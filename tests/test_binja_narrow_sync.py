@@ -5926,3 +5926,64 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     assert "idc.op_num(address, operand_index)" in ida_sync
     assert "for address in PATH_OWNERSHIP_DIRTY_FUNCTIONS:" in ida_sync
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_sync
+
+
+def test_remove_subgame_bods_cursor_ownership_is_replayed() -> None:
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "REMOVE_SUBGAME_BODS_CURSOR_USER_VAR_UPDATES" in binja_sync
+    for index, storage in (
+        (9, 73),
+        (15, 72),
+        (181, 72),
+        (587, 72),
+        (712, 72),
+        (848, 72),
+        (1562, 72),
+    ):
+        assert (
+            f'"RegisterVariableSourceType",\n        {index},\n        {storage},'
+            in binja_sync
+        )
+    for name, type_name in (
+        ("runtime_cell_cursor", "TrackRowCell*"),
+        ("row_list_next_cursor", "BodNode**"),
+        ("health_list_next_cursor", "BodNode**"),
+        ("garbage_list_next_cursor", "BodNode**"),
+        ("slug_list_next_cursor", "BodNode**"),
+        ("ring_list_next_cursor", "BodNode**"),
+        ("golb_shot_cursor", "GolbShot*"),
+    ):
+        assert f'"{name}"' in binja_sync
+        assert f'"{type_name}"' in binja_sync
+    assert "*REMOVE_SUBGAME_BODS_CURSOR_USER_VAR_UPDATES" in binja_sync
+
+    assert "REMOVE_SUBGAME_BODS_CURSOR_LVAR_SPECS" in ida_sync
+    for definition_address in (
+        "0x44091A",
+        "0x440920",
+        "0x4409C6",
+        "0x440B51",
+        "0x440BD9",
+        "0x440C61",
+        "0x440F15",
+    ):
+        assert definition_address in ida_sync
+    for name, declaration in (
+        ("runtime_cell_cursor", "TrackRowCell *runtime_cell_cursor;"),
+        ("row_list_next_cursor", "BodNode **row_list_next_cursor;"),
+        ("health_list_next_cursor", "BodNode **health_list_next_cursor;"),
+        ("garbage_list_next_cursor", "BodNode **garbage_list_next_cursor;"),
+        ("slug_list_next_cursor", "BodNode **slug_list_next_cursor;"),
+        ("ring_list_next_cursor", "BodNode **ring_list_next_cursor;"),
+        ("golb_shot_cursor", "GolbShot *golb_shot_cursor;"),
+    ):
+        assert f'"{name}"' in ida_sync
+        assert f'"{declaration}"' in ida_sync
+    assert "_sync_remove_subgame_bods_cursor_lvars" in ida_sync
+    assert '"remove_subgame_bods_cursor_lvars"' in ida_sync

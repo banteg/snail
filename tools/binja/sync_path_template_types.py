@@ -802,6 +802,72 @@ UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES = (
     ),
 )
 
+# remove_subgame_bods advances through one runtime cell at a time, then borrows
+# the intrusive BodNode::list_next field from each embedded row/pickup/hazard
+# owner. Binary Ninja otherwise promotes the cell and Golb-shot iterators to
+# pointers to their complete backing arrays, and infers SubHealth** for the
+# health field cursor. Pin only the exact native register lifetimes: none of the
+# list-next cursors owns the embedded pools, while the Golb cursor walks the
+# Player-owned fixed array one record at a time.
+REMOVE_SUBGAME_BODS_CURSOR_USER_VAR_UPDATES = (
+    (
+        "remove_subgame_bods",
+        "RegisterVariableSourceType",
+        9,
+        73,
+        "runtime_cell_cursor",
+        "TrackRowCell*",
+    ),
+    (
+        "remove_subgame_bods",
+        "RegisterVariableSourceType",
+        15,
+        72,
+        "row_list_next_cursor",
+        "BodNode**",
+    ),
+    (
+        "remove_subgame_bods",
+        "RegisterVariableSourceType",
+        181,
+        72,
+        "health_list_next_cursor",
+        "BodNode**",
+    ),
+    (
+        "remove_subgame_bods",
+        "RegisterVariableSourceType",
+        587,
+        72,
+        "garbage_list_next_cursor",
+        "BodNode**",
+    ),
+    (
+        "remove_subgame_bods",
+        "RegisterVariableSourceType",
+        712,
+        72,
+        "slug_list_next_cursor",
+        "BodNode**",
+    ),
+    (
+        "remove_subgame_bods",
+        "RegisterVariableSourceType",
+        848,
+        72,
+        "ring_list_next_cursor",
+        "BodNode**",
+    ),
+    (
+        "remove_subgame_bods",
+        "RegisterVariableSourceType",
+        1562,
+        72,
+        "golb_shot_cursor",
+        "GolbShot*",
+    ),
+)
+
 # VC6 retains containing-owner bases while advancing one authored row, one
 # runtime row, and one runtime cell at their native 0x38/0xf4/0x54 strides.
 # Binary Ninja otherwise flattens all three into void-pointer displacement
@@ -2297,6 +2363,7 @@ def main() -> int:
                 *PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES,
                 *CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES,
                 *UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES,
+                *REMOVE_SUBGAME_BODS_CURSOR_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *FRINGE_RUNTIME_USER_VAR_UPDATES,

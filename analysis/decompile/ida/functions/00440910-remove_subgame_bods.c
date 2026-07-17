@@ -5,20 +5,20 @@
 // Unlinks gameplay body lists and runtime pickup/hazard bods during subgame teardown. Cross-port iOS symbols match this helper to `cRSubGame::RemoveBods()` in `SubGame.o`.
 void __thiscall remove_subgame_bods(SubgameRuntime *game)
 {
-  TrackRowCell *v1; // edi
-  char *v2; // esi
+  TrackRowCell *runtime_cell_cursor; // edi
+  BodNode **row_list_next_cursor; // esi
   int v3; // ebp
   BodList *p_active_bod_list; // ecx
   int v5; // eax
   int v6; // eax
-  int v7; // eax
+  BodNode *v7; // eax
   int v8; // ebx
-  struct BodNode **p_list_next; // esi
+  BodNode **health_list_next_cursor; // esi
   int v10; // edi
   int v11; // eax
   BodList *v12; // ecx
   int v13; // eax
-  struct BodNode *v14; // eax
+  BodNode *v14; // eax
   BodList *v15; // edx
   uint32_t list_flags; // ecx
   struct BodNode *list_next; // ecx
@@ -29,24 +29,24 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
   struct BodNode *v22; // ecx
   struct BodNode *v23; // ecx
   uint32_t v24; // ecx
-  struct BodNode **v25; // esi
+  BodNode **garbage_list_next_cursor; // esi
   int v26; // edi
   int v27; // eax
   BodList *v28; // ecx
   int v29; // eax
-  struct BodNode *v30; // eax
-  struct BodNode **v31; // esi
+  BodNode *v30; // eax
+  BodNode **slug_list_next_cursor; // esi
   int v32; // edi
   int v33; // eax
   BodList *v34; // ecx
   int v35; // eax
-  struct BodNode *v36; // eax
-  struct BodNode **v37; // esi
+  BodNode *v36; // eax
+  BodNode **ring_list_next_cursor; // esi
   int v38; // edi
   int v39; // eax
   BodList *v40; // ecx
   int v41; // eax
-  struct BodNode *v42; // eax
+  BodNode *v42; // eax
   uint32_t v43; // eax
   BodList *v44; // ecx
   struct BodNode *v45; // eax
@@ -67,18 +67,18 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
   struct BodNode *v60; // ecx
   struct BodNode *v61; // ecx
   uint32_t v62; // ecx
-  GolbShot *golb_shots; // esi
+  GolbShot *golb_shot_cursor; // esi
   int v64; // edi
 
-  v1 = game->runtime_cells[0];
-  v2 = (char *)&unk_5CCAD8 + (_DWORD)game;
+  runtime_cell_cursor = game->runtime_cells[0];
+  row_list_next_cursor = (BodNode **)((char *)&unk_5CCAD8 + (_DWORD)game);
   v3 = 3200;
   do
   {
-    if ( (*((_DWORD *)v2 - 2) & 0x200) != 0 )
+    if ( (((unsigned __int16)*(row_list_next_cursor - 2) >> 8) & 2) != 0 )
     {
       p_active_bod_list = &g_game_base->active_bod_list;
-      v5 = *((_DWORD *)v2 - 2);
+      v5 = (int)*(row_list_next_cursor - 2);
       if ( (v5 & 0x200) != 0 )
       {
         if ( (v5 & 0x40) != 0 )
@@ -87,18 +87,18 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         }
         else
         {
-          if ( *(_DWORD *)v2 )
-            *(_DWORD *)(*(_DWORD *)v2 + 8) = *((_DWORD *)v2 - 1);
-          v6 = *((_DWORD *)v2 - 1);
+          if ( *row_list_next_cursor )
+            (*row_list_next_cursor)->list_prev = *(row_list_next_cursor - 1);
+          v6 = (int)*(row_list_next_cursor - 1);
           if ( v6 )
-            *(_DWORD *)(v6 + 12) = *(_DWORD *)v2;
+            *(_DWORD *)(v6 + 12) = *row_list_next_cursor;
           else
-            p_active_bod_list->first = *(BodNode **)v2;
-          *(_DWORD *)v2 = p_active_bod_list->free_top;
-          p_active_bod_list->free_top = (BodNode *)(v2 - 12);
-          v7 = *((_DWORD *)v2 - 2);
+            p_active_bod_list->first = *row_list_next_cursor;
+          *row_list_next_cursor = p_active_bod_list->free_top;
+          p_active_bod_list->free_top = (BodNode *)(row_list_next_cursor - 3);
+          v7 = *(row_list_next_cursor - 2);
           BYTE1(v7) &= ~2u;
-          *((_DWORD *)v2 - 2) = v7;
+          *(row_list_next_cursor - 2) = v7;
         }
       }
       else
@@ -109,20 +109,20 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
     v8 = 8;
     do
     {
-      remove_sub_loc(v1++);
+      remove_sub_loc(runtime_cell_cursor++);
       --v8;
     }
     while ( v8 );
-    v2 += 244;
+    row_list_next_cursor += 61;
     --v3;
   }
   while ( v3 );
   remove_track_render_cache_bods(&game->segment_cache);
-  p_list_next = &game->health_pickups[0].bod.list_next;
+  health_list_next_cursor = &game->health_pickups[0].bod.list_next;
   v10 = 8;
   do
   {
-    v11 = (int)*(p_list_next - 2);
+    v11 = (int)*(health_list_next_cursor - 2);
     if ( (v11 & 0x200) != 0 )
     {
       v12 = &g_game_base->active_bod_list;
@@ -132,22 +132,22 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       }
       else
       {
-        if ( *p_list_next )
-          (*p_list_next)->list_prev = *(p_list_next - 1);
-        v13 = (int)*(p_list_next - 1);
+        if ( *health_list_next_cursor )
+          (*health_list_next_cursor)->list_prev = *(health_list_next_cursor - 1);
+        v13 = (int)*(health_list_next_cursor - 1);
         if ( v13 )
-          *(_DWORD *)(v13 + 12) = *p_list_next;
+          *(_DWORD *)(v13 + 12) = *health_list_next_cursor;
         else
-          v12->first = *p_list_next;
-        *p_list_next = v12->free_top;
-        v12->free_top = (BodNode *)(p_list_next - 3);
-        v14 = *(p_list_next - 2);
+          v12->first = *health_list_next_cursor;
+        *health_list_next_cursor = v12->free_top;
+        v12->free_top = (BodNode *)(health_list_next_cursor - 3);
+        v14 = *(health_list_next_cursor - 2);
         BYTE1(v14) &= ~2u;
-        *(p_list_next - 2) = v14;
+        *(health_list_next_cursor - 2) = v14;
       }
-      p_list_next[11] = nullptr;
+      health_list_next_cursor[11] = nullptr;
     }
-    p_list_next += 29;
+    health_list_next_cursor += 29;
     --v10;
   }
   while ( v10 );
@@ -217,14 +217,14 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
     }
     game->jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
   }
-  v25 = &game->garbage_hazards.slots[0].body.bod.bod.list_next;
+  garbage_list_next_cursor = &game->garbage_hazards.slots[0].body.bod.bod.list_next;
   v26 = 50;
   do
   {
-    if ( (((unsigned __int16)*(v25 - 2) >> 8) & 2) != 0 )
+    if ( (((unsigned __int16)*(garbage_list_next_cursor - 2) >> 8) & 2) != 0 )
     {
-      v25[30] = nullptr;
-      v27 = (int)*(v25 - 2);
+      garbage_list_next_cursor[30] = nullptr;
+      v27 = (int)*(garbage_list_next_cursor - 2);
       v28 = &g_game_base->active_bod_list;
       if ( (v27 & 0x200) != 0 )
       {
@@ -234,18 +234,18 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         }
         else
         {
-          if ( *v25 )
-            (*v25)->list_prev = *(v25 - 1);
-          v29 = (int)*(v25 - 1);
+          if ( *garbage_list_next_cursor )
+            (*garbage_list_next_cursor)->list_prev = *(garbage_list_next_cursor - 1);
+          v29 = (int)*(garbage_list_next_cursor - 1);
           if ( v29 )
-            *(_DWORD *)(v29 + 12) = *v25;
+            *(_DWORD *)(v29 + 12) = *garbage_list_next_cursor;
           else
-            v28->first = *v25;
-          *v25 = v28->free_top;
-          v28->free_top = (BodNode *)(v25 - 3);
-          v30 = *(v25 - 2);
+            v28->first = *garbage_list_next_cursor;
+          *garbage_list_next_cursor = v28->free_top;
+          v28->free_top = (BodNode *)(garbage_list_next_cursor - 3);
+          v30 = *(garbage_list_next_cursor - 2);
           BYTE1(v30) &= ~2u;
-          *(v25 - 2) = v30;
+          *(garbage_list_next_cursor - 2) = v30;
         }
       }
       else
@@ -253,18 +253,18 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         report_errorf(aListRemove);
       }
     }
-    v25 += 49;
+    garbage_list_next_cursor += 49;
     --v26;
   }
   while ( v26 );
-  v31 = &game->slug_hazards.slots[0].body.bod.bod.list_next;
+  slug_list_next_cursor = &game->slug_hazards.slots[0].body.bod.bod.list_next;
   v32 = 8;
   do
   {
-    if ( (((unsigned __int16)*(v31 - 2) >> 8) & 2) != 0 )
+    if ( (((unsigned __int16)*(slug_list_next_cursor - 2) >> 8) & 2) != 0 )
     {
-      v31[29] = nullptr;
-      v33 = (int)*(v31 - 2);
+      slug_list_next_cursor[29] = nullptr;
+      v33 = (int)*(slug_list_next_cursor - 2);
       v34 = &g_game_base->active_bod_list;
       if ( (v33 & 0x200) != 0 )
       {
@@ -274,18 +274,18 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         }
         else
         {
-          if ( *v31 )
-            (*v31)->list_prev = *(v31 - 1);
-          v35 = (int)*(v31 - 1);
+          if ( *slug_list_next_cursor )
+            (*slug_list_next_cursor)->list_prev = *(slug_list_next_cursor - 1);
+          v35 = (int)*(slug_list_next_cursor - 1);
           if ( v35 )
-            *(_DWORD *)(v35 + 12) = *v31;
+            *(_DWORD *)(v35 + 12) = *slug_list_next_cursor;
           else
-            v34->first = *v31;
-          *v31 = v34->free_top;
-          v34->free_top = (BodNode *)(v31 - 3);
-          v36 = *(v31 - 2);
+            v34->first = *slug_list_next_cursor;
+          *slug_list_next_cursor = v34->free_top;
+          v34->free_top = (BodNode *)(slug_list_next_cursor - 3);
+          v36 = *(slug_list_next_cursor - 2);
           BYTE1(v36) &= ~2u;
-          *(v31 - 2) = v36;
+          *(slug_list_next_cursor - 2) = v36;
         }
       }
       else
@@ -293,17 +293,17 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         report_errorf(aListRemove);
       }
     }
-    v31 += 59;
+    slug_list_next_cursor += 59;
     --v32;
   }
   while ( v32 );
-  v37 = &game->ring_effects.slots[0].body.bod.bod.list_next;
+  ring_list_next_cursor = &game->ring_effects.slots[0].body.bod.bod.list_next;
   v38 = 2;
   do
   {
-    if ( v37[29] )
+    if ( ring_list_next_cursor[29] )
     {
-      v39 = (int)*(v37 - 2);
+      v39 = (int)*(ring_list_next_cursor - 2);
       v40 = &g_game_base->active_bod_list;
       if ( (v39 & 0x200) != 0 )
       {
@@ -313,18 +313,18 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         }
         else
         {
-          if ( *v37 )
-            (*v37)->list_prev = *(v37 - 1);
-          v41 = (int)*(v37 - 1);
+          if ( *ring_list_next_cursor )
+            (*ring_list_next_cursor)->list_prev = *(ring_list_next_cursor - 1);
+          v41 = (int)*(ring_list_next_cursor - 1);
           if ( v41 )
-            *(_DWORD *)(v41 + 12) = *v37;
+            *(_DWORD *)(v41 + 12) = *ring_list_next_cursor;
           else
-            v40->first = *v37;
-          *v37 = v40->free_top;
-          v40->free_top = (BodNode *)(v37 - 3);
-          v42 = *(v37 - 2);
+            v40->first = *ring_list_next_cursor;
+          *ring_list_next_cursor = v40->free_top;
+          v40->free_top = (BodNode *)(ring_list_next_cursor - 3);
+          v42 = *(ring_list_next_cursor - 2);
           BYTE1(v42) &= ~2u;
-          *(v37 - 2) = v42;
+          *(ring_list_next_cursor - 2) = v42;
         }
       }
       else
@@ -332,8 +332,8 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         report_errorf(aListRemove);
       }
     }
-    v37[29] = nullptr;
-    v37 += 126;
+    ring_list_next_cursor[29] = nullptr;
+    ring_list_next_cursor += 126;
     --v38;
   }
   while ( v38 );
@@ -467,13 +467,13 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
     game->player.movement_mode_selector = 0;
     noop_runtime_ai();
   }
-  golb_shots = game->player.golb_shots;
+  golb_shot_cursor = game->player.golb_shots;
   v64 = 12;
   do
   {
-    if ( golb_shots->state == 1 )
-      kill_golb(golb_shots);
-    ++golb_shots;
+    if ( golb_shot_cursor->state == 1 )
+      kill_golb(golb_shot_cursor);
+    ++golb_shot_cursor;
     --v64;
   }
   while ( v64 );

@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_subgame",
-      "address": "0x438b90"
+      "name": "remove_subgame_bods",
+      "address": "0x440910"
     }
   ],
   "health_check_count": 485,

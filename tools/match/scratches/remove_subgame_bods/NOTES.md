@@ -233,3 +233,20 @@ The compiler-sensitive cursor remains rooted at `list_next`; ownership alone
 moves to the shared intrusive-node layout. Focused output remains 67.67%,
 495/501 instructions, with 64 clean operands and the single remaining
 alignment-sensitive string mismatch.
+
+## 2026-07-17 teardown cursor analysis ownership
+
+The Binary Ninja and IDA replay lanes now preserve the exact native iterator
+lifetimes rather than letting register inference choose whole-array pointers or
+anonymous temporaries. The opening `runtime_cell_cursor` advances one
+`TrackRowCell`; the row, health, garbage, slug, and ring variables are borrowed
+`BodNode::list_next` field cursors; and `golb_shot_cursor` advances one element
+of the Player-owned `GolbShot[12]` bank. In particular, this corrects Binary
+Ninja's prior `TrackRowCell (*)[3200][8]`, `SubHealth**`, and
+`GolbShot (*)[12]` interpretations without claiming that any intrusive-list
+cursor owns its embedded pool.
+
+Both databases were previewed, applied, read back, and exported through the
+checked-in replay tooling. No matcher source changed. Focused output remains
+the honest 67.67%, 495/501-instruction frontier with 64 clean operands and the
+single alignment-sensitive string mismatch.

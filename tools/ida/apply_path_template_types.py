@@ -169,6 +169,41 @@ UPDATE_SUBGAME_RUNTIME_LVAR_SPECS = (
     ),
 )
 
+REMOVE_SUBGAME_BODS_CURSOR_LVAR_SPECS = (
+    ("runtime_cell_cursor", "TrackRowCell *runtime_cell_cursor;", 0x44091A, None),
+    (
+        "row_list_next_cursor",
+        "BodNode **row_list_next_cursor;",
+        0x440920,
+        None,
+    ),
+    (
+        "health_list_next_cursor",
+        "BodNode **health_list_next_cursor;",
+        0x4409C6,
+        None,
+    ),
+    (
+        "garbage_list_next_cursor",
+        "BodNode **garbage_list_next_cursor;",
+        0x440B51,
+        None,
+    ),
+    (
+        "slug_list_next_cursor",
+        "BodNode **slug_list_next_cursor;",
+        0x440BD9,
+        None,
+    ),
+    (
+        "ring_list_next_cursor",
+        "BodNode **ring_list_next_cursor;",
+        0x440C61,
+        None,
+    ),
+    ("golb_shot_cursor", "GolbShot *golb_shot_cursor;", 0x440F15, None),
+)
+
 MERGE_RUNTIME_LVAR_SPECS = (
     ("seed_lane_flags", "uint32_t *seed_lane_flags;", 0x435195, None),
     ("cell_lane_flags", "uint32_t *cell_lane_flags;", 0x4351D8, None),
@@ -1743,6 +1778,13 @@ def _sync_update_subgame_runtime_lvars() -> dict[str, object]:
     )
 
 
+def _sync_remove_subgame_bods_cursor_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "remove_subgame_bods",
+        REMOVE_SUBGAME_BODS_CURSOR_LVAR_SPECS,
+    )
+
+
 def _sync_merge_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "merge_track_tile_runs",
@@ -2185,6 +2227,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "runtime_lvars": update_subgame_runtime_lvars,
             }
         )
+    remove_subgame_bods_cursor_lvars = _sync_remove_subgame_bods_cursor_lvars()
+    if remove_subgame_bods_cursor_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "remove_subgame_bods",
+                "cursor_lvars": remove_subgame_bods_cursor_lvars,
+            }
+        )
     merge_runtime_lvars = _sync_merge_runtime_lvars()
     if merge_runtime_lvars.get("status") == "failed":
         failed.append(
@@ -2276,6 +2326,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "place_parcels_runtime_lvars": place_parcels_runtime_lvars,
                 "challenge_parcels_runtime_lvars": challenge_parcels_runtime_lvars,
                 "update_subgame_runtime_lvars": update_subgame_runtime_lvars,
+                "remove_subgame_bods_cursor_lvars": remove_subgame_bods_cursor_lvars,
                 "merge_runtime_lvars": merge_runtime_lvars,
                 "fringe_runtime_lvars": fringe_runtime_lvars,
                 "harmonize_runtime_lvars": harmonize_runtime_lvars,

@@ -3848,12 +3848,23 @@
         "&game->runtime_rows[0].primary_body",
         "&game->health_pickups[0].list_next",
         "&game->ring_effects.slots[0].bod.list_next",
-        "game->player.body.bod.bod.list_flags"
+        "game->player.body.bod.bod.list_flags",
+        "struct TrackRowCell* runtime_cell_cursor",
+        "struct BodNode** row_list_next_cursor",
+        "struct BodNode** health_list_next_cursor",
+        "struct BodNode** garbage_list_next_cursor",
+        "struct BodNode** slug_list_next_cursor",
+        "struct BodNode** ring_list_next_cursor",
+        "struct GolbShot* golb_shot_cursor",
+        "kill_golb(golb_shot_cursor)"
       ],
       "forbidden_substrings": [
         "struct Game*",
         "__offset(Game",
         "arg1->",
+        "struct TrackRowCell (*)[0xc80][0x8]",
+        "struct SubHealth**",
+        "struct GolbShot (*)[0xc]",
         "__asm",
         "_ET1"
       ],
@@ -3870,11 +3881,22 @@
         "remove_track_render_cache_bods(&game->segment_cache)",
         "&game->health_pickups[0].bod.list_next",
         "&game->ring_effects.slots[0].body.bod.bod.list_next",
-        "game->player.body.bod.bod.list_flags"
+        "game->player.body.bod.bod.list_flags",
+        "TrackRowCell *runtime_cell_cursor",
+        "BodNode **row_list_next_cursor",
+        "BodNode **health_list_next_cursor",
+        "BodNode **garbage_list_next_cursor",
+        "BodNode **slug_list_next_cursor",
+        "BodNode **ring_list_next_cursor",
+        "GolbShot *golb_shot_cursor",
+        "kill_golb(golb_shot_cursor)"
       ],
       "forbidden_substrings": [
         "sub_440910(int this)",
         "this +",
+        "char *v2",
+        "struct BodNode **v25",
+        "GolbShot *golb_shots",
         "__asm",
         "_ET1"
       ]
