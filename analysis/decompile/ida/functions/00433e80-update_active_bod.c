@@ -2,40 +2,40 @@
 /* function: update_active_bod @ 0x433e80 */
 /* selector: update_active_bod */
 
-// Implements the default active-bod subtype callback by recycling a live bod to the free list once its world-z plus the native 24-unit buffer falls behind the current subgame cutoff.
-void __thiscall sub_433E80(int this)
+// Exact TrackRenderCacheSlot callback installed by initialize_active_bod: recycles one live cache BOD to the root free list once its cache-row base plus the native 24-unit span falls behind the current subgame cutoff.
+void __thiscall update_active_bod(TrackRenderCacheSlot *slot)
 {
-  int v1; // eax
-  char *v2; // edx
-  int v3; // eax
-  int v4; // eax
-  int v5; // eax
+  uint32_t list_flags; // eax
+  BodList *p_active_bod_list; // edx
+  struct BodNode *list_next; // eax
+  struct BodNode *list_prev; // eax
+  uint32_t v5; // eax
 
-  if ( *(float *)(this + 56) + 24.0 < *((float *)MEMORY[0x4DF904] + 1100223) )
+  if ( slot->cache_row_base + 24.0 < g_game_base->subgame.player.interaction_max_z )
   {
-    v1 = *(_DWORD *)(this + 4);
-    v2 = (char *)MEMORY[0x4DF904] + 1448;
-    if ( (v1 & 0x200) != 0 )
+    list_flags = slot->bod.bod.list_flags;
+    p_active_bod_list = &g_game_base->active_bod_list;
+    if ( (list_flags & 0x200) != 0 )
     {
-      if ( (v1 & 0x40) != 0 )
+      if ( (list_flags & 0x40) != 0 )
       {
         report_errorf(aListRemoveNext);
       }
       else
       {
-        v3 = *(_DWORD *)(this + 12);
-        if ( v3 )
-          *(_DWORD *)(v3 + 8) = *(_DWORD *)(this + 8);
-        v4 = *(_DWORD *)(this + 8);
-        if ( v4 )
-          *(_DWORD *)(v4 + 12) = *(_DWORD *)(this + 12);
+        list_next = slot->bod.bod.list_next;
+        if ( list_next )
+          list_next->list_prev = slot->bod.bod.list_prev;
+        list_prev = slot->bod.bod.list_prev;
+        if ( list_prev )
+          list_prev->list_next = slot->bod.bod.list_next;
         else
-          *((_DWORD *)v2 + 1) = *(_DWORD *)(this + 12);
-        *(_DWORD *)(this + 12) = *((_DWORD *)v2 + 2);
-        *((_DWORD *)v2 + 2) = this;
-        v5 = *(_DWORD *)(this + 4);
+          p_active_bod_list->first = slot->bod.bod.list_next;
+        slot->bod.bod.list_next = p_active_bod_list->free_top;
+        p_active_bod_list->free_top = &slot->bod.bod;
+        v5 = slot->bod.bod.list_flags;
         BYTE1(v5) &= ~2u;
-        *(_DWORD *)(this + 4) = v5;
+        slot->bod.bod.list_flags = v5;
       }
     }
     else
@@ -44,4 +44,3 @@ void __thiscall sub_433E80(int this)
     }
   }
 }
-

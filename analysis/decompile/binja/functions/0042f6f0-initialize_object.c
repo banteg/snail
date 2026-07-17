@@ -3,11 +3,11 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_object @ 0x42f6f0 */
 
-0042f6f2        *(arg1 + 0x10) = 0
-0042f6f5        *(arg1 + 0x14) = 0
-0042f6f8        *(arg1 + 0x2c) = 0
-0042f6fb        *(arg1 + 0x54) = 0
-0042f6fe        *(arg1 + 0x44) = 0
-0042f701        *(arg1 + 0x40) = 0
-0042f704        *(arg1 + 0x64) = 0
-0042f707        return 0
+0042f6f2        object->flags = 0
+0042f6f5        object->blend_mode = 0
+0042f6f8        object->vertex_count = 0
+0042f6fb        object->facequad_count = 0
+0042f6fe        object->vertex_normals = nullptr
+0042f701        object->field_40 = 0
+0042f704        object->texture_group_count = 0
+0042f707        return

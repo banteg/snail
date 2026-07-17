@@ -2171,7 +2171,7 @@ try:
             "changed": changed,
         }})
 
-    bv.update_analysis_and_wait()
+    changed_any = any(entry["changed"] for entry in out)
     for entry in out:
         address = int(entry["address"], 0)
         after = bv.get_data_var_at(address)
@@ -2183,7 +2183,6 @@ try:
     if preview:
         bv.revert_undo_actions(state)
         undo_closed = True
-        bv.update_analysis_and_wait()
         for entry in out:
             address = int(entry["address"], 0)
             restored = bv.get_data_var_at(address)
@@ -2204,16 +2203,18 @@ try:
         bv.commit_undo_actions(state)
         undo_closed = True
         snapshot_saved = bv.file.save_auto_snapshot()
+        if changed_any:
+            bv.update_analysis()
 except Exception:
     if not undo_closed:
         bv.revert_undo_actions(state)
-        bv.update_analysis_and_wait()
     raise
 
 result = {{
     "success": True,
     "preview": preview,
     "committed": not preview,
+    "analysis_scheduled": changed_any and not preview,
     "results": out,
     "snapshot_saved": snapshot_saved,
 }}

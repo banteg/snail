@@ -517,7 +517,7 @@
     {
       "address": "0x4085e0",
       "name": "initialize_active_bod",
-      "description": "Initializes one shared active-bod runtime header by clearing its list links and installing the common subtype callback table at `data_497338`."
+      "description": "Exact constructor for one 0x3c-byte TrackRenderCacheSlot: calls the inherited BodBase constructor and installs the callback table at `data_497338`. Its sole array-constructor use covers the complete 143x5 SegmentCache grid with stride 0x3c; the iOS cRSegTrack RTTI name independently supports this concrete track-cache owner."
     },
     {
       "address": "0x408600",
@@ -1990,7 +1990,7 @@
     {
       "address": "0x433e80",
       "name": "update_active_bod",
-      "description": "Implements the default active-bod subtype callback by recycling a live bod to the free list once its world-z plus the native 24-unit buffer falls behind the current subgame cutoff."
+      "description": "Exact TrackRenderCacheSlot callback installed by initialize_active_bod: recycles one live cache BOD to the root free list once its cache-row base plus the native 24-unit span falls behind the current subgame cutoff."
     },
     {
       "address": "0x433f20",

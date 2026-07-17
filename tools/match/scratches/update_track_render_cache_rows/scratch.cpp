@@ -7,15 +7,15 @@
 int report_errorf(char* format, ...);
 
 #define ACTIVATE_CACHE_SLOT(slot, active_list)                                      \
-    if (((slot)->bod.list_flags & live_mask) != 0) {                               \
+    if (((slot)->list_flags & live_mask) != 0) {                                   \
         report_errorf("List ADDafter");                                            \
     } else {                                                                       \
-        (slot)->bod.list_prev = (active_list);                                     \
-        (slot)->bod.list_next = (active_list)->list_next;                          \
-        (active_list)->list_next = &(slot)->bod;                                   \
-        if ((slot)->bod.list_next != 0)                                            \
-            (slot)->bod.list_next->list_prev = &(slot)->bod;                       \
-        (slot)->bod.list_flags |= live_mask;                                       \
+        (slot)->list_prev = (active_list);                                         \
+        (slot)->list_next = (active_list)->list_next;                              \
+        (active_list)->list_next = (slot);                                         \
+        if ((slot)->list_next != 0)                                                \
+            (slot)->list_next->list_prev = (slot);                                 \
+        (slot)->list_flags |= live_mask;                                           \
     }
 
 void SegmentCache::update_track_render_cache_rows()
@@ -30,53 +30,53 @@ void SegmentCache::update_track_render_cache_rows()
             &slots[next_cache_row_index][TRACK_RENDER_CACHE_FRINGE];
         ACTIVATE_CACHE_SLOT(slot, active_list);
         Vector3* position =
-            &slots[next_cache_row_index][TRACK_RENDER_CACHE_FRINGE].bod.position;
+            &slots[next_cache_row_index][TRACK_RENDER_CACHE_FRINGE].position;
         position->z = 0.0f;
         position->y = 0.0f;
         position->x = 0.0f;
         tColour skirt_color;
-        slots[next_cache_row_index][TRACK_RENDER_CACHE_FRINGE].bod.color =
+        slots[next_cache_row_index][TRACK_RENDER_CACHE_FRINGE].color =
             *g_game->subgame.get_track_skirt_color(&skirt_color);
 
         active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_FLOOR];
         ACTIVATE_CACHE_SLOT(slot, active_list);
-        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_FLOOR].bod.position;
+        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_FLOOR].position;
         position->z = 0.0f;
         position->y = 0.0f;
         position->x = 0.0f;
         slots[next_cache_row_index][TRACK_RENDER_CACHE_FLOOR]
-            .bod.color.set_color_white();
+            .color.set_color_white();
 
         active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_SLIDE];
         ACTIVATE_CACHE_SLOT(slot, active_list);
-        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_SLIDE].bod.position;
+        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_SLIDE].position;
         position->z = 0.0f;
         position->y = 0.0f;
         position->x = 0.0f;
         slots[next_cache_row_index][TRACK_RENDER_CACHE_SLIDE]
-            .bod.color.set_color_white();
+            .color.set_color_white();
 
         active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_RAMP];
         ACTIVATE_CACHE_SLOT(slot, active_list);
-        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_RAMP].bod.position;
+        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_RAMP].position;
         position->z = 0.0f;
         position->y = 0.0f;
         position->x = 0.0f;
         slots[next_cache_row_index][TRACK_RENDER_CACHE_RAMP]
-            .bod.color.set_color_white();
+            .color.set_color_white();
 
         active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_WARNING];
         ACTIVATE_CACHE_SLOT(slot, active_list);
-        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_WARNING].bod.position;
+        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_WARNING].position;
         position->z = 0.0f;
         position->y = 0.0f;
         position->x = 0.0f;
         slots[next_cache_row_index][TRACK_RENDER_CACHE_WARNING]
-            .bod.color.set_color_white();
+            .color.set_color_white();
 
         next_cache_row_z += 24.0f;
         next_cache_row_index++;

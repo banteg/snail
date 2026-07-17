@@ -111,6 +111,16 @@ prefix 18/135, with all 23 operands clean.
   honest 97.78%, 135/135 result with the same two scheduling differences and
   23 clean masked operands.
 
+## 2026-07-18 active-list owner split
+
+The frame loop now walks the canonical
+`BodNode` linkage and invokes each heterogeneous slot-zero callback through
+the existing cast-only `BodAiDispatch` ABI. The removed `ActiveBod` class had
+combined a generic list traversal with fields that belong specifically to the
+track-cache subtype. Its exact constructor/updater pair now lives on
+`TrackRenderCacheSlot`; the frame loop remains exact at 135/135 instructions
+with all 23 operands clean.
+
 ## 2026-07-13 frame-lifetime closure
 
 - The fixed-step seed is an in-place owner update,

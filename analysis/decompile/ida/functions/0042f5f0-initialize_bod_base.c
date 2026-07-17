@@ -2,22 +2,21 @@
 /* function: initialize_bod_base @ 0x42f5f0 */
 /* selector: initialize_bod_base */
 
-// Initializes the shared bod header and default state: noop runtime AI callback, default flags, white color block, cleared linkage fields, and the global bod counter increment.
-_DWORD *__thiscall sub_42F5F0(_DWORD *this)
+// Initializes the shared bod header and default state: noop runtime AI callback, default flags, white color block, cleared linkage fields, and the global bod counter increment. iOS RObject.o names this base constructor `cRBod::cRBod()`.
+BodBase *__thiscall initialize_bod_base(BodBase *bod)
 {
-  _DWORD *v2; // edi
+  tColour *p_color; // edi
 
-  v2 = this + 10;
-  Iostream_init::Iostream_init((#93 *)(this + 10));
-  *this = off_4974FC;
-  *(this + 1) = 33554464;
-  store_color4f(v2, 1065353216, 1065353216, 1065353216, 1065353216);
-  ++MEMORY[0x50331C];
-  *(this + 6) = 0;
-  *(this + 5) = 0;
-  *(this + 4) = 0;
-  *(this + 7) = 0;
-  *(this + 8) = 0;
-  return this;
+  p_color = &bod->color;
+  noop_this_constructor(&bod->color);
+  bod->bod.vtable = &g_bod_base_vtable;
+  bod->bod.list_flags = 33554464;
+  store_color4f(p_color, 1.0, 1.0, 1.0, 1.0);
+  ++g_bod_base_init_count;
+  bod->position.z = 0.0;
+  bod->position.y = 0.0;
+  bod->position.x = 0.0;
+  bod->render_arg_1c = 0.0;
+  bod->render_arg_20 = 0.0;
+  return bod;
 }
-

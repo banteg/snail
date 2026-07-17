@@ -31,9 +31,13 @@ TRUSTED_NAMES = [
     (0x4084D0, "initialize_track_jetpack_pickup_runtime"),
     (0x408510, "initialize_track_health_pickup_runtime"),
     (0x408590, "initialize_track_row_runtime"),
+    (0x4085E0, "initialize_active_bod"),
     (0x408650, "initialize_fringe_object"),
     (0x4086D0, "initialize_player_presentation_controller"),
     (0x42F6E0, "initialize_object_constructor_thunk"),
+    (0x42F5F0, "initialize_bod_base"),
+    (0x42F650, "initialize_renderable_bod"),
+    (0x433E80, "update_active_bod"),
     (0x440F80, "update_barrier_ai"),
     (0x440FA0, "initialize_damage_gauge"),
     (0x440FD0, "update_damage_gauge"),
@@ -78,11 +82,15 @@ TRUSTED_NAMES = [
     (0x497318, "g_jet_pack_vtable"),
     (0x49731C, "g_vapour_vtable"),
     (0x497320, "g_sub_health_vtable"),
+    (0x497338, "g_active_bod_vtable"),
+    (0x4974FC, "g_bod_base_vtable"),
+    (0x497500, "g_renderable_bod_vtable"),
     (0x497330, "g_row_model_vtable"),
     (0x497344, "g_fringe_vtable"),
     (0x497354, "g_player_presentation_noop_vtable"),
     (0x497358, "g_invincible_shell_update_vtable"),
     (0x49735C, "g_weapon_noop_vtable"),
+    (0x50331C, "g_bod_base_init_count"),
     (0x503290, "g_loading_bar"),
 ]
 
@@ -96,6 +104,10 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x497318, "g_jet_pack_vtable", "void *g_jet_pack_vtable;"),
     (0x49731C, "g_vapour_vtable", "void *g_vapour_vtable;"),
     (0x497320, "g_sub_health_vtable", "void *g_sub_health_vtable;"),
+    (0x497338, "g_active_bod_vtable", "void *g_active_bod_vtable;"),
+    (0x4974FC, "g_bod_base_vtable", "void *g_bod_base_vtable;"),
+    (0x497500, "g_renderable_bod_vtable", "void *g_renderable_bod_vtable;"),
+    (0x50331C, "g_bod_base_init_count", "int32_t g_bod_base_init_count;"),
     (0x4AC5C8, "g_default_tip_message", "TipData g_default_tip_message;"),
     (0x503290, "g_loading_bar", "LoadingBar g_loading_bar;"),
 ]
@@ -110,10 +122,12 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4084D0,  # initialize_track_jetpack_pickup_runtime
     0x408510,  # initialize_track_health_pickup_runtime
     0x408590,  # initialize_track_row_runtime
+    0x4085E0,  # initialize_active_bod
     0x408650,  # initialize_fringe_object
     0x408670,  # initialize_click_start_controller_runtime
     0x408690,  # initialize_golb_shot
     0x408820,  # initialize_active_landscape_entry
+    0x40A2A0,  # run_frame_update
     0x40ACF0,  # initialize_game_assets_and_world
     0x414670,  # kill_golb
     0x414820,  # update_golb_ai
@@ -128,7 +142,9 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x42C770,  # try_enter_track_attachment_from_swept_motion
     0x42CA90,  # is_point_inside_track_attachment
     0x42F650,  # initialize_renderable_bod
+    0x42F5F0,  # initialize_bod_base
     0x42F6E0,  # initialize_object_constructor_thunk
+    0x433E80,  # update_active_bod
     0x434BE0,  # build_track_fringe_objects
     0x435180,  # merge_track_tile_runs
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
@@ -662,8 +678,20 @@ UPDATE_SUBGAME_RUNTIME_ROW_OFFSET_OPERANDS = (
 
 TRUSTED_DECLARATIONS = [
     (
+        "initialize_bod_base",
+        "BodBase* __thiscall initialize_bod_base(BodBase* bod);",
+    ),
+    (
         "initialize_renderable_bod",
         "RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body);",
+    ),
+    (
+        "initialize_active_bod",
+        "TrackRenderCacheSlot* __thiscall initialize_active_bod(TrackRenderCacheSlot* slot);",
+    ),
+    (
+        "update_active_bod",
+        "void __thiscall update_active_bod(TrackRenderCacheSlot* slot);",
     ),
     (
         "initialize_noop_renderable_bod",
@@ -2177,6 +2205,8 @@ def _normalize_type_text(value: str | None) -> str | None:
     normalized = value.strip().removesuffix(";")
     normalized = re.sub(r"\s+", " ", normalized)
     normalized = normalized.replace("unsigned __int8", "unsigned char")
+    normalized = re.sub(r"\buint8_t\b", "unsigned char", normalized)
+    normalized = re.sub(r"\bint32_t\b", "int", normalized)
     normalized = re.sub(r"\s*\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
     normalized = re.sub(r"\s*,\s*", ", ", normalized)
@@ -2382,6 +2412,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     names_unchanged = 0
     data_applied = 0
     data_unchanged = 0
+    type_changes = []
     missing = []
     failed = []
 
@@ -2470,6 +2501,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
             continue
 
         applied += 1
+        type_changes.append(
+            {
+                "selector": selector,
+                "address": hex(address),
+                "before": current_type,
+                "after": observed,
+            }
+        )
 
     game_root_owner_graph = sync_game_root_owner_graph(require=True)
     if game_root_owner_graph.get("status") == "failed":
@@ -2741,6 +2780,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "names_unchanged": names_unchanged,
                 "data_applied": data_applied,
                 "data_unchanged": data_unchanged,
+                "type_changes": type_changes,
                 "golb_shot_prefix_owner": golb_shot_prefix_owner,
                 "game_root_owner_graph": game_root_owner_graph,
                 "attachment_entry_root_offset_operands": attachment_entry_root_offset_operands,

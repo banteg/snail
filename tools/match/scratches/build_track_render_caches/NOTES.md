@@ -106,7 +106,7 @@ while manager `+0x54` is a borrowed backlink to the enclosing SubgameRuntime.
 
 The previous cross-tool `TrackRenderCacheSlot::vertex_count +0x2c` was false:
 that offset is inside `BodBase::color`. Exact activation and removal prove the
-full embedded `BodBase` at `+0x00` and `cache_row_base +0x38`. The checked-in
+full inherited `BodBase` at `+0x00` and `cache_row_base +0x38`. The checked-in
 headers and Binary Ninja sync now agree on that layout and on the owned
 `runtime_cells[3200][8]` slab reached through the backlink.
 

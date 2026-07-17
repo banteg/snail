@@ -1287,6 +1287,10 @@ typedef struct ObjectRenderVertex {
     float v;
 } ObjectRenderVertex;
 
+/*
+ * Concrete 0x3c-byte track-cache BOD constructed across SegmentCache::slots.
+ * The C analysis view embeds its inherited BodBase prefix explicitly.
+ */
 typedef struct TrackRenderCacheSlot {
     BodBase bod;
     float cache_row_base;
@@ -2251,6 +2255,8 @@ int32_t __thiscall set_bod_object(BodBase* bod, Object* object);
 BodBase* __thiscall initialize_bod_base(BodBase* bod);
 RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body);
 RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body);
+TrackRenderCacheSlot* __thiscall initialize_active_bod(TrackRenderCacheSlot* slot);
+void __thiscall update_active_bod(TrackRenderCacheSlot* slot);
 SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(
     SubgameRuntime* game
 );

@@ -25,10 +25,17 @@ enum {
     TRACK_RENDER_CACHE_ROW_COUNT = 0x8f,
 };
 
-struct TrackRenderCacheSlot {
-    // The manager owns the BOD node. BodBase::object is a handle allocated
-    // from the global ObjectList and retained for the manager lifetime.
-    BodBase bod;          // +0x00, object handle at +0x24
+// Windows constructs this exact 143x5 grid through initialize_active_bod and
+// installs update_active_bod as the slot-zero callback. The cRSegTrack RTTI
+// name in the iOS binary independently supports this concrete track-cache
+// owner; ActiveBod remains a behavior label, not a second native record.
+class TrackRenderCacheSlot : public BodBase {
+public:
+    TrackRenderCacheSlot* initialize_active_bod(); // @ 0x4085e0
+    void update_active_bod();                      // @ 0x433e80
+
+    // BodBase::object is allocated from the global ObjectList and retained for
+    // the manager lifetime.
     float cache_row_base; // +0x38, shared by all five families in one cache row
 };
 

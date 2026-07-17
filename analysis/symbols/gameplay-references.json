@@ -2280,7 +2280,7 @@
         "off_497338",
         "data_497338"
       ],
-      "description": "Shared active-BOD runtime vtable installed by initialize_active_bod."
+      "description": "Single-entry TrackRenderCacheSlot callback table installed across the complete 143x5 SegmentCache grid by initialize_active_bod; its entry is update_active_bod."
     },
     {
       "address": "0x49733c",

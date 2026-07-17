@@ -1,6 +1,5 @@
 // run_frame_update @ 0x40a2a0 (thiscall, ret)
 
-#include "active_bod.h"
 #include "audio_system.h"
 #include "bod_ai_dispatch.h"
 #include "cheat_state.h"
@@ -58,19 +57,19 @@ int GameRoot::run_frame_update()
             fixed_update_accumulator = fixed_update_accumulator - 1.0f;
             players[0].frontend_overlay.draw_frontend_overlay_color_lerp();
 
-            ActiveBod* bod = (ActiveBod*)active_bod_list.first;
+            BodNode* bod = active_bod_list.first;
             if (bod != 0) {
                 do {
                     if ((bod->list_flags & BOD_FLAG_DEBUG) != 0) {
                         report_errorf("Debug Bod AI");
                     }
 
-                    ActiveBod* next_bod = bod->list_next;
+                    BodNode* next_bod = bod->list_next;
                     if (next_bod != 0) {
                         next_bod->list_flags |= BOD_FLAG_NEXT_UPDATE_GUARD;
                     }
 
-                    bod->update_active_bod();
+                    ((BodAiDispatch*)bod)->update_bod_ai();
                     bod = next_bod;
                     ++bod_update_count;
                     if (next_bod == 0) {

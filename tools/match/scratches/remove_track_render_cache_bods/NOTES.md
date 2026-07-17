@@ -4,7 +4,7 @@ First typed scratch for clearing the track-render-cache BOD slots.
 
 The helper walks `0x8f` cache rows with five `TrackRenderCacheSlot` entries per
 row. The shared `segment_cache.h` layout keeps each slot as a
-`BodBase`/`BodNode` overlay with stride `0x3c`, matching the
+`BodBase`-derived owner with stride `0x3c`, matching the
 initializer/build-cache users that address the render object at the
 `BodBase::object` lane (`slot + 0x24`).
 
@@ -18,8 +18,8 @@ operands clean.
 
 Important shape correction: native keeps `esi` as a cursor to
 `BodNode::list_next` (`slot + 0x0c`), not to the slot/BOD base. The scratch uses
-`next_ref = &slots[0][0].bod.list_next` to preserve that lane while still
-documenting the owning slot as `TrackRenderCacheSlot { BodBase bod; ... }`.
+`next_ref = &slots[0][0].list_next` to preserve that lane while still
+documenting the owning slot as `TrackRenderCacheSlot : BodBase`.
 
 Residuals:
 

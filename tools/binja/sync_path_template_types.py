@@ -28,6 +28,20 @@ from _narrow_sync import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
+BOD_CORE_SYMBOL_UPDATES = (
+    ("0x42f5f0", "initialize_bod_base"),
+    ("0x42f650", "initialize_renderable_bod"),
+    ("0x4974fc", "g_bod_base_vtable"),
+    ("0x497500", "g_renderable_bod_vtable"),
+    ("0x50331c", "g_bod_base_init_count"),
+)
+
+TRACK_RENDER_CACHE_SYMBOL_UPDATES = (
+    ("0x4085e0", "initialize_active_bod"),
+    ("0x433e80", "update_active_bod"),
+    ("0x497338", "g_active_bod_vtable"),
+)
+
 SYMBOL_UPDATES = (
     ("0x408040", "initialize_noop_renderable_bod"),
     ("0x408060", "initialize_runtime_pools_and_path_template_bank"),
@@ -35,6 +49,8 @@ SYMBOL_UPDATES = (
     ("0x4084d0", "initialize_track_jetpack_pickup_runtime"),
     ("0x408510", "initialize_track_health_pickup_runtime"),
     ("0x408590", "initialize_track_row_runtime"),
+    *BOD_CORE_SYMBOL_UPDATES,
+    *TRACK_RENDER_CACHE_SYMBOL_UPDATES,
     ("0x408650", "initialize_fringe_object"),
     ("0x42f6e0", "initialize_object_constructor_thunk"),
     ("0x442500", "initialize_vapour"),
@@ -141,6 +157,11 @@ RENDERABLE_BOD_FIELD_UPDATES = (
     ("0x38", "transform", "TransformMatrix"),
     ("0x78", "render_animation_manager", "AnimManager*"),
     ("0x7c", "unknown_7c", "uint8_t[0x4]"),
+)
+
+TRACK_RENDER_CACHE_SLOT_FIELD_UPDATES = (
+    ("0x00", "bod", "BodBase"),
+    ("0x38", "cache_row_base", "float"),
 )
 
 ACTIVE_LANDSCAPE_ENTRY_FIELD_UPDATES = (
@@ -284,6 +305,7 @@ REQUIRED_HEADER_STRUCTS = (
     "AxisAngle",
     "Quaternion",
     "RenderableBod",
+    "TrackRenderCacheSlot",
     "FringeObject",
     "FringeManager",
     "SMTracks",
@@ -340,7 +362,10 @@ def ensure_path_analysis_views(
     *, target: str, header_path: Path
 ) -> dict[str, object]:
     """Replace mutable analysis views whenever their parsed shape changes."""
-    type_names = ("PresentationWobbleController", "RuntimeCellStrideAnchor")
+    type_names = (
+        "PresentationWobbleController",
+        "RuntimeCellStrideAnchor",
+    )
     equivalence = current_header_type_equivalence(
         REPO_ROOT,
         target=target,
@@ -1677,12 +1702,24 @@ TUTORIAL_FIELD_UPDATES = (
     ("0x0c", "game", "SubgameRuntime*"),
 )
 
+BOD_CORE_DATA_VAR_UPDATES = (
+    ("0x4974fc", "void*"),
+    ("0x497500", "void*"),
+    ("0x50331c", "int32_t"),
+)
+
+TRACK_RENDER_CACHE_DATA_VAR_UPDATES = (
+    ("0x497338", "void*"),
+)
+
 DATA_VAR_UPDATES = (
     ("0x4972b0", "void*"),
     ("0x497314", "void*"),
     ("0x497318", "void*"),
     ("0x49731c", "void*"),
     ("0x497320", "void*"),
+    *BOD_CORE_DATA_VAR_UPDATES,
+    *TRACK_RENDER_CACHE_DATA_VAR_UPDATES,
     ("0x4ac5c8", "TipData"),
 )
 
@@ -1804,11 +1841,7 @@ CUT_SCENE_PROTO_UPDATES = (
     ),
 )
 
-PROTO_UPDATES = GOLB_PROTO_UPDATES + (
-    (
-        "set_bod_object",
-        "int32_t __thiscall set_bod_object(BodBase* bod, Object* object)",
-    ),
+BOD_CORE_PROTO_UPDATES = (
     (
         "initialize_bod_base",
         "BodBase* __thiscall initialize_bod_base(BodBase* bod)",
@@ -1817,6 +1850,26 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "initialize_renderable_bod",
         "RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body)",
     ),
+)
+
+TRACK_RENDER_CACHE_PROTO_UPDATES = (
+    (
+        "initialize_active_bod",
+        "TrackRenderCacheSlot* __thiscall initialize_active_bod(TrackRenderCacheSlot* slot)",
+    ),
+    (
+        "update_active_bod",
+        "void __thiscall update_active_bod(TrackRenderCacheSlot* slot)",
+    ),
+)
+
+PROTO_UPDATES = GOLB_PROTO_UPDATES + (
+    (
+        "set_bod_object",
+        "int32_t __thiscall set_bod_object(BodBase* bod, Object* object)",
+    ),
+    *BOD_CORE_PROTO_UPDATES,
+    *TRACK_RENDER_CACHE_PROTO_UPDATES,
     (
         "initialize_noop_renderable_bod",
         "RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body)",
@@ -2690,6 +2743,14 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Replay only the CutScene state owner and its two method prototypes.",
     )
+    focused_group.add_argument(
+        "--track-cache-only",
+        action="store_true",
+        help=(
+            "Replay only the TrackRenderCacheSlot layout, lifecycle prototypes, "
+            "and callback table."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -2700,6 +2761,52 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
+    if args.track_cache_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=("BodBase", "TrackRenderCacheSlot"),
+            )
+        )
+        operations.extend(
+            apply_symbol_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=BOD_CORE_SYMBOL_UPDATES + TRACK_RENDER_CACHE_SYMBOL_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_struct_field_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_name="TrackRenderCacheSlot",
+                updates=TRACK_RENDER_CACHE_SLOT_FIELD_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_data_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=BOD_CORE_DATA_VAR_UPDATES
+                + TRACK_RENDER_CACHE_DATA_VAR_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=BOD_CORE_PROTO_UPDATES + TRACK_RENDER_CACHE_PROTO_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if args.cut_scene_only:
         operations.append(
             types_declare_if_missing(
@@ -2802,6 +2909,10 @@ def main() -> int:
                 ("ReplayRunRecord", REPLAY_RUN_RECORD_FIELD_UPDATES),
                 ("SubPause", SUB_PAUSE_FIELD_UPDATES),
                 ("RenderableBod", RENDERABLE_BOD_FIELD_UPDATES),
+                (
+                    "TrackRenderCacheSlot",
+                    TRACK_RENDER_CACHE_SLOT_FIELD_UPDATES,
+                ),
                 (
                     "ActiveLandscapeEntry",
                     ACTIVE_LANDSCAPE_ENTRY_FIELD_UPDATES,

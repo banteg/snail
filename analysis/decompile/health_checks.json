@@ -10409,6 +10409,104 @@
       ]
     },
     {
+      "name": "bn_bod_base_constructor_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0042f5f0-initialize_bod_base.c",
+      "required_substrings": [
+        "bod->bod.vtable = &g_bod_base_vtable",
+        "bod->bod.list_flags = 0x2000020",
+        "store_color4f(&bod->color",
+        "g_bod_base_init_count += 1",
+        "&bod->position",
+        "return bod"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_50331c",
+        "data_4974fc"
+      ]
+    },
+    {
+      "name": "ida_bod_base_constructor_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/0042f5f0-initialize_bod_base.c",
+      "required_substrings": [
+        "BodBase *__thiscall initialize_bod_base(BodBase *bod)",
+        "bod->bod.vtable = &g_bod_base_vtable",
+        "store_color4f(p_color",
+        "++g_bod_base_init_count",
+        "bod->position.z = 0.0",
+        "return bod"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *__thiscall",
+        "sub_42F5F0",
+        "dword_50331C",
+        "off_4974FC"
+      ]
+    },
+    {
+      "name": "bn_track_render_cache_slot_constructor_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/004085e0-initialize_active_bod.c",
+      "required_substrings": [
+        "initialize_bod_base(slot)",
+        "slot->bod.bod.vtable = &g_active_bod_vtable",
+        "return slot"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "void***",
+        "data_497338"
+      ]
+    },
+    {
+      "name": "ida_track_render_cache_slot_constructor_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/004085e0-initialize_active_bod.c",
+      "required_substrings": [
+        "TrackRenderCacheSlot *__thiscall initialize_active_bod(TrackRenderCacheSlot *slot)",
+        "initialize_bod_base(&slot->bod)",
+        "slot->bod.bod.vtable = &g_active_bod_vtable",
+        "return slot"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *__thiscall",
+        "sub_4085E0",
+        "off_497338"
+      ]
+    },
+    {
+      "name": "bn_track_render_cache_slot_update_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00433e80-update_active_bod.c",
+      "required_substrings": [
+        "slot->cache_row_base",
+        "game_base_1->subgame.player.interaction_max_z",
+        "slot->bod.bod.list_flags",
+        "game_base_1->active_bod_list.free_top",
+        "slot->bod.bod.list_next"
+      ],
+      "forbidden_substrings": [
+        "arg1->__offset(0x38)",
+        "struct BodNode* arg1",
+        "data_5033d4"
+      ]
+    },
+    {
+      "name": "ida_track_render_cache_slot_update_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00433e80-update_active_bod.c",
+      "required_substrings": [
+        "void __thiscall update_active_bod(TrackRenderCacheSlot *slot)",
+        "slot->cache_row_base + 24.0",
+        "g_game_base->subgame.player.interaction_max_z",
+        "slot->bod.bod.list_flags",
+        "&g_game_base->active_bod_list",
+        "slot->bod.bod.list_next"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_433E80",
+        "int this",
+        "world_z",
+        "dword_5033D4"
+      ]
+    },
+    {
       "name": "bn_renderable_bod_constructor_owner_abi",
       "artifact": "analysis/decompile/binja/functions/0042f650-initialize_renderable_bod.c",
       "required_substrings": [

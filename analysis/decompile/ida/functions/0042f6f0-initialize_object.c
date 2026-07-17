@@ -2,15 +2,14 @@
 /* function: initialize_object @ 0x42f6f0 */
 /* selector: initialize_object */
 
-int __thiscall sub_42F6F0(_DWORD *this)
+// Constructs one render object with empty geometry buffers and default render flags; iOS RObject.o names this `cRObject::cRObject()`.
+void __thiscall initialize_object(Object *object)
 {
-  *(this + 4) = 0;
-  *(this + 5) = 0;
-  *(this + 11) = 0;
-  *(this + 21) = 0;
-  *(this + 17) = 0;
-  *(this + 16) = 0;
-  *(this + 25) = 0;
-  return 0;
+  object->flags = 0;
+  object->blend_mode = 0;
+  object->vertex_count = 0;
+  object->facequad_count = 0;
+  object->vertex_normals = nullptr;
+  object->field_40 = 0;
+  object->texture_group_count = 0;
 }
-

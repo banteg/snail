@@ -824,6 +824,8 @@ def test_data_var_updates_skip_current_types(monkeypatch) -> None:
     assert "preview = True" in calls[0][-1]
     assert "bv.begin_undo_actions()" in calls[0][-1]
     assert "bv.revert_undo_actions(state)" in calls[0][-1]
+    assert "bv.update_analysis_and_wait()" not in calls[0][-1]
+    assert "bv.update_analysis()" in calls[0][-1]
     assert 'entry["before_width"] in (None, 0)' in calls[0][-1]
     assert 'entry["restored_width"] in (None, 0)' in calls[0][-1]
 
@@ -875,6 +877,8 @@ def test_data_var_updates_preview_before_saved_apply(monkeypatch) -> None:
     assert "preview = False" in calls[1][-1]
     assert "bv.commit_undo_actions(state)" in calls[1][-1]
     assert "bv.file.save_auto_snapshot()" in calls[1][-1]
+    assert "bv.update_analysis_and_wait()" not in calls[1][-1]
+    assert "bv.update_analysis()" in calls[1][-1]
 
 
 def test_data_var_removals_preview_before_saved_apply(monkeypatch) -> None:
@@ -2070,6 +2074,12 @@ def test_compact_high_score_replays_preserve_persistence_owners() -> None:
         'normalized.replace("unsigned __int8", "unsigned char")'
         in ida_path_source
     )
+    for marker in (
+        're.sub(r"\\buint8_t\\b", "unsigned char", normalized)',
+        're.sub(r"\\bint32_t\\b", "int", normalized)',
+        '"type_changes": type_changes',
+    ):
+        assert marker in ida_path_source
 
     for local_name in (
         "source_lateral",
@@ -2874,6 +2884,17 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
     assert renderable_constructor + ";" in ida_path_sync
     assert "RenderableBod* initialize_renderable_bod();" in matcher_header
     assert "0x42F650" in ida_path_sync
+    bod_constructor = "BodBase* __thiscall initialize_bod_base(BodBase* bod)"
+    assert bod_constructor in path_sync
+    assert bod_constructor + ";" in path_header
+    assert bod_constructor + ";" in ida_path_sync
+    for owner_name in (
+        "g_bod_base_vtable",
+        "g_renderable_bod_vtable",
+        "g_bod_base_init_count",
+    ):
+        assert owner_name in path_sync
+        assert owner_name in ida_path_sync
     for function_name in (
         "request_object_vertices",
         "request_object_vertex_colours",
@@ -2891,6 +2912,55 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
         "build_track_fringe_supertramp_mesh",
     ):
         assert f'"{function_name}"' in path_sync
+
+
+def test_track_render_cache_slot_owns_active_bod_lifecycle() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/segment_cache.h").read_text(
+        encoding="utf-8"
+    )
+    frame_source = (
+        repo_root / "tools/match/scratches/run_frame_update/scratch.cpp"
+    ).read_text(encoding="utf-8")
+
+    assert "class TrackRenderCacheSlot : public BodBase" in matcher_header
+    assert "TrackRenderCacheSlot* initialize_active_bod();" in matcher_header
+    assert "void update_active_bod();" in matcher_header
+    assert not (repo_root / "tools/match/include/active_bod.h").exists()
+    assert "BodNode* bod = active_bod_list.first;" in frame_source
+    assert "((BodAiDispatch*)bod)->update_bod_ai();" in frame_source
+
+    assert "typedef struct TrackRenderCacheSlot" in analysis_header
+    assert "BodBase bod;" in analysis_header
+    assert "float cache_row_base;" in analysis_header
+    assert '"TrackRenderCacheSlot",' in path_sync
+    assert "TRACK_RENDER_CACHE_SLOT_FIELD_UPDATES" in path_sync
+    assert '"--track-cache-only"' in path_sync
+    for marker in (
+        "BOD_CORE_SYMBOL_UPDATES",
+        "BOD_CORE_DATA_VAR_UPDATES",
+        "BOD_CORE_PROTO_UPDATES",
+        "TRACK_RENDER_CACHE_SYMBOL_UPDATES",
+        "TRACK_RENDER_CACHE_DATA_VAR_UPDATES",
+        "TRACK_RENDER_CACHE_PROTO_UPDATES",
+    ):
+        assert marker in path_sync
+    for declaration in (
+        "TrackRenderCacheSlot* __thiscall initialize_active_bod(TrackRenderCacheSlot* slot)",
+        "void __thiscall update_active_bod(TrackRenderCacheSlot* slot)",
+    ):
+        assert declaration in path_sync
+        assert declaration + ";" in ida_sync
+        assert declaration + ";" in analysis_header
 
 
 def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
