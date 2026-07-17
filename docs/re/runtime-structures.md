@@ -872,6 +872,34 @@ The initializer and every load/save site independently prove the full 0xc4
 extent. Reserved fields keep offset-based names because no current consumer
 justifies stronger semantics.
 
+## Voice Manager
+
+The process-global voice bank at `0x751498` is one exact `0x188`-byte
+`cRVoiceManager` owner, now named `g_voice_manager` in both analysis lanes. It
+contains 16 inline `0x18`-byte `cRVoiceSet` records followed by the shared
+progress and frequency fields at `+0x180/+0x184`.
+
+Each `VoiceSet` owns:
+
+- `+0x00/+0x04`: sample count and shuffled-playlist cursor;
+- `+0x08/+0x0c`: allocated playlist and registered-sample arrays; and
+- `+0x10/+0x14`: cooldown progress and step.
+
+The symbol-preserving mobile builds retain the authored
+`cRVoiceSet::{Init, Shuffle, AI, Play}` and
+`cRVoiceManager::{ReSet, Init, AI, Play, IsPlaying}` families. Windows callers
+and the mobile implementations also close the two ambiguous mutator ABIs:
+`VoiceSet::Init(int)` and `VoiceSet::Shuffle()` are `void`. Their different
+platform-specific return-register residue is incidental, and every caller
+discards it.
+
+`VoiceManager::Init()` parses all 16 named `Voice/_Voice.txt` banks, registers
+their samples, applies the three normalization scalars, reads the global
+frequency interval, and resets the inline cooldowns. `VoiceManager::Play()`
+then selects a bank and applies one of the three recovered policies: idle-only,
+global-cooldown, or interrupt. The checked-in matcher enums name those proved
+bank IDs and policies without strengthening the native integer formals.
+
 ## Backdrop
 
 The Windows root owns one exact `0x6cc`-byte `cRBackdrop`-compatible object at

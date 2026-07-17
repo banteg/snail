@@ -4524,7 +4524,8 @@
       "aliases": [
         "unk_751498"
       ],
-      "description": "Shared voice manager object initialized at startup and used by subgoldy, attachment, cutscene, and damage feedback callsites."
+      "size": "0x188",
+      "description": "Exact shared VoiceManager object with 16 inline VoiceSet records, initialized at startup and used by subgoldy, attachment, cutscene, and damage feedback callsites."
     },
     {
       "address": "0x75162c",

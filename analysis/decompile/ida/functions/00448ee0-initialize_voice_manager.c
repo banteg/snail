@@ -3,39 +3,39 @@
 /* selector: initialize_voice_manager */
 
 // Recovered `cRVoiceManager::Init()` member: parses the authored 16-set Voice/_Voice.txt bank, registers each sample, applies normalization and frequency settings, and resets cooldown state.
-_DWORD *__thiscall initialize_voice_manager(_DWORD *this)
+void __thiscall initialize_voice_manager(VoiceManager *manager)
 {
   float v1; // ebp
   const char *v2; // edi
   char *case_insensitive_substring; // eax
   char *v4; // esi
   char *crlf_line; // eax
-  int v6; // edi
-  int *v7; // ebp
-  int j; // esi
+  int32_t v6; // edi
+  VoiceSet *v7; // ebp
+  int32_t i; // esi
   char *v9; // edx
   char *v10; // eax
-  char k; // cl
+  char j; // cl
   _BYTE *v12; // eax
   char *v13; // esi
   char *v14; // eax
   double v15; // st7
-  _DWORD *v16; // ecx
+  VoiceManager *v16; // ecx
   char *cursor; // [esp+10h] [ebp-214h] BYREF
-  float v19; // [esp+14h] [ebp-210h]
-  float i; // [esp+18h] [ebp-20Ch]
-  _DWORD *v21; // [esp+1Ch] [ebp-208h]
-  float v22; // [esp+20h] [ebp-204h]
+  float voice_scale; // [esp+14h] [ebp-210h]
+  float sfx_scale; // [esp+18h] [ebp-20Ch]
+  VoiceManager *v20; // [esp+1Ch] [ebp-208h]
+  float music_scale; // [esp+20h] [ebp-204h]
   char ArgList[256]; // [esp+24h] [ebp-200h] BYREF
-  char v24[6]; // [esp+124h] [ebp-100h] BYREF
-  char v25; // [esp+12Ah] [ebp-FAh] BYREF
+  char path[6]; // [esp+124h] [ebp-100h] BYREF
+  char v24; // [esp+12Ah] [ebp-FAh] BYREF
 
-  v21 = this;
+  v20 = manager;
   ArgList[0] = 0;
-  v19 = COERCE_FLOAT(get_archive_data_base());
-  load_file_bytes_from_archive_or_fs(aVoiceVoiceTxt, (void *)LODWORD(v19), nullptr);
+  voice_scale = COERCE_FLOAT(get_archive_data_base());
+  load_file_bytes_from_archive_or_fs(aVoiceVoiceTxt, (void *)LODWORD(voice_scale), nullptr);
   v1 = 0.0;
-  for ( i = 0.0; ; v1 = i )
+  for ( sfx_scale = 0.0; ; v1 = sfx_scale )
   {
     rstrcpy_checked_ascii(ArgList, aSet);
     switch ( LODWORD(v1) )
@@ -93,7 +93,7 @@ LABEL_20:
       default:
         break;
     }
-    case_insensitive_substring = find_case_insensitive_substring(ArgList, (char *)LODWORD(v19));
+    case_insensitive_substring = find_case_insensitive_substring(ArgList, (char *)LODWORD(voice_scale));
     cursor = case_insensitive_substring;
     if ( !case_insensitive_substring )
       break;
@@ -103,18 +103,18 @@ LABEL_20:
     v6 = 0;
     for ( cursor = crlf_line; crlf_line < v4; crlf_line = (char *)advance_to_next_crlf_line(crlf_line) )
       ++v6;
-    v7 = &v21[6 * LODWORD(v1)];
+    v7 = &v20->sets[LODWORD(v1)];
     initialize_voice_set(v7, v6);
-    for ( j = 0; j < v6; ++j )
+    for ( i = 0; i < v6; ++i )
     {
       while ( *cursor == 9 || *cursor == 32 )
         ++cursor;
-      rstrcpy_checked_ascii(v24, aVoice);
+      rstrcpy_checked_ascii(path, aVoice);
       v9 = cursor;
-      v10 = &v25;
-      for ( k = *cursor; *v9 != 46; k = *v9 )
+      v10 = &v24;
+      for ( j = *cursor; *v9 != 46; j = *v9 )
       {
-        *v10++ = k;
+        *v10++ = j;
         cursor = ++v9;
       }
       *v10 = 46;
@@ -124,31 +124,32 @@ LABEL_20:
       *v12 = 103;
       v12[1] = 0;
       cursor = (char *)advance_to_next_crlf_line(v9);
-      *(_DWORD *)(v7[3] + 4 * j) = register_sound_sample(v24, 1);
+      v7->bites[i] = register_sound_sample(path, 1);
     }
-    ++LODWORD(i);
-    if ( SLODWORD(i) >= 16 )
+    ++LODWORD(sfx_scale);
+    if ( SLODWORD(sfx_scale) >= 16 )
     {
-      v13 = (char *)LODWORD(v19);
-      v14 = find_case_insensitive_substring(aNormalizemusic, (char *)LODWORD(v19));
+      v13 = (char *)LODWORD(voice_scale);
+      v14 = find_case_insensitive_substring(aNormalizemusic, (char *)LODWORD(voice_scale));
       cursor = find_case_insensitive_substring(asc_4A1644, v14);
-      v19 = COERCE_FLOAT(parse_next_signed_int(&cursor));
-      v22 = (double)SLODWORD(v19) * 0.0099999998;
+      voice_scale = COERCE_FLOAT(parse_next_signed_int(&cursor));
+      music_scale = (double)SLODWORD(voice_scale) * 0.0099999998;
       cursor = find_case_insensitive_substring(aNormalizesfx, v13);
       cursor = find_case_insensitive_substring(asc_4A1644, cursor);
-      v19 = COERCE_FLOAT(parse_next_signed_int(&cursor));
-      i = (double)SLODWORD(v19) * 0.0099999998;
+      voice_scale = COERCE_FLOAT(parse_next_signed_int(&cursor));
+      sfx_scale = (double)SLODWORD(voice_scale) * 0.0099999998;
       cursor = find_case_insensitive_substring(aNormalizevoice, v13);
       cursor = find_case_insensitive_substring(asc_4A1644, cursor);
-      v19 = (double)parse_next_signed_int(&cursor) * 0.0099999998;
-      set_audio_normalization_scales((AudioBackend *)g_audio_backend, v22, i, v19);
+      voice_scale = (double)parse_next_signed_int(&cursor) * 0.0099999998;
+      set_audio_normalization_scales(&g_audio_backend, music_scale, sfx_scale, voice_scale);
       cursor = find_case_insensitive_substring(aFrequency, v13);
       cursor = find_case_insensitive_substring(asc_4A1644, cursor);
       v15 = parse_next_float32(&cursor);
-      v16 = v21;
-      *((float *)v21 + 97) = v15;
-      return reset_voice_manager(v16);
+      v16 = v20;
+      v20->global_frequency_seconds = v15;
+      reset_voice_manager(v16);
+      return;
     }
   }
-  return (_DWORD *)report_errorf("Cannot find %s in _Voice.txt", ArgList);
+  report_errorf("Cannot find %s in _Voice.txt", ArgList);
 }

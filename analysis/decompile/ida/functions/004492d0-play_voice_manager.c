@@ -3,26 +3,26 @@
 /* selector: play_voice_manager */
 
 // Exact `cRVoiceManager::Play(int, int, int)` member: applies current-voice and frequency gating, optionally stops the active sample, and dispatches through the selected inline VoiceSet.
-char __thiscall play_voice_manager(int this, int a2, unsigned int a3, int a4)
+bool __thiscall play_voice_manager(VoiceManager *manager, int32_t set_id, uint32_t mode, int32_t sample_override)
 {
   int32_t v5; // eax
-  char result; // al
+  bool result; // al
 
-  if ( a3 < 2 )
+  if ( mode < 2 )
   {
-    if ( is_voice_playing((int *)this) != -1 )
+    if ( is_voice_playing(manager) != -1 )
       return 0;
-    if ( a3 == 1 && *(float *)(this + 384) < (double)*(float *)(this + 388) )
+    if ( mode == 1 && manager->global_progress < (double)manager->global_frequency_seconds )
       return 0;
   }
-  else if ( a3 == 2 )
+  else if ( mode == 2 )
   {
-    v5 = is_voice_playing((int *)this);
+    v5 = is_voice_playing(manager);
     if ( v5 != -1 )
-      stop_registered_sound_sample((AudioBackend *)g_audio_backend, v5);
+      stop_registered_sound_sample(&g_audio_backend, v5);
   }
-  result = play_voice_set((float *)(this + 24 * a2), a4);
-  if ( result == 1 && (a3 == 1 || a3 == 2) )
-    *(_DWORD *)(this + 384) = 0;
+  result = play_voice_set(&manager->sets[set_id], sample_override);
+  if ( result && (mode == 1 || mode == 2) )
+    manager->global_progress = 0.0;
   return result;
 }

@@ -4,7 +4,7 @@
 
 void* allocate_tracked_memory(int size, char* label);
 
-int VoiceSet::initialize_voice_set(int count)
+void VoiceSet::initialize_voice_set(int count)
 {
     sample_count = count;
     next_index = 0;
@@ -21,5 +21,5 @@ int VoiceSet::initialize_voice_set(int count)
             ++index;
         } while (index < sample_count);
     }
-    return shuffle_voice_set();
+    shuffle_voice_set();
 }

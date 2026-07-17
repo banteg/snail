@@ -70,20 +70,20 @@
 0044902d        cursor = cursor_1
 00449031        if (cursor_1 == 0)
 0044924b        report_errorf("Cannot find %s in _Voice.txt", &var_200)
-0044925d        return 0
+0044925d        return
 0044903d        char* cursor_2 = find_case_insensitive_substring("{", cursor_1)
 00449048        cursor = cursor_2
 0044904c        char* eax_1 = find_case_insensitive_substring("}", cursor_2)
 00449058        char* i_2 = advance_to_next_crlf_line(cursor)
-00449060        int32_t edi_6 = 0
+00449060        int32_t count = 0
 00449064        cursor = i_2
 00449068        while (i_2 u< eax_1)
-0044906b        edi_6 += 1
+0044906b        count += 1
 0044906c        i_2 = advance_to_next_crlf_line(i_2)
 00449081        struct VoiceSet* set = &manager->sets[ebp]
-00449086        initialize_voice_set(set, edi_6)
+00449086        initialize_voice_set(set, count)
 0044908b        int32_t esi_4 = 0
-0044908f        if (edi_6 s> 0)
+0044908f        if (count s> 0)
 00449099        while (true)
 00449099        char eax_3 = *cursor
 004490a1        if (eax_3 != 9 && eax_3 != 0x20)
@@ -107,7 +107,7 @@
 00449101        cursor = advance_to_next_crlf_line(cursor_7)
 00449110        set->bites[esi_4] = register_sound_sample(&path, 1)
 00449113        esi_4 += 1
-00449116        if (esi_4 s>= edi_6)
+00449116        if (esi_4 s>= count)
 00449116        break
 00449116        continue
 004490a3        cursor = &cursor[1]
@@ -132,4 +132,5 @@
 0044920d        cursor = cursor_6
 0044921a        cursor = find_case_insensitive_substring(":", cursor_6)
 0044922b        manager->global_frequency_seconds = fconvert.s(parse_next_float32(&cursor))
-00449240        return reset_voice_manager(manager)
+00449231        reset_voice_manager(manager)
+00449240        return

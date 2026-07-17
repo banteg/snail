@@ -45,3 +45,17 @@ subgame, and cutscene behavior. Their retained hashes are:
 - slug AI: `b8f196a0acb95aa3f4362423465c1789287c43d3b0dcfa29a506becbdbbdd462`
 - subgoldy: `56d9084051f977d866ddf7443f41deab0d9a04521c830d3e2d4f3d96da2003cb`
 - cutscene: `ac2818cb9cec3fb82bc12e15964317fc5118566892f6b5c9f1d9283206771c61`
+
+## 2026-07-17 paired owner replay
+
+The canonical `VoiceSet` and `VoiceManager` layouts, the nine owner-method
+ABIs, and the `g_voice_manager` data owner are now replayable into both Binary
+Ninja and IDA from narrow checked-in tooling. Readback proves `0x18`/`0x188`
+owner sizes and a `0x188` data extent at `0x751498`; a second IDA replay reports
+all ten function/data declarations unchanged.
+
+The propagated tracked decompiles now express manager-wide gates through
+`global_progress`/`global_frequency_seconds`, bank dispatch through
+`manager->sets[set_id]`, set playback through the playlist and bite arrays, and
+the playing-state scan through all 16 inline sets. No caller-local overlay or
+return-register interpretation is needed.

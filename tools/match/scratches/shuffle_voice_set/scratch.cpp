@@ -4,7 +4,7 @@
 
 int next_math_random_value();
 
-int VoiceSet::shuffle_voice_set()
+void VoiceSet::shuffle_voice_set()
 {
     int remaining = 100;
     int second_index;
@@ -18,5 +18,4 @@ int VoiceSet::shuffle_voice_set()
         list[first_index] = second_value;
         playlist[second_index] = first_value;
     } while (remaining != 0);
-    return second_index;
 }

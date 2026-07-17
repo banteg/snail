@@ -93,6 +93,46 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert "extern GalaxyPoint g_galaxy_route_points[101];" in matcher_header
 
 
+def test_voice_manager_replay_keeps_exact_owners_and_void_mutator_abis() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_voice_manager_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_voice_manager_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_voice_manager_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "voice_manager_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/voice_manager.h").read_text(
+        encoding="utf-8"
+    )
+    references = (repo_root / "analysis/symbols/gameplay-references.json").read_text(
+        encoding="utf-8"
+    )
+
+    for source in (binja_sync, ida_sync):
+        assert "void __thiscall initialize_voice_set(VoiceSet* set, int32_t count)" in source
+        assert "void __thiscall shuffle_voice_set(VoiceSet* set)" in source
+        assert "void __thiscall initialize_voice_manager(VoiceManager* manager)" in source
+        assert "void __thiscall update_voice_manager(VoiceManager* manager)" in source
+        assert "bool __thiscall play_voice_manager(VoiceManager* manager" in source
+        assert "bool __thiscall play_voice_set(VoiceSet* set" in source
+        assert "int32_t __thiscall is_voice_playing(VoiceManager* manager)" in source
+
+    assert '("0x751498", "g_voice_manager")' in binja_sync
+    assert '("0x751498", "VoiceManager")' in binja_sync
+    assert "VoiceSet sets[16];" in analysis_header
+    assert "extern VoiceManager g_voice_manager;" in analysis_header
+    assert "void initialize_voice_set(int count);" in matcher_header
+    assert "void shuffle_voice_set();" in matcher_header
+    assert '"size": "0x188"' in references
+    assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/voice_manager_types.h"' in ida_runner
+
+
 def test_frontend_tail_syncs_promote_proved_game_root_owners() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
     high_score_sync = (BINJA_DIR / "sync_high_score_screen_types.py").read_text(

@@ -67,3 +67,16 @@ Source-shape details retained:
 - Focused matching remains the honest 88.68% (`270/269`, prefix `99/269`), but
   the proof audit improves from 61 clean plus one unresolved operand to 62
   clean, zero unresolved, and zero mismatched operands.
+
+## 2026-07-17 paired owner replay
+
+- The exact global at `0x751498` is now typed and named `g_voice_manager` in
+  both Binary Ninja and IDA. Its `0x188` extent is 16 inline `VoiceSet` records
+  plus `global_progress` and `global_frequency_seconds`.
+- All nine `cRVoiceSet`/`cRVoiceManager` method ABIs are replayed together, so
+  the initializer now indexes `manager->sets`, registers through `set->bites`,
+  assigns `manager->global_frequency_seconds`, and ends with the void
+  `reset_voice_manager(manager)` call in both tracked decompiles.
+- The focused scratch remains the honest 88.68% result above. The replay only
+  recovers ownership and ABI propagation; it does not claim away the residual
+  scheduling differences.

@@ -2,16 +2,15 @@
 /* function: update_voice_set @ 0x449360 */
 /* selector: update_voice_set */
 
-void __thiscall sub_449360(float *this)
+void __thiscall update_voice_set(VoiceSet *set)
 {
   double v1; // st7
 
-  if ( *(this + 4) > 0.0 )
+  if ( set->cooldown > 0.0 )
   {
-    v1 = *(this + 5) + *(this + 4);
-    *(this + 4) = v1;
+    v1 = set->cooldown_step + set->cooldown;
+    set->cooldown = v1;
     if ( v1 > 1.0 )
-      *(this + 4) = 0.0;
+      set->cooldown = 0.0;
   }
 }
-

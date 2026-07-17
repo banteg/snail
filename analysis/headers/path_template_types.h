@@ -686,7 +686,7 @@ typedef struct Time {
  * Fall, Misc, PowerUp, Slow, Start, Victory, Ouch, Package, Slugged, WormTunnel,
  * Tutorial, Postal, SuperTramp). Shared instance is the global at 0x751498.
  * Native functions: initialize_voice_manager @ 0x448ee0, play_voice_manager
- * @ 0x4492d0, initialize_voice_set @ 0x448df0, play_voice_set @ 0x449260.
+ * @ 0x4492d0, initialize_voice_set @ 0x448df0, play_voice_set @ 0x449390.
  */
 typedef struct VoiceSet {
     uint32_t sample_count;
@@ -702,6 +702,8 @@ typedef struct VoiceManager {
     float global_progress;
     float global_frequency_seconds;
 } VoiceManager;
+
+extern VoiceManager g_voice_manager;
 
 /*
  * Salt hazard runtime slot. Pool lives at `game + 0x3578c0` with 40 slots and

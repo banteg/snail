@@ -2,34 +2,33 @@
 /* function: initialize_voice_set @ 0x448df0 */
 /* selector: initialize_voice_set */
 
-int __thiscall sub_448DF0(int *this, int a2)
+void __thiscall initialize_voice_set(VoiceSet *set, int32_t count)
 {
-  _BYTE *v3; // eax
-  _BYTE *v4; // eax
-  int v5; // ecx
-  int v6; // eax
-  int v8; // [esp-10h] [ebp-14h]
+  int32_t *tracked_memory; // eax
+  int32_t *v4; // eax
+  signed int sample_count; // ecx
+  signed int v6; // eax
+  int v7; // [esp-10h] [ebp-14h]
 
-  *this = a2;
-  *(this + 1) = 0;
-  v3 = allocate_tracked_memory(4 * a2, (int)aPlaylist);
-  v8 = 4 * *this;
-  *(this + 2) = (int)v3;
-  v4 = allocate_tracked_memory(v8, (int)aVoicebite);
-  v5 = *this;
-  *(this + 3) = (int)v4;
+  set->sample_count = count;
+  set->next_index = 0;
+  tracked_memory = (int32_t *)allocate_tracked_memory(4 * count, aPlaylist);
+  v7 = 4 * set->sample_count;
+  set->playlist = tracked_memory;
+  v4 = (int32_t *)allocate_tracked_memory(v7, aVoicebite);
+  sample_count = set->sample_count;
+  set->bites = v4;
   v6 = 0;
-  *(this + 4) = 0;
-  *(this + 5) = 998803593;
-  if ( v5 > 0 )
+  set->cooldown = 0.0;
+  set->cooldown_step = 0.0041666669;
+  if ( sample_count > 0 )
   {
     do
     {
-      *(_DWORD *)(*(this + 2) + 4 * v6) = v6;
+      set->playlist[v6] = v6;
       ++v6;
     }
-    while ( v6 < *this );
+    while ( v6 < (signed int)set->sample_count );
   }
-  return shuffle_voice_set(this);
+  shuffle_voice_set(set);
 }
-

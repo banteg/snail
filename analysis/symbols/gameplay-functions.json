@@ -3084,11 +3084,13 @@
     },
     {
       "address": "0x448df0",
-      "name": "initialize_voice_set"
+      "name": "initialize_voice_set",
+      "description": "Exact void cRVoiceSet::Init(int) member: allocates the playlist and sample banks, seeds the playlist order, and shuffles it. Windows and Android leave different incidental return-register residue, and every caller discards it."
     },
     {
       "address": "0x448e60",
-      "name": "shuffle_voice_set"
+      "name": "shuffle_voice_set",
+      "description": "Exact void cRVoiceSet::Shuffle() member: performs 100 in-place random playlist swaps. Its only caller discards the platform-specific incidental return-register residue."
     },
     {
       "address": "0x448ec0",
@@ -3098,7 +3100,7 @@
     {
       "address": "0x448ee0",
       "name": "initialize_voice_manager",
-      "description": "Recovered `cRVoiceManager::Init()` member: parses the authored 16-set Voice/_Voice.txt bank, registers each sample, applies normalization and frequency settings, and resets cooldown state."
+      "description": "Recovered void `cRVoiceManager::Init()` member: parses the authored 16-set Voice/_Voice.txt bank, registers each sample, applies normalization and frequency settings, and resets cooldown state."
     },
     {
       "address": "0x4492a0",
@@ -3112,15 +3114,18 @@
     },
     {
       "address": "0x449360",
-      "name": "update_voice_set"
+      "name": "update_voice_set",
+      "description": "Exact void cRVoiceSet::AI() member: advances an active per-set cooldown and clears it after the normalized interval completes."
     },
     {
       "address": "0x449390",
-      "name": "play_voice_set"
+      "name": "play_voice_set",
+      "description": "Exact bool cRVoiceSet::Play(int) member: gates on the per-set cooldown, plays an override or the next shuffled bite, and advances the playlist cursor."
     },
     {
       "address": "0x449410",
-      "name": "is_voice_playing"
+      "name": "is_voice_playing",
+      "description": "Exact cRVoiceManager::IsPlaying() member: scans all 16 inline VoiceSets and returns the first currently playing registered sample, or -1."
     },
     {
       "address": "0x449460",

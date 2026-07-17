@@ -32,8 +32,8 @@ enum VoicePlayMode {
 
 class VoiceSet {
 public:
-    int initialize_voice_set(int count); // @ 0x448df0
-    int shuffle_voice_set(); // @ 0x448e60
+    void initialize_voice_set(int count); // @ 0x448df0
+    void shuffle_voice_set(); // @ 0x448e60
     bool play_voice_set(int sample_override); // @ 0x449390
     void update_voice_set(); // @ 0x449360
 
