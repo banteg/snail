@@ -2379,6 +2379,14 @@ DEFERRED_PATH_OWNER_PROTO_UPDATES = (
         "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
     ),
     (
+        "initialize_twister_path_template_pair",
+        "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
+        "initialize_twister2_path_template_pair",
+        "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
         "allocate_path_template_samples",
         "void __fastcall allocate_path_template_samples(Path* self)",
     ),

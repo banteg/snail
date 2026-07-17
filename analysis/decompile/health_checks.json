@@ -6322,6 +6322,44 @@
       ]
     },
     {
+      "name": "bn_twister_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0042a540-initialize_twister_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_TWISTER",
+        "self->width_cells = width_cells_",
+        "self->segment_count = 0x22",
+        "if (handedness == 0)",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "arg3",
+        "arg4",
+        "return finalize_path_template"
+      ]
+    },
+    {
+      "name": "bn_twister2_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0042af30-initialize_twister2_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_TWISTER2",
+        "self->width_cells = width_cells_",
+        "self->segment_count = 0x34",
+        "if (handedness == 0)",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "arg3",
+        "arg4",
+        "return finalize_path_template"
+      ]
+    },
+    {
       "name": "bn_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
@@ -6431,6 +6469,22 @@
         "initialize_invert_path_template_pair(&game->subgame.path_pairs[0x29].primary.bod.bod.vtable",
         "initialize_halfpipe_path_template_pair(&game->subgame.path_pairs[0x2a].primary.bod.bod.vtable",
         "initialize_invert_path_template_pair(&game->subgame.path_pairs[0x3e].primary.bod.bod.vtable"
+      ]
+    },
+    {
+      "name": "bn_twister_path_constructor_callsite_abis",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_regexes": [
+        "initialize_twister_path_template_pair\\(&game->subgame\\.path_pairs\\[0x2b\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_twister_path_template_pair\\(&game->subgame\\.path_pairs\\[0x2c\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, 0, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_twister2_path_template_pair\\(&game->subgame\\.path_pairs\\[0x2d\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_twister2_path_template_pair\\(&game->subgame\\.path_pairs\\[0x2e\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, 0, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+      ],
+      "forbidden_substrings": [
+        "initialize_twister_path_template_pair(&game->subgame.path_pairs[0x2b].primary.bod.bod.vtable",
+        "initialize_twister_path_template_pair(&game->subgame.path_pairs[0x2c].primary.bod.bod.vtable",
+        "initialize_twister2_path_template_pair(&game->subgame.path_pairs[0x2d].primary.bod.bod.vtable",
+        "initialize_twister2_path_template_pair(&game->subgame.path_pairs[0x2e].primary.bod.bod.vtable"
       ]
     },
     {

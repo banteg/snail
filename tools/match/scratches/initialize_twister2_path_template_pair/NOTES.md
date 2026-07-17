@@ -101,3 +101,19 @@ match: 27.72%
 target: 677 insns, candidate: 593 insns
 masked operands: 40 ok, 0 unresolved, 0 mismatch
 ```
+
+## 2026-07-17 live constructor ABI closure
+
+Representative native callsite disassembly pushes `2.5f`, width `3`, byte
+handedness, two surface textures, and the vertical texture. The native tail at
+`0x42b90f` is `retn 0x18`, and iOS Path.o independently preserves the portable
+`cRPath::BuildTwister2A(float, int, bool, char*, char*)` prefix. Binary Ninja's
+stale prototype already had the first five stack types but omitted the known
+user-defined `arg6` and retained the old `PathTemplate*`/integer-return view.
+
+Guarded recreation and post-write readback now expose the complete seven-
+parameter `Path*` prototype with no pending operation. The refreshed caller
+shows full-arity handedness-1 and handedness-0 owners at slots `0x2d` and
+`0x2e`; the callee keeps its distinct 52-sample kind while sharing the proved
+sibling ABI. Focused matching remains 27.72% (593/677) with 40 clean masked
+operands.

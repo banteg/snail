@@ -950,3 +950,18 @@ slot `0x3e`. Halfpipe's shared matcher declaration and call now use the proved
 float type instead of raw `0x40c00000` bits, with no byte or audit change.
 Health checks pin all four callsites and the three callee owner flows while
 allowing only the zero-offset primary spelling difference.
+
+## 2026-07-17 Twister sibling constructor ABI closure
+
+Twister and Twister2 now expose their shared Windows contract: `Path*`, float
+height, integer width, byte handedness, two surface textures, and the Windows-
+only vertical texture. Both native tails are `retn 0x18`; the Path.o names
+`BuildTwisterA` and `BuildTwister2A` independently preserve the portable first
+five stack types.
+
+The refreshed initializer shows all seven operands through primary owners at
+slots `0x2b`/`0x2c` for Twister and `0x2d`/`0x2e` for Twister2, covering both
+handedness values. The sibling callee checks separately pin kinds 43 and 44,
+sample counts 34 and 52, byte-handedness branches, and void finalizer flow.
+This is analysis-only: both focused frontiers remain 27.72% (593/677), each
+with 40 clean masked operands.

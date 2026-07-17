@@ -1463,11 +1463,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_twister_path_template_pair",
-        "int32_t __thiscall initialize_twister_path_template_pair(Path* self, float arg2, int32_t arg3, char arg4, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_twister2_path_template_pair",
-        "int32_t __thiscall initialize_twister2_path_template_pair(Path* self, float arg2, int32_t arg3, char arg4, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_loopbow_path_template_pair",
