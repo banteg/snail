@@ -80,3 +80,18 @@ two face-local bodies gives the retained 49.66% (564/600), with 30 ok,
 0 unresolved, 0 mismatch. This is lower than the 51.27% intermediate but fixes
 real behavior, remains well above the 36.59% baseline, and brings the candidate
 instruction count materially closer to the 600-instruction target.
+
+## 2026-07-17 live constructor ABI closure
+
+Both native world-init callsites push `6.0f`, width `8`, mode `1`, two surface
+textures, and the vertical texture before calling this constructor; the tail at
+`0x429ac6` is `retn 0x18`. iOS exposes the same
+`(float, int, bool, char*, char*)` prefix for both `BuildInvert` and
+`BuildInvert1`, so the ABI is portable evidence even though the exact surviving
+Windows name split remains intentionally unresolved.
+
+Guarded recreation and post-write readback now expose the complete seven-
+parameter `Path*` prototype with no pending operation. The refreshed caller
+shows full-arity owners at public slot `0x29` and transition slot `0x3e`, and
+the callee now ends in void finalizer flow. This is analysis-only: focused
+matching remains 49.66% (564/600) with 30 clean masked operands.

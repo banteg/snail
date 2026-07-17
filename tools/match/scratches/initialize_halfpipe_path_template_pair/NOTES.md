@@ -177,3 +177,20 @@ The 37.34% facequads-first version is intentionally rejected despite its higher
 fuzzy score. The reference-aware masked-operand aligner now associates these
 repeated `call ADDR` sites with their actual callees, so the evidence-backed
 order remains audit-clean without a metric-driven source reordering.
+
+## 2026-07-17 live constructor ABI closure
+
+Native world-init disassembly pushes `6.0f`, width `8`, mode `1`, two surface
+textures, and the vertical texture before the slot-`0x2a` call; the tail at
+`0x42a530` is `retn 0x18`. The iOS Path.o symbol
+`cRPath::BuildHalfPipe(float, int, bool, char*, char*)` independently confirms
+the portable prefix. This also proves the first scratch parameter is a float,
+not an integer bit bucket; the shared declaration, callee, and caller now spell
+that real type while generating identical code.
+
+Guarded recreation and post-write readback expose the complete seven-parameter
+`Path*` prototype with no pending operation. The refreshed caller passes all
+six stack operands through `path_pairs[0x2a].primary`, and the callee ends in
+void finalizer flow. Focused matching remains 37.04% (659/707) with 46 clean
+masked operands, and the world initializer remains byte-for-byte unchanged at
+80.50% (5392/5411).

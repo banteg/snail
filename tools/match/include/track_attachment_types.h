@@ -24,12 +24,12 @@ struct Path : public BodBase {
     void initialize_cage2_path_template_pair(
         int width_cells_, char* texture_a, char* texture_b, char* vertical_texture);
     void initialize_halfpipe_path_template_pair(
-        int unused_scale_bits,
+        float scale,
         int width_cells_,
-        int unused_kind_arg,
+        int side_exit,
         char* texture_a,
         char* texture_b,
-        char* unused_path_version);
+        char* vertical_texture);
     void initialize_looptheloop_path_template_pair(
         float curve_source,
         int width_cells_,

@@ -987,7 +987,7 @@ char GameRoot::initialize_game_assets_and_world()
     path = &subgame.path_pairs[42].primary;
     path->set_bod_object(g_object_list.add_object_to_list());
     path->initialize_halfpipe_path_template_pair(
-        0x40c00000,
+        6.0f,
         8,
         1,
         (char*)"Objects/World00/Slide0.tga",

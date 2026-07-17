@@ -2434,11 +2434,14 @@ int32_t __thiscall initialize_supertramp_path_template_pair(
     char* texture_c
 );
 
-int32_t __thiscall initialize_halfpipe_path_template_pair(
+void __thiscall initialize_halfpipe_path_template_pair(
     Path* self,
-    int32_t arg2,
+    float scale,
+    int32_t width_cells_,
+    int32_t side_exit,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* vertical_texture
 );
 
 void __thiscall initialize_hump_path_template_pair(
@@ -2599,18 +2602,24 @@ void __thiscall initialize_turnunder_path_template_pair(
     char* vertical_texture
 );
 
-int32_t __thiscall initialize_wibble_path_template_pair(
+void __thiscall initialize_wibble_path_template_pair(
     Path* self,
-    int32_t arg2,
+    float radius,
+    int32_t width_cells_,
+    int32_t side_exit,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* vertical_texture
 );
 
-int32_t __thiscall initialize_invert_path_template_pair(
+void __thiscall initialize_invert_path_template_pair(
     Path* self,
-    int32_t arg2,
+    float radius,
+    int32_t width_cells_,
+    int32_t side_exit,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* vertical_texture
 );
 
 int32_t __thiscall initialize_twister_path_template_pair(

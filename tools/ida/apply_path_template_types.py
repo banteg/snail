@@ -1383,7 +1383,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_halfpipe_path_template_pair",
-        "int32_t __thiscall initialize_halfpipe_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_hump_path_template_pair",
@@ -1455,11 +1455,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_wibble_path_template_pair",
-        "int32_t __thiscall initialize_wibble_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_invert_path_template_pair",
-        "int32_t __thiscall initialize_invert_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_twister_path_template_pair",

@@ -934,3 +934,19 @@ those indices, owners, and arities while tolerating only Binary Ninja's two
 equivalent spellings for a zero-offset primary `Path`. The focused matcher
 scores and all four clean operand audits are unchanged, so this records real
 analysis ownership without altering source for metric alignment.
+
+## 2026-07-17 Wibble, Invert, and Halfpipe constructor ABI closure
+
+Live disassembly proves that Wibble, both Invert constructions, and Halfpipe
+each push the same six stack operands: float scale/radius, width, mode, two
+surface textures, and a Windows-only vertical texture. All three callees return
+with `retn 0x18`. Their Path.o symbols independently preserve the portable
+`(float, int, bool, char*, char*)` prefix; the Invert/Invert1 name split remains
+open without weakening that ABI evidence.
+
+The refreshed initializer now shows full-arity primary owners at public slots
+`0x28`, `0x29`, and `0x2a`, plus the second Invert construction at transition
+slot `0x3e`. Halfpipe's shared matcher declaration and call now use the proved
+float type instead of raw `0x40c00000` bits, with no byte or audit change.
+Health checks pin all four callsites and the three callee owner flows while
+allowing only the zero-offset primary spelling difference.

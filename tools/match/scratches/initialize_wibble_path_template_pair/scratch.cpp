@@ -1,4 +1,4 @@
-// initialize_wibble_path_template_pair @ 0x4289a0 (thiscall, ret 0x1c)
+// initialize_wibble_path_template_pair @ 0x4289a0 (thiscall, ret 0x18)
 
 #include "attachment_sample.h"
 #include "track_attachment_types.h"

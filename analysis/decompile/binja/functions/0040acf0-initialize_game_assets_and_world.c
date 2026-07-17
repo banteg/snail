@@ -316,14 +316,14 @@
 0040bdba        float a
 0040bdba        __builtin_strncpy(&a, "333?", 4)
 0040bdbf        float b = 1f
-0040bdc4        float g = 1f
-0040bdcc        float r = 1f
+0040bdc4        float g_24 = 1f
+0040bdcc        float r_24 = 1f
 0040bdd1        struct TextureRef* texture_ref = object_16->facequads->texture_ref
 0040bdd4        enum TextureRefFlags flags = texture_ref->flags
 0040bdd6        flags:1.b |= 4
 0040bdd9        texture_ref->flags = flags
 0040bde4        (edi_15 - 0x3cb13c)->subgame.sub_lazers.slots[0].owner_game = &game->subgame
-0040bde7        store_color4f(&edi_15[1], r, g, b, a)
+0040bde7        store_color4f(&edi_15[1], r_24, g_24, b, a)
 0040bdec        struct Object* object_12 = (edi_15 - 0x3cb13c)->subgame.sub_lazers.slots[0].body.bod.object
 0040bdf2        edi_15 = &edi_15[0x2c]
 0040bdf8        cond:1_1 = var_128_2 != 1
@@ -467,13 +467,7 @@
 0040c171        game->subgame.unknown_bod_355c7c.bod.list_flags = list_flags_9
 0040c14c        report_errorf("List ADDafter")
 0040c193        set_bod_object(&game->subgame.path_pairs, add_object_to_list(&g_object_list))
-0040c198        char* cap_texture_2 = "Objects/Path/VeryDark.tga"
-0040c19d        char* texture_b_5 = "Objects/World00/Back.tga"
-0040c1a2        char* texture_a_4 = "Objects/World00/Slide0.tga"
-0040c1a7        int32_t side_exit = 1
-0040c1a9        int32_t width_cells_ = 3
-0040c1ab        float var_154 = 6f
-0040c1b2        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs, var_154, width_cells_, side_exit, texture_a_4, texture_b_5, cap_texture_2)
+0040c1b2        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs, 6f, 3, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040c1bc        game->subgame.path_pairs[0].primary.bod.position.z = 0f
 0040c1c2        game->subgame.path_pairs[0].primary.bod.position.y = 0f
 0040c1c8        game->subgame.path_pairs[0].primary.bod.position.x = 0
@@ -491,13 +485,7 @@
 0040c238        game->subgame.path_pairs[0].secondary.fringe_mesh_bod.position.y = 0f
 0040c23e        game->subgame.path_pairs[0].secondary.fringe_mesh_bod.position.x = 0
 0040c252        set_bod_object(&game->subgame.path_pairs[1].primary.bod, add_object_to_list(&g_object_list))
-0040c257        char* cap_texture_3 = "Objects/Path/VeryDark.tga"
-0040c25c        char* texture_b_6 = "Objects/World00/Back.tga"
-0040c261        char* texture_a_5 = "Objects/World00/Slide0.tga"
-0040c266        int32_t side_exit_1 = 1
-0040c268        int32_t width_cells__1 = 2
-0040c26a        var_154 = 6f
-0040c271        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[1].primary, var_154, width_cells__1, side_exit_1, texture_a_5, texture_b_6, cap_texture_3)
+0040c271        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[1].primary, 6f, 2, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040c27b        game->subgame.path_pairs[1].primary.bod.position.z = 0f
 0040c281        game->subgame.path_pairs[1].primary.bod.position.y = 0f
 0040c287        game->subgame.path_pairs[1].primary.bod.position.x = 0
@@ -515,13 +503,7 @@
 0040c2f7        game->subgame.path_pairs[1].secondary.fringe_mesh_bod.position.y = 0f
 0040c2fd        game->subgame.path_pairs[1].secondary.fringe_mesh_bod.position.x = 0
 0040c311        set_bod_object(&game->subgame.path_pairs[2].primary.bod, add_object_to_list(&g_object_list))
-0040c316        char* cap_texture_4 = "Objects/Path/VeryDark.tga"
-0040c31b        char* texture_b_7 = "Objects/World00/Back.tga"
-0040c320        char* texture_a_6 = "Objects/World00/Slide0.tga"
-0040c325        int32_t side_exit_2 = 1
-0040c327        int32_t width_cells__2 = 4
-0040c329        var_154 = 8f
-0040c330        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[2].primary, var_154, width_cells__2, side_exit_2, texture_a_6, texture_b_7, cap_texture_4)
+0040c330        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[2].primary, 8f, 4, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040c33a        game->subgame.path_pairs[2].primary.bod.position.z = 0f
 0040c340        game->subgame.path_pairs[2].primary.bod.position.y = 0f
 0040c346        game->subgame.path_pairs[2].primary.bod.position.x = 0
@@ -539,13 +521,7 @@
 0040c3b6        game->subgame.path_pairs[2].secondary.fringe_mesh_bod.position.y = 0f
 0040c3bc        game->subgame.path_pairs[2].secondary.fringe_mesh_bod.position.x = 0
 0040c3d0        set_bod_object(&game->subgame.path_pairs[6].primary.bod, add_object_to_list(&g_object_list))
-0040c3d5        char* cap_texture_5 = "Objects/Path/VeryDark.tga"
-0040c3da        char* texture_b_8 = "Objects/World00/Back.tga"
-0040c3df        char* texture_a_7 = "Objects/World00/Slide0.tga"
-0040c3e4        int32_t side_exit_3 = 1
-0040c3e6        int32_t width_cells__3 = 4
-0040c3e8        var_154 = 8f
-0040c3ef        initialize_looptheloopw_path_template_pair(&game->subgame.path_pairs[6].primary, var_154, width_cells__3, side_exit_3, texture_a_7, texture_b_8, cap_texture_5)
+0040c3ef        initialize_looptheloopw_path_template_pair(&game->subgame.path_pairs[6].primary, 8f, 4, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040c3f9        game->subgame.path_pairs[6].primary.bod.position.z = 0f
 0040c3ff        game->subgame.path_pairs[6].primary.bod.position.y = 0f
 0040c405        game->subgame.path_pairs[6].primary.bod.position.x = 0
@@ -563,13 +539,7 @@
 0040c475        game->subgame.path_pairs[6].secondary.fringe_mesh_bod.position.y = 0f
 0040c47b        game->subgame.path_pairs[6].secondary.fringe_mesh_bod.position.x = 0
 0040c48f        set_bod_object(&game->subgame.path_pairs[3].primary.bod, add_object_to_list(&g_object_list))
-0040c494        char* cap_texture_6 = "Objects/Path/VeryDark.tga"
-0040c499        char* texture_b_9 = "Objects/World00/Back.tga"
-0040c49e        char* texture_a_8 = "Objects/World00/Slide0.tga"
-0040c4a3        int32_t side_exit_4 = 1
-0040c4a5        int32_t width_cells__4 = 2
-0040c4a7        var_154 = 3f
-0040c4ae        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[3].primary, var_154, width_cells__4, side_exit_4, texture_a_8, texture_b_9, cap_texture_6)
+0040c4ae        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[3].primary, 3f, 2, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040c4b8        game->subgame.path_pairs[3].primary.bod.position.z = 0f
 0040c4be        game->subgame.path_pairs[3].primary.bod.position.y = 0f
 0040c4c4        game->subgame.path_pairs[3].primary.bod.position.x = 0
@@ -587,13 +557,7 @@
 0040c534        game->subgame.path_pairs[3].secondary.fringe_mesh_bod.position.y = 0f
 0040c53a        game->subgame.path_pairs[3].secondary.fringe_mesh_bod.position.x = 0
 0040c54e        set_bod_object(&game->subgame.path_pairs[4].primary.bod, add_object_to_list(&g_object_list))
-0040c553        char* cap_texture_7 = "Objects/Path/VeryDark.tga"
-0040c558        char* texture_b_10 = "Objects/World00/Back.tga"
-0040c55d        char* texture_a_9 = "Objects/World00/Slide0.tga"
-0040c562        int32_t side_exit_5 = 1
-0040c564        int32_t width_cells__5 = 3
-0040c566        var_154 = 3f
-0040c56d        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[4].primary, var_154, width_cells__5, side_exit_5, texture_a_9, texture_b_10, cap_texture_7)
+0040c56d        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[4].primary, 3f, 3, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040c577        game->subgame.path_pairs[4].primary.bod.position.z = 0f
 0040c57d        game->subgame.path_pairs[4].primary.bod.position.y = 0f
 0040c583        game->subgame.path_pairs[4].primary.bod.position.x = 0
@@ -611,13 +575,7 @@
 0040c5f3        game->subgame.path_pairs[4].secondary.fringe_mesh_bod.position.y = 0f
 0040c5f9        game->subgame.path_pairs[4].secondary.fringe_mesh_bod.position.x = 0
 0040c60d        set_bod_object(&game->subgame.path_pairs[5].primary.bod, add_object_to_list(&g_object_list))
-0040c612        char* cap_texture_8 = "Objects/Path/VeryDark.tga"
-0040c617        char* texture_b_11 = "Objects/World00/Back.tga"
-0040c61c        char* texture_a_10 = "Objects/World00/Slide0.tga"
-0040c621        int32_t side_exit_6 = 1
-0040c623        int32_t width_cells__6 = 4
-0040c625        var_154 = 3f
-0040c62c        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[5].primary, var_154, width_cells__6, side_exit_6, texture_a_10, texture_b_11, cap_texture_8)
+0040c62c        initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[5].primary, 3f, 4, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040c636        game->subgame.path_pairs[5].primary.bod.position.z = 0f
 0040c63c        game->subgame.path_pairs[5].primary.bod.position.y = 0f
 0040c642        game->subgame.path_pairs[5].primary.bod.position.x = 0
@@ -635,13 +593,9 @@
 0040c6b2        game->subgame.path_pairs[5].secondary.fringe_mesh_bod.position.y = 0f
 0040c6b8        game->subgame.path_pairs[5].secondary.fringe_mesh_bod.position.x = 0
 0040c6cc        set_bod_object(&game->subgame.path_pairs[7].primary.bod, add_object_to_list(&g_object_list))
-0040c6d1        char* var_140_200 = "Objects/Path/VeryDark.tga"
-0040c6d6        char* var_144_114 = "Objects/World00/Back.tga"
-0040c6db        char* texture_b_4 = "Objects/World00/Slide0.tga"
-0040c6e0        char* texture_a_3 = 1
-0040c6e2        uint32_t var_150_4 = 4
-0040c6e4        var_154 = 6f
-0040c6eb        initialize_loopbow_path_template_pair(&game->subgame.path_pairs[7].primary.bod.bod.vtable, var_154, var_150_4, texture_a_3, texture_b_4)
+0040c6d1        char* var_140_207 = "Objects/Path/VeryDark.tga"
+0040c6d6        char* var_144_121 = "Objects/World00/Back.tga"
+0040c6eb        initialize_loopbow_path_template_pair(&game->subgame.path_pairs[7].primary.bod.bod.vtable, 6f, 4, 1, "Objects/World00/Slide0.tga")
 0040c6f5        game->subgame.path_pairs[7].primary.bod.position.z = 0f
 0040c6fb        game->subgame.path_pairs[7].primary.bod.position.y = 0f
 0040c701        game->subgame.path_pairs[7].primary.bod.position.x = 0
@@ -659,11 +613,7 @@
 0040c771        game->subgame.path_pairs[7].secondary.fringe_mesh_bod.position.y = 0f
 0040c777        game->subgame.path_pairs[7].secondary.fringe_mesh_bod.position.x = 0
 0040c78b        set_bod_object(&game->subgame.path_pairs[0x25].primary.bod, add_object_to_list(&g_object_list))
-0040c790        char* cap_texture = "Objects/Path/VeryDark.tga"
-0040c795        char* texture_b_1 = "Objects/World00/Back.tga"
-0040c79a        char* texture_a = "Objects/World00/Slide0.tga"
-0040c79f        var_154 = 1.40129846e-45f
-0040c7aa        initialize_turnover_path_template_pair(&game->subgame.path_pairs[0x25].primary, 6f, 4, var_154, texture_a, texture_b_1, cap_texture)
+0040c7aa        initialize_turnover_path_template_pair(&game->subgame.path_pairs[0x25].primary, 6f, 4, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040c7b4        game->subgame.path_pairs[0x25].primary.bod.position.z = 0f
 0040c7ba        game->subgame.path_pairs[0x25].primary.bod.position.y = 0f
 0040c7c0        game->subgame.path_pairs[0x25].primary.bod.position.x = 0
@@ -681,11 +631,7 @@
 0040c830        game->subgame.path_pairs[0x25].secondary.fringe_mesh_bod.position.y = 0f
 0040c836        game->subgame.path_pairs[0x25].secondary.fringe_mesh_bod.position.x = 0
 0040c84a        set_bod_object(&game->subgame.path_pairs[0x26].primary.bod, add_object_to_list(&g_object_list))
-0040c84f        char* cap_texture_1 = "Objects/Path/VeryDark.tga"
-0040c854        char* texture_b_2 = "Objects/World00/Back.tga"
-0040c859        char* texture_a_1 = "Objects/World00/Slide0.tga"
-0040c85e        var_154 = 1.40129846e-45f
-0040c869        initialize_turnoverdouble_path_template_pair(&game->subgame.path_pairs[0x26].primary, 6f, 4, var_154, texture_a_1, texture_b_2, cap_texture_1)
+0040c869        initialize_turnoverdouble_path_template_pair(&game->subgame.path_pairs[0x26].primary, 6f, 4, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040c873        game->subgame.path_pairs[0x26].primary.bod.position.z = 0f
 0040c879        game->subgame.path_pairs[0x26].primary.bod.position.y = 0f
 0040c87f        game->subgame.path_pairs[0x26].primary.bod.position.x = 0
@@ -703,11 +649,8 @@
 0040c8ef        game->subgame.path_pairs[0x26].secondary.fringe_mesh_bod.position.y = 0f
 0040c8f5        game->subgame.path_pairs[0x26].secondary.fringe_mesh_bod.position.x = 0
 0040c909        set_bod_object(&game->subgame.path_pairs[0x2b].primary.bod, add_object_to_list(&g_object_list))
-0040c90e        char* var_148_114 = "Objects/Path/VeryDark.tga"
-0040c913        char* texture_b_3 = "Objects/World00/Back.tga"
-0040c918        char* texture_a_2 = "Objects/World00/Slide0.tga"
-0040c91d        var_154 = 1.40129846e-45f
-0040c928        initialize_twister_path_template_pair(&game->subgame.path_pairs[0x2b].primary.bod.bod.vtable, 2.5f, 3, var_154.b, texture_a_2, texture_b_3)
+0040c90e        char* var_148_124 = "Objects/Path/VeryDark.tga"
+0040c928        initialize_twister_path_template_pair(&game->subgame.path_pairs[0x2b].primary.bod.bod.vtable, 2.5f, 3, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga")
 0040c932        game->subgame.path_pairs[0x2b].primary.bod.position.z = 0f
 0040c938        game->subgame.path_pairs[0x2b].primary.bod.position.y = 0f
 0040c93e        game->subgame.path_pairs[0x2b].primary.bod.position.x = 0
@@ -725,57 +668,45 @@
 0040c9ae        game->subgame.path_pairs[0x2b].secondary.fringe_mesh_bod.position.y = 0f
 0040c9b4        game->subgame.path_pairs[0x2b].secondary.fringe_mesh_bod.position.x = 0
 0040c9c8        set_bod_object(&game->subgame.path_pairs[0x2c].primary.bod, add_object_to_list(&g_object_list))
-0040c9cd        char* var_14c_17 = "Objects/Path/VeryDark.tga"
-0040c9d2        char* texture_b = "Objects/World00/Back.tga"
-0040c9d7        var_154 = "Objects/World00/Slide0.tga"
-0040c9e6        initialize_twister_path_template_pair(&game->subgame.path_pairs[0x2c].primary.bod.bod.vtable, 2.5f, 3, 0, var_154, texture_b)
+0040c9cd        char* var_14c_28 = "Objects/Path/VeryDark.tga"
+0040c9e6        initialize_twister_path_template_pair(&game->subgame.path_pairs[0x2c].primary.bod.bod.vtable, 2.5f, 3, 0, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga")
 0040c9f0        game->subgame.path_pairs[0x2c].primary.bod.position.z = 0f
 0040c9f6        game->subgame.path_pairs[0x2c].primary.bod.position.y = 0f
 0040c9fc        game->subgame.path_pairs[0x2c].primary.bod.position.x = 0
 0040ca0e        set_bod_object(&game->subgame.path_pairs[0x2c].secondary.bod, add_object_to_list(&g_object_list))
 0040ca1a        mirror_path_template_pair_x(&game->subgame.path_pairs[0x2c].secondary, &game->subgame.path_pairs[0x2c])
-0040ca1f        float clamp_side = 0f
-0040ca20        var_154 = "Objects/Universe/Fringe.tga"
 0040ca27        game->subgame.path_pairs[0x2c].secondary.bod.position.z = 0f
 0040ca2d        game->subgame.path_pairs[0x2c].secondary.bod.position.y = 0f
 0040ca33        game->subgame.path_pairs[0x2c].secondary.bod.position.x = 0
-0040ca39        build_track_fringe_mesh(&game->subgame.path_pairs[0x2c], var_154, clamp_side)
-0040ca3e        float clamp_side_1 = 0f
-0040ca3f        var_154 = "Objects/Universe/Fringe.tga"
+0040ca39        build_track_fringe_mesh(&game->subgame.path_pairs[0x2c], "Objects/Universe/Fringe.tga", 0f)
 0040ca4a        game->subgame.path_pairs[0x2c].primary.fringe_mesh_bod.position.z = 0f
 0040ca50        game->subgame.path_pairs[0x2c].primary.fringe_mesh_bod.position.y = 0f
 0040ca56        game->subgame.path_pairs[0x2c].primary.fringe_mesh_bod.position.x = 0
-0040ca5c        build_track_fringe_mesh(&game->subgame.path_pairs[0x2c].secondary, var_154, clamp_side_1)
+0040ca5c        build_track_fringe_mesh(&game->subgame.path_pairs[0x2c].secondary, "Objects/Universe/Fringe.tga", 0f)
 0040ca66        game->subgame.path_pairs[0x2c].secondary.fringe_mesh_bod.position.z = 0f
 0040ca6c        game->subgame.path_pairs[0x2c].secondary.fringe_mesh_bod.position.y = 0f
 0040ca72        game->subgame.path_pairs[0x2c].secondary.fringe_mesh_bod.position.x = 0
 0040ca86        set_bod_object(&game->subgame.path_pairs[0x2d].primary.bod, add_object_to_list(&g_object_list))
-0040ca8b        char* var_150_10 = "Objects/Path/VeryDark.tga"
-0040ca90        var_154 = "Objects/World00/Back.tga"
-0040caa5        initialize_twister2_path_template_pair(&game->subgame.path_pairs[0x2d].primary.bod.bod.vtable, 2.5f, 3, 1, "Objects/World00/Slide0.tga", var_154)
+0040ca8b        char* var_150_23 = "Objects/Path/VeryDark.tga"
+0040caa5        initialize_twister2_path_template_pair(&game->subgame.path_pairs[0x2d].primary.bod.bod.vtable, 2.5f, 3, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga")
 0040caaf        game->subgame.path_pairs[0x2d].primary.bod.position.z = 0f
 0040cab5        game->subgame.path_pairs[0x2d].primary.bod.position.y = 0f
 0040cabb        game->subgame.path_pairs[0x2d].primary.bod.position.x = 0
-0040cac6        var_154 = add_object_to_list(&g_object_list)
-0040cacd        set_bod_object(&game->subgame.path_pairs[0x2d].secondary, var_154)
-0040cad2        var_154 = &game->subgame.path_pairs[0x2d]
-0040cad9        mirror_path_template_pair_x(&game->subgame.path_pairs[0x2d].secondary, var_154)
-0040cade        var_154 = 0f
+0040cacd        set_bod_object(&game->subgame.path_pairs[0x2d].secondary.bod, add_object_to_list(&g_object_list))
+0040cad9        mirror_path_template_pair_x(&game->subgame.path_pairs[0x2d].secondary, &game->subgame.path_pairs[0x2d])
 0040cae6        game->subgame.path_pairs[0x2d].secondary.bod.position.z = 0f
 0040caec        game->subgame.path_pairs[0x2d].secondary.bod.position.y = 0f
 0040caf2        game->subgame.path_pairs[0x2d].secondary.bod.position.x = 0
-0040caf8        build_track_fringe_mesh(&game->subgame.path_pairs[0x2d], "Objects/Universe/Fringe.tga", var_154)
-0040cafd        var_154 = 0f
+0040caf8        build_track_fringe_mesh(&game->subgame.path_pairs[0x2d], "Objects/Universe/Fringe.tga", 0f)
 0040cb09        game->subgame.path_pairs[0x2d].primary.fringe_mesh_bod.position.z = 0f
 0040cb0f        game->subgame.path_pairs[0x2d].primary.fringe_mesh_bod.position.y = 0f
 0040cb15        game->subgame.path_pairs[0x2d].primary.fringe_mesh_bod.position.x = 0
-0040cb1b        build_track_fringe_mesh(&game->subgame.path_pairs[0x2d].secondary, "Objects/Universe/Fringe.tga", var_154)
+0040cb1b        build_track_fringe_mesh(&game->subgame.path_pairs[0x2d].secondary, "Objects/Universe/Fringe.tga", 0f)
 0040cb25        game->subgame.path_pairs[0x2d].secondary.fringe_mesh_bod.position.z = 0f
 0040cb2b        game->subgame.path_pairs[0x2d].secondary.fringe_mesh_bod.position.y = 0f
 0040cb31        game->subgame.path_pairs[0x2d].secondary.fringe_mesh_bod.position.x = 0
-0040cb42        var_154 = add_object_to_list(&g_object_list)
-0040cb45        set_bod_object(&game->subgame.path_pairs[0x2e], var_154)
-0040cb4a        var_154 = "Objects/Path/VeryDark.tga"
+0040cb45        set_bod_object(&game->subgame.path_pairs[0x2e].primary.bod, add_object_to_list(&g_object_list))
+0040cb4a        char* var_154_20 = "Objects/Path/VeryDark.tga"
 0040cb63        initialize_twister2_path_template_pair(&game->subgame.path_pairs[0x2e].primary.bod.bod.vtable, 2.5f, 3, 0, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga")
 0040cb68        game->subgame.path_pairs[0x2e].primary.bod.position.z = 0f
 0040cb6e        game->subgame.path_pairs[0x2e].primary.bod.position.y = 0f
@@ -812,10 +743,7 @@
 0040cca8        game->subgame.path_pairs[0x27].secondary.fringe_mesh_bod.position.y = 0f
 0040ccae        game->subgame.path_pairs[0x27].secondary.fringe_mesh_bod.position.x = 0
 0040ccc2        set_bod_object(&game->subgame.path_pairs[0x29].primary.bod, add_object_to_list(&g_object_list))
-0040ccc7        char* var_158_19 = "Objects/Path/VeryDark.tga"
-0040cccc        char* var_15c_11 = "Objects/World00/Back.tga"
-0040ccd1        char* var_160_4 = "Objects/World00/Slide0.tga"
-0040cce1        initialize_invert_path_template_pair(&game->subgame.path_pairs[0x29], 0x40c00000, 8, 1)
+0040cce1        initialize_invert_path_template_pair(&game->subgame.path_pairs[0x29].primary, 6f, 8, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040cce6        game->subgame.path_pairs[0x29].primary.bod.position.z = 0f
 0040ccf1        game->subgame.path_pairs[0x29].primary.bod.position.y = 0f
 0040ccf7        game->subgame.path_pairs[0x29].primary.bod.position.x = 0
@@ -833,10 +761,7 @@
 0040cd67        game->subgame.path_pairs[0x29].secondary.fringe_mesh_bod.position.y = 0f
 0040cd6d        game->subgame.path_pairs[0x29].secondary.fringe_mesh_bod.position.x = 0
 0040cd81        set_bod_object(&game->subgame.path_pairs[0x2a].primary.bod, add_object_to_list(&g_object_list))
-0040cd86        char* var_164_9 = "Objects/Path/VeryDark.tga"
-0040cd8b        char* var_168_5 = "Objects/World00/Back.tga"
-0040cd90        char* var_16c_2 = "Objects/World00/Slide0.tga"
-0040cda0        initialize_halfpipe_path_template_pair(&game->subgame.path_pairs[0x2a], 0x40c00000, 8, 1)
+0040cda0        initialize_halfpipe_path_template_pair(&game->subgame.path_pairs[0x2a].primary, 6f, 8, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040cdaa        game->subgame.path_pairs[0x2a].primary.bod.position.z = 0f
 0040cdb0        game->subgame.path_pairs[0x2a].primary.bod.position.y = 0f
 0040cdb6        game->subgame.path_pairs[0x2a].primary.bod.position.x = 0
@@ -854,10 +779,7 @@
 0040ce26        game->subgame.path_pairs[0x2a].secondary.fringe_mesh_bod.position.y = 0f
 0040ce2c        game->subgame.path_pairs[0x2a].secondary.fringe_mesh_bod.position.x = 0
 0040ce40        set_bod_object(&game->subgame.path_pairs[0x28].primary.bod, add_object_to_list(&g_object_list))
-0040ce45        char* var_170_6 = "Objects/Path/VeryDark.tga"
-0040ce4a        char* var_174_3 = "Objects/World00/Slide0.tga"
-0040ce4f        char* var_178_1 = "Objects/World00/Slide0.tga"
-0040ce5f        initialize_wibble_path_template_pair(&game->subgame.path_pairs[0x28], 0x40c00000, 8, 1)
+0040ce5f        initialize_wibble_path_template_pair(&game->subgame.path_pairs[0x28].primary, 6f, 8, 1, "Objects/World00/Slide0.tga", "Objects/World00/Slide0.tga", "Objects/Path/VeryDark.tga")
 0040ce69        game->subgame.path_pairs[0x28].primary.bod.position.z = 0f
 0040ce6f        game->subgame.path_pairs[0x28].primary.bod.position.y = 0f
 0040ce75        game->subgame.path_pairs[0x28].primary.bod.position.x = 0
@@ -875,8 +797,8 @@
 0040cee5        game->subgame.path_pairs[0x28].secondary.fringe_mesh_bod.position.y = 0f
 0040ceeb        game->subgame.path_pairs[0x28].secondary.fringe_mesh_bod.position.x = 0
 0040ceff        set_bod_object(&game->subgame.path_pairs[0x1f].primary.bod, add_object_to_list(&g_object_list))
-0040cf04        char* var_17c_6 = "Objects/World00/TrackWarn.tga"
-0040cf09        char* var_180_3 = "Objects/Path/VeryDark.tga"
+0040cf04        char* var_158_37 = "Objects/World00/TrackWarn.tga"
+0040cf09        char* var_15c_20 = "Objects/Path/VeryDark.tga"
 0040cf23        initialize_supertramp_path_template_pair(&game->subgame.path_pairs[0x1f].primary.bod.bod.vtable, 6f, 2, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga")
 0040cf2f        game->subgame.path_pairs[0x1f].primary.bod.position.z = 0f
 0040cf35        game->subgame.path_pairs[0x1f].primary.bod.position.y = 0f
@@ -886,8 +808,8 @@
 0040cf51        game->subgame.path_pairs[0x1f].primary.fringe_mesh_bod.position.y = 0f
 0040cf57        game->subgame.path_pairs[0x1f].primary.fringe_mesh_bod.position.x = 0
 0040cf6b        set_bod_object(&game->subgame.path_pairs[0x1f].secondary.bod, add_object_to_list(&g_object_list))
-0040cf70        char* var_184_4 = "Objects/World00/TrackWarn.tga"
-0040cf75        char* var_188_1 = "Objects/Path/VeryDark.tga"
+0040cf70        char* var_160_10 = "Objects/World00/TrackWarn.tga"
+0040cf75        char* var_164_7 = "Objects/Path/VeryDark.tga"
 0040cf86        struct tColour color
 0040cf86        color.a = 2
 0040cf88        color.b = 0x40c00000
@@ -1075,7 +997,7 @@
 0040d5da        game->subgame.path_pairs[0x13].secondary.fringe_mesh_bod.position.y = 0f
 0040d5e0        game->subgame.path_pairs[0x13].secondary.fringe_mesh_bod.position.x = 0
 0040d5f4        set_bod_object(&game->subgame.path_pairs[8].primary.bod, add_object_to_list(&g_object_list))
-0040d5f9        char* var_18c_52 = "Objects/Path/VeryDark.tga"
+0040d5f9        char* var_168_57 = "Objects/Path/VeryDark.tga"
 0040d608        color.a = 1
 0040d60a        color.b = 0x41a00000
 0040d60f        color.g = 0x40800000
@@ -1098,7 +1020,7 @@
 0040d69e        game->subgame.path_pairs[8].secondary.fringe_mesh_bod.position.y = 0f
 0040d6a4        game->subgame.path_pairs[8].secondary.fringe_mesh_bod.position.x = 0
 0040d6b8        set_bod_object(&game->subgame.path_pairs[0xa].primary.bod, add_object_to_list(&g_object_list))
-0040d6bd        char* var_190_33 = "Objects/Path/VeryDark.tga"
+0040d6bd        char* var_16c_37 = "Objects/Path/VeryDark.tga"
 0040d6c7        color.a = "Objects/World00/Slide0.tga"
 0040d6cc        color.b = 0
 0040d6cd        color.g = 0x41a00000
@@ -1123,7 +1045,7 @@
 0040d761        game->subgame.path_pairs[0xa].secondary.fringe_mesh_bod.position.y = 0f
 0040d767        game->subgame.path_pairs[0xa].secondary.fringe_mesh_bod.position.x = 0
 0040d77b        set_bod_object(&game->subgame.path_pairs[9].primary.bod, add_object_to_list(&g_object_list))
-0040d780        char* var_194_20 = "Objects/Path/VeryDark.tga"
+0040d780        char* var_170_20 = "Objects/Path/VeryDark.tga"
 0040d785        color.a = "Objects/World00/Back.tga"
 0040d78a        color.b = "Objects/World00/Slide0.tga"
 0040d78f        color.g = 1
@@ -1717,7 +1639,7 @@
 0040eec5        game->subgame.path_pairs[7].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[0x3a].secondary.bod.object
 0040eed1        game->subgame.path_pairs[7].secondary.entry_base_strip_mesh = game->subgame.path_pairs[7].secondary.bod.object
 0040eeea        set_bod_object(&game->subgame.path_pairs[0x3e].primary.bod, add_object_to_list(&g_object_list))
-0040ef09        initialize_invert_path_template_pair(&game->subgame.path_pairs[0x3e], 0x40c00000, 8, 1)
+0040ef09        initialize_invert_path_template_pair(&game->subgame.path_pairs[0x3e], 6f, 8, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040ef13        game->subgame.path_pairs[0x3e].primary.bod.position.z = 0f
 0040ef19        game->subgame.path_pairs[0x3e].primary.bod.position.y = 0f
 0040ef1f        game->subgame.path_pairs[0x3e].primary.bod.position.x = 0
@@ -1798,21 +1720,22 @@
 0040f276        game->subgame.path_pairs[0x1a].secondary.entry_base_strip_mesh = game->subgame.path_pairs[0x1a].secondary.bod.object
 0040f295        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots, add_object_to_list(&g_object_list))
 0040f2a2        char* eax_229 = find_case_insensitive_substring("Test:", game->directx_loader.animation_bytes)
+0040f2ac        void mesh_name
 0040f2ac        if (eax_229 == 0)
-0040f2f3        rstrcpy_checked_ascii(&var_154, "turbo-base-000.x")
+0040f2f3        rstrcpy_checked_ascii(&mesh_name, "turbo-base-000.x")
 0040f2b4        char* eax_230 = find_case_insensitive_substring(":", eax_229)
 0040f2b9        char i = eax_230[1]
-0040f2c5        float* eax_231 = &var_154
+0040f2c5        char* eax_231 = &mesh_name
 0040f2c9        while (i != 0x2e)
 0040f2d1        *eax_231 = i
-0040f2d3        i = *(&eax_230[1] - &var_154 + eax_231 + 1)
-0040f2d7        eax_231 += 1
+0040f2d3        i = eax_231[&eax_230[1] - &mesh_name + 1]
+0040f2d7        eax_231 = &eax_231[1]
 0040f2dd        *eax_231 = 0x2e
-0040f2e1        *(eax_231 + 1) = 0x78
-0040f2e4        *(eax_231 + 2) = 0
-0040f309        load_x_animation_clip(&game->directx_loader, &var_154, game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object)
+0040f2e1        eax_231[1] = 0x78
+0040f2e4        eax_231[2] = 0
+0040f309        load_x_animation_clip(&game->directx_loader, &mesh_name, game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object)
 0040f321        set_bod_object(&game->subgame.player.presentation.body.bod, add_object_to_list(&g_object_list))
-0040f334        load_x_animation_clip(&game->directx_loader, &var_154, game->subgame.player.presentation.body.bod.object)
+0040f334        load_x_animation_clip(&game->directx_loader, &mesh_name, game->subgame.player.presentation.body.bod.object)
 0040f34a        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[1].body.bod, add_object_to_list(&g_object_list))
 0040f35d        load_x_animation_clip(&game->directx_loader, "turbo-move-000.x", game->subgame.player.presentation.cutscene_animation_slots[1].body.bod.object)
 0040f373        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[2].body.bod, add_object_to_list(&g_object_list))
@@ -1834,20 +1757,20 @@
 0040f4bb        set_bod_object(&game->subgame.player.presentation.snail_hotspot_body.bod, add_object_to_list(&g_object_list))
 0040f4d4        load_x_mesh(&game->directx_loader, "TurboHotSpots.x", game->subgame.player.presentation.snail_hotspot_body.bod.object, 2)
 0040f4df        build_snail_hotspots(&game->subgame.player.presentation)
-0040f4ea        int32_t var_1bc = 0xa
-0040f4f2        struct Object** var_1c0_39 = &game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
+0040f4ea        int32_t var_18c_3 = 0xa
+0040f4f2        struct Object** var_190 = &game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
 0040f53d        bool cond:5_1
-0040f4fb        struct Object* object = (var_1c0_39 - 0x432870)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
+0040f4fb        struct Object* object = (var_190 - 0x432870)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
 0040f503        object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
-0040f508        apply_object_toon((var_1c0_39 - 0x432870)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object, 0)
-0040f511        struct Object* object_13 = (var_1c0_39 - 0x432870)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
-0040f513        struct Object** eax_250 = &var_1c0_39[0x20]
-0040f518        var_1c0_39 = eax_250
+0040f508        apply_object_toon((var_190 - 0x432870)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object, 0)
+0040f511        struct Object* object_13 = (var_190 - 0x432870)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
+0040f513        struct Object** eax_250 = &var_190[0x20]
+0040f518        var_190 = eax_250
 0040f51c        object_13->distort.z_wave = 0
 0040f525        (eax_250 - 0x4328f0)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object->distort.y_squash = 0f
-0040f532        cond:5_1 = var_1bc != 1
+0040f532        cond:5_1 = var_18c_3 != 1
 0040f533        (eax_250 - 0x4328f0)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object->distort.xyz_scale = 0f
-0040f539        var_1bc -= 1
+0040f539        var_18c_3 -= 1
 0040f53d        do while (cond:5_1)
 0040f53f        struct Object* object_1 = game->subgame.player.presentation.body.bod.object
 0040f54c        object_1->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
@@ -1861,20 +1784,20 @@
 0040f5cb        load_x_animation_clip(&game->directx_loader, "jetpack-base-000.x", game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object)
 0040f5e1        set_bod_object(&game->subgame.player.presentation.jetpack_channel.animation_slots[1].body.bod, add_object_to_list(&g_object_list))
 0040f5f4        load_x_animation_clip(&game->directx_loader, "jetpack-draw-000.x", game->subgame.player.presentation.jetpack_channel.animation_slots[1].body.bod.object)
-0040f5ff        int32_t var_1bc_1 = 2
-0040f603        struct Object** var_1c0_40 = &game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
+0040f5ff        int32_t var_18c_4 = 2
+0040f603        struct Object** var_190_1 = &game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
 0040f64e        bool cond:6_1
-0040f60c        struct Object* object_2 = (var_1c0_40 - 0x433a54)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
+0040f60c        struct Object* object_2 = (var_190_1 - 0x433a54)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
 0040f614        object_2->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
-0040f619        apply_object_toon((var_1c0_40 - 0x433a54)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object, 0)
-0040f622        struct Object* object_17 = (var_1c0_40 - 0x433a54)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
-0040f624        struct Object** eax_260 = &var_1c0_40[0x20]
-0040f629        var_1c0_40 = eax_260
+0040f619        apply_object_toon((var_190_1 - 0x433a54)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object, 0)
+0040f622        struct Object* object_17 = (var_190_1 - 0x433a54)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
+0040f624        struct Object** eax_260 = &var_190_1[0x20]
+0040f629        var_190_1 = eax_260
 0040f62d        object_17->distort.z_wave = 0
 0040f636        (eax_260 - 0x433ad4)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object->distort.y_squash = 0f
-0040f643        cond:6_1 = var_1bc_1 != 1
+0040f643        cond:6_1 = var_18c_4 != 1
 0040f644        (eax_260 - 0x433ad4)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object->distort.xyz_scale = 0f
-0040f64a        var_1bc_1 -= 1
+0040f64a        var_18c_4 -= 1
 0040f64e        do while (cond:6_1)
 0040f650        struct Object* object_3 = game->subgame.player.presentation.jetpack_channel.body.bod.object
 0040f65d        object_3->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
@@ -1894,20 +1817,20 @@
 0040f757        load_x_animation_clip(&game->directx_loader, "Laserleft-base-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[3].body.bod.object)
 0040f76d        set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots[4].body.bod, add_object_to_list(&g_object_list))
 0040f780        load_x_animation_clip(&game->directx_loader, "Laserleft-draw-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[4].body.bod.object)
-0040f78b        int32_t var_1bc_2 = 5
-0040f793        struct Object** var_1c0_41 = &game->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
+0040f78b        int32_t var_18c_5 = 5
+0040f793        struct Object** var_190_2 = &game->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
 0040f7de        bool cond:7_1
-0040f79c        struct Object* object_4 = (var_1c0_41 - 0x432ec0)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
+0040f79c        struct Object* object_4 = (var_190_2 - 0x432ec0)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
 0040f7a4        object_4->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
-0040f7a9        apply_object_toon((var_1c0_41 - 0x432ec0)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object, 0)
-0040f7b2        struct Object* object_14 = (var_1c0_41 - 0x432ec0)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
-0040f7b4        struct Object** eax_274 = &var_1c0_41[0x20]
-0040f7b9        var_1c0_41 = eax_274
+0040f7a9        apply_object_toon((var_190_2 - 0x432ec0)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object, 0)
+0040f7b2        struct Object* object_14 = (var_190_2 - 0x432ec0)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
+0040f7b4        struct Object** eax_274 = &var_190_2[0x20]
+0040f7b9        var_190_2 = eax_274
 0040f7bd        object_14->distort.z_wave = 0
 0040f7c6        (eax_274 - 0x432f40)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object->distort.y_squash = 0f
-0040f7d3        cond:7_1 = var_1bc_2 != 1
+0040f7d3        cond:7_1 = var_18c_5 != 1
 0040f7d4        (eax_274 - 0x432f40)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
-0040f7da        var_1bc_2 -= 1
+0040f7da        var_18c_5 -= 1
 0040f7de        do while (cond:7_1)
 0040f7e0        struct Object* object_5 = game->subgame.player.presentation.weapon_channels[0].body.bod.object
 0040f7ed        object_5->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
@@ -1927,20 +1850,20 @@
 0040f8e7        load_x_animation_clip(&game->directx_loader, "Laserright-base-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[3].body.bod.object)
 0040f8fd        set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots[4].body.bod, add_object_to_list(&g_object_list))
 0040f910        load_x_animation_clip(&game->directx_loader, "Laserright-draw-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[4].body.bod.object)
-0040f91b        int32_t var_1bc_3 = 5
-0040f923        struct Object** var_1c0_42 = &game->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
+0040f91b        int32_t var_18c_6 = 5
+0040f923        struct Object** var_190_3 = &game->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
 0040f96e        bool cond:8_1
-0040f92c        struct Object* object_6 = (var_1c0_42 - 0x43329c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
+0040f92c        struct Object* object_6 = (var_190_3 - 0x43329c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
 0040f934        object_6->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
-0040f939        apply_object_toon((var_1c0_42 - 0x43329c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object, 0)
-0040f942        struct Object* object_18 = (var_1c0_42 - 0x43329c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
-0040f944        struct Object** eax_288 = &var_1c0_42[0x20]
-0040f949        var_1c0_42 = eax_288
+0040f939        apply_object_toon((var_190_3 - 0x43329c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object, 0)
+0040f942        struct Object* object_18 = (var_190_3 - 0x43329c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
+0040f944        struct Object** eax_288 = &var_190_3[0x20]
+0040f949        var_190_3 = eax_288
 0040f94d        object_18->distort.z_wave = 0
 0040f956        (eax_288 - 0x43331c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object->distort.y_squash = 0f
-0040f963        cond:8_1 = var_1bc_3 != 1
+0040f963        cond:8_1 = var_18c_6 != 1
 0040f964        (eax_288 - 0x43331c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
-0040f96a        var_1bc_3 -= 1
+0040f96a        var_18c_6 -= 1
 0040f96e        do while (cond:8_1)
 0040f970        struct Object* object_7 = game->subgame.player.presentation.weapon_channels[1].body.bod.object
 0040f97d        object_7->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
@@ -1960,20 +1883,20 @@
 0040fa77        load_x_animation_clip(&game->directx_loader, "rocketlauncher-base-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[3].body.bod.object)
 0040fa8d        set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots[4].body.bod, add_object_to_list(&g_object_list))
 0040faa0        load_x_animation_clip(&game->directx_loader, "rocketlauncher-draw-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[4].body.bod.object)
-0040faab        int32_t var_1bc_4 = 5
-0040fab3        struct Object** var_1c0_43 = &game->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
+0040faab        int32_t var_18c_7 = 5
+0040fab3        struct Object** var_190_4 = &game->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
 0040fafe        bool cond:9_1
-0040fabc        struct Object* object_8 = (var_1c0_43 - 0x433678)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
+0040fabc        struct Object* object_8 = (var_190_4 - 0x433678)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
 0040fac4        object_8->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
-0040fac9        apply_object_toon((var_1c0_43 - 0x433678)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object, 0)
-0040fad2        struct Object* object_15 = (var_1c0_43 - 0x433678)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
-0040fad4        struct Object** eax_302 = &var_1c0_43[0x20]
-0040fad9        var_1c0_43 = eax_302
+0040fac9        apply_object_toon((var_190_4 - 0x433678)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object, 0)
+0040fad2        struct Object* object_15 = (var_190_4 - 0x433678)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
+0040fad4        struct Object** eax_302 = &var_190_4[0x20]
+0040fad9        var_190_4 = eax_302
 0040fadd        object_15->distort.z_wave = 0
 0040fae6        (eax_302 - 0x4336f8)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object->distort.y_squash = 0f
-0040faf3        cond:9_1 = var_1bc_4 != 1
+0040faf3        cond:9_1 = var_18c_7 != 1
 0040faf4        (eax_302 - 0x4336f8)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
-0040fafa        var_1bc_4 -= 1
+0040fafa        var_18c_7 -= 1
 0040fafe        do while (cond:9_1)
 0040fb00        struct Object* object_9 = game->subgame.player.presentation.weapon_channels[2].body.bod.object
 0040fb0d        object_9->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
@@ -1991,7 +1914,7 @@
 0040fbcd        set_bod_object(&game->subgame.player.golb_shots[0]...tertiary_body.bod, add_object_to_list(&g_object_list))
 0040fbe2        load_x_mesh(&game->directx_loader, "rocket-base-000.x", game->subgame.player.golb_shots[0]...__offset(0x13c).d, 1)
 0040fbe7        void* __offset(GameRoot, 0x430270) esi_3 = &game->subgame.player.golb_shots[0]...secondary_body.bod.object
-0040fbed        int32_t var_1bc_5 = 0xc
+0040fbed        int32_t var_18c_8 = 0xc
 0040fc5d        bool cond:10_1
 0040fc03        set_bod_object(esi_3 - 0x24, add_object_to_list(&g_object_list))
 0040fc08        void* eax_313 = (esi_3 - 0x430270)->subgame.player.golb_shots[0]...__offset(0xa4).d
@@ -2001,8 +1924,8 @@
 0040fc3a        initialize_vapour(esi_3 - 0x24, (esi_3 - 0x430270)->subgame.player.golb_shots[0]...__offset(0xa4).d, 0.159999996f)
 0040fc49        set_bod_object(esi_3 + 0x74, game->subgame.player.golb_shots[0]...__offset(0x13c).d)
 0040fc52        esi_3 += 0x2e8
-0040fc58        cond:10_1 = var_1bc_5 != 1
-0040fc59        var_1bc_5 -= 1
+0040fc58        cond:10_1 = var_18c_8 != 1
+0040fc59        var_18c_8 -= 1
 0040fc5d        do while (cond:10_1)
 0040fc6b        struct TextureRef* eax_317 = get_or_create_texture_ref(&g_texture_refs, "Objects/VapourLazer/Lazer.tga", 0, 0)
 0040fc70        enum TextureRefFlags flags_1 = eax_317->flags
@@ -2059,31 +1982,29 @@
 0040ffbe        store_color4f(&game->subgame.barrier.bod.color, 1f, 1f, 1f, 0.800000012f)
 0040ffcf        game->subgame.barrier.bod.object->blend_mode = 7
 0040ffd6        initialize_track_render_cache_manager(&game->subgame.segment_cache)
-0040ffdb        int32_t var_1bc_6 = 0
+0040ffdb        int32_t var_18c_9 = 0
 0040ffdf        void** eax_351 = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object
 00410066        bool cond:14_1
-0040ffe5        float var_1a8_31 = 0f
-00410058        bool cond:13_1
-0040ffe9        int32_t var_1c0_44 = 0
+0040ffe5        color.b = 0
+0040ffe9        int32_t var_190_5 = 0
 0040ffed        void** esi_4 = eax_351
 00410048        bool cond:12_1
 0040ffef        int32_t i_1 = 0
 0041003a        while (i_1 s< 3)
 0040ffff        set_bod_object(&esi_4[-9], add_object_to_list(&g_object_list))
-00410022        initialize_backdrop_tile_quad((esi_4 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object, var_1bc_6, var_1a8_31, var_1c0_44 - 1, i_1 - 1, "Objects/Universe/Fringe.tga")
+00410022        initialize_backdrop_tile_quad((esi_4 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object, var_18c_9, color.b, var_190_5 - 1, i_1 - 1, "Objects/Universe/Fringe.tga")
 00410027        void* object_11 = (esi_4 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object
 0041002c        i_1 += 1
 0041002d        esi_4 = &esi_4[0xe]
 00410033        *(object_11 + 0x14) = 5
-00410041        cond:12_1 = var_1c0_44 + 1 s< 3
-00410044        var_1c0_44 += 1
+00410041        cond:12_1 = var_190_5 + 1 s< 3
+00410044        var_190_5 += 1
 00410048        do while (cond:12_1)
 0041004e        eax_351 = esi_4
-00410051        cond:13_1 = var_1a8_31 i+ 1 s< 4
-00410054        var_1a8_31 += 1
-00410058        do while (cond:13_1)
-0041005f        cond:14_1 = var_1bc_6 + 1 s< 8
-00410062        var_1bc_6 += 1
+00410054        color.b += 1
+00410058        do while (color.b i+ 1 s< 4)
+0041005f        cond:14_1 = var_18c_9 + 1 s< 8
+00410062        var_18c_9 += 1
 00410066        do while (cond:14_1)
 00410078        struct TextureRef* eax_357 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Fringe.tga", 0, 0)
 0041007d        enum TextureRefFlags flags_3 = eax_357->flags
@@ -2097,26 +2018,26 @@
 004100a1        i_2 += 1
 004100a2        state = &state[2]
 004100a8        do while (i_2 s< 2)
-004100ad        int32_t var_1c0_45 = 0
+004100ad        int32_t var_190_6 = 0
 004100b3        if (game->player_count s> 0)
 004101c5        bool cond:15_1
-004100c4        void* esi_5 = game + var_1c0_45 * 0x1f8
+004100c4        void* esi_5 = game + var_190_6 * 0x1f8
 004100d4        set_matrix_identity(esi_5 + 0x15c)
 004100df        set_matrix_identity(esi_5 + 0x1fc)
 00410133        *(esi_5 + 0x284) = 0x42dc0000
-00410149        *(esi_5 + 0x28c) = &game->game_inputs[var_1c0_45]
-0041015b        var_d4
-0041015b        __builtin_memcpy(esi_5 + 0x15c, initialize_matrix_from_values(&var_d4, 0.0733430013f, 0f, -0.997310996f, 0f, 0.152129993f, 0.988296986f, 0.0111880004f, 0f, 0.985638976f, -0.152539998f, 0.0724840015f, 0f, -8.62666702f, 3.11352801f, 4.47740698f, 1f), 0x40)
+00410149        *(esi_5 + 0x28c) = &game->game_inputs[var_190_6]
+0041015b        struct TransformMatrix transform
+0041015b        __builtin_memcpy(esi_5 + 0x15c, initialize_matrix_from_values(&transform, 0.0733430013f, 0f, -0.997310996f, 0f, 0.152129993f, 0.988296986f, 0.0111880004f, 0f, 0.985638976f, -0.152539998f, 0.0724840015f, 0f, -8.62666702f, 3.11352801f, 4.47740698f, 1f), 0x40)
 0041016c        initialize_frontend_overlay_color_lerp(esi_5 + 0x2a8, 0x1000000)
 00410177        release_mouse_cursor(esi_5 + 0x290)
 00410180        *(esi_5 + 0x2a4) = 0
-00410188        if (var_1c0_45 == 0)
+00410188        if (var_190_6 == 0)
 0041018a        game->players[0].frontend_state = 0xc
 0041019d        *(esi_5 + 0x30d) = 0
 004101a3        *(esi_5 + 0x310) = 0
 004101af        rstrcpy_checked_ascii(esi_5 + 0x1a4, &g_runtime_config.last_entered_player_name)
-004101bf        cond:15_1 = var_1c0_45 + 1 s< game->player_count
-004101c1        var_1c0_45 += 1
+004101bf        cond:15_1 = var_190_6 + 1 s< game->player_count
+004101c1        var_190_6 += 1
 004101c5        do while (cond:15_1)
 004101d3        initialize_high_score_tables(&game->subgame.sub_high_score)
 004101df        load_high_scores_from_file(&game->subgame.sub_high_score, "ScoreA.dat")
@@ -2146,105 +2067,105 @@
 004102a6        i_4 -= 1
 004102a7        do while (i_3 != 1)
 004102ae        build_all_objects(&g_object_list)
-004102c6        char* var_1dc_2 = "Objects/World00/Back.tga"
-004102cd        char* var_1d8_10 = "Objects/Path/VeryDark.tga"
-004102d0        char* var_1d4_91 = "Objects/World00/Back.tga"
-004102da        set_object_color(game->subgame.path_pairs[0x33].primary.bod.object, "Objects/Path/VeryDark.tga")
-004102f2        char* var_1dc_3 = "Objects/World00/Back.tga"
-004102f9        char* var_1d8_11 = "Objects/Path/VeryDark.tga"
-004102fc        char* var_1d4_92 = "Objects/World00/Back.tga"
-00410306        set_object_color(game->subgame.path_pairs[0x33].secondary.bod.object, "Objects/Path/VeryDark.tga")
-0041031e        char* var_1dc_4 = "Objects/World00/Back.tga"
-00410325        char* var_1d8_12 = "Objects/Path/VeryDark.tga"
-00410328        char* var_1d4_93 = "Objects/World00/Back.tga"
-00410332        set_object_color(game->subgame.path_pairs[0x34].primary.bod.object, "Objects/Path/VeryDark.tga")
-0041034a        char* var_1dc_5 = "Objects/World00/Back.tga"
-00410351        char* var_1d8_13 = "Objects/Path/VeryDark.tga"
-00410354        char* var_1d4_94 = "Objects/World00/Back.tga"
-0041035e        set_object_color(game->subgame.path_pairs[0x34].secondary.bod.object, "Objects/Path/VeryDark.tga")
-00410376        char* var_1dc_6 = "Objects/World00/Back.tga"
-0041037d        char* var_1d8_14 = "Objects/Path/VeryDark.tga"
-00410380        char* var_1d4_95 = "Objects/World00/Back.tga"
-0041038a        set_object_color(game->subgame.path_pairs[0x35].primary.bod.object, "Objects/Path/VeryDark.tga")
-004103a2        char* var_1dc_7 = "Objects/World00/Back.tga"
-004103a9        char* var_1d8_15 = "Objects/Path/VeryDark.tga"
-004103ac        char* var_1d4_96 = "Objects/World00/Back.tga"
-004103b6        set_object_color(game->subgame.path_pairs[0x35].secondary.bod.object, "Objects/Path/VeryDark.tga")
-004103ce        char* var_1dc_8 = "Objects/World00/Back.tga"
-004103d5        char* var_1d8_16 = "Objects/Path/VeryDark.tga"
-004103d8        char* var_1d4_97 = "Objects/World00/Back.tga"
-004103e2        set_object_color(game->subgame.path_pairs[0x39].primary.bod.object, "Objects/Path/VeryDark.tga")
-004103fa        char* var_1dc_9 = "Objects/World00/Back.tga"
-00410401        char* var_1d8_17 = "Objects/Path/VeryDark.tga"
-00410404        char* var_1d4_98 = "Objects/World00/Back.tga"
-0041040e        set_object_color(game->subgame.path_pairs[0x39].secondary.bod.object, "Objects/Path/VeryDark.tga")
-00410426        char* var_1dc_10 = "Objects/World00/Back.tga"
-0041042d        char* var_1d8_18 = "Objects/Path/VeryDark.tga"
-00410430        char* var_1d4_99 = "Objects/World00/Back.tga"
-0041043a        set_object_color(game->subgame.path_pairs[0x36].primary.bod.object, "Objects/Path/VeryDark.tga")
-00410452        char* var_1dc_11 = "Objects/World00/Back.tga"
-00410459        char* var_1d8_19 = "Objects/Path/VeryDark.tga"
-0041045c        char* var_1d4_100 = "Objects/World00/Back.tga"
-00410466        set_object_color(game->subgame.path_pairs[0x36].secondary.bod.object, "Objects/Path/VeryDark.tga")
-0041047e        char* var_1dc_12 = "Objects/World00/Back.tga"
-00410485        char* var_1d8_20 = "Objects/Path/VeryDark.tga"
-00410488        char* var_1d4_101 = "Objects/World00/Back.tga"
-00410492        set_object_color(game->subgame.path_pairs[0x37].primary.bod.object, "Objects/Path/VeryDark.tga")
-004104aa        char* var_1dc_13 = "Objects/World00/Back.tga"
-004104b1        char* var_1d8_21 = "Objects/Path/VeryDark.tga"
-004104b4        char* var_1d4_102 = "Objects/World00/Back.tga"
-004104be        set_object_color(game->subgame.path_pairs[0x37].secondary.bod.object, "Objects/Path/VeryDark.tga")
-004104d6        char* var_1dc_14 = "Objects/World00/Back.tga"
-004104dd        char* var_1d8_22 = "Objects/Path/VeryDark.tga"
-004104e0        char* var_1d4_103 = "Objects/World00/Back.tga"
-004104ea        set_object_color(game->subgame.path_pairs[0x38].primary.bod.object, "Objects/Path/VeryDark.tga")
-00410502        char* var_1dc_15 = "Objects/World00/Back.tga"
-00410509        char* var_1d8_23 = "Objects/Path/VeryDark.tga"
-0041050c        char* var_1d4_104 = "Objects/World00/Back.tga"
-00410516        set_object_color(game->subgame.path_pairs[0x38].secondary.bod.object, "Objects/Path/VeryDark.tga")
-0041052e        char* var_1dc_16 = "Objects/World00/Back.tga"
-00410535        char* var_1d8_24 = "Objects/Path/VeryDark.tga"
-00410538        char* var_1d4_105 = "Objects/World00/Back.tga"
-00410542        set_object_color(game->subgame.path_pairs[0x3a].primary.bod.object, "Objects/Path/VeryDark.tga")
-0041055a        char* var_1dc_17 = "Objects/World00/Back.tga"
-00410561        char* var_1d8_25 = "Objects/Path/VeryDark.tga"
-00410564        char* var_1d4_106 = "Objects/World00/Back.tga"
-0041056e        set_object_color(game->subgame.path_pairs[0x3a].secondary.bod.object, "Objects/Path/VeryDark.tga")
-00410586        char* var_1dc_18 = "Objects/World00/Back.tga"
-0041058d        char* var_1d8_26 = "Objects/Path/VeryDark.tga"
-00410590        char* var_1d4_107 = "Objects/World00/Back.tga"
-0041059a        set_object_color(game->subgame.path_pairs[0x3e].primary.bod.object, "Objects/Path/VeryDark.tga")
-004105b2        char* var_1dc_19 = "Objects/World00/Back.tga"
-004105b9        char* var_1d8_27 = "Objects/Path/VeryDark.tga"
-004105bc        char* var_1d4_108 = "Objects/World00/Back.tga"
-004105c6        set_object_color(game->subgame.path_pairs[0x3e].secondary.bod.object, "Objects/Path/VeryDark.tga")
-004105de        char* var_1dc_20 = "Objects/World00/Back.tga"
-004105e5        char* var_1d8_28 = "Objects/Path/VeryDark.tga"
-004105e8        char* var_1d4_109 = "Objects/World00/Back.tga"
-004105f2        set_object_color(game->subgame.path_pairs[0x3b].primary.bod.object, "Objects/Path/VeryDark.tga")
-0041060a        char* var_1dc_21 = "Objects/World00/Back.tga"
-00410611        char* var_1d8_29 = "Objects/Path/VeryDark.tga"
-00410614        char* var_1d4_110 = "Objects/World00/Back.tga"
-0041061e        set_object_color(game->subgame.path_pairs[0x3b].secondary.bod.object, "Objects/Path/VeryDark.tga")
-00410636        char* var_1dc_22 = "Objects/World00/Back.tga"
-0041063d        char* var_1d8_30 = "Objects/Path/VeryDark.tga"
-00410640        char* var_1d4_111 = "Objects/World00/Back.tga"
-0041064a        set_object_color(game->subgame.path_pairs[0x3d].primary.bod.object, "Objects/Path/VeryDark.tga")
-00410662        char* var_1dc_23 = "Objects/World00/Back.tga"
-00410669        char* var_1d8_31 = "Objects/Path/VeryDark.tga"
-0041066c        char* var_1d4_112 = "Objects/World00/Back.tga"
-00410676        set_object_color(game->subgame.path_pairs[0x3d].secondary.bod.object, "Objects/Path/VeryDark.tga")
-0041068e        char* var_1dc_24 = "Objects/World00/Back.tga"
-00410695        char* var_1d8_32 = "Objects/Path/VeryDark.tga"
-00410698        char* var_1d4_113 = "Objects/World00/Back.tga"
-004106a2        set_object_color(game->subgame.path_pairs[0x3c].primary.bod.object, "Objects/Path/VeryDark.tga")
-004106ba        char* var_1dc_25 = "Objects/World00/Back.tga"
-004106c1        char* var_1d8_33 = "Objects/Path/VeryDark.tga"
-004106c4        char* var_1d4_114 = "Objects/World00/Back.tga"
-004106ce        set_object_color(game->subgame.path_pairs[0x3c].secondary.bod.object, "Objects/Path/VeryDark.tga")
+004102c6        char* var_1ac_2 = "Objects/Path/VeryDark.tga"
+004102cd        float r = color.r
+004102d0        float g = color.g
+004102da        set_object_color(game->subgame.path_pairs[0x33].primary.bod.object, "Objects/World00/Back.tga")
+004102f2        char* var_1ac_3 = "Objects/Path/VeryDark.tga"
+004102f9        float r_1 = color.r
+004102fc        float g_1 = color.g
+00410306        set_object_color(game->subgame.path_pairs[0x33].secondary.bod.object, "Objects/World00/Back.tga")
+0041031e        char* var_1ac_4 = "Objects/Path/VeryDark.tga"
+00410325        float r_2 = color.r
+00410328        float g_2 = color.g
+00410332        set_object_color(game->subgame.path_pairs[0x34].primary.bod.object, "Objects/World00/Back.tga")
+0041034a        char* var_1ac_5 = "Objects/Path/VeryDark.tga"
+00410351        float r_3 = color.r
+00410354        float g_3 = color.g
+0041035e        set_object_color(game->subgame.path_pairs[0x34].secondary.bod.object, "Objects/World00/Back.tga")
+00410376        char* var_1ac_6 = "Objects/Path/VeryDark.tga"
+0041037d        float r_4 = color.r
+00410380        float g_4 = color.g
+0041038a        set_object_color(game->subgame.path_pairs[0x35].primary.bod.object, "Objects/World00/Back.tga")
+004103a2        char* var_1ac_7 = "Objects/Path/VeryDark.tga"
+004103a9        float r_5 = color.r
+004103ac        float g_5 = color.g
+004103b6        set_object_color(game->subgame.path_pairs[0x35].secondary.bod.object, "Objects/World00/Back.tga")
+004103ce        char* var_1ac_8 = "Objects/Path/VeryDark.tga"
+004103d5        float r_6 = color.r
+004103d8        float g_6 = color.g
+004103e2        set_object_color(game->subgame.path_pairs[0x39].primary.bod.object, "Objects/World00/Back.tga")
+004103fa        char* var_1ac_9 = "Objects/Path/VeryDark.tga"
+00410401        float r_7 = color.r
+00410404        float g_7 = color.g
+0041040e        set_object_color(game->subgame.path_pairs[0x39].secondary.bod.object, "Objects/World00/Back.tga")
+00410426        char* var_1ac_10 = "Objects/Path/VeryDark.tga"
+0041042d        float r_8 = color.r
+00410430        float g_8 = color.g
+0041043a        set_object_color(game->subgame.path_pairs[0x36].primary.bod.object, "Objects/World00/Back.tga")
+00410452        char* var_1ac_11 = "Objects/Path/VeryDark.tga"
+00410459        float r_9 = color.r
+0041045c        float g_9 = color.g
+00410466        set_object_color(game->subgame.path_pairs[0x36].secondary.bod.object, "Objects/World00/Back.tga")
+0041047e        char* var_1ac_12 = "Objects/Path/VeryDark.tga"
+00410485        float r_10 = color.r
+00410488        float g_10 = color.g
+00410492        set_object_color(game->subgame.path_pairs[0x37].primary.bod.object, "Objects/World00/Back.tga")
+004104aa        char* var_1ac_13 = "Objects/Path/VeryDark.tga"
+004104b1        float r_11 = color.r
+004104b4        float g_11 = color.g
+004104be        set_object_color(game->subgame.path_pairs[0x37].secondary.bod.object, "Objects/World00/Back.tga")
+004104d6        char* var_1ac_14 = "Objects/Path/VeryDark.tga"
+004104dd        float r_12 = color.r
+004104e0        float g_12 = color.g
+004104ea        set_object_color(game->subgame.path_pairs[0x38].primary.bod.object, "Objects/World00/Back.tga")
+00410502        char* var_1ac_15 = "Objects/Path/VeryDark.tga"
+00410509        float r_13 = color.r
+0041050c        float g_13 = color.g
+00410516        set_object_color(game->subgame.path_pairs[0x38].secondary.bod.object, "Objects/World00/Back.tga")
+0041052e        char* var_1ac_16 = "Objects/Path/VeryDark.tga"
+00410535        float r_14 = color.r
+00410538        float g_14 = color.g
+00410542        set_object_color(game->subgame.path_pairs[0x3a].primary.bod.object, "Objects/World00/Back.tga")
+0041055a        char* var_1ac_17 = "Objects/Path/VeryDark.tga"
+00410561        float r_15 = color.r
+00410564        float g_15 = color.g
+0041056e        set_object_color(game->subgame.path_pairs[0x3a].secondary.bod.object, "Objects/World00/Back.tga")
+00410586        char* var_1ac_18 = "Objects/Path/VeryDark.tga"
+0041058d        float r_16 = color.r
+00410590        float g_16 = color.g
+0041059a        set_object_color(game->subgame.path_pairs[0x3e].primary.bod.object, "Objects/World00/Back.tga")
+004105b2        char* var_1ac_19 = "Objects/Path/VeryDark.tga"
+004105b9        float r_17 = color.r
+004105bc        float g_17 = color.g
+004105c6        set_object_color(game->subgame.path_pairs[0x3e].secondary.bod.object, "Objects/World00/Back.tga")
+004105de        char* var_1ac_20 = "Objects/Path/VeryDark.tga"
+004105e5        float r_18 = color.r
+004105e8        float g_18 = color.g
+004105f2        set_object_color(game->subgame.path_pairs[0x3b].primary.bod.object, "Objects/World00/Back.tga")
+0041060a        char* var_1ac_21 = "Objects/Path/VeryDark.tga"
+00410611        float r_19 = color.r
+00410614        float g_19 = color.g
+0041061e        set_object_color(game->subgame.path_pairs[0x3b].secondary.bod.object, "Objects/World00/Back.tga")
+00410636        char* var_1ac_22 = "Objects/Path/VeryDark.tga"
+0041063d        float r_20 = color.r
+00410640        float g_20 = color.g
+0041064a        set_object_color(game->subgame.path_pairs[0x3d].primary.bod.object, "Objects/World00/Back.tga")
+00410662        char* var_1ac_23 = "Objects/Path/VeryDark.tga"
+00410669        float r_21 = color.r
+0041066c        float g_21 = color.g
+00410676        set_object_color(game->subgame.path_pairs[0x3d].secondary.bod.object, "Objects/World00/Back.tga")
+0041068e        char* var_1ac_24 = "Objects/Path/VeryDark.tga"
+00410695        float r_22 = color.r
+00410698        float g_22 = color.g
+004106a2        set_object_color(game->subgame.path_pairs[0x3c].primary.bod.object, "Objects/World00/Back.tga")
+004106ba        char* var_1ac_25 = "Objects/Path/VeryDark.tga"
+004106c1        float r_23 = color.r
+004106c4        float g_23 = color.g
+004106ce        set_object_color(game->subgame.path_pairs[0x3c].secondary.bod.object, "Objects/World00/Back.tga")
 004106de        set_input_controller_pointer_authored_xy(0, 320f, 240f)
 004106ef        set_input_controller_pointer_authored_xy(1, 320f, 240f)
 004106f7        game->subgame.subgame_rebuild_selector = 2
-00410704        void* eax_378
-00410704        eax_378.b = 1
+00410704        void* eax_394
+00410704        eax_394.b = 1
 0041070d        return 1

@@ -2367,6 +2367,18 @@ DEFERRED_PATH_OWNER_PROTO_UPDATES = (
         "void __thiscall initialize_turnunder_path_template_pair(Path* self, float turns, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
     ),
     (
+        "initialize_wibble_path_template_pair",
+        "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
+        "initialize_invert_path_template_pair",
+        "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
+        "initialize_halfpipe_path_template_pair",
+        "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
         "allocate_path_template_samples",
         "void __fastcall allocate_path_template_samples(Path* self)",
     ),

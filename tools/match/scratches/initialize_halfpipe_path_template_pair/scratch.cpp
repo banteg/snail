@@ -9,16 +9,16 @@ float sine(float angle);
 
 
 void Path::initialize_halfpipe_path_template_pair(
-    int unused_scale_bits,
+    float scale,
     int width_cells_,
-    int unused_kind_arg,
+    int side_exit,
     char* texture_a,
     char* texture_b,
-    char* unused_path_version)
+    char* vertical_texture)
 {
-    unused_scale_bits = unused_scale_bits;
-    unused_kind_arg = unused_kind_arg;
-    unused_path_version = unused_path_version;
+    scale = scale;
+    side_exit = side_exit;
+    vertical_texture = vertical_texture;
 
     kind = 0x2a;
     is_mirrored_x = 0;

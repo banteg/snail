@@ -87,3 +87,17 @@ from 37.50% (512/608) to 55.68% (545/608), with the masked audit improving from
 2026-07-15 face-header ownership: the mesh face initializer clears the full
 16-bit `header_word`, not merely the low-byte flag view. Naming the owning field
 makes that width explicit without changing the generated store.
+
+## 2026-07-17 live constructor ABI closure
+
+Live callsite disassembly shows the six stack arguments in order: `6.0f`, width
+`8`, mode `1`, two surface textures, and the vertical texture. The native tail
+at `0x429235` is `retn 0x18`, correcting the stale `ret 0x1c` scratch banner,
+and the portable iOS symbol independently preserves
+`cRPath::BuildWibble(float, int, bool, char*, char*)`.
+
+Guarded recreation and post-write readback now expose the complete seven-
+parameter `Path*` prototype with no pending operation. The refreshed caller
+uses `path_pairs[0x28].primary` with all six stack operands, and the callee now
+ends in void finalizer flow. This is analysis-only: focused matching remains
+55.68% (545/608) with 35 clean masked operands.
