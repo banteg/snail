@@ -1805,7 +1805,7 @@ typedef TransformMatrix PathTemplateTransform;
 
 typedef struct PathTemplateSample {
     TransformMatrix transform;
-    uint8_t _pad_40[0x40];
+    TransformMatrix inverse_matrix;
     Vec3 delta_dir_to_next;
     float delta_length;
     float center_x;
@@ -2410,6 +2410,12 @@ void __thiscall try_enter_track_attachment_from_swept_motion(
     float sweep_dy,
     float sweep_dz,
     TrackRowCell* source_cell
+);
+bool __thiscall is_point_inside_track_attachment(
+    Path* self,
+    Vec3 probe,
+    Vec3 swept_motion,
+    TrackRowCell* cell
 );
 void __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);
 int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);

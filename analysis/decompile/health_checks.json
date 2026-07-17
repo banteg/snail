@@ -2315,6 +2315,8 @@
       "required_substrings": [
         "->segment_count",
         "->secondary_samples",
+        "sample->inverse_matrix",
+        "swept_sample->inverse_matrix",
         "source_cell->anchor_position",
         "g_game_base->subgame.player.attachment_exit_pending",
         "g_game_base->subgame.player.follow_state.template_record = self",
@@ -4071,6 +4073,8 @@
         "->primary_attachment_cell",
         "->secondary_attachment_cell",
         "->attachment_template_record",
+        "is_point_inside_track_attachment(primary_attachment_cell->attachment_template_record",
+        "is_point_inside_track_attachment(secondary_attachment_cell->attachment_template_record",
         "&g_game_base->active_bod_list"
       ],
       "forbidden_substrings": [
@@ -9292,9 +9296,18 @@
       "name": "bn_path_sample_lateral_source_owner",
       "artifact": "analysis/decompile/binja/functions/0042c600-finalize_path_template.c",
       "required_substrings": [
+        "struct PathTemplateSample* source = self->primary_samples",
+        "&source->inverse_matrix",
+        "struct PathTemplateSample* source_1 = self->secondary_samples",
+        "&source_1->inverse_matrix",
         "lateral_source"
       ],
       "forbidden_substrings": [
+        "struct TransformMatrix* source",
+        "struct TransformMatrix* source_1",
+        "source[1]",
+        "source_1[1]",
+        "_pad_40",
         "_pad_a4"
       ]
     },
@@ -9501,6 +9514,30 @@
       "forbidden_substrings": [
         "calc_path_length_z(shot +",
         "shot->__offset"
+      ]
+    },
+    {
+      "name": "bn_path_attachment_search_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0042ca90-is_point_inside_track_attachment.c",
+      "required_substrings": [
+        "cell->anchor_position.x",
+        "self->segment_count",
+        "self->secondary_samples",
+        "struct Vec3 vector",
+        "probe.x",
+        "probe.y",
+        "probe.z",
+        "&secondary_samples->inverse_matrix",
+        "self->width_cells"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "arg4",
+        "arg5",
+        "_pad_40",
+        "struct PathTemplate*"
       ]
     }
   ]

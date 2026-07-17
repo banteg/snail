@@ -1219,6 +1219,45 @@ HARMONIZE_RUNTIME_USER_VAR_UPDATES = (
     ),
 )
 
+# finalize_path_template produces the inverse transform for each 0xa8-byte
+# sample, while the swept-entry scan consumes two sample bases carried in
+# transient ECX definitions. Preserve the containing sample owner instead of
+# letting the matrix calls collapse those variables to TransformMatrix*/void*.
+PATH_SAMPLE_INVERSE_USER_VAR_UPDATES = (
+    (
+        "finalize_path_template",
+        "StackVariableSourceType",
+        74,
+        -32,
+        "primary_sample",
+        "PathTemplateSample*",
+    ),
+    (
+        "finalize_path_template",
+        "StackVariableSourceType",
+        89,
+        -32,
+        "secondary_sample",
+        "PathTemplateSample*",
+    ),
+    (
+        "try_enter_track_attachment_from_swept_motion",
+        "RegisterVariableSourceType",
+        69,
+        67,
+        "sample",
+        "PathTemplateSample*",
+    ),
+    (
+        "try_enter_track_attachment_from_swept_motion",
+        "RegisterVariableSourceType",
+        332,
+        67,
+        "swept_sample",
+        "PathTemplateSample*",
+    ),
+)
+
 # The entry-mesh milestone branches repeatedly reload
 # SubRow::primary_attachment_cell. BN's SSA split loses the TrackRowCell*/Path*
 # field types after the indexed 0xf4-byte row calculation even though the
@@ -1522,6 +1561,7 @@ PATH_FIELD_UPDATES = (
 )
 
 PATH_TEMPLATE_SAMPLE_FIELD_UPDATES = (
+    ("0x40", "inverse_matrix", "TransformMatrix"),
     ("0xa4", "lateral_source", "float"),
 )
 
@@ -2222,6 +2262,10 @@ CORE_SUBGAME_PROTO_UPDATES = (
         "void __thiscall try_enter_track_attachment_from_swept_motion(Path* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, TrackRowCell* source_cell)",
     ),
     (
+        "is_point_inside_track_attachment",
+        "bool __thiscall is_point_inside_track_attachment(Path* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)",
+    ),
+    (
         "update_track_attachment_follow_state",
         "int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion)",
     ),
@@ -2677,6 +2721,7 @@ def main() -> int:
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *FRINGE_RUNTIME_USER_VAR_UPDATES,
                 *HARMONIZE_RUNTIME_USER_VAR_UPDATES,
+                *PATH_SAMPLE_INVERSE_USER_VAR_UPDATES,
                 *ATTACHMENT_FOLLOW_USER_VAR_UPDATES,
             ),
         )

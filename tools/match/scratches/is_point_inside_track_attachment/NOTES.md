@@ -47,6 +47,28 @@ replaces five invented scalar temporaries and moves the Windows scratch from
 
 No volatile, inline assembly, dummy alias, or operand masking was introduced.
 
+## 2026-07-17 durable SearchPos owner and sample inverse
+
+The live Windows ABI is now durable across both analysis backends: ECX owns a
+`Path*`, stack `+0x4` and `+0x10` contain the two by-value vectors, stack
+`+0x1c` contains the borrowed `TrackRowCell*`, and both native exits use
+`ret 0x1c`.
+
+The sample member at `+0x40` is also proved as a full `TransformMatrix`, not
+padding. `finalize_path_template` produces it for both sample arrays by
+inverting each sample's authored transform, while this method and
+`try_enter_track_attachment_from_swept_motion` consume it through matrix-vector
+rotation. The canonical owner is therefore
+`PathTemplateSample::inverse_matrix`; replay and health checks preserve that
+field across future decompiler refreshes. Stable Binary Ninja variable
+identities also retain the containing `PathTemplateSample*` owner for both
+inverse-transform producers and both swept-entry consumers; this avoids
+regressing to `source[1]` or raw `+0x40` arithmetic after reanalysis.
+
+These ownership improvements do not alter the matching source: the scratch
+remains byte-identical at 111/111 instructions with a full prefix and six clean
+masked operands.
+
 ## Rejected shapes
 
 - Treating the method as three floats plus a cell produced `ret 0x10` and

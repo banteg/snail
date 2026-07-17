@@ -13,15 +13,15 @@
 0042c7ad        int32_t ebp_2 = esi * 0xa8
 0042c7b5        struct Vec3 vector
 0042c7b5        while (true)
-0042c7b5        void* ecx_1 = self->secondary_samples + ebp_2
-0042c7b7        long double x87_r7_1 = fconvert.t(*(ecx_1 + 0x14))
+0042c7b5        struct PathTemplateSample* sample = self->secondary_samples + ebp_2
+0042c7b7        long double x87_r7_1 = fconvert.t(sample->transform.basis_up.y)
 0042c7ba        long double temp2_1 = fconvert.t(0f)
 0042c7ba        x87_r7_1 - temp2_1
 0042c7c5        if ((((x87_r7_1 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp2_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp2_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-0042c80b        vector.x = fconvert.s(fconvert.t(world_x) - (fconvert.t(x) + fconvert.t(*(ecx_1 + 0x30))))
-0042c822        vector.y = fconvert.s(fconvert.t(world_y) - fconvert.t(fconvert.s(fconvert.t(y) + fconvert.t(*(ecx_1 + 0x34)))))
-0042c82e        vector.z = fconvert.s(fconvert.t(world_z) - fconvert.t(fconvert.s(fconvert.t(z) + fconvert.t((ecx_1 + 0x40)->__offset(0xfffffffffffffff8).d))))
-0042c832        rotate_vector_by_matrix(&vector, ecx_1 + 0x40)
+0042c80b        vector.x = fconvert.s(fconvert.t(world_x) - (fconvert.t(x) + fconvert.t(sample->transform.position.x)))
+0042c822        vector.y = fconvert.s(fconvert.t(world_y) - fconvert.t(fconvert.s(fconvert.t(y) + fconvert.t(sample->transform.position.y))))
+0042c82e        vector.z = fconvert.s(fconvert.t(world_z) - fconvert.t(fconvert.s(fconvert.t(z) + fconvert.t(sample->transform.position.z))))
+0042c832        rotate_vector_by_matrix(&vector, &sample->inverse_matrix)
 0042c837        uint32_t width_cells = self->width_cells
 0042c83c        int32_t eax_7
 0042c83c        int32_t edx_2
@@ -49,13 +49,13 @@
 0042c8b1        long double x87_r7_15 = fconvert.t(vector.z)
 0042c8b5        long double temp7_1 = fconvert.t(*(&secondary_samples->delta_length + ebp_2))
 0042c8b5        x87_r7_15 - temp7_1
-0042c8bc        void* ecx_4 = secondary_samples + ebp_2
+0042c8bc        struct PathTemplateSample* swept_sample = secondary_samples + ebp_2
 0042c8c4        if ((((x87_r7_15 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_15, temp7_1) ? 1 : 0) << 0xa | (x87_r7_15 == temp7_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 0042c932        struct Vec3 vector_1
-0042c932        vector_1.x = fconvert.s(fconvert.t(sweep_dx) + fconvert.t(world_x) - (fconvert.t(x) + fconvert.t(*(ecx_4 + 0x30))))
-0042c946        vector_1.y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(world_y) + fconvert.t(sweep_dy))) - fconvert.t(fconvert.s(fconvert.t(y) + fconvert.t(*(ecx_4 + 0x34)))))
-0042c952        vector_1.z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(world_z) + fconvert.t(sweep_dz))) - fconvert.t(fconvert.s(fconvert.t(z) + fconvert.t((ecx_4 + 0x40)->__offset(0xfffffffffffffff8).d))))
-0042c956        rotate_vector_by_matrix(&vector_1, ecx_4 + 0x40)
+0042c932        vector_1.x = fconvert.s(fconvert.t(sweep_dx) + fconvert.t(world_x) - (fconvert.t(x) + fconvert.t(swept_sample->transform.position.x)))
+0042c946        vector_1.y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(world_y) + fconvert.t(sweep_dy))) - fconvert.t(fconvert.s(fconvert.t(y) + fconvert.t(swept_sample->transform.position.y))))
+0042c952        vector_1.z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(world_z) + fconvert.t(sweep_dz))) - fconvert.t(fconvert.s(fconvert.t(z) + fconvert.t(swept_sample->transform.position.z))))
+0042c956        rotate_vector_by_matrix(&vector_1, &swept_sample->inverse_matrix)
 0042c95b        long double x87_r7_23 = fconvert.t(vector_1.y)
 0042c95f        long double temp8_1 = fconvert.t(0.00100000005f)
 0042c95f        x87_r7_23 - temp8_1

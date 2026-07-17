@@ -81,6 +81,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4217B0,  # calc_path_length_z
     0x42C600,  # finalize_path_template
     0x42C770,  # try_enter_track_attachment_from_swept_motion
+    0x42CA90,  # is_point_inside_track_attachment
     0x434BE0,  # build_track_fringe_objects
     0x435180,  # merge_track_tile_runs
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
@@ -88,6 +89,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x438B90,  # update_subgame
     0x43B120,  # update_subgoldy
     0x43DF10,  # spawn_track_ring_or_special_effect
+    0x4417D0,  # update_sub_lazer_projectile
     0x4438E0,  # place_parcels_on_track
     0x444240,  # place_challenge_parcels_on_track
     0x4444B0,  # project_position_onto_track_attachment
@@ -1376,6 +1378,10 @@ TRUSTED_DECLARATIONS = [
     (
         "try_enter_track_attachment_from_swept_motion",
         "void __thiscall try_enter_track_attachment_from_swept_motion(Path* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, TrackRowCell* source_cell);",
+    ),
+    (
+        "is_point_inside_track_attachment",
+        "bool __thiscall is_point_inside_track_attachment(Path* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell);",
     ),
     (
         "begin_track_attachment_follow_state",

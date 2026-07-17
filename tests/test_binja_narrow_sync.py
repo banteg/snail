@@ -6227,10 +6227,30 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     )[0]
 
     for source in (sample_struct, matcher_sample):
+        assert "TransformMatrix inverse_matrix;" in source
         assert "float lateral_source;" in source
+    assert "_pad_40" not in sample_struct
     assert "_pad_a4" not in sample_struct
+    assert '("0x40", "inverse_matrix", "TransformMatrix")' in binja_sync
     assert '("0xa4", "lateral_source", "float")' in binja_sync
     assert '("PathTemplateSample", PATH_TEMPLATE_SAMPLE_FIELD_UPDATES)' in binja_sync
+
+    assert "PATH_SAMPLE_INVERSE_USER_VAR_UPDATES" in binja_sync
+    for identity in (
+        '"StackVariableSourceType",\n        74,\n        -32,',
+        '"StackVariableSourceType",\n        89,\n        -32,',
+        '"RegisterVariableSourceType",\n        69,\n        67,',
+        '"RegisterVariableSourceType",\n        332,\n        67,',
+    ):
+        assert identity in binja_sync
+    for variable_name in (
+        "primary_sample",
+        "secondary_sample",
+        "sample",
+        "swept_sample",
+    ):
+        assert f'"{variable_name}"' in binja_sync
+    assert "*PATH_SAMPLE_INVERSE_USER_VAR_UPDATES" in binja_sync
 
     assert "uint8_t flag_3c;" in follow_struct
     assert "unsigned char flag_3c;" in matcher_follow
@@ -6248,6 +6268,16 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     assert "void __thiscall try_enter_track_attachment_from_swept_motion(" in analysis_header
     assert "TrackRowCell* source_cell" in analysis_header
 
+    attachment_search_prototype = (
+        "bool __thiscall is_point_inside_track_attachment("
+        "Path* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)"
+    )
+    assert attachment_search_prototype in binja_sync
+    assert attachment_search_prototype + ";" in ida_sync
+    assert "".join((attachment_search_prototype + ";").split()) in "".join(
+        analysis_header.split()
+    )
+
     follow_update_prototype = (
         "int32_t __thiscall update_track_attachment_follow_state("
         "FollowState* follow_state, float path_factor, Vec3* out_position, "
@@ -6261,8 +6291,10 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
         "0x420CB0",
         "0x42C600",
         "0x42C770",
+        "0x42CA90",
         "0x435EB0",
         "0x43B120",
+        "0x4417D0",
     ):
         assert address in ida_sync
     for address in (

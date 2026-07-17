@@ -21,10 +21,10 @@
 0042c63d        int32_t i_1 = 0
 0042c641        if (segment_count s> 0)
 0042c643        int32_t edi_3 = 0
-0042c648        struct TransformMatrix* source = self->primary_samples + edi_3
-0042c64e        invert_matrix_from_source(&source[1], source)
-0042c656        struct TransformMatrix* source_1 = self->secondary_samples + edi_3
-0042c65d        invert_matrix_from_source(&source_1[1], source_1)
+0042c648        struct PathTemplateSample* source = self->primary_samples + edi_3
+0042c64e        invert_matrix_from_source(&source->inverse_matrix, source)
+0042c656        struct PathTemplateSample* source_1 = self->secondary_samples + edi_3
+0042c65d        invert_matrix_from_source(&source_1->inverse_matrix, source_1)
 0042c665        i_1 += 1
 0042c666        edi_3 += 0xa8
 0042c66e        do while (i_1 s< self->segment_count)
