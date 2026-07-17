@@ -9,3 +9,10 @@ Focused match: 100%, 55/55 instructions, with ten clean masked operands. The
 x component needs an explicit `Vector3*` value/pointer split while the z
 component needs direct `vertices[index].z` addressing; both are source-level
 forms that produce the native x87 scheduling.
+
+## 2026-07-17 corner-table and object ownership
+
+The helper now reads back as `void __cdecl(int32_t, Object*, char*)` in both
+databases. The four-entry table at `0x4a3ce0` is replayed as the typed
+`g_backdrop_corner_vertex_indices[4]`, allowing both decompilers to express the
+selected `Object::vertices` element directly. The matcher stays exact.

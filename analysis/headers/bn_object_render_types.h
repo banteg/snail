@@ -478,6 +478,18 @@ typedef struct Direct3DRenderer {
     uint32_t multisample_type;
 } Direct3DRenderer;
 
+void __cdecl initialize_textured_backdrop_quad(
+    Object* object, char* texture_path, float x_offset);
+void __cdecl raise_backdrop_quad_edge_pair(int32_t selector, Object* object);
+void __cdecl initialize_backdrop_slice_quad(
+    Object* object, char* texture_path, float x_offset);
+void __cdecl initialize_backdrop_corner_quad(
+    int32_t selector, Object* object, char* texture_path);
+void __cdecl initialize_backdrop_tile_quad(
+    Object* object, int32_t edge_selector, int32_t orientation,
+    int32_t row_selector, int32_t column_selector, char* texture_path);
+void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad);
+
 void __thiscall initialize_object(Object* object);
 void __thiscall initialize_object_list(ObjectList* object_list, int32_t capacity);
 void __thiscall build_all_objects(ObjectList* object_list);
@@ -563,6 +575,9 @@ int32_t __cdecl reset_render_counters(void);
 
 extern ObjectToonEdge* g_object_edge_build_edges;
 extern int32_t g_object_edge_build_count;
+extern int32_t g_backdrop_raise_first_vertex_index;
+extern int32_t g_backdrop_raise_second_vertex_index;
+extern int32_t g_backdrop_corner_vertex_indices[4];
 extern int32_t g_object_grouped_vertex_cursor;
 extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;
 extern Direct3DRenderer g_direct3d_renderer;

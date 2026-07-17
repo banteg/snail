@@ -3,25 +3,24 @@
 /* selector: initialize_backdrop_corner_quad */
 
 // Builds one sliced backdrop quad and offsets the selected edge pair by 0.3 units using the four-entry corner selector table.
-void __cdecl sub_41A290(int a1, int *a2, _BYTE *a3)
+void __cdecl initialize_backdrop_corner_quad(int32_t selector, Object *object, char *texture_path)
 {
-  int v3; // edx
-  float *v4; // ecx
-  float *v5; // ecx
-  int v6; // [esp+10h] [ebp+Ch]
+  Vec3 *vertices; // edx
+  float *p_x; // ecx
+  float *p_z; // ecx
+  int texture_patha; // [esp+10h] [ebp+Ch]
 
-  initialize_backdrop_slice_quad(a2, a3, 0.0);
-  v3 = a2[14];
-  v4 = (float *)(v3 + 12 * dword_4A3CE0[a1]);
-  if ( *v4 >= 0.0 )
-    v6 = *v4 != 0.0;
+  initialize_backdrop_slice_quad(object, texture_path, 0.0);
+  vertices = object->vertices;
+  p_x = &vertices[g_backdrop_corner_vertex_indices[selector]].x;
+  if ( *p_x >= 0.0 )
+    texture_patha = *p_x != 0.0;
   else
-    v6 = -1;
-  *v4 = (double)v6 * 0.30000001;
-  v5 = (float *)(v3 + 12 * dword_4A3CE0[a1] + 8);
-  if ( *v5 >= 0.0 )
-    *v5 = (double)(*v5 != 0.0) * 0.30000001;
+    texture_patha = -1;
+  *p_x = (double)texture_patha * 0.30000001;
+  p_z = &vertices[g_backdrop_corner_vertex_indices[selector]].z;
+  if ( *p_z >= 0.0 )
+    *p_z = (double)(*p_z != 0.0) * 0.30000001;
   else
-    *v5 = (double)-1 * 0.30000001;
+    *p_z = (double)-1 * 0.30000001;
 }
-

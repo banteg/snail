@@ -27,3 +27,10 @@ Source-shape notes:
 - MSVC keeps `uv[0].u` live on the x87 stack while rotating the four U values
   through integer moves, then repeats the same pattern for V. Straight scalar
   assignments over `quad->uv[N].u/v` reproduce that schedule exactly.
+
+## 2026-07-17 named fastcall owner replay
+
+The function is now a first-class tracked artifact and both databases pin
+`void __fastcall(ObjectFaceQuad*)`. That replaces the anonymous integer
+receiver/return view and lets the tile builder call the named UV owner directly.
+The 17/17 matcher remains byte-identical.

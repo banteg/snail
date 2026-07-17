@@ -18,6 +18,30 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 TRUSTED_DECLARATIONS = [
     (
+        "initialize_textured_backdrop_quad",
+        "void __cdecl initialize_textured_backdrop_quad(Object* object, char* texture_path, float x_offset);",
+    ),
+    (
+        "raise_backdrop_quad_edge_pair",
+        "void __cdecl raise_backdrop_quad_edge_pair(int32_t selector, Object* object);",
+    ),
+    (
+        "initialize_backdrop_slice_quad",
+        "void __cdecl initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_offset);",
+    ),
+    (
+        "initialize_backdrop_corner_quad",
+        "void __cdecl initialize_backdrop_corner_quad(int32_t selector, Object* object, char* texture_path);",
+    ),
+    (
+        "initialize_backdrop_tile_quad",
+        "void __cdecl initialize_backdrop_tile_quad(Object* object, int32_t edge_selector, int32_t orientation, int32_t row_selector, int32_t column_selector, char* texture_path);",
+    ),
+    (
+        "rotate_object_facequad_uv_pairs",
+        "void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad);",
+    ),
+    (
         "initialize_direct3d_renderer_defaults",
         "void __thiscall initialize_direct3d_renderer_defaults(Direct3DRenderer* renderer);",
     ),
@@ -211,6 +235,11 @@ TRUSTED_DECLARATIONS = [
 ]
 
 TRUSTED_NAMES = [
+    (0x41A0B0, "initialize_textured_backdrop_quad"),
+    (0x41A170, "raise_backdrop_quad_edge_pair"),
+    (0x41A1C0, "initialize_backdrop_slice_quad"),
+    (0x41A290, "initialize_backdrop_corner_quad"),
+    (0x41A4D0, "initialize_backdrop_tile_quad"),
     (0x4114B0, "create_vertex_buffer"),
     (0x4115D0, "create_index_buffer"),
     (0x411630, "initialize_direct3d_renderer_defaults"),
@@ -232,7 +261,11 @@ TRUSTED_NAMES = [
     (0x414500, "bind_texture_ref"),
     (0x414600, "query_direct3d_device_caps"),
     (0x414650, "reset_render_counters"),
+    (0x430A30, "rotate_object_facequad_uv_pairs"),
     (0x430D90, "replace_object_list_texture_refs"),
+    (0x4A3C40, "g_backdrop_raise_first_vertex_index"),
+    (0x4A3C44, "g_backdrop_raise_second_vertex_index"),
+    (0x4A3CE0, "g_backdrop_corner_vertex_indices"),
     (0x4F7450, "g_render_triangle_count"),
     (0x4F7454, "g_render_successful_primitive_count"),
     (0x4F7458, "g_direct3d_renderer"),
@@ -243,6 +276,21 @@ TRUSTED_NAMES = [
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
+    (
+        0x4A3C40,
+        "g_backdrop_raise_first_vertex_index",
+        "int32_t g_backdrop_raise_first_vertex_index;",
+    ),
+    (
+        0x4A3C44,
+        "g_backdrop_raise_second_vertex_index",
+        "int32_t g_backdrop_raise_second_vertex_index;",
+    ),
+    (
+        0x4A3CE0,
+        "g_backdrop_corner_vertex_indices",
+        "int32_t g_backdrop_corner_vertex_indices[4];",
+    ),
     (0x4F7450, "g_render_triangle_count", "int32_t g_render_triangle_count;"),
     (
         0x4F7454,
@@ -273,6 +321,8 @@ def _normalize_type_text(value: str | None) -> str | None:
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
     normalized = re.sub(r"\s*,\s*", ", ", normalized)
     normalized = re.sub(r"\s*\*\s*", " *", normalized)
+    normalized = re.sub(r"\s*\[\s*", "[", normalized)
+    normalized = re.sub(r"\s*\]\s*", "]", normalized)
     normalized = re.sub(r"\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)", ")", normalized)
     normalized = normalized.strip()

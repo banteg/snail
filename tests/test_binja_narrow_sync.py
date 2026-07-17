@@ -2861,6 +2861,53 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         assert "void __thiscall request_object_texture_groups(" in header
 
 
+def test_backdrop_quad_helper_replay_keeps_object_owners_and_void_abis() -> None:
+    binja_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_object_render_types.h", "object_render_types.h")
+    ]
+
+    for function_name in (
+        "initialize_textured_backdrop_quad",
+        "raise_backdrop_quad_edge_pair",
+        "initialize_backdrop_slice_quad",
+        "initialize_backdrop_corner_quad",
+        "initialize_backdrop_tile_quad",
+        "rotate_object_facequad_uv_pairs",
+    ):
+        assert f'"{function_name}"' in binja_sync
+        assert f'"{function_name}"' in ida_sync
+        for header in analysis_headers:
+            assert function_name in header
+
+    for prototype in (
+        "void __cdecl raise_backdrop_quad_edge_pair(int32_t selector, Object* object)",
+        "void __cdecl initialize_backdrop_corner_quad(int32_t selector, Object* object, char* texture_path)",
+        "void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad)",
+    ):
+        assert prototype in binja_sync
+        assert prototype + ";" in ida_sync
+
+    for address, name, data_type in (
+        ("0x4a3c40", "g_backdrop_raise_first_vertex_index", "int32_t"),
+        ("0x4a3c44", "g_backdrop_raise_second_vertex_index", "int32_t"),
+        ("0x4a3ce0", "g_backdrop_corner_vertex_indices", "int32_t[4]"),
+    ):
+        assert f'("{address}", "{name}")' in binja_sync
+        assert f'("{address}", "{data_type}")' in binja_sync
+        for header in analysis_headers:
+            assert name in header
+
+    assert 're.sub(r"\\s*\\[\\s*", "[", normalized)' in ida_sync
+    assert 're.sub(r"\\s*\\]\\s*", "]", normalized)' in ida_sync
+
+
 def test_object_policy_flags_keep_producers_and_consumers_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     binja_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(

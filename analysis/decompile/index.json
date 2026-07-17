@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 5,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 5,
-  "ida_exported": 5,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -13,28 +13,36 @@
   "sync_ida_symbols": false,
   "binja_refreshed": true,
   "ida_refreshed": true,
-  "health_check_ran": false,
+  "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_golb_shot",
-      "address": "0x408690"
+      "name": "initialize_textured_backdrop_quad",
+      "address": "0x41a0b0"
     },
     {
-      "name": "initialize_game_assets_and_world",
-      "address": "0x40acf0"
+      "name": "raise_backdrop_quad_edge_pair",
+      "address": "0x41a170"
     },
     {
-      "name": "kill_golb",
-      "address": "0x414670"
+      "name": "initialize_backdrop_slice_quad",
+      "address": "0x41a1c0"
     },
     {
-      "name": "update_golb_ai",
-      "address": "0x414820"
+      "name": "initialize_backdrop_corner_quad",
+      "address": "0x41a290"
     },
     {
-      "name": "create_golb",
-      "address": "0x415280"
+      "name": "initialize_backdrop_tile_quad",
+      "address": "0x41a4d0"
+    },
+    {
+      "name": "rotate_object_facequad_uv_pairs",
+      "address": "0x430a30"
     }
-  ]
+  ],
+  "health_check_count": 610,
+  "health_failing_check_count": 0,
+  "health_passed": true,
+  "health_config": "analysis/decompile/health_checks.json"
 }

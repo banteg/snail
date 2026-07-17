@@ -8,3 +8,11 @@ the facequad indexes the vertices as `0, 1, 3, 2`.
 Focused match: 100%, 57/57 instructions, with six clean masked operands. The
 function is void; the decompiler's `0x3f800000` return is the leftover `eax`
 from the final two `1.0f` UV stores.
+
+## 2026-07-17 cross-decompiler object-owner replay
+
+The repeatable object-render slice now pins this exact helper as
+`void __cdecl(Object*, char*, float)` in both databases. The checked-in views
+therefore expose the complete `Object` vertex/facequad owners and retire both
+the incidental integer return and IDA's stale `PathTemplateStripMesh*` prefix.
+The matcher remains byte-identical at 100%.

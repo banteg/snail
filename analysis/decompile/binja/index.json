@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 719,
-  "function_count": 719,
+  "selected_count": 720,
+  "function_count": 720,
   "mismatch_count": 0,
   "mismatches": [],
   "analysis_refreshed": true,
@@ -1549,6 +1549,11 @@
       "address": "0x4308b0",
       "name": "calc_object_edges",
       "artifact": "analysis/decompile/binja/functions/004308b0-calc_object_edges.c"
+    },
+    {
+      "address": "0x430a30",
+      "name": "rotate_object_facequad_uv_pairs",
+      "artifact": "analysis/decompile/binja/functions/00430a30-rotate_object_facequad_uv_pairs.c"
     },
     {
       "address": "0x430a70",

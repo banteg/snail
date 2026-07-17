@@ -95,3 +95,12 @@ longer carries a volatile qualifier. Current VC6 emits the same exact 367/367
 instruction stream without it. COFF renumbered the unchanged bounded tables to
 `$L1143`/`$L1144`; their contents remain audited at object `+0x52c`/`+0x53c`,
 restoring all 63 operands without a source barrier.
+
+## 2026-07-17 complete helper ABI replay
+
+The repeatable object-render slice now pins the six-argument helper as
+`void __cdecl(Object*, int32_t, int32_t, int32_t, int32_t, char*)` in both
+databases. This retires Binary Ninja's stale float orientation/return lanes and
+IDA's obsolete `PathTemplateStripMesh*` receiver. The typed decompiles expose
+the shared vertices, facequad, UV array, texture ref, and named rotation helper;
+the proof-grade 367/367 matcher body is unchanged.

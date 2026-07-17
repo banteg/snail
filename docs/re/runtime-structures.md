@@ -1436,7 +1436,7 @@ The shared checked-in reverse-engineering header at
 [`analysis/headers/path_template_types.h`](../../analysis/headers/path_template_types.h)
 now also mirrors the stable `FollowState` prefix used by the attachment-follow
 helpers. Treat that header as the current repo-owned typed source for the
-`PathTemplate` / strip-mesh / follow-state slice that we actively mirror into
+`Path` / shared `Object` / follow-state slice that we actively mirror into
 IDA.
 
 The same narrow typed lane now also carries the `TrackRowCell` slice used by
@@ -1462,7 +1462,7 @@ The checked-in header also now mirrors the narrow render-cache owner slice:
 - `SubgameRuntime.runtime_row_count` and its owned runtime-cell slab
 - the generic render-object texture-group tail at `+0xc0..+0xd4`
 
-High-confidence `PathTemplateStripMesh` fields:
+High-confidence shared `Object` geometry fields:
 
 - `+0x10`: `flags`
 - `+0x2c`: `vertex_count`
@@ -1471,6 +1471,13 @@ High-confidence `PathTemplateStripMesh` fields:
 - `+0x54`: `facequad_count`
 - `+0x58`: `facequad_capacity`
 - `+0x5c`: `facequads`
+
+`PathTemplateStripMesh` is retired as an owner name. It was an early partial
+view of the first `0x60` bytes of `Object`; the same allocation helpers and
+geometry fields are used by path strips, backdrop quads, fringe objects, and
+render-cache inputs. The exact backdrop-quad helper family now independently
+reads back as `Object*` in both decompilers, so keeping the partial name would
+split one real owner by callsite.
 
 The former path-local strip-mesh flags are now owned by the shared `ObjectFlag`
 word. In particular, `0x10000` is `OBJECT_FLAG_USE_VERTEX_COLOURS` and

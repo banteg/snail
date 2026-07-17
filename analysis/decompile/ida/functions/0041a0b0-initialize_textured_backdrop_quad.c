@@ -3,48 +3,46 @@
 /* selector: initialize_textured_backdrop_quad */
 
 // Builds one shared 4-vertex textured backdrop quad with full-range UVs for the `Objects/Univers*` lane.
-int __cdecl sub_41A0B0(int *a1, _BYTE *a2, float a3)
+void __cdecl initialize_textured_backdrop_quad(Object *object, char *texture_path, float x_offset)
 {
   double v3; // st7
-  int v4; // eax
-  int v5; // esi
-  _DWORD *v6; // eax
+  Vec3 *vertices; // eax
+  ObjectFaceQuad *facequads; // esi
+  TextureRef *texture_ref; // eax
   double v7; // st7
 
-  request_object_vertices(a1, 4);
-  request_object_facequads(a1, 1);
-  v3 = a3 + 0.5;
-  v4 = a1[14];
-  v5 = a1[23];
-  *(_DWORD *)(v4 + 4) = 0;
-  *(float *)v4 = v3;
-  *(float *)(v4 + 24) = v3;
-  *(_DWORD *)(v4 + 8) = 1056964608;
-  *(_DWORD *)(v4 + 12) = -1090519040;
-  *(_DWORD *)(v4 + 16) = 0;
-  *(_DWORD *)(v4 + 20) = 1056964608;
-  *(_DWORD *)(v4 + 28) = 0;
-  *(_DWORD *)(v4 + 32) = -1090519040;
-  *(_DWORD *)(v4 + 36) = -1090519040;
-  *(_DWORD *)(v4 + 40) = 0;
-  *(_DWORD *)(v4 + 44) = -1090519040;
-  *(_WORD *)v5 = 0;
-  *(_WORD *)(v5 + 2) = 0;
-  *(_WORD *)(v5 + 4) = 1;
-  *(_WORD *)(v5 + 6) = 3;
-  *(_WORD *)(v5 + 8) = 2;
-  v6 = (_DWORD *)get_or_create_texture_ref(&texture_list, a2, 0, 0);
-  v7 = a3 + 1.0;
-  *(_DWORD *)(v5 + 12) = v6;
-  *v6 |= 2u;
-  *(float *)(v5 + 24) = v7;
-  *(float *)(v5 + 32) = v7;
-  *(_DWORD *)(v5 + 16) = 0;
-  *(_DWORD *)(v5 + 36) = 0;
-  *(_DWORD *)(v5 + 40) = 0;
-  *(_DWORD *)(v5 + 44) = 0;
-  *(_DWORD *)(v5 + 20) = 1065353216;
-  *(_DWORD *)(v5 + 28) = 1065353216;
-  return 1065353216;
+  request_object_vertices(object, 4);
+  request_object_facequads(object, 1);
+  v3 = x_offset + 0.5;
+  vertices = object->vertices;
+  facequads = object->facequads;
+  vertices->y = 0.0;
+  vertices->x = v3;
+  vertices[2].x = v3;
+  vertices->z = 0.5;
+  vertices[1].x = -0.5;
+  vertices[1].y = 0.0;
+  vertices[1].z = 0.5;
+  vertices[2].y = 0.0;
+  vertices[2].z = -0.5;
+  vertices[3].x = -0.5;
+  vertices[3].y = 0.0;
+  vertices[3].z = -0.5;
+  facequads->header_word = 0;
+  facequads->vertex_0 = 0;
+  facequads->vertex_1 = 1;
+  facequads->vertex_2 = 3;
+  facequads->vertex_3 = 2;
+  texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0);
+  v7 = x_offset + 1.0;
+  facequads->texture_ref = texture_ref;
+  texture_ref->flags |= 2u;
+  facequads->uv[1].u = v7;
+  facequads->uv[2].u = v7;
+  facequads->uv[0].u = 0.0;
+  facequads->uv[2].v = 0.0;
+  facequads->uv[3].u = 0.0;
+  facequads->uv[3].v = 0.0;
+  facequads->uv[0].v = 1.0;
+  facequads->uv[1].v = 1.0;
 }
-

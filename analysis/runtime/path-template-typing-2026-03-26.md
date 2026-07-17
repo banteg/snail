@@ -2,6 +2,13 @@
 
 Date: March 26, 2026
 
+> Historical snapshot. The `PathTemplateStripMesh` name and the helper
+> prototypes that use it below were superseded by the complete shared
+> `Object` owner. Path builders retain a borrowed `Object*` through
+> `BodBase.object`; backdrop, fringe, and render-cache callsites prove the same
+> allocation and geometry contract. See `docs/re/runtime-structures.md` for the
+> current layout.
+
 ### Summary
 
 The repeated Windows decompile pattern

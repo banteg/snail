@@ -10329,6 +10329,196 @@
         "player->vtable",
         "sub_408000"
       ]
+    },
+    {
+      "name": "bn_backdrop_textured_quad_object_owner",
+      "artifact": "analysis/decompile/binja/functions/0041a0b0-initialize_textured_backdrop_quad.c",
+      "required_substrings": [
+        "request_object_vertices(object, 4)",
+        "struct Vec3* vertices = object->vertices",
+        "struct ObjectFaceQuad* facequads = object->facequads",
+        "facequads->uv[1].u"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "return 0x3f800000",
+        "arg1",
+        "arg2"
+      ]
+    },
+    {
+      "name": "ida_backdrop_textured_quad_object_owner",
+      "artifact": "analysis/decompile/ida/functions/0041a0b0-initialize_textured_backdrop_quad.c",
+      "required_substrings": [
+        "void __cdecl initialize_textured_backdrop_quad(Object *object, char *texture_path, float x_offset)",
+        "vertices = object->vertices",
+        "facequads = object->facequads",
+        "facequads->uv[1].u"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "int __cdecl initialize_textured_backdrop_quad",
+        "sub_41A0B0",
+        "return 1065353216"
+      ]
+    },
+    {
+      "name": "bn_backdrop_raise_object_and_global_owners",
+      "artifact": "analysis/decompile/binja/functions/0041a170-raise_backdrop_quad_edge_pair.c",
+      "required_substrings": [
+        "struct Vec3* vertices = object->vertices",
+        "g_backdrop_raise_first_vertex_index",
+        "g_backdrop_raise_second_vertex_index",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "data_4a3c40",
+        "data_4a3c44",
+        "float* result",
+        "arg2"
+      ]
+    },
+    {
+      "name": "ida_backdrop_raise_object_and_global_owners",
+      "artifact": "analysis/decompile/ida/functions/0041a170-raise_backdrop_quad_edge_pair.c",
+      "required_substrings": [
+        "void __cdecl raise_backdrop_quad_edge_pair(int32_t selector, Object *object)",
+        "vertices = object->vertices",
+        "g_backdrop_raise_first_vertex_index",
+        "g_backdrop_raise_second_vertex_index"
+      ],
+      "forbidden_substrings": [
+        "dword_4A3C40",
+        "dword_4A3C44",
+        "float *__cdecl",
+        "sub_41A170"
+      ]
+    },
+    {
+      "name": "bn_backdrop_slice_quad_object_owner",
+      "artifact": "analysis/decompile/binja/functions/0041a1c0-initialize_backdrop_slice_quad.c",
+      "required_substrings": [
+        "request_object_vertices(object, 4)",
+        "enum ObjectFlag flags = object->flags",
+        "struct ObjectFaceQuad* facequads = object->facequads",
+        "facequads->uv[0].v = 0.125f"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "return 0x3e000000",
+        "arg1",
+        "arg2"
+      ]
+    },
+    {
+      "name": "ida_backdrop_slice_quad_object_owner",
+      "artifact": "analysis/decompile/ida/functions/0041a1c0-initialize_backdrop_slice_quad.c",
+      "required_substrings": [
+        "void __cdecl initialize_backdrop_slice_quad(Object *object, char *texture_path, float x_offset)",
+        "flags = object->flags",
+        "vertices = object->vertices",
+        "facequads = object->facequads"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "int __cdecl initialize_backdrop_slice_quad",
+        "sub_41A1C0",
+        "return 1040187392"
+      ]
+    },
+    {
+      "name": "bn_backdrop_corner_object_and_table_owner",
+      "artifact": "analysis/decompile/binja/functions/0041a290-initialize_backdrop_corner_quad.c",
+      "required_substrings": [
+        "initialize_backdrop_slice_quad(object, texture_path, 0f)",
+        "struct Vec3* vertices = object->vertices",
+        "g_backdrop_corner_vertex_indices[selector]"
+      ],
+      "forbidden_substrings": [
+        "data_4a3ce0",
+        "arg2",
+        "arg3",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_backdrop_corner_object_and_table_owner",
+      "artifact": "analysis/decompile/ida/functions/0041a290-initialize_backdrop_corner_quad.c",
+      "required_substrings": [
+        "void __cdecl initialize_backdrop_corner_quad(int32_t selector, Object *object, char *texture_path)",
+        "initialize_backdrop_slice_quad(object, texture_path, 0.0)",
+        "vertices = object->vertices",
+        "g_backdrop_corner_vertex_indices[selector]"
+      ],
+      "forbidden_substrings": [
+        "dword_4A3CE0",
+        "int *a2",
+        "sub_41A290"
+      ]
+    },
+    {
+      "name": "bn_backdrop_tile_complete_object_abi",
+      "artifact": "analysis/decompile/binja/functions/0041a4d0-initialize_backdrop_tile_quad.c",
+      "required_substrings": [
+        "request_object_vertices(object, 4)",
+        "struct ObjectFaceQuad* facequads = object->facequads",
+        "get_or_create_texture_ref(&g_texture_refs, texture_path",
+        "rotate_object_facequad_uv_pairs(facequads)"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "sub_430a30",
+        "float arg3",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_backdrop_tile_complete_object_abi",
+      "artifact": "analysis/decompile/ida/functions/0041a4d0-initialize_backdrop_tile_quad.c",
+      "required_substrings": [
+        "void __cdecl initialize_backdrop_tile_quad(",
+        "Object *object,",
+        "int32_t orientation,",
+        "facequads = object->facequads",
+        "rotate_object_facequad_uv_pairs(facequads)"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "sub_430A30",
+        "sub_41A4D0",
+        "float orientation"
+      ]
+    },
+    {
+      "name": "bn_object_facequad_uv_rotation_owner",
+      "artifact": "analysis/decompile/binja/functions/00430a30-rotate_object_facequad_uv_pairs.c",
+      "required_substrings": [
+        "quad->uv[0].u = quad->uv[1].u",
+        "quad->uv[2].u = quad->uv[3].u",
+        "quad->uv[0].v = quad->uv[1].v",
+        "quad->uv[2].v = quad->uv[3].v"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "sub_430a30",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_facequad_uv_rotation_owner",
+      "artifact": "analysis/decompile/ida/functions/00430a30-rotate_object_facequad_uv_pairs.c",
+      "required_substrings": [
+        "void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad *quad)",
+        "quad->uv[0].u = quad->uv[1].u",
+        "quad->uv[2].u = v3",
+        "quad->uv[0].v = v5",
+        "quad->uv[2].v = v7"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall",
+        "sub_430A30",
+        "int this"
+      ]
     }
   ]
 }

@@ -8,3 +8,11 @@ sets `OBJECT_FLAG_TEXTURE_TRANSFORM`, and maps the texture to one horizontal
 Focused match: 100%, 61/61 instructions, with seven clean masked operands. The
 decompiler's `0x3e000000` return is the leftover `eax` from storing `0.125f`
 into the first two V components; the source shape is void.
+
+## 2026-07-17 cross-decompiler object-owner replay
+
+The canonical replay now records `void __cdecl(Object*, char*, float)` in both
+databases. IDA no longer assigns the helper to the obsolete partial
+`PathTemplateStripMesh` view, and both checked-in artifacts expose the shared
+`Object` flags, vertices, facequad, texture, and UV owners. Matching remains
+100%.
