@@ -82,6 +82,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x42C600,  # finalize_path_template
     0x42C770,  # try_enter_track_attachment_from_swept_motion
     0x42CA90,  # is_point_inside_track_attachment
+    0x42F650,  # initialize_renderable_bod
     0x434BE0,  # build_track_fringe_objects
     0x435180,  # merge_track_tile_runs
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
@@ -559,6 +560,10 @@ UPDATE_SUBGAME_RUNTIME_ROW_OFFSET_OPERANDS = (
 
 
 TRUSTED_DECLARATIONS = [
+    (
+        "initialize_renderable_bod",
+        "RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body);",
+    ),
     (
         "initialize_fringe_manager",
         "void __thiscall initialize_fringe_manager(FringeManager* manager);",

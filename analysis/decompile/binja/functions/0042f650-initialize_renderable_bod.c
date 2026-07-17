@@ -3,8 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_renderable_bod @ 0x42f650 */
 
-0042f653        initialize_bod_base(arg1)
-0042f65b        *arg1 = &data_497500
-0042f661        arg1[1] = 0x2000420
-0042f668        set_matrix_identity(&arg1[0xe])
-0042f670        return arg1
+0042f653        initialize_bod_base(body)
+0042f65b        body->bod.bod.vtable = &data_497500
+0042f661        body->bod.bod.list_flags = 0x2000420
+0042f668        set_matrix_identity(&body->transform)
+0042f670        return body

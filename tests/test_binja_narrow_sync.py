@@ -2586,6 +2586,9 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
     path_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
     object_headers = [
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in ("bn_object_render_types.h", "object_render_types.h")
@@ -2599,6 +2602,15 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
     assert '("FringeObject", FRINGE_OBJECT_FIELD_UPDATES)' in path_sync
     assert "Object* object;" in path_header
     assert "int set_bod_object(Object* object);" in matcher_header
+    renderable_constructor = (
+        "RenderableBod* __thiscall initialize_renderable_bod("
+        "RenderableBod* body)"
+    )
+    assert renderable_constructor in path_sync
+    assert renderable_constructor + ";" in path_header
+    assert renderable_constructor + ";" in ida_path_sync
+    assert "RenderableBod* initialize_renderable_bod();" in matcher_header
+    assert "0x42F650" in ida_path_sync
     for function_name in (
         "request_object_vertices",
         "request_object_vertex_colours",
@@ -2610,6 +2622,7 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
     for function_name in (
         "set_bod_object",
         "initialize_bod_base",
+        "initialize_renderable_bod",
         "apply_bod_position",
         "build_track_fringe_mesh",
         "build_track_fringe_supertramp_mesh",

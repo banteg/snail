@@ -9539,6 +9539,23 @@
         "_pad_40",
         "struct PathTemplate*"
       ]
+    },
+    {
+      "name": "bn_renderable_bod_constructor_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0042f650-initialize_renderable_bod.c",
+      "required_substrings": [
+        "initialize_bod_base(body)",
+        "body->bod.bod.vtable",
+        "body->bod.bod.list_flags",
+        "set_matrix_identity(&body->transform)",
+        "return body"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "void*** result",
+        "result[1]",
+        "result[0xe]"
+      ]
     }
   ]
 }

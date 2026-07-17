@@ -1733,6 +1733,10 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "BodBase* __thiscall initialize_bod_base(BodBase* bod)",
     ),
     (
+        "initialize_renderable_bod",
+        "RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body)",
+    ),
+    (
         "initialize_fringe_manager",
         "void __thiscall initialize_fringe_manager(FringeManager* manager)",
     ),

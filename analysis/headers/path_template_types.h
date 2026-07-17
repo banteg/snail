@@ -2260,6 +2260,7 @@ void __thiscall initialize_pause_menu(SubPause* pause);
 void __thiscall update_pause_menu(SubPause* pause);
 int32_t __thiscall set_bod_object(BodBase* bod, Object* object);
 BodBase* __thiscall initialize_bod_base(BodBase* bod);
+RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body);
 Object* __thiscall apply_bod_position(
     BodBase* bod,
     TransformMatrix* matrix
