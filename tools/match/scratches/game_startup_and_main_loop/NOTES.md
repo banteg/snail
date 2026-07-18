@@ -203,3 +203,46 @@ producer of one logical 640x480 coordinate-space pair shared by renderer and
 mouse code. Width and height remain separate process globals at their proven
 addresses; no contiguous struct is invented. Focused output stays at the honest
 64.28% baseline with 127 clean operands and three structural mismatches.
+
+2026-07-18 WinMain ABI and fixed-update source recovery:
+
+- `_start` pushes `nShowCmd`, `lpCmdLine`, `hPrevInstance`, and `hInstance`
+  immediately before calling `0x406dc0`; the callee returns with `ret 0x10`.
+  This proves the complete four-argument WinMain-shaped stdcall ABI. Binary
+  Ninja still exposed only one stack argument. IDA named all four, but its
+  legacy `HINSTANCE` alias resolved to 16 bits and made Hex-Rays invent a
+  `__userpurge` signature with two register arguments. The IDA replay therefore
+  uses explicit 32-bit pointer spellings while the shared contract and Binary
+  Ninja retain the authored Win32 aliases; both tools now expose four arguments.
+- The same store closed an adjacent-global boundary. IDA had modeled
+  `0x4dfad0..0x4dfadc` as `g_mouse_wheel_delta[3]`, even though the mouse
+  consumer only owns two slots and startup/audio code use `0x4dfad8` as an
+  application instance handle. Both replay lanes now define the exact 8-byte
+  `g_mouse_wheel_delta[2]` extent followed by the 4-byte
+  `g_application_instance`, and the main loop plus both BASS-window consumers
+  decompile through that owner.
+- The former `do/while` update-index spelling made MSVC peel and duplicate the
+  entire keyboard/joystick/mouse/game-update body. Native has one body behind
+  an initial `fixed_update_count <= 0` guard, exactly matching a pre-tested
+  `while (update_index < fixed_update_count)` loop. That honest source recovery
+  removes 15 candidate instructions and raises focused similarity from 64.28%
+  to 70.64% before the smaller timing and ownership refinements below.
+- Updating the accumulator directly from
+  `current_timestamp - previous_timestamp` recovers native's single x87
+  `fadd [g_frame_time_accumulator]` sequence. Spelling the sign test as
+  `remaining < 0.0f` also removes the redundant zero load left by the prior
+  comparison form.
+- Shutdown loads `ECX = g_game` immediately before the shared empty
+  `noop_runtime_ai` target. That caller-side evidence promotes this use to the
+  `GameRoot` owner even though the one-instruction callee cannot expose `this`.
+- The fullscreen wrapper/member consume only the low byte of their argument,
+  and this caller forwards `g_runtime_config.fullscreen_enabled` with a low-byte
+  load. Their ABI is now byte-valued throughout the matcher and both analysis
+  replay lanes; all other tracked callers and both owning scratches remain
+  exact.
+- The current focused result is an honest 70.86% (`327/325` instructions,
+  `136` clean masked operands, no unresolved operands, and three alignment
+  mismatches). The remaining broad residual is dominated by the compiler's
+  opposite long-lived constant/register ledger (`EBX = 1`, `EDI = 0`,
+  `EBP = quit`) versus native (`EBX = 0`, `EDI = quit`, `EBP = timeGetTime`);
+  no synthetic register coercion is retained.

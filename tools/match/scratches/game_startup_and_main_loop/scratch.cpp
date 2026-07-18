@@ -39,7 +39,7 @@ int log_startup_timestamp(); // @ 0x406d30
 char initialize_audio_subsystem(); // @ 0x407a10
 int initialize_game_window_and_input_wrapper(char* window_name); // @ 0x4119c0
 int noop_runtime_ai(); // @ 0x407b50
-int set_fullscreen_mode(int enabled); // @ 0x414260
+void set_fullscreen_mode(char enabled); // @ 0x414260
 void initialize_main_loop_display_state(); // @ 0x406d70
 int construct_game_runtime(); // @ 0x407b60
 void set_tracked_allocation_mark(); // @ 0x431cb0
@@ -148,9 +148,9 @@ int __stdcall game_startup_and_main_loop(
         } while (g_frame_time_accumulator + g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds
             < 0.0008333333333333334);
 
-        float delta_seconds = g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds;
+        g_frame_time_accumulator +=
+            g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds;
         g_previous_frame_timestamp_seconds = g_current_frame_timestamp_seconds;
-        g_frame_time_accumulator = delta_seconds + g_frame_time_accumulator;
         if (g_frame_time_accumulator > 0.41666666f)
             g_frame_time_accumulator = 0.41666666f;
 
@@ -165,7 +165,7 @@ int __stdcall game_startup_and_main_loop(
             g_frame_time_accumulator = g_frame_time_accumulator - 0.016666668f;
 
             float remaining = g_frame_time_accumulator;
-            if (0.0f > remaining)
+            if (remaining < 0.0f)
                 remaining = -remaining;
 
             if (remaining >= 0.0000083333334f) {
@@ -186,20 +186,18 @@ int __stdcall game_startup_and_main_loop(
             if (g_window_deactivated != 0) {
 update_game:
                 int update_index = 0;
-                if (g_game->fixed_update_count > 0) {
-                    do {
-                        update_keyboard_input(g_main_window);
-                        update_joystick_input(g_main_window);
-                        update_mouse(g_main_window);
-                        update_font_wave_state();
-                        int frame_result = g_game->run_frame_update();
-                        g_frame_render_requested = 1;
-                        if (frame_result == 1 || frame_result == 2 || frame_result == 3) {
-                            quit_requested = 1;
-                            break;
-                        }
-                        ++update_index;
-                    } while (update_index < g_game->fixed_update_count);
+                while (update_index < g_game->fixed_update_count) {
+                    update_keyboard_input(g_main_window);
+                    update_joystick_input(g_main_window);
+                    update_mouse(g_main_window);
+                    update_font_wave_state();
+                    int frame_result = g_game->run_frame_update();
+                    g_frame_render_requested = 1;
+                    if (frame_result == 1 || frame_result == 2 || frame_result == 3) {
+                        quit_requested = 1;
+                        break;
+                    }
+                    ++update_index;
                 }
             } else {
                 ClipCursor(0);
@@ -224,7 +222,7 @@ update_game:
     g_game->subgame.sub_high_score.save_high_scores_and_config(4);
     g_game->subgame.sub_high_score.save_high_scores_and_config(8);
     g_game->subgame.sub_high_score.save_high_scores_and_config(16);
-    noop_runtime_ai();
+    g_game->noop_runtime_ai();
     free_tracked_allocations_to_mark();
     scalar_delete(g_game);
     uninitialize_game_data_archive();

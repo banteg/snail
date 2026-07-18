@@ -3499,6 +3499,79 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
     )
 
 
+def test_main_loop_replay_keeps_winmain_and_byte_fullscreen_abis() -> None:
+    repo_root = Path(__file__).parents[1]
+    main_header = (HEADER_DIR / "main_loop_types.h").read_text(encoding="utf-8")
+    binja_main_sync = (BINJA_DIR / "sync_main_loop_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_main_sync = (IDA_DIR / "apply_main_loop_types.py").read_text(
+        encoding="utf-8"
+    )
+    object_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_object_render_types.h", "object_render_types.h")
+    )
+    binja_object_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_object_sync = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/direct3d_renderer.h"
+    ).read_text(encoding="utf-8")
+    wrapper_scratch = (
+        repo_root / "tools/match/scratches/set_fullscreen_mode/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    renderer_scratch = (
+        repo_root
+        / "tools/match/scratches/direct3d_renderer_set_fullscreen_mode/scratch.cpp"
+    ).read_text(encoding="utf-8")
+
+    assert "int __stdcall game_startup_and_main_loop(" in main_header
+    for argument in (
+        "HINSTANCE hInstance",
+        "HINSTANCE hPrevInstance",
+        "LPSTR lpCmdLine",
+        "int nShowCmd",
+    ):
+        assert argument in main_header
+    for argument in (
+        "void *hInstance",
+        "void *hPrevInstance",
+        "char *lpCmdLine",
+        "int nShowCmd",
+    ):
+        assert argument in ida_main_sync
+    assert "int32_t __stdcall game_startup_and_main_loop(" in binja_main_sync
+    assert "LPSTR lpCmdLine, int32_t nShowCmd" in binja_main_sync
+    assert '("0x4dfad8", "g_application_instance")' in binja_main_sync
+    assert '("0x4dfad0", "int32_t[2]")' in binja_main_sync
+    assert "_sync_application_instance_boundary" in ida_main_sync
+    assert '"int g_mouse_wheel_delta[2];"' in ida_main_sync
+    assert '"void *g_application_instance;"' in ida_main_sync
+    assert "saved_lvar_overrides" in (
+        IDA_DIR / "inspect_function_lvars.py"
+    ).read_text(encoding="utf-8")
+    assert "types_declare_if_changed" in binja_object_sync
+    assert "types_declare(" not in binja_object_sync
+
+    for source in (binja_object_sync, ida_object_sync, *object_headers):
+        assert "set_fullscreen_mode(uint8_t enabled)" in source
+        assert "direct3d_renderer_set_fullscreen_mode(" in source
+        assert "Direct3DRenderer* renderer, uint8_t enabled)" in source.replace(
+            "\n", " "
+        )
+
+    assert "direct3d_renderer_set_fullscreen_mode(char enabled)" in matcher_header
+    assert "void set_fullscreen_mode(char enabled)" in wrapper_scratch
+    assert (
+        "void Direct3DRenderer::direct3d_renderer_set_fullscreen_mode(char enabled)"
+        in renderer_scratch
+    )
+
+
 def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"

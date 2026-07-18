@@ -7,10 +7,10 @@ int __cdecl shutdown_bass_audio_window()
 {
   int result; // eax
 
-  uninitialize_bass_audio_backend((AudioBackend *)g_audio_backend);
+  uninitialize_bass_audio_backend(&g_audio_backend);
   if ( g_bass_window && !((int (__stdcall *)(_DWORD))DestroyWindow)(g_bass_window) )
     abort_startup_with_3d_error();
-  result = ((int (__stdcall *)(ObjectFaceQuad *, int))UnregisterClassA)(ClassName, g_mouse_wheel_delta[2]);
+  result = ((int (__stdcall *)(ObjectFaceQuad *, void *))UnregisterClassA)(ClassName, g_application_instance);
   if ( !result )
     abort_startup_with_3d_error();
   return result;

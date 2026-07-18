@@ -394,7 +394,7 @@
       "aliases": [
         "sub_414270"
       ],
-      "description": "Renderer-wrapper method called by set_fullscreen_mode to switch windowed/fullscreen bookkeeping, reset the Direct3D device, restore window placement, and recenter the cursor."
+      "description": "Renderer-wrapper method called by set_fullscreen_mode with a byte-valued flag to switch windowed/fullscreen bookkeeping, reset the Direct3D device, restore window placement, and recenter the cursor."
     },
     {
       "address": "0x4143c0",

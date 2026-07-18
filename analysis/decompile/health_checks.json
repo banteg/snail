@@ -1024,13 +1024,78 @@
       "artifact": "analysis/decompile/binja/functions/00406dc0-game_startup_and_main_loop.c",
       "required_substrings": [
         "load_config_file(\"SnailMail.cfg\", &g_runtime_config)",
+        "g_application_instance = hInstance",
         "save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 1)",
         "save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 0x10)"
       ],
       "forbidden_substrings": [
+        "data_4dfad8",
         "data_4df904 + 0x6ffae0",
         "&data_4df918",
         "data_4df920"
+      ]
+    },
+    {
+      "name": "ida_game_startup_winmain_and_instance_owner",
+      "artifact": "analysis/decompile/ida/functions/00406dc0-game_startup_and_main_loop.c",
+      "required_substrings": [
+        "int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, char *lpCmdLine, int nShowCmd)",
+        "g_application_instance = hInstance;",
+        "set_fullscreen_mode(g_runtime_config.fullscreen_enabled);"
+      ],
+      "forbidden_substrings": [
+        "__userpurge",
+        "uint16_t hPrevInstance",
+        "g_mouse_wheel_delta[2]",
+        "FrontendWidget *a1@<ebp>"
+      ]
+    },
+    {
+      "name": "bn_application_instance_audio_init_owner",
+      "artifact": "analysis/decompile/binja/functions/00407a10-initialize_audio_subsystem.c",
+      "required_substrings": [
+        "wndClass.hInstance = g_application_instance",
+        "CreateWindowExA(WS_EX_LEFT, \"BASS\"",
+        "g_application_instance, nullptr)"
+      ],
+      "forbidden_substrings": [
+        "data_4dfad8",
+        "g_mouse_wheel_delta[2]"
+      ]
+    },
+    {
+      "name": "ida_application_instance_audio_init_owner",
+      "artifact": "analysis/decompile/ida/functions/00407a10-initialize_audio_subsystem.c",
+      "required_substrings": [
+        "WndClass[4] = g_application_instance;",
+        "g_application_instance,",
+        "g_bass_window = v0;"
+      ],
+      "forbidden_substrings": [
+        "g_mouse_wheel_delta[2]",
+        "dword_4DFAD8"
+      ]
+    },
+    {
+      "name": "bn_application_instance_audio_shutdown_owner",
+      "artifact": "analysis/decompile/binja/functions/00407b00-shutdown_bass_audio_window.c",
+      "required_substrings": [
+        "UnregisterClassA(\"BASS\", g_application_instance)"
+      ],
+      "forbidden_substrings": [
+        "data_4dfad8",
+        "g_mouse_wheel_delta[2]"
+      ]
+    },
+    {
+      "name": "ida_application_instance_audio_shutdown_owner",
+      "artifact": "analysis/decompile/ida/functions/00407b00-shutdown_bass_audio_window.c",
+      "required_substrings": [
+        "UnregisterClassA)(ClassName, g_application_instance)"
+      ],
+      "forbidden_substrings": [
+        "g_mouse_wheel_delta[2]",
+        "dword_4DFAD8"
       ]
     },
     {
@@ -8691,6 +8756,7 @@
       "artifact": "analysis/decompile/binja/functions/00414270-direct3d_renderer_set_fullscreen_mode.c",
       "required_substrings": [
         "renderer->device_initialized",
+        "eax_1.b = enabled == 0",
         "renderer->present.windowed",
         "renderer->present.back_buffer_format = renderer->display_format",
         "device->vtbl->Reset(device, &renderer->present)",
@@ -8698,9 +8764,38 @@
         "reset_direct3d_render_state(renderer)"
       ],
       "forbidden_substrings": [
+        "enabled.b",
+        "ebx_1",
         "*(arg1 +",
         "data_502fec",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_fullscreen_wrapper_byte_abi",
+      "artifact": "analysis/decompile/ida/functions/00414260-set_fullscreen_mode.c",
+      "required_substrings": [
+        "void __cdecl set_fullscreen_mode(uint8_t enabled)",
+        "direct3d_renderer_set_fullscreen_mode(&g_direct3d_renderer, enabled);"
+      ],
+      "forbidden_substrings": [
+        "__usercall",
+        "int enabled",
+        "LOBYTE"
+      ]
+    },
+    {
+      "name": "ida_direct3d_fullscreen_byte_owner",
+      "artifact": "analysis/decompile/ida/functions/00414270-direct3d_renderer_set_fullscreen_mode.c",
+      "required_substrings": [
+        "void __thiscall direct3d_renderer_set_fullscreen_mode(Direct3DRenderer *renderer, uint8_t enabled)",
+        "renderer->present.windowed = enabled == 0;",
+        "if ( enabled )"
+      ],
+      "forbidden_substrings": [
+        "int enabled",
+        "LOBYTE",
+        "sub_414270"
       ]
     },
     {

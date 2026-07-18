@@ -565,9 +565,9 @@ void __cdecl draw_textured_quad_immediate(
     int32_t blend_mode, float rotation);
 void __cdecl release_global_direct3d_renderer_resources(void);
 int32_t __cdecl present_backbuffer(void);
-void __cdecl set_fullscreen_mode(int32_t enabled);
+void __cdecl set_fullscreen_mode(uint8_t enabled);
 void __thiscall direct3d_renderer_set_fullscreen_mode(
-    Direct3DRenderer* renderer, int32_t enabled);
+    Direct3DRenderer* renderer, uint8_t enabled);
 void __thiscall restore_texture_ref_stage_states(Direct3DRenderer* renderer);
 void __cdecl bind_texture_ref(TextureRef* texture);
 void __thiscall query_direct3d_device_caps(Direct3DRenderer* renderer);

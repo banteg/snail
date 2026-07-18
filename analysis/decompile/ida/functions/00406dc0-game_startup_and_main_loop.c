@@ -3,26 +3,21 @@
 /* selector: game_startup_and_main_loop */
 
 // WinMain startup and fixed-step frame loop. It constructs and initializes the global cRGame root, drives its owned fade and render/update gates, then persists the embedded cRSubHighScore bank before releasing the root and process subsystems.
-int __userpurge game_startup_and_main_loop@<eax>(
-        FrontendWidget *a1@<ebp>,
-        FrontendWidget *a2@<esi>,
-        int hInstance,
-        uint16_t hPrevInstance,
-        int lpCmdLine,
-        int nShowCmd)
+int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, char *lpCmdLine, int nShowCmd)
 {
+  FrontendWidget *v4; // ebp
+  FrontendWidget *v5; // esi
   int v6; // edi
   ObjectIndexBufferResource *v8; // ecx
-  int32_t v9; // edx
-  int v10; // edx
-  int v11; // esi
-  double v12; // st7
-  double v14; // st7
-  char v15; // c0
+  int v9; // edx
+  int v10; // esi
+  double v11; // st7
+  double v13; // st7
+  char v14; // c0
+  int v15; // esi
   int v16; // esi
-  int v17; // esi
-  int v18; // eax
-  double v19; // st7
+  int v17; // eax
+  double v18; // st7
   _DWORD Msg[7]; // [esp+10h] [ebp-1Ch] BYREF
 
   v6 = 0;
@@ -30,10 +25,10 @@ int __userpurge game_startup_and_main_loop@<eax>(
     return 0;
   if ( query_directx_runtime_version() < 2049 )
     abort_startup_with_3d_error();
-  rebuild_game_archive_if_needed(nullptr, a1, nullptr, a2);
+  rebuild_game_archive_if_needed(nullptr, v4, nullptr, v5);
   load_config_file(nullptr, aSnailmailCfg, &g_runtime_config);
   g_runtime_config.load_valid_flag = validate_config_tail_stub(v8);
-  g_mouse_wheel_delta[2] = hInstance;
+  g_application_instance = hInstance;
   initialize_trigonometry_tables();
   if ( !initialize_game_data_archive() )
     return 0;
@@ -63,23 +58,22 @@ int __userpurge game_startup_and_main_loop@<eax>(
     if ( g_game_initialization_pending )
     {
       initialize_audio_subsystem();
-      initialize_game_window_and_input_wrapper((char *)aSnailmail);
+      initialize_game_window_and_input_wrapper((char *)window_name);
       noop_runtime_ai();
-      LOBYTE(v9) = g_runtime_config.fullscreen_enabled;
-      set_fullscreen_mode(v9);
+      set_fullscreen_mode(g_runtime_config.fullscreen_enabled);
       initialize_main_loop_display_state();
       initialize_loading_screen(&g_loading_bar);
-      v10 = ((int (*)(void))timeGetTime)() % 1000;
-      if ( v10 > 0 )
+      v9 = ((int (*)(void))timeGetTime)() % 1000;
+      if ( v9 > 0 )
       {
-        v11 = v10;
+        v10 = v9;
         do
         {
           random_float_below(1.0);
           next_math_random_value();
-          --v11;
+          --v10;
         }
-        while ( v11 );
+        while ( v10 );
       }
       construct_game_runtime();
       set_tracked_allocation_mark();
@@ -103,9 +97,9 @@ int __userpurge game_startup_and_main_loop@<eax>(
     do
       g_current_frame_timestamp_seconds = (double)(unsigned int)((int (*)(void))timeGetTime)() * 0.001;
     while ( g_frame_time_accumulator + g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds < 0.0008333333333333334 );
-    v12 = g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds;
+    v11 = g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds;
     g_previous_frame_timestamp_seconds = g_current_frame_timestamp_seconds;
-    g_frame_time_accumulator = v12 + g_frame_time_accumulator;
+    g_frame_time_accumulator = v11 + g_frame_time_accumulator;
     if ( g_frame_time_accumulator > 0.41666666 )
       g_frame_time_accumulator = 0.41666666;
     g_fixed_update_abort_requested = 0;
@@ -116,10 +110,10 @@ int __userpurge game_startup_and_main_loop@<eax>(
         break;
       g_current_frame_update_steps[0] = g_current_frame_update_steps[0] + 1.0;
       g_frame_time_accumulator = g_frame_time_accumulator - 0.016666668;
-      v14 = g_frame_time_accumulator;
-      if ( v15 )
-        v14 = -v14;
-      if ( v14 >= 0.0000083333334 )
+      v13 = g_frame_time_accumulator;
+      if ( v14 )
+        v13 = -v13;
+      if ( v13 >= 0.0000083333334 )
       {
         g_render_queue_active = g_frame_time_accumulator <= 0.0;
       }
@@ -128,18 +122,18 @@ int __userpurge game_startup_and_main_loop@<eax>(
         g_frame_time_accumulator = 0.0;
         g_render_queue_active = 1;
       }
-      v16 = ((int (*)(void))GetActiveWindow)();
-      if ( v16 == g_main_window )
+      v15 = ((int (*)(void))GetActiveWindow)();
+      if ( v15 == g_main_window )
       {
-        if ( unk_753C70 == 1 )
-          resume_audio_backend_if_paused((AudioBackend *)g_audio_backend);
-        if ( v16 == g_main_window )
+        if ( g_audio_backend.is_paused == 1 )
+          resume_audio_backend_if_paused(&g_audio_backend);
+        if ( v15 == g_main_window )
           goto LABEL_42;
       }
       if ( g_window_deactivated )
       {
 LABEL_42:
-        v17 = 0;
+        v16 = 0;
         if ( g_game_base->fixed_update_count > 0 )
         {
           while ( 1 )
@@ -148,11 +142,11 @@ LABEL_42:
             update_joystick_input();
             update_mouse(g_main_window);
             update_font_wave_state();
-            v18 = run_frame_update(g_game_base);
+            v17 = run_frame_update(g_game_base);
             g_frame_render_requested = 1;
-            if ( v18 == 1 || v18 == 2 || v18 == 3 )
+            if ( v17 == 1 || v17 == 2 || v17 == 3 )
               break;
-            if ( ++v17 >= g_game_base->fixed_update_count )
+            if ( ++v16 >= g_game_base->fixed_update_count )
               goto LABEL_49;
           }
           v6 = 1;
@@ -170,19 +164,30 @@ LABEL_49:
       ;
     }
     g_fixed_update_abort_requested = 0;
-    v19 = g_main_loop_frame_count * g_mean_update_steps_per_frame + g_current_frame_update_steps[0];
-    g_main_loop_frame_count = g_main_loop_frame_count + 1.0;
-    g_mean_update_steps_per_frame = v19 / g_main_loop_frame_count;
+    v18 = *(float *)&g_main_loop_frame_count * *(float *)&g_mean_update_steps_per_frame
+        + g_current_frame_update_steps[0];
+    *(float *)&g_main_loop_frame_count = *(float *)&g_main_loop_frame_count + 1.0;
+    *(float *)&g_mean_update_steps_per_frame = v18 / *(float *)&g_main_loop_frame_count;
     noop_runtime_ai();
   }
   while ( !g_main_loop_exit_requested && !v6 );
-  stop_audio_backend((AudioBackend *)g_audio_backend);
+  stop_audio_backend(&g_audio_backend);
   shutdown_bass_audio_window();
-  save_high_scores_and_config((SubHighScore *)&byte_6FFAE0[(_DWORD)g_game_base], 1u);
-  save_high_scores_and_config((SubHighScore *)&byte_6FFAE0[(_DWORD)g_game_base], 2u);
-  save_high_scores_and_config((SubHighScore *)&byte_6FFAE0[(_DWORD)g_game_base], 4u);
-  save_high_scores_and_config((SubHighScore *)&byte_6FFAE0[(_DWORD)g_game_base], 8u);
-  save_high_scores_and_config((SubHighScore *)&byte_6FFAE0[(_DWORD)g_game_base], 0x10u);
+  save_high_scores_and_config(
+    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)g_game_base),
+    1u);
+  save_high_scores_and_config(
+    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)g_game_base),
+    2u);
+  save_high_scores_and_config(
+    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)g_game_base),
+    4u);
+  save_high_scores_and_config(
+    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)g_game_base),
+    8u);
+  save_high_scores_and_config(
+    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)g_game_base),
+    0x10u);
   noop_runtime_ai();
   free_tracked_allocations_to_mark();
   scalar_delete(g_game_base);

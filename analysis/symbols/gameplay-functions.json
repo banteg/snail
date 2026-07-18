@@ -343,7 +343,7 @@
     {
       "address": "0x406dc0",
       "name": "game_startup_and_main_loop",
-      "description": "WinMain startup and fixed-step frame loop. It constructs and initializes the global cRGame root, drives its owned fade and render/update gates, then persists the embedded cRSubHighScore bank before releasing the root and process subsystems."
+      "description": "Four-argument stdcall WinMain startup and fixed-step frame loop. It constructs and initializes the global cRGame root, drives its owned fade and render/update gates, then persists the embedded cRSubHighScore bank before releasing the root and process subsystems."
     },
     {
       "address": "0x4072f0",
@@ -957,12 +957,12 @@
     {
       "address": "0x414260",
       "name": "set_fullscreen_mode",
-      "description": "Switches the renderer's display mode between windowed (`0`) and fullscreen (`1`) through the shared device wrapper, updates the saved window rectangle bookkeeping, and recenters the cursor after the mode change."
+      "description": "Consumes a byte-valued windowed (`0`) or fullscreen (`1`) flag, forwards it through the shared renderer owner, updates saved window-rectangle bookkeeping, and recenters the cursor after the mode change."
     },
     {
       "address": "0x414270",
       "name": "direct3d_renderer_set_fullscreen_mode",
-      "description": "Direct3DRenderer member that owns the fullscreen presentation-parameter transition, resets the device and render state, restores the saved window placement, and recenters the cursor."
+      "description": "Direct3DRenderer member that consumes the low byte of the fullscreen flag, owns the presentation-parameter transition, resets the device and render state, restores the saved window placement, and recenters the cursor."
     },
     {
       "address": "0x4143c0",

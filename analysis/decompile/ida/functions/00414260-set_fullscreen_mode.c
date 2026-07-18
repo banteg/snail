@@ -3,8 +3,7 @@
 /* selector: set_fullscreen_mode */
 
 // Switches the renderer's display mode between windowed (`0`) and fullscreen (`1`) through the shared device wrapper, updates the saved window rectangle bookkeeping, and recenters the cursor after the mode change.
-char __usercall sub_414260@<al>(int a1@<edi>, char a2)
+void __cdecl set_fullscreen_mode(uint8_t enabled)
 {
-  return direct3d_renderer_set_fullscreen_mode((int)unk_4F7458, a1, a2);
+  direct3d_renderer_set_fullscreen_mode(&g_direct3d_renderer, enabled);
 }
-

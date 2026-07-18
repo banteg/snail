@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 703,
-  "function_count": 703,
+  "selected_count": 704,
+  "function_count": 704,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -1091,6 +1091,13 @@
       "address": "0x414260",
       "name": "set_fullscreen_mode",
       "artifact": "analysis/decompile/ida/functions/00414260-set_fullscreen_mode.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "direct3d_renderer_set_fullscreen_mode",
+      "address": "0x414270",
+      "name": "direct3d_renderer_set_fullscreen_mode",
+      "artifact": "analysis/decompile/ida/functions/00414270-direct3d_renderer_set_fullscreen_mode.c",
       "removed_stale_artifacts": []
     },
     {

@@ -8,7 +8,7 @@
 00407b11        if (hWnd != 0 && DestroyWindow(hWnd) == 0)
 00407b1e        abort_startup_with_3d_error()
 00407b23        data_4dfaf8 = 0
-00407b38        BOOL result = UnregisterClassA("BASS", data_4dfad8)
+00407b38        BOOL result = UnregisterClassA("BASS", g_application_instance)
 00407b40        if (result != 0)
 00407b47        return result
 00407b42        return abort_startup_with_3d_error() __tailcall

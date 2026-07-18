@@ -5,11 +5,10 @@
 
 0041427b        if (renderer->device_initialized == 0)
 0041427b        return
-00414282        char ebx_1 = enabled.b
 00414286        int32_t eax_1 = 0
-0041428a        eax_1.b = ebx_1 == 0
+0041428a        eax_1.b = enabled == 0
 0041428f        renderer->present.windowed = eax_1
-00414295        if (ebx_1 == 0)
+00414295        if (enabled == 0)
 004142d8        renderer->present.fullscreen_refresh_rate_hz = 0
 004142de        renderer->present.fullscreen_presentation_interval = 0
 004142e4        renderer->present.back_buffer_format = renderer->display_format
@@ -22,7 +21,7 @@
 00414307        device->vtbl->Reset(device, &renderer->present)
 0041430c        restore_texture_ref_stage_states(renderer)
 00414313        reset_direct3d_render_state(renderer)
-00414324        if (ebx_1 != 0 || data_503278 != 1)
+00414324        if (enabled != 0 || data_503278 != 1)
 00414359        ShowCursor(0)
 0041432c        int32_t Y = data_50326c
 0041433c        int32_t X = data_503268

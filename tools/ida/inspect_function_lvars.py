@@ -7,6 +7,49 @@ import ida_pro
 import idc
 
 
+def _saved_lvar_location(info: ida_hexrays.lvar_saved_info_t) -> dict[str, object]:
+    locator = info.ll
+    if locator.is_stk_var():
+        return {"kind": "stack", "stack_offset": locator.get_stkoff()}
+    if locator.is_reg1():
+        width = info.size if info.size > 0 else 4
+        register = locator.get_reg1()
+        return {
+            "kind": "register",
+            "mreg": register,
+            "register": ida_hexrays.get_mreg_name(register, width),
+        }
+    if locator.is_reg2():
+        return {
+            "kind": "register_pair",
+            "mregs": [locator.get_reg1(), locator.get_reg2()],
+        }
+    if locator.is_scattered():
+        return {"kind": "scattered"}
+    return {"kind": "unknown", "location": str(locator.location)}
+
+
+def _saved_lvar_overrides(address: int) -> list[dict[str, object]]:
+    settings = ida_hexrays.lvar_uservec_t()
+    if not ida_hexrays.restore_user_lvar_settings(settings, address):
+        return []
+
+    overrides = []
+    for index in range(settings.lvvec.size()):
+        info = settings.lvvec.at(index)
+        overrides.append(
+            {
+                "name": info.name,
+                "type": str(info.type),
+                "size": info.size,
+                "flags": info.flags,
+                "definition_address": hex(info.ll.defea),
+                "location": _saved_lvar_location(info),
+            }
+        )
+    return overrides
+
+
 def main() -> None:
     selectors = list(idc.ARGV[1:])
     if not selectors:
@@ -55,6 +98,7 @@ def main() -> None:
                 "selector": selector,
                 "address": hex(address),
                 "lvars": lvars,
+                "saved_lvar_overrides": _saved_lvar_overrides(address),
             }
         )
 

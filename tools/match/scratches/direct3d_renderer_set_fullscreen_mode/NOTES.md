@@ -32,3 +32,9 @@ needed.
 2026-07-16 authored-view ownership: the final cursor recenter now consumes the
 same logical width/height pair written by startup and used by mouse conversion.
 The function remains exact at 84/84 instructions with all 29 operands clean.
+
+2026-07-18 ABI closure: the member copies only the low byte of its stack
+argument into `BL` and tests that byte throughout the transition. The startup
+caller independently forwards only the runtime config byte in `DL`, proving
+the fullscreen flag is byte-valued rather than the earlier `int32_t`. The
+corrected `char` matcher signature remains exact at 84/84 instructions.

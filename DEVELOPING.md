@@ -115,8 +115,9 @@ so it also works when a bad callee declaration prevents a caller from
 decompiling.
 
 The lvar query runs Hex-Rays headlessly and reports stable definition
-addresses, stack offsets, widths, and current user types. Use it before adding
-a narrow replay rule for a local whose inferred ownership regressed.
+addresses, stack offsets, widths, current user types, and separately persisted
+user-lvar overrides. Use it before adding a narrow replay rule for a local whose
+inferred ownership regressed.
 
 When synchronizing tool databases, prefer the documented paths in
 [docs/re/symbols.md](docs/re/symbols.md). Keep new rename work in the canonical

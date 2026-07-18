@@ -15,7 +15,7 @@ extern "C" __declspec(dllimport) BOOL __stdcall SetCursorPos(int x, int y);
 
 extern int debug_report_stub(char* message); // @ 0x449c00
 
-void Direct3DRenderer::direct3d_renderer_set_fullscreen_mode(int enabled)
+void Direct3DRenderer::direct3d_renderer_set_fullscreen_mode(char enabled)
 {
     if (device_initialized == 0) {
         return;

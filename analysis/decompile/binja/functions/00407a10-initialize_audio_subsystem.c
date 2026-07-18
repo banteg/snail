@@ -8,7 +8,7 @@
 00407a24        wndClass.lpfnWndProc = sub_4079e0
 00407a2c        wndClass.cbClsExtra = 0
 00407a30        wndClass.cbWndExtra = 0
-00407a34        wndClass.hInstance = data_4dfad8
+00407a34        wndClass.hInstance = g_application_instance
 00407a38        wndClass.hIcon = 0
 00407a3c        wndClass.hCursor = 0
 00407a40        wndClass.hbrBackground = 0
@@ -18,7 +18,7 @@
 00407a5b        int32_t eax_2 = abort_startup_with_3d_error()
 00407a60        eax_2.b = 0
 00407a66        return eax_2
-00407a85        HWND hwnd = CreateWindowExA(WS_EX_LEFT, "BASS", &g_blank_text, 0x86000000, 0, 0, 0, 0, nullptr, nullptr, data_4dfad8, nullptr)
+00407a85        HWND hwnd = CreateWindowExA(WS_EX_LEFT, "BASS", &g_blank_text, 0x86000000, 0, 0, 0, 0, nullptr, nullptr, g_application_instance, nullptr)
 00407a8d        data_4dfaf8 = hwnd
 00407a92        if (hwnd == 0)
 00407a94        shutdown_bass_audio_window()

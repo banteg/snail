@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 13,
+  "function_count": 5,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 13,
-  "ida_exported": 13,
+  "bn_exported": 5,
+  "ida_exported": 5,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,56 +17,24 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "render_game_frame",
-      "address": "0x40a490"
+      "name": "game_startup_and_main_loop",
+      "address": "0x406dc0"
     },
     {
-      "name": "draw_sprite_quad",
-      "address": "0x4137f0"
+      "name": "initialize_audio_subsystem",
+      "address": "0x407a10"
     },
     {
-      "name": "initialize_sprite",
-      "address": "0x44de90"
+      "name": "shutdown_bass_audio_window",
+      "address": "0x407b00"
     },
     {
-      "name": "update_sprite",
-      "address": "0x44df30"
+      "name": "set_fullscreen_mode",
+      "address": "0x414260"
     },
     {
-      "name": "register_sprite_texture",
-      "address": "0x44e0f0"
-    },
-    {
-      "name": "initialize_sprite_manager",
-      "address": "0x44e160"
-    },
-    {
-      "name": "kill_sprite",
-      "address": "0x44e200"
-    },
-    {
-      "name": "allocate_sprite",
-      "address": "0x44e2a0"
-    },
-    {
-      "name": "kill_game_sprites",
-      "address": "0x44e3d0"
-    },
-    {
-      "name": "set_sprite_manager_paused",
-      "address": "0x44e540"
-    },
-    {
-      "name": "set_sprite_texture_ref",
-      "address": "0x44e550"
-    },
-    {
-      "name": "get_sprite_texture",
-      "address": "0x44e570"
-    },
-    {
-      "name": "get_sprite_texture_ref",
-      "address": "0x44e580"
+      "name": "direct3d_renderer_set_fullscreen_mode",
+      "address": "0x414270"
     }
   ],
   "health_check_count": 680,

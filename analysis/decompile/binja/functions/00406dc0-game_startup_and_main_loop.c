@@ -13,7 +13,7 @@
 00406e0f        load_config_file("SnailMail.cfg", &g_runtime_config)
 00406e14        uint8_t (* var_38)[0x11] = &g_runtime_config.validation_tail
 00406e1e        g_runtime_config.load_valid_flag = sub_42f5b0()
-00406e2a        data_4dfad8 = arg1
+00406e2a        g_application_instance = hInstance
 00406e2f        initialize_trigonometry_tables()
 00406e3b        if (initialize_game_data_archive() == 0)
 00406e44        return 0
@@ -26,7 +26,6 @@
 00406e7e        data_4df90c = 1
 00406e85        g_window_deactivated = 0
 00406e8b        log_startup_timestamp()
-00406e90        uint32_t (__stdcall* const ebp)() = timeGetTime
 00406ea6        while (true)
 00406eaa        MSG msg
 00406eaa        if (PeekMessageA(&msg, nullptr, 0, 0, PM_REMOVE) != 0)
@@ -39,12 +38,11 @@
 00406ede        do while (i != 0)
 00406ee6        if (data_4df90c != 0)
 00406eec        initialize_audio_subsystem()
-00406ef6        int32_t enabled = initialize_game_window_and_input_wrapper("SnailMail")
-00406f00        enabled.b = g_runtime_config.fullscreen_enabled
-00406f07        set_fullscreen_mode(enabled)
+00406ef6        initialize_game_window_and_input_wrapper("SnailMail")
+00406f07        set_fullscreen_mode(g_runtime_config.fullscreen_enabled)
 00406f0f        sub_406d70()
 00406f19        initialize_loading_screen(&g_loading_bar)
-00406f26        int32_t i_3 = mods.dp.d(sx.q(ebp()), 0x3e8)
+00406f26        int32_t i_3 = mods.dp.d(sx.q(timeGetTime()), 0x3e8)
 00406f2a        if (i_3 s> 0)
 00406f2c        int32_t i_2 = i_3
 00406f44        int32_t i_1
@@ -56,9 +54,7 @@
 00406f44        do while (i_1 != 1)
 00406f46        construct_game_runtime()
 00406f4b        set_tracked_allocation_mark()
-00406f56        uint8_t eax_12
-00406f56        eax_12, ebp, edi = initialize_game_assets_and_world(g_game_base)
-00406f5d        if (eax_12 == 0)
+00406f5d        if (initialize_game_assets_and_world(g_game_base) == 0)
 00406f5f        edi = 1
 00406f66        sub_412a00(1)
 00406f74        initialize_game_last(g_game_base)
@@ -75,7 +71,7 @@
 00406ffe        long double x87_r7_7
 00406ffe        long double temp2_1
 00406fcd        int32_t var_20_1 = 0
-00406fdb        data_4dfb04 = fconvert.s(float.t(ebp().q) * fconvert.t(0.00100000005f))
+00406fdb        data_4dfb04 = fconvert.s(float.t(timeGetTime().q) * fconvert.t(0.00100000005f))
 00406fed        x87_r7_7 = fconvert.t(data_4dfafc) + fconvert.t(data_4dfb04) - fconvert.t(data_4dfb00)
 00406ff3        temp2_1 = fconvert.t(0.00083333333333333339)
 00406ff3        x87_r7_7 - temp2_1
@@ -118,7 +114,7 @@
 004070cc        g_render_queue_active = 1
 004070f7        HWND eax_17 = GetActiveWindow()
 00407106        if (eax_17 == g_main_window)
-0040710f        if (data_753c70 == 1)
+0040710f        if (g_audio_backend.is_paused == 1)
 00407116        resume_audio_backend_if_paused(&g_audio_backend)
 00407121        if (eax_17 == g_main_window || g_window_deactivated != 0)
 00407121        goto label_407156

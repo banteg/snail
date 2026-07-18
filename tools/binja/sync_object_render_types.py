@@ -14,7 +14,7 @@ from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_symbol_updates,
     emit_summary,
-    types_declare,
+    types_declare_if_changed,
 )
 
 
@@ -254,10 +254,10 @@ PROTO_UPDATES = (
         "void __cdecl release_global_direct3d_renderer_resources()",
     ),
     ("present_backbuffer", "int32_t __cdecl present_backbuffer()"),
-    ("set_fullscreen_mode", "void __cdecl set_fullscreen_mode(int32_t enabled)"),
+    ("set_fullscreen_mode", "void __cdecl set_fullscreen_mode(uint8_t enabled)"),
     (
         "direct3d_renderer_set_fullscreen_mode",
-        "void __thiscall direct3d_renderer_set_fullscreen_mode(Direct3DRenderer* renderer, int32_t enabled)",
+        "void __thiscall direct3d_renderer_set_fullscreen_mode(Direct3DRenderer* renderer, uint8_t enabled)",
     ),
     (
         "restore_texture_ref_stage_states",
@@ -440,7 +440,13 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
-    operations.append(types_declare(REPO_ROOT, target=args.target, header_path=header_path))
+    operations.append(
+        types_declare_if_changed(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+        )
+    )
     operations.append(
         apply_direct_proto_update(
             REPO_ROOT,

@@ -2,7 +2,7 @@
 
 #include "direct3d_renderer.h"
 
-void set_fullscreen_mode(int enabled)
+void set_fullscreen_mode(char enabled)
 {
     g_direct3d_renderer.direct3d_renderer_set_fullscreen_mode(enabled);
 }

@@ -98,11 +98,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_fullscreen_mode",
-        "void __cdecl set_fullscreen_mode(int32_t enabled);",
+        "void __cdecl set_fullscreen_mode(uint8_t enabled);",
     ),
     (
         "direct3d_renderer_set_fullscreen_mode",
-        "void __thiscall direct3d_renderer_set_fullscreen_mode(Direct3DRenderer* renderer, int32_t enabled);",
+        "void __thiscall direct3d_renderer_set_fullscreen_mode(Direct3DRenderer* renderer, uint8_t enabled);",
     ),
     (
         "restore_texture_ref_stage_states",

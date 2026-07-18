@@ -9,7 +9,7 @@ extern char g_fullscreen_on_text[]; // 0x4a3d5c
 extern char g_fullscreen_off_text[]; // 0x4a3d4c
 
 void rstrcpy_checked_ascii(char* destination, char* source);
-void set_fullscreen_mode(int enabled);
+void set_fullscreen_mode(char enabled);
 
 void Options::update_options_menu()
 {
