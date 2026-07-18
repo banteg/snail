@@ -8,6 +8,7 @@ import sys
 import ida_funcs
 import ida_hexrays
 import ida_kernwin
+import ida_name
 import ida_pro
 import ida_typeinf
 import idc
@@ -19,10 +20,64 @@ if str(SCRIPT_ROOT) not in sys.path:
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 
+TRUSTED_NAMES = [
+    (0x44DE90, "initialize_sprite"),
+    (0x44DF30, "update_sprite"),
+    (0x44E0F0, "register_sprite_texture"),
+    (0x44E160, "initialize_sprite_manager"),
+    (0x44E200, "kill_sprite"),
+    (0x44E2A0, "allocate_sprite"),
+    (0x44E3D0, "kill_game_sprites"),
+    (0x44E540, "set_sprite_manager_paused"),
+    (0x44E550, "set_sprite_texture_ref"),
+    (0x44E570, "get_sprite_texture"),
+    (0x44E580, "get_sprite_texture_ref"),
+]
+
 TRUSTED_DECLARATIONS = [
+    (
+        "initialize_sprite",
+        "void __thiscall initialize_sprite(Sprite *sprite);",
+    ),
+    (
+        "update_sprite",
+        "void __thiscall update_sprite(Sprite *sprite);",
+    ),
+    (
+        "register_sprite_texture",
+        "TextureRef *__thiscall register_sprite_texture(SpriteManager *manager, char *texture_path, int32_t texture_id, int32_t flags);",
+    ),
+    (
+        "initialize_sprite_manager",
+        "void __thiscall initialize_sprite_manager(SpriteManager *manager);",
+    ),
     (
         "kill_sprite",
         "void __thiscall kill_sprite(Sprite *sprite);",
+    ),
+    (
+        "allocate_sprite",
+        "Sprite *__thiscall allocate_sprite(SpriteManager *manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b);",
+    ),
+    (
+        "kill_game_sprites",
+        "void __thiscall kill_game_sprites(SpriteManager *manager);",
+    ),
+    (
+        "set_sprite_manager_paused",
+        "uint8_t __thiscall set_sprite_manager_paused(SpriteManager *manager, uint8_t paused);",
+    ),
+    (
+        "set_sprite_texture_ref",
+        "TextureRef *__thiscall set_sprite_texture_ref(Sprite *sprite, int32_t texture_id, int32_t frame);",
+    ),
+    (
+        "get_sprite_texture",
+        "TextureRef *__thiscall get_sprite_texture(SpriteManager *manager, int32_t texture_id);",
+    ),
+    (
+        "get_sprite_texture_ref",
+        "void *__thiscall get_sprite_texture_ref(SpriteManager *manager, int32_t texture_id);",
     ),
     (
         "destroy_star_field",
@@ -212,8 +267,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
     applied = 0
     unchanged = 0
+    renamed = 0
+    names_unchanged = 0
     missing = []
     failed = []
+
+    for address, name in TRUSTED_NAMES:
+        if idc.get_name(address) == name:
+            names_unchanged += 1
+            continue
+        if not idc.set_name(address, name, ida_name.SN_NOWARN | ida_name.SN_FORCE):
+            failed.append(
+                {"address": hex(address), "selector": name, "reason": "rename_failed"}
+            )
+            continue
+        renamed += 1
 
     for selector, declaration in TRUSTED_DECLARATIONS:
         address = idc.get_name_ea_simple(selector)
@@ -258,6 +326,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parse_errors": parse_errors,
                 "applied": applied,
                 "unchanged": unchanged,
+                "renamed": renamed,
+                "names_unchanged": names_unchanged,
                 "owner_sizes": owner_sizes,
                 "color_lvar": color_lvar,
                 "game_root_owner_graph": game_root_owner_graph,

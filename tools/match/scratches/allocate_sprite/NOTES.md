@@ -24,3 +24,14 @@ no tracked consumer yet proves semantic names for those bits, so they remain
 numeric rather than being guessed.
 
 Exact match: 100.00%, 81/81 instructions, with ten masked operands audited.
+
+## 2026-07-18 manager receiver replay
+
+The live Binary Ninja and IDA prototypes now preserve the real
+`SpriteManager *manager` thiscall receiver rather than ABI-equivalent global
+helpers. Fresh exports recover `free_head`, `active_heads[owner]`, and the
+allocated Sprite's texture/animation fields in both tools. The adjacent
+register/get helpers also retain their otherwise-unused manager receiver,
+which is independently proved by the Windows `ecx` callsites, callee cleanup,
+and the iOS `cRSpriteManager` names; the global texture table remains a separate
+borrowed store.

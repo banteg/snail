@@ -58,3 +58,19 @@ prototype preserves the exact 259/259 stream and all 29 operands.
 canonical triangle and DrawPrimitive counters, while its device pointer comes
 only from the documented renderer-member alias. The exact 259/259 stream and
 all 29 operands are unchanged.
+
+## 2026-07-18 analysis lifetime recovery
+
+VC6 assigns two non-overlapping source variables to the first argument's stack
+slot: the incoming `Vec3 *position`, followed by the
+`ObjectRenderVertex *vertices` written by `IDirect3DVertexBuffer8::Lock` at
+`0x413933`. Hex-Rays now records that definition as a split local at stack
+offset 120, so the tracked IDA artifact renders four typed vertices while the
+function ABI remains `draw_sprite_quad(Vec3 *, Sprite *)`.
+
+Binary Ninja can expose definition identity 323 for the same pointer-out call,
+but its current core does not attach a distinct name or type to that identity
+or rewrite HLIL after `split_var`. The BN artifact therefore retains the honest
+stack-slot reuse instead of widening the position argument or inventing a
+union. The IDA split, the unchanged BN ABI, and both Sprite field views are now
+covered by strict decompile-health checks.

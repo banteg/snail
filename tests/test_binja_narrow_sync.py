@@ -328,6 +328,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert '("0x814c94", "g_sprite_active_heads")' in bn_frame_sync
     assert '("0x814c94", "Sprite*[5]")' in bn_frame_sync
     assert '"Sprite": 0xB4' in frame_sync
+    assert '"ObjectRenderVertex": 0x18' in frame_sync
     assert '"SpriteDepthNode": 0x18' in frame_sync
     assert '"RenderableBod": 0x80' in frame_sync
     assert "def _sync_render_pointer_lvar" in frame_sync
@@ -335,12 +336,17 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert '"depth_bucket_sprite",\n        0x40A8CB,' in frame_sync
     assert '"post_cursor",\n        0x40A991,' in frame_sync
     assert '"int __cdecl draw_sprite_quad(Vec3 *position, Sprite *sprite);"' in frame_sync
+    assert "def _sync_draw_sprite_vertex_lvar" in frame_sync
+    assert 'declaration = "ObjectRenderVertex *vertices;"' in frame_sync
+    assert "split_definition_address = 0x413933" in frame_sync
     assert '(0x4DFB10, "g_post_sprite_bods")' in frame_sync
     assert '"RenderableBod *g_post_sprite_bods;"' in frame_sync
     assert '(0x814C94, "g_sprite_active_heads")' in frame_sync
     assert '"Sprite *g_sprite_active_heads[5];"' in frame_sync
     for header in frame_headers:
         assert "typedef struct Sprite Sprite;" in header
+        assert "typedef struct ObjectRenderVertex {" in header
+        assert "uint32_t diffuse;" in header
         assert "Sprite* sprite;" in header
         assert "void* sprite;" not in header
     assert '"BodNode": 0x10' in frame_sync
@@ -1177,6 +1183,42 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "current_struct_size" in source
     assert '"Sprite": 0xB4' in source
     assert "types_declare(" not in source
+    for declaration, ida_declaration in (
+        (
+            "void __thiscall initialize_sprite(Sprite* sprite)",
+            "void __thiscall initialize_sprite(Sprite *sprite);",
+        ),
+        (
+            "void __thiscall update_sprite(Sprite* sprite)",
+            "void __thiscall update_sprite(Sprite *sprite);",
+        ),
+        (
+            "TextureRef* __thiscall register_sprite_texture(SpriteManager* manager, char* texture_path, int32_t texture_id, int32_t flags)",
+            "TextureRef *__thiscall register_sprite_texture(SpriteManager *manager, char *texture_path, int32_t texture_id, int32_t flags);",
+        ),
+        (
+            "void __thiscall initialize_sprite_manager(SpriteManager* manager)",
+            "void __thiscall initialize_sprite_manager(SpriteManager *manager);",
+        ),
+        (
+            "Sprite* __thiscall allocate_sprite(SpriteManager* manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b)",
+            "Sprite *__thiscall allocate_sprite(SpriteManager *manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b);",
+        ),
+        (
+            "TextureRef* __thiscall get_sprite_texture(SpriteManager* manager, int32_t texture_id)",
+            "TextureRef *__thiscall get_sprite_texture(SpriteManager *manager, int32_t texture_id);",
+        ),
+        (
+            "void* __thiscall get_sprite_texture_ref(SpriteManager* manager, int32_t texture_id)",
+            "void *__thiscall get_sprite_texture_ref(SpriteManager *manager, int32_t texture_id);",
+        ),
+    ):
+        assert declaration in source
+        assert ida_declaration in ida_source
+    assert "TextureRef* __stdcall register_sprite_texture" not in source
+    assert "TextureRef* __stdcall get_sprite_texture" not in source
+    assert "TRUSTED_NAMES" in ida_source
+    assert '(0x44DF30, "update_sprite")' in ida_source
     for function_name in (
         "destroy_star_field",
         "initialize_star_field",

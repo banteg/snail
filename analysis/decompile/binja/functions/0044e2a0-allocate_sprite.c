@@ -15,7 +15,7 @@
 0044e2e1        free_head->next = manager->active_heads[owner]
 0044e2e4        manager->active_heads[owner] = free_head
 0044e2ed        initialize_sprite(free_head)
-0044e2ff        int32_t ecx_3 = free_head->flags | 1 << (owner.b + 0x18)
+0044e2ff        enum SpriteFlag ecx_3 = free_head->flags | 1 << ((owner.b + 0x18) & 0x1f)
 0044e305        free_head->flags = ecx_3
 0044e30f        free_head->texture_ref = g_sprite_texture_table[texture_id]
 0044e319        if (texture_b != 0xffffffff)
@@ -31,9 +31,9 @@
 0044e363        free_head->frame_progress_step = 0f
 0044e376        free_head->frame_count = g_sprite_texture_table[texture_id]->frame_count
 0044e388        if (((g_sprite_texture_table[texture_id]->flags).w:1.b & 0x20) != 0)
-0044e38d        uint32_t edi_2 = free_head->flags | 0x2000
+0044e38d        enum SpriteFlag edi_2 = free_head->flags | SPRITE_FLAG_ANIMATED
 0044e393        free_head->flags = edi_2
-0044e39d        uint32_t ecx_11 = edi_2
+0044e39d        enum SpriteFlag ecx_11 = edi_2
 0044e3a5        free_head->frame_progress_step = g_sprite_texture_table[texture_id]->frame_progress_step
 0044e3b7        if (((g_sprite_texture_table[texture_id]->flags).w:1.b & 0x40) != 0)
 0044e3b9        ecx_11:1.b |= 0x40

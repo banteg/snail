@@ -5583,6 +5583,109 @@
       ]
     },
     {
+      "name": "bn_draw_sprite_owner_fields",
+      "artifact": "analysis/decompile/binja/functions/004137f0-draw_sprite_quad.c",
+      "required_substrings": [
+        "struct Vec3* position_1 = position",
+        "struct Sprite* sprite_1 = sprite",
+        "sprite_1->texture_ref",
+        "sprite_1->corner_scale",
+        "vertex_buffer->vtbl->Lock(vertex_buffer, 0, 0x60, &position, 0)"
+      ],
+      "forbidden_substrings": [
+        "*(sprite +",
+        "sprite_1->__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_draw_sprite_vertex_lifetime_split",
+      "artifact": "analysis/decompile/ida/functions/004137f0-draw_sprite_quad.c",
+      "required_substrings": [
+        "int __cdecl draw_sprite_quad(Vec3 *position, Sprite *sprite)",
+        "ObjectRenderVertex *vertices;",
+        "SPLIT BYREF",
+        "vertices[3].diffuse",
+        "(void **)&vertices"
+      ],
+      "forbidden_substrings": [
+        "position->__offset(",
+        "int __cdecl draw_sprite_quad(int",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_sprite_update_owner",
+      "artifact": "analysis/decompile/binja/functions/0044df30-update_sprite.c",
+      "required_substrings": [
+        "sprite->previous_position.x = sprite->position.x",
+        "sprite->velocity.y =",
+        "sprite->facing_angle_step",
+        "sprite->frame_progress_step",
+        "kill_sprite(sprite)"
+      ],
+      "forbidden_substrings": [
+        "sprite->__offset(",
+        "*(sprite +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_sprite_update_owner",
+      "artifact": "analysis/decompile/ida/functions/0044df30-update_sprite.c",
+      "required_substrings": [
+        "void __thiscall update_sprite(Sprite *sprite)",
+        "sprite->previous_position = sprite->position",
+        "sprite->velocity.y = sprite->gravity_step + sprite->velocity.y",
+        "sprite->frame_progress_step + sprite->frame_progress",
+        "kill_sprite(sprite)"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall update_sprite(int",
+        "sprite->__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_sprite_manager_allocator_owner",
+      "artifact": "analysis/decompile/binja/functions/0044e2a0-allocate_sprite.c",
+      "required_substrings": [
+        "struct Sprite* free_head = manager->free_head",
+        "manager->active_heads[owner]",
+        "free_head->texture_ref",
+        "free_head->frame_count",
+        "return free_head"
+      ],
+      "forbidden_substrings": [
+        "*(manager +",
+        "free_head->__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_sprite_manager_allocator_owner",
+      "artifact": "analysis/decompile/ida/functions/0044e2a0-allocate_sprite.c",
+      "required_substrings": [
+        "Sprite *__thiscall allocate_sprite(",
+        "SpriteManager *manager,",
+        "manager->free_head = free_head->next",
+        "manager->active_heads[owner] = free_head",
+        "free_head->frame_count"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall allocate_sprite(",
+        "*((_DWORD *)manager",
+        "free_head->__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_subring_sprite_fields_intact",
       "artifact": "analysis/decompile/binja/functions/0043e470-initialize_ring_or_special_effect_particles.c",
       "required_substrings": [

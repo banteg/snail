@@ -2,35 +2,36 @@
 /* function: kill_sprite @ 0x44e200 */
 /* selector: kill_sprite */
 
-void __thiscall kill_sprite(int sprite)
+// Unlinks and returns one live sprite to the manager free list; iOS RSprite.o names this `cRSprite::Kill()`.
+void __thiscall kill_sprite(Sprite *sprite)
 {
-  int next; // eax
-  int prev; // eax
-  int next_after_prev; // eax
+  Sprite *next; // eax
+  Sprite *prev; // eax
+  Sprite *v4; // eax
 
-  if ( (*(_BYTE *)(sprite + 4) & 1) == 0 )
-    report_errorf("Sprite kill error, already dead (%s)", (const char *)(*(_DWORD *)(sprite + 28) + 12));
-  if ( (_UNKNOWN *)sprite != &g_sprite_sentinel )
+  if ( (sprite->flags & 1) == 0 )
+    report_errorf("Sprite kill error, already dead (%s)", sprite->texture_ref->name);
+  if ( sprite != (Sprite *)&g_sprite_sentinel )
   {
-    *(_DWORD *)(sprite + 4) &= ~1u;
-    if ( sprite == g_sprite_active_heads[*(_DWORD *)(sprite + 8)] )
+    sprite->flags &= ~1u;
+    if ( sprite == g_sprite_active_heads[sprite->owner] )
     {
-      next = *(_DWORD *)(sprite + 12);
+      next = sprite->next;
       if ( next )
-        *(_DWORD *)(next + 16) = 0;
-      g_sprite_active_heads[*(_DWORD *)(sprite + 8)] = *(_DWORD *)(sprite + 12);
-      *(_DWORD *)(sprite + 12) = g_sprite_free_head;
+        next->prev = nullptr;
+      g_sprite_active_heads[sprite->owner] = sprite->next;
+      sprite->next = (Sprite *)g_sprite_free_head;
       g_sprite_free_head = sprite;
     }
     else
     {
-      prev = *(_DWORD *)(sprite + 16);
+      prev = sprite->prev;
       if ( prev )
-        *(_DWORD *)(prev + 12) = *(_DWORD *)(sprite + 12);
-      next_after_prev = *(_DWORD *)(sprite + 12);
-      if ( next_after_prev )
-        *(_DWORD *)(next_after_prev + 16) = *(_DWORD *)(sprite + 16);
-      *(_DWORD *)(sprite + 12) = g_sprite_free_head;
+        prev->next = sprite->next;
+      v4 = sprite->next;
+      if ( v4 )
+        v4->prev = sprite->prev;
+      sprite->next = (Sprite *)g_sprite_free_head;
       g_sprite_free_head = sprite;
     }
   }

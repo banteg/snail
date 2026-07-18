@@ -3,9 +3,9 @@
 /* selector: draw_sprite_quad */
 
 // Builds and submits one textured sprite quad from the sprite color, scale, angle, and stretch lanes. The star-field pass at `initialize_star_field` and `update_star_positions` reaches this helper through the shared sprite renderer.
-int __cdecl sub_4137F0(int a1, float a2)
+int __cdecl draw_sprite_quad(Vec3 *position, Sprite *sprite)
 {
-  int v2; // esi
+  Sprite *v2; // esi
   double v3; // st7
   double v4; // st6
   double v5; // st6
@@ -15,120 +15,115 @@ int __cdecl sub_4137F0(int a1, float a2)
   double v9; // st6
   double v10; // st6
   int result; // eax
-  float v12; // [esp+18h] [ebp-5Ch]
-  float v13; // [esp+1Ch] [ebp-58h]
+  TextureRef *texture_ref; // [esp+20h] [ebp-54h]
+  float v13; // [esp+20h] [ebp-54h]
   float v14; // [esp+20h] [ebp-54h]
-  int v15; // [esp+20h] [ebp-54h]
-  float v16; // [esp+20h] [ebp-54h]
-  float v17; // [esp+20h] [ebp-54h]
-  int v18; // [esp+2Ch] [ebp-48h] BYREF
-  float v19; // [esp+30h] [ebp-44h]
-  int v20[16]; // [esp+34h] [ebp-40h] BYREF
+  ColorBGRA8 out; // [esp+2Ch] [ebp-48h] BYREF
+  float v16; // [esp+30h] [ebp-44h]
+  int v17[16]; // [esp+34h] [ebp-40h] BYREF
+  ObjectRenderVertex *vertices; // [esp+78h] [ebp+4h] SPLIT BYREF
+  Vec3 v19; // 0:^18.12
 
-  v14 = *(float *)(a1 + 8);
-  v13 = *(float *)(a1 + 4);
-  v12 = *(float *)a1;
-  memset(&v20[11], 0, 16);
-  memset(&v20[6], 0, 16);
-  memset(&v20[1], 0, 16);
-  v20[15] = 1065353216;
-  v20[10] = 1065353216;
-  v20[5] = 1065353216;
-  v20[0] = 1065353216;
-  sub_44FD8A((int)v20, v12, v13, v14);
-  (*(void (__stdcall **)(int, int, int *))(*(_DWORD *)MEMORY[0x502FEC] + 148))(MEMORY[0x502FEC], 2, v20);
-  v2 = LODWORD(a2);
-  v15 = *(_DWORD *)(LODWORD(a2) + 28);
-  a2 = (1.0 - *(float *)(LODWORD(a2) + 104)) * *(float *)(LODWORD(a2) + 96)
-     + *(float *)(LODWORD(a2) + 100) * *(float *)(LODWORD(a2) + 104);
-  bind_texture_ref(v15);
-  configure_sprite_render_state(v2);
-  if ( (*(_DWORD *)(v2 + 4) & 0x1000) != 0 )
-    v19 = 1.0;
+  v19 = *position;
+  memset(&v17[11], 0, 16);
+  memset(&v17[6], 0, 16);
+  memset(&v17[1], 0, 16);
+  v17[15] = 1065353216;
+  v17[10] = 1065353216;
+  v17[5] = 1065353216;
+  v17[0] = 1065353216;
+  D3DXMatrixTranslation((int)v17, v19.x, v19.y, v19.z);
+  g_direct3d_renderer.device->vtbl->SetTransform(g_direct3d_renderer.device, 2, (TransformMatrix *)v17);
+  v2 = sprite;
+  texture_ref = sprite->texture_ref;
+  *(float *)&sprite = (1.0 - sprite->progress) * sprite->size_start + sprite->size_end * sprite->progress;
+  bind_texture_ref(texture_ref);
+  configure_sprite_render_state((int)v2);
+  if ( (v2->flags & 0x1000) != 0 )
+    v16 = 1.0;
   else
-    v19 = (1.0 - *(float *)(v2 + 104)) * *(float *)(v2 + 56);
-  Iostream_init::Iostream_init((#93 *)&v18);
-  pack_color_rgba_u8(&v18, (float *)(v2 + 44));
-  HIBYTE(v18) = (__int64)(v19 * 255.0);
-  (*(void (__stdcall **)(_DWORD, _DWORD, int, int *, _DWORD))(**(_DWORD **)(MEMORY[0x502FE0] + 8) + 44))(
-    *(_DWORD *)(MEMORY[0x502FE0] + 8),
+    v16 = (1.0 - v2->progress) * v2->color.a;
+  noop_this_constructor(&out);
+  pack_color_rgba_u8((tColourSmall *)&out, &v2->color);
+  out.a = (__int64)(v16 * 255.0);
+  g_direct3d_renderer.renderer_state->vertex_buffer->vtbl->Lock(
+    g_direct3d_renderer.renderer_state->vertex_buffer,
     0,
     96,
-    &a1,
+    (void **)&vertices,
     0);
-  if ( *(float *)(v2 + 124) == 0.0 )
+  if ( v2->facing_angle == 0.0 )
   {
-    v3 = -a2;
-    *(float *)a1 = v3;
-    *(float *)(a1 + 4) = a2;
-    v4 = a2;
-    *(_DWORD *)(a1 + 8) = 0;
-    *(_DWORD *)(a1 + 16) = 0;
-    *(_DWORD *)(a1 + 20) = 0;
-    *(_DWORD *)(a1 + 12) = v18;
-    *(float *)(a1 + 24) = v4;
-    *(float *)(a1 + 28) = a2;
-    v5 = a2;
-    *(_DWORD *)(a1 + 32) = 0;
-    *(_DWORD *)(a1 + 40) = 1065353216;
-    *(_DWORD *)(a1 + 44) = 0;
-    *(_DWORD *)(a1 + 36) = v18;
-    *(float *)(a1 + 48) = v5;
-    *(float *)(a1 + 52) = v3;
-    *(_DWORD *)(a1 + 56) = 0;
-    *(_DWORD *)(a1 + 64) = 1065353216;
-    *(_DWORD *)(a1 + 68) = 1065353216;
-    *(_DWORD *)(a1 + 60) = v18;
-    *(float *)(a1 + 72) = v3;
+    v3 = -*(float *)&sprite;
+    vertices->x = v3;
+    vertices->y = *(float *)&sprite;
+    v4 = *(float *)&sprite;
+    vertices->z = 0.0;
+    vertices->u = 0.0;
+    vertices->v = 0.0;
+    vertices->diffuse = (uint32_t)out;
+    vertices[1].x = v4;
+    vertices[1].y = *(float *)&sprite;
+    v5 = *(float *)&sprite;
+    vertices[1].z = 0.0;
+    vertices[1].u = 1.0;
+    vertices[1].v = 0.0;
+    vertices[1].diffuse = (uint32_t)out;
+    vertices[2].x = v5;
+    vertices[2].y = v3;
+    vertices[2].z = 0.0;
+    vertices[2].u = 1.0;
+    vertices[2].v = 1.0;
+    vertices[2].diffuse = (uint32_t)out;
+    vertices[3].x = v3;
   }
   else
   {
-    v16 = *(float *)(v2 + 124) + 0.78539819;
-    v6 = cosine(v16);
-    v19 = v6 * a2 * 1.414;
-    v17 = *(float *)(v2 + 124) + 0.78539819;
-    v7 = sine(v17);
-    v8 = v7 * a2 * 1.414;
-    *(float *)a1 = -v8;
-    *(float *)(a1 + 4) = v19;
-    v9 = v19;
-    *(_DWORD *)(a1 + 8) = 0;
-    *(_DWORD *)(a1 + 16) = 0;
-    *(_DWORD *)(a1 + 20) = 0;
-    *(_DWORD *)(a1 + 12) = v18;
-    *(float *)(a1 + 24) = v9;
-    *(float *)(a1 + 28) = v8;
-    *(_DWORD *)(a1 + 32) = 0;
-    *(_DWORD *)(a1 + 40) = 1065353216;
-    *(_DWORD *)(a1 + 44) = 0;
-    *(_DWORD *)(a1 + 36) = v18;
-    *(float *)(a1 + 48) = v8;
-    *(float *)(a1 + 52) = -v19;
-    v10 = v19;
-    *(_DWORD *)(a1 + 56) = 0;
-    *(_DWORD *)(a1 + 64) = 1065353216;
-    *(_DWORD *)(a1 + 68) = 1065353216;
-    *(_DWORD *)(a1 + 60) = v18;
-    *(float *)(a1 + 72) = -(v10 * *(float *)(v2 + 136));
-    v3 = -(v8 * *(float *)(v2 + 136));
+    v13 = v2->facing_angle + 0.78539819;
+    v6 = cosine(v13);
+    v16 = v6 * *(float *)&sprite * 1.414;
+    v14 = v2->facing_angle + 0.78539819;
+    v7 = sine(v14);
+    v8 = v7 * *(float *)&sprite * 1.414;
+    vertices->x = -v8;
+    vertices->y = v16;
+    v9 = v16;
+    vertices->z = 0.0;
+    vertices->u = 0.0;
+    vertices->v = 0.0;
+    vertices->diffuse = (uint32_t)out;
+    vertices[1].x = v9;
+    vertices[1].y = v8;
+    vertices[1].z = 0.0;
+    vertices[1].u = 1.0;
+    vertices[1].v = 0.0;
+    vertices[1].diffuse = (uint32_t)out;
+    vertices[2].x = v8;
+    vertices[2].y = -v16;
+    v10 = v16;
+    vertices[2].z = 0.0;
+    vertices[2].u = 1.0;
+    vertices[2].v = 1.0;
+    vertices[2].diffuse = (uint32_t)out;
+    vertices[3].x = -(v10 * v2->corner_scale);
+    v3 = -(v8 * v2->corner_scale);
   }
-  *(float *)(a1 + 76) = v3;
-  *(_DWORD *)(a1 + 80) = 0;
-  *(_DWORD *)(a1 + 88) = 0;
-  *(_DWORD *)(a1 + 92) = 1065353216;
-  *(_DWORD *)(a1 + 84) = v18;
-  (*(void (__stdcall **)(_DWORD))(**(_DWORD **)(MEMORY[0x502FE0] + 8) + 48))(*(_DWORD *)(MEMORY[0x502FE0] + 8));
-  (*(void (__stdcall **)(int, _DWORD, _DWORD, int))(*(_DWORD *)MEMORY[0x502FEC] + 332))(
-    MEMORY[0x502FEC],
+  vertices[3].y = v3;
+  vertices[3].z = 0.0;
+  vertices[3].u = 0.0;
+  vertices[3].v = 1.0;
+  vertices[3].diffuse = (uint32_t)out;
+  g_direct3d_renderer.renderer_state->vertex_buffer->vtbl->Unlock(g_direct3d_renderer.renderer_state->vertex_buffer);
+  g_direct3d_renderer.device->vtbl->SetStreamSource(
+    g_direct3d_renderer.device,
     0,
-    *(_DWORD *)(MEMORY[0x502FE0] + 8),
+    g_direct3d_renderer.renderer_state->vertex_buffer,
     24);
-  (*(void (__stdcall **)(int, int))(*(_DWORD *)MEMORY[0x502FEC] + 304))(MEMORY[0x502FEC], 322);
-  result = (*(int (__stdcall **)(int, int, _DWORD, int))(*(_DWORD *)MEMORY[0x502FEC] + 280))(MEMORY[0x502FEC], 6, 0, 2);
-  MEMORY[0x4F7450] += 2;
-  ++MEMORY[0x503170];
+  g_direct3d_renderer.device->vtbl->SetVertexShader(g_direct3d_renderer.device, 322);
+  result = g_direct3d_renderer.device->vtbl->DrawPrimitive(g_direct3d_renderer.device, 6, 0, 2);
+  g_render_triangle_count += 2;
+  ++g_draw_primitive_call_count;
   if ( result )
     return report_errorf(aDrawPrimitiveF);
   return result;
 }
-

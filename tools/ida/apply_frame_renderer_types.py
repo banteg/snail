@@ -23,6 +23,7 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 EXPECTED_OWNER_SIZES = {
     "RenderableBod": 0x80,
     "Sprite": 0xB4,
+    "ObjectRenderVertex": 0x18,
     "SpriteDepthNode": 0x18,
     "FrameColor4f": 0x10,
     "FrontendFade": 0x14,
@@ -48,6 +49,8 @@ EXPECTED_OWNER_SIZES = {
 TRUSTED_NAMES = [
     (0x408000, "initialize_game_player"),
     (0x4107D0, "update_frontend_state_machine"),
+    (0x4137F0, "draw_sprite_quad"),
+    (0x44E410, "update_sprite_facing_angle"),
     (0x4119C0, "initialize_game_window_and_input_wrapper"),
     (0x4119D0, "initialize_game_window_and_input"),
     (0x44C3B0, "is_mouse_captured"),
@@ -212,6 +215,117 @@ def _named_struct_size(name: str) -> int | None:
     if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
         return None
     return value.get_size()
+
+
+def _sync_draw_sprite_vertex_lvar() -> dict[str, object]:
+    selector = "draw_sprite_quad"
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    declaration = "ObjectRenderVertex *vertices;"
+    local_type = ida_typeinf.tinfo_t()
+    if not ida_typeinf.parse_decl(
+        local_type,
+        None,
+        declaration,
+        ida_typeinf.PT_SIL,
+    ):
+        return {
+            "status": "failed",
+            "reason": "parse_vertex_type_failed",
+            "selector": selector,
+            "declaration": declaration,
+        }
+
+    expected_type = _normalize_type_text(str(local_type))
+    split_definition_address = 0x413933
+    cfunc = ida_hexrays.decompile(address)
+    existing = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.name == "vertices"
+        and _normalize_type_text(str(lvar.type())) == expected_type
+        and lvar.defea == split_definition_address
+    ]
+    if len(existing) == 1:
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": existing[0].name,
+            "type": str(existing[0].type()),
+            "definition_address": hex(existing[0].defea),
+        }
+    if existing:
+        return {
+            "status": "failed",
+            "reason": "unexpected_existing_vertex_lvars",
+            "selector": selector,
+            "candidate_count": len(existing),
+        }
+
+    sources = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if lvar.is_arg_var
+        and lvar.is_stk_var()
+        and lvar.get_stkoff() == 120
+        and lvar.name == "position"
+        and _normalize_type_text(str(lvar.type())) == "Vec3 *"
+    ]
+    if len(sources) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_position_argument_candidates",
+            "selector": selector,
+            "candidate_count": len(sources),
+        }
+
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(
+        sources[0].location,
+        split_definition_address,
+    )
+    info.name = "vertices"
+    info.type = local_type
+    info.set_split_lvar()
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE | ida_hexrays.MLI_SET_FLAGS,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_split_vertex_lvar_failed",
+            "selector": selector,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        lvar
+        for lvar in verified_cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.name == "vertices"
+        and _normalize_type_text(str(lvar.type())) == expected_type
+        and lvar.defea == split_definition_address
+    ]
+    if len(verified) != 1:
+        return {
+            "status": "failed",
+            "reason": "split_vertex_lvar_readback_failed",
+            "selector": selector,
+            "candidate_count": len(verified),
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "name": verified[0].name,
+        "type": str(verified[0].type()),
+        "definition_address": hex(verified[0].defea),
+    }
 
 
 def _normalize_struct_pointer_type(value: str | None) -> str:
@@ -471,6 +585,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {"selector": "GameRoot", "owner_graph": game_root_owner_graph}
         )
 
+    draw_sprite_vertex_lvar = _sync_draw_sprite_vertex_lvar()
+    if draw_sprite_vertex_lvar.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "draw_sprite_quad",
+                "vertex_lvar": draw_sprite_vertex_lvar,
+            }
+        )
+
     render_pointer_lvars = {}
     for (
         result_name,
@@ -507,6 +630,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "game_root_owner_graph": game_root_owner_graph,
+                "draw_sprite_vertex_lvar": draw_sprite_vertex_lvar,
                 "render_pointer_lvars": render_pointer_lvars,
                 "missing": missing,
                 "failed": failed,

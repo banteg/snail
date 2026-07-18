@@ -3,16 +3,16 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_sprite @ 0x44df30 */
 
-0044df30        uint32_t flags_2 = sprite->flags
+0044df30        enum SpriteFlag flags_2 = sprite->flags
 0044df37        int16_t eax
 0044df37        if ((flags_2:1.b & 8) != 0)
 0044df39        eax.b = g_sprite_manager
 0044df40        if ((flags_2:1.b & 8) != 0 && eax.b != 0)
 0044df40        return
 0044df49        if ((flags_2.b & 8) != 0)
-0044dfb9        sprite->flags = flags_2 & 0xfffffff7
+0044dfb9        sprite->flags = flags_2 & ~SPRITE_FLAG_SKIP_INITIAL_PROGRESS
 0044dfbc        label_44dfbc:
-0044dfbc        uint32_t flags = sprite->flags
+0044dfbc        enum SpriteFlag flags = sprite->flags
 0044dfc0        flags.b &= 0xf7
 0044dfc5        sprite->flags = flags
 0044dfcf        sprite->previous_position.x = sprite->position.x
@@ -26,17 +26,17 @@
 0044e00c        long double x87_r7_17 = fconvert.t(sprite->lifetime_step)
 0044e00f        long double temp1_1 = fconvert.t(0f)
 0044e00f        x87_r7_17 - temp1_1
-0044e01a        uint32_t flags_1 = sprite->flags
+0044e01a        enum SpriteFlag flags_1 = sprite->flags
 0044e01d        if ((((x87_r7_17 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_17, temp1_1) ? 1 : 0) << 0xa | (x87_r7_17 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
 0044e024        flags_1:1.b &= 0xfd
 0044e01f        flags_1:1.b |= 2
 0044e029        sprite->flags = flags_1
-0044e032        if ((flags_1 & 0x2000) != 0)
+0044e032        if ((flags_1 & SPRITE_FLAG_ANIMATED) != 0)
 0044e03e        long double x87_r7_19 = fconvert.t(sprite->frame_progress_step) + fconvert.t(sprite->frame_progress)
 0044e044        long double temp5_1 = fconvert.t(1f)
 0044e044        x87_r7_19 - temp5_1
 0044e04a        sprite->frame_progress = fconvert.s(x87_r7_19)
-0044e04a        bool c1_2 = unimplemented  {fst dword [ecx+0xac], st0}
+0044e04a        bool c1_2 = unknown  {fst dword [ecx+0xac], st0}
 0044e055        if ((((x87_r7_19 < temp5_1 ? 1 : 0) << 8 | (c1_2 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_19, temp5_1) ? 1 : 0) << 0xa | (x87_r7_19 == temp5_1 ? 1 : 0) << 0xe | 0x3800):1.b & 0x41) == 0)
 0044e06d        int32_t edx_3 = sprite->frame + sprite->frame_step
 0044e06f        int32_t frame_count = sprite->frame_count
@@ -56,7 +56,7 @@
 0044df51        long double temp0_1 = fconvert.t(1f)
 0044df51        x87_r7_2 - temp0_1
 0044df57        sprite->progress = fconvert.s(x87_r7_2)
-0044df57        bool c1_1 = unimplemented  {fst dword [ecx+0x68], st0}
+0044df57        bool c1_1 = unknown  {fst dword [ecx+0x68], st0}
 0044df5f        long double temp2_1
 0044df5f        if ((((x87_r7_2 < temp0_1 ? 1 : 0) << 8 | (c1_1 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_2, temp0_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp0_1 ? 1 : 0) << 0xe | 0x3800):1.b & 0x41) != 0)
 0044df61        temp2_1 = fconvert.t(0f)

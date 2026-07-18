@@ -122,7 +122,7 @@ PROTO_UPDATES = (
     ("update_sprite", "void __thiscall update_sprite(Sprite* sprite)"),
     (
         "register_sprite_texture",
-        "TextureRef* __stdcall register_sprite_texture(char* texture_path, int32_t texture_id, int32_t flags)",
+        "TextureRef* __thiscall register_sprite_texture(SpriteManager* manager, char* texture_path, int32_t texture_id, int32_t flags)",
     ),
     (
         "initialize_sprite_manager",
@@ -148,11 +148,11 @@ PROTO_UPDATES = (
     ),
     (
         "get_sprite_texture",
-        "TextureRef* __stdcall get_sprite_texture(int32_t texture_id)",
+        "TextureRef* __thiscall get_sprite_texture(SpriteManager* manager, int32_t texture_id)",
     ),
     (
         "get_sprite_texture_ref",
-        "void* __stdcall get_sprite_texture_ref(int32_t texture_id)",
+        "void* __thiscall get_sprite_texture_ref(SpriteManager* manager, int32_t texture_id)",
     ),
     ("destroy_star_field", "void __thiscall destroy_star_field(StarManager* manager)"),
     (

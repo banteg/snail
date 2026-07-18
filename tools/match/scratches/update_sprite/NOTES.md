@@ -36,3 +36,12 @@ The proven eleven-bit `SpriteFlag` word now reaches both checked-in concrete
 The live owner remains exactly 0xb4 bytes, and this exact matcher remains
 byte-identical. Bits without independent lifecycle or renderer evidence remain
 unnamed.
+
+## 2026-07-18 lifecycle owner replay
+
+Both analysis databases now carry the exact
+`void __thiscall update_sprite(Sprite *sprite)` receiver and the complete
+0xb4-byte Sprite owner. Fresh tracked exports render the previous/current
+position pair, velocity and gravity integration, lifetime flags, and animated
+frame state through named fields in both tools. Cross-tool health checks reject
+raw Sprite offsets while the matcher remains the 125/125, ten-operand oracle.

@@ -7,7 +7,7 @@
 0044e215        report_errorf("Sprite kill error, already dead (%s)", &sprite->texture_ref->name)
 0044e223        if (sprite == &g_sprite_sentinel)
 0044e223        return
-0044e22b        sprite->flags &= 0xfffffffe
+0044e22b        sprite->flags &= ~SPRITE_FLAG_ACTIVE
 0044e238        if (sprite == g_sprite_active_heads[sprite->owner])
 0044e23a        struct Sprite* next = sprite->next
 0044e23f        if (next != 0)

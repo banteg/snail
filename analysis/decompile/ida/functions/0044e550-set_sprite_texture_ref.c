@@ -2,12 +2,12 @@
 /* function: set_sprite_texture_ref @ 0x44e550 */
 /* selector: set_sprite_texture_ref */
 
-int __thiscall sub_44E550(_DWORD *this, int a2, int a3)
+// Assigns one sprite's texture reference and frame metadata from a manager texture id; iOS RSprite.o names this `cRSprite::SetTextureRef(int, int)`.
+TextureRef *__thiscall set_sprite_texture_ref(Sprite *sprite, int32_t texture_id, int32_t frame)
 {
-  int result; // eax
+  TextureRef *result; // eax
 
-  result = LODWORD(g_sprite_texture_table[a2]) + 164 * a3;
-  *(this + 7) = result;
+  result = &(*(&g_sprite_texture_table + texture_id))[frame];
+  sprite->texture_ref = result;
   return result;
 }
-

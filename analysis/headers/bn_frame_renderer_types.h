@@ -351,6 +351,15 @@ typedef struct GameRoot {
 
 typedef struct Sprite Sprite;
 
+typedef struct ObjectRenderVertex {
+    float x;
+    float y;
+    float z;
+    uint32_t diffuse;
+    float u;
+    float v;
+} ObjectRenderVertex;
+
 typedef struct SpriteDepthNode {
     struct SpriteDepthNode* next;
     FrameVec3 position;

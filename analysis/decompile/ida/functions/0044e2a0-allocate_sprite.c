@@ -2,59 +2,65 @@
 /* function: allocate_sprite @ 0x44e2a0 */
 /* selector: allocate_sprite */
 
-void *__thiscall allocate_sprite(_DWORD *manager, int owner, int texture_id, int texture_a, int texture_b)
+// Allocates one sprite from the manager free list, assigns texture ids, and links it into the selected active bucket; iOS RSprite.o names this `cRSpriteManager::New(int, int, int, int)`.
+Sprite *__thiscall allocate_sprite(
+        SpriteManager *manager,
+        int32_t owner,
+        int32_t texture_id,
+        int32_t texture_a,
+        int32_t texture_b)
 {
-  int free_sprite; // esi
-  int active_head; // eax
-  int flags; // ecx
-  int animation_flags; // edi
-  int final_flags; // ecx
+  Sprite *free_head; // esi
+  Sprite *v7; // eax
+  int v8; // ecx
+  int v9; // edi
+  SpriteFlag v10; // ecx
 
-  free_sprite = *(manager + 135006);
-  if ( !free_sprite )
-    return &g_sprite_sentinel;
-  *(manager + 135006) = *(_DWORD *)(free_sprite + 12);
-  *(_DWORD *)(free_sprite + 8) = owner;
-  active_head = *(manager + owner + 135001);
-  if ( active_head )
-    *(_DWORD *)(active_head + 16) = free_sprite;
-  *(_DWORD *)(free_sprite + 16) = 0;
-  *(_DWORD *)(free_sprite + 12) = *(manager + owner + 135001);
-  *(manager + owner + 135001) = free_sprite;
-  initialize_sprite((_DWORD *)free_sprite);
-  flags = (1 << (owner + 24)) | *(_DWORD *)(free_sprite + 4);
-  *(_DWORD *)(free_sprite + 4) = flags;
-  *(float *)(free_sprite + 28) = g_sprite_texture_table[texture_id];
+  free_head = manager->free_head;
+  if ( !free_head )
+    return (Sprite *)&g_sprite_sentinel;
+  manager->free_head = free_head->next;
+  free_head->owner = owner;
+  v7 = manager->active_heads[owner];
+  if ( v7 )
+    v7->prev = free_head;
+  free_head->prev = nullptr;
+  free_head->next = manager->active_heads[owner];
+  manager->active_heads[owner] = free_head;
+  initialize_sprite(free_head);
+  v8 = (1 << (owner + 24)) | free_head->flags;
+  free_head->flags = v8;
+  free_head->texture_ref = *(&g_sprite_texture_table + texture_id);
   if ( texture_b == -1 )
   {
     if ( texture_a != -1 )
     {
-      *(_DWORD *)(free_sprite + 4) = flags | 0x10;
-      *(float *)(free_sprite + 32) = g_sprite_texture_table[texture_a];
+      free_head->flags = v8 | 0x10;
+      free_head->texture_ref_a = *(&g_sprite_texture_table + texture_a);
     }
   }
   else
   {
-    *(_DWORD *)(free_sprite + 4) = flags | 0x20;
-    *(float *)(free_sprite + 32) = g_sprite_texture_table[texture_a];
-    *(float *)(free_sprite + 36) = g_sprite_texture_table[texture_b];
+    free_head->flags = v8 | 0x20;
+    free_head->texture_ref_a = *(&g_sprite_texture_table + texture_a);
+    free_head->texture_ref_b = *(&g_sprite_texture_table + texture_b);
   }
-  *(_DWORD *)(free_sprite + 100) = 0;
-  *(_DWORD *)(free_sprite + 156) = texture_id;
-  *(_DWORD *)(free_sprite + 172) = 0;
-  *(_DWORD *)(free_sprite + 176) = 0;
-  *(_DWORD *)(free_sprite + 160) = *(_DWORD *)(LODWORD(g_sprite_texture_table[texture_id]) + 144);
-  if ( (*(_DWORD *)LODWORD(g_sprite_texture_table[texture_id]) & 0x2000) != 0 )
+  free_head->size_end = 0.0;
+  free_head->texture_id = texture_id;
+  free_head->frame_progress = 0.0;
+  free_head->frame_progress_step = 0.0;
+  free_head->frame_count = (*(&g_sprite_texture_table + texture_id))->frame_count;
+  if ( ((*(&g_sprite_texture_table + texture_id))->flags & 0x2000) != 0 )
   {
-    animation_flags = *(_DWORD *)(free_sprite + 4) | 0x2000;
-    *(_DWORD *)(free_sprite + 4) = animation_flags;
-    final_flags = animation_flags;
-    *(_DWORD *)(free_sprite + 176) = *(_DWORD *)(LODWORD(g_sprite_texture_table[texture_id]) + 148);
-    if ( (*(_DWORD *)LODWORD(g_sprite_texture_table[texture_id]) & 0x4000) != 0 )
+    v9 = free_head->flags | 0x2000;
+    free_head->flags = v9;
+    v10 = v9;
+    free_head->frame_progress_step = (*(&g_sprite_texture_table + texture_id))->frame_progress_step;
+    if ( ((*(&g_sprite_texture_table + texture_id))->flags & 0x4000) != 0 )
     {
-      BYTE1(final_flags) = BYTE1(animation_flags) | 0x40;
-      *(_DWORD *)(free_sprite + 4) = final_flags;
+      BYTE1(v10) = BYTE1(v9) | 0x40;
+      free_head->flags = v10;
     }
   }
-  return (void *)free_sprite;
+  return free_head;
 }

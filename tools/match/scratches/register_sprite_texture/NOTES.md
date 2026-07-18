@@ -33,3 +33,9 @@ The exact allocation/get/set consumers retain hashes
 `2b2968a6e83462a879a086cc5416bbffd4c0bed6bd8355921acfaff7a7ecda89`,
 `f97d461b2bf8ec70b2b88601d81db1eb3ab97de23a4f1a306127104a45e30285`,
 and `49c8696ecafced0fc365f962d9087162719202a2bb9819d0f14d77f6f2d36d68`.
+
+2026-07-18 analysis replay: Binary Ninja and IDA now both retain the exact
+`SpriteManager *manager` thiscall receiver for registration and the two texture
+accessors. The receiver remains intentionally unused in the Windows body; it
+is ownership evidence, not a pretext to move the separately addressed texture
+table into the manager layout.

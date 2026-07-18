@@ -3,8 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_sprite @ 0x44de90 */
 
-0044de96        sprite->flags = 0x49
-0044de9d        set_color_white()
+0044de96        sprite->flags = SPRITE_FLAG_ACTIVE | SPRITE_FLAG_SKIP_INITIAL_PROGRESS | SPRITE_FLAG_RENDER_ENABLED
+0044de9d        set_color_white(&sprite->color)
 0044dea4        sprite->gravity_step = -0.0130000003f
 0044deab        sprite->draw_mode = 0
 0044deae        sprite->progress = 0f

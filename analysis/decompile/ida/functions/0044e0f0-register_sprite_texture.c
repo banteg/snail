@@ -2,27 +2,31 @@
 /* function: register_sprite_texture @ 0x44e0f0 */
 /* selector: register_sprite_texture */
 
-int __stdcall sub_44E0F0(_BYTE *a1, int a2, int a3)
+// Registers or reuses one sprite texture reference; iOS RSprite.o names this manager family `cRSpriteManager::Load(char*, int, int)` and also exposes the adjacent `LoadSet` variant.
+TextureRef *__thiscall register_sprite_texture(
+        SpriteManager *manager,
+        char *texture_path,
+        int32_t texture_id,
+        int32_t flags)
 {
-  _BYTE *v3; // eax
-  char v4; // cl
-  _DWORD *v5; // eax
-  int result; // eax
+  char *v4; // eax
+  char v5; // cl
+  TextureRef *texture_ref; // eax
+  TextureRef *result; // eax
 
-  v3 = a1;
-  if ( *a1 != 46 )
+  v4 = texture_path;
+  if ( *texture_path != 46 )
   {
     do
-      v4 = *++v3;
-    while ( v4 != 46 );
+      v5 = *++v4;
+    while ( v5 != 46 );
   }
-  if ( a2 >= 1000 )
+  if ( texture_id >= 1000 )
     report_errorf("Too many Sprite References - Increase RSPRITE_REFERENCE_MAX(%i) in RSprite.h", 1000);
-  v5 = (_DWORD *)get_or_create_texture_ref(&texture_list, a1, 0, a3);
-  LODWORD(g_sprite_texture_table[a2]) = v5;
-  *v5 |= a3;
-  result = LODWORD(g_sprite_texture_table[a2]);
-  *(_DWORD *)(result + 144) = 0;
+  texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, flags);
+  *(&g_sprite_texture_table + texture_id) = texture_ref;
+  texture_ref->flags |= flags;
+  result = *(&g_sprite_texture_table + texture_id);
+  result->frame_count = 0;
   return result;
 }
-

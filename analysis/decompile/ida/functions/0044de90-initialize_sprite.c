@@ -2,33 +2,34 @@
 /* function: initialize_sprite @ 0x44de90 */
 /* selector: initialize_sprite */
 
-void __thiscall initialize_sprite(_DWORD *sprite)
+// Initializes one sprite slot in the `cRSprite` runtime family before manager allocation links it into active/free lists.
+void __thiscall initialize_sprite(Sprite *sprite)
 {
-  *(sprite + 1) = 73;
-  set_color_white(sprite + 11);
-  *(sprite + 30) = -1135280652;
-  *(sprite + 10) = 0;
-  *(sprite + 26) = 0;
-  *(sprite + 28) = 0;
-  *(sprite + 29) = 0;
-  *(sprite + 31) = 0;
-  *(sprite + 32) = 0;
-  *(sprite + 33) = 0;
-  *(sprite + 34) = 1065353216;
-  *(sprite + 35) = 0;
-  *(sprite + 36) = 0;
-  *(sprite + 37) = -1007026176;
-  *(sprite + 8) = 0;
-  *(sprite + 9) = 0;
-  *(sprite + 23) = 0;
-  *(sprite + 22) = 0;
-  *(sprite + 21) = 0;
-  *(sprite + 38) = 0;
-  *sprite = -1;
-  *(sprite + 39) = 0;
-  *(sprite + 40) = 0;
-  *(sprite + 41) = 0;
-  *(sprite + 43) = 0;
-  *(sprite + 44) = 0;
-  *(sprite + 42) = 1;
+  sprite->flags = SPRITE_FLAG_RENDER_ENABLED|SPRITE_FLAG_SKIP_INITIAL_PROGRESS|SPRITE_FLAG_ACTIVE;
+  set_color_white(&sprite->color);
+  sprite->gravity_step = -0.013;
+  sprite->draw_mode = 0;
+  sprite->progress = 0.0;
+  sprite->lifetime = 0.0;
+  sprite->lifetime_step = 0.0;
+  sprite->facing_angle = 0.0;
+  sprite->facing_angle_step = 0.0;
+  sprite->reserved_84 = 0;
+  sprite->corner_scale = 1.0;
+  sprite->facing_refresh_progress = 0.0;
+  sprite->facing_refresh_step = 0.0;
+  sprite->depth_offset = -500.0;
+  sprite->texture_ref_a = nullptr;
+  sprite->texture_ref_b = nullptr;
+  sprite->velocity.z = 0.0;
+  sprite->velocity.y = 0.0;
+  sprite->velocity.x = 0.0;
+  sprite->depth_bias = 0.0;
+  sprite->object_ref = (void *)-1;
+  sprite->texture_id = 0;
+  sprite->frame_count = 0;
+  sprite->frame = 0;
+  sprite->frame_progress = 0.0;
+  sprite->frame_progress_step = 0.0;
+  sprite->frame_step = 1;
 }
