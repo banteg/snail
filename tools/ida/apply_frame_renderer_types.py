@@ -21,7 +21,11 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 
 EXPECTED_OWNER_SIZES = {
+    "Object": 0xDC,
+    "ObjectAnimation": 0x14,
+    "BodBase": 0x38,
     "RenderableBod": 0x80,
+    "AnimManager": 0x48,
     "Sprite": 0xB4,
     "ObjectRenderVertex": 0x18,
     "SpriteDepthNode": 0x18,
@@ -44,6 +48,11 @@ EXPECTED_OWNER_SIZES = {
     "BorderManager": 0x435B4,
     "GameRoot": 0x12E6FF4,
 }
+
+DEPENDENCY_HEADER_NAMES = (
+    "object_render_types.h",
+    "path_template_types.h",
+)
 
 
 TRUSTED_NAMES = [
@@ -333,6 +342,16 @@ def _normalize_struct_pointer_type(value: str | None) -> str:
     return re.sub(r"\s+", "", normalized)
 
 
+def _invalidate_cfunc(selector: str) -> dict[str, object]:
+    """Discard cached pseudocode after replaying transitive owner types."""
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    return {"status": "invalidated", "selector": selector, "address": hex(address)}
+
+
 def _sync_render_pointer_lvar(
     *,
     definition_address: int,
@@ -505,6 +524,29 @@ RENDER_POINTER_LVAR_SPECS = (
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
+    dependency_headers = [
+        header_path.with_name(name) for name in DEPENDENCY_HEADER_NAMES
+    ]
+    dependency_parse_results = []
+    for dependency_header in dependency_headers:
+        if dependency_header.is_file():
+            dependency_parse_results.append(
+                {
+                    "header": str(dependency_header),
+                    "parse_errors": idc.parse_decls(
+                        str(dependency_header), idc.PT_FILE
+                    ),
+                }
+            )
+        else:
+            dependency_parse_results.append(
+                {
+                    "header": str(dependency_header),
+                    "parse_errors": None,
+                    "reason": "missing_dependency_header",
+                }
+            )
+
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
     owner_sizes = {name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES}
     applied = 0
@@ -522,6 +564,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected in EXPECTED_OWNER_SIZES.items()
         if owner_sizes[name] != expected
     ]
+    failed.extend(
+        {
+            "selector": result["header"],
+            "reason": result.get("reason", "dependency_parse_failed"),
+            "parse_errors": result["parse_errors"],
+        }
+        for result in dependency_parse_results
+        if result["parse_errors"] != 0
+    )
 
     for address, name in TRUSTED_NAMES:
         if idc.get_name(address) == name:
@@ -585,6 +636,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {"selector": "GameRoot", "owner_graph": game_root_owner_graph}
         )
 
+    invalidated_cfuncs = {
+        selector: _invalidate_cfunc(selector)
+        for selector in ("draw_sprite_quad", "render_game_frame")
+    }
+    for selector, result in invalidated_cfuncs.items():
+        if result.get("status") == "failed":
+            failed.append({"selector": selector, "invalidation": result})
+
     draw_sprite_vertex_lvar = _sync_draw_sprite_vertex_lvar()
     if draw_sprite_vertex_lvar.get("status") == "failed":
         failed.append(
@@ -623,6 +682,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
+                "dependency_headers": dependency_parse_results,
                 "parse_errors": parse_errors,
                 "owner_sizes": owner_sizes,
                 "applied": applied,
@@ -630,6 +690,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "game_root_owner_graph": game_root_owner_graph,
+                "invalidated_cfuncs": invalidated_cfuncs,
                 "draw_sprite_vertex_lvar": draw_sprite_vertex_lvar,
                 "render_pointer_lvars": render_pointer_lvars,
                 "missing": missing,

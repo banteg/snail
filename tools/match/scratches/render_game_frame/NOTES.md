@@ -2,11 +2,11 @@
 
 Relationship-first scratch for the frame renderer at `0x40a490`.
 
-Current Wibo result after the renderer control-flow and ownership slice: 45.43%,
-415 candidate instructions versus 439 target instructions, with 26 masked
-operands ok, 0 unresolved, and 0 mismatch. The helper calls at `0x414650`, `0x413540`,
-`0x413650`, `0x411e10`, and `0x411de0` now resolve to standalone exact
-scratches.
+Current Wibo result after the frame-ledger and viewport-cursor source-shape
+slice: 56.22%, 429 candidate instructions versus 439 target instructions, with
+a 6-instruction exact prefix, 26 masked operands ok, 0 unresolved, and 0
+mismatch. The helper calls at `0x414650`, `0x413540`, `0x413650`, `0x411e10`,
+and `0x411de0` resolve to standalone exact scratches.
 
 The broader `GameRoot` remains sparse, but its renderer ownership window is now
 shared: the skip counter, borrowed active-BOD head, and owned five-entry
@@ -68,12 +68,10 @@ Recovered relationships:
 
 Expected residuals:
 
-- The native function has a compact `0x80`-byte frame with several overlapping
-  locals. In particular, it keeps a rendered-BOD total in the setup-index
-  stack lane, increments it after every accepted first-pass BOD, and adds the
-  replay count before draining the post-sprite stack. A separately named local
-  expands the candidate frame to `0x84`, so this honest partial leaves the
-  unused ledger out instead of introducing explicit stack aliasing.
+- The compact native `0x80`-byte frame and its distinct staged, total-rendered,
+  and replay ledgers are now reproduced without explicit stack aliasing. The
+  remaining mismatch is concentrated in camera-order setup induction and
+  compiler register scheduling across the sprite and replay lanes.
 - The complete BOD prefix through `RenderableBod +0x7f` is now shared through
   `bod_types.h` and the existing `BodNode`/`ContactTargetObject` prefix: signed
   flags, list links, position, render-object pass-through arguments, object,
@@ -234,4 +232,40 @@ the same 256-head array and its local `sprite` is the `Sprite*` borrowed from
 member declaration and call convention prove
 `void __thiscall update_sprite_facing_angle(Sprite*, const TransformMatrix*)`.
 These are ownership replays only: no matcher source or operand exception was
-changed, and the camera cursor remains intentionally unclaimed.
+changed. The pre-biased camera-pass register remains intentionally unclaimed;
+the distinct stack-backed `camera_order_cursor` is recovered below.
+
+## 2026-07-18 frame-ledger and viewport-cursor source shape
+
+The renderer now keeps the three native counters as separate source owners.
+`post_sprite_count` counts only staged BODs, `rendered_bod_count` increments for
+every accepted first-pass BOD, and `replay_count` snapshots the staged count.
+Before reverse replay, the staged count clears and the snapshot is added to the
+total ledger. This is the native control flow at `0x40a989..0x40a99f`, not a
+synthetic alias introduced for code generation.
+
+Removing the persistent local `RenderCameraSlot*` and `RenderCamera*` views was
+the complementary ownership correction. The authored expression indexes the
+root-owned `render_camera_slots` array at each use; VC6 consequently selects
+the native camera index in `EBX` and keeps `EBP` as the pre-biased containing-
+root cursor (`game + camera_index * 0x28`). The real ledgers then fit in the
+native `0x80` frame without overlap tricks. The two fixed-five scans use
+separate scoped induction variables because VC6 retains `for` declarations to
+the enclosing scope.
+
+Focused Wibo rises from 45.43% (`415/439`, prefix 3) to 56.22% (`429/439`,
+prefix 6), with all 26 masked operands clean and no unresolved or mismatched
+operands. A bounded probe that replaced the insertion `break` with
+`insert = ordered_count` reached 439 candidate instructions but reduced the
+honest similarity and destabilized unrelated register allocation; reversing
+the Sprite/depth-node declaration order also regressed. Both were rejected
+instead of retaining instruction-count padding.
+
+Binary Ninja now persists the exact compiler-split staged, total-rendered,
+rendered-sprite, camera-order-cursor, and remaining-camera locals. A proposed
+user override for the depth-node allocator was rejected after a reversible
+preview proved that it erased the independently recovered `Sprite*` chain.
+The IDA replay now loads its rich Object and canonical BOD dependencies before
+the narrow frame header and invalidates only the owned renderer caches, so the
+tracked `Object::animation` relationship cannot remain hidden behind stale
+pseudocode.

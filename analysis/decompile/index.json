@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 12,
+  "function_count": 13,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 12,
-  "ida_exported": 12,
+  "bn_exported": 13,
+  "ida_exported": 13,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -16,6 +16,10 @@
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
+    {
+      "name": "render_game_frame",
+      "address": "0x40a490"
+    },
     {
       "name": "draw_sprite_quad",
       "address": "0x4137f0"

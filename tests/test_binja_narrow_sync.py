@@ -319,6 +319,15 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert '"bod",\n        "RenderableBod*",' in bn_frame_sync
     assert '912,\n        67,\n        "bucket_node",\n        "SpriteDepthNode*",' in bn_frame_sync
     assert '1280,\n        73,\n        "post_cursor",\n        "RenderableBod**",' in bn_frame_sync
+    for marker in (
+        '299,\n        -128,\n        "post_sprite_count",\n        "int32_t",',
+        '303,\n        -124,\n        "rendered_bod_count",\n        "int32_t",',
+        '321,\n        -116,\n        "camera_order_cursor",\n        "int32_t*",',
+        '55,\n        -112,\n        "rendered_sprite_count",\n        "int32_t",',
+        '317,\n        -104,\n        "remaining_camera_count",\n        "int32_t",',
+    ):
+        assert marker in bn_frame_sync
+    assert '708,\n        -108,\n        "next_depth_node"' not in bn_frame_sync
     assert (
         '"int32_t __cdecl draw_sprite_quad(Vec3* position, Sprite* sprite)"'
         in bn_frame_sync
@@ -331,6 +340,16 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert '"ObjectRenderVertex": 0x18' in frame_sync
     assert '"SpriteDepthNode": 0x18' in frame_sync
     assert '"RenderableBod": 0x80' in frame_sync
+    assert '"Object": 0xDC' in frame_sync
+    assert '"ObjectAnimation": 0x14' in frame_sync
+    assert '"BodBase": 0x38' in frame_sync
+    assert '"AnimManager": 0x48' in frame_sync
+    assert "DEPENDENCY_HEADER_NAMES = (" in frame_sync
+    assert '"object_render_types.h"' in frame_sync
+    assert '"path_template_types.h"' in frame_sync
+    assert "def _invalidate_cfunc" in frame_sync
+    assert "ida_hexrays.mark_cfunc_dirty(address, True)" in frame_sync
+    assert 'for selector in ("draw_sprite_quad", "render_game_frame")' in frame_sync
     assert "def _sync_render_pointer_lvar" in frame_sync
     assert '"depth_bucket_cursor",\n        0x40A8C0,' in frame_sync
     assert '"depth_bucket_sprite",\n        0x40A8CB,' in frame_sync

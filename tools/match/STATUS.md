@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**626/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **100057/317040** bytes (**31.56%**) are proof-grade, and overall fuzzy is **76.13%**.
+**626/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **100057/317040** bytes (**31.56%**) are proof-grade, and overall fuzzy is **76.18%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -737,7 +737,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (43)
+## Mid Progress (50-79.99%) (44)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -748,6 +748,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 344/325 | 64.28% | 1/325 | 3 mismatch, 127 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.01% | 48/566 | 52 ok |  |
+| 🚧 | render_game_frame | 0x40a490 | 1460 | 429/439 | 56.22% | 6/439 | 26 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  |
 | 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 6 ok |  |
 | 🚧 | create_vertex_buffer | 0x4114b0 | 286 | 92/101 | 76.68% | 8/101 | 10 ok |  |
@@ -785,11 +786,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 1 mismatch, 88 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
 
-## Early Progress (>0-49.99%) (23)
+## Early Progress (>0-49.99%) (22)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
-| 🚧 | render_game_frame | 0x40a490 | 1460 | 415/439 | 45.43% | 3/439 | 26 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 459/582 | 34.77% | 1/582 | 35 ok |  |
 | 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 640/685 | 40.91% | 0/685 | 35 ok |  |
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 641/690 | 40.57% | 0/690 | 34 ok |  |

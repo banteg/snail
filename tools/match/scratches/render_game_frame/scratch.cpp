@@ -42,6 +42,7 @@ void GameRoot::render_game_frame()
     TransformMatrix transform;
     set_matrix_identity(&transform);
 
+    int active_camera_count = 0;
     int camera_order[CAMERA_SLOT_COUNT];
     camera_order[0] = -1;
     camera_order[1] = -1;
@@ -49,12 +50,14 @@ void GameRoot::render_game_frame()
     camera_order[3] = -1;
     camera_order[CAMERA_LAST_INDEX] = -1;
 
-    int active_camera_count = 0;
     RenderCameraSlot* slots = render_camera_slots;
-    int i;
-    for (i = 0; i < CAMERA_SLOT_COUNT; ++i) {
-        if ((slots[i].flags & 1) != 0) {
-            ++active_camera_count;
+    {
+        for (int active_index = 0;
+             active_index < CAMERA_SLOT_COUNT;
+             ++active_index) {
+            if ((slots[active_index].flags & 1) != 0) {
+                ++active_camera_count;
+            }
         }
     }
 
@@ -62,26 +65,31 @@ void GameRoot::render_game_frame()
         (slots[1].flags & ~RENDER_SCENE_MASK) | RENDER_SCENE_PLAYER_0;
 
     int ordered_count = 0;
-    for (i = 0; i < CAMERA_SLOT_COUNT; ++i) {
-        if ((slots[i].flags & 1) != 0) {
-            if (ordered_count == 0) {
-                camera_order[0] = i;
-                ordered_count = 1;
-            } else {
-                for (int insert = 0; insert < ordered_count; ++insert) {
-                    if (slots[i].sort_key > slots[camera_order[insert]].sort_key) {
-                        if (insert < CAMERA_LAST_INDEX) {
-                            int* shift = &camera_order[CAMERA_LAST_INDEX];
-                            int shift_count = CAMERA_LAST_INDEX - insert;
-                            do {
-                                *shift = shift[-1];
-                                --shift;
-                                --shift_count;
-                            } while (shift_count != 0);
+    {
+        for (int order_index = 0;
+             order_index < CAMERA_SLOT_COUNT;
+             ++order_index) {
+            if ((slots[order_index].flags & 1) != 0) {
+                if (ordered_count == 0) {
+                    camera_order[0] = order_index;
+                    ordered_count = 1;
+                } else {
+                    for (int insert = 0; insert < ordered_count; ++insert) {
+                        if (slots[order_index].sort_key >
+                            slots[camera_order[insert]].sort_key) {
+                            if (insert < CAMERA_LAST_INDEX) {
+                                int* shift = &camera_order[CAMERA_LAST_INDEX];
+                                int shift_count = CAMERA_LAST_INDEX - insert;
+                                do {
+                                    *shift = shift[-1];
+                                    --shift;
+                                    --shift_count;
+                                } while (shift_count != 0);
+                            }
+                            camera_order[insert] = order_index;
+                            ++ordered_count;
+                            break;
                         }
-                        camera_order[insert] = i;
-                        ++ordered_count;
-                        break;
                     }
                 }
             }
@@ -89,28 +97,27 @@ void GameRoot::render_game_frame()
     }
 
     int post_sprite_count = 0;
+    int rendered_bod_count = 0;
     if (active_camera_count > 0) {
         int* camera_cursor = camera_order;
         int remaining_cameras = active_camera_count;
         do {
             int camera_index = *camera_cursor;
-            RenderCameraSlot* slot = &slots[camera_index];
 
-        if ((slot->flags & 1) != 0) {
-            RenderCamera* source = slot->source;
+        if ((render_camera_slots[camera_index].flags & 1) != 0) {
             render_camera(
-                slot->viewport_x,
-                slot->viewport_y,
-                slot->viewport_width,
-                slot->viewport_height,
-                source->fov_degrees,
-                &source->transform,
-                &source->view_matrix,
-                slot->draw_world,
+                render_camera_slots[camera_index].viewport_x,
+                render_camera_slots[camera_index].viewport_y,
+                render_camera_slots[camera_index].viewport_width,
+                render_camera_slots[camera_index].viewport_height,
+                render_camera_slots[camera_index].source->fov_degrees,
+                &render_camera_slots[camera_index].source->transform,
+                &render_camera_slots[camera_index].source->view_matrix,
+                render_camera_slots[camera_index].draw_world,
                 0);
 
             post_sprite_count = 0;
-            if ((slot->flags & 2) == 0) {
+            if ((render_camera_slots[camera_index].flags & 2) == 0) {
                 RenderableBod* bod =
                     (RenderableBod*)active_bod_list.first;
                 RenderableBod** post_cursor = g_post_sprite_bods;
@@ -121,12 +128,14 @@ void GameRoot::render_game_frame()
 
                     if ((bod->list_flags & BOD_FLAG_HAS_OBJECT) != 0 &&
                         (bod->list_flags & BOD_FLAG_RENDER_ENABLED) != 0 &&
-                        (slot->flags & bod->list_flags & RENDER_SCENE_MASK) != 0) {
+                        (render_camera_slots[camera_index].flags &
+                         bod->list_flags & RENDER_SCENE_MASK) != 0) {
                         if ((bod->list_flags & BOD_FLAG_AFTER_SPRITES) != 0) {
                             *post_cursor = bod;
                             ++post_cursor;
                             ++post_sprite_count;
                         }
+                        ++rendered_bod_count;
                         if ((bod->list_flags & BOD_FLAG_SYNC_ANIMATION) != 0) {
                             Object* animated_object = bod->object;
                             AnimManager* animation_manager =
@@ -165,12 +174,14 @@ void GameRoot::render_game_frame()
             while (sprite != 0) {
                 ++rendered_sprite_count;
                 unsigned int sprite_flags = sprite->flags;
-                if ((slot->flags & sprite_flags & RENDER_SCENE_MASK) != 0) {
+                if ((render_camera_slots[camera_index].flags &
+                     sprite_flags & RENDER_SCENE_MASK) != 0) {
                     if ((sprite_flags & SPRITE_FLAG_ACTIVE) != 0 &&
                         (sprite_flags & SPRITE_FLAG_RENDER_ENABLED) != 0 &&
                         (sprite_flags & SPRITE_FLAG_DELAYED_RENDER) == 0) {
                         Vector3 projected = sprite->position;
-                        TransformMatrix camera_matrix = source->view_matrix;
+                        TransformMatrix camera_matrix =
+                            render_camera_slots[camera_index].source->view_matrix;
                         projected *= camera_matrix;
                         projected.x = -projected.x;
                         projected.z = -projected.z;
@@ -225,7 +236,8 @@ void GameRoot::render_game_frame()
                 SpriteDepthNode* node = g_sprite_depth_buckets[bucket];
                 while (node != 0) {
                     if ((node->sprite->flags & SPRITE_FLAG_ORIENT_TO_MOTION) != 0) {
-                        node->sprite->update_sprite_facing_angle(&source->view_matrix);
+                        node->sprite->update_sprite_facing_angle(
+                            &render_camera_slots[camera_index].source->view_matrix);
                     }
                     draw_sprite_quad(&node->position, node->sprite);
                     node = node->next;
@@ -235,23 +247,27 @@ void GameRoot::render_game_frame()
 
             end_sprite_depth_render_state();
             begin_overlay_render_state();
-            draw_font_text_queue(slot->flags);
+            draw_font_text_queue(render_camera_slots[camera_index].flags);
             end_overlay_render_state();
 
-            if ((slot->flags & 2) == 0 && post_sprite_count != 0) {
+            if ((render_camera_slots[camera_index].flags & 2) == 0 &&
+                post_sprite_count != 0) {
                 render_camera(
-                    slot->viewport_x,
-                    slot->viewport_y,
-                    slot->viewport_width,
-                    slot->viewport_height,
-                    source->fov_degrees,
-                    &source->transform,
-                    &source->view_matrix,
-                    slot->draw_world,
+                    render_camera_slots[camera_index].viewport_x,
+                    render_camera_slots[camera_index].viewport_y,
+                    render_camera_slots[camera_index].viewport_width,
+                    render_camera_slots[camera_index].viewport_height,
+                    render_camera_slots[camera_index].source->fov_degrees,
+                    &render_camera_slots[camera_index].source->transform,
+                    &render_camera_slots[camera_index].source->view_matrix,
+                    render_camera_slots[camera_index].draw_world,
                     1);
 
+                int replay_count = post_sprite_count;
+                post_sprite_count = 0;
+                rendered_bod_count += replay_count;
                 RenderableBod** post_cursor =
-                    g_post_sprite_bods + post_sprite_count;
+                    g_post_sprite_bods + replay_count;
                 do {
                     --post_cursor;
                     RenderableBod* bod = *post_cursor;
@@ -276,8 +292,8 @@ void GameRoot::render_game_frame()
                             &bod->color,
                             (char)bod->is_bod_after_sprites());
                     }
-                    --post_sprite_count;
-                } while (post_sprite_count != 0);
+                    --replay_count;
+                } while (replay_count != 0);
             }
         }
 
