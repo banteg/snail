@@ -523,6 +523,7 @@ int32_t __thiscall clean_duplicate_vertices(
 
 void __thiscall calc_object_bounding_box(Object* object);
 void __thiscall calc_object_facequad_normals(Object* object);
+int32_t __thiscall calc_object_facequad_normals_simple(Object* object);
 void __thiscall calc_object_texture_groups(Object* object);
 void __thiscall add_object_edge(
     Object* object, int32_t vertex_a, int32_t vertex_b, int32_t normal_index);

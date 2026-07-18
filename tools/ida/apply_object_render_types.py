@@ -188,6 +188,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall calc_object_facequad_normals(Object* object);",
     ),
     (
+        "calc_object_facequad_normals_simple",
+        "int32_t __thiscall calc_object_facequad_normals_simple(Object* object);",
+    ),
+    (
         "calc_object_texture_groups",
         "void __thiscall calc_object_texture_groups(Object* object);",
     ),
@@ -309,6 +313,7 @@ TRUSTED_NAMES = [
     (0x42FAD0, "add_object_to_list"),
     (0x42FB10, "calc_object_bounding_box"),
     (0x42FCB0, "calc_object_facequad_normals"),
+    (0x430230, "calc_object_facequad_normals_simple"),
     (0x4303F0, "calc_object_texture_groups"),
     (0x4305A0, "add_object_edge"),
     (0x4308B0, "calc_object_edges"),
@@ -421,6 +426,7 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct DirectXLoader {",
     "void __thiscall load_x_mesh(",
     "void __thiscall calc_object_bounding_box(Object* object);",
+    "int32_t __thiscall calc_object_facequad_normals_simple(Object* object);",
     "void __thiscall calc_object_texture_groups(Object* object);",
     "void __thiscall request_object_texture_groups(Object* object, int32_t group_count);",
     "void __cdecl sort_object_faces_by_texture_group(Object* object);",
@@ -485,6 +491,7 @@ REANALYSIS_FUNCTIONS = (
     0x42F930,  # request_object_texture_groups
     0x42FB10,  # calc_object_bounding_box
     0x42FCB0,  # calc_object_facequad_normals
+    0x430230,  # calc_object_facequad_normals_simple
     0x4303F0,  # calc_object_texture_groups
     0x4305A0,  # add_object_edge
     0x4308B0,  # calc_object_edges

@@ -3771,6 +3771,7 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         "request_object_edges",
         "calc_object_bounding_box",
         "calc_object_facequad_normals",
+        "calc_object_facequad_normals_simple",
         "calc_object_texture_groups",
         "add_object_edge",
         "calc_object_edges",
@@ -3782,6 +3783,7 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         ("0x41aa50", "apply_distort_to_object"),
         ("0x42fb10", "calc_object_bounding_box"),
         ("0x42fcb0", "calc_object_facequad_normals"),
+        ("0x430230", "calc_object_facequad_normals_simple"),
         ("0x4303f0", "calc_object_texture_groups"),
         ("0x4305a0", "add_object_edge"),
         ("0x4308b0", "calc_object_edges"),
@@ -3823,6 +3825,7 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         "0x42F9E0",
         "0x42FB10",
         "0x42FCB0",
+        "0x430230",
         "0x4303F0",
         "0x4305A0",
         "0x4308B0",
@@ -3868,9 +3871,17 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
     ) in ida_sync_source
 
     assert "Vec3* __thiscall request_object_facequad_normals(Object* object)" in sync_source
+    assert (
+        "int32_t __thiscall calc_object_facequad_normals_simple(Object* object)"
+        in sync_source
+    )
     assert "Vector3* request_object_facequad_normals();" in matcher_header
     for header in analysis_headers:
         assert "Vec3* __thiscall request_object_facequad_normals(Object* object);" in header
+        assert (
+            "int32_t __thiscall calc_object_facequad_normals_simple(Object* object);"
+            in header
+        )
         assert "void __thiscall request_object_texture_groups(" in header
 
 

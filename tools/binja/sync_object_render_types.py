@@ -179,6 +179,7 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x42fad0", "add_object_to_list"),
     ("0x42fb10", "calc_object_bounding_box"),
     ("0x42fcb0", "calc_object_facequad_normals"),
+    ("0x430230", "calc_object_facequad_normals_simple"),
     ("0x4303f0", "calc_object_texture_groups"),
     ("0x4305a0", "add_object_edge"),
     ("0x4308b0", "calc_object_edges"),
@@ -395,6 +396,10 @@ PROTO_UPDATES = (
     (
         "calc_object_facequad_normals",
         "void __thiscall calc_object_facequad_normals(Object* object)",
+    ),
+    (
+        "calc_object_facequad_normals_simple",
+        "int32_t __thiscall calc_object_facequad_normals_simple(Object* object)",
     ),
     (
         "calc_object_texture_groups",

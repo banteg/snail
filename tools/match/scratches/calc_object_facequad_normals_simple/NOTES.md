@@ -31,3 +31,11 @@ offset in `ebp`.
 
 Focused Wibo is 100.00%, 139/139 instructions and full prefix, with five clean
 masked operands and no unresolved or mismatched operands.
+
+2026-07-18 analyzer replay closure: the object-topology replay now owns this
+helper's `int __thiscall(Object*)` boundary alongside the full normal and edge
+builders. IDA recovers indexed `ObjectFaceQuad` inputs and the two `Vec3`
+normal slots per face; Binary Ninja recovers the canonical object fields while
+honestly preserving the native byte-offset face walk. Both lanes retain the
+real `Object` owner and the exact scratch remains 139/139 with five clean
+operands.

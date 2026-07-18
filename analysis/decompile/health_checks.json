@@ -9251,6 +9251,25 @@
       ]
     },
     {
+      "name": "bn_object_facequad_normal_pair_owner",
+      "artifact": "analysis/decompile/binja/functions/00430230-calc_object_facequad_normals_simple.c",
+      "required_substrings": [
+        "request_object_facequad_normals(object)",
+        "object->vertices",
+        "object->facequads",
+        "object->facequad_normals",
+        "object->facequad_count",
+        "struct Vec3 lhs",
+        "struct Vec3 rhs",
+        "return facequad_count"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(object +",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_object_texture_group_rebuild_owner",
       "artifact": "analysis/decompile/binja/functions/004303f0-calc_object_texture_groups.c",
       "required_substrings": [
@@ -9623,6 +9642,26 @@
         "int *this",
         "*(this +",
         "return free_tracked_memory",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_facequad_normal_pair_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00430230-calc_object_facequad_normals_simple.c",
+      "required_substrings": [
+        "int32_t __thiscall calc_object_facequad_normals_simple(Object *object)",
+        "request_object_facequad_normals(object);",
+        "ObjectFaceQuad *v6",
+        "object->vertices",
+        "object->facequads",
+        "object->facequad_normals[v3] = out;",
+        "object->facequad_normals[v3 + 1] = vector;",
+        "while ( v17 < object->facequad_count );"
+      ],
+      "forbidden_substrings": [
+        "sub_430230",
+        "int *this",
+        "*(this +",
         "unimplemented"
       ]
     },
