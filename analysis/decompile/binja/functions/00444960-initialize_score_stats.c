@@ -3,6 +3,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_score_stats @ 0x444960 */
 
-00444968        int32_t ecx
-00444968        __builtin_memset(ecx, 0, 0x18)
-00444973        return 0
+00444968        __builtin_memset(squidge, 0, 0x18)
+00444973        return

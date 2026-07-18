@@ -14265,6 +14265,132 @@
         "this +",
         "unimplemented"
       ]
+    },
+    {
+      "name": "bn_squidge_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/00444960-initialize_score_stats.c",
+      "required_substrings": [
+        "__builtin_memset(squidge, 0, 0x18)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "int32_t ecx",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_squidge_initializer_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00444960-initialize_score_stats.c",
+      "required_substrings": [
+        "void __thiscall initialize_score_stats(Squidge *squidge)",
+        "squidge->y_output = 0.0",
+        "squidge->y_velocity = 0.0",
+        "squidge->z_output = 0.0",
+        "squidge->z_velocity = 0.0"
+      ],
+      "forbidden_substrings": [
+        "sub_444960",
+        "_DWORD *this",
+        "SquidgeState",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_squidge_start_y_owner",
+      "artifact": "analysis/decompile/binja/functions/00444980-start_squidge_y.c",
+      "required_substrings": [
+        "squidge->y_phase = 0f",
+        "squidge->y_velocity",
+        "value"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "*(squidge +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_squidge_start_y_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00444980-start_squidge_y.c",
+      "required_substrings": [
+        "void __thiscall start_squidge_y(Squidge *squidge, float value)",
+        "squidge->y_phase = 0.0",
+        "squidge->y_velocity = value * 0.5"
+      ],
+      "forbidden_substrings": [
+        "SquidgeState",
+        "float *this",
+        "sub_444980",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_squidge_start_z_owner",
+      "artifact": "analysis/decompile/binja/functions/004449a0-start_squidge_z.c",
+      "required_substrings": [
+        "squidge->z_phase = value",
+        "squidge->z_velocity",
+        "-0.00300000003f"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "*(squidge +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_squidge_start_z_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/004449a0-start_squidge_z.c",
+      "required_substrings": [
+        "void __thiscall start_squidge_z(Squidge *squidge, float value)",
+        "squidge->z_phase = value",
+        "squidge->z_velocity = value * -0.003"
+      ],
+      "forbidden_substrings": [
+        "SquidgeState",
+        "float *this",
+        "sub_4449A0",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_squidge_ai_owner",
+      "artifact": "analysis/decompile/binja/functions/004449c0-update_squidge.c",
+      "required_substrings": [
+        "struct Squidge* squidge_1 = squidge",
+        "squidge->y_phase",
+        "squidge->y_velocity",
+        "squidge->y_output",
+        "squidge->z_phase",
+        "squidge->z_velocity",
+        "squidge->z_output"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg1[",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_squidge_ai_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/004449c0-update_squidge.c",
+      "required_substrings": [
+        "void __thiscall update_squidge(Squidge *squidge)",
+        "squidge->y_phase",
+        "squidge->y_velocity",
+        "squidge->y_output",
+        "squidge->z_phase",
+        "squidge->z_velocity",
+        "squidge->z_output"
+      ],
+      "forbidden_substrings": [
+        "SquidgeState",
+        "float *this",
+        "sub_4449C0",
+        "unimplemented"
+      ]
     }
   ]
 }

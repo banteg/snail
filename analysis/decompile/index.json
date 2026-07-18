@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,11 +17,23 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "normalize_segment_glyph_for_track_flags",
-      "address": "0x437270"
+      "name": "initialize_score_stats",
+      "address": "0x444960"
+    },
+    {
+      "name": "start_squidge_y",
+      "address": "0x444980"
+    },
+    {
+      "name": "start_squidge_z",
+      "address": "0x4449a0"
+    },
+    {
+      "name": "update_squidge",
+      "address": "0x4449c0"
     }
   ],
-  "health_check_count": 814,
+  "health_check_count": 822,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -26,3 +26,11 @@ nearby spellings during the retry: `0.0f > abs_output` regressed to 79.27%,
 copying from the output field improved only to 84.81% while changing instruction
 count, mutating `new_output` in place reproduced the old 75.15% regression, and
 volatile locals regressed badly.
+
+## 2026-07-18 analyzer replay
+
+The four-function `cRSquidge` family now exports through the canonical
+`Squidge` owner in both analyzers. Binary Ninja resolves the 0x18-byte
+initializer and all Y/Z spring fields; IDA retires the port-side
+`SquidgeState` compatibility name and the raw `sub_444960(_DWORD *this)` view.
+The tracked owner checks cover the initializer, both start methods, and AI.

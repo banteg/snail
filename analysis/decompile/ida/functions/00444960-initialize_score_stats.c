@@ -2,14 +2,13 @@
 /* function: initialize_score_stats @ 0x444960 */
 /* selector: initialize_score_stats */
 
-int __thiscall sub_444960(_DWORD *this)
+// Stable historical Windows harness name for `cRSquidge::Init()`. The sole caller passes the inline `Player + 0x4344` Squidge owner, and the helper clears its six Y/Z spring floats; Goldy's score buckets are separate at `Player + 0x310`.
+void __thiscall initialize_score_stats(Squidge *squidge)
 {
-  *(this + 1) = 0;
-  *(this + 2) = 0;
-  *this = 0;
-  *(this + 4) = 0;
-  *(this + 5) = 0;
-  *(this + 3) = 0;
-  return 0;
+  squidge->y_velocity = 0.0;
+  squidge->y_phase = 0.0;
+  squidge->y_output = 0.0;
+  squidge->z_velocity = 0.0;
+  squidge->z_phase = 0.0;
+  squidge->z_output = 0.0;
 }
-
