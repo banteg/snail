@@ -20,6 +20,7 @@ TRUSTED_NAMES = (
     (0x43A370, "end_jetpack_hover"),
     (0x43A9C0, "initialize_subgoldy"),
     (0x43AF10, "show_subgoldy_lives"),
+    (0x43AF60, "begin_post_follow_carryover"),
     (0x43AFD0, "play_movement_state_sound"),
     (0x43D230, "initialize_subgoldy_ghost"),
     (0x43D3D0, "set_subgoldy_ghost_z"),
@@ -45,6 +46,10 @@ TRUSTED_DECLARATIONS = (
     (
         "show_subgoldy_lives",
         "void __thiscall show_subgoldy_lives(Player* player);",
+    ),
+    (
+        "begin_post_follow_carryover",
+        "void __thiscall begin_post_follow_carryover(Player* player);",
     ),
     (
         "play_movement_state_sound",
@@ -96,6 +101,7 @@ REQUIRED_OWNER_MARKERS = (
     "Snail presentation;",
     "typedef struct SubgameRuntime {",
     "void __thiscall health_collect_particles(Player* player, SubHealth* pickup);",
+    "void __thiscall begin_post_follow_carryover(Player* player);",
 )
 
 EXPECTED_OWNER_SIZES = {

@@ -471,7 +471,7 @@ LABEL_101:
                 if ( (open_edge_mask & 1) != 0 )
                   source_cella = 0.2;
                 if ( v47 < v48 && v47 > source_cella && !player->attachment_exit_pending )
-                  begin_post_follow_carryover((int)player);
+                  begin_post_follow_carryover(player);
               }
               v49 = player->game;
               if ( v49->level_mode == 3 )
@@ -564,7 +564,7 @@ LABEL_101:
             }
             if ( player->body.transform.position.y < 0.0 && player->velocity.y <= 0.0 )
 LABEL_98:
-              begin_post_follow_carryover((int)player);
+              begin_post_follow_carryover(player);
           }
         }
         update_warning(&player->warning);
@@ -595,7 +595,7 @@ LABEL_98:
           {
             player->barrier_hold_progress = 0.0;
             if ( !player->attachment_exit_pending )
-              begin_post_follow_carryover((int)player);
+              begin_post_follow_carryover(player);
           }
         }
         if ( !player->lane_lean_state

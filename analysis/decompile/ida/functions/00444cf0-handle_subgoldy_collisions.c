@@ -138,7 +138,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
           add_subgoldy_score(player, 0, 0);
           apply_damage_gauge_delta(&player->damage_gauge, 0.039999999, 0);
           v10 = (__int64)((double)next_math_random_value() * -0.000061035156);
-          play_sound_effect(39 - v10);
+          play_sound_effect(&g_sound_effect_manager, 39 - v10);
         }
       }
     }
@@ -182,7 +182,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
               player->velocity.y = v63;
               v64 = v18 * -0.2;
               player->velocity.z = v64;
-              begin_post_follow_carryover((int)player);
+              begin_post_follow_carryover(player);
               v19 = player->game;
               player->presentation.cutscene.state = CUT_SCENE_STATE_DEATH_PENDING;
               v19->slug_hazards.slots[m].player_encounter_latched = 1;
@@ -220,8 +220,8 @@ void __thiscall handle_subgoldy_collisions(Player *player)
         if ( v27 < 1.0 && normalize_vector(&v69) < 1.24 )
         {
           add_subgoldy_score(player, 3, 0);
-          play_voice_manager((int)g_voice_manager, 10, 1u, -1);
-          play_sound_effect(27);
+          play_voice_manager(&g_voice_manager, 10, 1u, -1);
+          play_sound_effect(&g_sound_effect_manager, 27);
           player->game->parcel_manager.slots[n].state = PARCEL_STATE_COLLECT_PENDING;
           v28 = player->game;
           v29 = player->parcels_collected + 1;
@@ -252,9 +252,9 @@ void __thiscall handle_subgoldy_collisions(Player *player)
           v35 = -v35;
         if ( v35 < 0.40000001 && normalize_vector(&v60) < 0.98000002 )
         {
-          play_sound_effect(14);
+          play_sound_effect(&g_sound_effect_manager, 14);
           player->game->health_pickups[ii].state = TRACK_PICKUP_STATE_TEARDOWN_PENDING;
-          health_collect_particles((int)player, (int)&player->game->health_pickups[ii]);
+          health_collect_particles(player, &player->game->health_pickups[ii]);
           apply_damage_gauge_delta(&player->damage_gauge, -0.5, 0);
         }
       }
@@ -321,7 +321,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
           if ( kind == SUB_RING_KIND_SLOW_DEFAULT || kind == SUB_RING_KIND_SLOW_AUTHORED )
           {
             player->velocity.z = -0.1;
-            play_sound_effect(43);
+            play_sound_effect(&g_sound_effect_manager, 43);
           }
           else
           {
@@ -339,7 +339,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
             {
               if ( (v51->runtime_flags & 0x10) != 0 && v51->level_mode != 3 )
                 player->lives = lives + 1;
-              play_voice_manager((int)g_voice_manager, 5, 1u, -1);
+              play_voice_manager(&g_voice_manager, 5, 1u, -1);
             }
             movement_flag_selector = player->movement_flag_selector;
             if ( movement_flag_selector >= 8 )
@@ -356,7 +356,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
 LABEL_105:
               v54 = 6;
 LABEL_106:
-            play_sound_effect(v54 + 1);
+            play_sound_effect(&g_sound_effect_manager, v54 + 1);
             add_subgoldy_score(player, 2, 0);
             continue;
           case SUB_RING_KIND_POWER_UP_AUTHORED:
@@ -376,12 +376,12 @@ LABEL_106:
             goto LABEL_106;
           case SUB_RING_KIND_UNKNOWN_1:
             add_subgoldy_score(player, 2, 0);
-            play_sound_effect(1);
+            play_sound_effect(&g_sound_effect_manager, 1);
             break;
           case SUB_RING_KIND_EXPLODE_RAMP:
           case SUB_RING_KIND_EXPLODE_AUTHORED:
             add_subgoldy_score(player, 2, 0);
-            play_sound_effect(42);
+            play_sound_effect(&g_sound_effect_manager, 42);
             player->nuke_effect_progress = player->nuke_effect_progress_step;
             initialize_nuke(&player->nuke);
             break;

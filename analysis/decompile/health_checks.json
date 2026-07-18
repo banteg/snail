@@ -515,13 +515,15 @@
         "control_override_active",
         "attachment_exit_pending",
         "body.transform.position",
-        "track_state_latch"
+        "track_state_latch",
+        "begin_post_follow_carryover(player);"
       ],
       "forbidden_substrings": [
         "__asm",
         "_ET1",
         "unimplemented",
-        "__offset("
+        "__offset(",
+        "begin_post_follow_carryover((int)player)"
       ]
     },
     {
@@ -1713,6 +1715,58 @@
       ]
     },
     {
+      "name": "bn_post_follow_carryover_player_owner",
+      "artifact": "analysis/decompile/binja/functions/0043af60-begin_post_follow_carryover.c",
+      "required_substrings": [
+        "player->follow_state.active",
+        "player->follow_state.template_record->installed_heading_delta",
+        "player->post_follow_heading_carryover",
+        "player->post_follow_exit_roll",
+        "player->body.transform.position.z",
+        "player->attachment_exit_pending",
+        "player->attachment_exit_anchor_z",
+        "0043afc0        return"
+      ],
+      "forbidden_substrings": [
+        "player->live_matrix.position.z",
+        "0043afc0        return 0",
+        "int32_t __thiscall"
+      ]
+    },
+    {
+      "name": "ida_post_follow_carryover_player_owner",
+      "artifact": "analysis/decompile/ida/functions/0043af60-begin_post_follow_carryover.c",
+      "required_substrings": [
+        "void __thiscall begin_post_follow_carryover(Player *player)",
+        "player->follow_state.active",
+        "LODWORD(player->follow_state.template_record->installed_heading_delta)",
+        "player->post_follow_heading_carryover",
+        "player->post_follow_exit_roll",
+        "player->body.transform.position.z",
+        "player->attachment_exit_pending",
+        "player->attachment_exit_anchor_z"
+      ],
+      "forbidden_substrings": [
+        "sub_43AF60",
+        "int this",
+        "int result",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_kill_subgoldy_carryover_owner",
+      "artifact": "analysis/decompile/ida/functions/00445840-kill_subgoldy.c",
+      "required_substrings": [
+        "void __thiscall kill_subgoldy(Player *player)",
+        "begin_post_follow_carryover(player);",
+        "player->body.transform.position.y = -8.0;"
+      ],
+      "forbidden_substrings": [
+        "begin_post_follow_carryover((int)player)",
+        "sub_43AF60"
+      ]
+    },
+    {
       "name": "bn_nested_subgame_collision_owner",
       "artifact": "analysis/decompile/binja/functions/00444cf0-handle_subgoldy_collisions.c",
       "required_substrings": [
@@ -1725,7 +1779,11 @@
         "slug_cursor->slug.body.transform.position.z",
         "parcel_cursor->parcel.position.z",
         "health_cursor->health.bod.position.z",
-        "ring_cursor->ring.world_position.z"
+        "ring_cursor->ring.world_position.z",
+        "begin_post_follow_carryover(player)",
+        "play_sound_effect(&g_sound_effect_manager",
+        "play_voice_manager(&g_voice_manager",
+        "health_collect_particles(player, &player->game->health_pickups"
       ],
       "forbidden_substrings": [
         "struct Game*",
@@ -1738,7 +1796,9 @@
         "void* eax_19 = i_3 + game_8",
         "void* eax_31 = i_4 + game_4",
         "void* eax_38 = i_5 + game_5",
-        "void* eax_53 = i_6 + game_9"
+        "void* eax_53 = i_6 + game_9",
+        "play_sound_effect(0x1b)",
+        "play_voice_manager(0x751498"
       ]
     },
     {
@@ -1756,7 +1816,11 @@
         "slug_cursor->slug.body.transform.position.z",
         "parcel_cursor->parcel.bod.position.z",
         "health_cursor->health.bod.position.z",
-        "ring_cursor->ring.body.transform.position.z"
+        "ring_cursor->ring.body.transform.position.z",
+        "begin_post_follow_carryover(player);",
+        "play_sound_effect(&g_sound_effect_manager",
+        "play_voice_manager(&g_voice_manager",
+        "health_collect_particles(player, &player->game->health_pickups[ii]);"
       ],
       "forbidden_substrings": [
         "float *v3; // eax",
@@ -1770,7 +1834,11 @@
         "v14[874754]",
         "v26[4815140]",
         "v31[874500]",
-        "v47[880125]"
+        "v47[880125]",
+        "begin_post_follow_carryover((int)player)",
+        "play_sound_effect(27)",
+        "play_voice_manager((int)g_voice_manager",
+        "health_collect_particles((int)player"
       ]
     },
     {

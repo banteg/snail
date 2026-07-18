@@ -3,28 +3,25 @@
 /* selector: begin_post_follow_carryover */
 
 // Begins Goldy's pending post-follow carryover window. If the active follow byte is still set, it copies `follow_state.orientation_b` into `post_follow_exit_roll` and the live attachment record's installed-heading bits into `post_follow_heading_carryover`, clears `follow_state.active`, sets `attachment_exit_pending`, latches player z into `attachment_exit_anchor_z`, and zeroes the exit-progress and gate bytes. Windows `cdb` confirmed this helper can also run after the active follow byte has already been cleared, so it is one real exit lane but not the only attachment-retirement path.
-int __thiscall sub_43AF60(int this)
+void __thiscall begin_post_follow_carryover(Player *player)
 {
-  int result; // eax
-  int v2; // edx
+  float z; // edx
 
-  result = 0;
-  if ( *(_BYTE *)(this + 900) )
+  if ( player->follow_state.active )
   {
-    *(_DWORD *)(this + 1072) = *(_DWORD *)(*(_DWORD *)(this + 904) + 152);
-    *(_DWORD *)(this + 1068) = *(_DWORD *)(this + 928);
+    player->post_follow_heading_carryover = LODWORD(player->follow_state.template_record->installed_heading_delta);
+    player->post_follow_exit_roll = player->follow_state.orientation_b;
   }
   else
   {
-    *(_DWORD *)(this + 1072) = 0;
-    *(_DWORD *)(this + 1068) = 0;
+    player->post_follow_heading_carryover = 0;
+    player->post_follow_exit_roll = 0.0;
   }
-  v2 = *(_DWORD *)(this + 112);
-  *(_BYTE *)(this + 900) = 0;
-  *(_BYTE *)(this + 1053) = 1;
-  *(_DWORD *)(this + 1060) = v2;
-  *(_DWORD *)(this + 1076) = 0;
-  *(_BYTE *)(this + 1100) = 0;
-  *(_BYTE *)(this + 1101) = 0;
-  return result;
+  z = player->body.transform.position.z;
+  player->follow_state.active = 0;
+  player->attachment_exit_pending = 1;
+  player->attachment_exit_anchor_z = z;
+  player->attachment_exit_progress = 0.0;
+  player->attachment_exit_gate_a = 0;
+  player->attachment_exit_gate_b = 0;
 }

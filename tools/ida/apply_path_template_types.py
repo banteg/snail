@@ -53,6 +53,7 @@ TRUSTED_NAMES = [
     (0x43A980, "arm_jetpack_gauge"),
     (0x43A9C0, "initialize_subgoldy"),
     (0x43AF10, "show_subgoldy_lives"),
+    (0x43AF60, "begin_post_follow_carryover"),
     (0x43AFD0, "play_movement_state_sound"),
     (0x43B120, "update_subgoldy"),
     (0x43D230, "initialize_subgoldy_ghost"),
@@ -193,6 +194,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x43A980,  # arm_jetpack_gauge
     0x43A9C0,  # initialize_subgoldy
     0x43AF10,  # show_subgoldy_lives
+    0x43AF60,  # begin_post_follow_carryover
     0x43AFD0,  # play_movement_state_sound
     0x43B120,  # update_subgoldy
     0x43D230,  # initialize_subgoldy_ghost
@@ -216,6 +218,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x444600,  # dispatch_cutscene_animation
     0x4446E0,  # set_weapon_animation
     0x444CF0,  # handle_subgoldy_collisions
+    0x445840,  # kill_subgoldy
     0x445CD0,  # update_snail_skin
     0x445D50,  # build_snail_hotspots
     0x447090,  # initialize_fringe_manager
@@ -1512,6 +1515,10 @@ TRUSTED_DECLARATIONS = [
     (
         "show_subgoldy_lives",
         "void __thiscall show_subgoldy_lives(Player* player);",
+    ),
+    (
+        "begin_post_follow_carryover",
+        "void __thiscall begin_post_follow_carryover(Player* player);",
     ),
     (
         "initialize_subgoldy_ghost",

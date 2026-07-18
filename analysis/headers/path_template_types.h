@@ -2412,6 +2412,7 @@ void __thiscall update_jet_particles(SubHover* sub_hover);
 void __thiscall initialize_jetpack_gauge(SubHover* sub_hover, int32_t player_slot);
 void __thiscall arm_jetpack_gauge(SubHover* sub_hover);
 void __thiscall show_subgoldy_lives(Player* player);
+void __thiscall begin_post_follow_carryover(Player* player);
 void __thiscall initialize_subgoldy_ghost(Player* player, int32_t owner);
 void __thiscall update_subgoldy(Player* player);
 void __thiscall play_movement_state_sound(Player* player);

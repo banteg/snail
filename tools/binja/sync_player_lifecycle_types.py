@@ -47,6 +47,7 @@ SYMBOL_UPDATES = (
     ("0x43a370", "end_jetpack_hover"),
     ("0x43a9c0", "initialize_subgoldy"),
     ("0x43af10", "show_subgoldy_lives"),
+    ("0x43af60", "begin_post_follow_carryover"),
     ("0x43afd0", "play_movement_state_sound"),
     ("0x43d230", "initialize_subgoldy_ghost"),
     ("0x43d3d0", "set_subgoldy_ghost_z"),
@@ -72,6 +73,10 @@ PROTO_UPDATES = (
     (
         "show_subgoldy_lives",
         "void __thiscall show_subgoldy_lives(Player* player)",
+    ),
+    (
+        "begin_post_follow_carryover",
+        "void __thiscall begin_post_follow_carryover(Player* player)",
     ),
     (
         "play_movement_state_sound",

@@ -583,3 +583,17 @@ The slug first-hit transition now reaches the proved cRSnail wobble lane as
 presentation tick without inventing a new native class. This ownership-only
 change leaves focused output at 54.23%, 651/673 candidate/native instructions,
 prefix 8/673, with all 88 operands clean and no mismatches.
+
+## 2026-07-18 caller-owner refresh
+
+The matcher source and its byte-strided pool loops remain unchanged. Replaying
+the already proved sound, voice, health-pickup, and post-follow helper ABIs then
+refreshing this tracked artifact removes stale unowned call shapes in both
+decompilers: sound calls now borrow `g_sound_effect_manager`, voice calls borrow
+`g_voice_manager`, health collection receives `Player*` plus the embedded
+`SubHealth*`, and the slug-death lane calls
+`begin_post_follow_carryover(Player*)` without an integer cast. The helper's
+independent 100% match closes the ABI as void, while the six analytical pool
+cursors remain borrowed SubgameRuntime-relative views rather than new owners.
+Focused matching remains 54.23%, 651/673 instructions, prefix 8/673, with all
+88 masked operands clean and no mismatches.

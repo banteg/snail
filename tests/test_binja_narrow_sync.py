@@ -303,6 +303,7 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
         "void __thiscall end_jetpack_hover(SubHover* sub_hover)",
         "void __thiscall initialize_subgoldy(Player* player, int32_t player_slot)",
         "void __thiscall show_subgoldy_lives(Player* player)",
+        "void __thiscall begin_post_follow_carryover(Player* player)",
         "void __thiscall play_movement_state_sound(Player* player)",
         "void __thiscall initialize_subgoldy_ghost(Player* player, int32_t owner)",
         "void __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z)",
@@ -343,6 +344,7 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
         ("0x43a370", "end_jetpack_hover"),
         ("0x43a9c0", "initialize_subgoldy"),
         ("0x43af10", "show_subgoldy_lives"),
+        ("0x43af60", "begin_post_follow_carryover"),
         ("0x43afd0", "play_movement_state_sound"),
         ("0x43d230", "initialize_subgoldy_ghost"),
         ("0x43d3d0", "set_subgoldy_ghost_z"),
@@ -370,6 +372,8 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
     assert "INITIALIZE_SUBGOLDY_USER_VAR_UPDATES" in broad_binja_sync
     assert "MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES" in broad_binja_sync
     assert "INITIALIZE_SUBGOLDY_LVAR_SPECS" in broad_ida_sync
+    assert "0x43AF60,  # begin_post_follow_carryover" in broad_ida_sync
+    assert "0x445840,  # kill_subgoldy" in broad_ida_sync
     assert (
         'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"'
         in ida_runner
@@ -2123,6 +2127,7 @@ def test_subgoldy_replays_preserve_void_lifecycle_abis() -> None:
 
     declarations = (
         "void __thiscall show_subgoldy_lives(Player* player)",
+        "void __thiscall begin_post_follow_carryover(Player* player)",
         "void __thiscall initialize_subgoldy_ghost(Player* player, int32_t owner)",
         "void __thiscall update_subgoldy(Player* player)",
         "void __thiscall play_movement_state_sound(Player* player)",
@@ -2143,6 +2148,7 @@ def test_subgoldy_replays_preserve_void_lifecycle_abis() -> None:
 
     for stale_declaration in (
         "int32_t __thiscall update_subgoldy(Player* player)",
+        "int32_t __thiscall begin_post_follow_carryover(Player* player)",
         "Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z)",
         "int32_t __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss)",
         "void __fastcall update_subgoldy_resurrect(Player* player)",

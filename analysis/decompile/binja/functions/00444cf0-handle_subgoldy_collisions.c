@@ -74,14 +74,14 @@
 00444fc2        i_2->collision_side = 1
 00444fba        i_2->collision_side = 2
 00444fce        add_subgoldy_score(player, 0, 0)
-0044500a        x87control = play_sound_effect(0x27 - ftol(apply_damage_gauge_delta(&player->damage_gauge, 0.0399999991f, false), float.t(next_math_random_value()) * fconvert.t(-6.10351562e-05f)))
+0044500a        x87control = play_sound_effect(&g_sound_effect_manager, 0x27 - ftol(apply_damage_gauge_delta(&player->damage_gauge, 0.0399999991f, false), float.t(next_math_random_value()) * fconvert.t(-6.10351562e-05f)))
 0044500f        i_2 = i_2->next_active
 0044501d        void* i_3 = nullptr
 0044524b        while (i_3 s< 0x760)
 0044501f        struct SubgameRuntime* game_8 = player->game
-00445025        int32_t ecx_14 = *(&game_8->slug_hazards.slots[0].state + i_3)
+00445025        int32_t ecx_13 = *(&game_8->slug_hazards.slots[0].state + i_3)
 0044502c        struct SlugSlotCursor* slug_cursor = i_3 + game_8
-00445036        if (ecx_14 == 1 || ecx_14 == 4)
+00445036        if (ecx_13 == 1 || ecx_13 == 4)
 00445062        long double x87_r7_39 = fconvert.t(slug_cursor->slug.body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
 00445070        vector.x = fconvert.s(fconvert.t(slug_cursor->slug.body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
 00445074        vector.y = fconvert.s(fconvert.t(slug_cursor->slug.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
@@ -145,8 +145,8 @@
 004452cd        st0_5 - temp26_1
 004452d8        if ((((st0_5 < temp26_1 ? 1 : 0) << 8 | (is_unordered.t(st0_5, temp26_1) ? 1 : 0) << 0xa | (st0_5 == temp26_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 004452e0        add_subgoldy_score(player, 3, 0)
-004452ef        play_voice_manager(0x751498, 0xa, 1, 0xffffffff)
-004452fb        play_sound_effect(0x1b)
+004452ef        play_voice_manager(&g_voice_manager, 0xa, 1, 0xffffffff)
+004452fb        play_sound_effect(&g_sound_effect_manager, 0x1b)
 00445306        *(&player->game->parcel_manager.slots[0].state + i_4) = 4
 00445317        struct SubgameRuntime* game_1 = player->game
 0044531d        int32_t ebx_2 = player->parcels_collected + 1
@@ -189,7 +189,7 @@
 0044541b        long double temp11_1 = fconvert.t(0.980000019f)
 0044541b        st0_6 - temp11_1
 00445426        if ((((st0_6 < temp11_1 ? 1 : 0) << 8 | (is_unordered.t(st0_6, temp11_1) ? 1 : 0) << 0xa | (st0_6 == temp11_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-0044542f        play_sound_effect(0xe)
+0044542f        play_sound_effect(&g_sound_effect_manager, 0xe)
 0044543a        *(&player->game->health_pickups[0].state + i_5) = 2
 00445455        health_collect_particles(player, &player->game->health_pickups + i_5)
 00445467        apply_damage_gauge_delta(&player->damage_gauge, -0.5f, false)
@@ -273,7 +273,7 @@
 004456c4        int32_t eax_54 = *(&game_6->ring_effects.slots[0].kind + i_6)
 004456d2        if (eax_54 == 3 || eax_54 == 7)
 004456ec        player->velocity.z = -0.100000001f
-004456f2        play_sound_effect(0x2b)
+004456f2        play_sound_effect(&g_sound_effect_manager, 0x2b)
 004456dd        player->velocity.z = fconvert.s(fconvert.t(game_6->subgame_rate) * fconvert.t(0.5f))
 004456f7        struct SubgameRuntime* game_7 = player->game
 004456fd        int32_t eax_55 = *(&game_7->ring_effects.slots[0].kind + i_6)
@@ -283,7 +283,7 @@
 004457b4        if (lives s< 0xa)
 004457c0        if ((game_7->runtime_flags.b & 0x10) != 0 && game_7->level_mode != 3)
 004457c3        player->lives = lives + 1
-004457d4        play_voice_manager(0x751498, 5, 1, 0xffffffff)
+004457d4        play_voice_manager(&g_voice_manager, 5, 1, 0xffffffff)
 004457d9        int32_t movement_flag_selector_1 = player->movement_flag_selector
 004457e2        if (movement_flag_selector_1 s< 8)
 004457e5        player->movement_flag_selector = movement_flag_selector_1 + 1
@@ -292,7 +292,7 @@
 004457fb        eax_58 = player->movement_flag_selector - 1
 004457ff        if (eax_58 s> 6)
 004457ff        goto label_445801
-0044580d        play_sound_effect(eax_58 + 1)
+0044580d        play_sound_effect(&g_sound_effect_manager, eax_58 + 1)
 00445818        add_subgoldy_score(player, 2, 0)
 00445719        if (eax_55 == 8)
 0044571b        int32_t movement_flag_selector = player->movement_flag_selector
@@ -302,17 +302,17 @@
 00445731        player->movement_flag_selector = 7
 0044573d        eax_58 = player->movement_flag_selector - 1
 00445741        if (eax_58 s<= 6)
-0044580d        play_sound_effect(eax_58 + 1)
+0044580d        play_sound_effect(&g_sound_effect_manager, eax_58 + 1)
 00445818        add_subgoldy_score(player, 2, 0)
 00445801        label_445801:
-0044580d        play_sound_effect(6 + 1)
+0044580d        play_sound_effect(&g_sound_effect_manager, 6 + 1)
 00445818        add_subgoldy_score(player, 2, 0)
 0044574f        if (eax_55 == 1)
 00445757        add_subgoldy_score(player, 2, 0)
-00445763        play_sound_effect(1)
+00445763        play_sound_effect(&g_sound_effect_manager, 1)
 00445775        if (eax_55 == 2 || eax_55 == 6)
 00445781        add_subgoldy_score(player, 2, 0)
-0044578d        play_sound_effect(0x2a)
+0044578d        play_sound_effect(&g_sound_effect_manager, 0x2a)
 00445798        player->nuke_effect_progress = player->nuke_effect_progress_step
 004457a4        initialize_nuke(&player->nuke)
 0044581d        i_6 += 0x1f8
