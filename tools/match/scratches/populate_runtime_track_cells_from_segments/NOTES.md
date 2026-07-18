@@ -615,3 +615,21 @@ The resulting BN reanalysis also corrects two prefix-equivalent
 `set_bod_object` receivers from the embedded `vtable` word to the enclosing
 `TrackRowCell`/`BodBase` prefix. Those are accepted type-propagation
 improvements in the same function; they do not alter matcher source or bytes.
+
+## 2026-07-18 fringe position propagation
+
+The placement tail iterates the four contiguous borrowed fringe links at
+`TrackRowCell::fringe_front` through `fringe_back`. The native ECX lifetime is
+therefore an exact `FringeObject**` slot cursor. Its two EAX reloads are the
+borrowed `FringeObject*` in that slot, and their derived `+0x10` address is
+exactly `&FringeObject::bod.position`, a `Vec3*`; it is not an integer buffer
+or a separately owned position.
+
+The BN replay pins those identities at `(4697, 67)`, `(4697, 66)`,
+`(4714, 66)`, and `(4718, 66)`, plus the exact four-slot counter at
+`(4692, 68)`. IDA pins the corresponding locals at `0x437101`, `0x437105`,
+`0x43710a`, and `0x43711f`. Both second replays are idempotent. The resulting
+decompiles directly expose `FringeObject::bod.position` in both lanes, and IDA
+replaces its former integer position casts with `fringe_position->x/y/z`.
+Matcher source remains untouched at 29.67%, 1,229/1,245 instructions, 66 clean
+operands, and the same two documented mismatches; no fakematch was introduced.

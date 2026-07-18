@@ -212,6 +212,30 @@ POPULATE_RUNTIME_LVAR_SPECS = (
         0x436DC2,
         None,
     ),
+    (
+        "fringe_slot",
+        "FringeObject **fringe_slot;",
+        0x437101,
+        None,
+    ),
+    (
+        "remaining_fringe_slots",
+        "int32_t remaining_fringe_slots;",
+        0x437105,
+        None,
+    ),
+    (
+        "fringe_object",
+        "FringeObject *fringe_object;",
+        0x43710A,
+        None,
+    ),
+    (
+        "fringe_position",
+        "Vec3 *fringe_position;",
+        0x43711F,
+        None,
+    ),
 )
 
 PLACE_PARCELS_RUNTIME_LVAR_SPECS = (

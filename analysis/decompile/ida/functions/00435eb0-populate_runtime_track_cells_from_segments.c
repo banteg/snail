@@ -100,10 +100,10 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   tColour *track_skirt_color; // eax
   int v95; // eax
   uint8_t v96; // al
-  FringeObject **v97; // ecx
-  int v98; // edx
-  FringeObject *v99; // eax
-  int p_position; // eax
+  FringeObject **fringe_slot; // ecx
+  int32_t remaining_fringe_slots; // edx
+  FringeObject *fringe_object; // eax
+  Vec3 *fringe_position; // eax
   bool v101; // cc
   float v102; // [esp+0h] [ebp-5Ch]
   char v103; // [esp+1Ah] [ebp-42h]
@@ -959,25 +959,25 @@ LABEL_174:
                 runtime_cell_anchor->cell.anchor_position.y = -3.0;
               runtime_cell_anchor->cell.anchor_position.z = v113;
             }
-            v97 = &runtime_cell_anchor->cell.fringe_front;
-            v98 = 4;
+            fringe_slot = &runtime_cell_anchor->cell.fringe_front;
+            remaining_fringe_slots = 4;
             do
             {
-              v99 = *v97;
-              if ( *v97 )
+              fringe_object = *fringe_slot;
+              if ( *fringe_slot )
               {
-                v99->bod.position.z = 0.0;
-                v99->bod.position.y = 0.0;
-                v99->bod.position.x = 0.0;
-                p_position = (int)&(*v97)->bod.position;
-                *(float *)p_position = p_anchor_position->x;
-                *(float *)(p_position + 4) = runtime_cell_anchor->cell.anchor_position.y;
-                *(float *)(p_position + 8) = runtime_cell_anchor->cell.anchor_position.z;
+                fringe_object->bod.position.z = 0.0;
+                fringe_object->bod.position.y = 0.0;
+                fringe_object->bod.position.x = 0.0;
+                fringe_position = &(*fringe_slot)->bod.position;
+                fringe_position->x = p_anchor_position->x;
+                fringe_position->y = runtime_cell_anchor->cell.anchor_position.y;
+                fringe_position->z = runtime_cell_anchor->cell.anchor_position.z;
               }
-              ++v97;
-              --v98;
+              ++fringe_slot;
+              --remaining_fringe_slots;
             }
-            while ( v98 );
+            while ( remaining_fringe_slots );
             ++v110;
           }
           while ( v110 < 8 );

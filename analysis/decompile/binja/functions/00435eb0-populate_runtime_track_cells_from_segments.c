@@ -698,29 +698,29 @@
 004370ea        if (game->level_mode != 3 || ((game->runtime_flags).w:1.b & 4) != 0)
 004370ec        runtime_cell_anchor->cell.anchor_position.y = -3f
 004370fa        runtime_cell_anchor->cell.anchor_position.z = var_28_2
-00437100        struct FringeObject** ecx_125 = &runtime_cell_anchor->cell.fringe_front
-00437104        int32_t k_2 = 4
+00437100        struct FringeObject** fringe_slot = &runtime_cell_anchor->cell.fringe_front
+00437104        int32_t remaining_fringe_slots = 4
 00437135        int32_t k_1
-00437109        void* eax_117
-00437109        eax_117.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0c.b
-00437109        eax_117:1.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0d.b
-00437109        eax_117:2.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0e.b
-00437109        eax_117:3.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0f.b
-0043710f        if (eax_117 != 0)
-00437111        *(eax_117 + 0x18) = 0
-00437114        *(eax_117 + 0x14) = 0
-00437117        *(eax_117 + 0x10) = 0
-0043711a        void* eax_118
-0043711a        eax_118.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0c.b
-0043711a        eax_118:1.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0d.b
-0043711a        eax_118:2.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0e.b
-0043711a        eax_118:3.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0f.b
-00437123        *(eax_118 + 0x10) = runtime_cell_anchor->cell.anchor_position.x
-00437128        *(eax_118 + 0x14) = runtime_cell_anchor->cell.anchor_position.y
-0043712e        *(eax_118 + 0x18) = runtime_cell_anchor->cell.anchor_position.z
-00437131        ecx_125 = &ecx_125[1]
-00437134        k_1 = k_2
-00437134        k_2 -= 1
+00437109        struct FringeObject* fringe_object
+00437109        fringe_object.b = *fringe_slot
+00437109        fringe_object:1.b = *(fringe_slot + 1)
+00437109        fringe_object:2.b = *(fringe_slot + 2)
+00437109        fringe_object:3.b = *(fringe_slot + 3)
+0043710f        if (fringe_object != 0)
+00437111        fringe_object->bod.position.z = 0f
+00437114        fringe_object->bod.position.y = 0f
+00437117        fringe_object->bod.position.x = 0
+0043711a        struct FringeObject* fringe_object_reloaded
+0043711a        fringe_object_reloaded.b = *fringe_slot
+0043711a        fringe_object_reloaded:1.b = *(fringe_slot + 1)
+0043711a        fringe_object_reloaded:2.b = *(fringe_slot + 2)
+0043711a        fringe_object_reloaded:3.b = *(fringe_slot + 3)
+00437123        fringe_object_reloaded->bod.position.x = runtime_cell_anchor->cell.anchor_position.x
+00437128        fringe_object_reloaded->bod.position.y = runtime_cell_anchor->cell.anchor_position.y
+0043712e        fringe_object_reloaded->bod.position.z = runtime_cell_anchor->cell.anchor_position.z
+00437131        fringe_slot = &fringe_slot[1]
+00437134        k_1 = remaining_fringe_slots
+00437134        remaining_fringe_slots -= 1
 00437135        do while (k_1 != 1)
 0043713c        cond:12_1 = var_30_1 + 1 s< 8
 0043713f        var_30_1 += 1

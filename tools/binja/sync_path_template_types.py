@@ -1131,6 +1131,9 @@ COLLISION_POOL_CURSOR_USER_VAR_UPDATES = (
 # SubgameRuntime pointer inferred from an earlier compiler-reused lifetime.
 # The attachment-entry span has a separate exact SubRow lifetime: it begins at
 # runtime_row_anchor->row and advances by the native 0xf4 SubRow stride.
+# The four-pointer fringe tail likewise has exact slot, object-reload, and
+# inherited BodBase::position lifetimes; keep the physical-register reuse
+# split instead of weakening those values to void* or integer pointers.
 POPULATE_RUNTIME_USER_VAR_UPDATES = (
     (
         "populate_runtime_track_cells_from_segments",
@@ -1171,6 +1174,46 @@ POPULATE_RUNTIME_USER_VAR_UPDATES = (
         67,
         "stamped_row",
         "SubRow*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        4697,
+        67,
+        "fringe_slot",
+        "FringeObject**",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        4692,
+        68,
+        "remaining_fringe_slots",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        4697,
+        66,
+        "fringe_object",
+        "FringeObject*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        4714,
+        66,
+        "fringe_object_reloaded",
+        "FringeObject*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        4718,
+        66,
+        "fringe_position",
+        "Vec3*",
     ),
 )
 

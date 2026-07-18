@@ -3646,12 +3646,25 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert '"RegisterVariableSourceType",\n        1448,\n        69,' in binja_source
     assert '"RegisterVariableSourceType",\n        2002,\n        72,' in binja_source
     assert '"RegisterVariableSourceType",\n        3857,\n        67,' in binja_source
+    for identity in (
+        '"RegisterVariableSourceType",\n        4697,\n        67,',
+        '"RegisterVariableSourceType",\n        4692,\n        68,',
+        '"RegisterVariableSourceType",\n        4697,\n        66,',
+        '"RegisterVariableSourceType",\n        4714,\n        66,',
+        '"RegisterVariableSourceType",\n        4718,\n        66,',
+    ):
+        assert identity in binja_source
     for name, type_name in (
         ("segment_row_index", "int32_t"),
         ("segment_row_anchor", "SubSegmentRowStrideAnchor*"),
         ("runtime_row_anchor", "RuntimeRowStrideAnchor*"),
         ("runtime_cell_anchor", "RuntimeCellStrideAnchor*"),
         ("stamped_row", "SubRow*"),
+        ("fringe_slot", "FringeObject**"),
+        ("remaining_fringe_slots", "int32_t"),
+        ("fringe_object", "FringeObject*"),
+        ("fringe_object_reloaded", "FringeObject*"),
+        ("fringe_position", "Vec3*"),
     ):
         assert f'"{name}"' in binja_source
         assert f'"{type_name}"' in binja_source
@@ -3772,6 +3785,21 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "0x436DC2" in ida_path_sync
     assert '"stamped_row"' in ida_path_sync
     assert '"SubRow *stamped_row;"' in ida_path_sync
+    for definition_address in (
+        "0x437101",
+        "0x437105",
+        "0x43710A",
+        "0x43711F",
+    ):
+        assert definition_address in ida_path_sync
+    for name, declaration in (
+        ("fringe_slot", "FringeObject **fringe_slot;"),
+        ("remaining_fringe_slots", "int32_t remaining_fringe_slots;"),
+        ("fringe_object", "FringeObject *fringe_object;"),
+        ("fringe_position", "Vec3 *fringe_position;"),
+    ):
+        assert f'"{name}"' in ida_path_sync
+        assert f'"{declaration}"' in ida_path_sync
     assert "MERGE_RUNTIME_LVAR_SPECS" in ida_path_sync
     for definition_address in (
         "0x435195",

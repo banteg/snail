@@ -10393,7 +10393,11 @@
         "struct SubRow* stamped_row",
         "stamped_row->primary_attachment_cell",
         "stamped_row->secondary_attachment_cell",
-        "stamped_row = &stamped_row[1]"
+        "stamped_row = &stamped_row[1]",
+        "struct FringeObject** fringe_slot",
+        "int32_t remaining_fringe_slots = 4",
+        "fringe_object->bod.position",
+        "fringe_object_reloaded->bod.position"
       ],
       "forbidden_substrings": [
         "struct SubgameRuntime* segment_count_2",
@@ -10405,7 +10409,12 @@
         "*(esi_11 + 0x3bfb04)",
         "char* ecx_110",
         "*(ecx_110 + 0xa4)",
-        "*(ecx_110 + 0xa8)"
+        "*(ecx_110 + 0xa8)",
+        "struct FringeObject** ecx_125",
+        "void* eax_117",
+        "void* eax_118",
+        "*(eax_117 + 0x18)",
+        "*(eax_118 + 0x10)"
       ]
     },
     {
@@ -10423,7 +10432,15 @@
         "SubRow *stamped_row;",
         "stamped_row->primary_attachment_cell",
         "stamped_row->secondary_attachment_cell",
-        "++stamped_row"
+        "++stamped_row",
+        "FringeObject **fringe_slot;",
+        "int32_t remaining_fringe_slots;",
+        "FringeObject *fringe_object;",
+        "Vec3 *fringe_position;",
+        "fringe_object->bod.position",
+        "fringe_position->x",
+        "fringe_position->y",
+        "fringe_position->z"
       ],
       "forbidden_substrings": [
         "int32_t *segment_row_anchor;",
@@ -10432,7 +10449,13 @@
         "SubgameRuntime *segment_row_index;",
         "char *v84;",
         "(_DWORD *)v84 + 41",
-        "(_DWORD *)v84 + 42"
+        "(_DWORD *)v84 + 42",
+        "FringeObject **v97;",
+        "FringeObject *v99;",
+        "int p_position;",
+        "*(float *)p_position",
+        "*(float *)(p_position + 4)",
+        "*(float *)(p_position + 8)"
       ]
     },
     {
