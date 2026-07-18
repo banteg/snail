@@ -100,3 +100,27 @@ flight into `Completion::widget_world`. All terminal paths return the slot to
 only preserves them as inert states and no recovered live producer writes
 either one. Focused matching remains exact at 312/312 instructions with all 35
 operands clean.
+
+## 2026-07-18 analysis ownership catch-up
+
+Refreshing the tracked IDA lane through the canonical `Parcel`,
+`ParcelManager`, `SubgameRuntime`, `Player`, `Completion`, and `Sprite` owners
+collapses 62 raw parcel/root offsets into direct fields. The artifact now
+retains the state transition names, borrowed player and sprite links, both
+owned flight vectors, the player home hotspot, and the completion widget
+consumer. The sprite lane also owns the exact `kill_sprite(Sprite*)` prototype,
+so parcel teardown no longer casts its borrowed handle through `int`.
+
+Two IDA expressions intentionally remain as one bounded root-relative cursor.
+The machine code loads `Parcel::owner_subgame` at 0x4432c7/0x443320, then adds
+0x3bf91c at 0x4432cd/0x443336 before reading the same three floats that Binary
+Ninja resolves as `player.presentation.snail_hotspots_world[11]`. Hex-Rays does
+not allocate a new register local at either add, and its split-local mechanism
+only materializes the proven stack-slot case. Typing the value before the add as
+`Vec3*` would falsely claim that the subgame root is the vector, so the two
+`scan_reset + 982599` expressions remain explicit. The new read-only lvar-use
+query records both parent-expression addresses for future analysis without
+persisting a false owner.
+
+This is analysis-only ownership recovery. The exact source remains 100.00%,
+312/312 instructions with a full prefix and all 35 masked operands clean.

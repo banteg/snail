@@ -1398,6 +1398,33 @@
       ]
     },
     {
+      "name": "ida_nested_subgame_update_parcel_owner",
+      "artifact": "analysis/decompile/ida/functions/004431d0-update_track_parcel.c",
+      "required_substrings": [
+        "void __thiscall update_track_parcel(Parcel *parcel)",
+        "parcel->owner_subgame",
+        "owner_subgame->subgame_pause_gate",
+        "PARCEL_STATE_COLLECT_PENDING",
+        "parcel->travel_dir",
+        "parcel->delivery_offset",
+        "parcel->owner_player->heading_roll",
+        "parcel->owner_subgame->player.presentation.snail_hotspots_world[11]",
+        "v32 = parcel->owner_subgame",
+        "v32->completion.widget_world",
+        "register_parcel_delivery(&parcel->owner_subgame->completion)",
+        "kill_sprite(parcel->sprite)",
+        "p_scan_reset = (float *)&parcel->owner_subgame->scan_reset",
+        "p_scan_reset += 982599"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_4431D0(int this)",
+        "*(_DWORD *)(this +",
+        "*(float *)(this +",
+        "kill_sprite((int)",
+        "struct Game *"
+      ]
+    },
+    {
       "name": "bn_nested_subgame_initialize_cameraman_owner",
       "artifact": "analysis/decompile/binja/functions/00446160-initialize_cameraman.c",
       "required_substrings": [

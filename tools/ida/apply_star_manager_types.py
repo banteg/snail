@@ -21,6 +21,10 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 TRUSTED_DECLARATIONS = [
     (
+        "kill_sprite",
+        "void __thiscall kill_sprite(Sprite *sprite);",
+    ),
+    (
         "destroy_star_field",
         "void __thiscall destroy_star_field(StarManager *manager);",
     ),

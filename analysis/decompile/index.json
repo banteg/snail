@@ -17,11 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "spawn_slug_hazard",
-      "address": "0x43dc80"
+      "name": "update_track_parcel",
+      "address": "0x4431d0"
     }
   ],
-  "health_check_count": 663,
+  "health_check_count": 664,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"
