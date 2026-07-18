@@ -199,3 +199,39 @@ policy names: fringe, landscape, banner, intro-logo, and shell lifecycles own
 `BOD_FLAG_USE_TRANSFORM`. Exact constructors, the exact after-sprites query,
 and both render passes already prove those meanings. Replacing the residual
 raw constants leaves the full matcher board unchanged.
+
+## 2026-07-18 sprite render-workspace ownership
+
+The renderer's active-list source and temporary depth nodes now preserve the
+canonical sprite owner end to end. `g_sprite_active_heads` is the exact
+five-pointer alias at `SpriteManager +0x83d64`, not independent storage, and
+each `SpriteDepthNode +0x14` borrows the selected `Sprite*`. The frame replay
+only forward-declares `Sprite`, then requires the complete sprite lane to be
+exactly 0xb4 bytes before applying that relationship; it cannot replace the
+owner with a renderer-local projection.
+
+The camera-pass register remains intentionally raw. Native code keeps
+`game + camera_index * 0x28`, a pre-biased containing-root cursor, then reaches
+the slot at `+0x5b4`. Treating that register as either `GameRoot*` or
+`FrameRenderCameraSlot*` would require an overlapping anchor with false base
+semantics. The replay therefore persists the real slot layout but does not
+fakematch the compiler cursor.
+
+The generic root `BodList` remains a `BodNode*` anchor because insertion and
+recycling operate only on the intrusive header. Render performs an explicit
+zero-offset cast of the borrowed head to `RenderableBod*` before reading the
+body, transform, object, and animation-manager fields. Both replay lanes now
+persist that local cast and name `g_post_sprite_bods` as the base of the
+transient `RenderableBod*` staging stack. Only the first pointer type is
+claimed because no independent bound for that stack has been recovered yet.
+
+The bucket insertion and drain lanes now keep their borrowed owners through
+both decompilers as well. Binary Ninja's `bucket_node` is the exact register
+loaded from `g_sprite_depth_buckets[index]`; IDA's `depth_bucket_cursor` walks
+the same 256-head array and its local `sprite` is the `Sprite*` borrowed from
+`SpriteDepthNode::sprite`. The exact 100% `draw_sprite_quad` scratch proves the
+`int __cdecl draw_sprite_quad(Vec3*, Sprite*)` helper ABI, while the sprite
+member declaration and call convention prove
+`void __thiscall update_sprite_facing_angle(Sprite*, const TransformMatrix*)`.
+These are ownership replays only: no matcher source or operand exception was
+changed, and the camera cursor remains intentionally unclaimed.

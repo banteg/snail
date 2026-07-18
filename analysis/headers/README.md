@@ -66,6 +66,13 @@ Current checked-in example:
     it overlaps separately owned track-colour storage.
 - `frame_renderer_types.h`
 - `uv run python tools/ida/sync_frame_renderer_types.py`
+  - Borrows the canonical 0xb4-byte `Sprite` owner without redeclaring it,
+    types the renderer's 0x18-byte depth nodes with `Sprite*`, and reasserts
+    the five-entry active-list alias used by each camera pass. It preserves the
+    bucket-drain `Sprite*` and exact sprite helper ABIs as well. The root list
+    stays generic while Render()'s zero-offset downcast to `RenderableBod*`
+    and the base of its post-sprite pointer stack are persisted without
+    asserting an unrecovered stack bound.
 - `logo_types.h`
 - `uv run python tools/ida/sync_logo_types.py`
 - `path_template_types.h`
@@ -141,6 +148,14 @@ intentional.
     final `float justify_centre` field and the exact void
     `SetJustifyCentre(float)` ABI. It also preserves the cross-port-authored
     `Track` (`cRTrack`) root subobject and the void `Change(int)` receiver ABI.
+    The replay width-gates the canonical `Sprite` owner, restores the borrowed
+    `Sprite*` in each depth node, and preserves the five active-list heads as
+    an interior alias of `SpriteManager` rather than a separate owner. The
+    insertion and drain cursors retain `SpriteDepthNode*` / `Sprite*` through
+    the exact `draw_sprite_quad(Vec3*, Sprite*)` ABI. The renderer-local
+    root-list cast and post-sprite stack base retain canonical
+    `RenderableBod*` ownership without changing the generic `BodList` ABI or
+    inventing a capacity for the transient stack.
 - `bn_object_render_types.h`
 - `uv run python tools/binja/sync_object_render_types.py`
 - `bn_input_state_types.h`

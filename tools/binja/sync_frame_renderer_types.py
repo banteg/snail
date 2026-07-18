@@ -11,6 +11,7 @@ from _narrow_sync import (
     apply_data_var_updates,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
+    apply_user_var_updates,
     current_struct_size,
     emit_summary,
     types_declare_if_missing,
@@ -49,8 +50,10 @@ REQUIRED_STRUCTS = (
 
 SYMBOL_UPDATES = (
     ("0x4972f4", "g_game_player_callback_table"),
+    ("0x4dfb10", "g_post_sprite_bods"),
     ("0x4e5510", "g_sprite_depth_nodes"),
     ("0x4f7050", "g_sprite_depth_buckets"),
+    ("0x814c94", "g_sprite_active_heads"),
 )
 
 FUNCTION_SYMBOL_UPDATES = (
@@ -66,8 +69,10 @@ FUNCTION_SYMBOL_UPDATES = (
 DATA_VAR_UPDATES = (
     ("0x4972f4", "void*"),
     ("0x4df904", "GameRoot*"),
+    ("0x4dfb10", "RenderableBod*"),
     ("0x4e5510", "SpriteDepthNode[3000]"),
     ("0x4f7050", "SpriteDepthNode*[256]"),
+    ("0x814c94", "Sprite*[5]"),
 )
 
 PROTO_UPDATES = (
@@ -108,6 +113,15 @@ PROTO_UPDATES = (
         "void __thiscall render_game_frame(GameRoot* game)",
     ),
     (
+        "draw_sprite_quad",
+        "int32_t __cdecl draw_sprite_quad(Vec3* position, Sprite* sprite)",
+    ),
+    (
+        "update_sprite_facing_angle",
+        "void __thiscall update_sprite_facing_angle("
+        "Sprite* sprite, const TransformMatrix* matrix)",
+    ),
+    (
         "select_level_track_texture_set",
         "void __thiscall select_level_track_texture_set(Track* track, int32_t texture_set)",
     ),
@@ -133,6 +147,58 @@ FRAME_RENDER_CAMERA_FIELD_UPDATES = (
     ("0x80", "view_matrix", "FrameTransformMatrix"),
     ("0xc0", "fov_degrees", "float"),
     ("0xc4", "render_mask", "uint32_t"),
+)
+
+FRAME_RENDER_CAMERA_SLOT_FIELD_UPDATES = (
+    ("0x00", "unknown_00", "int32_t"),
+    ("0x04", "sort_key", "int32_t"),
+    ("0x08", "flags", "uint32_t"),
+    ("0x0c", "viewport_x", "float"),
+    ("0x10", "viewport_y", "float"),
+    ("0x14", "viewport_width", "float"),
+    ("0x18", "viewport_height", "float"),
+    ("0x1c", "unknown_1c", "float"),
+    ("0x20", "source", "FrameRenderCamera*"),
+    ("0x24", "draw_world", "uint8_t"),
+    ("0x25", "unknown_25", "uint8_t[3]"),
+)
+
+SPRITE_DEPTH_NODE_FIELD_UPDATES = (
+    ("0x00", "next", "SpriteDepthNode*"),
+    ("0x04", "position", "FrameVec3"),
+    ("0x10", "depth_key", "float"),
+    ("0x14", "sprite", "Sprite*"),
+)
+
+# The root list intentionally retains its generic BodNode* contract. Render()
+# performs the source-level zero-offset downcast before consuming the complete
+# RenderableBod prefix. Its reverse replay cursor borrows the same owner from
+# the transient pointer stack without asserting that stack's unknown capacity.
+RENDER_USER_VAR_UPDATES = (
+    (
+        "render_game_frame",
+        "RegisterVariableSourceType",
+        445,
+        72,
+        "bod",
+        "RenderableBod*",
+    ),
+    (
+        "render_game_frame",
+        "RegisterVariableSourceType",
+        912,
+        67,
+        "bucket_node",
+        "SpriteDepthNode*",
+    ),
+    (
+        "render_game_frame",
+        "RegisterVariableSourceType",
+        1280,
+        73,
+        "post_cursor",
+        "RenderableBod**",
+    ),
 )
 
 GAME_PLAYER_FIELD_UPDATES = (
@@ -317,6 +383,30 @@ def resolved_border_manager_struct_name(*, target: str) -> str:
     return "BorderManager"
 
 
+def resolved_sprite_struct_name(*, target: str) -> str:
+    """Require the canonical sprite owner before borrowing it in render state."""
+    size = current_struct_size(REPO_ROOT, target=target, struct_name="Sprite")
+    if size != 0xB4:
+        raise RuntimeError(
+            "Sprite must be exactly 0xb4 bytes before renderer replay; "
+            f"observed {size!r}"
+        )
+    return "Sprite"
+
+
+def resolved_renderable_bod_struct_name(*, target: str) -> str:
+    """Require the canonical renderable owner used after the root-list cast."""
+    size = current_struct_size(
+        REPO_ROOT, target=target, struct_name="RenderableBod"
+    )
+    if size != 0x80:
+        raise RuntimeError(
+            "RenderableBod must be exactly 0x80 bytes before renderer replay; "
+            f"observed {size!r}"
+        )
+    return "RenderableBod"
+
+
 def resolved_proto_updates(*, target: str) -> tuple[tuple[str, str], ...]:
     """Keep the border lifecycle receiver on the best available exact owner."""
     border_manager_type = resolved_border_manager_struct_name(target=target)
@@ -384,6 +474,9 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    resolved_sprite_struct_name(target=args.target)
+    resolved_renderable_bod_struct_name(target=args.target)
+
     operations: list[dict[str, object]] = [
         types_declare_if_missing(
             REPO_ROOT,
@@ -409,6 +502,8 @@ def main() -> int:
                 ("MouseCursorState", MOUSE_CURSOR_FIELD_UPDATES),
                 ("FrontendOverlayColorLerp", FRONTEND_OVERLAY_FIELD_UPDATES),
                 ("FrameRenderCamera", FRAME_RENDER_CAMERA_FIELD_UPDATES),
+                ("FrameRenderCameraSlot", FRAME_RENDER_CAMERA_SLOT_FIELD_UPDATES),
+                ("SpriteDepthNode", SPRITE_DEPTH_NODE_FIELD_UPDATES),
                 ("GamePlayer", GAME_PLAYER_FIELD_UPDATES),
                 ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("BorderStackEntry", BORDER_STACK_ENTRY_FIELD_UPDATES),
@@ -436,6 +531,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=DATA_VAR_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=RENDER_USER_VAR_UPDATES,
         )
     )
     return emit_summary(

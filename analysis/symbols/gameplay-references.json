@@ -3729,6 +3729,16 @@
       "description": "Shared empty text buffer used to initialize the options-menu fullscreen toggle before update_options_menu writes the live label."
     },
     {
+      "address": "0x4dfb10",
+      "name": "g_post_sprite_bods",
+      "kind": "global",
+      "aliases": [
+        "data_4dfb10",
+        "unk_4dfb10"
+      ],
+      "description": "Base of the transient RenderableBod pointer stack filled by render_game_frame for BODs carrying BOD_FLAG_AFTER_SPRITES and drained in reverse order after the post-sprite camera pass. The first pointer type is proven; the currently unknown capacity is deliberately not asserted."
+    },
+    {
       "address": "0x4e5510",
       "name": "g_sprite_depth_nodes",
       "kind": "global",

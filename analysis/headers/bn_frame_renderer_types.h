@@ -5,8 +5,8 @@
  * Narrow Binary Ninja ownership slice for the root frame updater/renderer.
  *
  * Frame-local projections keep this header self-contained. SpriteDepthNode
- * deliberately stores its borrowed sprite as void* so importing this slice
- * cannot replace the complete Sprite layout maintained by the sprite lane.
+ * borrows the complete Sprite owner maintained by the sprite lane through a
+ * forward declaration; this slice never redeclares or replaces that layout.
  */
 
 typedef struct FrameColor4f {
@@ -349,11 +349,13 @@ typedef struct GameRoot {
     uint8_t unknown_12e6e50[0x12e6ff4 - 0x12e6e50];
 } GameRoot;
 
+typedef struct Sprite Sprite;
+
 typedef struct SpriteDepthNode {
     struct SpriteDepthNode* next;
     FrameVec3 position;
     float depth_key;
-    void* sprite;
+    Sprite* sprite;
 } SpriteDepthNode;
 
 #endif

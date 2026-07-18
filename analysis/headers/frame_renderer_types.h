@@ -1,7 +1,11 @@
 #ifndef FRAME_RENDERER_TYPES_H
 #define FRAME_RENDERER_TYPES_H
 
-/* Narrow IDA import slice for the root frame updater/renderer and sort workspace. */
+/*
+ * Narrow IDA import slice for the root frame updater/renderer and sort
+ * workspace. The sprite lane owns the complete Sprite layout; this header
+ * only borrows it through a forward declaration.
+ */
 
 typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
@@ -348,11 +352,13 @@ typedef struct FrameRendererVec3 {
     float z;
 } FrameRendererVec3;
 
+typedef struct Sprite Sprite;
+
 typedef struct SpriteDepthNode {
     struct SpriteDepthNode* next;
     FrameRendererVec3 position;
     float depth_key;
-    void* sprite;
+    Sprite* sprite;
 } SpriteDepthNode;
 
 #endif

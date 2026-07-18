@@ -307,10 +307,42 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         '("0x568", "frontend_link_latch", "uint8_t")',
         '("0x5a8", "active_bod_list", "BodList")',
         '("0xa60", "root_noop_renderable", "FrameRenderableBod")',
+        '("0x14", "sprite", "Sprite*")',
+        '("0x24", "draw_world", "uint8_t")',
     ):
         assert update in bn_frame_sync
     assert 'struct_name="Overlay"' in bn_frame_sync
     assert 'struct_name="RenderableBod"' in bn_frame_sync
+    assert 'struct_name="Sprite"' in bn_frame_sync
+    assert "RENDER_USER_VAR_UPDATES" in bn_frame_sync
+    assert '"render_game_frame",\n        "RegisterVariableSourceType",\n        445,\n        72,' in bn_frame_sync
+    assert '"bod",\n        "RenderableBod*",' in bn_frame_sync
+    assert '912,\n        67,\n        "bucket_node",\n        "SpriteDepthNode*",' in bn_frame_sync
+    assert '1280,\n        73,\n        "post_cursor",\n        "RenderableBod**",' in bn_frame_sync
+    assert (
+        '"int32_t __cdecl draw_sprite_quad(Vec3* position, Sprite* sprite)"'
+        in bn_frame_sync
+    )
+    assert '("0x4dfb10", "g_post_sprite_bods")' in bn_frame_sync
+    assert '("0x4dfb10", "RenderableBod*")' in bn_frame_sync
+    assert '("0x814c94", "g_sprite_active_heads")' in bn_frame_sync
+    assert '("0x814c94", "Sprite*[5]")' in bn_frame_sync
+    assert '"Sprite": 0xB4' in frame_sync
+    assert '"SpriteDepthNode": 0x18' in frame_sync
+    assert '"RenderableBod": 0x80' in frame_sync
+    assert "def _sync_render_pointer_lvar" in frame_sync
+    assert '"depth_bucket_cursor",\n        0x40A8C0,' in frame_sync
+    assert '"depth_bucket_sprite",\n        0x40A8CB,' in frame_sync
+    assert '"post_cursor",\n        0x40A991,' in frame_sync
+    assert '"int __cdecl draw_sprite_quad(Vec3 *position, Sprite *sprite);"' in frame_sync
+    assert '(0x4DFB10, "g_post_sprite_bods")' in frame_sync
+    assert '"RenderableBod *g_post_sprite_bods;"' in frame_sync
+    assert '(0x814C94, "g_sprite_active_heads")' in frame_sync
+    assert '"Sprite *g_sprite_active_heads[5];"' in frame_sync
+    for header in frame_headers:
+        assert "typedef struct Sprite Sprite;" in header
+        assert "Sprite* sprite;" in header
+        assert "void* sprite;" not in header
     assert '"BodNode": 0x10' in frame_sync
     assert '"BodList": 0xC' in frame_sync
 

@@ -6,6 +6,7 @@ import re
 import sys
 
 import ida_funcs
+import ida_hexrays
 import ida_kernwin
 import ida_name
 import ida_pro
@@ -20,6 +21,9 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 
 EXPECTED_OWNER_SIZES = {
+    "RenderableBod": 0x80,
+    "Sprite": 0xB4,
+    "SpriteDepthNode": 0x18,
     "FrameColor4f": 0x10,
     "FrontendFade": 0x14,
     "GameInput": 0x70,
@@ -50,8 +54,10 @@ TRUSTED_NAMES = [
     (0x44C3C0, "capture_mouse_cursor"),
     (0x44C400, "release_mouse_cursor"),
     (0x4972F4, "g_game_player_callback_table"),
+    (0x4DFB10, "g_post_sprite_bods"),
     (0x4E5510, "g_sprite_depth_nodes"),
     (0x4F7050, "g_sprite_depth_buckets"),
+    (0x814C94, "g_sprite_active_heads"),
 ]
 
 TRUSTED_FUNCTION_DECLARATIONS = [
@@ -134,6 +140,15 @@ TRUSTED_FUNCTION_DECLARATIONS = [
         "void __thiscall render_game_frame(GameRoot *game);",
     ),
     (
+        "draw_sprite_quad",
+        "int __cdecl draw_sprite_quad(Vec3 *position, Sprite *sprite);",
+    ),
+    (
+        "update_sprite_facing_angle",
+        "void __thiscall update_sprite_facing_angle("
+        "Sprite *sprite, const TransformMatrix *matrix);",
+    ),
+    (
         "select_level_track_texture_set",
         "void __thiscall select_level_track_texture_set(Track *track, int32_t texture_set);",
     ),
@@ -151,6 +166,11 @@ TRUSTED_DATA_DECLARATIONS = [
         "GameRoot *g_game_base;",
     ),
     (
+        0x4DFB10,
+        "g_post_sprite_bods",
+        "RenderableBod *g_post_sprite_bods;",
+    ),
+    (
         0x4E5510,
         "g_sprite_depth_nodes",
         "SpriteDepthNode g_sprite_depth_nodes[3000];",
@@ -159,6 +179,11 @@ TRUSTED_DATA_DECLARATIONS = [
         0x4F7050,
         "g_sprite_depth_buckets",
         "SpriteDepthNode *g_sprite_depth_buckets[256];",
+    ),
+    (
+        0x814C94,
+        "g_sprite_active_heads",
+        "Sprite *g_sprite_active_heads[5];",
     ),
 ]
 
@@ -187,6 +212,182 @@ def _named_struct_size(name: str) -> int | None:
     if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
         return None
     return value.get_size()
+
+
+def _normalize_struct_pointer_type(value: str | None) -> str:
+    normalized = (_normalize_type_text(value) or "").removeprefix("struct ")
+    return re.sub(r"\s+", "", normalized)
+
+
+def _sync_render_pointer_lvar(
+    *,
+    definition_address: int,
+    accepted_names: set[str],
+    accepted_types: set[str],
+    target_name: str,
+    target_struct_name: str,
+    pointer_depth: int,
+) -> dict[str, object]:
+    """Persist one evidence-backed pointer relationship in Render()."""
+    selector = "render_game_frame"
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    target_pointer_type = _normalize_struct_pointer_type(
+        f"{target_struct_name} {'*' * pointer_depth}"
+    )
+    normalized_accepted_types = {
+        _normalize_struct_pointer_type(value) for value in accepted_types
+    }
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and not lvar.is_stk_var()
+        and lvar.defea == definition_address
+        and lvar.name in accepted_names
+        and _normalize_struct_pointer_type(str(lvar.type()))
+        in normalized_accepted_types
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_render_pointer_lvar_candidates",
+            "candidate_count": len(candidates),
+            "definition_address": hex(definition_address),
+            "target_name": target_name,
+            "selector": selector,
+        }
+
+    lvar = candidates[0]
+    observed_type = _normalize_struct_pointer_type(str(lvar.type()))
+    if lvar.name == target_name and observed_type == target_pointer_type:
+        return {
+            "status": "unchanged",
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "definition_address": hex(lvar.defea),
+            "selector": selector,
+        }
+
+    target_type = ida_typeinf.tinfo_t()
+    if not target_type.get_named_type(
+        None,
+        target_struct_name,
+        ida_typeinf.BTF_STRUCT,
+    ):
+        return {
+            "status": "failed",
+            "reason": "missing_render_pointer_target_type",
+            "target_struct_name": target_struct_name,
+            "selector": selector,
+        }
+
+    pointer_type = target_type
+    for _ in range(pointer_depth):
+        next_pointer_type = ida_typeinf.tinfo_t()
+        if not next_pointer_type.create_ptr(pointer_type):
+            return {
+                "status": "failed",
+                "reason": "create_render_pointer_type_failed",
+                "target_struct_name": target_struct_name,
+                "pointer_depth": pointer_depth,
+                "selector": selector,
+            }
+        pointer_type = next_pointer_type
+
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = target_name
+    info.type = pointer_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_render_pointer_lvar_failed",
+            "target_name": target_name,
+            "selector": selector,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and candidate.defea == definition_address
+        and candidate.name == target_name
+    ]
+    verified_type = (
+        _normalize_struct_pointer_type(str(verified[0].type()))
+        if len(verified) == 1
+        else None
+    )
+    if len(verified) != 1 or verified_type != target_pointer_type:
+        return {
+            "status": "failed",
+            "reason": "render_pointer_lvar_readback_failed",
+            "candidate_count": len(verified),
+            "observed_type": verified_type,
+            "target_type": target_pointer_type,
+            "target_name": target_name,
+            "selector": selector,
+        }
+
+    return {
+        "status": "applied",
+        "before_name": lvar.name,
+        "before_type": str(lvar.type()),
+        "name": verified[0].name,
+        "type": str(verified[0].type()),
+        "definition_address": hex(verified[0].defea),
+        "selector": selector,
+    }
+
+
+RENDER_POINTER_LVAR_SPECS = (
+    (
+        "active_bod",
+        0x40A64E,
+        {"first", "bod"},
+        {"BodNode *", "RenderableBod *"},
+        "bod",
+        "RenderableBod",
+        1,
+    ),
+    (
+        "depth_bucket_cursor",
+        0x40A8C0,
+        {"v52", "depth_bucket_cursor"},
+        {"int *", "SpriteDepthNode **"},
+        "depth_bucket_cursor",
+        "SpriteDepthNode",
+        2,
+    ),
+    (
+        "depth_bucket_sprite",
+        0x40A8CB,
+        {"sprite", "v54"},
+        {"int", "Sprite *"},
+        "sprite",
+        "Sprite",
+        1,
+    ),
+    (
+        "post_cursor",
+        0x40A991,
+        {"v58", "post_cursor"},
+        {"int *", "RenderableBod **"},
+        "post_cursor",
+        "RenderableBod",
+        2,
+    ),
+)
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
@@ -270,6 +471,30 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {"selector": "GameRoot", "owner_graph": game_root_owner_graph}
         )
 
+    render_pointer_lvars = {}
+    for (
+        result_name,
+        definition_address,
+        accepted_names,
+        accepted_types,
+        target_name,
+        target_struct_name,
+        pointer_depth,
+    ) in RENDER_POINTER_LVAR_SPECS:
+        result = _sync_render_pointer_lvar(
+            definition_address=definition_address,
+            accepted_names=accepted_names,
+            accepted_types=accepted_types,
+            target_name=target_name,
+            target_struct_name=target_struct_name,
+            pointer_depth=pointer_depth,
+        )
+        render_pointer_lvars[result_name] = result
+        if result.get("status") == "failed":
+            failed.append(
+                {"selector": "render_game_frame", "lvar": result_name, "result": result}
+            )
+
     print(
         json.dumps(
             {
@@ -282,6 +507,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "game_root_owner_graph": game_root_owner_graph,
+                "render_pointer_lvars": render_pointer_lvars,
                 "missing": missing,
                 "failed": failed,
             },
