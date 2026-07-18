@@ -414,7 +414,7 @@ def parse_args() -> argparse.Namespace:
         "--only",
         action="append",
         default=[],
-        help="Optional function selector(s) to export. Matches manifest name or hex address.",
+        help="Optional function selector(s) to export. Matches manifest name, alias, or hex address.",
     )
     parser.add_argument(
         "--skip-analysis-refresh",
@@ -431,21 +431,26 @@ def _select_functions(manifest_functions: list[FunctionSymbol], selectors: list[
     selected = [
         function
         for function in manifest_functions
-        if function.name.lower() in requested or function.address_hex.lower() in requested
+        if requested
+        & {
+            function.name.lower(),
+            function.address_hex.lower(),
+            *(alias.lower() for alias in function.aliases),
+        }
     ]
+    selected_selectors = {
+        selector
+        for function in selected
+        for selector in (
+            function.name.lower(),
+            function.address_hex.lower(),
+            *(alias.lower() for alias in function.aliases),
+        )
+    }
     missing = sorted(
         selector
         for selector in selectors
-        if selector.lower()
-        not in {
-            function.name.lower()
-            for function in selected
-        }
-        and selector.lower()
-        not in {
-            function.address_hex.lower()
-            for function in selected
-        }
+        if selector.lower() not in selected_selectors
     )
     if missing:
         raise RuntimeError(f"manifest does not contain requested function selector(s): {', '.join(missing)}")
@@ -486,12 +491,14 @@ def main() -> int:
             )
         else:
             observed_name = live.get("name")
-            if observed_name != function.name:
+            accepted_names = {function.name, *function.aliases}
+            if observed_name not in accepted_names:
                 mismatches.append(
                     {
                         "reason": "name_mismatch",
                         "manifest_address": function.address_hex,
                         "manifest_name": function.name,
+                        "manifest_aliases": list(function.aliases),
                         "observed_address": live.get("address"),
                         "observed_name": observed_name,
                     }
@@ -503,15 +510,16 @@ def main() -> int:
             function.address_hex,
         )
         artifact = _artifact_path(out_dir, function)
-        exported.append(
-            _write_artifact(
-                out_dir,
-                function=function,
-                decompile_text=decompile_text,
-                target_metadata=target_metadata,
-                manifest_path=manifest_path,
-            )
+        exported_entry = _write_artifact(
+            out_dir,
+            function=function,
+            decompile_text=decompile_text,
+            target_metadata=target_metadata,
+            manifest_path=manifest_path,
         )
+        if live is not None and live.get("name") != function.name:
+            exported_entry["database_name"] = live.get("name")
+        exported.append(exported_entry)
         expected_paths.add(artifact)
         if args.only:
             removed.extend(

@@ -141,7 +141,7 @@ def parse_args() -> argparse.Namespace:
         "--only",
         action="append",
         default=[],
-        help="Optional function selector(s) to refresh. Matches manifest name or hex address.",
+        help="Optional function selector(s) to refresh. Matches manifest name, alias, or hex address.",
     )
     parser.add_argument(
         "--strict",
@@ -158,13 +158,26 @@ def _select_manifest_functions(manifest, selectors: list[str]):
     selected = [
         function
         for function in manifest.functions
-        if function.name.lower() in requested or function.address_hex.lower() in requested
+        if requested
+        & {
+            function.name.lower(),
+            function.address_hex.lower(),
+            *(alias.lower() for alias in function.aliases),
+        }
     ]
+    selected_selectors = {
+        selector
+        for function in selected
+        for selector in (
+            function.name.lower(),
+            function.address_hex.lower(),
+            *(alias.lower() for alias in function.aliases),
+        )
+    }
     missing = sorted(
         selector
         for selector in selectors
-        if selector.lower() not in {function.name.lower() for function in selected}
-        and selector.lower() not in {function.address_hex.lower() for function in selected}
+        if selector.lower() not in selected_selectors
     )
     if missing:
         raise RuntimeError(f"manifest does not contain requested function selector(s): {', '.join(missing)}")

@@ -66,6 +66,27 @@ def test_tracked_export_defaults_to_the_pinned_binja_target(
     assert module.parse_args().bn_target == "SnailMail_unwrapped.exe.bndb"
 
 
+def test_tracked_export_selects_manifest_alias(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/export_tracked_decompiles.py",
+        "test_export_tracked_decompiles_alias",
+    )
+    function = types.SimpleNamespace(
+        name="rotate_matrix_world_x",
+        aliases=("rotate_matrix_local_x",),
+        address_hex="0x44ce30",
+    )
+    manifest = types.SimpleNamespace(functions=(function,))
+
+    assert module._select_manifest_functions(
+        manifest,
+        ["rotate_matrix_local_x"],
+    ) == [function]
+
+
 def test_tracked_export_can_reuse_one_lane_index(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -171,6 +192,35 @@ def test_ida_symbol_sync_filters_manifest_by_name_and_address(
     ]
 
 
+def test_ida_symbol_sync_filters_manifest_by_alias(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/ida/sync_symbols.py",
+        "test_ida_sync_symbols_alias",
+    )
+    manifest = {
+        "functions": [
+            {
+                "address": "0x44ce30",
+                "name": "rotate_matrix_world_x",
+                "aliases": ["rotate_matrix_local_x"],
+            },
+            {"address": "0x44cec0", "name": "rotate_matrix_world_y"},
+        ]
+    }
+
+    filtered = module._select_manifest_functions(
+        manifest,
+        ["rotate_matrix_local_x"],
+    )
+
+    assert [function["name"] for function in filtered["functions"]] == [
+        "rotate_matrix_world_x"
+    ]
+
+
 def test_ida_symbol_sync_rejects_unknown_focused_selector(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -216,6 +266,26 @@ def test_binja_focused_export_retires_stale_same_address_artifacts(
     assert not stale.exists()
     assert keep.is_file()
     assert other.is_file()
+
+
+def test_binja_focused_export_selects_manifest_alias(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/binja/export_manifest_functions.py",
+        "test_binja_export_manifest_functions_alias",
+    )
+    function = module.FunctionSymbol(
+        address=0x44CE30,
+        name="rotate_matrix_world_x",
+        aliases=("rotate_matrix_local_x",),
+    )
+
+    assert module._select_functions(
+        [function],
+        ["rotate_matrix_local_x"],
+    ) == [function]
 
 
 def test_binja_export_refreshes_dependent_analysis(
@@ -400,6 +470,39 @@ def test_ida_focused_summary_reports_only_refreshed_exports(
     assert summary["exported"] == refreshed
 
 
+def test_ida_focused_export_selects_and_accepts_manifest_alias(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/ida/export_manifest_functions.py",
+        "test_ida_export_manifest_functions_alias",
+    )
+    function = types.SimpleNamespace(
+        address=0x44CE30,
+        address_hex="0x44ce30",
+        name="rotate_matrix_world_x",
+        aliases=("rotate_matrix_local_x",),
+    )
+    manifest = types.SimpleNamespace(functions=(function,))
+
+    assert module._select_functions(
+        manifest.functions,
+        ["rotate_matrix_local_x"],
+    ) == [function]
+    assert module._build_mismatches(
+        manifest,
+        [
+            {
+                "selector": "rotate_matrix_world_x",
+                "address": "0x44ce30",
+                "name": "rotate_matrix_world_x",
+                "database_name": "rotate_matrix_local_x",
+            }
+        ],
+    ) == []
+
+
 def test_ida_partial_export_preserves_last_known_good_artifact(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -479,6 +582,11 @@ def test_ida_artifact_normalization_strips_trailing_blank_lines(
     )
 
     assert module._normalize_pseudocode("line 1  \nline 2\n\n") == "line 1\nline 2"
+    assert module._artifact_path(
+        Path("functions"),
+        0x44CE30,
+        "rotate_matrix_world_x",
+    ) == Path("functions/0044ce30-rotate_matrix_world_x.c")
 
 
 def test_ida_artifact_export_reports_partial_failures_without_process_abort(

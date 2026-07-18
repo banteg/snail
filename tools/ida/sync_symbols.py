@@ -38,7 +38,7 @@ def parse_args() -> argparse.Namespace:
         "--only",
         action="append",
         default=[],
-        help="Optional function selector(s) to sync. Matches manifest name or hex address.",
+        help="Optional function selector(s) to sync. Matches manifest name, alias, or hex address.",
     )
     return parser.parse_args()
 
@@ -69,10 +69,19 @@ def _select_manifest_functions(
             raise ValueError("manifest function entries must be objects")
         name = function.get("name")
         address = function.get("address")
+        aliases = function.get("aliases", [])
         if not isinstance(name, str) or not name:
             raise ValueError("manifest function entry has an invalid name")
+        if not isinstance(aliases, list) or not all(
+            isinstance(alias, str) and alias for alias in aliases
+        ):
+            raise ValueError("manifest function entry has invalid aliases")
         address_hex = f"0x{_parse_address(address):x}"
-        selectors_for_function = {name.lower(), address_hex.lower()}
+        selectors_for_function = {
+            name.lower(),
+            address_hex.lower(),
+            *(alias.lower() for alias in aliases),
+        }
         hits = requested & selectors_for_function
         if hits:
             selected.append(function)

@@ -34,6 +34,11 @@ def _prune_same_address_artifacts(out_dir, start, keep_path):
     return removed
 
 
+def _artifact_path(out_dir, start, display_selector):
+    """Keep tracked filenames on the manifest's stable canonical identity."""
+    return out_dir / f"{start:08x}-{_safe_name(display_selector)}.c"
+
+
 def _resolve_selector(selector):
     resolved_from_address = False
     try:
@@ -80,12 +85,16 @@ def _export_function(out_dir, selector):
     except Exception as exc:  # pragma: no cover - IDA runtime dependent
         raise RuntimeError(f"failed to decompile {selector}: {exc}") from exc
 
-    out_path = out_dir / f"{start:08x}-{_safe_name(name)}.c"
+    out_path = _artifact_path(out_dir, start, display_selector)
     removed_stale_artifacts = _prune_same_address_artifacts(out_dir, start, out_path)
+    database_symbol_comment = (
+        f"/* database symbol: {name} */\n" if name != display_selector else ""
+    )
     out_path.write_text(
         (
             f"/* database: {idc.get_idb_path()} */\n"
-            f"/* function: {name} @ {hex(start)} */\n"
+            f"/* function: {display_selector} @ {hex(start)} */\n"
+            f"{database_symbol_comment}"
             f"/* selector: {display_selector} */\n\n"
             f"{_normalize_pseudocode(pseudocode)}\n"
         ),
@@ -94,7 +103,8 @@ def _export_function(out_dir, selector):
     return {
         "selector": display_selector,
         "address": hex(start),
-        "name": name,
+        "name": display_selector,
+        **({"database_name": name} if name != display_selector else {}),
         "artifact": str(out_path),
         "removed_stale_artifacts": removed_stale_artifacts,
     }

@@ -61,7 +61,7 @@ def parse_args() -> argparse.Namespace:
         "--only",
         action="append",
         default=[],
-        help="Optional function selector(s) to export. Matches manifest name or hex address.",
+        help="Optional function selector(s) to export. Matches manifest name, alias, or hex address.",
     )
     return parser.parse_args()
 
@@ -238,16 +238,27 @@ def _build_mismatches(manifest, exported_entries: list[dict[str, object]]) -> li
             )
             continue
         observed_address = entry.get("address")
-        observed_name = entry.get("name")
-        if observed_address != manifest_function.address_hex or observed_name != manifest_function.name:
+        exported_name = entry.get("name")
+        database_name = entry.get("database_name", exported_name)
+        accepted_database_names = {
+            manifest_function.name,
+            *manifest_function.aliases,
+        }
+        if (
+            observed_address != manifest_function.address_hex
+            or exported_name != manifest_function.name
+            or database_name not in accepted_database_names
+        ):
             mismatches.append(
                 {
                     "reason": "selector_resolved_differently",
                     "selector": selector,
                     "manifest_address": manifest_function.address_hex,
                     "manifest_name": manifest_function.name,
+                    "manifest_aliases": list(manifest_function.aliases),
                     "observed_address": observed_address,
-                    "observed_name": observed_name,
+                    "observed_name": exported_name,
+                    "database_name": database_name,
                 }
             )
     for function in manifest.functions:
@@ -271,14 +282,26 @@ def _select_functions(manifest_functions, selectors: list[str]):
     selected = [
         function
         for function in manifest_functions
-        if function.name.lower() in requested or function.address_hex.lower() in requested
+        if requested
+        & {
+            function.name.lower(),
+            function.address_hex.lower(),
+            *(alias.lower() for alias in function.aliases),
+        }
     ]
-    selected_names = {function.name.lower() for function in selected}
-    selected_addresses = {function.address_hex.lower() for function in selected}
+    selected_selectors = {
+        selector
+        for function in selected
+        for selector in (
+            function.name.lower(),
+            function.address_hex.lower(),
+            *(alias.lower() for alias in function.aliases),
+        )
+    }
     missing = sorted(
         selector
         for selector in selectors
-        if selector.lower() not in selected_names and selector.lower() not in selected_addresses
+        if selector.lower() not in selected_selectors
     )
     if missing:
         raise RuntimeError(f"manifest does not contain requested function selector(s): {', '.join(missing)}")
