@@ -240,6 +240,9 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
             "void __thiscall initialize_invincible_shell(Invincible* invincible)",
             "void __thiscall start_invincible_shell(Invincible* invincible)",
             "void __thiscall update_invincible_shell(Invincible* invincible)",
+            "void __thiscall initialize_snail_skin(SnailSkin* snail_skin)",
+            "void __thiscall update_snail_skin_transition(SnailSkin* snail_skin)",
+            "void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
         ):
             assert declaration in source
         for declaration in (
@@ -262,6 +265,7 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
             ('"SubHover"', "0x214"),
             ('"Weapon"', "0x3DC"),
             ('"Invincible"', "0xA4"),
+            ('"SnailSkin"', "0x20"),
             ('"Snail"', "0x19B4"),
             ('"Player"', "0x4364"),
         ):

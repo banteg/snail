@@ -5553,17 +5553,39 @@
       ]
     },
     {
-      "name": "bn_snail_skin_fields_intact",
+      "name": "bn_snail_skin_change_owner",
       "artifact": "analysis/decompile/binja/functions/00445fd0-change_snail_skin.c",
       "required_substrings": [
-        "state->active",
-        "state->selected_slot",
-        "state->progress",
-        "state->progress_step"
+        "snail_skin->active",
+        "snail_skin->selected_slot",
+        "snail_skin->progress",
+        "snail_skin->progress_step",
+        "duration_seconds",
+        "slot_id"
       ],
       "forbidden_substrings": [
+        "SnailSkinTransitionState",
+        "state->",
+        "arg1",
         "__asm",
         "_ET1"
+      ]
+    },
+    {
+      "name": "ida_snail_skin_change_owner",
+      "artifact": "analysis/decompile/ida/functions/00445fd0-change_snail_skin.c",
+      "required_substrings": [
+        "void __thiscall change_snail_skin(SnailSkin *snail_skin, int32_t slot_id, float duration_seconds)",
+        "snail_skin->active = 1;",
+        "snail_skin->progress = 0.0;",
+        "snail_skin->selected_slot = slot_id;",
+        "snail_skin->progress_step = 1.0 / (duration_seconds * 60.0);"
+      ],
+      "forbidden_substrings": [
+        "SnailSkinTransitionState",
+        "state->",
+        "sub_445FD0",
+        "MEMORY["
       ]
     },
     {
@@ -14884,6 +14906,77 @@
         "MEMORY[",
         "int *sprite_slots",
         "nuke->state = 0;"
+      ]
+    },
+    {
+      "name": "bn_snail_skin_initialize_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00445f60-initialize_snail_skin.c",
+      "required_substrings": [
+        "struct GameRoot* game_base_1 = g_game_base",
+        "snail_skin->selected_slot = 0",
+        "snail_skin->active = 0",
+        "snail_skin->owner_snail = &game_base_1->subgame.player.presentation"
+      ],
+      "forbidden_substrings": [
+        "SnailSkinTransitionState",
+        "state->",
+        "owner_render_state",
+        "data_4df904",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_snail_skin_initialize_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00445f60-initialize_snail_skin.c",
+      "required_substrings": [
+        "void __thiscall initialize_snail_skin(SnailSkin *snail_skin)",
+        "v1 = g_game_base;",
+        "snail_skin->selected_slot = 0;",
+        "snail_skin->active = 0;",
+        "snail_skin->owner_snail = &v1->subgame.player.presentation;"
+      ],
+      "forbidden_substrings": [
+        "SnailSkinTransitionState",
+        "owner_render_state",
+        "MEMORY[",
+        "sub_445F60"
+      ]
+    },
+    {
+      "name": "bn_snail_skin_update_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00445f80-update_snail_skin_transition.c",
+      "required_substrings": [
+        "struct Object* object = snail_skin->owner_snail->body.bod.object",
+        "object->flags |= OBJECT_FLAG_USE_OVERRIDE_TEXTURE",
+        "object->override_texture_ref = snail_skin->material_overrides[snail_skin->selected_slot]",
+        "snail_skin->progress_step",
+        "snail_skin->progress",
+        "snail_skin->active = 0"
+      ],
+      "forbidden_substrings": [
+        "SnailSkinTransitionState",
+        "owner_render_state",
+        "slot_ids",
+        "state->",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_snail_skin_update_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00445f80-update_snail_skin_transition.c",
+      "required_substrings": [
+        "void __thiscall update_snail_skin_transition(SnailSkin *snail_skin)",
+        "snail_skin->owner_snail->body.bod.object->flags |= 8u;",
+        "snail_skin->owner_snail->body.bod.object->override_texture_ref = snail_skin->material_overrides[snail_skin->selected_slot];",
+        "snail_skin->progress_step + snail_skin->progress",
+        "snail_skin->active = 0;"
+      ],
+      "forbidden_substrings": [
+        "SnailSkinTransitionState",
+        "owner_render_state",
+        "slot_ids",
+        "*(_DWORD *)",
+        "sub_445F80"
       ]
     }
   ]

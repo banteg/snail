@@ -27,3 +27,13 @@ invincible slot and restores default on teardown. Binary Ninja finds those
 five complete `Change` callsites and types the bank as `TextureRef*[3]`.
 `change_snail_skin` deliberately retains its authored cross-port `int` formal,
 so these constants document proven values without inventing an enum ABI.
+
+## 2026-07-18 durable lifecycle replay
+
+The focused Snail-presentation lane now verifies the exact 0x20-byte
+`SnailSkin` child and replays its complete `Init/AI/Change` ABI family. Paired
+tracked decompiles expose the root-owned `Snail` parent at
+`SubgameRuntime::player.presentation`, replacing the stale synthetic
+transition-state owner and raw root displacement. Strict health checks preserve
+that borrowed parent relationship. Focused matching remains exact at 6/6 with
+both operands clean.

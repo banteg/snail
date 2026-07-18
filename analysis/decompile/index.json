@@ -17,19 +17,19 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "uninit_nuke",
-      "address": "0x4470e0"
+      "name": "initialize_snail_skin",
+      "address": "0x445f60"
     },
     {
-      "name": "initialize_nuke",
-      "address": "0x447110"
+      "name": "update_snail_skin_transition",
+      "address": "0x445f80"
     },
     {
-      "name": "update_nuke",
-      "address": "0x4471e0"
+      "name": "change_snail_skin",
+      "address": "0x445fd0"
     }
   ],
-  "health_check_count": 848,
+  "health_check_count": 853,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

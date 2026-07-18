@@ -29,6 +29,9 @@ TRUSTED_NAMES = (
     (0x444B50, "update_invincible_shell"),
     (0x445CD0, "update_snail_skin"),
     (0x445D50, "build_snail_hotspots"),
+    (0x445F60, "initialize_snail_skin"),
+    (0x445F80, "update_snail_skin_transition"),
+    (0x445FD0, "change_snail_skin"),
 )
 
 TRUSTED_DECLARATIONS = (
@@ -88,6 +91,18 @@ TRUSTED_DECLARATIONS = (
         "build_snail_hotspots",
         "void __thiscall build_snail_hotspots(Snail* snail);",
     ),
+    (
+        "initialize_snail_skin",
+        "void __thiscall initialize_snail_skin(SnailSkin* snail_skin);",
+    ),
+    (
+        "update_snail_skin_transition",
+        "void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);",
+    ),
+    (
+        "change_snail_skin",
+        "void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);",
+    ),
 )
 
 DEPENDENCY_HEADER_NAMES = (
@@ -114,6 +129,8 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct Weapon {",
     "Vec3 release_step;",
     "typedef struct Invincible {",
+    "typedef struct SnailSkin {",
+    "TextureRef* material_overrides[3];",
     "uint8_t channel_release_steps_active;",
     "typedef struct Snail {",
     "Weapon weapon_channels[3];",
@@ -132,6 +149,7 @@ EXPECTED_OWNER_SIZES = {
     "SubHover": 0x214,
     "Weapon": 0x3DC,
     "Invincible": 0xA4,
+    "SnailSkin": 0x20,
     "Snail": 0x19B4,
     "Player": 0x4364,
 }

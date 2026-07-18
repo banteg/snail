@@ -15,3 +15,13 @@ Android independently exports `cRSnailSkin::AI()` and follows the same
 Snail-to-object link for its flag/material write and timer state machine. The
 Windows renderer independently consumes `Object::override_texture_ref`, so
 the old synthetic visual-root/material-index view is retired.
+
+## 2026-07-18 durable lifecycle replay
+
+The focused Snail-presentation lane now replays this method through the exact
+0x20-byte `SnailSkin` child. Paired tracked decompiles follow its borrowed
+`Snail*` backlink into the owned render `Object`, then recover the object flag,
+override texture, three borrowed `TextureRef*` slots, and timed reset fields.
+Strict health checks reject the old `owner_render_state`, `slot_ids`, raw
+object offsets, and synthetic transition owner. Focused matching remains exact
+at 25/25 with its operand clean.

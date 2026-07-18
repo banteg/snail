@@ -3,8 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_snail_skin @ 0x445f60 */
 
-00445f60        void* eax_1 = data_4df904
-00445f65        state->selected_slot = 0
-00445f70        state->active = 0
-00445f77        state->owner_render_state = eax_1 + 0x432700
+00445f60        struct GameRoot* game_base_1 = g_game_base
+00445f65        snail_skin->selected_slot = 0
+00445f70        snail_skin->active = 0
+00445f77        snail_skin->owner_snail = &game_base_1->subgame.player.presentation
 00445f7a        return

@@ -2,23 +2,22 @@
 /* function: update_snail_skin_transition @ 0x445f80 */
 /* selector: update_snail_skin_transition */
 
-// Applies the currently selected snail-skin object to the shared player render owner and, when a timed skin change is armed, advances the transition progress until the swap completes.
-void __thiscall update_snail_skin_transition(SnailSkinTransitionState *state)
+// Exact Windows `SnailSkin::update_snail_skin_transition`, authored as `cRSnailSkin::AI`: follows the borrowed Snail backlink, marks its linked Object dirty, installs the selected TextureRef override, and advances the timed reset state.
+void __thiscall update_snail_skin_transition(SnailSkin *snail_skin)
 {
   double v1; // st7
 
-  *(_DWORD *)(*((_DWORD *)state->owner_render_state + 9) + 16) |= 8u;
-  *(_DWORD *)(*((_DWORD *)state->owner_render_state + 9) + 24) = state->slot_ids[state->selected_slot];
-  if ( state->active == 1 )
+  snail_skin->owner_snail->body.bod.object->flags |= 8u;
+  snail_skin->owner_snail->body.bod.object->override_texture_ref = snail_skin->material_overrides[snail_skin->selected_slot];
+  if ( snail_skin->active == 1 )
   {
-    v1 = state->progress_step + state->progress;
-    state->progress = v1;
+    v1 = snail_skin->progress_step + snail_skin->progress;
+    snail_skin->progress = v1;
     if ( v1 > 1.0 )
     {
-      state->progress = 0.0;
-      state->active = 0;
-      state->selected_slot = 0;
+      snail_skin->progress = 0.0;
+      snail_skin->active = 0;
+      snail_skin->selected_slot = 0;
     }
   }
 }
-

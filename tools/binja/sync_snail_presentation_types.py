@@ -30,6 +30,7 @@ EXPECTED_OWNER_SIZES = {
     "SubHover": 0x214,
     "Weapon": 0x3DC,
     "Invincible": 0xA4,
+    "SnailSkin": 0x20,
     "Snail": 0x19B4,
     "Player": 0x4364,
 }
@@ -49,6 +50,9 @@ SYMBOL_UPDATES = (
     ("0x444b50", "update_invincible_shell"),
     ("0x445cd0", "update_snail_skin"),
     ("0x445d50", "build_snail_hotspots"),
+    ("0x445f60", "initialize_snail_skin"),
+    ("0x445f80", "update_snail_skin_transition"),
+    ("0x445fd0", "change_snail_skin"),
 )
 
 PROTO_UPDATES = (
@@ -107,6 +111,18 @@ PROTO_UPDATES = (
     (
         "build_snail_hotspots",
         "void __thiscall build_snail_hotspots(Snail* snail)",
+    ),
+    (
+        "initialize_snail_skin",
+        "void __thiscall initialize_snail_skin(SnailSkin* snail_skin)",
+    ),
+    (
+        "update_snail_skin_transition",
+        "void __thiscall update_snail_skin_transition(SnailSkin* snail_skin)",
+    ),
+    (
+        "change_snail_skin",
+        "void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
     ),
 )
 
