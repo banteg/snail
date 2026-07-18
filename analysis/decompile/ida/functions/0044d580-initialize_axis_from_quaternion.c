@@ -2,15 +2,14 @@
 /* function: initialize_axis_from_quaternion @ 0x44d580 */
 /* selector: initialize_axis_from_quaternion */
 
-// Converts a quaternion into axis-angle form by normalizing xyz against `sin(theta / 2)` and storing `angle = 2 * acos(w)`. Android symbols match this helper to `tAxis::operator=(const tQuaternian&)`.
-void __thiscall sub_44D580(float *this, float *a2)
+// Stable Windows harness identity for the exact void `AxisAngle::operator=(const Quaternion&)` conversion retained by Android as `tAxis::operator=(const tQuaternian&)`. It normalizes xyz against `sin(theta / 2)` and stores `angle = 2 * acos(w)`.
+void __thiscall initialize_axis_from_quaternion(AxisAngle *out, const Quaternion *quaternion)
 {
-  float v4; // [esp+10h] [ebp+4h]
+  float quaterniona; // [esp+10h] [ebp+4h]
 
-  v4 = arccosine(a2[3]);
-  *this = *a2 / sine(v4);
-  *(this + 1) = a2[1] / sine(v4);
-  *(this + 2) = a2[2] / sine(v4);
-  *(this + 3) = v4 + v4;
+  quaterniona = arccosine(quaternion->w);
+  out->x = quaternion->x / sine(quaterniona);
+  out->y = quaternion->y / sine(quaterniona);
+  out->z = quaternion->z / sine(quaterniona);
+  out->angle = quaterniona + quaterniona;
 }
-

@@ -2,8 +2,8 @@
 /* function: set_matrix_rotation_identity @ 0x44d250 */
 /* selector: set_matrix_rotation_identity */
 
-// Resets the rotational basis and homogeneous row to identity while preserving the translation slots. Android symbols match this helper to `tMatrix::RotIdentity()`.
-void __fastcall set_matrix_rotation_identity(TransformMatrix *transform)
+// Exact void `TransformMatrix::set_matrix_rotation_identity()` method: resets the rotational basis and homogeneous row while preserving translation, matching mobile `tMatrix::RotIdentity()`.
+void __thiscall set_matrix_rotation_identity(TransformMatrix *transform)
 {
   transform->position.w = 1.0;
   transform->basis_forward.z = 1.0;
@@ -19,4 +19,3 @@ void __fastcall set_matrix_rotation_identity(TransformMatrix *transform)
   transform->basis_right.z = 0.0;
   transform->basis_right.y = 0.0;
 }
-

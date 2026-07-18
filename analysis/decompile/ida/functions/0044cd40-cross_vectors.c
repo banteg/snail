@@ -2,23 +2,18 @@
 /* function: cross_vectors @ 0x44cd40 */
 /* selector: cross_vectors */
 
-// Computes the 3D cross product of two vectors into a destination output. Android symbols match this helper to `tVector::Cross(const tVector&, const tVector&)`.
-int32_t __thiscall cross_vectors(Vec3 *out, Vec3 *lhs, Vec3 *rhs)
+// Exact void `Vector3::cross_vectors(const Vector3&, const Vector3&)` member: computes the 3D cross product of two const-reference operands through a function-local static temporary and copies it into its receiver, matching iOS and Android `tVector::Cross(const tVector&, const tVector&)`.
+void __thiscall cross_vectors(Vec3 *out, const Vec3 *lhs, const Vec3 *rhs)
 {
-  int32_t result; // eax
-
-  if ( (dword_777B2C[259] & 1) == 0 )
+  if ( (LOBYTE(cross_vectors_static_guard[0]) & 1) == 0 )
   {
-    LOBYTE(dword_777B2C[259]) |= 1u;
-    atexit(nullsub_2);
+    LOBYTE(cross_vectors_static_guard[0]) |= 1u;
+    atexit(destroy_cross_vectors_static_result);
   }
-  *(float *)&dword_777B2C[8469] = lhs->y * rhs->z - rhs->y * lhs->z;
-  *(float *)&dword_777B2C[8470] = lhs->z * rhs->x - lhs->x * rhs->z;
-  result = dword_777B2C[8469];
-  *(float *)&dword_777B2C[8471] = rhs->y * lhs->x - lhs->y * rhs->x;
-  LODWORD(out->x) = dword_777B2C[8469];
-  LODWORD(out->y) = dword_777B2C[8470];
-  LODWORD(out->z) = dword_777B2C[8471];
-  return result;
+  cross_vectors_static_result[0] = lhs->y * rhs->z - rhs->y * lhs->z;
+  cross_vectors_static_result[1] = lhs->z * rhs->x - lhs->x * rhs->z;
+  flt_77FF88[0] = rhs->y * lhs->x - lhs->y * rhs->x;
+  out->x = cross_vectors_static_result[0];
+  out->y = cross_vectors_static_result[1];
+  out->z = flt_77FF88[0];
 }
-

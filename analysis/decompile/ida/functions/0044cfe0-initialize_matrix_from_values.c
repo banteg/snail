@@ -2,6 +2,7 @@
 /* function: initialize_matrix_from_values @ 0x44cfe0 */
 /* selector: initialize_matrix_from_values */
 
+// Stable Windows harness identity for the authored 16-float `tMatrix::tMatrix(float, ..., float)` constructor retained by Android and iOS. The exact constructor writes all four matrix rows and returns its receiver only through the ordinary VC6 constructor ABI.
 TransformMatrix *__thiscall initialize_matrix_from_values(
         TransformMatrix *transform,
         float m00,
@@ -39,4 +40,3 @@ TransformMatrix *__thiscall initialize_matrix_from_values(
   transform->position.w = m33;
   return transform;
 }
-

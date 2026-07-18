@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 704,
-  "function_count": 704,
+  "selected_count": 706,
+  "function_count": 706,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -4531,6 +4531,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "destroy_cross_vectors_static_result",
+      "address": "0x44cdd0",
+      "name": "destroy_cross_vectors_static_result",
+      "artifact": "analysis/decompile/ida/functions/0044cdd0-destroy_cross_vectors_static_result.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_uniform_scale_matrix",
       "address": "0x44cde0",
       "name": "initialize_uniform_scale_matrix",
@@ -4541,6 +4548,7 @@
       "selector": "rotate_matrix_world_x",
       "address": "0x44ce30",
       "name": "rotate_matrix_world_x",
+      "database_name": "rotate_matrix_local_x",
       "artifact": "analysis/decompile/ida/functions/0044ce30-rotate_matrix_world_x.c",
       "removed_stale_artifacts": []
     },
@@ -4548,6 +4556,7 @@
       "selector": "rotate_matrix_world_y",
       "address": "0x44cec0",
       "name": "rotate_matrix_world_y",
+      "database_name": "rotate_matrix_local_y",
       "artifact": "analysis/decompile/ida/functions/0044cec0-rotate_matrix_world_y.c",
       "removed_stale_artifacts": []
     },
@@ -4555,6 +4564,7 @@
       "selector": "rotate_matrix_world_z",
       "address": "0x44cf50",
       "name": "rotate_matrix_world_z",
+      "database_name": "rotate_matrix_local_z",
       "artifact": "analysis/decompile/ida/functions/0044cf50-rotate_matrix_world_z.c",
       "removed_stale_artifacts": []
     },
@@ -4576,7 +4586,15 @@
       "selector": "multiply_matrix_in_place",
       "address": "0x44d1a0",
       "name": "multiply_matrix_in_place",
+      "database_name": "multiply_matrix",
       "artifact": "analysis/decompile/ida/functions/0044d1a0-multiply_matrix_in_place.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "multiply_matrix_in_place_forward_thunk",
+      "address": "0x44d1d0",
+      "name": "multiply_matrix_in_place_forward_thunk",
+      "artifact": "analysis/decompile/ida/functions/0044d1d0-multiply_matrix_in_place_forward_thunk.c",
       "removed_stale_artifacts": []
     },
     {

@@ -2,7 +2,8 @@
 /* function: orthogonalize_matrix @ 0x44d3d0 */
 /* selector: orthogonalize_matrix */
 
-int32_t __fastcall orthogonalize_matrix(TransformMatrix *transform)
+// Exact void `TransformMatrix::orthogonalize_matrix()` method: normalizes the three basis vectors and rebuilds an orthogonal frame through cross products, matching mobile `tMatrix::Orthoganalize()`.
+void __thiscall orthogonalize_matrix(TransformMatrix *transform)
 {
   Vec3 *p_basis_up; // edi
   Vec3 *p_basis_forward; // ebx
@@ -13,6 +14,5 @@ int32_t __fastcall orthogonalize_matrix(TransformMatrix *transform)
   normalize_vector(p_basis_up);
   normalize_vector(p_basis_forward);
   cross_vectors((Vec3 *)transform, p_basis_up, p_basis_forward);
-  return cross_vectors(p_basis_forward, (Vec3 *)transform, p_basis_up);
+  cross_vectors(p_basis_forward, (const Vec3 *)transform, p_basis_up);
 }
-

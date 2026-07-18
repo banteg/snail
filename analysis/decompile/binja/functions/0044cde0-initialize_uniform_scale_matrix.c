@@ -3,20 +3,20 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_uniform_scale_matrix @ 0x44cde0 */
 
-0044cdea        *arg1 = arg2
-0044cdee        arg1[1] = 0
-0044cdf1        arg1[2] = 0
-0044cdf4        arg1[3] = 0
-0044cdf7        arg1[4] = 0
-0044cdfa        arg1[5] = arg2
-0044cdfd        arg1[6] = 0
-0044ce00        arg1[7] = 0
-0044ce03        arg1[8] = 0
-0044ce06        arg1[9] = 0
-0044ce09        arg1[0xa] = arg2
-0044ce0c        arg1[0xb] = 0
-0044ce0f        arg1[0xc] = 0
-0044ce12        arg1[0xd] = 0
-0044ce15        arg1[0xe] = 0
-0044ce18        arg1[0xf] = 0x3f800000
-0044ce1f        return arg1
+0044cdea        transform->basis_right.x = scale
+0044cdee        transform->basis_right.y = 0f
+0044cdf1        transform->basis_right.z = 0f
+0044cdf4        transform->basis_right_w = 0f
+0044cdf7        transform->basis_up.x = 0
+0044cdfa        transform->basis_up.y = scale
+0044cdfd        transform->basis_up.z = 0f
+0044ce00        transform->basis_up_w = 0f
+0044ce03        transform->basis_forward.x = 0
+0044ce06        transform->basis_forward.y = 0f
+0044ce09        transform->basis_forward.z = scale
+0044ce0c        transform->basis_forward_w = 0f
+0044ce0f        transform->position.x = 0
+0044ce12        transform->position.y = 0f
+0044ce15        transform->position.z = 0f
+0044ce18        transform->position_w = 1f
+0044ce1f        return transform

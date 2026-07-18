@@ -11,3 +11,8 @@ new-up temporary before the z lane writes both final temporaries.
 also direct local-axis evidence; "world" was only the old Windows analysis
 label. The scratch now defines `TransformMatrix::rotate_matrix_local_x`, keeps
 the stable dashboard identity through `SYMBOL`, and remains 50/50 exact.
+
+2026-07-18 tracked decompile replay: the live database keeps the authored
+`rotate_matrix_local_x` symbol while the exported artifact retains the stable
+canonical `0044ce30-rotate_matrix_world_x.c` identity. IDA records both names
+explicitly, preventing an alias refresh from creating duplicate artifacts.

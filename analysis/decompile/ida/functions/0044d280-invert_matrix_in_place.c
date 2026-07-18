@@ -2,10 +2,9 @@
 /* function: invert_matrix_in_place @ 0x44d280 */
 /* selector: invert_matrix_in_place */
 
-// Inverts one orthonormal transform matrix in place by transposing the basis and recomputing the negated translated origin. Android symbols match this helper to `tMatrix::Invert()`.
-float *__thiscall sub_44D280(float *this)
+// Void `tMatrix::Invert()` implementation: inverts one orthonormal transform matrix in place by transposing the basis and recomputing the negated translated origin. Windows and Android callers discard the incidental receiver register.
+void __thiscall invert_matrix_in_place(TransformMatrix *transform)
 {
-  float *result; // eax
   double v2; // st7
   float v3; // edx
   float v4; // ecx
@@ -18,27 +17,24 @@ float *__thiscall sub_44D280(float *this)
   float v11; // edx
   float v12[16]; // [esp+8h] [ebp-40h] BYREF
 
-  result = this;
-  qmemcpy(v12, this, sizeof(v12));
-  v2 = v12[2] * *(this + 14) + v12[13] * v12[1] + v12[12] * v12[0];
+  qmemcpy(v12, transform, sizeof(v12));
+  v2 = v12[2] * transform->position.z + v12[13] * v12[1] + v12[12] * v12[0];
   v3 = v12[8];
-  *(this + 1) = v12[4];
+  transform->basis_right.y = v12[4];
   v4 = v12[1];
-  result[12] = -v2;
-  v5 = v12[6] * result[14];
+  transform->position.x = -v2;
+  v5 = v12[6] * transform->position.z;
   v6 = v12[5] * v12[13];
-  result[2] = v3;
+  transform->basis_right.z = v3;
   v7 = v12[9];
-  result[4] = v4;
+  transform->basis_up.x = v4;
   v8 = v12[2];
   v9 = v5 + v6;
   v10 = v12[4] * v12[12];
-  result[6] = v7;
+  transform->basis_up.z = v7;
   v11 = v12[6];
-  result[8] = v8;
-  result[9] = v11;
-  result[13] = -(v9 + v10);
-  result[14] = -(v12[10] * result[14] + v12[9] * v12[13] + v12[8] * v12[12]);
-  return result;
+  transform->basis_forward.x = v8;
+  transform->basis_forward.y = v11;
+  transform->position.y = -(v9 + v10);
+  transform->position.z = -(v12[10] * transform->position.z + v12[9] * v12[13] + v12[8] * v12[12]);
 }
-

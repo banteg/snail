@@ -28,3 +28,8 @@ remain exact at 61/61 instructions with all six operands clean.
 The shared method and all owned callers now use two const references directly;
 the helper and all exact callers remain byte-identical, while the six affected
 partial callers retain their prior scores and operand state.
+
+2026-07-18 tracked decompile replay: the stored Binary Ninja and IDA artifacts
+now carry the full typed `TransformMatrix` -> `Quaternion` -> `AxisAngle` ->
+`Quaternion` -> `TransformMatrix` ownership chain. The exact 61/61 source and
+its explicit translation temporaries remain unchanged.

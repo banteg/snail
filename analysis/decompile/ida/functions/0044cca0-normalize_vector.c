@@ -2,18 +2,23 @@
 /* function: normalize_vector @ 0x44cca0 */
 /* selector: normalize_vector */
 
-double __fastcall normalize_vector(Vec3 *vector)
+// Exact float-returning `Vector3::normalize_vector()` member: normalizes its receiver in place and returns the prior magnitude, matching iOS and Android `tVector::Normalize()`.
+float __thiscall normalize_vector(Vec3 *vector)
 {
-  double result; // st7
-  float v3; // [esp+0h] [ebp-8h]
+  long double v2; // st7
+  float v4; // [esp+0h] [ebp-8h]
 
-  v3 = dot_vectors(&vector->x, &vector->x);
-  result = square_root(v3);
-  if ( result == 0.0 )
+  v4 = dot_vectors(vector, vector);
+  v2 = square_root(v4);
+  if ( v2 == 0.0 )
+  {
     return 0.0;
-  vector->x = 1.0 / result * vector->x;
-  vector->y = 1.0 / result * vector->y;
-  vector->z = 1.0 / result * vector->z;
-  return result;
+  }
+  else
+  {
+    vector->x = 1.0 / v2 * vector->x;
+    vector->y = 1.0 / v2 * vector->y;
+    vector->z = 1.0 / v2 * vector->z;
+  }
+  return v2;
 }
-

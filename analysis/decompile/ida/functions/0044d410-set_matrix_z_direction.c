@@ -2,6 +2,7 @@
 /* function: set_matrix_z_direction @ 0x44d410 */
 /* selector: set_matrix_z_direction */
 
+// Exact void `TransformMatrix::set_matrix_z_direction(const Vector3&)` method: normalizes a requested forward direction and rebuilds the right/up basis, matching mobile `tMatrix::SetZDir(tVector const&)`.
 void __thiscall set_matrix_z_direction(TransformMatrix *transform, const Vec3 *direction)
 {
   bool v3; // c3
@@ -40,4 +41,3 @@ void __thiscall set_matrix_z_direction(TransformMatrix *transform, const Vec3 *d
     cross_vectors((Vec3 *)&transform->basis_up, &out, &vector);
   }
 }
-

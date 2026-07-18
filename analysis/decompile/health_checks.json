@@ -12158,6 +12158,156 @@
         "initialize_cheat(&byte_4B2F40)",
         "initialize_cheat((CheatState *)0x4B2F40)"
       ]
+    },
+    {
+      "name": "bn_vector_affine_transform_owner",
+      "artifact": "analysis/decompile/binja/functions/0044cac0-multiply_vector_by_matrix_copy.c",
+      "required_substrings": [
+        "float x = vector->x",
+        "matrix->basis_forward.y",
+        "matrix->position.z",
+        "return out"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "float *this"
+      ]
+    },
+    {
+      "name": "ida_vector_affine_transform_owner",
+      "artifact": "analysis/decompile/ida/functions/0044cac0-multiply_vector_by_matrix_copy.c",
+      "required_substrings": [
+        "Vec3 *__thiscall multiply_vector_by_matrix_copy(const Vec3 *vector, Vec3 *out, const TransformMatrix *matrix)",
+        "matrix->basis_forward.x",
+        "*out = v4;",
+        "return out;"
+      ],
+      "forbidden_substrings": [
+        "float *__thiscall sub_44CAC0",
+        "float *this",
+        "float *a2",
+        "float *a3"
+      ]
+    },
+    {
+      "name": "bn_affine_matrix_multiply_owner_and_void_abi",
+      "artifact": "analysis/decompile/binja/functions/0044d060-multiply_matrices.c",
+      "required_substrings": [
+        "out->basis_right.x",
+        "lhs->basis_up.z",
+        "rhs->basis_forward.z",
+        "out->position.z",
+        "0044d195        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "return arg3"
+      ]
+    },
+    {
+      "name": "ida_affine_matrix_multiply_owner_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/0044d060-multiply_matrices.c",
+      "required_substrings": [
+        "void __thiscall multiply_matrices(TransformMatrix *out, const TransformMatrix *lhs, const TransformMatrix *rhs)",
+        "out->basis_right.x",
+        "lhs->position.z",
+        "rhs->position.z"
+      ],
+      "forbidden_substrings": [
+        "float *__thiscall sub_44D060",
+        "float *this",
+        "return a3"
+      ]
+    },
+    {
+      "name": "bn_local_x_matrix_rotation_owner",
+      "artifact": "analysis/decompile/binja/functions/0044ce30-rotate_matrix_world_x.c",
+      "required_substrings": [
+        "transform->basis_forward.x",
+        "transform->basis_up.x",
+        "0044ceb5        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return transform"
+      ]
+    },
+    {
+      "name": "ida_local_x_matrix_rotation_alias_and_owner",
+      "artifact": "analysis/decompile/ida/functions/0044ce30-rotate_matrix_world_x.c",
+      "required_substrings": [
+        "/* function: rotate_matrix_world_x @ 0x44ce30 */",
+        "/* database symbol: rotate_matrix_local_x */",
+        "void __thiscall rotate_matrix_local_x(TransformMatrix *transform, float angle)",
+        "transform->basis_forward.x"
+      ],
+      "forbidden_substrings": [
+        "sub_44CE30",
+        "float *this"
+      ]
+    },
+    {
+      "name": "bn_matrix_to_quaternion_owner",
+      "artifact": "analysis/decompile/binja/functions/0044d5d0-initialize_quaternion_from_matrix.c",
+      "required_substrings": [
+        "struct TransformMatrix* matrix_4 = matrix",
+        "matrix_4->basis_up.y",
+        "out->w",
+        "out->x"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2"
+      ]
+    },
+    {
+      "name": "ida_matrix_to_quaternion_owner",
+      "artifact": "analysis/decompile/ida/functions/0044d5d0-initialize_quaternion_from_matrix.c",
+      "required_substrings": [
+        "Quaternion *__thiscall initialize_quaternion_from_matrix(Quaternion *out, const TransformMatrix *matrix)",
+        "matrix->basis_up.y",
+        "out->w",
+        "out->x"
+      ],
+      "forbidden_substrings": [
+        "float *__thiscall sub_44D5D0",
+        "float *this",
+        "float *a2"
+      ]
+    },
+    {
+      "name": "bn_matrix_rotation_interpolation_owner_chain",
+      "artifact": "analysis/decompile/binja/functions/0044d920-interpolate_matrix_rotation.c",
+      "required_substrings": [
+        "struct Quaternion out",
+        "struct AxisAngle var_50",
+        "struct TransformMatrix out_1",
+        "initialize_quaternion_from_matrix(&out, transform)",
+        "initialize_matrix_from_quaternion(&out_1, &var_70)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2"
+      ]
+    },
+    {
+      "name": "ida_matrix_rotation_interpolation_owner_chain",
+      "artifact": "analysis/decompile/ida/functions/0044d920-interpolate_matrix_rotation.c",
+      "required_substrings": [
+        "void __thiscall interpolate_matrix_rotation(TransformMatrix *transform, float alpha)",
+        "Quaternion self;",
+        "AxisAngle axis;",
+        "TransformMatrix v6;",
+        "qmemcpy(transform, &v6, sizeof(TransformMatrix));"
+      ],
+      "forbidden_substrings": [
+        "sub_44D920",
+        "float *this"
+      ]
     }
   ]
 }

@@ -2,19 +2,14 @@
 /* function: rotate_vector_by_matrix @ 0x44cc20 */
 /* selector: rotate_vector_by_matrix */
 
-// Applies only the 3x3 rotational basis of a matrix to a vector in place, leaving translation out. Android symbols match this helper to `tVector::Rotate(const tMatrix&)`.
-float *__thiscall sub_44CC20(float *this, float *a2)
+// Exact reference-returning `Vector3::rotate_vector_by_matrix(const TransformMatrix&)` harness for Android/iOS `tVector::Rotate(const tMatrix&)`. It applies only the 3x3 rotational basis in place; sprite-facing callers consume the returned receiver.
+Vec3 *__thiscall rotate_vector_by_matrix(Vec3 *vector, const TransformMatrix *matrix)
 {
-  float v3; // [esp+0h] [ebp-Ch]
-  float v4; // [esp+4h] [ebp-8h]
-  float v5; // [esp+8h] [ebp-4h]
+  Vec3 v3; // 0:^0.12
 
-  v3 = *this;
-  v4 = *(this + 1);
-  v5 = *(this + 2);
-  *this = v5 * a2[8] + v4 * a2[4] + *this * *a2;
-  *(this + 1) = v5 * a2[9] + v4 * a2[5] + v3 * a2[1];
-  *(this + 2) = v5 * a2[10] + v4 * a2[6] + v3 * a2[2];
-  return this;
+  v3 = *vector;
+  vector->x = vector->z * matrix->basis_forward.x + vector->y * matrix->basis_up.x + vector->x * matrix->basis_right.x;
+  vector->y = v3.z * matrix->basis_forward.y + v3.y * matrix->basis_up.y + v3.x * matrix->basis_right.y;
+  vector->z = v3.z * matrix->basis_forward.z + v3.y * matrix->basis_up.z + v3.x * matrix->basis_right.z;
+  return vector;
 }
-

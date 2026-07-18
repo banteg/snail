@@ -1,6 +1,6 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: dot_vector @ 0x44cb70 */
+/* function: destroy_cross_vectors_static_result @ 0x44cdd0 */
 
-0044cb88        return (fconvert.t(rhs->z) * fconvert.t(vector->z) + fconvert.t(rhs->y) * fconvert.t(vector->y) + fconvert.t(rhs->x) * fconvert.t(vector->x)).d
+0044cdd0        return

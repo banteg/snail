@@ -1,12 +1,13 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
 /* function: multiply_matrix_in_place @ 0x44d1a0 */
+/* database symbol: multiply_matrix */
 /* selector: multiply_matrix_in_place */
 
-TransformMatrix *__thiscall multiply_matrix_in_place(TransformMatrix *lhs, TransformMatrix *rhs)
+// Stable Windows harness identity for the exact void `TransformMatrix::multiply_matrix(const TransformMatrix&)` member retained by iOS and Android as `tMatrix::Multiply(const tMatrix&)`. It snapshots its receiver and delegates to the two-reference multiply core.
+void __thiscall multiply_matrix(TransformMatrix *matrix, const TransformMatrix *rhs)
 {
-  float v3[16]; // [esp+8h] [ebp-40h] BYREF
+  TransformMatrix lhs; // [esp+8h] [ebp-40h] BYREF
 
-  qmemcpy(v3, lhs, sizeof(v3));
-  return (TransformMatrix *)multiply_matrices(&lhs->basis_right.x, v3, &rhs->basis_right.x);
+  qmemcpy(&lhs, matrix, sizeof(lhs));
+  multiply_matrices(matrix, &lhs, rhs);
 }
-

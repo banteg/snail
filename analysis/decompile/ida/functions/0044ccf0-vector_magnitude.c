@@ -2,11 +2,11 @@
 /* function: vector_magnitude @ 0x44ccf0 */
 /* selector: vector_magnitude */
 
-void __thiscall vector_magnitude(float *this)
+// Exact const `Vector3::vector_magnitude()` member: returns sqrt(x*x + y*y + z*z) as float without mutating its receiver, matching iOS and Android `tVector::Magnitude() const`.
+float __thiscall vector_magnitude(const Vec3 *vector)
 {
-  float v1; // [esp+0h] [ebp-4h]
+  float v3; // [esp+0h] [ebp-4h]
 
-  v1 = *this * *this + *(this + 1) * *(this + 1) + *(this + 2) * *(this + 2);
-  square_root(v1);
+  v3 = vector->x * vector->x + vector->y * vector->y + vector->z * vector->z;
+  return square_root(v3);
 }
-

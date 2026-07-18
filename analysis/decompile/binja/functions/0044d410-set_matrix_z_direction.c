@@ -8,24 +8,21 @@
 0044d428        long double temp1 = fconvert.t(0f)
 0044d428        st0 - temp1
 0044d433        if ((((st0 < temp1 ? 1 : 0) << 8 | (is_unordered.t(st0, temp1) ? 1 : 0) << 0xa | (st0 == temp1 ? 1 : 0) << 0xe):1.b & 0x40) != 0)
-0044d433        return 
+0044d433        return
 0044d439        long double x87_r7_1 = fconvert.t(var_c.x)
 0044d43d        long double temp2_1 = fconvert.t(0f)
 0044d43d        x87_r7_1 - temp2_1
 0044d44f        transform->basis_forward.z = var_c.z
 0044d452        transform->basis_forward.x = var_c.x
 0044d455        transform->basis_forward.y = var_c.y
-0044d458        float eax_1
-0044d458        eax_1.w = (x87_r7_1 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp2_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp2_1 ? 1 : 0) << 0xe
-0044d45d        struct Vec3 var_18
-0044d45d        if ((eax_1:1.b & 0x40) == 0)
-0044d48c        var_18.z = fconvert.s(fneg(fconvert.t(var_c.x)))
-0044d490        var_18.x = var_c.z
-0044d45f        long double x87_r7_2 = fconvert.t(var_c.z)
-0044d463        long double temp3_1 = fconvert.t(0f)
+0044d45d        long double x87_r7_2
+0044d45d        long double temp3_1
+0044d45d        if ((((x87_r7_1 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp2_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp2_1 ? 1 : 0) << 0xe):1.b & 0x40) != 0)
+0044d45f        x87_r7_2 = fconvert.t(var_c.z)
+0044d463        temp3_1 = fconvert.t(0f)
 0044d463        x87_r7_2 - temp3_1
-0044d469        eax_1.w = (x87_r7_2 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp3_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp3_1 ? 1 : 0) << 0xe
-0044d46e        if ((eax_1:1.b & 0x40) == 0)
+0044d46e        struct Vec3 var_18
+0044d46e        if ((((x87_r7_1 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp2_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp2_1 ? 1 : 0) << 0xe):1.b & 0x40) == 0 || (((x87_r7_2 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp3_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp3_1 ? 1 : 0) << 0xe):1.b & 0x40) == 0)
 0044d48c        var_18.z = fconvert.s(fneg(fconvert.t(var_c.x)))
 0044d490        var_18.x = var_c.z
 0044d470        var_18.x = 0x3f800000

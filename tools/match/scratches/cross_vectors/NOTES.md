@@ -24,3 +24,9 @@ to references preserves all 40 instructions; only VC6's mangled names for the
 function-local static result and guard change, so both proven spellings are
 tracked as aliases and all ten masked operands remain clean. A pointer overload
 is retained only as an explicit compatibility view for low-progress callers.
+
+2026-07-18 tracked decompile replay: the vector family was refreshed with the
+recovered `Vec3`/reference ownership in both analysis lanes. The static result
+and guard still overlap the synthetic one-float-before sine/cosine table bases;
+those are genuine linker aliases used by different consumers, so this pass
+deliberately did not collapse them into one misleading global owner.

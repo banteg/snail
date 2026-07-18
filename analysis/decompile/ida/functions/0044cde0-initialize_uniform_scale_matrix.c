@@ -2,25 +2,24 @@
 /* function: initialize_uniform_scale_matrix @ 0x44cde0 */
 /* selector: initialize_uniform_scale_matrix */
 
-// Initializes a matrix from one scalar by writing the same value across the xyz diagonal, zeroing the off-diagonal and translation slots, and setting homogeneous `w` to 1.0. Android symbols match this helper to the single-float `tMatrix::tMatrix(float)` constructor.
-_DWORD *__thiscall sub_44CDE0(_DWORD *this, int a2)
+// Stable Windows harness identity for the authored single-float `tMatrix::tMatrix(float)` constructor retained by Android. The exact constructor writes the scalar across the xyz diagonal, zeroes off-diagonal and translation slots, and sets homogeneous `w` to 1.0.
+TransformMatrix *__thiscall initialize_uniform_scale_matrix(TransformMatrix *transform, float scale)
 {
-  *this = a2;
-  *(this + 1) = 0;
-  *(this + 2) = 0;
-  *(this + 3) = 0;
-  *(this + 4) = 0;
-  *(this + 5) = a2;
-  *(this + 6) = 0;
-  *(this + 7) = 0;
-  *(this + 8) = 0;
-  *(this + 9) = 0;
-  *(this + 10) = a2;
-  *(this + 11) = 0;
-  *(this + 12) = 0;
-  *(this + 13) = 0;
-  *(this + 14) = 0;
-  *(this + 15) = 1065353216;
-  return this;
+  transform->basis_right.x = scale;
+  transform->basis_right.y = 0.0;
+  transform->basis_right.z = 0.0;
+  transform->basis_right.w = 0.0;
+  transform->basis_up.x = 0.0;
+  transform->basis_up.y = scale;
+  transform->basis_up.z = 0.0;
+  transform->basis_up.w = 0.0;
+  transform->basis_forward.x = 0.0;
+  transform->basis_forward.y = 0.0;
+  transform->basis_forward.z = scale;
+  transform->basis_forward.w = 0.0;
+  transform->position.x = 0.0;
+  transform->position.y = 0.0;
+  transform->position.z = 0.0;
+  transform->position.w = 1.0;
+  return transform;
 }
-

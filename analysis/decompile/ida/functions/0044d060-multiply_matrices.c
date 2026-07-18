@@ -2,21 +2,46 @@
 /* function: multiply_matrices @ 0x44d060 */
 /* selector: multiply_matrices */
 
-// Core affine matrix multiply that writes `out = lhs * rhs` for the 3x3 basis and translated origin row. Android symbols match this helper to `tMatrix::Multiply(const tMatrix&, const tMatrix&)`.
-float *__thiscall sub_44D060(float *this, float *a2, float *a3)
+// Exact void `TransformMatrix::multiply_matrices(const TransformMatrix&, const TransformMatrix&)` member: writes `this = lhs * rhs` for the 3x3 basis and translated origin row. Android retains `tMatrix::Multiply(const tMatrix&, const tMatrix&)`; the right operand left in EAX is incidental.
+void __thiscall multiply_matrices(TransformMatrix *out, const TransformMatrix *lhs, const TransformMatrix *rhs)
 {
-  *this = *a2 * *a3 + a2[1] * a3[4] + a2[2] * a3[8];
-  *(this + 1) = a2[1] * a3[5] + a3[1] * *a2 + a3[9] * a2[2];
-  *(this + 2) = a2[1] * a3[6] + a3[2] * *a2 + a3[10] * a2[2];
-  *(this + 4) = a2[6] * a3[8] + a2[5] * a3[4] + a2[4] * *a3;
-  *(this + 5) = a2[6] * a3[9] + a2[5] * a3[5] + a2[4] * a3[1];
-  *(this + 6) = a2[6] * a3[10] + a2[5] * a3[6] + a2[4] * a3[2];
-  *(this + 8) = a2[8] * *a3 + a2[10] * a3[8] + a2[9] * a3[4];
-  *(this + 9) = a3[9] * a2[10] + a3[5] * a2[9] + a3[1] * a2[8];
-  *(this + 10) = a3[10] * a2[10] + a3[6] * a2[9] + a3[2] * a2[8];
-  *(this + 12) = a2[14] * a3[8] + a2[13] * a3[4] + a2[12] * *a3 + a3[12];
-  *(this + 13) = a2[14] * a3[9] + a2[13] * a3[5] + a2[12] * a3[1] + a3[13];
-  *(this + 14) = a2[14] * a3[10] + a2[13] * a3[6] + a2[12] * a3[2] + a3[14];
-  return a3;
+  out->basis_right.x = lhs->basis_right.x * rhs->basis_right.x
+                     + lhs->basis_right.y * rhs->basis_up.x
+                     + lhs->basis_right.z * rhs->basis_forward.x;
+  out->basis_right.y = lhs->basis_right.y * rhs->basis_up.y
+                     + rhs->basis_right.y * lhs->basis_right.x
+                     + rhs->basis_forward.y * lhs->basis_right.z;
+  out->basis_right.z = lhs->basis_right.y * rhs->basis_up.z
+                     + rhs->basis_right.z * lhs->basis_right.x
+                     + rhs->basis_forward.z * lhs->basis_right.z;
+  out->basis_up.x = lhs->basis_up.z * rhs->basis_forward.x
+                  + lhs->basis_up.y * rhs->basis_up.x
+                  + lhs->basis_up.x * rhs->basis_right.x;
+  out->basis_up.y = lhs->basis_up.z * rhs->basis_forward.y
+                  + lhs->basis_up.y * rhs->basis_up.y
+                  + lhs->basis_up.x * rhs->basis_right.y;
+  out->basis_up.z = lhs->basis_up.z * rhs->basis_forward.z
+                  + lhs->basis_up.y * rhs->basis_up.z
+                  + lhs->basis_up.x * rhs->basis_right.z;
+  out->basis_forward.x = lhs->basis_forward.x * rhs->basis_right.x
+                       + lhs->basis_forward.z * rhs->basis_forward.x
+                       + lhs->basis_forward.y * rhs->basis_up.x;
+  out->basis_forward.y = rhs->basis_forward.y * lhs->basis_forward.z
+                       + rhs->basis_up.y * lhs->basis_forward.y
+                       + rhs->basis_right.y * lhs->basis_forward.x;
+  out->basis_forward.z = rhs->basis_forward.z * lhs->basis_forward.z
+                       + rhs->basis_up.z * lhs->basis_forward.y
+                       + rhs->basis_right.z * lhs->basis_forward.x;
+  out->position.x = lhs->position.z * rhs->basis_forward.x
+                  + lhs->position.y * rhs->basis_up.x
+                  + lhs->position.x * rhs->basis_right.x
+                  + rhs->position.x;
+  out->position.y = lhs->position.z * rhs->basis_forward.y
+                  + lhs->position.y * rhs->basis_up.y
+                  + lhs->position.x * rhs->basis_right.y
+                  + rhs->position.y;
+  out->position.z = lhs->position.z * rhs->basis_forward.z
+                  + lhs->position.y * rhs->basis_up.z
+                  + lhs->position.x * rhs->basis_right.z
+                  + rhs->position.z;
 }
-

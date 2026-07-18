@@ -6,5 +6,6 @@
 0044d3db        normalize_vector(transform)
 0044d3e4        normalize_vector(&transform->basis_up)
 0044d3ed        normalize_vector(&transform->basis_forward)
-0044d3f8        cross_vectors(transform, &transform->basis_up.x, &transform->basis_forward)
-0044d409        return cross_vectors(&transform->basis_forward.x, transform, &transform->basis_up.x)
+0044d3f8        cross_vectors(transform, &transform->basis_up, &transform->basis_forward)
+0044d401        cross_vectors(&transform->basis_forward, transform, &transform->basis_up)
+0044d409        return

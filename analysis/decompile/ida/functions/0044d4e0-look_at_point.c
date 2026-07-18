@@ -2,6 +2,7 @@
 /* function: look_at_point @ 0x44d4e0 */
 /* selector: look_at_point */
 
+// Exact void `TransformMatrix::look_at_point(const Vector3&)` method: subtracts the matrix position from a world-space target and forwards the resulting direction to SetZDir, matching mobile `tMatrix::LookAt(tVector const&)`.
 void __thiscall look_at_point(TransformMatrix *transform, const Vec3 *target)
 {
   Vec3 direction; // [esp+Ch] [ebp-Ch] BYREF
@@ -13,4 +14,3 @@ void __thiscall look_at_point(TransformMatrix *transform, const Vec3 *target)
   direction = v3;
   set_matrix_z_direction(transform, &direction);
 }
-

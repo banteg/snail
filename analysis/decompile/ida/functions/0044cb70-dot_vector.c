@@ -2,9 +2,8 @@
 /* function: dot_vector @ 0x44cb70 */
 /* selector: dot_vector */
 
-// Computes the 3D dot product of one vector against another through the member-style overload `tVector::Dot(const tVector&)`.
-double __thiscall sub_44CB70(float *this, float *a2)
+// Exact float-returning `Vector3::dot_vector(const Vector3&)` member: computes the 3D dot product against one const-reference operand, matching iOS and Android `tVector::Dot(const tVector&)`.
+float __thiscall dot_vector(const Vec3 *vector, const Vec3 *rhs)
 {
-  return a2[2] * *(this + 2) + a2[1] * *(this + 1) + *a2 * *this;
+  return rhs->z * vector->z + rhs->y * vector->y + rhs->x * vector->x;
 }
-

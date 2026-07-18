@@ -1,8 +1,10 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
 /* function: rotate_matrix_world_z @ 0x44cf50 */
+/* database symbol: rotate_matrix_local_z */
 /* selector: rotate_matrix_world_z */
 
-void __thiscall rotate_matrix_world_z(TransformMatrix *transform, float angle)
+// Stable Windows harness identity for the exact void `TransformMatrix::rotate_matrix_local_z(float)` member, retained by iOS and Android as `tMatrix::RotLocalZ(float)`. It rotates the right/up basis around the matrix's local Z axis.
+void __thiscall rotate_matrix_local_z(TransformMatrix *transform, float angle)
 {
   double v4; // st7
   double v5; // st6
@@ -24,4 +26,3 @@ void __thiscall rotate_matrix_world_z(TransformMatrix *transform, float angle)
   transform->basis_up.z = v7;
   transform->basis_right.z = v8;
 }
-

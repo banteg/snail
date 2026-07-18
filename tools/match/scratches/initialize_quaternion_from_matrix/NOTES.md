@@ -61,3 +61,9 @@ aligned and have clean masked operands.
 - Spelling the first split as `!(m00 >= m11)` is codegen-neutral at 92.47% and
   leaves the same `jne`/`je` branch-layout mismatch. Keep the clearer
   `m00 < m11` source unless a new arm-order lead appears.
+
+2026-07-18 tracked decompile replay: both tools now expose the typed
+`Quaternion` destination and const `TransformMatrix` source throughout the
+dominant-diagonal arms. This strengthens the ownership record but does not
+change the honest 92.47% matcher result or justify forcing the remaining
+branch-layout mismatch.

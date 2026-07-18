@@ -13,3 +13,8 @@ now takes the same two const references and returns void. Its epilogue still
 leaves `rhs` in EAX because that register holds the right operand throughout
 the final stores; both wrappers discard it, and removing the synthetic return
 preserves all 114 instructions exactly.
+
+2026-07-18 tracked decompile replay: Binary Ninja and IDA now both materialize
+the complete `TransformMatrix` owner across all basis and position lanes. The
+artifacts also preserve the recovered void ABI instead of inventing a return
+from the incidental final EAX value. The exact matcher result is unchanged.
