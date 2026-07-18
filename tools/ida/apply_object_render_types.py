@@ -255,6 +255,18 @@ TRUSTED_DECLARATIONS = [
         "render_object",
         "int __cdecl render_object(Object* object, TransformMatrix* matrix, float texture_u, float texture_v, tColour* color, char after_sprites);",
     ),
+    (
+        "render_camera",
+        "TransformMatrix* __cdecl render_camera(float viewport_x, float viewport_y, float viewport_width, float viewport_height, float fov_degrees, TransformMatrix* camera_matrix, TransformMatrix* view_matrix, char draw_world, char post_sprite_pass);",
+    ),
+    (
+        "build_perspective_projection_matrix",
+        "TransformMatrix* __stdcall build_perspective_projection_matrix(TransformMatrix* matrix, float vertical_fov_radians, float aspect_ratio, float near_z, float far_z);",
+    ),
+    (
+        "build_camera_view_matrix",
+        "TransformMatrix* __stdcall build_camera_view_matrix(TransformMatrix* matrix, const Vec3* eye, const Vec3* target, const Vec3* up);",
+    ),
 ]
 
 TRUSTED_NAMES = [
@@ -275,6 +287,7 @@ TRUSTED_NAMES = [
     (0x4118B0, "reset_direct3d_render_state"),
     (0x411960, "release_direct3d_device_interfaces"),
     (0x411D70, "release_global_direct3d_renderer_resources"),
+    (0x411FA0, "render_camera"),
     (0x4129C0, "initialize_direct3d_renderer"),
     (0x4129F0, "set_cull_mode"),
     (0x412D00, "set_blend_mode"),
@@ -301,6 +314,8 @@ TRUSTED_NAMES = [
     (0x4308B0, "calc_object_edges"),
     (0x430A30, "rotate_object_facequad_uv_pairs"),
     (0x430D90, "replace_object_list_texture_refs"),
+    (0x450314, "build_perspective_projection_matrix"),
+    (0x451AD9, "build_camera_view_matrix"),
     (0x4A3C40, "g_backdrop_raise_first_vertex_index"),
     (0x4A3C44, "g_backdrop_raise_second_vertex_index"),
     (0x4A3CE0, "g_backdrop_corner_vertex_indices"),
@@ -308,12 +323,19 @@ TRUSTED_NAMES = [
     (0x4F7450, "g_render_triangle_count"),
     (0x4F7454, "g_render_successful_primitive_count"),
     (0x4F7458, "g_direct3d_renderer"),
+    (0x50316C, "g_render_projection_param_b"),
     (0x503170, "g_draw_primitive_call_count"),
     (0x503174, "g_current_texture_ref"),
+    (0x5031B8, "g_render_camera_source_matrix"),
     (0x5031BC, "g_object_grouped_vertex_cursor"),
     (0x5031C0, "g_texture_bind_call_count"),
     (0x5031C4, "g_object_grouped_vertex_scratch"),
     (0x5031C8, "g_d3d_texture_slots"),
+    (0x5031CC, "g_render_projection_near_z"),
+    (0x5031D0, "g_render_projection_far_z"),
+    (0x5031D4, "g_render_projection_param_a"),
+    (0x503218, "g_render_camera_view_matrix"),
+    (0x503260, "g_object_render_pass_filter"),
     (0x503300, "g_object_edge_build_edges"),
     (0x503318, "g_object_edge_build_count"),
 ]
@@ -342,8 +364,14 @@ TRUSTED_DATA_DECLARATIONS = [
         "int32_t g_render_successful_primitive_count;",
     ),
     (0x4F7458, "g_direct3d_renderer", "Direct3DRenderer g_direct3d_renderer;"),
+    (0x50316C, "g_render_projection_param_b", "float g_render_projection_param_b;"),
     (0x503170, "g_draw_primitive_call_count", "int32_t g_draw_primitive_call_count;"),
     (0x503174, "g_current_texture_ref", "TextureRef* g_current_texture_ref;"),
+    (
+        0x5031B8,
+        "g_render_camera_source_matrix",
+        "TransformMatrix* g_render_camera_source_matrix;",
+    ),
     (
         0x5031BC,
         "g_object_grouped_vertex_cursor",
@@ -356,6 +384,19 @@ TRUSTED_DATA_DECLARATIONS = [
         "ObjectGroupedVertex* g_object_grouped_vertex_scratch;",
     ),
     (0x5031C8, "g_d3d_texture_slots", "Direct3DTexture8** g_d3d_texture_slots;"),
+    (0x5031CC, "g_render_projection_near_z", "float g_render_projection_near_z;"),
+    (0x5031D0, "g_render_projection_far_z", "float g_render_projection_far_z;"),
+    (0x5031D4, "g_render_projection_param_a", "float g_render_projection_param_a;"),
+    (
+        0x503218,
+        "g_render_camera_view_matrix",
+        "TransformMatrix* g_render_camera_view_matrix;",
+    ),
+    (
+        0x503260,
+        "g_object_render_pass_filter",
+        "uint8_t g_object_render_pass_filter;",
+    ),
     (
         0x503300,
         "g_object_edge_build_edges",
@@ -391,6 +432,10 @@ REQUIRED_OWNER_MARKERS = (
     "ObjectRenderBuffers* __thiscall create_vertex_buffer(",
     "ObjectIndexBuffer* __thiscall create_index_buffer(",
     "void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object);",
+    "TransformMatrix* __cdecl render_camera(",
+    "extern TransformMatrix* g_render_camera_source_matrix;",
+    "extern TransformMatrix* g_render_camera_view_matrix;",
+    "extern uint8_t g_object_render_pass_filter;",
 )
 
 EXPECTED_OWNER_SIZES = {
@@ -422,6 +467,7 @@ REANALYSIS_FUNCTIONS = (
     0x4115D0,  # create_index_buffer
     0x411630,  # initialize_direct3d_renderer_defaults
     0x4116F0,  # release_direct3d_renderer_resources
+    0x411FA0,  # render_camera
     0x412250,  # refresh_object_vertex_buffer
     0x4129C0,  # initialize_direct3d_renderer
     0x413BB0,  # get_or_append_object_texture_group_vertex
@@ -446,6 +492,15 @@ REANALYSIS_FUNCTIONS = (
     0x430D90,  # replace_object_list_texture_refs
     0x433060,  # initialize_track_render_cache_manager
     0x44AE10,  # initialize_font3d_objects
+)
+
+# The stale 11-argument usercall left two compensating stack points around
+# render_camera's first and last indirect D3D calls. The native pushes prove
+# SetViewport consumes two arguments while SetRenderState consumes three.
+# Guard both observed stale values so replay cannot rewrite an unrelated edit.
+RENDER_CAMERA_STACK_POINT_SPECS = (
+    (0x41201E, 12, 8, "SetViewport"),
+    (0x412229, 8, 12, "SetRenderState"),
 )
 
 BUFFER_FACTORY_LVAR_SPECS = (
@@ -834,6 +889,81 @@ def _sync_buffer_factory_lvars() -> dict[str, object]:
     }
 
 
+def _sync_render_camera_stack_points() -> dict[str, object]:
+    results = []
+    for address, stale_delta, target_delta, call_name in (
+        RENDER_CAMERA_STACK_POINT_SPECS
+    ):
+        observed_delta = idc.get_sp_delta(address)
+        if observed_delta == target_delta:
+            results.append(
+                {
+                    "status": "unchanged",
+                    "address": hex(address),
+                    "call": call_name,
+                    "delta": observed_delta,
+                }
+            )
+            continue
+        if observed_delta != stale_delta:
+            results.append(
+                {
+                    "status": "failed",
+                    "reason": "unexpected_stack_point_delta",
+                    "address": hex(address),
+                    "call": call_name,
+                    "expected_stale_delta": stale_delta,
+                    "target_delta": target_delta,
+                    "observed_delta": observed_delta,
+                }
+            )
+            continue
+        if not idc.add_user_stkpnt(address, target_delta):
+            results.append(
+                {
+                    "status": "failed",
+                    "reason": "stack_point_update_failed",
+                    "address": hex(address),
+                    "call": call_name,
+                    "target_delta": target_delta,
+                }
+            )
+            continue
+
+        idc.recalc_spd(address)
+        ida_auto.auto_wait()
+        verified_delta = idc.get_sp_delta(address)
+        results.append(
+            {
+                "status": "applied" if verified_delta == target_delta else "failed",
+                "reason": (
+                    None
+                    if verified_delta == target_delta
+                    else "stack_point_readback_failed"
+                ),
+                "address": hex(address),
+                "call": call_name,
+                "before_delta": observed_delta,
+                "delta": verified_delta,
+            }
+        )
+
+    failures = [result for result in results if result.get("status") == "failed"]
+    if not failures:
+        ida_hexrays.mark_cfunc_dirty(0x411FA0, True)
+    return {
+        "status": (
+            "failed"
+            if failures
+            else "applied"
+            if any(result.get("status") == "applied" for result in results)
+            else "unchanged"
+        ),
+        "stack_points": results,
+        "failures": failures,
+    }
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     header_text = header_path.read_text(encoding="utf-8")
     missing_owner_markers = [
@@ -996,6 +1126,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
     if game_root_owner_graph.get("status") == "failed":
         failed.append({"selector": "GameRoot", "owner_graph": game_root_owner_graph})
 
+    render_camera_stack_points = _sync_render_camera_stack_points()
+    if render_camera_stack_points.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "render_camera",
+                "stack_points": render_camera_stack_points,
+            }
+        )
+
     refresh_vertex_lvars = _sync_refresh_vertex_lvars()
     if refresh_vertex_lvars.get("status") == "failed":
         failed.append(
@@ -1047,6 +1186,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "game_root_owner_graph": game_root_owner_graph,
+                "render_camera_stack_points": render_camera_stack_points,
                 "refresh_vertex_lvars": refresh_vertex_lvars,
                 "topology_lvars": topology_lvars,
                 "buffer_factory_lvars": buffer_factory_lvars,

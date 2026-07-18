@@ -3,32 +3,32 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: build_perspective_projection_matrix @ 0x450314 */
 
-00450326        float* var_10 = &arg2
+00450326        float* var_10 = &vertical_fov_radians
 0045032c        float var_8
 0045032c        int32_t* var_14 = &var_8
 0045033b        long double st0
 0045033b        long double st1
 0045033b        bool c1
 0045033b        bool c2
-0045033b        st1, st0, c1, c2 = __fsincos(fconvert.t(fconvert.s(fconvert.t(arg2) * fconvert.t(0.5f))))
-0045033d        arg2 = fconvert.s(st0)
+0045033b        st1, st0, c1, c2 = __fsincos(fconvert.t(fconvert.s(fconvert.t(vertical_fov_radians) * fconvert.t(0.5f))))
+0045033d        vertical_fov_radians = fconvert.s(st0)
 0045033f        var_8 = fconvert.s(st1)
-00450347        long double x87_r7_5 = fconvert.t(arg2) / fconvert.t(var_8)
-0045034a        arg1[0xb] = 0xbf800000
-00450356        *arg1 = fconvert.s(x87_r7_5 / fconvert.t(arg3))
-0045035a        arg1[1] = fconvert.s(float.t(0))
-0045035f        arg1[2] = fconvert.s(float.t(0))
-00450364        arg1[3] = fconvert.s(float.t(0))
-00450369        arg1[4] = fconvert.s(float.t(0))
-0045036c        arg1[5] = fconvert.s(x87_r7_5)
-00450371        arg1[6] = fconvert.s(float.t(0))
-00450376        arg1[7] = fconvert.s(float.t(0))
-0045037b        arg1[8] = fconvert.s(float.t(0))
-00450380        arg1[9] = fconvert.s(float.t(0))
-00450389        long double x87_r7_12 = fconvert.t(arg5) / (fconvert.t(arg4) - fconvert.t(arg5))
-0045038c        arg1[0xa] = fconvert.s(x87_r7_12)
-00450391        arg1[0xc] = fconvert.s(float.t(0))
-00450396        arg1[0xd] = fconvert.s(float.t(0))
-0045039c        arg1[0xe] = fconvert.s(x87_r7_12 * fconvert.t(arg4))
-004503a1        arg1[0xf] = fconvert.s(float.t(0))
-004503a5        return arg1
+00450347        long double x87_r7_5 = fconvert.t(vertical_fov_radians) / fconvert.t(var_8)
+0045034a        matrix->basis_forward_w = -1f
+00450356        matrix->basis_right.x = fconvert.s(x87_r7_5 / fconvert.t(aspect_ratio))
+0045035a        matrix->basis_right.y = fconvert.s(float.t(0))
+0045035f        matrix->basis_right.z = fconvert.s(float.t(0))
+00450364        matrix->basis_right_w = fconvert.s(float.t(0))
+00450369        matrix->basis_up.x = fconvert.s(float.t(0))
+0045036c        matrix->basis_up.y = fconvert.s(x87_r7_5)
+00450371        matrix->basis_up.z = fconvert.s(float.t(0))
+00450376        matrix->basis_up_w = fconvert.s(float.t(0))
+0045037b        matrix->basis_forward.x = fconvert.s(float.t(0))
+00450380        matrix->basis_forward.y = fconvert.s(float.t(0))
+00450389        long double x87_r7_12 = fconvert.t(far_z) / (fconvert.t(near_z) - fconvert.t(far_z))
+0045038c        matrix->basis_forward.z = fconvert.s(x87_r7_12)
+00450391        matrix->position.x = fconvert.s(float.t(0))
+00450396        matrix->position.y = fconvert.s(float.t(0))
+0045039c        matrix->position.z = fconvert.s(x87_r7_12 * fconvert.t(near_z))
+004503a1        matrix->position_w = fconvert.s(float.t(0))
+004503a5        return matrix

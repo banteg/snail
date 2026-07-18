@@ -3,107 +3,108 @@
 /* selector: render_camera */
 
 // Configures one 3D scene viewport, projection, view transform, depth state, fog state, and the after-sprites lane before world objects render. Cross-port Android symbols match this helper to `G0RenderCamera`.
-int __usercall sub_411FA0@<eax>(
-        int a1@<esi>,
-        float a2,
-        float a3,
-        float a4,
-        float a5,
-        int a6,
-        float a7,
-        int a8,
-        int a9,
-        char a10,
-        char a11)
+TransformMatrix *__cdecl render_camera(
+        float viewport_x,
+        float viewport_y,
+        float viewport_width,
+        float viewport_height,
+        float fov_degrees,
+        TransformMatrix *camera_matrix,
+        TransformMatrix *view_matrix,
+        char draw_world,
+        char post_sprite_pass)
 {
+  double v9; // st7
+  __int64 v10; // rax
   double v11; // st7
   double v12; // st7
-  float v13; // edx
-  int v14; // eax
-  float v15; // ecx
+  float y; // edx
+  float z; // eax
+  float x; // ecx
   double v16; // st7
   float v17; // edx
   float v18; // eax
   double v19; // st7
-  int v20; // edx
-  int v21; // ecx
-  float v23; // [esp+70h] [ebp-C4h] BYREF
-  float v24; // [esp+74h] [ebp-C0h]
-  int v25; // [esp+78h] [ebp-BCh]
-  float v26[3]; // [esp+7Ch] [ebp-B8h] BYREF
-  float v27[3]; // [esp+88h] [ebp-ACh] BYREF
-  float v28[2]; // [esp+94h] [ebp-A0h] BYREF
-  _DWORD v29[7]; // [esp+9Ch] [ebp-98h] BYREF
-  int v30[16]; // [esp+B8h] [ebp-7Ch] BYREF
-  float v31[15]; // [esp+F8h] [ebp-3Ch] BYREF
+  float fog_end; // edx
+  Direct3DDevice8Vtbl *vtbl; // ecx
+  float self; // [esp+6Ch] [ebp-C8h] BYREF
+  ColorBGRA8 out; // [esp+70h] [ebp-C4h]
+  int32_t v25; // [esp+74h] [ebp-C0h]
+  Vec3 target; // [esp+78h] [ebp-BCh] BYREF
+  Vec3 up; // [esp+84h] [ebp-B0h] BYREF
+  Vec3 eye; // [esp+90h] [ebp-A4h] BYREF
+  _DWORD v29[6]; // [esp+9Ch] [ebp-98h] BYREF
+  TransformMatrix matrix; // [esp+B4h] [ebp-80h] BYREF
+  TransformMatrix v31; // [esp+F4h] [ebp-40h] BYREF
 
-  v29[0] = (__int64)a2;
-  v29[1] = (__int64)a3;
-  v11 = a5 * 480.0;
-  v29[2] = (__int64)(a4 * 640.0);
-  v23 = v11;
+  v29[0] = (__int64)viewport_x;
+  v9 = viewport_width * 640.0;
+  v29[1] = (__int64)viewport_y;
+  self = v9;
+  v10 = (__int64)v9;
+  v11 = viewport_height * 480.0;
+  v29[2] = v10;
+  *(float *)&out = v11;
   v29[3] = (__int64)v11;
   v29[4] = 0;
   v29[5] = 1065353216;
-  (*(void (__stdcall **)(int, _DWORD *, int))(*(_DWORD *)MEMORY[0x502FEC] + 160))(MEMORY[0x502FEC], v29, a1);
-  MEMORY[0x5031CC] = 0.30000001;
-  MEMORY[0x5031D0] = 52.0;
-  MEMORY[0x5031D4] = a7 * 0.017453292;
-  MEMORY[0x50316C] = v23 / v24;
-  build_perspective_projection_matrix((int)v30, MEMORY[0x5031D4], MEMORY[0x50316C], 0.30000001, 52.0);
-  (*(void (__stdcall **)(int, int, int *))(*(_DWORD *)MEMORY[0x502FEC] + 148))(MEMORY[0x502FEC], 3, v30);
-  MEMORY[0x503260] = a11;
-  v12 = *(float *)(a8 + 32) + *(float *)(a8 + 48);
-  v13 = *(float *)(a8 + 52);
-  v14 = *(_DWORD *)(a8 + 56);
-  v28[0] = *(float *)(a8 + 48);
-  v15 = *(float *)(a8 + 16);
-  v28[1] = v13;
-  v26[0] = v12;
-  v16 = *(float *)(a8 + 36) + *(float *)(a8 + 52);
-  v17 = *(float *)(a8 + 20);
-  v29[0] = v14;
-  v18 = *(float *)(a8 + 24);
-  v27[0] = v15;
-  v27[1] = v17;
-  v26[1] = v16;
-  v19 = *(float *)(a8 + 40) + *(float *)(a8 + 56);
-  v27[2] = v18;
-  v26[2] = v19;
-  build_camera_view_matrix(v31, v28, v26, v27);
-  (*(void (__stdcall **)(int, int, float *))(*(_DWORD *)MEMORY[0x502FEC] + 148))(MEMORY[0x502FEC], 2, v31);
-  (*(void (__stdcall **)(int, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 200))(MEMORY[0x502FEC], 7, 1);
-  (*(void (__stdcall **)(int, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 200))(MEMORY[0x502FEC], 14, 1);
-  (*(void (__stdcall **)(int, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 200))(MEMORY[0x502FEC], 23, 4);
-  if ( a10 && *((_BYTE *)MEMORY[0x4DF904] + 4) )
+  g_direct3d_renderer.device->vtbl->SetViewport(g_direct3d_renderer.device, (D3DViewport8 *)v29);
+  g_render_projection_near_z = 0.30000001;
+  g_render_projection_far_z = 52.0;
+  g_render_projection_param_a = fov_degrees * 0.017453292;
+  g_render_projection_param_b = self / *(float *)&out;
+  build_perspective_projection_matrix(
+    &matrix,
+    g_render_projection_param_a,
+    g_render_projection_param_b,
+    0.30000001,
+    52.0);
+  g_direct3d_renderer.device->vtbl->SetTransform(g_direct3d_renderer.device, 3, &matrix);
+  g_object_render_pass_filter = post_sprite_pass;
+  v12 = camera_matrix->basis_forward.x + camera_matrix->position.x;
+  y = camera_matrix->position.y;
+  z = camera_matrix->position.z;
+  eye.x = camera_matrix->position.x;
+  x = camera_matrix->basis_up.x;
+  eye.y = y;
+  target.x = v12;
+  v16 = camera_matrix->basis_forward.y + camera_matrix->position.y;
+  v17 = camera_matrix->basis_up.y;
+  eye.z = z;
+  v18 = camera_matrix->basis_up.z;
+  up.x = x;
+  up.y = v17;
+  target.y = v16;
+  v19 = camera_matrix->basis_forward.z + camera_matrix->position.z;
+  up.z = v18;
+  target.z = v19;
+  build_camera_view_matrix(&v31, &eye, &target, &up);
+  g_direct3d_renderer.device->vtbl->SetTransform(g_direct3d_renderer.device, 2, &v31);
+  g_direct3d_renderer.device->vtbl->SetRenderState(g_direct3d_renderer.device, 7, 1);
+  g_direct3d_renderer.device->vtbl->SetRenderState(g_direct3d_renderer.device, 14, 1);
+  g_direct3d_renderer.device->vtbl->SetRenderState(g_direct3d_renderer.device, 23, 4);
+  if ( draw_world && g_game_base->fog_enabled )
   {
-    v20 = *((_DWORD *)MEMORY[0x4DF904] + 3);
-    v24 = *((float *)MEMORY[0x4DF904] + 2);
-    v21 = *(_DWORD *)MEMORY[0x502FEC];
-    v25 = v20;
-    (*(void (__stdcall **)(int, int, int))(v21 + 200))(MEMORY[0x502FEC], 28, 1);
-    Iostream_init::Iostream_init((#93 *)&v23);
-    pack_color_rgba_u8(&v23, (float *)MEMORY[0x4DF904] + 5);
-    HIBYTE(v23) = 0;
-    (*(void (__stdcall **)(int, int, float))(*(_DWORD *)MEMORY[0x502FEC] + 200))(
-      MEMORY[0x502FEC],
-      34,
-      COERCE_FLOAT(LODWORD(v23)));
-    (*(void (__stdcall **)(int, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 200))(MEMORY[0x502FEC], 140, 3);
-    (*(void (__stdcall **)(int, int, float))(*(_DWORD *)MEMORY[0x502FEC] + 200))(
-      MEMORY[0x502FEC],
-      36,
-      COERCE_FLOAT(LODWORD(v24)));
-    (*(void (__stdcall **)(int, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 200))(MEMORY[0x502FEC], 37, v25);
-    (*(void (__stdcall **)(int, int))(*(_DWORD *)MEMORY[0x502FEC] + 200))(MEMORY[0x502FEC], 38);
+    fog_end = g_game_base->fog_end;
+    out = LODWORD(g_game_base->fog_start);
+    vtbl = g_direct3d_renderer.device->vtbl;
+    v25 = LODWORD(fog_end);
+    vtbl->SetRenderState(g_direct3d_renderer.device, 28, 1);
+    noop_this_constructor(&self);
+    pack_color_rgba_u8((tColourSmall *)&self, (tColour *)&g_game_base->fog_color);
+    HIBYTE(self) = 0;
+    g_direct3d_renderer.device->vtbl->SetRenderState(g_direct3d_renderer.device, 34, LODWORD(self));
+    g_direct3d_renderer.device->vtbl->SetRenderState(g_direct3d_renderer.device, 140, 3);
+    g_direct3d_renderer.device->vtbl->SetRenderState(g_direct3d_renderer.device, 36, (int32_t)out);
+    g_direct3d_renderer.device->vtbl->SetRenderState(g_direct3d_renderer.device, 37, v25);
+    g_direct3d_renderer.device->vtbl->SetRenderState(g_direct3d_renderer.device, 38, LODWORD(g_game_base->fog_density));
   }
   else
   {
-    (*(void (__stdcall **)(int, int))(*(_DWORD *)MEMORY[0x502FEC] + 200))(MEMORY[0x502FEC], 28);
+    g_direct3d_renderer.device->vtbl->SetRenderState(g_direct3d_renderer.device, 28, 0);
   }
-  MEMORY[0x5031B8] = a8;
-  MEMORY[0x503218] = a8;
-  MEMORY[0x503174] = 0;
-  return a8;
+  g_render_camera_source_matrix = camera_matrix;
+  g_render_camera_view_matrix = view_matrix;
+  g_current_texture_ref = nullptr;
+  return view_matrix;
 }
-

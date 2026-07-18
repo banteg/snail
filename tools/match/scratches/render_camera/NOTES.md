@@ -66,3 +66,23 @@ pointers, projection parameters, and object-pass filter consumed by toon and
 ordinary object rendering. The current texture reference comes from the
 texture registry owner. Focused output remains exact at 180/180 instructions
 with all 37 operands clean.
+
+## 2026-07-18 analyzer ownership replay
+
+The object-render replay now carries the exact nine-argument cdecl ABI into
+both analyzers, together with typed `TransformMatrix`/`Vec3` declarations for
+the two linked D3DX matrix helpers. The seven standalone projection, active
+camera, and render-pass globals are named and typed there as well.
+
+The device address at `0x502fec` deliberately remains an interior alias for
+`g_direct3d_renderer.device` at `+0xbb94`; replay does not create a second
+global owner. Likewise, the existing frame renderer remains authoritative for
+the `GameRoot` fog prefix, which the recovered camera prototype exposes
+without redefining that block.
+
+IDA also retained two compensating stack deltas from its obsolete usercall:
+the first `SetViewport` consumed 12 bytes instead of the native 8, while the
+final fog `SetRenderState` consumed 8 instead of 12. That shifted every camera
+argument after the viewport call by one slot even after the textual prototype
+was corrected. Replay now repairs only that witnessed pair behind strict stale
+value guards, restoring the native parameter flow without a broad frame reset.

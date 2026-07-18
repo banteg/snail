@@ -546,6 +546,16 @@ int32_t __cdecl render_object_toon(
 int32_t __cdecl render_object(
     Object* object, TransformMatrix* matrix, float texture_u,
     float texture_v, tColour* color, char after_sprites);
+TransformMatrix* __cdecl render_camera(
+    float viewport_x, float viewport_y, float viewport_width,
+    float viewport_height, float fov_degrees, TransformMatrix* camera_matrix,
+    TransformMatrix* view_matrix, char draw_world, char post_sprite_pass);
+TransformMatrix* __stdcall build_perspective_projection_matrix(
+    TransformMatrix* matrix, float vertical_fov_radians, float aspect_ratio,
+    float near_z, float far_z);
+TransformMatrix* __stdcall build_camera_view_matrix(
+    TransformMatrix* matrix, const Vec3* eye, const Vec3* target,
+    const Vec3* up);
 ObjectRenderBuffers* __thiscall create_vertex_buffer(
     VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf);
 ObjectIndexBuffer* __thiscall create_index_buffer(
@@ -589,6 +599,13 @@ extern Direct3DRenderer g_direct3d_renderer;
 extern int32_t g_render_triangle_count;
 extern int32_t g_render_successful_primitive_count;
 extern int32_t g_draw_primitive_call_count;
+extern float g_render_projection_param_b;
 extern TextureRef* g_current_texture_ref;
+extern TransformMatrix* g_render_camera_source_matrix;
 extern int32_t g_texture_bind_call_count;
 extern Direct3DTexture8** g_d3d_texture_slots;
+extern float g_render_projection_near_z;
+extern float g_render_projection_far_z;
+extern float g_render_projection_param_a;
+extern TransformMatrix* g_render_camera_view_matrix;
+extern uint8_t g_object_render_pass_filter;

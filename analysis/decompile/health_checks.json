@@ -14391,6 +14391,54 @@
         "sub_4449C0",
         "unimplemented"
       ]
+    },
+    {
+      "name": "bn_render_camera_pipeline_owner",
+      "artifact": "analysis/decompile/binja/functions/00411fa0-render_camera.c",
+      "required_substrings": [
+        "g_direct3d_renderer.device",
+        "g_render_projection_param_a",
+        "g_object_render_pass_filter = post_sprite_pass",
+        "camera_matrix->basis_forward.x",
+        "g_game_base->fog_density",
+        "g_render_camera_source_matrix = camera_matrix",
+        "g_render_camera_view_matrix = view_matrix",
+        "return view_matrix"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_5031b8",
+        "data_503218",
+        "*(camera_matrix +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_render_camera_pipeline_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00411fa0-render_camera.c",
+      "required_substrings": [
+        "TransformMatrix *__cdecl render_camera(",
+        "float fov_degrees",
+        "TransformMatrix *camera_matrix",
+        "TransformMatrix *view_matrix",
+        "char draw_world",
+        "char post_sprite_pass",
+        "g_render_projection_param_a = fov_degrees",
+        "g_object_render_pass_filter = post_sprite_pass;",
+        "camera_matrix->basis_forward.x",
+        "if ( draw_world && g_game_base->fog_enabled )",
+        "g_render_camera_source_matrix = camera_matrix;",
+        "g_render_camera_view_matrix = view_matrix;",
+        "return view_matrix;"
+      ],
+      "forbidden_substrings": [
+        "__usercall",
+        "sub_411FA0",
+        "MEMORY[",
+        "data_5031b8",
+        "data_503218",
+        "unimplemented"
+      ]
     }
   ]
 }

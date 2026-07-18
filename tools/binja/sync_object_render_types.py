@@ -117,13 +117,20 @@ SYMBOL_UPDATES = (
     ("0x4f7450", "g_render_triangle_count"),
     ("0x4f7454", "g_render_successful_primitive_count"),
     ("0x4f7458", "g_direct3d_renderer"),
+    ("0x50316c", "g_render_projection_param_b"),
     ("0x503170", "g_draw_primitive_call_count"),
     ("0x503174", "g_current_texture_ref"),
+    ("0x5031b8", "g_render_camera_source_matrix"),
     ("0x5031bc", "g_object_grouped_vertex_cursor"),
     ("0x5031c0", "g_texture_bind_call_count"),
     ("0x5031c4", "g_object_grouped_vertex_scratch"),
     ("0x5031c8", "g_d3d_texture_slots"),
+    ("0x5031cc", "g_render_projection_near_z"),
+    ("0x5031d0", "g_render_projection_far_z"),
+    ("0x5031d4", "g_render_projection_param_a"),
     ("0x5031d8", "g_object_texture_transform_matrix"),
+    ("0x503218", "g_render_camera_view_matrix"),
+    ("0x503260", "g_object_render_pass_filter"),
     ("0x503300", "g_object_edge_build_edges"),
     ("0x503318", "g_object_edge_build_count"),
 )
@@ -150,6 +157,7 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x4118b0", "reset_direct3d_render_state"),
     ("0x411960", "release_direct3d_device_interfaces"),
     ("0x411d70", "release_global_direct3d_renderer_resources"),
+    ("0x411fa0", "render_camera"),
     ("0x4129c0", "initialize_direct3d_renderer"),
     ("0x4129f0", "set_cull_mode"),
     ("0x412d00", "set_blend_mode"),
@@ -175,6 +183,8 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x4305a0", "add_object_edge"),
     ("0x4308b0", "calc_object_edges"),
     ("0x430a30", "rotate_object_facequad_uv_pairs"),
+    ("0x450314", "build_perspective_projection_matrix"),
+    ("0x451ad9", "build_camera_view_matrix"),
 )
 
 DATA_VAR_UPDATES = (
@@ -185,13 +195,20 @@ DATA_VAR_UPDATES = (
     ("0x4f7450", "int32_t"),
     ("0x4f7454", "int32_t"),
     ("0x4f7458", "Direct3DRenderer"),
+    ("0x50316c", "float"),
     ("0x503170", "int32_t"),
     ("0x503174", "TextureRef*"),
+    ("0x5031b8", "TransformMatrix*"),
     ("0x5031bc", "int32_t"),
     ("0x5031c0", "int32_t"),
     ("0x5031c4", "ObjectGroupedVertex*"),
     ("0x5031c8", "Direct3DTexture8**"),
+    ("0x5031cc", "float"),
+    ("0x5031d0", "float"),
+    ("0x5031d4", "float"),
     ("0x5031d8", "TransformMatrix"),
+    ("0x503218", "TransformMatrix*"),
+    ("0x503260", "uint8_t"),
     ("0x503300", "ObjectToonEdge*"),
     ("0x503318", "int32_t"),
 )
@@ -438,6 +455,18 @@ PROTO_UPDATES = (
     (
         "render_object",
         "int32_t __cdecl render_object(Object* object, TransformMatrix* matrix, float texture_u, float texture_v, tColour* color, char after_sprites)",
+    ),
+    (
+        "render_camera",
+        "TransformMatrix* __cdecl render_camera(float viewport_x, float viewport_y, float viewport_width, float viewport_height, float fov_degrees, TransformMatrix* camera_matrix, TransformMatrix* view_matrix, char draw_world, char post_sprite_pass)",
+    ),
+    (
+        "build_perspective_projection_matrix",
+        "TransformMatrix* __stdcall build_perspective_projection_matrix(TransformMatrix* matrix, float vertical_fov_radians, float aspect_ratio, float near_z, float far_z)",
+    ),
+    (
+        "build_camera_view_matrix",
+        "TransformMatrix* __stdcall build_camera_view_matrix(TransformMatrix* matrix, const Vec3* eye, const Vec3* target, const Vec3* up)",
     ),
 )
 

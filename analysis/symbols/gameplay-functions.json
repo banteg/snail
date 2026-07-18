@@ -855,7 +855,7 @@
     {
       "address": "0x411fa0",
       "name": "render_camera",
-      "description": "Configures one 3D scene viewport, projection, view transform, depth state, fog state, and the after-sprites lane before world objects render. Cross-port Android symbols match this helper to `G0RenderCamera`."
+      "description": "Nine-argument cdecl camera pipeline owner: configures one 3D scene viewport, projection, view transform, depth and root-owned fog state, then publishes the active source/view matrices and after-sprites object lane before world objects render. Cross-port Android symbols match this helper to `G0RenderCamera`."
     },
     {
       "address": "0x412250",

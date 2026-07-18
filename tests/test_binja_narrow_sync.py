@@ -3320,6 +3320,12 @@ def test_ida_type_inspectors_report_function_and_data_ownership() -> None:
         assert marker in function_inspector
     assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/inspect_function_types.py"' in function_wrapper
     assert "script_args=list(args.selectors)" in function_wrapper
+    lvar_inspector = (IDA_DIR / "inspect_function_lvars.py").read_text(
+        encoding="utf-8"
+    )
+    assert '"stack_pointer_changes"' in lvar_inspector
+    assert "idc.get_sp_delta(item_address)" in lvar_inspector
+    assert "idc.get_spd(item_address)" in lvar_inspector
 
     for marker in (
         "ida_bytes.get_item_head(address)",
@@ -4173,6 +4179,78 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
         "Matcher relocation alias for g_direct3d_renderer.device (+0xbb94)."
         in matcher_device_header
     )
+
+
+def test_render_camera_replay_owns_pipeline_without_splitting_device_alias() -> None:
+    binja_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_object_render_types.h", "object_render_types.h")
+    ]
+
+    camera_prototype = (
+        "TransformMatrix* __cdecl render_camera(float viewport_x, float viewport_y, "
+        "float viewport_width, float viewport_height, float fov_degrees, "
+        "TransformMatrix* camera_matrix, TransformMatrix* view_matrix, "
+        "char draw_world, char post_sprite_pass)"
+    )
+    projection_prototype = (
+        "TransformMatrix* __stdcall build_perspective_projection_matrix("
+        "TransformMatrix* matrix, float vertical_fov_radians, float aspect_ratio, "
+        "float near_z, float far_z)"
+    )
+    view_prototype = (
+        "TransformMatrix* __stdcall build_camera_view_matrix(TransformMatrix* matrix, "
+        "const Vec3* eye, const Vec3* target, const Vec3* up)"
+    )
+    for source in (binja_sync, ida_sync):
+        assert camera_prototype in source
+        assert projection_prototype in source
+        assert view_prototype in source
+        assert "render_camera" in source
+        assert "0X411FA0" in source.upper()
+
+    for address, stale_delta, target_delta, call_name in (
+        ("0x41201E", 12, 8, "SetViewport"),
+        ("0x412229", 8, 12, "SetRenderState"),
+    ):
+        assert address in ida_sync
+        assert f'({address}, {stale_delta}, {target_delta}, "{call_name}")' in ida_sync
+    assert "_sync_render_camera_stack_points()" in ida_sync
+    assert "unexpected_stack_point_delta" in ida_sync
+
+    pipeline_globals = (
+        ("0x50316c", "g_render_projection_param_b", "float"),
+        ("0x5031b8", "g_render_camera_source_matrix", "TransformMatrix*"),
+        ("0x5031cc", "g_render_projection_near_z", "float"),
+        ("0x5031d0", "g_render_projection_far_z", "float"),
+        ("0x5031d4", "g_render_projection_param_a", "float"),
+        ("0x503218", "g_render_camera_view_matrix", "TransformMatrix*"),
+        ("0x503260", "g_object_render_pass_filter", "uint8_t"),
+    )
+    for address, name, data_type in pipeline_globals:
+        assert f'("{address}", "{name}")' in binja_sync
+        assert f'("{address}", "{data_type}")' in binja_sync
+        assert f'(0x{int(address, 0):X}, "{name}")' in ida_sync
+        for header in analysis_headers:
+            assert name in header
+
+    for header in analysis_headers:
+        assert "TransformMatrix* __cdecl render_camera(" in header
+        assert (
+            "TransformMatrix* __stdcall build_perspective_projection_matrix("
+            in header
+        )
+        assert "TransformMatrix* __stdcall build_camera_view_matrix(" in header
+        assert "extern Direct3DDevice8* g_d3d_device;" not in header
+
+    assert '("0x502fec",' not in binja_sync
+    assert '(0x502FEC,' not in ida_sync
 
 
 def test_main_loop_replay_keeps_winmain_and_byte_fullscreen_abis() -> None:

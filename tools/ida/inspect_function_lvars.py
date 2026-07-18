@@ -4,6 +4,7 @@ import json
 
 import ida_hexrays
 import ida_pro
+import idautils
 import idc
 
 
@@ -99,6 +100,15 @@ def main() -> None:
                 "address": hex(address),
                 "lvars": lvars,
                 "saved_lvar_overrides": _saved_lvar_overrides(address),
+                "stack_pointer_changes": [
+                    {
+                        "address": hex(item_address),
+                        "delta": idc.get_sp_delta(item_address),
+                        "cumulative_delta": idc.get_spd(item_address),
+                    }
+                    for item_address in idautils.FuncItems(address)
+                    if idc.get_sp_delta(item_address)
+                ],
             }
         )
 
