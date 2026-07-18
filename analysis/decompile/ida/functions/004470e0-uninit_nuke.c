@@ -2,15 +2,15 @@
 /* function: uninit_nuke @ 0x4470e0 */
 /* selector: uninit_nuke */
 
-// Kills the 25 sprite slots owned by the collision ring-effect controller and clears its active state. Cross-port Android symbols match this helper to `cRNuke::UnInit()`.
-void __thiscall uninit_nuke(NukeController *nuke)
+// Kills the 25 sprite slots owned by the exact 0x7c-byte cRNuke collision-ring effect at Player +0x150 and clears its active state. Android and iOS retain this method as `cRNuke::UnInit()`.
+void __thiscall uninit_nuke(Nuke *nuke)
 {
-  int *sprite_slots; // esi
+  Sprite **sprite_slots; // esi
   int v3; // edi
 
-  if ( nuke->state == 1 )
+  if ( nuke->state == NUKE_STATE_ACTIVE )
   {
-    sprite_slots = (int *)nuke->sprite_slots;
+    sprite_slots = nuke->sprite_slots;
     v3 = 25;
     do
     {
@@ -18,7 +18,6 @@ void __thiscall uninit_nuke(NukeController *nuke)
       --v3;
     }
     while ( v3 );
-    nuke->state = 0;
+    nuke->state = NUKE_STATE_INACTIVE;
   }
 }
-

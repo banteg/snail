@@ -52,3 +52,14 @@ The exact updater now dispatches on the typed inactive and active states. No
 additional values are accepted by either the Windows switch or Android
 `cRNuke::AI`. Focused output remains exact at 59/59 instructions with all
 eight operands clean.
+
+## 2026-07-18 durable lifecycle replay
+
+The focused path-ownership lane now verifies and replays this method through
+the exact 0x7c-byte `Nuke` owner. Narrow BN views preserve the native
+`Sprite**` slot cursor and the shared integer/x87 loop-index lifetimes without
+inventing a pointer-to-array owner. The paired tracked decompiles expose the
+typed state gate, orbit z/phase pairs, and each sprite position component;
+strict health checks reject the stale `NukeController`, raw slot offsets, and
+compensating owner subtraction. Focused output remains exact at 59/59
+instructions with all eight operands clean.

@@ -85,3 +85,15 @@ retaining the real zero local that owns native's `edi` register. Windows field
 xrefs and Android `cRNuke::{Init,AI,UnInit}` agree on the complete two-state
 graph. Focused output remains 93.75%, 64/64 instructions, prefix 30/64, with
 all five operands clean.
+
+## 2026-07-18 durable lifecycle replay
+
+The focused path-ownership lane now verifies the exact 0x7c-byte owner before
+replaying all three `cRNuke` method ABIs. Its bounded BN cursor override records
+native ESI as the honest `Sprite**` walk through the embedded 25-slot array;
+the paired tracked decompiles now expose the containing player's body transform
+and slot, root-owned subgame rate, sprite flags, progress, size, velocity,
+position, and gravity fields. Strict health checks reject the stale
+`NukeController`, raw root offset, and pointer-to-array subtraction views.
+Focused matching remains an honest 93.75%, 64/64 instructions, prefix 30/64,
+with all five operands clean.

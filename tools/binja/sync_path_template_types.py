@@ -63,6 +63,10 @@ FRINGE_OWNER_SIZES = {
     "FringeManager": 0x5FB44,
 }
 
+NUKE_OWNER_SIZES = {
+    "Nuke": 0x7C,
+}
+
 TRACK_RENDER_CACHE_SYMBOL_UPDATES = (
     ("0x4085e0", "initialize_active_bod"),
     ("0x433e80", "update_active_bod"),
@@ -508,6 +512,28 @@ def verify_fringe_owner_sizes(*, target: str) -> dict[str, object]:
         "owner_sizes": observed,
     }
 
+
+def verify_nuke_owner_size(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRNuke lifecycle ABIs."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=NUKE_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in NUKE_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"Nuke owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "nuke",
+        "owner_sizes": observed,
+    }
+
 SUB_PAUSE_FIELD_UPDATES = (
     ("0x00", "options_widget", "FrontendWidget*"),
     ("0x04", "end_game_widget", "FrontendWidget*"),
@@ -692,6 +718,53 @@ UPDATE_BANNER_USER_VAR_UPDATES = (
         66,
         "list_flags",
         "uint32_t",
+    ),
+)
+
+# The native cRNuke methods walk the embedded 25-element sprite array through
+# a Sprite** cursor. BN otherwise promotes ESI to a pointer-to-array and then
+# invents a compensating Nuke subtraction. The updater also shares its integer
+# loop index with the one stack slot used as the x87 conversion source.
+NUKE_USER_VAR_UPDATES = (
+    (
+        "uninit_nuke",
+        "RegisterVariableSourceType",
+        10,
+        72,
+        "sprite_slots",
+        "Sprite**",
+    ),
+    (
+        "initialize_nuke",
+        "RegisterVariableSourceType",
+        19,
+        72,
+        "sprite_slots",
+        "Sprite**",
+    ),
+    (
+        "update_nuke",
+        "RegisterVariableSourceType",
+        75,
+        72,
+        "sprite_slots",
+        "Sprite**",
+    ),
+    (
+        "update_nuke",
+        "RegisterVariableSourceType",
+        68,
+        69,
+        "i",
+        "int32_t",
+    ),
+    (
+        "update_nuke",
+        "StackVariableSourceType",
+        71,
+        -4,
+        "loop_index_float_source",
+        "int32_t",
     ),
 )
 
@@ -2302,12 +2375,28 @@ THANKS_SCREEN_PROTO_UPDATES = (
     ),
 )
 
+NUKE_PROTO_UPDATES = (
+    (
+        "initialize_nuke",
+        "void __thiscall initialize_nuke(Nuke* nuke)",
+    ),
+    (
+        "update_nuke",
+        "void __thiscall update_nuke(Nuke* nuke)",
+    ),
+    (
+        "uninit_nuke",
+        "void __thiscall uninit_nuke(Nuke* nuke)",
+    ),
+)
+
 PROTO_UPDATES = (
     *GOLB_PROTO_UPDATES,
     *ROW_MODEL_PROTO_UPDATES,
     *LANDSCAPE_LOADER_PROTO_UPDATES,
     *SLUG_VOICE_MANAGER_PROTO_UPDATES,
     *THANKS_SCREEN_PROTO_UPDATES,
+    *NUKE_PROTO_UPDATES,
     *BOD_CORE_PROTO_UPDATES,
     *FRINGE_PROTO_UPDATES,
     *TRACK_RENDER_CACHE_PROTO_UPDATES,
@@ -2728,18 +2817,6 @@ PROTO_UPDATES = (
     (
         "update_warning",
         "void __thiscall update_warning(Warning* warning)",
-    ),
-    (
-        "initialize_nuke",
-        "void __thiscall initialize_nuke(Nuke* nuke)",
-    ),
-    (
-        "update_nuke",
-        "void __thiscall update_nuke(Nuke* nuke)",
-    ),
-    (
-        "uninit_nuke",
-        "void __thiscall uninit_nuke(Nuke* nuke)",
     ),
     (
         "initialize_jetpack_gauge",
@@ -3205,6 +3282,11 @@ def parse_args() -> argparse.Namespace:
         help="Replay only the CutScene state owner and its two method prototypes.",
     )
     focused_group.add_argument(
+        "--nuke-only",
+        action="store_true",
+        help="Replay only the exact cRNuke owner and its lifecycle method ABIs.",
+    )
+    focused_group.add_argument(
         "--track-cache-only",
         action="store_true",
         help=(
@@ -3520,6 +3602,45 @@ def main() -> int:
             operations=operations,
         )
 
+    if args.nuke_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=("NukeState", "Nuke"),
+            )
+        )
+        operations.append(verify_nuke_owner_size(target=args.target))
+        operations.extend(
+            apply_struct_field_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_name="Nuke",
+                updates=NUKE_FIELD_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=NUKE_PROTO_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=NUKE_USER_VAR_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if not args.golb_only:
         operations.append(
             types_declare_if_missing(
@@ -3686,6 +3807,7 @@ def main() -> int:
                 *INITIALIZE_SUBGOLDY_USER_VAR_UPDATES,
                 *MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
+                *NUKE_USER_VAR_UPDATES,
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
                 *CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES,
                 *KILL_GOLB_OWNER_USER_VAR_UPDATES,

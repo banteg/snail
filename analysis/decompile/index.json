@@ -17,19 +17,19 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_invincible_shell",
-      "address": "0x444ac0"
+      "name": "uninit_nuke",
+      "address": "0x4470e0"
     },
     {
-      "name": "start_invincible_shell",
-      "address": "0x444ae0"
+      "name": "initialize_nuke",
+      "address": "0x447110"
     },
     {
-      "name": "update_invincible_shell",
-      "address": "0x444b50"
+      "name": "update_nuke",
+      "address": "0x4471e0"
     }
   ],
-  "health_check_count": 842,
+  "health_check_count": 848,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

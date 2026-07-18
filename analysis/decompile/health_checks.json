@@ -14767,6 +14767,124 @@
         "_pad_00",
         "rotate_matrix_world_y"
       ]
+    },
+    {
+      "name": "bn_nuke_initialize_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00447110-initialize_nuke.c",
+      "required_substrings": [
+        "if (nuke->state == NUKE_STATE_INACTIVE)",
+        "struct Sprite** sprite_slots = &nuke->sprite_slots",
+        "nuke->owner_player->body.transform.position.z",
+        "g_game_base->subgame.subgame_rate",
+        "allocate_sprite(&g_sprite_manager, nuke->owner_player->player_slot",
+        "sprite_slots[-1]->progress",
+        "sprite_slots[-1]->velocity.x",
+        "update_nuke(nuke)"
+      ],
+      "forbidden_substrings": [
+        "NukeController",
+        "arg1",
+        "data_4df904",
+        "(sprite_slots - 0x18)",
+        "return update_nuke"
+      ]
+    },
+    {
+      "name": "ida_nuke_initialize_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00447110-initialize_nuke.c",
+      "required_substrings": [
+        "void __thiscall initialize_nuke(Nuke *nuke)",
+        "nuke->state == NUKE_STATE_INACTIVE",
+        "nuke->owner_player->body.transform.position.z",
+        "g_game_base->subgame.subgame_rate",
+        "Sprite **sprite_slots",
+        "sprite->flags",
+        "p_velocity->z = 0.0",
+        "p_position->z = 0.0",
+        "update_nuke(nuke);"
+      ],
+      "forbidden_substrings": [
+        "NukeController",
+        "MEMORY[",
+        "void **sprite_slots",
+        "int32_t __thiscall initialize_nuke",
+        "*((_DWORD *)"
+      ]
+    },
+    {
+      "name": "bn_nuke_update_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/004471e0-update_nuke.c",
+      "required_substrings": [
+        "enum NukeState state = nuke->state",
+        "nuke->orbit_center_z_step",
+        "nuke->orbit_phase_step",
+        "int32_t i = 0",
+        "struct Sprite** sprite_slots = &nuke->sprite_slots",
+        "(*sprite_slots)->position.z",
+        "(*sprite_slots)->position.x",
+        "eax_4->position.y"
+      ],
+      "forbidden_substrings": [
+        "NukeController",
+        "arg1",
+        "struct Nuke* i",
+        "(esi_1 - 0x18)",
+        "data_4df904"
+      ]
+    },
+    {
+      "name": "ida_nuke_update_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/004471e0-update_nuke.c",
+      "required_substrings": [
+        "void __thiscall update_nuke(Nuke *nuke)",
+        "nuke->state == NUKE_STATE_ACTIVE",
+        "nuke->orbit_center_z_step",
+        "nuke->orbit_phase_step",
+        "Sprite **sprite_slots",
+        "(*sprite_slots)->position.z",
+        "(*sprite_slots)->position.x",
+        "v10->position.y"
+      ],
+      "forbidden_substrings": [
+        "NukeController",
+        "MEMORY[",
+        "void **sprite_slots",
+        "*((float *)",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_nuke_uninit_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/004470e0-uninit_nuke.c",
+      "required_substrings": [
+        "nuke->state != NUKE_STATE_ACTIVE",
+        "struct Sprite** sprite_slots = &nuke->sprite_slots",
+        "kill_sprite(*sprite_slots)",
+        "nuke->state = 0"
+      ],
+      "forbidden_substrings": [
+        "NukeController",
+        "arg1",
+        "(esi_1 - 0x18)",
+        "int32_t* sprite_slots"
+      ]
+    },
+    {
+      "name": "ida_nuke_uninit_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/004470e0-uninit_nuke.c",
+      "required_substrings": [
+        "void __thiscall uninit_nuke(Nuke *nuke)",
+        "nuke->state == NUKE_STATE_ACTIVE",
+        "Sprite **sprite_slots",
+        "kill_sprite(*sprite_slots++)",
+        "nuke->state = NUKE_STATE_INACTIVE"
+      ],
+      "forbidden_substrings": [
+        "NukeController",
+        "MEMORY[",
+        "int *sprite_slots",
+        "nuke->state = 0;"
+      ]
     }
   ]
 }

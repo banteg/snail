@@ -7053,6 +7053,16 @@ def test_nuke_state_ownership_stays_aligned() -> None:
     assert '"NukeState",' in path_sync
     assert '("0x00", "state", "NukeState")' in path_sync
     assert '("Nuke", NUKE_FIELD_UPDATES)' in path_sync
+    assert '"--nuke-only"' in path_sync
+    assert "NUKE_OWNER_SIZES" in path_sync
+    assert "verify_nuke_owner_size" in path_sync
+    assert "updates=NUKE_PROTO_UPDATES" in path_sync
+    assert "updates=NUKE_USER_VAR_UPDATES" in path_sync
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    for address in ("0x4470E0", "0x447110", "0x4471E0"):
+        assert address in ida_sync
     for header in (analysis_header, matcher_header):
         assert "NUKE_STATE_INACTIVE = 0" in header
         assert "NUKE_STATE_ACTIVE = 1" in header

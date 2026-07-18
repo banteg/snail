@@ -313,6 +313,9 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x445D50,  # build_snail_hotspots
     0x447090,  # initialize_fringe_manager
     0x4470A0,  # allocate_fringe_object
+    0x4470E0,  # uninit_nuke
+    0x447110,  # initialize_nuke
+    0x4471E0,  # update_nuke
     0x447290,  # recycle_bod_to_free_list
 )
 

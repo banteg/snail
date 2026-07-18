@@ -18,3 +18,13 @@ clean masked operand.
 
 Teardown now closes the typed `ACTIVE -> INACTIVE` edge. Focused output remains
 exact at 18/18 instructions with its operand clean.
+
+## 2026-07-18 durable lifecycle replay
+
+The focused path-ownership lane now verifies the exact 0x7c-byte owner before
+replaying teardown. Its bounded BN cursor view records ESI as the native
+`Sprite**` walk through `sprite_slots`, and paired tracked decompiles preserve
+the typed `ACTIVE -> INACTIVE` transition and `kill_sprite` ownership. Strict
+health checks reject the stale controller name, pointer-to-array subtraction,
+and raw slot arithmetic. Focused output remains exact at 18/18 instructions
+with its operand clean.
