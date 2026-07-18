@@ -2,56 +2,54 @@
 /* function: initialize_jet_particles @ 0x43a5b0 */
 /* selector: initialize_jet_particles */
 
-void __thiscall initialize_jet_particles(char *gauge)
+// Exact Windows `SubHover::initialize_jet_particles`, authored as `cRSubHover::JetInit`: allocates and initializes the 15-by-2 inline jet sprite grid.
+void __thiscall initialize_jet_particles(SubHover *sub_hover)
 {
-  char *slot_cursor; // esi
-  int columns; // ebx
-  _DWORD *sprite; // eax
-  int flags; // edx
-  _DWORD *velocity; // eax
-  _DWORD *color; // eax
-  _DWORD *sprite_color; // ecx
-  int rows; // [esp+10h] [ebp-14h]
-  int color_temp[4]; // [esp+14h] [ebp-10h] BYREF
+  JetParticleSlot *particle_slots; // esi
+  int v2; // ebx
+  Sprite *sprite; // eax
+  SpriteFlag flags; // edx
+  Vec3 *p_velocity; // eax
+  tColour *v6; // eax
+  tColour *p_color; // ecx
+  int v8; // [esp+10h] [ebp-14h]
+  Color4f color; // [esp+14h] [ebp-10h] BYREF
 
-  slot_cursor = gauge + 32;
-  rows = 15;
+  particle_slots = sub_hover->particle_slots;
+  v8 = 15;
   do
   {
-    columns = 2;
+    v2 = 2;
     do
     {
-      sprite = allocate_sprite(g_sprite_manager, 1, 158, -1, -1);
-      *(_DWORD *)slot_cursor = sprite;
-      flags = sprite[1];
+      sprite = allocate_sprite((SpriteManager *)g_sprite_manager, 1, 158, -1, -1);
+      particle_slots->sprite = sprite;
+      flags = sprite->flags;
       BYTE1(flags) |= 8u;
-      sprite[1] = flags;
-      *(_DWORD *)(*(_DWORD *)slot_cursor + 104) = 0;
-      *(_DWORD *)(*(_DWORD *)slot_cursor + 108) = 0;
-      *(_DWORD *)(*(_DWORD *)slot_cursor + 112) = 0;
-      *(_DWORD *)(*(_DWORD *)slot_cursor + 116) = 0;
-      *(_DWORD *)(*(_DWORD *)slot_cursor + 100) = 0;
-      *(_DWORD *)(*(_DWORD *)slot_cursor + 96) = 0;
-      velocity = (_DWORD *)(*(_DWORD *)slot_cursor + 84);
-      velocity[2] = 0;
-      velocity[1] = 0;
-      *velocity = 0;
-      *(_DWORD *)(*(_DWORD *)slot_cursor + 120) = 0;
-      color = set_color_rgba(color_temp, 1065353216, 1065353216, 1065353216, 1065336439);
-      sprite_color = (_DWORD *)(*(_DWORD *)slot_cursor + 44);
-      slot_cursor += 16;
-      --columns;
-      *sprite_color = *color;
-      sprite_color[1] = color[1];
-      sprite_color[2] = color[2];
-      sprite_color[3] = color[3];
-      *((_DWORD *)slot_cursor - 3) = 0;
-      *(_DWORD *)(*((_DWORD *)slot_cursor - 4) + 40) = 0;
-      *((_DWORD *)slot_cursor - 2) = 0;
-      *((_DWORD *)slot_cursor - 1) = 1042983595;
+      sprite->flags = flags;
+      particle_slots->sprite->progress = 0.0;
+      particle_slots->sprite->progress_step = 0.0;
+      particle_slots->sprite->lifetime = 0.0;
+      particle_slots->sprite->lifetime_step = 0.0;
+      particle_slots->sprite->size_end = 0.0;
+      particle_slots->sprite->size_start = 0.0;
+      p_velocity = &particle_slots->sprite->velocity;
+      p_velocity->z = 0.0;
+      p_velocity->y = 0.0;
+      p_velocity->x = 0.0;
+      particle_slots->sprite->gravity_step = 0.0;
+      v6 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.99900001);
+      p_color = &particle_slots->sprite->color;
+      ++particle_slots;
+      --v2;
+      *p_color = *v6;
+      particle_slots[-1].wobble_x = 0.0;
+      particle_slots[-1].sprite->draw_mode = 0;
+      particle_slots[-1].wobble_y = 0.0;
+      particle_slots[-1].wobble_alpha = 0.16666667;
     }
-    while ( columns );
-    --rows;
+    while ( v2 );
+    --v8;
   }
-  while ( rows );
+  while ( v8 );
 }

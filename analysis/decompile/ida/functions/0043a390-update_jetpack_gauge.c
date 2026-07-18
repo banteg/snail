@@ -2,76 +2,75 @@
 /* function: update_jetpack_gauge @ 0x43a390 */
 /* selector: update_jetpack_gauge */
 
-// Advances the player jetpack countdown or warning controller at +0x2750: animates the near-empty meter, triggers the auto-shutoff branch when the current runtime cell carries flag 0x80, and clears the controller once the jetpack gauge drains. Cross-port Android and iOS symbols still name the owning class `cRDamageGuage::AI()`.
-void __thiscall sub_43A390(int this)
+// Windows `SubHover::update_jetpack_gauge`, authored as `cRSubHover::AI`: advances the hover countdown/warning envelope, applies runtime-row auto-shutoff, drives wobble and the authored Hover call, and clears the exact 0x214-byte owner at teardown.
+void __thiscall update_jetpack_gauge(SubHover *sub_hover)
 {
   double v3; // st7
   char v4; // c0
   double v5; // st7
-  float v6; // eax
-  int v7; // [esp-4h] [ebp-18h]
+  float warning_intensity; // eax
+  Vec4 *p_position; // [esp-4h] [ebp-18h]
   float v8; // [esp+0h] [ebp-14h]
   float v9; // [esp+0h] [ebp-14h]
   float v10; // [esp+0h] [ebp-14h]
-  float v11; // [esp+0h] [ebp-14h]
+  int progress_low; // [esp+0h] [ebp-14h]
   float v12; // [esp+Ch] [ebp-8h]
 
-  if ( *(_DWORD *)(this + 12) == 1 )
+  if ( sub_hover->state == SUB_HOVER_STATE_ACTIVE )
   {
-    v12 = *(float *)(this + 4) + *(float *)this;
-    *(float *)this = v12;
-    if ( v12 > 1.0 || (double)(*(_DWORD *)(*(_DWORD *)(this + 512) + 88) - 5) < *(float *)(*(_DWORD *)(this + 16) + 112) )
+    v12 = sub_hover->progress_step + sub_hover->progress;
+    sub_hover->progress = v12;
+    if ( v12 > 1.0 || (double)(sub_hover->game->completion_row_start - 5) < sub_hover->player->body.transform.position.z )
     {
-      end_jetpack_hover((float *)this);
-      if ( *(float *)this <= 0.94 )
-        set_snail_jetpack((_DWORD *)MEMORY[0x4DF904] + 1100224, 0);
-      *(_DWORD *)(this + 12) = 0;
-      *(_DWORD *)(this + 28) = 0;
-      *(_DWORD *)(this + 24) = 0;
-      *(_DWORD *)(this + 20) = 0;
+      end_jetpack_hover(sub_hover);
+      if ( sub_hover->progress <= 0.94 )
+        set_snail_jetpack(&g_game_base->subgame.player.presentation, 0);
+      sub_hover->state = SUB_HOVER_STATE_INACTIVE;
+      sub_hover->wobble_alpha = 0.0;
+      sub_hover->wobble_y = 0.0;
+      sub_hover->wobble_x = 0.0;
     }
     else
     {
       v3 = v12;
       if ( v4 )
       {
-        *(float *)(this + 528) = v3 * 10.0;
+        sub_hover->warning_intensity = v3 * 10.0;
       }
       else if ( v3 <= 0.94 )
       {
-        *(_DWORD *)(this + 528) = 1065353216;
-        if ( (BYTE1(*(_DWORD *)get_track_runtime_cell_at_world_z(
-                                 (char *)MEMORY[0x4DF904] + 476696,
-                                 (int)MEMORY[0x4DF904] + 4390372))
+        sub_hover->warning_intensity = 1.0;
+        if ( (BYTE1(get_track_runtime_cell_at_world_z(
+                      &g_game_base->subgame,
+                      (Vec3 *)&g_game_base->subgame.player.body.transform.position)->flags)
             & 0x80u) != 0 )
         {
-          *(_DWORD *)this = 1064346583;
-          sub_449C00();
+          sub_hover->progress = 0.94;
+          debug_report_stub();
         }
       }
       else
       {
-        *(float *)(this + 528) = (1.0 - v12) * 16.666668;
-        if ( v12 - *(float *)(this + 4) <= 0.94 )
+        sub_hover->warning_intensity = (1.0 - v12) * 16.666668;
+        if ( v12 - sub_hover->progress_step <= 0.94 )
         {
-          set_snail_jetpack((_DWORD *)MEMORY[0x4DF904] + 1100224, 0);
-          uninit_jet_particles((int *)this);
+          set_snail_jetpack(&g_game_base->subgame.player.presentation, 0);
+          uninit_jet_particles(sub_hover);
         }
       }
-      v8 = *(float *)(this + 528) * 3.1415927;
-      *(float *)(this + 528) = 1.0 - (cosine(v8) + 1.0) * 0.5;
-      v9 = *(float *)this * 25.132742;
-      *(float *)(this + 20) = sine(v9) * *(float *)(this + 528) * 0.25;
-      v10 = *(float *)this * 37.699112;
+      v8 = sub_hover->warning_intensity * 3.1415927;
+      sub_hover->warning_intensity = 1.0 - (cosine(v8) + 1.0) * 0.5;
+      v9 = sub_hover->progress * 25.132742;
+      sub_hover->wobble_x = sine(v9) * sub_hover->warning_intensity * 0.25;
+      v10 = sub_hover->progress * 37.699112;
       v5 = sine(v10);
-      v6 = *(float *)(this + 528);
-      v11 = *(float *)this;
-      v7 = *(_DWORD *)(this + 16) + 104;
-      *(_DWORD *)(this + 28) = 0;
-      *(float *)(this + 524) = v6;
-      *(float *)(this + 24) = (v5 * 0.25 + 1.0) * v6;
-      spawn_track_speedup(v7, LODWORD(v11));
+      warning_intensity = sub_hover->warning_intensity;
+      progress_low = LODWORD(sub_hover->progress);
+      p_position = &sub_hover->player->body.transform.position;
+      sub_hover->wobble_alpha = 0.0;
+      sub_hover->warning_intensity_latch = warning_intensity;
+      sub_hover->wobble_y = (v5 * 0.25 + 1.0) * warning_intensity;
+      spawn_track_speedup((int)p_position, progress_low);
     }
   }
 }
-

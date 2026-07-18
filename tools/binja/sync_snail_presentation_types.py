@@ -19,10 +19,12 @@ from _narrow_sync import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
+SPRITE_HEADER_PATH = REPO_ROOT / "analysis/headers/star_manager_types.h"
 
 EXPECTED_OWNER_SIZES = {
     "ObjectAnimation": 0x14,
     "Object": 0xDC,
+    "Sprite": 0xB4,
     "RenderableBod": 0x80,
     "AnimManager": 0x48,
     "SubHover": 0x214,
@@ -33,6 +35,12 @@ EXPECTED_OWNER_SIZES = {
 }
 
 SYMBOL_UPDATES = (
+    ("0x43a390", "update_jetpack_gauge"),
+    ("0x43a580", "uninit_jet_particles"),
+    ("0x43a5b0", "initialize_jet_particles"),
+    ("0x43a690", "update_jet_particles"),
+    ("0x43a930", "initialize_jetpack_gauge"),
+    ("0x43a980", "arm_jetpack_gauge"),
     ("0x442e40", "release_snail_weapons"),
     ("0x444600", "dispatch_cutscene_animation"),
     ("0x4446e0", "set_weapon_animation"),
@@ -41,6 +49,30 @@ SYMBOL_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "update_jetpack_gauge",
+        "void __thiscall update_jetpack_gauge(SubHover* sub_hover)",
+    ),
+    (
+        "uninit_jet_particles",
+        "void __thiscall uninit_jet_particles(SubHover* sub_hover)",
+    ),
+    (
+        "initialize_jet_particles",
+        "void __thiscall initialize_jet_particles(SubHover* sub_hover)",
+    ),
+    (
+        "update_jet_particles",
+        "void __thiscall update_jet_particles(SubHover* sub_hover)",
+    ),
+    (
+        "initialize_jetpack_gauge",
+        "void __thiscall initialize_jetpack_gauge(SubHover* sub_hover, int32_t player_slot)",
+    ),
+    (
+        "arm_jetpack_gauge",
+        "void __thiscall arm_jetpack_gauge(SubHover* sub_hover)",
+    ),
     (
         "release_snail_weapons",
         "void __thiscall release_snail_weapons(Snail* snail)",
@@ -97,6 +129,12 @@ def main() -> int:
             target=args.target,
             header_path=OBJECT_HEADER_PATH,
             required_structs=("Object",),
+        ),
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=SPRITE_HEADER_PATH,
+            required_structs=("Sprite",),
         ),
         types_declare_if_missing(
             REPO_ROOT,

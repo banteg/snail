@@ -52,3 +52,13 @@ puff gate and normalized row fraction to that owner instead of repeating the
 literal `14`. The paired Windows loops and Android traversal independently pin
 both axes; these are derived capacity names, not claims about original symbol
 spelling.
+
+## 2026-07-18 durable SubHover and Sprite replay
+
+The focused replay now imports the canonical complete 0xb4-byte `Sprite`
+definition before the 0x214-byte `SubHover` owner, then reapplies the authored
+void member ABI in BN and IDA. The tracked IDA artifact exposes the inline
+`JetParticleSlot` cursor plus Sprite flags, progress/lifetime, size, velocity,
+gravity, colour, and draw mode instead of byte offsets. Focused Wibo remains
+exact at 73/73 with all three masks clean; this commit changes analysis and
+guards only, with no source rewrite or fakematch.

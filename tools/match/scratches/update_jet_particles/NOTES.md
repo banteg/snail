@@ -137,3 +137,13 @@ Jet emission now explicitly belongs to `SUB_HOVER_STATE_ACTIVE`. This is one
 of the eight direct Windows consumers of the exact state field at owner
 `+0x0c`. Focused output remains byte-identical at 52.96%, 174/181
 instructions, prefix 0, with all 16 operands clean.
+
+## 2026-07-18 durable owner replay
+
+Both tracked decompilers now retain the exact `SubHover*` receiver and recover
+the borrowed `SubgameRuntime`, embedded Player presentation/hotspot bank,
+forward basis, velocity, 15-by-2 particle bank, and complete shared Sprite
+fields. The focused replay verifies `SubHover` 0x214, `Player` 0x4364, and
+`Sprite` 0xb4 before exporting. This is an ownership/export improvement only:
+focused Wibo stays at the honest 52.96%, 174/181, prefix 0, with all 16 masks
+clean and no fabricated source shape.

@@ -2,18 +2,19 @@
 /* function: update_jet_particles @ 0x43a690 */
 /* selector: update_jet_particles */
 
-void __thiscall sub_43A690(int this)
+// Windows `SubHover::update_jet_particles`, authored as `cRSubHover::Jets`: projects the owner's 15-by-2 jet exhaust grid backward from the authored snail hotspots and occasionally emits a detached puff with 85% of Player velocity.
+void __thiscall update_jet_particles(SubHover *sub_hover)
 {
   int v2; // esi
   int v3; // ecx
   double v4; // st7
   double v5; // st7
-  int v6; // eax
-  float *v7; // eax
-  char *v8; // esi
-  int v9; // eax
-  _DWORD *v10; // eax
-  int v11; // eax
+  JetParticleSlot *v6; // eax
+  float *p_x; // eax
+  Sprite *sprite; // esi
+  SpriteFlag flags; // eax
+  tColour *v10; // eax
+  float a; // eax
   float *v12; // ecx
   double v13; // st7
   int v14; // [esp+4h] [ebp-50h]
@@ -22,21 +23,21 @@ void __thiscall sub_43A690(int this)
   float v17; // [esp+10h] [ebp-44h]
   float v18; // [esp+14h] [ebp-40h]
   float v19; // [esp+18h] [ebp-3Ch]
-  float v20; // [esp+20h] [ebp-34h]
+  float x; // [esp+20h] [ebp-34h]
   float v21; // [esp+20h] [ebp-34h]
-  float v22; // [esp+24h] [ebp-30h]
+  float y; // [esp+24h] [ebp-30h]
   float v23; // [esp+24h] [ebp-30h]
-  float v24; // [esp+28h] [ebp-2Ch]
+  float z; // [esp+28h] [ebp-2Ch]
   float v25; // [esp+28h] [ebp-2Ch]
   float v26; // [esp+2Ch] [ebp-28h]
   float v27; // [esp+30h] [ebp-24h]
   float v28; // [esp+34h] [ebp-20h]
   float v29; // [esp+38h] [ebp-1Ch]
   float v30; // [esp+3Ch] [ebp-18h]
-  _DWORD v31[4]; // [esp+44h] [ebp-10h] BYREF
+  Color4f color; // [esp+44h] [ebp-10h] BYREF
 
-  if ( *(_DWORD *)(this + 12) == 1
-    && *(_DWORD *)(*(_DWORD *)(this + 512) + 3929052) == *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(this + 512) + 3929148) + 188) )
+  if ( sub_hover->state == SUB_HOVER_STATE_ACTIVE
+    && sub_hover->game->player.presentation.jetpack_channel.anim_manager.active_animation == sub_hover->game->player.presentation.jetpack_channel.animation_slots[0].body.bod.object->animation )
   {
     v19 = (double)next_math_random_value() * 0.0000015258789 + 0.40000001;
     v2 = 0;
@@ -47,68 +48,68 @@ void __thiscall sub_43A690(int this)
       v3 = 0;
       v15 = 0;
       v16 = (double)v14 * 0.071428575;
-      v17 = (1.0 - v16) * v18 * *(float *)(this + 528);
+      v17 = (1.0 - v16) * v18 * sub_hover->warning_intensity;
       do
       {
         if ( v3 )
         {
-          v20 = *(float *)(*(_DWORD *)(this + 512) + 3930432);
-          v22 = *(float *)(*(_DWORD *)(this + 512) + 3930436);
-          v24 = *(float *)(*(_DWORD *)(this + 512) + 3930440);
+          x = sub_hover->game->player.presentation.snail_hotspots_world[14].x;
+          y = sub_hover->game->player.presentation.snail_hotspots_world[14].y;
+          z = sub_hover->game->player.presentation.snail_hotspots_world[14].z;
         }
         else
         {
-          v20 = *(float *)(*(_DWORD *)(this + 512) + 3930420);
-          v22 = *(float *)(*(_DWORD *)(this + 512) + 3930424);
-          v24 = *(float *)(*(_DWORD *)(this + 512) + 3930428);
+          x = sub_hover->game->player.presentation.snail_hotspots_world[13].x;
+          y = sub_hover->game->player.presentation.snail_hotspots_world[13].y;
+          z = sub_hover->game->player.presentation.snail_hotspots_world[13].z;
         }
-        v4 = -(v16 * v19 * *(float *)(this + 528));
-        v29 = v4 * *(float *)(*(_DWORD *)(this + 16) + 10716);
-        v30 = v4 * *(float *)(*(_DWORD *)(this + 16) + 10720);
-        v5 = v4 * *(float *)(*(_DWORD *)(this + 16) + 10724);
-        v6 = this + 16 * (v3 + 2 * v2 + 2);
-        v21 = v20 + v29;
-        *(float *)(*(_DWORD *)v6 + 100) = v17;
-        *(float *)(*(_DWORD *)v6 + 96) = v17;
-        v23 = v22 + v30;
-        v7 = (float *)(*(_DWORD *)v6 + 72);
-        *v7 = v21;
-        v7[1] = v23;
-        v25 = v24 + v5;
-        v7[2] = v25;
+        v4 = -(v16 * v19 * sub_hover->warning_intensity);
+        v29 = v4 * sub_hover->player->presentation.body.transform.basis_forward.x;
+        v30 = v4 * sub_hover->player->presentation.body.transform.basis_forward.y;
+        v5 = v4 * sub_hover->player->presentation.body.transform.basis_forward.z;
+        v6 = &sub_hover->particle_slots[2 * v2 + v3];
+        v21 = x + v29;
+        v6->sprite->size_end = v17;
+        v6->sprite->size_start = v17;
+        v23 = y + v30;
+        p_x = &v6->sprite->position.x;
+        *p_x = v21;
+        p_x[1] = v23;
+        v25 = z + v5;
+        p_x[2] = v25;
         if ( v2 == 14 )
         {
           if ( (double)next_math_random_value() * 0.000030517578 > 0.89999998 )
           {
-            v8 = (char *)allocate_sprite(g_sprite_manager, *(_DWORD *)(*(_DWORD *)(this + 512) + 3914468), 33, -1, -1);
-            v9 = *((_DWORD *)v8 + 1);
-            BYTE1(v9) |= 8u;
-            *((_DWORD *)v8 + 1) = v9;
-            *((_DWORD *)v8 + 26) = 0;
-            *((_DWORD *)v8 + 27) = 1041119460;
-            *((_DWORD *)v8 + 28) = 0;
-            *((_DWORD *)v8 + 29) = 0;
-            v10 = set_color_rgba(v31, 1065353216, 1065353216, 1065353216, 1065353216);
-            *((_DWORD *)v8 + 11) = *v10;
-            *((_DWORD *)v8 + 12) = v10[1];
-            *((_DWORD *)v8 + 13) = v10[2];
-            v11 = v10[3];
-            *((_DWORD *)v8 + 24) = 1036831949;
-            *((_DWORD *)v8 + 25) = 1050253722;
-            *((_DWORD *)v8 + 14) = v11;
-            v12 = (float *)(v8 + 84);
-            v8 += 72;
-            v26 = *(float *)(*(_DWORD *)(this + 512) + 3914612) * 0.85000002;
-            v27 = *(float *)(*(_DWORD *)(this + 512) + 3914616) * 0.85000002;
-            v13 = *(float *)(*(_DWORD *)(this + 512) + 3914620) * 0.85000002;
-            *((_DWORD *)v8 + 12) = 981668463;
+            sprite = allocate_sprite((SpriteManager *)g_sprite_manager, sub_hover->game->player.player_slot, 33, -1, -1);
+            flags = sprite->flags;
+            BYTE1(flags) |= 8u;
+            sprite->flags = flags;
+            sprite->progress = 0.0;
+            sprite->progress_step = 0.1388889;
+            sprite->lifetime = 0.0;
+            sprite->lifetime_step = 0.0;
+            v10 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+            sprite->color.r = v10->r;
+            sprite->color.g = v10->g;
+            sprite->color.b = v10->b;
+            a = v10->a;
+            sprite->size_start = 0.1;
+            sprite->size_end = 0.30000001;
+            sprite->color.a = a;
+            v12 = &sprite->velocity.x;
+            sprite = (Sprite *)((char *)sprite + 72);
+            v26 = sub_hover->game->player.velocity.x * 0.85000002;
+            v27 = sub_hover->game->player.velocity.y * 0.85000002;
+            v13 = sub_hover->game->player.velocity.z * 0.85000002;
+            sprite->color.g = 0.001;
             *v12 = v26;
-            *(float *)v8 = v21;
+            *(float *)&sprite->object_ref = v21;
             v28 = v13;
             v12[1] = v27;
-            *((float *)v8 + 1) = v23;
+            *(float *)&sprite->flags = v23;
             v12[2] = v28;
-            *((float *)v8 + 2) = v25;
+            *(float *)&sprite->owner = v25;
             v2 = v14;
           }
           v3 = v15;
@@ -123,4 +124,3 @@ void __thiscall sub_43A690(int this)
     }
   }
 }
-

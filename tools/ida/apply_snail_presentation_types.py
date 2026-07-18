@@ -15,6 +15,12 @@ import idc
 
 
 TRUSTED_NAMES = (
+    (0x43A390, "update_jetpack_gauge"),
+    (0x43A580, "uninit_jet_particles"),
+    (0x43A5B0, "initialize_jet_particles"),
+    (0x43A690, "update_jet_particles"),
+    (0x43A930, "initialize_jetpack_gauge"),
+    (0x43A980, "arm_jetpack_gauge"),
     (0x442E40, "release_snail_weapons"),
     (0x444600, "dispatch_cutscene_animation"),
     (0x4446E0, "set_weapon_animation"),
@@ -23,6 +29,30 @@ TRUSTED_NAMES = (
 )
 
 TRUSTED_DECLARATIONS = (
+    (
+        "update_jetpack_gauge",
+        "void __thiscall update_jetpack_gauge(SubHover* sub_hover);",
+    ),
+    (
+        "uninit_jet_particles",
+        "void __thiscall uninit_jet_particles(SubHover* sub_hover);",
+    ),
+    (
+        "initialize_jet_particles",
+        "void __thiscall initialize_jet_particles(SubHover* sub_hover);",
+    ),
+    (
+        "update_jet_particles",
+        "void __thiscall update_jet_particles(SubHover* sub_hover);",
+    ),
+    (
+        "initialize_jetpack_gauge",
+        "void __thiscall initialize_jetpack_gauge(SubHover* sub_hover, int32_t player_slot);",
+    ),
+    (
+        "arm_jetpack_gauge",
+        "void __thiscall arm_jetpack_gauge(SubHover* sub_hover);",
+    ),
     (
         "release_snail_weapons",
         "void __thiscall release_snail_weapons(Snail* snail);",
@@ -47,12 +77,18 @@ TRUSTED_DECLARATIONS = (
 
 DEPENDENCY_HEADER_NAMES = (
     "object_render_types.h",
+    "star_manager_types.h",
 )
 
 DEPENDENCY_OWNER_MARKERS = {
     "object_render_types.h": (
         "typedef struct Object {",
         "ObjectAnimation* animation;",
+    ),
+    "star_manager_types.h": (
+        "struct Sprite {",
+        "Vec3 position;",
+        "float gravity_step;",
     ),
 }
 
@@ -75,6 +111,7 @@ REQUIRED_OWNER_MARKERS = (
 EXPECTED_OWNER_SIZES = {
     "ObjectAnimation": 0x14,
     "Object": 0xDC,
+    "Sprite": 0xB4,
     "RenderableBod": 0x80,
     "AnimManager": 0x48,
     "SubHover": 0x214,
@@ -83,6 +120,11 @@ EXPECTED_OWNER_SIZES = {
     "Snail": 0x19B4,
     "Player": 0x4364,
 }
+
+# The authored Player root displacement numerically lands on the tracked
+# g_player_block offset symbol. Keep that evidence symbol, but render this one
+# ADD operand as a number so Hex-Rays can fold GameRoot::subgame.player.
+SUBHOVER_PLAYER_ROOT_OFFSET_OPERAND = (0x43A953, 1, 0x42FD7C)
 
 
 def _normalize_type_text(value: str | None) -> str | None:
@@ -109,6 +151,33 @@ def _named_struct_size(name: str) -> int | None:
     if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
         return None
     return value.get_size()
+
+
+def _normalize_subhover_player_root_offset() -> dict[str, object]:
+    address, operand_index, expected_offset = SUBHOVER_PLAYER_ROOT_OFFSET_OPERAND
+    before = idc.print_operand(address, operand_index)
+    idc.op_num(address, operand_index)
+    after = idc.print_operand(address, operand_index)
+    observed_offset = idc.get_operand_value(address, operand_index)
+    normalized = (
+        observed_offset == expected_offset
+        and f"{expected_offset:X}H" in after.upper()
+    )
+    return {
+        "status": (
+            "applied"
+            if normalized and before != after
+            else "unchanged"
+            if normalized
+            else "failed"
+        ),
+        "address": hex(address),
+        "operand_index": operand_index,
+        "expected_offset": hex(expected_offset),
+        "observed_offset": hex(observed_offset),
+        "before": before,
+        "after": after,
+    }
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
@@ -239,6 +308,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
         ida_hexrays.mark_cfunc_dirty(address, True)
         dirty_functions.append(hex(address))
 
+    subhover_player_root_offset = _normalize_subhover_player_root_offset()
+    if subhover_player_root_offset["status"] == "failed":
+        failed.append(
+            {
+                "selector": "initialize_jetpack_gauge",
+                "root_offset_operand": subhover_player_root_offset,
+            }
+        )
+    ida_hexrays.mark_cfunc_dirty(0x43A930, True)
+
     print(
         json.dumps(
             {
@@ -247,6 +326,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "dependency_parse_results": dependency_parse_results,
                 "parse_errors": parse_errors,
                 "owner_sizes": owner_sizes,
+                "subhover_player_root_offset": subhover_player_root_offset,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

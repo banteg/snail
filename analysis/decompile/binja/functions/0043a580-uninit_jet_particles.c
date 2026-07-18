@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: uninit_jet_particles @ 0x43a580 */
 
-0043a583        struct JetParticleSlot (* esi)[0x1e] = &gauge->particle_slots
+0043a583        struct JetParticleSlot (* esi)[0x1e] = &sub_hover->particle_slots
 0043a586        int32_t i_1 = 0xf
 0043a59e        int32_t i
 0043a58b        int32_t j_1 = 2

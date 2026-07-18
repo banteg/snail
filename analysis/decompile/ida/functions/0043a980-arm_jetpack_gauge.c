@@ -2,22 +2,17 @@
 /* function: arm_jetpack_gauge @ 0x43a980 */
 /* selector: arm_jetpack_gauge */
 
-// Arms the player jetpack countdown controller at +0x2750 from the pickup path: sets the active flag, zeros progress and wobble offsets, plays the jetpack start cue, and seeds the warning visuals.
-int __thiscall sub_43A980(int this)
+// Exact Windows `SubHover::arm_jetpack_gauge`, authored as `cRSubHover::On`: arms the child at Player +0x2750, clears progress and wobble, selects the snail jetpack visual, and calls JetInit. The authored contract is void.
+void __thiscall arm_jetpack_gauge(SubHover *sub_hover)
 {
-  int result; // eax
-
-  result = 0;
-  if ( !*(_DWORD *)(this + 12) )
+  if ( sub_hover->state == SUB_HOVER_STATE_INACTIVE )
   {
-    *(_DWORD *)(this + 12) = 1;
-    *(_DWORD *)this = 0;
-    *(_DWORD *)(this + 28) = 0;
-    *(_DWORD *)(this + 24) = 0;
-    *(_DWORD *)(this + 20) = 0;
-    set_snail_jetpack((_DWORD *)MEMORY[0x4DF904] + 1100224, 1);
-    return initialize_jet_particles((char *)this);
+    sub_hover->state = SUB_HOVER_STATE_ACTIVE;
+    sub_hover->progress = 0.0;
+    sub_hover->wobble_alpha = 0.0;
+    sub_hover->wobble_y = 0.0;
+    sub_hover->wobble_x = 0.0;
+    set_snail_jetpack(&g_game_base->subgame.player.presentation, 1);
+    initialize_jet_particles(sub_hover);
   }
-  return result;
 }
-

@@ -1227,27 +1227,194 @@
       ]
     },
     {
+      "name": "bn_subhover_jetpack_gauge_owner",
+      "artifact": "analysis/decompile/binja/functions/0043a390-update_jetpack_gauge.c",
+      "required_substrings": [
+        "enum SubHoverState state = sub_hover->state",
+        "sub_hover->game->completion_row_start",
+        "struct Player* player = sub_hover->player",
+        "player->body.transform.position.z",
+        "set_snail_jetpack(&g_game_base->subgame.player.presentation, 0)",
+        "end_jetpack_hover(sub_hover)"
+      ],
+      "forbidden_substrings": [
+        "gauge->",
+        "data_4df904",
+        "live_matrix",
+        "return warning_intensity"
+      ]
+    },
+    {
+      "name": "bn_subhover_jet_particle_teardown_owner",
+      "artifact": "analysis/decompile/binja/functions/0043a580-uninit_jet_particles.c",
+      "required_substrings": [
+        "&sub_hover->particle_slots",
+        "particle_slots[0].sprite",
+        "kill_sprite"
+      ],
+      "forbidden_substrings": [
+        "gauge->",
+        "int32_t result",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_subhover_jet_particle_init_owner",
+      "artifact": "analysis/decompile/binja/functions/0043a5b0-initialize_jet_particles.c",
+      "required_substrings": [
+        "&sub_hover->particle_slots",
+        "struct Sprite* eax_1 = allocate_sprite(&g_sprite_manager",
+        "particle_slots[0].sprite->velocity",
+        "particle_slots[0].sprite->color"
+      ],
+      "forbidden_substrings": [
+        "gauge->",
+        "char* gauge",
+        "return eax"
+      ]
+    },
+    {
       "name": "bn_nested_subgame_jet_particle_owner",
       "artifact": "analysis/decompile/binja/functions/0043a690-update_jet_particles.c",
       "required_substrings": [
         "struct SubgameRuntime* game = sub_hover->game",
         "game->player.presentation.jetpack_channel",
-        "sub_hover->game->player.presentation.snail_hotspots_world"
+        "sub_hover->game->player.presentation.snail_hotspots_world",
+        "sub_hover->game->player.velocity",
+        "eax_18->gravity_step"
       ],
       "forbidden_substrings": [
-        "struct Game*"
+        "struct Game*",
+        "gauge->",
+        "data_4df904",
+        "__offset("
       ]
     },
     {
       "name": "bn_nested_subgame_jetpack_gauge_owner",
       "artifact": "analysis/decompile/binja/functions/0043a930-initialize_jetpack_gauge.c",
       "required_substrings": [
+        "sub_hover->state = SUB_HOVER_STATE_INACTIVE",
         "sub_hover->game = &g_game_base->subgame",
         "sub_hover->player = &g_game_base->subgame.player"
       ],
       "forbidden_substrings": [
         "struct Game*",
-        "g_game_base->subgame.__offset"
+        "g_game_base->subgame.__offset",
+        "gauge->",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_subhover_jetpack_arm_owner",
+      "artifact": "analysis/decompile/binja/functions/0043a980-arm_jetpack_gauge.c",
+      "required_substrings": [
+        "sub_hover->state != SUB_HOVER_STATE_INACTIVE",
+        "sub_hover->state = SUB_HOVER_STATE_ACTIVE",
+        "set_snail_jetpack(&g_game_base->subgame.player.presentation, 1)",
+        "initialize_jet_particles(sub_hover)"
+      ],
+      "forbidden_substrings": [
+        "gauge->",
+        "return result",
+        "return initialize_jet_particles"
+      ]
+    },
+    {
+      "name": "ida_subhover_jetpack_gauge_owner",
+      "artifact": "analysis/decompile/ida/functions/0043a390-update_jetpack_gauge.c",
+      "required_substrings": [
+        "void __thiscall update_jetpack_gauge(SubHover *sub_hover)",
+        "sub_hover->game->completion_row_start",
+        "sub_hover->player->body.transform.position.z",
+        "set_snail_jetpack(&g_game_base->subgame.player.presentation, 0)",
+        "uninit_jet_particles(sub_hover)"
+      ],
+      "forbidden_substrings": [
+        "sub_43A390",
+        "MEMORY[",
+        "int this",
+        "cRDamageGuage"
+      ]
+    },
+    {
+      "name": "ida_subhover_jet_particle_teardown_owner",
+      "artifact": "analysis/decompile/ida/functions/0043a580-uninit_jet_particles.c",
+      "required_substrings": [
+        "void __thiscall uninit_jet_particles(SubHover *sub_hover)",
+        "particle_slots = sub_hover->particle_slots",
+        "kill_sprite(particle_slots->sprite)"
+      ],
+      "forbidden_substrings": [
+        "sub_43A580",
+        "int *this",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_subhover_jet_particle_init_owner",
+      "artifact": "analysis/decompile/ida/functions/0043a5b0-initialize_jet_particles.c",
+      "required_substrings": [
+        "void __thiscall initialize_jet_particles(SubHover *sub_hover)",
+        "Sprite *sprite",
+        "particle_slots->sprite->velocity",
+        "particle_slots->sprite->gravity_step",
+        "particle_slots[-1].wobble_alpha"
+      ],
+      "forbidden_substrings": [
+        "char *gauge",
+        "sub_43A5B0",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_subhover_jet_particle_update_owner",
+      "artifact": "analysis/decompile/ida/functions/0043a690-update_jet_particles.c",
+      "required_substrings": [
+        "void __thiscall update_jet_particles(SubHover *sub_hover)",
+        "sub_hover->game->player.presentation.snail_hotspots_world[14]",
+        "&sub_hover->particle_slots[2 * v2 + v3]",
+        "sub_hover->game->player.velocity.x",
+        "sprite->size_end"
+      ],
+      "forbidden_substrings": [
+        "sub_43A690",
+        "MEMORY[",
+        "int this"
+      ]
+    },
+    {
+      "name": "ida_subhover_jetpack_init_owner",
+      "artifact": "analysis/decompile/ida/functions/0043a930-initialize_jetpack_gauge.c",
+      "required_substrings": [
+        "void __thiscall initialize_jetpack_gauge(SubHover *sub_hover, int32_t player_slot)",
+        "sub_hover->game = p_subgame",
+        "p_player = &g_game_base->subgame.player",
+        "sub_hover->player = p_player",
+        "sub_hover->state = SUB_HOVER_STATE_INACTIVE"
+      ],
+      "forbidden_substrings": [
+        "sub_43A930",
+        "g_player_block",
+        "MEMORY[",
+        "return 0"
+      ]
+    },
+    {
+      "name": "ida_subhover_jetpack_arm_owner",
+      "artifact": "analysis/decompile/ida/functions/0043a980-arm_jetpack_gauge.c",
+      "required_substrings": [
+        "void __thiscall arm_jetpack_gauge(SubHover *sub_hover)",
+        "sub_hover->state == SUB_HOVER_STATE_INACTIVE",
+        "sub_hover->state = SUB_HOVER_STATE_ACTIVE",
+        "set_snail_jetpack(&g_game_base->subgame.player.presentation, 1)",
+        "initialize_jet_particles(sub_hover)"
+      ],
+      "forbidden_substrings": [
+        "sub_43A980",
+        "MEMORY[",
+        "int result",
+        "return initialize_jet_particles"
       ]
     },
     {

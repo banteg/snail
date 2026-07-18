@@ -42,6 +42,12 @@ TRUSTED_NAMES = [
     (0x433FD0, "initialize_thanks_for_playing_screen"),
     (0x4340C0, "uninit_thanks_screen"),
     (0x4340F0, "update_thanks_for_playing_screen"),
+    (0x43A390, "update_jetpack_gauge"),
+    (0x43A580, "uninit_jet_particles"),
+    (0x43A5B0, "initialize_jet_particles"),
+    (0x43A690, "update_jet_particles"),
+    (0x43A930, "initialize_jetpack_gauge"),
+    (0x43A980, "arm_jetpack_gauge"),
     (0x440F80, "update_barrier_ai"),
     (0x440FA0, "initialize_damage_gauge"),
     (0x440FD0, "update_damage_gauge"),
@@ -163,6 +169,12 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
     0x435EB0,  # populate_runtime_track_cells_from_segments
     0x438B90,  # update_subgame
+    0x43A390,  # update_jetpack_gauge
+    0x43A580,  # uninit_jet_particles
+    0x43A5B0,  # initialize_jet_particles
+    0x43A690,  # update_jet_particles
+    0x43A930,  # initialize_jetpack_gauge
+    0x43A980,  # arm_jetpack_gauge
     0x43B120,  # update_subgoldy
     0x43DF10,  # spawn_track_ring_or_special_effect
     0x43ECC0,  # update_track_health_pickup
@@ -734,6 +746,14 @@ UPDATE_SUBGAME_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x439228, 1, 0x5CCB88),  # row attachment-body position
     (0x439569, 1, 0x5CCAC8),  # authored-ring row flags
     (0x439827, 1, 0x5CCAC8),  # ambient-ring row flags
+)
+
+# The Init method stores its borrowed Player backlink from a relocatable root
+# displacement that numerically collides with the tracked g_player_block offset
+# symbol. Normalize only that ADD operand so the typed root folds to the exact
+# GameRoot::subgame.player child.
+SUBHOVER_PLAYER_ROOT_OFFSET_OPERANDS = (
+    (0x43A953, 1, 0x42FD7C),
 )
 
 
@@ -2693,6 +2713,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    subhover_player_root_offset_operands = _normalize_root_offset_operands(
+        SUBHOVER_PLAYER_ROOT_OFFSET_OPERANDS
+    )
+    for result in subhover_player_root_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "initialize_jetpack_gauge",
+                    "root_offset_operand": result,
+                }
+            )
 
     lvar_view = _sync_build_track_render_cache_lvar()
     if lvar_view.get("status") == "failed":
@@ -2880,6 +2911,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "place_parcels_runtime_row_offset_operands": place_parcels_runtime_row_offset_operands,
                 "challenge_parcels_runtime_row_offset_operands": challenge_parcels_runtime_row_offset_operands,
                 "update_subgame_runtime_row_offset_operands": update_subgame_runtime_row_offset_operands,
+                "subhover_player_root_offset_operands": subhover_player_root_offset_operands,
                 "lvar_view": lvar_view,
                 "frontend_color_lvars": frontend_color_lvars,
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,

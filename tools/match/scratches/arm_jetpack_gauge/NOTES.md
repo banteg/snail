@@ -16,3 +16,12 @@ their authored void contracts while preserving the exact 18/18 instructions.
 The authored `On` edge now explicitly transitions the child from
 `SUB_HOVER_STATE_INACTIVE` to `SUB_HOVER_STATE_ACTIVE`. Focused output remains
 exact at 18/18 instructions with all four operands clean.
+
+## 2026-07-18 durable SubHover replay
+
+The focused BN/IDA lane now preserves the authored void `SubHover*` receiver,
+inactive-to-active state edge, root-owned Snail presentation call, and direct
+JetInit member call in both tracked artifacts. Exact owner-size verification
+covers the 0x214-byte child and its complete 0xb4-byte Sprite dependency. The
+matcher remains exact at 18/18 with all four operands clean; the improvement is
+analysis-only and introduces no fakematch.

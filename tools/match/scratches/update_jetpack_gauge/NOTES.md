@@ -92,3 +92,14 @@ The native early ladder and teardown store now name
 `SUB_HOVER_STATE_ACTIVE`. This preserves the deliberate VC6 ladder shape and
 the honest 85.93%, 132/131-instruction partial, prefix 6/131, with all 34
 operands clean.
+
+## 2026-07-18 durable SubHover replay
+
+The focused Binary Ninja and IDA replay now pins this function as authored
+`void __thiscall(SubHover*)`, verifies the exact 0x214-byte receiver, and loads
+the complete 0xb4-byte Sprite dependency used by the sibling jet methods. Both
+tracked decompilers now expose `progress`, `state`, `game`, `player`, wobble,
+warning, and root-owned snail presentation paths through their real owners;
+the stale `cRDamageGuage` artifact description is gone. This is analysis-only
+ownership recovery: focused Wibo remains honestly 85.93%, 132/131, prefix
+6/131, with all 34 masks clean and no source or fakematch change.

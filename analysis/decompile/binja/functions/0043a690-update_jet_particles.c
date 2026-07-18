@@ -6,7 +6,7 @@
 0043a69a        if (sub_hover->state != SUB_HOVER_STATE_ACTIVE)
 0043a69a        return
 0043a6a0        struct SubgameRuntime* game = sub_hover->game
-0043a6b8        if (game->player.presentation.jetpack_channel.anim_manager.active_animation != *(game->player.presentation.jetpack_channel.animation_slots[0].body.bod.object + 0xbc))
+0043a6b8        if (game->player.presentation.jetpack_channel.anim_manager.active_animation != game->player.presentation.jetpack_channel.animation_slots[0].body.bod.object->animation)
 0043a6b8        return
 0043a6da        float var_3c_1 = fconvert.s(float.t(next_math_random_value()) * fconvert.t(1.52587893e-06f) + fconvert.t(0.400000006f))
 0043a6e7        int32_t esi_1 = 0

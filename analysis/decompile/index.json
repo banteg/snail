@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,19 +17,31 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "dispatch_cutscene_animation",
-      "address": "0x444600"
+      "name": "update_jetpack_gauge",
+      "address": "0x43a390"
     },
     {
-      "name": "set_weapon_animation",
-      "address": "0x4446e0"
+      "name": "uninit_jet_particles",
+      "address": "0x43a580"
     },
     {
-      "name": "update_snail_skin",
-      "address": "0x445cd0"
+      "name": "initialize_jet_particles",
+      "address": "0x43a5b0"
+    },
+    {
+      "name": "update_jet_particles",
+      "address": "0x43a690"
+    },
+    {
+      "name": "initialize_jetpack_gauge",
+      "address": "0x43a930"
+    },
+    {
+      "name": "arm_jetpack_gauge",
+      "address": "0x43a980"
     }
   ],
-  "health_check_count": 713,
+  "health_check_count": 723,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

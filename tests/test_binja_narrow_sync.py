@@ -193,7 +193,7 @@ def test_cheat_state_replay_keeps_exact_global_owner_and_authored_abis() -> None
     )
 
 
-def test_snail_presentation_replay_keeps_exact_snail_and_weapon_owners() -> None:
+def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners() -> None:
     binja_sync = (BINJA_DIR / "sync_snail_presentation_types.py").read_text(
         encoding="utf-8"
     )
@@ -210,6 +210,9 @@ def test_snail_presentation_replay_keeps_exact_snail_and_weapon_owners() -> None
         encoding="utf-8"
     )
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    sprite_header = (HEADER_DIR / "star_manager_types.h").read_text(
         encoding="utf-8"
     )
 
@@ -233,11 +236,21 @@ def test_snail_presentation_replay_keeps_exact_snail_and_weapon_owners() -> None
             "int32_t animation_id, uint8_t immediate, int32_t mode_flags)"
             in source
         )
+        for declaration in (
+            "void __thiscall update_jetpack_gauge(SubHover* sub_hover)",
+            "void __thiscall uninit_jet_particles(SubHover* sub_hover)",
+            "void __thiscall initialize_jet_particles(SubHover* sub_hover)",
+            "void __thiscall update_jet_particles(SubHover* sub_hover)",
+            "void __thiscall initialize_jetpack_gauge(SubHover* sub_hover, int32_t player_slot)",
+            "void __thiscall arm_jetpack_gauge(SubHover* sub_hover)",
+        ):
+            assert declaration in source
 
     for source in (binja_sync, ida_sync):
         for owner, size in (
             ('"ObjectAnimation"', "0x14"),
             ('"Object"', "0xDC"),
+            ('"Sprite"', "0xB4"),
             ('"RenderableBod"', "0x80"),
             ('"AnimManager"', "0x48"),
             ('"SubHover"', "0x214"),
@@ -250,7 +263,13 @@ def test_snail_presentation_replay_keeps_exact_snail_and_weapon_owners() -> None
 
     assert "types_declare_if_missing" in binja_sync
     assert "bn_object_render_types.h" in binja_sync
+    assert "star_manager_types.h" in binja_sync
     assert '"object_render_types.h"' in ida_sync
+    assert '"star_manager_types.h"' in ida_sync
+    assert "struct Sprite {" in sprite_header
+    assert "SUBHOVER_PLAYER_ROOT_OFFSET_OPERAND = (0x43A953, 1, 0x42FD7C)" in ida_sync
+    assert "SUBHOVER_PLAYER_ROOT_OFFSET_OPERANDS = (" in broad_ida_sync
+    assert "(0x43A953, 1, 0x42FD7C)" in broad_ida_sync
     assert "mark_cfunc_dirty" in ida_sync
     assert (
         'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"'

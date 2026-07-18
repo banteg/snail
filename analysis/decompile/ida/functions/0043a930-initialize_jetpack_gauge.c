@@ -2,23 +2,21 @@
 /* function: initialize_jetpack_gauge @ 0x43a930 */
 /* selector: initialize_jetpack_gauge */
 
-// Initializes the player jetpack countdown or warning controller at +0x2750, wiring the live Game pointer and warning anchor used by `update_jetpack_gauge`. Cross-port Android symbols still name the owning class `cRDamageGuage::Init()`.
-int __thiscall sub_43A930(_DWORD *this, int a2)
+// Exact Windows `SubHover::initialize_jetpack_gauge`, authored as `cRSubHover::Init`: clears the 0x214-byte child state, seeds its 1/600 progress step, and stores borrowed SubgameRuntime and Player backlinks. The authored contract is void; the Windows integer parameter is unused.
+void __thiscall initialize_jetpack_gauge(SubHover *sub_hover, int32_t player_slot)
 {
-  char *v3; // edx
-  char *v4; // edx
+  SubgameRuntime *p_subgame; // edx
+  struct Player *p_player; // edx
 
-  *this = 0;
-  v3 = (char *)MEMORY[0x4DF904] + 476696;
-  *(this + 1) = 987395086;
-  *(this + 128) = v3;
-  v4 = (char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904];
-  *(this + 3) = 0;
-  *(this + 4) = v4;
-  *(this + 7) = 0;
-  *(this + 6) = 0;
-  *(this + 5) = 0;
-  *(this + 131) = 0;
-  return 0;
+  sub_hover->progress = 0.0;
+  p_subgame = &g_game_base->subgame;
+  sub_hover->progress_step = 0.0016666667;
+  sub_hover->game = p_subgame;
+  p_player = &g_game_base->subgame.player;
+  sub_hover->state = SUB_HOVER_STATE_INACTIVE;
+  sub_hover->player = p_player;
+  sub_hover->wobble_alpha = 0.0;
+  sub_hover->wobble_y = 0.0;
+  sub_hover->wobble_x = 0.0;
+  sub_hover->warning_intensity_latch = 0.0;
 }
-
