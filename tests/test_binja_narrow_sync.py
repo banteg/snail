@@ -4218,6 +4218,16 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert '"char g_level_file_text_buffer[10240];"' in ida_segment_sync
 
     assert "POPULATE_RUNTIME_USER_VAR_UPDATES" in binja_source
+    assert "POPULATE_RUNTIME_SPLIT_USER_VAR_UPDATES" in binja_source
+    assert '("0x436165", "mlil", "RegisterVariableSourceType", 693, 67)' in binja_source
+    assert '("0x43616a", "mlil_ssa", "RegisterVariableSourceType", 698, 67)' in binja_source
+    assert '("0x436171", "mlil_ssa", "RegisterVariableSourceType", 705, 67)' in binja_source
+    assert '("0x4361a1", "mlil", "RegisterVariableSourceType", 753, 67)' in binja_source
+    assert '("0x4361ad", "mlil", "RegisterVariableSourceType", 765, 67)' in binja_source
+    assert '("0x4361b3", "mlil_ssa", "RegisterVariableSourceType", 771, 67)' in binja_source
+    assert '("0x4361bd", "mlil_ssa", "RegisterVariableSourceType", 781, 67)' in binja_source
+    assert '("0x43714d", "mlil", "RegisterVariableSourceType", 4765, 67)' in binja_source
+    assert '"visited_cursor"' in binja_source
     assert '"StackVariableSourceType",\n        1077,\n        -52,' in binja_source
     assert '"RegisterVariableSourceType",\n        1363,\n        72,' in binja_source
     assert '"RegisterVariableSourceType",\n        1448,\n        69,' in binja_source
@@ -4374,6 +4384,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "*HARMONIZE_RUNTIME_USER_VAR_UPDATES" in binja_source
 
     assert "POPULATE_RUNTIME_LVAR_SPECS" in ida_path_sync
+    assert '("visited_cursor", "uint8_t *visited_cursor;", 0x4361AE, None)' in ida_path_sync
     assert "0x4362E6" in ida_path_sync
     assert "0x436404" in ida_path_sync
     assert "0x436459" in ida_path_sync

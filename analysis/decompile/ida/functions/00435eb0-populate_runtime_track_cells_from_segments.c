@@ -24,7 +24,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int v18; // ecx
   FringeObject **v19; // esi
   int32_t v20; // eax
-  uint8_t *p_visited; // ecx
+  uint8_t *visited_cursor; // ecx
   int32_t v22; // edi
   SubgameRuntime *v23; // ebp
   SubSegment *p_last_segment; // esi
@@ -299,12 +299,12 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
     v20 = 0;
     if ( game->level_definition.segment_count > 0 )
     {
-      p_visited = &game->level_definition.segment_slots[0].visited;
+      visited_cursor = &game->level_definition.segment_slots[0].visited;
       do
       {
-        *p_visited = 0;
+        *visited_cursor = 0;
         ++v20;
-        p_visited += 16928;
+        visited_cursor += 16928;
       }
       while ( v20 < game->level_definition.segment_count );
     }

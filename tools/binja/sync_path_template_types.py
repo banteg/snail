@@ -1210,6 +1210,41 @@ COLLISION_POOL_CURSOR_USER_VAR_UPDATES = (
 # segment cursor, runtime-row/lane ordinals, trampoline counter, row-event
 # owner, and per-row first/last and attachment latches. Do not name the reused
 # random-length/edge-row slot, whose two lifetimes still overlap in HLIL.
+POPULATE_RUNTIME_SPLIT_USER_VAR_UPDATES = (
+    (
+        (
+            ("0x436165", "mlil", "RegisterVariableSourceType", 693, 67),
+            ("0x43616a", "mlil_ssa", "RegisterVariableSourceType", 698, 67),
+            ("0x436171", "mlil_ssa", "RegisterVariableSourceType", 705, 67),
+        ),
+        ("RegisterVariableSourceType", 693, 67),
+        "remaining_cell_lanes",
+        "int32_t",
+    ),
+    (
+        (("0x4361a1", "mlil", "RegisterVariableSourceType", 753, 67),),
+        ("RegisterVariableSourceType", 753, 67),
+        "segment_count",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x4361ad", "mlil", "RegisterVariableSourceType", 765, 67),
+            ("0x4361b3", "mlil_ssa", "RegisterVariableSourceType", 771, 67),
+            ("0x4361bd", "mlil_ssa", "RegisterVariableSourceType", 781, 67),
+        ),
+        ("RegisterVariableSourceType", 765, 67),
+        "visited_cursor",
+        "uint8_t*",
+    ),
+    (
+        (("0x43714d", "mlil", "RegisterVariableSourceType", 4765, 67),),
+        ("RegisterVariableSourceType", 4765, 67),
+        "runtime_owner",
+        "SubgameRuntime*",
+    ),
+)
+
 POPULATE_RUNTIME_USER_VAR_UPDATES = (
     (
         "populate_runtime_track_cells_from_segments",
@@ -3342,6 +3377,20 @@ def main() -> int:
             variable_type="RuntimeRowStrideAnchor*",
         )
     )
+    for definitions, target_var, variable_name, variable_type in (
+        POPULATE_RUNTIME_SPLIT_USER_VAR_UPDATES
+    ):
+        operations.extend(
+            apply_split_user_var_update(
+                REPO_ROOT,
+                target=args.target,
+                identifier="populate_runtime_track_cells_from_segments",
+                definitions=definitions,
+                target_var=target_var,
+                variable_name=variable_name,
+                variable_type=variable_type,
+            )
+        )
     operations.extend(
         apply_user_var_updates(
             REPO_ROOT,

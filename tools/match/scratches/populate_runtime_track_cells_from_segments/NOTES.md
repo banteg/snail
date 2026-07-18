@@ -653,3 +653,39 @@ integer address arithmetic. VC6 emits the same normalized candidate listing:
 29.67%, 1,229/1,245 instructions, 66 clean operands, and the same two honest
 alignment mismatches. No table alias, forced register, or dummy dependency was
 added.
+
+## 2026-07-18 visited-cursor register ownership
+
+The runtime clear pass reuses ECX for four unrelated source lifetimes: the
+eight-cell fringe-link countdown, `SubTracks::segment_count`, a borrowed
+cursor beginning at `SubSegment::visited`, and the final `SubgameRuntime*`
+loop owner. Treating that physical register as one `SubgameRuntime*` produced
+the false `segment_count->scan_reset` expression and also tainted helper-call
+results and integer loop conditions.
+
+Binary Ninja exposes separate definition identities at `0x436165`,
+`0x4361a1`, `0x4361ad`, and `0x43714d`. The countdown and byte cursor also
+cross loop phis and update definitions at `0x43616a`/`0x436171` and
+`0x4361b3`/`0x4361bd`; replaying only their entry definitions lets HLIL
+coalesce them again. The durable replay therefore splits and merges each
+complete SSA lifetime before typing the four roles as `int32_t`, `int32_t`,
+`uint8_t*`, and `SubgameRuntime*`, respectively.
+
+IDA independently recovers the same byte cursor and now names it
+`visited_cursor` at its Hex-Rays definition locator `0x4361ae`. Its `+16928`
+step is exactly `sizeof(SubSegment) == 0x4220`,
+so the cursor remains a borrowed field address rather than being falsely
+promoted to an owning `SubSegment*`. The incidental random-helper spill at
+stack `-0x5c` remains without user-authored metadata because its source role
+is not proved.
+
+The focused replay is idempotent in both databases: Binary Ninja skips all
+four complete lifetime groups as already current, while IDA reports 279 type
+operations and 108 names unchanged with no missing or failed operations. The
+strict focused export passes both decompilers and all 768 health checks.
+
+Matcher source and operands are untouched; the normalized candidate remains
+at the honest 29.67%, 1,229/1,245-instruction frontier with 66 clean operands
+and the same two documented alignment mismatches. This pass only corrects
+durable analysis ownership and adds checks rejecting the former false runtime
+owner; no score-shaped source or operand fakematch was introduced.

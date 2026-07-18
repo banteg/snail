@@ -87,7 +87,6 @@
 004360e9        struct FringeObject** var_28 = &game->runtime_cells[0][0].fringe_front
 004360ed        int32_t* edi = &game->runtime_rows[0].projection_payload.y
 004360f3        int32_t var_30 = 0xc80
-00436192        struct SubgameRuntime* segment_count
 00436192        bool cond:3_1
 004360fd        int32_t i_7 = 8
 00436102        edi[-0x25] = 0
@@ -119,12 +118,12 @@
 0043615e        i_7 -= 1
 0043615f        do while (i_2 != 1)
 00436161        struct FringeObject** eax_20 = var_28
-00436165        segment_count = 8
-0043617d        struct SubgameRuntime* i_3
+00436165        int32_t remaining_cell_lanes = 8
+0043617d        int32_t i_3
 0043616a        struct FringeObject** esi_6 = eax_20
 0043616e        eax_20 = &eax_20[0x15]
-00436171        i_3 = segment_count
-00436171        segment_count -= 1
+00436171        i_3 = remaining_cell_lanes
+00436171        remaining_cell_lanes -= 1
 00436172        (esi_6 - 0x3bfb0c)->runtime_cells[0][0].fringe_front = nullptr
 00436174        (esi_6 - 0x3bfb0c)->runtime_cells[0][0].fringe_right = nullptr
 00436177        (esi_6 - 0x3bfb0c)->runtime_cells[0][0].fringe_left = nullptr
@@ -136,13 +135,12 @@
 0043618e        var_30 -= 1
 00436192        do while (cond:3_1)
 0043619f        if (game->level_definition.random_enabled == 1)
-004361a1        segment_count = game->level_definition.segment_count
 004361a7        int32_t i_4 = 0
-004361ab        if (segment_count s> 0)
-004361ad        segment_count = &game->level_definition.segment_slots[0].visited
-004361b3        segment_count->scan_reset = 0
+004361ab        if (game->level_definition.segment_count s> 0)
+004361ad        uint8_t* visited_cursor = &game->level_definition.segment_slots[0].visited
+004361b3        *visited_cursor = 0
 004361bc        i_4 += 1
-004361bd        segment_count = &segment_count->segment_cache.slots[0x37][4].bod.bod.list_prev
+004361bd        visited_cursor = &visited_cursor[0x4220]
 004361c5        do while (i_4 s< game->level_definition.segment_count)
 004361ca        int32_t build_row = 0
 004361d4        if (game->runtime_row_count s<= 0)
@@ -150,6 +148,7 @@
 004361da        int32_t i_5 = 0
 004361de        struct SubgameRuntime* runtime = game
 004361e4        struct SubSegment* active_segment
+004361e4        int32_t segment_row_index_1
 004361e4        struct SubSegment* active_segment_4
 004361e4        if (i_5 == 0)
 004361e6        active_segment_4 = &runtime->level_definition.first_segment
@@ -169,7 +168,7 @@
 0043625a        char* var_58_6 = "Segtra"
 00436241        char* var_58_5 = "Segdif"
 0043624c        x87_r7_9 = (fconvert.t(runtime->challenge_difficulty_scalar) * fconvert.t(0.899999976f) + fconvert.t(0.100000001f)) * float.t(runtime->level_definition.segment_count)
-0043625f        struct SubgameRuntime* segment_count_1 = segment_count
+0043625f        int32_t segment_row_index_2 = segment_row_index_1
 0043626b        int32_t eax_27
 0043626b        int16_t x87control_2
 0043626b        eax_27, x87control_2 = ftol(x87control_1, random_float_below(fconvert.s(x87_r7_9)))
@@ -182,16 +181,16 @@
 00436211        first_or_last_row = 1
 00436216        active_segment = active_segment_4
 0043621a        active_segment_4->row_base = i_5
-004362c7        segment_count = switch_track_mirror(runtime)
+004362c7        segment_row_index_1 = switch_track_mirror(runtime)
 004362cc        int32_t row_count = active_segment_4->row_count
 004362cf        active_segment_4->row_base = i_5
 004362d3        if (row_count s< 0)
-004362da        segment_count = report_errorf("Negative Segment Length")
+004362da        segment_row_index_1 = report_errorf("Negative Segment Length")
 004362e5        int32_t segment_row_index = 0
 004362ef        if (i_5 s< runtime->runtime_row_count)
 00437168        int32_t j
-004362f9        segment_count = segment_row_index
-00436300        if (segment_count s>= *(active_segment + 4))
+004362f9        segment_row_index_1 = segment_row_index
+00436300        if (segment_row_index_1 s>= *(active_segment + 4))
 00436300        break
 00436306        int32_t level_mode_3 = runtime->level_mode
 0043630c        if (level_mode_3 != 2)
@@ -401,7 +400,7 @@
 00436945        list_flags_13.b |= 0x20
 00436947        runtime_cell_anchor->cell.bod.list_flags = list_flags_13
 004369bc        case 7
-004369bc        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.floor_slices.storage[0].object)
+004369bc        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.floor_slices.storage[0].object)
 004369c1        runtime_cell_anchor->cell.tile_id = 0x15
 004369c8        uint32_t list_flags_16 = runtime_cell_anchor->cell.bod.list_flags
 004369ce        list_flags_16.b |= 0x20
@@ -458,7 +457,7 @@
 004369fe        runtime_cell_anchor->cell.bod.list_flags = list_flags_17
 00436ad0        case 0xd
 00436ad0        if (build_row s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != 3)
-00436b21        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.ramp_edges[1].object)
+00436b21        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[1].object)
 00436b26        runtime_cell_anchor->cell.render_arg_1c = 0
 00436b2c        runtime_cell_anchor->cell.render_arg_20 = 0f
 00436b32        runtime_cell_anchor->cell.tile_id = 3
@@ -725,13 +724,12 @@
 0043713c        cond:12_1 = lane + 1 s< 8
 0043713f        lane += 1
 00437143        do while (cond:12_1)
-0043714d        segment_count = game
 00437159        j = build_row + 1
 0043715a        segment_row_index += 1
 00437160        build_row = j
 00437164        i_5 = j
-00437166        runtime = segment_count
-00437168        do while (j s< segment_count->runtime_row_count)
+00437166        runtime = game
+00437168        do while (j s< game->runtime_row_count)
 0043717a        if (runtime->level_mode != 3 || first_or_last_row == 0)
 0043717c        row_event_owner += 1
 00437183        do while (i_5 s< runtime->runtime_row_count)

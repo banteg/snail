@@ -278,6 +278,7 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ("trampoline_counter", "int32_t trampoline_counter;", 0x4360D6, 76),
     ("first_or_last_row", "char first_or_last_row;", 0x4360DA, 42),
     ("row_event_owner", "int32_t row_event_owner;", 0x4360DF, 64),
+    ("visited_cursor", "uint8_t *visited_cursor;", 0x4361AE, None),
     ("build_row", "int32_t build_row;", 0x4361CB, 44),
     ("active_segment", "SubSegment *active_segment;", 0x4361F2, 48),
     ("segment_row_index", "int32_t segment_row_index;", 0x4362E6, 56),

@@ -11852,6 +11852,11 @@
         "int32_t row_event_owner = 0",
         "int32_t build_row = 0",
         "struct SubSegment* active_segment",
+        "int32_t remaining_cell_lanes = 8",
+        "uint8_t* visited_cursor",
+        "game->level_definition.segment_slots[0].visited",
+        "*visited_cursor = 0",
+        "visited_cursor = &visited_cursor[0x4220]",
         "char attachment_entry_installed = 0",
         "int32_t lane = 0",
         "runtime_row_anchor->row.source_segment",
@@ -11868,6 +11873,10 @@
         "fringe_object_reloaded->bod.position"
       ],
       "forbidden_substrings": [
+        "struct SubgameRuntime* segment_count",
+        "segment_count->scan_reset",
+        "segment_count = game",
+        "char* ecx_14",
         "struct SubgameRuntime* segment_count_2",
         "int32_t var_24",
         "int32_t var_20",
@@ -11906,6 +11915,10 @@
         "int32_t row_event_owner;",
         "int32_t build_row;",
         "SubSegment *active_segment;",
+        "uint8_t *visited_cursor;",
+        "visited_cursor = &game->level_definition.segment_slots[0].visited",
+        "*visited_cursor = 0",
+        "visited_cursor += 16928",
         "char attachment_entry_installed;",
         "int32_t lane;",
         "int32_t segment_row_index;",
@@ -11927,6 +11940,7 @@
         "fringe_position->z"
       ],
       "forbidden_substrings": [
+        "uint8_t *p_visited;",
         "int32_t *segment_row_anchor;",
         "int v114;",
         "int v115;",
