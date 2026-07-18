@@ -4537,13 +4537,33 @@
       "name": "ida_track_cache_object_face_owner",
       "artifact": "analysis/decompile/ida/functions/00433960-append_track_cache_object.c",
       "required_substrings": [
-        "int32_t __thiscall append_track_cache_object",
+        "int32_t __thiscall append_track_cache_object(\n        SegmentCache *manager",
         "Object *source",
         "source->facequad_count",
         "source->facequads",
         "vertex_3"
       ],
       "forbidden_substrings": [
+        "TrackRenderCacheManager",
+        "PathTemplateStripMesh",
+        "__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_track_cache_vertex_staging_owner",
+      "artifact": "analysis/decompile/ida/functions/00433830-add_track_cache_vertex.c",
+      "required_substrings": [
+        "int32_t __thiscall add_track_cache_vertex(\n        SegmentCache *manager",
+        "Object *source",
+        "ObjectRenderVertex *vertices",
+        "source->vertices[source_index]",
+        "manager->build_cache_row_base",
+        "vertices[v14].x"
+      ],
+      "forbidden_substrings": [
+        "TrackRenderCacheManager",
         "PathTemplateStripMesh",
         "__offset(",
         "__asm",
@@ -4661,6 +4681,60 @@
         "g_game_base[0x74618]",
         "g_game_base->subgame.scan_reset",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_track_cache_row_runtime_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00433b30-update_track_render_cache_rows.c",
+      "required_substrings": [
+        "void __thiscall update_track_render_cache_rows(SegmentCache *manager)",
+        "g_game_base->subgame.player.body.transform.position.z",
+        "v2->subgame.fringe_attachment_list_head.bod",
+        "get_track_skirt_color(&g_game_base->subgame, &out)",
+        "g_game_base->subgame.track_body_list_head",
+        "manager->slots[manager->next_cache_row_index]",
+        "manager->next_cache_row_z"
+      ],
+      "forbidden_substrings": [
+        "TrackRenderCacheManager",
+        "Color4f",
+        "(char *)g_game_base",
+        "*((float *)g_game_base",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_track_cache_teardown_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00433f20-remove_track_render_cache_bods.c",
+      "required_substrings": [
+        "struct SegmentCache* manager_1 = manager",
+        "&manager->slots[0][0].bod.bod.list_next",
+        "&g_game_base->active_bod_list",
+        "ecx->first",
+        "ecx->free_top"
+      ],
+      "forbidden_substrings": [
+        "TrackRenderCacheManager",
+        "g_game_base[0x5a8]",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_track_cache_teardown_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00433f20-remove_track_render_cache_bods.c",
+      "required_substrings": [
+        "void __thiscall remove_track_render_cache_bods(SegmentCache *manager)",
+        "&manager->slots[0][0].bod.bod.list_next",
+        "p_active_bod_list = &g_game_base->active_bod_list",
+        "p_active_bod_list->first",
+        "p_active_bod_list->free_top"
+      ],
+      "forbidden_substrings": [
+        "TrackRenderCacheManager",
+        "(char *)g_game_base + 1448",
+        "__asm",
+        "_ET1"
       ]
     },
     {

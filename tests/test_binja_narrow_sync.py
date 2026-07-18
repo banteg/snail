@@ -7071,6 +7071,20 @@ def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     assert "build_track_render_caches" in direct_track_prototypes
     assert expected[0] + ";" in ida_path_sync
     assert expected[1] + ";" in ida_path_sync
+    assert '"TrackRenderCacheSlot": 0x3C' in ida_path_sync
+    assert '"SegmentCache": 0xA7F8' in ida_path_sync
+    assert "TRACK_RENDER_CACHE_OWNER_MARKERS" in ida_path_sync
+    assert "TRACK_RENDER_CACHE_OWNER_SIZES" in ida_path_sync
+    assert "track_render_cache_owner_sizes" in ida_path_sync
+    for address in (
+        "0x433060",
+        "0x433220",
+        "0x433830",
+        "0x433960",
+        "0x433B30",
+        "0x433F20",
+    ):
+        assert address in ida_path_sync
     assert (
         "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);"
         in ida_path_sync

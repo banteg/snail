@@ -2,9 +2,9 @@
 /* function: append_track_cache_object @ 0x433960 */
 /* selector: append_track_cache_object */
 
-// Appends one source object's triangle or quad faces to a render-cache family by emitting deduplicated vertices and indices.
+// Appends one source object’s triangle or quad faces to a cRSegmentCache family by emitting deduplicated vertices and indices.
 int32_t __thiscall append_track_cache_object(
-        TrackRenderCacheManager *manager,
+        SegmentCache *manager,
         int32_t row_index,
         Object *source,
         Vec3 *position,

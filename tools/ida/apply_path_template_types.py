@@ -43,7 +43,13 @@ TRUSTED_NAMES = [
     (0x42F6E0, "initialize_object_constructor_thunk"),
     (0x42F5F0, "initialize_bod_base"),
     (0x42F650, "initialize_renderable_bod"),
+    (0x433060, "initialize_track_render_cache_manager"),
+    (0x433220, "build_track_render_caches"),
+    (0x433830, "add_track_cache_vertex"),
+    (0x433960, "append_track_cache_object"),
+    (0x433B30, "update_track_render_cache_rows"),
     (0x433E80, "update_active_bod"),
+    (0x433F20, "remove_track_render_cache_bods"),
     (0x433FD0, "initialize_thanks_for_playing_screen"),
     (0x4340C0, "uninit_thanks_screen"),
     (0x4340F0, "update_thanks_for_playing_screen"),
@@ -143,6 +149,24 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x643194, "g_replay_accum_z", "float g_replay_accum_z;"),
 ]
 
+TRACK_RENDER_CACHE_OWNER_MARKERS = (
+    "typedef struct TrackRenderCacheSlot {",
+    "BodBase bod;",
+    "float cache_row_base;",
+    "typedef struct SegmentCache {",
+    "SubgameRuntime* owner_subgame;",
+    "TrackRenderCacheSlot slots[0x8f][5];",
+    "void __thiscall initialize_track_render_cache_manager(SegmentCache* manager);",
+    "void __thiscall build_track_render_caches(",
+    "void __thiscall update_track_render_cache_rows(SegmentCache* manager);",
+    "void __thiscall remove_track_render_cache_bods(SegmentCache* manager);",
+)
+
+TRACK_RENDER_CACHE_OWNER_SIZES = {
+    "TrackRenderCacheSlot": 0x3C,
+    "SegmentCache": 0xA7F8,
+}
+
 # Header field-name changes need an explicit Hex-Rays refresh even when the
 # owning function prototype itself was already current.
 PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
@@ -177,7 +201,13 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x42F650,  # initialize_renderable_bod
     0x42F5F0,  # initialize_bod_base
     0x42F6E0,  # initialize_object_constructor_thunk
+    0x433060,  # initialize_track_render_cache_manager
+    0x433220,  # build_track_render_caches
+    0x433830,  # add_track_cache_vertex
+    0x433960,  # append_track_cache_object
+    0x433B30,  # update_track_render_cache_rows
     0x433E80,  # update_active_bod
+    0x433F20,  # remove_track_render_cache_bods
     0x433FD0,  # initialize_thanks_for_playing_screen
     0x4340C0,  # uninit_thanks_screen
     0x4340F0,  # update_thanks_for_playing_screen
@@ -2406,6 +2436,13 @@ def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
+def _named_struct_size(name: str) -> int | None:
+    value = ida_typeinf.tinfo_t()
+    if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
+        return None
+    return value.get_size()
+
+
 def _normalize_root_offset_operands(
     operand_specs: tuple[tuple[int, int, int], ...],
 ) -> list[dict[str, object]]:
@@ -2584,7 +2621,55 @@ def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
+    header_text = header_path.read_text(encoding="utf-8")
+    missing_owner_markers = [
+        marker
+        for marker in TRACK_RENDER_CACHE_OWNER_MARKERS
+        if marker not in header_text
+    ]
+    if missing_owner_markers:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "missing_owner_markers": missing_owner_markers,
+                    "failed": [{"reason": "noncanonical_track_render_cache_header"}],
+                },
+                indent=2,
+            )
+        )
+        return 1
+
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    track_render_cache_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in TRACK_RENDER_CACHE_OWNER_SIZES
+    }
+    owner_size_failures = [
+        {
+            "selector": name,
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": track_render_cache_owner_sizes[name],
+        }
+        for name, expected_size in TRACK_RENDER_CACHE_OWNER_SIZES.items()
+        if track_render_cache_owner_sizes[name] != expected_size
+    ]
+    if parse_errors or owner_size_failures:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "parse_errors": parse_errors,
+                    "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
+                    "failed": owner_size_failures,
+                },
+                indent=2,
+            )
+        )
+        return 1
 
     applied = 0
     unchanged = 0
@@ -2981,6 +3066,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

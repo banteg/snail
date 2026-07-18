@@ -40,3 +40,13 @@ player's `position.z`, and the skirt color comes from the same subgame owner.
 All accesses retain the native independent `g_game` reloads while following
 the canonical `GameRoot -> SubgameRuntime` graph. The method remains exact at
 227/227 instructions with all 27 operands clean.
+
+## 2026-07-18 cross-tool owner graph
+
+Address-anchored IDA replay now preserves the exact `SegmentCache*` receiver
+and the full `GameRoot -> SubgameRuntime` owner graph in the checked-in
+artifact. The activation threshold names the embedded player's `position.z`;
+Fringe links through `fringe_attachment_list_head`, the other four families
+link through `track_body_list_head`, and skirt color is borrowed from the same
+subgame. These are decompiler ownership improvements only: the scratch remains
+exact at 227/227 instructions with all 27 operands clean.

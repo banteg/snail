@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 7,
+  "function_count": 8,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 7,
-  "ida_exported": 7,
+  "bn_exported": 8,
+  "ida_exported": 8,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,35 +17,39 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "create_vertex_buffer",
-      "address": "0x4114b0"
-    },
-    {
-      "name": "create_index_buffer",
-      "address": "0x4115d0"
-    },
-    {
-      "name": "initialize_direct3d_renderer_defaults",
-      "address": "0x411630"
-    },
-    {
-      "name": "release_direct3d_renderer_resources",
-      "address": "0x4116f0"
-    },
-    {
-      "name": "initialize_direct3d_renderer",
-      "address": "0x4129c0"
-    },
-    {
-      "name": "initialize_loading_screen",
-      "address": "0x418b50"
+      "name": "initialize_active_bod",
+      "address": "0x4085e0"
     },
     {
       "name": "initialize_track_render_cache_manager",
       "address": "0x433060"
+    },
+    {
+      "name": "build_track_render_caches",
+      "address": "0x433220"
+    },
+    {
+      "name": "add_track_cache_vertex",
+      "address": "0x433830"
+    },
+    {
+      "name": "append_track_cache_object",
+      "address": "0x433960"
+    },
+    {
+      "name": "update_track_render_cache_rows",
+      "address": "0x433b30"
+    },
+    {
+      "name": "update_active_bod",
+      "address": "0x433e80"
+    },
+    {
+      "name": "remove_track_render_cache_bods",
+      "address": "0x433f20"
     }
   ],
-  "health_check_count": 760,
+  "health_check_count": 764,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

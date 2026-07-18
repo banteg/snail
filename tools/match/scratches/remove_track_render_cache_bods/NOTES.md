@@ -125,3 +125,13 @@ rather than function-local macros. The cache still owns the 143 by 5 record
 grid and only lends each node's linkage to `GameRoot::active_bod_list`.
 Focused output remains byte-identical at 70.59%, 61/58 instructions, with all
 five operands clean.
+
+## 2026-07-18 teardown replay closure
+
+Both decompilers now read the receiver as the canonical `SegmentCache*` and
+resolve the borrowed unlink target as `GameRoot::active_bod_list`, including
+its `first` and `free_top` lanes. IDA replay reanalyzes this teardown together
+with the five construction/activation helpers and refuses to run unless the
+slot and cache owner sizes read back as `0x3c` and `0xa7f8`. The ownership
+cleanup does not reshape the source: focused matching remains honestly partial
+at 70.59%, 61/58 instructions, with all five operands clean.

@@ -2,9 +2,9 @@
 /* function: add_track_cache_vertex @ 0x433830 */
 /* selector: add_track_cache_vertex */
 
-// Transforms and deduplicates one source object vertex into a render-cache family staging buffer, optionally projecting track UVs.
+// Transforms and deduplicates one source object vertex into a cRSegmentCache family staging buffer, optionally projecting track UVs.
 int32_t __thiscall add_track_cache_vertex(
-        TrackRenderCacheManager *manager,
+        SegmentCache *manager,
         Object *source,
         Vec3 *position,
         int32_t source_index,

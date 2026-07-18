@@ -210,3 +210,22 @@ synthetic `int32_t` result. The narrow replay script owns this prototype as a
 normal checked update rather than carrying it as deferred database debt. No
 source shaping was needed: the honest matcher result remains 99.79%, 475/475
 instructions, with 20 clean operands and the equivalent SIB ordering visible.
+
+## 2026-07-18 lifecycle replay closure
+
+The IDA replay now treats the complete cache lifecycle as one ownership unit:
+manager initialization, cache building, vertex staging, object append, row
+activation, and teardown are all address-anchored and reanalyzed together.
+Before any database mutation, replay proves the canonical
+`TrackRenderCacheSlot` and `SegmentCache` sizes are exactly `0x3c` and
+`0xa7f8`. This prevents a stale or partially parsed header from silently
+retyping the embedded 143-by-5 grid.
+
+Strict focused export refreshed all eight adjacent lifecycle artifacts in both
+decompilers with no mismatches. The stale `TrackRenderCacheManager` shell is
+gone from the IDA helpers; the artifacts now retain the same `SegmentCache*`
+receiver as the exact caller and shared headers. The initializer's compiler
+cursor intentionally remains raw: it points at the manager base plus a
+`0x3c` row offset and only reaches the first slot after a further `0x58`, so
+typing that pre-slot cursor as `TrackRenderCacheSlot*` would claim ownership at
+the wrong address.

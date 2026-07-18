@@ -2,12 +2,12 @@
 /* function: remove_track_render_cache_bods @ 0x433f20 */
 /* selector: remove_track_render_cache_bods */
 
-// Unlinks the fixed 143x5 track-render cache bod grid from the shared active-bod list during subgame teardown.
-void __thiscall remove_track_render_cache_bods(TrackRenderCacheManager *manager)
+// Unlinks the cRSegmentCache owner’s fixed 143x5 BOD grid from the shared active-bod list during subgame teardown.
+void __thiscall remove_track_render_cache_bods(SegmentCache *manager)
 {
   struct BodNode **p_list_next; // esi
   int v2; // edi
-  char *v3; // ecx
+  BodList *p_active_bod_list; // ecx
   int v4; // eax
   int v5; // eax
   int v6; // [esp+10h] [ebp-4h]
@@ -21,7 +21,7 @@ void __thiscall remove_track_render_cache_bods(TrackRenderCacheManager *manager)
     {
       if ( ((unsigned int)*(p_list_next - 2) & 0x200) != 0 )
       {
-        v3 = (char *)g_game_base + 1448;
+        p_active_bod_list = &g_game_base->active_bod_list;
         v4 = (int)*(p_list_next - 2);
         if ( (v4 & 0x200) != 0 )
         {
@@ -37,9 +37,9 @@ void __thiscall remove_track_render_cache_bods(TrackRenderCacheManager *manager)
             if ( v5 )
               *(_DWORD *)(v5 + 12) = *p_list_next;
             else
-              *((_DWORD *)v3 + 1) = *p_list_next;
-            *p_list_next = *((struct BodNode **)v3 + 2);
-            *((_DWORD *)v3 + 2) = p_list_next - 3;
+              p_active_bod_list->first = *p_list_next;
+            *p_list_next = p_active_bod_list->free_top;
+            p_active_bod_list->free_top = (BodNode *)(p_list_next - 3);
             *(p_list_next - 2) = (struct BodNode *)((unsigned int)*(p_list_next - 2) & 0xFFFFFDFF);
           }
         }
