@@ -2,16 +2,16 @@
 /* function: add_object_to_list @ 0x42fad0 */
 /* selector: add_object_to_list */
 
-_DWORD *__thiscall sub_42FAD0(_DWORD *this)
+// Appends one render object to the global object list and returns the new slot; iOS RObject.o names this `cRObjects::Add()`.
+Object *__thiscall add_object_to_list(ObjectList *object_list)
 {
-  int v2; // ecx
-  _DWORD *v3; // edi
+  int32_t v2; // ecx
+  Object *v3; // edi
 
-  if ( *this == *(this + 1) )
+  if ( object_list->count == object_list->capacity )
     report_errorf(aTooManyObjects);
-  v2 = 11 * (*this)++;
-  v3 = (_DWORD *)(*(this + 2) + 20 * v2);
+  v2 = object_list->count++;
+  v3 = &object_list->objects[v2];
   initialize_object(v3);
   return v3;
 }
-

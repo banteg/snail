@@ -238,6 +238,8 @@ struct ObjectList {
     Object* objects; // +0x08, owned contiguous capacity * 0xdc allocation
 };
 
+typedef char ObjectList_must_be_0x0c[(sizeof(ObjectList) == 0x0c) ? 1 : -1];
+
 void replace_object_group_texture_refs(Object* object, TextureRef* new_texture,
     TextureRef* old_texture); // @ 0x4145c0
 void load_object_definition(char* path, Object* object); // @ 0x44c420

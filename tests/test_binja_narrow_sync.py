@@ -3550,6 +3550,52 @@ def test_slug_voice_manager_replay_uses_embedded_owner() -> None:
         assert marker in ida_sync
 
 
+def test_object_list_replay_owns_global_lifecycle_and_allocation_consumers() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_object_render_types.h", "object_render_types.h")
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/object_render_types.h"
+    ).read_text(encoding="utf-8")
+
+    for address, name in (
+        ("0x42f990", "initialize_object_list"),
+        ("0x42f9e0", "build_all_objects"),
+        ("0x42fad0", "add_object_to_list"),
+    ):
+        assert f'("{address}", "{name}")' in binja_sync
+        assert f'(0x{int(address, 0):X}, "{name}")' in ida_sync
+
+    assert '("0x4b7648", "g_object_list")' in binja_sync
+    assert '("0x4b7648", "ObjectList")' in binja_sync
+    assert '(0x4B7648, "g_object_list")' in ida_sync
+    assert '(0x4B7648, "g_object_list", "ObjectList g_object_list;")' in ida_sync
+    assert '"ObjectList": 0xC' in ida_sync
+
+    for header in (*analysis_headers, matcher_header):
+        assert "ObjectList_must_be_0x0c" in header
+        assert "extern ObjectList g_object_list;" in header
+
+    for address in (
+        "0x419110",  # open_logo
+        "0x4246A0",  # build_track_fringe_mesh
+        "0x424AD0",  # build_track_fringe_supertramp_mesh
+        "0x42F990",  # initialize_object_list
+        "0x42FAD0",  # add_object_to_list
+        "0x430D90",  # replace_object_list_texture_refs
+        "0x44AE10",  # initialize_font3d_objects
+    ):
+        assert address in ida_sync
+
+
 def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> None:
     repo_root = Path(__file__).parents[1]
     sync_source = (BINJA_DIR / "sync_object_render_types.py").read_text(

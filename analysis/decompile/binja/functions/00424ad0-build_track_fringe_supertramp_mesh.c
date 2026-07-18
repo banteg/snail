@@ -62,7 +62,7 @@
 00424d30        if (self->segment_count s> 0)
 00424d36        uint16_t* edi_2 = &facequads->vertex_0
 00424d59        while (true)
-00424d59        (edi_2 - 2)->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0)
+00424d59        (edi_2 - 2)->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0)
 00424d5c        int16_t ebp_1 = (ebp << 2).w
 00424d5f        (edi_2 - 2)->vertex_0 = (ebp << 2).w + 4
 00424d6c        (edi_2 - 2)->vertex_1 = ebp_1 + 5
@@ -76,7 +76,7 @@
 00424d93        (edi_2 - 2)->uv[1].v = 0f
 00424d96        (edi_2 - 2)->uv[2].u = 0x3f000000
 00424d9a        (edi_2 - 2)->uv[2].v = 0f
-00424da9        (edi_2 - 2)->__offset(0x3c).d = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0)
+00424da9        (edi_2 - 2)->__offset(0x3c).d = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0)
 00424db2        (edi_2 - 2)->__offset(0x32).w = ebp_1 + 7
 00424db9        (edi_2 - 2)->__offset(0x34).w = ebp_1 + 6
 00424dc0        (edi_2 - 2)->__offset(0x36).w = ebp_1 + 2
@@ -116,7 +116,7 @@
 00424f3c        *(edi_3 + 0x18) = *(edi_3 + 0x3c)
 00424f46        *(edi_3 + 0x1c) = *(edi_3 + 0x40)
 00424f4c        *(edi_3 + 0x20) = *(edi_3 + 0x44)
-00424f54        struct TextureRef* eax_59 = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0)
+00424f54        struct TextureRef* eax_59 = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0)
 00424f5f        uint32_t ecx_34 = self->segment_count * 0x60
 00424f62        *(&facequads->texture_ref + ecx_34) = eax_59
 00424f78        facequads[self->segment_count * 2].vertex_0 = (self->segment_count.w << 2) + 1

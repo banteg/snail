@@ -12,3 +12,12 @@ ObjectList initializer at `0x42f990`.
 from the complete shared `Object` type instead of the factored literal
 `20 * 11`. Matching remains exact at 30/30 instructions with all three
 operands clean.
+
+## 2026-07-18 global lifecycle replay
+
+The sole initializer call passes `&g_object_list` with capacity 3000 and
+discards `eax`, confirming the exact `void ObjectList::initialize_object_list`
+contract rather than treating the final constructed slot as a returned owner.
+Both analyzer replays now bind the 0x0c-byte global container at `0x4b7648`,
+width-gate its count/capacity/backing-pointer layout, and reanalyze the full
+allocator consumer set. The initializer remains exact at 30/30 instructions.

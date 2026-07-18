@@ -161,7 +161,7 @@ void __thiscall build_track_fringe_mesh(Path *self, char *texture_path, float cl
     p_vertex_0 = &facequads->vertex_0;
     do
     {
-      *(_DWORD *)(p_vertex_0 + 5) = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0);
+      *(_DWORD *)(p_vertex_0 + 5) = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0);
       *p_vertex_0 = 4 * v27 + 5;
       p_vertex_0[1] = 4 * v27 + 4;
       p_vertex_0[2] = 4 * v27;
@@ -174,7 +174,7 @@ void __thiscall build_track_fringe_mesh(Path *self, char *texture_path, float cl
       *(_DWORD *)(p_vertex_0 + 13) = 1065353216;
       *(_DWORD *)(p_vertex_0 + 15) = 1056964608;
       *(_DWORD *)(p_vertex_0 + 17) = 1065353216;
-      *(_DWORD *)(p_vertex_0 + 29) = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0);
+      *(_DWORD *)(p_vertex_0 + 29) = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0);
       p_vertex_0[24] = 4 * v27 + 6;
       p_vertex_0[25] = 4 * v27 + 7;
       p_vertex_0[26] = 4 * v27 + 3;

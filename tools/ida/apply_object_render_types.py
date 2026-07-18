@@ -291,6 +291,9 @@ TRUSTED_NAMES = [
     (0x413D50, "build_object_texture_group_buffers"),
     (0x419FD0, "sort_object_faces_by_texture_group"),
     (0x42F930, "request_object_texture_groups"),
+    (0x42F990, "initialize_object_list"),
+    (0x42F9E0, "build_all_objects"),
+    (0x42FAD0, "add_object_to_list"),
     (0x42FB10, "calc_object_bounding_box"),
     (0x42FCB0, "calc_object_facequad_normals"),
     (0x4303F0, "calc_object_texture_groups"),
@@ -301,6 +304,7 @@ TRUSTED_NAMES = [
     (0x4A3C40, "g_backdrop_raise_first_vertex_index"),
     (0x4A3C44, "g_backdrop_raise_second_vertex_index"),
     (0x4A3CE0, "g_backdrop_corner_vertex_indices"),
+    (0x4B7648, "g_object_list"),
     (0x4F7450, "g_render_triangle_count"),
     (0x4F7454, "g_render_successful_primitive_count"),
     (0x4F7458, "g_direct3d_renderer"),
@@ -315,6 +319,7 @@ TRUSTED_NAMES = [
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
+    (0x4B7648, "g_object_list", "ObjectList g_object_list;"),
     (
         0x4A3C40,
         "g_backdrop_raise_first_vertex_index",
@@ -369,6 +374,9 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct ObjectGroupedVertex {",
     "typedef struct ObjectToonEdge {",
     "typedef struct Object {",
+    "typedef struct ObjectList {",
+    "ObjectList_must_be_0x0c",
+    "extern ObjectList g_object_list;",
     "typedef struct DirectXLoader {",
     "void __thiscall load_x_mesh(",
     "void __thiscall calc_object_bounding_box(Object* object);",
@@ -398,6 +406,7 @@ EXPECTED_OWNER_SIZES = {
     "ObjectToonEdge": 0x24,
     "ObjectDistort": 0x14,
     "Object": 0xDC,
+    "ObjectList": 0xC,
     "DuplicateVertices": 0x8,
     "CachedXMeshSlot": 0xBC,
     "DirectXLoader": 0x5E10,
@@ -418,10 +427,15 @@ REANALYSIS_FUNCTIONS = (
     0x413BB0,  # get_or_append_object_texture_group_vertex
     0x413D50,  # build_object_texture_group_buffers
     0x418B50,  # initialize_loading_screen
+    0x419110,  # open_logo
     0x419FD0,  # sort_object_faces_by_texture_group
     0x41AA30,  # initialize_object_distort
     0x41AA50,  # apply_distort_to_object
+    0x4246A0,  # build_track_fringe_mesh
+    0x424AD0,  # build_track_fringe_supertramp_mesh
+    0x42F990,  # initialize_object_list
     0x42F9E0,  # build_all_objects
+    0x42FAD0,  # add_object_to_list
     0x42F930,  # request_object_texture_groups
     0x42FB10,  # calc_object_bounding_box
     0x42FCB0,  # calc_object_facequad_normals
@@ -429,7 +443,9 @@ REANALYSIS_FUNCTIONS = (
     0x4305A0,  # add_object_edge
     0x4308B0,  # calc_object_edges
     0x430A70,  # request_object_animation
+    0x430D90,  # replace_object_list_texture_refs
     0x433060,  # initialize_track_render_cache_manager
+    0x44AE10,  # initialize_font3d_objects
 )
 
 BUFFER_FACTORY_LVAR_SPECS = (

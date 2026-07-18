@@ -294,6 +294,8 @@ typedef struct ObjectList {
     Object* objects;
 } ObjectList;
 
+typedef char ObjectList_must_be_0x0c[(sizeof(ObjectList) == 0x0c) ? 1 : -1];
+
 typedef struct DuplicateVertexRecord {
     uint16_t source_vertex;
     uint16_t compare_vertex;
@@ -577,6 +579,7 @@ int32_t __cdecl reset_render_counters(void);
 
 extern ObjectToonEdge* g_object_edge_build_edges;
 extern int32_t g_object_edge_build_count;
+extern ObjectList g_object_list;
 extern int32_t g_backdrop_raise_first_vertex_index;
 extern int32_t g_backdrop_raise_second_vertex_index;
 extern int32_t g_backdrop_corner_vertex_indices[4];

@@ -2,7 +2,7 @@
 /* function: replace_object_list_texture_refs @ 0x430d90 */
 /* selector: replace_object_list_texture_refs */
 
-// Walks the global object list and replaces one texture reference with another across face quads and any already-built grouped-render texture tables.
+// Void Windows cRObjects texture-replacement member: walks the owned contiguous Object list and replaces one borrowed TextureRef with another across face quads and any already-built grouped-render texture tables. Android retains the same owner and behavior as cRObjects::ReTextureObjects.
 void __thiscall replace_object_list_texture_refs(
         ObjectList *object_list,
         TextureRef *new_texture,

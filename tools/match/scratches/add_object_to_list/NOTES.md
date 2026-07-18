@@ -18,3 +18,15 @@ for the returned object pointer, and emits the native `0xdc` stride through the
 same scaled `11 * 20` arithmetic. A separate `object_offset` local was
 codegen-neutral at the old 73.91%, so the accepted change is the durable
 typed-container source shape, not a local scheduling trick.
+
+## 2026-07-18 analyzer ownership closure
+
+Native xrefs show 202 allocator references across eight owning callers,
+including the startup asset builder plus the mesh cache, animation loader,
+logo, track-fringe, render-cache, and Font3D lanes. The live
+Binary Ninja and IDA databases already agree on `ObjectList* -> Object*`, but
+the checked-in allocator artifacts were stale raw-pointer views. The canonical
+object-render replays now own the three list lifecycle names, the exact 0x0c
+global `g_object_list`, and all direct callers so a fresh export cannot regress
+to `_DWORD* this`, `unk_4B7648`, or a hand-scaled opaque result. The allocator
+remains exact at 24/24 instructions with three clean operands.

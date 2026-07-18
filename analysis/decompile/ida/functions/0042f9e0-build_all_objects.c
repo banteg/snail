@@ -22,7 +22,7 @@ void __thiscall build_all_objects(ObjectList *object_list)
       if ( v4->vertex_count )
       {
         calc_object_bounding_box(v4);
-        sort_object_faces_by_texture_group((int)&object_list->objects[v3]);
+        sort_object_faces_by_texture_group(&object_list->objects[v3]);
         calc_object_texture_groups(&object_list->objects[v3]);
         v5 = &object_list->objects[v3];
         if ( (v5->flags & 0x4000) != 0 )

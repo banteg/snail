@@ -14,18 +14,18 @@
 00419158        i_1 -= 1
 00419159        *(eax_3 + 0x10) |= 4
 0041915c        do while (i != 1)
-00419175        void arg_84
-00419175        enumerate_matching_archive_or_fs_entries("Intro", "*.tga", &__return_addr, &arg_84)
-0041917a        void* const result = __return_addr
+00419175        EnumeratedEntryName names[0x80]
+00419175        enumerate_matching_archive_or_fs_entries("Intro", "*.tga", &__return_addr, &names)
+0041917a        int32_t result = __return_addr
 00419181        int32_t esi_1 = 0
 00419185        if (result s> 0)
-00419187        void* edi = &arg_84
-0041918e        void* var_c_4 = edi
+00419187        EnumeratedEntryName (* edi)[0x80] = &names
+0041918e        EnumeratedEntryName (* var_c_4)[0x80] = edi
 00419199        void texture_path
-00419199        sub_48b32c(&texture_path, "Intro/%s")
-004191af        struct TextureRef* eax_4 = get_or_create_texture_ref(&g_texture_refs, &texture_path, 0, 0)
-004191b4        uint32_t flags = eax_4->flags
-004191b6        edi += 0x80
+00419199        sprintf(&texture_path, "Intro/%s")
+004191af        struct TextureRef* eax_4 = get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)
+004191b4        enum TextureRefFlags flags = eax_4->flags
+004191b6        edi = &(*edi)[1]
 004191bc        flags:1.b |= 4
 004191bf        esi_1 += 1
 004191c0        eax_4->flags = flags

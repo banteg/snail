@@ -9157,6 +9157,124 @@
       ]
     },
     {
+      "name": "bn_object_list_initializer_owner_and_void_abi",
+      "artifact": "analysis/decompile/binja/functions/0042f990-initialize_object_list.c",
+      "required_substrings": [
+        "object_list->count = 0",
+        "object_list->capacity = esi",
+        "object_list->objects = allocate_tracked_memory(esi * 0xdc, \"Object List\")",
+        "initialize_object(ebx_1 + object_list->objects)",
+        "0042f9dd        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_list_initializer_owner_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/0042f990-initialize_object_list.c",
+      "required_substrings": [
+        "void __thiscall initialize_object_list(ObjectList *object_list, int32_t capacity)",
+        "object_list->count = 0;",
+        "object_list->capacity = capacity;",
+        "object_list->objects = (Object *)allocate_tracked_memory(220 * capacity, aObjectList);",
+        "initialize_object(&object_list->objects[v4++]);"
+      ],
+      "forbidden_substrings": [
+        "sub_42F990",
+        "_DWORD *this",
+        "_BYTE *__thiscall",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_list_allocator_owner",
+      "artifact": "analysis/decompile/binja/functions/0042fad0-add_object_to_list.c",
+      "required_substrings": [
+        "object_list->count == object_list->capacity",
+        "struct Object* object = &object_list->objects",
+        "initialize_object(object)",
+        "return object"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*arg1",
+        "void* result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_list_allocator_owner",
+      "artifact": "analysis/decompile/ida/functions/0042fad0-add_object_to_list.c",
+      "required_substrings": [
+        "Object *__thiscall add_object_to_list(ObjectList *object_list)",
+        "object_list->count == object_list->capacity",
+        "v2 = object_list->count++;",
+        "v3 = &object_list->objects[v2];",
+        "return v3;"
+      ],
+      "forbidden_substrings": [
+        "sub_42FAD0",
+        "_DWORD *this",
+        "*(this +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_list_global_lifecycle",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "initialize_object_list(&g_object_list, 0xbb8)",
+        "add_object_to_list(&g_object_list)"
+      ],
+      "forbidden_substrings": [
+        "initialize_object_list(0x4b7648",
+        "add_object_to_list(0x4b7648",
+        "add_object_to_list(&data_4b7648)"
+      ]
+    },
+    {
+      "name": "ida_object_list_global_lifecycle",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "initialize_object_list(&g_object_list, 3000);",
+        "add_object_to_list(&g_object_list)"
+      ],
+      "forbidden_substrings": [
+        "initialize_object_list((ObjectList *)0x4B7648",
+        "add_object_to_list(unk_4B7648)",
+        "add_object_to_list((ObjectList *)0x4B7648)"
+      ]
+    },
+    {
+      "name": "ida_logo_object_list_borrow",
+      "artifact": "analysis/decompile/ida/functions/00419110-open_logo.c",
+      "required_substrings": [
+        "add_object_to_list(&g_object_list)"
+      ],
+      "forbidden_substrings": [
+        "unk_4B7648",
+        "data_4B7648",
+        "add_object_to_list((ObjectList *)0x4B7648)"
+      ]
+    },
+    {
+      "name": "ida_supertramp_object_list_borrow",
+      "artifact": "analysis/decompile/ida/functions/00424ad0-build_track_fringe_supertramp_mesh.c",
+      "required_substrings": [
+        "add_object_to_list(&g_object_list)"
+      ],
+      "forbidden_substrings": [
+        "unk_4B7648",
+        "data_4B7648",
+        "add_object_to_list((ObjectList *)0x4B7648)"
+      ]
+    },
+    {
       "name": "bn_object_vertex_copy_owner",
       "artifact": "analysis/decompile/binja/functions/0042f790-copy_object_vertices.c",
       "required_substrings": [

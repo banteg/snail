@@ -114,7 +114,7 @@
 004249ed        return
 004249fc        uint16_t* esi_2 = &facequads->vertex_0
 00424abd        bool cond:1_1
-00424a16        (esi_2 - 2)->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0)
+00424a16        (esi_2 - 2)->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0)
 00424a1b        int16_t ebp_6 = (var_68_1 << 2).w
 00424a31        (esi_2 - 2)->vertex_0 = ebp_6 + 5
 00424a34        (esi_2 - 2)->vertex_1 = (var_68_1 << 2).w + 4
@@ -124,7 +124,7 @@
 00424a4b        (esi_2 - 2)->uv[0].u = 0x3f000000
 00424a4e        (esi_2 - 2)->uv[0].v = 0f
 00424a51        __builtin_memcpy(&esi_2[0xb], "\x00\x00\x00\x3f\x00\x00\x80\x3f\x00\x00\x00\x3f\x00\x00\x80\x3f\x00\x00\x00\x3f", 0x14)
-00424a6e        (esi_2 - 2)->__offset(0x3c).d = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0)
+00424a6e        (esi_2 - 2)->__offset(0x3c).d = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0)
 00424a77        (esi_2 - 2)->__offset(0x32).w = ebp_6 + 6
 00424a7e        (esi_2 - 2)->__offset(0x34).w = ebp_6 + 7
 00424a85        (esi_2 - 2)->__offset(0x36).w = ebp_6 + 3
