@@ -80,3 +80,19 @@ Source-shape details retained:
 - The focused scratch remains the honest 88.68% result above. The replay only
   recovers ownership and ABI propagation; it does not claim away the residual
   scheduling differences.
+
+## 2026-07-18 parser lifetime recovery
+
+- IDA's single float-shaped stack alias is now split at the native definition
+  sites into the archive `buffer`, integer `music_percent`/`sfx_percent`, and
+  final `voice_scale`. The adjacent reused slot likewise remains the integer
+  `next_set_index` during the 16-set sweep and becomes `sfx_scale` only at its
+  later x87 store.
+- The register and spill identities now expose integer `set_index`, the
+  `VoiceManager* owner`, and its borrowed `VoiceSet* set`. This removes every
+  `LODWORD`/`COERCE_FLOAT` artifact from the tracked IDA initializer without
+  changing the native bytes or the matcher source.
+- The focused result therefore remains the honest 88.68% (`270/269`, prefix
+  `99/269`, 62 clean operands). This slice improves durable ownership and
+  source-lifetime evidence only; it does not fakematch the remaining compiler
+  scheduling differences.

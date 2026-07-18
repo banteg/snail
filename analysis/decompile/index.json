@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 9,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 9,
+  "ida_exported": 9,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,19 +17,43 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_tutorial",
-      "address": "0x448da0"
+      "name": "initialize_voice_set",
+      "address": "0x448df0"
     },
     {
-      "name": "uninit_tutorial",
-      "address": "0x448dd0"
+      "name": "shuffle_voice_set",
+      "address": "0x448e60"
     },
     {
-      "name": "update_tutorial",
-      "address": "0x448de0"
+      "name": "reset_voice_manager",
+      "address": "0x448ec0"
+    },
+    {
+      "name": "initialize_voice_manager",
+      "address": "0x448ee0"
+    },
+    {
+      "name": "update_voice_manager",
+      "address": "0x4492a0"
+    },
+    {
+      "name": "play_voice_manager",
+      "address": "0x4492d0"
+    },
+    {
+      "name": "update_voice_set",
+      "address": "0x449360"
+    },
+    {
+      "name": "play_voice_set",
+      "address": "0x449390"
+    },
+    {
+      "name": "is_voice_playing",
+      "address": "0x449410"
     }
   ],
-  "health_check_count": 867,
+  "health_check_count": 872,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

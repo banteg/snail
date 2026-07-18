@@ -131,6 +131,32 @@ def test_voice_manager_replay_keeps_exact_owners_and_void_mutator_abis() -> None
     assert "void shuffle_voice_set();" in matcher_header
     assert '"size": "0x188"' in references
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/voice_manager_types.h"' in ida_runner
+    assert "apply_user_var_updates" in binja_sync
+    assert "VOICE_MANAGER_USER_VAR_UPDATES" in binja_sync
+    assert binja_sync.count('"cooldown_cursor"') == 1
+    assert binja_sync.count('"set_cursor"') == 2
+    assert '"RegisterVariableSourceType",\n        10,\n        66,' in binja_sync
+    assert '"RegisterVariableSourceType",\n        5,\n        72,' in binja_sync
+    assert '"RegisterVariableSourceType",\n        8,\n        73,' in binja_sync
+    assert "VOICE_MANAGER_LVAR_SPECS" in ida_sync
+    assert "VOICE_MANAGER_SPLIT_LVAR_SPECS" in ida_sync
+    for definition_address in (
+        "0x448ECB",
+        "0x448EED",
+        "0x448F04",
+        "0x448F0D",
+        "0x448F0F",
+        "0x449082",
+        "0x44915A",
+        "0x449194",
+        "0x4491A8",
+        "0x4491E7",
+        "0x4492A6",
+        "0x449419",
+    ):
+        assert definition_address in ida_sync
+    assert "info.set_split_lvar()" in ida_sync
+    assert "split_lvar_readback_failed" in ida_sync
 
 
 def test_cheat_state_replay_keeps_exact_global_owner_and_authored_abis() -> None:

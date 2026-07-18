@@ -73,3 +73,15 @@ The same replay closes the distinct embedded `SlugVoiceManager` lifecycle:
 updates that complete owner, and the exact 0x43f5c0/0x43f5e0 callees expose its
 `active`, `progress`, and `step` fields through a 0x0c-byte receiver. No matcher
 source changed in this analysis-only propagation.
+
+## 2026-07-18 inline-bank cursor closure
+
+The paired replay now preserves the three real borrows through the 16-record
+bank: `reset_voice_manager` walks `VoiceSet::cooldown` as a `float*`, while
+`update_voice_manager` and `is_voice_playing` walk complete `VoiceSet*`
+elements. Binary Ninja and IDA no longer invent a second `VoiceManager` owner
+and subtract or cast back through its first `sets` member on every iteration.
+
+This is an ownership-only decompiler improvement. The exact reset, update, and
+playing-query matcher results remain byte-identical; no source was changed to
+imitate either decompiler's presentation.

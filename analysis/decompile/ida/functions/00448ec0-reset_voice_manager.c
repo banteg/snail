@@ -5,16 +5,16 @@
 // Exact `cRVoiceManager::ReSet()` member: clears global voice progress and all 16 inline VoiceSet cooldowns.
 void __thiscall reset_voice_manager(VoiceManager *manager)
 {
-  float *p_cooldown; // eax
+  float *cooldown_cursor; // eax
   int v2; // ecx
 
   manager->global_progress = 0.0;
-  p_cooldown = &manager->sets[0].cooldown;
+  cooldown_cursor = &manager->sets[0].cooldown;
   v2 = 16;
   do
   {
-    *p_cooldown = 0.0;
-    p_cooldown += 6;
+    *cooldown_cursor = 0.0;
+    cooldown_cursor += 6;
     --v2;
   }
   while ( v2 );

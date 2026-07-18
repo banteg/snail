@@ -5,15 +5,14 @@
 // Exact `cRVoiceManager::AI()` member: advances all 16 inline VoiceSets and the manager's global voice-frequency timer.
 void __thiscall update_voice_manager(VoiceManager *manager)
 {
-  VoiceManager *v2; // esi
+  VoiceSet *set_cursor; // esi
   int v3; // edi
 
-  v2 = manager;
+  set_cursor = (VoiceSet *)manager;
   v3 = 16;
   do
   {
-    update_voice_set(v2->sets);
-    v2 = (VoiceManager *)((char *)v2 + 24);
+    update_voice_set(set_cursor++);
     --v3;
   }
   while ( v3 );

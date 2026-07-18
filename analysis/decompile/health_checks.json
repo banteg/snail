@@ -5139,6 +5139,39 @@
       ]
     },
     {
+      "name": "bn_voice_manager_reset_inline_cooldown_cursor",
+      "artifact": "analysis/decompile/binja/functions/00448ec0-reset_voice_manager.c",
+      "required_substrings": [
+        "float* cooldown_cursor = &manager->sets[0].cooldown",
+        "*cooldown_cursor = 0f",
+        "cooldown_cursor = &cooldown_cursor[6]",
+        "00448ede        return"
+      ],
+      "forbidden_substrings": [
+        "(cooldown_cursor -",
+        "->sets[0].cooldown = 0f",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_voice_manager_reset_inline_cooldown_cursor",
+      "artifact": "analysis/decompile/ida/functions/00448ec0-reset_voice_manager.c",
+      "required_substrings": [
+        "void __thiscall reset_voice_manager(VoiceManager *manager)",
+        "float *cooldown_cursor",
+        "cooldown_cursor = &manager->sets[0].cooldown",
+        "*cooldown_cursor = 0.0",
+        "cooldown_cursor += 6"
+      ],
+      "forbidden_substrings": [
+        "float *p_cooldown",
+        "VoiceManager *cooldown_cursor",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_voice_manager_initializer_owner_and_void_abi",
       "artifact": "analysis/decompile/binja/functions/00448ee0-initialize_voice_manager.c",
       "required_substrings": [
@@ -5161,14 +5194,22 @@
       "artifact": "analysis/decompile/ida/functions/00448ee0-initialize_voice_manager.c",
       "required_substrings": [
         "void __thiscall initialize_voice_manager(VoiceManager *manager)",
-        "&v20->sets[LODWORD(v1)]",
-        "v7->bites[i]",
-        "v20->global_frequency_seconds",
+        "char *buffer",
+        "int32_t set_index",
+        "int32_t next_set_index",
+        "set = &owner->sets[set_index]",
+        "set->bites[i]",
+        "music_percent = parse_next_signed_int(&cursor)",
+        "sfx_percent = parse_next_signed_int(&cursor)",
+        "owner->global_frequency_seconds",
         "reset_voice_manager(v16);"
       ],
       "forbidden_substrings": [
         "_DWORD *__thiscall initialize_voice_manager",
         "return reset_voice_manager",
+        "COERCE_FLOAT",
+        "LODWORD",
+        "VoiceManager *v20",
         "this +",
         "__asm",
         "_ET1"
@@ -5178,13 +5219,16 @@
       "name": "bn_voice_manager_update_owner_and_void_abi",
       "artifact": "analysis/decompile/binja/functions/004492a0-update_voice_manager.c",
       "required_substrings": [
-        "update_voice_set(set)",
-        "set = &set->sets[1]",
+        "struct VoiceSet* set_cursor = manager",
+        "update_voice_set(set_cursor)",
+        "set_cursor = &set_cursor[1]",
         "manager->global_progress",
         "004492ce        return"
       ],
       "forbidden_substrings": [
         "arg1",
+        "struct VoiceManager* set",
+        "set->sets[1]",
         "return result",
         "*(manager +",
         "__asm",
@@ -5196,11 +5240,14 @@
       "artifact": "analysis/decompile/ida/functions/004492a0-update_voice_manager.c",
       "required_substrings": [
         "void __thiscall update_voice_manager(VoiceManager *manager)",
-        "update_voice_set(v2->sets)",
+        "VoiceSet *set_cursor",
+        "update_voice_set(set_cursor++)",
         "manager->global_progress = manager->global_progress"
       ],
       "forbidden_substrings": [
         "float *this",
+        "VoiceManager *v2",
+        "set_cursor->sets",
         "*(this +",
         "return update_voice_set",
         "__asm",
@@ -5228,13 +5275,17 @@
       "name": "bn_voice_manager_playing_scan_owner",
       "artifact": "analysis/decompile/binja/functions/00449410-is_voice_playing.c",
       "required_substrings": [
-        "manager_1->sets[0].sample_count",
-        "manager_1->sets[0].bites[j]",
+        "struct VoiceSet* set_cursor = manager",
+        "set_cursor->sample_count",
+        "set_cursor->bites[j]",
+        "set_cursor = &set_cursor[1]",
         "manager->sets[i].bites[j]",
         "return 0xffffffff"
       ],
       "forbidden_substrings": [
         "arg1",
+        "manager_1->sets",
+        "set_cursor->sets",
         "*(manager +",
         "__asm",
         "_ET1"
@@ -5245,12 +5296,16 @@
       "artifact": "analysis/decompile/ida/functions/00449410-is_voice_playing.c",
       "required_substrings": [
         "int32_t __thiscall is_voice_playing(VoiceManager *manager)",
-        "i->sets[0].sample_count",
-        "i->sets[0].bites[v4]",
+        "VoiceSet *set_cursor",
+        "set_cursor->sample_count",
+        "set_cursor->bites[v4]",
+        "++set_cursor",
         "manager->sets[v2].bites[v4]"
       ],
       "forbidden_substrings": [
         "int *this",
+        "VoiceManager *i",
+        "set_cursor->sets",
         "*(this +",
         "__asm",
         "_ET1"

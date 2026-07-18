@@ -11,6 +11,7 @@ from _narrow_sync import (
     apply_data_var_updates,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
+    apply_user_var_updates,
     current_struct_size,
     emit_summary,
     types_declare_missing_only,
@@ -96,6 +97,37 @@ PROTO_UPDATES = (
     ),
 )
 
+# These three native cursors borrow elements from VoiceManager's inline bank.
+# Their exact MLIL identities prevent BN from promoting a cooldown float or a
+# single VoiceSet to a second VoiceManager owner and then synthesizing reverse
+# pointer arithmetic around each access.
+VOICE_MANAGER_USER_VAR_UPDATES = (
+    (
+        "reset_voice_manager",
+        "RegisterVariableSourceType",
+        10,
+        66,
+        "cooldown_cursor",
+        "float*",
+    ),
+    (
+        "update_voice_manager",
+        "RegisterVariableSourceType",
+        5,
+        72,
+        "set_cursor",
+        "VoiceSet*",
+    ),
+    (
+        "is_voice_playing",
+        "RegisterVariableSourceType",
+        8,
+        73,
+        "set_cursor",
+        "VoiceSet*",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -173,6 +205,11 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=DATA_VAR_UPDATES,
+        ),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=VOICE_MANAGER_USER_VAR_UPDATES,
         ),
     ]
     return emit_summary(
