@@ -2,54 +2,44 @@
 /* function: spawn_track_parcel @ 0x443730 */
 /* selector: spawn_track_parcel */
 
-// Allocates one live gameplay parcel slot from `game->track_parcels`, seeds its world position, sprite, and parcel-owner pointer, and returns the activated runtime slot.
-char *__thiscall sub_443730(int *this, float *a2, int a3)
+// Exact `SubgameRuntime` allocator/initializer for one live Parcel from the owned `ParcelManager`. Android explicitly returns the allocated `cRParcel*` or null, confirming the Windows return contract; iOS v1.9 adds the source `cRSubRow*` argument.
+Parcel *__thiscall spawn_track_parcel(SubgameRuntime *runtime, Vec3 *world_position, Player *source_player)
 {
-  char *v4; // eax
-  char *v5; // esi
-  _DWORD *v6; // edi
-  _DWORD *v7; // eax
-  int v8; // ecx
-  _DWORD *v9; // eax
-  _DWORD *v10; // ecx
-  _DWORD *v11; // eax
-  _DWORD v13[4]; // [esp+8h] [ebp-10h] BYREF
+  Parcel *track_parcel_slot; // eax
+  Parcel *v5; // esi
+  Vec3 *p_position; // edi
+  Sprite *sprite; // eax
+  SpriteFlag flags; // ecx
+  void **v9; // eax
+  Color4f color; // [esp+8h] [ebp-10h] BYREF
 
-  v4 = allocate_track_parcel_slot(this + 4815136);
-  v5 = v4;
-  if ( !v4 )
+  track_parcel_slot = allocate_track_parcel_slot(&runtime->parcel_manager);
+  v5 = track_parcel_slot;
+  if ( !track_parcel_slot )
     return nullptr;
-  v6 = v4 + 16;
-  *((_DWORD *)v4 + 14) = 1;
-  *((float *)v4 + 4) = *a2;
-  *((float *)v4 + 5) = a2[1];
-  *((float *)v4 + 6) = a2[2];
-  *((_DWORD *)v4 + 25) = this + 978393;
-  v7 = allocate_sprite(g_sprite_manager, *(this + 978617), 121, -1, -1);
-  *((_DWORD *)v5 + 21) = v7;
-  v8 = v7[1];
-  BYTE1(v8) |= 8u;
-  v7[1] = v8;
-  *(_DWORD *)(*((_DWORD *)v5 + 21) + 104) = 0;
-  *(_DWORD *)(*((_DWORD *)v5 + 21) + 108) = 0;
-  *(_DWORD *)(*((_DWORD *)v5 + 21) + 120) = 0;
-  v9 = set_color_rgba(v13, 1065353216, 1065353216, 1065353216, 1065353216);
-  v10 = (_DWORD *)(*((_DWORD *)v5 + 21) + 44);
-  *v10 = *v9;
-  v10[1] = v9[1];
-  v10[2] = v9[2];
-  v10[3] = v9[3];
-  *(_DWORD *)(*((_DWORD *)v5 + 21) + 96) = 1065353216;
-  *(_DWORD *)(*((_DWORD *)v5 + 21) + 100) = 1065353216;
-  v11 = (_DWORD *)(*((_DWORD *)v5 + 21) + 72);
-  *v11 = *v6;
-  v11[1] = *((_DWORD *)v5 + 5);
-  v11[2] = *((_DWORD *)v5 + 6);
-  if ( ((__int64)a2[2] & 1) != 0 )
-    *((_DWORD *)v5 + 23) = 0;
+  p_position = &track_parcel_slot->bod.position;
+  track_parcel_slot->state = PARCEL_STATE_TRACK_ACTIVE;
+  track_parcel_slot->bod.position = *world_position;
+  track_parcel_slot->owner_player = &runtime->player;
+  sprite = allocate_sprite(&g_sprite_manager, runtime->player.player_slot, 121, -1, -1);
+  v5->sprite = sprite;
+  flags = sprite->flags;
+  BYTE1(flags) |= 8u;
+  sprite->flags = flags;
+  v5->sprite->progress = 0.0;
+  v5->sprite->progress_step = 0.0;
+  v5->sprite->gravity_step = 0.0;
+  v5->sprite->color = *set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  v5->sprite->size_start = 1.0;
+  v5->sprite->size_end = 1.0;
+  v9 = (void **)&v5->sprite->position;
+  *v9 = (void *)LODWORD(p_position->x);
+  v9[1] = (void *)LODWORD(v5->bod.position.y);
+  v9[2] = (void *)LODWORD(v5->bod.position.z);
+  if ( ((__int64)world_position->z & 1) != 0 )
+    v5->bob_phase = 0.0;
   else
-    *((_DWORD *)v5 + 23) = 1056964608;
-  *((_DWORD *)v5 + 24) = 1012010273;
+    v5->bob_phase = 0.5;
+  v5->bob_phase_step = 0.012820513;
   return v5;
 }
-

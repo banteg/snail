@@ -2,14 +2,14 @@
 /* function: allocate_track_parcel_slot @ 0x443190 */
 /* selector: allocate_track_parcel_slot */
 
-// Scans the gameplay parcel array for the first inactive slot and returns it, logging `Too Many Parcels increase RPARCEL_MAXIMUM` if the 50-slot pool is exhausted.
-char *__thiscall sub_443190(_DWORD *this)
+// Exact `ParcelManager` allocator: returns the first inactive Parcel or logs `Too Many Parcels increase RPARCEL_MAXIMUM` and returns null. Android retains `cRParcelManager::New()`.
+Parcel *__thiscall allocate_track_parcel_slot(ParcelManager *manager)
 {
   int v1; // eax
-  _DWORD *i; // edx
+  ParcelState *i; // edx
 
   v1 = 0;
-  for ( i = this + 14; *i; i += 35 )
+  for ( i = &manager->slots[0].state; *i; i += 35 )
   {
     if ( ++v1 >= 50 )
     {
@@ -17,6 +17,5 @@ char *__thiscall sub_443190(_DWORD *this)
       return nullptr;
     }
   }
-  return (char *)(this + 35 * v1);
+  return &manager->slots[v1];
 }
-

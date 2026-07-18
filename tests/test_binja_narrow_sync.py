@@ -5278,6 +5278,60 @@ def test_parcel_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_parcel_manager_replay_owns_fixed_pool_lifecycle_and_consumers() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+            "path_template_types.h",
+        )
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/track_parcel_runtime.h"
+    ).read_text(encoding="utf-8")
+
+    lifecycle = (
+        (0x408860, "initialize_track_parcel_runtime"),
+        (0x443130, "update_track_parcels"),
+        (0x443160, "initialize_track_parcel_slots"),
+        (0x443190, "allocate_track_parcel_slot"),
+        (0x4431D0, "update_track_parcel"),
+        (0x443730, "spawn_track_parcel"),
+    )
+    for address, name in lifecycle:
+        assert f'("{address:#x}", "{name}")' in binja_sync
+        assert f'(0x{address:X}, "{name}")' in ida_sync
+
+    for header in (*analysis_headers, matcher_header):
+        assert "Parcel_must_be_0x8c" in header
+        assert "ParcelManager_must_be_0x1b58" in header
+
+    assert "current_struct_size" in binja_sync
+    assert '"Parcel": 0x8C' in binja_sync
+    assert '"ParcelManager": 0x1B58' in binja_sync
+    assert "EXPECTED_PARCEL_OWNER_SIZES" in ida_sync
+    assert '"Parcel": 0x8C' in ida_sync
+    assert '"ParcelManager": 0x1B58' in ida_sync
+
+    for address in (
+        0x404CF0,  # update_row_event_display
+        0x408060,  # initialize_runtime_pools_and_path_template_bank
+        0x437EB0,  # build_subgame_level
+        0x438B90,  # update_subgame
+        0x43B120,  # update_subgoldy
+        0x444CF0,  # handle_subgoldy_collisions
+    ):
+        assert f"0x{address:X}" in ida_sync
+
+
 def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
     header = (HEADER_DIR / "parcel_bucket_types.h").read_text(encoding="utf-8")
     path_header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")

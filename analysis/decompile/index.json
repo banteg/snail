@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 11,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 11,
-  "ida_exported": 11,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,51 +17,31 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "load_or_reuse_cached_x_mesh",
-      "address": "0x405cc0"
+      "name": "initialize_track_parcel_runtime",
+      "address": "0x408860"
     },
     {
-      "name": "load_x_animation_clip",
-      "address": "0x405d60"
+      "name": "update_track_parcels",
+      "address": "0x443130"
     },
     {
-      "name": "open_logo",
-      "address": "0x419110"
+      "name": "initialize_track_parcel_slots",
+      "address": "0x443160"
     },
     {
-      "name": "build_track_fringe_mesh",
-      "address": "0x4246a0"
+      "name": "allocate_track_parcel_slot",
+      "address": "0x443190"
     },
     {
-      "name": "build_track_fringe_supertramp_mesh",
-      "address": "0x424ad0"
+      "name": "update_track_parcel",
+      "address": "0x4431d0"
     },
     {
-      "name": "initialize_object_list",
-      "address": "0x42f990"
-    },
-    {
-      "name": "build_all_objects",
-      "address": "0x42f9e0"
-    },
-    {
-      "name": "add_object_to_list",
-      "address": "0x42fad0"
-    },
-    {
-      "name": "replace_object_list_texture_refs",
-      "address": "0x430d90"
-    },
-    {
-      "name": "initialize_track_render_cache_manager",
-      "address": "0x433060"
-    },
-    {
-      "name": "initialize_font3d_objects",
-      "address": "0x44ae10"
+      "name": "spawn_track_parcel",
+      "address": "0x443730"
     }
   ],
-  "health_check_count": 793,
+  "health_check_count": 799,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

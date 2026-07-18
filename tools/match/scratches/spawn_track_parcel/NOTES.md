@@ -31,3 +31,13 @@ Exact match.
 The spawner now enters `PARCEL_STATE_TRACK_ACTIVE`, pairing the exact producer
 with the manager's inactive-slot allocator and the collision consumer. Focused
 matching remains exact at 96/96 instructions with all five operands clean.
+
+## 2026-07-18 analyzer lifecycle replay
+
+Native xrefs show two callers, `update_subgame` and
+`update_row_event_display`. Both borrow the embedded manager through the
+`SubgameRuntime` receiver; the returned `Parcel*` remains manager-owned while
+its Player, Sprite, and subgame links are borrowed. The paired replay now pins
+that complete lifecycle and reanalyzes both producers plus
+`handle_subgoldy_collisions`. Matching remains exact at 96/96 instructions
+with all five operands clean.

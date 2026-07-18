@@ -3,6 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_track_parcel_runtime @ 0x408860 */
 
-00408863        initialize_bod_base(slot)
-00408868        slot->vtable = &track_parcel_runtime_vtable
-00408871        return slot
+00408863        initialize_bod_base(parcel)
+00408868        parcel->vtable = &track_parcel_runtime_vtable
+00408871        return parcel

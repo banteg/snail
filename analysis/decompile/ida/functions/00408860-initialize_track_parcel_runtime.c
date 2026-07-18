@@ -2,11 +2,10 @@
 /* function: initialize_track_parcel_runtime @ 0x408860 */
 /* selector: initialize_track_parcel_runtime */
 
-// Constructs one gameplay parcel runtime slot by clearing the shared body object and installing the parcel-slot vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot array at `game->track_parcels`.
-_DWORD *__thiscall sub_408860(_DWORD *this)
+// Exact Windows constructor for one authored `Parcel` (`cRParcel` cross-port): constructs the inherited BOD and installs the table whose entry is `update_track_parcel`. `ParcelManager` owns 50 inline 0x8c-byte records whose 0x1b58 extent exactly matches the native manager ledger.
+Parcel *__thiscall initialize_track_parcel_runtime(Parcel *parcel)
 {
-  initialize_bod_base(this);
-  *this = off_497364;
-  return this;
+  initialize_bod_base(&parcel->bod);
+  parcel->bod.bod.vtable = &g_parcel_vtable;
+  return parcel;
 }
-

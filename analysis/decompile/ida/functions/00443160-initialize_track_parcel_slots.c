@@ -2,22 +2,20 @@
 /* function: initialize_track_parcel_slots @ 0x443160 */
 /* selector: initialize_track_parcel_slots */
 
-// Clears the live state on the 50-slot gameplay parcel array and reseeds each slot's `game` pointer before any authored parcel placements are spawned for the current level.
-_DWORD *__thiscall sub_443160(_DWORD *this)
+// Exact `ParcelManager` initializer: clears all 50 Parcel states and seeds each borrowed SubgameRuntime backlink. Android retains the authored member as `cRParcelManager::Init()`.
+void __thiscall initialize_track_parcel_slots(ParcelManager *manager)
 {
-  _DWORD *result; // eax
+  SubgameRuntime **p_owner_subgame; // eax
   int v2; // ecx
 
-  result = this + 15;
+  p_owner_subgame = &manager->slots[0].owner_subgame;
   v2 = 50;
   do
   {
-    *(result - 1) = 0;
-    *result = (char *)MEMORY[0x4DF904] + 476696;
-    result += 35;
+    *(p_owner_subgame - 1) = nullptr;
+    *p_owner_subgame = &g_game_base->subgame;
+    p_owner_subgame += 35;
     --v2;
   }
   while ( v2 );
-  return result;
 }
-

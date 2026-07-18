@@ -4,9 +4,9 @@
 /* function: allocate_track_parcel_slot @ 0x443190 */
 
 00443190        int32_t i = 0
-00443192        uint32_t* edx = &slots->state
-00443198        if ((edx - 0x38)->state == 0)
-004431c5        return &slots[i]
+00443192        enum ParcelState* edx = &manager->slots[0].state
+00443198        if ((edx - 0x38)->slots[0].state == PARCEL_STATE_INACTIVE)
+004431c5        return &manager->slots[i]
 0044319a        i += 1
 0044319b        edx = &edx[0x23]
 004431a4        do while (i s< 0x32)

@@ -5,6 +5,8 @@ import sys
 
 import ida_funcs
 import ida_hexrays
+import ida_kernwin
+import ida_name
 import ida_pro
 import ida_typeinf
 import idc
@@ -14,6 +16,16 @@ if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
+
+
+TRUSTED_NAMES = (
+    (0x408860, "initialize_track_parcel_runtime"),
+    (0x443130, "update_track_parcels"),
+    (0x443160, "initialize_track_parcel_slots"),
+    (0x443190, "allocate_track_parcel_slot"),
+    (0x4431D0, "update_track_parcel"),
+    (0x443730, "spawn_track_parcel"),
+)
 
 
 TRUSTED_DECLARATIONS = [
@@ -330,6 +342,29 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "SubRingPool ring_effects;",
     "TrackRowCell runtime_cells[3200][8];",
     "SubRow runtime_rows[3200];",
+    "Parcel_must_be_0x8c",
+    "Parcel slots[50];",
+    "ParcelManager_must_be_0x1b58",
+)
+
+EXPECTED_PARCEL_OWNER_SIZES = {
+    "Parcel": 0x8C,
+    "ParcelManager": 0x1B58,
+}
+
+REANALYSIS_FUNCTIONS = (
+    0x404CF0,  # update_row_event_display
+    0x408060,  # initialize_runtime_pools_and_path_template_bank
+    0x408860,  # initialize_track_parcel_runtime
+    0x437EB0,  # build_subgame_level
+    0x438B90,  # update_subgame
+    0x43B120,  # update_subgoldy
+    0x443130,  # update_track_parcels
+    0x443160,  # initialize_track_parcel_slots
+    0x443190,  # allocate_track_parcel_slot
+    0x4431D0,  # update_track_parcel
+    0x443730,  # spawn_track_parcel
+    0x444CF0,  # handle_subgoldy_collisions
 )
 
 
@@ -566,11 +601,66 @@ def _sync_types(header_path: pathlib.Path) -> int:
     contact_header_path = header_path.with_name("contact_target_types.h")
     contact_parse_errors = idc.parse_decls(str(contact_header_path), idc.PT_FILE)
     parse_errors = contact_parse_errors + idc.parse_decls(str(header_path), idc.PT_FILE)
+    parcel_owner_sizes = {
+        name: _named_struct_size(name) for name in EXPECTED_PARCEL_OWNER_SIZES
+    }
+    size_failures = [
+        {
+            "selector": name,
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": parcel_owner_sizes[name],
+        }
+        for name, expected_size in EXPECTED_PARCEL_OWNER_SIZES.items()
+        if parcel_owner_sizes[name] != expected_size
+    ]
+    if parse_errors or size_failures:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "parse_errors": parse_errors,
+                    "parcel_owner_sizes": parcel_owner_sizes,
+                    "failed": size_failures,
+                },
+                indent=2,
+            )
+        )
+        return 1
 
     applied = 0
     unchanged = 0
+    renamed = 0
+    names_unchanged = 0
     missing = []
     failed = []
+
+    for address, name in TRUSTED_NAMES:
+        current_name = idc.get_name(address)
+        if current_name == name:
+            names_unchanged += 1
+            continue
+        if not idc.set_name(address, name, ida_name.SN_NOWARN | ida_name.SN_FORCE):
+            failed.append(
+                {
+                    "selector": name,
+                    "address": hex(address),
+                    "reason": "rename_failed",
+                }
+            )
+            continue
+        if idc.get_name(address) != name:
+            failed.append(
+                {
+                    "selector": name,
+                    "address": hex(address),
+                    "observed": idc.get_name(address),
+                    "reason": "rename_readback_failed",
+                }
+            )
+            continue
+        renamed += 1
 
     for selector, declaration in TRUSTED_DECLARATIONS:
         address, _name = _resolve_function(selector)
@@ -687,12 +777,32 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {"selector": "GameRoot", "owner_graph": game_root_owner_graph}
         )
 
+    reanalyzed = []
+    for address in REANALYSIS_FUNCTIONS:
+        function = ida_funcs.get_func(address)
+        if function is None:
+            failed.append(
+                {
+                    "selector": hex(address),
+                    "reason": "missing_reanalysis_function",
+                }
+            )
+            continue
+        ida_hexrays.mark_cfunc_dirty(function.start_ea, True)
+        reanalyzed.append(
+            {
+                "address": hex(function.start_ea),
+                "name": idc.get_func_name(function.start_ea),
+            }
+        )
+
     print(
         json.dumps(
             {
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "contact_header": str(contact_header_path),
+                "parcel_owner_sizes": parcel_owner_sizes,
                 "type_sizes": {
                     "SubgameRuntime": _named_struct_size("SubgameRuntime"),
                     "SubRingStar": _named_struct_size("SubRingStar"),
@@ -713,6 +823,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parse_errors": parse_errors,
                 "applied": applied,
                 "unchanged": unchanged,
+                "renamed": renamed,
+                "names_unchanged": names_unchanged,
+                "reanalyzed": reanalyzed,
                 "game_root_owner_graph": game_root_owner_graph,
                 "slug_allocator_lvars": slug_allocator_lvars,
                 "missing": missing,
@@ -735,7 +848,12 @@ def main() -> None:
         return
 
     header_path = pathlib.Path(argv[1]).resolve()
-    ida_pro.qexit(_sync_types(header_path))
+    exit_code = _sync_types(header_path)
+    try:
+        idc.save_database(idc.get_idb_path(), 0)
+    except Exception as exc:  # pragma: no cover - IDA runtime dependent
+        ida_kernwin.msg(f"warning: failed to save database explicitly: {exc}\n")
+    ida_pro.qexit(exit_code)
 
 
 if __name__ == "__main__":

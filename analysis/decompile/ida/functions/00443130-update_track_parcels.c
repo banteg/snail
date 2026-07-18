@@ -2,22 +2,18 @@
 /* function: update_track_parcels @ 0x443130 */
 /* selector: update_track_parcels */
 
-// Walks the 50-slot `game->track_parcels` runtime array and dispatches `update_track_parcel` on each active parcel slot.
-int __thiscall sub_443130(_DWORD *this)
+// Exact `ParcelManager` update: walks the 50 owned records and dispatches each active Parcel through its installed table. Android and iOS v1.9 retain `cRParcelManager::AI()`.
+void __thiscall update_track_parcels(ParcelManager *manager)
 {
   int v2; // edi
-  int result; // eax
 
   v2 = 50;
   do
   {
-    result = *(this + 14);
-    if ( result )
-      result = (*(int (__thiscall **)(_DWORD *))*this)(this);
-    this += 35;
+    if ( manager->slots[0].state )
+      (*(void (__thiscall **)(ParcelManager *))manager->slots[0].bod.bod.vtable)(manager);
+    manager = (ParcelManager *)((char *)manager + 140);
     --v2;
   }
   while ( v2 );
-  return result;
 }
-

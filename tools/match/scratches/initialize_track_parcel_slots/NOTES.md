@@ -21,3 +21,12 @@ The run reset now names each manager-owned slot's terminal value as
 `PARCEL_STATE_INACTIVE`. The borrowed `owner_subgame` backlink is unchanged,
 and focused matching remains exact at 13/13 instructions with one clean
 operand.
+
+## 2026-07-18 analyzer lifecycle replay
+
+The sole native caller is `build_subgame_level`, which resets the embedded
+manager before authored parcel placement. The durable BN/IDA replay now owns
+this function by address, verifies `Parcel == 0x8c` and
+`ParcelManager == 0x1b58`, and preserves each slot's borrowed backlink to the
+root-owned `SubgameRuntime`. Matching remains exact at 13/13 instructions with
+one clean operand.

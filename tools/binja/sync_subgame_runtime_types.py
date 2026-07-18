@@ -11,6 +11,7 @@ from _narrow_sync import (
     apply_data_var_updates,
     apply_symbol_updates,
     apply_struct_and_proto_updates,
+    current_struct_size,
     emit_summary,
     struct_exists,
     types_declare_if_missing,
@@ -78,6 +79,20 @@ GALAXY_FUNCTION_SYMBOL_UPDATES = (
     ("0x408880", "initialize_galaxy_route_name_record"),
     ("0x409bd0", "update_galaxy_route_record"),
 )
+
+PARCEL_FUNCTION_SYMBOL_UPDATES = (
+    ("0x408860", "initialize_track_parcel_runtime"),
+    ("0x443130", "update_track_parcels"),
+    ("0x443160", "initialize_track_parcel_slots"),
+    ("0x443190", "allocate_track_parcel_slot"),
+    ("0x4431d0", "update_track_parcel"),
+    ("0x443730", "spawn_track_parcel"),
+)
+
+PARCEL_EXPECTED_SIZES = {
+    "Parcel": 0x8C,
+    "ParcelManager": 0x1B58,
+}
 
 GALAXY_DATA_SYMBOL_UPDATES = (
     ("0x4a1c4c", "g_galaxy_group_points"),
@@ -420,11 +435,40 @@ def main() -> int:
             ),
         ),
     ]
+    parcel_sizes = {
+        name: current_struct_size(REPO_ROOT, target=args.target, struct_name=name)
+        for name in PARCEL_EXPECTED_SIZES
+    }
+    parcel_size_mismatches = {
+        name: {"expected": expected, "observed": parcel_sizes[name]}
+        for name, expected in PARCEL_EXPECTED_SIZES.items()
+        if parcel_sizes[name] != expected
+    }
+    if parcel_size_mismatches:
+        raise RuntimeError(
+            f"refusing parcel ownership replay with size mismatches: "
+            f"{parcel_size_mismatches!r}"
+        )
+    operations.append(
+        {
+            "op": "owner_size_verify",
+            "status": "verified",
+            "owner_sizes": parcel_sizes,
+        }
+    )
     operations.extend(
         apply_symbol_updates(
             REPO_ROOT,
             target=args.target,
             updates=GALAXY_FUNCTION_SYMBOL_UPDATES,
+            kind="function",
+        )
+    )
+    operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=PARCEL_FUNCTION_SYMBOL_UPDATES,
             kind="function",
         )
     )

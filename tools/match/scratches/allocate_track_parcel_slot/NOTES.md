@@ -28,3 +28,11 @@ operands clean.
 Allocation now tests `PARCEL_STATE_INACTIVE` directly. This closes the free
 slot contract against reset and every updater teardown while preserving the
 exact 18/18 instruction body and both clean operands.
+
+## 2026-07-18 analyzer lifecycle replay
+
+The allocator has one native caller, `spawn_track_parcel`, and returns a
+borrowed slot from the manager's inline 50-record array. Canonical analyzer
+replays now pin its address/name/prototype and refuse Parcel or ParcelManager
+width drift before applying the lifecycle types. Matching remains exact at
+18/18 instructions with both operands clean.

@@ -109,10 +109,15 @@ typedef struct Parcel {
     Vec3 delivery_offset;
 } Parcel;
 
+typedef char Parcel_must_be_0x8c[(sizeof(Parcel) == 0x8c) ? 1 : -1];
+
 /* Exact 0x1b58-byte Windows cRParcelManager embedded in SubgameRuntime. */
 typedef struct ParcelManager {
     Parcel slots[50];
 } ParcelManager;
+
+typedef char ParcelManager_must_be_0x1b58[
+    (sizeof(ParcelManager) == 0x1b58) ? 1 : -1];
 
 typedef enum CompletionState {
     COMPLETION_STATE_INACTIVE = 0,
