@@ -824,6 +824,21 @@ UPDATE_SUBGAME_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x439827, 1, 0x5CCAC8),  # ambient-ring row flags
 )
 
+# initialize_subgame selects one of the three embedded SubHighScore record
+# banks, then publishes that borrowed pointer through active_record_bank. The
+# five native displacements numerically collide with unrelated named globals,
+# causing Hex-Rays to print parcel/sprite owners even though EBP is the typed
+# SubgameRuntime receiver. Normalize only these proven operands so the shared
+# SubHighScore layout can fold the postal, survival, time-trial, and active-bank
+# accesses without changing any global symbol.
+INITIALIZE_SUBGAME_RECORD_BANK_OFFSET_OPERANDS = (
+    (0x43757E, 1, 0x68B4D0),  # SubHighScore::postal_records
+    (0x437567, 1, 0x7E7B10),  # SubHighScore::survival_records
+    (0x43755F, 1, 0x944150),  # SubHighScore::time_trial_route_records
+    (0x43756D, 0, 0x68B4C8),  # SubHighScore::active_record_bank (survival)
+    (0x437584, 0, 0x68B4C8),  # SubHighScore::active_record_bank (shared)
+)
+
 # The Init method stores its borrowed Player backlink from a relocatable root
 # displacement that numerically collides with the tracked g_player_block offset
 # symbol. Normalize only that ADD operand so the typed root folds to the exact
@@ -2870,6 +2885,19 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    initialize_subgame_record_bank_offset_operands = (
+        _normalize_root_offset_operands(
+            INITIALIZE_SUBGAME_RECORD_BANK_OFFSET_OPERANDS
+        )
+    )
+    for result in initialize_subgame_record_bank_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "initialize_subgame",
+                    "record_bank_offset_operand": result,
+                }
+            )
     subhover_player_root_offset_operands = _normalize_root_offset_operands(
         SUBHOVER_PLAYER_ROOT_OFFSET_OPERANDS
     )
@@ -3085,6 +3113,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "place_parcels_runtime_row_offset_operands": place_parcels_runtime_row_offset_operands,
                 "challenge_parcels_runtime_row_offset_operands": challenge_parcels_runtime_row_offset_operands,
                 "update_subgame_runtime_row_offset_operands": update_subgame_runtime_row_offset_operands,
+                "initialize_subgame_record_bank_offset_operands": initialize_subgame_record_bank_offset_operands,
                 "subhover_player_root_offset_operands": subhover_player_root_offset_operands,
                 "lvar_view": lvar_view,
                 "frontend_color_lvars": frontend_color_lvars,

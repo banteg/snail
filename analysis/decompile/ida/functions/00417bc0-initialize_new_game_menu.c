@@ -5,7 +5,7 @@
 // Exact Windows `cRIntro::Init()`: builds the New Game mode submenu with Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back after reloading the shared menu backdrop and shell-font scene. The root-owned 0x48-byte Intro at `data_4df904 + 0x4f2dc` retains its replay-attract controller across initialization.
 void __thiscall initialize_new_game_menu(Intro *intro)
 {
-  int landscape_script_by_name; // eax
+  int32_t landscape_script_by_name; // eax
   tColour *v3; // eax
   tColour *v4; // eax
   tColour *v5; // eax
@@ -17,7 +17,7 @@ void __thiscall initialize_new_game_menu(Intro *intro)
   hide_star_field(&g_game_base->star_manager);
   cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
   landscape_script_by_name = load_landscape_script_by_name(
-                               (char *)&g_game_base->subgame.landscape_manager,
+                               &g_game_base->subgame.landscape_manager,
                                g_menu_background_script_path);
   change_backdrop(&g_game_base->backdrop, &g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name], 0);
   set_border_justify_centre(&g_game_base->border_manager, 25.0);

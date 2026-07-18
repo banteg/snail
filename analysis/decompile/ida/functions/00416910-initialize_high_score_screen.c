@@ -5,7 +5,7 @@
 // Void `cRHighScore::Init(int, int)`: builds the postal or challenge high-score screen, optionally enables inline name entry, and lays out five owned ten-handle row banks. Android AI tail-branches among the void lifecycle peers; all three Windows callers discard EAX.
 void __thiscall initialize_high_score_screen(HighScore *high_score, int selected_bank, int selected_rank)
 {
-  int landscape_script_by_name; // eax
+  int32_t landscape_script_by_name; // eax
   int32_t v5; // eax
   tColour *v6; // eax
   tColour *v7; // eax
@@ -59,7 +59,7 @@ void __thiscall initialize_high_score_screen(HighScore *high_score, int selected
   hide_gameplay_scores((FrontendWidget **)&g_game_base->subgame);
   cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
   landscape_script_by_name = load_landscape_script_by_name(
-                               (char *)&g_game_base->subgame.landscape_manager,
+                               &g_game_base->subgame.landscape_manager,
                                g_menu_background_script_path);
   change_backdrop(&g_game_base->backdrop, &g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name], 0);
   set_border_justify_centre(&g_game_base->border_manager, 25.0);

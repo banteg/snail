@@ -524,3 +524,25 @@ The tracked IDA decompile now reaches the embedded `Backdrop` used for menu
 landscape changes and the `Intro` replay latch through the complete shared
 `GameRoot` graph. No matcher source changed; the function remains proof-grade
 at 396/396 instructions with all 85 operands clean.
+
+## 2026-07-18 landscape-record and score-bank ownership
+
+The five callers that turn a landscape-script index into a backdrop record now
+agree in both decompiler lanes: `initialize_help_screen`,
+`initialize_high_score_screen`, `initialize_new_game_menu`,
+`initialize_main_menu`, and `initialize_subgame` borrow
+`LandscapeManager::scripts[index]` from the root-owned manager. The refreshed
+artifacts no longer leave that derived pointer as an anonymous root offset.
+
+The subgame startup switch also exposes the complete `SubHighScore` borrowing
+contract in IDA. Postal, survival, and time-trial storage stay embedded arrays;
+`active_record_bank` points at the selected array, and the active score/timer
+remain copied display snapshots. Five exact EBP-relative operands had collided
+numerically with unrelated parcel and sprite globals, so the replay now clears
+only those operand aliases after verifying their addresses, operand indices,
+and encoded displacements. No global symbol was renamed or moved.
+
+No matching source changed. Focused results remain 47/47 for Help, 600/600 at
+98.00% for High Score (the twelve honest colour-temporary stack permutations),
+182/182 for New Game, 172/172 for Main Menu, and 396/396 for Subgame, with no
+unresolved or mismatched masked operands in any of the five functions.

@@ -23,10 +23,9 @@
 004374e1        int32_t subgame_rebuild_selector = game->subgame_rebuild_selector
 004374f1        if (subgame_rebuild_selector == 2 || subgame_rebuild_selector == 1)
 004374fe        cache_music_file("music/mainmenu.ogg", 0, &g_blank_text)
-00437503        g_game_base
-00437516        int32_t eax_2 = load_landscape_script_by_name("Menubg.txt")
+00437516        int32_t eax_2 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "Menubg.txt")
 00437522        struct GameRoot* game_base_1 = g_game_base
-00437535        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax_2 * 0x124 + 0x106c7bc], 0)
+00437535        change_backdrop(&game_base_1->backdrop, &game_base_1->subgame.landscape_manager.scripts[eax_2], 0)
 0043754b        set_border_justify_centre(&g_game_base->border_manager, 25f)
 00437550        int32_t level_mode = game->level_mode
 00437555        struct SubSolution (* eax_6)[0x33]
@@ -45,7 +44,7 @@
 0043755f        eax_6 = &game->sub_high_score.time_trial_route_records
 00437565        goto label_437584
 004375a9        if (game->selected_level_record_persistent != 0)
-004375b4        game->rate_or_level_arg.base_rate = game->selected_level_record->replay_speed_scalar_bits
+004375b4        game->rate_or_level_arg.base_rate = game->selected_level_record->replay_speed_scalar.bits
 004375bd        game->subgame_pause_gate = 0
 004375c0        game->resume_requested = 0
 004375c3        game->pause_fade = 0f
@@ -61,24 +60,24 @@
 0043765f        game->top_score_widget->text_buffer.raw[0] = 0
 0043766a        if (game->level_mode == 0)
 0043769c        game->lives_icon_widget = allocate_border(&g_game_base->border_manager)
-004376a2        struct tColour* eax_12 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-004376bb        initialize_frontend_sprite_button(game->lives_icon_widget, 0x400800, 0x7a, 0f, 58f, eax_12, 0f, 4)
+004376a2        struct tColour* color_2 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+004376bb        initialize_frontend_sprite_button(game->lives_icon_widget, 0x400800, 0x7a, 0f, 58f, color_2, 0f, 4)
 004376c6        hide_border_init(game->lives_icon_widget)
 004376d1        game->lives_icon_widget->sprite_shadow_offset = 0f
 00437702        game->lives_text_widget = allocate_border(&g_game_base->border_manager)
-00437708        struct tColour* color_2 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
-0043772a        initialize_frontend_widget(game->lives_text_widget, &__dos_header.e_cblp, "0", 0x14, 47f, 80f, color_2, 0, 0f)
+00437708        struct tColour* color_3 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
+0043772a        initialize_frontend_widget(game->lives_text_widget, &__dos_header.e_cblp, "0", 0x14, 47f, 80f, color_3, 0, 0f)
 00437735        hide_border_init(game->lives_text_widget)
 00437740        int32_t i_1 = 0
 00437742        int32_t i_2 = 0
 00437746        struct FrontendWidget* (* esi_2)[0x9] = &game->life_stock_widgets
 0043774c        __builtin_strncpy(&game->lives_text_widget->font_scale, "333?", 4)
 00437781        (esi_2 - 0x35bb98)->life_stock_widgets[0] = allocate_border(&g_game_base->border_manager)
-00437783        int32_t* eax_17
+00437783        struct tColour* color_4
 00437783        int32_t ecx_23
-00437783        eax_17, ecx_23 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+00437783        color_4, ecx_23 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00437792        int32_t var_40_1 = ecx_23
-004377ab        initialize_frontend_sprite_button((esi_2 - 0x35bb98)->life_stock_widgets[0], 0x400800, 0x7b, fconvert.s(float.t(i_2) * fconvert.t(24f) + fconvert.t(13f)), 430f, eax_17, 0f, 4)
+004377ab        initialize_frontend_sprite_button((esi_2 - 0x35bb98)->life_stock_widgets[0], 0x400800, 0x7b, fconvert.s(float.t(i_2) * fconvert.t(24f) + fconvert.t(13f)), 430f, color_4, 0f, 4)
 004377b2        (esi_2 - 0x35bb98)->life_stock_widgets[0]->sprite_shadow_offset = 0f
 004377ba        hide_border_init((esi_2 - 0x35bb98)->life_stock_widgets[0])
 004377bf        i_1 += 1
@@ -97,8 +96,8 @@
 004377f0        format_time_trial_string(&game->time_trial, &game->sub_high_score.current_result_record.score_or_time)
 00437802        rstrcpy_checked_ascii(&game->top_score_widget->text_buffer, 0x751478)
 00437865        game->bottom_score_widget = allocate_border(&g_game_base->border_manager)
-0043786b        struct tColour* color_3 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
-0043788d        initialize_frontend_widget(game->bottom_score_widget, &__dos_header.e_cblp, "0", 0x14, 40f, 14f, color_3, 3, -71f)
+0043786b        struct tColour* color_5 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
+0043788d        initialize_frontend_widget(game->bottom_score_widget, &__dos_header.e_cblp, "0", 0x14, 40f, 14f, color_5, 3, -71f)
 00437898        game->bottom_score_widget->font_scale = 1.5f
 004378a8        game->bottom_score_widget->texture_layer = 7
 004378b4        game->bottom_score_widget->text_buffer.raw[0] = 0
@@ -126,13 +125,13 @@
 00437991        set_matrix_identity(&game->player.body.transform)
 004379a2        game->player.movement_mode_selector = 0
 004379a8        game->player.game = game
-004379ae        int32_t eax_25
-004379ae        eax_25.b = game->player.body.transform.position.x.b
-004379ae        eax_25:1.b = game->player.body.transform.position.x:1.b
-004379ae        eax_25:2.b = game->player.body.transform.position.x:2.b
-004379ae        eax_25:3.b = game->player.body.transform.position.x:3.b
+004379ae        int32_t eax_23
+004379ae        eax_23.b = game->player.body.transform.position.x.b
+004379ae        eax_23:1.b = game->player.body.transform.position.x:1.b
+004379ae        eax_23:2.b = game->player.body.transform.position.x:2.b
+004379ae        eax_23:3.b = game->player.body.transform.position.x:3.b
 004379b0        game->player.attachment_exit_pending = 0
-004379b6        game->player.cached_camera_target_world.x = eax_25
+004379b6        game->player.cached_camera_target_world.x = eax_23
 004379b8        game->player.boost_one_tick = 0
 004379c1        game->player.lives = 0
 004379c7        game->player.cached_camera_target_world.y = game->player.body.transform.position.y
@@ -171,6 +170,6 @@
 00437aa7        report_errorf("Unknown game mode")
 00437ab1        reset_subgame(game)
 00437abd        return
-00437ac7        game->rate_or_level_arg.base_rate = game->selected_level_record->replay_speed_scalar_bits
+00437ac7        game->rate_or_level_arg.base_rate = game->selected_level_record->replay_speed_scalar.bits
 00437acc        reset_subgame(game)
 00437ad8        return

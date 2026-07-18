@@ -5,7 +5,7 @@
 // Starts MAINMENU.OGG, loads Menubg.txt into the shared backdrop renderer, seeds the front-end state to menu mode, and allocates the New Game, High Scores, Options, Credits, and Exit widgets. Cross-port Android and iOS symbols match this helper to `cRMainMenu::Init()`.
 void __thiscall initialize_main_menu(MainMenu *menu)
 {
-  int landscape_script_by_name; // eax
+  int32_t landscape_script_by_name; // eax
   tColour *v3; // eax
   tColour *v4; // eax
   tColour *v5; // eax
@@ -17,7 +17,7 @@ void __thiscall initialize_main_menu(MainMenu *menu)
   hide_star_field(&g_game_base->star_manager);
   cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
   landscape_script_by_name = load_landscape_script_by_name(
-                               (char *)&g_game_base->subgame.landscape_manager,
+                               &g_game_base->subgame.landscape_manager,
                                g_menu_background_script_path);
   change_backdrop(&g_game_base->backdrop, &g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name], 0);
   set_border_justify_centre(&g_game_base->border_manager, 25.0);

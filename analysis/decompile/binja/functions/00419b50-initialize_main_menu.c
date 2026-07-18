@@ -5,10 +5,9 @@
 
 00419b61        hide_star_field(&g_game_base->star_manager)
 00419b72        cache_music_file("music/mainmenu.ogg", 0, &g_blank_text)
-00419b77        g_game_base
-00419b8b        int32_t eax = load_landscape_script_by_name("Menubg.txt")
+00419b8b        int32_t eax = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "Menubg.txt")
 00419b98        struct GameRoot* game_base_1 = g_game_base
-00419bab        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax * 0x124 + 0x106c7bc], 0)
+00419bab        change_backdrop(&game_base_1->backdrop, &game_base_1->subgame.landscape_manager.scripts[eax], 0)
 00419bc0        set_border_justify_centre(&g_game_base->border_manager, 25f)
 00419bcb        g_game_base->render_skip_count = 2
 00419c02        menu->new_game_widget = allocate_border(&g_game_base->border_manager)

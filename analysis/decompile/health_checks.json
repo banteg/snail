@@ -3150,6 +3150,8 @@
       "artifact": "analysis/decompile/binja/functions/00416910-initialize_high_score_screen.c",
       "required_substrings": [
         "hide_gameplay_scores(&g_game_base->subgame)",
+        "&g_game_base->subgame.landscape_manager,",
+        "subgame.landscape_manager.scripts[eax_2]",
         "allocate_border(&g_game_base->border_manager)",
         "capture_mouse_cursor(&g_game_base->players[0].mouse_cursor)",
         "g_game_base->subgame.sub_high_score.active_record_bank",
@@ -3161,6 +3163,8 @@
       "forbidden_substrings": [
         "g_game_base[0x74618]",
         "g_game_base + 0x6ffae0",
+        "unknown_000000",
+        "0x106c7bc",
         "unimplemented"
       ]
     },
@@ -3170,12 +3174,16 @@
       "required_substrings": [
         "void __thiscall initialize_high_score_screen(",
         "HighScore *high_score",
+        "&g_game_base->subgame.landscape_manager,",
+        "subgame.landscape_manager.scripts[landscape_script_by_name]",
         "high_score->selected_bank",
         "high_score->selected_rank",
         "high_score->name_row_widgets"
       ],
       "forbidden_substrings": [
         "int __thiscall initialize_high_score_screen",
+        "unknown_000000",
+        "0x106c7bc",
         "return result",
         "__asm",
         "_ET1"
@@ -3798,6 +3806,8 @@
       "artifact": "analysis/decompile/binja/functions/00417bc0-initialize_new_game_menu.c",
       "required_substrings": [
         "hide_star_field(&g_game_base->star_manager)",
+        "&g_game_base->subgame.landscape_manager,",
+        "subgame.landscape_manager.scripts[eax]",
         "change_backdrop(&game_base_1->backdrop",
         "set_border_justify_centre(&g_game_base->border_manager",
         "intro->tutorial_button = allocate_border",
@@ -3806,9 +3816,29 @@
       ],
       "forbidden_substrings": [
         "data_4df904 + 0x4f33c",
+        "unknown_000000",
+        "0x106c7bc",
         "struct NewGameMenu",
         "__offset(",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_initialize_new_game_menu_root_ownership",
+      "artifact": "analysis/decompile/ida/functions/00417bc0-initialize_new_game_menu.c",
+      "required_substrings": [
+        "void __thiscall initialize_new_game_menu(Intro *intro)",
+        "&g_game_base->subgame.landscape_manager,",
+        "subgame.landscape_manager.scripts[landscape_script_by_name]",
+        "intro->tutorial_button = allocate_border",
+        "intro->time_trial_button = allocate_border",
+        "intro->back_button = allocate_border"
+      ],
+      "forbidden_substrings": [
+        "unknown_000000",
+        "0x106c7bc",
+        "struct NewGameMenu",
+        "__offset("
       ]
     },
     {
@@ -3835,6 +3865,8 @@
       "artifact": "analysis/decompile/binja/functions/00419b50-initialize_main_menu.c",
       "required_substrings": [
         "hide_star_field(&g_game_base->star_manager)",
+        "load_landscape_script_by_name(&g_game_base->subgame.landscape_manager",
+        "subgame.landscape_manager.scripts[eax]",
         "change_backdrop(&game_base_1->backdrop",
         "set_border_justify_centre(&g_game_base->border_manager",
         "g_game_base->render_skip_count = 2",
@@ -3842,8 +3874,26 @@
       ],
       "forbidden_substrings": [
         "data_4df904 + 0x4f33c",
+        "unknown_000000",
+        "0x106c7bc",
         "__offset(",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_initialize_main_menu_root_ownership",
+      "artifact": "analysis/decompile/ida/functions/00419b50-initialize_main_menu.c",
+      "required_substrings": [
+        "void __thiscall initialize_main_menu(MainMenu *menu)",
+        "&g_game_base->subgame.landscape_manager,",
+        "subgame.landscape_manager.scripts[landscape_script_by_name]",
+        "g_game_base->render_skip_count = 2",
+        "menu->new_game_widget = allocate_border"
+      ],
+      "forbidden_substrings": [
+        "unknown_000000",
+        "0x106c7bc",
+        "__offset("
       ]
     },
     {
@@ -6695,6 +6745,8 @@
       "artifact": "analysis/decompile/binja/functions/004374b0-initialize_subgame.c",
       "required_substrings": [
         "&game->runtime_cells[0][0].fringe_front",
+        "load_landscape_script_by_name(&g_game_base->subgame.landscape_manager",
+        "subgame.landscape_manager.scripts[eax_2]",
         "game->sub_high_score.active_record_bank",
         "game->top_score_widget",
         "game->player.game = game",
@@ -6708,6 +6760,8 @@
       "forbidden_substrings": [
         "struct Game*",
         "arg1->",
+        "unknown_000000",
+        "0x106c7bc",
         "Color4f",
         "__asm",
         "_ET1"
@@ -6723,15 +6777,25 @@
         "void __thiscall initialize_subgame(",
         "SubgameRuntime *game)",
         "p_fringe_front = &game->runtime_cells[0][0].fringe_front",
+        "&g_game_base->subgame.landscape_manager,",
+        "subgame.landscape_manager.scripts[landscape_script_by_name]",
+        "game->sub_high_score.postal_records",
+        "game->sub_high_score.survival_records",
         "game->sub_high_score.time_trial_route_records",
+        "game->sub_high_score.active_record_bank",
         "game->top_score_widget",
         "game->player.game = game",
         "initialize_challenge_setup_screen(&game->gui)",
-        "initialize_galaxy((int)&game->galaxy)"
+        "initialize_galaxy(&game->galaxy)"
       ],
       "forbidden_substrings": [
         "GameRoot *__thiscall initialize_subgame",
         "initialize_subgame(int this)",
+        "initialize_galaxy((int)&game->galaxy)",
+        "g_parcel_set_buckets[522]",
+        "g_sprite_manager.sprites[1973]",
+        "unknown_000000",
+        "0x106c7bc",
         "this +",
         "__asm",
         "_ET1"
@@ -9865,6 +9929,35 @@
         "FrameBorderManager",
         "this +",
         "manager->unknown_"
+      ]
+    },
+    {
+      "name": "bn_initialize_help_screen_landscape_owner",
+      "artifact": "analysis/decompile/binja/functions/00416800-initialize_help_screen.c",
+      "required_substrings": [
+        "load_landscape_script_by_name(&g_game_base->subgame.landscape_manager",
+        "subgame.landscape_manager.scripts[eax_1]",
+        "change_backdrop(&game_base_1->backdrop"
+      ],
+      "forbidden_substrings": [
+        "unknown_000000",
+        "0x106c7bc",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_initialize_help_screen_landscape_owner",
+      "artifact": "analysis/decompile/ida/functions/00416800-initialize_help_screen.c",
+      "required_substrings": [
+        "void __thiscall initialize_help_screen(FrontendWidget **this)",
+        "&g_game_base->subgame.landscape_manager,",
+        "subgame.landscape_manager.scripts[landscape_script_by_name]",
+        "change_backdrop(&g_game_base->backdrop"
+      ],
+      "forbidden_substrings": [
+        "unknown_000000",
+        "0x106c7bc",
+        "unimplemented"
       ]
     },
     {

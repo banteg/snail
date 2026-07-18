@@ -4509,6 +4509,16 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         "update_subgame_runtime_row_offset_operands = _normalize_root_offset_operands("
         in ida_path_sync
     )
+    assert "INITIALIZE_SUBGAME_RECORD_BANK_OFFSET_OPERANDS" in ida_path_sync
+    for operand_spec in (
+        "(0x43757E, 1, 0x68B4D0)",
+        "(0x437567, 1, 0x7E7B10)",
+        "(0x43755F, 1, 0x944150)",
+        "(0x43756D, 0, 0x68B4C8)",
+        "(0x437584, 0, 0x68B4C8)",
+    ):
+        assert operand_spec in ida_path_sync
+    assert "initialize_subgame_record_bank_offset_operands" in ida_path_sync
     assert "_sync_exact_lvars" in ida_path_sync
     assert "_sync_populate_runtime_lvars" in ida_path_sync
     assert "_sync_merge_runtime_lvars" in ida_path_sync

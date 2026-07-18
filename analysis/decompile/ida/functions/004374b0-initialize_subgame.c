@@ -10,15 +10,15 @@ void __thiscall initialize_subgame(SubgameRuntime *game)
   int v4; // ecx
   FringeObject **v5; // edi
   int32_t subgame_rebuild_selector; // eax
-  int landscape_script_by_name; // eax
+  int32_t landscape_script_by_name; // eax
   int32_t level_mode; // eax
   int v9; // eax
-  SubSolution *time_trial_route_records; // eax
+  SubSolution *postal_records; // eax
   tColour *v11; // eax
   tColour *v12; // eax
   tColour *v13; // eax
   int v14; // edi
-  int *life_stock_widgets; // esi
+  FrontendWidget **life_stock_widgets; // esi
   tColour *v16; // eax
   int32_t v17; // eax
   SubSolutionScoreOrTime *p_score_or_time; // edx
@@ -26,11 +26,11 @@ void __thiscall initialize_subgame(SubgameRuntime *game)
   tColour *v20; // eax
   char *v21; // eax
   GameRoot *v22; // eax
-  float x; // eax
+  float v23; // eax
   float y; // eax
   int32_t v25; // eax
   int v26; // edx
-  int v27; // [esp+0h] [ebp-40h]
+  float x; // [esp+0h] [ebp-40h]
   int v28; // [esp+24h] [ebp-1Ch]
   Time color; // [esp+28h] [ebp-18h] BYREF
 
@@ -58,7 +58,7 @@ void __thiscall initialize_subgame(SubgameRuntime *game)
   {
     cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
     landscape_script_by_name = load_landscape_script_by_name(
-                                 (char *)&g_game_base->subgame.landscape_manager,
+                                 &g_game_base->subgame.landscape_manager,
                                  g_menu_background_script_path);
     change_backdrop(
       &g_game_base->backdrop,
@@ -69,10 +69,10 @@ void __thiscall initialize_subgame(SubgameRuntime *game)
   level_mode = game->level_mode;
   if ( !level_mode )
   {
-    time_trial_route_records = (SubSolution *)((char *)&unk_68B4D0 + (_DWORD)game);
+    postal_records = game->sub_high_score.postal_records;
 LABEL_14:
-    *(_DWORD *)((char *)&g_high_score_bank + (_DWORD)game) = time_trial_route_records;
-    game->active_level_score = time_trial_route_records->score;
+    game->sub_high_score.active_record_bank = postal_records;
+    game->active_level_score = postal_records->score;
     goto LABEL_15;
   }
   v9 = level_mode - 1;
@@ -80,17 +80,17 @@ LABEL_14:
   {
     if ( v9 != 3 )
       goto LABEL_16;
-    time_trial_route_records = game->sub_high_score.time_trial_route_records;
+    postal_records = game->sub_high_score.time_trial_route_records;
     goto LABEL_14;
   }
-  time_trial_route_records = (SubSolution *)((char *)&unk_7E7B10 + (_DWORD)game);
-  *(_DWORD *)((char *)&g_high_score_bank + (_DWORD)game) = (char *)&unk_7E7B10 + (_DWORD)game;
-  game->active_level_score = *(_DWORD *)((char *)&unk_7E7B10 + (_DWORD)game + 4);
+  postal_records = game->sub_high_score.survival_records;
+  game->sub_high_score.active_record_bank = game->sub_high_score.survival_records;
+  game->active_level_score = game->sub_high_score.survival_records[0].score;
 LABEL_15:
-  qmemcpy(&game->active_level_timer, &time_trial_route_records->score_or_time, sizeof(game->active_level_timer));
+  qmemcpy(&game->active_level_timer, &postal_records->score_or_time, sizeof(game->active_level_timer));
 LABEL_16:
   if ( game->selected_level_record_persistent )
-    game->rate_or_level_arg.level_arg_tail = LODWORD(game->selected_level_record->replay_speed_scalar);
+    game->rate_or_level_arg.level_arg_tail = game->selected_level_record->replay_speed_scalar.bits;
   game->subgame_pause_gate = 0;
   game->resume_requested = 0;
   game->pause_fade = 0.0;
@@ -108,7 +108,7 @@ LABEL_16:
   {
     game->lives_icon_widget = allocate_border(&g_game_base->border_manager);
     v12 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
-    initialize_frontend_sprite_button((int)game->lives_icon_widget, 4196352, 122, 0, 1114112000, v12, 0.0, 4);
+    initialize_frontend_sprite_button(game->lives_icon_widget, 0x400800u, 122, 0.0, 58.0, v12, 0.0, 4);
     hide_border_init(game->lives_icon_widget);
     game->lives_icon_widget->sprite_shadow_offset = 0.0;
     game->lives_text_widget = allocate_border(&g_game_base->border_manager);
@@ -117,16 +117,16 @@ LABEL_16:
     hide_border_init(game->lives_text_widget);
     v14 = 0;
     v28 = 0;
-    life_stock_widgets = (int *)game->life_stock_widgets;
+    life_stock_widgets = game->life_stock_widgets;
     game->lives_text_widget->font_scale = 0.69999999;
     do
     {
-      *life_stock_widgets = (int)allocate_border(&g_game_base->border_manager);
+      *life_stock_widgets = allocate_border(&g_game_base->border_manager);
       v16 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
-      *(float *)&v27 = (double)v28 * 24.0 + 13.0;
-      initialize_frontend_sprite_button(*life_stock_widgets, 4196352, 123, v27, 1138163712, v16, 0.0, 4);
-      *(_DWORD *)(*life_stock_widgets + 376) = 0;
-      hide_border_init((FrontendWidget *)*life_stock_widgets);
+      x = (double)v28 * 24.0 + 13.0;
+      initialize_frontend_sprite_button(*life_stock_widgets, 0x400800u, 123, x, 430.0, v16, 0.0, 4);
+      (*life_stock_widgets)->sprite_shadow_offset = 0.0;
+      hide_border_init(*life_stock_widgets);
       ++v14;
       ++life_stock_widgets;
       v28 = v14;
@@ -196,16 +196,16 @@ LABEL_29:
     set_matrix_identity(&game->player.body.transform);
     game->player.movement_mode_selector = 0;
     game->player.game = game;
-    x = game->player.body.transform.position.x;
+    v23 = game->player.body.transform.position.x;
     game->player.attachment_exit_pending = 0;
-    game->player.cached_camera_target_world.x = x;
+    game->player.cached_camera_target_world.x = v23;
     game->player.boost_one_tick = 0;
     y = game->player.body.transform.position.y;
     game->player.lives = 0;
     game->player.cached_camera_target_world.y = y;
     game->player.cached_camera_target_world.z = game->player.body.transform.position.z;
     game->player.body.bod.bod.list_flags &= ~0x20u;
-    initialize_warning((int *)&game->player.warning);
+    initialize_warning(&game->player.warning);
     v25 = game->subgame_rebuild_selector;
     if ( v25 && v25 != 3 )
     {
@@ -221,7 +221,7 @@ LABEL_29:
               if ( v26 > g_runtime_config.highest_galaxy_route_index )
               {
                 g_runtime_config.highest_galaxy_route_index = v26;
-                save_config_file(aSnailmailCfg, (CompletionResultScreen *)&g_runtime_config, (FrontendWidget *)0xC4);
+                save_config_file(aSnailmailCfg, &g_runtime_config, 196);
               }
               g_runtime_config.landscape_backdrop_variant_selector = game->level_mode_arg;
             }
@@ -232,7 +232,7 @@ LABEL_29:
             break;
           case 4:
 LABEL_45:
-            initialize_galaxy((int)&game->galaxy);
+            initialize_galaxy(&game->galaxy);
             reset_subgame(game);
             break;
           case 7:
@@ -246,7 +246,7 @@ LABEL_45:
         }
         return;
       }
-      game->rate_or_level_arg.level_arg_tail = LODWORD(game->selected_level_record->replay_speed_scalar);
+      game->rate_or_level_arg.level_arg_tail = game->selected_level_record->replay_speed_scalar.bits;
     }
     reset_subgame(game);
   }

@@ -13,7 +13,7 @@
 00416968        cache_music_file("music/mainmenu.ogg", 0, &g_blank_text)
 00416980        int32_t eax_2 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "Menubg.txt")
 0041698d        struct GameRoot* game_base_1 = g_game_base
-004169a0        change_backdrop(&game_base_1->backdrop, game_base_1 + eax_2 * 0x124 + 0x106c7bc, 0)
+004169a0        change_backdrop(&game_base_1->backdrop, &game_base_1->subgame.landscape_manager.scripts[eax_2], 0)
 004169b6        set_border_justify_centre(&g_game_base->border_manager, 25f)
 004169c6        capture_mouse_cursor(&g_game_base->players[0].mouse_cursor)
 004169dc        high_score->title_widget = allocate_border(&g_game_base->border_manager)
