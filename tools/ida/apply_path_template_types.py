@@ -1141,7 +1141,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "get_or_create_texture_ref",
-        "TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);",
+        "TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, void* payload, int32_t flags);",
     ),
     (
         "allocate_path_template_samples",

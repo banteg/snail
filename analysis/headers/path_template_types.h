@@ -1094,10 +1094,12 @@ typedef struct SMTracks {
     SegmentCatalogEntry entries[150];
 } SMTracks;
 
+#define TEXTURE_REF_LIST_CAPACITY 500
+
 typedef struct TextureRefList {
     int32_t count;
     int32_t capacity;
-    TextureRef entries[1];
+    TextureRef entries[TEXTURE_REF_LIST_CAPACITY];
 } TextureRefList;
 
 typedef enum SubLocOpenEdgeFlag {
@@ -2151,7 +2153,9 @@ typedef struct SubgameRuntime {
     TimesUp times_up;
 } SubgameRuntime;
 
-TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);
+TextureRef* __thiscall get_or_create_texture_ref(
+    TextureRefList* texture_list, char* texture_path, void* payload,
+    int32_t flags);
 void __fastcall allocate_path_template_samples(Path* self);
 void __fastcall finalize_path_template(Path* self);
 void __thiscall mirror_path_template_pair_x(Path* self, Path* source);

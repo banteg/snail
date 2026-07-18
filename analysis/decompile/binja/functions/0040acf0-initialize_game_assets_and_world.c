@@ -1791,9 +1791,9 @@
 0040fb28        game->subgame.player.presentation.weapon_channels[2].body.bod.object->distort.z_wave = 0
 0040fb34        game->subgame.player.presentation.weapon_channels[2].body.bod.object->distort.y_squash = 0f
 0040fb40        game->subgame.player.presentation.weapon_channels[2].body.bod.object->distort.xyz_scale = 0f
-0040fb5c        game->subgame.player.presentation.snail_skin.material_overrides[0] = get_or_create_texture_ref(&g_texture_refs, "x/snail-turbo.tga", 0, 0)
-0040fb73        game->subgame.player.presentation.snail_skin.material_overrides[1] = get_or_create_texture_ref(&g_texture_refs, "x/snail-turbo-damage.tga", 0, 0)
-0040fb83        game->subgame.player.presentation.snail_skin.material_overrides[2] = get_or_create_texture_ref(&g_texture_refs, "x/snail-turbo-invincible.tga", 0, 0)
+0040fb5c        game->subgame.player.presentation.snail_skin.material_overrides[0] = get_or_create_texture_ref(&g_texture_refs, "x/snail-turbo.tga", nullptr, 0)
+0040fb73        game->subgame.player.presentation.snail_skin.material_overrides[1] = get_or_create_texture_ref(&g_texture_refs, "x/snail-turbo-damage.tga", nullptr, 0)
+0040fb83        game->subgame.player.presentation.snail_skin.material_overrides[2] = get_or_create_texture_ref(&g_texture_refs, "x/snail-turbo-invincible.tga", nullptr, 0)
 0040fb95        set_bod_object(&game->subgame.player.presentation.invincible_shell.body.bod, add_object_to_list(&g_object_list))
 0040fbaa        load_x_mesh(&game->directx_loader, "invincible-base-000.x", game->subgame.player.presentation.invincible_shell.body.bod.object, 1)
 0040fbaf        struct Object* object_10 = game->subgame.player.presentation.invincible_shell.body.bod.object
@@ -1814,55 +1814,55 @@
 0040fc58        cond:10_1 = var_128_10 != 1
 0040fc59        var_128_10 -= 1
 0040fc5d        do while (cond:10_1)
-0040fc6b        struct TextureRef* eax_315 = get_or_create_texture_ref(&g_texture_refs, "Objects/VapourLazer/Lazer.tga", 0, 0)
+0040fc6b        struct TextureRef* eax_315 = get_or_create_texture_ref(&g_texture_refs, "Objects/VapourLazer/Lazer.tga", nullptr, 0)
 0040fc70        enum TextureRefFlags flags_2 = eax_315->flags
 0040fc73        flags_2:1.b |= 4
 0040fc77        eax_315->flags = flags_2
-0040fc83        struct TextureRef* eax_316 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Worm.tga", 0, 0)
+0040fc83        struct TextureRef* eax_316 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Worm.tga", nullptr, 0)
 0040fc92        eax_316->flags |= TEXTURE_REF_REGISTERED | TEXTURE_REF_WRAP_ADDRESSING | 0x3
-0040fc9e        struct TextureRef* eax_317 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Back.tga", 0, 0)
+0040fc9e        struct TextureRef* eax_317 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Back.tga", nullptr, 0)
 0040fcad        eax_317->flags |= TEXTURE_REF_REGISTERED | TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fcca        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/TrackWarn.tga", 0, 0)->flags = 0x1000
-0040fcd0        struct TextureRef* eax_319 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Ramp.tga", 0, 0)
+0040fcca        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/TrackWarn.tga", nullptr, 0)->flags = 0x1000
+0040fcd0        struct TextureRef* eax_319 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Ramp.tga", nullptr, 0)
 0040fcd5        enum TextureRefFlags flags_3 = eax_319->flags
 0040fcd8        flags_3:1.b |= 0x10
 0040fcdc        eax_319->flags = flags_3
-0040fce8        struct TextureRef* eax_320 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track0.tga", 0, 0)
+0040fce8        struct TextureRef* eax_320 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track0.tga", nullptr, 0)
 0040fcf7        eax_320->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd03        struct TextureRef* eax_321 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide0.tga", 0, 0)
+0040fd03        struct TextureRef* eax_321 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide0.tga", nullptr, 0)
 0040fd12        eax_321->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd1e        struct TextureRef* eax_322 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track1.tga", 0, 0)
+0040fd1e        struct TextureRef* eax_322 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track1.tga", nullptr, 0)
 0040fd2d        eax_322->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd39        struct TextureRef* eax_323 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide1.tga", 0, 0)
+0040fd39        struct TextureRef* eax_323 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide1.tga", nullptr, 0)
 0040fd48        eax_323->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd54        struct TextureRef* eax_324 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track2.tga", 0, 0)
+0040fd54        struct TextureRef* eax_324 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track2.tga", nullptr, 0)
 0040fd63        eax_324->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd6f        struct TextureRef* eax_325 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide2.tga", 0, 0)
+0040fd6f        struct TextureRef* eax_325 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide2.tga", nullptr, 0)
 0040fd7e        eax_325->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd8a        struct TextureRef* eax_326 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track3.tga", 0, 0)
+0040fd8a        struct TextureRef* eax_326 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track3.tga", nullptr, 0)
 0040fd99        eax_326->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fda5        struct TextureRef* eax_327 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide3.tga", 0, 0)
+0040fda5        struct TextureRef* eax_327 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide3.tga", nullptr, 0)
 0040fdb4        eax_327->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fdd1        game->track.track_textures[0] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track0.tga", 0, 0)
-0040fde8        game->track.slide_textures[0] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide0.tga", 0, 0)
-0040fdff        game->track.track_textures[1] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track1.tga", 0, 0)
-0040fe16        game->track.slide_textures[1] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide1.tga", 0, 0)
-0040fe2d        game->track.track_textures[2] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track2.tga", 0, 0)
-0040fe44        game->track.slide_textures[2] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide2.tga", 0, 0)
-0040fe5b        game->track.track_textures[3] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track3.tga", 0, 0)
-0040fe68        game->track.slide_textures[3] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide3.tga", 0, 0)
+0040fdd1        game->track.track_textures[0] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track0.tga", nullptr, 0)
+0040fde8        game->track.slide_textures[0] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide0.tga", nullptr, 0)
+0040fdff        game->track.track_textures[1] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track1.tga", nullptr, 0)
+0040fe16        game->track.slide_textures[1] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide1.tga", nullptr, 0)
+0040fe2d        game->track.track_textures[2] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track2.tga", nullptr, 0)
+0040fe44        game->track.slide_textures[2] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide2.tga", nullptr, 0)
+0040fe5b        game->track.track_textures[3] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track3.tga", nullptr, 0)
+0040fe68        game->track.slide_textures[3] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide3.tga", nullptr, 0)
 0040fe78        game->track.current_texture_set = 0
-0040fe8f        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Back.tga", 0, 0)->mip_levels = 2
-0040fea6        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/TrackWarn.tga", 0, 0)->mip_levels = 2
-0040febd        get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Ramp.tga", 0, 0)->mip_levels = 2
-0040fed4        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track0.tga", 0, 0)->mip_levels = 2
-0040feeb        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide0.tga", 0, 0)->mip_levels = 2
-0040ff02        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track1.tga", 0, 0)->mip_levels = 2
-0040ff19        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide1.tga", 0, 0)->mip_levels = 2
-0040ff30        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track2.tga", 0, 0)->mip_levels = 2
-0040ff47        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide2.tga", 0, 0)->mip_levels = 2
-0040ff5e        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track3.tga", 0, 0)->mip_levels = 2
-0040ff6e        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide3.tga", 0, 0)->mip_levels = 2
+0040fe8f        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Back.tga", nullptr, 0)->mip_levels = 2
+0040fea6        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/TrackWarn.tga", nullptr, 0)->mip_levels = 2
+0040febd        get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Ramp.tga", nullptr, 0)->mip_levels = 2
+0040fed4        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track0.tga", nullptr, 0)->mip_levels = 2
+0040feeb        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide0.tga", nullptr, 0)->mip_levels = 2
+0040ff02        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track1.tga", nullptr, 0)->mip_levels = 2
+0040ff19        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide1.tga", nullptr, 0)->mip_levels = 2
+0040ff30        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track2.tga", nullptr, 0)->mip_levels = 2
+0040ff47        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide2.tga", nullptr, 0)->mip_levels = 2
+0040ff5e        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track3.tga", nullptr, 0)->mip_levels = 2
+0040ff6e        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide3.tga", nullptr, 0)->mip_levels = 2
 0040ff80        set_bod_object(&game->subgame.barrier.bod, add_object_to_list(&g_object_list))
 0040ff91        load_object_definition("Objects/Barrier", game->subgame.barrier.bod.object)
 0040ff9f        zero_vector3(&game->subgame.barrier.bod.position)
@@ -1895,7 +1895,7 @@
 0041005f        cond:14_1 = edge_selector + 1 s< 8
 00410062        edge_selector += 1
 00410066        do while (cond:14_1)
-00410078        struct TextureRef* eax_355 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Fringe.tga", 0, 0)
+00410078        struct TextureRef* eax_355 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Fringe.tga", nullptr, 0)
 0041007d        enum TextureRefFlags flags_4 = eax_355->flags
 0041007f        struct InputState* state = &game->game_inputs[0].input
 00410082        flags_4:1.b |= 4

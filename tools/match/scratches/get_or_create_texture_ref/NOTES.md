@@ -70,3 +70,15 @@ Rejected/no-op variants:
   `TextureRefFlags` vocabulary now reaches every concrete checked-in
   `TextureRef` analysis header and the narrow Binary Ninja field replays at
   owner `+0x00`. The exact allocator remains byte-identical at 79/79.
+
+## 2026-07-18 registry ABI and bank closure
+
+All 97 native callsites share `g_texture_refs`. Ordinary object, backdrop, and
+path-template callers pass a null payload and zero flags; sprite registration
+passes its full 32-bit texture flags, including
+`TEXTURE_REF_DISABLE_PATH_REUSE` (`0x800`). The third argument is stored in the
+pointer field at `TextureRef +0x98`, so the replay now records `void* payload`
+rather than `int32_t`; the flag parameter is `int32_t`, not the stale IDA
+`int16_t`. The global registry owns 500 inline entries and ends at `0x4cb7e8`.
+These type changes preserve the exact 79/79 instruction body and all four
+clean operands.

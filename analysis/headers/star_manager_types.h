@@ -82,6 +82,18 @@ typedef struct TextureRef {
     uint8_t unknown_9c[0x4];
     int32_t mip_levels;
 } TextureRef;
+
+#define TEXTURE_REF_LIST_CAPACITY 500
+
+typedef struct TextureRefList {
+    int32_t count;
+    int32_t capacity;
+    TextureRef entries[TEXTURE_REF_LIST_CAPACITY];
+} TextureRefList;
+
+typedef char TextureRefList_must_be_0x14058[
+    (sizeof(TextureRefList) == 0x14058) ? 1 : -1];
+
 typedef struct Sprite Sprite;
 struct Sprite {
     void* object_ref;
@@ -153,5 +165,12 @@ void __thiscall update_sprite_facing_angle(
     Sprite* sprite,
     const struct TransformMatrix* matrix
 );
+void __thiscall initialize_texture_list(
+    TextureRefList* texture_list, int32_t capacity);
+TextureRef* __thiscall get_or_create_texture_ref(
+    TextureRefList* texture_list, char* texture_path, void* payload,
+    int32_t flags);
+
+extern TextureRefList g_texture_refs;
 
 #endif

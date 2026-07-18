@@ -1454,7 +1454,13 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     matcher_header = (
         Path(__file__).parents[1] / "tools/match/include/star_manager.h"
     ).read_text(encoding="utf-8")
+    sprite_matcher_header = (
+        Path(__file__).parents[1] / "tools/match/include/sprite.h"
+    ).read_text(encoding="utf-8")
     star_analysis_header = (HEADER_DIR / "star_manager_types.h").read_text(
+        encoding="utf-8"
+    )
+    path_analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
 
@@ -1469,8 +1475,21 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert 'required_structs=("TransformMatrix",)' in source
     assert "matrix_size != 0x40" in source
     assert '("0x44e410", "update_sprite_facing_angle")' in source
+    assert '("0x44e800", "initialize_texture_list")' in source
+    assert '("0x44e810", "get_or_create_texture_ref")' in source
+    assert '("0x4b7790", "g_texture_refs")' in source
+    assert '("0x4b7790", "TextureRefList")' in source
+    assert "apply_data_var_updates" in source
     assert "types_declare(" not in source
     for declaration, ida_declaration in (
+        (
+            "void __thiscall initialize_texture_list(TextureRefList* texture_list, int32_t capacity)",
+            "void __thiscall initialize_texture_list(TextureRefList *texture_list, int32_t capacity);",
+        ),
+        (
+            "TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, void* payload, int32_t flags)",
+            "TextureRef *__thiscall get_or_create_texture_ref(TextureRefList *texture_list, char *texture_path, void *payload, int32_t flags);",
+        ),
         (
             "void __thiscall initialize_sprite(Sprite* sprite)",
             "void __thiscall initialize_sprite(Sprite *sprite);",
@@ -1512,14 +1531,23 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "TRUSTED_NAMES" in ida_source
     assert '(0x44DF30, "update_sprite")' in ida_source
     assert '(0x44E410, "update_sprite_facing_angle")' in ida_source
+    assert '(0x44E800, "initialize_texture_list")' in ida_source
+    assert '(0x44E810, "get_or_create_texture_ref")' in ida_source
+    assert '(0x4B7790, "g_texture_refs")' in ida_source
+    assert "TRUSTED_DATA_DECLARATIONS" in ida_source
     assert '"path_template_types.h"' in ida_source
     assert '"object_render_types.h"' in ida_source
     assert '"Object": 0xDC' in ida_source
     assert '"BodBase": 0x38' in ida_source
     assert '"TransformMatrix": 0x40' in ida_source
+    assert '"TextureRefList": 0x14058' in source
+    assert '"TextureRefList": 0x14058' in ida_source
     assert 're.sub(r"\\b(?:struct|union|enum)\\s+", "", normalized)' in ida_source
     assert "0x40A490" in ida_source
+    assert "0x40ACF0" in ida_source
     assert "0x44E410" in ida_source
+    assert "0x44E800" in ida_source
+    assert "0x44E810" in ida_source
     for function_name in (
         "destroy_star_field",
         "initialize_star_field",
@@ -1540,6 +1568,15 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "void __thiscall update_sprite_facing_angle(" in star_analysis_header
     assert "const struct TransformMatrix* matrix" in star_analysis_header
     assert "typedef struct TransformMatrix TransformMatrix;" not in star_analysis_header
+    assert "#define TEXTURE_REF_LIST_CAPACITY 500" in star_analysis_header
+    assert "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];" in star_analysis_header
+    assert "extern TextureRefList g_texture_refs;" in star_analysis_header
+    assert "TEXTURE_REF_LIST_CAPACITY = 500" in sprite_matcher_header
+    assert "void initialize_texture_list(int capacity);" in sprite_matcher_header
+    assert "char* texture_path, void* payload, int flags" in sprite_matcher_header
+    assert "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];" in path_analysis_header
+    assert "char* texture_path, void* payload," in path_analysis_header
+    assert "int16_t arg4" not in path_analysis_header
 
 
 def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:

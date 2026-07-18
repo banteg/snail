@@ -6,7 +6,8 @@ void report_errorf(char* format, ...);
 void copy_c_string(char* destination, char* source);
 unsigned char strings_equal_case_insensitive(char* left, char* right); // @ 0x431dc0
 
-TextureRef* TextureRefList::get_or_create_texture_ref(char* texture_path, int arg3, int flags)
+TextureRef* TextureRefList::get_or_create_texture_ref(
+    char* texture_path, void* payload, int flags)
 {
     int i = 0;
     int current;
@@ -31,7 +32,7 @@ TextureRef* TextureRefList::get_or_create_texture_ref(char* texture_path, int ar
     entries[current].slot_index = current;
     entries[count].flags = 0;
     entries[count].flags = TEXTURE_REF_REGISTERED;
-    entries[count].texture_ref = (void*)arg3;
+    entries[count].texture_ref = payload;
     entries[count].mip_levels = 1;
 
     result = &entries[count];

@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 5,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 5,
-  "ida_exported": 5,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,27 +17,23 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "get_or_append_object_texture_group_vertex",
-      "address": "0x413bb0"
+      "name": "initialize_game_assets_and_world",
+      "address": "0x40acf0"
     },
     {
-      "name": "build_object_texture_group_buffers",
-      "address": "0x413d50"
+      "name": "register_sprite_texture",
+      "address": "0x44e0f0"
     },
     {
-      "name": "sort_object_faces_by_texture_group",
-      "address": "0x419fd0"
+      "name": "initialize_texture_list",
+      "address": "0x44e800"
     },
     {
-      "name": "request_object_texture_groups",
-      "address": "0x42f930"
-    },
-    {
-      "name": "calc_object_texture_groups",
-      "address": "0x4303f0"
+      "name": "get_or_create_texture_ref",
+      "address": "0x44e810"
     }
   ],
-  "health_check_count": 781,
+  "health_check_count": 785,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

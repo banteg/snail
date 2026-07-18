@@ -98,15 +98,23 @@ struct TextureRef {
 typedef char TextureRef_must_be_0xa4[
     (sizeof(TextureRef) == 0xa4) ? 1 : -1];
 
+enum {
+    TEXTURE_REF_LIST_CAPACITY = 500,
+};
+
 class TextureRefList {
 public:
-    int initialize_texture_list(int capacity); // @ 0x44e800
-    TextureRef* get_or_create_texture_ref(char* texture_path, int arg3, int flags); // @ 0x44e810
+    void initialize_texture_list(int capacity); // @ 0x44e800
+    TextureRef* get_or_create_texture_ref(
+        char* texture_path, void* payload, int flags); // @ 0x44e810
 
     int count;             // +0x00
     int capacity;          // +0x04
-    TextureRef entries[1]; // +0x08, variable-capacity backing store
+    TextureRef entries[TEXTURE_REF_LIST_CAPACITY]; // +0x08, concrete startup capacity
 };
+
+typedef char TextureRefList_must_be_0x14058[
+    (sizeof(TextureRefList) == 0x14058) ? 1 : -1];
 
 class Sprite {
 public:

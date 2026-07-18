@@ -2,10 +2,8 @@
 /* function: initialize_texture_list @ 0x44e800 */
 /* selector: initialize_texture_list */
 
-int __thiscall sub_44E800(_DWORD *this, int a2)
+void __thiscall initialize_texture_list(TextureRefList *texture_list, int32_t capacity)
 {
-  *this = 0;
-  *(this + 1) = a2;
-  return a2;
+  texture_list->count = 0;
+  texture_list->capacity = capacity;
 }
-

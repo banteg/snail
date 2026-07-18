@@ -23,7 +23,7 @@ TextureRef *__thiscall register_sprite_texture(
   }
   if ( texture_id >= 1000 )
     report_errorf("Too many Sprite References - Increase RSPRITE_REFERENCE_MAX(%i) in RSprite.h", 1000);
-  texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, flags);
+  texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, flags);
   *(&g_sprite_texture_table + texture_id) = texture_ref;
   texture_ref->flags |= flags;
   result = *(&g_sprite_texture_table + texture_id);

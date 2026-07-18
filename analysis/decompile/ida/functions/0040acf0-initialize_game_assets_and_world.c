@@ -300,7 +300,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   Object *v294; // eax
   Object **v295; // eax
   Object **v296; // esi
-  int k; // edi
+  int j; // edi
   Object *v298; // eax
   Object *v299; // eax
   TextureRef *v300; // eax
@@ -309,29 +309,29 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   int v303; // edi
   int32_t *p_flags; // eax
   int v305; // ecx
-  float v307; // [esp+10h] [ebp-12Ch]
-  Object **v308; // [esp+10h] [ebp-12Ch]
-  Object **v309; // [esp+10h] [ebp-12Ch]
-  Object **v310; // [esp+10h] [ebp-12Ch]
-  Object **v311; // [esp+10h] [ebp-12Ch]
-  Object **v312; // [esp+10h] [ebp-12Ch]
-  int v313; // [esp+10h] [ebp-12Ch]
-  int32_t m; // [esp+10h] [ebp-12Ch]
-  uint32_t *v315; // [esp+14h] [ebp-128h]
-  uint32_t *v316; // [esp+14h] [ebp-128h]
-  int v317; // [esp+14h] [ebp-128h]
-  int v318; // [esp+14h] [ebp-128h]
-  char *v319; // [esp+14h] [ebp-128h]
-  int v320; // [esp+14h] [ebp-128h]
-  int v321; // [esp+14h] [ebp-128h]
-  int v322; // [esp+14h] [ebp-128h]
-  int v323; // [esp+14h] [ebp-128h]
-  int v324; // [esp+14h] [ebp-128h]
-  int v325; // [esp+14h] [ebp-128h]
-  int32_t v326; // [esp+14h] [ebp-128h]
-  char *v327; // [esp+14h] [ebp-128h]
+  float x_offset; // [esp+10h] [ebp-12Ch]
+  Object **x_offseta; // [esp+10h] [ebp-12Ch]
+  Object **x_offsetb; // [esp+10h] [ebp-12Ch]
+  Object **x_offsetc; // [esp+10h] [ebp-12Ch]
+  Object **x_offsetd; // [esp+10h] [ebp-12Ch]
+  Object **x_offsete; // [esp+10h] [ebp-12Ch]
+  int x_offsetf; // [esp+10h] [ebp-12Ch]
+  int32_t x_offsetg; // [esp+10h] [ebp-12Ch]
+  uint32_t *edge_selector; // [esp+14h] [ebp-128h]
+  uint32_t *edge_selectora; // [esp+14h] [ebp-128h]
+  int32_t edge_selectorb; // [esp+14h] [ebp-128h]
+  int32_t edge_selectorc; // [esp+14h] [ebp-128h]
+  char *edge_selectord; // [esp+14h] [ebp-128h]
+  int32_t edge_selectore; // [esp+14h] [ebp-128h]
+  int32_t edge_selectorf; // [esp+14h] [ebp-128h]
+  int32_t edge_selectorg; // [esp+14h] [ebp-128h]
+  int32_t edge_selectorh; // [esp+14h] [ebp-128h]
+  int32_t edge_selectori; // [esp+14h] [ebp-128h]
+  int32_t edge_selectorj; // [esp+14h] [ebp-128h]
+  int edge_selectork; // [esp+14h] [ebp-128h]
+  char *edge_selectorl; // [esp+14h] [ebp-128h]
   Color4f color; // [esp+18h] [ebp-124h] BYREF
-  int32_t j; // [esp+28h] [ebp-114h]
+  int32_t orientation; // [esp+28h] [ebp-114h]
   TransformMatrix transform; // [esp+2Ch] [ebp-110h] BYREF
   char self[16]; // [esp+6Ch] [ebp-D0h] BYREF
   char ArgList[128]; // [esp+7Ch] [ebp-C0h] BYREF
@@ -437,7 +437,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->render_camera_slots[3].viewport_width = 1.0;
   game->render_camera_slots[3].viewport_height = 1.0;
   p_overlay_2 = &game->overlay_2;
-  v315 = &game->overlay_2.bod.bod.bod.list_flags;
+  edge_selector = &game->overlay_2.bod.bod.bod.list_flags;
   if ( (game->overlay_2.bod.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
@@ -460,9 +460,9 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
       game->overlay_2.bod.bod.bod.list_prev = nullptr;
       (*v9)->list_next = nullptr;
     }
-    v12 = *v315;
-    BYTE1(v12) = BYTE1(*v315) | 2;
-    *v315 = v12;
+    v12 = *edge_selector;
+    BYTE1(v12) = BYTE1(*edge_selector) | 2;
+    *edge_selector = v12;
   }
   initialize_overlay((int)&game->overlay_2);
   game->render_camera_slots[2].sort_key = 2;
@@ -473,7 +473,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   p_overlay_1 = &game->overlay_1;
   game->render_camera_slots[2].viewport_width = 1.0;
   game->render_camera_slots[2].viewport_height = 1.0;
-  v316 = &game->overlay_1.bod.bod.bod.list_flags;
+  edge_selectora = &game->overlay_1.bod.bod.bod.list_flags;
   if ( (game->overlay_1.bod.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
@@ -496,96 +496,96 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
       game->overlay_1.bod.bod.bod.list_prev = nullptr;
       (*v14)->list_next = nullptr;
     }
-    v17 = *v316;
-    BYTE1(v17) = BYTE1(*v316) | 2;
-    *v316 = v17;
+    v17 = *edge_selectora;
+    BYTE1(v17) = BYTE1(*edge_selectora) | 2;
+    *edge_selectora = v17;
   }
   initialize_overlay((int)&game->overlay_1);
   register_font_texture_sheet_wrapper(aObjectsFontFon, 2, 0.75, 1.0);
   initialize_font3d_objects(0);
   initialize_font_wave_state();
-  initialize_sprite_manager((SpriteManager *)g_sprite_manager);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, (char *)aSpritesDebugTg, 1, 0);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesOverlay, 2, 0);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesBorderT, 5, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesMouseTg, 22, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesWarning, 94, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesPlayTga, 27, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesStartai, 32, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesJetTga, 33, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesHealthT, 57, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesDamageg, 89, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesDamageg_0, 90, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesDamageg_1, 91, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesSparkTg, 92, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesBlackTg, 93, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesBorderg, 99, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesSlug000, 118, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesSlug001, 119, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesSlugmas, 120, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesParcel0, 121, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesParceli, 122, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesGarbage, 114, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesGarbage_0, 115, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesGarbage_1, 116, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesGarbage_2, 117, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesLifeTga, 123, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesJetpack, 124, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesSmokeTg, 128, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesSluggoo, 129, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesSliderb, 36, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesSliderb_0, 37, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesLessTga, 38, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesLesshov, 40, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesLessmas, 41, 1056);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesMoreTga, 42, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesMorehov, 44, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesMoremas, 45, 1056);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesParticl, 130, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesParticl_0, 131, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesParticl_1, 132, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesParticl_2, 133, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesParticl_3, 134, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesParticl_4, 135, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesParticl_5, 136, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesCollisi, 137, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxySpacemap, 138, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyGalaxy00, 139, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyGalaxy00_0, 140, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyGalaxy00_1, 141, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyGalaxy00_2, 142, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyGalaxy00_3, 143, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyGalaxy00_4, 144, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyGalaxy00_5, 145, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyGalaxy00_6, 146, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyGalaxy00_7, 147, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyGalaxy00_8, 148, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyGalaxyse, 149, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyLevelsel, 150, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyLevelsta, 151, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyBordersp, 152, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyLineTga, 153, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aGalaxyLinestar, 154, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesProgres, 155, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesProgres_0, 156, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesProgres_1, 157, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesJetpack_0, 158, 1024);
-  register_sprite_texture((SpriteManager *)g_sprite_manager, aSpritesGhostTg, 159, 1024);
-  v307 = 0.0;
+  initialize_sprite_manager(&g_sprite_manager);
+  register_sprite_texture(&g_sprite_manager, (char *)aSpritesDebugTg, 1, 0);
+  register_sprite_texture(&g_sprite_manager, aSpritesOverlay, 2, 0);
+  register_sprite_texture(&g_sprite_manager, aSpritesBorderT, 5, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesMouseTg, 22, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesWarning, 94, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesPlayTga, 27, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesStartai, 32, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesJetTga, 33, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesHealthT, 57, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesDamageg, 89, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesDamageg_0, 90, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesDamageg_1, 91, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesSparkTg, 92, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesBlackTg, 93, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesBorderg, 99, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesSlug000, 118, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesSlug001, 119, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesSlugmas, 120, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesParcel0, 121, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesParceli, 122, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesGarbage, 114, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesGarbage_0, 115, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesGarbage_1, 116, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesGarbage_2, 117, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesLifeTga, 123, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesJetpack, 124, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesSmokeTg, 128, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesSluggoo, 129, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesSliderb, 36, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesSliderb_0, 37, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesLessTga, 38, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesLesshov, 40, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesLessmas, 41, 1056);
+  register_sprite_texture(&g_sprite_manager, aSpritesMoreTga, 42, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesMorehov, 44, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesMoremas, 45, 1056);
+  register_sprite_texture(&g_sprite_manager, aSpritesParticl, 130, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesParticl_0, 131, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesParticl_1, 132, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesParticl_2, 133, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesParticl_3, 134, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesParticl_4, 135, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesParticl_5, 136, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesCollisi, 137, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxySpacemap, 138, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyGalaxy00, 139, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyGalaxy00_0, 140, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyGalaxy00_1, 141, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyGalaxy00_2, 142, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyGalaxy00_3, 143, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyGalaxy00_4, 144, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyGalaxy00_5, 145, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyGalaxy00_6, 146, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyGalaxy00_7, 147, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyGalaxy00_8, 148, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyGalaxyse, 149, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyLevelsel, 150, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyLevelsta, 151, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyBordersp, 152, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyLineTga, 153, 1024);
+  register_sprite_texture(&g_sprite_manager, aGalaxyLinestar, 154, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesProgres, 155, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesProgres_0, 156, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesProgres_1, 157, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesJetpack_0, 158, 1024);
+  register_sprite_texture(&g_sprite_manager, aSpritesGhostTg, 159, 1024);
+  x_offset = 0.0;
   do
   {
-    v18 = (char *)game + 56 * (__int64)v307;
+    v18 = (char *)game + 56 * (__int64)x_offset;
     v19 = add_object_to_list(&g_object_list);
     set_bod_object((BodBase *)(v18 + 280464), v19);
-    initialize_backdrop_slice_quad(*((Object **)v18 + 70125), aObjectsWorld00, v307);
+    initialize_backdrop_slice_quad(*((Object **)v18 + 70125), aObjectsWorld00, x_offset);
     v20 = add_object_to_list(&g_object_list);
     set_bod_object((BodBase *)(v18 + 280912), v20);
-    initialize_backdrop_slice_quad(*((Object **)v18 + 70237), aObjectsWorld00_0, v307);
+    initialize_backdrop_slice_quad(*((Object **)v18 + 70237), cap_texture, x_offset);
     v21 = add_object_to_list(&g_object_list);
     set_bod_object((BodBase *)(v18 + 281360), v21);
-    initialize_backdrop_slice_quad(*((Object **)v18 + 70349), texture_a, v307);
-    v22 = v307 + 1.0;
-    v307 = v22;
+    initialize_backdrop_slice_quad(*((Object **)v18 + 70349), texture_a, x_offset);
+    v22 = x_offset + 1.0;
+    x_offset = v22;
   }
   while ( v22 < 8.0 );
   set_matrix_identity(&transform);
@@ -655,16 +655,16 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   initialize_backdrop_corner_quad(3, game->root_bod_catalog.floor_corners.storage[2].object, aObjectsWorld00);
   v38 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners, v38);
-  initialize_backdrop_corner_quad(0, game->root_bod_catalog.warning_corners.storage[0].object, aObjectsWorld00_0);
+  initialize_backdrop_corner_quad(0, game->root_bod_catalog.warning_corners.storage[0].object, cap_texture);
   v39 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[1], v39);
-  initialize_backdrop_corner_quad(1, game->root_bod_catalog.warning_corners.storage[1].object, aObjectsWorld00_0);
+  initialize_backdrop_corner_quad(1, game->root_bod_catalog.warning_corners.storage[1].object, cap_texture);
   v40 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[3], v40);
-  initialize_backdrop_corner_quad(2, game->root_bod_catalog.warning_corners.storage[3].object, aObjectsWorld00_0);
+  initialize_backdrop_corner_quad(2, game->root_bod_catalog.warning_corners.storage[3].object, cap_texture);
   v41 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[2], v41);
-  initialize_backdrop_corner_quad(3, game->root_bod_catalog.warning_corners.storage[2].object, aObjectsWorld00_0);
+  initialize_backdrop_corner_quad(3, game->root_bod_catalog.warning_corners.storage[2].object, cap_texture);
   v42 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners, v42);
   initialize_backdrop_corner_quad(0, game->root_bod_catalog.slide_corners.storage[0].object, texture_a);
@@ -695,7 +695,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object((BodBase *)&game->root_bod_catalog.lazer_model, v51);
   load_object_definition(path, game->root_bod_catalog.lazer_model.object);
   p_object = &game->subgame.sub_lazers.slots[0].body.bod.object;
-  v317 = 20;
+  edge_selectorb = 20;
   do
   {
     set_bod_object((BodBase *)(p_object - 9), game->root_bod_catalog.lazer_model.object);
@@ -707,16 +707,16 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     store_color4f((tColour *)(p_object + 1), 1.0, 1.0, 1.0, 0.69999999);
     v55 = *p_object;
     p_object += 44;
-    v56 = v317 == 1;
+    v56 = edge_selectorb == 1;
     v55->blend_mode = 9;
-    --v317;
+    --edge_selectorb;
   }
   while ( !v56 );
   v57 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.salt_model, v57);
   load_x_mesh(&game->directx_loader, aSaltX, game->root_bod_catalog.salt_model.object, 1);
   p_owner_game = &game->subgame.salt_hazards.slots[0].owner_game;
-  v318 = 40;
+  edge_selectorc = 40;
   do
   {
     set_bod_object((BodBase *)(p_owner_game - 34), game->root_bod_catalog.salt_model.object);
@@ -725,14 +725,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     (*(p_owner_game - 25))->sub_pause.options_widget = (FrontendWidget *)12;
     set_matrix_identity((TransformMatrix *)(p_owner_game - 20));
     p_owner_game += 38;
-    --v318;
+    --edge_selectorc;
   }
-  while ( v318 );
+  while ( edge_selectorc );
   for ( i = 0; i < 2; ++i )
   {
-    v319 = (char *)game + 96 * i;
+    edge_selectord = (char *)game + 96 * i;
     v60 = add_object_to_list(&g_object_list);
-    set_bod_object((BodBase *)(v319 + 3987096), v60);
+    set_bod_object((BodBase *)(edge_selectord + 3987096), v60);
     if ( i )
     {
       if ( i == 1 )
@@ -742,13 +742,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     {
       load_x_mesh(&game->directx_loader, aPostofficestop, game->subgame.banners.slots[0].bod.object, 1);
     }
-    *((_DWORD *)v319 + 996780) = 0;
-    *((_DWORD *)v319 + 996779) = 0;
-    *((_DWORD *)v319 + 996778) = 0;
+    *((_DWORD *)edge_selectord + 996780) = 0;
+    *((_DWORD *)edge_selectord + 996779) = 0;
+    *((_DWORD *)edge_selectord + 996778) = 0;
     game->subgame.banners.slots[i].owner_game = &game->subgame;
-    *((_DWORD *)v319 + 996788) = i;
-    *((_DWORD *)v319 + 996796) = 0;
-    *((_DWORD *)v319 + 996797) = 1004768824;
+    *((_DWORD *)edge_selectord + 996788) = i;
+    *((_DWORD *)edge_selectord + 996796) = 0;
+    *((_DWORD *)edge_selectord + 996797) = 1004768824;
   }
   p_track_body_list_head = &game->subgame.track_body_list_head;
   if ( (game->subgame.track_body_list_head.bod.list_flags & 0x200) != 0 )
@@ -931,7 +931,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[0].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[0].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[0].primary.bod.position.x = 0.0;
@@ -958,7 +958,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[1].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[1].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[1].primary.bod.position.x = 0.0;
@@ -985,7 +985,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[2].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[2].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[2].primary.bod.position.x = 0.0;
@@ -1012,7 +1012,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[6].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[6].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[6].primary.bod.position.x = 0.0;
@@ -1039,7 +1039,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[3].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[3].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[3].primary.bod.position.x = 0.0;
@@ -1066,7 +1066,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[4].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[4].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[4].primary.bod.position.x = 0.0;
@@ -1093,7 +1093,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[5].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[5].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[5].primary.bod.position.x = 0.0;
@@ -1120,7 +1120,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[7].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[7].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[7].primary.bod.position.x = 0.0;
@@ -1147,7 +1147,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[37].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[37].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[37].primary.bod.position.x = 0.0;
@@ -1174,7 +1174,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[38].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[38].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[38].primary.bod.position.x = 0.0;
@@ -1201,7 +1201,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[43].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[43].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[43].primary.bod.position.x = 0.0;
@@ -1228,7 +1228,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     0,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[44].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[44].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[44].primary.bod.position.x = 0.0;
@@ -1255,7 +1255,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[45].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[45].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[45].primary.bod.position.x = 0.0;
@@ -1282,7 +1282,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     0,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[46].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[46].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[46].primary.bod.position.x = 0.0;
@@ -1309,7 +1309,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[39].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[39].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[39].primary.bod.position.x = 0.0;
@@ -1336,7 +1336,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[41].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[41].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[41].primary.bod.position.x = 0.0;
@@ -1363,7 +1363,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[42].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[42].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[42].primary.bod.position.x = 0.0;
@@ -1390,7 +1390,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_a,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[40].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[40].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[40].primary.bod.position.x = 0.0;
@@ -1417,8 +1417,8 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer,
-    aObjectsWorld00_0);
+    vertical_texture,
+    cap_texture);
   game->subgame.path_pairs[31].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[31].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[31].primary.bod.position.x = 0.0;
@@ -1435,8 +1435,8 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer,
-    aObjectsWorld00_0);
+    vertical_texture,
+    cap_texture);
   game->subgame.path_pairs[31].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[31].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[31].secondary.bod.position.x = 0.0;
@@ -1453,7 +1453,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_a,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[36].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[36].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[36].primary.bod.position.x = 0.0;
@@ -1470,7 +1470,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     aObjectsWorld00_3,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[36].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[36].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[36].secondary.bod.position.x = 0.0;
@@ -1487,7 +1487,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[25].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[25].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[25].primary.bod.position.x = 0.0;
@@ -1514,7 +1514,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[27].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[27].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[27].primary.bod.position.x = 0.0;
@@ -1541,7 +1541,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[26].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[26].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[26].primary.bod.position.x = 0.0;
@@ -1569,7 +1569,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[16].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[16].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[16].primary.bod.position.x = 0.0;
@@ -1597,7 +1597,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[17].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[17].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[17].primary.bod.position.x = 0.0;
@@ -1625,7 +1625,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[18].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[18].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[18].primary.bod.position.x = 0.0;
@@ -1653,7 +1653,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[19].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[19].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[19].primary.bod.position.x = 0.0;
@@ -1681,7 +1681,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_a,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[8].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[8].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[8].primary.bod.position.x = 0.0;
@@ -1709,7 +1709,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     0,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[10].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[10].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[10].primary.bod.position.x = 0.0;
@@ -1737,7 +1737,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[9].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[9].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[9].primary.bod.position.x = 0.0;
@@ -1765,7 +1765,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     aObjectsWorld00,
     aObjectsWorld00,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[14].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[14].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[14].primary.bod.position.x = 0.0;
@@ -1793,7 +1793,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_a,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[11].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[11].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[11].primary.bod.position.x = 0.0;
@@ -1821,7 +1821,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     0,
     texture_a,
     texture_a,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[13].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[13].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[13].primary.bod.position.x = 0.0;
@@ -1849,7 +1849,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_a,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[12].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[12].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[12].primary.bod.position.x = 0.0;
@@ -1876,7 +1876,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[20].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[20].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[20].primary.bod.position.x = 0.0;
@@ -1903,7 +1903,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_a,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[21].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[21].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[21].primary.bod.position.x = 0.0;
@@ -1930,7 +1930,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[22].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[22].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[22].primary.bod.position.x = 0.0;
@@ -1957,7 +1957,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[23].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[23].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[23].primary.bod.position.x = 0.0;
@@ -1984,7 +1984,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[32].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[32].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[32].primary.bod.position.x = 0.0;
@@ -2031,7 +2031,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[28].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[28].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[28].primary.bod.position.x = 0.0;
@@ -2051,7 +2051,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[28].secondary.fringe_mesh_bod.position.x = 0.0;
   v182 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[15].primary.bod, v182);
-  initialize_cage2_path_template_pair(&game->subgame.path_pairs[15].primary, 3, texture_a, texture_b, aObjectsPathVer);
+  initialize_cage2_path_template_pair(&game->subgame.path_pairs[15].primary, 3, texture_a, texture_b, vertical_texture);
   game->subgame.path_pairs[15].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[15].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[15].primary.bod.position.x = 0.0;
@@ -2081,7 +2081,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     14,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[33].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[33].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[33].primary.bod.position.x = 0.0;
@@ -2111,7 +2111,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     14,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[34].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[34].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[34].primary.bod.position.x = 0.0;
@@ -2141,7 +2141,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     14,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[35].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[35].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[35].primary.bod.position.x = 0.0;
@@ -2168,7 +2168,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     aObjectsWorld00,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[29].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[29].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[29].primary.bod.position.x = 0.0;
@@ -2193,7 +2193,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     aObjectsWorld00,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[47].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[47].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[47].primary.bod.position.x = 0.0;
@@ -2218,7 +2218,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     0,
     texture_a,
     aObjectsWorld00,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[48].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[48].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[48].primary.bod.position.x = 0.0;
@@ -2243,7 +2243,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     aObjectsWorld00,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[49].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[49].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[49].primary.bod.position.x = 0.0;
@@ -2268,7 +2268,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     0,
     texture_a,
     aObjectsWorld00,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[50].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[50].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[50].primary.bod.position.x = 0.0;
@@ -2297,7 +2297,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[51].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[51].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[51].primary.bod.position.x = 0.0;
@@ -2331,7 +2331,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[52].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[52].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[52].primary.bod.position.x = 0.0;
@@ -2364,7 +2364,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[53].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[53].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[53].primary.bod.position.x = 0.0;
@@ -2397,7 +2397,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[57].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[57].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[57].primary.bod.position.x = 0.0;
@@ -2428,7 +2428,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[54].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[54].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[54].primary.bod.position.x = 0.0;
@@ -2459,7 +2459,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[55].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[55].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[55].primary.bod.position.x = 0.0;
@@ -2490,7 +2490,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[56].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[56].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[56].primary.bod.position.x = 0.0;
@@ -2521,7 +2521,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[58].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[58].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[58].primary.bod.position.x = 0.0;
@@ -2552,7 +2552,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[62].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[62].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[62].primary.bod.position.x = 0.0;
@@ -2583,7 +2583,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[59].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[59].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[59].primary.bod.position.x = 0.0;
@@ -2614,7 +2614,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   game->subgame.path_pairs[61].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[61].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[61].primary.bod.position.x = 0.0;
@@ -2645,7 +2645,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     1,
     texture_a,
     texture_b,
-    aObjectsPathVer);
+    vertical_texture);
   zero_vector3(&game->subgame.path_pairs[60].primary.bod.position.x);
   v230 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[60].secondary.bod, v230);
@@ -2743,20 +2743,20 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   v249 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433D46 + 6), v249);
   load_x_mesh(&game->directx_loader, aTurbohotspotsX, *(Object **)((char *)&game->vtable + (_DWORD)&loc_433D6F + 1), 2);
-  build_snail_hotspots((int)game + (_DWORD)&loc_4326FF + 1);
-  v320 = 10;
-  v308 = (Object **)((char *)&loc_432870 + (_DWORD)game);
+  build_snail_hotspots((Snail *)((char *)game + (_DWORD)&loc_4326FF + 1));
+  edge_selectore = 10;
+  x_offseta = (Object **)((char *)&loc_432870 + (_DWORD)game);
   do
   {
-    (*v308)->flags |= 4u;
-    apply_object_toon(*v308, 0);
-    v250 = *v308;
-    v308 += 32;
+    (*x_offseta)->flags |= 4u;
+    apply_object_toon(*x_offseta, 0);
+    v250 = *x_offseta;
+    x_offseta += 32;
     v250->distort.z_wave = 0.0;
-    (*(v308 - 32))->distort.y_squash = 0.0;
-    v56 = v320 == 1;
-    (*(v308 - 32))->distort.xyz_scale = 0.0;
-    --v320;
+    (*(x_offseta - 32))->distort.y_squash = 0.0;
+    v56 = edge_selectore == 1;
+    (*(x_offseta - 32))->distort.xyz_scale = 0.0;
+    --edge_selectore;
   }
   while ( !v56 );
   (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4))[4] |= 4u;
@@ -2776,19 +2776,19 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   v253 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433AB0 + (_DWORD)game), v253);
   load_x_animation_clip(&game->directx_loader, aJetpackDraw000, *(Object **)((char *)&loc_433AD4 + (_DWORD)game));
-  v321 = 2;
-  v309 = (Object **)((char *)&loc_433A54 + (_DWORD)game);
+  edge_selectorf = 2;
+  x_offsetb = (Object **)((char *)&loc_433A54 + (_DWORD)game);
   do
   {
-    (*v309)->flags |= 4u;
-    apply_object_toon(*v309, 0);
-    v254 = *v309;
-    v309 += 32;
+    (*x_offsetb)->flags |= 4u;
+    apply_object_toon(*x_offsetb, 0);
+    v254 = *x_offsetb;
+    x_offsetb += 32;
     v254->distort.z_wave = 0.0;
-    (*(v309 - 32))->distort.y_squash = 0.0;
-    v56 = v321 == 1;
-    (*(v309 - 32))->distort.xyz_scale = 0.0;
-    --v321;
+    (*(x_offsetb - 32))->distort.y_squash = 0.0;
+    v56 = edge_selectorf == 1;
+    (*(x_offsetb - 32))->distort.xyz_scale = 0.0;
+    --edge_selectorf;
   }
   while ( !v56 );
   (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2))[4] |= 4u;
@@ -2829,19 +2829,19 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->directx_loader,
     aLaserleftDraw0,
     *(Object **)((char *)&game->vtable + (_DWORD)&loc_4330BF + 1));
-  v322 = 5;
-  v310 = (Object **)((char *)game + (_DWORD)&loc_432EBF + 1);
+  edge_selectorg = 5;
+  x_offsetc = (Object **)((char *)game + (_DWORD)&loc_432EBF + 1);
   do
   {
-    (*v310)->flags |= 4u;
-    apply_object_toon(*v310, 0);
-    v261 = *v310;
-    v310 += 32;
+    (*x_offsetc)->flags |= 4u;
+    apply_object_toon(*x_offsetc, 0);
+    v261 = *x_offsetc;
+    x_offsetc += 32;
     v261->distort.z_wave = 0.0;
-    (*(v310 - 32))->distort.y_squash = 0.0;
-    v56 = v322 == 1;
-    (*(v310 - 32))->distort.xyz_scale = 0.0;
-    --v322;
+    (*(x_offsetc - 32))->distort.y_squash = 0.0;
+    v56 = edge_selectorg == 1;
+    (*(x_offsetc - 32))->distort.xyz_scale = 0.0;
+    --edge_selectorg;
   }
   while ( !v56 );
   (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3))[4] |= 4u;
@@ -2879,19 +2879,19 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->directx_loader,
     aLaserrightDraw,
     *(Object **)((char *)&game->vtable + (_DWORD)&loc_433499 + 3));
-  v323 = 5;
-  v311 = (Object **)((char *)game + (_DWORD)&loc_43329B + 1);
+  edge_selectorh = 5;
+  x_offsetd = (Object **)((char *)game + (_DWORD)&loc_43329B + 1);
   do
   {
-    (*v311)->flags |= 4u;
-    apply_object_toon(*v311, 0);
-    v268 = *v311;
-    v311 += 32;
+    (*x_offsetd)->flags |= 4u;
+    apply_object_toon(*x_offsetd, 0);
+    v268 = *x_offsetd;
+    x_offsetd += 32;
     v268->distort.z_wave = 0.0;
-    (*(v311 - 32))->distort.y_squash = 0.0;
-    v56 = v323 == 1;
-    (*(v311 - 32))->distort.xyz_scale = 0.0;
-    --v323;
+    (*(x_offsetd - 32))->distort.y_squash = 0.0;
+    v56 = edge_selectorh == 1;
+    (*(x_offsetd - 32))->distort.xyz_scale = 0.0;
+    --edge_selectorh;
   }
   while ( !v56 );
   *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + (_DWORD)game) + 16) |= 4u;
@@ -2935,19 +2935,19 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->directx_loader,
     aRocketlauncher_0,
     *(Object **)((char *)&game->vtable + (_DWORD)&loc_433877 + 1));
-  v324 = 5;
-  v312 = (Object **)((char *)game + (_DWORD)&loc_433677 + 1);
+  edge_selectori = 5;
+  x_offsete = (Object **)((char *)game + (_DWORD)&loc_433677 + 1);
   do
   {
-    (*v312)->flags |= 4u;
-    apply_object_toon(*v312, 0);
-    v275 = *v312;
-    v312 += 32;
+    (*x_offsete)->flags |= 4u;
+    apply_object_toon(*x_offsete, 0);
+    v275 = *x_offsete;
+    x_offsete += 32;
     v275->distort.z_wave = 0.0;
-    (*(v312 - 32))->distort.y_squash = 0.0;
-    v56 = v324 == 1;
-    (*(v312 - 32))->distort.xyz_scale = 0.0;
-    --v324;
+    (*(x_offsete - 32))->distort.y_squash = 0.0;
+    v56 = edge_selectori == 1;
+    (*(x_offsete - 32))->distort.xyz_scale = 0.0;
+    --edge_selectori;
   }
   while ( !v56 );
   (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5))[4] |= 4u;
@@ -2958,17 +2958,17 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   *(void **)((char *)&game->vtable + (_DWORD)&loc_434037 + 5) = get_or_create_texture_ref(
                                                                   &g_texture_refs,
                                                                   aXSnailTurboTga_0,
-                                                                  0,
+                                                                  nullptr,
                                                                   0);
   *(void **)((char *)&game->vtable + (_DWORD)&loc_43403D + 3) = get_or_create_texture_ref(
                                                                   &g_texture_refs,
                                                                   aXSnailTurboDam,
-                                                                  0,
+                                                                  nullptr,
                                                                   0);
   *(void **)((char *)&game->vtable + (_DWORD)&loc_434042 + 2) = get_or_create_texture_ref(
                                                                   &g_texture_refs,
                                                                   aXSnailTurboInv,
-                                                                  0,
+                                                                  nullptr,
                                                                   0);
   v276 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433F94 + (_DWORD)game), v276);
@@ -2978,7 +2978,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4302E3 + 1), v277);
   load_x_mesh(&game->directx_loader, aRocketBase000X, *(Object **)((char *)&game->vtable + (_DWORD)&loc_430306 + 2), 1);
   v278 = (char *)game + (_DWORD)&loc_43026E + 2;
-  v325 = 12;
+  edge_selectorj = 12;
   do
   {
     v279 = add_object_to_list(&g_object_list);
@@ -2989,58 +2989,58 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     initialize_vapour((Vapour *)(v278 - 36), *(Object **)v278, 0.16);
     set_bod_object((BodBase *)(v278 + 116), *(Object **)((char *)&game->vtable + (_DWORD)&loc_430306 + 2));
     v278 += 744;
-    --v325;
+    --edge_selectorj;
   }
-  while ( v325 );
-  v280 = get_or_create_texture_ref(&g_texture_refs, aObjectsVapourl_0, 0, 0);
+  while ( edge_selectorj );
+  v280 = get_or_create_texture_ref(&g_texture_refs, aObjectsVapourl_0, nullptr, 0);
   v281 = v280->flags;
   BYTE1(v281) = ((unsigned __int16)v280->flags >> 8) | 4;
   v280->flags = v281;
-  v282 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_4, 0, 0);
+  v282 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_4, nullptr, 0);
   v282->flags |= 0x1403u;
-  v283 = get_or_create_texture_ref(&g_texture_refs, texture_b, 0, 0);
+  v283 = get_or_create_texture_ref(&g_texture_refs, texture_b, nullptr, 0);
   v283->flags |= 0x1402u;
-  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_0, 0, 0)->flags = TEXTURE_REF_WRAP_ADDRESSING;
-  v284 = get_or_create_texture_ref(&g_texture_refs, aObjectsUnivers, 0, 0);
+  get_or_create_texture_ref(&g_texture_refs, cap_texture, nullptr, 0)->flags = TEXTURE_REF_WRAP_ADDRESSING;
+  v284 = get_or_create_texture_ref(&g_texture_refs, aObjectsUnivers, nullptr, 0);
   v285 = v284->flags;
   BYTE1(v285) = ((unsigned __int16)v284->flags >> 8) | 0x10;
   v284->flags = v285;
-  v286 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00, 0, 0);
+  v286 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00, nullptr, 0);
   v286->flags |= 0x1002u;
-  v287 = get_or_create_texture_ref(&g_texture_refs, texture_a, 0, 0);
+  v287 = get_or_create_texture_ref(&g_texture_refs, texture_a, nullptr, 0);
   v287->flags |= 0x1002u;
-  v288 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_5, 0, 0);
+  v288 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_5, nullptr, 0);
   v288->flags |= 0x1002u;
-  v289 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_6, 0, 0);
+  v289 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_6, nullptr, 0);
   v289->flags |= 0x1002u;
-  v290 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_7, 0, 0);
+  v290 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_7, nullptr, 0);
   v290->flags |= 0x1002u;
-  v291 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_8, 0, 0);
+  v291 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_8, nullptr, 0);
   v291->flags |= 0x1002u;
-  v292 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_9, 0, 0);
+  v292 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_9, nullptr, 0);
   v292->flags |= 0x1002u;
-  v293 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_10, 0, 0);
+  v293 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_10, nullptr, 0);
   v293->flags |= 0x1002u;
-  game->track.track_textures[0] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00, 0, 0);
-  game->track.slide_textures[0] = get_or_create_texture_ref(&g_texture_refs, texture_a, 0, 0);
-  game->track.track_textures[1] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_5, 0, 0);
-  game->track.slide_textures[1] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_6, 0, 0);
-  game->track.track_textures[2] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_7, 0, 0);
-  game->track.slide_textures[2] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_8, 0, 0);
-  game->track.track_textures[3] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_9, 0, 0);
-  game->track.slide_textures[3] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_10, 0, 0);
+  game->track.track_textures[0] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00, nullptr, 0);
+  game->track.slide_textures[0] = get_or_create_texture_ref(&g_texture_refs, texture_a, nullptr, 0);
+  game->track.track_textures[1] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_5, nullptr, 0);
+  game->track.slide_textures[1] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_6, nullptr, 0);
+  game->track.track_textures[2] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_7, nullptr, 0);
+  game->track.slide_textures[2] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_8, nullptr, 0);
+  game->track.track_textures[3] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_9, nullptr, 0);
+  game->track.slide_textures[3] = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_10, nullptr, 0);
   game->track.current_texture_set = 0;
-  get_or_create_texture_ref(&g_texture_refs, texture_b, 0, 0)->mip_levels = 2;
-  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_0, 0, 0)->mip_levels = 2;
-  get_or_create_texture_ref(&g_texture_refs, aObjectsUnivers, 0, 0)->mip_levels = 2;
-  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00, 0, 0)->mip_levels = 2;
-  get_or_create_texture_ref(&g_texture_refs, texture_a, 0, 0)->mip_levels = 2;
-  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_5, 0, 0)->mip_levels = 2;
-  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_6, 0, 0)->mip_levels = 2;
-  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_7, 0, 0)->mip_levels = 2;
-  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_8, 0, 0)->mip_levels = 2;
-  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_9, 0, 0)->mip_levels = 2;
-  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_10, 0, 0)->mip_levels = 2;
+  get_or_create_texture_ref(&g_texture_refs, texture_b, nullptr, 0)->mip_levels = 2;
+  get_or_create_texture_ref(&g_texture_refs, cap_texture, nullptr, 0)->mip_levels = 2;
+  get_or_create_texture_ref(&g_texture_refs, aObjectsUnivers, nullptr, 0)->mip_levels = 2;
+  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00, nullptr, 0)->mip_levels = 2;
+  get_or_create_texture_ref(&g_texture_refs, texture_a, nullptr, 0)->mip_levels = 2;
+  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_5, nullptr, 0)->mip_levels = 2;
+  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_6, nullptr, 0)->mip_levels = 2;
+  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_7, nullptr, 0)->mip_levels = 2;
+  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_8, nullptr, 0)->mip_levels = 2;
+  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_9, nullptr, 0)->mip_levels = 2;
+  get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_10, nullptr, 0)->mip_levels = 2;
   v294 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.barrier.bod, v294);
   load_object_definition(aObjectsBarrier, game->subgame.barrier.bod.object);
@@ -3048,34 +3048,34 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   store_color4f(&game->subgame.barrier.bod.color, 1.0, 1.0, 1.0, 0.80000001);
   game->subgame.barrier.bod.object->blend_mode = 7;
   initialize_track_render_cache_manager(&game->subgame.segment_cache);
-  v326 = 0;
+  edge_selectork = 0;
   v295 = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object;
   do
   {
-    for ( j = 0; j < 4; ++j )
+    for ( orientation = 0; orientation < 4; ++orientation )
     {
-      v313 = 0;
+      x_offsetf = 0;
       v296 = v295;
       do
       {
-        for ( k = 0; k < 3; ++k )
+        for ( j = 0; j < 3; ++j )
         {
           v298 = add_object_to_list(&g_object_list);
           set_bod_object((BodBase *)(v296 - 9), v298);
-          initialize_backdrop_tile_quad(*v296, v326, j, v313 - 1, k - 1, aObjectsUnivers_1);
+          initialize_backdrop_tile_quad(*v296, edge_selectork, orientation, x_offsetf - 1, j - 1, aObjectsUnivers_1);
           v299 = *v296;
           v296 += 14;
           v299->blend_mode = 5;
         }
-        ++v313;
+        ++x_offsetf;
       }
-      while ( v313 < 3 );
+      while ( x_offsetf < 3 );
       v295 = v296;
     }
-    ++v326;
+    ++edge_selectork;
   }
-  while ( v326 < 8 );
-  v300 = get_or_create_texture_ref(&g_texture_refs, aObjectsUnivers_1, 0, 0);
+  while ( edge_selectork < 8 );
+  v300 = get_or_create_texture_ref(&g_texture_refs, aObjectsUnivers_1, nullptr, 0);
   v301 = v300->flags;
   p_input = &game->game_inputs[0].input;
   BYTE1(v301) = ((unsigned __int16)v300->flags >> 8) | 4;
@@ -3090,15 +3090,15 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     p_input += 2;
   }
   while ( v303 < 2 );
-  for ( m = 0; m < game->player_count; ++m )
+  for ( x_offsetg = 0; x_offsetg < game->player_count; ++x_offsetg )
   {
-    v327 = (char *)game + 504 * m;
-    set_matrix_identity((TransformMatrix *)(v327 + 348));
-    set_matrix_identity((TransformMatrix *)(v327 + 508));
-    *((_DWORD *)v327 + 161) = 1121714176;
-    *((_DWORD *)v327 + 163) = &game->game_inputs[m];
+    edge_selectorl = (char *)game + 504 * x_offsetg;
+    set_matrix_identity((TransformMatrix *)(edge_selectorl + 348));
+    set_matrix_identity((TransformMatrix *)(edge_selectorl + 508));
+    *((_DWORD *)edge_selectorl + 161) = 1121714176;
+    *((_DWORD *)edge_selectorl + 163) = &game->game_inputs[x_offsetg];
     qmemcpy(
-      v327 + 348,
+      edge_selectorl + 348,
       initialize_matrix_from_values(
         &v333,
         0.073343001,
@@ -3118,14 +3118,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
         4.477407,
         1.0),
       0x40u);
-    initialize_frontend_overlay_color_lerp((_DWORD *)v327 + 170, 0x1000000);
-    release_mouse_cursor((MouseCursorState *)(v327 + 656));
-    v327[676] = 0;
-    if ( !m )
+    initialize_frontend_overlay_color_lerp((_DWORD *)edge_selectorl + 170, 0x1000000);
+    release_mouse_cursor((MouseCursorState *)(edge_selectorl + 656));
+    edge_selectorl[676] = 0;
+    if ( !x_offsetg )
       game->players[0].frontend_state = 12;
-    v327[781] = 0;
-    *((_DWORD *)v327 + 196) = 0;
-    rstrcpy_checked_ascii(v327 + 420, g_runtime_config.last_entered_player_name);
+    edge_selectorl[781] = 0;
+    *((_DWORD *)edge_selectorl + 196) = 0;
+    rstrcpy_checked_ascii(edge_selectorl + 420, g_runtime_config.last_entered_player_name);
   }
   initialize_high_score_tables((SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position
                                               + (_DWORD)game));

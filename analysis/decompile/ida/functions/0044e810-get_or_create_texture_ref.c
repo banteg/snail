@@ -6,8 +6,8 @@
 TextureRef *__thiscall get_or_create_texture_ref(
         TextureRefList *texture_list,
         char *texture_path,
-        int32_t arg3,
-        int16_t arg4)
+        void *payload,
+        int32_t flags)
 {
   int32_t v5; // edi
   char *name; // ebx
@@ -16,14 +16,14 @@ TextureRef *__thiscall get_or_create_texture_ref(
   v5 = 0;
   if ( texture_list->count == texture_list->capacity )
     report_errorf(aTooManyTexture);
-  if ( (arg4 & 0x800) != 0 || texture_list->count <= 0 )
+  if ( (flags & 0x800) != 0 || texture_list->count <= 0 )
   {
 LABEL_8:
     copy_c_string(texture_list->entries[texture_list->count].name, texture_path);
     texture_list->entries[texture_list->count].slot_index = texture_list->count;
     texture_list->entries[texture_list->count].flags = 0;
     texture_list->entries[texture_list->count].flags = TEXTURE_REF_REGISTERED;
-    texture_list->entries[texture_list->count].texture_ref = (void *)arg3;
+    texture_list->entries[texture_list->count].texture_ref = payload;
     texture_list->entries[texture_list->count].mip_levels = 1;
     v7 = texture_list->count++;
     return &texture_list->entries[v7];

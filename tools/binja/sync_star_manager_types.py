@@ -8,6 +8,7 @@ import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
+    apply_data_var_updates,
     apply_symbol_updates,
     apply_struct_and_proto_updates,
     current_struct_size,
@@ -25,6 +26,16 @@ OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 
 FUNCTION_SYMBOL_UPDATES = (
     ("0x44e410", "update_sprite_facing_angle"),
+    ("0x44e800", "initialize_texture_list"),
+    ("0x44e810", "get_or_create_texture_ref"),
+)
+
+DATA_SYMBOL_UPDATES = (
+    ("0x4b7790", "g_texture_refs"),
+)
+
+DATA_VAR_UPDATES = (
+    ("0x4b7790", "TextureRefList"),
 )
 
 GAME_ROOT_FIELD_UPDATES = (
@@ -41,6 +52,7 @@ EXPECTED_STRUCT_SIZES = {
     "BodNode": 0x10,
     "BodBase": 0x38,
     "TextureRef": 0xA4,
+    "TextureRefList": 0x14058,
     "Sprite": 0xB4,
     "SpriteManager": 0x83D7C,
     "StarManagerEntry": 0x2C,
@@ -62,6 +74,12 @@ TEXTURE_REF_FIELD_UPDATES = (
     ("0x94", "frame_progress_step", "float"),
     ("0x98", "texture_ref", "void*"),
     ("0xa0", "mip_levels", "int32_t"),
+)
+
+TEXTURE_REF_LIST_FIELD_UPDATES = (
+    ("0x00", "count", "int32_t"),
+    ("0x04", "capacity", "int32_t"),
+    ("0x08", "entries", "TextureRef[0x1f4]"),
 )
 
 SPRITE_FIELD_UPDATES = (
@@ -130,6 +148,14 @@ STAR_MANAGER_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "initialize_texture_list",
+        "void __thiscall initialize_texture_list(TextureRefList* texture_list, int32_t capacity)",
+    ),
+    (
+        "get_or_create_texture_ref",
+        "TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, void* payload, int32_t flags)",
+    ),
     ("initialize_sprite", "void __thiscall initialize_sprite(Sprite* sprite)"),
     ("update_sprite", "void __thiscall update_sprite(Sprite* sprite)"),
     (
@@ -280,6 +306,7 @@ def main() -> int:
     struct_updates = (
         ("BodBase", BOD_BASE_FIELD_UPDATES),
         ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
+        ("TextureRefList", TEXTURE_REF_LIST_FIELD_UPDATES),
         ("Sprite", SPRITE_FIELD_UPDATES),
         ("SpriteManager", SPRITE_MANAGER_FIELD_UPDATES),
         ("StarManagerEntry", STAR_MANAGER_ENTRY_FIELD_UPDATES),
@@ -301,6 +328,17 @@ def main() -> int:
             target=args.target,
             struct_updates=struct_updates,
             proto_updates=PROTO_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=DATA_SYMBOL_UPDATES,
+            kind="data",
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=DATA_VAR_UPDATES,
         ),
     ]
     return emit_summary(

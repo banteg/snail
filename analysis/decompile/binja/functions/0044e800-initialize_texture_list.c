@@ -3,6 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_texture_list @ 0x44e800 */
 
-0044e804        *arg1 = 0
-0044e80a        arg1[1] = arg2
-0044e80d        return arg2
+0044e804        texture_list->count = 0
+0044e80a        texture_list->capacity = capacity
+0044e80d        return

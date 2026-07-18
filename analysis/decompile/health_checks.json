@@ -3778,14 +3778,44 @@
       "required_substrings": [
         ".name",
         ".slot_index",
-        ".texture_ref = arg3",
+        ".texture_ref = payload",
         ".mip_levels = 1"
       ],
       "forbidden_substrings": [
         ".texture_path",
         ".arg3_98",
         ".one_a0",
-        ".unknown_a0"
+        ".unknown_a0",
+        "arg3",
+        "int16_t flags"
+      ]
+    },
+    {
+      "name": "bn_texture_ref_list_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/0044e800-initialize_texture_list.c",
+      "required_substrings": [
+        "texture_list->count = 0",
+        "texture_list->capacity = capacity",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return capacity",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_texture_ref_registry_lifecycle",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "initialize_texture_list(&g_texture_refs, 0x1f4)",
+        "get_or_create_texture_ref(&g_texture_refs, \"x/snail-turbo.tga\", nullptr, 0)"
+      ],
+      "forbidden_substrings": [
+        "initialize_texture_list(0x4b7790",
+        "initialize_texture_list(&data_4b7790",
+        "get_or_create_texture_ref(&g_texture_refs, \"x/snail-turbo.tga\", 0, 0)"
       ]
     },
     {
@@ -10461,14 +10491,45 @@
       "required_substrings": [
         ".name",
         ".slot_index",
-        ".texture_ref = (void *)arg3",
+        ".texture_ref = payload",
         ".mip_levels = 1"
       ],
       "forbidden_substrings": [
         ".texture_path",
         ".arg3_98",
         ".one_a0",
-        ".unknown_a0"
+        ".unknown_a0",
+        "arg3",
+        "int16_t flags"
+      ]
+    },
+    {
+      "name": "ida_texture_ref_list_initializer_owner",
+      "artifact": "analysis/decompile/ida/functions/0044e800-initialize_texture_list.c",
+      "required_substrings": [
+        "void __thiscall initialize_texture_list(TextureRefList *texture_list, int32_t capacity)",
+        "texture_list->count = 0;",
+        "texture_list->capacity = capacity;"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall initialize_texture_list",
+        "sub_44E800",
+        "_DWORD *this",
+        "return a2",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_texture_ref_registry_lifecycle",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "initialize_texture_list(&g_texture_refs, 500);",
+        "get_or_create_texture_ref(&g_texture_refs, aObjectsVapourl_0, nullptr, 0)"
+      ],
+      "forbidden_substrings": [
+        "sub_44E800",
+        "(TextureRefList *)0x4B7790",
+        "initialize_texture_list((int *)&g_texture_refs"
       ]
     },
     {

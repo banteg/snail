@@ -21,6 +21,7 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 
 TRUSTED_NAMES = [
+    (0x4B7790, "g_texture_refs"),
     (0x44DE90, "initialize_sprite"),
     (0x44DF30, "update_sprite"),
     (0x44E0F0, "register_sprite_texture"),
@@ -33,9 +34,19 @@ TRUSTED_NAMES = [
     (0x44E550, "set_sprite_texture_ref"),
     (0x44E570, "get_sprite_texture"),
     (0x44E580, "get_sprite_texture_ref"),
+    (0x44E800, "initialize_texture_list"),
+    (0x44E810, "get_or_create_texture_ref"),
 ]
 
 TRUSTED_DECLARATIONS = [
+    (
+        "initialize_texture_list",
+        "void __thiscall initialize_texture_list(TextureRefList *texture_list, int32_t capacity);",
+    ),
+    (
+        "get_or_create_texture_ref",
+        "TextureRef *__thiscall get_or_create_texture_ref(TextureRefList *texture_list, char *texture_path, void *payload, int32_t flags);",
+    ),
     (
         "initialize_sprite",
         "void __thiscall initialize_sprite(Sprite *sprite);",
@@ -114,7 +125,17 @@ TRUSTED_DECLARATIONS = [
     ),
 ]
 
+TRUSTED_DATA_DECLARATIONS = [
+    (0x4B7790, "g_texture_refs", "TextureRefList g_texture_refs;"),
+]
+
 REQUIRED_OWNER_MARKERS = (
+    "#define TEXTURE_REF_LIST_CAPACITY 500",
+    "typedef struct TextureRefList {",
+    "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];",
+    "void __thiscall initialize_texture_list(",
+    "TextureRef* __thiscall get_or_create_texture_ref(",
+    "extern TextureRefList g_texture_refs;",
     "struct Sprite {",
     "float facing_refresh_progress;",
     "typedef struct StarManagerEntry {",
@@ -129,6 +150,8 @@ EXPECTED_OWNER_SIZES = {
     "Object": 0xDC,
     "BodBase": 0x38,
     "TransformMatrix": 0x40,
+    "TextureRef": 0xA4,
+    "TextureRefList": 0x14058,
     "Sprite": 0xB4,
     "StarManagerEntry": 0x2C,
     "StarManager": 0x4C,
@@ -140,8 +163,12 @@ DEPENDENCY_HEADER_NAMES = (
 )
 
 REANALYSIS_FUNCTIONS = (
+    0x40ACF0,
     0x40A490,
+    0x44E0F0,
     0x44E410,
+    0x44E800,
+    0x44E810,
 )
 
 
@@ -162,6 +189,11 @@ def _normalize_type_text(value: str | None) -> str | None:
 
 def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=\()", "", declaration, count=1)
+    return _normalize_type_text(unnamed) or ""
+
+
+def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
+    unnamed = re.sub(rf"\b{re.escape(selector)}\b", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
 
 
@@ -355,6 +387,37 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "selector": selector,
                     "reason": "verification_failed",
                     "observed": observed,
+                }
+            )
+            continue
+        applied += 1
+
+    for address, selector, declaration in TRUSTED_DATA_DECLARATIONS:
+        expected = _data_declaration_to_observed_type(selector, declaration)
+        if _normalize_type_text(idc.get_type(address)) == expected:
+            unchanged += 1
+            continue
+
+        if not idc.SetType(address, declaration):
+            failed.append(
+                {
+                    "address": hex(address),
+                    "selector": selector,
+                    "declaration": declaration,
+                    "reason": "set_data_type_failed",
+                }
+            )
+            continue
+
+        observed = idc.get_type(address)
+        if _normalize_type_text(observed) != expected:
+            failed.append(
+                {
+                    "address": hex(address),
+                    "selector": selector,
+                    "declaration": declaration,
+                    "observed": observed,
+                    "reason": "data_verification_failed",
                 }
             )
             continue
