@@ -114,10 +114,11 @@ typedef char RenderableBod_must_be_0x80[
     (sizeof(RenderableBod) == 0x80) ? 1 : -1
 ];
 
-/* Compatibility spelling for the authored cRFringe owner. */
-typedef struct FringeObject {
+/* Authored cRFringe BOD stored inline by the shared fringe manager. */
+typedef struct Fringe {
     BodBase bod;
-} FringeObject;
+} Fringe;
+typedef char Fringe_must_be_0x38[(sizeof(Fringe) == 0x38) ? 1 : -1];
 
 typedef struct Player Player;
 typedef struct SubSegment SubSegment;
@@ -1001,9 +1002,12 @@ typedef struct SlugVoiceManager {
 } SlugVoiceManager;
 
 typedef struct FringeManager {
-    FringeObject objects[7000];
+    Fringe objects[7000];
     int32_t count;
 } FringeManager;
+typedef char FringeManager_must_be_0x5fb44[
+    (sizeof(FringeManager) == 0x5fb44) ? 1 : -1
+];
 
 /* Exact 0x330-byte authored cRTimeTrial owner. */
 typedef struct TimeTrial {
@@ -1150,10 +1154,10 @@ typedef struct TrackRowCell {
     uint8_t open_edge_mask;
     uint8_t _pad_3e[0x2];
     uint32_t lane_and_flags;
-    FringeObject* fringe_front;
-    FringeObject* fringe_right;
-    FringeObject* fringe_left;
-    FringeObject* fringe_back;
+    Fringe* fringe_front;
+    Fringe* fringe_right;
+    Fringe* fringe_left;
+    Fringe* fringe_back;
 } TrackRowCell;
 
 typedef enum SubRowFlag {
@@ -2308,7 +2312,10 @@ SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(
     SubgameRuntime* game
 );
 SubRow* __thiscall initialize_track_row_runtime(SubRow* row);
-FringeObject* __thiscall initialize_fringe_object(FringeObject* fringe);
+Fringe* __thiscall initialize_fringe_object(Fringe* fringe);
+void __thiscall refresh_fringe_object_draw_list(Fringe* fringe);
+void __thiscall initialize_fringe_manager(FringeManager* manager);
+Fringe* __thiscall allocate_fringe_object(FringeManager* manager);
 ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start);
 void __thiscall initialize_click_start(ClickStart* click_start, Player* player);
 void __thiscall update_click_start(ClickStart* click_start);

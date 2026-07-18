@@ -2,49 +2,46 @@
 /* function: refresh_fringe_object_draw_list @ 0x439b00 */
 /* selector: refresh_fringe_object_draw_list */
 
-// Copies the current track skirt tint into one fringe object and, once its world-z falls behind the live fringe threshold, unlinks the object from the active list and requeues it onto the shared draw-list bucket.
-void __thiscall sub_439B00(int this)
+// Windows cRFringe callback: copies the current track skirt tint into one authored Fringe and, once its world-z falls behind the live fringe threshold, unlinks it from the active list and requeues it onto the shared draw-list bucket. The constructor table points directly here; Android preserves `cRFringe::AI()` but implements it as a no-op.
+void __thiscall refresh_fringe_object_draw_list(Fringe *fringe)
 {
-  _DWORD *v2; // eax
-  double v3; // st7
-  int v4; // eax
-  char *v5; // ecx
-  int v6; // eax
-  int v7; // eax
-  int v8; // eax
-  _DWORD v9[4]; // [esp+4h] [ebp-10h] BYREF
+  tColour *track_skirt_color; // eax
+  double z; // st7
+  uint32_t list_flags; // eax
+  BodList *p_active_bod_list; // ecx
+  struct BodNode *list_next; // eax
+  struct BodNode *list_prev; // eax
+  uint32_t v8; // eax
+  tColour out; // [esp+4h] [ebp-10h] BYREF
 
-  v2 = get_track_skirt_color((int *)MEMORY[0x4DF904] + 119174, v9);
-  v3 = *(float *)(this + 24);
-  *(_DWORD *)(this + 40) = *v2;
-  *(_DWORD *)(this + 44) = v2[1];
-  *(_DWORD *)(this + 48) = v2[2];
-  *(_DWORD *)(this + 52) = v2[3];
-  if ( v3 < *((float *)MEMORY[0x4DF904] + 1100223) )
+  track_skirt_color = get_track_skirt_color(&g_game_base->subgame, &out);
+  z = fringe->bod.position.z;
+  fringe->bod.color = *track_skirt_color;
+  if ( z < g_game_base->subgame.player.interaction_max_z )
   {
-    v4 = *(_DWORD *)(this + 4);
-    v5 = (char *)MEMORY[0x4DF904] + 1448;
-    if ( (v4 & 0x200) != 0 )
+    list_flags = fringe->bod.bod.list_flags;
+    p_active_bod_list = &g_game_base->active_bod_list;
+    if ( (list_flags & 0x200) != 0 )
     {
-      if ( (v4 & 0x40) != 0 )
+      if ( (list_flags & 0x40) != 0 )
       {
         report_errorf(aListRemoveNext);
       }
       else
       {
-        v6 = *(_DWORD *)(this + 12);
-        if ( v6 )
-          *(_DWORD *)(v6 + 8) = *(_DWORD *)(this + 8);
-        v7 = *(_DWORD *)(this + 8);
-        if ( v7 )
-          *(_DWORD *)(v7 + 12) = *(_DWORD *)(this + 12);
+        list_next = fringe->bod.bod.list_next;
+        if ( list_next )
+          list_next->list_prev = fringe->bod.bod.list_prev;
+        list_prev = fringe->bod.bod.list_prev;
+        if ( list_prev )
+          list_prev->list_next = fringe->bod.bod.list_next;
         else
-          *((_DWORD *)v5 + 1) = *(_DWORD *)(this + 12);
-        *(_DWORD *)(this + 12) = *((_DWORD *)v5 + 2);
-        *((_DWORD *)v5 + 2) = this;
-        v8 = *(_DWORD *)(this + 4);
+          p_active_bod_list->first = fringe->bod.bod.list_next;
+        fringe->bod.bod.list_next = p_active_bod_list->free_top;
+        p_active_bod_list->free_top = &fringe->bod.bod;
+        v8 = fringe->bod.bod.list_flags;
         BYTE1(v8) &= ~2u;
-        *(_DWORD *)(this + 4) = v8;
+        fringe->bod.bod.list_flags = v8;
       }
     }
     else
@@ -53,4 +50,3 @@ void __thiscall sub_439B00(int this)
     }
   }
 }
-

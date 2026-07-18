@@ -6,9 +6,9 @@
 void __thiscall initialize_subgame(SubgameRuntime *game)
 {
   int v1; // edx
-  FringeObject **p_fringe_front; // eax
+  Fringe **p_fringe_front; // eax
   int v4; // ecx
-  FringeObject **v5; // edi
+  Fringe **v5; // edi
   int32_t subgame_rebuild_selector; // eax
   int32_t landscape_script_by_name; // eax
   int32_t level_mode; // eax

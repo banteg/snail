@@ -221,3 +221,12 @@ The only pre-repair tag was Binary Ninja's analyzer-owned unresolved-stack
 diagnostic. The repair preserved it through recreation, and a fresh analysis
 then retired it because the condition no longer reproduced. No matcher source
 or bytes changed in this ownership-only closure.
+
+## 2026-07-18 authored Fringe ownership
+
+The analyzer-only `FringeObject` compatibility name is now retired. The four
+directional cell fields are explicit borrowed `Fringe*` handles, while
+`SubgameRuntime::fringe_manager` owns all 7000 inline `Fringe` records and its
+cursor. Focused replay also types the exact constructor, pool reset/allocation,
+and vtable callback together, preventing the cell handles and pool element from
+drifting into separate same-sized analyzer types.

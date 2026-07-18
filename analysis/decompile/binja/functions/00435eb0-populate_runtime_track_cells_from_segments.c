@@ -84,7 +84,7 @@
 004360d9        char first_or_last_row = 0
 004360de        int32_t row_event_owner = 0
 004360e2        game->player.follow_state.flag_3c = 0
-004360e9        struct FringeObject** var_28 = &game->runtime_cells[0][0].fringe_front
+004360e9        struct Fringe** var_28 = &game->runtime_cells[0][0].fringe_front
 004360ed        int32_t* edi = &game->runtime_rows[0].projection_payload.y
 004360f3        int32_t var_30 = 0xc80
 00436192        bool cond:3_1
@@ -117,10 +117,10 @@
 0043615e        i_2 = i_7
 0043615e        i_7 -= 1
 0043615f        do while (i_2 != 1)
-00436161        struct FringeObject** eax_20 = var_28
+00436161        struct Fringe** eax_20 = var_28
 00436165        int32_t remaining_cell_lanes = 8
 0043617d        int32_t i_3
-0043616a        struct FringeObject** esi_6 = eax_20
+0043616a        struct Fringe** esi_6 = eax_20
 0043616e        eax_20 = &eax_20[0x15]
 00436171        i_3 = remaining_cell_lanes
 00436171        remaining_cell_lanes -= 1
@@ -697,10 +697,10 @@
 004370ea        if (game->level_mode != 3 || ((game->runtime_flags).w:1.b & 4) != 0)
 004370ec        runtime_cell_anchor->cell.anchor_position.y = -3f
 004370fa        runtime_cell_anchor->cell.anchor_position.z = var_28_2
-00437100        struct FringeObject** fringe_slot = &runtime_cell_anchor->cell.fringe_front
+00437100        struct Fringe** fringe_slot = &runtime_cell_anchor->cell.fringe_front
 00437104        int32_t remaining_fringe_slots = 4
 00437135        int32_t k_1
-00437109        struct FringeObject* fringe_object
+00437109        struct Fringe* fringe_object
 00437109        fringe_object.b = *fringe_slot
 00437109        fringe_object:1.b = *(fringe_slot + 1)
 00437109        fringe_object:2.b = *(fringe_slot + 2)
@@ -709,7 +709,7 @@
 00437111        fringe_object->bod.position.z = 0f
 00437114        fringe_object->bod.position.y = 0f
 00437117        fringe_object->bod.position.x = 0
-0043711a        struct FringeObject* fringe_object_reloaded
+0043711a        struct Fringe* fringe_object_reloaded
 0043711a        fringe_object_reloaded.b = *fringe_slot
 0043711a        fringe_object_reloaded:1.b = *(fringe_slot + 1)
 0043711a        fringe_object_reloaded:2.b = *(fringe_slot + 2)

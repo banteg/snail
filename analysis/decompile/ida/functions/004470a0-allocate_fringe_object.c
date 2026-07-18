@@ -3,7 +3,7 @@
 /* selector: allocate_fringe_object */
 
 // Allocates the next 0x38-byte object from the shared 7000-entry fringe-manager pool, or raises the `Too many Fringes` error if the pool overflows. Cross-port Android symbols match this helper to `cRFringeManager::GetFringe()`.
-FringeObject *__thiscall allocate_fringe_object(FringeManager *manager)
+Fringe *__thiscall allocate_fringe_object(FringeManager *manager)
 {
   int32_t count; // edx
 

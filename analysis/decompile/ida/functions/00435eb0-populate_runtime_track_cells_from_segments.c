@@ -20,9 +20,9 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   _DWORD *v14; // esi
   int v15; // ecx
   int v16; // edx
-  FringeObject **v17; // eax
+  Fringe **v17; // eax
   int v18; // ecx
-  FringeObject **v19; // esi
+  Fringe **v19; // esi
   int32_t v20; // eax
   uint8_t *visited_cursor; // ecx
   int32_t v22; // edi
@@ -100,9 +100,9 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   tColour *track_skirt_color; // eax
   int v95; // eax
   uint8_t v96; // al
-  FringeObject **fringe_slot; // ecx
+  Fringe **fringe_slot; // ecx
   int32_t remaining_fringe_slots; // edx
-  FringeObject *fringe_object; // eax
+  Fringe *fringe_object; // eax
   Vec3 *fringe_position; // eax
   bool v101; // cc
   float v102; // [esp+0h] [ebp-5Ch]
@@ -114,7 +114,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int v109; // [esp+2Ch] [ebp-30h]
   int32_t lane; // [esp+2Ch] [ebp-30h]
   int32_t row_event_owner; // [esp+30h] [ebp-2Ch]
-  FringeObject **p_fringe_front; // [esp+34h] [ebp-28h]
+  Fringe **p_fringe_front; // [esp+34h] [ebp-28h]
   float v113; // [esp+34h] [ebp-28h]
   int32_t segment_cursor; // [esp+38h] [ebp-24h]
   int32_t trampoline_counter; // [esp+3Ch] [ebp-20h]

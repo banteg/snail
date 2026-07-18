@@ -50,6 +50,19 @@ BOD_CORE_OWNER_SIZES = {
     "RenderableBod": 0x80,
 }
 
+FRINGE_SYMBOL_UPDATES = (
+    ("0x408650", "initialize_fringe_object"),
+    ("0x439b00", "refresh_fringe_object_draw_list"),
+    ("0x447090", "initialize_fringe_manager"),
+    ("0x4470a0", "allocate_fringe_object"),
+    ("0x497344", "g_fringe_vtable"),
+)
+
+FRINGE_OWNER_SIZES = {
+    "Fringe": 0x38,
+    "FringeManager": 0x5FB44,
+}
+
 TRACK_RENDER_CACHE_SYMBOL_UPDATES = (
     ("0x4085e0", "initialize_active_bod"),
     ("0x433e80", "update_active_bod"),
@@ -65,7 +78,7 @@ SYMBOL_UPDATES = (
     ("0x408590", "initialize_track_row_runtime"),
     *BOD_CORE_SYMBOL_UPDATES,
     *TRACK_RENDER_CACHE_SYMBOL_UPDATES,
-    ("0x408650", "initialize_fringe_object"),
+    *FRINGE_SYMBOL_UPDATES,
     ("0x42f6e0", "initialize_object_constructor_thunk"),
     ("0x442500", "initialize_vapour"),
     ("0x442540", "reset_vapour"),
@@ -81,7 +94,6 @@ SYMBOL_UPDATES = (
     ("0x49731c", "g_vapour_vtable"),
     ("0x497320", "g_sub_health_vtable"),
     ("0x497330", "g_row_model_vtable"),
-    ("0x497344", "g_fringe_vtable"),
     ("0x44c870", "initialize_global_identity_matrix_thunk"),
     ("0x44c880", "initialize_global_identity_matrix"),
     ("0x44cac0", "multiply_vector_by_matrix_copy"),
@@ -362,7 +374,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Quaternion",
     "RenderableBod",
     "TrackRenderCacheSlot",
-    "FringeObject",
+    "Fringe",
     "FringeManager",
     "SMTracks",
     "SmtrackHeightfieldAnimator",
@@ -465,6 +477,28 @@ def verify_bod_core_owner_sizes(*, target: str) -> dict[str, object]:
     return {
         "op": "owner_size_verify",
         "status": "verified",
+        "owner_sizes": observed,
+    }
+
+
+def verify_fringe_owner_sizes(*, target: str) -> dict[str, object]:
+    """Fail closed before applying method ABIs to incompatible Fringe owners."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=FRINGE_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in FRINGE_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"Fringe owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "fringe",
         "owner_sizes": observed,
     }
 
@@ -1404,7 +1438,7 @@ POPULATE_RUNTIME_USER_VAR_UPDATES = (
         4697,
         67,
         "fringe_slot",
-        "FringeObject**",
+        "Fringe**",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -1420,7 +1454,7 @@ POPULATE_RUNTIME_USER_VAR_UPDATES = (
         4697,
         66,
         "fringe_object",
-        "FringeObject*",
+        "Fringe*",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -1428,7 +1462,7 @@ POPULATE_RUNTIME_USER_VAR_UPDATES = (
         4714,
         66,
         "fringe_object_reloaded",
-        "FringeObject*",
+        "Fringe*",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -1438,6 +1472,21 @@ POPULATE_RUNTIME_USER_VAR_UPDATES = (
         "fringe_position",
         "Vec3*",
     ),
+)
+
+POPULATE_FRINGE_USER_VAR_NAMES = frozenset(
+    {
+        "fringe_slot",
+        "remaining_fringe_slots",
+        "fringe_object",
+        "fringe_object_reloaded",
+        "fringe_position",
+    }
+)
+POPULATE_FRINGE_USER_VAR_UPDATES = tuple(
+    update
+    for update in POPULATE_RUNTIME_USER_VAR_UPDATES
+    if update[4] in POPULATE_FRINGE_USER_VAR_NAMES
 )
 
 # CondenseTrack carries field-first cursors for the row attachment flags and
@@ -1879,8 +1928,13 @@ BOD_BASE_FIELD_UPDATES = (
     ("0x28", "color", "tColour"),
 )
 
-FRINGE_OBJECT_FIELD_UPDATES = (
+FRINGE_FIELD_UPDATES = (
     ("0x00", "bod", "BodBase"),
+)
+
+FRINGE_MANAGER_FIELD_UPDATES = (
+    ("0x00000", "objects", "Fringe[7000]"),
+    ("0x5fb40", "count", "int32_t"),
 )
 
 TRACK_ROW_CELL_FIELD_UPDATES = (
@@ -1894,10 +1948,10 @@ TRACK_ROW_CELL_FIELD_UPDATES = (
     ("0x3c", "tile_id", "uint8_t"),
     ("0x3d", "open_edge_mask", "uint8_t"),
     ("0x40", "lane_and_flags", "uint32_t"),
-    ("0x44", "fringe_front", "FringeObject*"),
-    ("0x48", "fringe_right", "FringeObject*"),
-    ("0x4c", "fringe_left", "FringeObject*"),
-    ("0x50", "fringe_back", "FringeObject*"),
+    ("0x44", "fringe_front", "Fringe*"),
+    ("0x48", "fringe_right", "Fringe*"),
+    ("0x4c", "fringe_left", "Fringe*"),
+    ("0x50", "fringe_back", "Fringe*"),
 )
 
 ROW_MODEL_FIELD_UPDATES = (
@@ -1997,6 +2051,10 @@ BOD_CORE_DATA_VAR_UPDATES = (
     ("0x50331c", "int32_t"),
 )
 
+FRINGE_DATA_VAR_UPDATES = (
+    ("0x497344", "void*"),
+)
+
 TRACK_RENDER_CACHE_DATA_VAR_UPDATES = (
     ("0x497338", "void*"),
 )
@@ -2008,6 +2066,7 @@ DATA_VAR_UPDATES = (
     ("0x49731c", "void*"),
     ("0x497320", "void*"),
     *BOD_CORE_DATA_VAR_UPDATES,
+    *FRINGE_DATA_VAR_UPDATES,
     *TRACK_RENDER_CACHE_DATA_VAR_UPDATES,
     ("0x4ac5c8", "TipData"),
     ("0x643190", "float"),
@@ -2167,6 +2226,25 @@ BOD_CORE_PROTO_UPDATES = (
     ),
 )
 
+FRINGE_PROTO_UPDATES = (
+    (
+        "initialize_fringe_object",
+        "Fringe* __thiscall initialize_fringe_object(Fringe* fringe)",
+    ),
+    (
+        "refresh_fringe_object_draw_list",
+        "void __thiscall refresh_fringe_object_draw_list(Fringe* fringe)",
+    ),
+    (
+        "initialize_fringe_manager",
+        "void __thiscall initialize_fringe_manager(FringeManager* manager)",
+    ),
+    (
+        "allocate_fringe_object",
+        "Fringe* __thiscall allocate_fringe_object(FringeManager* manager)",
+    ),
+)
+
 TRACK_RENDER_CACHE_PROTO_UPDATES = (
     (
         "initialize_active_bod",
@@ -2225,6 +2303,7 @@ PROTO_UPDATES = (
     *SLUG_VOICE_MANAGER_PROTO_UPDATES,
     *THANKS_SCREEN_PROTO_UPDATES,
     *BOD_CORE_PROTO_UPDATES,
+    *FRINGE_PROTO_UPDATES,
     *TRACK_RENDER_CACHE_PROTO_UPDATES,
     (
         "initialize_noop_renderable_bod",
@@ -2237,10 +2316,6 @@ PROTO_UPDATES = (
     (
         "initialize_track_row_runtime",
         "SubRow* __thiscall initialize_track_row_runtime(SubRow* row)",
-    ),
-    (
-        "initialize_fringe_object",
-        "FringeObject* __thiscall initialize_fringe_object(FringeObject* fringe)",
     ),
     (
         "initialize_object_constructor_thunk",
@@ -2273,14 +2348,6 @@ PROTO_UPDATES = (
     (
         "update_active_landscape_entry",
         "void __thiscall update_active_landscape_entry(ActiveLandscapeEntry* active_entry)",
-    ),
-    (
-        "initialize_fringe_manager",
-        "void __thiscall initialize_fringe_manager(FringeManager* manager)",
-    ),
-    (
-        "allocate_fringe_object",
-        "FringeObject* __thiscall allocate_fringe_object(FringeManager* manager)",
     ),
     (
         "build_track_fringe_mesh",
@@ -3114,6 +3181,14 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     focused_group.add_argument(
+        "--fringe-only",
+        action="store_true",
+        help=(
+            "Replay only the authored Fringe/FringeManager layouts, borrowed "
+            "cell pointers, and lifecycle method ABIs."
+        ),
+    )
+    focused_group.add_argument(
         "--golb-only",
         action="store_true",
         help="Replay only the GolbShot/path-follow ownership slice.",
@@ -3191,6 +3266,64 @@ def main() -> int:
                 REPO_ROOT,
                 target=args.target,
                 updates=BOD_CORE_DATA_VAR_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
+    if args.fringe_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=(
+                    *BOD_CORE_OWNER_SIZES,
+                    *FRINGE_OWNER_SIZES,
+                    "TrackRowCell",
+                ),
+            )
+        )
+        operations.append(verify_bod_core_owner_sizes(target=args.target))
+        operations.append(verify_fringe_owner_sizes(target=args.target))
+        operations.extend(
+            apply_symbol_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=FRINGE_SYMBOL_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_struct_and_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_updates=(
+                    ("Fringe", FRINGE_FIELD_UPDATES),
+                    ("FringeManager", FRINGE_MANAGER_FIELD_UPDATES),
+                    ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
+                ),
+                proto_updates=FRINGE_PROTO_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=(
+                    *POPULATE_FRINGE_USER_VAR_UPDATES,
+                    *FRINGE_RUNTIME_USER_VAR_UPDATES,
+                ),
+            )
+        )
+        operations.extend(
+            apply_data_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=FRINGE_DATA_VAR_UPDATES,
             )
         )
         return emit_summary(
@@ -3391,6 +3524,7 @@ def main() -> int:
             )
         )
         operations.append(verify_bod_core_owner_sizes(target=args.target))
+        operations.append(verify_fringe_owner_sizes(target=args.target))
         operations.append(
             ensure_path_analysis_views(
                 target=args.target,
@@ -3476,7 +3610,8 @@ def main() -> int:
                 ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
                 ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
                 ("BodBase", BOD_BASE_FIELD_UPDATES),
-                ("FringeObject", FRINGE_OBJECT_FIELD_UPDATES),
+                ("Fringe", FRINGE_FIELD_UPDATES),
+                ("FringeManager", FRINGE_MANAGER_FIELD_UPDATES),
                 ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
                 ("RowModel", ROW_MODEL_FIELD_UPDATES),
                 ("SubRow", SUB_ROW_FIELD_UPDATES),

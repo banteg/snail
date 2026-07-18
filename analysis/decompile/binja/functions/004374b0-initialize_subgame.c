@@ -4,11 +4,11 @@
 /* function: initialize_subgame @ 0x4374b0 */
 
 004374b3        int32_t i_3 = 0xc80
-004374be        struct FringeObject** eax = &game->runtime_cells[0][0].fringe_front
+004374be        struct Fringe** eax = &game->runtime_cells[0][0].fringe_front
 004374df        int32_t i
 004374c4        int32_t j_1 = 8
 004374dc        int32_t j
-004374c9        struct FringeObject** edi_1 = eax
+004374c9        struct Fringe** edi_1 = eax
 004374cd        eax = &eax[0x15]
 004374d0        j = j_1
 004374d0        j_1 -= 1

@@ -58,6 +58,7 @@ TRUSTED_NAMES = [
     (0x433FD0, "initialize_thanks_for_playing_screen"),
     (0x4340C0, "uninit_thanks_screen"),
     (0x4340F0, "update_thanks_for_playing_screen"),
+    (0x439B00, "refresh_fringe_object_draw_list"),
     (0x43A390, "update_jetpack_gauge"),
     (0x43A580, "uninit_jet_particles"),
     (0x43A5B0, "initialize_jet_particles"),
@@ -147,6 +148,7 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x497318, "g_jet_pack_vtable", "void *g_jet_pack_vtable;"),
     (0x49731C, "g_vapour_vtable", "void *g_vapour_vtable;"),
     (0x497320, "g_sub_health_vtable", "void *g_sub_health_vtable;"),
+    (0x497344, "g_fringe_vtable", "void *g_fringe_vtable;"),
     (0x497338, "g_active_bod_vtable", "void *g_active_bod_vtable;"),
     (0x4974FC, "g_bod_base_vtable", "void *g_bod_base_vtable;"),
     (0x497500, "g_renderable_bod_vtable", "void *g_renderable_bod_vtable;"),
@@ -186,6 +188,21 @@ BOD_CORE_OWNER_SIZES = {
     "BodList": 0x0C,
     "BodBase": 0x38,
     "RenderableBod": 0x80,
+}
+
+FRINGE_OWNER_MARKERS = (
+    "Fringe_must_be_0x38",
+    "FringeManager_must_be_0x5fb44",
+    "Fringe objects[7000];",
+    "Fringe* __thiscall initialize_fringe_object(Fringe* fringe);",
+    "void __thiscall refresh_fringe_object_draw_list(Fringe* fringe);",
+    "void __thiscall initialize_fringe_manager(FringeManager* manager);",
+    "Fringe* __thiscall allocate_fringe_object(FringeManager* manager);",
+)
+
+FRINGE_OWNER_SIZES = {
+    "Fringe": 0x38,
+    "FringeManager": 0x5FB44,
 }
 
 TRACK_RENDER_CACHE_OWNER_SIZES = {
@@ -247,8 +264,11 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x435180,  # merge_track_tile_runs
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
     0x435EB0,  # populate_runtime_track_cells_from_segments
+    0x4374B0,  # initialize_subgame
     0x437EB0,  # build_subgame_level
     0x438B90,  # update_subgame
+    0x439B00,  # refresh_fringe_object_draw_list
+    0x439BC0,  # remove_sub_loc
     0x43A010,  # health_collect_particles
     0x43A300,  # update_movement_flag_emitters
     0x43A370,  # end_jetpack_hover
@@ -351,7 +371,7 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ),
     (
         "fringe_slot",
-        "FringeObject **fringe_slot;",
+        "Fringe **fringe_slot;",
         0x437101,
         None,
     ),
@@ -363,7 +383,7 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ),
     (
         "fringe_object",
-        "FringeObject *fringe_object;",
+        "Fringe *fringe_object;",
         0x43710A,
         None,
     ),
@@ -588,10 +608,10 @@ FRINGE_RUNTIME_LVAR_SPECS = (
     ("row", "SubRow *row;", 0x434C0D, None),
     ("cell", "TrackRowCell *cell;", 0x434C15, None),
     ("row_cursor", "SubRow *row_cursor;", 0x434C1B, 40),
-    ("fringe_front_new", "FringeObject *fringe_front_new;", 0x434D44, None),
-    ("fringe_right_new", "FringeObject *fringe_right_new;", 0x434E48, None),
-    ("fringe_left_new", "FringeObject *fringe_left_new;", 0x434F4C, None),
-    ("fringe_back_new", "FringeObject *fringe_back_new;", 0x435050, None),
+    ("fringe_front_new", "Fringe *fringe_front_new;", 0x434D44, None),
+    ("fringe_right_new", "Fringe *fringe_right_new;", 0x434E48, None),
+    ("fringe_left_new", "Fringe *fringe_left_new;", 0x434F4C, None),
+    ("fringe_back_new", "Fringe *fringe_back_new;", 0x435050, None),
 )
 
 HARMONIZE_RUNTIME_LVAR_SPECS = (
@@ -976,7 +996,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_fringe_object",
-        "FringeObject* __thiscall initialize_fringe_object(FringeObject* fringe);",
+        "Fringe* __thiscall initialize_fringe_object(Fringe* fringe);",
+    ),
+    (
+        "refresh_fringe_object_draw_list",
+        "void __thiscall refresh_fringe_object_draw_list(Fringe* fringe);",
     ),
     (
         "initialize_object_constructor_thunk",
@@ -1016,7 +1040,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "allocate_fringe_object",
-        "FringeObject* __thiscall allocate_fringe_object(FringeManager* manager);",
+        "Fringe* __thiscall allocate_fringe_object(FringeManager* manager);",
     ),
     (
         "initialize_golb_shot",
@@ -2720,15 +2744,26 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in BOD_CORE_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_fringe_owner_markers = [
+        marker
+        for marker in FRINGE_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_track_render_cache_owner_markers = [
         marker
         for marker in TRACK_RENDER_CACHE_OWNER_MARKERS
         if marker not in header_text
     ]
-    if missing_bod_core_owner_markers or missing_track_render_cache_owner_markers:
+    if (
+        missing_bod_core_owner_markers
+        or missing_fringe_owner_markers
+        or missing_track_render_cache_owner_markers
+    ):
         marker_failures = []
         if missing_bod_core_owner_markers:
             marker_failures.append({"reason": "noncanonical_bod_core_header"})
+        if missing_fringe_owner_markers:
+            marker_failures.append({"reason": "noncanonical_fringe_header"})
         if missing_track_render_cache_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_track_render_cache_header"}
@@ -2739,6 +2774,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "missing_bod_core_owner_markers": missing_bod_core_owner_markers,
+                    "missing_fringe_owner_markers": missing_fringe_owner_markers,
                     "missing_track_render_cache_owner_markers": (
                         missing_track_render_cache_owner_markers
                     ),
@@ -2753,6 +2789,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
     bod_core_owner_sizes = {
         name: _named_struct_size(name)
         for name in BOD_CORE_OWNER_SIZES
+    }
+    fringe_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in FRINGE_OWNER_SIZES
     }
     track_render_cache_owner_sizes = {
         name: _named_struct_size(name)
@@ -2769,6 +2809,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in BOD_CORE_OWNER_SIZES.items()
         if bod_core_owner_sizes[name] != expected_size
     ]
+    fringe_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "fringe",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": fringe_owner_sizes[name],
+        }
+        for name, expected_size in FRINGE_OWNER_SIZES.items()
+        if fringe_owner_sizes[name] != expected_size
+    ]
     track_render_cache_owner_size_failures = [
         {
             "selector": name,
@@ -2781,7 +2832,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if track_render_cache_owner_sizes[name] != expected_size
     ]
     owner_size_failures = (
-        bod_core_owner_size_failures + track_render_cache_owner_size_failures
+        bod_core_owner_size_failures
+        + fringe_owner_size_failures
+        + track_render_cache_owner_size_failures
     )
     if parse_errors or owner_size_failures:
         print(
@@ -2791,6 +2844,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "header": str(header_path),
                     "parse_errors": parse_errors,
                     "bod_core_owner_sizes": bod_core_owner_sizes,
+                    "fringe_owner_sizes": fringe_owner_sizes,
                     "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                     "failed": owner_size_failures,
                 },
@@ -3219,6 +3273,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "parse_errors": parse_errors,
                 "bod_core_owner_sizes": bod_core_owner_sizes,
+                "fringe_owner_sizes": fringe_owner_sizes,
                 "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                 "applied": applied,
                 "unchanged": unchanged,

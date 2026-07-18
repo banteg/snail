@@ -35,7 +35,7 @@ void __thiscall update_subgame(SubgameRuntime *game)
   BodBase *p_attachment_body; // eax
   struct BodNode *v30; // ecx
   uint32_t v31; // ecx
-  FringeObject **p_fringe_front; // ebx
+  Fringe **p_fringe_front; // ebx
   struct BodNode *v33; // eax
   struct BodNode *v34; // ecx
   uint32_t v35; // ecx

@@ -34,3 +34,12 @@ supply the shared list lifecycle and track-skirt color policy.
 `GameRoot::subgame.embedded_player()->interaction_max_z`, the same cull plane
 used by the other pickup and hazard lifecycles. The canonical root pointer and
 active-list owner preserve the exact 63/63 instructions and all eight operands.
+
+## 2026-07-18 callback ABI closure
+
+The live BN database still inferred this callback as
+`float __fastcall(BodNode*)` from incidental register state. The installed
+fringe vtable, ECX receiver, exact `Fringe::refresh_fringe_object_draw_list()`
+source, and Android `cRFringe::AI()` identity establish the durable analyzer
+ABI as `void __thiscall refresh_fringe_object_draw_list(Fringe*)`. This is an
+ownership correction only; the exact 63/63 matcher remains unchanged.

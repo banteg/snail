@@ -13,17 +13,17 @@ int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)
   int v6; // edi
   uint8_t tile_id; // al
   int v8; // ebp
-  FringeObject *fringe_front_new; // eax
+  Fringe *fringe_front_new; // eax
   int v10; // ebp
-  FringeObject *fringe_right_new; // eax
+  Fringe *fringe_right_new; // eax
   int v12; // ebp
-  FringeObject *fringe_left_new; // eax
+  Fringe *fringe_left_new; // eax
   int v14; // ebp
-  FringeObject *fringe_back_new; // eax
-  FringeObject *fringe_front; // eax
-  FringeObject *fringe_back; // eax
-  FringeObject *fringe_right; // eax
-  FringeObject *fringe_left; // eax
+  Fringe *fringe_back_new; // eax
+  Fringe *fringe_front; // eax
+  Fringe *fringe_back; // eax
+  Fringe *fringe_right; // eax
+  Fringe *fringe_left; // eax
   bool v20; // cc
   int v23; // [esp+Ch] [ebp-4Ch]
   int v24; // [esp+10h] [ebp-48h]

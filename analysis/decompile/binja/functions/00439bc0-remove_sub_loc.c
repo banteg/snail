@@ -40,26 +40,26 @@
 00439cc0        ecx_8->free_top = cell
 00439cc3        cell->bod.list_flags &= 0xfffffdff
 00439c8e        report_errorf("List remove NEXTBOD")
-00439cc6        struct FringeObject** esi_1 = &cell->fringe_front
+00439cc6        struct Fringe** esi_1 = &cell->fringe_front
 00439cc9        int32_t i_1 = 4
 00439d45        int32_t i
-00439cce        struct FringeObject* fringe_front = (esi_1 - 0x44)->fringe_front
-00439cda        if (fringe_front != 0 && ((fringe_front->bod.list_flags).w:1.b & 2) != 0)
+00439cce        struct Fringe* fringe_front = (esi_1 - 0x44)->fringe_front
+00439cda        if (fringe_front != 0 && ((fringe_front->bod.bod.list_flags).w:1.b & 2) != 0)
 00439ce2        struct BodList* edx_6 = &g_game_base->active_bod_list
-00439ce8        uint16_t list_flags_1 = (fringe_front->bod.list_flags).w
+00439ce8        uint16_t list_flags_1 = (fringe_front->bod.bod.list_flags).w
 00439cee        if ((list_flags_1:1.b & 2) == 0)
 00439cf5        report_errorf("List remove")
 00439d02        if ((list_flags_1.b & 0x40) == 0)
-00439d13        struct BodNode* list_next_2 = fringe_front->bod.list_next
+00439d13        struct BodNode* list_next_2 = fringe_front->bod.bod.list_next
 00439d18        if (list_next_2 != 0)
-00439d1d        list_next_2->list_prev = fringe_front->bod.list_prev
-00439d20        struct BodNode* list_prev_2 = fringe_front->bod.list_prev
+00439d1d        list_next_2->list_prev = fringe_front->bod.bod.list_prev
+00439d20        struct BodNode* list_prev_2 = fringe_front->bod.bod.list_prev
 00439d25        if (list_prev_2 == 0)
-00439d32        edx_6->first = fringe_front->bod.list_next
-00439d2a        list_prev_2->list_next = fringe_front->bod.list_next
-00439d38        fringe_front->bod.list_next = edx_6->free_top
+00439d32        edx_6->first = fringe_front->bod.bod.list_next
+00439d2a        list_prev_2->list_next = fringe_front->bod.bod.list_next
+00439d38        fringe_front->bod.bod.list_next = edx_6->free_top
 00439d3b        edx_6->free_top = fringe_front
-00439d3e        fringe_front->bod.list_flags &= 0xfffffdff
+00439d3e        fringe_front->bod.bod.list_flags &= 0xfffffdff
 00439d09        report_errorf("List remove NEXTBOD")
 00439d41        esi_1 = &esi_1[1]
 00439d44        i = i_1

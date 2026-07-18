@@ -19,9 +19,9 @@ void __thiscall remove_sub_loc(SubLoc *cell)
   BodList *v13; // ecx
   struct BodNode *v14; // eax
   struct BodNode *v15; // eax
-  FringeObject **p_fringe_front; // esi
+  Fringe **p_fringe_front; // esi
   int v17; // edi
-  FringeObject *v18; // eax
+  Fringe *v18; // eax
   BodList *v19; // edx
   uint32_t v20; // ecx
   struct BodNode *v21; // ecx
@@ -94,10 +94,10 @@ void __thiscall remove_sub_loc(SubLoc *cell)
   do
   {
     v18 = *p_fringe_front;
-    if ( *p_fringe_front && (v18->bod.list_flags & 0x200) != 0 )
+    if ( *p_fringe_front && (v18->bod.bod.list_flags & 0x200) != 0 )
     {
       v19 = &g_game_base->active_bod_list;
-      v20 = v18->bod.list_flags;
+      v20 = v18->bod.bod.list_flags;
       if ( (v20 & 0x200) != 0 )
       {
         if ( (v20 & 0x40) != 0 )
@@ -106,17 +106,17 @@ void __thiscall remove_sub_loc(SubLoc *cell)
         }
         else
         {
-          v21 = v18->bod.list_next;
+          v21 = v18->bod.bod.list_next;
           if ( v21 )
-            v21->list_prev = v18->bod.list_prev;
-          v22 = v18->bod.list_prev;
+            v21->list_prev = v18->bod.bod.list_prev;
+          v22 = v18->bod.bod.list_prev;
           if ( v22 )
-            v22->list_next = v18->bod.list_next;
+            v22->list_next = v18->bod.bod.list_next;
           else
-            v19->first = v18->bod.list_next;
-          v18->bod.list_next = v19->free_top;
-          v19->free_top = &v18->bod;
-          v18->bod.list_flags &= ~0x200u;
+            v19->first = v18->bod.bod.list_next;
+          v18->bod.bod.list_next = v19->free_top;
+          v19->free_top = &v18->bod.bod;
+          v18->bod.bod.list_flags &= ~0x200u;
         }
       }
       else

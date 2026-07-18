@@ -6927,6 +6927,7 @@
         "struct SubRow* row = &game_1->runtime_rows",
         "struct TrackRowCell* cell = &game_1->runtime_cells",
         "struct SubRow* row_cursor = row",
+        "struct Fringe* bod = allocate_fringe_object",
         "cell->fringe_front",
         "cell = &cell[1]",
         "row = &row[1]",
@@ -6939,6 +6940,7 @@
         " - 0x5ccac8",
         "__offset(Game",
         "data_4df904 +",
+        "FringeObject",
         "__asm",
         "_ET1"
       ]
@@ -6954,10 +6956,10 @@
         "SubRow *row_cursor;",
         "row = v1->runtime_rows;",
         "cell = v1->runtime_cells[0];",
-        "FringeObject *fringe_front_new;",
-        "FringeObject *fringe_right_new;",
-        "FringeObject *fringe_left_new;",
-        "FringeObject *fringe_back_new;",
+        "Fringe *fringe_front_new;",
+        "Fringe *fringe_right_new;",
+        "Fringe *fringe_left_new;",
+        "Fringe *fringe_back_new;",
         "initialize_fringe_manager(&g_game_base->subgame.fringe_manager)",
         "allocate_fringe_object(&g_game_base->subgame.fringe_manager)",
         "g_game_base->root_bod_catalog.fringe_catalog.entries[0][3]",
@@ -6972,6 +6974,7 @@
         "BodBase *fringe_",
         "unknown_000044[3521400]",
         "unknown_000b48[",
+        "FringeObject",
         "sub_434BE0",
         "__asm",
         "_ET1"
@@ -7019,7 +7022,7 @@
       "name": "ida_allocate_fringe_object_pool_owner",
       "artifact": "analysis/decompile/ida/functions/004470a0-allocate_fringe_object.c",
       "required_substrings": [
-        "FringeObject *__thiscall allocate_fringe_object(FringeManager *manager)",
+        "Fringe *__thiscall allocate_fringe_object(FringeManager *manager)",
         "count = manager->count",
         "count == 7000",
         "manager->count = count + 1",
@@ -7027,7 +7030,8 @@
       ],
       "forbidden_substrings": [
         "_DWORD",
-        "this +"
+        "this +",
+        "FringeObject"
       ]
     },
     {
@@ -12421,7 +12425,7 @@
         "stamped_row->primary_attachment_cell",
         "stamped_row->secondary_attachment_cell",
         "stamped_row = &stamped_row[1]",
-        "struct FringeObject** fringe_slot",
+        "struct Fringe** fringe_slot",
         "int32_t remaining_fringe_slots = 4",
         "fringe_object->bod.position",
         "fringe_object_reloaded->bod.position"
@@ -12484,9 +12488,9 @@
         "stamped_row->primary_attachment_cell",
         "stamped_row->secondary_attachment_cell",
         "++stamped_row",
-        "FringeObject **fringe_slot;",
+        "Fringe **fringe_slot;",
         "int32_t remaining_fringe_slots;",
-        "FringeObject *fringe_object;",
+        "Fringe *fringe_object;",
         "Vec3 *fringe_position;",
         "fringe_object->bod.position",
         "fringe_position->x",
@@ -13196,11 +13200,15 @@
         "RenderableBod body;",
         "Vec3 velocity;",
         "RowModel row_model;",
-        "typedef struct FringeObject {",
-        "BodBase bod;"
+        "typedef struct Fringe {",
+        "BodBase bod;",
+        "Fringe_must_be_0x38",
+        "Fringe objects[7000];",
+        "FringeManager_must_be_0x5fb44"
       ],
       "forbidden_substrings": [
-        "Vec3 authored_object_velocity;"
+        "Vec3 authored_object_velocity;",
+        "FringeObject"
       ],
       "forbidden_regexes": [
         "typedef struct SubRow \\{[\\s\\S]{0,220}RenderableBod primary_body;",
@@ -13367,14 +13375,49 @@
       "name": "ida_fringe_constructor_nested_owner_abi",
       "artifact": "analysis/decompile/ida/functions/00408650-initialize_fringe_object.c",
       "required_substrings": [
-        "FringeObject *__thiscall initialize_fringe_object(FringeObject *fringe)",
+        "Fringe *__thiscall initialize_fringe_object(Fringe *fringe)",
         "initialize_bod_base(&fringe->bod)",
         "fringe->bod.bod.vtable = &g_fringe_vtable",
         "return fringe"
       ],
       "forbidden_substrings": [
         "int this",
-        "sub_408650"
+        "sub_408650",
+        "FringeObject"
+      ]
+    },
+    {
+      "name": "bn_fringe_refresh_callback_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00439b00-refresh_fringe_object_draw_list.c",
+      "required_substrings": [
+        "fringe->bod.position.z",
+        "fringe->bod.color.r",
+        "fringe->bod.bod.list_flags",
+        "game_base_1->active_bod_list.first",
+        "game_base_1->active_bod_list.free_top"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "float __fastcall",
+        "FringeObject",
+        "__offset("
+      ]
+    },
+    {
+      "name": "ida_fringe_refresh_callback_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00439b00-refresh_fringe_object_draw_list.c",
+      "required_substrings": [
+        "void __thiscall refresh_fringe_object_draw_list(Fringe *fringe)",
+        "fringe->bod.position.z",
+        "fringe->bod.color = *track_skirt_color",
+        "fringe->bod.bod.list_flags",
+        "p_active_bod_list->first",
+        "p_active_bod_list->free_top"
+      ],
+      "forbidden_substrings": [
+        "int this",
+        "sub_439B00",
+        "FringeObject"
       ]
     },
     {

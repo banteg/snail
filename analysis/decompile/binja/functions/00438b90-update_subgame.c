@@ -226,10 +226,10 @@
 00439161        runtime_cell_anchor->cell.bod.list_flags |= 0x200
 0043913e        report_errorf("List ADDafter")
 0043924a        (*runtime_cell_anchor->cell.bod.vtable)()
-0043924c        struct FringeObject** ebx_8 = &runtime_cell_anchor->cell.fringe_front
+0043924c        struct Fringe** ebx_8 = &runtime_cell_anchor->cell.fringe_front
 00439252        uint32_t var_38_2 = 4
 004392d9        bool cond:8_1
-0043925a        struct FringeObject* fringe_front = (ebx_8 - 0x3bfb0c)->cell.fringe_front
+0043925a        struct Fringe* fringe_front = (ebx_8 - 0x3bfb0c)->cell.fringe_front
 0043925e        if (fringe_front != 0)
 0043926c        if (((fringe_front->bod.bod.list_flags).w:1.b & 2) == 0)
 0043927d        fringe_front->bod.bod.list_prev = &game->fringe_attachment_list_head
@@ -245,7 +245,7 @@
 00439273        report_errorf("List ADDafter")
 004392ad        struct tColour out
 004392ad        int32_t* eax_44 = get_track_skirt_color(&g_game_base->subgame, &out)
-004392b6        struct Color4f* edx_16 = &(ebx_8 - 0x3bfb0c)->cell.fringe_front->bod.color
+004392b6        struct tColour* edx_16 = &(ebx_8 - 0x3bfb0c)->cell.fringe_front->bod.color
 004392b9        edx_16->r = *eax_44
 004392be        edx_16->g = eax_44[1]
 004392c4        edx_16->b = eax_44[2]

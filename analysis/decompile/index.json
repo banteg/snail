@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 7,
+  "function_count": 9,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 7,
-  "ida_exported": 7,
+  "bn_exported": 9,
+  "ida_exported": 9,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,35 +17,43 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "add_bod_to_front",
-      "address": "0x4113b0"
+      "name": "initialize_fringe_object",
+      "address": "0x408650"
     },
     {
-      "name": "append_bod_to_end",
-      "address": "0x411420"
+      "name": "build_track_fringe_objects",
+      "address": "0x434be0"
     },
     {
-      "name": "is_bod_after_sprites",
-      "address": "0x42f5c0"
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
     },
     {
-      "name": "set_bod_object",
-      "address": "0x42f5d0"
+      "name": "initialize_subgame",
+      "address": "0x4374b0"
     },
     {
-      "name": "initialize_bod_base",
-      "address": "0x42f5f0"
+      "name": "update_subgame",
+      "address": "0x438b90"
     },
     {
-      "name": "apply_bod_position",
-      "address": "0x42f680"
+      "name": "refresh_fringe_object_draw_list",
+      "address": "0x439b00"
     },
     {
-      "name": "recycle_bod_to_free_list",
-      "address": "0x447290"
+      "name": "remove_sub_loc",
+      "address": "0x439bc0"
+    },
+    {
+      "name": "initialize_fringe_manager",
+      "address": "0x447090"
+    },
+    {
+      "name": "allocate_fringe_object",
+      "address": "0x4470a0"
     }
   ],
-  "health_check_count": 810,
+  "health_check_count": 812,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

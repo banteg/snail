@@ -2159,7 +2159,7 @@ def test_runtime_pool_constructor_replay_preserves_nested_owners() -> None:
         "RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body)",
         "SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime* game)",
         "SubRow* __thiscall initialize_track_row_runtime(SubRow* row)",
-        "FringeObject* __thiscall initialize_fringe_object(FringeObject* fringe)",
+        "Fringe* __thiscall initialize_fringe_object(Fringe* fringe)",
         "Object* __thiscall initialize_object_constructor_thunk(Object* object)",
     )
     for declaration in declarations:
@@ -3355,7 +3355,8 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
 
     assert '("0x24", "object", "Object*")' in path_sync
     assert '("BodBase", BOD_BASE_FIELD_UPDATES)' in path_sync
-    assert '("FringeObject", FRINGE_OBJECT_FIELD_UPDATES)' in path_sync
+    assert '("Fringe", FRINGE_FIELD_UPDATES)' in path_sync
+    assert '("FringeManager", FRINGE_MANAGER_FIELD_UPDATES)' in path_sync
     assert "Object* object;" in path_header
     assert "int set_bod_object(Object* object);" in matcher_header
     renderable_constructor = (
@@ -3462,6 +3463,64 @@ def test_bod_intrusive_list_lifecycle_replay_owns_shared_layout() -> None:
     assert "bool is_bod_after_sprites();" in bod_types_header
     assert "int set_bod_object(Object* object);" in bod_types_header
     assert "Object* apply_bod_position(TransformMatrix* matrix);" in bod_types_header
+
+
+def test_fringe_replay_owns_authored_pool_and_callback_abi() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    normalized_header = (
+        " ".join(path_header.split()).replace("( ", "(").replace(" )", ")")
+    )
+    fringe_header = (
+        repo_root / "tools/match/include/fringe_object.h"
+    ).read_text(encoding="utf-8")
+    fringe_fwd = (repo_root / "tools/match/include/fringe_fwd.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"--fringe-only"' in path_sync
+    assert "verify_fringe_owner_sizes" in path_sync
+    assert "POPULATE_FRINGE_USER_VAR_UPDATES" in path_sync
+    assert '"Fringe": 0x38' in path_sync
+    assert '"FringeManager": 0x5FB44' in path_sync
+    assert '"Fringe": 0x38' in ida_sync
+    assert '"FringeManager": 0x5FB44' in ida_sync
+    assert "Fringe_must_be_0x38" in path_header
+    assert "FringeManager_must_be_0x5fb44" in path_header
+    assert "Fringe objects[7000];" in path_header
+    assert "Fringe[7000]" in path_sync
+
+    declarations = (
+        "Fringe* __thiscall initialize_fringe_object(Fringe* fringe)",
+        "void __thiscall refresh_fringe_object_draw_list(Fringe* fringe)",
+        "void __thiscall initialize_fringe_manager(FringeManager* manager)",
+        "Fringe* __thiscall allocate_fringe_object(FringeManager* manager)",
+    )
+    for declaration in declarations:
+        assert declaration in path_sync
+        assert declaration + ";" in ida_sync
+        assert declaration + ";" in normalized_header
+
+    for field_name in ("fringe_front", "fringe_right", "fringe_left", "fringe_back"):
+        assert f'"{field_name}", "Fringe*"' in path_sync
+        assert f"Fringe* {field_name};" in path_header
+
+    for address in ("0x408650", "0x434BE0", "0x439B00", "0x447090", "0x4470A0"):
+        assert address in ida_sync
+
+    assert "class Fringe : public BodBase" in fringe_header
+    assert "Fringe objects[7000];" in fringe_header
+    assert "FringeObject" not in fringe_fwd
+    for canonical_text in (path_sync, ida_sync, path_header):
+        assert "FringeObject" not in canonical_text
 
 
 def test_track_render_cache_slot_owns_active_bod_lifecycle() -> None:
@@ -4466,10 +4525,10 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         ("runtime_row_anchor", "RuntimeRowStrideAnchor*"),
         ("runtime_cell_anchor", "RuntimeCellStrideAnchor*"),
         ("stamped_row", "SubRow*"),
-        ("fringe_slot", "FringeObject**"),
+        ("fringe_slot", "Fringe**"),
         ("remaining_fringe_slots", "int32_t"),
-        ("fringe_object", "FringeObject*"),
-        ("fringe_object_reloaded", "FringeObject*"),
+        ("fringe_object", "Fringe*"),
+        ("fringe_object_reloaded", "Fringe*"),
         ("fringe_position", "Vec3*"),
     ):
         assert f'"{name}"' in binja_source
@@ -4527,7 +4586,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         ),
         (
             "allocate_fringe_object",
-            "FringeObject* __thiscall allocate_fringe_object(FringeManager* manager)",
+            "Fringe* __thiscall allocate_fringe_object(FringeManager* manager)",
         ),
     ):
         assert f'"{selector}"' in binja_source
@@ -4623,9 +4682,9 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     ):
         assert definition_address in ida_path_sync
     for name, declaration in (
-        ("fringe_slot", "FringeObject **fringe_slot;"),
+        ("fringe_slot", "Fringe **fringe_slot;"),
         ("remaining_fringe_slots", "int32_t remaining_fringe_slots;"),
-        ("fringe_object", "FringeObject *fringe_object;"),
+        ("fringe_object", "Fringe *fringe_object;"),
         ("fringe_position", "Vec3 *fringe_position;"),
     ):
         assert f'"{name}"' in ida_path_sync
@@ -4659,10 +4718,10 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         ("row", "SubRow *row;"),
         ("cell", "TrackRowCell *cell;"),
         ("row_cursor", "SubRow *row_cursor;"),
-        ("fringe_front_new", "FringeObject *fringe_front_new;"),
-        ("fringe_right_new", "FringeObject *fringe_right_new;"),
-        ("fringe_left_new", "FringeObject *fringe_left_new;"),
-        ("fringe_back_new", "FringeObject *fringe_back_new;"),
+        ("fringe_front_new", "Fringe *fringe_front_new;"),
+        ("fringe_right_new", "Fringe *fringe_right_new;"),
+        ("fringe_left_new", "Fringe *fringe_left_new;"),
+        ("fringe_back_new", "Fringe *fringe_back_new;"),
     ):
         assert f'"{name}"' in ida_path_sync
         assert f'"{declaration}"' in ida_path_sync
