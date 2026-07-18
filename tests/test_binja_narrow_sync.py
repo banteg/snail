@@ -3793,6 +3793,17 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert '"RegisterVariableSourceType",\n        2002,\n        72,' in binja_source
     assert '"RegisterVariableSourceType",\n        3857,\n        67,' in binja_source
     for identity in (
+        '"StackVariableSourceType",\n        0,\n        -36,',
+        '"StackVariableSourceType",\n        549,\n        -32,',
+        '"StackVariableSourceType",\n        553,\n        -66,',
+        '"StackVariableSourceType",\n        558,\n        -44,',
+        '"StackVariableSourceType",\n        794,\n        -64,',
+        '"StackVariableSourceType",\n        833,\n        -60,',
+        '"StackVariableSourceType",\n        1921,\n        -65,',
+        '"StackVariableSourceType",\n        1926,\n        -48,',
+    ):
+        assert identity in binja_source
+    for identity in (
         '"RegisterVariableSourceType",\n        4697,\n        67,',
         '"RegisterVariableSourceType",\n        4692,\n        68,',
         '"RegisterVariableSourceType",\n        4697,\n        66,',
@@ -3801,7 +3812,15 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     ):
         assert identity in binja_source
     for name, type_name in (
+        ("segment_cursor", "int32_t"),
+        ("trampoline_counter", "int32_t"),
+        ("first_or_last_row", "char"),
+        ("row_event_owner", "int32_t"),
+        ("build_row", "int32_t"),
+        ("active_segment", "SubSegment*"),
         ("segment_row_index", "int32_t"),
+        ("attachment_entry_installed", "char"),
+        ("lane", "int32_t"),
         ("segment_row_anchor", "SubSegmentRowStrideAnchor*"),
         ("runtime_row_anchor", "RuntimeRowStrideAnchor*"),
         ("runtime_cell_anchor", "RuntimeCellStrideAnchor*"),
@@ -3931,6 +3950,29 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "0x436DC2" in ida_path_sync
     assert '"stamped_row"' in ida_path_sync
     assert '"SubRow *stamped_row;"' in ida_path_sync
+    for definition_address in (
+        "0x435EB0",
+        "0x4360D6",
+        "0x4360DA",
+        "0x4360DF",
+        "0x4361CB",
+        "0x4361F2",
+        "0x436632",
+        "0x436637",
+    ):
+        assert definition_address in ida_path_sync
+    for name, declaration in (
+        ("segment_cursor", "int32_t segment_cursor;"),
+        ("trampoline_counter", "int32_t trampoline_counter;"),
+        ("first_or_last_row", "char first_or_last_row;"),
+        ("row_event_owner", "int32_t row_event_owner;"),
+        ("build_row", "int32_t build_row;"),
+        ("active_segment", "SubSegment *active_segment;"),
+        ("attachment_entry_installed", "char attachment_entry_installed;"),
+        ("lane", "int32_t lane;"),
+    ):
+        assert f'"{name}"' in ida_path_sync
+        assert f'"{declaration}"' in ida_path_sync
     for definition_address in (
         "0x437101",
         "0x437105",

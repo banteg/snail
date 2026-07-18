@@ -633,3 +633,23 @@ decompiles directly expose `FringeObject::bod.position` in both lanes, and IDA
 replaces its former integer position casts with `fringe_position->x/y/z`.
 Matcher source remains untouched at 29.67%, 1,229/1,245 instructions, 66 clean
 operands, and the same two documented mismatches; no fakematch was introduced.
+
+## 2026-07-18 builder-loop state ownership
+
+The restored Binary Ninja session closes eight single-role stack lifetimes
+shared by the segment and cell construction loops: `segment_cursor`,
+`trampoline_counter`, `first_or_last_row`, `row_event_owner`, `build_row`,
+`active_segment`, `attachment_entry_installed`, and `lane`. IDA identifies the
+same source variables at their exact stack definitions. In particular,
+`row_event_owner` is stored into every completed `SubRow::row_event_id`, while
+`first_or_last_row` suppresses that advance only for the synthetic mode-3
+Start/Last blocks. The random-length/edge-row stack reuse remains neutrally
+named because it has two distinct roles and is not a safe ownership claim.
+
+The matcher tail now carries the four contiguous borrowed fringe links as
+`Fringe**` and each pointee as the complete inherited `Fringe` owner. Position
+clears and copies therefore resolve through `Fringe::position` rather than
+integer address arithmetic. VC6 emits the same normalized candidate listing:
+29.67%, 1,229/1,245 instructions, 66 clean operands, and the same two honest
+alignment mismatches. No table alias, forced register, or dummy dependency was
+added.

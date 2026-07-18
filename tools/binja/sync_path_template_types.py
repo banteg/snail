@@ -1138,13 +1138,81 @@ COLLISION_POOL_CURSOR_USER_VAR_UPDATES = (
 # The four-pointer fringe tail likewise has exact slot, object-reload, and
 # inherited BodBase::position lifetimes; keep the physical-register reuse
 # split instead of weakening those values to void* or integer pointers.
+# The surrounding stack slots are also single-role source state: the authored
+# segment cursor, runtime-row/lane ordinals, trampoline counter, row-event
+# owner, and per-row first/last and attachment latches. Do not name the reused
+# random-length/edge-row slot, whose two lifetimes still overlap in HLIL.
 POPULATE_RUNTIME_USER_VAR_UPDATES = (
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        0,
+        -36,
+        "segment_cursor",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        549,
+        -32,
+        "trampoline_counter",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        553,
+        -66,
+        "first_or_last_row",
+        "char",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        558,
+        -44,
+        "row_event_owner",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        794,
+        -64,
+        "build_row",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        833,
+        -60,
+        "active_segment",
+        "SubSegment*",
+    ),
     (
         "populate_runtime_track_cells_from_segments",
         "StackVariableSourceType",
         1077,
         -52,
         "segment_row_index",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        1921,
+        -65,
+        "attachment_entry_installed",
+        "char",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        1926,
+        -48,
+        "lane",
         "int32_t",
     ),
     (

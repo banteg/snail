@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "sprite.h"
+#include "fringe_object.h"
 #include "game_root.h"
 #include "runtime_config.h"
 #include "subgame_runtime.h"
@@ -178,9 +179,6 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             RUNTIME_CELLS_BASE + offsetof(SubLoc, fringe_back),
         CELL_FRINGE_COUNT =
             sizeof(((SubLoc*)0)->fringes) / sizeof(((SubLoc*)0)->fringes[0]),
-        BOD_POSITION_X = offsetof(BodBase, position) + offsetof(Vector3, x),
-        BOD_POSITION_Y = offsetof(BodBase, position) + offsetof(Vector3, y),
-        BOD_POSITION_Z = offsetof(BodBase, position) + offsetof(Vector3, z),
         PATH_PAIRS_BASE = offsetof(SubgameRuntime, path_pairs),
         PATH_PAIR_SECONDARY_DELTA = offsetof(PathPair, secondary),
         PATH_36_PRIMARY_SAMPLES =
@@ -910,24 +908,25 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 }
             }
 
-            char* subobject_slot = cell + CELL_FRINGE_FRONT;
+            Fringe** subobject_slot =
+                &((SubLoc*)(cell + CELL_BOD_BASE))->fringes[0];
             for (int subobject_index = 0;
                  subobject_index < CELL_FRINGE_COUNT;
                  ++subobject_index) {
-                char* object = *(char**)subobject_slot;
+                Fringe* object = *subobject_slot;
                 if (object != 0) {
-                    *(int*)(object + BOD_POSITION_Z) = 0;
-                    *(int*)(object + BOD_POSITION_Y) = 0;
-                    *(int*)(object + BOD_POSITION_X) = 0;
-                    object = *(char**)subobject_slot;
-                    *(int*)(object + BOD_POSITION_X) =
-                        *(int*)(cell + CELL_POSITION_X);
-                    *(int*)(object + BOD_POSITION_Y) =
-                        *(int*)(cell + CELL_POSITION_Y);
-                    *(int*)(object + BOD_POSITION_Z) =
-                        *(int*)(cell + CELL_POSITION_Z);
+                    object->position.z = 0.0f;
+                    object->position.y = 0.0f;
+                    object->position.x = 0.0f;
+                    object = *subobject_slot;
+                    object->position.x =
+                        *(float*)(cell + CELL_POSITION_X);
+                    object->position.y =
+                        *(float*)(cell + CELL_POSITION_Y);
+                    object->position.z =
+                        *(float*)(cell + CELL_POSITION_Z);
                 }
-                subobject_slot += sizeof(Fringe*);
+                ++subobject_slot;
             }
         }
         ++segment_row;

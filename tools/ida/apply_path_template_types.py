@@ -195,6 +195,12 @@ GOLB_SHOT_HEADER_MARKERS = (
 )
 
 POPULATE_RUNTIME_LVAR_SPECS = (
+    ("segment_cursor", "int32_t segment_cursor;", 0x435EB0, 72),
+    ("trampoline_counter", "int32_t trampoline_counter;", 0x4360D6, 76),
+    ("first_or_last_row", "char first_or_last_row;", 0x4360DA, 42),
+    ("row_event_owner", "int32_t row_event_owner;", 0x4360DF, 64),
+    ("build_row", "int32_t build_row;", 0x4361CB, 44),
+    ("active_segment", "SubSegment *active_segment;", 0x4361F2, 48),
     ("segment_row_index", "int32_t segment_row_index;", 0x4362E6, 56),
     (
         "segment_row_anchor",
@@ -214,6 +220,13 @@ POPULATE_RUNTIME_LVAR_SPECS = (
         0x436683,
         None,
     ),
+    (
+        "attachment_entry_installed",
+        "char attachment_entry_installed;",
+        0x436632,
+        43,
+    ),
+    ("lane", "int32_t lane;", 0x436637, 60),
     (
         "stamped_row",
         "SubRow *stamped_row;",
