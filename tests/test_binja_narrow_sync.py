@@ -3077,6 +3077,7 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
     assert '("0x88", "repeat_z_span", "float")' in path_sync
     assert '("0x8c", "reference_bod", "RenderableBod*")' in path_sync
     assert '"ActiveLandscapeEntry",\n                    ACTIVE_LANDSCAPE_ENTRY_FIELD_UPDATES' in path_sync
+    assert '"--landscape-loader-only"' in path_sync
 
     declarations = (
         "ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start)",
@@ -3086,6 +3087,7 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
         "void __thiscall activate_landscape_entry(LandscapeManager* manager, int32_t script_index)",
         "void __thiscall clear_active_landscape_entries(LandscapeManager* manager)",
         "void __thiscall update_active_landscape_entry(ActiveLandscapeEntry* active_entry)",
+        "int32_t __thiscall load_landscape_script_by_name(LandscapeManager* manager, char* script_name)",
     )
     for declaration in declarations:
         assert declaration in path_sync
@@ -3099,6 +3101,7 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
         "activate_landscape_entry",
         "clear_active_landscape_entries",
         "update_active_landscape_entry",
+        "load_landscape_script_by_name",
     ):
         assert function_name in path_header
 
@@ -3106,7 +3109,16 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
     assert "Player* owner_player" in click_matcher
     assert "class ActiveLandscapeEntry : public RenderableBod" in landscape_matcher
     assert "RenderableBod* reference_bod" in landscape_matcher
-    for address in ("0x408670", "0x408820", "0x418870", "0x418A30", "0x418AC0", "0x442170", "0x442290"):
+    for address in (
+        "0x408670",
+        "0x408820",
+        "0x4182F0",
+        "0x418870",
+        "0x418A30",
+        "0x418AC0",
+        "0x442170",
+        "0x442290",
+    ):
         assert address in ida_sync
 
 

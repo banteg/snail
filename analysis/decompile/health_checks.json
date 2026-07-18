@@ -9136,11 +9136,39 @@
       "name": "ida_landscape_loader_directx_owner",
       "artifact": "analysis/decompile/ida/functions/004182f0-load_landscape_script_by_name.c",
       "required_substrings": [
+        "int32_t __thiscall load_landscape_script_by_name(LandscapeManager *manager, char *script_name)",
+        "manager->scripts[manager->script_count].fog_color",
+        "manager->scripts[manager->script_count].backdrop_texture_path",
+        "manager->scripts[manager->script_count].object_index",
+        "manager->scripts[manager->script_count].distort",
         "load_or_reuse_cached_x_mesh(",
         "&v23->directx_loader"
       ],
       "forbidden_substrings": [
+        "char *this",
+        "*((int *)this",
+        "this + 292",
         "v23 + 298496",
+        "unknown_044100"
+      ]
+    },
+    {
+      "name": "bn_landscape_loader_record_ownership",
+      "artifact": "analysis/decompile/binja/functions/004182f0-load_landscape_script_by_name.c",
+      "required_substrings": [
+        "manager->script_count",
+        "&manager->scripts[0].name",
+        "manager->scripts[manager->script_count].fog_color",
+        "manager->scripts[manager->script_count].backdrop_texture_path",
+        "manager->scripts[manager->script_count].object_index",
+        "manager->scripts[manager->script_count].distort",
+        "&game_base_1->directx_loader"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "+ 0x5a0",
+        "+ 0x5a4",
+        "+ 0x6b4",
         "unknown_044100"
       ]
     },

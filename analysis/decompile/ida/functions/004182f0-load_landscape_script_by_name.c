@@ -3,10 +3,10 @@
 /* selector: load_landscape_script_by_name */
 
 // Loads or reuses one `Backgrounds/<name>` landscape script, parses its `ID`, `Fog`, `Picture`, `Landscape`, and `Distort` fields, registers the referenced backdrop textures, and returns the cached landscape index.
-int __thiscall load_landscape_script_by_name(char *this, char *ArgList)
+int32_t __thiscall load_landscape_script_by_name(LandscapeManager *manager, char *script_name)
 {
-  int v3; // edi
-  char *v4; // ebp
+  int32_t v3; // edi
+  char *name; // ebp
   char *file_bytes; // edi
   char *case_insensitive_substring; // eax
   char *v8; // eax
@@ -14,9 +14,9 @@ int __thiscall load_landscape_script_by_name(char *this, char *ArgList)
   char *v10; // eax
   char *v11; // edx
   char i; // cl
-  int v13; // eax
+  int32_t script_count; // eax
   bool v14; // zf
-  int v15; // eax
+  int32_t v15; // eax
   char *v16; // eax
   char v17; // cl
   char *v18; // eax
@@ -35,26 +35,26 @@ int __thiscall load_landscape_script_by_name(char *this, char *ArgList)
   char v31[512]; // [esp+318h] [ebp-400h] BYREF
   char mesh_name[512]; // [esp+518h] [ebp-200h] BYREF
 
-  sprintf(Buffer, "Backgrounds/%s", ArgList);
+  sprintf(Buffer, "Backgrounds/%s", script_name);
   v3 = 0;
-  if ( *((int *)this + 360) <= 0 )
+  if ( manager->script_count <= 0 )
   {
 LABEL_5:
-    file_bytes = load_file_bytes(Buffer, nullptr);
+    file_bytes = (char *)load_file_bytes(Buffer, nullptr);
     if ( file_bytes )
     {
-      rstrcpy_checked_ascii(this + 292 * *((_DWORD *)this + 360) + 1448, ArgList);
+      rstrcpy_checked_ascii(manager->scripts[manager->script_count].name, script_name);
       case_insensitive_substring = find_case_insensitive_substring(aId, file_bytes);
       cursor = case_insensitive_substring;
       if ( case_insensitive_substring )
       {
         cursor = find_case_insensitive_substring(asc_4A1644, case_insensitive_substring);
-        *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 361) = parse_next_signed_int(&cursor);
+        manager->scripts[manager->script_count].id = parse_next_signed_int(&cursor);
       }
       else
       {
         report_errorf("Landscape. Cannot find ID: %s", Buffer);
-        *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 361) = 0;
+        manager->scripts[manager->script_count].id = 0;
       }
       v8 = find_case_insensitive_substring(aFog, file_bytes);
       cursor = v8;
@@ -62,16 +62,16 @@ LABEL_5:
       {
         cursor = find_case_insensitive_substring(asc_4A1644, v8);
         v27 = parse_next_signed_int(&cursor);
-        *((float *)this + 73 * *((_DWORD *)this + 360) + 429) = (double)v27 * 0.0039215689;
+        manager->scripts[manager->script_count].fog_color.r = (double)v27 * 0.0039215689;
         v27 = parse_next_signed_int(&cursor);
-        *((float *)this + 73 * *((_DWORD *)this + 360) + 430) = (double)v27 * 0.0039215689;
+        manager->scripts[manager->script_count].fog_color.g = (double)v27 * 0.0039215689;
         v27 = parse_next_signed_int(&cursor);
-        *((float *)this + 73 * *((_DWORD *)this + 360) + 431) = (double)v27 * 0.0039215689;
+        manager->scripts[manager->script_count].fog_color.b = (double)v27 * 0.0039215689;
       }
       else
       {
         report_errorf("Landscape. Cannot find Fog: %s", Buffer);
-        set_color_black((tColour *)(this + 292 * *((_DWORD *)this + 360) + 1716));
+        set_color_black(&manager->scripts[manager->script_count].fog_color);
       }
       v9 = find_case_insensitive_substring(aPicture, file_bytes);
       cursor = v9;
@@ -85,17 +85,17 @@ LABEL_5:
           *v11++ = i;
           cursor = ++v10;
         }
-        v13 = *((_DWORD *)this + 360);
+        script_count = manager->script_count;
         *v11 = 0;
-        sprintf(this + 292 * v13 + 1581, "Backgrounds/%s.tga", v31);
-        *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 394) = 2 * *((_DWORD *)this + 360) + 6;
-        v14 = archive_or_file_exists(this + 292 * *((_DWORD *)this + 360) + 1581, 0) == 0;
-        v15 = *((_DWORD *)this + 360);
+        sprintf(manager->scripts[script_count].backdrop_texture_path, "Backgrounds/%s.tga", v31);
+        manager->scripts[manager->script_count].backdrop_texture_id = 2 * manager->script_count + 6;
+        v14 = archive_or_file_exists(manager->scripts[manager->script_count].backdrop_texture_path, 0) == 0;
+        v15 = manager->script_count;
         if ( v14 )
         {
-          *(this + 292 * v15 + 1580) = 1;
-          rstrcpy_checked_ascii(v29, this + 292 * *((_DWORD *)this + 360) + 1581);
-          rstrcpy_checked_ascii(v28, this + 292 * *((_DWORD *)this + 360) + 1581);
+          manager->scripts[v15].split_backdrop_texture_pair = 1;
+          rstrcpy_checked_ascii(v29, manager->scripts[manager->script_count].backdrop_texture_path);
+          rstrcpy_checked_ascii(v28, manager->scripts[manager->script_count].backdrop_texture_path);
           v16 = v29;
           if ( v29[0] != 46 )
           {
@@ -125,13 +125,16 @@ LABEL_5:
           v18[4] = 103;
           v18[5] = 97;
           v18[6] = 0;
-          register_sprite_texture(v29, *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 394), 1024);
-          register_sprite_texture(v28, *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 394) + 1, 1024);
+          register_sprite_texture(v29, manager->scripts[manager->script_count].backdrop_texture_id, 1024);
+          register_sprite_texture(v28, manager->scripts[manager->script_count].backdrop_texture_id + 1, 1024);
         }
         else
         {
-          register_sprite_texture(this + 292 * v15 + 1581, *((_DWORD *)this + 73 * v15 + 394), 1024);
-          *(this + 292 * *((_DWORD *)this + 360) + 1580) = 0;
+          register_sprite_texture(
+            manager->scripts[v15].backdrop_texture_path,
+            manager->scripts[v15].backdrop_texture_id,
+            1024);
+          manager->scripts[manager->script_count].split_backdrop_texture_pair = 0;
         }
         debug_report_stub();
       }
@@ -148,7 +151,7 @@ LABEL_5:
         v21 = *v20;
         if ( *v20 <= 32 )
         {
-          *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 428) = -1;
+          manager->scripts[manager->script_count].object_index = -1;
         }
         else
         {
@@ -168,9 +171,9 @@ LABEL_5:
           v24 = v22 + 1;
           *v24 = 120;
           v24[1] = 0;
-          *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 428) = load_or_reuse_cached_x_mesh(
-                                                                     &v23->directx_loader,
-                                                                     mesh_name);
+          manager->scripts[manager->script_count].object_index = load_or_reuse_cached_x_mesh(
+                                                                   &v23->directx_loader,
+                                                                   mesh_name);
         }
       }
       else
@@ -182,15 +185,15 @@ LABEL_5:
       if ( v25 )
       {
         cursor = find_case_insensitive_substring(asc_4A1644, v25) + 1;
-        *((float *)this + 73 * *((_DWORD *)this + 360) + 433) = parse_next_float32(&cursor);
+        manager->scripts[manager->script_count].distort = parse_next_float32(&cursor);
       }
       else
       {
         report_errorf("Landscape. Cannot find Distort: in %s", Buffer);
       }
-      ++*((_DWORD *)this + 360);
+      ++manager->script_count;
       debug_report_stub();
-      return *((_DWORD *)this + 360) - 1;
+      return manager->script_count - 1;
     }
     else
     {
@@ -200,12 +203,12 @@ LABEL_5:
   }
   else
   {
-    v4 = this + 1448;
-    while ( !strings_equal_case_insensitive_path(v4, ArgList) )
+    name = manager->scripts[0].name;
+    while ( !strings_equal_case_insensitive_path(name, script_name) )
     {
       ++v3;
-      v4 += 292;
-      if ( v3 >= *((_DWORD *)this + 360) )
+      name += 292;
+      if ( v3 >= manager->script_count )
         goto LABEL_5;
     }
     return v3;

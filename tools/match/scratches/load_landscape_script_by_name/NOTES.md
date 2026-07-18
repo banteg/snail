@@ -32,3 +32,13 @@ root graph: `DirectXLoader +0x48e00` spans `0x5e10` bytes and ends at
 `&v23->directx_loader` without a raw `GameRoot +298496` cast. This is
 analysis-only; the matching source remains exact at 386/386 instructions with
 all 63 operands clean.
+
+## 2026-07-18 landscape cache ownership replay
+
+Both tracked databases now carry the exact
+`int32_t __thiscall load_landscape_script_by_name(LandscapeManager*, char*)`
+ABI. This promotes the receiver from Binja's `void*` and IDA's `char*` to the
+existing exact `0x97a4`-byte manager, so the cache count and all parsed
+`LandscapeScriptRecord` fields render through their real owners. The narrow
+Binja replay is available through `--landscape-loader-only`; the focused match
+remains 386/386 instructions with all 63 masked operands clean.

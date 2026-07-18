@@ -34,6 +34,7 @@ TRUSTED_NAMES = [
     (0x4085E0, "initialize_active_bod"),
     (0x408650, "initialize_fringe_object"),
     (0x4086D0, "initialize_player_presentation_controller"),
+    (0x4182F0, "load_landscape_script_by_name"),
     (0x42F6E0, "initialize_object_constructor_thunk"),
     (0x42F5F0, "initialize_bod_base"),
     (0x42F650, "initialize_renderable_bod"),
@@ -135,6 +136,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x414670,  # kill_golb
     0x414820,  # update_golb_ai
     0x415280,  # create_golb
+    0x4182F0,  # load_landscape_script_by_name
     0x418870,  # activate_landscape_entry
     0x418A30,  # clear_active_landscape_entries
     0x418AC0,  # update_active_landscape_entry
@@ -732,6 +734,10 @@ TRUSTED_DECLARATIONS = [
     (
         "update_row_model",
         "void __thiscall update_row_model(RowModel* row_model);",
+    ),
+    (
+        "load_landscape_script_by_name",
+        "int32_t __thiscall load_landscape_script_by_name(LandscapeManager* manager, char* script_name);",
     ),
     (
         "initialize_thanks_for_playing_screen",

@@ -57,6 +57,7 @@ SYMBOL_UPDATES = (
     ("0x442540", "reset_vapour"),
     ("0x442560", "add_vapour_point"),
     ("0x4425f0", "update_vapour"),
+    ("0x4182f0", "load_landscape_script_by_name"),
     ("0x433fd0", "initialize_thanks_for_playing_screen"),
     ("0x4340c0", "uninit_thanks_screen"),
     ("0x4340f0", "update_thanks_for_playing_screen"),
@@ -1934,6 +1935,13 @@ ROW_MODEL_PROTO_UPDATES = (
     ),
 )
 
+LANDSCAPE_LOADER_PROTO_UPDATES = (
+    (
+        "load_landscape_script_by_name",
+        "int32_t __thiscall load_landscape_script_by_name(LandscapeManager* manager, char* script_name)",
+    ),
+)
+
 THANKS_SCREEN_PROTO_UPDATES = (
     (
         "initialize_thanks_for_playing_screen",
@@ -1949,7 +1957,11 @@ THANKS_SCREEN_PROTO_UPDATES = (
     ),
 )
 
-PROTO_UPDATES = GOLB_PROTO_UPDATES + ROW_MODEL_PROTO_UPDATES + THANKS_SCREEN_PROTO_UPDATES + (
+PROTO_UPDATES = (
+    *GOLB_PROTO_UPDATES,
+    *ROW_MODEL_PROTO_UPDATES,
+    *LANDSCAPE_LOADER_PROTO_UPDATES,
+    *THANKS_SCREEN_PROTO_UPDATES,
     (
         "set_bod_object",
         "int32_t __thiscall set_bod_object(BodBase* bod, Object* object)",
@@ -2847,6 +2859,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Replay only the ThanksScreen layout and lifecycle method ABIs.",
     )
+    focused_group.add_argument(
+        "--landscape-loader-only",
+        action="store_true",
+        help="Replay only the LandscapeManager cache-loader method ABI.",
+    )
     return parser.parse_args()
 
 
@@ -2857,6 +2874,36 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
+    if args.landscape_loader_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=("LandscapeManager",),
+            )
+        )
+        operations.extend(
+            apply_symbol_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=(("0x4182f0", "load_landscape_script_by_name"),),
+            )
+        )
+        operations.extend(
+            apply_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=LANDSCAPE_LOADER_PROTO_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if args.thanks_screen_only:
         operations.append(
             types_declare_if_missing(

@@ -2286,6 +2286,10 @@ void __thiscall clear_active_landscape_entries(LandscapeManager* manager);
 void __thiscall update_active_landscape_entry(
     ActiveLandscapeEntry* active_entry
 );
+int32_t __thiscall load_landscape_script_by_name(
+    LandscapeManager* manager,
+    char* script_name
+);
 Object* __thiscall apply_bod_position(
     BodBase* bod,
     TransformMatrix* matrix
