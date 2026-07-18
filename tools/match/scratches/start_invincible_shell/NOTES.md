@@ -27,3 +27,10 @@ Start now names the native transition from `INACTIVE` to `FADING_IN` and the
 re-entry edge from `FADING_OUT` back to `FADING_IN`. The typed local preserves
 the four-byte enum representation and the exact authored control flow. Focused
 output remains exact at 21/21 instructions with all four operands clean.
+
+## 2026-07-18 durable lifecycle replay
+
+The narrow Snail-presentation replay now reanalyzes this method as part of the
+complete `Invincible` lifecycle. Both decompilers preserve the `Invincible*`
+receiver, enum transitions, embedded shell render-bit owner, and registered
+sound edge. Focused matching remains exact at 21/21 with four clean operands.

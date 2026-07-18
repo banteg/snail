@@ -237,6 +237,12 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
             in source
         )
         for declaration in (
+            "void __thiscall initialize_invincible_shell(Invincible* invincible)",
+            "void __thiscall start_invincible_shell(Invincible* invincible)",
+            "void __thiscall update_invincible_shell(Invincible* invincible)",
+        ):
+            assert declaration in source
+        for declaration in (
             "void __thiscall update_jetpack_gauge(SubHover* sub_hover)",
             "void __thiscall uninit_jet_particles(SubHover* sub_hover)",
             "void __thiscall initialize_jet_particles(SubHover* sub_hover)",
@@ -268,6 +274,15 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
     assert '"star_manager_types.h"' in ida_sync
     assert "struct Sprite {" in sprite_header
     assert "SUBHOVER_PLAYER_ROOT_OFFSET_OPERAND = (0x43A953, 1, 0x42FD7C)" in ida_sync
+    for operand in (
+        "(0x444B72, 0, 0x4300B4)",
+        "(0x444BCD, 0, 0x4300B4)",
+        "(0x444BE4, 0, 0x4300B4)",
+        "(0x444C3C, 0, 0x4300B4)",
+        "(0x444CBD, 1, 0x432738)",
+    ):
+        assert operand in ida_sync
+    assert "_normalize_invincible_root_offsets" in ida_sync
     assert "SUBHOVER_PLAYER_ROOT_OFFSET_OPERANDS = (" in broad_ida_sync
     assert "(0x43A953, 1, 0x42FD7C)" in broad_ida_sync
     assert "mark_cfunc_dirty" in ida_sync

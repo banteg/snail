@@ -32,3 +32,11 @@ Binary Ninja field xrefs show that only `cRInvincible::{Init,Start,AI}` access
 the exact four-byte state at owner `+0x80`, and Android confirms the same
 four-state graph. Focused output remains exact at 7/7 instructions with all
 three operands clean.
+
+## 2026-07-18 durable lifecycle replay
+
+The focused Snail-presentation replay now owns this initializer together with
+`Start()` and `AI()` instead of merely size-checking the embedded `Invincible`
+type. Binary Ninja and IDA both retain the exact `Invincible*` receiver, the
+typed inactive state, and the adjacent root-owned `SnailSkin` handoff. The
+matcher remains exact at 7/7 instructions with all three operands clean.

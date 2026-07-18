@@ -50,3 +50,13 @@ ACTIVE -> FADING_OUT -> INACTIVE`, with the native reactivation edge from
 `cRInvincible::AI` agree that these are the only four states of the exact
 owner. Focused output remains exact at 98/98 instructions with all 28 operands
 clean.
+
+## 2026-07-18 durable lifecycle replay
+
+The focused Snail-presentation lane now directly replays `Init`, `Start`, and
+this `AI` method after importing the exact 0xa4-byte `Invincible` owner. The
+paired tracked decompiles expose enum states, the root-owned movement flag and
+`SnailSkin`, inherited colour and transform fields, and the embedded shell
+render bit; stale `InvincibleShellController`, raw root offsets, padding-field
+accesses, and the world/local rotation mislabel are rejected by strict health
+checks. Focused matching remains exact at 98/98 with all 28 operands clean.

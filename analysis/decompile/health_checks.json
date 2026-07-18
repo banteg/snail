@@ -14660,6 +14660,113 @@
         "a1",
         "unimplemented"
       ]
+    },
+    {
+      "name": "bn_invincible_initialize_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00444ac0-initialize_invincible_shell.c",
+      "required_substrings": [
+        "invincible->state = INVINCIBLE_STATE_INACTIVE",
+        "&g_game_base->subgame.player.presentation.snail_skin",
+        "00444ade        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4df904",
+        "shell->",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_invincible_initialize_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00444ac0-initialize_invincible_shell.c",
+      "required_substrings": [
+        "void __thiscall initialize_invincible_shell(Invincible *invincible)",
+        "invincible->state = INVINCIBLE_STATE_INACTIVE;",
+        "&g_game_base->subgame.player.presentation.snail_skin"
+      ],
+      "forbidden_substrings": [
+        "InvincibleShellController",
+        "MEMORY[",
+        "sub_444AC0",
+        "shell->"
+      ]
+    },
+    {
+      "name": "bn_invincible_start_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00444ae0-start_invincible_shell.c",
+      "required_substrings": [
+        "enum InvincibleState state = invincible->state",
+        "invincible->state = INVINCIBLE_STATE_FADING_IN",
+        "game_base_1->subgame.player.presentation.invincible_shell.body.bod.bod.list_flags",
+        "play_registered_sound_sample_scaled(&g_audio_backend"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4df904",
+        "shell->",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_invincible_start_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00444ae0-start_invincible_shell.c",
+      "required_substrings": [
+        "void __thiscall start_invincible_shell(Invincible *invincible)",
+        "InvincibleState state;",
+        "invincible->spin_phase_step = 0.033333335;",
+        "g_game_base->subgame.player.presentation.invincible_shell.body.bod.bod.list_flags",
+        "play_registered_sound_sample_scaled(&g_audio_backend"
+      ],
+      "forbidden_substrings": [
+        "InvincibleShellController",
+        "MEMORY[",
+        "sub_444AE0",
+        "shell->"
+      ]
+    },
+    {
+      "name": "bn_invincible_update_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00444b50-update_invincible_shell.c",
+      "required_substrings": [
+        "switch (invincible->state)",
+        "case INVINCIBLE_STATE_FADING_OUT",
+        "g_game_base->subgame.player.movement_flags",
+        "&g_game_base->subgame.player.presentation.snail_skin",
+        "invincible->body.bod.color.a",
+        "&invincible->body.transform",
+        "rotate_matrix_local_y"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4df904",
+        "shell->",
+        "_pad_00",
+        "rotate_matrix_world_y"
+      ]
+    },
+    {
+      "name": "ida_invincible_update_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00444b50-update_invincible_shell.c",
+      "required_substrings": [
+        "void __thiscall update_invincible_shell(Invincible *invincible)",
+        "case INVINCIBLE_STATE_FADING_OUT:",
+        "g_game_base->subgame.player.movement_flags",
+        "g_game_base->subgame.player.presentation.invincible_shell.body.bod.bod.list_flags",
+        "&g_game_base->subgame.player.presentation.snail_skin",
+        "&g_game_base->subgame.player.presentation.body.transform",
+        "invincible->body.bod.color.a",
+        "&invincible->body.transform",
+        "rotate_matrix_local_y"
+      ],
+      "forbidden_substrings": [
+        "InvincibleShellController",
+        "MEMORY[",
+        "g_invincible_damage_gate_flags_offset",
+        "g_live_snail_matrix_offset",
+        "shell->",
+        "_pad_00",
+        "rotate_matrix_world_y"
+      ]
     }
   ]
 }

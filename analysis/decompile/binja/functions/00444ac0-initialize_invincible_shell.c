@@ -3,6 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_invincible_shell @ 0x444ac0 */
 
-00444ac0        shell->state = 0
-00444ad9        change_snail_skin(data_4df904 + 0x434038, 0, 0f)
+00444ac0        invincible->state = INVINCIBLE_STATE_INACTIVE
+00444ad9        change_snail_skin(&g_game_base->subgame.player.presentation.snail_skin, 0, 0f)
 00444ade        return

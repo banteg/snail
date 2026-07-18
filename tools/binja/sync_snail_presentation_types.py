@@ -44,6 +44,9 @@ SYMBOL_UPDATES = (
     ("0x442e40", "release_snail_weapons"),
     ("0x444600", "dispatch_cutscene_animation"),
     ("0x4446e0", "set_weapon_animation"),
+    ("0x444ac0", "initialize_invincible_shell"),
+    ("0x444ae0", "start_invincible_shell"),
+    ("0x444b50", "update_invincible_shell"),
     ("0x445cd0", "update_snail_skin"),
     ("0x445d50", "build_snail_hotspots"),
 )
@@ -84,6 +87,18 @@ PROTO_UPDATES = (
     (
         "set_weapon_animation",
         "void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags)",
+    ),
+    (
+        "initialize_invincible_shell",
+        "void __thiscall initialize_invincible_shell(Invincible* invincible)",
+    ),
+    (
+        "start_invincible_shell",
+        "void __thiscall start_invincible_shell(Invincible* invincible)",
+    ),
+    (
+        "update_invincible_shell",
+        "void __thiscall update_invincible_shell(Invincible* invincible)",
     ),
     (
         "update_snail_skin",

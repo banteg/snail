@@ -24,6 +24,9 @@ TRUSTED_NAMES = (
     (0x442E40, "release_snail_weapons"),
     (0x444600, "dispatch_cutscene_animation"),
     (0x4446E0, "set_weapon_animation"),
+    (0x444AC0, "initialize_invincible_shell"),
+    (0x444AE0, "start_invincible_shell"),
+    (0x444B50, "update_invincible_shell"),
     (0x445CD0, "update_snail_skin"),
     (0x445D50, "build_snail_hotspots"),
 )
@@ -64,6 +67,18 @@ TRUSTED_DECLARATIONS = (
     (
         "set_weapon_animation",
         "void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags);",
+    ),
+    (
+        "initialize_invincible_shell",
+        "void __thiscall initialize_invincible_shell(Invincible* invincible);",
+    ),
+    (
+        "start_invincible_shell",
+        "void __thiscall start_invincible_shell(Invincible* invincible);",
+    ),
+    (
+        "update_invincible_shell",
+        "void __thiscall update_invincible_shell(Invincible* invincible);",
     ),
     (
         "update_snail_skin",
@@ -126,6 +141,18 @@ EXPECTED_OWNER_SIZES = {
 # ADD operand as a number so Hex-Rays can fold GameRoot::subgame.player.
 SUBHOVER_PLAYER_ROOT_OFFSET_OPERAND = (0x43A953, 1, 0x42FD7C)
 
+# These relocatable reference symbols remain useful in the reference manifest,
+# but rendering them symbolically at these instructions prevents Hex-Rays from
+# folding the accesses through GameRoot::subgame.player and Snail. Normalize
+# only the proved consumer operands; the underlying reference names stay intact.
+INVINCIBLE_ROOT_OFFSET_OPERANDS = (
+    (0x444B72, 0, 0x4300B4),
+    (0x444BCD, 0, 0x4300B4),
+    (0x444BE4, 0, 0x4300B4),
+    (0x444C3C, 0, 0x4300B4),
+    (0x444CBD, 1, 0x432738),
+)
+
 
 def _normalize_type_text(value: str | None) -> str | None:
     if value is None:
@@ -178,6 +205,37 @@ def _normalize_subhover_player_root_offset() -> dict[str, object]:
         "before": before,
         "after": after,
     }
+
+
+def _normalize_invincible_root_offsets() -> list[dict[str, object]]:
+    results = []
+    for address, operand_index, expected_offset in INVINCIBLE_ROOT_OFFSET_OPERANDS:
+        before = idc.print_operand(address, operand_index)
+        idc.op_num(address, operand_index)
+        after = idc.print_operand(address, operand_index)
+        observed_offset = idc.get_operand_value(address, operand_index)
+        normalized = (
+            observed_offset == expected_offset
+            and f"{expected_offset:X}H" in after.upper()
+        )
+        results.append(
+            {
+                "status": (
+                    "applied"
+                    if normalized and before != after
+                    else "unchanged"
+                    if normalized
+                    else "failed"
+                ),
+                "address": hex(address),
+                "operand_index": operand_index,
+                "expected_offset": hex(expected_offset),
+                "observed_offset": hex(observed_offset),
+                "before": before,
+                "after": after,
+            }
+        )
+    return results
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
@@ -318,6 +376,19 @@ def _sync_types(header_path: pathlib.Path) -> int:
         )
     ida_hexrays.mark_cfunc_dirty(0x43A930, True)
 
+    invincible_root_offsets = _normalize_invincible_root_offsets()
+    failed_invincible_root_offsets = [
+        result for result in invincible_root_offsets if result["status"] == "failed"
+    ]
+    if failed_invincible_root_offsets:
+        failed.append(
+            {
+                "selector": "update_invincible_shell",
+                "root_offset_operands": failed_invincible_root_offsets,
+            }
+        )
+    ida_hexrays.mark_cfunc_dirty(0x444B50, True)
+
     print(
         json.dumps(
             {
@@ -327,6 +398,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parse_errors": parse_errors,
                 "owner_sizes": owner_sizes,
                 "subhover_player_root_offset": subhover_player_root_offset,
+                "invincible_root_offsets": invincible_root_offsets,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

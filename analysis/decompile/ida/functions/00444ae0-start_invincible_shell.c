@@ -21,6 +21,6 @@ void __thiscall start_invincible_shell(Invincible *invincible)
     invincible->fade_progress = 0.0;
     invincible->fade_step = 0.033333335;
     g_game_base->subgame.player.presentation.invincible_shell.body.bod.bod.list_flags |= 0x20u;
-    play_registered_sound_sample_scaled((AudioBackend *)g_audio_backend, 48, 1.0);
+    play_registered_sound_sample_scaled(&g_audio_backend, 48, 1.0);
   }
 }

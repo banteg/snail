@@ -2,10 +2,9 @@
 /* function: initialize_invincible_shell @ 0x444ac0 */
 /* selector: initialize_invincible_shell */
 
-// Resets the runner-owned invincible-shell controller at `player + 0x4218` and restores the normal snail-skin state before gameplay starts.
-void __thiscall initialize_invincible_shell(InvincibleShellController *shell)
+// Authored `cRInvincible::Init()`: resets the exact 0xa4-byte visual owner embedded at `Snail + 0x1894` (`Player + 0x4218`) and restores the normal snail skin.
+void __thiscall initialize_invincible_shell(Invincible *invincible)
 {
-  shell->state = 0;
-  change_snail_skin((float *)MEMORY[0x4DF904] + 1101838, 0, 0.0);
+  invincible->state = INVINCIBLE_STATE_INACTIVE;
+  change_snail_skin(&g_game_base->subgame.player.presentation.snail_skin, 0, 0.0);
 }
-
