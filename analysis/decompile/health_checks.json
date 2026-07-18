@@ -1477,23 +1477,71 @@
       ]
     },
     {
-      "name": "bn_frontend_widget_fields_intact",
+      "name": "bn_frontend_sprite_button_owner",
       "artifact": "analysis/decompile/binja/functions/00401a70-initialize_frontend_sprite_button.c",
       "required_substrings": [
-        "arg1->list_flags",
-        "arg1->list_prev",
-        "arg1->list_next",
-        "arg1->texture_hit_test_enabled",
-        "arg1->tooltip.state",
-        "arg1->render_inset_delta",
-        "arg1->font_id",
-        "arg1->font_scale",
-        "arg1->texture_hit_width",
-        "arg1->texture_hit_height"
+        "struct BorderManager* eax = &g_game_base->border_manager",
+        "widget->list_flags",
+        "widget->list_prev",
+        "widget->list_next",
+        "widget->texture_hit_test_enabled",
+        "widget->tooltip.state",
+        "widget->tooltip.owner_widget = widget",
+        "widget->tooltip.input_ok_state.source_widget = widget",
+        "widget->render_inset_delta",
+        "widget->idle_fill_color.r = color->r",
+        "widget->hot_fill_color.a = color->a",
+        "widget->idle_text_color.r",
+        "widget->hot_text_color.a",
+        "widget->font_id",
+        "widget->font_scale",
+        "g_game_base->border_manager.justify_centre",
+        "widget->texture_hit_width",
+        "widget->texture_hit_height",
+        "widget->texture_id = sprite",
+        "widget->texture_layer = layer",
+        "widget->_pad_10[0x28] = 1",
+        "layout_frontend_widget(widget)"
       ],
       "forbidden_substrings": [
         "__asm",
-        "_ET1"
+        "_ET1",
+        "arg1",
+        "widget_1",
+        "FrameBodBase",
+        "__offset(",
+        "g_game_base["
+      ]
+    },
+    {
+      "name": "ida_frontend_sprite_button_owner",
+      "artifact": "analysis/decompile/ida/functions/00401a70-initialize_frontend_sprite_button.c",
+      "required_substrings": [
+        "void __thiscall initialize_frontend_sprite_button(",
+        "FrontendWidget *widget",
+        "uint32_t widget_flags",
+        "int32_t sprite",
+        "tColour *color",
+        "p_border_manager = (FrontendWidget *)&g_game_base->border_manager",
+        "widget->list_flags",
+        "widget->tooltip.owner_widget = widget",
+        "widget->tooltip.input_ok_state.source_widget = widget",
+        "widget->idle_fill_color = *color",
+        "widget->hot_fill_color = *color",
+        "g_game_base->border_manager.justify_centre",
+        "widget->texture_id = sprite",
+        "widget->texture_layer = layer",
+        "*(_DWORD *)&widget->_pad_10[40] = 1",
+        "layout_frontend_widget(widget);"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1",
+        "int this",
+        "FrameBodBase",
+        "__offset(",
+        "g_game_base[",
+        "int32_t __thiscall initialize_frontend_sprite_button"
       ]
     },
     {

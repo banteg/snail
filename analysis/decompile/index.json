@@ -17,12 +17,47 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_track_parcel",
-      "address": "0x4431d0"
+      "name": "initialize_frontend_sprite_button",
+      "address": "0x401a70"
     }
   ],
   "health_check_count": 664,
-  "health_failing_check_count": 0,
-  "health_passed": true,
-  "health_config": "analysis/decompile/health_checks.json"
+  "health_failing_check_count": 1,
+  "health_passed": false,
+  "health_config": "analysis/decompile/health_checks.json",
+  "failing_checks": [
+    {
+      "name": "bn_frontend_widget_fields_intact",
+      "artifact": "analysis/decompile/binja/functions/00401a70-initialize_frontend_sprite_button.c",
+      "exists": true,
+      "passed": false,
+      "failures": [
+        "missing required substring: arg1->list_flags",
+        "missing required substring: arg1->list_prev",
+        "missing required substring: arg1->list_next",
+        "missing required substring: arg1->texture_hit_test_enabled",
+        "missing required substring: arg1->tooltip.state",
+        "missing required substring: arg1->render_inset_delta",
+        "missing required substring: arg1->font_id",
+        "missing required substring: arg1->font_scale",
+        "missing required substring: arg1->texture_hit_width",
+        "missing required substring: arg1->texture_hit_height"
+      ],
+      "observed_counts": {
+        "_ET1": 0,
+        "__asm": 0,
+        "arg1->font_id": 0,
+        "arg1->font_scale": 0,
+        "arg1->list_flags": 0,
+        "arg1->list_next": 0,
+        "arg1->list_prev": 0,
+        "arg1->render_inset_delta": 0,
+        "arg1->texture_hit_height": 0,
+        "arg1->texture_hit_test_enabled": 0,
+        "arg1->texture_hit_width": 0,
+        "arg1->tooltip.state": 0
+      },
+      "observed_regex_counts": {}
+    }
+  ]
 }

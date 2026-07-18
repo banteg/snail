@@ -2,110 +2,103 @@
 /* function: initialize_frontend_sprite_button @ 0x401a70 */
 /* selector: initialize_frontend_sprite_button */
 
-// Constructs one sprite-backed front-end child control, including arrow-button animation ids, authored anchor, and immediate-vs-delayed click behavior.
-float *__thiscall initialize_frontend_sprite_button(
-        int this,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        _DWORD *a6,
-        float a7,
-        int a8)
+// Constructs one sprite-backed cRBorder child control, including its frame texture, optional shadow offset, authored anchor, texture/layer pair, and immediate-vs-delayed click behavior.
+void __thiscall initialize_frontend_sprite_button(
+        FrontendWidget *widget,
+        uint32_t widget_flags,
+        int32_t sprite,
+        float x,
+        float y,
+        tColour *color,
+        float anchor_x,
+        int32_t layer)
 {
-  char *v8; // eax
-  int v10; // eax
-  int v11; // ecx
-  int v12; // edx
-  int v13; // ecx
+  FrontendWidget *p_border_manager; // eax
+  FrontendWidget *list_next; // eax
+  float hot_padding; // ecx
+  float idle_padding; // edx
+  float target_padding; // ecx
   double v14; // st7
-  double v15; // st7
-  int v16; // edx
-  Color4f color; // [esp+8h] [ebp-10h] BYREF
+  double loaded_height; // st7
+  float layout_height; // edx
+  Color4f colora; // [esp+8h] [ebp-10h] BYREF
 
-  v8 = (char *)g_game_base + 2892;
-  if ( (*(_DWORD *)(this + 4) & 0x200) != 0 )
+  p_border_manager = (FrontendWidget *)&g_game_base->border_manager;
+  if ( (widget->list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
   }
   else
   {
-    *(_DWORD *)(this + 8) = v8;
-    *(_DWORD *)(this + 12) = *((_DWORD *)v8 + 3);
-    *((_DWORD *)v8 + 3) = this;
-    v10 = *(_DWORD *)(this + 12);
-    if ( v10 )
-      *(_DWORD *)(v10 + 8) = this;
-    *(_DWORD *)(this + 4) |= 0x200u;
+    widget->list_prev = p_border_manager;
+    widget->list_next = p_border_manager->list_next;
+    p_border_manager->list_next = widget;
+    list_next = widget->list_next;
+    if ( list_next )
+      list_next->list_prev = widget;
+    widget->list_flags |= 0x200u;
   }
-  *(_DWORD *)(this + 72) = 5;
-  *(_BYTE *)(this + 92) = 0;
-  *(_DWORD *)(this + 656) = 0;
-  *(_DWORD *)(this + 664) = this;
-  *(_DWORD *)(this + 676) = 0;
-  *(_DWORD *)(this + 708) = this;
-  *(_DWORD *)(this + 556) = 0;
-  *(_DWORD *)(this + 560) = 1101004800;
-  *(_BYTE *)(this + 564) = 0;
-  *(_DWORD *)(this + 376) = 1082130432;
-  *(_DWORD *)(this + 1772) = 0;
-  *(_DWORD *)(this + 1776) = 1065353216;
-  *(_DWORD *)(this + 532) = 1092616192;
-  *(_DWORD *)(this + 536) = 1097859072;
-  *(_DWORD *)(this + 620) = 1101004800;
-  *(_DWORD *)(this + 600) = 0;
-  *(_DWORD *)(this + 56) = 1;
-  unhide_border_init((_DWORD *)this);
-  *(_DWORD *)(this + 1784) = a5;
-  *(_DWORD *)(this + 416) = a2 | 0x40801;
-  *(_DWORD *)(this + 420) = a2 | 0x40801;
-  *(_BYTE *)(this + 716) = 0;
-  *(_DWORD *)(this + 1780) = a4;
-  *(_DWORD *)(this + 444) = *a6;
-  *(_DWORD *)(this + 448) = a6[1];
-  *(_DWORD *)(this + 452) = a6[2];
-  *(_DWORD *)(this + 456) = a6[3];
-  *(_DWORD *)(this + 460) = *a6;
-  *(_DWORD *)(this + 464) = a6[1];
-  *(_DWORD *)(this + 468) = a6[2];
-  *(_DWORD *)(this + 472) = a6[3];
-  *(Color4f *)(this + 492) = *set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
-  *(Color4f *)(this + 508) = *set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
-  if ( (*(_BYTE *)(this + 416) & 2) != 0 )
+  widget->border_texture_id = 5;
+  widget->texture_hit_test_enabled = 0;
+  widget->tooltip.state = 0;
+  widget->tooltip.owner_widget = widget;
+  widget->tooltip.tooltip_widget = nullptr;
+  widget->tooltip.input_ok_state.source_widget = widget;
+  widget->render_inset_delta = 0.0;
+  widget->render_inset_base = 20.0;
+  widget->render_inset_dynamic = 0;
+  widget->sprite_shadow_offset = 4.0;
+  widget->font_id = 0;
+  widget->font_scale = 1.0;
+  widget->idle_padding = 10.0;
+  widget->hot_padding = 15.0;
+  widget->stack_gap = 20.0;
+  widget->border_edge = 0.0;
+  *(_DWORD *)&widget->_pad_10[40] = 1;
+  unhide_border_init(widget);
+  widget->layout_anchor_y = y;
+  widget->widget_flags = widget_flags | 0x40801;
+  widget->previous_widget_flags = widget_flags | 0x40801;
+  widget->text_buffer.raw[0] = 0;
+  widget->layout_anchor_x = x;
+  widget->idle_fill_color = *color;
+  widget->hot_fill_color = *color;
+  widget->idle_text_color = *set_color_rgba((tColour *)&colora, 1.0, 1.0, 1.0, 1.0);
+  widget->hot_text_color = *set_color_rgba((tColour *)&colora, 1.0, 1.0, 1.0, 1.0);
+  if ( (widget->widget_flags & 2) != 0 )
   {
-    v11 = *(_DWORD *)(this + 536);
-    *(_DWORD *)(this + 524) = 1065353216;
-    *(_DWORD *)(this + 540) = v11;
+    hot_padding = widget->hot_padding;
+    widget->hover_blend_target = 1.0;
+    widget->target_padding = hot_padding;
   }
   else
   {
-    v12 = *(_DWORD *)(this + 532);
-    *(_DWORD *)(this + 524) = 0;
-    *(_DWORD *)(this + 540) = v12;
+    idle_padding = widget->idle_padding;
+    widget->hover_blend_target = 0.0;
+    widget->target_padding = idle_padding;
   }
-  v13 = *(_DWORD *)(this + 540);
-  *(_DWORD *)(this + 528) = *(_DWORD *)(this + 524);
-  *(_DWORD *)(this + 544) = v13;
-  *(_DWORD *)(this + 548) = 0;
-  *(_DWORD *)(this + 552) = 0;
-  *(_DWORD *)(this + 604) = 0;
-  *(float *)(this + 608) = a7;
-  v14 = a7 + *((float *)g_game_base + 69695);
-  *(_DWORD *)(this + 568) = a4;
-  *(_DWORD *)(this + 572) = a5;
-  *(float *)(this + 608) = v14;
-  *(float *)(this + 584) = (float)*(int *)(LODWORD(g_sprite_texture_table[a3]) + 4);
-  v15 = (double)*(int *)(LODWORD(g_sprite_texture_table[a3]) + 8);
-  *(_DWORD *)(this + 592) = *(_DWORD *)(this + 584);
-  *(_DWORD *)(this + 624) = a3;
-  *(float *)(this + 588) = v15;
-  v16 = *(_DWORD *)(this + 588);
-  *(_DWORD *)(this + 1780) = a4;
-  *(_DWORD *)(this + 596) = v16;
-  *(_DWORD *)(this + 1784) = a5;
-  *(_DWORD *)(this + 628) = a8;
-  *(_DWORD *)(this + 612) = 0;
-  *(_DWORD *)(this + 616) = 0;
-  return (float *)layout_frontend_widget((FrontendWidget *)this);
+  target_padding = widget->target_padding;
+  widget->hover_blend_current = widget->hover_blend_target;
+  widget->current_padding = target_padding;
+  widget->text_effect_target = 0.0;
+  widget->text_effect_current = 0.0;
+  widget->text_alignment = 0;
+  widget->anchor_x = anchor_x;
+  v14 = anchor_x + g_game_base->border_manager.justify_centre;
+  widget->layout_left = x;
+  widget->layout_top = y;
+  widget->anchor_x = v14;
+  widget->layout_width = (float)(*(&g_sprite_texture_table + sprite))->loaded_width;
+  loaded_height = (double)(*(&g_sprite_texture_table + sprite))->loaded_height;
+  widget->texture_hit_width = widget->layout_width;
+  widget->texture_id = sprite;
+  widget->layout_height = loaded_height;
+  layout_height = widget->layout_height;
+  widget->layout_anchor_x = x;
+  widget->texture_hit_height = layout_height;
+  widget->layout_anchor_y = y;
+  widget->texture_layer = layer;
+  widget->teardown_progress = 0.0;
+  widget->teardown_progress_step = 0.0;
+  layout_frontend_widget(widget);
 }
-

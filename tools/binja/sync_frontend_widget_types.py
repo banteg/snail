@@ -171,6 +171,10 @@ PROTO_UPDATES = (
         "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, tColour* color, int32_t text_alignment, float anchor_x)",
     ),
     (
+        "initialize_frontend_sprite_button",
+        "void __thiscall initialize_frontend_sprite_button(FrontendWidget* widget, uint32_t widget_flags, int32_t sprite, float x, float y, tColour* color, float anchor_x, int32_t layer)",
+    ),
+    (
         "border_mouse_test",
         "uint8_t __thiscall border_mouse_test(FrontendWidget* widget)",
     ),
@@ -214,6 +218,14 @@ PROTO_UPDATES = (
 )
 
 USER_VAR_UPDATES = (
+    (
+        "initialize_frontend_sprite_button",
+        "RegisterVariableSourceType",
+        15,
+        72,
+        "widget",
+        "FrontendWidget*",
+    ),
     (
         "initialize_frontend_widget",
         "RegisterVariableSourceType",

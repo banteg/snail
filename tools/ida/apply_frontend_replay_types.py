@@ -30,6 +30,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall draw_frontend_widget(FrontendWidget* widget);",
     ),
     (
+        "initialize_frontend_sprite_button",
+        "void __thiscall initialize_frontend_sprite_button(FrontendWidget* widget, uint32_t widget_flags, int32_t sprite, float x, float y, tColour* color, float anchor_x, int32_t layer);",
+    ),
+    (
         "update_input_ok",
         "void __thiscall update_input_ok(InputOkState* input_ok);",
     ),

@@ -78,3 +78,25 @@ The source-order-sensitive `idle_fill_color` pointer remains an ordinary typed
 alias and still explains the native shrink-wrapped `ebp` lifetime. Focused
 matching stays proof-grade at 100.00%, 157/157 instructions, full prefix, and
 ten clean operands; the ownership promotion changes no generated instruction.
+
+## 2026-07-18 live-analysis ownership replay
+
+The exact member ABI is now durable in the focused front-end analysis syncs.
+IDA receives the full `void __thiscall` prototype with `FrontendWidget*`,
+`tColour*`, float layout coordinates/anchor, sprite id, and layer. Binary Ninja
+receives the same prototype plus a guarded retype of the native EBX copy
+(`RegisterVariableSourceType`, index 15, storage 72) from stale
+`FrameBodBase*` to its proved `FrontendWidget*` owner. That local correction
+recovers the list, tooltip, colour, padding, layout, texture, and teardown
+members throughout the exported HLIL instead of leaving 137 raw offsets.
+
+The replay lives in `sync_frontend_widget_types.py` and
+`apply_frontend_replay_types.py`, rather than the broad path-template sync,
+because this is front-end object ownership and the focused scripts replay in
+seconds. Cross-tool health guards require the typed receiver graph and reject
+the old `arg1`/`FrameBodBase`/`__offset` forms.
+
+The dword store at widget `+0x38` remains an explicitly padded write in both
+exports. No independent reader currently proves its meaning, so naming it
+would be fakematching; the guards preserve that bounded unknown alongside the
+recovered fields.
