@@ -104,3 +104,15 @@ The refreshed Binary Ninja artifact now renders the receiver as `Object*` and
 names `vertices`, `vertex_count`, `bounding_radius`, `bounds_min`, and
 `bounds_max`. A health check rejects the old raw-offset receiver and synthetic
 integer return while the honest 99.16% scheduling residual stays unchanged.
+
+## 2026-07-18 paired replay and health proof
+
+The IDA lane is now address-anchored and fail-closed on the complete
+0xdc-byte `Object` owner before this prototype is applied. Its tracked artifact
+matches the Binary Ninja ownership view: a void Object mutator over typed
+vertices, minimum/maximum bounds, and bounding radius. A paired IDA health
+check now rejects the old `_DWORD* this`, raw offsets, and incidental return.
+
+No matcher source changed. Focused Wibo remains `99.16%`, exactly `119/119`
+instructions, prefix `28`, with one clean mask; only the independent radius
+zero-store scheduling remains.

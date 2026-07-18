@@ -2,87 +2,78 @@
 /* function: calc_object_bounding_box @ 0x42fb10 */
 /* selector: calc_object_bounding_box */
 
-int __thiscall sub_42FB10(_DWORD *this)
+// Recomputes one cRObject's min/max bounds and maximum vertex magnitude in place. Its sole native caller discards EAX, confirming this is a void object mutator rather than the decompiler-derived count-returning helper.
+void __thiscall calc_object_bounding_box(Object *object)
 {
-  float *v2; // edi
-  float *v3; // ebx
+  Vec3 *p_bounds_max; // edi
+  Vec3 *p_bounds_min; // ebx
   int v4; // ebp
-  int result; // eax
-  float *v6; // ecx
+  Vec3 *v5; // ecx
+  double x; // st7
   double v7; // st7
-  double v8; // st7
+  double y; // st7
   double v9; // st7
-  double v10; // st7
+  double z; // st7
   double v11; // st7
   double v12; // st7
-  int v13; // [esp+10h] [ebp-10h]
+  int32_t v13; // [esp+10h] [ebp-10h]
 
-  v2 = (float *)(this + 44);
-  *(this + 44) = -803929351;
-  v3 = (float *)(this + 41);
-  *(this + 45) = -803929351;
-  *(this + 46) = -803929351;
-  *(this + 41) = 1343554297;
+  p_bounds_max = &object->bounds_max;
+  object->bounds_max.x = -1.0e10;
+  p_bounds_min = &object->bounds_min;
+  object->bounds_max.y = -1.0e10;
+  object->bounds_max.z = -1.0e10;
+  object->bounds_min.x = 1.0e10;
   v4 = 0;
-  *(this + 42) = 1343554297;
-  *(this + 37) = 0;
+  object->bounds_min.y = 1.0e10;
+  object->bounding_radius = 0.0;
   v13 = 0;
-  *(this + 43) = 1343554297;
-  result = *(this + 11);
-  if ( result > 0 )
+  for ( object->bounds_min.z = 1.0e10; v13 < object->vertex_count; ++v13 )
   {
-    do
+    v5 = &object->vertices[v4];
+    if ( p_bounds_max->x <= (double)v5->x )
     {
-      v6 = (float *)(v4 + *(this + 14));
-      if ( *v2 <= (double)*v6 )
-      {
-        v7 = *v6;
-      }
-      else
-      {
-        v7 = *((float *)this + 44);
-        v2 = (float *)(this + 44);
-      }
-      *v2 = v7;
-      if ( *v6 <= (double)*v3 )
-      {
-        v8 = *v6;
-      }
-      else
-      {
-        v8 = *((float *)this + 41);
-        v3 = (float *)(this + 41);
-      }
-      *v3 = v8;
-      if ( *((float *)this + 45) <= (double)v6[1] )
-        v9 = v6[1];
-      else
-        v9 = *((float *)this + 45);
-      *((float *)this + 45) = v9;
-      if ( v6[1] <= (double)*((float *)this + 42) )
-        v10 = v6[1];
-      else
-        v10 = *((float *)this + 42);
-      *((float *)this + 42) = v10;
-      if ( *((float *)this + 46) <= (double)v6[2] )
-        v11 = v6[2];
-      else
-        v11 = *((float *)this + 46);
-      *((float *)this + 46) = v11;
-      if ( v6[2] <= (double)*((float *)this + 43) )
-        v12 = v6[2];
-      else
-        v12 = *((float *)this + 43);
-      *((float *)this + 43) = v12;
-      vector_magnitude(v6);
-      if ( v12 > *((float *)this + 37) )
-        *((float *)this + 37) = v12;
-      result = v13 + 1;
-      v4 += 12;
-      ++v13;
+      x = v5->x;
     }
-    while ( v13 < *(this + 11) );
+    else
+    {
+      x = object->bounds_max.x;
+      p_bounds_max = &object->bounds_max;
+    }
+    p_bounds_max->x = x;
+    if ( v5->x <= (double)p_bounds_min->x )
+    {
+      v7 = v5->x;
+    }
+    else
+    {
+      v7 = object->bounds_min.x;
+      p_bounds_min = &object->bounds_min;
+    }
+    p_bounds_min->x = v7;
+    if ( object->bounds_max.y <= (double)v5->y )
+      y = v5->y;
+    else
+      y = object->bounds_max.y;
+    object->bounds_max.y = y;
+    if ( v5->y <= (double)object->bounds_min.y )
+      v9 = v5->y;
+    else
+      v9 = object->bounds_min.y;
+    object->bounds_min.y = v9;
+    if ( object->bounds_max.z <= (double)v5->z )
+      z = v5->z;
+    else
+      z = object->bounds_max.z;
+    object->bounds_max.z = z;
+    if ( v5->z <= (double)object->bounds_min.z )
+      v11 = v5->z;
+    else
+      v11 = object->bounds_min.z;
+    object->bounds_min.z = v11;
+    v12 = vector_magnitude(v5);
+    if ( v12 > object->bounding_radius )
+      object->bounding_radius = v12;
+    ++v4;
   }
-  return result;
 }
-

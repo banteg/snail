@@ -8959,6 +8959,105 @@
       ]
     },
     {
+      "name": "ida_object_mesh_loader_owner",
+      "artifact": "analysis/decompile/ida/functions/00405640-load_x_mesh.c",
+      "required_substrings": [
+        "void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *object, int32_t options_flags)",
+        "request_object_facequads(object",
+        "request_object_vertices(object",
+        "object->vertices",
+        "object->facequads",
+        "object->flags"
+      ],
+      "forbidden_substrings": [
+        "__stdcall load_x_mesh",
+        "PathTemplateStripMesh",
+        "uint8_t options_flags",
+        "return report_errorf",
+        "sub_405640",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_bounds_owner",
+      "artifact": "analysis/decompile/ida/functions/0042fb10-calc_object_bounding_box.c",
+      "required_substrings": [
+        "void __thiscall calc_object_bounding_box(Object *object)",
+        "&object->bounds_max",
+        "&object->bounds_min",
+        "object->bounding_radius",
+        "object->vertices",
+        "object->vertex_count"
+      ],
+      "forbidden_substrings": [
+        "sub_42FB10",
+        "_DWORD *this",
+        "this +",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_texture_group_rebuild_owner",
+      "artifact": "analysis/decompile/ida/functions/004303f0-calc_object_texture_groups.c",
+      "required_substrings": [
+        "void __thiscall calc_object_texture_groups(Object *object)",
+        "ObjectFaceQuad *facequads",
+        "facequads->texture_ref",
+        "object->texture_group_ends",
+        "object->facequad_count",
+        "request_object_texture_groups(object"
+      ],
+      "forbidden_substrings": [
+        "sub_4303F0",
+        "_BYTE *__thiscall",
+        "this +",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_distort_owner",
+      "artifact": "analysis/decompile/ida/functions/0041aa50-apply_distort_to_object.c",
+      "required_substrings": [
+        "void __thiscall apply_distort_to_object(ObjectDistort *distort, Object *object)",
+        "distort->z_wave",
+        "distort->y_squash",
+        "distort->xyz_scale",
+        "object->copied_vertices",
+        "object->vertices = object->copied_vertices",
+        "calc_object_facequad_normals_simple(object)"
+      ],
+      "forbidden_substrings": [
+        "sub_41AA50",
+        "float *this",
+        "int a2",
+        "a2 +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_dynamic_upload_owner",
+      "artifact": "analysis/decompile/ida/functions/00412250-refresh_object_vertex_buffer.c",
+      "required_substrings": [
+        "void __cdecl refresh_object_vertex_buffer(Object *object)",
+        "ObjectRenderVertex *animated_vertices",
+        "ObjectRenderVertex *dynamic_vertices",
+        "(void **)&animated_vertices",
+        "(void **)&dynamic_vertices",
+        "animated_vertices[v5]",
+        "dynamic_vertices[v10 - 1].u",
+        "apply_distort_to_object(&v1->distort, v1)"
+      ],
+      "forbidden_substrings": [
+        "sub_412250",
+        "_DWORD *a1",
+        "(void **)&object",
+        "&object->_pad_00",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_object_grouped_vertex_workspace_owner",
       "artifact": "analysis/decompile/binja/functions/00413bb0-get_or_append_object_texture_group_vertex.c",
       "required_substrings": [

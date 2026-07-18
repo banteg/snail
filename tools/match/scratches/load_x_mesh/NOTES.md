@@ -138,3 +138,17 @@ allocation. None are retained.
   `238`, with all 94 masked operands clean. Exact `initialize_directx_loader`,
   `load_or_reuse_cached_x_mesh`, and `load_x_animation_clip` also remain exact,
   proving the corrected family contract without match-only control flow.
+
+## 2026-07-18 durable cross-lane replay
+
+The Binary Ninja and IDA object replays now anchor `load_x_mesh` by its native
+address before applying the prototype, verify the complete 0x5e10-byte
+`DirectXLoader` and nested 0xbc-byte cache slots, and invalidate its three
+direct callers. The tracked IDA artifact no longer presents a free
+`__stdcall` over `PathTemplateStripMesh`; it renders the void
+`DirectXLoader*` receiver and owned `Object*` mesh target, including typed
+vertex, facequad, texture, and flag writes.
+
+No matcher source changed. Focused Wibo remains honestly at `96.75%`,
+`494/492`, prefix `238`, with 94 clean masks; the residual is still the
+documented face-flag instruction expansion and resulting branch displacement.

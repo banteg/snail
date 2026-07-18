@@ -1,8 +1,9 @@
 # apply_distort_to_object
 
-`Object +0x80` is a three-float `ObjectDistort` subobject used only when the
-object has dynamic vertex data (`flags & 0x800000` in
-`refresh_object_vertex_buffer`).
+`Object +0x80` is a five-float, 0x14-byte `ObjectDistort` subobject used only
+when the object has dynamic vertex data (`flags & 0x800000` in
+`refresh_object_vertex_buffer`). The first three floats are the recovered
+controls below; the final two remain unknown.
 
 - `z_wave` offsets vertex Y from absolute Z with a sine envelope over the
   object's Z bounds.
@@ -48,3 +49,15 @@ target. The refreshed artifact names all three distortion controls, the Object
 bounds/live/copy views, and the final simple-normal rebuild. This replaces the
 old `int(float*, float)` interpretation without changing the honest 95.43%
 matcher frontier or its nine equivalent SIB base/index order residuals.
+
+## 2026-07-18 checked-in IDA owner closure
+
+The IDA replay now owns this helper by address as well as name, verifies the
+0x14-byte `ObjectDistort` and 0xdc-byte `Object` layouts before applying the
+prototype, and refreshes `refresh_object_vertex_buffer` as its sole caller.
+The tracked IDA artifact now exposes all three distort controls, the borrowed
+live vertex view, the owned copy buffer, bounds, and final normal rebuild.
+
+No matcher source changed. Focused Wibo remains `95.43%`, exactly `197/197`
+instructions with 26 clean masks; all residuals are still equivalent x86 SIB
+base/index encodings rather than ownership or behavior differences.

@@ -3482,6 +3482,9 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
     sync_source = (BINJA_DIR / "sync_object_render_types.py").read_text(
         encoding="utf-8"
     )
+    ida_sync_source = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
     analysis_headers = [
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in ("bn_object_render_types.h", "object_render_types.h")
@@ -3510,6 +3513,56 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         "calc_object_edges",
     ):
         assert f'"{function_name}"' in sync_source
+
+    for address, name in (
+        ("0x405640", "load_x_mesh"),
+        ("0x41aa50", "apply_distort_to_object"),
+        ("0x42fb10", "calc_object_bounding_box"),
+        ("0x4303f0", "calc_object_texture_groups"),
+    ):
+        assert f'("{address}", "{name}")' in sync_source
+        assert f'({address.upper().replace("0X", "0x")}, "{name}")' in ida_sync_source
+
+    for owner_name, expected_size in (
+        ("Vec3", "0xC"),
+        ("TextureRef", "0xA4"),
+        ("ObjectFaceQuad", "0x30"),
+        ("ObjectDistort", "0x14"),
+        ("Object", "0xDC"),
+        ("DuplicateVertices", "0x8"),
+        ("CachedXMeshSlot", "0xBC"),
+        ("DirectXLoader", "0x5E10"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in ida_sync_source
+
+    for address in (
+        "0x405640",
+        "0x405CC0",
+        "0x405D60",
+        "0x40ACF0",
+        "0x412250",
+        "0x41AA50",
+        "0x42F9E0",
+        "0x42FB10",
+        "0x4303F0",
+    ):
+        assert address in ida_sync_source
+
+    assert "idc.PT_FILE | idc.PT_REPLACE" in ida_sync_source
+    assert "ida_hexrays.mark_cfunc_dirty(function.start_ea, True)" in ida_sync_source
+    assert 're.sub(r"\\b(?:struct|union|enum)\\s+", "", normalized)' in ida_sync_source
+    assert 'declaration = "ObjectRenderVertex *vertices;"' in ida_sync_source
+    assert '("animated_vertices", 0x4122D0)' in ida_sync_source
+    assert '("dynamic_vertices", 0x412350)' in ida_sync_source
+    assert "info.set_split_lvar()" in ida_sync_source
+    assert (
+        "void __thiscall load_x_mesh(DirectXLoader* loader, char* mesh_path, "
+        "Object* object, int32_t options_flags);"
+    ) in ida_sync_source
+    assert (
+        "void __thiscall apply_distort_to_object(ObjectDistort* distort, "
+        "Object* object);"
+    ) in ida_sync_source
 
     assert "Vec3* __thiscall request_object_facequad_normals(Object* object)" in sync_source
     assert "Vector3* request_object_facequad_normals();" in matcher_header

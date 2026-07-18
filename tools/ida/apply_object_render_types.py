@@ -3,10 +3,13 @@ import pathlib
 import re
 import sys
 
+import ida_auto
 import ida_funcs
+import ida_hexrays
 import ida_kernwin
 import ida_name
 import ida_pro
+import ida_typeinf
 import idc
 
 SCRIPT_ROOT = pathlib.Path(__file__).resolve().parent
@@ -125,6 +128,14 @@ TRUSTED_DECLARATIONS = [
         "void* __thiscall noop_this_constructor(void* self);",
     ),
     (
+        "initialize_object_distort",
+        "void __thiscall initialize_object_distort(ObjectDistort* distort);",
+    ),
+    (
+        "apply_distort_to_object",
+        "void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object);",
+    ),
+    (
         "initialize_object",
         "void __thiscall initialize_object(Object* object);",
     ),
@@ -150,7 +161,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "load_x_mesh",
-        "void __thiscall load_x_mesh(DirectXLoader* loader, char* mesh_path, Object* object, int options_flags);",
+        "void __thiscall load_x_mesh(DirectXLoader* loader, char* mesh_path, Object* object, int32_t options_flags);",
     ),
     (
         "load_or_reuse_cached_x_mesh",
@@ -235,11 +246,14 @@ TRUSTED_DECLARATIONS = [
 ]
 
 TRUSTED_NAMES = [
+    (0x405640, "load_x_mesh"),
     (0x41A0B0, "initialize_textured_backdrop_quad"),
     (0x41A170, "raise_backdrop_quad_edge_pair"),
     (0x41A1C0, "initialize_backdrop_slice_quad"),
     (0x41A290, "initialize_backdrop_corner_quad"),
     (0x41A4D0, "initialize_backdrop_tile_quad"),
+    (0x41AA30, "initialize_object_distort"),
+    (0x41AA50, "apply_distort_to_object"),
     (0x4114B0, "create_vertex_buffer"),
     (0x4115D0, "create_index_buffer"),
     (0x411630, "initialize_direct3d_renderer_defaults"),
@@ -261,6 +275,8 @@ TRUSTED_NAMES = [
     (0x414500, "bind_texture_ref"),
     (0x414600, "query_direct3d_device_caps"),
     (0x414650, "reset_render_counters"),
+    (0x42FB10, "calc_object_bounding_box"),
+    (0x4303F0, "calc_object_texture_groups"),
     (0x430A30, "rotate_object_facequad_uv_pairs"),
     (0x430D90, "replace_object_list_texture_refs"),
     (0x4A3C40, "g_backdrop_raise_first_vertex_index"),
@@ -304,6 +320,41 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x5031C8, "g_d3d_texture_slots", "Direct3DTexture8** g_d3d_texture_slots;"),
 ]
 
+REQUIRED_OWNER_MARKERS = (
+    "typedef struct ObjectDistort {",
+    "typedef struct Object {",
+    "typedef struct DirectXLoader {",
+    "void __thiscall load_x_mesh(",
+    "void __thiscall calc_object_bounding_box(Object* object);",
+    "void __thiscall calc_object_texture_groups(Object* object);",
+    "void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object);",
+)
+
+EXPECTED_OWNER_SIZES = {
+    "Vec3": 0xC,
+    "TextureRef": 0xA4,
+    "ObjectFaceQuad": 0x30,
+    "ObjectDistort": 0x14,
+    "Object": 0xDC,
+    "DuplicateVertices": 0x8,
+    "CachedXMeshSlot": 0xBC,
+    "DirectXLoader": 0x5E10,
+}
+
+# Rebuild both recovered helpers and their direct ownership-bearing callers.
+REANALYSIS_FUNCTIONS = (
+    0x405640,  # load_x_mesh
+    0x405CC0,  # load_or_reuse_cached_x_mesh
+    0x405D60,  # load_x_animation_clip
+    0x40ACF0,  # initialize_game_assets_and_world
+    0x412250,  # refresh_object_vertex_buffer
+    0x41AA30,  # initialize_object_distort
+    0x41AA50,  # apply_distort_to_object
+    0x42F9E0,  # build_all_objects
+    0x42FB10,  # calc_object_bounding_box
+    0x4303F0,  # calc_object_texture_groups
+)
+
 
 def _resolve_function(selector: str) -> tuple[int | None, str]:
     address = idc.get_name_ea_simple(selector)
@@ -316,7 +367,9 @@ def _normalize_type_text(value: str | None) -> str | None:
     if value is None:
         return None
     normalized = value.strip().removesuffix(";")
+    normalized = re.sub(r"\bint32_t\b", "int", normalized)
     normalized = re.sub(r"\s+", " ", normalized)
+    normalized = re.sub(r"\b(?:struct|union|enum)\s+", "", normalized)
     normalized = re.sub(r"\s*\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
     normalized = re.sub(r"\s*,\s*", ", ", normalized)
@@ -339,8 +392,184 @@ def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
+def _named_struct_size(name: str) -> int | None:
+    value = ida_typeinf.tinfo_t()
+    if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
+        return None
+    return value.get_size()
+
+
+def _sync_refresh_vertex_lvars() -> dict[str, object]:
+    selector = "refresh_object_vertex_buffer"
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    declaration = "ObjectRenderVertex *vertices;"
+    local_type = ida_typeinf.tinfo_t()
+    if not ida_typeinf.parse_decl(
+        local_type,
+        None,
+        declaration,
+        ida_typeinf.PT_SIL,
+    ):
+        return {
+            "status": "failed",
+            "reason": "parse_vertex_type_failed",
+            "selector": selector,
+            "declaration": declaration,
+        }
+
+    expected_type = _normalize_type_text(str(local_type))
+    split_specs = (
+        ("animated_vertices", 0x4122D0),
+        ("dynamic_vertices", 0x412350),
+    )
+    cfunc = ida_hexrays.decompile(address)
+    source_candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if lvar.is_arg_var
+        and lvar.is_stk_var()
+        and lvar.get_stkoff() == 40
+        and lvar.name == "object"
+        and _normalize_type_text(str(lvar.type())) == "Object *"
+    ]
+    if len(source_candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_object_argument_candidates",
+            "selector": selector,
+            "candidate_count": len(source_candidates),
+        }
+
+    applied = []
+    unchanged = []
+    for name, split_definition_address in split_specs:
+        existing = [
+            lvar
+            for lvar in cfunc.get_lvars()
+            if not lvar.is_arg_var
+            and lvar.name == name
+            and _normalize_type_text(str(lvar.type())) == expected_type
+            and lvar.defea == split_definition_address
+        ]
+        if len(existing) == 1:
+            unchanged.append(name)
+            continue
+        if existing:
+            return {
+                "status": "failed",
+                "reason": "unexpected_existing_vertex_lvars",
+                "selector": selector,
+                "name": name,
+                "candidate_count": len(existing),
+            }
+
+        info = ida_hexrays.lvar_saved_info_t()
+        info.ll = ida_hexrays.lvar_locator_t(
+            source_candidates[0].location,
+            split_definition_address,
+        )
+        info.name = name
+        info.type = local_type
+        info.set_split_lvar()
+        if not ida_hexrays.modify_user_lvar_info(
+            address,
+            ida_hexrays.MLI_NAME
+            | ida_hexrays.MLI_TYPE
+            | ida_hexrays.MLI_SET_FLAGS,
+            info,
+        ):
+            return {
+                "status": "failed",
+                "reason": "modify_split_vertex_lvar_failed",
+                "selector": selector,
+                "name": name,
+                "definition_address": hex(split_definition_address),
+            }
+        applied.append(name)
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = {
+        name: [
+            lvar
+            for lvar in verified_cfunc.get_lvars()
+            if not lvar.is_arg_var
+            and lvar.name == name
+            and _normalize_type_text(str(lvar.type())) == expected_type
+            and lvar.defea == split_definition_address
+        ]
+        for name, split_definition_address in split_specs
+    }
+    invalid = {name: len(candidates) for name, candidates in verified.items() if len(candidates) != 1}
+    if invalid:
+        return {
+            "status": "failed",
+            "reason": "split_vertex_lvar_readback_failed",
+            "selector": selector,
+            "candidate_counts": invalid,
+        }
+
+    return {
+        "status": "applied" if applied else "unchanged",
+        "selector": selector,
+        "type": str(local_type),
+        "applied": applied,
+        "unchanged": unchanged,
+        "definitions": {
+            name: hex(split_definition_address)
+            for name, split_definition_address in split_specs
+        },
+    }
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
-    parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    header_text = header_path.read_text(encoding="utf-8")
+    missing_owner_markers = [
+        marker for marker in REQUIRED_OWNER_MARKERS if marker not in header_text
+    ]
+    if missing_owner_markers:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "missing_owner_markers": missing_owner_markers,
+                    "failed": [{"reason": "noncanonical_object_owner_header"}],
+                },
+                indent=2,
+            )
+        )
+        return 1
+
+    parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE | idc.PT_REPLACE)
+    owner_sizes = {name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES}
+    size_failures = [
+        {
+            "selector": name,
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": owner_sizes[name],
+        }
+        for name, expected_size in EXPECTED_OWNER_SIZES.items()
+        if owner_sizes[name] != expected_size
+    ]
+    if parse_errors or size_failures:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "parse_errors": parse_errors,
+                    "owner_sizes": owner_sizes,
+                    "failed": size_failures,
+                },
+                indent=2,
+            )
+        )
+        return 1
 
     applied = 0
     unchanged = 0
@@ -360,6 +589,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "selector": name,
                     "address": hex(address),
                     "reason": "rename_failed",
+                }
+            )
+            continue
+        if idc.get_name(address) != name:
+            failed.append(
+                {
+                    "selector": name,
+                    "address": hex(address),
+                    "observed": idc.get_name(address),
+                    "reason": "rename_readback_failed",
                 }
             )
             continue
@@ -448,17 +687,41 @@ def _sync_types(header_path: pathlib.Path) -> int:
     if game_root_owner_graph.get("status") == "failed":
         failed.append({"selector": "GameRoot", "owner_graph": game_root_owner_graph})
 
+    refresh_vertex_lvars = _sync_refresh_vertex_lvars()
+    if refresh_vertex_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "refresh_object_vertex_buffer",
+                "vertex_lvars": refresh_vertex_lvars,
+            }
+        )
+
+    ida_auto.auto_wait()
+    reanalysis_functions = []
+    for address in REANALYSIS_FUNCTIONS:
+        function = ida_funcs.get_func(address)
+        if function is None:
+            missing.append(
+                {"address": hex(address), "reason": "missing_reanalysis_function"}
+            )
+            continue
+        ida_hexrays.mark_cfunc_dirty(function.start_ea, True)
+        reanalysis_functions.append(hex(function.start_ea))
+
     print(
         json.dumps(
             {
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "owner_sizes": owner_sizes,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "game_root_owner_graph": game_root_owner_graph,
+                "refresh_vertex_lvars": refresh_vertex_lvars,
+                "reanalysis_functions": reanalysis_functions,
                 "missing": missing,
                 "failed": failed,
             },

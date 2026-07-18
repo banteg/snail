@@ -133,12 +133,14 @@ SYMBOL_REMOVALS = (
 )
 
 FUNCTION_SYMBOL_UPDATES = (
+    ("0x405640", "load_x_mesh"),
     ("0x41a0b0", "initialize_textured_backdrop_quad"),
     ("0x41a170", "raise_backdrop_quad_edge_pair"),
     ("0x41a1c0", "initialize_backdrop_slice_quad"),
     ("0x41a290", "initialize_backdrop_corner_quad"),
     ("0x41a4d0", "initialize_backdrop_tile_quad"),
     ("0x41aa30", "initialize_object_distort"),
+    ("0x41aa50", "apply_distort_to_object"),
     ("0x4114b0", "create_vertex_buffer"),
     ("0x4115d0", "create_index_buffer"),
     ("0x411630", "initialize_direct3d_renderer_defaults"),
@@ -160,6 +162,8 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x414500", "bind_texture_ref"),
     ("0x414600", "query_direct3d_device_caps"),
     ("0x414650", "reset_render_counters"),
+    ("0x42fb10", "calc_object_bounding_box"),
+    ("0x4303f0", "calc_object_texture_groups"),
     ("0x430a30", "rotate_object_facequad_uv_pairs"),
 )
 

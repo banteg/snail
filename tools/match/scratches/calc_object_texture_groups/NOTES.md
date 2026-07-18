@@ -105,3 +105,16 @@ The refreshed Binary Ninja artifact now exposes the `ObjectFaceQuad` texture
 references and the `Object::texture_group_ends` producer directly. The helper
 call is the proved void Object method; no incidental EAX result remains in the
 checked-in ownership view.
+
+## 2026-07-18 paired replay and health proof
+
+The IDA lane now reconstructs this helper from its address, verifies
+`Object` (0xdc), `ObjectFaceQuad` (0x30), and `TextureRef` (0xa4), and marks
+the owning `build_all_objects` caller dirty. The checked-in artifact now shows
+the same face-array borrow and cumulative `texture_group_ends` writes as the
+Binary Ninja lane, with a paired health check rejecting the former byte-pointer
+receiver and synthetic return.
+
+No matcher source changed. Focused Wibo remains `98.18%`, exactly `55/55`
+instructions, prefix `18`, with one clean mask; the sole residual remains the
+equivalent base/index order in one SIB encoding.

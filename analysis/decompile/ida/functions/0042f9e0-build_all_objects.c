@@ -2,41 +2,39 @@
 /* function: build_all_objects @ 0x42f9e0 */
 /* selector: build_all_objects */
 
-void __usercall sub_42F9E0(int *a1@<ecx>, int a2@<edi>, double a3@<st0>)
+// Builds every object in the global render-object list; iOS RObject.o names this `cRObjects::BuildObjects()`.
+void __thiscall build_all_objects(ObjectList *object_list)
 {
-  int v4; // ebx
-  int v5; // edi
-  _DWORD *v6; // ecx
-  int *v7; // ecx
-  int v8; // [esp-4h] [ebp-Ch]
+  int32_t v2; // ebx
+  int v3; // edi
+  Object *v4; // ecx
+  Object *v5; // ecx
 
-  v4 = 0;
-  if ( *a1 > 0 )
+  v2 = 0;
+  if ( object_list->count > 0 )
   {
-    v8 = a2;
-    v5 = 0;
+    v3 = 0;
     do
     {
-      if ( !(v4 % 4) )
-        update_loading_screen(MEMORY[0x503290]);
-      v6 = (_DWORD *)(v5 + a1[2]);
-      if ( v6[11] )
+      if ( !(v2 % 4) )
+        update_loading_screen(&g_loading_bar);
+      v4 = &object_list->objects[v3];
+      if ( v4->vertex_count )
       {
-        calc_object_bounding_box(v6);
-        sort_object_faces_by_texture_group(v5 + a1[2]);
-        calc_object_texture_groups(v5 + a1[2]);
-        v7 = (int *)(a1[2] + v5);
-        if ( (v7[4] & 0x4000) != 0 )
+        calc_object_bounding_box(v4);
+        sort_object_faces_by_texture_group((int)&object_list->objects[v3]);
+        calc_object_texture_groups(&object_list->objects[v3]);
+        v5 = &object_list->objects[v3];
+        if ( (v5->flags & 0x4000) != 0 )
         {
-          calc_object_facequad_normals(v7);
-          calc_object_edges(v5 + a1[2], a3);
+          calc_object_facequad_normals(v5);
+          calc_object_edges(&object_list->objects[v3]);
         }
-        build_object_texture_group_buffers((int)a1, (_DWORD *)(v5 + a1[2]), v8);
+        build_object_texture_group_buffers(&object_list->objects[v3]);
       }
-      ++v4;
-      v5 += 220;
+      ++v2;
+      ++v3;
     }
-    while ( v4 < *a1 );
+    while ( v2 < object_list->count );
   }
 }
-

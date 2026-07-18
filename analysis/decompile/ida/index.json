@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 706,
-  "function_count": 706,
+  "selected_count": 707,
+  "function_count": 707,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -1490,6 +1490,13 @@
       "address": "0x41a4d0",
       "name": "initialize_backdrop_tile_quad",
       "artifact": "analysis/decompile/ida/functions/0041a4d0-initialize_backdrop_tile_quad.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_object_distort",
+      "address": "0x41aa30",
+      "name": "initialize_object_distort",
+      "artifact": "analysis/decompile/ida/functions/0041aa30-initialize_object_distort.c",
       "removed_stale_artifacts": []
     },
     {

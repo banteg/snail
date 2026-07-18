@@ -8,7 +8,7 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
   char *v3; // edi
   char *case_insensitive_substring; // eax
   XAnimationKeyframe *tracked_memory; // eax
-  int v7; // ecx
+  int32_t v7; // ecx
   int v8; // ebp
   bool v9; // cc
   char *v10; // esi
@@ -19,7 +19,7 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
   char *v15; // eax
   char *v16; // ebx
   char *v17; // eax
-  int v18; // edi
+  int32_t v18; // edi
   char *cursor; // [esp+10h] [ebp-194h] BYREF
   char v20; // [esp+17h] [ebp-18Dh]
   float progress_step; // [esp+18h] [ebp-18Ch]
@@ -38,7 +38,7 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
   if ( is_archive_index_loaded() )
     *cursor++ = 50;
   *cursor++ = 0;
-  enumerate_matching_archive_or_fs_entries(asc_4A169C, Buffer, &unused, g_animation_directory);
+  enumerate_matching_archive_or_fs_entries(directory, Buffer, &unused, g_animation_directory);
   tracked_memory = (XAnimationKeyframe *)allocate_tracked_memory(unused << 7, aAnimKeyFrameBo);
   v7 = unused;
   v8 = 0;
@@ -69,7 +69,7 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
   clean_duplicate_vertices(&loader->duplicate_vertices, v7);
   load_x_mesh(loader, g_animation_directory[0], object, 0);
   request_object_vertices_copy(object);
-  object->flags |= (unsigned int)&unk_800000;
+  object->flags |= (unsigned int)&g_sprite_manager.sprites[2527];
   sprintf(v24, "Anim:%s", v3);
   v13 = find_case_insensitive_substring(v24, loader->animation_bytes);
   v14 = v13;

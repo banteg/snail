@@ -28,9 +28,10 @@ Recovered relationships:
 
 Corrected assumptions:
 
-- `Object +0x80` is a real three-float `ObjectDistort` subobject. The shared
-  complete `Object` layout now owns that member directly; the older explicit
-  cast was a temporary renderer-local view.
+- `Object +0x80` is a real five-float, 0x14-byte `ObjectDistort` subobject.
+  Three controls are understood and two trailing floats remain unknown. The
+  shared complete `Object` layout owns that member directly; the older
+  explicit cast was a temporary renderer-local view.
 - `ObjectAnimation +0x04/+0x0c` are not a raw frame-index/scale pair. The
   animation builder proves they are generated frame count and playback
   progress; their product selects the generated frame.
@@ -89,3 +90,17 @@ the full Object-owned animation/copy/render-buffer chain. A local retained
 typed source/destination pointer locals were codegen-neutral at 90.58%. The
 direct aggregate copy remains the clearest source-plausible form, with the two
 documented address-formation instructions left honest.
+
+## 2026-07-18 locked render-stream ownership
+
+The IDA decompiler had merged each D3D lock output with the reused incoming
+`Object*` stack slot. The repeatable object replay now splits the two native
+definitions into scoped `ObjectRenderVertex*` locals at `0x4122d0` and
+`0x412350`. The tracked artifact consequently renders typed position and UV
+writes instead of false `Object::_pad_00` accesses, while preserving the real
+Object receiver in both branches. The replay is read-back verified and
+idempotent, and a health check rejects the old argument alias.
+
+No matcher source changed. Focused Wibo remains `90.58%`, `137/139`, prefix
+`7`, with four clean masks; the two residual instructions remain ordinary
+source/destination address-formation scheduling differences.
