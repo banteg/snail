@@ -50,6 +50,8 @@ TRUSTED_NAMES = [
     (0x442540, "reset_vapour"),
     (0x442560, "add_vapour_point"),
     (0x4425F0, "update_vapour"),
+    (0x442E40, "release_snail_weapons"),
+    (0x445D50, "build_snail_hotspots"),
     (0x447090, "initialize_fringe_manager"),
     (0x4470A0, "allocate_fringe_object"),
     (0x44C870, "initialize_global_identity_matrix_thunk"),
@@ -171,10 +173,12 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x442540,  # reset_vapour
     0x442560,  # add_vapour_point
     0x4425F0,  # update_vapour
+    0x442E40,  # release_snail_weapons
     0x4438E0,  # place_parcels_on_track
     0x444240,  # place_challenge_parcels_on_track
     0x4444B0,  # project_position_onto_track_attachment
     0x444CF0,  # handle_subgoldy_collisions
+    0x445D50,  # build_snail_hotspots
     0x447090,  # initialize_fringe_manager
     0x4470A0,  # allocate_fringe_object
 )
@@ -1241,6 +1245,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_snail_skin(Snail* snail);",
     ),
     (
+        "build_snail_hotspots",
+        "void __thiscall build_snail_hotspots(Snail* snail);",
+    ),
+    (
         "initialize_invincible_shell",
         "void __thiscall initialize_invincible_shell(Invincible* invincible);",
     ),
@@ -1567,6 +1575,10 @@ TRUSTED_DECLARATIONS = [
     (
         "set_snail_jetpack",
         "void __thiscall set_snail_jetpack(Snail* snail, int32_t state);",
+    ),
+    (
+        "release_snail_weapons",
+        "void __thiscall release_snail_weapons(Snail* snail);",
     ),
     (
         "initialize_cutscene",

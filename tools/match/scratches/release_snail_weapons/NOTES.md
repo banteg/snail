@@ -58,3 +58,13 @@ temporaries and the exact native `0x1c` frame. Focused Wibo improves from
 operands clean. The residual is limited to the first random-X stack-slot choice
 and independent owner-load/store scheduling in the third channel; explicit
 raw-vector locals regress to 68.80% and are not retained.
+
+2026-07-18 analysis replay: the Windows Binary Ninja and IDA databases now pin
+this as `void __thiscall release_snail_weapons(Snail* snail)`, replacing the
+stale `void*`/`int this` receivers. Both decompilers read the four exact embedded
+`Weapon::release_step` vectors, the `Invincible` one-shot gate, the `Player`
+backlink and velocity, and `Player::sub_hover` without raw owner offsets. A
+focused replay verifies the exact `SubHover`, `Weapon`, `Invincible`, `Snail`,
+and `Player` sizes before applying either ABI. This is ownership/decompile
+recovery only: the authored matcher remains honestly at 92.80%, with no source
+padding or fakematch.

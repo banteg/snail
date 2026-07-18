@@ -95,6 +95,8 @@ SYMBOL_UPDATES = (
     ("0x44d920", "interpolate_matrix_rotation"),
     ("0x44dbd0", "set_color_rgb"),
     ("0x4086d0", "initialize_player_presentation_controller"),
+    ("0x442e40", "release_snail_weapons"),
+    ("0x445d50", "build_snail_hotspots"),
     ("0x4ac5c8", "g_default_tip_message"),
     ("0x497354", "g_player_presentation_noop_vtable"),
     ("0x497358", "g_invincible_shell_update_vtable"),
@@ -2322,6 +2324,10 @@ PROTO_UPDATES = (
         "void __thiscall set_snail_jetpack(Snail* snail, int32_t state)",
     ),
     (
+        "release_snail_weapons",
+        "void __thiscall release_snail_weapons(Snail* snail)",
+    ),
+    (
         "initialize_cutscene",
         "void __thiscall initialize_cutscene(Snail* snail)",
     ),
@@ -2345,6 +2351,10 @@ PROTO_UPDATES = (
     (
         "update_snail_skin",
         "void __thiscall update_snail_skin(Snail* snail)",
+    ),
+    (
+        "build_snail_hotspots",
+        "void __thiscall build_snail_hotspots(Snail* snail)",
     ),
     (
         "initialize_subgoldy",

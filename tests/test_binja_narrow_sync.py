@@ -193,6 +193,54 @@ def test_cheat_state_replay_keeps_exact_global_owner_and_authored_abis() -> None
     )
 
 
+def test_snail_presentation_replay_keeps_release_and_hotspot_owners() -> None:
+    binja_sync = (BINJA_DIR / "sync_snail_presentation_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_snail_presentation_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_snail_presentation_types.py").read_text(
+        encoding="utf-8"
+    )
+    broad_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    broad_ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    for source in (
+        binja_sync,
+        ida_sync,
+        broad_binja_sync,
+        broad_ida_sync,
+        analysis_header,
+    ):
+        assert "void __thiscall release_snail_weapons(Snail* snail)" in source
+        assert "void __thiscall build_snail_hotspots(Snail* snail)" in source
+
+    for source in (binja_sync, ida_sync):
+        for owner, size in (
+            ('"SubHover"', "0x214"),
+            ('"Weapon"', "0x3DC"),
+            ('"Invincible"', "0xA4"),
+            ('"Snail"', "0x19B4"),
+            ('"Player"', "0x4364"),
+        ):
+            assert f"{owner}: {size}" in source
+
+    assert "types_declare_if_missing" in binja_sync
+    assert "mark_cfunc_dirty" in ida_sync
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"'
+        in ida_runner
+    )
+
+
 def test_sound_manager_replay_keeps_empty_owner_bank_and_void_init_abi() -> None:
     repo_root = Path(__file__).parents[1]
     binja_sync = (BINJA_DIR / "sync_sound_effect_manager_types.py").read_text(

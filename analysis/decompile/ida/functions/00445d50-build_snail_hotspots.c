@@ -2,68 +2,66 @@
 /* function: build_snail_hotspots @ 0x445d50 */
 /* selector: build_snail_hotspots */
 
-// Builds the 19-entry local snail hotspot bank from named hotpoint textures on the loaded snail model, including the authored `CameraSkidStop`, `CameraSlugDeath`, and `CameraIntroTalk` entries later transformed by `update_snail_skin` and consumed by the cutscene path.
-int __thiscall sub_445D50(int this)
+// Authored `cRSnail::ExtractHotSpots()`: fills the exact Snail's 19-entry local hotspot bank from named model textures, including CameraSkidStop, CameraSlugDeath, and CameraIntroTalk.
+void __thiscall build_snail_hotspots(Snail *snail)
 {
-  _DWORD *v1; // ebp
-  const char **v2; // ebx
-  float *v3; // esi
-  int v4; // eax
-  int v5; // edx
+  Object *object; // ebp
+  char **v2; // ebx
+  float *p_z; // esi
+  TextureRef *texture_ref; // eax
+  int facequad_count; // edx
   int v6; // ecx
-  _DWORD *v7; // edi
-  int v8; // eax
-  int v9; // ecx
+  TextureRef **p_texture_ref; // edi
+  int vertex_0; // eax
+  Vec3 *vertices; // ecx
   double v10; // st7
-  int v11; // eax
+  float *v11; // eax
   int v12; // ecx
-  float v13; // edx
+  int v13; // edx
 
-  v1 = *(_DWORD **)(this + 5744);
-  v2 = (const char **)off_4A4AA0;
-  v3 = (float *)(this + 5844);
+  object = snail->snail_hotspot_body.bod.object;
+  v2 = g_snail_hotspot_texture_names;
+  p_z = &snail->snail_hotspots_local[0].z;
   do
   {
-    *v3 = 0.0;
-    *(v3 - 1) = 0.0;
-    *(v3 - 2) = 0.0;
-    v4 = get_or_create_texture_ref(&texture_list, *v2, 0, 0);
-    v5 = v1[21];
+    *p_z = 0.0;
+    *(p_z - 1) = 0.0;
+    *(p_z - 2) = 0.0;
+    texture_ref = get_or_create_texture_ref(&g_texture_refs, *v2, 0, 0);
+    facequad_count = object->facequad_count;
     v6 = 0;
-    if ( v5 <= 0 )
+    if ( facequad_count <= 0 )
     {
 LABEL_6:
       report_errorf("Cannot find HotPoint Texture %s", *v2);
     }
     else
     {
-      v7 = (_DWORD *)(v1[23] + 12);
-      while ( *v7 != v4 )
+      p_texture_ref = &object->facequads->texture_ref;
+      while ( *p_texture_ref != texture_ref )
       {
         ++v6;
-        v7 += 12;
-        if ( v6 >= v5 )
+        p_texture_ref += 12;
+        if ( v6 >= facequad_count )
           goto LABEL_6;
       }
-      v8 = *(unsigned __int16 *)(48 * v6 + v1[23] + 2);
-      v9 = v1[14];
-      v8 *= 3;
-      v10 = *(v3 - 2) + *(float *)(v9 + 4 * v8);
-      v11 = v9 + 4 * v8;
-      *(v3 - 2) = v10;
-      *(v3 - 1) = *(float *)(v11 + 4) + *(v3 - 1);
-      *v3 = *(float *)(v11 + 8) + *v3;
-      v12 = *((_DWORD *)v3 - 1);
-      v13 = *v3;
-      *(v3 - 2) = *(v3 - 2);
-      *((_DWORD *)v3 - 1) = v12;
-      *v3 = v13;
+      vertex_0 = object->facequads[v6].vertex_0;
+      vertices = object->vertices;
+      vertex_0 *= 3;
+      v10 = *(p_z - 2) + *(&vertices->x + vertex_0);
+      v11 = &vertices->x + vertex_0;
+      *(p_z - 2) = v10;
+      *(p_z - 1) = v11[1] + *(p_z - 1);
+      *p_z = v11[2] + *p_z;
+      v12 = *((_DWORD *)p_z - 1);
+      v13 = *(_DWORD *)p_z;
+      *(p_z - 2) = *(p_z - 2);
+      *((_DWORD *)p_z - 1) = v12;
+      *(_DWORD *)p_z = v13;
     }
     ++v2;
-    v3 += 3;
+    p_z += 3;
   }
-  while ( (int)v2 < (int)aXCameraintrota );
-  *(float *)(this + 6056) = *(float *)(this + 6056) + 0.30000001;
-  return this;
+  while ( (int)v2 < (int)g_snail_hotspot_texture_names_end );
+  snail->snail_hotspots_local[18].y = snail->snail_hotspots_local[18].y + 0.30000001;
 }
-

@@ -12308,6 +12308,68 @@
         "sub_44D920",
         "float *this"
       ]
+    },
+    {
+      "name": "bn_snail_weapon_release_owner_and_void_abi",
+      "artifact": "analysis/decompile/binja/functions/00442e40-release_snail_weapons.c",
+      "required_substrings": [
+        "snail->invincible_shell.channel_release_steps_active",
+        "snail->jetpack_channel.release_step.x",
+        "snail->weapon_channels[2].release_step.x",
+        "end_jetpack_hover(&owner_player->sub_hover)",
+        "00443069        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return result",
+        "*(snail + 0x1934)"
+      ]
+    },
+    {
+      "name": "ida_snail_weapon_release_owner_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00442e40-release_snail_weapons.c",
+      "required_substrings": [
+        "void __thiscall release_snail_weapons(Snail *snail)",
+        "snail->invincible_shell.channel_release_steps_active",
+        "snail->weapon_channels[1].release_step.z",
+        "end_jetpack_hover(&owner_player->sub_hover);"
+      ],
+      "forbidden_substrings": [
+        "sub_442E40",
+        "int this",
+        "*(_BYTE *)(this + 6452)"
+      ]
+    },
+    {
+      "name": "bn_snail_hotspot_bank_owner_and_void_abi",
+      "artifact": "analysis/decompile/binja/functions/00445d50-build_snail_hotspots.c",
+      "required_substrings": [
+        "struct Snail* snail_1 = snail",
+        "snail->snail_hotspot_body.bod.object",
+        "snail->snail_hotspots_local[0].z",
+        "snail->snail_hotspots_local[0x12].y",
+        "00445e1f        return"
+      ],
+      "forbidden_substrings": [
+        "PlayerPresentationController",
+        "_pad_1644",
+        "presentation->"
+      ]
+    },
+    {
+      "name": "ida_snail_hotspot_bank_owner_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00445d50-build_snail_hotspots.c",
+      "required_substrings": [
+        "void __thiscall build_snail_hotspots(Snail *snail)",
+        "object = snail->snail_hotspot_body.bod.object;",
+        "p_z = &snail->snail_hotspots_local[0].z;",
+        "snail->snail_hotspots_local[18].y"
+      ],
+      "forbidden_substrings": [
+        "sub_445D50",
+        "int this",
+        "return this;"
+      ]
     }
   ]
 }

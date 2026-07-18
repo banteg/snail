@@ -74,3 +74,14 @@ error path plus the native redundant final hotspot self-stores.
 double-store, volatile self-assign, and `> 0` guard + self-store all fail to
 recover native's six-instruction hotspot self-copy tail (best 80.52%, worse
 than 83.78%). Keep the current break-on-match scan.
+
+2026-07-18 analysis replay: the Windows databases now pin the authored receiver
+as `void __thiscall build_snail_hotspots(Snail* snail)`, retiring Binary Ninja's
+stale `PlayerPresentationController*` view and IDA's `int this`/returned-owner
+artifact. IDA now exposes the exact `Snail` hotspot body, `Object` facequad and
+vertex owners, the named 19-entry texture table, and the local hotspot bank.
+Binary Ninja exposes the same exact `Snail` receiver and bank; its nested
+`Object` copy still decompiles as byte lanes, so no stronger sub-owner is being
+claimed. The focused replay verifies all transitive owner sizes. The authored
+matcher remains honestly at 83.78%; this slice does not alter source shape or
+fakematch the residual branch/register scheduling.
