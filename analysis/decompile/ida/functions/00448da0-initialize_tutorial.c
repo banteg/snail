@@ -2,19 +2,19 @@
 /* function: initialize_tutorial @ 0x448da0 */
 /* selector: initialize_tutorial */
 
-void __fastcall initialize_tutorial(TutorialController *controller)
+// Exact Windows `Tutorial::initialize_tutorial`: seeds the embedded 0x1c-byte tutorial owner, borrows its containing SubgameRuntime, and applies the tutorial runtime flags. Android and iOS retain `cRTutorial::Init()`.
+void __thiscall initialize_tutorial(Tutorial *tutorial)
 {
-  char *v1; // eax
-  _DWORD *game; // ecx
-  int v3; // eax
+  SubgameRuntime *p_subgame; // eax
+  SubgameRuntime *game; // ecx
+  uint32_t runtime_flags; // eax
 
-  controller->state = 0;
-  v1 = (char *)MEMORY[0x4DF904] + 476696;
-  controller->game = (char *)MEMORY[0x4DF904] + 476696;
-  *((_DWORD *)v1 + 19) |= (unsigned int)&unk_600000;
-  game = controller->game;
-  v3 = game[19];
-  LOBYTE(v3) = v3 & 0xFD;
-  game[19] = v3;
+  tutorial->state = 0;
+  p_subgame = &g_game_base->subgame;
+  tutorial->game = &g_game_base->subgame;
+  p_subgame->runtime_flags |= 0x600000u;
+  game = tutorial->game;
+  runtime_flags = game->runtime_flags;
+  LOBYTE(runtime_flags) = runtime_flags & 0xFD;
+  game->runtime_flags = runtime_flags;
 }
-

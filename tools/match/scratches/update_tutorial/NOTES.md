@@ -33,3 +33,8 @@ dispatch. The cross-port `cRTutorial::AI()` lifecycle name agrees with that
 contract, and the natural `void` member remains exact at 5/5 instructions with
 its sole masked call operand clean. EAX is incidental residue from the final
 lookup, not an authored return value.
+
+2026-07-18 durable decompiler replay: the paired tracked views now agree on the
+`Tutorial*` receiver, borrowed `SubgameRuntime*`, and embedded player transform
+position. The existing paired health checks keep that owner chain and void ABI
+stable; matching remains exact at 5/5 with one clean operand.

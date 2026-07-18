@@ -7147,6 +7147,41 @@ def test_tip_manager_lifecycle_replay_keeps_exact_owner_graph() -> None:
         assert address in ida_sync
 
 
+def test_tutorial_lifecycle_replay_keeps_runtime_and_tip_manager_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_tutorial = (repo_root / "tools/match/include/tutorial.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_subgame = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+    ida_root_owner = (IDA_DIR / "game_root_owner.py").read_text(encoding="utf-8")
+
+    for header in (analysis_header, matcher_tutorial):
+        assert "SubgameRuntime* game" in header
+    for header in (analysis_header, matcher_subgame):
+        assert "runtime_flags" in header
+    assert '(0x12E6F58, 0x98, "tip_manager", "TipManager")' in ida_root_owner
+
+    for marker in (
+        "TUTORIAL_NUMERIC_OPERANDS",
+        "(0x448DAB, 1, 0x74618)",
+        "(0x448DB6, 1, 0x600000)",
+        "(0x448DD5, 1, 0x12E6F58)",
+        '"tutorial_numeric_operands": tutorial_numeric_operands',
+    ):
+        assert marker in ida_sync
+
+    for address in ("0x448DA0", "0x448DD0", "0x448DE0"):
+        assert address in ida_sync
+
+
 def test_sub_hover_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

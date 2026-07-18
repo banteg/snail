@@ -32,3 +32,10 @@ tutorial-init OR mask and clears the proved ambient-garbage bit by name. The
 composite deliberately retains its unresolved `0x200000` member rather than
 inventing a feature label. Focused output remains exact at 12/12 instructions
 with both operands clean.
+
+2026-07-18 durable decompiler replay: both tracked decompilers now retain the
+complete `Tutorial*` member, borrowed `SubgameRuntime*`, root `subgame`, and
+`runtime_flags` owner chain. IDA normalizes only the proven `0x74618` owner
+displacement and `0x600000` feature-mask immediate, preventing its auto-symbol
+heuristic from turning the mask into `&unk_600000`. Paired health checks pin
+the recovered graph; matching remains exact at 12/12 with two clean operands.

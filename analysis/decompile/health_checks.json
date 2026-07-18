@@ -15174,6 +15174,54 @@
         "manager->slots",
         "MEMORY["
       ]
+    },
+    {
+      "name": "bn_tutorial_initialize_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00448da0-initialize_tutorial.c",
+      "required_substrings": [
+        "tutorial->state = 0",
+        "struct SubgameRuntime* eax_1 = &g_game_base->subgame",
+        "tutorial->game = eax_1",
+        "eax_1->runtime_flags |= 0x600000",
+        "game->runtime_flags"
+      ],
+      "forbidden_substrings": [
+        "TutorialController",
+        "controller->",
+        "data_4df904",
+        "void* game"
+      ]
+    },
+    {
+      "name": "ida_tutorial_initialize_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00448da0-initialize_tutorial.c",
+      "required_substrings": [
+        "void __thiscall initialize_tutorial(Tutorial *tutorial)",
+        "p_subgame = &g_game_base->subgame;",
+        "tutorial->game = &g_game_base->subgame;",
+        "p_subgame->runtime_flags |= 0x600000u;",
+        "game->runtime_flags = runtime_flags;"
+      ],
+      "forbidden_substrings": [
+        "TutorialController",
+        "MEMORY[",
+        "unk_600000",
+        "game[19]"
+      ]
+    },
+    {
+      "name": "ida_tutorial_uninit_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00448dd0-uninit_tutorial.c",
+      "required_substrings": [
+        "void __thiscall uninit_tutorial(Tutorial *tutorial)",
+        "uninit_tips(&g_game_base->tip_manager);"
+      ],
+      "forbidden_substrings": [
+        "void uninit_tutorial()",
+        "MEMORY[",
+        "_DWORD **",
+        "4955094"
+      ]
     }
   ]
 }

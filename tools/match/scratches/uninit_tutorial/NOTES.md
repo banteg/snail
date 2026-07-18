@@ -10,3 +10,9 @@ both operands clean.
 The teardown call now names `GameRoot::tip_manager`, the exact 0x98-byte root
 tail owner, instead of reconstructing it from `root + 0x12e6f58`. The global
 receiver load and exact three-instruction body are unchanged.
+
+2026-07-18 durable decompiler replay: IDA now preserves the unused-but-authored
+`Tutorial*` receiver and folds the normalized `0x12e6f58` displacement into
+`GameRoot::tip_manager`; Binary Ninja retains the same root-owned tail call.
+Health checks reject the former no-argument, `_DWORD**`, and raw-root views.
+The scratch remains exact at 3/3 with two clean operands.

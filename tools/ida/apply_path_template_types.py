@@ -324,6 +324,9 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x448D10,  # uninit_tips
     0x448D30,  # enqueue_tip_message
     0x448D80,  # update_tip_manager
+    0x448DA0,  # initialize_tutorial
+    0x448DD0,  # uninit_tutorial
+    0x448DE0,  # update_tutorial
 )
 
 GOLB_SHOT_EXPECTED_SIZE = 0x2E8
@@ -785,6 +788,18 @@ ATTACHMENT_ENTRY_ROOT_OFFSET_OPERANDS = (
     (0x42CA3D, 1, 0x64118C),  # runtime_rows[row].installed_heading_delta
     (0x42CA5B, 0, 0x430118),  # FollowState::orientation_a
     (0x42CA7B, 1, 0x430100),  # Player::follow_state
+)
+
+# Tutorial::Init borrows the containing SubgameRuntime and ORs the authored
+# tutorial feature mask into runtime_flags. IDA can promote both immediate
+# operands to address expressions because their values also land inside the
+# image, which blocks the typed GameRoot/SubgameRuntime folds. UnInit has the
+# same collision for the root-owned TipManager displacement. Keep the global
+# symbols and normalize only these three proven instruction operands.
+TUTORIAL_NUMERIC_OPERANDS = (
+    (0x448DAB, 1, 0x74618),  # GameRoot::subgame
+    (0x448DB6, 1, 0x600000),  # tutorial runtime_flags OR mask
+    (0x448DD5, 1, 0x12E6F58),  # GameRoot::tip_manager
 )
 
 # The follow updater has the same address-expression collision in two Player
@@ -2975,6 +2990,18 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {"selector": "GameRoot", "owner_graph": game_root_owner_graph}
         )
 
+    tutorial_numeric_operands = _normalize_root_offset_operands(
+        TUTORIAL_NUMERIC_OPERANDS
+    )
+    for result in tutorial_numeric_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "Tutorial lifecycle",
+                    "numeric_operand": result,
+                }
+            )
+
     attachment_entry_root_offset_operands = (
         _normalize_root_offset_operands(ATTACHMENT_ENTRY_ROOT_OFFSET_OPERANDS)
     )
@@ -3296,6 +3323,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "type_changes": type_changes,
                 "golb_shot_prefix_owner": golb_shot_prefix_owner,
                 "game_root_owner_graph": game_root_owner_graph,
+                "tutorial_numeric_operands": tutorial_numeric_operands,
                 "attachment_entry_root_offset_operands": attachment_entry_root_offset_operands,
                 "attachment_follow_root_offset_operands": attachment_follow_root_offset_operands,
                 "harmonize_root_offset_operands": harmonize_root_offset_operands,
