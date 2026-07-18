@@ -14230,6 +14230,41 @@
         "_DWORD *a2",
         "unimplemented"
       ]
+    },
+    {
+      "name": "bn_segment_glyph_normalizer_subgame_owner",
+      "artifact": "analysis/decompile/binja/functions/00437270-normalize_segment_glyph_for_track_flags.c",
+      "required_substrings": [
+        "row s<= runtime->completion_row_start",
+        "runtime->runtime_flags",
+        "runtime->track_mirror_enabled",
+        "edge_row == 0",
+        "return glyph"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "*(runtime +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_segment_glyph_normalizer_subgame_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00437270-normalize_segment_glyph_for_track_flags.c",
+      "required_substrings": [
+        "char __thiscall normalize_segment_glyph_for_track_flags(",
+        "SubgameRuntime *runtime",
+        "runtime->completion_row_start",
+        "runtime->runtime_flags",
+        "runtime->track_mirror_enabled",
+        "char edge_row"
+      ],
+      "forbidden_substrings": [
+        "sub_437270",
+        "int this",
+        "this +",
+        "unimplemented"
+      ]
     }
   ]
 }

@@ -2210,7 +2210,8 @@
     },
     {
       "address": "0x437270",
-      "name": "normalize_segment_glyph_for_track_flags"
+      "name": "normalize_segment_glyph_for_track_flags",
+      "description": "Exact Windows `cRSubGame` glyph normalizer. The ECX receiver owns `track_mirror_enabled` at +0x02, `runtime_flags` at +0x4c, and `completion_row_start` at +0x58; three stack arguments carry the authored glyph, build row, and edge-row flag before `populate_runtime_track_cells_from_segments` selects the runtime tile family."
     },
     {
       "address": "0x4374b0",

@@ -248,6 +248,10 @@ TRUSTED_DECLARATIONS = [
         "bool __thiscall switch_track_mirror(SubgameRuntime* runtime);",
     ),
     (
+        "normalize_segment_glyph_for_track_flags",
+        "char __thiscall normalize_segment_glyph_for_track_flags(SubgameRuntime* runtime, char glyph, int32_t row, char edge_row);",
+    ),
+    (
         "rebuild_track_runtime_from_segments",
         "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);",
     ),
@@ -356,6 +360,7 @@ REANALYSIS_FUNCTIONS = (
     0x404CF0,  # update_row_event_display
     0x408060,  # initialize_runtime_pools_and_path_template_bank
     0x408860,  # initialize_track_parcel_runtime
+    0x437270,  # normalize_segment_glyph_for_track_flags
     0x437EB0,  # build_subgame_level
     0x438B90,  # update_subgame
     0x43B120,  # update_subgoldy

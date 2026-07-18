@@ -2,29 +2,33 @@
 /* function: normalize_segment_glyph_for_track_flags @ 0x437270 */
 /* selector: normalize_segment_glyph_for_track_flags */
 
-char __thiscall sub_437270(int this, char a2, int a3, char a4)
+char __thiscall normalize_segment_glyph_for_track_flags(
+        SubgameRuntime *runtime,
+        char glyph,
+        int32_t row,
+        char edge_row)
 {
   char result; // al
-  int v5; // ecx
-  int v6; // edx
-  int v7; // edx
-  int v8; // edx
-  int v9; // edx
-  int v10; // ecx
-  int v11; // ecx
-  int v12; // ecx
-  int v13; // ecx
+  uint32_t runtime_flags; // ecx
+  uint32_t v6; // edx
+  uint32_t v7; // edx
+  uint32_t v8; // edx
+  uint32_t v9; // edx
+  uint32_t v10; // ecx
+  uint32_t v11; // ecx
+  uint32_t v12; // ecx
+  uint32_t v13; // ecx
 
-  result = a2;
-  if ( a3 <= *(_DWORD *)(this + 88) )
+  result = glyph;
+  if ( row <= runtime->completion_row_start )
   {
-    switch ( a2 )
+    switch ( glyph )
     {
       case ' ':
-        v5 = *(_DWORD *)(this + 76);
-        if ( (v5 & 0x400) != 0 )
+        runtime_flags = runtime->runtime_flags;
+        if ( (runtime_flags & 0x400) != 0 )
         {
-          if ( (v5 & 1) == 0 )
+          if ( (runtime_flags & 1) == 0 )
             result = 46;
         }
         else
@@ -33,21 +37,21 @@ char __thiscall sub_437270(int this, char a2, int a3, char a4)
         }
         break;
       case '$':
-        v13 = *(_DWORD *)(this + 76);
+        v13 = runtime->runtime_flags;
         if ( (v13 & 0x800) == 0 )
           result = (v13 & 0x40) != 0 ? 95 : 46;
         break;
       case '-':
-        if ( (*(_DWORD *)(this + 76) & 0x4000) == 0 )
+        if ( (runtime->runtime_flags & 0x4000) == 0 )
           result = 46;
         break;
       case '<':
       case '>':
-        if ( (*(_DWORD *)(this + 76) & 0x200) == 0 )
+        if ( (runtime->runtime_flags & 0x200) == 0 )
           result = 46;
         break;
       case '=':
-        v10 = *(_DWORD *)(this + 76);
+        v10 = runtime->runtime_flags;
         if ( (v10 & 0x100) == 0 )
         {
           if ( (v10 & 1) != 0 )
@@ -57,12 +61,12 @@ char __thiscall sub_437270(int this, char a2, int a3, char a4)
         }
         break;
       case '[':
-        v9 = *(_DWORD *)(this + 76);
+        v9 = runtime->runtime_flags;
         if ( (v9 & 0x200) != 0 )
         {
           if ( (v9 & 0x20) != 0 )
           {
-            if ( *(_BYTE *)(this + 2) )
+            if ( runtime->track_mirror_enabled )
               result = 91;
           }
           else
@@ -76,7 +80,7 @@ char __thiscall sub_437270(int this, char a2, int a3, char a4)
         }
         break;
       case ']':
-        v8 = *(_DWORD *)(this + 76);
+        v8 = runtime->runtime_flags;
         if ( (v8 & 0x200) != 0 )
         {
           if ( (v8 & 0x20) != 0 )
@@ -89,21 +93,21 @@ char __thiscall sub_437270(int this, char a2, int a3, char a4)
         }
         break;
       case '_':
-        if ( (*(_BYTE *)(this + 76) & 0x40) == 0 && !a4 )
+        if ( (runtime->runtime_flags & 0x40) == 0 && !edge_row )
           result = 46;
         break;
       case 'o':
-        v12 = *(_DWORD *)(this + 76);
+        v12 = runtime->runtime_flags;
         if ( (v12 & 4) == 0 )
           result = (v12 & 0x40) != 0 ? 95 : 46;
         break;
       case '{':
-        v7 = *(_DWORD *)(this + 76);
+        v7 = runtime->runtime_flags;
         if ( (v7 & 0x200) != 0 )
         {
           if ( (v7 & 0x20) != 0 )
           {
-            if ( *(_BYTE *)(this + 2) )
+            if ( runtime->track_mirror_enabled )
               result = 125;
           }
           else
@@ -117,7 +121,7 @@ char __thiscall sub_437270(int this, char a2, int a3, char a4)
         }
         break;
       case '|':
-        v11 = *(_DWORD *)(this + 76);
+        v11 = runtime->runtime_flags;
         if ( (v11 & 0x100) == 0 )
         {
           if ( (v11 & 1) != 0 )
@@ -127,13 +131,13 @@ char __thiscall sub_437270(int this, char a2, int a3, char a4)
         }
         break;
       case '}':
-        v6 = *(_DWORD *)(this + 76);
+        v6 = runtime->runtime_flags;
         if ( (v6 & 0x200) != 0 )
         {
           if ( (v6 & 0x20) != 0 )
           {
 LABEL_23:
-            if ( *(_BYTE *)(this + 2) )
+            if ( runtime->track_mirror_enabled )
               result = 123;
           }
           else
@@ -152,4 +156,3 @@ LABEL_23:
   }
   return result;
 }
-

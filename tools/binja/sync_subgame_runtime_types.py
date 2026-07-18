@@ -267,6 +267,10 @@ PROTO_UPDATES = (
     ("set_subgame_features", "int32_t __thiscall set_subgame_features(SubgameRuntime* runtime)"),
     ("switch_track_mirror", "bool __thiscall switch_track_mirror(SubgameRuntime* runtime)"),
     (
+        "normalize_segment_glyph_for_track_flags",
+        "char __thiscall normalize_segment_glyph_for_track_flags(SubgameRuntime* runtime, char glyph, int32_t row, char edge_row)",
+    ),
+    (
         "rebuild_track_runtime_from_segments",
         "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* runtime, int32_t level_index)",
     ),

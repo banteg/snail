@@ -5196,6 +5196,28 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
             assert field in scratch
 
 
+def test_segment_glyph_normalizer_replay_preserves_subgame_owner_abi() -> None:
+    binja_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    expected = (
+        "char __thiscall normalize_segment_glyph_for_track_flags("
+        "SubgameRuntime* runtime, char glyph, int32_t row, char edge_row)"
+    )
+    assert expected in binja_sync
+    assert expected + ";" in ida_sync
+    assert "char __thiscall normalize_segment_glyph_for_track_flags(" in path_header
+    assert "SubgameRuntime* runtime," in path_header
+    assert "0x437270,  # normalize_segment_glyph_for_track_flags" in ida_sync
+
+
 def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     pool_sync = (BINJA_DIR / "sync_subgame_pool_types.py").read_text(

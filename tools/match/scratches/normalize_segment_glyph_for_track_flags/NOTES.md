@@ -34,3 +34,12 @@ All twelve feature tests now resolve through the shared
 exact helper proves, while the separate falling bit is also backed by the
 player-floor consumer. The focused result remains exact at 100.00%, 160/160
 instructions, full prefix, and two clean table operands.
+
+## 2026-07-18 analyzer owner ABI
+
+The exact member source, ECX data flow, and two native callsites prove the
+analyzer ABI as `char __thiscall (SubgameRuntime*, char, int32_t, char)`.
+The receiver reads the recovered `track_mirror_enabled` (+0x02),
+`runtime_flags` (+0x4c), and `completion_row_start` (+0x58) fields. This
+replaces Binary Ninja's residual `void*` receiver / `int32_t` return and IDA's
+raw `sub_437270(int this, ...)` view without changing the exact matcher source.

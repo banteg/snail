@@ -2862,6 +2862,13 @@ void __thiscall remove_subgame_bods(SubgameRuntime* game);
 
 void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game);
 
+char __thiscall normalize_segment_glyph_for_track_flags(
+    SubgameRuntime* runtime,
+    char glyph,
+    int32_t row,
+    char edge_row
+);
+
 void __thiscall rebuild_track_runtime_from_segments(
     SubgameRuntime* game,
     int32_t level_index

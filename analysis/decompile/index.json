@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 9,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 9,
-  "ida_exported": 9,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,43 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_fringe_object",
-      "address": "0x408650"
-    },
-    {
-      "name": "build_track_fringe_objects",
-      "address": "0x434be0"
-    },
-    {
-      "name": "populate_runtime_track_cells_from_segments",
-      "address": "0x435eb0"
-    },
-    {
-      "name": "initialize_subgame",
-      "address": "0x4374b0"
-    },
-    {
-      "name": "update_subgame",
-      "address": "0x438b90"
-    },
-    {
-      "name": "refresh_fringe_object_draw_list",
-      "address": "0x439b00"
-    },
-    {
-      "name": "remove_sub_loc",
-      "address": "0x439bc0"
-    },
-    {
-      "name": "initialize_fringe_manager",
-      "address": "0x447090"
-    },
-    {
-      "name": "allocate_fringe_object",
-      "address": "0x4470a0"
+      "name": "normalize_segment_glyph_for_track_flags",
+      "address": "0x437270"
     }
   ],
-  "health_check_count": 812,
+  "health_check_count": 814,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"
