@@ -5236,6 +5236,9 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
         assert "sub_pause" in header
         assert "runtime_row_scan_begin" in header
         assert "runtime_row_scan_end" in header
+        assert "int32_t level_mode;" in header or "int level_mode;" in header
+        assert "runtime_flags" in header
+        assert "SubSolution* selected_level_record;" in header
 
     for sync in (path_sync, runtime_sync):
         assert '("0x00", "scan_reset", "uint8_t")' in sync
@@ -5246,6 +5249,25 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
         assert '("0x14", "sub_pause", "SubPause")' in sync
         assert '("0x20", "runtime_row_scan_begin", "int32_t")' in sync
         assert '("0x24", "runtime_row_scan_end", "int32_t")' in sync
+
+    for field_update in (
+        '("0x40", "level_mode", "int32_t")',
+        '("0x4c", "runtime_flags", "uint32_t")',
+        '("0xff25d0", "selected_level_record_active", "uint8_t")',
+        '("0xff25d4", "selected_level_record", "SubSolution*")',
+    ):
+        assert field_update in runtime_sync
+
+    assert '("0x435df0", "set_subgame_features")' in runtime_sync
+    ida_runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    assert '(0x435DF0, "set_subgame_features")' in ida_runtime_sync
+    assert "0x435DF0,  # set_subgame_features" in ida_runtime_sync
+    assert (
+        "int32_t __thiscall set_subgame_features(SubgameRuntime* runtime);"
+        in ida_runtime_sync
+    )
 
     for header in frame_headers:
         assert "uint8_t scan_reset;" in header

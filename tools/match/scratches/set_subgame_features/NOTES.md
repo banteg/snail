@@ -21,3 +21,12 @@ of anonymous mode masks. `SubgameRuntimeFlag` separately names only bits with
 proved Windows consumers; preset-only bits `0x040000`, `0x100000`, and
 `0x200000` remain intentionally opaque. Focused output remains exact at
 100.00%, 19/19 instructions, full prefix, and three clean operands.
+
+## 2026-07-18 selected-record owner replay
+
+The focused analyzer replay now owns the complete exact boundary used here:
+`SubgameRuntime::level_mode`, `runtime_flags`, the selected-record activation
+byte, and the borrowed `SubSolution* selected_level_record`. This preserves the
+native distinction between the embedded working record and the optional
+borrowed replay/level record while keeping the scratch exact at 19/19 with
+three clean operands.

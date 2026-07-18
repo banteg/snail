@@ -17,11 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "calc_object_facequad_normals_simple",
-      "address": "0x430230"
+      "name": "set_subgame_features",
+      "address": "0x435df0"
     }
   ],
-  "health_check_count": 832,
+  "health_check_count": 834,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

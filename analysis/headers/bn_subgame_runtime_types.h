@@ -478,7 +478,7 @@ typedef struct SubgameRuntime {
     uint8_t selected_level_record_active;
     uint8_t selected_level_record_persistent;
     uint8_t unknown_ff25d2[0xff25d4 - 0xff25d2];
-    void* selected_level_record;
+    SubSolution* selected_level_record;
     int32_t selected_level_record_cursor;
     int32_t replay_update_cursor;
     TimeTrial time_trial;

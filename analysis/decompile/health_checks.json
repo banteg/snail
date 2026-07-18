@@ -14341,6 +14341,39 @@
       ]
     },
     {
+      "name": "bn_subgame_feature_selected_record_owner",
+      "artifact": "analysis/decompile/binja/functions/00435df0-set_subgame_features.c",
+      "required_substrings": [
+        "runtime->selected_level_record_active",
+        "struct SubSolution* selected_level_record = runtime->selected_level_record",
+        "selected_level_record->runtime_build_flags",
+        "runtime->level_mode",
+        "runtime->runtime_flags"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(runtime +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_subgame_feature_selected_record_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00435df0-set_subgame_features.c",
+      "required_substrings": [
+        "int32_t __thiscall set_subgame_features(SubgameRuntime *runtime)",
+        "runtime->selected_level_record_active",
+        "runtime->selected_level_record",
+        "runtime->level_mode",
+        "runtime->runtime_flags"
+      ],
+      "forbidden_substrings": [
+        "sub_435DF0",
+        "int this",
+        "this +",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_segment_glyph_normalizer_subgame_owner",
       "artifact": "analysis/decompile/binja/functions/00437270-normalize_segment_glyph_for_track_flags.c",
       "required_substrings": [

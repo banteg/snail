@@ -95,6 +95,10 @@ PAUSE_FUNCTION_SYMBOL_UPDATES = (
     ("0x4407a0", "update_pause_menu"),
 )
 
+SUBGAME_FUNCTION_SYMBOL_UPDATES = (
+    ("0x435df0", "set_subgame_features"),
+)
+
 PARCEL_EXPECTED_SIZES = {
     "Parcel": 0x8C,
     "ParcelManager": 0x1B58,
@@ -122,10 +126,17 @@ SUBGAME_FIELD_UPDATES = (
     ("0x14", "sub_pause", "SubPause"),
     ("0x20", "runtime_row_scan_begin", "int32_t"),
     ("0x24", "runtime_row_scan_end", "int32_t"),
+    ("0x40", "level_mode", "int32_t"),
+    ("0x4c", "runtime_flags", "uint32_t"),
     ("0x355e64", "jetpack_pickup", "JetPack"),
     ("0x359080", "banners", "BannerPool"),
     ("0x3bb700", "blink_random_index", "int32_t"),
     ("0x3bb704", "blink_random_samples", "float[24]"),
+    ("0xff25d0", "selected_level_record_active", "uint8_t"),
+    ("0xff25d1", "selected_level_record_persistent", "uint8_t"),
+    ("0xff25d4", "selected_level_record", "SubSolution*"),
+    ("0xff25d8", "selected_level_record_cursor", "int32_t"),
+    ("0xff25dc", "replay_update_cursor", "int32_t"),
     ("0xff25e0", "time_trial", "TimeTrial"),
     ("0x125e480", "parcel_manager", "ParcelManager"),
     ("0x125ffd8", "garbage_frequency", "float"),
@@ -499,6 +510,14 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=PAUSE_FUNCTION_SYMBOL_UPDATES,
+            kind="function",
+        )
+    )
+    operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SUBGAME_FUNCTION_SYMBOL_UPDATES,
             kind="function",
         )
     )

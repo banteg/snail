@@ -20,6 +20,7 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 TRUSTED_NAMES = (
     (0x408860, "initialize_track_parcel_runtime"),
+    (0x435DF0, "set_subgame_features"),
     (0x440600, "uninit_pause_menu"),
     (0x440660, "initialize_pause_menu"),
     (0x4407A0, "update_pause_menu"),
@@ -256,7 +257,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_subgame_features",
-        "int __thiscall set_subgame_features(SubgameRuntime* runtime);",
+        "int32_t __thiscall set_subgame_features(SubgameRuntime* runtime);",
     ),
     (
         "switch_track_mirror",
@@ -361,6 +362,7 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "SubRingPool ring_effects;",
     "TrackRowCell runtime_cells[3200][8];",
     "SubRow runtime_rows[3200];",
+    "SubSolution* selected_level_record;",
     "Parcel_must_be_0x8c",
     "Parcel slots[50];",
     "ParcelManager_must_be_0x1b58",
@@ -375,6 +377,7 @@ REANALYSIS_FUNCTIONS = (
     0x404CF0,  # update_row_event_display
     0x408060,  # initialize_runtime_pools_and_path_template_bank
     0x408860,  # initialize_track_parcel_runtime
+    0x435DF0,  # set_subgame_features
     0x437270,  # normalize_segment_glyph_for_track_flags
     0x437EB0,  # build_subgame_level
     0x438B90,  # update_subgame
