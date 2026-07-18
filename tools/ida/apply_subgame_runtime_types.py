@@ -20,6 +20,9 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 TRUSTED_NAMES = (
     (0x408860, "initialize_track_parcel_runtime"),
+    (0x440600, "uninit_pause_menu"),
+    (0x440660, "initialize_pause_menu"),
+    (0x4407A0, "update_pause_menu"),
     (0x443130, "update_track_parcels"),
     (0x443160, "initialize_track_parcel_slots"),
     (0x443190, "allocate_track_parcel_slot"),
@@ -29,6 +32,18 @@ TRUSTED_NAMES = (
 
 
 TRUSTED_DECLARATIONS = [
+    (
+        "uninit_pause_menu",
+        "void __thiscall uninit_pause_menu(SubPause* pause);",
+    ),
+    (
+        "initialize_pause_menu",
+        "void __thiscall initialize_pause_menu(SubPause* pause);",
+    ),
+    (
+        "update_pause_menu",
+        "void __thiscall update_pause_menu(SubPause* pause);",
+    ),
     (
         "initialize_galaxy_route_name_record",
         "GalaxyRouteNameRecord* __thiscall initialize_galaxy_route_name_record(GalaxyRouteNameRecord* record);",
@@ -364,6 +379,9 @@ REANALYSIS_FUNCTIONS = (
     0x437EB0,  # build_subgame_level
     0x438B90,  # update_subgame
     0x43B120,  # update_subgoldy
+    0x440600,  # uninit_pause_menu
+    0x440660,  # initialize_pause_menu
+    0x4407A0,  # update_pause_menu
     0x443130,  # update_track_parcels
     0x443160,  # initialize_track_parcel_slots
     0x443190,  # allocate_track_parcel_slot

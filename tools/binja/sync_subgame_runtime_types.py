@@ -89,6 +89,12 @@ PARCEL_FUNCTION_SYMBOL_UPDATES = (
     ("0x443730", "spawn_track_parcel"),
 )
 
+PAUSE_FUNCTION_SYMBOL_UPDATES = (
+    ("0x440600", "uninit_pause_menu"),
+    ("0x440660", "initialize_pause_menu"),
+    ("0x4407a0", "update_pause_menu"),
+)
+
 PARCEL_EXPECTED_SIZES = {
     "Parcel": 0x8C,
     "ParcelManager": 0x1B58,
@@ -182,6 +188,18 @@ GUI_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "uninit_pause_menu",
+        "void __thiscall uninit_pause_menu(SubPause* pause)",
+    ),
+    (
+        "initialize_pause_menu",
+        "void __thiscall initialize_pause_menu(SubPause* pause)",
+    ),
+    (
+        "update_pause_menu",
+        "void __thiscall update_pause_menu(SubPause* pause)",
+    ),
     (
         "initialize_galaxy_route_name_record",
         "GalaxyRouteNameRecord* __thiscall initialize_galaxy_route_name_record(GalaxyRouteNameRecord* record)",
@@ -473,6 +491,14 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=PARCEL_FUNCTION_SYMBOL_UPDATES,
+            kind="function",
+        )
+    )
+    operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=PAUSE_FUNCTION_SYMBOL_UPDATES,
             kind="function",
         )
     )

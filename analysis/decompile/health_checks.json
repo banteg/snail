@@ -5773,6 +5773,76 @@
       ]
     },
     {
+      "name": "bn_pause_menu_teardown_owner",
+      "artifact": "analysis/decompile/binja/functions/00440600-uninit_pause_menu.c",
+      "required_substrings": [
+        "kill_border(pause->options_widget)",
+        "kill_border(pause->end_game_widget)",
+        "kill_border(pause->resume_widget)",
+        "release_mouse_cursor(&g_game_base->players[0].mouse_cursor)",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4df904",
+        "*(pause +",
+        "return release_mouse_cursor",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_pause_menu_teardown_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00440600-uninit_pause_menu.c",
+      "required_substrings": [
+        "void __thiscall uninit_pause_menu(SubPause *pause)",
+        "pause->options_widget",
+        "pause->end_game_widget",
+        "pause->resume_widget",
+        "&g_game_base->players[0].mouse_cursor"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall uninit_pause_menu",
+        "sub_440600",
+        "MEMORY[",
+        "_DWORD **this",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_pause_menu_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/00440660-initialize_pause_menu.c",
+      "required_substrings": [
+        "pause->end_game_widget = allocate_border(&g_game_base->border_manager)",
+        "pause->options_widget = allocate_border(&g_game_base->border_manager)",
+        "pause->resume_widget = allocate_border(&g_game_base->border_manager)",
+        "stack_widget_below(pause->resume_widget, pause->options_widget)",
+        "capture_mouse_cursor(&g_game_base->players[0].mouse_cursor)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4df904",
+        "*(pause +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_pause_menu_initializer_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00440660-initialize_pause_menu.c",
+      "required_substrings": [
+        "void __thiscall initialize_pause_menu(SubPause *pause)",
+        "pause->end_game_widget = allocate_border(&g_game_base->border_manager);",
+        "pause->options_widget = allocate_border(&g_game_base->border_manager);",
+        "pause->resume_widget = allocate_border(&g_game_base->border_manager);",
+        "capture_mouse_cursor(&g_game_base->players[0].mouse_cursor);"
+      ],
+      "forbidden_substrings": [
+        "sub_440660",
+        "MEMORY[",
+        "int *this",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_update_pause_menu_subgame_bridge",
       "artifact": "analysis/decompile/binja/functions/004407a0-update_pause_menu.c",
       "required_substrings": [

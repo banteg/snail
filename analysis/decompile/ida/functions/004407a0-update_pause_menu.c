@@ -16,8 +16,8 @@ void __thiscall update_pause_menu(SubPause *pause)
   {
     LOBYTE(widget_flags) = widget_flags & 0xDF;
     pause->options_widget->widget_flags = widget_flags;
-    g_game_base->unknown_000b48[321604] = 0;
-    *(_DWORD *)&g_game_base->unknown_000b48[321600] = g_game_base->players[0].frontend_state;
+    g_game_base->options.active = 0;
+    g_game_base->options.previous_frontend_state = g_game_base->players[0].frontend_state;
     g_game_base->players[0].frontend_state = 6;
   }
   else
@@ -40,20 +40,20 @@ void __thiscall update_pause_menu(SubPause *pause)
       {
         LOBYTE(v5) = v5 & 0xDF;
         end_game_widget->widget_flags = v5;
-        *(_DWORD *)&g_game_base->unknown_000b48[321644] = g_game_base->players[0].frontend_state;
+        g_game_base->exit_controller.previous_frontend_state = g_game_base->players[0].frontend_state;
         if ( g_game_base->subgame.level_mode == 7 )
         {
-          *(_DWORD *)&g_game_base->unknown_000b48[321636] = 7;
+          g_game_base->exit_controller.state = 7;
         }
-        else if ( g_game_base->subgame.unknown_000044[16721293] == 1 )
+        else if ( g_game_base->subgame.selected_level_record_persistent == 1 )
         {
-          *(_DWORD *)&g_game_base->unknown_000b48[321636] = 3;
+          g_game_base->exit_controller.state = 3;
         }
         else
         {
-          *(_DWORD *)&g_game_base->unknown_000b48[321636] = 2;
+          g_game_base->exit_controller.state = 2;
         }
-        *(_DWORD *)&g_game_base->subgame.unknown_000044[19337092] = 2;
+        g_game_base->subgame.subgame_rebuild_selector = 2;
         g_game_base->players[0].frontend_state = 8;
       }
     }

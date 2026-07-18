@@ -23,3 +23,9 @@ side-effect-only `void` method and both real owners directly preserves VC6's
 native final-call sequence at 22/22 instructions with all eight masked
 operands clean, so the former `PauseMenuTeardownView` and
 `PauseMenuMouseCursorReleaseView` shells were removed.
+
+2026-07-18 focused replay closure: the `SubgameRuntime` replay now owns the
+pause lifecycle ABI and explicitly reanalyzes this teardown together with
+`initialize_pause_menu` and `update_pause_menu`. Both tracked analyzers retain
+the `void __thiscall(SubPause*)` contract, the three named widget members, and
+the root-owned mouse cursor without reconstructing a synthetic return value.

@@ -478,4 +478,8 @@ typedef struct SubgameOwnerLink {
     SubgameRuntime* game;
 } SubgameOwnerLink;
 
+void __thiscall uninit_pause_menu(SubPause* pause);
+void __thiscall initialize_pause_menu(SubPause* pause);
+void __thiscall update_pause_menu(SubPause* pause);
+
 #endif

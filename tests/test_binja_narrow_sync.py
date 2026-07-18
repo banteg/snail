@@ -5308,6 +5308,36 @@ def test_segment_glyph_normalizer_replay_preserves_subgame_owner_abi() -> None:
     assert "0x437270,  # normalize_segment_glyph_for_track_flags" in ida_sync
 
 
+def test_pause_menu_lifecycle_replay_stays_with_subgame_owner() -> None:
+    binja_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+        )
+    )
+
+    addresses = {
+        "uninit_pause_menu": "0x440600",
+        "initialize_pause_menu": "0x440660",
+        "update_pause_menu": "0x4407a0",
+    }
+    for name, address in addresses.items():
+        prototype = f"void __thiscall {name}(SubPause* pause)"
+        assert f'("{address}", "{name}")' in binja_sync
+        assert prototype in binja_sync
+        assert prototype + ";" in ida_sync
+        assert f"{address.upper().replace('X', 'x')},  # {name}" in ida_sync
+        for header in headers:
+            assert prototype + ";" in header
+
+
 def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     pool_sync = (BINJA_DIR / "sync_subgame_pool_types.py").read_text(
