@@ -59,3 +59,17 @@ The propagated tracked decompiles now express manager-wide gates through
 `manager->sets[set_id]`, set playback through the playlist and bite arrays, and
 the playing-state scan through all 16 inline sets. No caller-local overlay or
 return-register interpretation is needed.
+
+## 2026-07-18 caller and embedded-owner closure
+
+The live databases now propagate the standalone `g_voice_manager` owner through
+the attachment follower, subgame builder, slug AI, damage gauge, damage delta,
+and cutscene callers. Every call passes `&g_voice_manager`; the former raw
+`0x751498` and integer-cast views were stale decompiler state, not separate
+objects.
+
+The same replay closes the distinct embedded `SlugVoiceManager` lifecycle:
+`build_subgame_level` initializes `game->slug_voice_manager`, `update_subgame`
+updates that complete owner, and the exact 0x43f5c0/0x43f5e0 callees expose its
+`active`, `progress`, and `step` fields through a 0x0c-byte receiver. No matcher
+source changed in this analysis-only propagation.

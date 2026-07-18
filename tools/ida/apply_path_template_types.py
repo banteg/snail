@@ -66,6 +66,8 @@ TRUSTED_NAMES = [
     (0x43B120, "update_subgoldy"),
     (0x43D230, "initialize_subgoldy_ghost"),
     (0x43D3D0, "set_subgoldy_ghost_z"),
+    (0x43F5C0, "initialize_slug_voice_manager"),
+    (0x43F5E0, "update_slug_voice_manager"),
     (0x440F80, "update_barrier_ai"),
     (0x440FA0, "initialize_damage_gauge"),
     (0x440FD0, "update_damage_gauge"),
@@ -215,6 +217,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x435180,  # merge_track_tile_runs
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
     0x435EB0,  # populate_runtime_track_cells_from_segments
+    0x437EB0,  # build_subgame_level
     0x438B90,  # update_subgame
     0x43A010,  # health_collect_particles
     0x43A300,  # update_movement_flag_emitters
@@ -236,6 +239,8 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x43ECC0,  # update_track_health_pickup
     0x43EE50,  # update_track_speedup
     0x43EFB0,  # update_track_jetpack_pickup
+    0x43F5C0,  # initialize_slug_voice_manager
+    0x43F5E0,  # update_slug_voice_manager
     0x440910,  # remove_subgame_bods
     0x4417D0,  # update_sub_lazer_projectile
     0x442170,  # initialize_click_start
@@ -824,6 +829,15 @@ UPDATE_SUBGAME_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x439827, 1, 0x5CCAC8),  # ambient-ring row flags
 )
 
+# The parcel-spawn runtime flag is an immediate mask, not a data reference.
+# Its numeric value falls inside IDA's address space and can therefore inherit
+# an unrelated global symbol (currently a SpriteManager array element) after
+# caller reanalysis. Preserve the evidenced 0x800000 mask as a number so the
+# decompiler cannot fabricate ownership for this bit test.
+UPDATE_SUBGAME_RUNTIME_FLAG_OPERANDS = (
+    (0x4390A8, 1, 0x800000),
+)
+
 # initialize_subgame selects one of the three embedded SubHighScore record
 # banks, then publishes that borrowed pointer through active_record_bank. The
 # five native displacements numerically collide with unrelated named globals,
@@ -872,6 +886,14 @@ TRUSTED_DECLARATIONS = [
     (
         "load_landscape_script_by_name",
         "int32_t __thiscall load_landscape_script_by_name(LandscapeManager* manager, char* script_name);",
+    ),
+    (
+        "initialize_slug_voice_manager",
+        "void __thiscall initialize_slug_voice_manager(SlugVoiceManager* manager);",
+    ),
+    (
+        "update_slug_voice_manager",
+        "void __thiscall update_slug_voice_manager(SlugVoiceManager* manager);",
     ),
     (
         "initialize_thanks_for_playing_screen",
@@ -2885,6 +2907,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    update_subgame_runtime_flag_operands = _normalize_root_offset_operands(
+        UPDATE_SUBGAME_RUNTIME_FLAG_OPERANDS
+    )
+    for result in update_subgame_runtime_flag_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "update_subgame",
+                    "runtime_flag_operand": result,
+                }
+            )
     initialize_subgame_record_bank_offset_operands = (
         _normalize_root_offset_operands(
             INITIALIZE_SUBGAME_RECORD_BANK_OFFSET_OPERANDS
@@ -3113,6 +3146,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "place_parcels_runtime_row_offset_operands": place_parcels_runtime_row_offset_operands,
                 "challenge_parcels_runtime_row_offset_operands": challenge_parcels_runtime_row_offset_operands,
                 "update_subgame_runtime_row_offset_operands": update_subgame_runtime_row_offset_operands,
+                "update_subgame_runtime_flag_operands": update_subgame_runtime_flag_operands,
                 "initialize_subgame_record_bank_offset_operands": initialize_subgame_record_bank_offset_operands,
                 "subhover_player_root_offset_operands": subhover_player_root_offset_operands,
                 "lvar_view": lvar_view,

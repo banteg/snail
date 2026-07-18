@@ -60,7 +60,7 @@ void __thiscall update_damage_gauge(DamageGuage *damage_guage)
       if ( LODWORD(g_game_base->subgame.player.body.transform.position.y) != 1056629064 )
         goto LABEL_26;
       damage_guage->state = DAMAGE_GUAGE_STATE_DRAINING;
-      play_voice_manager((int)g_voice_manager, 14, 0, -1);
+      play_voice_manager(&g_voice_manager, 14, 0, -1);
     }
     goto LABEL_25;
   }
@@ -86,7 +86,7 @@ LABEL_25:
   {
     damage_guage->state = DAMAGE_GUAGE_STATE_MONITORING;
     stop_warning(&g_game_base->subgame.player.warning);
-    stop_warning_sample();
+    stop_warning_sample(&g_game_base->subgame.player.warning);
     goto LABEL_25;
   }
 LABEL_26:

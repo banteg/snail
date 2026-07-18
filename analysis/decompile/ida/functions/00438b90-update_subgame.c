@@ -8,7 +8,7 @@ void __thiscall update_subgame(SubgameRuntime *game)
   int32_t subgame_rebuild_selector; // eax
   SubSolution *selected_level_record; // eax
   int32_t level_mode; // eax
-  int updated; // eax
+  int32_t updated; // eax
   int32_t level_mode_arg; // eax
   int32_t v7; // edx
   int32_t v8; // edx
@@ -97,7 +97,7 @@ LABEL_14:
       switch ( level_mode )
       {
         case 0:
-          updated = update_galaxy((FrontendWidget ***)&game->galaxy);
+          updated = update_galaxy(&game->galaxy);
           if ( updated == 1 )
           {
             level_mode_arg = game->level_mode_arg;
@@ -129,7 +129,7 @@ LABEL_23:
             goto LABEL_23;
           goto LABEL_214;
         case 4:
-          updated = update_galaxy((FrontendWidget ***)&game->galaxy);
+          updated = update_galaxy(&game->galaxy);
           if ( updated != 1 )
             goto LABEL_22;
           v8 = game->level_mode_arg;
@@ -166,12 +166,12 @@ LABEL_25:
       }
       if ( game->level_mode == 7 )
         update_tutorial(&game->tutorial);
-      update_slug_voice_manager((float *)&game->slug_voice_manager.active);
+      update_slug_voice_manager(&game->slug_voice_manager);
       if ( game->resume_requested == 1 )
       {
         game->subgame_pause_gate = 0;
         game->resume_requested = 0;
-        set_sprite_manager_paused(g_sprite_manager, 0);
+        set_sprite_manager_paused(&g_sprite_manager, 0);
       }
       if ( game->selected_level_record_active
         && game->pause_fade == 0.0
@@ -196,7 +196,7 @@ LABEL_25:
       {
         game->subgame_pause_gate = 1;
         game->subgame_state = 3;
-        set_sprite_manager_paused(g_sprite_manager, 1);
+        set_sprite_manager_paused(&g_sprite_manager, 1u);
         if ( game->player.click_start.state == CLICK_START_STATE_WAITING_FOR_START )
           hide_border_init(game->player.click_start.prompt);
         return;
@@ -275,7 +275,7 @@ LABEL_65:
             runtime_row_anchor->row.row_model.body.bod.bod.list_flags = list_flags;
           }
         }
-        if ( (runtime_row_anchor->row.flags & 0x10) != 0 && ((unsigned int)&unk_800000 & game->runtime_flags) != 0 )
+        if ( (runtime_row_anchor->row.flags & 0x10) != 0 && (game->runtime_flags & 0x800000) != 0 )
           spawn_track_parcel(game, &runtime_row_anchor->row.projection_payload, &game->player);
         v52 = 0;
         while ( 1 )
@@ -447,7 +447,7 @@ LABEL_158:
             && runtime_row_scan_begin >= game->first_block_row_count
             && runtime_row_scan_begin < game->completion_row_start )
           {
-            spawn_slug_hazard((int)game, (int)&runtime_cell_anchor->cell, (int)&game->player);
+            spawn_slug_hazard(game, &runtime_cell_anchor->cell, &game->player);
           }
           flags = runtime_row_anchor_saved->row.flags;
           if ( (flags & 0x200) != 0 )

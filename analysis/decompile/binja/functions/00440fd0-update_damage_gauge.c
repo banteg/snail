@@ -41,7 +41,7 @@
 0044113b        game_base_1 = g_game_base
 0044114b        if (game_base_1->subgame.player.body.transform.position.y == 0x3efae148)
 00441158        damage_guage->state = 2
-0044115e        play_voice_manager(0x751498, 0xe, 0, 0xffffffff)
+0044115e        play_voice_manager(&g_voice_manager, 0xe, 0, 0xffffffff)
 004411ad        game_base_1 = g_game_base
 0044103c        if (state != 2)
 004411ad        game_base_1 = g_game_base

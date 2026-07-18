@@ -15,13 +15,13 @@ void __thiscall apply_damage_gauge_delta(DamageGuage *damage_guage, float delta,
     if ( damage_guage->hit_flash_progress == 0.0 && delta > 0.0 )
     {
       change_snail_skin(&g_game_base->subgame.player.presentation.snail_skin, 1, 0.2);
-      if ( play_voice_manager((int)g_voice_manager, 0, 1u, -1) )
+      if ( play_voice_manager(&g_voice_manager, 0, 1u, -1) )
       {
         damage_guage->hit_flash_progress = damage_guage->hit_flash_step;
       }
       else
       {
-        if ( play_voice_manager((int)g_voice_manager, 9, 0, -1) )
+        if ( play_voice_manager(&g_voice_manager, 9, 0, -1) )
           damage_guage->hit_flash_progress = damage_guage->hit_flash_step;
         if ( !g_game_base->subgame.player.control_override_active )
         {

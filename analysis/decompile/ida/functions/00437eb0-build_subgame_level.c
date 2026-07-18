@@ -8,7 +8,7 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   int32_t level_mode; // eax
   double challenge_difficulty_value; // st7
   int32_t v5; // eax
-  int landscape_script_by_name; // eax
+  int32_t landscape_script_by_name; // eax
   BannerPool *p_banners; // eax
   BodBase *p_track_body_list_head; // edi
   struct BodNode *list_next; // ecx
@@ -82,7 +82,7 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   noop_runtime_ai();
   initialize_sub_lazer_pool(&game->sub_lazers);
   initialize_salt_hazard_pool(&game->salt_hazards);
-  reset_voice_manager(g_voice_manager);
+  reset_voice_manager(&g_voice_manager);
   load_frontend_level_by_mode_and_index(&game->level_definition, game->level_mode, level_index);
   if ( game->selected_level_record_active || game->selected_level_record_persistent )
   {
@@ -151,34 +151,32 @@ LABEL_24:
     {
       case 0u:
         landscape_script_by_name = load_landscape_script_by_name(
-                                     (char *)&g_game_base->subgame.landscape_manager,
+                                     &g_game_base->subgame.landscape_manager,
                                      aSpaceblueswhor);
         break;
       case 1u:
         landscape_script_by_name = load_landscape_script_by_name(
-                                     (char *)&g_game_base->subgame.landscape_manager,
+                                     &g_game_base->subgame.landscape_manager,
                                      aSpacegreenwarp);
         break;
       case 2u:
         landscape_script_by_name = load_landscape_script_by_name(
-                                     (char *)&g_game_base->subgame.landscape_manager,
+                                     &g_game_base->subgame.landscape_manager,
                                      aSpacepurpleTxt);
         break;
       case 3u:
-        landscape_script_by_name = load_landscape_script_by_name(
-                                     (char *)&g_game_base->subgame.landscape_manager,
-                                     aSpaceredTxt);
+        landscape_script_by_name = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, aSpaceredTxt);
         break;
       default:
         landscape_script_by_name = level_index;
         break;
     }
-    activate_landscape_entry((char *)&game->landscape_manager, landscape_script_by_name);
+    activate_landscape_entry(&game->landscape_manager, landscape_script_by_name);
     g_game_base->backdrop.pending_flip = random_float_below(1.0) > 0.5;
   }
   else
   {
-    activate_landscape_entry((char *)&game->landscape_manager, game->level_definition.landscape_script_index);
+    activate_landscape_entry(&game->landscape_manager, game->level_definition.landscape_script_index);
   }
   p_banners = &game->banners;
   p_track_body_list_head = &game->track_body_list_head;
@@ -417,7 +415,7 @@ LABEL_24:
     }
     game->player.body.bod.bod.list_flags |= 0x200u;
   }
-  initialize_slug_voice_manager(&game->slug_voice_manager.active);
+  initialize_slug_voice_manager(&game->slug_voice_manager);
   p_barrier = &game->barrier;
   if ( (game->barrier.bod.bod.list_flags & 0x200) != 0 )
   {

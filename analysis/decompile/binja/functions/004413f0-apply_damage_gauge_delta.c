@@ -33,9 +33,9 @@
 00441464        x87_r7_4 - temp4_1
 0044146f        if ((((x87_r7_4 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_4, temp4_1) ? 1 : 0) << 0xa | (x87_r7_4 == temp4_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 0044147e        change_snail_skin(&game_base_2->subgame.player.presentation.snail_skin, 1, 0.200000003f)
-00441495        if (play_voice_manager(0x751498, 0, 1, 0xffffffff) != 0)
+00441495        if (play_voice_manager(&g_voice_manager, 0, 1, 0xffffffff) != 0)
 004414ed        damage_guage->hit_flash_progress = damage_guage->hit_flash_step
-004414a9        if (play_voice_manager(0x751498, 9, 0, 0xffffffff) != 0)
+004414a9        if (play_voice_manager(&g_voice_manager, 9, 0, 0xffffffff) != 0)
 004414ae        damage_guage->hit_flash_progress = damage_guage->hit_flash_step
 004414b1        struct GameRoot* game_base_1 = g_game_base
 004414be        if (game_base_1->subgame.player.control_override_active == 0)

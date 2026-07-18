@@ -342,7 +342,7 @@ LABEL_62:
       follow_state->sample_index = v11;
       v78 = v78 - v10;
       if ( v11 == 2 * template_record->segment_count )
-        play_voice_manager((int)g_voice_manager, 4, 1u, -1);
+        play_voice_manager(&g_voice_manager, 4, 1u, -1);
       v12 = follow_state->template_record;
       if ( v12->has_entry_mesh_transition )
       {
@@ -408,7 +408,7 @@ LABEL_62:
       out_position->x = v26;
       follow_state->player->cutscene_pitch_cycle_step = g_game_base->subgame.subgame_rate * 0.013888888;
       follow_state->player->cutscene_pitch_cycle = follow_state->player->cutscene_pitch_cycle_step;
-      play_voice_manager((int)g_voice_manager, 15, 0, -1);
+      play_voice_manager(&g_voice_manager, 15, 0, -1);
     }
     else
     {

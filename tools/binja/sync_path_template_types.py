@@ -2115,6 +2115,17 @@ LANDSCAPE_LOADER_PROTO_UPDATES = (
     ),
 )
 
+SLUG_VOICE_MANAGER_PROTO_UPDATES = (
+    (
+        "initialize_slug_voice_manager",
+        "void __thiscall initialize_slug_voice_manager(SlugVoiceManager* manager)",
+    ),
+    (
+        "update_slug_voice_manager",
+        "void __thiscall update_slug_voice_manager(SlugVoiceManager* manager)",
+    ),
+)
+
 THANKS_SCREEN_PROTO_UPDATES = (
     (
         "initialize_thanks_for_playing_screen",
@@ -2134,6 +2145,7 @@ PROTO_UPDATES = (
     *GOLB_PROTO_UPDATES,
     *ROW_MODEL_PROTO_UPDATES,
     *LANDSCAPE_LOADER_PROTO_UPDATES,
+    *SLUG_VOICE_MANAGER_PROTO_UPDATES,
     *THANKS_SCREEN_PROTO_UPDATES,
     (
         "set_bod_object",

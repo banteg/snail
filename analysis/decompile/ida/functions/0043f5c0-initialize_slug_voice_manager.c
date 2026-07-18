@@ -2,10 +2,10 @@
 /* function: initialize_slug_voice_manager @ 0x43f5c0 */
 /* selector: initialize_slug_voice_manager */
 
-void __thiscall sub_43F5C0(_DWORD *this)
+// Exact initializer for the 0x0c-byte `SlugVoiceManager` embedded at `SubgameRuntime +0x35bb7c`. Android retains the authored owner as `cRSlugVoiceManager::Init()`.
+void __thiscall initialize_slug_voice_manager(SlugVoiceManager *manager)
 {
-  *(_BYTE *)this = 0;
-  *(this + 1) = 0;
-  *(this + 2) = 1015580809;
+  manager->active = 0;
+  manager->progress = 0.0;
+  manager->step = 0.016666668;
 }
-

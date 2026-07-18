@@ -81,7 +81,7 @@
 00446bf0        perfect_delivery = true
 00446bf7        parcels_collected = cutscene->player->parcels_collected
 00446bfe        initialize_completion_screen(&game_base_1->subgame.completion, parcels_collected, perfect_delivery)
-00446c0a        play_sound_effect(0x2e)
+00446c0a        play_sound_effect(&g_sound_effect_manager, 0x2e)
 00446c0a        goto label_446c13
 00446c13        case CUT_SCENE_STATE_COMPLETION_BLEND
 00446c13        label_446c13:
@@ -180,7 +180,7 @@
 0044696b        cutscene->progress = 0f
 00446972        cutscene->progress_step = 0.00833333377f
 00446979        cutscene->force_camera_update = 1
-0044697c        play_voice_manager(0x751498, 3, parcels_collected, sample_override)
+0044697c        play_voice_manager(&g_voice_manager, 3, parcels_collected, sample_override)
 0044698a        cutscene->presentation->owner_player->attachment_exit_gate_a = 1
 00446993        release_snail_weapons(cutscene->presentation)
 0044699c        label_44699c:
@@ -235,7 +235,7 @@
 00446b14        if (cutscene->player->attachment_exit_gate_b == 0)
 00446b1a        int32_t sample_override_1 = 0xffffffff
 00446b1c        parcels_collected = 2
-00446b25        play_voice_manager(0x751498, 0xb, parcels_collected, sample_override_1)
+00446b25        play_voice_manager(&g_voice_manager, 0xb, parcels_collected, sample_override_1)
 00446b2f        cutscene->player->attachment_exit_gate_b = 1
 00446b38        cutscene->player->attachment_exit_gate_a = 1
 00446b44        cutscene->progress = fconvert.s(fconvert.t(cutscene->progress_step) + fconvert.t(cutscene->progress))

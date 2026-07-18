@@ -3477,6 +3477,42 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
         assert address in ida_sync
 
 
+def test_slug_voice_manager_replay_uses_embedded_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/slug_voice_manager.h"
+    ).read_text(encoding="utf-8")
+
+    declarations = (
+        "void __thiscall initialize_slug_voice_manager(SlugVoiceManager* manager)",
+        "void __thiscall update_slug_voice_manager(SlugVoiceManager* manager)",
+    )
+    for declaration in declarations:
+        assert declaration in binja_sync
+        assert declaration + ";" in ida_sync
+
+    assert "SLUG_VOICE_MANAGER_PROTO_UPDATES" in binja_sync
+    assert 'typedef struct SlugVoiceManager {' in analysis_header
+    assert "SlugVoiceManager slug_voice_manager;" in analysis_header
+    assert "class SlugVoiceManager" in matcher_header
+    for marker in (
+        '(0x43F5C0, "initialize_slug_voice_manager")',
+        '(0x43F5E0, "update_slug_voice_manager")',
+        "0x437EB0,  # build_subgame_level",
+        "0x438B90,  # update_subgame",
+    ):
+        assert marker in ida_sync
+
+
 def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> None:
     repo_root = Path(__file__).parents[1]
     sync_source = (BINJA_DIR / "sync_object_render_types.py").read_text(
@@ -4507,6 +4543,12 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert operand_spec in ida_path_sync
     assert (
         "update_subgame_runtime_row_offset_operands = _normalize_root_offset_operands("
+        in ida_path_sync
+    )
+    assert "UPDATE_SUBGAME_RUNTIME_FLAG_OPERANDS" in ida_path_sync
+    assert "(0x4390A8, 1, 0x800000)" in ida_path_sync
+    assert (
+        "update_subgame_runtime_flag_operands = _normalize_root_offset_operands("
         in ida_path_sync
     )
     assert "INITIALIZE_SUBGAME_RECORD_BANK_OFFSET_OPERANDS" in ida_path_sync

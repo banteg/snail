@@ -287,11 +287,13 @@
         "damage_guage->display_fill",
         "game_base_1->subgame.player.attachment_exit_pending",
         "apply_damage_gauge_delta(damage_guage, -0.00166666671f, true)",
+        "play_voice_manager(&g_voice_manager",
         "&g_game_base->subgame.player.warning"
       ],
       "forbidden_substrings": [
         "controller->",
-        "data_4df904 + 0x430170"
+        "data_4df904 + 0x430170",
+        "play_voice_manager(0x751498"
       ]
     },
     {
@@ -301,11 +303,13 @@
         "void __thiscall update_damage_gauge(DamageGuage *damage_guage)",
         "damage_guage->state = DAMAGE_GUAGE_STATE_DRAINING",
         "&g_game_base->subgame.player.presentation.snail_skin",
+        "play_voice_manager(&g_voice_manager",
         "damage_guage->skin_hold_ticks = 5"
       ],
       "forbidden_substrings": [
         "void __thiscall sub_440FD0",
-        "*(float *)(this +"
+        "*(float *)(this +",
+        "play_voice_manager((int)g_voice_manager"
       ]
     },
     {
@@ -315,11 +319,13 @@
         "eax.b = force",
         "damage_guage->state",
         "game_base_2->subgame.player.trampoline_bounce_active",
+        "play_voice_manager(&g_voice_manager",
         "damage_guage->fill"
       ],
       "forbidden_substrings": [
         "controller->",
-        "edx_1 + 0x42ff60"
+        "edx_1 + 0x42ff60",
+        "play_voice_manager(0x751498"
       ]
     },
     {
@@ -329,11 +335,13 @@
         "void __thiscall apply_damage_gauge_delta(DamageGuage *damage_guage, float delta, bool force)",
         "damage_guage->state != DAMAGE_GUAGE_STATE_DRAINING",
         "g_game_base->subgame.player.trampoline_bounce_active",
+        "play_voice_manager(&g_voice_manager",
         "damage_guage->hit_flash_progress"
       ],
       "forbidden_substrings": [
         "void __thiscall sub_4413F0",
-        "float *this"
+        "float *this",
+        "play_voice_manager((int)g_voice_manager"
       ]
     },
     {
@@ -634,11 +642,13 @@
       "artifact": "analysis/decompile/binja/functions/004466d0-update_cutscene.c",
       "required_substrings": [
         "subgame.level_definition.parcel_count",
-        "subgame.completion"
+        "subgame.completion",
+        "play_voice_manager(&g_voice_manager"
       ],
       "forbidden_substrings": [
         "unknown_12e6df0",
-        "subgame.__offset"
+        "subgame.__offset",
+        "play_voice_manager(0x751498"
       ]
     },
     {
@@ -646,11 +656,13 @@
       "artifact": "analysis/decompile/ida/functions/004466d0-update_cutscene.c",
       "required_substrings": [
         "g_game_base->subgame.level_definition.parcel_count",
-        "&g_game_base->subgame.completion"
+        "&g_game_base->subgame.completion",
+        "play_voice_manager(&g_voice_manager"
       ],
       "forbidden_substrings": [
         "g_game_base->unknown_12e6df0",
-        "subgame.unknown_"
+        "subgame.unknown_",
+        "play_voice_manager((int)g_voice_manager"
       ]
     },
     {
@@ -3319,12 +3331,14 @@
         "entry_base_template->entry_base_strip_mesh",
         ")->color.a = 0.600000024f",
         "g_game_base->subgame.player.body.transform",
-        "g_game_base->subgame.subgame_rate"
+        "g_game_base->subgame.subgame_rate",
+        "play_voice_manager(&g_voice_manager"
       ],
       "forbidden_substrings": [
         "g_game_base[0x42fd",
         "data_42fd",
         "void* entry_",
+        "play_voice_manager(0x751498",
         "__asm",
         "_ET1"
       ]
@@ -3341,13 +3355,15 @@
         "primary_attachment_cell->color.a = 1.0",
         "primary_attachment_cell->bod.list_flags |= 0x80u",
         "g_game_base->subgame.player.body.transform.basis_up",
-        "g_game_base->subgame.subgame_rate"
+        "g_game_base->subgame.subgame_rate",
+        "play_voice_manager(&g_voice_manager"
       ],
       "forbidden_substrings": [
         "g_track_runtime_rows",
         "loc_42FDC4",
         "(char *)g_game_base",
         "(_DWORD *)g_game_base",
+        "play_voice_manager((int)g_voice_manager",
         "__asm",
         "_ET1"
       ]
@@ -5579,7 +5595,8 @@
         "game->time_trial",
         "struct TimeTrialRouteRecordCursor* time_trial_route_cursor",
         "time_trial_route_cursor->record.active",
-        "&time_trial_route_cursor->record.score_or_time"
+        "&time_trial_route_cursor->record.score_or_time",
+        "update_slug_voice_manager(&game->slug_voice_manager)"
       ],
       "forbidden_substrings": [
         "struct Game*",
@@ -5591,6 +5608,7 @@
         "void* eax_98 = game->level_mode_arg * 0x1fac0 + game",
         "*(eax_98 + 0x944150)",
         "eax_98 + 0x944158",
+        "update_slug_voice_manager(&game->slug_voice_manager.active)",
         "__asm",
         "_ET1"
       ],
@@ -5618,7 +5636,9 @@
         "game->time_trial",
         "TimeTrialRouteRecordCursor *time_trial_route_cursor",
         "time_trial_route_cursor->record.active",
-        "&time_trial_route_cursor->record.score_or_time"
+        "&time_trial_route_cursor->record.score_or_time",
+        "update_slug_voice_manager(&game->slug_voice_manager);",
+        "game->runtime_flags & 0x800000"
       ],
       "forbidden_substrings": [
         "sub_438B90(int this)",
@@ -5635,6 +5655,10 @@
         "char *v46; // eax",
         "*((_DWORD *)v46 + 2429012)",
         "v46 + 9716056",
+        "update_slug_voice_manager((float *)&game->slug_voice_manager.active)",
+        "sub_43F5E0",
+        "g_sprite_manager.sprites[2527]",
+        "unk_800000",
         "__asm",
         "_ET1"
       ]
@@ -6072,6 +6096,64 @@
       ]
     },
     {
+      "name": "bn_slug_voice_manager_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/0043f5c0-initialize_slug_voice_manager.c",
+      "required_substrings": [
+        "manager->active = 0",
+        "manager->progress = 0f",
+        "manager->step = 0.0166666675f"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(manager +",
+        "__fastcall"
+      ]
+    },
+    {
+      "name": "ida_slug_voice_manager_initializer_owner",
+      "artifact": "analysis/decompile/ida/functions/0043f5c0-initialize_slug_voice_manager.c",
+      "required_substrings": [
+        "void __thiscall initialize_slug_voice_manager(SlugVoiceManager *manager)",
+        "manager->active = 0;",
+        "manager->progress = 0.0;",
+        "manager->step = 0.016666668;"
+      ],
+      "forbidden_substrings": [
+        "sub_43F5C0",
+        "_DWORD *this",
+        "__fastcall"
+      ]
+    },
+    {
+      "name": "bn_slug_voice_manager_update_owner",
+      "artifact": "analysis/decompile/binja/functions/0043f5e0-update_slug_voice_manager.c",
+      "required_substrings": [
+        "manager->progress",
+        "manager->step",
+        "manager->active = 0"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(manager +",
+        "__fastcall"
+      ]
+    },
+    {
+      "name": "ida_slug_voice_manager_update_owner",
+      "artifact": "analysis/decompile/ida/functions/0043f5e0-update_slug_voice_manager.c",
+      "required_substrings": [
+        "void __thiscall update_slug_voice_manager(SlugVoiceManager *manager)",
+        "manager->step + manager->progress",
+        "manager->progress = 0.0;",
+        "manager->active = 0;"
+      ],
+      "forbidden_substrings": [
+        "sub_43F5E0",
+        "float *this",
+        "__fastcall"
+      ]
+    },
+    {
       "name": "bn_slug_hazard_ai_body_available",
       "artifact": "analysis/decompile/binja/functions/0043f930-update_slug_hazard_ai.c",
       "required_substrings": [
@@ -6081,7 +6163,7 @@
         "slug->engagement_voice_gate",
         "slug->body.transform.position",
         "slug->body.bod.bod.list_flags",
-        "play_voice_manager",
+        "play_voice_manager(&g_voice_manager",
         "advance_blink_random(&g_game_base->subgame)"
       ],
       "forbidden_substrings": [
@@ -6091,7 +6173,8 @@
         "slug->unknown_00",
         "struct Game*",
         "g_game_base[0x74618]",
-        "g_game_base->subgame.scan_reset"
+        "g_game_base->subgame.scan_reset",
+        "play_voice_manager(0x751498"
       ]
     },
     {
@@ -6103,14 +6186,16 @@
         "update_slug_voice_ai(slug)",
         "slug->body.transform.position",
         "slug->body.bod.bod.list_flags",
-        "slug->unknown_9c"
+        "slug->unknown_9c",
+        "play_voice_manager(&g_voice_manager"
       ],
       "forbidden_substrings": [
         "__asm",
         "_ET1",
         "SlugHazardRuntime",
         "slug->unknown_00",
-        "_DWORD *this"
+        "_DWORD *this",
+        "play_voice_manager((int)g_voice_manager"
       ]
     },
     {
@@ -7179,6 +7264,8 @@
         "game->player.damage_gauge",
         "game->player.presentation.weapon_channels",
         "game->slug_voice_manager",
+        "reset_voice_manager(&g_voice_manager)",
+        "initialize_slug_voice_manager(&game->slug_voice_manager)",
         "game->level_definition.parcel_count",
         "game->barrier.owner_player"
       ],
@@ -7186,6 +7273,8 @@
         "struct Game",
         "__offset(Game",
         "arg1->",
+        "reset_voice_manager(0x751498)",
+        "initialize_slug_voice_manager(&game->slug_voice_manager.active)",
         "__asm",
         "_ET1"
       ],
@@ -7201,12 +7290,16 @@
       "required_substrings": [
         "void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)",
         "game->level_definition.selected_speed.bits",
-        "game->level_definition.selected_speed.value"
+        "game->level_definition.selected_speed.value",
+        "reset_voice_manager(&g_voice_manager);",
+        "initialize_slug_voice_manager(&game->slug_voice_manager);"
       ],
       "forbidden_substrings": [
         "level_definition..selected_speed",
         "*((_DWORD *)game +",
-        "sub_437EB0"
+        "sub_437EB0",
+        "reset_voice_manager(g_voice_manager)",
+        "initialize_slug_voice_manager(&game->slug_voice_manager.active)"
       ]
     },
     {

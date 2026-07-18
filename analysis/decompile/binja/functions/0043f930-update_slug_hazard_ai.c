@@ -85,7 +85,7 @@
 0043fbba        x87_r7_18 - temp17_1
 0043fbc2        if ((((x87_r7_18 < temp17_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_18, temp17_1) ? 1 : 0) << 0xa | (x87_r7_18 == temp17_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 0043fbcf        slug->engagement_voice_gate = 0
-0043fbd5        play_voice_manager(0x751498, 2, 1, 0xffffffff)
+0043fbd5        play_voice_manager(&g_voice_manager, 2, 1, 0xffffffff)
 0043fbe5        int32_t* eax_12 = &slug->sprite->position
 0043fbea        *eax_12 = slug->body.transform.position.x
 0043fbef        eax_12[1] = slug->body.transform.position.y

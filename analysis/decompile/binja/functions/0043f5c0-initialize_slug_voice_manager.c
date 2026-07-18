@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_slug_voice_manager @ 0x43f5c0 */
 
-0043f5c0        *arg1 = 0
-0043f5c3        *(arg1 + 4) = 0
-0043f5ca        *(arg1 + 8) = 0x3c888889
+0043f5c0        manager->active = 0
+0043f5c3        manager->progress = 0f
+0043f5ca        manager->step = 0.0166666675f
 0043f5d1        return

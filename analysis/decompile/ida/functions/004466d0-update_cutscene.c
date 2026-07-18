@@ -10,57 +10,60 @@ void __thiscall update_cutscene(CutScene *cutscene)
   Vec3 *v4; // ecx
   double v5; // st7
   double v6; // st7
-  double v7; // st7
+  Vec3 *v7; // eax
   double v8; // st7
   double v9; // st7
   double v10; // st7
   double v11; // st7
-  Snail *v12; // ecx
-  double v13; // st7
+  double v12; // st7
+  Snail *v13; // ecx
   double v14; // st7
-  double v15; // st7
+  Vec3 *v15; // edx
   double v16; // st7
-  Snail *v17; // ecx
-  Player *player; // ecx
+  double v17; // st7
+  double v18; // st7
   Snail *v19; // ecx
-  Snail *v20; // eax
+  Player *player; // ecx
+  Snail *v21; // ecx
+  Snail *v22; // eax
   int32_t level_mode; // eax
-  Vec3 *v22; // eax
+  Vec3 *v24; // ecx
+  Vec3 *v25; // eax
   float z; // edx
   float progress; // eax
-  double v25; // st7
-  double v26; // st7
-  double v27; // st7
-  Vec3 *v28; // edx
-  Vec3 *alpha; // [esp+0h] [ebp-FCh]
+  double v28; // st7
+  double v29; // st7
+  double v30; // st7
+  Vec3 *v31; // edx
+  Vec4 *alpha; // [esp+0h] [ebp-FCh]
   float alphaa; // [esp+0h] [ebp-FCh]
-  Vec3 *alphab; // [esp+0h] [ebp-FCh]
+  Vec4 *alphab; // [esp+0h] [ebp-FCh]
   float alphac; // [esp+0h] [ebp-FCh]
   float alphad; // [esp+0h] [ebp-FCh]
   float alphae; // [esp+0h] [ebp-FCh]
   float alphaf; // [esp+0h] [ebp-FCh]
   float alphag; // [esp+0h] [ebp-FCh]
   float alphah; // [esp+0h] [ebp-FCh]
-  Vec3 *alphai; // [esp+0h] [ebp-FCh]
+  Vec4 *alphai; // [esp+0h] [ebp-FCh]
   float alphaj; // [esp+0h] [ebp-FCh]
   float alphak; // [esp+0h] [ebp-FCh]
-  Vec3 *alphal; // [esp+0h] [ebp-FCh]
-  float v42; // [esp+14h] [ebp-E8h]
-  float v43; // [esp+14h] [ebp-E8h]
-  float v44; // [esp+18h] [ebp-E4h]
-  float v45; // [esp+18h] [ebp-E4h]
-  float v46; // [esp+18h] [ebp-E4h]
-  float v47; // [esp+1Ch] [ebp-E0h]
-  float v48; // [esp+1Ch] [ebp-E0h]
+  Vec4 *alphal; // [esp+0h] [ebp-FCh]
+  float v45; // [esp+14h] [ebp-E8h]
+  float v46; // [esp+14h] [ebp-E8h]
+  float v47; // [esp+18h] [ebp-E4h]
+  float v48; // [esp+18h] [ebp-E4h]
+  float v49; // [esp+18h] [ebp-E4h]
+  float v50; // [esp+1Ch] [ebp-E0h]
+  float v51; // [esp+1Ch] [ebp-E0h]
   Vec3 vector; // [esp+24h] [ebp-D8h] BYREF
-  float v50; // [esp+34h] [ebp-C8h]
-  float v51; // [esp+38h] [ebp-C4h]
+  float v53; // [esp+34h] [ebp-C8h]
+  float v54; // [esp+38h] [ebp-C4h]
   TransformMatrix transform; // [esp+3Ch] [ebp-C0h] BYREF
   TransformMatrix to; // [esp+7Ch] [ebp-80h] BYREF
   float x; // [esp+ECh] [ebp-10h]
   float y; // [esp+F0h] [ebp-Ch]
-  float v56; // [esp+F4h] [ebp-8h]
-  Vec3 v57; // 0:^1C.12
+  float v59; // [esp+F4h] [ebp-8h]
+  Vec3 v60; // 0:^1C.12
 
   state = cutscene->state;
   cutscene->force_camera_update = 0;
@@ -85,7 +88,7 @@ LABEL_3:
       cutscene->live_matrix.position.x = v4->x;
       cutscene->live_matrix.position.y = v4->y;
       cutscene->live_matrix.position.z = v4->z;
-      look_at_point(&cutscene->live_matrix, alpha);
+      look_at_point(&cutscene->live_matrix, (const Vec3 *)alpha);
       v5 = cutscene->progress + cutscene->progress_step;
       cutscene->progress = v5;
       if ( v5 > 1.0 )
@@ -96,17 +99,17 @@ LABEL_3:
       }
       return;
     case CUT_SCENE_STATE_COMPLETION_PENDING:
-      v19 = cutscene->presentation;
+      v21 = cutscene->presentation;
       cutscene->state = CUT_SCENE_STATE_COMPLETION_HOLD;
       cutscene->camera_mode = -1;
-      dispatch_cutscene_animation(v19, 8, 1u, -1);
+      dispatch_cutscene_animation(v21, 8, 1u, -1);
       dispatch_cutscene_animation(cutscene->presentation, 9, 0, -1);
       dispatch_cutscene_animation(cutscene->presentation, 9, 0, -1);
-      v20 = cutscene->presentation;
+      v22 = cutscene->presentation;
       cutscene->state = CUT_SCENE_STATE_COMPLETION_BLEND;
       cutscene->progress = 0.0;
       cutscene->progress_step = 0.0083333338;
-      v20->invincible_shell.cutscene_roll_step = 0.016666668;
+      v22->invincible_shell.cutscene_roll_step = 0.016666668;
       cutscene->presentation->invincible_shell.cutscene_roll_progress = cutscene->presentation->invincible_shell.cutscene_roll_step;
       cutscene->force_camera_update = 1;
       level_mode = g_game_base->subgame.level_mode;
@@ -122,42 +125,45 @@ LABEL_3:
           cutscene->player->parcels_collected,
           cutscene->player->parcels_collected == g_game_base->subgame.level_definition.parcel_count);
       }
-      play_sound_effect(46);
+      play_sound_effect(&g_sound_effect_manager, 46);
       goto LABEL_25;
     case CUT_SCENE_STATE_COMPLETION_BLEND:
 LABEL_25:
       cutscene->camera_mode = -1;
       set_matrix_identity(&to);
-      v22 = &cutscene->presentation->snail_hotspots_world[18];
-      transform.position = cutscene->presentation->snail_hotspots_world[12];
-      x = v22->x;
-      z = v22->z;
-      y = v22->y;
+      v24 = &cutscene->presentation->snail_hotspots_world[12];
+      v25 = &cutscene->presentation->snail_hotspots_world[18];
+      transform.position.x = v24->x;
+      transform.position.y = v24->y;
+      transform.position.z = v24->z;
+      x = v25->x;
+      z = v25->z;
+      y = v25->y;
       progress = cutscene->progress;
-      v56 = z;
-      v45 = y - transform.position.y;
-      v47 = z - transform.position.z;
-      v50 = v45 * progress;
-      v51 = v47 * progress;
-      v43 = (x - transform.position.x) * progress + transform.position.x;
-      to.position.x = v43;
-      v46 = transform.position.y + v50;
-      to.position.y = v46;
-      v48 = transform.position.z + v51;
-      v25 = cutscene->progress * 3.1415927;
-      to.position.z = v48;
-      alphah = v25;
-      v26 = sine(alphah);
+      v59 = z;
+      v48 = y - transform.position.y;
+      v50 = z - transform.position.z;
+      v53 = v48 * progress;
+      v54 = v50 * progress;
+      v46 = (x - transform.position.x) * progress + transform.position.x;
+      to.position.x = v46;
+      v49 = transform.position.y + v53;
+      to.position.y = v49;
+      v51 = transform.position.z + v54;
+      v28 = cutscene->progress * 3.1415927;
+      to.position.z = v51;
+      alphah = v28;
+      v29 = sine(alphah);
       alphai = &cutscene->presentation->body.transform.position;
-      to.position.x = to.position.x - v26 * 0.5;
-      look_at_point(&to, alphai);
+      to.position.x = to.position.x - v29 * 0.5;
+      look_at_point(&to, (const Vec3 *)alphai);
       qmemcpy(&transform, &cutscene->presentation->owner_player->cameraman, sizeof(transform));
       alphaj = cutscene->progress * 1.5707964;
       alphak = sine(alphaj);
       linear_interpolate_matrix(&cutscene->live_matrix, &transform, &to, alphak);
-      v27 = cutscene->progress + cutscene->progress_step;
-      cutscene->progress = v27;
-      if ( v27 > 1.0 )
+      v30 = cutscene->progress + cutscene->progress_step;
+      cutscene->progress = v30;
+      if ( v30 > 1.0 )
       {
         cutscene->state = CUT_SCENE_STATE_COMPLETION_HOLD;
         cutscene->progress = 0.0;
@@ -168,12 +174,12 @@ LABEL_25:
       cutscene->camera_mode = -1;
       cutscene->force_camera_update = 1;
       set_matrix_identity(&cutscene->live_matrix);
-      v28 = &cutscene->presentation->snail_hotspots_world[18];
+      v31 = &cutscene->presentation->snail_hotspots_world[18];
       alphal = &cutscene->presentation->body.transform.position;
-      cutscene->live_matrix.position.x = v28->x;
-      cutscene->live_matrix.position.y = v28->y;
-      cutscene->live_matrix.position.z = v28->z;
-      look_at_point(&cutscene->live_matrix, alphal);
+      cutscene->live_matrix.position.x = v31->x;
+      cutscene->live_matrix.position.y = v31->y;
+      cutscene->live_matrix.position.z = v31->z;
+      look_at_point(&cutscene->live_matrix, (const Vec3 *)alphal);
       if ( !cutscene->presentation->anim_manager.queue_count )
         dispatch_cutscene_animation(cutscene->presentation, 9, 0, -1);
       goto LABEL_29;
@@ -182,34 +188,37 @@ LABEL_25:
       cutscene->camera_mode = 1;
       set_matrix_identity(&transform);
       v6 = cutscene->progress * 3.1415927;
-      transform.position = cutscene->presentation->snail_hotspots_world[18];
+      v7 = &cutscene->presentation->snail_hotspots_world[18];
+      transform.position.x = v7->x;
       alphaa = v6;
-      v7 = sine(alphaa);
+      transform.position.y = v7->y;
+      transform.position.z = v7->z;
+      v8 = sine(alphaa);
       alphab = &cutscene->presentation->body.transform.position;
-      transform.position.x = v7 + v7 + transform.position.x;
-      look_at_point(&transform, alphab);
+      transform.position.x = v8 + v8 + transform.position.x;
+      look_at_point(&transform, (const Vec3 *)alphab);
       qmemcpy(&to, &cutscene->presentation->owner_player->cameraman, sizeof(to));
       alphac = cutscene->progress * 1.5707964;
       alphad = sine(alphac);
       linear_interpolate_matrix(&cutscene->live_matrix, &transform, &to, alphad);
-      v57.x = cutscene->live_matrix.position.x - cutscene->presentation->body.transform.position.x;
-      v57.y = cutscene->live_matrix.position.y - cutscene->presentation->body.transform.position.y;
-      v57.z = cutscene->live_matrix.position.z - cutscene->presentation->body.transform.position.z;
-      vector = v57;
-      v8 = normalize_vector(&vector);
-      if ( v8 < 1.5 )
+      v60.x = cutscene->live_matrix.position.x - cutscene->presentation->body.transform.position.x;
+      v60.y = cutscene->live_matrix.position.y - cutscene->presentation->body.transform.position.y;
+      v60.z = cutscene->live_matrix.position.z - cutscene->presentation->body.transform.position.z;
+      vector = v60;
+      v9 = normalize_vector(&vector);
+      if ( v9 < 1.5 )
       {
-        v9 = 1.5 - v8;
-        v42 = vector.x * v9;
-        v44 = vector.y * v9;
-        v10 = v9 * vector.z;
-        cutscene->live_matrix.position.x = v42 + cutscene->live_matrix.position.x;
-        cutscene->live_matrix.position.y = v44 + cutscene->live_matrix.position.y;
-        cutscene->live_matrix.position.z = v10 + cutscene->live_matrix.position.z;
+        v10 = 1.5 - v9;
+        v45 = vector.x * v10;
+        v47 = vector.y * v10;
+        v11 = v10 * vector.z;
+        cutscene->live_matrix.position.x = v45 + cutscene->live_matrix.position.x;
+        cutscene->live_matrix.position.y = v47 + cutscene->live_matrix.position.y;
+        cutscene->live_matrix.position.z = v11 + cutscene->live_matrix.position.z;
       }
-      v11 = cutscene->progress + cutscene->progress_step;
-      cutscene->progress = v11;
-      if ( v11 > 1.0 )
+      v12 = cutscene->progress + cutscene->progress_step;
+      cutscene->progress = v12;
+      if ( v12 > 1.0 )
       {
         cutscene->state = CUT_SCENE_STATE_INTRO_FINISH;
         cutscene->progress = 0.0;
@@ -221,37 +230,40 @@ LABEL_25:
       cutscene->state = CUT_SCENE_STATE_INACTIVE;
       return;
     case CUT_SCENE_STATE_DEATH_PENDING:
-      v12 = cutscene->presentation;
+      v13 = cutscene->presentation;
       cutscene->camera_mode = -1;
-      dispatch_cutscene_animation(v12, 7, 1u, -1);
+      dispatch_cutscene_animation(v13, 7, 1u, -1);
       cutscene->state = CUT_SCENE_STATE_DEATH_BLEND;
       cutscene->progress = 0.0;
       cutscene->progress_step = 0.0083333338;
       cutscene->force_camera_update = 1;
-      play_voice_manager((int)g_voice_manager, 3, 2u, -1);
+      play_voice_manager(&g_voice_manager, 3, 2u, -1);
       cutscene->presentation->owner_player->attachment_exit_gate_a = 1;
-      release_snail_weapons((int)cutscene->presentation);
+      release_snail_weapons(cutscene->presentation);
       goto LABEL_11;
     case CUT_SCENE_STATE_DEATH_BLEND:
 LABEL_11:
       cutscene->camera_mode = -1;
       set_matrix_identity(&to);
-      v13 = cutscene->progress * 3.1415927;
-      to.position = cutscene->presentation->snail_hotspots_world[18];
-      alphae = v13;
-      v14 = sine(alphae);
-      to.position.x = v14 + v14 + to.position.x;
+      v14 = cutscene->progress * 3.1415927;
+      v15 = &cutscene->presentation->snail_hotspots_world[18];
+      to.position.x = v15->x;
+      to.position.y = v15->y;
+      alphae = v14;
+      to.position.z = v15->z;
+      v16 = sine(alphae);
+      to.position.x = v16 + v16 + to.position.x;
       if ( to.position.y < 0.0 )
         to.position.y = 0.0;
-      look_at_point(&to, &cutscene->presentation->body.transform.position);
-      v15 = cutscene->progress;
+      look_at_point(&to, (const Vec3 *)&cutscene->presentation->body.transform.position);
+      v17 = cutscene->progress;
       qmemcpy(&transform, &cutscene->presentation->owner_player->cameraman, sizeof(transform));
-      alphaf = v15 * 1.5707964;
+      alphaf = v17 * 1.5707964;
       alphag = sine(alphaf);
       linear_interpolate_matrix(&cutscene->live_matrix, &transform, &to, alphag);
-      v16 = cutscene->progress + cutscene->progress_step;
-      cutscene->progress = v16;
-      if ( v16 > 1.0 )
+      v18 = cutscene->progress + cutscene->progress_step;
+      cutscene->progress = v18;
+      if ( v18 > 1.0 )
       {
         cutscene->state = CUT_SCENE_STATE_DEATH_HOLD;
         cutscene->progress = 0.0;
@@ -262,13 +274,13 @@ LABEL_11:
       cutscene->camera_mode = -1;
       cutscene->force_camera_update = 1;
       set_matrix_identity(&cutscene->live_matrix);
-      v17 = cutscene->presentation;
+      v19 = cutscene->presentation;
       cutscene->live_matrix.position.x = cutscene->presentation->snail_hotspots_world[18].x;
-      cutscene->live_matrix.position.y = v17->snail_hotspots_world[18].y;
-      cutscene->live_matrix.position.z = v17->snail_hotspots_world[18].z;
+      cutscene->live_matrix.position.y = v19->snail_hotspots_world[18].y;
+      cutscene->live_matrix.position.z = v19->snail_hotspots_world[18].z;
       if ( cutscene->live_matrix.position.y < 0.0 )
         cutscene->live_matrix.position.y = 0.0;
-      look_at_point(&cutscene->live_matrix, &v17->body.transform.position);
+      look_at_point(&cutscene->live_matrix, (const Vec3 *)&v19->body.transform.position);
       player = cutscene->player;
       if ( LOBYTE(player->resurrect_active)
         || (initialize_subgoldy_death(player), cutscene->player->attachment_exit_gate_b) )
@@ -278,7 +290,7 @@ LABEL_29:
       }
       else
       {
-        play_voice_manager((int)g_voice_manager, 11, 2u, -1);
+        play_voice_manager(&g_voice_manager, 11, 2u, -1);
         cutscene->player->attachment_exit_gate_b = 1;
         cutscene->player->attachment_exit_gate_a = 1;
         cutscene->progress = cutscene->progress_step + cutscene->progress;

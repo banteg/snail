@@ -36,7 +36,7 @@
 00437f61        initialize_damage_gauge(&game->player.damage_gauge)
 00437f77        initialize_sub_lazer_pool(&game->sub_lazers)
 00437f82        initialize_salt_hazard_pool(&game->salt_hazards)
-00437f8c        reset_voice_manager(0x751498)
+00437f8c        reset_voice_manager(&g_voice_manager)
 00437fa0        int32_t __saved_ebp_16
 00437fa0        int32_t edx
 00437fa0        __saved_ebp_16, edx = load_frontend_level_by_mode_and_index(&game->level_definition, game->level_mode, level_index)

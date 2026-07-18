@@ -21,7 +21,7 @@
 00420d11        follow_state->sample_index = sample_index_2 + 1
 00420d1f        var_180 = fconvert.s(fconvert.t(var_180) - x87_r7_4)
 00420d23        if (sample_index_2 + 1 == template_record_6->segment_count << 1)
-00420d30        play_voice_manager(0x751498, 4, 1, 0xffffffff)
+00420d30        play_voice_manager(&g_voice_manager, 4, 1, 0xffffffff)
 00420d35        struct Path* template_record = follow_state->template_record
 00420d40        if (template_record->has_entry_mesh_transition != 0)
 00420d46        uint32_t segment_count = template_record->segment_count
@@ -60,7 +60,7 @@
 00420f52        if (template_record_4->kind != PATH_TEMPLATE_KIND_SUPERTRAMP)
 00421077        out_position->z = fconvert.s(fconvert.t(*(&template_record_4->secondary_samples[template_record_4->segment_count] - 0x70)) + fconvert.t(follow_state->source_cell->anchor_position.z) + fconvert.t(template_record_4->width_or_scale) + fconvert.t(var_180))
 00420f68        int32_t sample_override = 0xffffffff
-00420f6a        int32_t mode = 0
+00420f6a        uint32_t mode = 0
 00420f6c        int32_t set_id = 0xf
 00420f6e        motion->y = fconvert.s(fconvert.t(motion->z) * fconvert.t(0.699999988f))
 00420f71        struct Path* template_record_2 = follow_state->template_record
@@ -80,7 +80,7 @@
 0042102c        follow_state->player->cutscene_pitch_cycle_step = fconvert.s(fconvert.t(g_game_base->subgame.subgame_rate) * fconvert.t(0.0138888881f))
 00421032        struct Player* player = follow_state->player
 0042103b        player->cutscene_pitch_cycle = player->cutscene_pitch_cycle_step
-00421046        play_voice_manager(0x751498, set_id, mode, sample_override)
+00421046        play_voice_manager(&g_voice_manager, set_id, mode, sample_override)
 0042107d        struct Player* player_1 = follow_state->player
 00421090        player_1->heading_roll = fconvert.s(fconvert.t(follow_state->template_record->installed_heading_delta) + fconvert.t(player_1->heading_roll))
 004210a1        return 3

@@ -63,9 +63,9 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
         {
           slug->blink_progress = slug->blink_step + slug->blink_progress;
           if ( slug->blink_step <= 0.0 )
-            set_sprite_texture_ref(&slug->sprite->object_ref, 119, 0);
+            set_sprite_texture_ref(slug->sprite, 119, 0);
           else
-            set_sprite_texture_ref(&slug->sprite->object_ref, 118, 0);
+            set_sprite_texture_ref(slug->sprite, 118, 0);
           slug->sprite->draw_mode = 0;
           store_color4f(&slug->sprite->color, 1.0, 1.0, 1.0, 1.0);
           if ( slug->blink_progress >= 0.0 )
@@ -89,7 +89,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
           if ( v3 <= 1.0 )
           {
             slug->sprite->draw_mode = 5;
-            set_sprite_texture_ref(&slug->sprite->object_ref, 120, 0);
+            set_sprite_texture_ref(slug->sprite, 120, 0);
             store_color4f(&slug->sprite->color, 1.0, 0.0, 0.0, 0.99000001);
           }
           else
@@ -100,7 +100,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
             slug->blink_step = -0.16666667;
             sprite->draw_mode = 0;
             store_color4f(&slug->sprite->color, 1.0, 1.0, 1.0, 1.0);
-            set_sprite_texture_ref(&slug->sprite->object_ref, 119, 0);
+            set_sprite_texture_ref(slug->sprite, 119, 0);
           }
         }
         if ( slug->owner_player->body.transform.position.z + 1.0 > slug->body.transform.position.z
@@ -120,7 +120,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
           && owner_player->body.transform.position.z + 16.0 > slug->body.transform.position.z )
         {
           slug->engagement_voice_gate = 0;
-          play_voice_manager((int)g_voice_manager, 2, 1u, -1);
+          play_voice_manager(&g_voice_manager, 2, 1u, -1);
         }
         p_position = &slug->sprite->position;
         p_position->x = slug->body.transform.position.x;
@@ -250,7 +250,7 @@ LABEL_39:
             {
 LABEL_72:
               report_errorf(aListRemoveNext);
-              kill_sprite((int)slug->sprite);
+              kill_sprite(slug->sprite);
             }
             else
             {
@@ -270,14 +270,14 @@ LABEL_78:
               v40 = slug->sprite;
               BYTE1(v39) &= ~2u;
               slug->body.bod.bod.list_flags = v39;
-              kill_sprite((int)v40);
+              kill_sprite(v40);
             }
           }
           else
           {
 LABEL_70:
             report_errorf(aListRemove);
-            kill_sprite((int)slug->sprite);
+            kill_sprite(slug->sprite);
           }
         }
         break;
