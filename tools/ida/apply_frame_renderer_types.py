@@ -6,6 +6,7 @@ import re
 import sys
 
 import ida_funcs
+import ida_bytes
 import ida_hexrays
 import ida_kernwin
 import ida_name
@@ -27,6 +28,7 @@ EXPECTED_OWNER_SIZES = {
     "RenderableBod": 0x80,
     "AnimManager": 0x48,
     "Sprite": 0xB4,
+    "TransformMatrix": 0x40,
     "ObjectRenderVertex": 0x18,
     "SpriteDepthNode": 0x18,
     "FrameColor4f": 0x10,
@@ -52,6 +54,7 @@ EXPECTED_OWNER_SIZES = {
 DEPENDENCY_HEADER_NAMES = (
     "object_render_types.h",
     "path_template_types.h",
+    "star_manager_types.h",
 )
 
 
@@ -69,7 +72,6 @@ TRUSTED_NAMES = [
     (0x4DFB10, "g_post_sprite_bods"),
     (0x4E5510, "g_sprite_depth_nodes"),
     (0x4F7050, "g_sprite_depth_buckets"),
-    (0x814C94, "g_sprite_active_heads"),
 ]
 
 TRUSTED_FUNCTION_DECLARATIONS = [
@@ -158,7 +160,7 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     (
         "update_sprite_facing_angle",
         "void __thiscall update_sprite_facing_angle("
-        "Sprite *sprite, const TransformMatrix *matrix);",
+        "Sprite *sprite, const struct TransformMatrix *matrix);",
     ),
     (
         "select_level_track_texture_set",
@@ -192,12 +194,20 @@ TRUSTED_DATA_DECLARATIONS = [
         "g_sprite_depth_buckets",
         "SpriteDepthNode *g_sprite_depth_buckets[256];",
     ),
+]
+
+# The authored g_sprite_active_heads view starts at SpriteManager.active_heads.
+# IDA correctly treats that address as an interior member of g_sprite_manager
+# and therefore cannot assign a second global name without destroying the owner.
+INTERIOR_OWNER_VIEWS = (
     (
         0x814C94,
-        "g_sprite_active_heads",
-        "Sprite *g_sprite_active_heads[5];",
+        0x790F30,
+        "g_sprite_manager",
+        "Sprite *[5]",
+        "active_heads",
     ),
-]
+)
 
 
 def _normalize_type_text(value: str | None) -> str | None:
@@ -205,6 +215,7 @@ def _normalize_type_text(value: str | None) -> str | None:
         return None
     normalized = value.strip().removesuffix(";")
     normalized = re.sub(r"\s+", " ", normalized)
+    normalized = re.sub(r"\b(?:struct|union|enum)\s+", "", normalized)
     normalized = re.sub(r"\s*\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
     normalized = re.sub(r"\s*,\s*", ", ", normalized)
@@ -630,6 +641,41 @@ def _sync_types(header_path: pathlib.Path) -> int:
             continue
         applied += 1
 
+    interior_owner_views = []
+    for (
+        address,
+        owner_address,
+        owner_name,
+        expected_type,
+        member_name,
+    ) in INTERIOR_OWNER_VIEWS:
+        observed_head = ida_bytes.get_item_head(address)
+        observed_owner_name = idc.get_name(owner_address)
+        observed_type = idc.get_type(address)
+        verified = (
+            observed_head == owner_address
+            and observed_owner_name == owner_name
+            and _normalize_type_text(observed_type)
+            == _normalize_type_text(expected_type)
+        )
+        result = {
+            "address": hex(address),
+            "owner_address": hex(owner_address),
+            "owner_name": observed_owner_name,
+            "member": member_name,
+            "type": observed_type,
+            "verified": verified,
+        }
+        interior_owner_views.append(result)
+        if not verified:
+            failed.append(
+                {
+                    "selector": member_name,
+                    "reason": "interior_owner_view_mismatch",
+                    "result": result,
+                }
+            )
+
     game_root_owner_graph = sync_game_root_owner_graph(require=False)
     if game_root_owner_graph.get("status") == "failed":
         failed.append(
@@ -638,7 +684,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
     invalidated_cfuncs = {
         selector: _invalidate_cfunc(selector)
-        for selector in ("draw_sprite_quad", "render_game_frame")
+        for selector in (
+            "draw_sprite_quad",
+            "update_sprite_facing_angle",
+            "render_game_frame",
+        )
     }
     for selector, result in invalidated_cfuncs.items():
         if result.get("status") == "failed":
@@ -693,6 +743,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "invalidated_cfuncs": invalidated_cfuncs,
                 "draw_sprite_vertex_lvar": draw_sprite_vertex_lvar,
                 "render_pointer_lvars": render_pointer_lvars,
+                "interior_owner_views": interior_owner_views,
                 "missing": missing,
                 "failed": failed,
             },

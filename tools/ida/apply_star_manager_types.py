@@ -28,6 +28,7 @@ TRUSTED_NAMES = [
     (0x44E200, "kill_sprite"),
     (0x44E2A0, "allocate_sprite"),
     (0x44E3D0, "kill_game_sprites"),
+    (0x44E410, "update_sprite_facing_angle"),
     (0x44E540, "set_sprite_manager_paused"),
     (0x44E550, "set_sprite_texture_ref"),
     (0x44E570, "get_sprite_texture"),
@@ -62,6 +63,10 @@ TRUSTED_DECLARATIONS = [
     (
         "kill_game_sprites",
         "void __thiscall kill_game_sprites(SpriteManager *manager);",
+    ),
+    (
+        "update_sprite_facing_angle",
+        "void __thiscall update_sprite_facing_angle(Sprite *sprite, const struct TransformMatrix *matrix);",
     ),
     (
         "set_sprite_manager_paused",
@@ -121,10 +126,23 @@ FORBIDDEN_DESTRUCTIVE_DECLARATIONS = (
 )
 
 EXPECTED_OWNER_SIZES = {
+    "Object": 0xDC,
+    "BodBase": 0x38,
+    "TransformMatrix": 0x40,
     "Sprite": 0xB4,
     "StarManagerEntry": 0x2C,
     "StarManager": 0x4C,
 }
+
+DEPENDENCY_HEADER_NAMES = (
+    "object_render_types.h",
+    "path_template_types.h",
+)
+
+REANALYSIS_FUNCTIONS = (
+    0x40A490,
+    0x44E410,
+)
 
 
 def _normalize_type_text(value: str | None) -> str | None:
@@ -132,6 +150,7 @@ def _normalize_type_text(value: str | None) -> str | None:
         return None
     normalized = value.strip().removesuffix(";")
     normalized = re.sub(r"\s+", " ", normalized)
+    normalized = re.sub(r"\b(?:struct|union|enum)\s+", "", normalized)
     normalized = re.sub(r"\s*\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
     normalized = re.sub(r"\s*,\s*", ", ", normalized)
@@ -233,6 +252,27 @@ def _sync_types(header_path: pathlib.Path) -> int:
         )
         return 1
 
+    dependency_parse_results = []
+    for dependency_name in DEPENDENCY_HEADER_NAMES:
+        dependency_header = header_path.with_name(dependency_name)
+        if dependency_header.is_file():
+            dependency_parse_results.append(
+                {
+                    "header": str(dependency_header),
+                    "parse_errors": idc.parse_decls(
+                        str(dependency_header), idc.PT_FILE
+                    ),
+                }
+            )
+        else:
+            dependency_parse_results.append(
+                {
+                    "header": str(dependency_header),
+                    "parse_errors": None,
+                    "reason": "missing_dependency_header",
+                }
+            )
+
     # Sprite is shared by several narrow ownership lanes. Replace any earlier
     # partial declaration so this full 0xb4-byte owner remains authoritative.
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE | idc.PT_REPLACE)
@@ -249,16 +289,26 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in EXPECTED_OWNER_SIZES.items()
         if owner_sizes[name] != expected_size
     ]
-    if parse_errors or size_failures:
+    dependency_failures = [
+        {
+            "selector": result["header"],
+            "reason": result.get("reason", "dependency_parse_failed"),
+            "parse_errors": result["parse_errors"],
+        }
+        for result in dependency_parse_results
+        if result["parse_errors"] != 0
+    ]
+    if parse_errors or size_failures or dependency_failures:
         print(
             json.dumps(
                 {
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
+                    "dependency_headers": dependency_parse_results,
                     "parse_errors": parse_errors,
                     "applied": 0,
                     "owner_sizes": owner_sizes,
-                    "failed": size_failures,
+                    "failed": [*dependency_failures, *size_failures],
                 },
                 indent=2,
             )
@@ -318,11 +368,26 @@ def _sync_types(header_path: pathlib.Path) -> int:
     if game_root_owner_graph.get("status") == "failed":
         failed.append({"selector": "GameRoot", "owner_graph": game_root_owner_graph})
 
+    reanalysis_functions = []
+    for address in REANALYSIS_FUNCTIONS:
+        function = ida_funcs.get_func(address)
+        if function is None:
+            failed.append(
+                {
+                    "address": hex(address),
+                    "reason": "missing_reanalysis_function",
+                }
+            )
+            continue
+        ida_hexrays.mark_cfunc_dirty(function.start_ea, True)
+        reanalysis_functions.append(hex(function.start_ea))
+
     print(
         json.dumps(
             {
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
+                "dependency_headers": dependency_parse_results,
                 "parse_errors": parse_errors,
                 "applied": applied,
                 "unchanged": unchanged,
@@ -331,6 +396,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "owner_sizes": owner_sizes,
                 "color_lvar": color_lvar,
                 "game_root_owner_graph": game_root_owner_graph,
+                "reanalysis_functions": reanalysis_functions,
                 "missing": missing,
                 "failed": failed,
             },

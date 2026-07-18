@@ -596,7 +596,12 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert '"path_template_types.h"' in frame_sync
     assert "def _invalidate_cfunc" in frame_sync
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in frame_sync
-    assert 'for selector in ("draw_sprite_quad", "render_game_frame")' in frame_sync
+    for selector in (
+        "draw_sprite_quad",
+        "update_sprite_facing_angle",
+        "render_game_frame",
+    ):
+        assert f'"{selector}",' in frame_sync
     assert "def _sync_render_pointer_lvar" in frame_sync
     assert '"depth_bucket_cursor",\n        0x40A8C0,' in frame_sync
     assert '"depth_bucket_sprite",\n        0x40A8CB,' in frame_sync
@@ -607,8 +612,13 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert "split_definition_address = 0x413933" in frame_sync
     assert '(0x4DFB10, "g_post_sprite_bods")' in frame_sync
     assert '"RenderableBod *g_post_sprite_bods;"' in frame_sync
-    assert '(0x814C94, "g_sprite_active_heads")' in frame_sync
-    assert '"Sprite *g_sprite_active_heads[5];"' in frame_sync
+    assert "INTERIOR_OWNER_VIEWS" in frame_sync
+    assert "0x814C94" in frame_sync
+    assert "0x790F30" in frame_sync
+    assert '"g_sprite_manager"' in frame_sync
+    assert '"Sprite *[5]"' in frame_sync
+    assert '"active_heads"' in frame_sync
+    assert "interior_owner_view_mismatch" in frame_sync
     for header in frame_headers:
         assert "typedef struct Sprite Sprite;" in header
         assert "typedef struct ObjectRenderVertex {" in header
@@ -1444,10 +1454,21 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     matcher_header = (
         Path(__file__).parents[1] / "tools/match/include/star_manager.h"
     ).read_text(encoding="utf-8")
+    star_analysis_header = (HEADER_DIR / "star_manager_types.h").read_text(
+        encoding="utf-8"
+    )
 
     assert "types_declare_missing_only" in source
     assert "current_struct_size" in source
     assert '"Sprite": 0xB4' in source
+    assert 'MATRIX_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in source
+    assert 'OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"' in source
+    assert 'required_structs=("Object",)' in source
+    assert "object_size != 0xDC" in source
+    assert '("0x24", "object", "Object*")' in source
+    assert 'required_structs=("TransformMatrix",)' in source
+    assert "matrix_size != 0x40" in source
+    assert '("0x44e410", "update_sprite_facing_angle")' in source
     assert "types_declare(" not in source
     for declaration, ida_declaration in (
         (
@@ -1478,6 +1499,11 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
             "void* __thiscall get_sprite_texture_ref(SpriteManager* manager, int32_t texture_id)",
             "void *__thiscall get_sprite_texture_ref(SpriteManager *manager, int32_t texture_id);",
         ),
+        (
+            "void __thiscall update_sprite_facing_angle(Sprite* sprite, const TransformMatrix* matrix)",
+            "void __thiscall update_sprite_facing_angle("
+            "Sprite *sprite, const struct TransformMatrix *matrix);",
+        ),
     ):
         assert declaration in source
         assert ida_declaration in ida_source
@@ -1485,6 +1511,15 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "TextureRef* __stdcall get_sprite_texture" not in source
     assert "TRUSTED_NAMES" in ida_source
     assert '(0x44DF30, "update_sprite")' in ida_source
+    assert '(0x44E410, "update_sprite_facing_angle")' in ida_source
+    assert '"path_template_types.h"' in ida_source
+    assert '"object_render_types.h"' in ida_source
+    assert '"Object": 0xDC' in ida_source
+    assert '"BodBase": 0x38' in ida_source
+    assert '"TransformMatrix": 0x40' in ida_source
+    assert 're.sub(r"\\b(?:struct|union|enum)\\s+", "", normalized)' in ida_source
+    assert "0x40A490" in ida_source
+    assert "0x44E410" in ida_source
     for function_name in (
         "destroy_star_field",
         "initialize_star_field",
@@ -1499,9 +1534,11 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "noncanonical_star_manager_header" in ida_source
     assert "EXPECTED_OWNER_SIZES" in ida_source
     assert "owner_size_mismatch" in ida_source
-    star_analysis_header = (HEADER_DIR / "star_manager_types.h").read_text(
-        encoding="utf-8"
-    )
+    assert "struct TransformMatrix;" in star_analysis_header
+    assert "typedef struct Object Object;" in star_analysis_header
+    assert "Object* object;" in star_analysis_header
+    assert "void __thiscall update_sprite_facing_angle(" in star_analysis_header
+    assert "const struct TransformMatrix* matrix" in star_analysis_header
     assert "typedef struct TransformMatrix TransformMatrix;" not in star_analysis_header
 
 
@@ -3025,6 +3062,14 @@ def test_frame_replays_preserve_window_bootstrap_abi() -> None:
     symbol_update = binja_source.index("updates=FUNCTION_SYMBOL_UPDATES")
     prototype_update = binja_source.index("proto_updates=resolved_proto_updates")
     assert symbol_update < prototype_update
+    assert '("0x44e410", "update_sprite_facing_angle")' in binja_source
+    assert 'OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"' in binja_source
+    assert 'SPRITE_HEADER_PATH = REPO_ROOT / "analysis/headers/star_manager_types.h"' in binja_source
+    assert '"RenderableBod"' in binja_source
+    assert '"Sprite"' in binja_source
+    assert '"star_manager_types.h"' in ida_source
+    assert '"update_sprite_facing_angle",' in ida_source
+    assert 're.sub(r"\\b(?:struct|union|enum)\\s+", "", normalized)' in ida_source
 
 
 def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownership() -> None:

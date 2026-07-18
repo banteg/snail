@@ -8,19 +8,31 @@ import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
+    apply_symbol_updates,
     apply_struct_and_proto_updates,
     current_struct_size,
     current_type_widths,
     emit_summary,
+    types_declare_if_missing,
     types_declare_missing_only,
 )
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/star_manager_types.h"
+MATRIX_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
+OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
+
+FUNCTION_SYMBOL_UPDATES = (
+    ("0x44e410", "update_sprite_facing_angle"),
+)
 
 GAME_ROOT_FIELD_UPDATES = (
     ("0x4f33c", "star_manager", "StarManager"),
+)
+
+BOD_BASE_FIELD_UPDATES = (
+    ("0x24", "object", "Object*"),
 )
 
 EXPECTED_STRUCT_SIZES = {
@@ -193,6 +205,40 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    object_type_operation = types_declare_if_missing(
+        REPO_ROOT,
+        target=args.target,
+        header_path=OBJECT_HEADER_PATH,
+        required_structs=("Object",),
+    )
+    object_size = current_struct_size(
+        REPO_ROOT,
+        target=args.target,
+        struct_name="Object",
+    )
+    if object_size != 0xDC:
+        raise RuntimeError(
+            "Object must be exactly 0xdc bytes before BodBase ownership replay; "
+            f"observed {object_size!r}"
+        )
+
+    matrix_type_operation = types_declare_if_missing(
+        REPO_ROOT,
+        target=args.target,
+        header_path=MATRIX_HEADER_PATH,
+        required_structs=("TransformMatrix",),
+    )
+    matrix_size = current_struct_size(
+        REPO_ROOT,
+        target=args.target,
+        struct_name="TransformMatrix",
+    )
+    if matrix_size != 0x40:
+        raise RuntimeError(
+            "TransformMatrix must be exactly 0x40 bytes before Sprite ABI replay; "
+            f"observed {matrix_size!r}"
+        )
+
     mismatched_types = tuple(
         name
         for name, expected_size in EXPECTED_STRUCT_SIZES.items()
@@ -232,6 +278,7 @@ def main() -> int:
         }
 
     struct_updates = (
+        ("BodBase", BOD_BASE_FIELD_UPDATES),
         ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
         ("Sprite", SPRITE_FIELD_UPDATES),
         ("SpriteManager", SPRITE_MANAGER_FIELD_UPDATES),
@@ -240,7 +287,15 @@ def main() -> int:
         ("GameRoot", GAME_ROOT_FIELD_UPDATES),
     )
     operations: list[dict[str, object]] = [
+        object_type_operation,
+        matrix_type_operation,
         type_operation,
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=FUNCTION_SYMBOL_UPDATES,
+            kind="function",
+        ),
         *apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,

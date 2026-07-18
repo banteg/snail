@@ -64,3 +64,14 @@ residual is caller-side only. The full normalized listing shows the two
 mismatches are still only the dead returned-`z` spill address after the rotate
 call; forcing that address would require an artificial unused copy and is not a
 valid source-shape lead.
+
+2026-07-18 ownership replay: both decompiler lanes now persist the exact
+`Sprite*` receiver, borrowed `const TransformMatrix*`, `Vec3` rotate result,
+and the position/previous-position, facing-angle, and refresh-progress fields.
+The replay also makes its `Object`, `TransformMatrix`, `Sprite`, and
+`RenderableBod` header dependencies explicit instead of relying on replay
+order. IDA proves the source-level `g_sprite_active_heads` view is the
+`SpriteManager.active_heads` member at `g_sprite_manager + 0x83d64`; it no
+longer attempts to create an overlapping global symbol there. Focused matching
+remains honestly unchanged at 97.67%, 86/86 instructions, with eight clean
+operands and only the dead returned-`z` spill slot differing.

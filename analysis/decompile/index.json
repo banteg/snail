@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 5,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 5,
-  "ida_exported": 5,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,27 +17,19 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "get_path_position_at_node",
-      "address": "0x42b9c0"
+      "name": "render_game_frame",
+      "address": "0x40a490"
     },
     {
-      "name": "is_point_inside_track_attachment",
-      "address": "0x42ca90"
+      "name": "rotate_vector_by_matrix",
+      "address": "0x44cc20"
     },
     {
-      "name": "update_sub_lazer_projectile",
-      "address": "0x4417d0"
-    },
-    {
-      "name": "place_parcels_on_track",
-      "address": "0x4438e0"
-    },
-    {
-      "name": "place_challenge_parcels_on_track",
-      "address": "0x444240"
+      "name": "update_sprite_facing_angle",
+      "address": "0x44e410"
     }
   ],
-  "health_check_count": 747,
+  "health_check_count": 749,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

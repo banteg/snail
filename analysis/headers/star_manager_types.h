@@ -13,6 +13,9 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 
+struct TransformMatrix;
+typedef struct Object Object;
+
 typedef struct Vec3 {
     float x;
     float y;
@@ -38,7 +41,7 @@ typedef struct BodBase {
     Vec3 position;
     float render_arg_1c;
     float render_arg_20;
-    void* object;
+    Object* object;
     tColour color;
 } BodBase;
 
@@ -145,5 +148,10 @@ typedef struct StarManager {
     float fade;
     float fade_step;
 } StarManager;
+
+void __thiscall update_sprite_facing_angle(
+    Sprite* sprite,
+    const struct TransformMatrix* matrix
+);
 
 #endif

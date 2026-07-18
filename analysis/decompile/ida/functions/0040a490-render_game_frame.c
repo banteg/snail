@@ -286,7 +286,7 @@ void __thiscall render_game_frame(GameRoot *game)
             v1 = v74;
           }
         }
-        v40 = g_sprite_active_heads[v17];
+        v40 = g_sprite_manager.active_heads[v17];
         v77 = g_sprite_depth_nodes;
         begin_sprite_depth_render_state();
         if ( v40 )
@@ -379,7 +379,7 @@ LABEL_64:
             {
               sprite = v53->sprite;
               if ( (sprite->flags & 2) != 0 )
-                update_sprite_facing_angle(sprite, (const TransformMatrix *)(*((_DWORD *)v18 + 373) + 128));
+                update_sprite_facing_angle(sprite, (const struct TransformMatrix *)(*((_DWORD *)v18 + 373) + 128));
               draw_sprite_quad((Vec3 *)&v53->position, v53->sprite);
               v53 = v53->next;
             }

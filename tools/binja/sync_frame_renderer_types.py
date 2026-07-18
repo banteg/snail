@@ -20,6 +20,16 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frame_renderer_types.h"
+OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
+SPRITE_HEADER_PATH = REPO_ROOT / "analysis/headers/star_manager_types.h"
+OBJECT_REQUIRED_STRUCTS = (
+    "Vec3",
+    "TransformMatrix",
+    "RenderableBod",
+)
+SPRITE_REQUIRED_STRUCTS = (
+    "Sprite",
+)
 REQUIRED_STRUCTS = (
     "SpriteDepthNode",
     "FrontendFade",
@@ -64,6 +74,7 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x44c3b0", "is_mouse_captured"),
     ("0x44c3c0", "capture_mouse_cursor"),
     ("0x44c400", "release_mouse_cursor"),
+    ("0x44e410", "update_sprite_facing_angle"),
 )
 
 DATA_VAR_UPDATES = (
@@ -514,10 +525,19 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    resolved_sprite_struct_name(target=args.target)
-    resolved_renderable_bod_struct_name(target=args.target)
-
     operations: list[dict[str, object]] = [
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=OBJECT_HEADER_PATH,
+            required_structs=OBJECT_REQUIRED_STRUCTS,
+        ),
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=SPRITE_HEADER_PATH,
+            required_structs=SPRITE_REQUIRED_STRUCTS,
+        ),
         types_declare_if_missing(
             REPO_ROOT,
             target=args.target,
@@ -525,6 +545,9 @@ def main() -> int:
             required_structs=REQUIRED_STRUCTS,
         )
     ]
+
+    resolved_sprite_struct_name(target=args.target)
+    resolved_renderable_bod_struct_name(target=args.target)
     operations.extend(
         apply_symbol_updates(
             REPO_ROOT,

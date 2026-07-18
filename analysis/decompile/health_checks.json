@@ -4484,7 +4484,7 @@
         "v29 = &g_post_sprite_bods;",
         "bod->bod.object->animation->progress = bod->render_animation_manager->progress;",
         "Sprite *v40;",
-        "v40 = g_sprite_active_heads[v17];",
+        "v40 = g_sprite_manager.active_heads[v17];",
         "flags = v40->flags;",
         "vector = v40->position;",
         "v40->depth_bias",
@@ -6260,6 +6260,50 @@
       "forbidden_substrings": [
         "void __thiscall update_sprite(int",
         "sprite->__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_sprite_facing_owner_and_matrix_abi",
+      "artifact": "analysis/decompile/binja/functions/0044e410-update_sprite_facing_angle.c",
+      "required_substrings": [
+        "struct Vec3 vector",
+        "sprite->position.x",
+        "sprite->previous_position.x",
+        "rotate_vector_by_matrix(&vector, matrix)",
+        "struct Vec3* eax_",
+        "sprite->facing_angle",
+        "sprite->facing_refresh_progress",
+        "sprite->facing_refresh_step"
+      ],
+      "forbidden_substrings": [
+        "int32_t* eax_",
+        "*(sprite +",
+        "sprite->__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_sprite_facing_owner_and_matrix_abi",
+      "artifact": "analysis/decompile/ida/functions/0044e410-update_sprite_facing_angle.c",
+      "required_substrings": [
+        "void __thiscall update_sprite_facing_angle(Sprite *sprite, const",
+        "TransformMatrix *matrix)",
+        "Vec3 *v5",
+        "Vec3 vector",
+        "sprite->position.x - sprite->previous_position.x",
+        "rotate_vector_by_matrix(&vector, matrix)",
+        "sprite->facing_refresh_progress",
+        "sprite->facing_refresh_step",
+        "sprite->facing_angle"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall update_sprite_facing_angle(int",
+        "float *matrix",
+        "*(_DWORD *)(sprite +",
+        "*(float *)(sprite +",
         "__asm",
         "_ET1"
       ]
