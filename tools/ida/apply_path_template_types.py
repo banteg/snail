@@ -38,6 +38,9 @@ TRUSTED_NAMES = [
     (0x42F5F0, "initialize_bod_base"),
     (0x42F650, "initialize_renderable_bod"),
     (0x433E80, "update_active_bod"),
+    (0x433FD0, "initialize_thanks_for_playing_screen"),
+    (0x4340C0, "uninit_thanks_screen"),
+    (0x4340F0, "update_thanks_for_playing_screen"),
     (0x440F80, "update_barrier_ai"),
     (0x440FA0, "initialize_damage_gauge"),
     (0x440FD0, "update_damage_gauge"),
@@ -145,6 +148,9 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x42F5F0,  # initialize_bod_base
     0x42F6E0,  # initialize_object_constructor_thunk
     0x433E80,  # update_active_bod
+    0x433FD0,  # initialize_thanks_for_playing_screen
+    0x4340C0,  # uninit_thanks_screen
+    0x4340F0,  # update_thanks_for_playing_screen
     0x434BE0,  # build_track_fringe_objects
     0x435180,  # merge_track_tile_runs
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
@@ -726,6 +732,18 @@ TRUSTED_DECLARATIONS = [
     (
         "update_row_model",
         "void __thiscall update_row_model(RowModel* row_model);",
+    ),
+    (
+        "initialize_thanks_for_playing_screen",
+        "void __thiscall initialize_thanks_for_playing_screen(ThanksScreen* thanks_screen);",
+    ),
+    (
+        "uninit_thanks_screen",
+        "void __thiscall uninit_thanks_screen(ThanksScreen* thanks_screen);",
+    ),
+    (
+        "update_thanks_for_playing_screen",
+        "void __thiscall update_thanks_for_playing_screen(ThanksScreen* thanks_screen);",
     ),
     (
         "initialize_noop_renderable_bod",

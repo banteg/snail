@@ -16,3 +16,10 @@ screen-local `ThanksBorderManager` pseudo-type is removed; exact output remains
 
 2026-07-14 widget-field ownership: the final message scale write now names the
 shared `FrontendWidget::font_scale` field rather than repeating its byte offset.
+
+2026-07-18 live-analysis lifecycle pass: the exact void
+`ThanksScreen*` receiver is now durable in both databases. The export resolves
+the Splash record through `SubgameRuntime::landscape_manager.scripts`, then
+owns the allocated `message_widget`, its `font_scale`, and all three initial
+state/timer stores directly. The focused Binary Ninja replay checks the full
+0x14-byte owner and all three ThanksScreen method ABIs.

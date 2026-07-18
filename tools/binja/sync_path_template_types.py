@@ -57,6 +57,9 @@ SYMBOL_UPDATES = (
     ("0x442540", "reset_vapour"),
     ("0x442560", "add_vapour_point"),
     ("0x4425f0", "update_vapour"),
+    ("0x433fd0", "initialize_thanks_for_playing_screen"),
+    ("0x4340c0", "uninit_thanks_screen"),
+    ("0x4340f0", "update_thanks_for_playing_screen"),
     ("0x4972b0", "g_noop_runtime_callback_table"),
     ("0x497314", "g_sub_speed_up_vtable"),
     ("0x497318", "g_jet_pack_vtable"),
@@ -1677,6 +1680,14 @@ ROW_MODEL_FIELD_UPDATES = (
     ("0x80", "velocity", "Vec3"),
 )
 
+THANKS_SCREEN_FIELD_UPDATES = (
+    ("0x00", "game", "SubgameRuntime*"),
+    ("0x04", "message_widget", "FrontendWidget*"),
+    ("0x08", "message_state", "int32_t"),
+    ("0x0c", "message_progress", "float"),
+    ("0x10", "message_progress_step", "float"),
+)
+
 SUB_ROW_FIELD_UPDATES = (
     ("0x00", "flags", "uint32_t"),
     ("0x04", "row_model", "RowModel"),
@@ -1923,7 +1934,22 @@ ROW_MODEL_PROTO_UPDATES = (
     ),
 )
 
-PROTO_UPDATES = GOLB_PROTO_UPDATES + ROW_MODEL_PROTO_UPDATES + (
+THANKS_SCREEN_PROTO_UPDATES = (
+    (
+        "initialize_thanks_for_playing_screen",
+        "void __thiscall initialize_thanks_for_playing_screen(ThanksScreen* thanks_screen)",
+    ),
+    (
+        "uninit_thanks_screen",
+        "void __thiscall uninit_thanks_screen(ThanksScreen* thanks_screen)",
+    ),
+    (
+        "update_thanks_for_playing_screen",
+        "void __thiscall update_thanks_for_playing_screen(ThanksScreen* thanks_screen)",
+    ),
+)
+
+PROTO_UPDATES = GOLB_PROTO_UPDATES + ROW_MODEL_PROTO_UPDATES + THANKS_SCREEN_PROTO_UPDATES + (
     (
         "set_bod_object",
         "int32_t __thiscall set_bod_object(BodBase* bod, Object* object)",
@@ -2816,6 +2842,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Replay only the RowModel layout and per-frame callback ABI.",
     )
+    focused_group.add_argument(
+        "--thanks-screen-only",
+        action="store_true",
+        help="Replay only the ThanksScreen layout and lifecycle method ABIs.",
+    )
     return parser.parse_args()
 
 
@@ -2826,6 +2857,48 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
+    if args.thanks_screen_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=("ThanksScreen",),
+            )
+        )
+        operations.extend(
+            apply_symbol_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=(
+                    ("0x433fd0", "initialize_thanks_for_playing_screen"),
+                    ("0x4340c0", "uninit_thanks_screen"),
+                    ("0x4340f0", "update_thanks_for_playing_screen"),
+                ),
+            )
+        )
+        operations.extend(
+            apply_struct_field_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_name="ThanksScreen",
+                updates=THANKS_SCREEN_FIELD_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=THANKS_SCREEN_PROTO_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if args.row_model_only:
         operations.append(
             types_declare_if_missing(

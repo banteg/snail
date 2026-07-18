@@ -2,12 +2,8 @@
 /* function: uninit_thanks_screen @ 0x4340c0 */
 /* selector: uninit_thanks_screen */
 
-int __thiscall sub_4340C0(_DWORD **this)
+void __thiscall uninit_thanks_screen(ThanksScreen *thanks_screen)
 {
-  int result; // eax
-
-  kill_border(*(this + 1));
-  *((_DWORD *)MEMORY[0x4DF904] + 110) = 14;
-  return result;
+  kill_border(&thanks_screen->message_widget->list_kind);
+  g_game_base->players[0].frontend_state = 14;
 }
-

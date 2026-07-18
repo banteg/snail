@@ -3,64 +3,63 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_thanks_for_playing_screen @ 0x4340f0 */
 
-004340fe        enum InputButtonFlag result = g_game_base->players[0].game_input->input.pressed_buttons
-00434104        if ((result:1.b & 0x40) != 0)
-0043410f        label_43410f:
-00434113        if (*(arg1 + 8) s>= 2)
-0043411b        result = g_game_base->fade.state
-00434120        if (result == 0)
-00434129        play_sound_effect(8)
-00434138        result = begin_frontend_fade_out(&g_game_base->fade, 0)
-00434106        result = read_pressed_text_input_key_code()
-0043410d        if (result.b == 0xb)
-0043410d        goto label_43410f
+00434104        enum InputButtonFlag eax
+00434104        if ((g_game_base->players[0].game_input->input.pressed_buttons:1.b & 0x40) == 0)
+00434106        eax = read_pressed_text_input_key_code()
+00434120        if (((g_game_base->players[0].game_input->input.pressed_buttons:1.b & 0x40) != 0 || eax.b == 0xb) && thanks_screen->message_state s>= 2 && g_game_base->fade.state == 0)
+00434129        play_sound_effect(&g_sound_effect_manager, 8)
+00434138        begin_frontend_fade_out(&g_game_base->fade.state, 0)
 00434147        if (g_game_base->fade.state == 4)
-0043414b        result = uninit_thanks_screen(arg1)
-00434153        long double x87_r7_1 = fconvert.t(*(arg1 + 0xc)) + fconvert.t(*(arg1 + 0x10))
-00434156        *(arg1 + 0xc) = fconvert.s(x87_r7_1)
+0043414b        uninit_thanks_screen(thanks_screen)
+00434153        long double x87_r7_1 = fconvert.t(thanks_screen->message_progress) + fconvert.t(thanks_screen->message_progress_step)
+00434156        thanks_screen->message_progress = fconvert.s(x87_r7_1)
 00434159        long double temp0 = fconvert.t(1f)
 00434159        x87_r7_1 - temp0
-0043415f        result.w = (x87_r7_1 < temp0 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp0) ? 1 : 0) << 0xa | (x87_r7_1 == temp0 ? 1 : 0) << 0xe
-00434164        if ((result:1.b & 0x41) == 0)
-0043416a        result = *(arg1 + 8)
-0043416d        *(arg1 + 0xc) = 0
-0043417d        switch (result)
+00434164        if ((((x87_r7_1 < temp0 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp0) ? 1 : 0) << 0xa | (x87_r7_1 == temp0 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
+00434164        return
+0043416a        int32_t message_state = thanks_screen->message_state
+0043416d        thanks_screen->message_progress = 0f
+0043417d        struct FrontendWidgetTextBuffer* var_c
+0043417d        char* var_8
+0043417d        switch (message_state)
 00434184        case 0
-00434184        struct FrontendWidget* widget = *(arg1 + 4)
-00434187        *(arg1 + 8) = 1
-0043418e        *(arg1 + 0x10) = 0x3d088889
-0043419b        return hide_border_init(widget)
-0043419f        case 0x1
-004341a4        char* edx_3 = *(arg1 + 4) + 0x2cc
-004341aa        *(arg1 + 8) = 2
-004341b1        *(arg1 + 0x10) = 0x3b888889
-00434226        rstrcpy_checked_ascii(edx_3, "Test your reflexes in Challenge Mode!")
-00434237        return unhide_border_init(*(arg1 + 4))
-004341bb        case 0x2
-004341bb        struct FrontendWidget* widget_1 = *(arg1 + 4)
-004341be        *(arg1 + 8) = 3
-004341c5        *(arg1 + 0x10) = 0x3d088889
-004341d2        return hide_border_init(widget_1)
-004341d6        case 0x3
-004341db        char* eax_4 = *(arg1 + 4) + 0x2cc
-004341e0        *(arg1 + 8) = 4
-004341e7        *(arg1 + 0x10) = 0x3b888889
-00434226        rstrcpy_checked_ascii(eax_4, "Improve your skills in Time Trial!")
-00434237        return unhide_border_init(*(arg1 + 4))
-004341f1        case 0x4
-004341f1        struct FrontendWidget* widget_2 = *(arg1 + 4)
-004341f4        *(arg1 + 8) = 5
-004341fb        *(arg1 + 0x10) = 0x3d088889
-00434208        return hide_border_init(widget_2)
-0043420c        case 0x5
-00434211        char* ecx_6 = *(arg1 + 4) + 0x2cc
-00434217        *(arg1 + 8) = 6
-0043421e        *(arg1 + 0x10) = 0x3b888889
-00434226        rstrcpy_checked_ascii(ecx_6, "Click to Continue")
-00434237        return unhide_border_init(*(arg1 + 4))
-00434238        case 0x6
-00434238        *(arg1 + 8) = 7
-0043423f        *(arg1 + 0x10) = 0
-0043423f        case 0x7
-0043423f        *(arg1 + 0x10) = 0
-00434247        return result
+00434184        struct FrontendWidget* message_widget = thanks_screen->message_widget
+00434187        thanks_screen->message_state = 1
+0043418e        thanks_screen->message_progress_step = 0.0333333351f
+00434195        hide_border_init(message_widget)
+0043419f        case 1
+0043419f        var_8 = "Test your reflexes in Challenge Mode!"
+004341aa        thanks_screen->message_state = 2
+004341b1        thanks_screen->message_progress_step = 0.00416666688f
+004341b8        var_c = &thanks_screen->message_widget->text_buffer
+00434226        label_434226:
+00434226        rstrcpy_checked_ascii(var_c, var_8)
+00434231        unhide_border_init(thanks_screen->message_widget)
+004341bb        case 2
+004341bb        struct FrontendWidget* message_widget_1 = thanks_screen->message_widget
+004341be        thanks_screen->message_state = 3
+004341c5        thanks_screen->message_progress_step = 0.0333333351f
+004341cc        hide_border_init(message_widget_1)
+004341d6        case 3
+004341d6        var_8 = "Improve your skills in Time Trial!"
+004341e0        thanks_screen->message_state = 4
+004341e7        thanks_screen->message_progress_step = 0.00416666688f
+004341ee        var_c = &thanks_screen->message_widget->text_buffer
+004341ef        goto label_434226
+004341f1        case 4
+004341f1        struct FrontendWidget* message_widget_2 = thanks_screen->message_widget
+004341f4        thanks_screen->message_state = 5
+004341fb        thanks_screen->message_progress_step = 0.0333333351f
+00434202        hide_border_init(message_widget_2)
+0043420c        case 5
+0043420c        var_8 = "Click to Continue"
+00434217        thanks_screen->message_state = 6
+0043421e        thanks_screen->message_progress_step = 0.00416666688f
+00434225        var_c = &thanks_screen->message_widget->text_buffer
+00434225        goto label_434226
+00434238        case 6
+00434238        thanks_screen->message_state = 7
+0043423f        thanks_screen->message_progress_step = 0f
+0043423f        case 7
+0043423f        thanks_screen->message_progress_step = 0f
+00434247        return

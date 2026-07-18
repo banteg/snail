@@ -1545,6 +1545,113 @@
       ]
     },
     {
+      "name": "bn_thanks_screen_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/00433fd0-initialize_thanks_for_playing_screen.c",
+      "required_substrings": [
+        "hide_star_field(&g_game_base->star_manager)",
+        "&game_base_1->subgame.landscape_manager.scripts[eax]",
+        "thanks_screen->message_widget = allocate_border",
+        "initialize_frontend_widget(thanks_screen->message_widget",
+        "thanks_screen->message_widget->font_scale",
+        "thanks_screen->message_progress = 0f",
+        "thanks_screen->message_progress_step",
+        "thanks_screen->message_state = 0"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "unknown_000000",
+        "*(thanks_screen +",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_thanks_screen_initializer_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00433fd0-initialize_thanks_for_playing_screen.c",
+      "required_substrings": [
+        "void __thiscall initialize_thanks_for_playing_screen(ThanksScreen *thanks_screen)",
+        "&g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name]",
+        "thanks_screen->message_widget = allocate_border",
+        "initialize_frontend_widget(thanks_screen->message_widget",
+        "thanks_screen->message_widget->font_scale",
+        "thanks_screen->message_progress = 0.0",
+        "thanks_screen->message_progress_step",
+        "thanks_screen->message_state = 0"
+      ],
+      "forbidden_substrings": [
+        "float *__thiscall initialize_thanks_for_playing_screen",
+        "int *this",
+        "*(this +",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_thanks_screen_teardown_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/004340c0-uninit_thanks_screen.c",
+      "required_substrings": [
+        "kill_border(thanks_screen->message_widget)",
+        "g_game_base->players[0].frontend_state = 0xe",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4df904",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_thanks_screen_teardown_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/004340c0-uninit_thanks_screen.c",
+      "required_substrings": [
+        "void __thiscall uninit_thanks_screen(ThanksScreen *thanks_screen)",
+        "kill_border(&thanks_screen->message_widget->list_kind)",
+        "g_game_base->players[0].frontend_state = 14"
+      ],
+      "forbidden_substrings": [
+        "sub_4340C0",
+        "_DWORD **this",
+        "MEMORY[0x4DF904]",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_thanks_screen_update_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/004340f0-update_thanks_for_playing_screen.c",
+      "required_substrings": [
+        "thanks_screen->message_state s>= 2",
+        "uninit_thanks_screen(thanks_screen)",
+        "thanks_screen->message_progress",
+        "thanks_screen->message_progress_step",
+        "&thanks_screen->message_widget->text_buffer",
+        "hide_border_init(message_widget)",
+        "unhide_border_init(thanks_screen->message_widget)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(thanks_screen +",
+        "return hide_border_init",
+        "return unhide_border_init"
+      ]
+    },
+    {
+      "name": "ida_thanks_screen_update_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/004340f0-update_thanks_for_playing_screen.c",
+      "required_substrings": [
+        "void __thiscall update_thanks_for_playing_screen(ThanksScreen *thanks_screen)",
+        "thanks_screen->message_state >= 2",
+        "uninit_thanks_screen(thanks_screen)",
+        "thanks_screen->message_progress + thanks_screen->message_progress_step",
+        "&v5->text_buffer",
+        "hide_border_init(message_widget)",
+        "unhide_border_init(thanks_screen->message_widget)"
+      ],
+      "forbidden_substrings": [
+        "int this",
+        "this +",
+        "_DWORD **)this",
+        "void __thiscall update_thanks_for_playing_screen(int"
+      ]
+    },
+    {
       "name": "ida_frontend_widget_tcolour_void_owner",
       "artifact": "analysis/decompile/ida/functions/00401d30-initialize_frontend_widget.c",
       "required_substrings": [
