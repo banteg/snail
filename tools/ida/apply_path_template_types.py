@@ -54,6 +54,7 @@ TRUSTED_NAMES = [
     (0x43A9C0, "initialize_subgoldy"),
     (0x43AF10, "show_subgoldy_lives"),
     (0x43AFD0, "play_movement_state_sound"),
+    (0x43B120, "update_subgoldy"),
     (0x43D230, "initialize_subgoldy_ghost"),
     (0x43D3D0, "set_subgoldy_ghost_z"),
     (0x440F80, "update_barrier_ai"),
@@ -115,6 +116,8 @@ TRUSTED_NAMES = [
     (0x49735C, "g_weapon_noop_vtable"),
     (0x50331C, "g_bod_base_init_count"),
     (0x503290, "g_loading_bar"),
+    (0x643190, "g_subgoldy_ghost_z"),
+    (0x643194, "g_replay_accum_z"),
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
@@ -133,6 +136,8 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x50331C, "g_bod_base_init_count", "int32_t g_bod_base_init_count;"),
     (0x4AC5C8, "g_default_tip_message", "TipData g_default_tip_message;"),
     (0x503290, "g_loading_bar", "LoadingBar g_loading_bar;"),
+    (0x643190, "g_subgoldy_ghost_z", "float g_subgoldy_ghost_z;"),
+    (0x643194, "g_replay_accum_z", "float g_replay_accum_z;"),
 ]
 
 # Header field-name changes need an explicit Hex-Rays refresh even when the
@@ -356,6 +361,15 @@ UPDATE_SUBGAME_RUNTIME_LVAR_SPECS = (
         "time_trial_route_cursor",
         "TimeTrialRouteRecordCursor *time_trial_route_cursor;",
         0x4398CB,
+        None,
+    ),
+)
+
+UPDATE_SUBGOLDY_REPLAY_LVAR_SPECS = (
+    (
+        "time_trial_route_cursor",
+        "TimeTrialRouteRecordCursor *time_trial_route_cursor;",
+        0x43CD08,
         None,
     ),
 )
@@ -2155,6 +2169,13 @@ def _sync_update_subgame_runtime_lvars() -> dict[str, object]:
     )
 
 
+def _sync_update_subgoldy_replay_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "update_subgoldy",
+        UPDATE_SUBGOLDY_REPLAY_LVAR_SPECS,
+    )
+
+
 def _sync_initialize_subgoldy_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "initialize_subgoldy",
@@ -2820,6 +2841,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "runtime_lvars": update_subgame_runtime_lvars,
             }
         )
+    update_subgoldy_replay_lvars = _sync_update_subgoldy_replay_lvars()
+    if update_subgoldy_replay_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "update_subgoldy",
+                "replay_lvars": update_subgoldy_replay_lvars,
+            }
+        )
     initialize_subgoldy_lvars = _sync_initialize_subgoldy_lvars()
     if initialize_subgoldy_lvars.get("status") == "failed":
         failed.append(
@@ -2964,6 +2993,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "place_parcels_runtime_lvars": place_parcels_runtime_lvars,
                 "challenge_parcels_runtime_lvars": challenge_parcels_runtime_lvars,
                 "update_subgame_runtime_lvars": update_subgame_runtime_lvars,
+                "update_subgoldy_replay_lvars": update_subgoldy_replay_lvars,
                 "initialize_subgoldy_lvars": initialize_subgoldy_lvars,
                 "remove_subgame_bods_cursor_lvars": remove_subgame_bods_cursor_lvars,
                 "spawn_track_ring_lvars": spawn_track_ring_lvars,

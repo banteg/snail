@@ -1,0 +1,186 @@
+#!/usr/bin/env python3
+
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+import sys
+
+from _target import DEFAULT_TARGET
+from _narrow_sync import (
+    apply_data_var_updates,
+    apply_proto_updates,
+    apply_symbol_updates,
+    apply_user_var_updates,
+    current_type_widths,
+    emit_summary,
+    types_declare_if_missing,
+)
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
+OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
+SPRITE_HEADER_PATH = REPO_ROOT / "analysis/headers/star_manager_types.h"
+RUNTIME_CONFIG_HEADER_PATH = REPO_ROOT / "analysis/headers/runtime_config_types.h"
+
+EXPECTED_OWNER_SIZES = {
+    "ReplayRunRecord": 0x6,
+    "SubSolution": 0x1FAC0,
+    "TimeTrialRouteRecordCursor": 0x963C10,
+    "SubHighScore": 0x947648,
+    "Player": 0x4364,
+    "SubgameRuntime": 0x1272838,
+}
+
+FUNCTION_SYMBOL_UPDATES = (
+    ("0x43b120", "update_subgoldy"),
+)
+
+DATA_SYMBOL_UPDATES = (
+    ("0x643190", "g_subgoldy_ghost_z"),
+    ("0x643194", "g_replay_accum_z"),
+)
+
+DATA_VAR_UPDATES = (
+    ("0x643190", "float"),
+    ("0x643194", "float"),
+)
+
+PROTO_UPDATES = (
+    (
+        "update_subgoldy",
+        "void __thiscall update_subgoldy(Player* player)",
+    ),
+)
+
+# update_subgoldy preserves the native
+# `game + route_index * sizeof(SubSolution)` expression in EAX. This exact
+# lifetime is a borrowed SubgameRuntime-relative view of the record owned by
+# SubHighScore::time_trial_route_records; it does not introduce another owner.
+USER_VAR_UPDATES = (
+    (
+        "update_subgoldy",
+        "RegisterVariableSourceType",
+        7143,
+        66,
+        "time_trial_route_cursor",
+        "TimeTrialRouteRecordCursor*",
+    ),
+)
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Apply focused subgoldy replay and ghost-record ownership types."
+    )
+    parser.add_argument(
+        "--target",
+        default=DEFAULT_TARGET,
+        help="Binary Ninja target selector.",
+    )
+    parser.add_argument(
+        "--header",
+        type=Path,
+        default=DEFAULT_HEADER_PATH,
+        help="Canonical subgame owner type header.",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    header_path = args.header.resolve()
+    if not header_path.is_file():
+        raise FileNotFoundError(f"Subgame owner type header not found: {header_path}")
+
+    operations: list[dict[str, object]] = [
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=OBJECT_HEADER_PATH,
+            required_structs=("Object",),
+        ),
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=SPRITE_HEADER_PATH,
+            required_structs=("Sprite",),
+        ),
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=RUNTIME_CONFIG_HEADER_PATH,
+            required_structs=("RuntimeConfig",),
+        ),
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            required_structs=EXPECTED_OWNER_SIZES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=FUNCTION_SYMBOL_UPDATES,
+            kind="function",
+        ),
+        *apply_proto_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=PROTO_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=DATA_SYMBOL_UPDATES,
+            kind="data",
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=DATA_VAR_UPDATES,
+        ),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=USER_VAR_UPDATES,
+        ),
+    ]
+
+    observed_sizes = current_type_widths(
+        REPO_ROOT,
+        target=args.target,
+        type_names=EXPECTED_OWNER_SIZES,
+    )
+    mismatches = []
+    for name, expected_size in EXPECTED_OWNER_SIZES.items():
+        observed_size = observed_sizes.get(name)
+        status = "verified" if observed_size == expected_size else "verification_failed"
+        operations.append(
+            {
+                "op": "owner_size_verify",
+                "name": name,
+                "expected_size": expected_size,
+                "observed_size": observed_size,
+                "status": status,
+            }
+        )
+        if status == "verification_failed":
+            mismatches.append(
+                f"{name}: expected {expected_size:#x}, observed {observed_size!r}"
+            )
+
+    if mismatches:
+        raise RuntimeError("Subgoldy replay owner size mismatch: " + "; ".join(mismatches))
+
+    return emit_summary(
+        repo_root=REPO_ROOT,
+        target=args.target,
+        header_path=header_path,
+        operations=operations,
+    )
+
+
+if __name__ == "__main__":
+    sys.exit(main())

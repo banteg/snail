@@ -90,8 +90,8 @@ void __thiscall update_subgoldy(Player *player)
   double v85; // st7
   double v86; // st7
   SubgameRuntime *v87; // ecx
-  char *v88; // eax
-  int32_t v89; // ecx
+  TimeTrialRouteRecordCursor *time_trial_route_cursor; // eax
+  int32_t replay_sample_count; // ecx
   int32_t startup_track_index; // edx
   int v91; // ecx
   double v92; // st7
@@ -857,17 +857,23 @@ LABEL_287:
         v87 = player->game;
         if ( v87->level_mode == 4 )
         {
-          v88 = (char *)v87 + 129728 * v87->level_mode_arg;
-          if ( *((_DWORD *)v88 + 2429012) == 1 && !v87->selected_level_record_active )
+          time_trial_route_cursor = (TimeTrialRouteRecordCursor *)((char *)v87 + 129728 * v87->level_mode_arg);
+          if ( time_trial_route_cursor->record.active == 1 && !v87->selected_level_record_active )
           {
-            v89 = v87->replay_update_cursor;
-            if ( v89 >= *((_DWORD *)v88 + 2429039) )
-              v89 = *((_DWORD *)v88 + 2429039);
+            replay_sample_count = v87->replay_update_cursor;
+            if ( replay_sample_count >= time_trial_route_cursor->record.replay_sample_count )
+              replay_sample_count = time_trial_route_cursor->record.replay_sample_count;
             startup_track_index = player->startup_track_index;
-            if ( startup_track_index && (v91 = *((_DWORD *)v88 + 2429021) - startup_track_index + v89) != 0 )
-              v92 = convert_math_type16_to_32(*(_WORD *)&v88[6 * v91 + 9716162], 32.0) + g_subgoldy_ghost_z;
+            if ( startup_track_index
+              && (v91 = time_trial_route_cursor->record.source_tail - startup_track_index + replay_sample_count) != 0 )
+            {
+              v92 = convert_math_type16_to_32(time_trial_route_cursor->record.run_records[v91].delta_z, 32.0)
+                  + g_subgoldy_ghost_z;
+            }
             else
-              v92 = convert_math_type16_to_32(*((_WORD *)v88 + 4858081), 32.0);
+            {
+              v92 = convert_math_type16_to_32(time_trial_route_cursor->record.run_records[0].delta_z, 32.0);
+            }
             g_subgoldy_ghost_z = v92;
             if ( player->game->selected_level_record_active )
               g_subgoldy_ghost_z = player->body.transform.position.z;

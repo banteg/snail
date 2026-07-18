@@ -525,6 +525,47 @@
       ]
     },
     {
+      "name": "bn_update_subgoldy_time_trial_replay_owner",
+      "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "struct TimeTrialRouteRecordCursor* time_trial_route_cursor",
+        "time_trial_route_cursor->record.active",
+        "time_trial_route_cursor->record.replay_sample_count",
+        "time_trial_route_cursor->record.source_tail",
+        "time_trial_route_cursor->record.run_records[replay_update_cursor].delta_z",
+        "time_trial_route_cursor->record.run_records[0].delta_z",
+        "g_subgoldy_ghost_z",
+        "g_replay_accum_z"
+      ],
+      "forbidden_substrings": [
+        "void* eax_139",
+        "*(eax_139 + 0x944150)",
+        "eax_139 + replay_update_cursor * 6 + 0x9441c2",
+        "data_643194"
+      ]
+    },
+    {
+      "name": "ida_update_subgoldy_time_trial_replay_owner",
+      "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "TimeTrialRouteRecordCursor *time_trial_route_cursor",
+        "time_trial_route_cursor->record.active",
+        "time_trial_route_cursor->record.replay_sample_count",
+        "time_trial_route_cursor->record.source_tail",
+        "time_trial_route_cursor->record.run_records[v91].delta_z",
+        "time_trial_route_cursor->record.run_records[0].delta_z",
+        "g_subgoldy_ghost_z",
+        "g_replay_accum_z"
+      ],
+      "forbidden_substrings": [
+        "char *v88",
+        "*((_DWORD *)v88 + 2429012)",
+        "*((_DWORD *)v88 + 2429039)",
+        "v88[6 * v91 + 9716162]",
+        "*((_WORD *)v88 + 4858081)"
+      ]
+    },
+    {
       "name": "bn_remove_sub_loc_root_list_owner",
       "artifact": "analysis/decompile/binja/functions/00439bc0-remove_sub_loc.c",
       "required_substrings": [

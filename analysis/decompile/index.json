@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 8,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 8,
-  "ida_exported": 8,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,39 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "health_collect_particles",
-      "address": "0x43a010"
-    },
-    {
-      "name": "update_movement_flag_emitters",
-      "address": "0x43a300"
-    },
-    {
-      "name": "end_jetpack_hover",
-      "address": "0x43a370"
-    },
-    {
-      "name": "initialize_subgoldy",
-      "address": "0x43a9c0"
-    },
-    {
-      "name": "show_subgoldy_lives",
-      "address": "0x43af10"
-    },
-    {
-      "name": "play_movement_state_sound",
-      "address": "0x43afd0"
-    },
-    {
-      "name": "initialize_subgoldy_ghost",
-      "address": "0x43d230"
-    },
-    {
-      "name": "set_subgoldy_ghost_z",
-      "address": "0x43d3d0"
+      "name": "update_subgoldy",
+      "address": "0x43b120"
     }
   ],
-  "health_check_count": 739,
+  "health_check_count": 741,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

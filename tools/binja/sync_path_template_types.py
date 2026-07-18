@@ -107,6 +107,7 @@ SYMBOL_UPDATES = (
     ("0x43a9c0", "initialize_subgoldy"),
     ("0x43af10", "show_subgoldy_lives"),
     ("0x43afd0", "play_movement_state_sound"),
+    ("0x43b120", "update_subgoldy"),
     ("0x43d230", "initialize_subgoldy_ghost"),
     ("0x43d3d0", "set_subgoldy_ghost_z"),
     ("0x442e40", "release_snail_weapons"),
@@ -118,6 +119,8 @@ SYMBOL_UPDATES = (
     ("0x497354", "g_player_presentation_noop_vtable"),
     ("0x497358", "g_invincible_shell_update_vtable"),
     ("0x49735c", "g_weapon_noop_vtable"),
+    ("0x643190", "g_subgoldy_ghost_z"),
+    ("0x643194", "g_replay_accum_z"),
 )
 
 SNAIL_FIELD_UPDATES = (
@@ -541,6 +544,21 @@ UPDATE_SUBGOLDY_USER_VAR_UPDATES = (
         68,
         "game_bytes_for_duration",
         "uint8_t*",
+    ),
+)
+
+# The time-trial ghost path preserves the native
+# `game + route_index * sizeof(SubSolution)` expression in EAX. This exact
+# lifetime borrows one SubHighScore::time_trial_route_records element through
+# a SubgameRuntime-relative analytical view; it does not own another record.
+UPDATE_SUBGOLDY_REPLAY_USER_VAR_UPDATES = (
+    (
+        "update_subgoldy",
+        "RegisterVariableSourceType",
+        7143,
+        66,
+        "time_trial_route_cursor",
+        "TimeTrialRouteRecordCursor*",
     ),
 )
 
@@ -1901,6 +1919,8 @@ DATA_VAR_UPDATES = (
     *BOD_CORE_DATA_VAR_UPDATES,
     *TRACK_RENDER_CACHE_DATA_VAR_UPDATES,
     ("0x4ac5c8", "TipData"),
+    ("0x643190", "float"),
+    ("0x643194", "float"),
 )
 
 
@@ -3317,6 +3337,7 @@ def main() -> int:
             target=args.target,
             updates=(
                 *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
+                *UPDATE_SUBGOLDY_REPLAY_USER_VAR_UPDATES,
                 *INITIALIZE_SUBGOLDY_USER_VAR_UPDATES,
                 *MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,

@@ -614,3 +614,31 @@ durable BN and IDA declarations now therefore match the authored
 an inferred integer return. This is a decompiler ABI correction only; the
 matching source remains unchanged at 74.30%, 2,072/2,087 instructions, prefix
 12/2,087, with 290 clean operands and the same bounded jump-table mismatch.
+
+## 2026-07-18 replay and time-trial record ownership replay
+
+The two persistent replay-Z lanes are now durable typed globals in both
+analysis databases: `g_replay_accum_z` at `0x643194` is the recording codec's
+decoded-Z accumulator, while `g_subgoldy_ghost_z` at `0x643190` accumulates the
+time-trial ghost record. Both are proved `float` by their x87 load/store use
+and by the existing matching source; Binary Ninja had retained them as
+`int32_t`, and the first still lacked a durable symbol.
+
+The native time-trial expression deliberately remains
+`game + level_mode_arg * sizeof(SubSolution)`. Its exact EAX/Hex-Rays lifetime
+is now a borrowed `TimeTrialRouteRecordCursor *`, rooted at
+`SubgameRuntime + offsetof(SubgameRuntime, sub_high_score) +
+offsetof(SubHighScore, time_trial_route_records)`. This recovers
+`SubSolution::{active,source_tail,replay_sample_count,run_records}` in both
+tracked decompilers without flattening the `SubHighScore` owner or claiming a
+second record allocation. The analytical cursor size is `0x963c10`, its
+terminal `record` starts at `0x944150`, and the owned record remains exactly
+`0x1fac0` bytes.
+
+The Binary Ninja identity is `RegisterVariableSourceType` index 7143 in EAX;
+the IDA identity is the sole non-stack local defined at `0x43cd08`. Focused
+replays assert those exact identities and all owner sizes, and the broad path
+replays carry the same facts. This is analysis-only ownership recovery: the
+matching source and masks are unchanged, so the honest focused result remains
+74.43%, 2,070/2,087 normalized instructions, prefix 12/2,087, with 290 clean
+audited operands and the same one bounded jump-table mismatch.

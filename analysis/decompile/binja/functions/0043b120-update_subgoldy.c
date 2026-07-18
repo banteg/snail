@@ -114,13 +114,13 @@
 0043b5a5        int32_t var_58_4 = ecx_25
 0043b5a9        int16_t eax_25
 0043b5a9        int80_t st0_7
-0043b5a9        st0_7, eax_25 = convert_math_type32_to_16(fconvert.s(fconvert.t(player->body.transform.position.z) - fconvert.t(data_643194)), 32f)
+0043b5a9        st0_7, eax_25 = convert_math_type32_to_16(fconvert.s(fconvert.t(player->body.transform.position.z) - fconvert.t(g_replay_accum_z)), 32f)
 0043b5c2        *(game_18 + (game_18->replay_update_cursor + 0x2a31eb) * 6) = eax_25
 0043b5c6        game_10 = player->game
 0043b5d2        int32_t eax_27 = game_10->replay_update_cursor + 0x2a31eb
 0043b5da        eax_27.w = *(game_10 + eax_27 * 6)
 0043b5df        st0_1 = convert_math_type16_to_32(eax_27.w, 32f)
-0043b5e4        x87_r4_1 = st0_1 + fconvert.t(data_643194)
+0043b5e4        x87_r4_1 = st0_1 + fconvert.t(g_replay_accum_z)
 0043b55c        int16_t eax_22
 0043b55c        int80_t st0_6
 0043b55c        st0_6, eax_22 = convert_math_type32_to_16(player->body.transform.position.z, 32f)
@@ -130,7 +130,7 @@
 0043b58d        eax_24.w = *(game_10 + eax_24 * 6)
 0043b592        st0_1 = convert_math_type16_to_32(eax_24.w, 32f)
 0043b592        x87_r4_1 = st0_1
-0043b5ed        data_643194 = fconvert.s(x87_r4_1)
+0043b5ed        g_replay_accum_z = fconvert.s(x87_r4_1)
 0043b5ed        top_1 = 0xfffd
 0043b5f3        struct SubgameRuntime* game_3 = player->game
 0043b601        if (game_3->track_state_latch != 0)
@@ -1352,33 +1352,33 @@
 0043cccb        uninit_nuke(&player->nuke)
 0043cce1        struct SubgameRuntime* game_16 = player->game
 0043cceb        if (game_16->level_mode == 4)
-0043cd07        void* eax_139 = game_16->level_mode_arg * 0x1fac0 + game_16
-0043cd1e        if (*(eax_139 + 0x944150) == 1 && game_16->selected_level_record_active == 0)
+0043cd07        struct TimeTrialRouteRecordCursor* time_trial_route_cursor = game_16->level_mode_arg * 0x1fac0 + game_16
+0043cd1e        if (time_trial_route_cursor->record.active == 1 && game_16->selected_level_record_active == 0)
 0043cd24        int32_t replay_update_cursor = game_16->replay_update_cursor
-0043cd2a        int32_t replay_update_cursor_1 = *(eax_139 + 0x9441bc)
-0043cd32        if (replay_update_cursor s>= replay_update_cursor_1)
-0043cd34        replay_update_cursor = replay_update_cursor_1
+0043cd2a        int32_t replay_sample_count = time_trial_route_cursor->record.replay_sample_count
+0043cd32        if (replay_update_cursor s>= replay_sample_count)
+0043cd34        replay_update_cursor = replay_sample_count
 0043cd36        int32_t startup_track_index = player->startup_track_index
 0043cd3e        int32_t edi_8
-0043cd3e        int32_t replay_update_cursor_2
+0043cd3e        int32_t replay_update_cursor_1
 0043cd3e        if (startup_track_index != 0)
-0043cd46        edi_8 = *(eax_139 + 0x944174) - startup_track_index
-0043cd48        replay_update_cursor_2 = replay_update_cursor
+0043cd46        edi_8 = time_trial_route_cursor->record.source_tail - startup_track_index
+0043cd48        replay_update_cursor_1 = replay_update_cursor
 0043cd48        replay_update_cursor += edi_8
 0043cd4a        int16_t top_213
-0043cd4a        if (startup_track_index != 0 && replay_update_cursor_2 != neg.d(edi_8))
-0043cd6b        eax_139.w = *(eax_139 + replay_update_cursor * 6 + 0x9441c2)
+0043cd4a        if (startup_track_index != 0 && replay_update_cursor_1 != neg.d(edi_8))
+0043cd6b        time_trial_route_cursor.w = time_trial_route_cursor->record.run_records[replay_update_cursor].delta_z
 0043cd74        top_213 = top_212 - 1
 0043cd74        unimplemented  {call 0x44c8b0}
 0043cd79        unimplemented  {fadd dword [0x643190]}
-0043cd4c        replay_update_cursor.w = *(eax_139 + 0x9441c2)
+0043cd4c        replay_update_cursor.w = time_trial_route_cursor->record.run_records[0].delta_z
 0043cd59        top_213 = top_212 - 1
 0043cd59        unimplemented  {call 0x44c8b0}
 0043cd82        g_subgoldy_ghost_z = fconvert.s(unimplemented  {fstp dword [0x643190], st0})
 0043cd82        unimplemented  {fstp dword [0x643190], st0}
-0043cd8e        int16_t eax_141
-0043cd8e        eax_141.b = player->game->selected_level_record_active
-0043cd96        if (eax_141.b != 0)
+0043cd8e        int16_t eax_140
+0043cd8e        eax_140.b = player->game->selected_level_record_active
+0043cd96        if (eax_140.b != 0)
 0043cd9b        g_subgoldy_ghost_z = player->body.transform.position.z
 0043cda1        unimplemented  {fld st0, dword [ebp+0x70]}
 0043cda4        unimplemented  {fadd dword [0x497448]}
@@ -1448,9 +1448,9 @@
 0043ce73        unimplemented  {fstp st0, st0}
 0043ce73        unimplemented  {fstp st0, st0}
 0043ce75        player->attachment_exit_pending = 0
-0043ce7c        int16_t eax_147
-0043ce7c        eax_147.b = player->attachment_exit_pending
-0043ce84        if (eax_147.b != 0)
+0043ce7c        int16_t eax_146
+0043ce7c        eax_146.b = player->attachment_exit_pending
+0043ce84        if (eax_146.b != 0)
 0043ce8a        unimplemented  {fld st0, dword [ebp+0x438]}
 0043ce90        unimplemented  {fadd dword [ebp+0x434]}
 0043ce96        player->attachment_exit_progress = fconvert.s(unimplemented  {fst dword [ebp+0x434], st0})
@@ -1460,15 +1460,15 @@
 0043ce9c        bool c2_65 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497200]}, temp61_1)
 0043ce9c        bool c3_65 = unimplemented  {fcomp st0, dword [0x497200]} f== temp61_1
 0043ce9c        unimplemented  {fcomp st0, dword [0x497200]}
-0043cea2        eax_147 = (c0_65 ? 1 : 0) << 8 | (c2_65 ? 1 : 0) << 0xa | (c3_65 ? 1 : 0) << 0xe | (top_224 & 7) << 0xb
-0043cea7        if ((eax_147:1.b & 0x41) == 0)
-0043cea9        eax_147.b = player->attachment_exit_gate_a
-0043ceb1        if (eax_147.b == 0)
+0043cea2        eax_146 = (c0_65 ? 1 : 0) << 8 | (c2_65 ? 1 : 0) << 0xa | (c3_65 ? 1 : 0) << 0xe | (top_224 & 7) << 0xb
+0043cea7        if ((eax_146:1.b & 0x41) == 0)
+0043cea9        eax_146.b = player->attachment_exit_gate_a
+0043ceb1        if (eax_146.b == 0)
 0043cebd        play_voice_manager(&g_voice_manager, 3, 0, 0xffffffff)
-0043cec2        int16_t eax_149
-0043cec2        eax_149.b = player->control_override_active
+0043cec2        int16_t eax_148
+0043cec2        eax_148.b = player->control_override_active
 0043cec8        player->attachment_exit_gate_a = 1
-0043ced1        if (eax_149.b == 0)
+0043ced1        if (eax_148.b == 0)
 0043ced3        unimplemented  {fld st0, dword [ebp+0x6c]}
 0043ced6        long double temp68_1 = fconvert.t(-6f)
 0043ced6        unimplemented  {fcomp st0, dword [0x4975a8]} f- temp68_1
@@ -1486,10 +1486,10 @@
 0043cef7        bool c3_67 = unimplemented  {fcomp st0, dword [0x4975bc]} f== temp65_1
 0043cef7        unimplemented  {fcomp st0, dword [0x4975bc]}
 0043cef7        top_224 = top_224
-0043cefd        int16_t eax_150 = (c0_67 ? 1 : 0) << 8 | (c2_67 ? 1 : 0) << 0xa | (c3_67 ? 1 : 0) << 0xe | (top_224 & 7) << 0xb
-0043cf02        if ((eax_150:1.b & 1) != 0)
-0043cf04        eax_150.b = player->attachment_exit_gate_b
-0043cf0c        if (eax_150.b == 0)
+0043cefd        int16_t eax_149 = (c0_67 ? 1 : 0) << 8 | (c2_67 ? 1 : 0) << 0xa | (c3_67 ? 1 : 0) << 0xe | (top_224 & 7) << 0xb
+0043cf02        if ((eax_149:1.b & 1) != 0)
+0043cf04        eax_149.b = player->attachment_exit_gate_b
+0043cf0c        if (eax_149.b == 0)
 0043cf19        play_voice_manager(&g_voice_manager, 1, 2, 0xffffffff)
 0043cf1e        player->attachment_exit_gate_b = 1
 0043cf25        player->attachment_exit_gate_a = 1
@@ -1539,11 +1539,11 @@
 0043cfa3        bool c3_71 = unimplemented  {fcomp st0, dword [ebp+0x418]} f== temp67_1
 0043cfa3        unimplemented  {fcomp st0, dword [ebp+0x418]}
 0043cfa3        top_241 = top_224
-0043cfa9        int16_t eax_152 = (c0_71 ? 1 : 0) << 8 | (c2_71 ? 1 : 0) << 0xa | (c3_71 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb
-0043cfae        if ((eax_152:1.b & 1) == 0)
+0043cfa9        int16_t eax_151 = (c0_71 ? 1 : 0) << 8 | (c2_71 ? 1 : 0) << 0xa | (c3_71 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb
+0043cfae        if ((eax_151:1.b & 1) == 0)
 0043cffc        player->slow_commentary_timer = 0f
-0043cfb0        eax_152.b = player->attachment_exit_pending
-0043cfc1        if (eax_152.b != 0 || player->click_start.state == CLICK_START_STATE_WAITING_FOR_START)
+0043cfb0        eax_151.b = player->attachment_exit_pending
+0043cfc1        if (eax_151.b != 0 || player->click_start.state == CLICK_START_STATE_WAITING_FOR_START)
 0043cffc        player->slow_commentary_timer = 0f
 0043cfc3        unimplemented  {fld st0, dword [ebp+0x4360]}
 0043cfc9        unimplemented  {fadd dword [ebp+0x435c]}
@@ -1579,10 +1579,10 @@
 0043d0c5        bool c2_73 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497234]}, temp70_1)
 0043d0c5        bool c3_73 = unimplemented  {fcomp st0, dword [0x497234]} f== temp70_1
 0043d0c5        unimplemented  {fcomp st0, dword [0x497234]}
-0043d0cb        int16_t eax_155 = (c0_73 ? 1 : 0) << 8 | (c2_73 ? 1 : 0) << 0xa | (c3_73 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb
-0043d0d0        if ((eax_155:1.b & 0x41) != 0)
-0043d100        eax_155.b = game_17->track_state_latch
-0043d108        if (eax_155.b != 0)
+0043d0cb        int16_t eax_154 = (c0_73 ? 1 : 0) << 8 | (c2_73 ? 1 : 0) << 0xa | (c3_73 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb
+0043d0d0        if ((eax_154:1.b & 0x41) != 0)
+0043d100        eax_154.b = game_17->track_state_latch
+0043d108        if (eax_154.b != 0)
 0043d10e        uint8_t selected_level_record_active = game_17->selected_level_record_active
 0043d116        if (selected_level_record_active == 0)
 0043d138        label_43d138:
