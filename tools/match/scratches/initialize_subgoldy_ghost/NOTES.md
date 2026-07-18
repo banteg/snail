@@ -18,3 +18,12 @@ The mask is now derived from `SPRITE_FLAG_RENDER_ENABLED`; exact
 `set_subgoldy_ghost_z` sets the same named policy when the pair receives its
 live Z. Together the initializer and setter close the ghost visibility
 lifecycle without retaining raw `0x40` spellings.
+
+## 2026-07-18 Sprite ownership replay
+
+The Player lifecycle lane now loads the exact 0xb4-byte `Sprite` dependency
+before replaying the authored void Player member. Both artifacts preserve the
+two Player-owned sprite pointers and their color, progress, gravity, scale,
+position, and visibility lifecycles; raw Player offsets and incidental return
+inference are guarded out. Matching remains exact at 108/108 with all six
+operands clean.

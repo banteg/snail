@@ -95,12 +95,20 @@ SYMBOL_UPDATES = (
     ("0x44d920", "interpolate_matrix_rotation"),
     ("0x44dbd0", "set_color_rgb"),
     ("0x4086d0", "initialize_player_presentation_controller"),
+    ("0x43a010", "health_collect_particles"),
+    ("0x43a300", "update_movement_flag_emitters"),
+    ("0x43a370", "end_jetpack_hover"),
     ("0x43a390", "update_jetpack_gauge"),
     ("0x43a580", "uninit_jet_particles"),
     ("0x43a5b0", "initialize_jet_particles"),
     ("0x43a690", "update_jet_particles"),
     ("0x43a930", "initialize_jetpack_gauge"),
     ("0x43a980", "arm_jetpack_gauge"),
+    ("0x43a9c0", "initialize_subgoldy"),
+    ("0x43af10", "show_subgoldy_lives"),
+    ("0x43afd0", "play_movement_state_sound"),
+    ("0x43d230", "initialize_subgoldy_ghost"),
+    ("0x43d3d0", "set_subgoldy_ghost_z"),
     ("0x442e40", "release_snail_weapons"),
     ("0x444600", "dispatch_cutscene_animation"),
     ("0x4446e0", "set_weapon_animation"),
@@ -533,6 +541,34 @@ UPDATE_SUBGOLDY_USER_VAR_UPDATES = (
         68,
         "game_bytes_for_duration",
         "uint8_t*",
+    ),
+)
+
+# initialize_subgoldy walks the 12 Player-owned GolbShot records from each
+# shot's flight_transform field. The exact EDI MLIL identity is a borrowed
+# field-stride cursor, not a replacement owner for Player.golb_shots.
+INITIALIZE_SUBGOLDY_USER_VAR_UPDATES = (
+    (
+        "initialize_subgoldy",
+        "RegisterVariableSourceType",
+        1171,
+        73,
+        "golb_shot_flight_cursor",
+        "GolbShotFlightStrideCursor*",
+    ),
+)
+
+# The emitter search borrows one GolbShot at a time from Player.golb_shots.
+# Fixing the exact EDI lifetime prevents HLIL from widening it to a pointer to
+# the entire 12-element array and inventing a compensating owner subtraction.
+MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES = (
+    (
+        "update_movement_flag_emitters",
+        "RegisterVariableSourceType",
+        49,
+        73,
+        "golb_shot_cursor",
+        "GolbShot*",
     ),
 )
 
@@ -2370,6 +2406,10 @@ PROTO_UPDATES = (
         "void __thiscall initialize_subgoldy(Player* player, int32_t player_slot)",
     ),
     (
+        "health_collect_particles",
+        "void __thiscall health_collect_particles(Player* player, SubHealth* pickup)",
+    ),
+    (
         "show_subgoldy_lives",
         "void __thiscall show_subgoldy_lives(Player* player)",
     ),
@@ -3277,6 +3317,8 @@ def main() -> int:
             target=args.target,
             updates=(
                 *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
+                *INITIALIZE_SUBGOLDY_USER_VAR_UPDATES,
+                *MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
                 *CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES,

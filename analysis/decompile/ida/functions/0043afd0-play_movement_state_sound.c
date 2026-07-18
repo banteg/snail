@@ -7,7 +7,7 @@ void __thiscall play_movement_state_sound(Player *player)
 {
   uint32_t movement_flags; // eax
   __int64 v3; // rax
-  int v4; // edi
+  int32_t v4; // edi
   __int64 v5; // rax
   __int64 v6; // rax
   double v7; // st7
@@ -55,11 +55,11 @@ void __thiscall play_movement_state_sound(Player *player)
       {
         v8 = 0.0;
       }
-      play_sound_effect_scaled(v4, v8);
+      play_sound_effect_scaled(&g_sound_effect_manager, v4, v8);
     }
     else
     {
-      play_sound_effect(v4);
+      play_sound_effect(&g_sound_effect_manager, v4);
     }
   }
 }

@@ -2,68 +2,60 @@
 /* function: health_collect_particles @ 0x43a010 */
 /* selector: health_collect_particles */
 
-char __thiscall sub_43A010(int this, int a2)
+// Exact `Player` collection burst for one `SubHealth`, emitting eight particles from the pickup sprite. Android and iOS retain the authored member as `cRSubGoldy::HealthCollect(cRSubHealth*)`.
+void __thiscall health_collect_particles(Player *player, SubHealth *pickup)
 {
-  char result; // al
-  char *v4; // esi
-  _DWORD *v5; // eax
-  float *v6; // edi
-  int v7; // eax
-  _DWORD *v8; // edx
-  float v9; // ebp
-  bool v10; // cc
-  int v11; // [esp+4h] [ebp-34h]
-  float v12; // [esp+8h] [ebp-30h]
-  float v13; // [esp+8h] [ebp-30h]
-  float v14; // [esp+Ch] [ebp-2Ch]
-  float v15; // [esp+10h] [ebp-28h]
-  float v16; // [esp+20h] [ebp-18h]
-  float v17; // [esp+24h] [ebp-14h]
-  _DWORD v18[4]; // [esp+28h] [ebp-10h] BYREF
+  Sprite *sprite; // esi
+  tColour *v4; // eax
+  float *p_x; // edi
+  float a; // eax
+  float v7; // ebp
+  bool v8; // cc
+  int v9; // [esp+4h] [ebp-34h]
+  float v10; // [esp+8h] [ebp-30h]
+  SpriteFlag v11; // [esp+8h] [ebp-30h]
+  int32_t v12; // [esp+Ch] [ebp-2Ch]
+  float v13; // [esp+10h] [ebp-28h]
+  float v14; // [esp+20h] [ebp-18h]
+  float v15; // [esp+24h] [ebp-14h]
+  Color4f color; // [esp+28h] [ebp-10h] BYREF
 
-  result = byte_4DF934;
-  if ( (byte_4DF934 & 0x10) != 0 )
+  if ( (g_runtime_config.render_flags & 0x10) != 0 )
   {
-    v11 = 0;
+    v9 = 0;
     do
     {
-      v4 = (char *)allocate_sprite(g_sprite_manager, *(_DWORD *)(this + 896), 128, -1, -1);
-      *((_DWORD *)v4 + 1) |= 0x800u;
-      *((_DWORD *)v4 + 26) = 0;
-      *((_DWORD *)v4 + 27) = 1026206379;
-      *((_DWORD *)v4 + 30) = -1185827049;
-      v5 = set_color_rgba(v18, 1065353216, 1061158912, 1061158912, 1065353216);
-      *((_DWORD *)v4 + 11) = *v5;
-      v6 = (float *)(v4 + 72);
-      *((_DWORD *)v4 + 12) = v5[1];
-      *((_DWORD *)v4 + 13) = v5[2];
-      v7 = v5[3];
-      *((_DWORD *)v4 + 24) = 1036831949;
-      *((_DWORD *)v4 + 25) = 1056964608;
-      *((_DWORD *)v4 + 14) = v7;
-      v8 = (_DWORD *)(*(_DWORD *)(a2 + 100) + 72);
-      v12 = (double)v11 * 0.78539819;
-      v9 = v12;
-      *((_DWORD *)v4 + 18) = *v8;
-      *((_DWORD *)v4 + 19) = v8[1];
-      *((_DWORD *)v4 + 20) = v8[2];
-      v14 = *(float *)(this + 1048) * 0.40000001;
-      v13 = cosine(v12) * 0.015;
-      v4 += 84;
-      v15 = sine(v9) * 0.015;
-      *(float *)v4 = v15;
-      *((float *)v4 + 1) = v13;
-      *((float *)v4 + 2) = v14;
-      v16 = *(float *)(this + 1044) * 3.0;
-      v17 = *(float *)(this + 1048) * 3.0;
-      *v6 = *(float *)(this + 1040) * 3.0 + *v6;
-      v6[1] = v16 + v6[1];
-      result = v11 + 1;
-      v10 = ++v11 < 8;
-      v6[2] = v17 + v6[2];
+      sprite = allocate_sprite((SpriteManager *)g_sprite_manager, player->player_slot, 128, -1, -1);
+      sprite->flags |= 0x800u;
+      sprite->progress = 0.0;
+      sprite->progress_step = 0.041666668;
+      sprite->gravity_step = -0.00019999999;
+      v4 = set_color_rgba((tColour *)&color, 1.0, 0.75, 0.75, 1.0);
+      sprite->color.r = v4->r;
+      p_x = &sprite->position.x;
+      sprite->color.g = v4->g;
+      sprite->color.b = v4->b;
+      a = v4->a;
+      sprite->size_start = 0.1;
+      sprite->size_end = 0.5;
+      sprite->color.a = a;
+      v10 = (double)v9 * 0.78539819;
+      v7 = v10;
+      sprite->position = pickup->sprite->position;
+      *(float *)&v12 = player->velocity.z * 0.40000001;
+      *(float *)&v11 = cosine(v10) * 0.015;
+      sprite = (Sprite *)((char *)sprite + 84);
+      v13 = sine(v7) * 0.015;
+      *(float *)&sprite->object_ref = v13;
+      sprite->flags = v11;
+      sprite->owner = v12;
+      v14 = player->velocity.y * 3.0;
+      v15 = player->velocity.z * 3.0;
+      *p_x = player->velocity.x * 3.0 + *p_x;
+      p_x[1] = v14 + p_x[1];
+      v8 = ++v9 < 8;
+      p_x[2] = v15 + p_x[2];
     }
-    while ( v10 );
+    while ( v8 );
   }
-  return result;
 }
-

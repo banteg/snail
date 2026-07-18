@@ -3,14 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_subgoldy @ 0x43a9c0 */
 
-0043a9c4        int32_t ebx
-0043a9c4        int32_t var_4 = ebx
-0043a9c5        int32_t ebp
-0043a9c5        int32_t var_8 = ebp
-0043a9c6        int32_t esi
-0043a9c6        int32_t var_c = esi
-0043a9cb        int32_t edi
-0043a9cb        int32_t var_10 = edi
 0043a9cc        player->player_slot = player_slot
 0043a9de        player->game = &g_game_base->subgame
 0043a9e4        player->heading_roll = 0f
@@ -111,16 +103,15 @@
 0043acc6        player->presentation.weapon_channels[2].anim_manager.animation_slots = &player->presentation.weapon_channels[2].animation_slots
 0043accc        player->presentation.weapon_channels[2].anim_manager.queue_count = 0
 0043ace9        initialize_snail_skin(&player->presentation.snail_skin)
-0043acf4        struct ClickStartPlayer* player_1 = initialize_cutscene_ai(&player->presentation.cutscene)
+0043acf4        initialize_cutscene_ai(&player->presentation.cutscene)
 0043ad05        if (player->game->selected_level_record_active == 0)
 0043ad07        player->presentation.cutscene.state = CUT_SCENE_STATE_INTRO_PENDING
 0043ad17        player->presentation.owner_player = player
 0043ad1d        set_matrix_identity(&player->presentation.body.transform)
 0043ad28        set_matrix_identity(&player->presentation.cached_cutscene_matrix)
 0043ad33        set_matrix_identity(&player->presentation.previous_live_matrix)
-0043ad38        struct Player* player_2 = player
 0043ad3f        player->parcels_collected = 0
-0043ad45        initialize_click_start(&player->click_start, player_1)
+0043ad45        initialize_click_start(&player->click_start, player)
 0043ad50        initialize_cameraman(&player->cameraman)
 0043ad5e        initialize_subgoldy_ghost(player, player->player_slot)
 0043ad6a        player->damage_retrigger_step = 0.0505050495f
@@ -160,13 +151,13 @@
 0043ae37        player->slide_extension_threshold_z = 0f
 0043ae3d        initialize_damage_gauge(&player->damage_gauge)
 0043ae4d        player->follow_state.active = 0
-0043ae53        struct TransformMatrix* transform = &player->golb_shots[0].flight_transform
+0043ae53        struct GolbShotFlightStrideCursor* golb_shot_flight_cursor = &player->golb_shots[0].flight_transform
 0043ae59        int32_t i_1 = 0xc
 0043ae7e        int32_t i
-0043ae60        transform->__offset(0x80).d = 0
-0043ae66        set_matrix_identity(transform)
-0043ae71        transform->__offset(0xac).d = player->game
-0043ae77        transform += 0x2e8
+0043ae60        golb_shot_flight_cursor->state = 0
+0043ae66        set_matrix_identity(golb_shot_flight_cursor)
+0043ae71        golb_shot_flight_cursor->game = player->game
+0043ae77        golb_shot_flight_cursor = &golb_shot_flight_cursor[1]
 0043ae7d        i = i_1
 0043ae7d        i_1 -= 1
 0043ae7e        do while (i != 1)

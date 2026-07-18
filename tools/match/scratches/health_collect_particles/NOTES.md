@@ -115,3 +115,14 @@ matching Android and iOS
 `cRSubGoldy::HealthCollect(cRSubHealth*)`. `TrackHealthPickup` remains only a
 compatibility alias. The Windows body stays exact at 104/104 with all 13
 masked operands clean.
+
+## 2026-07-18 focused Player lifecycle replay
+
+Both decompiler lanes now preserve the authored
+`void __thiscall Player::health_collect_particles(SubHealth*)` contract. The
+Binary Ninja artifact no longer has two `void*` arguments or an incidental
+integer result: it resolves the `Player::player_slot` and velocity lanes, the
+borrowed `SubHealth::sprite`, complete `Sprite` particle fields, and
+`RuntimeConfig::render_flags`. IDA independently renders the same owner chain.
+No matcher source or masks changed; the function remains exact at 104/104 with
+all 13 audited operands clean.

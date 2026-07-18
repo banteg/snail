@@ -11,7 +11,7 @@ void __thiscall initialize_subgoldy_ghost(Player *player, int32_t owner)
   SpriteFlag v6; // ecx
   Color4f color; // [esp+10h] [ebp-10h] BYREF
 
-  sprite = (Sprite *)allocate_sprite(g_sprite_manager, owner, 159, -1, -1);
+  sprite = allocate_sprite((SpriteManager *)g_sprite_manager, owner, 159, -1, -1);
   player->ghost_sprite_a = sprite;
   flags = sprite->flags;
   BYTE1(flags) |= 8u;
@@ -25,7 +25,7 @@ void __thiscall initialize_subgoldy_ghost(Player *player, int32_t owner)
   player->ghost_sprite_a->position.x = 4.5;
   player->ghost_sprite_a->position.y = 1.0;
   player->ghost_sprite_a->position.z = 0.0;
-  v5 = (Sprite *)allocate_sprite(g_sprite_manager, owner, 159, -1, -1);
+  v5 = allocate_sprite((SpriteManager *)g_sprite_manager, owner, 159, -1, -1);
   player->ghost_sprite_b = v5;
   v6 = v5->flags;
   BYTE1(v6) |= 8u;

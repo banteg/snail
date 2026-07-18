@@ -17,3 +17,11 @@ Exact `cRSubHover::End()` hover clamp helper.
 
 The clamp gate now consumes the typed active state rather than raw value one.
 Focused output remains exact at 9/9 instructions with its operand clean.
+
+## 2026-07-18 focused lifecycle replay
+
+The durable BN and IDA replay now names the function at 0x43a370 and verifies
+the exact 0x214-byte `SubHover` owner before applying the authored void member
+ABI. Both tracked artifacts render `state`, `progress`, and
+`SUB_HOVER_STATE_ACTIVE`; the stale scalar/gauge view is guarded out. The
+matcher remains exact at 9/9 instructions with its operand clean.

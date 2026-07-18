@@ -1924,6 +1924,20 @@ typedef struct GolbShot {
     float path_entry_z_latch;
 } GolbShot;
 
+/* Analytical field-stride view rooted at GolbShot::flight_transform. The
+ * native initialize_subgoldy loop advances this borrowed cursor by one full
+ * GolbShot while touching only flight_transform, state, and game. It is not a
+ * second owner: the tail spans from the current game's backlink to the next
+ * shot's flight_transform solely to preserve the exact 0x2e8 stride. */
+typedef struct GolbShotFlightStrideCursor {
+    TransformMatrix flight_transform;
+    uint8_t _pad_40[0x40];
+    int32_t state;
+    uint8_t _pad_84[0x28];
+    SubgameRuntime* game;
+    uint8_t _stride_tail[0x238];
+} GolbShotFlightStrideCursor;
+
 typedef struct Player {
     RenderableBod body;
     int32_t resurrect_final_loss;
@@ -2387,6 +2401,8 @@ void __thiscall update_row_event_display(Completion* completion);
 void __thiscall register_parcel_delivery(Completion* completion);
 void __thiscall initialize_cameraman(Cameraman* cameraman);
 void __thiscall update_cameraman(Cameraman* cameraman);
+void __thiscall health_collect_particles(Player* player, SubHealth* pickup);
+void __thiscall update_movement_flag_emitters(Player* owner, Player* movement_source);
 void __thiscall initialize_subgoldy(Player* player, int32_t player_slot);
 void __thiscall end_jetpack_hover(SubHover* sub_hover);
 void __thiscall update_jetpack_gauge(SubHover* sub_hover);

@@ -47,3 +47,13 @@ path likewise promises no result. BN and IDA now preserve the source-authored
 `void __thiscall(Player*)` contract. The matching source already used that ABI
 and remains unchanged at 89.13%, 96/88 instructions, prefix 26/88, with all 19
 masked operands clean.
+
+## 2026-07-18 Player lifecycle ownership guard
+
+The focused replay now makes the void `Player*` ABI and its transitive owner
+graph durable in both tools: movement flags and the cached variant sample live
+on `Player`, attachment-exit attenuation reads the Player body transform, and
+the reference position comes from the root-owned presentation player. This is
+an analysis-only improvement. The honest matcher baseline remains 89.13%,
+96/88 instructions, prefix 26/88, with all 19 masks clean; the unresolved
+lower-clamp tail is not fakematched.

@@ -43,3 +43,13 @@ Together with the exact source, this establishes
 movement_source)`. Both replay catalogs now replace Binary Ninja's false cdecl
 two-stack-argument result and IDA's integer movement-source placeholder. The
 39/39 matcher remains exact.
+
+## 2026-07-18 borrowed GolbShot cursor replay
+
+The focused Player lifecycle lane now guards the exact EDI lifetime as a
+borrowed `GolbShot*` cursor into `Player::golb_shots`. Binary Ninja previously
+widened that local to `GolbShot (*)[12]` and compensated with a false-looking
+owner subtraction before reading `state`; the refreshed artifact now walks
+`golb_shot_cursor->state` and passes that same record to `create_golb`. The
+owning 12-element array remains on `Player`. No matching edit was made: the
+function stays exact at 39/39 with its single operand clean.

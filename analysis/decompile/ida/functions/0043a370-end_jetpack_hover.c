@@ -2,8 +2,9 @@
 /* function: end_jetpack_hover @ 0x43a370 */
 /* selector: end_jetpack_hover */
 
-void __thiscall end_jetpack_hover(float *gauge)
+// Exact Windows `SubHover::end_jetpack_hover`, authored as `cRSubHover::End`: while the exact 0x214-byte owner is active, clamps progress to the 0.94 teardown threshold.
+void __thiscall end_jetpack_hover(SubHover *sub_hover)
 {
-  if ( *((_DWORD *)gauge + 3) == 1 && *gauge < 0.94 )
-    *gauge = 0.94;
+  if ( sub_hover->state == SUB_HOVER_STATE_ACTIVE && sub_hover->progress < 0.94 )
+    sub_hover->progress = 0.94;
 }

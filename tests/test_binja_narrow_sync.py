@@ -277,6 +277,105 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
     )
 
 
+def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
+    binja_sync = (BINJA_DIR / "sync_player_lifecycle_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_player_lifecycle_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_player_lifecycle_types.py").read_text(
+        encoding="utf-8"
+    )
+    broad_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    broad_ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    prototypes = (
+        "void __thiscall health_collect_particles(Player* player, SubHealth* pickup)",
+        "void __thiscall update_movement_flag_emitters(Player* owner, Player* movement_source)",
+        "void __thiscall end_jetpack_hover(SubHover* sub_hover)",
+        "void __thiscall initialize_subgoldy(Player* player, int32_t player_slot)",
+        "void __thiscall show_subgoldy_lives(Player* player)",
+        "void __thiscall play_movement_state_sound(Player* player)",
+        "void __thiscall initialize_subgoldy_ghost(Player* player, int32_t owner)",
+        "void __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z)",
+    )
+    for source in (
+        binja_sync,
+        ida_sync,
+        broad_binja_sync,
+        broad_ida_sync,
+        analysis_header,
+    ):
+        for declaration in prototypes:
+            assert declaration in source
+
+    for source in (binja_sync, ida_sync):
+        for owner, size in (
+            ('"ObjectAnimation"', "0x14"),
+            ('"Object"', "0xDC"),
+            ('"Sprite"', "0xB4"),
+            ('"RuntimeConfig"', "0xC4"),
+            ('"RenderableBod"', "0x80"),
+            ('"AnimManager"', "0x48"),
+            ('"SubHealth"', "0x74"),
+            ('"SubHover"', "0x214"),
+            ('"GolbShot"', "0x2E8"),
+            ('"GolbShotFlightStrideCursor"', "0x2E8"),
+            ('"Weapon"', "0x3DC"),
+            ('"Invincible"', "0xA4"),
+            ('"Snail"', "0x19B4"),
+            ('"Player"', "0x4364"),
+            ('"SubgameRuntime"', "0x1272838"),
+        ):
+            assert f"{owner}: {size}" in source
+
+    for address, name in (
+        ("0x43a010", "health_collect_particles"),
+        ("0x43a300", "update_movement_flag_emitters"),
+        ("0x43a370", "end_jetpack_hover"),
+        ("0x43a9c0", "initialize_subgoldy"),
+        ("0x43af10", "show_subgoldy_lives"),
+        ("0x43afd0", "play_movement_state_sound"),
+        ("0x43d230", "initialize_subgoldy_ghost"),
+        ("0x43d3d0", "set_subgoldy_ghost_z"),
+    ):
+        assert f'("{address}", "{name}")' in binja_sync
+        assert f'("{address}", "{name}")' in broad_binja_sync
+        ida_address = address.upper().replace("0X", "0x")
+        assert f'({ida_address}, "{name}")' in ida_sync
+        assert f'({ida_address}, "{name}")' in broad_ida_sync
+
+    assert "bn_object_render_types.h" in binja_sync
+    assert "star_manager_types.h" in binja_sync
+    assert "runtime_config_types.h" in binja_sync
+    assert '"object_render_types.h"' in ida_sync
+    assert '"star_manager_types.h"' in ida_sync
+    assert '"runtime_config_types.h"' in ida_sync
+    assert "typedef struct GolbShotFlightStrideCursor {" in analysis_header
+    assert "uint8_t _stride_tail[0x238];" in analysis_header
+    assert '"RegisterVariableSourceType",\n        1171,\n        73,' in binja_sync
+    assert '"GolbShotFlightStrideCursor*"' in binja_sync
+    assert '"RegisterVariableSourceType",\n        49,\n        73,' in binja_sync
+    assert '"golb_shot_cursor",\n        "GolbShot*"' in binja_sync
+    assert "0x43AE54" in ida_sync
+    assert "GolbShotFlightStrideCursor *golb_shot_flight_cursor;" in ida_sync
+    assert "INITIALIZE_SUBGOLDY_USER_VAR_UPDATES" in broad_binja_sync
+    assert "MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES" in broad_binja_sync
+    assert "INITIALIZE_SUBGOLDY_LVAR_SPECS" in broad_ida_sync
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"'
+        in ida_runner
+    )
+
+
 def test_sound_manager_replay_keeps_empty_owner_bank_and_void_init_abi() -> None:
     repo_root = Path(__file__).parents[1]
     binja_sync = (BINJA_DIR / "sync_sound_effect_manager_types.py").read_text(

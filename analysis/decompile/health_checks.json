@@ -1,6 +1,260 @@
 {
   "checks": [
     {
+      "name": "bn_player_health_collect_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/0043a010-health_collect_particles.c",
+      "required_substrings": [
+        "g_runtime_config.render_flags",
+        "player->player_slot",
+        "pickup->sprite->position",
+        "player->velocity.z",
+        "eax_1->gravity_step"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "data_4df934",
+        "->__offset"
+      ]
+    },
+    {
+      "name": "ida_player_health_collect_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/0043a010-health_collect_particles.c",
+      "required_substrings": [
+        "void __thiscall health_collect_particles(Player *player, SubHealth *pickup)",
+        "g_runtime_config.render_flags",
+        "player->player_slot",
+        "pickup->sprite->position",
+        "player->velocity.z"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_43A010",
+        "byte_4DF934",
+        "int this",
+        "this +"
+      ]
+    },
+    {
+      "name": "bn_player_movement_emitter_cursor_owner",
+      "artifact": "analysis/decompile/binja/functions/0043a300-update_movement_flag_emitters.c",
+      "required_substrings": [
+        "struct GolbShot* golb_shot_cursor",
+        "&owner->golb_shots",
+        "golb_shot_cursor->state",
+        "create_golb(golb_shot_cursor, owner",
+        "movement_source->movement_flags"
+      ],
+      "forbidden_substrings": [
+        "(*)[0xc]",
+        "(shot - 0x450)",
+        "arg1",
+        "arg2"
+      ]
+    },
+    {
+      "name": "ida_player_movement_emitter_cursor_owner",
+      "artifact": "analysis/decompile/ida/functions/0043a300-update_movement_flag_emitters.c",
+      "required_substrings": [
+        "void __thiscall update_movement_flag_emitters(Player *owner, Player *movement_source)",
+        "movement_source->movement_flags",
+        "golb_shots = owner->golb_shots",
+        "golb_shots->state",
+        "create_golb(golb_shots, owner"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_43A300",
+        "owner + 0x450",
+        "int this"
+      ]
+    },
+    {
+      "name": "bn_subhover_end_owner",
+      "artifact": "analysis/decompile/binja/functions/0043a370-end_jetpack_hover.c",
+      "required_substrings": [
+        "sub_hover->state != SUB_HOVER_STATE_ACTIVE",
+        "sub_hover->progress",
+        "0.939999998f"
+      ],
+      "forbidden_substrings": [
+        "gauge->",
+        "arg1",
+        "->__offset"
+      ]
+    },
+    {
+      "name": "ida_subhover_end_owner",
+      "artifact": "analysis/decompile/ida/functions/0043a370-end_jetpack_hover.c",
+      "required_substrings": [
+        "void __thiscall end_jetpack_hover(SubHover *sub_hover)",
+        "sub_hover->state == SUB_HOVER_STATE_ACTIVE",
+        "sub_hover->progress = 0.94"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_43A370",
+        "float *gauge",
+        "this +"
+      ]
+    },
+    {
+      "name": "bn_player_initialize_owner_and_shot_stride",
+      "artifact": "analysis/decompile/binja/functions/0043a9c0-initialize_subgoldy.c",
+      "required_substrings": [
+        "player->game = &g_game_base->subgame",
+        "player->presentation.owner_player = player",
+        "struct GolbShotFlightStrideCursor* golb_shot_flight_cursor",
+        "golb_shot_flight_cursor->state",
+        "golb_shot_flight_cursor->game = player->game",
+        "initialize_jetpack_gauge(&player->sub_hover"
+      ],
+      "forbidden_substrings": [
+        "TransformMatrix* transform = &player->golb_shots",
+        "transform->__offset",
+        "arg1",
+        "arg2"
+      ]
+    },
+    {
+      "name": "ida_player_initialize_owner_and_shot_stride",
+      "artifact": "analysis/decompile/ida/functions/0043a9c0-initialize_subgoldy.c",
+      "required_substrings": [
+        "void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)",
+        "player->game = &g_game_base->subgame",
+        "GolbShotFlightStrideCursor *golb_shot_flight_cursor",
+        "golb_shot_flight_cursor->state = 0",
+        "set_matrix_identity(&golb_shot_flight_cursor->flight_transform)",
+        "golb_shot_flight_cursor->game = player->game"
+      ],
+      "forbidden_substrings": [
+        "TransformMatrix *p_flight_transform",
+        "p_flight_transform[2]",
+        "void __thiscall sub_43A9C0",
+        "int this"
+      ]
+    },
+    {
+      "name": "bn_player_life_stock_owner",
+      "artifact": "analysis/decompile/binja/functions/0043af10-show_subgoldy_lives.c",
+      "required_substrings": [
+        "player->visible_life_stock",
+        "player->game",
+        "hide_border_init",
+        "unhide_border_init"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "ida_player_life_stock_owner",
+      "artifact": "analysis/decompile/ida/functions/0043af10-show_subgoldy_lives.c",
+      "required_substrings": [
+        "void __thiscall show_subgoldy_lives(Player *player)",
+        "player->visible_life_stock",
+        "player->game->scan_reset",
+        "hide_border_init",
+        "unhide_border_init"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_43AF10",
+        "int this"
+      ]
+    },
+    {
+      "name": "bn_player_movement_sound_owner",
+      "artifact": "analysis/decompile/binja/functions/0043afd0-play_movement_state_sound.c",
+      "required_substrings": [
+        "player->movement_flags",
+        "player->movement_sound_variant_sample",
+        "player->attachment_exit_pending",
+        "player->body.transform.position",
+        "play_sound_effect_scaled"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4df904"
+      ]
+    },
+    {
+      "name": "ida_player_movement_sound_owner",
+      "artifact": "analysis/decompile/ida/functions/0043afd0-play_movement_state_sound.c",
+      "required_substrings": [
+        "void __thiscall play_movement_state_sound(Player *player)",
+        "player->movement_flags",
+        "player->movement_sound_variant_sample",
+        "player->attachment_exit_pending",
+        "g_game_base->players[0].body.transform.position"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_43AFD0",
+        "int this",
+        "MEMORY[0x4DF904]"
+      ]
+    },
+    {
+      "name": "bn_player_ghost_sprite_pair_owner",
+      "artifact": "analysis/decompile/binja/functions/0043d230-initialize_subgoldy_ghost.c",
+      "required_substrings": [
+        "player->ghost_sprite_a",
+        "player->ghost_sprite_b",
+        "->gravity_step",
+        "->position.x",
+        "SPRITE_FLAG_RENDER_ENABLED"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "->__offset"
+      ]
+    },
+    {
+      "name": "ida_player_ghost_sprite_pair_owner",
+      "artifact": "analysis/decompile/ida/functions/0043d230-initialize_subgoldy_ghost.c",
+      "required_substrings": [
+        "void __thiscall initialize_subgoldy_ghost(Player *player, int32_t owner)",
+        "player->ghost_sprite_a",
+        "player->ghost_sprite_b",
+        "->gravity_step",
+        "->position.x"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_43D230",
+        "int this",
+        "this +"
+      ]
+    },
+    {
+      "name": "bn_player_ghost_z_owner",
+      "artifact": "analysis/decompile/binja/functions/0043d3d0-set_subgoldy_ghost_z.c",
+      "required_substrings": [
+        "player->ghost_sprite_a",
+        "player->ghost_sprite_b",
+        "SPRITE_FLAG_RENDER_ENABLED",
+        "position.z = ghost_z"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "->__offset"
+      ]
+    },
+    {
+      "name": "ida_player_ghost_z_owner",
+      "artifact": "analysis/decompile/ida/functions/0043d3d0-set_subgoldy_ghost_z.c",
+      "required_substrings": [
+        "void __thiscall set_subgoldy_ghost_z(Player *player, float ghost_z)",
+        "player->ghost_sprite_a->flags",
+        "player->ghost_sprite_b->flags",
+        "player->ghost_sprite_a->position.z = ghost_z",
+        "player->ghost_sprite_b->position.z = ghost_z"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_43D3D0",
+        "int this",
+        "this +"
+      ]
+    },
+    {
       "name": "bn_damage_guage_initializer_owner",
       "artifact": "analysis/decompile/binja/functions/00440fa0-initialize_damage_gauge.c",
       "required_substrings": [

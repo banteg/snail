@@ -3,11 +3,11 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: end_jetpack_hover @ 0x43a370 */
 
-0043a374        if (gauge->state != 1)
-0043a374        return 
-0043a376        long double x87_r7_1 = fconvert.t(gauge->progress)
+0043a374        if (sub_hover->state != SUB_HOVER_STATE_ACTIVE)
+0043a374        return
+0043a376        long double x87_r7_1 = fconvert.t(sub_hover->progress)
 0043a378        long double temp0_1 = fconvert.t(0.939999998f)
 0043a378        x87_r7_1 - temp0_1
 0043a383        if ((((x87_r7_1 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp0_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp0_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-0043a385        gauge->progress = 0x3f70a3d7
+0043a385        sub_hover->progress = 0x3f70a3d7
 0043a38b        return

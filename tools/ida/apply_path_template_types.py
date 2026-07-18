@@ -34,6 +34,9 @@ TRUSTED_NAMES = [
     (0x4085E0, "initialize_active_bod"),
     (0x408650, "initialize_fringe_object"),
     (0x4086D0, "initialize_player_presentation_controller"),
+    (0x43A010, "health_collect_particles"),
+    (0x43A300, "update_movement_flag_emitters"),
+    (0x43A370, "end_jetpack_hover"),
     (0x4182F0, "load_landscape_script_by_name"),
     (0x42F6E0, "initialize_object_constructor_thunk"),
     (0x42F5F0, "initialize_bod_base"),
@@ -48,6 +51,11 @@ TRUSTED_NAMES = [
     (0x43A690, "update_jet_particles"),
     (0x43A930, "initialize_jetpack_gauge"),
     (0x43A980, "arm_jetpack_gauge"),
+    (0x43A9C0, "initialize_subgoldy"),
+    (0x43AF10, "show_subgoldy_lives"),
+    (0x43AFD0, "play_movement_state_sound"),
+    (0x43D230, "initialize_subgoldy_ghost"),
+    (0x43D3D0, "set_subgoldy_ghost_z"),
     (0x440F80, "update_barrier_ai"),
     (0x440FA0, "initialize_damage_gauge"),
     (0x440FD0, "update_damage_gauge"),
@@ -169,13 +177,21 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
     0x435EB0,  # populate_runtime_track_cells_from_segments
     0x438B90,  # update_subgame
+    0x43A010,  # health_collect_particles
+    0x43A300,  # update_movement_flag_emitters
+    0x43A370,  # end_jetpack_hover
     0x43A390,  # update_jetpack_gauge
     0x43A580,  # uninit_jet_particles
     0x43A5B0,  # initialize_jet_particles
     0x43A690,  # update_jet_particles
     0x43A930,  # initialize_jetpack_gauge
     0x43A980,  # arm_jetpack_gauge
+    0x43A9C0,  # initialize_subgoldy
+    0x43AF10,  # show_subgoldy_lives
+    0x43AFD0,  # play_movement_state_sound
     0x43B120,  # update_subgoldy
+    0x43D230,  # initialize_subgoldy_ghost
+    0x43D3D0,  # set_subgoldy_ghost_z
     0x43DF10,  # spawn_track_ring_or_special_effect
     0x43ECC0,  # update_track_health_pickup
     0x43EE50,  # update_track_speedup
@@ -340,6 +356,15 @@ UPDATE_SUBGAME_RUNTIME_LVAR_SPECS = (
         "time_trial_route_cursor",
         "TimeTrialRouteRecordCursor *time_trial_route_cursor;",
         0x4398CB,
+        None,
+    ),
+)
+
+INITIALIZE_SUBGOLDY_LVAR_SPECS = (
+    (
+        "golb_shot_flight_cursor",
+        "GolbShotFlightStrideCursor *golb_shot_flight_cursor;",
+        0x43AE54,
         None,
     ),
 )
@@ -1467,6 +1492,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall initialize_subgoldy(Player* player, int32_t player_slot);",
     ),
     (
+        "health_collect_particles",
+        "void __thiscall health_collect_particles(Player* player, SubHealth* pickup);",
+    ),
+    (
         "show_subgoldy_lives",
         "void __thiscall show_subgoldy_lives(Player* player);",
     ),
@@ -2123,6 +2152,13 @@ def _sync_update_subgame_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "update_subgame",
         UPDATE_SUBGAME_RUNTIME_LVAR_SPECS,
+    )
+
+
+def _sync_initialize_subgoldy_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "initialize_subgoldy",
+        INITIALIZE_SUBGOLDY_LVAR_SPECS,
     )
 
 
@@ -2784,6 +2820,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "runtime_lvars": update_subgame_runtime_lvars,
             }
         )
+    initialize_subgoldy_lvars = _sync_initialize_subgoldy_lvars()
+    if initialize_subgoldy_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "initialize_subgoldy",
+                "ownership_lvars": initialize_subgoldy_lvars,
+            }
+        )
     remove_subgame_bods_cursor_lvars = _sync_remove_subgame_bods_cursor_lvars()
     if remove_subgame_bods_cursor_lvars.get("status") == "failed":
         failed.append(
@@ -2920,6 +2964,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "place_parcels_runtime_lvars": place_parcels_runtime_lvars,
                 "challenge_parcels_runtime_lvars": challenge_parcels_runtime_lvars,
                 "update_subgame_runtime_lvars": update_subgame_runtime_lvars,
+                "initialize_subgoldy_lvars": initialize_subgoldy_lvars,
                 "remove_subgame_bods_cursor_lvars": remove_subgame_bods_cursor_lvars,
                 "spawn_track_ring_lvars": spawn_track_ring_lvars,
                 "spawn_track_health_lvars": spawn_track_health_lvars,

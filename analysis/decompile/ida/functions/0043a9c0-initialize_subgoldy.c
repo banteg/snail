@@ -12,7 +12,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   uint32_t v7; // ecx
   float z; // ecx
   PlayerControlSource *p_input; // eax
-  TransformMatrix *p_flight_transform; // edi
+  GolbShotFlightStrideCursor *golb_shot_flight_cursor; // edi
   int v11; // ebp
   int32_t v12; // [esp-4h] [ebp-14h]
 
@@ -149,7 +149,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   set_matrix_identity(&player->presentation.cached_cutscene_matrix);
   set_matrix_identity(&player->presentation.previous_live_matrix);
   player->parcels_collected = 0;
-  initialize_click_start((ClickStartController *)&player->click_start, (ClickStartPlayer *)player);
+  initialize_click_start(&player->click_start, player);
   initialize_cameraman(&player->cameraman);
   initialize_subgoldy_ghost(player, player->player_slot);
   player->damage_retrigger_step = 0.05050505;
@@ -196,14 +196,14 @@ LABEL_24:
   initialize_damage_gauge(&player->damage_gauge);
   noop_runtime_ai();
   player->follow_state.active = 0;
-  p_flight_transform = &player->golb_shots[0].flight_transform;
+  golb_shot_flight_cursor = (GolbShotFlightStrideCursor *)&player->golb_shots[0].flight_transform;
   v11 = 12;
   do
   {
-    p_flight_transform[2].basis_right.x = 0.0;
-    set_matrix_identity(p_flight_transform);
-    LODWORD(p_flight_transform[2].basis_forward.w) = player->game;
-    p_flight_transform = (TransformMatrix *)((char *)p_flight_transform + 744);
+    golb_shot_flight_cursor->state = 0;
+    set_matrix_identity(&golb_shot_flight_cursor->flight_transform);
+    golb_shot_flight_cursor->game = player->game;
+    ++golb_shot_flight_cursor;
     --v11;
   }
   while ( v11 );

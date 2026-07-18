@@ -297,3 +297,15 @@ group while keeping the surrounding authored `Snail` owner explicit. Binary
 Ninja's stale 0x38-byte tail is gone, so the initializer readback names all
 four stores. Focused matching remains exact at 279/279 instructions with all
 27 operands clean.
+
+## 2026-07-18 owned GolbShot bank stride recovery
+
+The native 12-record reset loop starts at
+`Player::golb_shots[0].flight_transform`, touches `state +0x80` and the
+borrowed `game +0xac`, then advances by one complete 0x2e8-byte `GolbShot`.
+`GolbShotFlightStrideCursor` records that analytical field-stride view without
+claiming a second allocation or replacing the owning Player array. Exact BN
+and Hex-Rays local identities are replayed and read back; IDA now renders
+`flight_transform`, `state`, and `game` directly, while BN exposes the same
+stride and fields. No matcher source or masks changed: the initializer remains
+exact at 279/279 with all 27 audited operands clean.

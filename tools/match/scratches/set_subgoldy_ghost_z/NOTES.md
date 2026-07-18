@@ -50,3 +50,11 @@ instructions and leaves `update_subgoldy` unchanged at its honest 74.30%
 baseline. The regenerated decompiles retain the real
 `Player::ghost_sprite_a` / `Player::ghost_sprite_b` owners without pretending
 the residual second pointer is a result.
+
+## 2026-07-18 Sprite ownership replay
+
+The focused lifecycle replay now verifies the exact void `Player*`/`float`
+contract and loads the complete Sprite dependency in both decompilers. The
+tracked artifacts expose both `ghost_sprite_*` owners, the shared render-enable
+policy, and each `position.z` store. No matching source changed; the helper
+remains exact at 18/18 instructions with no masked operands.

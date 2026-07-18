@@ -28,3 +28,12 @@ EAX, whose terminal value is only the last widget flag mutation. BN and IDA now
 preserve the authored `void __thiscall(Player*)` method instead of a fastcall
 scalar inference. The matching source was already void and remains exact at
 23/23 instructions with both operands clean.
+
+## 2026-07-18 Player lifecycle ownership guard
+
+The focused replay now freezes the exact `Player*` receiver,
+`visible_life_stock`, and borrowed `SubgameRuntime* game` relationship in both
+decompiler lanes. The scalar native byte-offset iterator is intentionally
+retained: retyping it as a direct widget pointer would misstate the recovered
+source shape and previously regressed matching. No matcher edit was made; the
+function remains exact at 23/23 with both operands clean.
