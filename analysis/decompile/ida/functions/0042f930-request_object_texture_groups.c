@@ -2,24 +2,21 @@
 /* function: request_object_texture_groups @ 0x42f930 */
 /* selector: request_object_texture_groups */
 
-_BYTE *__thiscall sub_42F930(_DWORD *this, int a2)
+void __thiscall request_object_texture_groups(Object *object, int32_t group_count)
 {
-  _BYTE *result; // eax
+  int32_t *tracked_memory; // eax
 
-  if ( *(this + 25) )
+  if ( object->texture_group_count )
   {
-    result = (_BYTE *)*(this + 26);
-    if ( a2 > (int)result )
-      result = (_BYTE *)report_errorf(aFixedFacequadt);
-    *(this + 25) = a2;
+    if ( group_count > object->texture_group_capacity )
+      report_errorf(aFixedFacequadt);
+    object->texture_group_count = group_count;
   }
   else
   {
-    result = allocate_tracked_memory(4 * a2, (int)aObjectFacequad_1);
-    *(this + 26) = a2;
-    *(this + 25) = a2;
-    *(this + 27) = result;
+    tracked_memory = (int32_t *)allocate_tracked_memory(4 * group_count, aObjectFacequad_1);
+    object->texture_group_capacity = group_count;
+    object->texture_group_count = group_count;
+    object->texture_group_ends = tracked_memory;
   }
-  return result;
 }
-

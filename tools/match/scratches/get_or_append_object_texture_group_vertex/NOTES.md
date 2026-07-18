@@ -98,3 +98,12 @@ borrowed `Object*`, names the vertex/UV arguments, and preserves
 `g_object_grouped_vertex_scratch` plus its append cursor as builder-owned global
 workspace. Focused matching remains 83.14% with all 18 operands clean; the
 honest loop-exit block-placement residual is unchanged.
+
+## 2026-07-18 paired replay closure
+
+IDA now receives the same `Object*` ABI, `ObjectGroupedVertex*` scratch owner,
+and `int32_t` cursor as Binary Ninja. Both shared globals remain temporary
+workspace owned by `build_object_texture_group_buffers`; neither is retained
+by an object. Replay health checks reject raw `_DWORD*` object arguments and
+anonymous absolute globals. Matcher source and the honest 83.14% frontier are
+unchanged.

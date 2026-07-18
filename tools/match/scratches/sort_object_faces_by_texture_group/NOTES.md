@@ -29,3 +29,12 @@ increments inside the inner loop as well as at the outer loop tail.
 Rejected probes retained from the earlier allocator audit: C mode, `register`
 hints, return-type changes, and guard/compare rewrites did not recover the
 missing relationship. No padding or dead work is present in the exact source.
+
+## 2026-07-18 Object-owner ABI replay
+
+The sole callsite in `build_all_objects` passes one object and discards `eax`;
+the exact scratch likewise has a natural `void (Object*)` source signature.
+The integer return shown by both raw decompilers was only the final
+`facequad_count` load. The shared headers and repeatable Binary Ninja/IDA
+syncs now preserve the borrowed `Object*` owner and `void` ABI. Matcher source
+is unchanged at 100.00%, 75/75 instructions, with no masked operands.

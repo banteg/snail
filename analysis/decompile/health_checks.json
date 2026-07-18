@@ -9398,6 +9398,102 @@
       ]
     },
     {
+      "name": "bn_object_texture_group_sort_owner",
+      "artifact": "analysis/decompile/binja/functions/00419fd0-sort_object_faces_by_texture_group.c",
+      "required_substrings": [
+        "struct Object* object_1 = object",
+        "object_1->facequad_count",
+        "object_1->facequads",
+        "facequads[ebp].texture_ref"
+      ],
+      "forbidden_substrings": [
+        "void* esi = arg1",
+        "*(esi + 0x54)",
+        "return result",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_grouped_vertex_workspace_owner",
+      "artifact": "analysis/decompile/ida/functions/00413bb0-get_or_append_object_texture_group_vertex.c",
+      "required_substrings": [
+        "int32_t __cdecl get_or_append_object_texture_group_vertex(Object *object, int vertex_index, float u, float v)",
+        "object->vertex_count",
+        "object->vertices[vertex_index]",
+        "g_object_grouped_vertex_cursor",
+        "g_object_grouped_vertex_scratch[v7].x",
+        "object->vertex_colours[vertex_index]",
+        "g_object_grouped_vertex_scratch[v7].source_vertex"
+      ],
+      "forbidden_substrings": [
+        "sub_413BB0",
+        "_DWORD *a1",
+        "MEMORY[0x5031",
+        "a1[",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_render_buffer_build_owner",
+      "artifact": "analysis/decompile/ida/functions/00413d50-build_object_texture_group_buffers.c",
+      "required_substrings": [
+        "void __cdecl build_object_texture_group_buffers(Object *object)",
+        "g_object_grouped_vertex_scratch = (ObjectGroupedVertex *)get_archive_data_base()",
+        "g_object_grouped_vertex_cursor = 0",
+        "get_or_append_object_texture_group_vertex(object",
+        "object->grouped_vertex_count = g_object_grouped_vertex_cursor",
+        "object->render_buffers = create_vertex_buffer",
+        "object->index_buffer = index_buffer",
+        "create_index_buffer(&g_direct3d_renderer.index_buffer_factory"
+      ],
+      "forbidden_substrings": [
+        "sub_413D50",
+        "unk_5031BC",
+        "unk_5031C4",
+        "g_object_index_buffer_factory",
+        "create_object_vertex_buffer_resource",
+        "create_object_index_buffer_resource",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_texture_group_sort_owner",
+      "artifact": "analysis/decompile/ida/functions/00419fd0-sort_object_faces_by_texture_group.c",
+      "required_substrings": [
+        "void __cdecl sort_object_faces_by_texture_group(Object *object)",
+        "object->facequad_count",
+        "object->facequads",
+        "facequads[v2].texture_ref",
+        "sizeof(ObjectFaceQuad)"
+      ],
+      "forbidden_substrings": [
+        "int __cdecl",
+        "sub_419FD0",
+        "int a1",
+        "*(_DWORD *)(a1 +",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_texture_group_allocation_owner",
+      "artifact": "analysis/decompile/ida/functions/0042f930-request_object_texture_groups.c",
+      "required_substrings": [
+        "void __thiscall request_object_texture_groups(Object *object, int32_t group_count)",
+        "object->texture_group_count",
+        "object->texture_group_capacity",
+        "object->texture_group_ends = tracked_memory",
+        "allocate_tracked_memory(4 * group_count"
+      ],
+      "forbidden_substrings": [
+        "sub_42F930",
+        "_DWORD *this",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_galaxy_route_name_constructor_owner",
       "artifact": "analysis/decompile/binja/functions/00408880-initialize_galaxy_route_name_record.c",
       "required_substrings": [

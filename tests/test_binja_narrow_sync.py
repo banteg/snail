@@ -3793,6 +3793,7 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
         "apply_distort_to_object",
         "replace_object_list_texture_refs",
         "get_or_append_object_texture_group_vertex",
+        "sort_object_faces_by_texture_group",
         "refresh_object_vertex_buffer",
         "build_object_texture_group_buffers",
     ):
@@ -3807,6 +3808,9 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
         "int32_t vertex_index, float u, float v)"
     ) in sync_source
     assert (
+        "void __cdecl sort_object_faces_by_texture_group(Object* object)"
+    ) in sync_source
+    assert (
         "void __thiscall replace_object_list_texture_refs(ObjectList* object_list, "
         "TextureRef* new_texture, TextureRef* old_texture)"
     ) in sync_source
@@ -3815,6 +3819,14 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
         "TextureRef* new_texture, TextureRef* old_texture);"
     ) in ida_sync_source
     assert '"void __thiscall initialize_object(Object* object);"' in ida_sync_source
+    assert (
+        '"int32_t __cdecl get_or_append_object_texture_group_vertex(Object* object, '
+        'int vertex_index, float u, float v);"'
+    ) in ida_sync_source
+    assert (
+        '"void __cdecl sort_object_faces_by_texture_group(Object* object);"'
+    ) in ida_sync_source
+    assert '"ObjectGroupedVertex": 0x1C' in ida_sync_source
     assert 're.sub(r"\\(void\\)$", "()", normalized)' in ida_sync_source
     for header in analysis_headers:
         assert "typedef struct ObjectRenderVertex" in header
@@ -3823,8 +3835,10 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
         assert "void __thiscall replace_object_list_texture_refs(" in header
         assert "extern int32_t g_object_grouped_vertex_cursor;" in header
         assert "extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;" in header
+        assert "void __cdecl sort_object_faces_by_texture_group(Object* object);" in header
 
     assert "int get_or_append_object_texture_group_vertex(" in matcher_header
+    assert "void sort_object_faces_by_texture_group(Object* object);" in matcher_header
     assert "extern int g_object_grouped_vertex_cursor;" in matcher_header
     assert "extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;" in matcher_header
 

@@ -530,6 +530,7 @@ void __thiscall request_object_animation(
     Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes,
     float progress_step, int32_t flags);
 void __thiscall advance_frame_sequence(FrameSequence* sequence);
+void __cdecl sort_object_faces_by_texture_group(Object* object);
 void __cdecl build_object_texture_group_buffers(Object* object);
 int32_t __cdecl get_or_append_object_texture_group_vertex(
     Object* object, int32_t vertex_index, float u, float v);

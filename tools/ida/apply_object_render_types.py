@@ -192,6 +192,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall calc_object_texture_groups(Object* object);",
     ),
     (
+        "request_object_texture_groups",
+        "void __thiscall request_object_texture_groups(Object* object, int group_count);",
+    ),
+    (
         "add_object_edge",
         "void __thiscall add_object_edge(Object* object, int vertex_a, int vertex_b, int normal_index);",
     ),
@@ -218,6 +222,14 @@ TRUSTED_DECLARATIONS = [
     (
         "advance_frame_sequence",
         "void __thiscall advance_frame_sequence(FrameSequence* sequence);",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "int32_t __cdecl get_or_append_object_texture_group_vertex(Object* object, int vertex_index, float u, float v);",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "void __cdecl sort_object_faces_by_texture_group(Object* object);",
     ),
     (
         "build_object_texture_group_buffers",
@@ -275,6 +287,10 @@ TRUSTED_NAMES = [
     (0x414500, "bind_texture_ref"),
     (0x414600, "query_direct3d_device_caps"),
     (0x414650, "reset_render_counters"),
+    (0x413BB0, "get_or_append_object_texture_group_vertex"),
+    (0x413D50, "build_object_texture_group_buffers"),
+    (0x419FD0, "sort_object_faces_by_texture_group"),
+    (0x42F930, "request_object_texture_groups"),
     (0x42FB10, "calc_object_bounding_box"),
     (0x42FCB0, "calc_object_facequad_normals"),
     (0x4303F0, "calc_object_texture_groups"),
@@ -290,7 +306,9 @@ TRUSTED_NAMES = [
     (0x4F7458, "g_direct3d_renderer"),
     (0x503170, "g_draw_primitive_call_count"),
     (0x503174, "g_current_texture_ref"),
+    (0x5031BC, "g_object_grouped_vertex_cursor"),
     (0x5031C0, "g_texture_bind_call_count"),
+    (0x5031C4, "g_object_grouped_vertex_scratch"),
     (0x5031C8, "g_d3d_texture_slots"),
     (0x503300, "g_object_edge_build_edges"),
     (0x503318, "g_object_edge_build_count"),
@@ -321,7 +339,17 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x4F7458, "g_direct3d_renderer", "Direct3DRenderer g_direct3d_renderer;"),
     (0x503170, "g_draw_primitive_call_count", "int32_t g_draw_primitive_call_count;"),
     (0x503174, "g_current_texture_ref", "TextureRef* g_current_texture_ref;"),
+    (
+        0x5031BC,
+        "g_object_grouped_vertex_cursor",
+        "int32_t g_object_grouped_vertex_cursor;",
+    ),
     (0x5031C0, "g_texture_bind_call_count", "int32_t g_texture_bind_call_count;"),
+    (
+        0x5031C4,
+        "g_object_grouped_vertex_scratch",
+        "ObjectGroupedVertex* g_object_grouped_vertex_scratch;",
+    ),
     (0x5031C8, "g_d3d_texture_slots", "Direct3DTexture8** g_d3d_texture_slots;"),
     (
         0x503300,
@@ -338,13 +366,19 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct IndexBufferFactory {",
     "typedef struct Direct3DRenderer {",
     "typedef struct ObjectDistort {",
+    "typedef struct ObjectGroupedVertex {",
     "typedef struct ObjectToonEdge {",
     "typedef struct Object {",
     "typedef struct DirectXLoader {",
     "void __thiscall load_x_mesh(",
     "void __thiscall calc_object_bounding_box(Object* object);",
     "void __thiscall calc_object_texture_groups(Object* object);",
+    "void __thiscall request_object_texture_groups(Object* object, int32_t group_count);",
+    "void __cdecl sort_object_faces_by_texture_group(Object* object);",
+    "int32_t __cdecl get_or_append_object_texture_group_vertex(",
     "void __thiscall add_object_edge(",
+    "extern int32_t g_object_grouped_vertex_cursor;",
+    "extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;",
     "extern ObjectToonEdge* g_object_edge_build_edges;",
     "ObjectRenderBuffers* __thiscall create_vertex_buffer(",
     "ObjectIndexBuffer* __thiscall create_index_buffer(",
@@ -360,6 +394,7 @@ EXPECTED_OWNER_SIZES = {
     "IndexBufferFactory": 0x2EE4,
     "Direct3DRenderer": 0xBCC0,
     "ObjectFaceQuad": 0x30,
+    "ObjectGroupedVertex": 0x1C,
     "ObjectToonEdge": 0x24,
     "ObjectDistort": 0x14,
     "Object": 0xDC,
@@ -380,10 +415,14 @@ REANALYSIS_FUNCTIONS = (
     0x4116F0,  # release_direct3d_renderer_resources
     0x412250,  # refresh_object_vertex_buffer
     0x4129C0,  # initialize_direct3d_renderer
+    0x413BB0,  # get_or_append_object_texture_group_vertex
+    0x413D50,  # build_object_texture_group_buffers
     0x418B50,  # initialize_loading_screen
+    0x419FD0,  # sort_object_faces_by_texture_group
     0x41AA30,  # initialize_object_distort
     0x41AA50,  # apply_distort_to_object
     0x42F9E0,  # build_all_objects
+    0x42F930,  # request_object_texture_groups
     0x42FB10,  # calc_object_bounding_box
     0x42FCB0,  # calc_object_facequad_normals
     0x4303F0,  # calc_object_texture_groups

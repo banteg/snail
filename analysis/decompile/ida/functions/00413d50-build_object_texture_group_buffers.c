@@ -2,246 +2,239 @@
 /* function: build_object_texture_group_buffers @ 0x413d50 */
 /* selector: build_object_texture_group_buffers */
 
-// Allocates one built object's texture-group tables, expands each grouped face run into triangle indices, and builds the matching Direct3D vertex and index buffers for grouped rendering.
-int *__usercall sub_413D50@<eax>(int a1@<esi>, _DWORD *a2, int a3)
+// Allocates one Object's texture-group tables, expands each Object-owned face run through six advancing index lanes, uploads the grouped scratch's scalar diffuse plus aggregate UV/XYZ render payload, and retains the resulting Direct3D vertex and index buffers. iOS RObject.o names the owner family `cRObject::BuildGLVertexArray()`.
+void __cdecl build_object_texture_group_buffers(Object *object)
 {
-  int *result; // eax
-  int v5; // edi
-  _BYTE *v6; // eax
-  _BYTE *v7; // eax
-  int v8; // ecx
-  int v9; // ebp
-  int i; // esi
-  int v11; // eax
-  int v12; // eax
-  int v13; // ecx
-  int v14; // edx
-  int v15; // eax
-  int v16; // edi
-  char *v17; // esi
-  _WORD *v18; // ebp
-  int v19; // eax
-  int v20; // ecx
-  int *v21; // eax
-  int v22; // edx
-  int v23; // edx
-  int v24; // eax
-  int v25; // ecx
-  _DWORD *v26; // esi
-  int v27; // esi
-  _DWORD *v28; // edi
-  int v29; // ebp
-  int v30; // [esp-1Ch] [ebp-50h]
-  int v31; // [esp-14h] [ebp-48h]
-  char *v33; // [esp+Ch] [ebp-28h]
-  char *v34; // [esp+10h] [ebp-24h]
-  _WORD *v35; // [esp+14h] [ebp-20h]
-  int v36; // [esp+18h] [ebp-1Ch]
-  _WORD *v37; // [esp+1Ch] [ebp-18h]
-  int v38; // [esp+20h] [ebp-14h]
-  int v39; // [esp+24h] [ebp-10h] BYREF
-  int v40; // [esp+28h] [ebp-Ch]
-  char *v41; // [esp+2Ch] [ebp-8h]
-  char *v42; // [esp+30h] [ebp-4h] BYREF
-  int v43; // [esp+38h] [ebp+4h]
+  int v1; // esi
+  int v3; // edi
+  int32_t *tracked_memory; // eax
+  TextureRef **v5; // eax
+  int32_t v6; // ecx
+  int32_t v7; // ebp
+  int32_t i; // esi
+  int32_t facequad_count; // eax
+  ObjectFaceQuad *v10; // eax
+  int32_t v11; // ecx
+  int32_t texture_group_count; // edx
+  int32_t v13; // eax
+  int32_t v14; // edi
+  char *v15; // esi
+  _WORD *v16; // ebp
+  int32_t v17; // eax
+  int32_t v18; // ecx
+  ObjectIndexBuffer *index_buffer; // eax
+  ObjectRenderBuffers *render_buffers; // edx
+  int32_t v21; // edx
+  int v22; // eax
+  int v23; // ecx
+  float *p_u; // esi
+  ObjectGroupedVertex *v25; // esi
+  float *v26; // edi
+  float x; // ebp
+  int v28; // [esp-1Ch] [ebp-50h]
+  int v29; // [esp-14h] [ebp-48h]
+  int v30; // [esp-4h] [ebp-38h]
+  char *v31; // [esp+Ch] [ebp-28h]
+  char *v32; // [esp+10h] [ebp-24h]
+  _WORD *v33; // [esp+14h] [ebp-20h]
+  int32_t v34; // [esp+18h] [ebp-1Ch]
+  _WORD *v35; // [esp+1Ch] [ebp-18h]
+  int32_t v36; // [esp+20h] [ebp-14h]
+  int v37; // [esp+24h] [ebp-10h] BYREF
+  int32_t v38; // [esp+28h] [ebp-Ch]
+  char *archive_data_end; // [esp+2Ch] [ebp-8h]
+  char *v40; // [esp+30h] [ebp-4h] BYREF
+  int32_t objecta; // [esp+38h] [ebp+4h]
+  int32_t v42; // [esp+3Ch] [ebp+8h]
 
-  result = (int *)a2[11];
-  v5 = 0;
-  if ( result )
+  v3 = 0;
+  if ( object->vertex_count )
   {
-    a2[4] |= 0x80000u;
-    v6 = allocate_tracked_memory(4 * a2[25], (int)aDxTexturegroup);
-    v31 = 4 * a2[25];
-    a2[51] = v6;
-    v7 = allocate_tracked_memory(v31, (int)aDxTexturegroup_0);
-    v30 = 4 * a2[25];
-    a2[52] = v7;
-    a2[53] = allocate_tracked_memory(v30, (int)aDxTexturegroup_1);
-    unk_5031C4 = get_archive_data_base();
-    v41 = (char *)get_archive_data_end();
-    unk_5031BC = 0;
-    v8 = 0;
-    v9 = 0;
-    v38 = 0;
-    v43 = 0;
-    if ( (a2[4] & 4) != 0 )
+    v30 = v1;
+    object->flags |= 0x80000u;
+    tracked_memory = (int32_t *)allocate_tracked_memory(4 * object->texture_group_count, aDxTexturegroup);
+    v29 = 4 * object->texture_group_count;
+    object->group_index_starts = tracked_memory;
+    v5 = (TextureRef **)allocate_tracked_memory(v29, aDxTexturegroup_0);
+    v28 = 4 * object->texture_group_count;
+    object->group_texture_refs = v5;
+    object->group_primitive_counts = (int32_t *)allocate_tracked_memory(v28, aDxTexturegroup_1);
+    g_object_grouped_vertex_scratch = (ObjectGroupedVertex *)get_archive_data_base();
+    archive_data_end = (char *)get_archive_data_end();
+    g_object_grouped_vertex_cursor = 0;
+    v6 = 0;
+    v7 = 0;
+    v36 = 0;
+    objecta = 0;
+    if ( (object->flags & 4) != 0 )
     {
-      for ( i = 0; i < a2[11]; ++i )
+      for ( i = 0; i < object->vertex_count; ++i )
       {
-        v11 = a2[21];
-        v40 = 0;
-        if ( v11 > 0 )
+        facequad_count = object->facequad_count;
+        v38 = 0;
+        if ( facequad_count > 0 )
         {
           do
           {
-            v12 = v5 + a2[23];
-            if ( *(unsigned __int16 *)(v12 + 2) == i )
+            v10 = &object->facequads[v3];
+            if ( v10->vertex_0 == i )
             {
-              get_or_append_object_texture_group_vertex(a2, i, *(float *)(v12 + 16), *(float *)(v12 + 20));
+              get_or_append_object_texture_group_vertex(object, i, v10->uv[0].u, v10->uv[0].v);
             }
-            else if ( *(unsigned __int16 *)(v12 + 4) == i )
+            else if ( v10->vertex_1 == i )
             {
-              get_or_append_object_texture_group_vertex(a2, i, *(float *)(v12 + 24), *(float *)(v12 + 28));
+              get_or_append_object_texture_group_vertex(object, i, v10->uv[1].u, v10->uv[1].v);
             }
-            else if ( *(unsigned __int16 *)(v12 + 6) == i )
+            else if ( v10->vertex_2 == i )
             {
-              get_or_append_object_texture_group_vertex(a2, i, *(float *)(v12 + 32), *(float *)(v12 + 36));
+              get_or_append_object_texture_group_vertex(object, i, v10->uv[2].u, v10->uv[2].v);
             }
-            else if ( *(char *)v12 >= 0 && *(unsigned __int16 *)(v12 + 8) == i )
+            else if ( (v10->flags & 0x80u) == 0 && v10->vertex_3 == i )
             {
-              get_or_append_object_texture_group_vertex(a2, i, *(float *)(v12 + 40), *(float *)(v12 + 44));
+              get_or_append_object_texture_group_vertex(object, i, v10->uv[3].u, v10->uv[3].v);
             }
-            v13 = a2[21];
-            v5 += 48;
-            ++v40;
+            v11 = object->facequad_count;
+            ++v3;
+            ++v38;
           }
-          while ( v40 < v13 );
-          v8 = 0;
-          v5 = 0;
+          while ( v38 < v11 );
+          v6 = 0;
+          v3 = 0;
         }
       }
     }
-    v14 = a2[25];
-    v15 = 0;
-    v40 = 0;
-    if ( v14 > 0 )
+    texture_group_count = object->texture_group_count;
+    v13 = 0;
+    v38 = 0;
+    if ( texture_group_count > 0 )
     {
       while ( 1 )
       {
-        v36 = 0;
-        v16 = 48 * v8;
-        *(_DWORD *)(a2[52] + 4 * v15) = *(_DWORD *)(48 * v8 + a2[23] + 12);
-        *(_DWORD *)(a2[51] + 4 * v15) = v9;
-        if ( v8 < *(_DWORD *)(a2[27] + 4 * v15) )
+        v34 = 0;
+        v14 = v6;
+        object->group_texture_refs[v13] = object->facequads[v6].texture_ref;
+        object->group_index_starts[v13] = v7;
+        if ( v6 < object->texture_group_ends[v13] )
         {
-          v17 = &v41[2 * v9];
-          v37 = v17 + 10;
-          v18 = v17 + 4;
-          v35 = v17 + 8;
-          v34 = &v41[2 * v43 + 6];
-          v33 = &v41[2 * v43 + 2];
+          v15 = &archive_data_end[2 * v7];
+          v35 = v15 + 10;
+          v16 = v15 + 4;
+          v33 = v15 + 8;
+          v32 = &archive_data_end[2 * objecta + 6];
+          v31 = &archive_data_end[2 * objecta + 2];
           do
           {
-            *(_WORD *)v17 = get_or_append_object_texture_group_vertex(
-                              a2,
-                              *(unsigned __int16 *)(v16 + a2[23] + 2),
-                              *(float *)(v16 + a2[23] + 16),
-                              *(float *)(v16 + a2[23] + 20));
-            *(_WORD *)v33 = get_or_append_object_texture_group_vertex(
-                              a2,
-                              *(unsigned __int16 *)(v16 + a2[23] + 4),
-                              *(float *)(v16 + a2[23] + 24),
-                              *(float *)(v16 + a2[23] + 28));
-            *v18 = get_or_append_object_texture_group_vertex(
-                     a2,
-                     *(unsigned __int16 *)(v16 + a2[23] + 6),
-                     *(float *)(v16 + a2[23] + 32),
-                     *(float *)(v16 + a2[23] + 36));
-            if ( *(char *)(v16 + a2[23]) < 0 )
+            *(_WORD *)v15 = get_or_append_object_texture_group_vertex(
+                              object,
+                              object->facequads[v14].vertex_0,
+                              object->facequads[v14].uv[0].u,
+                              object->facequads[v14].uv[0].v);
+            *(_WORD *)v31 = get_or_append_object_texture_group_vertex(
+                              object,
+                              object->facequads[v14].vertex_1,
+                              object->facequads[v14].uv[1].u,
+                              object->facequads[v14].uv[1].v);
+            *v16 = get_or_append_object_texture_group_vertex(
+                     object,
+                     object->facequads[v14].vertex_2,
+                     object->facequads[v14].uv[2].u,
+                     object->facequads[v14].uv[2].v);
+            if ( (object->facequads[v14].flags & 0x80u) != 0 )
             {
-              v43 += 3;
-              v17 += 6;
-              v33 += 6;
-              v18 += 3;
-              v34 += 6;
+              objecta += 3;
+              v15 += 6;
+              v31 += 6;
+              v16 += 3;
+              v32 += 6;
+              v33 += 3;
               v35 += 3;
-              v37 += 3;
-              v19 = v36 + 1;
+              v17 = v34 + 1;
             }
             else
             {
-              *(_WORD *)v34 = *(_WORD *)v17;
-              *v35 = *v18;
-              *v37 = get_or_append_object_texture_group_vertex(
-                       a2,
-                       *(unsigned __int16 *)(v16 + a2[23] + 8),
-                       *(float *)(v16 + a2[23] + 40),
-                       *(float *)(v16 + a2[23] + 44));
-              v43 += 6;
-              v17 += 12;
-              v33 += 12;
-              v18 += 6;
-              v34 += 12;
+              *(_WORD *)v32 = *(_WORD *)v15;
+              *v33 = *v16;
+              *v35 = get_or_append_object_texture_group_vertex(
+                       object,
+                       object->facequads[v14].vertex_3,
+                       object->facequads[v14].uv[3].u,
+                       object->facequads[v14].uv[3].v);
+              objecta += 6;
+              v15 += 12;
+              v31 += 12;
+              v16 += 6;
+              v32 += 12;
+              v33 += 6;
               v35 += 6;
-              v37 += 6;
-              v19 = v36 + 2;
+              v17 = v34 + 2;
             }
-            v36 = v19;
-            v16 += 48;
-            ++v38;
+            v34 = v17;
+            ++v14;
+            ++v36;
           }
-          while ( v38 < *(_DWORD *)(a2[27] + 4 * v40) );
-          v9 = v43;
-          v15 = v40;
+          while ( v36 < object->texture_group_ends[v38] );
+          v7 = objecta;
+          v13 = v38;
         }
-        *(_DWORD *)(a2[53] + 4 * v15) = v36;
-        v20 = a2[25];
-        v40 = ++v15;
-        if ( v15 >= v20 )
+        object->group_primitive_counts[v13] = v34;
+        v18 = object->texture_group_count;
+        v38 = ++v13;
+        if ( v13 >= v18 )
           break;
-        v8 = v38;
+        v6 = v36;
       }
     }
-    a2[49] = unk_5031BC;
-    a2[48] = create_object_vertex_buffer_resource(unk_4F7458, unk_5031BC, 322);
-    v21 = create_object_index_buffer_resource(unk_5000FC, v9);
-    v22 = a2[48];
-    a2[50] = v21;
-    (*(void (__stdcall **)(_DWORD, _DWORD, int, int *, _DWORD, int))(**(_DWORD **)(v22 + 8) + 44))(
-      *(_DWORD *)(v22 + 8),
+    object->grouped_vertex_count = g_object_grouped_vertex_cursor;
+    object->render_buffers = create_vertex_buffer(
+                               &g_direct3d_renderer.vertex_buffer_factory,
+                               g_object_grouped_vertex_cursor,
+                               322);
+    index_buffer = create_index_buffer(&g_direct3d_renderer.index_buffer_factory, v7);
+    render_buffers = object->render_buffers;
+    object->index_buffer = index_buffer;
+    ((void (__stdcall *)(ObjectVertexBuffer *, _DWORD, int, int *, _DWORD, int))render_buffers->vertex_buffer->vtbl->Lock)(
+      render_buffers->vertex_buffer,
       0,
-      24 * unk_5031BC,
-      &v39,
+      24 * g_object_grouped_vertex_cursor,
+      &v37,
       0,
-      a1);
-    v23 = 0;
-    if ( unk_5031BC > 0 )
+      v30);
+    v21 = 0;
+    if ( g_object_grouped_vertex_cursor > 0 )
     {
-      v24 = 0;
-      v25 = 0;
+      v22 = 0;
+      v23 = 0;
       do
       {
-        *(_DWORD *)(v24 + v40 + 12) = *(_DWORD *)(v25 + unk_5031C4 + 12);
-        v26 = (_DWORD *)(v25 + unk_5031C4 + 16);
-        *(_DWORD *)(v24 + v40 + 16) = *v26;
-        *(_DWORD *)(v24 + v40 + 20) = v26[1];
-        v27 = v25 + unk_5031C4;
-        v28 = (_DWORD *)(v24 + v40);
-        ++v23;
-        v29 = *(_DWORD *)(v25 + unk_5031C4);
-        v25 += 28;
-        *v28 = v29;
-        v24 += 24;
-        v28[1] = *(_DWORD *)(v27 + 4);
-        v28[2] = *(_DWORD *)(v27 + 8);
+        *(_DWORD *)(v22 + v38 + 12) = g_object_grouped_vertex_scratch[v23].diffuse;
+        p_u = &g_object_grouped_vertex_scratch[v23].u;
+        *(float *)(v22 + v38 + 16) = *p_u;
+        *(float *)(v22 + v38 + 20) = p_u[1];
+        v25 = &g_object_grouped_vertex_scratch[v23];
+        v26 = (float *)(v22 + v38);
+        ++v21;
+        x = g_object_grouped_vertex_scratch[v23++].x;
+        *v26 = x;
+        v22 += 24;
+        v26[1] = v25->y;
+        v26[2] = v25->z;
       }
-      while ( v23 < unk_5031BC );
-      v9 = a3;
+      while ( v21 < g_object_grouped_vertex_cursor );
+      v7 = v42;
     }
-    (*(void (__cdecl **)(_DWORD))(**(_DWORD **)(a2[48] + 8) + 48))(*(_DWORD *)(a2[48] + 8));
-    (*(void (__stdcall **)(_DWORD, _DWORD, int, char **, _DWORD))(**(_DWORD **)a2[50] + 44))(
-      *(_DWORD *)a2[50],
-      0,
-      2 * v9,
-      &v42,
-      0);
-    qmemcpy(v42, v41, 2 * v9);
-    (*(void (__stdcall **)(_DWORD))(**(_DWORD **)a2[50] + 48))(*(_DWORD *)a2[50]);
-    result = (int *)a2[4];
-    if ( (BYTE1(result) & 0x40) != 0 )
-    {
-      result = create_object_index_buffer_resource(unk_5000FC, v9);
-      a2[54] = result;
-    }
+    ((void (__cdecl *)(ObjectVertexBuffer *))object->render_buffers->vertex_buffer->vtbl->Unlock)(object->render_buffers->vertex_buffer);
+    object->index_buffer->buffer->vtbl->Lock(object->index_buffer->buffer, 0, 2 * v7, (void **)&v40, 0);
+    qmemcpy(v40, archive_data_end, 2 * v7);
+    object->index_buffer->buffer->vtbl->Unlock(object->index_buffer->buffer);
+    if ( (object->flags & 0x4000) != 0 )
+      object->toon_index_buffer = create_index_buffer(&g_direct3d_renderer.index_buffer_factory, v7);
   }
   else
   {
-    a2[51] = 0;
-    a2[52] = 0;
-    a2[53] = 0;
-    a2[48] = 0;
-    a2[50] = 0;
+    object->group_index_starts = nullptr;
+    object->group_texture_refs = nullptr;
+    object->group_primitive_counts = nullptr;
+    object->render_buffers = nullptr;
+    object->index_buffer = nullptr;
   }
-  return result;
 }
-

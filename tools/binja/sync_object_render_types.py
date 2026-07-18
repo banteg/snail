@@ -162,6 +162,10 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x414500", "bind_texture_ref"),
     ("0x414600", "query_direct3d_device_caps"),
     ("0x414650", "reset_render_counters"),
+    ("0x413bb0", "get_or_append_object_texture_group_vertex"),
+    ("0x413d50", "build_object_texture_group_buffers"),
+    ("0x419fd0", "sort_object_faces_by_texture_group"),
+    ("0x42f930", "request_object_texture_groups"),
     ("0x42fb10", "calc_object_bounding_box"),
     ("0x42fcb0", "calc_object_facequad_normals"),
     ("0x4303f0", "calc_object_texture_groups"),
@@ -399,6 +403,10 @@ PROTO_UPDATES = (
     (
         "advance_frame_sequence",
         "void __thiscall advance_frame_sequence(FrameSequence* sequence)",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "void __cdecl sort_object_faces_by_texture_group(Object* object)",
     ),
     (
         "build_object_texture_group_buffers",

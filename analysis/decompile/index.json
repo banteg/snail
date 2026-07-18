@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 9,
+  "function_count": 5,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 9,
-  "ida_exported": 9,
+  "bn_exported": 5,
+  "ida_exported": 5,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,43 +17,27 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_track_attachment_follow_state",
-      "address": "0x420cb0"
+      "name": "get_or_append_object_texture_group_vertex",
+      "address": "0x413bb0"
     },
     {
-      "name": "build_subgame_level",
-      "address": "0x437eb0"
+      "name": "build_object_texture_group_buffers",
+      "address": "0x413d50"
     },
     {
-      "name": "update_subgame",
-      "address": "0x438b90"
+      "name": "sort_object_faces_by_texture_group",
+      "address": "0x419fd0"
     },
     {
-      "name": "initialize_slug_voice_manager",
-      "address": "0x43f5c0"
+      "name": "request_object_texture_groups",
+      "address": "0x42f930"
     },
     {
-      "name": "update_slug_voice_manager",
-      "address": "0x43f5e0"
-    },
-    {
-      "name": "update_slug_hazard_ai",
-      "address": "0x43f930"
-    },
-    {
-      "name": "update_damage_gauge",
-      "address": "0x440fd0"
-    },
-    {
-      "name": "apply_damage_gauge_delta",
-      "address": "0x4413f0"
-    },
-    {
-      "name": "update_cutscene",
-      "address": "0x4466d0"
+      "name": "calc_object_texture_groups",
+      "address": "0x4303f0"
     }
   ],
-  "health_check_count": 776,
+  "health_check_count": 781,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"
