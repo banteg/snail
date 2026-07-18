@@ -1,11 +1,17 @@
 #ifndef CHEAT_STATE_H
 #define CHEAT_STATE_H
 
+enum CheatStateFlag {
+    CHEAT_STATE_FLAG_NEWTON = 0x01,
+    CHEAT_STATE_FLAG_AUTUMN = 0x02,
+    CHEAT_STATE_FLAG_SHEEP = 0x04,
+};
+
 class CheatState {
 public:
-    int initialize_cheat();
-    char update_cheat();
-    char match_cheat_text(const char* text);
+    void initialize_cheat();
+    void update_cheat();
+    bool match_cheat_text(char* text);
 
     int flags; // +0x00
     int unused_04; // +0x04

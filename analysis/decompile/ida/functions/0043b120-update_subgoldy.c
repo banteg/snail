@@ -152,7 +152,7 @@ void __thiscall update_subgoldy(Player *player)
     {
       update_damage_gauge(&player->damage_gauge);
       update_progress_bar(&player->progress_bar);
-      update_warning((float *)&player->warning);
+      update_warning(&player->warning);
       update_row_event_display(&player->game->completion);
     }
     return;
@@ -249,7 +249,7 @@ LABEL_60:
             v30 = *((_DWORD *)v28 + 60);
             v31 = player->game;
             if ( *(&v31->level_definition.segment_count + 4232 * v30) != -1 )
-              play_voice_manager((int)g_voice_manager, 13, 2u, *(&v31->level_definition.segment_count + 4232 * v30));
+              play_voice_manager(&g_voice_manager, 13, 2u, *(&v31->level_definition.segment_count + 4232 * v30));
             enqueue_tip_message(&g_game_base->tip_manager, &player->row_event.tip_definition, 1);
           }
         }
@@ -260,7 +260,7 @@ LABEL_60:
           {
             begin_track_attachment_follow_state(&player->follow_state, source_cell, p_position, player);
             if ( player->follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM )
-              play_voice_manager((int)g_voice_manager, 12, 0, -1);
+              play_voice_manager(&g_voice_manager, 12, 0, -1);
           }
         }
         if ( player->control_override_active )
@@ -476,7 +476,7 @@ LABEL_101:
               v49 = player->game;
               if ( v49->level_mode == 3 )
                 get_track_grid_cell_at_world_position(v49, p_position);
-              if ( ((player->game->runtime_flags & 0x400) == 0 || (g_cheat_state & 2) != 0)
+              if ( ((player->game->runtime_flags & 0x400) == 0 || (g_cheat_state.flags & 2) != 0)
                 && player->body.transform.position.y < 0.49000001 )
               {
                 start_squidge_y(&player->squidge, player->velocity.y);
@@ -511,7 +511,7 @@ LABEL_101:
               player->body.transform.position.y = v54->anchor_position.y + 0.49000001;
               player->attachment_exit_pending = 0;
               player->trampoline_bounce_active = 1;
-              play_sound_effect(41);
+              play_sound_effect(&g_sound_effect_manager, 41);
             }
           }
           else
@@ -567,7 +567,7 @@ LABEL_98:
               begin_post_follow_carryover((int)player);
           }
         }
-        update_warning((float *)&player->warning);
+        update_warning(&player->warning);
         if ( player->boost_one_tick
           || player->follow_state.active
           || (v55 = p_position->y,
@@ -587,7 +587,7 @@ LABEL_98:
           player->body.transform.position.z = (double)(int)(__int64)(player->body.transform.position.z + 0.49000001)
                                             - 0.5;
           if ( player->squidge.z_output == 0.0 )
-            play_sound_effect(47);
+            play_sound_effect(&g_sound_effect_manager, 47);
           start_squidge_z(&player->squidge, -0.33000001);
           v57 = player->barrier_hold_step + player->barrier_hold_progress;
           player->barrier_hold_progress = v57;
@@ -670,10 +670,10 @@ LABEL_98:
                 v61 = player->velocity.z;
             }
             player->velocity.z = v61;
-            reset_voice_manager(g_voice_manager);
+            reset_voice_manager(&g_voice_manager);
             end_jetpack_hover(&player->sub_hover);
             player->presentation.cutscene.state = CUT_SCENE_STATE_COMPLETION_PENDING;
-            play_sound_effect(0);
+            play_sound_effect(&g_sound_effect_manager, 0);
             player->boost_one_tick = 0;
           }
           player->completion_handoff_active = 1;
@@ -697,7 +697,7 @@ LABEL_98:
           if ( player->completion_handoff_timer > 2.0 && !player->completion_handoff_voice_gate )
           {
             player->completion_handoff_voice_gate = 1;
-            play_voice_manager((int)g_voice_manager, 8, 2u, -1);
+            play_voice_manager(&g_voice_manager, 8, 2u, -1);
           }
           if ( player->completion_handoff_timer > 2.0 )
           {
@@ -908,7 +908,7 @@ LABEL_287:
           player->attachment_exit_progress = v98;
           if ( v98 > 0.69999999 && !player->attachment_exit_gate_a )
           {
-            play_voice_manager((int)g_voice_manager, 3, 0, -1);
+            play_voice_manager(&g_voice_manager, 3, 0, -1);
             control_override_active = player->control_override_active;
             player->attachment_exit_gate_a = 1;
             if ( !control_override_active && player->body.transform.position.y < -6.0 )
@@ -916,7 +916,7 @@ LABEL_287:
           }
           if ( player->body.transform.position.y < -7.0 && !player->attachment_exit_gate_b )
           {
-            play_voice_manager((int)g_voice_manager, 1, 2u, -1);
+            play_voice_manager(&g_voice_manager, 1, 2u, -1);
             player->attachment_exit_gate_b = 1;
             player->attachment_exit_gate_a = 1;
           }
@@ -927,7 +927,7 @@ LABEL_287:
           player->startup_voice_timer = v100;
           if ( v100 > 1.0 )
           {
-            play_voice_manager((int)g_voice_manager, 7, 2u, -1);
+            play_voice_manager(&g_voice_manager, 7, 2u, -1);
             player->startup_voice_timer = 0.0;
           }
         }
@@ -947,7 +947,7 @@ LABEL_287:
           if ( v103 > 1.0 )
           {
             player->slow_commentary_timer = 0.0;
-            play_voice_manager((int)g_voice_manager, 6, 1u, -1);
+            play_voice_manager(&g_voice_manager, 6, 1u, -1);
           }
         }
         handle_subgoldy_collisions(player);
@@ -1016,8 +1016,8 @@ LABEL_365:
         ++player->game->replay_update_cursor;
         v107 = player->game;
         if ( v107->replay_update_cursor == 21000 )
-          show_times_up_message((int *)&v107->times_up);
-        update_times_up((int)&player->game->times_up);
+          show_times_up_message(&v107->times_up);
+        update_times_up(&player->game->times_up);
         return;
       }
     }

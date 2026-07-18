@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 7,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 7,
+  "ida_exported": 7,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,11 +17,35 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "populate_runtime_track_cells_from_segments",
-      "address": "0x435eb0"
+      "name": "initialize_cheat",
+      "address": "0x404740"
+    },
+    {
+      "name": "update_cheat",
+      "address": "0x404750"
+    },
+    {
+      "name": "match_cheat_text",
+      "address": "0x4047d0"
+    },
+    {
+      "name": "run_frame_update",
+      "address": "0x40a2a0"
+    },
+    {
+      "name": "initialize_game_assets_and_world",
+      "address": "0x40acf0"
+    },
+    {
+      "name": "complete_subgame",
+      "address": "0x438700"
+    },
+    {
+      "name": "update_subgoldy",
+      "address": "0x43b120"
     }
   ],
-  "health_check_count": 687,
+  "health_check_count": 695,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

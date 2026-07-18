@@ -39,3 +39,17 @@ at `+0x08` as `recent_text[8]` alongside the constructor's two-dword clearing
 view. The shift and insertion use that owned array directly, removing raw
 receiver indexing while preserving the exact 52/52 function and all seven
 clean operands.
+
+## 2026-07-18 authored lifecycle ABI
+
+Android preserves this callback as `cRCheat::AI()`, and Windows invokes it
+once per frame without consuming EAX. The final key/flag byte is ordinary
+expression residue, so the source now carries the authored void contract.
+The three masks are named from their exact trigger strings. All 52 instructions,
+the full prefix, and seven masked operands remain exact; no return-shape
+fakematch was introduced.
+
+Binary Ninja and Hex-Rays now persist the descending shift cursor as
+`recent_text_cursor`, an exact `char*` borrow starting at `recent_text[7]`.
+Both replays verify the cursor's native register/definition identity before
+mutation, so this clarification does not invent a second buffer owner.

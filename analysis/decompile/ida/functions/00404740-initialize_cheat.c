@@ -2,11 +2,8 @@
 /* function: initialize_cheat @ 0x404740 */
 /* selector: initialize_cheat */
 
-int __thiscall sub_404740(_DWORD *this)
+void __thiscall initialize_cheat(CheatState *cheat)
 {
-  *(this + 2) = 0;
-  *(this + 3) = 0;
-  *this = 0;
-  return 0;
+  cheat->recent_text = 0;
+  cheat->flags = 0;
 }
-

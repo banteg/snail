@@ -133,6 +133,66 @@ def test_voice_manager_replay_keeps_exact_owners_and_void_mutator_abis() -> None
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/voice_manager_types.h"' in ida_runner
 
 
+def test_cheat_state_replay_keeps_exact_global_owner_and_authored_abis() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_cheat_state_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_cheat_state_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_cheat_state_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "cheat_state_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/cheat_state.h").read_text(
+        encoding="utf-8"
+    )
+    functions = (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+        encoding="utf-8"
+    )
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+
+    for source in (binja_sync, ida_sync):
+        assert "void __thiscall initialize_cheat(CheatState* cheat)" in source
+        assert "void __thiscall update_cheat(CheatState* cheat)" in source
+        assert (
+            "bool __thiscall match_cheat_text(CheatState* cheat, char* text)"
+            in source
+        )
+
+    assert '("0x4b2f40", "g_cheat_state")' in binja_sync
+    assert '("0x4b2f40", "CheatState")' in binja_sync
+    assert "apply_user_var_updates" in binja_sync
+    assert binja_sync.count('"recent_text_cursor"') == 2
+    assert '"RegisterVariableSourceType",\n        33,\n        67,' in binja_sync
+    assert '"RegisterVariableSourceType",\n        57,\n        68,' in binja_sync
+    assert "CHEAT_STATE_ADDRESS = 0x4B2F40" in ida_sync
+    assert "NEXT_OWNER_ADDRESS = 0x4B2F50" in ida_sync
+    assert ida_sync.count('"recent_text_cursor"') >= 2
+    assert "0x404772" in ida_sync
+    assert "0x40480A" in ida_sync
+    assert "unexpected_cursor_lvar_candidates" in ida_sync
+    assert "cursor_lvar_readback_failed" in ida_sync
+    assert "typedef union CheatTextBuffer" in analysis_header
+    assert "char bytes[8];" in analysis_header
+    assert "CheatTextBuffer recent_text;" in analysis_header
+    assert "extern CheatState g_cheat_state;" in analysis_header
+    assert "void initialize_cheat();" in matcher_header
+    assert "void update_cheat();" in matcher_header
+    assert "bool match_cheat_text(char* text);" in matcher_header
+    assert "cRCheat::Init()" in functions
+    assert '"gCheat"' in references
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/cheat_state_types.h"'
+        in ida_runner
+    )
+
+
 def test_sound_manager_replay_keeps_empty_owner_bank_and_void_init_abi() -> None:
     repo_root = Path(__file__).parents[1]
     binja_sync = (BINJA_DIR / "sync_sound_effect_manager_types.py").read_text(

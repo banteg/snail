@@ -4,8 +4,8 @@
 /* function: run_frame_update @ 0x40a2a0 */
 
 0040a2aa        update_frontend_transition_overlay(&game->fade)
-0040a2be        update_cheat(&data_4b2f40)
-0040a2c8        update_voice_manager(0x751498)
+0040a2be        update_cheat(&g_cheat_state)
+0040a2c8        update_voice_manager(&g_voice_manager)
 0040a2d3        long double x87_r7_1 = fconvert.t(game->fixed_update_accumulator) + fconvert.t(1f)
 0040a2d9        int32_t frame_counter = game->frame_counter
 0040a2df        int32_t ebx = 0

@@ -2,46 +2,44 @@
 /* function: update_cheat @ 0x404750 */
 /* selector: update_cheat */
 
-char __thiscall sub_404750(char *this)
+void __thiscall update_cheat(CheatState *cheat)
 {
-  int v2; // eax
-  _BYTE *v3; // ecx
-  int v4; // eax
-  int v5; // eax
+  char pressed_text_input_key_code; // al
+  char *recent_text_cursor; // ecx
+  uint32_t flags; // eax
+  uint32_t v5; // eax
+  uint32_t v6; // eax
 
-  LOBYTE(v2) = read_pressed_text_input_key_code();
-  if ( (char)v2 >= 97 && (char)v2 <= 122 )
-    LOBYTE(v2) = v2 - 32;
-  if ( (char)v2 >= 65 && (char)v2 <= 90 )
+  pressed_text_input_key_code = read_pressed_text_input_key_code();
+  if ( pressed_text_input_key_code >= 97 && pressed_text_input_key_code <= 122 )
+    pressed_text_input_key_code -= 32;
+  if ( pressed_text_input_key_code >= 65 && pressed_text_input_key_code <= 90 )
   {
-    v3 = this + 15;
+    recent_text_cursor = &cheat->recent_text.bytes[7];
     do
     {
-      *v3 = *(v3 - 1);
-      --v3;
+      *recent_text_cursor = *(recent_text_cursor - 1);
+      --recent_text_cursor;
     }
-    while ( (int)&v3[-8 - (_DWORD)this] > 0 );
-    *(this + 8) = v2;
-    if ( match_cheat_text(this, aNewton) )
+    while ( (int)&recent_text_cursor[-8 - (_DWORD)cheat] > 0 );
+    cheat->recent_text.bytes[0] = pressed_text_input_key_code;
+    if ( match_cheat_text(cheat, aNewton) )
     {
-      v4 = *(_DWORD *)this;
-      LOBYTE(v4) = *(_DWORD *)this | 1;
-      *(_DWORD *)this = v4;
+      flags = cheat->flags;
+      LOBYTE(flags) = cheat->flags | 1;
+      cheat->flags = flags;
     }
-    if ( match_cheat_text(this, aAutumn) )
+    if ( match_cheat_text(cheat, aAutumn) )
     {
-      v5 = *(_DWORD *)this;
-      LOBYTE(v5) = *(_DWORD *)this | 2;
-      *(_DWORD *)this = v5;
+      v5 = cheat->flags;
+      LOBYTE(v5) = cheat->flags | 2;
+      cheat->flags = v5;
     }
-    LOBYTE(v2) = match_cheat_text(this, aSheep);
-    if ( (_BYTE)v2 )
+    if ( match_cheat_text(cheat, aSheep) )
     {
-      v2 = *(_DWORD *)this;
-      LOBYTE(v2) = *(_DWORD *)this | 4;
-      *(_DWORD *)this = v2;
+      v6 = cheat->flags;
+      LOBYTE(v6) = cheat->flags | 4;
+      cheat->flags = v6;
     }
   }
-  return v2;
 }
-

@@ -30,3 +30,16 @@ Rejected source-shape probes:
 from `CheatState::recent_text + length - 1` rather than rebuilding the same
 address from raw `this + length + 7`. The field-relative spelling remains
 exact at 42/42 instructions with both operands clean.
+
+## 2026-07-18 authored member contract
+
+Android preserves `cRCheat::MatchText(char*)`, including the mutable `char*`
+parameter spelling, while every path deliberately returns zero or one. The
+shared declaration now records that bool contract and the exact cross-port
+parameter type. Windows remains exact at 42/42 instructions with both masked
+operands clean.
+
+The paired decompiler replays also name the reverse comparison pointer
+`recent_text_cursor` from its exact ECX/EDX SSA and Hex-Rays definition
+identities. It remains a `char*` borrow into the owned eight-byte window rather
+than a fabricated allocation or wider field.

@@ -21,7 +21,7 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
   v3 = runtime->replay_update_cursor + 1;
   ++runtime->current_high_score_record.replay_sample_count;
   runtime->replay_update_cursor = v3;
-  if ( (g_cheat_state & 1) == 0 )
+  if ( (g_cheat_state.flags & 1) == 0 )
   {
     score_tail = runtime->player.score_tail;
     runtime->current_high_score_record.score = runtime->player.total_score;

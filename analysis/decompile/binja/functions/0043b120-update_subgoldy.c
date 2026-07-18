@@ -223,7 +223,7 @@
 0043b817        dispatch_cutscene_animation(&player->presentation, 1, 0, 0xffffffff)
 0043b837        int32_t sample_override = *(&player->game->level_definition + (&game_21->runtime_rows[0].row_event_id)[eax_34] * 0x4220)
 0043b841        if (sample_override != 0xffffffff)
-0043b84d        play_voice_manager(0x751498, 0xd, 2, sample_override)
+0043b84d        play_voice_manager(&g_voice_manager, 0xd, 2, sample_override)
 0043b866        enqueue_tip_message(&g_game_base->tip_manager, &player->row_event.tip_definition, 1)
 0043b86b        int16_t eax_43
 0043b86b        eax_43.b = player->attachment_exit_pending
@@ -234,7 +234,7 @@
 0043b88c        if (eax_43.b == 0)
 0043b89b        begin_track_attachment_follow_state(&player->follow_state, eax_32, ebx_1, player)
 0043b8aa        if (player->follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM)
-0043b8b7        play_voice_manager(0x751498, 0xc, 0, 0xffffffff)
+0043b8b7        play_voice_manager(&g_voice_manager, 0xc, 0, 0xffffffff)
 0043b8bc        eax_43.b = player->control_override_active
 0043b8c4        int16_t top_13
 0043b8c4        if (eax_43.b == 0)
@@ -557,7 +557,7 @@
 0043c011        struct SubgameRuntime* game_11 = player->game
 0043c01b        if (game_11->level_mode == 3)
 0043c01e        get_track_grid_cell_at_world_position(game_11, ebx_1)
-0043c038        if (((player->game->runtime_flags).w:1.b & 4) == 0 || (data_4b2f40 & 2) != 0)
+0043c038        if (((player->game->runtime_flags).w:1.b & 4) == 0 || (g_cheat_state.flags.b & 2) != 0)
 0043c03a        unimplemented  {fld st0, dword [ebp+0x6c]}
 0043c03d        long double temp48_1 = fconvert.t(0.49000001f)
 0043c03d        unimplemented  {fcomp st0, dword [0x4973e8]} f- temp48_1
@@ -658,7 +658,7 @@
 0043c3e7        unimplemented  {fstp dword [ebp+0x6c], st0}
 0043c3ea        player->attachment_exit_pending = 0
 0043c3f1        player->trampoline_bounce_active = 1
-0043c3f8        play_sound_effect(0x29)
+0043c3f8        play_sound_effect(&g_sound_effect_manager, 0x29)
 0043c0e9        st0_1 = sample_track_floor_height_at_position(player->game, ebx_1)
 0043c0e9        unimplemented  {call 0x43d4d0}
 0043c0ee        unimplemented  {fadd dword [0x4973e8]}
@@ -898,7 +898,7 @@
 0043c4ad        bool c3_41 = unimplemented  {fcomp st0, dword [0x497234]} f== temp26_1
 0043c4ad        unimplemented  {fcomp st0, dword [0x497234]}
 0043c4b8        if ((((c0_41 ? 1 : 0) << 8 | (c2_41 ? 1 : 0) << 0xa | (c3_41 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb):1.b & 0x40) != 0)
-0043c4c1        play_sound_effect(0x2f)
+0043c4c1        play_sound_effect(&g_sound_effect_manager, 0x2f)
 0043c4d1        start_squidge_z(&player->squidge, -0.330000013f)
 0043c4d6        unimplemented  {fld st0, dword [ebp+0x32c]}
 0043c4dc        unimplemented  {fadd dword [ebp+0x328]}
@@ -1072,10 +1072,10 @@
 0043c771        player->velocity.z = fconvert.s(unimplemented  {fstp dword [ebp+0x418], st0})
 0043c771        unimplemented  {fstp dword [ebp+0x418], st0}
 0043c771        top_142 = top_146 + 1
-0043c77c        reset_voice_manager(0x751498)
+0043c77c        reset_voice_manager(&g_voice_manager)
 0043c787        end_jetpack_hover(&player->sub_hover)
 0043c797        player->presentation.cutscene.state = CUT_SCENE_STATE_COMPLETION_PENDING
-0043c79d        play_sound_effect(0)
+0043c79d        play_sound_effect(&g_sound_effect_manager, 0)
 0043c7a2        player->boost_one_tick = 0
 0043c7b0        player->completion_handoff_active = 1
 0043c7bd        unimplemented  {fild st0, dword [ecx+0x58]}
@@ -1132,7 +1132,7 @@
 0043c858        eax_121.b = player->completion_handoff_voice_gate
 0043c860        if (eax_121.b == 0)
 0043c86d        player->completion_handoff_voice_gate = 1
-0043c874        play_voice_manager(0x751498, 8, 2, 0xffffffff)
+0043c874        play_voice_manager(&g_voice_manager, 8, 2, 0xffffffff)
 0043c879        unimplemented  {fld st0, dword [ebp+0x444]}
 0043c87f        long double temp47_1 = fconvert.t(2f)
 0043c87f        unimplemented  {fcomp st0, dword [0x4974a4]} f- temp47_1
@@ -1464,7 +1464,7 @@
 0043cea7        if ((eax_147:1.b & 0x41) == 0)
 0043cea9        eax_147.b = player->attachment_exit_gate_a
 0043ceb1        if (eax_147.b == 0)
-0043cebd        play_voice_manager(0x751498, 3, 0, 0xffffffff)
+0043cebd        play_voice_manager(&g_voice_manager, 3, 0, 0xffffffff)
 0043cec2        int16_t eax_149
 0043cec2        eax_149.b = player->control_override_active
 0043cec8        player->attachment_exit_gate_a = 1
@@ -1490,7 +1490,7 @@
 0043cf02        if ((eax_150:1.b & 1) != 0)
 0043cf04        eax_150.b = player->attachment_exit_gate_b
 0043cf0c        if (eax_150.b == 0)
-0043cf19        play_voice_manager(0x751498, 1, 2, 0xffffffff)
+0043cf19        play_voice_manager(&g_voice_manager, 1, 2, 0xffffffff)
 0043cf1e        player->attachment_exit_gate_b = 1
 0043cf25        player->attachment_exit_gate_a = 1
 0043cf2c        unimplemented  {fld st0, dword [ebp+0x330]}
@@ -1511,7 +1511,7 @@
 0043cf51        bool c3_69 = unimplemented  {fcomp st0, dword [0x497220]} f== temp64_1
 0043cf51        unimplemented  {fcomp st0, dword [0x497220]}
 0043cf5c        if ((((c0_69 ? 1 : 0) << 8 | (c2_69 ? 1 : 0) << 0xa | (c3_69 ? 1 : 0) << 0xe | (top_224 & 7) << 0xb):1.b & 0x41) == 0)
-0043cf69        play_voice_manager(0x751498, 7, 2, 0xffffffff)
+0043cf69        play_voice_manager(&g_voice_manager, 7, 2, 0xffffffff)
 0043cf6e        player->startup_voice_timer = 0f
 0043cf7a        unimplemented  {fld st0, dword [eax+0x38]}
 0043cf7d        unimplemented  {fmul st0, dword [0x4975b0]}
@@ -1556,7 +1556,7 @@
 0043cfd5        unimplemented  {fcomp st0, dword [0x497220]}
 0043cfe0        if ((((c0_72 ? 1 : 0) << 8 | (c2_72 ? 1 : 0) << 0xa | (c3_72 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb):1.b & 0x41) == 0)
 0043cfed        player->slow_commentary_timer = 0f
-0043cff3        play_voice_manager(0x751498, 6, 1, 0xffffffff)
+0043cff3        play_voice_manager(&g_voice_manager, 6, 1, 0xffffffff)
 0043d004        handle_subgoldy_collisions(player)
 0043d00f        update_anim_manager(&player->presentation.anim_manager)
 0043d01a        update_anim_manager(&player->presentation.jetpack_channel.anim_manager)

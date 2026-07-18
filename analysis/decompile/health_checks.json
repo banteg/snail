@@ -12048,6 +12048,116 @@
         "sub_430A30",
         "int this"
       ]
+    },
+    {
+      "name": "bn_cheat_initializer_exact_owner_and_void_abi",
+      "artifact": "analysis/decompile/binja/functions/00404740-initialize_cheat.c",
+      "required_substrings": [
+        "__builtin_memset(&cheat->recent_text, 0, 8)",
+        "cheat->flags = 0",
+        "0040474a        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4b2f40",
+        "return 0"
+      ]
+    },
+    {
+      "name": "ida_cheat_initializer_exact_owner_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00404740-initialize_cheat.c",
+      "required_substrings": [
+        "void __thiscall initialize_cheat(CheatState *cheat)",
+        "cheat->recent_text = 0;",
+        "cheat->flags = 0;"
+      ],
+      "forbidden_substrings": [
+        "char __thiscall",
+        "sub_404740",
+        "return 0"
+      ]
+    },
+    {
+      "name": "bn_cheat_update_borrowed_text_cursor_and_void_abi",
+      "artifact": "analysis/decompile/binja/functions/00404750-update_cheat.c",
+      "required_substrings": [
+        "char* recent_text_cursor = &cheat->recent_text.bytes[7]",
+        "match_cheat_text(cheat, \"NEWTON\")",
+        "cheat->flags = flags",
+        "004047cb        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4b2f40",
+        "char update_cheat"
+      ]
+    },
+    {
+      "name": "ida_cheat_update_borrowed_text_cursor_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00404750-update_cheat.c",
+      "required_substrings": [
+        "void __thiscall update_cheat(CheatState *cheat)",
+        "char *recent_text_cursor; // ecx",
+        "recent_text_cursor = &cheat->recent_text.bytes[7];",
+        "cheat->recent_text.bytes[0] = pressed_text_input_key_code;"
+      ],
+      "forbidden_substrings": [
+        "char __thiscall update_cheat",
+        "sub_404750",
+        "_BYTE *v3"
+      ]
+    },
+    {
+      "name": "bn_cheat_match_borrowed_text_cursor_and_bool_abi",
+      "artifact": "analysis/decompile/binja/functions/004047d0-match_cheat_text.c",
+      "required_substrings": [
+        "char* recent_text_cursor = not.d(i) - 1 + cheat + 7",
+        "*recent_text_cursor",
+        "return 0",
+        "return 1"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "data_4b2f40"
+      ]
+    },
+    {
+      "name": "ida_cheat_match_borrowed_text_cursor_and_bool_abi",
+      "artifact": "analysis/decompile/ida/functions/004047d0-match_cheat_text.c",
+      "required_substrings": [
+        "bool __thiscall match_cheat_text(CheatState *cheat, char *text)",
+        "char *recent_text_cursor; // edx",
+        "text[v6] == *recent_text_cursor",
+        "--recent_text_cursor"
+      ],
+      "forbidden_substrings": [
+        "char __thiscall match_cheat_text",
+        "sub_4047D0",
+        "char *i; // edx"
+      ]
+    },
+    {
+      "name": "bn_cheat_global_owner_lifecycle_and_consumers",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "initialize_cheat(&g_cheat_state)"
+      ],
+      "forbidden_substrings": [
+        "initialize_cheat(&data_4b2f40)",
+        "initialize_cheat(0x4b2f40)"
+      ]
+    },
+    {
+      "name": "ida_cheat_global_owner_lifecycle_and_consumers",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "initialize_cheat(&g_cheat_state);"
+      ],
+      "forbidden_substrings": [
+        "initialize_cheat(&byte_4B2F40)",
+        "initialize_cheat((CheatState *)0x4B2F40)"
+      ]
     }
   ]
 }

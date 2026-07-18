@@ -2,7 +2,7 @@
 
 #include "cheat_state.h"
 
-char CheatState::update_cheat()
+void CheatState::update_cheat()
 {
     char key = read_pressed_text_input_key_code();
     if (key >= 'a' && key <= 'z') {
@@ -19,19 +19,17 @@ char CheatState::update_cheat()
         recent_text[0] = key;
 
         if (match_cheat_text("NEWTON") != 0) {
-            flags |= 1;
+            flags |= CHEAT_STATE_FLAG_NEWTON;
         }
         if (match_cheat_text("AUTUMN") != 0) {
-            flags |= 2;
+            flags |= CHEAT_STATE_FLAG_AUTUMN;
         }
         key = match_cheat_text("SHEEP");
         if (key != 0) {
             int value = flags;
-            value |= 4;
+            value |= CHEAT_STATE_FLAG_SHEEP;
             flags = value;
             key = (char)value;
         }
     }
-
-    return key;
 }

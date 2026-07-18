@@ -58,6 +58,14 @@ we keep a narrow handwritten header and a matching IDA import script instead.
 
 Current checked-in example:
 
+- `cheat_state_types.h`
+- `uv run python tools/binja/sync_cheat_state_types.py --target SnailMail_unwrapped.exe.bndb`
+- `uv run python tools/ida/sync_cheat_state_types.py`
+  - Replays the exact 0x10-byte cross-port `cRCheat` / `gCheat` owner, its
+    eight-byte rolling text buffer, and the authored void `Init` / `AI` versus
+    bool `MatchText(char*)` contracts. The next named global at `0x4b2f50`
+    guards the owner extent.
+
 - `parcel_bucket_types.h`
 - `uv run python tools/ida/sync_parcel_bucket_types.py`
   - Previews on a temporary database before replaying the two exact 0x800-entry

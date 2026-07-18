@@ -1060,3 +1060,13 @@ owner removes stale root-byte arithmetic and casts from
 This is analysis ownership only. No matcher source was changed to chase the
 new decompiler spelling: the world initializer remains honestly at 80.50%
 (5392/5411), with 1639 clean masked operands and the existing 36 mismatches.
+
+## 2026-07-18 cRCheat global ownership
+
+The early startup call owns the exact `g_cheat_state` object at `0x4b2f40`,
+not an anonymous byte global. Android preserves the corresponding `gCheat`
+and `cRCheat::Init()` symbols, and its four-dword declaration agrees with the
+Windows `0x10` extent ending at the independently named
+`g_animation_directory`. The checked-in matcher already used the canonical
+owner; its lifecycle ABI is now void without changing the initializer's
+80.50%, 5,392/5,411 instruction receipt or 1,639 clean operands.

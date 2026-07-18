@@ -13,9 +13,9 @@ int __thiscall run_frame_update(GameRoot *game)
   struct BodNode *list_next; // esi
   uint32_t list_flags; // eax
   uint32_t v9; // eax
-  int *v10; // edi
-  int v11; // ecx
-  int v12; // esi
+  Sprite **v10; // edi
+  Sprite *v11; // ecx
+  Sprite *next; // esi
   double fixed_update_accumulator; // st7
   float x; // [esp+0h] [ebp-38h]
   float y; // [esp+4h] [ebp-34h]
@@ -25,7 +25,7 @@ int __thiscall run_frame_update(GameRoot *game)
   update_frontend_transition_overlay((float *)&game->fade.state);
   noop_runtime_ai();
   update_cheat(&g_cheat_state);
-  update_voice_manager(g_voice_manager);
+  update_voice_manager(&g_voice_manager);
   v2 = game->fixed_update_accumulator + 1.0;
   v3 = 0;
   v4 = game->frame_counter + 1;
@@ -90,12 +90,12 @@ int __thiscall run_frame_update(GameRoot *game)
       {
         do
         {
-          v12 = *(_DWORD *)(v11 + 12);
+          next = v11->next;
           update_sprite(v11);
           ++v3;
-          v11 = v12;
+          v11 = next;
         }
-        while ( v12 );
+        while ( next );
       }
       ++v10;
     }

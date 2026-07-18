@@ -2954,10 +2954,11 @@
       "aliases": [
         "g_completion_snapshot_flags",
         "g_environment_flags",
-        "byte_4b2f40"
+        "byte_4b2f40",
+        "gCheat"
       ],
       "size": "0x10",
-      "description": "Global CheatState object: flag bits at +0x00 gate completion snapshots and environment behavior, while +0x08..+0x0f retain the recent cheat-text buffer."
+      "description": "Exact 0x10-byte cRCheat global (`gCheat` in Android): flag bits at +0x00 gate completion snapshots and environment behavior, +0x04 is unconsumed, and +0x08..+0x0f own the recent cheat-text buffer. The independently named animation-directory owner starts at 0x4b2f50."
     },
     {
       "address": "0x4b2f50",

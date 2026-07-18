@@ -3,7 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_cheat @ 0x404740 */
 
-00404742        arg1[2] = 0
-00404745        arg1[3] = 0
-00404748        *arg1 = 0
-0040474a        return 0
+00404742        __builtin_memset(&cheat->recent_text, 0, 8)
+00404748        cheat->flags = 0
+0040474a        return

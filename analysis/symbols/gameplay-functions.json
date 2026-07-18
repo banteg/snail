@@ -182,15 +182,18 @@
     },
     {
       "address": "0x404740",
-      "name": "initialize_cheat"
+      "name": "initialize_cheat",
+      "description": "Exact void cRCheat::Init() lifecycle method for the 0x10-byte g_cheat_state owner. It clears the eight-byte rolling text buffer and flags; the zero left in EAX is the flags-store temporary, not a returned value. Android preserves cRCheat::Init() and gCheat."
     },
     {
       "address": "0x404750",
-      "name": "update_cheat"
+      "name": "update_cheat",
+      "description": "Exact void cRCheat::AI() lifecycle method: consumes typed letters, shifts the owned eight-byte rolling buffer, and sets the NEWTON, AUTUMN, and SHEEP flag bits. Its only Windows caller discards the incidental final AL value; Android preserves cRCheat::AI()."
     },
     {
       "address": "0x4047d0",
-      "name": "match_cheat_text"
+      "name": "match_cheat_text",
+      "description": "Exact bool cRCheat::MatchText(char*) member: rejects strings of length eight or more and reverse-compares shorter text against the owned rolling input buffer. Android preserves the exact cRCheat::MatchText(char*) signature."
     },
     {
       "address": "0x404830",

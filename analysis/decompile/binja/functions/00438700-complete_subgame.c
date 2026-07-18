@@ -8,7 +8,7 @@
 00438718        (&game->current_high_score_record.run_records[0].flags)[eax_1].b |= 8
 00438735        game->current_high_score_record.replay_sample_count += 1
 0043873b        game->replay_update_cursor += 1
-0043874d        if ((1 & data_4b2f40) != 0)
+0043874d        if ((1 & g_cheat_state.flags.b) != 0)
 0043874d        return
 00438759        int32_t score_tail = game->player.score_tail
 00438761        game->current_high_score_record.score = game->player.total_score
