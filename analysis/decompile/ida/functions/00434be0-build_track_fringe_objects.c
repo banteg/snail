@@ -98,7 +98,7 @@ LABEL_64:
           cell->fringe_front = fringe_front_new;
           set_bod_object(
             &fringe_front_new->bod,
-            (Object *)g_game_base->root_bod_catalog.fringe_catalog.entries[0][0][8 * v6][12 * v6 + 2 * v2 + v8 + v2].object);
+            g_game_base->root_bod_catalog.fringe_catalog.entries[0][0][8 * v6][12 * v6 + 2 * v2 + v8 + v2].object);
           cell->fringe_front->bod.bod.list_flags |= 0x20u;
           cell->fringe_front->bod.position = cell->anchor_position;
           v1 = game;
@@ -121,7 +121,7 @@ LABEL_64:
           cell->fringe_right = fringe_right_new;
           set_bod_object(
             &fringe_right_new->bod,
-            (Object *)g_game_base->root_bod_catalog.fringe_catalog.entries[0][1][8 * v6][12 * v6 + 2 * v2 + v10 + v2].object);
+            g_game_base->root_bod_catalog.fringe_catalog.entries[0][1][8 * v6][12 * v6 + 2 * v2 + v10 + v2].object);
           cell->fringe_right->bod.bod.list_flags |= 0x20u;
           cell->fringe_right->bod.position = cell->anchor_position;
           v1 = game;
@@ -144,7 +144,7 @@ LABEL_64:
           cell->fringe_left = fringe_left_new;
           set_bod_object(
             &fringe_left_new->bod,
-            (Object *)g_game_base->root_bod_catalog.fringe_catalog.entries[0][2][8 * v6][12 * v6 + 2 * v2 + v12 + v2].object);
+            g_game_base->root_bod_catalog.fringe_catalog.entries[0][2][8 * v6][12 * v6 + 2 * v2 + v12 + v2].object);
           cell->fringe_left->bod.bod.list_flags |= 0x20u;
           cell->fringe_left->bod.position = cell->anchor_position;
           v1 = game;
@@ -163,7 +163,7 @@ LABEL_64:
         cell->fringe_back = fringe_back_new;
         set_bod_object(
           &fringe_back_new->bod,
-          (Object *)g_game_base->root_bod_catalog.fringe_catalog.entries[0][3][8 * v6][12 * v6 + 2 * v2 + v14 + v2].object);
+          g_game_base->root_bod_catalog.fringe_catalog.entries[0][3][8 * v6][12 * v6 + 2 * v2 + v14 + v2].object);
         cell->fringe_back->bod.bod.list_flags |= 0x20u;
         cell->fringe_back->bod.position = cell->anchor_position;
         v1 = game;

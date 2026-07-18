@@ -5,6 +5,8 @@
  * Narrow Binary Ninja projection of the constructor-proven 352-entry BOD
  * catalog at GameRoot +0x44100. Type names are intentionally local to this
  * lane so importing it cannot flatten an independently recovered BodBase.
+ * The complete Object owner is maintained by the object-render lane and is
+ * borrowed here through a forward declaration only.
  */
 
 typedef unsigned char uint8_t;
@@ -23,6 +25,8 @@ typedef struct RootBodCatalogColor4f {
     float a;
 } RootBodCatalogColor4f;
 
+typedef struct Object Object;
+
 typedef struct RootBodCatalogEntry RootBodCatalogEntry;
 struct RootBodCatalogEntry {
     void* vtable;
@@ -32,7 +36,7 @@ struct RootBodCatalogEntry {
     RootBodCatalogVec3 position;
     float render_arg_1c;
     float render_arg_20;
-    void* object;
+    Object* object;
     RootBodCatalogColor4f color;
 };
 

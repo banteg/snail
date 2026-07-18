@@ -189,7 +189,9 @@ intentional.
 - `uv run python tools/binja/sync_root_bod_catalog_types.py`
 - `uv run python tools/ida/sync_root_bod_catalog_types.py`
   - Width-gates the constructor-proven 352-entry, 0x4d00-byte catalog and
-    composes it with the adjacent 0x5e10-byte `DirectXLoader` owner in IDA.
+    borrows the exact 0xdc-byte `Object` owner for each entry without
+    redeclaring it, then composes the catalog with the adjacent 0x5e10-byte
+    `DirectXLoader` owner in IDA.
 - `bn_subgame_hazard_pool_types.h`
 - `uv run python tools/binja/sync_subgame_hazard_pool_types.py`
 - `bn_subgame_pool_types.h`

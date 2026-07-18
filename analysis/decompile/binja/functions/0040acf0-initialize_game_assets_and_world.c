@@ -287,26 +287,26 @@
 0040bcd4        initialize_backdrop_corner_quad(3, game->root_bod_catalog.slide_corners.storage[2].object, "Objects/World00/Slide0.tga")
 0040bced        set_bod_object(&game->root_bod_catalog.trampoline.vtable, add_object_to_list(&g_object_list))
 0040bd02        load_x_mesh(&game->directx_loader, "Tramp.x", game->root_bod_catalog.trampoline.object, 1)
-0040bd0d        *(game->root_bod_catalog.trampoline.object + 0x14) = 6
-0040bd1d        int32_t* eax_56 = *(*(game->root_bod_catalog.trampoline.object + 0x5c) + 0xc)
-0040bd25        *eax_56 |= 0x400
+0040bd0d        game->root_bod_catalog.trampoline.object->blend_mode = 6
+0040bd1d        struct TextureRef* texture_ref = game->root_bod_catalog.trampoline.object->facequads->texture_ref
+0040bd25        texture_ref->flags |= 0x400
 0040bd37        set_bod_object(&game->root_bod_catalog.universe_hole.vtable, add_object_to_list(&g_object_list))
 0040bd49        initialize_textured_backdrop_quad(game->root_bod_catalog.universe_hole.object, "Objects/Universe/Hole.tga", 0f)
-0040bd57        *(game->root_bod_catalog.universe_hole.object + 0x14) = 5
-0040bd67        int32_t* eax_59 = *(*(game->root_bod_catalog.universe_hole.object + 0x5c) + 0xc)
-0040bd6a        int32_t ecx_161 = *eax_59
-0040bd6c        ecx_161:1.b |= 4
-0040bd6f        *eax_59 = ecx_161
+0040bd57        game->root_bod_catalog.universe_hole.object->blend_mode = 5
+0040bd67        struct TextureRef* texture_ref_1 = game->root_bod_catalog.universe_hole.object->facequads->texture_ref
+0040bd6a        enum TextureRefFlags flags = texture_ref_1->flags
+0040bd6c        flags:1.b |= 4
+0040bd6f        texture_ref_1->flags = flags
 0040bd82        set_bod_object(&game->root_bod_catalog.lazer_model.vtable, add_object_to_list(&g_object_list))
 0040bd93        load_object_definition("Objects/Lazer", game->root_bod_catalog.lazer_model.object)
 0040bd9b        struct Object** edi_14 = &game->subgame.sub_lazers.slots[0].body.bod.object
 0040bda1        int32_t var_128_2 = 0x14
 0040be04        bool cond:1_1
 0040bdb3        set_bod_object(&edi_14[-9], game->root_bod_catalog.lazer_model.object)
-0040bdd1        struct TextureRef* texture_ref = (edi_14 - 0x3cb13c)->subgame.sub_lazers.slots[0].body.bod.object->facequads->texture_ref
-0040bdd4        enum TextureRefFlags flags = texture_ref->flags
-0040bdd6        flags:1.b |= 4
-0040bdd9        texture_ref->flags = flags
+0040bdd1        struct TextureRef* texture_ref_2 = (edi_14 - 0x3cb13c)->subgame.sub_lazers.slots[0].body.bod.object->facequads->texture_ref
+0040bdd4        enum TextureRefFlags flags_1 = texture_ref_2->flags
+0040bdd6        flags_1:1.b |= 4
+0040bdd9        texture_ref_2->flags = flags_1
 0040bde4        (edi_14 - 0x3cb13c)->subgame.sub_lazers.slots[0].owner_game = &game->subgame
 0040bde7        store_color4f(&edi_14[1], 1f, 1f, 1f, 0.699999988f)
 0040bdec        struct Object* object_13 = (edi_14 - 0x3cb13c)->subgame.sub_lazers.slots[0].body.bod.object
@@ -1606,20 +1606,20 @@
 0040f26a        game->subgame.path_pairs[0x1a].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[0x3c].secondary.bod.object
 0040f276        game->subgame.path_pairs[0x1a].secondary.entry_base_strip_mesh = game->subgame.path_pairs[0x1a].secondary.bod.object
 0040f295        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots, add_object_to_list(&g_object_list))
-0040f2a2        char* eax_230 = find_case_insensitive_substring("Test:", game->directx_loader.animation_bytes)
+0040f2a2        char* eax_228 = find_case_insensitive_substring("Test:", game->directx_loader.animation_bytes)
 0040f2ac        void mesh_name
-0040f2ac        if (eax_230 == 0)
+0040f2ac        if (eax_228 == 0)
 0040f2f3        rstrcpy_checked_ascii(&mesh_name, "turbo-base-000.x")
-0040f2b4        char* eax_231 = find_case_insensitive_substring(":", eax_230)
-0040f2b9        char i = eax_231[1]
-0040f2c5        char* eax_232 = &mesh_name
+0040f2b4        char* eax_229 = find_case_insensitive_substring(":", eax_228)
+0040f2b9        char i = eax_229[1]
+0040f2c5        char* eax_230 = &mesh_name
 0040f2c9        while (i != 0x2e)
-0040f2d1        *eax_232 = i
-0040f2d3        i = eax_232[&eax_231[1] - &mesh_name + 1]
-0040f2d7        eax_232 = &eax_232[1]
-0040f2dd        *eax_232 = 0x2e
-0040f2e1        eax_232[1] = 0x78
-0040f2e4        eax_232[2] = 0
+0040f2d1        *eax_230 = i
+0040f2d3        i = eax_230[&eax_229[1] - &mesh_name + 1]
+0040f2d7        eax_230 = &eax_230[1]
+0040f2dd        *eax_230 = 0x2e
+0040f2e1        eax_230[1] = 0x78
+0040f2e4        eax_230[2] = 0
 0040f309        load_x_animation_clip(&game->directx_loader, &mesh_name, game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object)
 0040f321        set_bod_object(&game->subgame.player.presentation.body.bod, add_object_to_list(&g_object_list))
 0040f334        load_x_animation_clip(&game->directx_loader, &mesh_name, game->subgame.player.presentation.body.bod.object)
@@ -1651,12 +1651,12 @@
 0040f503        object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
 0040f508        apply_object_toon((var_12c - 0x432870)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object, 0)
 0040f511        struct Object* object_14 = (var_12c - 0x432870)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
-0040f513        struct Object** eax_251 = &var_12c[0x20]
-0040f518        var_12c = eax_251
+0040f513        struct Object** eax_249 = &var_12c[0x20]
+0040f518        var_12c = eax_249
 0040f51c        object_14->distort.z_wave = 0
-0040f525        (eax_251 - 0x4328f0)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object->distort.y_squash = 0f
+0040f525        (eax_249 - 0x4328f0)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object->distort.y_squash = 0f
 0040f532        cond:5_1 = var_128_5 != 1
-0040f533        (eax_251 - 0x4328f0)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object->distort.xyz_scale = 0f
+0040f533        (eax_249 - 0x4328f0)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object->distort.xyz_scale = 0f
 0040f539        var_128_5 -= 1
 0040f53d        do while (cond:5_1)
 0040f53f        struct Object* object_1 = game->subgame.player.presentation.body.bod.object
@@ -1678,12 +1678,12 @@
 0040f614        object_2->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
 0040f619        apply_object_toon((var_12c_1 - 0x433a54)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object, 0)
 0040f622        struct Object* object_17 = (var_12c_1 - 0x433a54)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
-0040f624        struct Object** eax_261 = &var_12c_1[0x20]
-0040f629        var_12c_1 = eax_261
+0040f624        struct Object** eax_259 = &var_12c_1[0x20]
+0040f629        var_12c_1 = eax_259
 0040f62d        object_17->distort.z_wave = 0
-0040f636        (eax_261 - 0x433ad4)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object->distort.y_squash = 0f
+0040f636        (eax_259 - 0x433ad4)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object->distort.y_squash = 0f
 0040f643        cond:6_1 = var_128_6 != 1
-0040f644        (eax_261 - 0x433ad4)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object->distort.xyz_scale = 0f
+0040f644        (eax_259 - 0x433ad4)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object->distort.xyz_scale = 0f
 0040f64a        var_128_6 -= 1
 0040f64e        do while (cond:6_1)
 0040f650        struct Object* object_3 = game->subgame.player.presentation.jetpack_channel.body.bod.object
@@ -1711,12 +1711,12 @@
 0040f7a4        object_4->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
 0040f7a9        apply_object_toon((var_12c_2 - 0x432ec0)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object, 0)
 0040f7b2        struct Object* object_15 = (var_12c_2 - 0x432ec0)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
-0040f7b4        struct Object** eax_275 = &var_12c_2[0x20]
-0040f7b9        var_12c_2 = eax_275
+0040f7b4        struct Object** eax_273 = &var_12c_2[0x20]
+0040f7b9        var_12c_2 = eax_273
 0040f7bd        object_15->distort.z_wave = 0
-0040f7c6        (eax_275 - 0x432f40)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object->distort.y_squash = 0f
+0040f7c6        (eax_273 - 0x432f40)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object->distort.y_squash = 0f
 0040f7d3        cond:7_1 = var_128_7 != 1
-0040f7d4        (eax_275 - 0x432f40)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
+0040f7d4        (eax_273 - 0x432f40)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
 0040f7da        var_128_7 -= 1
 0040f7de        do while (cond:7_1)
 0040f7e0        struct Object* object_5 = game->subgame.player.presentation.weapon_channels[0].body.bod.object
@@ -1744,12 +1744,12 @@
 0040f934        object_6->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
 0040f939        apply_object_toon((var_12c_3 - 0x43329c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object, 0)
 0040f942        struct Object* object_18 = (var_12c_3 - 0x43329c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
-0040f944        struct Object** eax_289 = &var_12c_3[0x20]
-0040f949        var_12c_3 = eax_289
+0040f944        struct Object** eax_287 = &var_12c_3[0x20]
+0040f949        var_12c_3 = eax_287
 0040f94d        object_18->distort.z_wave = 0
-0040f956        (eax_289 - 0x43331c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object->distort.y_squash = 0f
+0040f956        (eax_287 - 0x43331c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object->distort.y_squash = 0f
 0040f963        cond:8_1 = var_128_8 != 1
-0040f964        (eax_289 - 0x43331c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
+0040f964        (eax_287 - 0x43331c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
 0040f96a        var_128_8 -= 1
 0040f96e        do while (cond:8_1)
 0040f970        struct Object* object_7 = game->subgame.player.presentation.weapon_channels[1].body.bod.object
@@ -1777,12 +1777,12 @@
 0040fac4        object_8->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
 0040fac9        apply_object_toon((var_12c_4 - 0x433678)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object, 0)
 0040fad2        struct Object* object_16 = (var_12c_4 - 0x433678)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
-0040fad4        struct Object** eax_303 = &var_12c_4[0x20]
-0040fad9        var_12c_4 = eax_303
+0040fad4        struct Object** eax_301 = &var_12c_4[0x20]
+0040fad9        var_12c_4 = eax_301
 0040fadd        object_16->distort.z_wave = 0
-0040fae6        (eax_303 - 0x4336f8)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object->distort.y_squash = 0f
+0040fae6        (eax_301 - 0x4336f8)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object->distort.y_squash = 0f
 0040faf3        cond:9_1 = var_128_9 != 1
-0040faf4        (eax_303 - 0x4336f8)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
+0040faf4        (eax_301 - 0x4336f8)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
 0040fafa        var_128_9 -= 1
 0040fafe        do while (cond:9_1)
 0040fb00        struct Object* object_9 = game->subgame.player.presentation.weapon_channels[2].body.bod.object
@@ -1814,35 +1814,35 @@
 0040fc58        cond:10_1 = var_128_10 != 1
 0040fc59        var_128_10 -= 1
 0040fc5d        do while (cond:10_1)
-0040fc6b        struct TextureRef* eax_317 = get_or_create_texture_ref(&g_texture_refs, "Objects/VapourLazer/Lazer.tga", 0, 0)
-0040fc70        enum TextureRefFlags flags_1 = eax_317->flags
-0040fc73        flags_1:1.b |= 4
-0040fc77        eax_317->flags = flags_1
-0040fc83        struct TextureRef* eax_318 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Worm.tga", 0, 0)
-0040fc92        eax_318->flags |= TEXTURE_REF_REGISTERED | TEXTURE_REF_WRAP_ADDRESSING | 0x3
-0040fc9e        struct TextureRef* eax_319 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Back.tga", 0, 0)
-0040fcad        eax_319->flags |= TEXTURE_REF_REGISTERED | TEXTURE_REF_WRAP_ADDRESSING | 0x2
+0040fc6b        struct TextureRef* eax_315 = get_or_create_texture_ref(&g_texture_refs, "Objects/VapourLazer/Lazer.tga", 0, 0)
+0040fc70        enum TextureRefFlags flags_2 = eax_315->flags
+0040fc73        flags_2:1.b |= 4
+0040fc77        eax_315->flags = flags_2
+0040fc83        struct TextureRef* eax_316 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Worm.tga", 0, 0)
+0040fc92        eax_316->flags |= TEXTURE_REF_REGISTERED | TEXTURE_REF_WRAP_ADDRESSING | 0x3
+0040fc9e        struct TextureRef* eax_317 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Back.tga", 0, 0)
+0040fcad        eax_317->flags |= TEXTURE_REF_REGISTERED | TEXTURE_REF_WRAP_ADDRESSING | 0x2
 0040fcca        get_or_create_texture_ref(&g_texture_refs, "Objects/World00/TrackWarn.tga", 0, 0)->flags = 0x1000
-0040fcd0        struct TextureRef* eax_321 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Ramp.tga", 0, 0)
-0040fcd5        enum TextureRefFlags flags_2 = eax_321->flags
-0040fcd8        flags_2:1.b |= 0x10
-0040fcdc        eax_321->flags = flags_2
-0040fce8        struct TextureRef* eax_322 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track0.tga", 0, 0)
-0040fcf7        eax_322->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd03        struct TextureRef* eax_323 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide0.tga", 0, 0)
-0040fd12        eax_323->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd1e        struct TextureRef* eax_324 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track1.tga", 0, 0)
-0040fd2d        eax_324->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd39        struct TextureRef* eax_325 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide1.tga", 0, 0)
-0040fd48        eax_325->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd54        struct TextureRef* eax_326 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track2.tga", 0, 0)
-0040fd63        eax_326->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd6f        struct TextureRef* eax_327 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide2.tga", 0, 0)
-0040fd7e        eax_327->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fd8a        struct TextureRef* eax_328 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track3.tga", 0, 0)
-0040fd99        eax_328->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
-0040fda5        struct TextureRef* eax_329 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide3.tga", 0, 0)
-0040fdb4        eax_329->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
+0040fcd0        struct TextureRef* eax_319 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Ramp.tga", 0, 0)
+0040fcd5        enum TextureRefFlags flags_3 = eax_319->flags
+0040fcd8        flags_3:1.b |= 0x10
+0040fcdc        eax_319->flags = flags_3
+0040fce8        struct TextureRef* eax_320 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track0.tga", 0, 0)
+0040fcf7        eax_320->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
+0040fd03        struct TextureRef* eax_321 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide0.tga", 0, 0)
+0040fd12        eax_321->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
+0040fd1e        struct TextureRef* eax_322 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track1.tga", 0, 0)
+0040fd2d        eax_322->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
+0040fd39        struct TextureRef* eax_323 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide1.tga", 0, 0)
+0040fd48        eax_323->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
+0040fd54        struct TextureRef* eax_324 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track2.tga", 0, 0)
+0040fd63        eax_324->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
+0040fd6f        struct TextureRef* eax_325 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide2.tga", 0, 0)
+0040fd7e        eax_325->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
+0040fd8a        struct TextureRef* eax_326 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track3.tga", 0, 0)
+0040fd99        eax_326->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
+0040fda5        struct TextureRef* eax_327 = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide3.tga", 0, 0)
+0040fdb4        eax_327->flags |= TEXTURE_REF_WRAP_ADDRESSING | 0x2
 0040fdd1        game->track.track_textures[0] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track0.tga", 0, 0)
 0040fde8        game->track.slide_textures[0] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Slide0.tga", 0, 0)
 0040fdff        game->track.track_textures[1] = get_or_create_texture_ref(&g_texture_refs, "Objects/World00/Track1.tga", 0, 0)
@@ -1870,37 +1870,37 @@
 0040ffcf        game->subgame.barrier.bod.object->blend_mode = 7
 0040ffd6        initialize_track_render_cache_manager(&game->subgame.segment_cache)
 0040ffdb        int32_t edge_selector = 0
-0040ffdf        void** eax_351 = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object
+0040ffdf        struct Object** eax_349 = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object
 00410066        bool cond:14_1
 0040ffe5        int32_t orientation = 0
 00410058        bool cond:13_1
 0040ffe9        int32_t var_12c_5 = 0
-0040ffed        void** esi_3 = eax_351
+0040ffed        struct Object** esi_3 = eax_349
 00410048        bool cond:12_1
 0040ffef        int32_t i_1 = 0
 0041003a        while (i_1 s< 3)
 0040ffff        set_bod_object(&esi_3[-9], add_object_to_list(&g_object_list))
 00410022        initialize_backdrop_tile_quad((esi_3 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object, edge_selector, orientation, var_12c_5 - 1, i_1 - 1, "Objects/Universe/Fringe.tga")
-00410027        void* object_12 = (esi_3 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object
+00410027        struct Object* object_12 = (esi_3 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object
 0041002c        i_1 += 1
 0041002d        esi_3 = &esi_3[0xe]
-00410033        *(object_12 + 0x14) = 5
+00410033        object_12->blend_mode = 5
 00410041        cond:12_1 = var_12c_5 + 1 s< 3
 00410044        var_12c_5 += 1
 00410048        do while (cond:12_1)
-0041004e        eax_351 = esi_3
+0041004e        eax_349 = esi_3
 00410051        cond:13_1 = orientation + 1 s< 4
 00410054        orientation += 1
 00410058        do while (cond:13_1)
 0041005f        cond:14_1 = edge_selector + 1 s< 8
 00410062        edge_selector += 1
 00410066        do while (cond:14_1)
-00410078        struct TextureRef* eax_357 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Fringe.tga", 0, 0)
-0041007d        enum TextureRefFlags flags_3 = eax_357->flags
+00410078        struct TextureRef* eax_355 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Fringe.tga", 0, 0)
+0041007d        enum TextureRefFlags flags_4 = eax_355->flags
 0041007f        struct InputState* state = &game->game_inputs[0].input
-00410082        flags_3:1.b |= 4
+00410082        flags_4:1.b |= 4
 00410085        int32_t i_2 = 0
-00410087        eax_357->flags = flags_3
+00410087        eax_355->flags = flags_4
 00410093        sub_4113b0(&game->active_bod_list, state - 0x38)
 0041009a        state->controller_slot = i_2
 0041009c        initialize_input(state)
@@ -1947,11 +1947,11 @@
 0041027c        game->border_manager.border_stack.owner = &game->border_manager
 00410289        game->border_manager.delayed_widget_active = 0
 0041028f        set_border_justify_centre(&game->border_manager, 25f)
-00410294        int32_t* eax_368 = &game->border_manager.borders[0].flags
+00410294        int32_t* eax_366 = &game->border_manager.borders[0].flags
 0041029a        int32_t i_4 = 0x96
 004102a7        int32_t i_3
-0041029f        (eax_368 - 0x1370)->border_manager.borders[0].flags = 0
-004102a1        eax_368 = &eax_368[0x1c9]
+0041029f        (eax_366 - 0x1370)->border_manager.borders[0].flags = 0
+004102a1        eax_366 = &eax_366[0x1c9]
 004102a6        i_3 = i_4
 004102a6        i_4 -= 1
 004102a7        do while (i_3 != 1)
@@ -2055,6 +2055,6 @@
 004106de        set_input_controller_pointer_authored_xy(0, 320f, 240f)
 004106ef        set_input_controller_pointer_authored_xy(1, 320f, 240f)
 004106f7        game->subgame.subgame_rebuild_selector = 2
-00410704        void* eax_410
-00410704        eax_410.b = 1
+00410704        void* eax_408
+00410704        eax_408.b = 1
 0041070d        return 1

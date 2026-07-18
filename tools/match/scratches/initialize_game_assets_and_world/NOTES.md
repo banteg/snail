@@ -1036,3 +1036,27 @@ ECX receiver for the otherwise empty Windows `cRSound` facade and the complete
 52-record bank owner; the second captures the `0x188` inline voice-bank object
 recovered in the preceding slice. These are analysis propagation improvements
 only, with no matcher source-shape concession.
+
+## 2026-07-18 root catalog Object ownership
+
+The constructor-proven catalog remains a narrow 352-entry layout projection:
+each `RootBodCatalogEntry` is exactly `0x38` bytes and the full bank is exactly
+`0x4d00` bytes. Its object slot at `+0x24` now borrows the canonical, complete
+`Object` owner of exactly `0xdc` bytes through a forward declaration. The
+catalog lane neither redeclares `Object` nor replaces the independent
+`BodBase` and catalog allocation owners.
+
+The guarded live replay changed only that `void*` field to `Object*` in Binary
+Ninja, was idempotent on its second run, and parsed in IDA with every owner
+extent intact. The refreshed initializer consequently exposes trampoline and
+universe-hole `blend_mode` plus `facequads->texture_ref` directly. The same
+owner removes stale root-byte arithmetic and casts from
+`build_track_fringe_objects`, `merge_track_tile_runs`,
+`promote_track_tiles_to_fringe_variants`,
+`harmonize_center_lane_floor_slide_variants`,
+`select_track_tile_edge_variants`, and
+`populate_runtime_track_cells_from_segments`.
+
+This is analysis ownership only. No matcher source was changed to chase the
+new decompiler spelling: the world initializer remains honestly at 80.50%
+(5392/5411), with 1639 clean masked operands and the existing 36 mismatches.

@@ -111,7 +111,7 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
               {
                 set_bod_object(
                   (BodBase *)(cell_lane_flags - 16),
-                  (Object *)g_game_base->root_bod_catalog.unknown_18_21[v27 + 3].object);
+                  g_game_base->root_bod_catalog.unknown_18_21[v27 + 3].object);
                 v30 = *cell_lane_flags;
                 BYTE1(v30) = BYTE1(*cell_lane_flags) & 0xF0;
                 v31 = v30 | ((v27 & 0xF) << 8);
@@ -139,9 +139,7 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
               *cell_lane_flags = v35;
               if ( v1->level_mode == 2 )
               {
-                set_bod_object(
-                  (BodBase *)(cell_lane_flags - 16),
-                  (Object *)g_game_base->root_bod_catalog.universe_hole.object);
+                set_bod_object((BodBase *)(cell_lane_flags - 16), g_game_base->root_bod_catalog.universe_hole.object);
               }
               else
               {
@@ -174,7 +172,7 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
             {
               set_bod_object(
                 (BodBase *)(cell_lane_flags - 16),
-                (Object *)g_game_base->root_bod_catalog.warning_slices.storage[v18 + 7].object);
+                g_game_base->root_bod_catalog.warning_slices.storage[v18 + 7].object);
               v21 = v18 - 1;
               if ( v21 > 0 )
               {
@@ -217,9 +215,7 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
           while ( v11 < 8 );
           if ( v10 > 1 )
           {
-            set_bod_object(
-              (BodBase *)(cell_lane_flags - 16),
-              (Object *)g_game_base->root_bod_catalog.pillars[v10 + 7].object);
+            set_bod_object((BodBase *)(cell_lane_flags - 16), g_game_base->root_bod_catalog.pillars[v10 + 7].object);
             v15 = v10 - 1;
             if ( v15 > 0 )
             {

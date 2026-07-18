@@ -19,6 +19,7 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 
 EXPECTED_OWNER_SIZES = {
+    "Object": 0xDC,
     "RootBodCatalogEntry": 0x38,
     "RootTrackCornerBodBank": 0xE0,
     "RootTrackSliceBodBank": 0x1C0,

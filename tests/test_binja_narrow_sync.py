@@ -423,6 +423,12 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
 
 
 def test_ida_catalog_and_loader_lanes_replay_the_shared_root_graph() -> None:
+    catalog_header = (HEADER_DIR / "bn_root_bod_catalog_types.h").read_text(
+        encoding="utf-8"
+    )
+    catalog_binja_sync = (
+        BINJA_DIR / "sync_root_bod_catalog_types.py"
+    ).read_text(encoding="utf-8")
     catalog_apply = (IDA_DIR / "apply_root_bod_catalog_types.py").read_text(
         encoding="utf-8"
     )
@@ -438,6 +444,16 @@ def test_ida_catalog_and_loader_lanes_replay_the_shared_root_graph() -> None:
         assert "sync_game_root_owner_graph(require=False)" in source
         assert '"game_root_owner_graph": game_root_owner_graph' in source
 
+    assert "typedef struct Object Object;" in catalog_header
+    assert "Object* object;" in catalog_header
+    assert "void* object;" not in catalog_header
+    assert "types_declare_if_missing" in catalog_binja_sync
+    assert 'struct_name="Object"' in catalog_binja_sync
+    assert "Object must be exactly 0xdc bytes" in catalog_binja_sync
+    assert '("0x24", "object", "Object*")' in catalog_binja_sync
+    assert '"RootBodCatalogEntry": 0x38' in catalog_binja_sync
+    assert '"RootBodCatalog": 0x4D00' in catalog_binja_sync
+    assert '"Object": 0xDC' in catalog_apply
     assert '"RootBodCatalogEntry": 0x38' in catalog_apply
     assert '"RootTrackFringeBodCatalog": 0x3F00' in catalog_apply
     assert '"RootBodCatalog": 0x4D00' in catalog_apply

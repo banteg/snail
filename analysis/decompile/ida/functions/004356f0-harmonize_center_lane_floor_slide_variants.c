@@ -52,7 +52,7 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *ga
             {
               set_bod_object(
                 (BodBase *)&forward_cell_anchor->cell,
-                (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+                g_game_base->root_bod_catalog.slide_slices.storage[0].object);
               forward_cell_anchor->cell.lane_and_flags |= 0x40u;
               v8 = g_game_base;
             }
@@ -62,7 +62,7 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *ga
               {
                 set_bod_object(
                   (BodBase *)&forward_cell_anchor->cell,
-                  (Object *)v8->root_bod_catalog.slide_corners.storage[j].object);
+                  v8->root_bod_catalog.slide_corners.storage[j].object);
                 forward_cell_anchor->cell.lane_and_flags |= 0x40u;
                 v8 = g_game_base;
               }
@@ -78,7 +78,7 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *ga
             {
               set_bod_object(
                 (BodBase *)&forward_cell_anchor->cell,
-                (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
+                g_game_base->root_bod_catalog.floor_slices.storage[0].object);
               forward_cell_anchor->cell.lane_and_flags |= 0x40u;
               v10 = g_game_base;
             }
@@ -88,7 +88,7 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *ga
               {
                 set_bod_object(
                   (BodBase *)&forward_cell_anchor->cell,
-                  (Object *)v10->root_bod_catalog.floor_corners.storage[k].object);
+                  v10->root_bod_catalog.floor_corners.storage[k].object);
                 forward_cell_anchor->cell.lane_and_flags |= 0x40u;
                 v10 = g_game_base;
               }
@@ -111,7 +111,7 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *ga
             {
               set_bod_object(
                 (BodBase *)&backward_cell_anchor->cell,
-                (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+                g_game_base->root_bod_catalog.slide_slices.storage[0].object);
               backward_cell_anchor->cell.lane_and_flags |= 0x40u;
               v13 = g_game_base;
             }
@@ -121,7 +121,7 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *ga
               {
                 set_bod_object(
                   (BodBase *)&backward_cell_anchor->cell,
-                  (Object *)v13->root_bod_catalog.slide_corners.storage[m].object);
+                  v13->root_bod_catalog.slide_corners.storage[m].object);
                 backward_cell_anchor->cell.lane_and_flags |= 0x40u;
                 v13 = g_game_base;
               }
@@ -137,7 +137,7 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *ga
             {
               set_bod_object(
                 (BodBase *)&backward_cell_anchor->cell,
-                (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
+                g_game_base->root_bod_catalog.floor_slices.storage[0].object);
               backward_cell_anchor->cell.lane_and_flags |= 0x40u;
               v15 = g_game_base;
             }
@@ -147,7 +147,7 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *ga
               {
                 set_bod_object(
                   (BodBase *)&backward_cell_anchor->cell,
-                  (Object *)v15->root_bod_catalog.floor_corners.storage[n].object);
+                  v15->root_bod_catalog.floor_corners.storage[n].object);
                 backward_cell_anchor->cell.lane_and_flags |= 0x40u;
                 v15 = g_game_base;
               }

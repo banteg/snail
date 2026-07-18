@@ -50,14 +50,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   Object *v44; // eax
   Object *v45; // eax
   Object *v46; // eax
-  _DWORD *v47; // eax
+  TextureRef *texture_ref; // eax
   Object *v48; // eax
-  int *v49; // eax
-  int v50; // ecx
+  TextureRef *v49; // eax
+  TextureRefFlags flags; // ecx
   Object *v51; // eax
   Object **p_object; // edi
-  TextureRef *texture_ref; // eax
-  TextureRefFlags flags; // ecx
+  TextureRef *v53; // eax
+  TextureRefFlags v54; // ecx
   Object *v55; // ecx
   bool v56; // zf
   Object *v57; // eax
@@ -298,7 +298,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   TextureRef *v292; // eax
   TextureRef *v293; // eax
   Object *v294; // eax
-  void **v295; // eax
+  Object **v295; // eax
   Object **v296; // esi
   int k; // edi
   Object *v298; // eax
@@ -591,130 +591,118 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_matrix_identity(&transform);
   v23 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)game->root_bod_catalog.pillars, v23);
-  load_x_mesh(&game->directx_loader, mesh_path, (Object *)game->root_bod_catalog.pillars[0].object, 1);
+  load_x_mesh(&game->directx_loader, mesh_path, game->root_bod_catalog.pillars[0].object, 1);
   transform.position.x = 0.0;
   apply_bod_position((BodBase *)game->root_bod_catalog.pillars, &transform);
   v24 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.pillars[1], v24);
-  load_x_mesh(&game->directx_loader, aPillar2X, (Object *)game->root_bod_catalog.pillars[1].object, 1);
+  load_x_mesh(&game->directx_loader, aPillar2X, game->root_bod_catalog.pillars[1].object, 1);
   transform.position.x = 0.5;
   apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[1], &transform);
   v25 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.pillars[2], v25);
-  load_x_mesh(&game->directx_loader, aPillar3X, (Object *)game->root_bod_catalog.pillars[2].object, 1);
+  load_x_mesh(&game->directx_loader, aPillar3X, game->root_bod_catalog.pillars[2].object, 1);
   transform.position.x = 1.0;
   apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[2], &transform);
   v26 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.pillars[3], v26);
-  load_x_mesh(&game->directx_loader, aPillar4X, (Object *)game->root_bod_catalog.pillars[3].object, 1);
+  load_x_mesh(&game->directx_loader, aPillar4X, game->root_bod_catalog.pillars[3].object, 1);
   transform.position.x = 1.5;
   apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[3], &transform);
   v27 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.pillars[4], v27);
-  load_x_mesh(&game->directx_loader, aPillar5X, (Object *)game->root_bod_catalog.pillars[4].object, 1);
+  load_x_mesh(&game->directx_loader, aPillar5X, game->root_bod_catalog.pillars[4].object, 1);
   transform.position.x = 2.0;
   apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[4], &transform);
   v28 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.pillars[5], v28);
-  load_x_mesh(&game->directx_loader, aPillar6X, (Object *)game->root_bod_catalog.pillars[5].object, 1);
+  load_x_mesh(&game->directx_loader, aPillar6X, game->root_bod_catalog.pillars[5].object, 1);
   transform.position.x = 2.5;
   apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[5], &transform);
   v29 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.pillars[6], v29);
-  load_x_mesh(&game->directx_loader, aPillar7X, (Object *)game->root_bod_catalog.pillars[6].object, 1);
+  load_x_mesh(&game->directx_loader, aPillar7X, game->root_bod_catalog.pillars[6].object, 1);
   transform.position.x = 3.0;
   apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[6], &transform);
   v30 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.pillars[7], v30);
-  load_x_mesh(&game->directx_loader, aPillar8X, (Object *)game->root_bod_catalog.pillars[7].object, 1);
+  load_x_mesh(&game->directx_loader, aPillar8X, game->root_bod_catalog.pillars[7].object, 1);
   transform.position.x = 3.5;
   apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[7], &transform);
   v31 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)game->root_bod_catalog.ramp_edges, v31);
-  initialize_textured_backdrop_quad((Object *)game->root_bod_catalog.ramp_edges[0].object, aObjectsUnivers, 0.0);
-  raise_backdrop_quad_edge_pair(-1, (Object *)game->root_bod_catalog.ramp_edges[0].object);
+  initialize_textured_backdrop_quad(game->root_bod_catalog.ramp_edges[0].object, aObjectsUnivers, 0.0);
+  raise_backdrop_quad_edge_pair(-1, game->root_bod_catalog.ramp_edges[0].object);
   v32 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.ramp_edges[1], v32);
-  initialize_textured_backdrop_quad((Object *)game->root_bod_catalog.ramp_edges[1].object, aObjectsUnivers, 0.0);
-  raise_backdrop_quad_edge_pair(0, (Object *)game->root_bod_catalog.ramp_edges[1].object);
+  initialize_textured_backdrop_quad(game->root_bod_catalog.ramp_edges[1].object, aObjectsUnivers, 0.0);
+  raise_backdrop_quad_edge_pair(0, game->root_bod_catalog.ramp_edges[1].object);
   v33 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.ramp_edges[2], v33);
-  initialize_textured_backdrop_quad((Object *)game->root_bod_catalog.ramp_edges[2].object, aObjectsUnivers, 0.0);
-  raise_backdrop_quad_edge_pair(1, (Object *)game->root_bod_catalog.ramp_edges[2].object);
+  initialize_textured_backdrop_quad(game->root_bod_catalog.ramp_edges[2].object, aObjectsUnivers, 0.0);
+  raise_backdrop_quad_edge_pair(1, game->root_bod_catalog.ramp_edges[2].object);
   v34 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners, v34);
-  initialize_backdrop_corner_quad(0, (Object *)game->root_bod_catalog.floor_corners.storage[0].object, aObjectsWorld00);
+  initialize_backdrop_corner_quad(0, game->root_bod_catalog.floor_corners.storage[0].object, aObjectsWorld00);
   v35 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners.storage[1], v35);
-  initialize_backdrop_corner_quad(1, (Object *)game->root_bod_catalog.floor_corners.storage[1].object, aObjectsWorld00);
+  initialize_backdrop_corner_quad(1, game->root_bod_catalog.floor_corners.storage[1].object, aObjectsWorld00);
   v36 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners.storage[3], v36);
-  initialize_backdrop_corner_quad(2, (Object *)game->root_bod_catalog.floor_corners.storage[3].object, aObjectsWorld00);
+  initialize_backdrop_corner_quad(2, game->root_bod_catalog.floor_corners.storage[3].object, aObjectsWorld00);
   v37 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners.storage[2], v37);
-  initialize_backdrop_corner_quad(3, (Object *)game->root_bod_catalog.floor_corners.storage[2].object, aObjectsWorld00);
+  initialize_backdrop_corner_quad(3, game->root_bod_catalog.floor_corners.storage[2].object, aObjectsWorld00);
   v38 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners, v38);
-  initialize_backdrop_corner_quad(
-    0,
-    (Object *)game->root_bod_catalog.warning_corners.storage[0].object,
-    aObjectsWorld00_0);
+  initialize_backdrop_corner_quad(0, game->root_bod_catalog.warning_corners.storage[0].object, aObjectsWorld00_0);
   v39 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[1], v39);
-  initialize_backdrop_corner_quad(
-    1,
-    (Object *)game->root_bod_catalog.warning_corners.storage[1].object,
-    aObjectsWorld00_0);
+  initialize_backdrop_corner_quad(1, game->root_bod_catalog.warning_corners.storage[1].object, aObjectsWorld00_0);
   v40 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[3], v40);
-  initialize_backdrop_corner_quad(
-    2,
-    (Object *)game->root_bod_catalog.warning_corners.storage[3].object,
-    aObjectsWorld00_0);
+  initialize_backdrop_corner_quad(2, game->root_bod_catalog.warning_corners.storage[3].object, aObjectsWorld00_0);
   v41 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[2], v41);
-  initialize_backdrop_corner_quad(
-    3,
-    (Object *)game->root_bod_catalog.warning_corners.storage[2].object,
-    aObjectsWorld00_0);
+  initialize_backdrop_corner_quad(3, game->root_bod_catalog.warning_corners.storage[2].object, aObjectsWorld00_0);
   v42 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners, v42);
-  initialize_backdrop_corner_quad(0, (Object *)game->root_bod_catalog.slide_corners.storage[0].object, texture_a);
+  initialize_backdrop_corner_quad(0, game->root_bod_catalog.slide_corners.storage[0].object, texture_a);
   v43 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners.storage[1], v43);
-  initialize_backdrop_corner_quad(1, (Object *)game->root_bod_catalog.slide_corners.storage[1].object, texture_a);
+  initialize_backdrop_corner_quad(1, game->root_bod_catalog.slide_corners.storage[1].object, texture_a);
   v44 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners.storage[3], v44);
-  initialize_backdrop_corner_quad(2, (Object *)game->root_bod_catalog.slide_corners.storage[3].object, texture_a);
+  initialize_backdrop_corner_quad(2, game->root_bod_catalog.slide_corners.storage[3].object, texture_a);
   v45 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners.storage[2], v45);
-  initialize_backdrop_corner_quad(3, (Object *)game->root_bod_catalog.slide_corners.storage[2].object, texture_a);
+  initialize_backdrop_corner_quad(3, game->root_bod_catalog.slide_corners.storage[2].object, texture_a);
   v46 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.trampoline, v46);
-  load_x_mesh(&game->directx_loader, aTrampX, (Object *)game->root_bod_catalog.trampoline.object, 1);
-  *((_DWORD *)game->root_bod_catalog.trampoline.object + 5) = 6;
-  v47 = *(_DWORD **)(*((_DWORD *)game->root_bod_catalog.trampoline.object + 23) + 12);
-  *v47 |= 0x400u;
+  load_x_mesh(&game->directx_loader, aTrampX, game->root_bod_catalog.trampoline.object, 1);
+  game->root_bod_catalog.trampoline.object->blend_mode = 6;
+  texture_ref = game->root_bod_catalog.trampoline.object->facequads->texture_ref;
+  texture_ref->flags |= 0x400u;
   v48 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog, v48);
-  initialize_textured_backdrop_quad((Object *)game->root_bod_catalog.universe_hole.object, aObjectsUnivers_0, 0.0);
-  *((_DWORD *)game->root_bod_catalog.universe_hole.object + 5) = 5;
-  v49 = *(int **)(*((_DWORD *)game->root_bod_catalog.universe_hole.object + 23) + 12);
-  v50 = *v49;
-  BYTE1(v50) = BYTE1(*v49) | 4;
-  *v49 = v50;
+  initialize_textured_backdrop_quad(game->root_bod_catalog.universe_hole.object, aObjectsUnivers_0, 0.0);
+  game->root_bod_catalog.universe_hole.object->blend_mode = 5;
+  v49 = game->root_bod_catalog.universe_hole.object->facequads->texture_ref;
+  flags = v49->flags;
+  BYTE1(flags) = ((unsigned __int16)v49->flags >> 8) | 4;
+  v49->flags = flags;
   v51 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.lazer_model, v51);
-  load_object_definition(path, (Object *)game->root_bod_catalog.lazer_model.object);
+  load_object_definition(path, game->root_bod_catalog.lazer_model.object);
   p_object = &game->subgame.sub_lazers.slots[0].body.bod.object;
   v317 = 20;
   do
   {
-    set_bod_object((BodBase *)(p_object - 9), (Object *)game->root_bod_catalog.lazer_model.object);
-    texture_ref = (*p_object)->facequads->texture_ref;
-    flags = texture_ref->flags;
-    BYTE1(flags) = ((unsigned __int16)texture_ref->flags >> 8) | 4;
-    texture_ref->flags = flags;
+    set_bod_object((BodBase *)(p_object - 9), game->root_bod_catalog.lazer_model.object);
+    v53 = (*p_object)->facequads->texture_ref;
+    v54 = v53->flags;
+    BYTE1(v54) = ((unsigned __int16)v53->flags >> 8) | 4;
+    v53->flags = v54;
     p_object[25] = (Object *)&game->subgame;
     store_color4f((tColour *)(p_object + 1), 1.0, 1.0, 1.0, 0.69999999);
     v55 = *p_object;
@@ -726,12 +714,12 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   while ( !v56 );
   v57 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.salt_model, v57);
-  load_x_mesh(&game->directx_loader, aSaltX, (Object *)game->root_bod_catalog.salt_model.object, 1);
+  load_x_mesh(&game->directx_loader, aSaltX, game->root_bod_catalog.salt_model.object, 1);
   p_owner_game = &game->subgame.salt_hazards.slots[0].owner_game;
   v318 = 40;
   do
   {
-    set_bod_object((BodBase *)(p_owner_game - 34), (Object *)game->root_bod_catalog.salt_model.object);
+    set_bod_object((BodBase *)(p_owner_game - 34), game->root_bod_catalog.salt_model.object);
     *p_owner_game = &game->subgame;
     store_color4f((tColour *)p_owner_game - 6, 1.0, 1.0, 1.0, 0.89999998);
     (*(p_owner_game - 25))->sub_pause.options_widget = (FrontendWidget *)12;
@@ -3067,7 +3055,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     for ( j = 0; j < 4; ++j )
     {
       v313 = 0;
-      v296 = (Object **)v295;
+      v296 = v295;
       do
       {
         for ( k = 0; k < 3; ++k )
@@ -3082,7 +3070,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
         ++v313;
       }
       while ( v313 < 3 );
-      v295 = (void **)v296;
+      v295 = v296;
     }
     ++v326;
   }

@@ -12,7 +12,7 @@ int32_t __thiscall select_track_tile_edge_variants(SubgameRuntime *game)
   int v5; // edx
   uint8_t v6; // al
   uint8_t v7; // al
-  int v8; // edx
+  Object *object; // edx
   uint8_t v9; // al
   uint8_t v10; // al
   uint8_t v11; // al
@@ -50,11 +50,15 @@ int32_t __thiscall select_track_tile_edge_variants(SubgameRuntime *game)
               v9 = *p_tile_id;
               if ( *p_tile_id == 1 || v9 == 20 || v9 == 21 || v9 == 27 || v9 == 33 || v9 == 34 )
               {
-                set_bod_object((_DWORD *)p_tile_id - 15, *(_DWORD *)&g_game_base->unknown_000b48[276268]);
+                set_bod_object(
+                  (BodBase *)(p_tile_id - 60),
+                  g_game_base->root_bod_catalog.floor_corners.storage[1].object);
               }
               else if ( v9 != 22 && v9 != 14 && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(p_tile_id - 60)) )
               {
-                set_bod_object((_DWORD *)p_tile_id - 15, *(_DWORD *)&g_game_base->unknown_000b48[276716]);
+                set_bod_object(
+                  (BodBase *)(p_tile_id - 60),
+                  g_game_base->root_bod_catalog.slide_corners.storage[1].object);
               }
               break;
             case 6u:
@@ -62,24 +66,28 @@ int32_t __thiscall select_track_tile_edge_variants(SubgameRuntime *game)
               v11 = *p_tile_id;
               if ( *p_tile_id == 1 || v11 == 20 || v11 == 21 || v11 == 27 || v11 == 33 || v11 == 34 )
               {
-                v8 = *(_DWORD *)&g_game_base->unknown_000b48[276380];
+                object = g_game_base->root_bod_catalog.floor_corners.storage[3].object;
                 goto LABEL_67;
               }
               if ( v11 != 22 && v11 != 14 && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(p_tile_id - 60)) )
-                set_bod_object((_DWORD *)p_tile_id - 15, *(_DWORD *)&g_game_base->unknown_000b48[276828]);
+                set_bod_object(
+                  (BodBase *)(p_tile_id - 60),
+                  g_game_base->root_bod_catalog.slide_corners.storage[3].object);
               break;
             case 9u:
               *((_DWORD *)p_tile_id + 1) |= 0x8000u;
               v7 = *p_tile_id;
               if ( *p_tile_id == 1 || v7 == 20 || v7 == 21 || v7 == 27 || v7 == 33 || v7 == 34 )
               {
-                v8 = *(_DWORD *)&g_game_base->unknown_000b48[276212];
+                object = g_game_base->root_bod_catalog.floor_corners.storage[0].object;
 LABEL_67:
-                set_bod_object((_DWORD *)p_tile_id - 15, v8);
+                set_bod_object((BodBase *)(p_tile_id - 60), object);
               }
               else if ( v7 != 22 && v7 != 14 && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(p_tile_id - 60)) )
               {
-                set_bod_object((_DWORD *)p_tile_id - 15, *(_DWORD *)&g_game_base->unknown_000b48[276660]);
+                set_bod_object(
+                  (BodBase *)(p_tile_id - 60),
+                  g_game_base->root_bod_catalog.slide_corners.storage[0].object);
               }
               break;
             case 0xAu:
@@ -87,11 +95,15 @@ LABEL_67:
               v10 = *p_tile_id;
               if ( *p_tile_id == 1 || v10 == 20 || v10 == 21 || v10 == 27 || v10 == 33 || v10 == 34 )
               {
-                set_bod_object((_DWORD *)p_tile_id - 15, *(_DWORD *)&g_game_base->unknown_000b48[276324]);
+                set_bod_object(
+                  (BodBase *)(p_tile_id - 60),
+                  g_game_base->root_bod_catalog.floor_corners.storage[2].object);
               }
               else if ( v10 != 22 && v10 != 14 && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(p_tile_id - 60)) )
               {
-                set_bod_object((_DWORD *)p_tile_id - 15, *(_DWORD *)&g_game_base->unknown_000b48[276772]);
+                set_bod_object(
+                  (BodBase *)(p_tile_id - 60),
+                  g_game_base->root_bod_catalog.slide_corners.storage[2].object);
               }
               break;
             default:

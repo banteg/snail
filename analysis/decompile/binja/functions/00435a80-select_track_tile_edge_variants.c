@@ -38,7 +38,7 @@
 00435b46        (esi_1 - 0x3bfb04)->:0x3bfb05.b |= 2
 00435b4a        int32_t eax_6 = 0
 00435b4c        eax_6.b = (esi_1 - 0x3bfb04)->:0x3bfb05.b
-00435b55        void* object
+00435b55        struct Object* object
 00435b55        if (eax_6 - 5 u<= 5)
 00435b55        switch (eax_6)
 00435bd0        case 5
@@ -72,12 +72,12 @@
 00435cec        set_bod_object(&esi_1[0xffffffc4], g_game_base->root_bod_catalog.floor_corners.storage[2].object)
 00435c60        if (eax_15 != 0x16 && eax_15 != 0xe && is_sub_loc_ramp(&esi_1[0xffffffc4]) == 0)
 00435c74        struct GameRoot* game_base_1 = g_game_base
-00435c7a        void* edx_9
-00435c7a        edx_9.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object.b
-00435c7a        edx_9:1.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object:1.b
-00435c7a        edx_9:2.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object:2.b
-00435c7a        edx_9:3.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object:3.b
-00435cec        set_bod_object(&esi_1[0xffffffc4], edx_9)
+00435c7a        struct Object* object_1
+00435c7a        object_1.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object.b
+00435c7a        object_1:1.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object:1.b
+00435c7a        object_1:2.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object:2.b
+00435c7a        object_1:3.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object:3.b
+00435cec        set_bod_object(&esi_1[0xffffffc4], object_1)
 00435cf1        i = i_1
 00435cf5        j += 1
 00435cf6        esi_1 = &esi_1[0x54]

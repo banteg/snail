@@ -528,7 +528,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               case '$':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 23;
                 v57 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v57) = v57 | 0x20;
@@ -537,7 +537,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               case '&':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.floor_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 34;
                 v63 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v63) = v63 | 0x20;
@@ -560,7 +560,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                   {
                     set_bod_object(
                       (BodBase *)&runtime_cell_anchor->cell,
-                      (Object *)g_game_base->root_bod_catalog.trampoline.object);
+                      g_game_base->root_bod_catalog.trampoline.object);
                     runtime_cell_anchor->cell.bod.list_flags |= 0x20u;
                     store_color4f(&game->runtime_cells[v105][v110].color, 1.0, 1.0, 1.0, 0.99900001);
                   }
@@ -575,7 +575,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               case '+':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 24;
                 v65 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v65) = v65 | 0x20;
@@ -584,7 +584,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               case ',':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.universe_hole.object);
+                  g_game_base->root_bod_catalog.universe_hole.object);
                 runtime_cell_anchor->cell.tile_id = 28;
                 v64 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v64) = v64 | 0x20;
@@ -593,7 +593,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               case '-':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.floor_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 21;
                 v67 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v67) = v67 | 0x20;
@@ -602,7 +602,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               case '.':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.floor_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 1;
                 v61 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v61) = v61 | 0x20;
@@ -642,7 +642,7 @@ LABEL_173:
               case '<':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.ramp_edges[1].object);
+                  g_game_base->root_bod_catalog.ramp_edges[1].object);
                 runtime_cell_anchor->cell.render_arg_1c = 0.0;
                 runtime_cell_anchor->cell.render_arg_20 = 0.0;
                 runtime_cell_anchor->cell.tile_id = 6;
@@ -652,9 +652,7 @@ LABEL_173:
                 break;
               case '=':
               case '|':
-                set_bod_object(
-                  (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.pillars[0].object);
+                set_bod_object((BodBase *)&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.pillars[0].object);
                 runtime_cell_anchor->cell.tile_id = 14;
                 v68 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v68) = v68 | 0x20;
@@ -665,7 +663,7 @@ LABEL_173:
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
-                    (Object *)g_game_base->root_bod_catalog.ramp_edges[1].object);
+                    g_game_base->root_bod_catalog.ramp_edges[1].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
                   runtime_cell_anchor->cell.tile_id = 9;
@@ -678,7 +676,7 @@ LABEL_173:
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
-                    (Object *)g_game_base->root_bod_catalog.ramp_edges[1].object);
+                    g_game_base->root_bod_catalog.ramp_edges[1].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
                   runtime_cell_anchor->cell.tile_id = 3;
@@ -697,7 +695,7 @@ LABEL_173:
               case 'F':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 19;
                 v60 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v60) = v60 | 0x20;
@@ -706,7 +704,7 @@ LABEL_173:
               case 'G':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 17;
                 v56 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v56) = v56 | 0x20;
@@ -715,7 +713,7 @@ LABEL_173:
               case 'J':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 25;
                 v66 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v66) = v66 | 0x20;
@@ -724,7 +722,7 @@ LABEL_173:
               case 'M':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 18;
                 v59 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v59) = v59 | 0x20;
@@ -794,7 +792,7 @@ LABEL_173:
               case '[':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.ramp_edges[0].object);
+                  g_game_base->root_bod_catalog.ramp_edges[0].object);
                 runtime_cell_anchor->cell.render_arg_1c = 0.0;
                 runtime_cell_anchor->cell.render_arg_20 = 0.0;
                 runtime_cell_anchor->cell.tile_id = 5;
@@ -806,7 +804,7 @@ LABEL_173:
 LABEL_174:
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 15;
                 v87 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v87) = v87 | 0x20;
@@ -815,7 +813,7 @@ LABEL_174:
               case 'o':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 16;
                 v58 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v58) = v58 | 0x20;
@@ -824,7 +822,7 @@ LABEL_174:
               case 's':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
-                  (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
+                  g_game_base->root_bod_catalog.floor_slices.storage[0].object);
                 runtime_cell_anchor->cell.tile_id = 33;
                 v62 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v62) = v62 | 0x20;
@@ -835,7 +833,7 @@ LABEL_174:
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
-                    (Object *)g_game_base->root_bod_catalog.ramp_edges[0].object);
+                    g_game_base->root_bod_catalog.ramp_edges[0].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
                   runtime_cell_anchor->cell.tile_id = 8;
@@ -848,7 +846,7 @@ LABEL_174:
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
-                    (Object *)g_game_base->root_bod_catalog.ramp_edges[0].object);
+                    g_game_base->root_bod_catalog.ramp_edges[0].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
                   runtime_cell_anchor->cell.tile_id = 2;
@@ -862,7 +860,7 @@ LABEL_174:
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
-                    (Object *)g_game_base->root_bod_catalog.ramp_edges[2].object);
+                    g_game_base->root_bod_catalog.ramp_edges[2].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
                   runtime_cell_anchor->cell.tile_id = 10;
@@ -875,7 +873,7 @@ LABEL_174:
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
-                    (Object *)g_game_base->root_bod_catalog.ramp_edges[2].object);
+                    g_game_base->root_bod_catalog.ramp_edges[2].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
                   runtime_cell_anchor->cell.tile_id = 4;

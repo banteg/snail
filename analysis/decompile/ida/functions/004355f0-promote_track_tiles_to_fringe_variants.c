@@ -26,22 +26,22 @@ int32_t __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime *game)
         if ( (unsigned __int8)is_sub_loc_empty((TrackRowCell *)(p_object + 159)) )
         {
           v4 = g_game_base;
-          for ( i = 0; i < 448; i += 56 )
+          for ( i = 0; i < 8; ++i )
           {
-            if ( *p_object == *(void **)&v4->unknown_000b48[i + 277612]
-              || *p_object == *(void **)&v4->unknown_000b48[i + 278508] )
+            if ( *p_object == v4->root_bod_catalog.floor_slices.storage[i].object
+              || *p_object == v4->root_bod_catalog.slide_slices.storage[i].object )
             {
-              set_bod_object(p_object - 9, *(_DWORD *)&v4->unknown_000b48[i + 278060]);
+              set_bod_object((BodBase *)(p_object - 9), v4->root_bod_catalog.warning_slices.storage[i].object);
               p_object[7] = (void *)((unsigned int)p_object[7] | 0x20);
               v4 = g_game_base;
             }
           }
-          for ( j = 0; j < 224; j += 56 )
+          for ( j = 0; j < 4; ++j )
           {
-            if ( *p_object == *(void **)&v4->unknown_000b48[j + 276212]
-              || *p_object == *(void **)&v4->unknown_000b48[j + 276660] )
+            if ( *p_object == v4->root_bod_catalog.floor_corners.storage[j].object
+              || *p_object == v4->root_bod_catalog.slide_corners.storage[j].object )
             {
-              set_bod_object(p_object - 9, *(_DWORD *)&v4->unknown_000b48[j + 276436]);
+              set_bod_object((BodBase *)(p_object - 9), v4->root_bod_catalog.warning_corners.storage[j].object);
               p_object[7] = (void *)((unsigned int)p_object[7] | 0x20);
               v4 = g_game_base;
             }

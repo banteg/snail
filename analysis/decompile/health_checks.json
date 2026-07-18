@@ -2908,6 +2908,8 @@
         "game->root_bod_catalog.pillars[0].object",
         "game->root_bod_catalog.floor_corners.storage[0].object",
         "game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object",
+        "game->root_bod_catalog.trampoline.object->blend_mode = 6",
+        "game->root_bod_catalog.trampoline.object->facequads->texture_ref",
         "game->intro.hide_for_replay_latch = 0",
         "apply_audio_config_volumes(&game->options)",
         "open_logo(&game->logo)",
@@ -2941,6 +2943,8 @@
         "game->__offset(0x4f33c)",
         "game->__offset(0x4f388)",
         "game->__offset(0x4f400)",
+        ".object + 0x14",
+        ".object + 0x5c",
         "game->texture_set_selector",
         "->unknown_a0 = 2",
         "analysis skipped",
@@ -5291,10 +5295,14 @@
         "void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)",
         "game->runtime_row_count",
         "game->completion_row_start",
-        "game->runtime_cells[0][0].fringe_front"
+        "game->runtime_cells[0][0].fringe_front",
+        "g_game_base->root_bod_catalog.floor_slices.storage[0].object",
+        "g_game_base->root_bod_catalog.ramp_edges[1].object"
       ],
       "forbidden_substrings": [
         "populate_runtime_track_cells_from_segments(Game *game)",
+        "g_game_base->unknown_000b48",
+        "g_game_base->unknown_044100",
         "_pad_74622",
         "__asm",
         "_ET1"
@@ -5849,10 +5857,14 @@
       "required_substrings": [
         "int32_t __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime *game)",
         "game->runtime_row_count",
-        "&game->runtime_cells[0][0].object"
+        "&game->runtime_cells[0][0].object",
+        "root_bod_catalog.floor_slices.storage",
+        "root_bod_catalog.warning_corners.storage"
       ],
       "forbidden_substrings": [
         "promote_track_tiles_to_fringe_variants(Game *game)",
+        "unknown_000b48[",
+        "unknown_044100",
         "sub_4355F0",
         "__asm",
         "_ET1"
@@ -5913,10 +5925,14 @@
       "required_substrings": [
         "int32_t __thiscall select_track_tile_edge_variants(SubgameRuntime *game)",
         "game->runtime_row_count",
-        "&game->runtime_cells[0][0].tile_id"
+        "&game->runtime_cells[0][0].tile_id",
+        "root_bod_catalog.floor_corners.storage",
+        "root_bod_catalog.slide_corners.storage"
       ],
       "forbidden_substrings": [
         "select_track_tile_edge_variants(Game *game)",
+        "unknown_000b48[",
+        "unknown_044100",
         "sub_435A80",
         "__asm",
         "_ET1"
@@ -8879,11 +8895,15 @@
         "game->root_bod_catalog.pillars[0].object",
         "game->root_bod_catalog.floor_corners.storage[0].object",
         "game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object",
+        "game->root_bod_catalog.trampoline.object->blend_mode = 6",
+        "game->root_bod_catalog.trampoline.object->facequads->texture_ref",
         "game->directx_loader.animation_bytes"
       ],
       "forbidden_substrings": [
         "game->unknown_044100",
-        "(DirectXLoader *)&game->unknown_044100"
+        "(DirectXLoader *)&game->unknown_044100",
+        "*((_DWORD *)game->root_bod_catalog",
+        "(Object *)game->root_bod_catalog"
       ]
     },
     {
@@ -8895,7 +8915,9 @@
         "g_game_base->root_bod_catalog.pillars"
       ],
       "forbidden_substrings": [
-        "g_game_base->unknown_044100"
+        "g_game_base->unknown_044100",
+        "g_game_base->unknown_000b48",
+        "(Object *)g_game_base->root_bod_catalog"
       ]
     },
     {
@@ -11201,6 +11223,18 @@
         "SingleWaitBlock",
         "P@{",
         "sub_406BD0"
+      ]
+    },
+    {
+      "name": "bn_root_bod_catalog_borrowed_object_owner",
+      "artifact": "analysis/headers/bn_root_bod_catalog_types.h",
+      "required_substrings": [
+        "typedef struct Object Object;",
+        "Object* object;"
+      ],
+      "forbidden_substrings": [
+        "void* object;",
+        "struct Object {"
       ]
     },
     {
