@@ -17,11 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "set_subgame_features",
-      "address": "0x435df0"
+      "name": "initialize_path_follow_golb",
+      "address": "0x421770"
     }
   ],
-  "health_check_count": 834,
+  "health_check_count": 836,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -40,6 +40,8 @@ TRUSTED_NAMES = [
     (0x43A300, "update_movement_flag_emitters"),
     (0x43A370, "end_jetpack_hover"),
     (0x4182F0, "load_landscape_script_by_name"),
+    (0x421770, "initialize_path_follow_golb"),
+    (0x4217B0, "calc_path_length_z"),
     (0x42B9C0, "get_path_position_at_node"),
     (0x42CA90, "is_point_inside_track_attachment"),
     (0x42F6E0, "initialize_object_constructor_thunk"),

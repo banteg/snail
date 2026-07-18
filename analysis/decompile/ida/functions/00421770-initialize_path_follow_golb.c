@@ -2,20 +2,24 @@
 /* function: initialize_path_follow_golb @ 0x421770 */
 /* selector: initialize_path_follow_golb */
 
-int __thiscall sub_421770(float *this, int a2, int a3, int a4)
+// Starts one Golb projectile attachment-follow session by borrowing the runtime `SubLoc`, its authored `Path`, and its world anchor; iOS Path.o names this owner family `cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)`.
+int32_t __thiscall initialize_path_follow_golb(
+        GolbPathFollowState *state,
+        TrackRowCell *source_cell,
+        const Vec3 *position,
+        GolbShot *shot)
 {
-  int v4; // edx
+  Path *attachment_template_record; // edx
   double v5; // st7
 
-  *(_BYTE *)this = 1;
-  v4 = *(_DWORD *)(a2 + 56);
-  *((_DWORD *)this + 2) = a2;
-  *((_DWORD *)this + 1) = v4;
-  *(this + 3) = 0.0;
-  v5 = *(float *)(a3 + 8) - *(float *)(a2 + 24);
-  *((_DWORD *)this + 9) = a4;
-  *(this + 4) = v5;
-  *(this + 5) = *(float *)(a3 + 4) - 0.49000001;
-  return a4;
+  state->active = 1;
+  attachment_template_record = source_cell->attachment_template_record;
+  state->source_cell = source_cell;
+  state->template_record = attachment_template_record;
+  state->sample_index = 0;
+  v5 = position->z - source_cell->anchor_position.z;
+  state->shot = shot;
+  state->progress = v5;
+  state->vertical_offset = position->y - 0.49000001;
+  return (int32_t)shot;
 }
-

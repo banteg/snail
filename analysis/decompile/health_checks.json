@@ -12709,6 +12709,53 @@
       ]
     },
     {
+      "name": "bn_golb_path_follow_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/00421770-initialize_path_follow_golb.c",
+      "required_substrings": [
+        "state->active = 1",
+        "struct Path* attachment_template_record = source_cell->attachment_template_record",
+        "state->source_cell = source_cell",
+        "state->template_record = attachment_template_record",
+        "state->sample_index = 0",
+        "source_cell->anchor_position.z",
+        "state->shot = shot",
+        "state->progress",
+        "state->vertical_offset"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "arg4",
+        "*(state +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_golb_path_follow_initializer_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00421770-initialize_path_follow_golb.c",
+      "required_substrings": [
+        "int32_t __thiscall initialize_path_follow_golb(",
+        "GolbPathFollowState *state",
+        "TrackRowCell *source_cell",
+        "const Vec3 *position",
+        "GolbShot *shot",
+        "source_cell->attachment_template_record",
+        "state->source_cell = source_cell;",
+        "state->template_record = attachment_template_record;",
+        "source_cell->anchor_position.z",
+        "state->shot = shot;"
+      ],
+      "forbidden_substrings": [
+        "sub_421770",
+        "float *this",
+        "int a2",
+        "int a3",
+        "int a4",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_golb_path_follow_owner_graph",
       "artifact": "analysis/decompile/binja/functions/004217b0-calc_path_length_z.c",
       "required_substrings": [

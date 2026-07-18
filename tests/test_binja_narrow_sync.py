@@ -1769,6 +1769,16 @@ def test_path_sync_owns_golb_follow_abis() -> None:
     assert "Path* template_record;" in header
     assert "TrackRowCell* source_cell;" in header
     assert "GolbPathFollowState path_follow;" in header
+    for symbol_update in (
+        '("0x421770", "initialize_path_follow_golb")',
+        '("0x4217b0", "calc_path_length_z")',
+    ):
+        assert symbol_update in source
+    for trusted_name in (
+        '(0x421770, "initialize_path_follow_golb")',
+        '(0x4217B0, "calc_path_length_z")',
+    ):
+        assert trusted_name in ida_source
     for address in ("0x414820", "0x421770", "0x4217B0"):
         assert address in ida_source
 

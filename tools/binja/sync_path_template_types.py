@@ -69,6 +69,11 @@ TRACK_RENDER_CACHE_SYMBOL_UPDATES = (
     ("0x497338", "g_active_bod_vtable"),
 )
 
+GOLB_PATH_FOLLOW_SYMBOL_UPDATES = (
+    ("0x421770", "initialize_path_follow_golb"),
+    ("0x4217b0", "calc_path_length_z"),
+)
+
 SYMBOL_UPDATES = (
     ("0x408040", "initialize_noop_renderable_bod"),
     ("0x408060", "initialize_runtime_pools_and_path_template_bank"),
@@ -79,6 +84,7 @@ SYMBOL_UPDATES = (
     *BOD_CORE_SYMBOL_UPDATES,
     *TRACK_RENDER_CACHE_SYMBOL_UPDATES,
     *FRINGE_SYMBOL_UPDATES,
+    *GOLB_PATH_FOLLOW_SYMBOL_UPDATES,
     ("0x42f6e0", "initialize_object_constructor_thunk"),
     ("0x442500", "initialize_vapour"),
     ("0x442540", "reset_vapour"),
@@ -3556,6 +3562,13 @@ def main() -> int:
         )
     )
     if args.golb_only:
+        operations.extend(
+            apply_symbol_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=GOLB_PATH_FOLLOW_SYMBOL_UPDATES,
+            )
+        )
         operations.extend(
             apply_user_var_updates(
                 REPO_ROOT,
