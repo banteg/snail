@@ -71,6 +71,7 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x4107d0", "update_frontend_state_machine"),
     ("0x4119c0", "initialize_game_window_and_input_wrapper"),
     ("0x4119d0", "initialize_game_window_and_input"),
+    ("0x413670", "configure_sprite_render_state"),
     ("0x44c3b0", "is_mouse_captured"),
     ("0x44c3c0", "capture_mouse_cursor"),
     ("0x44c400", "release_mouse_cursor"),
@@ -126,6 +127,10 @@ PROTO_UPDATES = (
     (
         "draw_sprite_quad",
         "int32_t __cdecl draw_sprite_quad(Vec3* position, Sprite* sprite)",
+    ),
+    (
+        "configure_sprite_render_state",
+        "int32_t __cdecl configure_sprite_render_state(Sprite* sprite)",
     ),
     (
         "update_sprite_facing_angle",

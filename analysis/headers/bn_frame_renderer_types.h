@@ -367,4 +367,6 @@ typedef struct SpriteDepthNode {
     Sprite* sprite;
 } SpriteDepthNode;
 
+int32_t __cdecl configure_sprite_render_state(Sprite* sprite);
+
 #endif

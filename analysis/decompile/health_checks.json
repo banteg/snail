@@ -14439,6 +14439,38 @@
         "data_503218",
         "unimplemented"
       ]
+    },
+    {
+      "name": "bn_sprite_render_state_owner",
+      "artifact": "analysis/decompile/binja/functions/00413670-configure_sprite_render_state.c",
+      "required_substrings": [
+        "int32_t draw_mode = sprite->draw_mode",
+        "g_direct3d_renderer.device",
+        "SetRenderState(device",
+        "return draw_mode"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(sprite +",
+        "data_502fec",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_sprite_render_state_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00413670-configure_sprite_render_state.c",
+      "required_substrings": [
+        "int __cdecl configure_sprite_render_state(Sprite *sprite)",
+        "result = sprite->draw_mode;",
+        "g_direct3d_renderer.device->vtbl->SetRenderState",
+        "case 13:"
+      ],
+      "forbidden_substrings": [
+        "sub_413670",
+        "MEMORY[",
+        "a1",
+        "unimplemented"
+      ]
     }
   ]
 }

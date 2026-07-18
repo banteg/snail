@@ -579,6 +579,11 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         '"int32_t __cdecl draw_sprite_quad(Vec3* position, Sprite* sprite)"'
         in bn_frame_sync
     )
+    assert '"0x413670", "configure_sprite_render_state"' in bn_frame_sync
+    assert (
+        '"int32_t __cdecl configure_sprite_render_state(Sprite* sprite)"'
+        in bn_frame_sync
+    )
     assert '("0x4dfb10", "g_post_sprite_bods")' in bn_frame_sync
     assert '("0x4dfb10", "RenderableBod*")' in bn_frame_sync
     assert '("0x814c94", "g_sprite_active_heads")' in bn_frame_sync
@@ -597,6 +602,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert "def _invalidate_cfunc" in frame_sync
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in frame_sync
     for selector in (
+        "configure_sprite_render_state",
         "draw_sprite_quad",
         "update_sprite_facing_angle",
         "render_game_frame",
@@ -607,6 +613,11 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert '"depth_bucket_sprite",\n        0x40A8CB,' in frame_sync
     assert '"post_cursor",\n        0x40A991,' in frame_sync
     assert '"int __cdecl draw_sprite_quad(Vec3 *position, Sprite *sprite);"' in frame_sync
+    assert '(0x413670, "configure_sprite_render_state")' in frame_sync
+    assert (
+        '"int __cdecl configure_sprite_render_state(Sprite *sprite);"'
+        in frame_sync
+    )
     assert "def _sync_draw_sprite_vertex_lvar" in frame_sync
     assert 'declaration = "ObjectRenderVertex *vertices;"' in frame_sync
     assert "split_definition_address = 0x413933" in frame_sync
@@ -625,6 +636,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         assert "uint32_t diffuse;" in header
         assert "Sprite* sprite;" in header
         assert "void* sprite;" not in header
+        assert "int32_t __cdecl configure_sprite_render_state(Sprite* sprite);" in header
     assert '"BodNode": 0x10' in frame_sync
     assert '"BodList": 0xC' in frame_sync
 

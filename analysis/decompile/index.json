@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,19 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "render_camera",
-      "address": "0x411fa0"
-    },
-    {
-      "name": "build_perspective_projection_matrix",
-      "address": "0x450314"
-    },
-    {
-      "name": "build_camera_view_matrix",
-      "address": "0x451ad9"
+      "name": "configure_sprite_render_state",
+      "address": "0x413670"
     }
   ],
-  "health_check_count": 824,
+  "health_check_count": 826,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

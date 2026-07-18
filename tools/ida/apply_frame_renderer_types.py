@@ -62,6 +62,7 @@ TRUSTED_NAMES = [
     (0x408000, "initialize_game_player"),
     (0x4107D0, "update_frontend_state_machine"),
     (0x4137F0, "draw_sprite_quad"),
+    (0x413670, "configure_sprite_render_state"),
     (0x44E410, "update_sprite_facing_angle"),
     (0x4119C0, "initialize_game_window_and_input_wrapper"),
     (0x4119D0, "initialize_game_window_and_input"),
@@ -156,6 +157,10 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     (
         "draw_sprite_quad",
         "int __cdecl draw_sprite_quad(Vec3 *position, Sprite *sprite);",
+    ),
+    (
+        "configure_sprite_render_state",
+        "int __cdecl configure_sprite_render_state(Sprite *sprite);",
     ),
     (
         "update_sprite_facing_angle",
@@ -685,6 +690,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     invalidated_cfuncs = {
         selector: _invalidate_cfunc(selector)
         for selector in (
+            "configure_sprite_render_state",
             "draw_sprite_quad",
             "update_sprite_facing_angle",
             "render_game_frame",
