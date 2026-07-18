@@ -12,6 +12,7 @@ from _narrow_sync import (
     apply_split_user_var_update,
     apply_symbol_updates,
     apply_user_var_updates,
+    current_type_widths,
     emit_summary,
     types_declare_if_changed,
 )
@@ -20,6 +21,17 @@ from _narrow_sync import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/segment_catalog_types.h"
 TARGET = DEFAULT_TARGET
+
+EXPECTED_OWNER_SIZES = {
+    "AuthoredSegmentRow": 0x38,
+    "SegmentCatalogEntry": 0x4088,
+    "SegmentCatalogEntryAnchor": 0x408C,
+    "SegmentCatalogRowStrideAnchor": 0x8C4,
+    "SMTracks": 0x25CFB4,
+    "SubSegment": 0x4220,
+    "SubTracks": 0x1A5978,
+    "SubSegmentRaw": 0x48,
+}
 
 DATA_SYMBOL_UPDATES = (
     ("0x74ec74", "g_current_level_definition_name"),
@@ -115,33 +127,64 @@ def main() -> int:
             REPO_ROOT,
             target=TARGET,
             header_path=HEADER_PATH,
-        ),
-        *apply_symbol_updates(
-            REPO_ROOT,
-            target=TARGET,
-            updates=DATA_SYMBOL_UPDATES,
-        ),
-        *apply_data_var_updates(
-            REPO_ROOT,
-            target=TARGET,
-            updates=DATA_VAR_UPDATES,
-        ),
-        *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
-        *apply_split_user_var_update(
-            REPO_ROOT,
-            target=TARGET,
-            identifier="load_builtin_segment_definitions",
-            definitions=BUILTIN_GRID_OFFSET_SPLIT_DEFINITIONS,
-            target_var=BUILTIN_GRID_OFFSET_TARGET_VAR,
-            variable_name="grid_offset",
-            variable_type="int32_t",
-        ),
-        *apply_user_var_updates(
-            REPO_ROOT,
-            target=TARGET,
-            updates=SEGMENT_USER_VAR_UPDATES,
-        ),
+        )
     ]
+
+    observed_sizes = current_type_widths(
+        REPO_ROOT,
+        target=TARGET,
+        type_names=EXPECTED_OWNER_SIZES,
+    )
+    mismatches = []
+    for name, expected_size in EXPECTED_OWNER_SIZES.items():
+        observed_size = observed_sizes.get(name)
+        status = "verified" if observed_size == expected_size else "verification_failed"
+        operations.append(
+            {
+                "op": "owner_size_verify",
+                "name": name,
+                "expected_size": expected_size,
+                "observed_size": observed_size,
+                "status": status,
+            }
+        )
+        if status == "verification_failed":
+            mismatches.append(
+                f"{name}: expected {expected_size:#x}, observed {observed_size!r}"
+            )
+
+    if mismatches:
+        raise RuntimeError("Segment catalog owner size mismatch: " + "; ".join(mismatches))
+
+    operations.extend(
+        [
+            *apply_symbol_updates(
+                REPO_ROOT,
+                target=TARGET,
+                updates=DATA_SYMBOL_UPDATES,
+            ),
+            *apply_data_var_updates(
+                REPO_ROOT,
+                target=TARGET,
+                updates=DATA_VAR_UPDATES,
+            ),
+            *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
+            *apply_split_user_var_update(
+                REPO_ROOT,
+                target=TARGET,
+                identifier="load_builtin_segment_definitions",
+                definitions=BUILTIN_GRID_OFFSET_SPLIT_DEFINITIONS,
+                target_var=BUILTIN_GRID_OFFSET_TARGET_VAR,
+                variable_name="grid_offset",
+                variable_type="int32_t",
+            ),
+            *apply_user_var_updates(
+                REPO_ROOT,
+                target=TARGET,
+                updates=SEGMENT_USER_VAR_UPDATES,
+            ),
+        ]
+    )
 
     return emit_summary(repo_root=REPO_ROOT, target=TARGET, header_path=HEADER_PATH, operations=operations)
 

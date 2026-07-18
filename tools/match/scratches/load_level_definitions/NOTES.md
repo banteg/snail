@@ -34,3 +34,14 @@ to `SMTracks` and removing the synthetic count result preserves proof grade at
 owned `SubTracks` through `g_game->subgame.level_definition_scratch`, without
 discarding the root type at the singleton reload. It remains exact at 30/30
 instructions with all six operands clean.
+
+## 2026-07-18 cross-tool replay closure
+
+Strict six-function export now preserves the exact void `SMTracks` member in
+IDA and the nested root-owned `SubTracks` receiver in both decompilers. Replay
+verifies the full catalog and level-definition owner sizes before applying the
+six member prototypes, preventing the 150-entry catalog or 100-slot active
+definition from silently drifting across adjacent root storage. Dedicated
+health checks reject the former incidental `int32_t` return and raw
+`g_game_base + 0x224804` view. The source remains proof-grade at 100.00%,
+30/30 instructions, with all six operands clean.

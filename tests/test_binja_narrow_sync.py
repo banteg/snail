@@ -4177,6 +4177,20 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "LevelFileTextBuffer" in binja_segment_sync
     assert "types_declare_if_changed" in binja_segment_sync
     assert "types_declare(" not in binja_segment_sync
+    for sync_source in (binja_segment_sync, ida_segment_sync):
+        assert "EXPECTED_OWNER_SIZES" in sync_source
+        assert '"AuthoredSegmentRow": 0x38' in sync_source
+        assert '"SegmentCatalogEntry": 0x4088' in sync_source
+        assert '"SegmentCatalogEntryAnchor": 0x408C' in sync_source
+        assert '"SegmentCatalogRowStrideAnchor": 0x8C4' in sync_source
+        assert '"SMTracks": 0x25CFB4' in sync_source
+        assert '"SubSegment": 0x4220' in sync_source
+        assert '"SubTracks": 0x1A5978' in sync_source
+        assert '"SubSegmentRaw": 0x48' in sync_source
+    assert "current_type_widths" in binja_segment_sync
+    assert '"op": "owner_size_verify"' in binja_segment_sync
+    assert "SEGMENT_OWNER_MARKERS" in ida_segment_sync
+    assert "owner_sizes" in ida_segment_sync
     assert "SEGMENT_USER_VAR_UPDATES" in binja_segment_sync
     assert '"selected_entry_anchor"' in binja_segment_sync
     assert '"SegmentCatalogEntryAnchor*"' in binja_segment_sync

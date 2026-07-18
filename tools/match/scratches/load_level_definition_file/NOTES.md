@@ -133,3 +133,14 @@ Residuals:
   candidate/target instructions, prefix 20/926, and 178 clean masked operands
   with no unresolved references or mismatches. The residuals remain compiler
   scheduling and control-flow shape; no fakematch was introduced.
+
+## 2026-07-18 exact owner-size replay
+
+Both replay lanes now read back the complete catalog/import chain before
+refreshing this parser: `AuthoredSegmentRow` `0x38`, `SegmentCatalogEntry`
+`0x4088`, `SMTracks` `0x25cfb4`, `SubSegment` `0x4220`, `SubTracks`
+`0x1a5978`, and `SubSegmentRaw` `0x48`, together with the two compiler cursor
+views. IDA refuses name/prototype/local mutations if any extent is wrong.
+Focused reanalysis also recovered the 512-byte `script_name` stack buffer and
+kept its landscape lookup on the embedded `SubgameRuntime::landscape_manager`.
+The scratch and its honest 82.27% matcher result are unchanged.

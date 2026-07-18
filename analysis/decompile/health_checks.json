@@ -10514,6 +10514,66 @@
       ]
     },
     {
+      "name": "bn_frontend_level_loader_owner_and_void_abi",
+      "artifact": "analysis/decompile/binja/functions/00443650-load_frontend_level_by_mode_and_index.c",
+      "required_substrings": [
+        "switch (mode)",
+        "level_index",
+        "load_level_definition_file(tracks, &filename)",
+        "00443708        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "sub_443650",
+        "return load_level_definition_file"
+      ]
+    },
+    {
+      "name": "ida_frontend_level_loader_owner_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00443650-load_frontend_level_by_mode_and_index.c",
+      "required_substrings": [
+        "void __thiscall load_frontend_level_by_mode_and_index(SubTracks *tracks, int mode, int level_index)",
+        "switch ( mode )",
+        "load_level_definition_file(tracks, Buffer);"
+      ],
+      "forbidden_substrings": [
+        "sub_443650",
+        "char *this",
+        "return load_level_definition_file"
+      ]
+    },
+    {
+      "name": "bn_level_catalog_open_levels_owner_and_void_abi",
+      "artifact": "analysis/decompile/binja/functions/00448900-load_level_definitions.c",
+      "required_substrings": [
+        "EnumeratedEntryName names[0x80]",
+        "enumerate_matching_archive_or_fs_entries(\"Levels\", \"*.txt\"",
+        "load_level_definition_file(&g_game_base->subgame.level_definition_scratch, filename)",
+        "0044895f        return"
+      ],
+      "forbidden_substrings": [
+        "&g_game_base[0x224804]",
+        "arg1",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_level_catalog_open_levels_owner_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00448900-load_level_definitions.c",
+      "required_substrings": [
+        "void __thiscall load_level_definitions(SMTracks *tracks)",
+        "EnumeratedEntryName filename[128]",
+        "&out_count",
+        "load_level_definition_file(&g_game_base->subgame.level_definition_scratch, v2);"
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall load_level_definitions",
+        "(char *)g_game_base + 2246660",
+        "return result"
+      ]
+    },
+    {
       "name": "bn_backdrop_zoom_void_owner",
       "artifact": "analysis/decompile/binja/functions/00410c30-set_backdrop_progress_fraction.c",
       "required_substrings": [

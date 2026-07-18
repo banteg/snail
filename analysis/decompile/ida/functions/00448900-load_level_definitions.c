@@ -2,29 +2,25 @@
 /* function: load_level_definitions @ 0x448900 */
 /* selector: load_level_definitions */
 
-// Implements `cRSMTracks::OpenLevels()` by enumerating LEVELS/*.TXT and parsing each name into the root-owned SubTracks scratch definition. Cross-port evidence proves the authored member is void; this pre-sync decompile still presents incidental EAX residue as an int32_t result.
-int32_t __thiscall load_level_definitions(SMTracks *catalog)
+// Implements the void `cRSMTracks::OpenLevels()` member by enumerating LEVELS/*.TXT and parsing each name into the root-owned SubTracks scratch definition.
+void __thiscall load_level_definitions(SMTracks *tracks)
 {
-  int32_t result; // eax
-  int v2; // esi
-  char *v3; // edi
-  int v4; // [esp+4h] [ebp-4004h] BYREF
-  _BYTE v5[16384]; // [esp+8h] [ebp-4000h] BYREF
+  int v1; // esi
+  char *v2; // edi
+  int out_count; // [esp+4h] [ebp-4004h] BYREF
+  EnumeratedEntryName filename[128]; // [esp+8h] [ebp-4000h] BYREF
 
-  enumerate_matching_archive_or_fs_entries(aLevels, (int)aTxt, (float *)&v4, (int)v5);
-  result = v4;
-  v2 = 0;
-  if ( v4 > 0 )
+  enumerate_matching_archive_or_fs_entries(aLevels, (char *)aTxt, &out_count, filename);
+  v1 = 0;
+  if ( out_count > 0 )
   {
-    v3 = v5;
+    v2 = filename[0];
     do
     {
-      load_level_definition_file((SubTracks *)((char *)g_game_base + 2246660), v3);
-      result = v4;
-      ++v2;
-      v3 += 128;
+      load_level_definition_file(&g_game_base->subgame.level_definition_scratch, v2);
+      ++v1;
+      v2 += 128;
     }
-    while ( v2 < v4 );
+    while ( v1 < out_count );
   }
-  return result;
 }

@@ -49,6 +49,31 @@ DIRTY_FUNCTIONS = (
 
 SEGMENT_COPY_ENTRY_ANCHOR_DEFEA = 0x447372
 
+SEGMENT_OWNER_MARKERS = (
+    "typedef struct AuthoredSegmentRow {",
+    "typedef struct SegmentCatalogEntry {",
+    "typedef struct SegmentCatalogEntryAnchor {",
+    "typedef struct SegmentCatalogRowStrideAnchor {",
+    "typedef struct SMTracks {",
+    "SegmentCatalogEntry entries[150];",
+    "typedef struct SubSegment {",
+    "AuthoredSegmentRow rows[256];",
+    "typedef struct SubTracks {",
+    "SubSegment segment_slots[100];",
+    "typedef struct SubSegmentRaw {",
+)
+
+EXPECTED_OWNER_SIZES = {
+    "AuthoredSegmentRow": 0x38,
+    "SegmentCatalogEntry": 0x4088,
+    "SegmentCatalogEntryAnchor": 0x408C,
+    "SegmentCatalogRowStrideAnchor": 0x8C4,
+    "SMTracks": 0x25CFB4,
+    "SubSegment": 0x4220,
+    "SubTracks": 0x1A5978,
+    "SubSegmentRaw": 0x48,
+}
+
 
 TRUSTED_DECLARATIONS = [
     (
@@ -109,6 +134,13 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
 def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\b", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
+
+
+def _named_struct_size(name: str) -> int | None:
+    value = ida_typeinf.tinfo_t()
+    if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
+        return None
+    return value.get_size()
 
 
 def _sync_builtin_grid_offset_lvar() -> dict[str, object]:
@@ -315,7 +347,50 @@ def _sync_segment_copy_entry_anchor_lvar() -> dict[str, object]:
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
+    header_text = header_path.read_text(encoding="utf-8")
+    missing_owner_markers = [
+        marker for marker in SEGMENT_OWNER_MARKERS if marker not in header_text
+    ]
+    if missing_owner_markers:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "missing_owner_markers": missing_owner_markers,
+                    "failed": [{"reason": "noncanonical_segment_owner_header"}],
+                },
+                indent=2,
+            )
+        )
+        return 1
+
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    owner_sizes = {name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES}
+    owner_size_failures = [
+        {
+            "selector": name,
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": owner_sizes[name],
+        }
+        for name, expected_size in EXPECTED_OWNER_SIZES.items()
+        if owner_sizes[name] != expected_size
+    ]
+    if parse_errors or owner_size_failures:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "parse_errors": parse_errors,
+                    "owner_sizes": owner_sizes,
+                    "failed": owner_size_failures,
+                },
+                indent=2,
+            )
+        )
+        return 1
 
     renamed = 0
     names_unchanged = 0
@@ -462,6 +537,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "owner_sizes": owner_sizes,
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "applied": applied,

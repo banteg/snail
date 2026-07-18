@@ -10,7 +10,7 @@
 0044892f        if (__return_addr s<= 0)
 0044892f        return
 00448932        EnumeratedEntryName (* filename)[0x80] = &names
-00448943        load_level_definition_file(&g_game_base[0x224804], filename)
+00448943        load_level_definition_file(&g_game_base->subgame.level_definition_scratch, filename)
 0044894c        esi += 1
 0044894d        filename = &(*filename)[1]
 00448955        do while (esi s< __return_addr)

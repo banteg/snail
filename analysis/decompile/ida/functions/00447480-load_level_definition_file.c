@@ -71,7 +71,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
   char v66[128]; // [esp+220h] [ebp-500h] BYREF
   char ArgList[128]; // [esp+2A0h] [ebp-480h] BYREF
   char segment_name[512]; // [esp+320h] [ebp-400h] BYREF
-  char v69[512]; // [esp+520h] [ebp-200h] BYREF
+  char script_name[512]; // [esp+520h] [ebp-200h] BYREF
 
   g_current_level_definition_name = filename;
   sprintf(Buffer, "Levels/%s", filename);
@@ -206,7 +206,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
   }
   v20 = find_case_insensitive_substring(asc_4A1644, v19) + 1;
   cursor = v20;
-  v21 = v69;
+  v21 = script_name;
   for ( k = *v20; *v20 != 46; k = *v20 )
   {
     *v21++ = k;
@@ -219,7 +219,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
   *v23++ = 120;
   *v23 = 116;
   v23[1] = 0;
-  tracks->landscape_script_index = load_landscape_script_by_name((char *)&v24->subgame.landscape_manager, v69);
+  tracks->landscape_script_index = load_landscape_script_by_name(&v24->subgame.landscape_manager, script_name);
   v25 = find_case_insensitive_substring(aFringe, g_level_file_text_buffer);
   cursor = v25;
   if ( v25 )

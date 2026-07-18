@@ -55,3 +55,14 @@ member, and every Windows callsite discards the value incidentally forwarded
 from `Init(char*)`. Removing the synthetic pointer result preserves 81.36%,
 61/57 instructions, prefix 5/57, and the existing single local jump-table
 masked mismatch.
+
+## 2026-07-18 durable loader ABI
+
+The segment-catalog replay now reanalyzes this entry together with the import,
+file parser, built-in initializer, catalog loader, and level enumerator. IDA's
+checked-in artifact consequently retains the authored void
+`SubTracks::Load(int, int)` receiver instead of the stale `_DWORD*`/`char*`
+shell. Its default arm still falls through to the final load with the native
+uninitialized filename behavior; no safety guard or score-shaped branch was
+invented. Focused matching remains honestly unchanged at 81.36% with the one
+known jump-table relocation mismatch.

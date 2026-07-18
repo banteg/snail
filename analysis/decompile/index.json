@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 8,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 8,
-  "ida_exported": 8,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,39 +17,31 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_active_bod",
-      "address": "0x4085e0"
+      "name": "load_frontend_level_by_mode_and_index",
+      "address": "0x443650"
     },
     {
-      "name": "initialize_track_render_cache_manager",
-      "address": "0x433060"
+      "name": "copy_segment_definition_to_level_slot",
+      "address": "0x447300"
     },
     {
-      "name": "build_track_render_caches",
-      "address": "0x433220"
+      "name": "load_level_definition_file",
+      "address": "0x447480"
     },
     {
-      "name": "add_track_cache_vertex",
-      "address": "0x433830"
+      "name": "load_builtin_segment_definitions",
+      "address": "0x448060"
     },
     {
-      "name": "append_track_cache_object",
-      "address": "0x433960"
+      "name": "load_segment_definitions",
+      "address": "0x448160"
     },
     {
-      "name": "update_track_render_cache_rows",
-      "address": "0x433b30"
-    },
-    {
-      "name": "update_active_bod",
-      "address": "0x433e80"
-    },
-    {
-      "name": "remove_track_render_cache_bods",
-      "address": "0x433f20"
+      "name": "load_level_definitions",
+      "address": "0x448900"
     }
   ],
-  "health_check_count": 764,
+  "health_check_count": 768,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

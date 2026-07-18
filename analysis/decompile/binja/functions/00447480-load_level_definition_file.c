@@ -101,22 +101,22 @@
 004477d7        return
 004477e8        char* cursor_12 = &find_case_insensitive_substring(":", cursor_11)[1]
 004477e9        cursor = cursor_12
-004477ed        void var_200
-004477ed        char* ecx_10 = &var_200
+004477ed        char script_name[0x200]
+004477ed        char (* ecx_10)[0x200] = &script_name
 004477f4        char i_3 = *cursor_12
 004477f9        while (i_3 != 0x2e)
 004477fb        *ecx_10 = i_3
-004477fd        ecx_10 = &ecx_10[1]
+004477fd        ecx_10 = &(*ecx_10)[1]
 004477fe        cursor_12 = &cursor_12[1]
 004477ff        cursor = cursor_12
 00447803        i_3 = *cursor_12
 0044780a        *ecx_10 = 0x2e
 0044780e        struct GameRoot* game_base_1 = g_game_base
-00447814        ecx_10[1] = 0x74
-00447818        ecx_10[2] = 0x78
-0044781c        ecx_10[3] = 0x74
-0044781f        ecx_10[4] = 0
-00447840        tracks->landscape_script_index = load_landscape_script_by_name(&game_base_1->subgame.landscape_manager, &var_200)
+00447814        (*ecx_10)[1] = 0x74
+00447818        (*ecx_10)[2] = 0x78
+0044781c        (*ecx_10)[3] = 0x74
+0044781f        (*ecx_10)[4] = 0
+00447840        tracks->landscape_script_index = load_landscape_script_by_name(&game_base_1->subgame.landscape_manager, &script_name)
 00447846        char* cursor_13 = find_case_insensitive_substring("Fringe:", &g_level_file_text_buffer)
 00447850        cursor = cursor_13
 00447854        if (cursor_13 != 0)
