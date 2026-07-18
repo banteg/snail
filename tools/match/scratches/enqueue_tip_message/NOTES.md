@@ -26,3 +26,9 @@ member as `cRTipManager::TipNew(cRTipData*, bool)` in v1.5 and use a signed-char
 second formal in v1.9. Both return the selected `cRTip*`. Windows independently
 loads that gate as a 32-bit argument, so this exact member returns `Tip*`, takes
 `TipData*`, and retains `int hide_disable_button`.
+
+2026-07-18 durable decompiler replay: both tracked decompilers now retain the
+`TipManager*`, `TipData*`, and returned `Tip*` ownership, and index the embedded
+`manager->tips` array without pointer-to-array artifacts or offset correction.
+Paired health checks pin that graph. Matching remains exact at 26/26 with three
+clean masked operands.

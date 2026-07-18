@@ -14978,6 +14978,202 @@
         "*(_DWORD *)",
         "sub_445F80"
       ]
+    },
+    {
+      "name": "bn_tip_kill_widgets_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/004489e0-kill_tip_widgets.c",
+      "required_substrings": [
+        "kill_border(tip->widget_main)",
+        "struct FrontendWidget* widget_ok = tip->widget_ok",
+        "tip->active = 0"
+      ],
+      "forbidden_substrings": [
+        "TipSlot",
+        "arg1",
+        "data_4df904"
+      ]
+    },
+    {
+      "name": "ida_tip_kill_widgets_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/004489e0-kill_tip_widgets.c",
+      "required_substrings": [
+        "void __thiscall kill_tip_widgets(Tip *tip)",
+        "kill_border(&tip->widget_main->list_kind);",
+        "tip->active = 0;"
+      ],
+      "forbidden_substrings": [
+        "TipSlot",
+        "MEMORY[",
+        "sub_4489E0"
+      ]
+    },
+    {
+      "name": "bn_tip_initialize_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00448a40-initialize_tip.c",
+      "required_substrings": [
+        "tip->definition = &g_default_tip_message",
+        "tip->widget_main = allocate_border(&g_game_base->border_manager)",
+        "tip->previous_outer_owner = g_game_base->players[0].frontend_state"
+      ],
+      "forbidden_substrings": [
+        "TipSlot",
+        "TipMessageDefinition",
+        "data_4df904"
+      ]
+    },
+    {
+      "name": "ida_tip_initialize_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00448a40-initialize_tip.c",
+      "required_substrings": [
+        "void __thiscall initialize_tip(Tip *tip, TipData *definition, int32_t hide_disable_button)",
+        "tip->widget_main = allocate_border(&g_game_base->border_manager);",
+        "tip->previous_outer_owner = g_game_base->players[0].frontend_state;"
+      ],
+      "forbidden_substrings": [
+        "TipSlot",
+        "TipMessageDefinition",
+        "MEMORY["
+      ]
+    },
+    {
+      "name": "bn_tip_update_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00448c40-update_tip.c",
+      "required_substrings": [
+        "g_game_base->subgame.subgame_pause_gate",
+        "enum FrontendWidgetFlag widget_flags",
+        "unhide_all_borders(&g_game_base->border_manager)"
+      ],
+      "forbidden_substrings": [
+        "TipSlot",
+        "slot->",
+        "data_4df904"
+      ]
+    },
+    {
+      "name": "ida_tip_update_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00448c40-update_tip.c",
+      "required_substrings": [
+        "void __thiscall update_tip(Tip *tip)",
+        "FrontendWidgetFlag widget_flags;",
+        "g_game_base->players[0].frontend_state = tip->previous_outer_owner;"
+      ],
+      "forbidden_substrings": [
+        "TipSlot",
+        "slot->",
+        "MEMORY["
+      ]
+    },
+    {
+      "name": "bn_tip_manager_initialize_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00448cf0-initialize_tip_manager.c",
+      "required_substrings": [
+        "struct Tip* tip = &manager->tips",
+        "tip->active = 0",
+        "tip = &tip[1]"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "int32_t* result",
+        "manager->slots"
+      ]
+    },
+    {
+      "name": "ida_tip_manager_initialize_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00448cf0-initialize_tip_manager.c",
+      "required_substrings": [
+        "void __thiscall initialize_tip_manager(TipManager *manager)",
+        "tips = manager->tips;",
+        "tips->active = 0;"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *",
+        "this + 14",
+        "manager->slots"
+      ]
+    },
+    {
+      "name": "bn_tip_manager_uninit_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00448d10-uninit_tips.c",
+      "required_substrings": [
+        "struct Tip* tip = &manager->tips",
+        "if (tip->active == 1)",
+        "kill_tip_widgets(tip)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "int32_t* esi",
+        "manager->slots"
+      ]
+    },
+    {
+      "name": "ida_tip_manager_uninit_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00448d10-uninit_tips.c",
+      "required_substrings": [
+        "void __thiscall uninit_tips(TipManager *manager)",
+        "tips = manager->tips;",
+        "kill_tip_widgets(tips);"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *",
+        "this + 14",
+        "manager->slots"
+      ]
+    },
+    {
+      "name": "bn_tip_manager_enqueue_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00448d30-enqueue_tip_message.c",
+      "required_substrings": [
+        "struct Tip* tip = &manager->tips",
+        "initialize_tip(&manager->tips[i], definition, hide_disable_button)",
+        "return &manager->tips[i]"
+      ],
+      "forbidden_substrings": [
+        "TipSlot",
+        "TipMessageDefinition",
+        "manager->slots"
+      ]
+    },
+    {
+      "name": "ida_tip_manager_enqueue_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00448d30-enqueue_tip_message.c",
+      "required_substrings": [
+        "Tip *__thiscall enqueue_tip_message(TipManager *manager, TipData *definition, int32_t hide_disable_button)",
+        "for ( i = manager->tips; i->active; ++i )",
+        "initialize_tip(v6, definition, hide_disable_button);"
+      ],
+      "forbidden_substrings": [
+        "TipSlot",
+        "TipMessageDefinition",
+        "manager->slots"
+      ]
+    },
+    {
+      "name": "bn_tip_manager_update_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00448d80-update_tip_manager.c",
+      "required_substrings": [
+        "struct Tip* tip = &manager->tips",
+        "if (tip->active == 1)",
+        "update_tip(tip)"
+      ],
+      "forbidden_substrings": [
+        "TipSlot",
+        "manager->slots",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_tip_manager_update_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00448d80-update_tip_manager.c",
+      "required_substrings": [
+        "void __thiscall update_tip_manager(TipManager *manager)",
+        "tips = manager->tips;",
+        "update_tip(tips);"
+      ],
+      "forbidden_substrings": [
+        "TipSlot",
+        "manager->slots",
+        "MEMORY["
+      ]
     }
   ]
 }

@@ -67,6 +67,26 @@ NUKE_OWNER_SIZES = {
     "Nuke": 0x7C,
 }
 
+TIP_OWNER_SIZES = {
+    "TipData": 0x14,
+    "Tip": 0x20,
+    "TipManager": 0x98,
+}
+
+TIP_FUNCTION_SYMBOL_UPDATES = (
+    ("0x4489e0", "kill_tip_widgets"),
+    ("0x448a40", "initialize_tip"),
+    ("0x448c40", "update_tip"),
+    ("0x448cf0", "initialize_tip_manager"),
+    ("0x448d10", "uninit_tips"),
+    ("0x448d30", "enqueue_tip_message"),
+    ("0x448d80", "update_tip_manager"),
+)
+
+TIP_DATA_SYMBOL_UPDATES = (
+    ("0x4ac5c8", "g_default_tip_message"),
+)
+
 TRACK_RENDER_CACHE_SYMBOL_UPDATES = (
     ("0x4085e0", "initialize_active_bod"),
     ("0x433e80", "update_active_bod"),
@@ -534,6 +554,28 @@ def verify_nuke_owner_size(*, target: str) -> dict[str, object]:
         "owner_sizes": observed,
     }
 
+
+def verify_tip_owner_sizes(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRTip and cRTipManager ABIs."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=TIP_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in TIP_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"Tip owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "tip",
+        "owner_sizes": observed,
+    }
+
 SUB_PAUSE_FIELD_UPDATES = (
     ("0x00", "options_widget", "FrontendWidget*"),
     ("0x04", "end_game_widget", "FrontendWidget*"),
@@ -765,6 +807,44 @@ NUKE_USER_VAR_UPDATES = (
         -4,
         "loop_index_float_source",
         "int32_t",
+    ),
+)
+
+# TipManager owns three adjacent 0x20-byte Tip records. BN otherwise promotes
+# each native cursor register to Tip (*)[3] and invents a subtraction back to
+# the manager before every access. Preserve the exact borrowed Tip* walks.
+TIP_MANAGER_USER_VAR_UPDATES = (
+    (
+        "initialize_tip_manager",
+        "RegisterVariableSourceType",
+        8,
+        66,
+        "tip",
+        "Tip*",
+    ),
+    (
+        "uninit_tips",
+        "RegisterVariableSourceType",
+        2,
+        72,
+        "tip",
+        "Tip*",
+    ),
+    (
+        "enqueue_tip_message",
+        "RegisterVariableSourceType",
+        3,
+        68,
+        "tip",
+        "Tip*",
+    ),
+    (
+        "update_tip_manager",
+        "RegisterVariableSourceType",
+        2,
+        72,
+        "tip",
+        "Tip*",
     ),
 )
 
@@ -2115,6 +2195,25 @@ SUB_HOVER_FIELD_UPDATES = (
     ("0x210", "warning_intensity", "float"),
 )
 
+TIP_DATA_FIELD_UPDATES = (
+    ("0x00", "flags", "uint32_t"),
+    ("0x04", "layout_y", "float"),
+    ("0x08", "text_scale", "float"),
+    ("0x0c", "dismiss_seconds", "float"),
+    ("0x10", "text", "char*"),
+)
+
+TIP_FIELD_UPDATES = (
+    ("0x00", "active", "int32_t"),
+    ("0x04", "previous_outer_owner", "int32_t"),
+    ("0x08", "definition", "TipData*"),
+    ("0x0c", "widget_main", "FrontendWidget*"),
+    ("0x10", "widget_ok", "FrontendWidget*"),
+    ("0x14", "widget_disable", "FrontendWidget*"),
+    ("0x18", "dismiss_progress", "float"),
+    ("0x1c", "dismiss_step", "float"),
+)
+
 TIP_MANAGER_FIELD_UPDATES = (
     ("0x00", "bod", "BodBase"),
     ("0x38", "tips", "Tip[0x3]"),
@@ -2390,6 +2489,34 @@ NUKE_PROTO_UPDATES = (
     ),
 )
 
+TIP_PROTO_UPDATES = (
+    (
+        "kill_tip_widgets",
+        "void __thiscall kill_tip_widgets(Tip* tip)",
+    ),
+    (
+        "initialize_tip",
+        "void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button)",
+    ),
+    ("update_tip", "void __thiscall update_tip(Tip* tip)"),
+    (
+        "initialize_tip_manager",
+        "void __thiscall initialize_tip_manager(TipManager* manager)",
+    ),
+    (
+        "uninit_tips",
+        "void __thiscall uninit_tips(TipManager* manager)",
+    ),
+    (
+        "enqueue_tip_message",
+        "Tip* __thiscall enqueue_tip_message(TipManager* manager, TipData* definition, int32_t hide_disable_button)",
+    ),
+    (
+        "update_tip_manager",
+        "void __thiscall update_tip_manager(TipManager* manager)",
+    ),
+)
+
 PROTO_UPDATES = (
     *GOLB_PROTO_UPDATES,
     *ROW_MODEL_PROTO_UPDATES,
@@ -2397,6 +2524,7 @@ PROTO_UPDATES = (
     *SLUG_VOICE_MANAGER_PROTO_UPDATES,
     *THANKS_SCREEN_PROTO_UPDATES,
     *NUKE_PROTO_UPDATES,
+    *TIP_PROTO_UPDATES,
     *BOD_CORE_PROTO_UPDATES,
     *FRINGE_PROTO_UPDATES,
     *TRACK_RENDER_CACHE_PROTO_UPDATES,
@@ -2916,31 +3044,6 @@ PROTO_UPDATES = (
         "void __thiscall update_tutorial(Tutorial* tutorial)",
     ),
     (
-        "kill_tip_widgets",
-        "void __thiscall kill_tip_widgets(Tip* tip)",
-    ),
-    (
-        "initialize_tip",
-        "void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button)",
-    ),
-    ("update_tip", "void __thiscall update_tip(Tip* tip)"),
-    (
-        "initialize_tip_manager",
-        "void __thiscall initialize_tip_manager(TipManager* manager)",
-    ),
-    (
-        "uninit_tips",
-        "void __thiscall uninit_tips(TipManager* manager)",
-    ),
-    (
-        "enqueue_tip_message",
-        "Tip* __thiscall enqueue_tip_message(TipManager* manager, TipData* definition, int32_t hide_disable_button)",
-    ),
-    (
-        "update_tip_manager",
-        "void __thiscall update_tip_manager(TipManager* manager)",
-    ),
-    (
         "initialize_invincible_shell",
         "void __thiscall initialize_invincible_shell(Invincible* invincible)",
     ),
@@ -3285,6 +3388,11 @@ def parse_args() -> argparse.Namespace:
         "--nuke-only",
         action="store_true",
         help="Replay only the exact cRNuke owner and its lifecycle method ABIs.",
+    )
+    focused_group.add_argument(
+        "--tip-only",
+        action="store_true",
+        help="Replay only the exact cRTip/cRTipManager owner graph and lifecycle ABIs.",
     )
     focused_group.add_argument(
         "--track-cache-only",
@@ -3641,6 +3749,65 @@ def main() -> int:
             operations=operations,
         )
 
+    if args.tip_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=("FrontendWidget", *TIP_OWNER_SIZES),
+            )
+        )
+        operations.append(verify_tip_owner_sizes(target=args.target))
+        operations.extend(
+            apply_symbol_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=TIP_FUNCTION_SYMBOL_UPDATES,
+                kind="function",
+            )
+        )
+        operations.extend(
+            apply_symbol_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=TIP_DATA_SYMBOL_UPDATES,
+                kind="data",
+            )
+        )
+        operations.extend(
+            apply_struct_and_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_updates=(
+                    ("TipData", TIP_DATA_FIELD_UPDATES),
+                    ("Tip", TIP_FIELD_UPDATES),
+                    ("TipManager", TIP_MANAGER_FIELD_UPDATES),
+                ),
+                proto_updates=TIP_PROTO_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_data_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=(("0x4ac5c8", "TipData"),),
+            )
+        )
+        operations.extend(
+            apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=TIP_MANAGER_USER_VAR_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if not args.golb_only:
         operations.append(
             types_declare_if_missing(
@@ -3754,6 +3921,8 @@ def main() -> int:
                 ("FollowState", FOLLOW_STATE_FIELD_UPDATES),
                 ("JetParticleSlot", JET_PARTICLE_SLOT_FIELD_UPDATES),
                 ("SubHover", SUB_HOVER_FIELD_UPDATES),
+                ("TipData", TIP_DATA_FIELD_UPDATES),
+                ("Tip", TIP_FIELD_UPDATES),
                 ("TipManager", TIP_MANAGER_FIELD_UPDATES),
                 ("Tutorial", TUTORIAL_FIELD_UPDATES),
                 ("Player", PLAYER_FIELD_UPDATES),
@@ -3808,6 +3977,7 @@ def main() -> int:
                 *MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
                 *NUKE_USER_VAR_UPDATES,
+                *TIP_MANAGER_USER_VAR_UPDATES,
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
                 *CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES,
                 *KILL_GOLB_OWNER_USER_VAR_UPDATES,

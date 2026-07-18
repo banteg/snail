@@ -317,6 +317,13 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x447110,  # initialize_nuke
     0x4471E0,  # update_nuke
     0x447290,  # recycle_bod_to_free_list
+    0x4489E0,  # kill_tip_widgets
+    0x448A40,  # initialize_tip
+    0x448C40,  # update_tip
+    0x448CF0,  # initialize_tip_manager
+    0x448D10,  # uninit_tips
+    0x448D30,  # enqueue_tip_message
+    0x448D80,  # update_tip_manager
 )
 
 GOLB_SHOT_EXPECTED_SIZE = 0x2E8

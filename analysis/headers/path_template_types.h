@@ -1656,9 +1656,9 @@ typedef struct Tip {
     int32_t active;
     int32_t previous_outer_owner;
     TipData* definition;
-    void* widget_main;
-    void* widget_ok;
-    void* widget_disable;
+    FrontendWidget* widget_main;
+    FrontendWidget* widget_ok;
+    FrontendWidget* widget_disable;
     float dismiss_progress;
     float dismiss_step;
 } Tip;

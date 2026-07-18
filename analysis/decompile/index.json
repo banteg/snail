@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 7,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 7,
+  "ida_exported": 7,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,16 +17,32 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_snail_skin",
-      "address": "0x445f60"
+      "name": "kill_tip_widgets",
+      "address": "0x4489e0"
     },
     {
-      "name": "update_snail_skin_transition",
-      "address": "0x445f80"
+      "name": "initialize_tip",
+      "address": "0x448a40"
     },
     {
-      "name": "change_snail_skin",
-      "address": "0x445fd0"
+      "name": "update_tip",
+      "address": "0x448c40"
+    },
+    {
+      "name": "initialize_tip_manager",
+      "address": "0x448cf0"
+    },
+    {
+      "name": "uninit_tips",
+      "address": "0x448d10"
+    },
+    {
+      "name": "enqueue_tip_message",
+      "address": "0x448d30"
+    },
+    {
+      "name": "update_tip_manager",
+      "address": "0x448d80"
     }
   ],
   "health_check_count": 853,

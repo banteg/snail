@@ -2,20 +2,19 @@
 /* function: initialize_tip_manager @ 0x448cf0 */
 /* selector: initialize_tip_manager */
 
-_DWORD *__thiscall sub_448CF0(_DWORD *this)
+// Exact `cRTipManager::Init()` member that clears the three inline Tips at TipManager +0x38.
+void __thiscall initialize_tip_manager(TipManager *manager)
 {
-  _DWORD *result; // eax
+  Tip *tips; // eax
   int v2; // ecx
 
-  result = this + 14;
+  tips = manager->tips;
   v2 = 3;
   do
   {
-    *result = 0;
-    result += 8;
+    tips->active = 0;
+    ++tips;
     --v2;
   }
   while ( v2 );
-  return result;
 }
-

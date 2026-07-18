@@ -60,3 +60,11 @@ confirm the 0x20-byte Tip layout and 0x14-byte TipData field order used here,
 including the `gTips` null-definition fallback. Windows reads the second formal
 with a 32-bit stack load and compare, so the native Windows declaration keeps
 `int hide_disable_button` instead of importing either mobile-width spelling.
+
+2026-07-18 durable decompiler replay: Binary Ninja and IDA now preserve the
+full `Tip`/`TipData` graph, `FrontendWidget*` members, default `gTips` entry,
+owned `GameRoot::border_manager`, and `players[0].frontend_state` handoff.
+Exact 0x14/0x20/0x98 owner-size assertions and paired health checks prevent the
+analysis from drifting back to synthetic slots, `void*` widgets, or raw root
+offsets. The honest matcher result remains 83.12%, 154/154, prefix 16, with 25
+clean masked operands; no source scheduling was changed for appearance.

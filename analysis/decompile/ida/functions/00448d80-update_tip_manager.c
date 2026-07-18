@@ -2,20 +2,20 @@
 /* function: update_tip_manager @ 0x448d80 */
 /* selector: update_tip_manager */
 
-void __fastcall update_tip_manager(TipManager *manager)
+// Exact `cRTipManager::AI()` member that advances each active inline Tip.
+void __thiscall update_tip_manager(TipManager *manager)
 {
-  TipSlot *slots; // esi
+  Tip *tips; // esi
   int v2; // edi
 
-  slots = manager->slots;
+  tips = manager->tips;
   v2 = 3;
   do
   {
-    if ( slots->active == 1 )
-      update_tip(slots);
-    ++slots;
+    if ( tips->active == 1 )
+      update_tip(tips);
+    ++tips;
     --v2;
   }
   while ( v2 );
 }
-

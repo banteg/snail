@@ -7084,6 +7084,69 @@ def test_nuke_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_tip_manager_lifecycle_replay_keeps_exact_owner_graph() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/tip_manager.h").read_text(
+        encoding="utf-8"
+    )
+
+    for header in (analysis_header, matcher_header):
+        assert "TipData* definition" in header
+        assert "FrontendWidget* widget_main" in header
+        assert "FrontendWidget* widget_ok" in header
+        assert "FrontendWidget* widget_disable" in header
+        assert "Tip tips[" in header
+
+    for marker in (
+        '"--tip-only"',
+        '"TipData": 0x14',
+        '"Tip": 0x20',
+        '"TipManager": 0x98',
+        "TIP_DATA_FIELD_UPDATES",
+        "TIP_FIELD_UPDATES",
+        "TIP_MANAGER_FIELD_UPDATES",
+        "TIP_PROTO_UPDATES",
+        "TIP_MANAGER_USER_VAR_UPDATES",
+        "verify_tip_owner_sizes",
+        "updates=TIP_MANAGER_USER_VAR_UPDATES",
+    ):
+        assert marker in path_sync
+
+    prototypes = (
+        "void __thiscall kill_tip_widgets(Tip* tip)",
+        "void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button)",
+        "void __thiscall update_tip(Tip* tip)",
+        "void __thiscall initialize_tip_manager(TipManager* manager)",
+        "void __thiscall uninit_tips(TipManager* manager)",
+        "Tip* __thiscall enqueue_tip_message(TipManager* manager, TipData* definition, int32_t hide_disable_button)",
+        "void __thiscall update_tip_manager(TipManager* manager)",
+    )
+    for prototype in prototypes:
+        assert prototype in path_sync
+        assert prototype + ";" in ida_sync
+        assert prototype + ";" in analysis_header
+
+    for address in (
+        "0x4489E0",
+        "0x448A40",
+        "0x448C40",
+        "0x448CF0",
+        "0x448D10",
+        "0x448D30",
+        "0x448D80",
+    ):
+        assert address in ida_sync
+
+
 def test_sub_hover_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

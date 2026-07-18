@@ -59,3 +59,9 @@ operands.
 exact behavior `cRTip::AI()`. The scratch is now a real `Tip` member rather
 than a free fastcall-shaped helper, while preserving the exact 51/51 Windows
 body and all nine masked operands.
+
+2026-07-18 durable decompiler replay: both tracked decompilers now expose the
+`Tip` owner, typed `FrontendWidgetFlag` access, the owned subgame pause gate,
+the player frontend-state restore, and the root border manager. Paired health
+checks forbid the former `TipSlot`, raw-root, and untyped widget views while
+the scratch stays exact at 51/51 with nine clean masks.
