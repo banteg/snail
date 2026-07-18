@@ -193,7 +193,7 @@ def test_cheat_state_replay_keeps_exact_global_owner_and_authored_abis() -> None
     )
 
 
-def test_snail_presentation_replay_keeps_release_and_hotspot_owners() -> None:
+def test_snail_presentation_replay_keeps_exact_snail_and_weapon_owners() -> None:
     binja_sync = (BINJA_DIR / "sync_snail_presentation_types.py").read_text(
         encoding="utf-8"
     )
@@ -222,9 +222,24 @@ def test_snail_presentation_replay_keeps_release_and_hotspot_owners() -> None:
     ):
         assert "void __thiscall release_snail_weapons(Snail* snail)" in source
         assert "void __thiscall build_snail_hotspots(Snail* snail)" in source
+        assert "void __thiscall update_snail_skin(Snail* snail)" in source
+        assert (
+            "int32_t __thiscall dispatch_cutscene_animation(Snail* snail, "
+            "int32_t animation_id, uint8_t immediate, int32_t mode_flags)"
+            in source
+        )
+        assert (
+            "void __thiscall set_weapon_animation(Weapon* weapon, "
+            "int32_t animation_id, uint8_t immediate, int32_t mode_flags)"
+            in source
+        )
 
     for source in (binja_sync, ida_sync):
         for owner, size in (
+            ('"ObjectAnimation"', "0x14"),
+            ('"Object"', "0xDC"),
+            ('"RenderableBod"', "0x80"),
+            ('"AnimManager"', "0x48"),
             ('"SubHover"', "0x214"),
             ('"Weapon"', "0x3DC"),
             ('"Invincible"', "0xA4"),
@@ -234,6 +249,8 @@ def test_snail_presentation_replay_keeps_release_and_hotspot_owners() -> None:
             assert f"{owner}: {size}" in source
 
     assert "types_declare_if_missing" in binja_sync
+    assert "bn_object_render_types.h" in binja_sync
+    assert '"object_render_types.h"' in ida_sync
     assert "mark_cfunc_dirty" in ida_sync
     assert (
         'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"'

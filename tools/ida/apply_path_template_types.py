@@ -51,6 +51,9 @@ TRUSTED_NAMES = [
     (0x442560, "add_vapour_point"),
     (0x4425F0, "update_vapour"),
     (0x442E40, "release_snail_weapons"),
+    (0x444600, "dispatch_cutscene_animation"),
+    (0x4446E0, "set_weapon_animation"),
+    (0x445CD0, "update_snail_skin"),
     (0x445D50, "build_snail_hotspots"),
     (0x447090, "initialize_fringe_manager"),
     (0x4470A0, "allocate_fringe_object"),
@@ -177,7 +180,10 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4438E0,  # place_parcels_on_track
     0x444240,  # place_challenge_parcels_on_track
     0x4444B0,  # project_position_onto_track_attachment
+    0x444600,  # dispatch_cutscene_animation
+    0x4446E0,  # set_weapon_animation
     0x444CF0,  # handle_subgoldy_collisions
+    0x445CD0,  # update_snail_skin
     0x445D50,  # build_snail_hotspots
     0x447090,  # initialize_fringe_manager
     0x4470A0,  # allocate_fringe_object

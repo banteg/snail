@@ -18,8 +18,13 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
+OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 
 EXPECTED_OWNER_SIZES = {
+    "ObjectAnimation": 0x14,
+    "Object": 0xDC,
+    "RenderableBod": 0x80,
+    "AnimManager": 0x48,
     "SubHover": 0x214,
     "Weapon": 0x3DC,
     "Invincible": 0xA4,
@@ -29,6 +34,9 @@ EXPECTED_OWNER_SIZES = {
 
 SYMBOL_UPDATES = (
     ("0x442e40", "release_snail_weapons"),
+    ("0x444600", "dispatch_cutscene_animation"),
+    ("0x4446e0", "set_weapon_animation"),
+    ("0x445cd0", "update_snail_skin"),
     ("0x445d50", "build_snail_hotspots"),
 )
 
@@ -36,6 +44,18 @@ PROTO_UPDATES = (
     (
         "release_snail_weapons",
         "void __thiscall release_snail_weapons(Snail* snail)",
+    ),
+    (
+        "dispatch_cutscene_animation",
+        "int32_t __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t mode_flags)",
+    ),
+    (
+        "set_weapon_animation",
+        "void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags)",
+    ),
+    (
+        "update_snail_skin",
+        "void __thiscall update_snail_skin(Snail* snail)",
     ),
     (
         "build_snail_hotspots",
@@ -47,8 +67,8 @@ PROTO_UPDATES = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Apply the focused cRSnail release and hotspot ownership ABIs to a "
-            "Binary Ninja target."
+            "Apply the focused cRSnail presentation and cRWeapon animation "
+            "ownership ABIs to a Binary Ninja target."
         )
     )
     parser.add_argument(
@@ -72,6 +92,12 @@ def main() -> int:
         raise FileNotFoundError(f"Owner type header not found: {header_path}")
 
     operations: list[dict[str, object]] = [
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=OBJECT_HEADER_PATH,
+            required_structs=("Object",),
+        ),
         types_declare_if_missing(
             REPO_ROOT,
             target=args.target,

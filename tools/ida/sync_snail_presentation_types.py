@@ -15,7 +15,10 @@ IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_snail_presentation_types.py
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the focused cRSnail release and hotspot ownership ABIs to IDA."
+        description=(
+            "Apply the focused cRSnail presentation and cRWeapon animation "
+            "ownership ABIs to IDA."
+        )
     )
     parser.add_argument(
         "--ida-bin",

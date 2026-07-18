@@ -98,3 +98,11 @@ the cRWeapon RTTI and vtable. The Windows constructor creates four identical
 0x3dc-byte instances and installs the same callback slot on each. The former
 synthetic presentation-channel type is therefore retired in favor of the exact
 `Weapon` owner. The field layout and focused code remain unchanged.
+
+2026-07-18 focused replay closure: the fast Snail presentation lane now covers
+this paired `Weapon` method as well as the root Snail dispatcher, importing the
+complete `Object` definition before the presentation header and verifying
+`ObjectAnimation`, `Object`, `RenderableBod`, `AnimManager`, and `Weapon` exact
+sizes. Binary Ninja and IDA both retain the authored void ABI and owned five-slot
+animation bank. Matching remains honestly at 94.55%; no register barrier or
+other fakematch was reintroduced.

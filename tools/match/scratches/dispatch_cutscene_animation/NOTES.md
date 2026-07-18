@@ -78,3 +78,12 @@ animation mode word, not an initial frame. The parser and exact updater prove
 loop `1`, ping-pong `2`, once `4`, and reverse-once `8`; caller sentinel `-1`
 preserves the selected clip's current flags. Queued animation id `-1` has a
 separate role: the exact manager updater consumes it by hiding the target model.
+
+2026-07-18 analysis replay: both Windows databases now render the exact
+`Snail*` receiver, ten owned `RenderableBod` animation slots, nested
+`Object::animation`, root `AnimManager`, and borrowed target model. This retires
+the stale `PlayerPresentationController`, `active_keyframe`, `self_ref`, and
+`initial_frame` analysis vocabulary without changing the conservative `int32_t`
+return contract. Focused matching remains honestly at 94.55%; the remaining
+three-instruction queue-tail register swap is still visible and is not
+fakematched.

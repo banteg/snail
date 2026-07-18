@@ -38,3 +38,12 @@ instructions with its masked operand clean.
 2026-07-14 vector operator ownership: the hotspot transform now uses the real
 void by-value `Vector3::operator*=` directly. The caller remains exact at 44/44;
 the decorated operator alias keeps its sole call operand audited.
+
+2026-07-18 analysis replay: Binary Ninja and IDA now pin the exact
+`void cRSnail::BuildHotSpots()` receiver as `Snail*`, retiring the synthetic
+`PlayerPresentationController` view. Both decompilers expose the two complete
+`RenderableBod` source matrices and the local/world 19-entry `Vec3` banks; IDA
+also recovers the by-value `TransformMatrix` and `Vec3` temporaries. The focused
+replay imports the complete `Object` dependency explicitly and verifies the
+nine transitive owner sizes before applying presentation ABIs. Matching remains
+exact at 100.00%, 44/44, with no source or code-shape change.

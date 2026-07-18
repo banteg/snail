@@ -16,6 +16,9 @@ import idc
 
 TRUSTED_NAMES = (
     (0x442E40, "release_snail_weapons"),
+    (0x444600, "dispatch_cutscene_animation"),
+    (0x4446E0, "set_weapon_animation"),
+    (0x445CD0, "update_snail_skin"),
     (0x445D50, "build_snail_hotspots"),
 )
 
@@ -25,12 +28,37 @@ TRUSTED_DECLARATIONS = (
         "void __thiscall release_snail_weapons(Snail* snail);",
     ),
     (
+        "dispatch_cutscene_animation",
+        "int32_t __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t mode_flags);",
+    ),
+    (
+        "set_weapon_animation",
+        "void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags);",
+    ),
+    (
+        "update_snail_skin",
+        "void __thiscall update_snail_skin(Snail* snail);",
+    ),
+    (
         "build_snail_hotspots",
         "void __thiscall build_snail_hotspots(Snail* snail);",
     ),
 )
 
+DEPENDENCY_HEADER_NAMES = (
+    "object_render_types.h",
+)
+
+DEPENDENCY_OWNER_MARKERS = {
+    "object_render_types.h": (
+        "typedef struct Object {",
+        "ObjectAnimation* animation;",
+    ),
+}
+
 REQUIRED_OWNER_MARKERS = (
+    "typedef struct ObjectAnimation {",
+    "struct AnimManager {",
     "typedef struct SubHover {",
     "typedef struct Weapon {",
     "Vec3 release_step;",
@@ -45,6 +73,10 @@ REQUIRED_OWNER_MARKERS = (
 )
 
 EXPECTED_OWNER_SIZES = {
+    "ObjectAnimation": 0x14,
+    "Object": 0xDC,
+    "RenderableBod": 0x80,
+    "AnimManager": 0x48,
     "SubHover": 0x214,
     "Weapon": 0x3DC,
     "Invincible": 0xA4,
@@ -84,13 +116,39 @@ def _sync_types(header_path: pathlib.Path) -> int:
     missing_owner_markers = [
         marker for marker in REQUIRED_OWNER_MARKERS if marker not in header_text
     ]
-    if missing_owner_markers:
+    dependency_headers = [
+        header_path.with_name(name) for name in DEPENDENCY_HEADER_NAMES
+    ]
+    dependency_marker_failures = []
+    for dependency_header in dependency_headers:
+        if not dependency_header.is_file():
+            dependency_marker_failures.append(
+                {
+                    "header": str(dependency_header),
+                    "reason": "missing_dependency_header",
+                }
+            )
+            continue
+        dependency_text = dependency_header.read_text(encoding="utf-8")
+        markers = DEPENDENCY_OWNER_MARKERS[dependency_header.name]
+        missing = [marker for marker in markers if marker not in dependency_text]
+        if missing:
+            dependency_marker_failures.append(
+                {
+                    "header": str(dependency_header),
+                    "reason": "noncanonical_dependency_header",
+                    "missing_owner_markers": missing,
+                }
+            )
+
+    if missing_owner_markers or dependency_marker_failures:
         print(
             json.dumps(
                 {
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "missing_owner_markers": missing_owner_markers,
+                    "dependency_marker_failures": dependency_marker_failures,
                     "failed": [{"reason": "noncanonical_snail_owner_header"}],
                 },
                 indent=2,
@@ -98,6 +156,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
         )
         return 1
 
+    dependency_parse_results = [
+        {
+            "header": str(dependency_header),
+            "parse_errors": idc.parse_decls(str(dependency_header), idc.PT_FILE),
+        }
+        for dependency_header in dependency_headers
+    ]
+    dependency_parse_failed = any(
+        result["parse_errors"] for result in dependency_parse_results
+    )
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
     owner_sizes = {name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES}
     failed = [
@@ -110,12 +178,13 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in EXPECTED_OWNER_SIZES.items()
         if owner_sizes[name] != expected_size
     ]
-    if parse_errors or failed:
+    if dependency_parse_failed or parse_errors or failed:
         print(
             json.dumps(
                 {
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
+                    "dependency_parse_results": dependency_parse_results,
                     "parse_errors": parse_errors,
                     "owner_sizes": owner_sizes,
                     "failed": failed,
@@ -175,6 +244,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
+                "dependency_parse_results": dependency_parse_results,
                 "parse_errors": parse_errors,
                 "owner_sizes": owner_sizes,
                 "applied": applied,
@@ -188,7 +258,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
             indent=2,
         )
     )
-    return 1 if parse_errors or missing or failed else 0
+    return 1 if dependency_parse_failed or parse_errors or missing or failed else 0
 
 
 def main() -> None:

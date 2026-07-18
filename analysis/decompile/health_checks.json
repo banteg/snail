@@ -10057,6 +10057,76 @@
       ]
     },
     {
+      "name": "bn_snail_animation_dispatch_owner",
+      "artifact": "analysis/decompile/binja/functions/00444600-dispatch_cutscene_animation.c",
+      "required_substrings": [
+        "snail->anim_manager.queued_animations",
+        "snail->cutscene_animation_slots[animation_id].body.bod.object->animation",
+        "snail->body.bod.object",
+        "target_model->bod.bod.list_flags"
+      ],
+      "forbidden_substrings": [
+        "PlayerPresentationController",
+        "presentation->",
+        "_pad_14c",
+        "active_keyframe",
+        "initial_frame"
+      ]
+    },
+    {
+      "name": "ida_snail_animation_dispatch_owner",
+      "artifact": "analysis/decompile/ida/functions/00444600-dispatch_cutscene_animation.c",
+      "required_substrings": [
+        "int32_t __thiscall dispatch_cutscene_animation(",
+        "Snail *snail,",
+        "snail->anim_manager.queued_animations",
+        "snail->cutscene_animation_slots[animation_id].body.bod.object->animation",
+        "snail->body.bod.object = object;"
+      ],
+      "forbidden_substrings": [
+        "PlayerPresentationController",
+        "presentation->",
+        "initial_frame",
+        "active_keyframe",
+        "self_ref"
+      ]
+    },
+    {
+      "name": "bn_snail_hotspot_transform_owner",
+      "artifact": "analysis/decompile/binja/functions/00445cd0-update_snail_skin.c",
+      "required_substrings": [
+        "struct Snail* snail_1 = snail",
+        "&snail->snail_hotspots_world",
+        "&snail->snail_hotspot_body.transform",
+        "&snail->snail_hotspot_source_body.transform",
+        "multiply_vector_by_matrix(&vector, matrix)"
+      ],
+      "forbidden_substrings": [
+        "PlayerPresentationController",
+        "presentation->",
+        "snail_hotspot_source_matrix_a",
+        "snail_hotspot_source_matrix_b"
+      ]
+    },
+    {
+      "name": "ida_snail_hotspot_transform_owner",
+      "artifact": "analysis/decompile/ida/functions/00445cd0-update_snail_skin.c",
+      "required_substrings": [
+        "void __thiscall update_snail_skin(Snail *snail)",
+        "snail_hotspots_world = snail->snail_hotspots_world;",
+        "p_transform = &snail->snail_hotspot_body.transform;",
+        "p_transform = &snail->snail_hotspot_source_body.transform;",
+        "multiply_vector_by_matrix(&vector, v7);"
+      ],
+      "forbidden_substrings": [
+        "PlayerPresentationController",
+        "presentation->",
+        "snail_hotspot_source_matrix_a",
+        "snail_hotspot_source_matrix_b",
+        "multiply_vector_by_matrix(&x,"
+      ]
+    },
+    {
       "name": "bn_text_input_repeat_scalar_ownership",
       "artifact": "analysis/decompile/binja/functions/004327e0-read_repeating_text_input_key_code.c",
       "required_substrings": [
