@@ -2,42 +2,43 @@
 /* function: update_row_model @ 0x443070 */
 /* selector: update_row_model */
 
-void __thiscall update_row_model(int this)
+// Exact per-frame update for the `RowModel` embedded at `SubRow +0x04`: adds its velocity at model +0x80 to the inherited transform position, then recycles the model's intrusive body node once it crosses the live row threshold. iOS preserves the authored callback as `cRRowModel::AI()`.
+void __thiscall update_row_model(RowModel *row_model)
 {
-  int v1; // eax
-  char *v2; // edx
-  int v3; // eax
-  int v4; // eax
-  int v5; // eax
+  uint32_t list_flags; // eax
+  BodList *p_active_bod_list; // edx
+  struct BodNode *list_next; // eax
+  struct BodNode *list_prev; // eax
+  uint32_t v5; // eax
 
-  *(float *)(this + 104) = *(float *)(this + 128) + *(float *)(this + 104);
-  *(float *)(this + 108) = *(float *)(this + 132) + *(float *)(this + 108);
-  *(float *)(this + 112) = *(float *)(this + 136) + *(float *)(this + 112);
-  if ( *(float *)(*(_DWORD *)(this + 36) + 184) + *((float *)MEMORY[0x4DF904] + 1100223) > *(float *)(this + 112) )
+  row_model->body.transform.position.x = row_model->velocity.x + row_model->body.transform.position.x;
+  row_model->body.transform.position.y = row_model->velocity.y + row_model->body.transform.position.y;
+  row_model->body.transform.position.z = row_model->velocity.z + row_model->body.transform.position.z;
+  if ( row_model->body.bod.object->bounds_max.z + g_game_base->subgame.player.interaction_max_z > row_model->body.transform.position.z )
   {
-    v1 = *(_DWORD *)(this + 4);
-    v2 = (char *)MEMORY[0x4DF904] + 1448;
-    if ( (v1 & 0x200) != 0 )
+    list_flags = row_model->body.bod.bod.list_flags;
+    p_active_bod_list = &g_game_base->active_bod_list;
+    if ( (list_flags & 0x200) != 0 )
     {
-      if ( (v1 & 0x40) != 0 )
+      if ( (list_flags & 0x40) != 0 )
       {
         report_errorf(aListRemoveNext);
       }
       else
       {
-        v3 = *(_DWORD *)(this + 12);
-        if ( v3 )
-          *(_DWORD *)(v3 + 8) = *(_DWORD *)(this + 8);
-        v4 = *(_DWORD *)(this + 8);
-        if ( v4 )
-          *(_DWORD *)(v4 + 12) = *(_DWORD *)(this + 12);
+        list_next = row_model->body.bod.bod.list_next;
+        if ( list_next )
+          list_next->list_prev = row_model->body.bod.bod.list_prev;
+        list_prev = row_model->body.bod.bod.list_prev;
+        if ( list_prev )
+          list_prev->list_next = row_model->body.bod.bod.list_next;
         else
-          *((_DWORD *)v2 + 1) = *(_DWORD *)(this + 12);
-        *(_DWORD *)(this + 12) = *((_DWORD *)v2 + 2);
-        *((_DWORD *)v2 + 2) = this;
-        v5 = *(_DWORD *)(this + 4);
+          p_active_bod_list->first = row_model->body.bod.bod.list_next;
+        row_model->body.bod.bod.list_next = p_active_bod_list->free_top;
+        p_active_bod_list->free_top = &row_model->body.bod.bod;
+        v5 = row_model->body.bod.bod.list_flags;
         BYTE1(v5) &= ~2u;
-        *(_DWORD *)(this + 4) = v5;
+        row_model->body.bod.bod.list_flags = v5;
       }
     }
     else
@@ -46,4 +47,3 @@ void __thiscall update_row_model(int this)
     }
   }
 }
-

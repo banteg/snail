@@ -11183,6 +11183,48 @@
       ]
     },
     {
+      "name": "bn_row_model_update_nested_owner",
+      "artifact": "analysis/decompile/binja/functions/00443070-update_row_model.c",
+      "required_substrings": [
+        "row_model->body.transform.position.x",
+        "row_model->velocity.x",
+        "row_model->body.bod.object->bounds_max.z",
+        "game_base_1->subgame.player.interaction_max_z",
+        "row_model->body.bod.bod.list_flags",
+        "game_base_1->active_bod_list.first",
+        "game_base_1->active_bod_list.free_top",
+        "report_errorf(\"List remove\")"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4df904",
+        "__offset(",
+        "*(row_model +",
+        "return 0"
+      ]
+    },
+    {
+      "name": "ida_row_model_update_nested_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00443070-update_row_model.c",
+      "required_substrings": [
+        "void __thiscall update_row_model(RowModel *row_model)",
+        "row_model->body.transform.position.x",
+        "row_model->velocity.x",
+        "row_model->body.bod.object->bounds_max.z",
+        "g_game_base->subgame.player.interaction_max_z",
+        "p_active_bod_list = &g_game_base->active_bod_list",
+        "p_active_bod_list->first = row_model->body.bod.bod.list_next",
+        "p_active_bod_list->free_top = &row_model->body.bod.bod"
+      ],
+      "forbidden_substrings": [
+        "int this",
+        "this +",
+        "MEMORY[0x4DF904]",
+        "sub_443070",
+        "void __thiscall update_row_model(int"
+      ]
+    },
+    {
       "name": "bn_noop_renderable_constructor_owner_abi",
       "artifact": "analysis/decompile/binja/functions/00408040-initialize_noop_renderable_bod.c",
       "required_substrings": [

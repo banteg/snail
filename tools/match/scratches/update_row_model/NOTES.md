@@ -27,3 +27,19 @@ Status:
 - 2026-07-14: canonicalized the cull plane and active/free list through
   `GameRoot -> SubgameRuntime -> Player` ownership. Matching remains exact at
   60/60 with all six operands clean.
+
+## 2026-07-18 live-analysis ownership replay
+
+Both analysis databases now carry the exact void member ABI,
+`update_row_model(RowModel*)`. The existing 0x8c-byte owner is sufficient to
+recover all three velocity-to-position additions, the inherited
+`Object::bounds_max.z` cull extent, the player's `interaction_max_z` plane,
+and the full `GameRoot::active_bod_list` unlink/free-stack transition without
+any local-variable override.
+
+Binary Ninja can replay this slice with `--row-model-only`: it checks the
+transitive `RowModel` header owner, its two proved fields, and the callback
+prototype instead of walking the broad path catalog. IDA replays the same
+prototype through the canonical path ownership sync. Cross-tool health guards
+reject the former `arg1`/raw-offset and `int this` forms while requiring the
+nested body, object, player, and active/free-list owners.

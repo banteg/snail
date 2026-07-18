@@ -724,6 +724,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_active_bod(TrackRenderCacheSlot* slot);",
     ),
     (
+        "update_row_model",
+        "void __thiscall update_row_model(RowModel* row_model);",
+    ),
+    (
         "initialize_noop_renderable_bod",
         "RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body);",
     ),
