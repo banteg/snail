@@ -10389,7 +10389,11 @@
         "runtime_row_anchor->row.source_segment",
         "runtime_cell_anchor->previous_row_same_lane.tile_id",
         "runtime_cell_anchor->cell.attachment_template_record",
-        "runtime_row_anchor->row.attachment_body"
+        "runtime_row_anchor->row.attachment_body",
+        "struct SubRow* stamped_row",
+        "stamped_row->primary_attachment_cell",
+        "stamped_row->secondary_attachment_cell",
+        "stamped_row = &stamped_row[1]"
       ],
       "forbidden_substrings": [
         "struct SubgameRuntime* segment_count_2",
@@ -10398,7 +10402,10 @@
         "void* esi_11",
         "*(ebx_5 + 0x5ccbb4)",
         "*(esi_9 + 0x814)",
-        "*(esi_11 + 0x3bfb04)"
+        "*(esi_11 + 0x3bfb04)",
+        "char* ecx_110",
+        "*(ecx_110 + 0xa4)",
+        "*(ecx_110 + 0xa8)"
       ]
     },
     {
@@ -10412,13 +10419,20 @@
         "segment_row_anchor->row.object_position",
         "v31->rows[segment_row_index].parcel_set_id",
         "runtime_cell_anchor->previous_row_same_lane.tile_id",
-        "runtime_cell_anchor->cell.attachment_template_record"
+        "runtime_cell_anchor->cell.attachment_template_record",
+        "SubRow *stamped_row;",
+        "stamped_row->primary_attachment_cell",
+        "stamped_row->secondary_attachment_cell",
+        "++stamped_row"
       ],
       "forbidden_substrings": [
         "int32_t *segment_row_anchor;",
         "uint8_t *runtime_row_anchor;",
         "char *runtime_cell_anchor;",
-        "SubgameRuntime *segment_row_index;"
+        "SubgameRuntime *segment_row_index;",
+        "char *v84;",
+        "(_DWORD *)v84 + 41",
+        "(_DWORD *)v84 + 42"
       ]
     },
     {

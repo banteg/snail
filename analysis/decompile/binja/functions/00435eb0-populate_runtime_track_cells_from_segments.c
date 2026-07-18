@@ -401,7 +401,7 @@
 00436945        list_flags_13.b |= 0x20
 00436947        runtime_cell_anchor->cell.bod.list_flags = list_flags_13
 004369bc        case 7
-004369bc        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.floor_slices.storage[0].object)
+004369bc        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.floor_slices.storage[0].object)
 004369c1        runtime_cell_anchor->cell.tile_id = 0x15
 004369c8        uint32_t list_flags_16 = runtime_cell_anchor->cell.bod.list_flags
 004369ce        list_flags_16.b |= 0x20
@@ -458,7 +458,7 @@
 004369fe        runtime_cell_anchor->cell.bod.list_flags = list_flags_17
 00436ad0        case 0xd
 00436ad0        if (j_1 s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != 3)
-00436b21        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.ramp_edges[1].object)
+00436b21        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[1].object)
 00436b26        runtime_cell_anchor->cell.render_arg_1c = 0
 00436b2c        runtime_cell_anchor->cell.render_arg_20 = 0f
 00436b32        runtime_cell_anchor->cell.tile_id = 3
@@ -543,27 +543,27 @@
 00436da8        runtime_row_anchor->row.installed_heading_delta = var_3c_1->angle_radians.bits
 00436db4        int32_t k = 0
 00436dbb        if (runtime_cell_anchor->cell.attachment_template_record->row_span_count s> 0)
-00436dc1        char* ecx_110 = &runtime_row_anchor->row
+00436dc1        struct SubRow* stamped_row = &runtime_row_anchor->row
 00436dc7        int32_t eax_102
-00436dc7        eax_102.b = *ecx_110
-00436dc7        eax_102:1.b = ecx_110[1]
-00436dc7        eax_102:2.b = ecx_110[2]
-00436dc7        eax_102:3.b = ecx_110[3]
+00436dc7        eax_102.b = stamped_row->flags.b
+00436dc7        eax_102:1.b = stamped_row->flags:1.b
+00436dc7        eax_102:2.b = stamped_row->flags:2.b
+00436dc7        eax_102:3.b = stamped_row->flags:3.b
 00436dcb        if ((eax_102.b & 0x40) == 0)
 00436dd9        eax_102.b |= 0x40
-00436ddb        *ecx_110 = eax_102.b
-00436ddb        ecx_110[1] = eax_102:1.b
-00436ddb        ecx_110[2] = eax_102:2.b
-00436ddb        ecx_110[3] = eax_102:3.b
-00436ddd        *(ecx_110 + 0xa4) = &runtime_cell_anchor->cell
+00436ddb        stamped_row->flags.b = eax_102.b
+00436ddb        stamped_row->flags:1.b = eax_102:1.b
+00436ddb        stamped_row->flags:2.b = eax_102:2.b
+00436ddb        stamped_row->flags:3.b = eax_102:3.b
+00436ddd        stamped_row->primary_attachment_cell = &runtime_cell_anchor->cell
 00436dcd        eax_102.b |= 0x80
-00436dcf        *ecx_110 = eax_102.b
-00436dcf        ecx_110[1] = eax_102:1.b
-00436dcf        ecx_110[2] = eax_102:2.b
-00436dcf        ecx_110[3] = eax_102:3.b
-00436dd1        *(ecx_110 + 0xa8) = &runtime_cell_anchor->cell
+00436dcf        stamped_row->flags.b = eax_102.b
+00436dcf        stamped_row->flags:1.b = eax_102:1.b
+00436dcf        stamped_row->flags:2.b = eax_102:2.b
+00436dcf        stamped_row->flags:3.b = eax_102:3.b
+00436dd1        stamped_row->secondary_attachment_cell = &runtime_cell_anchor->cell
 00436de9        k += 1
-00436dea        ecx_110 = &ecx_110[0xf4]
+00436dea        stamped_row = &stamped_row[1]
 00436df3        do while (k s< runtime_cell_anchor->cell.attachment_template_record->row_span_count)
 00436733        case 0x14
 00436733        runtime_cell_anchor->cell.tile_id = 0x23
@@ -687,38 +687,38 @@
 0043703a        runtime_cell_anchor->cell.anchor_position.y = fconvert.s(fconvert.t(runtime_cell_anchor->cell.anchor_position.y) - fconvert.t(0.0299999993f))
 00437040        tile_id = runtime_cell_anchor->cell.tile_id
 00437080        if (tile_id == 1 || tile_id == 0x15 || tile_id == 0x14 || tile_id == 0x21 || tile_id == 0x22 || tile_id == 0xf || tile_id == 0x10 || tile_id == 0x17 || tile_id == 0x18 || tile_id == 0x19 || tile_id == 0x1a || tile_id == 0x1b || tile_id == 0x12 || tile_id == 0x13 || tile_id == 0x11)
-0043708d        int32_t ecx_122 = j_1 & 0x80000007
+0043708d        int32_t ecx_121 = j_1 & 0x80000007
 004370a1        runtime_cell_anchor->cell.render_arg_1c = fconvert.s(float.t(8 - var_30_1) * fconvert.t(0.125f))
-004370a7        if (ecx_122 s< 0)
-004370ad        ecx_122 = ((ecx_122 - 1) | 0xfffffff8) + 1
-004370bc        runtime_cell_anchor->cell.render_arg_20 = fconvert.s(float.t(ecx_122) * fconvert.t(0.125f))
+004370a7        if (ecx_121 s< 0)
+004370ad        ecx_121 = ((ecx_121 - 1) | 0xfffffff8) + 1
+004370bc        runtime_cell_anchor->cell.render_arg_20 = fconvert.s(float.t(ecx_121) * fconvert.t(0.125f))
 004370c9        if (runtime_cell_anchor->cell.tile_id == 0x1f)
 004370d3        runtime_cell_anchor->cell.anchor_position.x = fconvert.s(fconvert.t(runtime_cell_anchor->cell.anchor_position.x) * fconvert.t(1.10000002f))
 004370dc        if (runtime_cell_anchor->cell.tile_id == 0x16)
 004370ea        if (game->level_mode != 3 || ((game->runtime_flags).w:1.b & 4) != 0)
 004370ec        runtime_cell_anchor->cell.anchor_position.y = -3f
 004370fa        runtime_cell_anchor->cell.anchor_position.z = var_28_2
-00437100        struct FringeObject** ecx_126 = &runtime_cell_anchor->cell.fringe_front
+00437100        struct FringeObject** ecx_125 = &runtime_cell_anchor->cell.fringe_front
 00437104        int32_t k_2 = 4
 00437135        int32_t k_1
 00437109        void* eax_117
-00437109        eax_117.b = (ecx_126 - 0x3bfb0c)->:0x3bfb0c.b
-00437109        eax_117:1.b = (ecx_126 - 0x3bfb0c)->:0x3bfb0d.b
-00437109        eax_117:2.b = (ecx_126 - 0x3bfb0c)->:0x3bfb0e.b
-00437109        eax_117:3.b = (ecx_126 - 0x3bfb0c)->:0x3bfb0f.b
+00437109        eax_117.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0c.b
+00437109        eax_117:1.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0d.b
+00437109        eax_117:2.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0e.b
+00437109        eax_117:3.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0f.b
 0043710f        if (eax_117 != 0)
 00437111        *(eax_117 + 0x18) = 0
 00437114        *(eax_117 + 0x14) = 0
 00437117        *(eax_117 + 0x10) = 0
 0043711a        void* eax_118
-0043711a        eax_118.b = (ecx_126 - 0x3bfb0c)->:0x3bfb0c.b
-0043711a        eax_118:1.b = (ecx_126 - 0x3bfb0c)->:0x3bfb0d.b
-0043711a        eax_118:2.b = (ecx_126 - 0x3bfb0c)->:0x3bfb0e.b
-0043711a        eax_118:3.b = (ecx_126 - 0x3bfb0c)->:0x3bfb0f.b
+0043711a        eax_118.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0c.b
+0043711a        eax_118:1.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0d.b
+0043711a        eax_118:2.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0e.b
+0043711a        eax_118:3.b = (ecx_125 - 0x3bfb0c)->:0x3bfb0f.b
 00437123        *(eax_118 + 0x10) = runtime_cell_anchor->cell.anchor_position.x
 00437128        *(eax_118 + 0x14) = runtime_cell_anchor->cell.anchor_position.y
 0043712e        *(eax_118 + 0x18) = runtime_cell_anchor->cell.anchor_position.z
-00437131        ecx_126 = &ecx_126[1]
+00437131        ecx_125 = &ecx_125[1]
 00437134        k_1 = k_2
 00437134        k_2 -= 1
 00437135        do while (k_1 != 1)

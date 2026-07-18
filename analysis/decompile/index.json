@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 7,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 7,
-  "ida_exported": 7,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,35 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_game_assets_and_world",
-      "address": "0x40acf0"
-    },
-    {
-      "name": "build_track_fringe_objects",
-      "address": "0x434be0"
-    },
-    {
-      "name": "merge_track_tile_runs",
-      "address": "0x435180"
-    },
-    {
-      "name": "promote_track_tiles_to_fringe_variants",
-      "address": "0x4355f0"
-    },
-    {
-      "name": "harmonize_center_lane_floor_slide_variants",
-      "address": "0x4356f0"
-    },
-    {
-      "name": "select_track_tile_edge_variants",
-      "address": "0x435a80"
-    },
-    {
       "name": "populate_runtime_track_cells_from_segments",
       "address": "0x435eb0"
     }
   ],
-  "health_check_count": 661,
+  "health_check_count": 662,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

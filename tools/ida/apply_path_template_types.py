@@ -206,6 +206,12 @@ POPULATE_RUNTIME_LVAR_SPECS = (
         0x436683,
         None,
     ),
+    (
+        "stamped_row",
+        "SubRow *stamped_row;",
+        0x436DC2,
+        None,
+    ),
 )
 
 PLACE_PARCELS_RUNTIME_LVAR_SPECS = (

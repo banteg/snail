@@ -1129,6 +1129,8 @@ COLLISION_POOL_CURSOR_USER_VAR_UPDATES = (
 # Binary Ninja otherwise flattens all three into void-pointer displacement
 # arithmetic. The stack slot is the matching authored-row ordinal, not the
 # SubgameRuntime pointer inferred from an earlier compiler-reused lifetime.
+# The attachment-entry span has a separate exact SubRow lifetime: it begins at
+# runtime_row_anchor->row and advances by the native 0xf4 SubRow stride.
 POPULATE_RUNTIME_USER_VAR_UPDATES = (
     (
         "populate_runtime_track_cells_from_segments",
@@ -1161,6 +1163,14 @@ POPULATE_RUNTIME_USER_VAR_UPDATES = (
         72,
         "runtime_cell_anchor",
         "RuntimeCellStrideAnchor*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        3857,
+        67,
+        "stamped_row",
+        "SubRow*",
     ),
 )
 

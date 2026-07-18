@@ -592,3 +592,26 @@ displacements from Binary Ninja and recovers the same owner chain in IDA.
 Matcher source is unchanged at the honest 29.67%, 1,229/1,245-instruction
 frontier with the two documented alignment mismatches; no score-shaped source
 or operand fakematch was introduced.
+
+## 2026-07-18 attachment-span row cursor
+
+The `P`/`p` installer has one further exact element lifetime inside the broader
+containing-owner loop. Its cursor starts at `&runtime_row_anchor->row`, writes
+`SubRow::flags`, `primary_attachment_cell`, or
+`secondary_attachment_cell`, and advances by exactly `sizeof(SubRow) == 0xf4`
+for `Path::row_span_count` rows. Binary Ninja identifies that lifetime as
+`RegisterVariableSourceType(3857, 67)`; IDA identifies the same local at
+definition address `0x436dc2`.
+
+Both replay lanes now preserve it as borrowed `SubRow* stamped_row`. Binary
+Ninja emits direct field writes and `stamped_row = &stamped_row[1]`; IDA emits
+the same fields and `++stamped_row`. A second replay is idempotent in both
+databases (779 BN operations skipped; IDA reports the local unchanged, zero
+parse errors, and no failures). Matcher source remains untouched at the honest
+29.67%, 1,229/1,245-instruction frontier with the same two alignment
+mismatches; this is ownership recovery, not match shaping.
+
+The resulting BN reanalysis also corrects two prefix-equivalent
+`set_bod_object` receivers from the embedded `vtable` word to the enclosing
+`TrackRowCell`/`BodBase` prefix. Those are accepted type-propagation
+improvements in the same function; they do not alter matcher source or bytes.

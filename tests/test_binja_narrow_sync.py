@@ -3645,11 +3645,13 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert '"RegisterVariableSourceType",\n        1363,\n        72,' in binja_source
     assert '"RegisterVariableSourceType",\n        1448,\n        69,' in binja_source
     assert '"RegisterVariableSourceType",\n        2002,\n        72,' in binja_source
+    assert '"RegisterVariableSourceType",\n        3857,\n        67,' in binja_source
     for name, type_name in (
         ("segment_row_index", "int32_t"),
         ("segment_row_anchor", "SubSegmentRowStrideAnchor*"),
         ("runtime_row_anchor", "RuntimeRowStrideAnchor*"),
         ("runtime_cell_anchor", "RuntimeCellStrideAnchor*"),
+        ("stamped_row", "SubRow*"),
     ):
         assert f'"{name}"' in binja_source
         assert f'"{type_name}"' in binja_source
@@ -3767,6 +3769,9 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "0x436404" in ida_path_sync
     assert "0x436459" in ida_path_sync
     assert "0x436683" in ida_path_sync
+    assert "0x436DC2" in ida_path_sync
+    assert '"stamped_row"' in ida_path_sync
+    assert '"SubRow *stamped_row;"' in ida_path_sync
     assert "MERGE_RUNTIME_LVAR_SPECS" in ida_path_sync
     for definition_address in (
         "0x435195",

@@ -87,8 +87,8 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int v81; // ecx
   PathPair *p_secondary; // ecx
   signed int v83; // edx
-  char *v84; // ecx
-  int v85; // eax
+  SubRow *stamped_row; // ecx
+  uint32_t flags; // eax
   int v86; // ecx
   uint32_t v87; // eax
   uint32_t v88; // eax
@@ -760,24 +760,24 @@ LABEL_173:
                   v83 = 0;
                   if ( (int)runtime_cell_anchor->cell.attachment_template_record->row_span_count > 0 )
                   {
-                    v84 = &byte_5CCAC8[(_DWORD)runtime_row_anchor];
+                    stamped_row = (SubRow *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
                     do
                     {
-                      v85 = *(_DWORD *)v84;
-                      if ( (*(_DWORD *)v84 & 0x40) != 0 )
+                      flags = stamped_row->flags;
+                      if ( (stamped_row->flags & 0x40) != 0 )
                       {
-                        LOBYTE(v85) = v85 | 0x80;
-                        *(_DWORD *)v84 = v85;
-                        *((_DWORD *)v84 + 42) = p_cell;
+                        LOBYTE(flags) = flags | 0x80;
+                        stamped_row->flags = flags;
+                        stamped_row->secondary_attachment_cell = p_cell;
                       }
                       else
                       {
-                        LOBYTE(v85) = v85 | 0x40;
-                        *(_DWORD *)v84 = v85;
-                        *((_DWORD *)v84 + 41) = p_cell;
+                        LOBYTE(flags) = flags | 0x40;
+                        stamped_row->flags = flags;
+                        stamped_row->primary_attachment_cell = p_cell;
                       }
                       ++v83;
-                      v84 += 244;
+                      ++stamped_row;
                     }
                     while ( v83 < (signed int)runtime_cell_anchor->cell.attachment_template_record->row_span_count );
                   }
