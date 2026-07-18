@@ -5,22 +5,22 @@
 // Void cRLoadingBar::Init(): loads the loading-screen textures, seeds the full-screen and progress quads, and resets the loader counters. Startup discards EAX; the remaining 83.00% source shape is honest register scheduling, not return uncertainty.
 void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
 {
-  _BYTE *archive_data_base; // edi
+  void *archive_data_base; // edi
   int32_t texture_from_file_in_memory; // eax
-  _BYTE *v4; // edi
+  void *v4; // edi
   int32_t texture_from_file; // eax
   _DWORD *v6; // [esp+8Ch] [ebp-8h] BYREF
-  int v7; // [esp+90h] [ebp-4h] BYREF
+  int out_size; // [esp+90h] [ebp-4h] BYREF
 
   g_runtime_config.last_loading_budget = 1276;
   if ( is_archive_index_loaded() )
   {
-    archive_data_base = (_BYTE *)get_archive_data_base();
-    load_file_bytes_from_archive_or_fs((char *)WideCharStr, archive_data_base, (CompletionResultScreen *)&v7);
+    archive_data_base = get_archive_data_base();
+    load_file_bytes_from_archive_or_fs((char *)WideCharStr, archive_data_base, &out_size);
     texture_from_file_in_memory = d3dx_create_texture_from_file_in_memory_ex(
                                     g_direct3d_renderer.device,
                                     archive_data_base,
-                                    v7,
+                                    out_size,
                                     0,
                                     0,
                                     1u,
@@ -32,7 +32,7 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
                                     0xFF00FF00,
                                     nullptr,
                                     nullptr,
-                                    (void **)&g_loading_background_texture);
+                                    &g_loading_background_texture);
   }
   else
   {
@@ -50,15 +50,12 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
                                     0xFF00FF00,
                                     nullptr,
                                     nullptr,
-                                    (void **)&g_loading_background_texture);
+                                    &g_loading_background_texture);
   }
   if ( texture_from_file_in_memory < 0 )
   {
     report_errorf(aFailedToCreate_0);
-    d3dx_create_texture_from_file(
-      g_direct3d_renderer.device,
-      (char *)aSpritesDebugTg,
-      (void **)&g_loading_background_texture);
+    d3dx_create_texture_from_file(g_direct3d_renderer.device, (char *)aSpritesDebugTg, &g_loading_background_texture);
   }
   g_direct3d_renderer.device->vtbl->SetTexture(
     g_direct3d_renderer.device,
@@ -70,12 +67,12 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
   g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 14, 3);
   if ( is_archive_index_loaded() )
   {
-    v4 = (_BYTE *)get_archive_data_base();
-    load_file_bytes_from_archive_or_fs((char *)aSpritesLoading_0, v4, (CompletionResultScreen *)&v7);
+    v4 = get_archive_data_base();
+    load_file_bytes_from_archive_or_fs((char *)aSpritesLoading_0, v4, &out_size);
     texture_from_file = d3dx_create_texture_from_file_in_memory_ex(
                           g_direct3d_renderer.device,
                           v4,
-                          v7,
+                          out_size,
                           0,
                           0,
                           1u,
@@ -87,7 +84,7 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
                           0xFF00FF00,
                           nullptr,
                           nullptr,
-                          (void **)&g_loading_bar_on_texture);
+                          &g_loading_bar_on_texture);
   }
   else
   {
@@ -105,15 +102,12 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
                           0xFF00FF00,
                           nullptr,
                           nullptr,
-                          (void **)&g_loading_bar_on_texture);
+                          &g_loading_bar_on_texture);
   }
   if ( texture_from_file < 0 )
   {
     report_errorf(aFailedToCreate_1);
-    d3dx_create_texture_from_file(
-      g_direct3d_renderer.device,
-      (char *)aSpritesDebugTg,
-      (void **)&g_loading_bar_on_texture);
+    d3dx_create_texture_from_file(g_direct3d_renderer.device, (char *)aSpritesDebugTg, &g_loading_bar_on_texture);
   }
   g_direct3d_renderer.device->vtbl->SetTexture(
     g_direct3d_renderer.device,

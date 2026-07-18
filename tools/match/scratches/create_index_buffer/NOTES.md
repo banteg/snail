@@ -23,3 +23,10 @@ each COM resource.
 `0x5000fc` was removed with an exact-name, previewed mutation; readback resolves
 that address to the enclosing `g_direct3d_renderer` data variable. The exact
 36/36 match is unchanged.
+
+2026-07-18 sibling-oracle closure: IDA now tracks this exact allocator beside
+the fuzzy vertex-buffer allocator and replays its `IndexBufferFactory*`
+receiver, four-byte `ObjectIndexBuffer` slots, real `CreateIndexBuffer` call,
+and stable `next_count` identity. Exact size checks enforce the full
+`0x2ee4` factory and its `+0x8ca4` placement inside the `0xbcc0` renderer. The
+exact 36/36 match remains unchanged.

@@ -38,3 +38,15 @@ the `VertexBufferFactory*` receiver and resolves every device access through
 the renderer singleton instead of the older verbose resource-helper alias.
 This is ownership/ABI recovery only: focused output remains 76.68% with all ten
 masked operands clean.
+
+2026-07-18 durable owner closure: the IDA replay now rejects any header unless
+`ObjectRenderBuffers` is `0x0c`, `VertexBufferFactory` is `0x8ca4`, the adjacent
+`IndexBufferFactory` is `0x2ee4`, and their enclosing `Direct3DRenderer` is
+`0xbcc0`. The allocator, its exact index-buffer sibling, renderer
+construction/teardown, and all direct allocation callers are reanalyzed as one
+ownership boundary. IDA now has a tracked allocator artifact with the factory
+receiver, embedded slot array, real device vtable call, and stable
+`next_count` identity. Four tempting HRESULT/return-slot overrides were tested,
+failed exact decompiler readback, and were removed rather than forced. Strict
+dual-lane export passes all 760 health checks; matcher source and the honest
+76.68% focused result are unchanged.

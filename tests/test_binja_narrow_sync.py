@@ -3839,6 +3839,36 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
         ")"
     ) in binja_sync
 
+    for owner_name, expected_size in (
+        ("ObjectRenderBuffers", "0xC"),
+        ("ObjectIndexBuffer", "0x4"),
+        ("VertexBufferFactory", "0x8CA4"),
+        ("IndexBufferFactory", "0x2EE4"),
+        ("Direct3DRenderer", "0xBCC0"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in ida_sync
+
+    assert "BUFFER_FACTORY_LVAR_SPECS" in ida_sync
+    for selector, definition_address, expected_name in (
+        ("create_vertex_buffer", "0x4115A8", "next_count"),
+        ("create_index_buffer", "0x4115F9", "next_count"),
+    ):
+        assert (
+            f'("{selector}", {definition_address}, "{expected_name}"'
+            in ida_sync
+        )
+
+    for address in (
+        "0x4114B0",
+        "0x4115D0",
+        "0x411630",
+        "0x4116F0",
+        "0x4129C0",
+        "0x418B50",
+        "0x433060",
+    ):
+        assert address in ida_sync
+
     for function_name in (
         "create_vertex_buffer",
         "create_index_buffer",

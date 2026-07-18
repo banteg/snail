@@ -4634,7 +4634,7 @@
       "artifact": "analysis/decompile/ida/functions/00433060-initialize_track_render_cache_manager.c",
       "required_substrings": [
         "void __thiscall initialize_track_render_cache_manager(SegmentCache *manager)",
-        "manager->owner_subgame = (SubgameRuntime *)&g_game_base->subgame",
+        "manager->owner_subgame = &g_game_base->subgame",
         "manager->shared_vertex_buffers",
         "allocate_tracked_memory"
       ],
@@ -9426,6 +9426,43 @@
       ]
     },
     {
+      "name": "ida_vertex_buffer_factory_owner",
+      "artifact": "analysis/decompile/ida/functions/004114b0-create_vertex_buffer.c",
+      "required_substrings": [
+        "ObjectRenderBuffers *__thiscall create_vertex_buffer(VertexBufferFactory *factory, int32_t vertex_count, int32_t fvf)",
+        "factory->buffers[factory->count].fvf = fvf",
+        "g_direct3d_renderer.device",
+        "CreateVertexBuffer",
+        "&factory->buffers[factory->count].vertex_buffer",
+        "factory->count"
+      ],
+      "forbidden_substrings": [
+        "create_object_vertex_buffer_resource",
+        "data_502fec",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_index_buffer_factory_owner",
+      "artifact": "analysis/decompile/ida/functions/004115d0-create_index_buffer.c",
+      "required_substrings": [
+        "ObjectIndexBuffer *__thiscall create_index_buffer(IndexBufferFactory *factory, int32_t index_count)",
+        "g_direct3d_renderer.device",
+        "CreateIndexBuffer",
+        "&factory->buffers[factory->count]",
+        "factory->count"
+      ],
+      "forbidden_substrings": [
+        "g_object_index_buffer_factory",
+        "create_object_index_buffer_resource",
+        "data_5000fc",
+        "data_502fec",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_direct3d_renderer_composition_root",
       "artifact": "analysis/decompile/binja/functions/004129c0-initialize_direct3d_renderer.c",
       "required_substrings": [
@@ -9436,6 +9473,21 @@
       "forbidden_substrings": [
         "data_4f7458",
         "data_502fe0",
+        "create_object_vertex_buffer_resource",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_direct3d_renderer_composition_root",
+      "artifact": "analysis/decompile/ida/functions/004129c0-initialize_direct3d_renderer.c",
+      "required_substrings": [
+        "initialize_direct3d_renderer_defaults(&g_direct3d_renderer)",
+        "initialize_d3d8_device(&g_direct3d_renderer, 0)",
+        "g_direct3d_renderer.renderer_state = create_vertex_buffer(&g_direct3d_renderer.vertex_buffer_factory"
+      ],
+      "forbidden_substrings": [
+        "data_4F7458",
+        "data_502FE0",
         "create_object_vertex_buffer_resource",
         "unimplemented"
       ]

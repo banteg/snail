@@ -2,7 +2,7 @@
 /* function: initialize_track_render_cache_manager @ 0x433060 */
 /* selector: initialize_track_render_cache_manager */
 
-// Initializes the embedded cRSegmentCache owner: a fixed 143x5 track-render BOD grid plus shared GDX cache vertex/index buffers and per-family scratch arrays. Its complete 0xa7f8-byte extent matches the Windows runtime size ledger.
+// Authored void initializer for the embedded cRSegmentCache owner: constructs its fixed 143x5 track-render BOD grid plus shared GDX cache vertex/index buffers and per-family scratch arrays. Its sole Windows caller discards the incidental final allocation pointer, and its complete 0xa7f8-byte extent matches the Windows runtime size ledger.
 void __thiscall initialize_track_render_cache_manager(SegmentCache *manager)
 {
   int i; // edi
@@ -24,7 +24,7 @@ void __thiscall initialize_track_render_cache_manager(SegmentCache *manager)
   manager->max_index_counts[3] = 160;
   manager->max_vertex_counts[4] = 800;
   manager->max_index_counts[4] = 1280;
-  manager->owner_subgame = (SubgameRuntime *)&g_game_base->subgame;
+  manager->owner_subgame = &g_game_base->subgame;
   v8 = 0;
   p_object = &manager->slots[0][4].bod.object;
   do
@@ -47,10 +47,10 @@ void __thiscall initialize_track_render_cache_manager(SegmentCache *manager)
       *(_DWORD *)(*((_DWORD *)v3 + 31) + 200) = create_index_buffer(
                                                   &g_direct3d_renderer.index_buffer_factory,
                                                   manager->max_index_counts[i]);
-      *(_DWORD *)(*((_DWORD *)v3 + 31) + 204) = allocate_tracked_memory(4, (int)aDxTexturegroup);
+      *(_DWORD *)(*((_DWORD *)v3 + 31) + 204) = allocate_tracked_memory(4, aDxTexturegroup);
       **(_DWORD **)(*((_DWORD *)v3 + 31) + 204) = 0;
-      *(_DWORD *)(*((_DWORD *)v3 + 31) + 208) = allocate_tracked_memory(4, (int)aDxTexturegroup_0);
-      *(_DWORD *)(*((_DWORD *)v3 + 31) + 212) = allocate_tracked_memory(4, (int)aDxTexturegroup_1);
+      *(_DWORD *)(*((_DWORD *)v3 + 31) + 208) = allocate_tracked_memory(4, aDxTexturegroup_0);
+      *(_DWORD *)(*((_DWORD *)v3 + 31) + 212) = allocate_tracked_memory(4, aDxTexturegroup_1);
       if ( i == 4 )
         (*p_object)->blend_mode = 5;
     }
@@ -65,10 +65,10 @@ void __thiscall initialize_track_render_cache_manager(SegmentCache *manager)
   {
     *shared_vertex_buffers = (ObjectRenderVertex *)allocate_tracked_memory(
                                                      24 * (_DWORD)*(shared_vertex_buffers - 10),
-                                                     (int)aGdxCacheVertex);
+                                                     aGdxCacheVertex);
     shared_vertex_buffers[5] = (ObjectRenderVertex *)allocate_tracked_memory(
                                                        2 * (_DWORD)*(shared_vertex_buffers - 5),
-                                                       (int)aGdxCacheIndexB);
+                                                       aGdxCacheIndexB);
     ++shared_vertex_buffers;
     --v7;
   }

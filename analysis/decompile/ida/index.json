@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 707,
-  "function_count": 707,
+  "selected_count": 712,
+  "function_count": 712,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -982,6 +982,34 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "create_vertex_buffer",
+      "address": "0x4114b0",
+      "name": "create_vertex_buffer",
+      "artifact": "analysis/decompile/ida/functions/004114b0-create_vertex_buffer.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "create_index_buffer",
+      "address": "0x4115d0",
+      "name": "create_index_buffer",
+      "artifact": "analysis/decompile/ida/functions/004115d0-create_index_buffer.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_direct3d_renderer_defaults",
+      "address": "0x411630",
+      "name": "initialize_direct3d_renderer_defaults",
+      "artifact": "analysis/decompile/ida/functions/00411630-initialize_direct3d_renderer_defaults.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "release_direct3d_renderer_resources",
+      "address": "0x4116f0",
+      "name": "release_direct3d_renderer_resources",
+      "artifact": "analysis/decompile/ida/functions/004116f0-release_direct3d_renderer_resources.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_d3d8_device",
       "address": "0x411730",
       "name": "initialize_d3d8_device",
@@ -1028,6 +1056,13 @@
       "address": "0x4126c0",
       "name": "render_object",
       "artifact": "analysis/decompile/ida/functions/004126c0-render_object.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_direct3d_renderer",
+      "address": "0x4129c0",
+      "name": "initialize_direct3d_renderer",
+      "artifact": "analysis/decompile/ida/functions/004129c0-initialize_direct3d_renderer.c",
       "removed_stale_artifacts": []
     },
     {

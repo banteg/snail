@@ -332,6 +332,11 @@ TRUSTED_DATA_DECLARATIONS = [
 ]
 
 REQUIRED_OWNER_MARKERS = (
+    "typedef struct ObjectRenderBuffers {",
+    "typedef struct ObjectIndexBuffer {",
+    "typedef struct VertexBufferFactory {",
+    "typedef struct IndexBufferFactory {",
+    "typedef struct Direct3DRenderer {",
     "typedef struct ObjectDistort {",
     "typedef struct ObjectToonEdge {",
     "typedef struct Object {",
@@ -341,12 +346,19 @@ REQUIRED_OWNER_MARKERS = (
     "void __thiscall calc_object_texture_groups(Object* object);",
     "void __thiscall add_object_edge(",
     "extern ObjectToonEdge* g_object_edge_build_edges;",
+    "ObjectRenderBuffers* __thiscall create_vertex_buffer(",
+    "ObjectIndexBuffer* __thiscall create_index_buffer(",
     "void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object);",
 )
 
 EXPECTED_OWNER_SIZES = {
     "Vec3": 0xC,
     "TextureRef": 0xA4,
+    "ObjectRenderBuffers": 0xC,
+    "ObjectIndexBuffer": 0x4,
+    "VertexBufferFactory": 0x8CA4,
+    "IndexBufferFactory": 0x2EE4,
+    "Direct3DRenderer": 0xBCC0,
     "ObjectFaceQuad": 0x30,
     "ObjectToonEdge": 0x24,
     "ObjectDistort": 0x14,
@@ -362,7 +374,13 @@ REANALYSIS_FUNCTIONS = (
     0x405CC0,  # load_or_reuse_cached_x_mesh
     0x405D60,  # load_x_animation_clip
     0x40ACF0,  # initialize_game_assets_and_world
+    0x4114B0,  # create_vertex_buffer
+    0x4115D0,  # create_index_buffer
+    0x411630,  # initialize_direct3d_renderer_defaults
+    0x4116F0,  # release_direct3d_renderer_resources
     0x412250,  # refresh_object_vertex_buffer
+    0x4129C0,  # initialize_direct3d_renderer
+    0x418B50,  # initialize_loading_screen
     0x41AA30,  # initialize_object_distort
     0x41AA50,  # apply_distort_to_object
     0x42F9E0,  # build_all_objects
@@ -372,6 +390,12 @@ REANALYSIS_FUNCTIONS = (
     0x4305A0,  # add_object_edge
     0x4308B0,  # calc_object_edges
     0x430A70,  # request_object_animation
+    0x433060,  # initialize_track_render_cache_manager
+)
+
+BUFFER_FACTORY_LVAR_SPECS = (
+    ("create_vertex_buffer", 0x4115A8, "next_count", "int32_t next_count;"),
+    ("create_index_buffer", 0x4115F9, "next_count", "int32_t next_count;"),
 )
 
 TOPOLOGY_LVAR_SPECS = (
@@ -734,6 +758,27 @@ def _sync_topology_lvars() -> dict[str, object]:
     }
 
 
+def _sync_buffer_factory_lvars() -> dict[str, object]:
+    results = [
+        _sync_owned_lvar(selector, definition_address, expected_name, declaration)
+        for selector, definition_address, expected_name, declaration in (
+            BUFFER_FACTORY_LVAR_SPECS
+        )
+    ]
+    failures = [result for result in results if result.get("status") == "failed"]
+    return {
+        "status": (
+            "failed"
+            if failures
+            else "applied"
+            if any(result.get("status") == "applied" for result in results)
+            else "unchanged"
+        ),
+        "locals": results,
+        "failures": failures,
+    }
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     header_text = header_path.read_text(encoding="utf-8")
     missing_owner_markers = [
@@ -914,6 +959,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    buffer_factory_lvars = _sync_buffer_factory_lvars()
+    if buffer_factory_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "buffer_factory_lvars",
+                "buffer_factory_lvars": buffer_factory_lvars,
+            }
+        )
+
     ida_auto.auto_wait()
     reanalysis_functions = []
     for address in REANALYSIS_FUNCTIONS:
@@ -940,6 +994,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "game_root_owner_graph": game_root_owner_graph,
                 "refresh_vertex_lvars": refresh_vertex_lvars,
                 "topology_lvars": topology_lvars,
+                "buffer_factory_lvars": buffer_factory_lvars,
                 "reanalysis_functions": reanalysis_functions,
                 "missing": missing,
                 "failed": failed,
