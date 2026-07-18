@@ -6,83 +6,86 @@
 void __thiscall calc_object_edges(Object *object)
 {
   ObjectFaceQuad *facequads; // esi
-  _BYTE *archive_data_base; // edi
-  int32_t v4; // ecx
-  int v5; // edi
-  int32_t v6; // eax
-  int v7; // edx
-  int v8; // ebx
-  int32_t v9; // [esp+4h] [ebp-4h]
-  int v10; // [esp+4h] [ebp-4h]
+  ObjectToonEdge *build_edges; // edi
+  int32_t edge_count; // ecx
+  int32_t normal_index; // edi
+  int32_t edge_index; // eax
+  int32_t edge_offset; // edx
+  int32_t shift_index; // ebx
+  int32_t face_index; // [esp+4h] [ebp-4h]
+  int32_t saved_edge_offset; // [esp+4h] [ebp-4h]
 
   if ( (object->flags & 1) != 0 )
   {
     facequads = object->facequads;
-    archive_data_base = get_archive_data_base();
-    v4 = 0;
-    g_object_edge_build_edges = archive_data_base;
+    build_edges = (ObjectToonEdge *)get_archive_data_base();
+    edge_count = 0;
+    g_object_edge_build_edges = build_edges;
     g_object_edge_build_count = 0;
-    v9 = 0;
+    face_index = 0;
     if ( object->facequad_count > 0 )
     {
-      v5 = 0;
+      normal_index = 0;
       do
       {
-        add_object_edge(object, facequads->vertex_0, facequads->vertex_1, v5);
-        add_object_edge(object, facequads->vertex_2, facequads->vertex_0, v5);
-        add_object_edge(object, facequads->vertex_1, facequads->vertex_2, v5);
+        add_object_edge(object, facequads->vertex_0, facequads->vertex_1, normal_index);
+        add_object_edge(object, facequads->vertex_2, facequads->vertex_0, normal_index);
+        add_object_edge(object, facequads->vertex_1, facequads->vertex_2, normal_index);
         if ( (facequads->flags & 0x80u) == 0 )
         {
-          add_object_edge(object, facequads->vertex_0, facequads->vertex_2, v5 + 1);
-          add_object_edge(object, facequads->vertex_3, facequads->vertex_0, v5 + 1);
-          add_object_edge(object, facequads->vertex_2, facequads->vertex_3, v5 + 1);
+          add_object_edge(object, facequads->vertex_0, facequads->vertex_2, normal_index + 1);
+          add_object_edge(object, facequads->vertex_3, facequads->vertex_0, normal_index + 1);
+          add_object_edge(object, facequads->vertex_2, facequads->vertex_3, normal_index + 1);
         }
         ++facequads;
-        v5 += 2;
-        ++v9;
+        normal_index += 2;
+        ++face_index;
       }
-      while ( v9 < object->facequad_count );
-      archive_data_base = (_BYTE *)g_object_edge_build_edges;
-      v4 = g_object_edge_build_count;
+      while ( face_index < object->facequad_count );
+      build_edges = g_object_edge_build_edges;
+      edge_count = g_object_edge_build_count;
     }
     if ( (BYTE1(object->flags) & 0x80u) != 0 )
     {
-      v6 = 0;
-      if ( v4 > 0 )
+      edge_index = 0;
+      if ( edge_count > 0 )
       {
-        v7 = 0;
-        v10 = 0;
+        edge_offset = 0;
+        saved_edge_offset = 0;
         do
         {
-          if ( (archive_data_base[v7] & 1) != 0 )
+          if ( (*((_BYTE *)&build_edges->flags + edge_offset) & 1) != 0 )
           {
-            v8 = v6;
-            if ( v6 < v4 - 1 )
+            shift_index = edge_index;
+            if ( edge_index < edge_count - 1 )
             {
               do
               {
-                ++v8;
-                qmemcpy(&archive_data_base[v7], &archive_data_base[v7 + 36], 0x24u);
-                v4 = g_object_edge_build_count;
-                archive_data_base = (_BYTE *)g_object_edge_build_edges;
-                v7 += 36;
+                ++shift_index;
+                qmemcpy(
+                  (char *)build_edges + edge_offset,
+                  (char *)&build_edges[1] + edge_offset,
+                  sizeof(ObjectToonEdge));
+                edge_count = g_object_edge_build_count;
+                build_edges = g_object_edge_build_edges;
+                edge_offset += 36;
               }
-              while ( v8 < g_object_edge_build_count - 1 );
-              v7 = v10;
+              while ( shift_index < g_object_edge_build_count - 1 );
+              edge_offset = saved_edge_offset;
             }
-            --v4;
-            --v6;
-            g_object_edge_build_count = v4;
-            v7 -= 36;
+            --edge_count;
+            --edge_index;
+            g_object_edge_build_count = edge_count;
+            edge_offset -= 36;
           }
-          ++v6;
-          v7 += 36;
-          v10 = v7;
+          ++edge_index;
+          edge_offset += 36;
+          saved_edge_offset = edge_offset;
         }
-        while ( v6 < v4 );
+        while ( edge_index < edge_count );
       }
     }
-    request_object_edges(object, v4);
+    request_object_edges(object, edge_count);
     qmemcpy(object->edges, g_object_edge_build_edges, 36 * g_object_edge_build_count);
   }
 }

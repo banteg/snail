@@ -9058,6 +9058,70 @@
       ]
     },
     {
+      "name": "ida_object_facequad_normal_rebuild_owner",
+      "artifact": "analysis/decompile/ida/functions/0042fcb0-calc_object_facequad_normals.c",
+      "required_substrings": [
+        "void __thiscall calc_object_facequad_normals(Object *object)",
+        "float *normal_tally",
+        "Vec3 quad_normal",
+        "Vec3 face_normal",
+        "request_object_facequad_normals(object)",
+        "object->facequads",
+        "object->facequad_normals",
+        "object->vertex_normals",
+        "normal_tally[",
+        "free_tracked_memory(normal_tally)"
+      ],
+      "forbidden_substrings": [
+        "sub_42FCB0",
+        "int *this",
+        "*(this +",
+        "return free_tracked_memory",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_edge_merge_owner",
+      "artifact": "analysis/decompile/ida/functions/004305a0-add_object_edge.c",
+      "required_substrings": [
+        "void __thiscall add_object_edge(Object *object, int32_t vertex_a, int32_t vertex_b, int32_t normal_index)",
+        "int32_t edge_index",
+        "ObjectToonEdgeFlag flags",
+        "g_object_edge_build_edges[build_count].flags = OBJECT_TOON_EDGE_FLAG_BOUNDARY",
+        "g_object_edge_build_edges[found_index].normal_a",
+        "g_object_edge_build_edges[found_index].normal_b",
+        "g_object_edge_build_edges[found_index].direction",
+        "sizeof(ObjectToonEdge)"
+      ],
+      "forbidden_substrings": [
+        "sub_4305A0",
+        "g_object_edge_build_edges +",
+        "_DWORD *)(g_object_edge_build_edges",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_edge_workspace_owner",
+      "artifact": "analysis/decompile/ida/functions/004308b0-calc_object_edges.c",
+      "required_substrings": [
+        "void __thiscall calc_object_edges(Object *object)",
+        "ObjectToonEdge *build_edges",
+        "g_object_edge_build_edges = build_edges",
+        "add_object_edge(object",
+        "request_object_edges(object",
+        "sizeof(ObjectToonEdge)",
+        "qmemcpy(object->edges, g_object_edge_build_edges"
+      ],
+      "forbidden_substrings": [
+        "sub_4308B0",
+        "_BYTE *archive_data_base",
+        "(_BYTE *)g_object_edge_build_edges",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_object_grouped_vertex_workspace_owner",
       "artifact": "analysis/decompile/binja/functions/00413bb0-get_or_append_object_texture_group_vertex.c",
       "required_substrings": [

@@ -3518,15 +3518,30 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         ("0x405640", "load_x_mesh"),
         ("0x41aa50", "apply_distort_to_object"),
         ("0x42fb10", "calc_object_bounding_box"),
+        ("0x42fcb0", "calc_object_facequad_normals"),
         ("0x4303f0", "calc_object_texture_groups"),
+        ("0x4305a0", "add_object_edge"),
+        ("0x4308b0", "calc_object_edges"),
     ):
         assert f'("{address}", "{name}")' in sync_source
         assert f'({address.upper().replace("0X", "0x")}, "{name}")' in ida_sync_source
+
+    for address, name, declaration in (
+        (
+            "0x503300",
+            "g_object_edge_build_edges",
+            "ObjectToonEdge* g_object_edge_build_edges;",
+        ),
+        ("0x503318", "g_object_edge_build_count", "int32_t g_object_edge_build_count;"),
+    ):
+        assert f'({address}, "{name}")' in ida_sync_source
+        assert declaration in ida_sync_source
 
     for owner_name, expected_size in (
         ("Vec3", "0xC"),
         ("TextureRef", "0xA4"),
         ("ObjectFaceQuad", "0x30"),
+        ("ObjectToonEdge", "0x24"),
         ("ObjectDistort", "0x14"),
         ("Object", "0xDC"),
         ("DuplicateVertices", "0x8"),
@@ -3544,9 +3559,34 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         "0x41AA50",
         "0x42F9E0",
         "0x42FB10",
+        "0x42FCB0",
         "0x4303F0",
+        "0x4305A0",
+        "0x4308B0",
+        "0x430A70",
     ):
         assert address in ida_sync_source
+
+    for selector, definition_address, local_name, declaration in (
+        (
+            "calc_object_facequad_normals",
+            "0x42FCD3",
+            "normal_tally",
+            "float *normal_tally;",
+        ),
+        ("add_object_edge", "0x4305E0", "edge_index", "int32_t edge_index;"),
+        (
+            "calc_object_edges",
+            "0x4308CA",
+            "build_edges",
+            "ObjectToonEdge *build_edges;",
+        ),
+    ):
+        assert selector in ida_sync_source
+        assert definition_address in ida_sync_source
+        assert local_name in ida_sync_source
+        assert declaration in ida_sync_source
+    assert "_sync_topology_lvars()" in ida_sync_source
 
     assert "idc.PT_FILE | idc.PT_REPLACE" in ida_sync_source
     assert "ida_hexrays.mark_cfunc_dirty(function.start_ea, True)" in ida_sync_source

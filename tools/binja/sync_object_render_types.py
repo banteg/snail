@@ -163,7 +163,10 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x414600", "query_direct3d_device_caps"),
     ("0x414650", "reset_render_counters"),
     ("0x42fb10", "calc_object_bounding_box"),
+    ("0x42fcb0", "calc_object_facequad_normals"),
     ("0x4303f0", "calc_object_texture_groups"),
+    ("0x4305a0", "add_object_edge"),
+    ("0x4308b0", "calc_object_edges"),
     ("0x430a30", "rotate_object_facequad_uv_pairs"),
 )
 

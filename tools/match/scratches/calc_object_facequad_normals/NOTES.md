@@ -67,3 +67,18 @@ correction only and does not hide the 90.03% stack-allocation residual.
 The refreshed Binary Ninja artifact now carries `Object*` through the normal
 allocator, vertex/facequad banks, counts, and final free. Its health check
 rejects the prior `arg1`/raw-offset form without changing the 90.03% scratch.
+
+## 2026-07-18 two-lane normal ownership replay
+
+The restarted Binary Ninja session confirms the void `Object` method and both
+callers without further mutation. The repeatable IDA lane is now anchored at
+`0x42fcb0`, verifies `ObjectToonEdge` alongside the existing Object geometry
+types, and persists the temporary `float* normal_tally`, primary
+`face_normal`, secondary `quad_normal`, and their loop owners. The refreshed
+artifact therefore exposes the same vertex, facequad, and normal banks as the
+source-shaped scratch instead of the old `int* this`/integer-return form.
+
+Focused Wibo remains honestly unchanged at 90.03%, 436/437 instructions,
+prefix 27/437, and 22 clean masked operands. No matcher source change was
+retained; the residual is still the documented VC6 stack-slot and register
+allocation tie.

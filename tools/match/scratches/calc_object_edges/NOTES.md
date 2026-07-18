@@ -75,3 +75,17 @@ and count globals. The refreshed artifact follows `ObjectFaceQuad*` input,
 six Object-member edge calls, the shared workspace, and the final retained
 `Object::edges` bank without `arg1` or anonymous `data_5033xx` owners. Matching
 remains honestly partial at 75.62%.
+
+## 2026-07-18 shared topology workspace replay
+
+Both replay lanes now address-anchor the builder and its edge-merge helper.
+IDA additionally types `g_object_edge_build_edges` as `ObjectToonEdge*`, names
+the borrowed archive view `build_edges`, and persists the face, normal, edge,
+shift, and byte-offset loop owners. Its artifact now follows the complete
+handoff from `get_archive_data_base()` through six member calls and typed
+0x24-byte compaction into `Object::edges`; paired health checks reject the old
+byte-bank transcription.
+
+Focused Wibo is unchanged at 75.62%, 142/141 instructions, prefix 0/141, and
+14 clean masked operands. The candidate's extra stack spill remains visible;
+no pointer cursor, raw address spelling, or other fakematch was introduced.

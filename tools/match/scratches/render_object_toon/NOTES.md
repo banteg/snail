@@ -65,3 +65,9 @@ from `sizeof(unsigned short)`. Both substitutions are byte-identical at
 same camera source, projection parameters, and render counters as the exact
 camera/object paths. Focused output remains exact at 219/219 instructions with
 all 31 operands clean.
+
+2026-07-18 tracked replay refresh: rebuilding the topology consumer after the
+edge-bank sync exposes the already-proven
+`get_sprite_texture(&g_sprite_manager, 0x5d)` owner in both generated
+artifacts. This is an artifact freshness fix; the scratch remains exact at
+219/219 with all 31 operands clean.

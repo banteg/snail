@@ -111,7 +111,7 @@ LABEL_9:
         ((void (*)(void))toon_index_buffer->buffer->vtbl->Unlock)();
         if ( v10 > 0 )
         {
-          sprite_texture = (TextureRef *)get_sprite_texture(93);
+          sprite_texture = get_sprite_texture(&g_sprite_manager, 93);
           bind_texture_ref(sprite_texture);
           v23 = v10 / 2;
           g_direct3d_renderer.device->vtbl->DrawIndexedPrimitive(

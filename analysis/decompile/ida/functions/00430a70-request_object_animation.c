@@ -5,12 +5,12 @@
 // Void Windows `cRObject::RequestAnim(int, cRBodPos*, float, int)`: validates borrowed keyframe Objects, allocates and retains the ObjectAnimation/frame graph, interpolates each vertex as a scaled next-minus-current delta, and regenerates per-frame facequad normals.
 void __thiscall request_object_animation(
         Object *object,
-        int keyframe_count,
+        int32_t keyframe_count,
         XAnimationKeyframe *keyframes,
         float progress_step,
-        int flags)
+        int32_t flags)
 {
-  int v5; // eax
+  int32_t v5; // eax
   int32_t vertex_count; // edx
   Object **v9; // ecx
   int v10; // ebp

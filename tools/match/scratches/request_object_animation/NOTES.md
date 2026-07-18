@@ -151,3 +151,8 @@ stored 16-bit word as `ObjectAnimationFlags`, backed by the proven
 `ObjectAnimationFlag` values. The selector-only preserve-current value lives
 in the separate `ObjectAnimationModeOverride` enum because `-1` is accepted by
 the authored `int` API but never narrowed into this member.
+
+2026-07-18 caller replay refresh: reanalysis after address-anchoring the full
+normal rebuild keeps the exact void `Object` animation owner and normalizes its
+integer formals to the shared `int32_t` surface in the tracked IDA artifact.
+The matcher remains proof-grade at 231/231 with all 17 operands clean.

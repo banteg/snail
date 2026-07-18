@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 9,
+  "function_count": 5,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 9,
-  "ida_exported": 9,
+  "bn_exported": 5,
+  "ida_exported": 5,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,43 +17,27 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "load_x_mesh",
-      "address": "0x405640"
+      "name": "render_object_toon",
+      "address": "0x4123e0"
     },
     {
-      "name": "load_or_reuse_cached_x_mesh",
-      "address": "0x405cc0"
+      "name": "calc_object_facequad_normals",
+      "address": "0x42fcb0"
     },
     {
-      "name": "load_x_animation_clip",
-      "address": "0x405d60"
+      "name": "add_object_edge",
+      "address": "0x4305a0"
     },
     {
-      "name": "refresh_object_vertex_buffer",
-      "address": "0x412250"
+      "name": "calc_object_edges",
+      "address": "0x4308b0"
     },
     {
-      "name": "initialize_object_distort",
-      "address": "0x41aa30"
-    },
-    {
-      "name": "apply_distort_to_object",
-      "address": "0x41aa50"
-    },
-    {
-      "name": "build_all_objects",
-      "address": "0x42f9e0"
-    },
-    {
-      "name": "calc_object_bounding_box",
-      "address": "0x42fb10"
-    },
-    {
-      "name": "calc_object_texture_groups",
-      "address": "0x4303f0"
+      "name": "request_object_animation",
+      "address": "0x430a70"
     }
   ],
-  "health_check_count": 754,
+  "health_check_count": 757,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

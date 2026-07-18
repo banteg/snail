@@ -62,7 +62,7 @@
 004125f6        struct ObjectIndexBufferResource* buffer_1 = object->toon_index_buffer->buffer
 004125fb        buffer_1->vtbl->Unlock(buffer_1)
 00412600        if (esi_2 s> 0)
-0041260f        bind_texture_ref(get_sprite_texture(0x5d))
+0041260f        bind_texture_ref(get_sprite_texture(&g_sprite_manager, 0x5d))
 00412616        struct Direct3DDevice8* device_4 = g_direct3d_renderer.device
 0041261c        int32_t eax_19
 0041261c        int32_t edx_17

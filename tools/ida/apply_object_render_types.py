@@ -276,7 +276,10 @@ TRUSTED_NAMES = [
     (0x414600, "query_direct3d_device_caps"),
     (0x414650, "reset_render_counters"),
     (0x42FB10, "calc_object_bounding_box"),
+    (0x42FCB0, "calc_object_facequad_normals"),
     (0x4303F0, "calc_object_texture_groups"),
+    (0x4305A0, "add_object_edge"),
+    (0x4308B0, "calc_object_edges"),
     (0x430A30, "rotate_object_facequad_uv_pairs"),
     (0x430D90, "replace_object_list_texture_refs"),
     (0x4A3C40, "g_backdrop_raise_first_vertex_index"),
@@ -289,6 +292,8 @@ TRUSTED_NAMES = [
     (0x503174, "g_current_texture_ref"),
     (0x5031C0, "g_texture_bind_call_count"),
     (0x5031C8, "g_d3d_texture_slots"),
+    (0x503300, "g_object_edge_build_edges"),
+    (0x503318, "g_object_edge_build_count"),
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
@@ -318,15 +323,24 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x503174, "g_current_texture_ref", "TextureRef* g_current_texture_ref;"),
     (0x5031C0, "g_texture_bind_call_count", "int32_t g_texture_bind_call_count;"),
     (0x5031C8, "g_d3d_texture_slots", "Direct3DTexture8** g_d3d_texture_slots;"),
+    (
+        0x503300,
+        "g_object_edge_build_edges",
+        "ObjectToonEdge* g_object_edge_build_edges;",
+    ),
+    (0x503318, "g_object_edge_build_count", "int32_t g_object_edge_build_count;"),
 ]
 
 REQUIRED_OWNER_MARKERS = (
     "typedef struct ObjectDistort {",
+    "typedef struct ObjectToonEdge {",
     "typedef struct Object {",
     "typedef struct DirectXLoader {",
     "void __thiscall load_x_mesh(",
     "void __thiscall calc_object_bounding_box(Object* object);",
     "void __thiscall calc_object_texture_groups(Object* object);",
+    "void __thiscall add_object_edge(",
+    "extern ObjectToonEdge* g_object_edge_build_edges;",
     "void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object);",
 )
 
@@ -334,6 +348,7 @@ EXPECTED_OWNER_SIZES = {
     "Vec3": 0xC,
     "TextureRef": 0xA4,
     "ObjectFaceQuad": 0x30,
+    "ObjectToonEdge": 0x24,
     "ObjectDistort": 0x14,
     "Object": 0xDC,
     "DuplicateVertices": 0x8,
@@ -341,7 +356,7 @@ EXPECTED_OWNER_SIZES = {
     "DirectXLoader": 0x5E10,
 }
 
-# Rebuild both recovered helpers and their direct ownership-bearing callers.
+# Rebuild the recovered helpers and their direct ownership-bearing callers.
 REANALYSIS_FUNCTIONS = (
     0x405640,  # load_x_mesh
     0x405CC0,  # load_or_reuse_cached_x_mesh
@@ -352,7 +367,79 @@ REANALYSIS_FUNCTIONS = (
     0x41AA50,  # apply_distort_to_object
     0x42F9E0,  # build_all_objects
     0x42FB10,  # calc_object_bounding_box
+    0x42FCB0,  # calc_object_facequad_normals
     0x4303F0,  # calc_object_texture_groups
+    0x4305A0,  # add_object_edge
+    0x4308B0,  # calc_object_edges
+    0x430A70,  # request_object_animation
+)
+
+TOPOLOGY_LVAR_SPECS = (
+    (
+        "calc_object_facequad_normals",
+        0x42FCD3,
+        "normal_tally",
+        "float *normal_tally;",
+    ),
+    (
+        "calc_object_facequad_normals",
+        0x42FCF0,
+        "byte_offset",
+        "uint32_t byte_offset;",
+    ),
+    (
+        "calc_object_facequad_normals",
+        0x42FCF4,
+        "face_index",
+        "int32_t face_index;",
+    ),
+    (
+        "calc_object_facequad_normals",
+        0x42FCFE,
+        "normal_index",
+        "int32_t normal_index;",
+    ),
+    (
+        "calc_object_facequad_normals",
+        0x42FDD0,
+        "face_normal",
+        "Vec3 face_normal;",
+    ),
+    (
+        "calc_object_facequad_normals",
+        0x42FEBE,
+        "quad_normal",
+        "Vec3 quad_normal;",
+    ),
+    (
+        "calc_object_facequad_normals",
+        0x43017D,
+        "vertex_index",
+        "int32_t vertex_index;",
+    ),
+    ("add_object_edge", 0x4305D2, "build_count", "int32_t build_count;"),
+    ("add_object_edge", 0x4305E0, "edge_index", "int32_t edge_index;"),
+    ("add_object_edge", 0x43078C, "shift_index", "int32_t shift_index;"),
+    ("add_object_edge", 0x430799, "found_index", "int32_t found_index;"),
+    ("add_object_edge", 0x43086B, "copy_index", "int32_t copy_index;"),
+    (
+        "calc_object_edges",
+        0x4308CA,
+        "build_edges",
+        "ObjectToonEdge *build_edges;",
+    ),
+    ("calc_object_edges", 0x4308CC, "edge_count", "int32_t edge_count;"),
+    ("calc_object_edges", 0x4308DD, "face_index", "int32_t face_index;"),
+    ("calc_object_edges", 0x4308E9, "normal_index", "int32_t normal_index;"),
+    ("calc_object_edges", 0x4309A5, "edge_index", "int32_t edge_index;"),
+    ("calc_object_edges", 0x4309AB, "edge_offset", "int32_t edge_offset;"),
+    (
+        "calc_object_edges",
+        0x4309AD,
+        "saved_edge_offset",
+        "int32_t saved_edge_offset;",
+    ),
+    ("calc_object_edges", 0x4309BA, "shift_index", "int32_t shift_index;"),
 )
 
 
@@ -522,6 +609,128 @@ def _sync_refresh_vertex_lvars() -> dict[str, object]:
             name: hex(split_definition_address)
             for name, split_definition_address in split_specs
         },
+    }
+
+
+def _sync_owned_lvar(
+    selector: str,
+    definition_address: int,
+    expected_name: str,
+    declaration: str,
+) -> dict[str, object]:
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        return {
+            "status": "failed",
+            "reason": "missing_function",
+            "selector": selector,
+        }
+
+    local_type = ida_typeinf.tinfo_t()
+    if not ida_typeinf.parse_decl(
+        local_type,
+        None,
+        declaration,
+        ida_typeinf.PT_SIL,
+    ):
+        return {
+            "status": "failed",
+            "reason": "parse_owned_lvar_type_failed",
+            "selector": selector,
+            "declaration": declaration,
+        }
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var and lvar.defea == definition_address
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_owned_lvar_candidates",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+            "candidate_count": len(candidates),
+        }
+
+    lvar = candidates[0]
+    expected_type = _normalize_type_text(str(local_type))
+    observed_type = _normalize_type_text(str(lvar.type()))
+    if lvar.name == expected_name and observed_type == expected_type:
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": expected_name,
+            "type": str(local_type),
+            "definition_address": hex(definition_address),
+        }
+
+    before_name = lvar.name
+    before_type = str(lvar.type())
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = expected_name
+    info.type = local_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_owned_lvar_failed",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and candidate.defea == definition_address
+        and candidate.name == expected_name
+        and _normalize_type_text(str(candidate.type())) == expected_type
+    ]
+    if len(verified) != 1:
+        return {
+            "status": "failed",
+            "reason": "owned_lvar_readback_failed",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+            "candidate_count": len(verified),
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "before_name": before_name,
+        "before_type": before_type,
+        "name": expected_name,
+        "type": str(local_type),
+        "definition_address": hex(definition_address),
+    }
+
+
+def _sync_topology_lvars() -> dict[str, object]:
+    results = [
+        _sync_owned_lvar(selector, definition_address, expected_name, declaration)
+        for selector, definition_address, expected_name, declaration in TOPOLOGY_LVAR_SPECS
+    ]
+    failures = [result for result in results if result.get("status") == "failed"]
+    return {
+        "status": (
+            "failed"
+            if failures
+            else "applied"
+            if any(result.get("status") == "applied" for result in results)
+            else "unchanged"
+        ),
+        "locals": results,
+        "failures": failures,
     }
 
 
@@ -696,6 +905,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    topology_lvars = _sync_topology_lvars()
+    if topology_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "object_topology_lvars",
+                "topology_lvars": topology_lvars,
+            }
+        )
+
     ida_auto.auto_wait()
     reanalysis_functions = []
     for address in REANALYSIS_FUNCTIONS:
@@ -721,6 +939,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "names_unchanged": names_unchanged,
                 "game_root_owner_graph": game_root_owner_graph,
                 "refresh_vertex_lvars": refresh_vertex_lvars,
+                "topology_lvars": topology_lvars,
                 "reanalysis_functions": reanalysis_functions,
                 "missing": missing,
                 "failed": failed,
