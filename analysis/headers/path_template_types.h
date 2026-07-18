@@ -957,6 +957,16 @@ typedef struct SlugSlotCursor {
     Slug slug;
 } SlugSlotCursor;
 
+/*
+ * Analysis-only field-first view for spawn_slug_hazard's free-slot sweep.
+ * The physical pointer begins at Slug::state and advances by sizeof(Slug), so
+ * the tail aliases the rest of each embedded Slug rather than owning storage.
+ */
+typedef struct SlugStateStrideCursor {
+    int32_t state;
+    uint8_t slot_stride_tail[0xe8];
+} SlugStateStrideCursor;
+
 typedef struct SubLazerSlotCursor {
     uint8_t subgame_prefix[0x356b00];
     SubLazer sub_lazer;

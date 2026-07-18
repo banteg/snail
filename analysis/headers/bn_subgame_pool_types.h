@@ -215,6 +215,26 @@ typedef struct SlugPool {
     Slug slots[SUB_SLUG_SLOT_CAPACITY];
 } SlugPool;
 
+/*
+ * Analysis-only field-first cursor for the allocator's state sweep. The
+ * cursor begins at Slug::state and advances by sizeof(Slug); the trailing
+ * bytes alias the remainder of each owned Slug slot.
+ */
+typedef struct SlugStateStrideCursor {
+    int32_t state;
+    uint8_t slot_stride_tail[0xe8];
+} SlugStateStrideCursor;
+
+/*
+ * Analysis-only manager-relative view for the allocator's selected slot.
+ * The prefix aliases the enclosing SubgameRuntime; slug is one embedded pool
+ * record, not independently owned storage.
+ */
+typedef struct SlugSlotCursor {
+    uint8_t subgame_prefix[0x3563a0];
+    Slug slug;
+} SlugSlotCursor;
+
 typedef enum SubRingState {
     SUB_RING_STATE_INACTIVE = 0,
     SUB_RING_STATE_ACTIVE = 1,

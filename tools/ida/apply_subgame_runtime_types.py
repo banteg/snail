@@ -4,6 +4,7 @@ import re
 import sys
 
 import ida_funcs
+import ida_hexrays
 import ida_pro
 import ida_typeinf
 import idc
@@ -99,6 +100,10 @@ TRUSTED_DECLARATIONS = [
     (
         "initialize_slug_hazard_runtime",
         "Slug* __thiscall initialize_slug_hazard_runtime(Slug* slug);",
+    ),
+    (
+        "spawn_slug_hazard",
+        "int32_t __thiscall spawn_slug_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* owner_player);",
     ),
     (
         "update_slug_voice_ai",
@@ -369,6 +374,167 @@ def _named_struct_size(name: str) -> int | None:
     return value.get_size()
 
 
+def _normalize_pointer_type(value: str | None) -> str:
+    return (_normalize_type_text(value) or "").removeprefix("struct ")
+
+
+def _sync_slug_allocator_lvar(
+    *,
+    definition_address: int,
+    accepted_names: set[str],
+    accepted_types: set[str],
+    target_name: str,
+    target_struct_name: str,
+) -> dict[str, object]:
+    """Persist one exact borrowed-cursor relationship in AddSlug."""
+    selector = "spawn_slug_hazard"
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    normalized_accepted_types = {
+        _normalize_pointer_type(value) for value in accepted_types
+    }
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and not lvar.is_stk_var()
+        and lvar.defea == definition_address
+        and lvar.name in accepted_names
+        and _normalize_pointer_type(str(lvar.type()))
+        in normalized_accepted_types
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_slug_allocator_lvar_candidates",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+            "target_name": target_name,
+            "candidate_count": len(candidates),
+        }
+
+    lvar = candidates[0]
+    target_pointer_type = _normalize_pointer_type(f"{target_struct_name} *")
+    if (
+        lvar.name == target_name
+        and _normalize_pointer_type(str(lvar.type())) == target_pointer_type
+    ):
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "definition_address": hex(lvar.defea),
+        }
+
+    target_type = ida_typeinf.tinfo_t()
+    if not target_type.get_named_type(
+        None,
+        target_struct_name,
+        ida_typeinf.BTF_STRUCT,
+    ):
+        return {
+            "status": "failed",
+            "reason": "missing_slug_allocator_lvar_type",
+            "selector": selector,
+            "target_struct_name": target_struct_name,
+        }
+
+    pointer_type = ida_typeinf.tinfo_t()
+    if not pointer_type.create_ptr(target_type):
+        return {
+            "status": "failed",
+            "reason": "create_slug_allocator_pointer_type_failed",
+            "selector": selector,
+            "target_struct_name": target_struct_name,
+        }
+
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = target_name
+    info.type = pointer_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_slug_allocator_lvar_failed",
+            "selector": selector,
+            "target_name": target_name,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and not candidate.is_stk_var()
+        and candidate.defea == definition_address
+        and candidate.name == target_name
+        and _normalize_pointer_type(str(candidate.type())) == target_pointer_type
+    ]
+    if len(verified) != 1:
+        return {
+            "status": "failed",
+            "reason": "slug_allocator_lvar_readback_failed",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+            "target_name": target_name,
+            "candidate_count": len(verified),
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "before_name": lvar.name,
+        "before_type": str(lvar.type()),
+        "name": verified[0].name,
+        "type": str(verified[0].type()),
+        "definition_address": hex(verified[0].defea),
+    }
+
+
+SPAWN_SLUG_HAZARD_LVAR_SPECS = (
+    (
+        "state_stride_cursor",
+        0x43DC89,
+        {"i", "slug_state_cursor"},
+        {
+            "_DWORD *",
+            "int *",
+            "int32_t *",
+            "unsigned int *",
+            "SlugStateStrideCursor *",
+        },
+        "slug_state_cursor",
+        "SlugStateStrideCursor",
+    ),
+    (
+        "selected_slot_cursor",
+        0x43DCBD,
+        {"v6", "slug_slot_cursor"},
+        {"int", "char *", "void *", "SlugSlotCursor *"},
+        "slug_slot_cursor",
+        "SlugSlotCursor",
+    ),
+    (
+        "sprite",
+        0x43DDC8,
+        {"sprite"},
+        {"_DWORD *", "Sprite *"},
+        "sprite",
+        "Sprite",
+    ),
+)
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     header_text = header_path.read_text(encoding="utf-8")
     missing_owner_markers = [
@@ -485,6 +651,36 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
         applied += 1
 
+    slug_allocator_lvars = {}
+    for (
+        result_name,
+        definition_address,
+        accepted_names,
+        accepted_types,
+        target_name,
+        target_struct_name,
+    ) in SPAWN_SLUG_HAZARD_LVAR_SPECS:
+        result = _sync_slug_allocator_lvar(
+            definition_address=definition_address,
+            accepted_names=accepted_names,
+            accepted_types=accepted_types,
+            target_name=target_name,
+            target_struct_name=target_struct_name,
+        )
+        slug_allocator_lvars[result_name] = result
+        if result.get("status") == "applied":
+            applied += 1
+        elif result.get("status") == "unchanged":
+            unchanged += 1
+        else:
+            failed.append(
+                {
+                    "selector": "spawn_slug_hazard",
+                    "lvar": result_name,
+                    "result": result,
+                }
+            )
+
     game_root_owner_graph = sync_game_root_owner_graph(require=True)
     if game_root_owner_graph.get("status") == "failed":
         failed.append(
@@ -502,6 +698,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "SubRingStar": _named_struct_size("SubRingStar"),
                     "SubRing": _named_struct_size("SubRing"),
                     "SubRingPool": _named_struct_size("SubRingPool"),
+                    "SlugStateStrideCursor": _named_struct_size("SlugStateStrideCursor"),
+                    "SlugSlotCursor": _named_struct_size("SlugSlotCursor"),
                     "EnemyManager": _named_struct_size("EnemyManager"),
                     "GUI": _named_struct_size("GUI"),
                     "Help": _named_struct_size("Help"),
@@ -516,6 +714,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "applied": applied,
                 "unchanged": unchanged,
                 "game_root_owner_graph": game_root_owner_graph,
+                "slug_allocator_lvars": slug_allocator_lvars,
                 "missing": missing,
                 "failed": failed,
             },

@@ -9,9 +9,9 @@ import sys
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
+    apply_user_var_updates,
     current_type_widths,
     emit_summary,
-    struct_exists,
     types_declare_missing_only,
 )
 
@@ -48,6 +48,11 @@ TYPE_REPLACEMENTS = (
     "RingOrSpecialEffectParent",
     "SubRingPool",
     "RingOrSpecialEffectPool",
+)
+
+SLUG_ALLOCATOR_CURSOR_TYPES = (
+    "SlugStateStrideCursor",
+    "SlugSlotCursor",
 )
 
 SUBGAME_FIELD_UPDATES = (
@@ -197,6 +202,37 @@ PROTO_UPDATES = (
     ),
 )
 
+# spawn_slug_hazard uses two distinct borrowed cursor shapes. ECX physically
+# points at Slug::state and advances by the full slot stride; ESI remains a
+# SubgameRuntime-relative biased base for the selected slot. Preserve those
+# exact lifetimes instead of pretending either cursor is a direct Slug owner.
+SPAWN_SLUG_HAZARD_USER_VAR_UPDATES = (
+    (
+        "spawn_slug_hazard",
+        "RegisterVariableSourceType",
+        8,
+        67,
+        "slug_state_cursor",
+        "SlugStateStrideCursor*",
+    ),
+    (
+        "spawn_slug_hazard",
+        "RegisterVariableSourceType",
+        60,
+        72,
+        "slug_slot_cursor",
+        "SlugSlotCursor*",
+    ),
+    (
+        "spawn_slug_hazard",
+        "RegisterVariableSourceType",
+        589,
+        66,
+        "blink_random_value",
+        "int32_t",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -218,17 +254,22 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    types_present = all(
-        struct_exists(REPO_ROOT, target=args.target, struct_name=struct_name)
-        for struct_name in REQUIRED_HEADER_STRUCTS
-    )
-    pool_type_widths = current_type_widths(
+    type_widths = current_type_widths(
         REPO_ROOT,
         target=args.target,
-        type_names=REQUIRED_POOL_TYPES,
+        type_names=(
+            *REQUIRED_HEADER_STRUCTS,
+            *REQUIRED_POOL_TYPES,
+            *SLUG_ALLOCATOR_CURSOR_TYPES,
+            "FrameSubgameRuntime",
+        ),
+    )
+    types_present = all(
+        (type_widths.get(struct_name) or 0) > 0
+        for struct_name in REQUIRED_HEADER_STRUCTS
     )
     pool_types_present = all(
-        pool_type_widths.get(type_name) == 4 for type_name in REQUIRED_POOL_TYPES
+        type_widths.get(type_name) == 4 for type_name in REQUIRED_POOL_TYPES
     )
     type_operation = (
         {
@@ -247,6 +288,27 @@ def main() -> int:
             replace_types=TYPE_REPLACEMENTS,
         )
     )
+    cursor_types_present = all(
+        (type_widths.get(struct_name) or 0) > 0
+        for struct_name in SLUG_ALLOCATOR_CURSOR_TYPES
+    )
+    cursor_type_operation = (
+        {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "slug allocator cursor views already present",
+            "header": str(header_path),
+            "required_structs": SLUG_ALLOCATOR_CURSOR_TYPES,
+        }
+        if cursor_types_present
+        else types_declare_missing_only(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            replace_types=SLUG_ALLOCATOR_CURSOR_TYPES,
+            include_types=SLUG_ALLOCATOR_CURSOR_TYPES,
+        )
+    )
 
     struct_updates = [
         ("SubgameRuntime", SUBGAME_FIELD_UPDATES),
@@ -257,16 +319,22 @@ def main() -> int:
         ("Slug", SLUG_FIELD_UPDATES),
         ("SubRing", SUB_RING_FIELD_UPDATES),
     ]
-    if struct_exists(REPO_ROOT, target=args.target, struct_name="FrameSubgameRuntime"):
+    if (type_widths.get("FrameSubgameRuntime") or 0) > 0:
         struct_updates.insert(0, ("FrameSubgameRuntime", SUBGAME_FIELD_UPDATES))
 
     operations: list[dict[str, object]] = [
         type_operation,
+        cursor_type_operation,
         *apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,
             struct_updates=struct_updates,
             proto_updates=PROTO_UPDATES,
+        ),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SPAWN_SLUG_HAZARD_USER_VAR_UPDATES,
         ),
     ]
 

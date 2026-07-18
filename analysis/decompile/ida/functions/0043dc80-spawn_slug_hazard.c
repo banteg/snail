@@ -3,108 +3,113 @@
 /* selector: spawn_slug_hazard */
 
 // Exact allocator for one live `Slug`: scans the eight owned 0xec-byte records, installs the borrowed owner Player, scales `(0, 0, -0.2)` by the subgame rate, links the inherited body before the embedded Player tail, and arms the spaced engagement-voice gate. Android and iOS identify the owning caller as `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`. The Windows result shape remains intentionally unresolved: its sole caller discards EAX, but a void probe removes two native instructions.
-int __thiscall spawn_slug_hazard(int this, int a2, int a3)
+int32_t __thiscall spawn_slug_hazard(SubgameRuntime *game, TrackRowCell *cell, Player *owner_player)
 {
-  int result; // eax
-  _DWORD *i; // ecx
-  int v6; // esi
+  int32_t result; // eax
+  struct SlugStateStrideCursor *slug_state_cursor; // ecx
+  struct SlugSlotCursor *slug_slot_cursor; // esi
   double v7; // st7
   double v8; // st7
-  BodNode *v9; // eax
+  Slug *p_slug; // eax
   BodList *p_active_bod_list; // edx
-  BodNode *v11; // ecx
-  int v12; // ecx
-  _DWORD *sprite; // eax
-  int v14; // ecx
-  _DWORD *v15; // eax
-  int v16; // eax
+  Player *p_player; // ecx
+  uint32_t list_flags; // ecx
+  Sprite *sprite; // eax
+  SpriteFlag flags; // ecx
+  Vec3 *p_position; // eax
+  uint32_t v16; // eax
   float v17; // [esp+8h] [ebp-8h]
-  int v18; // [esp+Ch] [ebp-4h]
+  float z; // [esp+Ch] [ebp-4h]
   float v19; // [esp+Ch] [ebp-4h]
 
   result = 0;
-  for ( i = (_DWORD *)(this + 3499040); *i; i += 59 )
+  for ( slug_state_cursor = (struct SlugStateStrideCursor *)&game->slug_hazards.slots[0].state;
+        slug_state_cursor->state;
+        ++slug_state_cursor )
   {
     if ( ++result >= 8 )
       return result;
   }
-  v6 = this + 236 * result;
-  *(_DWORD *)(v6 + 3499040) = 1;
-  *(_DWORD *)(v6 + 3499104) = a3;
-  set_matrix_identity((TransformMatrix *)(v6 + 3498968));
-  v7 = *(float *)(a2 + 20) + 1.7;
-  v18 = *(_DWORD *)(a2 + 24);
-  *(_DWORD *)(v6 + 3499016) = *(_DWORD *)(a2 + 16);
+  slug_slot_cursor = (struct SlugSlotCursor *)((char *)game + 236 * result);
+  slug_slot_cursor->slug.state = 1;
+  slug_slot_cursor->slug.owner_player = owner_player;
+  set_matrix_identity(&slug_slot_cursor->slug.body.transform);
+  v7 = cell->anchor_position.y + 1.7;
+  z = cell->anchor_position.z;
+  slug_slot_cursor->slug.body.transform.position.x = cell->anchor_position.x;
   v17 = v7;
-  *(float *)(v6 + 3499020) = v17;
-  *(_DWORD *)(v6 + 3499024) = v18;
-  project_position_onto_track_attachment((void *)this, (float *)(v6 + 3499016), (float *)(v6 + 3499064));
-  v8 = *(float *)(this + 56) * -0.2;
-  *(float *)(v6 + 3499052) = 0.0;
-  *(float *)(v6 + 3499056) = 0.0;
-  v9 = (BodNode *)(v6 + 3498912);
+  slug_slot_cursor->slug.body.transform.position.y = v17;
+  slug_slot_cursor->slug.body.transform.position.z = z;
+  project_position_onto_track_attachment(
+    game,
+    (Vec3 *)&slug_slot_cursor->slug.body.transform.position,
+    &slug_slot_cursor->slug.attachment_facing_angle);
+  v8 = game->subgame_rate * -0.2;
+  slug_slot_cursor->slug.velocity.x = 0.0;
+  slug_slot_cursor->slug.velocity.y = 0.0;
+  p_slug = &slug_slot_cursor->slug;
   v19 = v8;
-  *(float *)(v6 + 3499060) = v19;
+  slug_slot_cursor->slug.velocity.z = v19;
   p_active_bod_list = &g_game_base->active_bod_list;
-  v11 = (BodNode *)(this + 3913572);
-  if ( (*(_BYTE *)(v6 + 3498917) & 2) != 0 )
+  p_player = &game->player;
+  if ( (slug_slot_cursor->slug.body.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddbefore);
   }
   else
   {
-    *(_DWORD *)(v6 + 3498924) = v11;
-    if ( p_active_bod_list->first == v11 )
+    slug_slot_cursor->slug.body.bod.bod.list_next = &p_player->body.bod.bod;
+    if ( (Player *)p_active_bod_list->first == p_player )
     {
-      *(_DWORD *)(this + 3913580) = v9;
-      p_active_bod_list->first = v9;
-      *(_DWORD *)(v6 + 3498920) = 0;
+      game->player.body.bod.bod.list_prev = &p_slug->body.bod.bod;
+      p_active_bod_list->first = &p_slug->body.bod.bod;
+      slug_slot_cursor->slug.body.bod.bod.list_prev = nullptr;
     }
     else
     {
-      *(_DWORD *)(v6 + 3498920) = *(_DWORD *)(this + 3913580);
-      *(_DWORD *)(this + 3913580) = v9;
-      *(_DWORD *)(*(_DWORD *)(v6 + 3498920) + 12) = v9;
+      slug_slot_cursor->slug.body.bod.bod.list_prev = game->player.body.bod.bod.list_prev;
+      game->player.body.bod.bod.list_prev = &p_slug->body.bod.bod;
+      slug_slot_cursor->slug.body.bod.bod.list_prev->list_next = &p_slug->body.bod.bod;
     }
-    v12 = *(_DWORD *)(v6 + 3498916);
-    BYTE1(v12) |= 2u;
-    *(_DWORD *)(v6 + 3498916) = v12;
+    list_flags = slug_slot_cursor->slug.body.bod.bod.list_flags;
+    BYTE1(list_flags) |= 2u;
+    slug_slot_cursor->slug.body.bod.bod.list_flags = list_flags;
   }
-  sprite = allocate_sprite(g_sprite_manager, *(_DWORD *)(a3 + 896), 118, -1, -1);
-  *(_DWORD *)(v6 + 3499084) = sprite;
-  v14 = sprite[1];
-  BYTE1(v14) |= 8u;
-  sprite[1] = v14;
-  set_color_white((tColour *)(*(_DWORD *)(v6 + 3499084) + 44));
-  *(_DWORD *)(*(_DWORD *)(v6 + 3499084) + 120) = 0;
-  *(_DWORD *)(*(_DWORD *)(v6 + 3499084) + 104) = 0;
-  *(_DWORD *)(*(_DWORD *)(v6 + 3499084) + 108) = 0;
-  *(_DWORD *)(*(_DWORD *)(v6 + 3499084) + 96) = 0x40000000;
-  *(_DWORD *)(*(_DWORD *)(v6 + 3499084) + 100) = 0x40000000;
-  v15 = (_DWORD *)(*(_DWORD *)(v6 + 3499084) + 72);
-  *v15 = *(_DWORD *)(v6 + 3499016);
-  v15[1] = *(_DWORD *)(v6 + 3499020);
-  v15[2] = *(_DWORD *)(v6 + 3499024);
-  *(_DWORD *)(v6 + 3499088) = a2;
-  *(_BYTE *)(v6 + 3499092) = 0;
-  *(_BYTE *)(v6 + 3499116) = 0;
-  *(_DWORD *)(v6 + 3499120) = 0;
-  *(float *)(v6 + 3499124) = g_game_base->subgame.subgame_rate * 0.16666667;
-  *(_DWORD *)(v6 + 3499112) = 7;
-  v16 = *(_DWORD *)(v6 + 3498916);
+  sprite = (Sprite *)allocate_sprite(g_sprite_manager, owner_player->player_slot, 118, -1, -1);
+  slug_slot_cursor->slug.sprite = sprite;
+  flags = sprite->flags;
+  BYTE1(flags) |= 8u;
+  sprite->flags = flags;
+  set_color_white(&slug_slot_cursor->slug.sprite->color);
+  slug_slot_cursor->slug.sprite->gravity_step = 0.0;
+  slug_slot_cursor->slug.sprite->progress = 0.0;
+  slug_slot_cursor->slug.sprite->progress_step = 0.0;
+  slug_slot_cursor->slug.sprite->size_start = 2.0;
+  slug_slot_cursor->slug.sprite->size_end = 2.0;
+  p_position = &slug_slot_cursor->slug.sprite->position;
+  p_position->x = slug_slot_cursor->slug.body.transform.position.x;
+  p_position->y = slug_slot_cursor->slug.body.transform.position.y;
+  p_position->z = slug_slot_cursor->slug.body.transform.position.z;
+  slug_slot_cursor->slug.source_cell = cell;
+  slug_slot_cursor->slug.passed_player = 0;
+  slug_slot_cursor->slug.hit_flash_pending = 0;
+  slug_slot_cursor->slug.hit_flash_progress = 0.0;
+  slug_slot_cursor->slug.hit_flash_progress_step = g_game_base->subgame.subgame_rate * 0.16666667;
+  slug_slot_cursor->slug.hit_points = 7;
+  v16 = slug_slot_cursor->slug.body.bod.bod.list_flags;
   BYTE1(v16) &= ~0x10u;
-  *(_DWORD *)(v6 + 3498916) = v16;
-  *(_BYTE *)(v6 + 3499128) = 0;
-  *(_BYTE *)(v6 + 3499129) = 0;
-  *(_DWORD *)(v6 + 3499132) = 0;
-  *(_DWORD *)(v6 + 3499136) = 1023969417;
-  if ( *(float *)(a2 + 24) > (double)*(float *)(this + 19337164) )
+  slug_slot_cursor->slug.body.bod.bod.list_flags = v16;
+  slug_slot_cursor->slug.voice_active = 0;
+  slug_slot_cursor->slug.player_encounter_latched = 0;
+  slug_slot_cursor->slug.voice_progress = 0.0;
+  slug_slot_cursor->slug.voice_progress_step = 0.033333335;
+  if ( cell->anchor_position.z > (double)game->next_slug_voice_trigger_z )
   {
-    *(_DWORD *)(v6 + 3499108) = 1;
-    *(float *)(this + 19337164) = *(float *)(this + 19337168) + *(float *)(this + 19337164);
+    slug_slot_cursor->slug.engagement_voice_gate = 1;
+    game->next_slug_voice_trigger_z = game->slug_voice_trigger_spacing_z + game->next_slug_voice_trigger_z;
   }
-  *(_DWORD *)(v6 + 3499140) = 0;
+  slug_slot_cursor->slug.blink_progress = 0.0;
   result = next_math_random_value();
-  *(float *)(v6 + 3499144) = 1.0 / (((double)result * 0.000030517578 + 1.0) * 60.0);
+  slug_slot_cursor->slug.blink_step = 1.0 / (((double)result * 0.000030517578 + 1.0) * 60.0);
   return result;
 }

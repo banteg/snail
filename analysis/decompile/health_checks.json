@@ -7620,6 +7620,12 @@
       "artifact": "analysis/decompile/binja/functions/0043dc80-spawn_slug_hazard.c",
       "required_substrings": [
         "&game->slug_hazards.slots[0].state",
+        "struct SlugStateStrideCursor* slug_state_cursor",
+        "slug_state_cursor->state",
+        "struct SlugSlotCursor* slug_slot_cursor",
+        "slug_slot_cursor->slug.owner_player = owner_player",
+        "slug_slot_cursor->slug.sprite->position",
+        "int32_t blink_random_value = next_math_random_value()",
         "&game->player",
         "project_position_onto_track_attachment(game,",
         "g_game_base->subgame.subgame_rate",
@@ -7628,8 +7634,32 @@
       ],
       "forbidden_substrings": [
         "__offset(Game, 0x356420)",
+        "int32_t* ecx",
+        "void* esi",
+        "*(esi + 0x356",
+        "struct Player* eax_",
         "game->__offset",
         "g_game_base->subgame.__offset"
+      ]
+    },
+    {
+      "name": "ida_slug_allocator_cursor_owners",
+      "artifact": "analysis/decompile/ida/functions/0043dc80-spawn_slug_hazard.c",
+      "required_substrings": [
+        "int32_t __thiscall spawn_slug_hazard(SubgameRuntime *game, TrackRowCell *cell, Player *owner_player)",
+        "struct SlugStateStrideCursor *slug_state_cursor",
+        "struct SlugSlotCursor *slug_slot_cursor",
+        "slug_state_cursor->state",
+        "slug_slot_cursor->slug.owner_player = owner_player",
+        "slug_slot_cursor->slug.sprite->position",
+        "game->next_slug_voice_trigger_z"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall spawn_slug_hazard(int this",
+        "*(_DWORD *)(v6 +",
+        "this + 349",
+        "a2 +",
+        "a3 +"
       ]
     },
     {

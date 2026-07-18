@@ -4403,6 +4403,13 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     assert "void __fastcall update_slug_hazard_ai(Slug* slug)" not in pool_sync
     assert "DEFERRED_PROTO_UPDATES" not in pool_sync
     assert "report_deferred_prototypes" not in pool_sync
+    assert "SPAWN_SLUG_HAZARD_USER_VAR_UPDATES" in pool_sync
+    assert '"slug_state_cursor",\n        "SlugStateStrideCursor*"' in pool_sync
+    assert '"slug_slot_cursor",\n        "SlugSlotCursor*"' in pool_sync
+    assert '"blink_random_value",\n        "int32_t"' in pool_sync
+    assert "apply_user_var_updates" in pool_sync
+    assert "current_type_widths" in pool_sync
+    assert "struct_exists" not in pool_sync
 
     for header in (*analysis_headers, matcher_header):
         assert "Slug slots[SUB_SLUG_SLOT_CAPACITY]" in header
@@ -4412,9 +4419,15 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
         assert "typedef struct Slug" in header
         assert "RenderableBod body;" in header
         assert "typedef struct SlugHazardRuntime" not in header
+        assert "typedef struct SlugStateStrideCursor" in header
+        assert "uint8_t slot_stride_tail[0xe8];" in header
+        assert "typedef struct SlugSlotCursor" in header
+        assert "uint8_t subgame_prefix[0x3563a0];" in header
+        assert "Slug slug;" in header
 
     for function_name in (
         "initialize_slug_hazard_runtime",
+        "spawn_slug_hazard",
         "update_slug_voice_ai",
         "play_slug_voice",
         "hit_slug_hazard",
@@ -4424,6 +4437,16 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     ):
         assert function_name in pool_sync
         assert function_name in ida_sync
+    assert "SPAWN_SLUG_HAZARD_LVAR_SPECS" in ida_sync
+    assert "0x43DC89" in ida_sync
+    assert "0x43DCBD" in ida_sync
+    assert "0x43DDC8" in ida_sync
+    assert '"slug_state_cursor"' in ida_sync
+    assert '"SlugStateStrideCursor"' in ida_sync
+    assert '"slug_slot_cursor"' in ida_sync
+    assert '"SlugSlotCursor"' in ida_sync
+    assert '"sprite"' in ida_sync
+    assert '"Sprite"' in ida_sync
     assert "SlugHazardRuntime*" not in ida_sync
 
 

@@ -162,3 +162,27 @@ allows the newly active slug to enter the exact per-frame contact registry.
 The same contact bit is reserved by `create_golb` and released by exact
 `kill_golb`, closing the shared policy across both object families. All flag
 substitutions remain byte-identical.
+
+## 2026-07-18 analysis cursor ownership
+
+The exact source remains unchanged and byte-identical. The tracked analysis
+lanes now expose the same recovered ownership without lying about the two
+physical allocator cursors:
+
+- the free-slot sweep points at `Slug::state`, then advances by the complete
+  `0xec` slot stride, so `SlugStateStrideCursor` is a field-first borrowed view
+  rather than a `Slug*`;
+- the selected-slot register retains `SubgameRuntime + slot_index * 0xec`, so
+  `SlugSlotCursor` preserves that root-biased address and exposes its one
+  embedded `slug` record without inventing independent storage;
+- IDA now carries the typed `SubgameRuntime`, `TrackRowCell`, and `Player`
+  arguments plus the same two cursor views; the sprite, inherited BOD node,
+  player tail, and position copy then recover transitively from real fields.
+
+The Binary Ninja replay records exact register identities `(8, 67)` for the
+state cursor, `(60, 72)` for the selected slot, and `(589, 66)` for the final
+integer random result. The last identity prevents EAX reuse from falsely
+propagating an earlier `Player*` owner onto `next_math_random_value()`. Its
+type-presence probe is batched into one bridge request, reducing an idempotent
+replay from minutes to 8.7 seconds while keeping the existing `Slug` and
+`SubRing` metadata intact.
