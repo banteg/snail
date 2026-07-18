@@ -17,6 +17,7 @@ from _narrow_sync import (
     apply_user_var_updates,
     current_header_type_equivalence,
     current_prototypes,
+    current_type_widths,
     emit_summary,
     normalize_prototype,
     run_bn,
@@ -29,12 +30,25 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
 BOD_CORE_SYMBOL_UPDATES = (
+    ("0x4113b0", "add_bod_to_front"),
+    ("0x411420", "append_bod_to_end"),
+    ("0x42f5c0", "is_bod_after_sprites"),
+    ("0x42f5d0", "set_bod_object"),
     ("0x42f5f0", "initialize_bod_base"),
     ("0x42f650", "initialize_renderable_bod"),
+    ("0x42f680", "apply_bod_position"),
+    ("0x447290", "recycle_bod_to_free_list"),
     ("0x4974fc", "g_bod_base_vtable"),
     ("0x497500", "g_renderable_bod_vtable"),
     ("0x50331c", "g_bod_base_init_count"),
 )
+
+BOD_CORE_OWNER_SIZES = {
+    "BodNode": 0x10,
+    "BodList": 0x0C,
+    "BodBase": 0x38,
+    "RenderableBod": 0x80,
+}
 
 TRACK_RENDER_CACHE_SYMBOL_UPDATES = (
     ("0x4085e0", "initialize_active_bod"),
@@ -186,6 +200,19 @@ RENDERABLE_BOD_FIELD_UPDATES = (
     ("0x38", "transform", "TransformMatrix"),
     ("0x78", "render_animation_manager", "AnimManager*"),
     ("0x7c", "unknown_7c", "uint8_t[0x4]"),
+)
+
+BOD_NODE_FIELD_UPDATES = (
+    ("0x00", "vtable", "void*"),
+    ("0x04", "list_flags", "uint32_t"),
+    ("0x08", "list_prev", "BodNode*"),
+    ("0x0c", "list_next", "BodNode*"),
+)
+
+BOD_LIST_FIELD_UPDATES = (
+    ("0x00", "unknown_00", "int32_t"),
+    ("0x04", "first", "BodNode*"),
+    ("0x08", "free_top", "BodNode*"),
 )
 
 TRACK_RENDER_CACHE_SLOT_FIELD_UPDATES = (
@@ -419,6 +446,27 @@ def ensure_path_analysis_views(
         replace_types=stale_types,
         include_types=type_names,
     )
+
+
+def verify_bod_core_owner_sizes(*, target: str) -> dict[str, object]:
+    """Fail closed before applying method ABIs to incompatible BOD owners."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=BOD_CORE_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in BOD_CORE_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"BOD core owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_sizes": observed,
+    }
 
 SUB_PAUSE_FIELD_UPDATES = (
     ("0x00", "options_widget", "FrontendWidget*"),
@@ -1823,7 +1871,12 @@ SNAIL_VISUAL_FIELD_UPDATES = (
 )
 
 BOD_BASE_FIELD_UPDATES = (
+    ("0x00", "bod", "BodNode"),
+    ("0x10", "position", "Vec3"),
+    ("0x1c", "render_arg_1c", "float"),
+    ("0x20", "render_arg_20", "float"),
     ("0x24", "object", "Object*"),
+    ("0x28", "color", "tColour"),
 )
 
 FRINGE_OBJECT_FIELD_UPDATES = (
@@ -2081,12 +2134,36 @@ CUT_SCENE_PROTO_UPDATES = (
 
 BOD_CORE_PROTO_UPDATES = (
     (
+        "add_bod_to_front",
+        "void __thiscall add_bod_to_front(BodList* list, BodNode* node)",
+    ),
+    (
+        "append_bod_to_end",
+        "void __thiscall append_bod_to_end(BodList* list, BodNode* node)",
+    ),
+    (
+        "is_bod_after_sprites",
+        "bool __thiscall is_bod_after_sprites(BodBase* bod)",
+    ),
+    (
+        "set_bod_object",
+        "int32_t __thiscall set_bod_object(BodBase* bod, Object* object)",
+    ),
+    (
         "initialize_bod_base",
         "BodBase* __thiscall initialize_bod_base(BodBase* bod)",
     ),
     (
         "initialize_renderable_bod",
         "RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body)",
+    ),
+    (
+        "apply_bod_position",
+        "Object* __thiscall apply_bod_position(BodBase* bod, TransformMatrix* matrix)",
+    ),
+    (
+        "recycle_bod_to_free_list",
+        "int32_t __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node)",
     ),
 )
 
@@ -2147,10 +2224,6 @@ PROTO_UPDATES = (
     *LANDSCAPE_LOADER_PROTO_UPDATES,
     *SLUG_VOICE_MANAGER_PROTO_UPDATES,
     *THANKS_SCREEN_PROTO_UPDATES,
-    (
-        "set_bod_object",
-        "int32_t __thiscall set_bod_object(BodBase* bod, Object* object)",
-    ),
     *BOD_CORE_PROTO_UPDATES,
     *TRACK_RENDER_CACHE_PROTO_UPDATES,
     (
@@ -2208,10 +2281,6 @@ PROTO_UPDATES = (
     (
         "allocate_fringe_object",
         "FringeObject* __thiscall allocate_fringe_object(FringeManager* manager)",
-    ),
-    (
-        "apply_bod_position",
-        "Object* __thiscall apply_bod_position(BodBase* bod, TransformMatrix* matrix)",
     ),
     (
         "build_track_fringe_mesh",
@@ -3037,6 +3106,14 @@ def parse_args() -> argparse.Namespace:
     )
     focused_group = parser.add_mutually_exclusive_group()
     focused_group.add_argument(
+        "--bod-core-only",
+        action="store_true",
+        help=(
+            "Replay only the intrusive BodNode/BodList layouts and shared "
+            "BodBase lifecycle ABIs."
+        ),
+    )
+    focused_group.add_argument(
         "--golb-only",
         action="store_true",
         help="Replay only the GolbShot/path-follow ownership slice.",
@@ -3079,6 +3156,50 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
+    if args.bod_core_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=tuple(BOD_CORE_OWNER_SIZES),
+            )
+        )
+        operations.append(verify_bod_core_owner_sizes(target=args.target))
+        operations.extend(
+            apply_symbol_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=BOD_CORE_SYMBOL_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_struct_and_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_updates=(
+                    ("BodNode", BOD_NODE_FIELD_UPDATES),
+                    ("BodList", BOD_LIST_FIELD_UPDATES),
+                    ("BodBase", BOD_BASE_FIELD_UPDATES),
+                    ("RenderableBod", RENDERABLE_BOD_FIELD_UPDATES),
+                ),
+                proto_updates=BOD_CORE_PROTO_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_data_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=BOD_CORE_DATA_VAR_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if args.landscape_loader_only:
         operations.append(
             types_declare_if_missing(
@@ -3188,9 +3309,10 @@ def main() -> int:
                 REPO_ROOT,
                 target=args.target,
                 header_path=header_path,
-                required_structs=("BodBase", "TrackRenderCacheSlot"),
+                required_structs=(*BOD_CORE_OWNER_SIZES, "TrackRenderCacheSlot"),
             )
         )
+        operations.append(verify_bod_core_owner_sizes(target=args.target))
         operations.extend(
             apply_symbol_updates(
                 REPO_ROOT,
@@ -3268,6 +3390,7 @@ def main() -> int:
                 required_structs=REQUIRED_HEADER_STRUCTS,
             )
         )
+        operations.append(verify_bod_core_owner_sizes(target=args.target))
         operations.append(
             ensure_path_analysis_views(
                 target=args.target,
@@ -3326,6 +3449,8 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             struct_updates=(
+                ("BodNode", BOD_NODE_FIELD_UPDATES),
+                ("BodList", BOD_LIST_FIELD_UPDATES),
                 ("GameRoot", GAME_ROOT_FIELD_UPDATES),
                 ("ReplayRunRecord", REPLAY_RUN_RECORD_FIELD_UPDATES),
                 ("SubPause", SUB_PAUSE_FIELD_UPDATES),

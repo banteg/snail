@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 723,
-  "function_count": 723,
+  "selected_count": 725,
+  "function_count": 725,
   "mismatch_count": 0,
   "mismatches": [],
   "analysis_refreshed": true,
@@ -729,6 +729,16 @@
       "address": "0x4112f0",
       "name": "update_backdrop",
       "artifact": "analysis/decompile/binja/functions/004112f0-update_backdrop.c"
+    },
+    {
+      "address": "0x4113b0",
+      "name": "add_bod_to_front",
+      "artifact": "analysis/decompile/binja/functions/004113b0-add_bod_to_front.c"
+    },
+    {
+      "address": "0x411420",
+      "name": "append_bod_to_end",
+      "artifact": "analysis/decompile/binja/functions/00411420-append_bod_to_end.c"
     },
     {
       "address": "0x4114b0",

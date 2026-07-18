@@ -14014,6 +14014,179 @@
         "int this",
         "return this;"
       ]
+    },
+    {
+      "name": "bn_bod_list_front_insert_owner",
+      "artifact": "analysis/decompile/binja/functions/004113b0-add_bod_to_front.c",
+      "required_substrings": [
+        "node->list_flags",
+        "struct BodNode* first = list->first",
+        "list->first = node",
+        "node->list_prev"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "*(list +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_bod_list_front_insert_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/004113b0-add_bod_to_front.c",
+      "required_substrings": [
+        "void __thiscall add_bod_to_front(BodList *list, BodNode *node)",
+        "first = list->first;",
+        "list->first = node;",
+        "node->list_prev"
+      ],
+      "forbidden_substrings": [
+        "sub_4113B0",
+        "_DWORD *this",
+        "int a2",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_bod_list_tail_insert_owner",
+      "artifact": "analysis/decompile/binja/functions/00411420-append_bod_to_end.c",
+      "required_substrings": [
+        "struct BodNode* first = list->first",
+        "struct BodNode* list_next = first->list_next",
+        "first->list_next = node",
+        "node->list_next = nullptr"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "*(list +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_bod_list_tail_insert_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00411420-append_bod_to_end.c",
+      "required_substrings": [
+        "void __thiscall append_bod_to_end(BodList *list, BodNode *node)",
+        "for ( i = first->list_next; i; i = i->list_next )",
+        "first->list_next = node;",
+        "node->list_next = nullptr;"
+      ],
+      "forbidden_substrings": [
+        "sub_411420",
+        "_DWORD *this",
+        "int a2",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_bod_after_sprites_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f5c0-is_bod_after_sprites.c",
+      "required_substrings": [
+        "return (bod->bod.list_flags.b & 0x80) != 0"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(bod +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_bod_after_sprites_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/0042f5c0-is_bod_after_sprites.c",
+      "required_substrings": [
+        "bool __thiscall is_bod_after_sprites(BodBase *bod)",
+        "bod->bod.list_flags"
+      ],
+      "forbidden_substrings": [
+        "sub_42F5C0",
+        "char *this",
+        "this + 4",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_bod_object_attachment_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/0042f5d0-set_bod_object.c",
+      "required_substrings": [
+        "int32_t __thiscall set_bod_object(BodBase *bod, Object *object)",
+        "bod->object = object;",
+        "result = bod->bod.list_flags;",
+        "return result;"
+      ],
+      "forbidden_substrings": [
+        "sub_42F5D0",
+        "_DWORD *this",
+        "int a2",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_bod_position_object_geometry_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f680-apply_bod_position.c",
+      "required_substrings": [
+        "struct Object* object = bod->object",
+        "object->vertex_count",
+        "multiply_vector_by_matrix_copy(object->vertices",
+        "return object"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "*(bod +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_bod_position_object_geometry_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/0042f680-apply_bod_position.c",
+      "required_substrings": [
+        "Object *__thiscall apply_bod_position(BodBase *bod, TransformMatrix *matrix)",
+        "result = bod->object;",
+        "result->vertex_count",
+        "&bod->object->vertices[v5]",
+        "return result;"
+      ],
+      "forbidden_substrings": [
+        "sub_42F680",
+        "_DWORD *this",
+        "float *a2",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_bod_list_recycle_owner",
+      "artifact": "analysis/decompile/binja/functions/00447290-recycle_bod_to_free_list.c",
+      "required_substrings": [
+        "struct BodNode* list_next = node->list_next",
+        "list_next->list_prev = node->list_prev",
+        "list->first = node->list_next",
+        "node->list_next = list->free_top",
+        "list->free_top = node"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "*(list +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_bod_list_recycle_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00447290-recycle_bod_to_free_list.c",
+      "required_substrings": [
+        "int32_t __thiscall recycle_bod_to_free_list(BodList *list, BodNode *node)",
+        "list_next = node->list_next;",
+        "list->first = node->list_next;",
+        "node->list_next = list->free_top;",
+        "list->free_top = node;"
+      ],
+      "forbidden_substrings": [
+        "sub_447290",
+        "_DWORD *this",
+        "_DWORD *a2",
+        "unimplemented"
+      ]
     }
   ]
 }

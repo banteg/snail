@@ -13,3 +13,10 @@ The exact scratch is now the emitted wrapper around the owned inline
 `BodList::remove_bod` implementation. The same method inlines exactly in the
 speedup, health, and JetPack AI state paths, making this 36-instruction helper
 the source-of-truth anchor for repeated runtime removal/free-stack blocks.
+
+## 2026-07-18 analyzer ownership replay
+
+The analyzer ABI now records the complete `BodList*` and `BodNode*` ownership
+while preserving the exact `int32_t` result. Although the successful path
+returns the recycled node address, the two error paths return `report_errorf`;
+typing the function as `BodNode*` would overstate the recovered contract.

@@ -2,8 +2,8 @@
 /* function: is_bod_after_sprites @ 0x42f5c0 */
 /* selector: is_bod_after_sprites */
 
-bool __thiscall sub_42F5C0(char *this)
+// Returns whether one body should draw after sprites; iOS RObject.o names this `cRBod::IsAfterSprites()`.
+bool __thiscall is_bod_after_sprites(BodBase *bod)
 {
-  return *(this + 4) < 0;
+  return SLOBYTE(bod->bod.list_flags) < 0;
 }
-

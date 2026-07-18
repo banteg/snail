@@ -42,3 +42,9 @@ constructor counter now live with the common `BodBase`/`RenderableBod` owner in
 without inventing a wider class: the callback table remains shared by startup,
 player-camera, overlay-camera, and passive root bodies. Both BOD constructors
 remain exact.
+
+## 2026-07-18 fail-closed owner sizes
+
+The shared analyzer replay now verifies `BodNode` `0x10`, `BodList` `0x0c`,
+`BodBase` `0x38`, and `RenderableBod` `0x80` before applying any lifecycle
+method ABI. This prevents a stale prefix from silently contaminating callers.

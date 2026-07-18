@@ -81,6 +81,7 @@ typedef struct BodNode {
     struct BodNode* list_prev;
     struct BodNode* list_next;
 } BodNode;
+typedef char BodNode_must_be_0x10[(sizeof(BodNode) == 0x10) ? 1 : -1];
 
 /* Root-owned intrusive list header shared by active and free BOD chains. */
 typedef struct BodList {
@@ -88,6 +89,7 @@ typedef struct BodList {
     BodNode* first;
     BodNode* free_top;
 } BodList;
+typedef char BodList_must_be_0x0c[(sizeof(BodList) == 0x0c) ? 1 : -1];
 
 typedef struct BodBase {
     BodNode bod;
@@ -97,6 +99,7 @@ typedef struct BodBase {
     Object* object;
     tColour color;
 } BodBase;
+typedef char BodBase_must_be_0x38[(sizeof(BodBase) == 0x38) ? 1 : -1];
 
 typedef struct AnimManager AnimManager;
 
@@ -107,6 +110,9 @@ typedef struct RenderableBod {
     AnimManager* render_animation_manager;
     uint8_t unknown_7c[0x4];
 } RenderableBod;
+typedef char RenderableBod_must_be_0x80[
+    (sizeof(RenderableBod) == 0x80) ? 1 : -1
+];
 
 /* Compatibility spelling for the authored cRFringe owner. */
 typedef struct FringeObject {
@@ -2284,9 +2290,17 @@ int32_t __thiscall calc_path_length_z(
 void __thiscall uninit_pause_menu(SubPause* pause);
 void __thiscall initialize_pause_menu(SubPause* pause);
 void __thiscall update_pause_menu(SubPause* pause);
+void __thiscall add_bod_to_front(BodList* list, BodNode* node);
+void __thiscall append_bod_to_end(BodList* list, BodNode* node);
+bool __thiscall is_bod_after_sprites(BodBase* bod);
 int32_t __thiscall set_bod_object(BodBase* bod, Object* object);
 BodBase* __thiscall initialize_bod_base(BodBase* bod);
 RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body);
+Object* __thiscall apply_bod_position(
+    BodBase* bod,
+    TransformMatrix* matrix
+);
+int32_t __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node);
 RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body);
 TrackRenderCacheSlot* __thiscall initialize_active_bod(TrackRenderCacheSlot* slot);
 void __thiscall update_active_bod(TrackRenderCacheSlot* slot);
@@ -2312,10 +2326,6 @@ void __thiscall update_active_landscape_entry(
 int32_t __thiscall load_landscape_script_by_name(
     LandscapeManager* manager,
     char* script_name
-);
-Object* __thiscall apply_bod_position(
-    BodBase* bod,
-    TransformMatrix* matrix
 );
 Object* __thiscall initialize_object_constructor_thunk(Object* object);
 void __thiscall request_object_vertices(Object* object, int32_t vertex_count);

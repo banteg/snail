@@ -3397,6 +3397,73 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
         assert f'"{function_name}"' in path_sync
 
 
+def test_bod_intrusive_list_lifecycle_replay_owns_shared_layout() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    normalized_header = (
+        " ".join(path_header.split()).replace("( ", "(").replace(" )", ")")
+    )
+    bod_list_header = (repo_root / "tools/match/include/bod_list.h").read_text(
+        encoding="utf-8"
+    )
+    bod_types_header = (repo_root / "tools/match/include/bod_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"--bod-core-only"' in path_sync
+    assert "verify_bod_core_owner_sizes" in path_sync
+    assert "current_type_widths(" in path_sync
+    for name, size in (
+        ("BodNode", "0x10"),
+        ("BodList", "0x0C"),
+        ("BodBase", "0x38"),
+        ("RenderableBod", "0x80"),
+    ):
+        assert f'"{name}": {size}' in path_sync
+        assert f'"{name}": {size}' in ida_sync
+        assert f"{name}_must_be_{size}".lower() in path_header.lower()
+
+    declarations = (
+        "void __thiscall add_bod_to_front(BodList* list, BodNode* node)",
+        "void __thiscall append_bod_to_end(BodList* list, BodNode* node)",
+        "bool __thiscall is_bod_after_sprites(BodBase* bod)",
+        "int32_t __thiscall set_bod_object(BodBase* bod, Object* object)",
+        "BodBase* __thiscall initialize_bod_base(BodBase* bod)",
+        "Object* __thiscall apply_bod_position(BodBase* bod, TransformMatrix* matrix)",
+        "int32_t __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node)",
+    )
+    for declaration in declarations:
+        assert declaration in path_sync
+        assert declaration + ";" in ida_sync
+        assert declaration + ";" in normalized_header
+
+    for address in (
+        "0x4113B0",
+        "0x411420",
+        "0x40A490",
+        "0x42F5C0",
+        "0x42F5D0",
+        "0x42F680",
+        "0x447290",
+    ):
+        assert address in ida_sync
+
+    assert "void add_bod_to_front(BodNode* node);" in bod_list_header
+    assert "void append_bod_to_end(BodNode* node);" in bod_list_header
+    assert "int recycle_bod_to_free_list(BodNode* node);" in bod_list_header
+    assert "bool is_bod_after_sprites();" in bod_types_header
+    assert "int set_bod_object(Object* object);" in bod_types_header
+    assert "Object* apply_bod_position(TransformMatrix* matrix);" in bod_types_header
+
+
 def test_track_render_cache_slot_owns_active_bod_lifecycle() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

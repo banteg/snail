@@ -2,14 +2,14 @@
 /* function: set_bod_object @ 0x42f5d0 */
 /* selector: set_bod_object */
 
-int __thiscall sub_42F5D0(_DWORD *this, int a2)
+// Stores the render-object pointer on one body record; iOS RObject.o names this `cRBod::SetObject(cRObject*)`.
+int32_t __thiscall set_bod_object(BodBase *bod, Object *object)
 {
-  int result; // eax
+  int32_t result; // eax
 
-  *(this + 9) = a2;
-  result = *(this + 1);
+  bod->object = object;
+  result = bod->bod.list_flags;
   LOBYTE(result) = result | 2;
-  *(this + 1) = result;
+  bod->bod.list_flags = result;
   return result;
 }
-

@@ -16,3 +16,9 @@ The exact body confirms the existing intrusive layout: `BodList::first` at
 lifetime. The exact receiver is the same `BodList` at `GameRoot +0x5a8` used by
 inline insertion/removal and free-list recycling, so the method now belongs to
 `BodList` directly. Focused output remains exact.
+
+## 2026-07-18 analyzer ownership replay
+
+Both analyzer databases now preserve the exact void method ABI on the complete
+`BodList*` receiver and `BodNode*` argument. Replay is gated on the proven
+`0x0c` list and `0x10` node extents before it can rename or type the helper.

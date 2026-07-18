@@ -16,3 +16,9 @@ for an explicit `if ((list_flags & 0x80) != 0) return true; return false;`
 branch when `list_flags` is signed. With the earlier unsigned contact flag
 type, VC6 compiled this same source to a shift sequence, so the helper also
 pins the shared flag word as signed.
+
+## 2026-07-18 analyzer ownership replay
+
+The analyzer method now keeps its native `bool` result and a `BodBase*`
+receiver, exposing the inherited `BodNode::list_flags` owner to the two-pass
+renderer instead of retaining the raw `this + 4` expression.

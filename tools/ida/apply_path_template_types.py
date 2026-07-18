@@ -34,6 +34,8 @@ TRUSTED_NAMES = [
     (0x4085E0, "initialize_active_bod"),
     (0x408650, "initialize_fringe_object"),
     (0x4086D0, "initialize_player_presentation_controller"),
+    (0x4113B0, "add_bod_to_front"),
+    (0x411420, "append_bod_to_end"),
     (0x43A010, "health_collect_particles"),
     (0x43A300, "update_movement_flag_emitters"),
     (0x43A370, "end_jetpack_hover"),
@@ -41,8 +43,11 @@ TRUSTED_NAMES = [
     (0x42B9C0, "get_path_position_at_node"),
     (0x42CA90, "is_point_inside_track_attachment"),
     (0x42F6E0, "initialize_object_constructor_thunk"),
+    (0x42F5C0, "is_bod_after_sprites"),
+    (0x42F5D0, "set_bod_object"),
     (0x42F5F0, "initialize_bod_base"),
     (0x42F650, "initialize_renderable_bod"),
+    (0x42F680, "apply_bod_position"),
     (0x433060, "initialize_track_render_cache_manager"),
     (0x433220, "build_track_render_caches"),
     (0x433830, "add_track_cache_vertex"),
@@ -83,6 +88,7 @@ TRUSTED_NAMES = [
     (0x445D50, "build_snail_hotspots"),
     (0x447090, "initialize_fringe_manager"),
     (0x4470A0, "allocate_fringe_object"),
+    (0x447290, "recycle_bod_to_free_list"),
     (0x44C870, "initialize_global_identity_matrix_thunk"),
     (0x44C880, "initialize_global_identity_matrix"),
     (0x44CAC0, "multiply_vector_by_matrix_copy"),
@@ -164,6 +170,24 @@ TRACK_RENDER_CACHE_OWNER_MARKERS = (
     "void __thiscall remove_track_render_cache_bods(SegmentCache* manager);",
 )
 
+BOD_CORE_OWNER_MARKERS = (
+    "BodNode_must_be_0x10",
+    "BodList_must_be_0x0c",
+    "BodBase_must_be_0x38",
+    "RenderableBod_must_be_0x80",
+    "void __thiscall add_bod_to_front(BodList* list, BodNode* node);",
+    "void __thiscall append_bod_to_end(BodList* list, BodNode* node);",
+    "bool __thiscall is_bod_after_sprites(BodBase* bod);",
+    "int32_t __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node);",
+)
+
+BOD_CORE_OWNER_SIZES = {
+    "BodNode": 0x10,
+    "BodList": 0x0C,
+    "BodBase": 0x38,
+    "RenderableBod": 0x80,
+}
+
 TRACK_RENDER_CACHE_OWNER_SIZES = {
     "TrackRenderCacheSlot": 0x3C,
     "SegmentCache": 0xA7F8,
@@ -185,7 +209,10 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x408690,  # initialize_golb_shot
     0x408820,  # initialize_active_landscape_entry
     0x40A2A0,  # run_frame_update
+    0x40A490,  # render_game_frame
     0x40ACF0,  # initialize_game_assets_and_world
+    0x4113B0,  # add_bod_to_front
+    0x411420,  # append_bod_to_end
     0x414670,  # kill_golb
     0x414820,  # update_golb_ai
     0x415280,  # create_golb
@@ -200,8 +227,11 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x42C600,  # finalize_path_template
     0x42C770,  # try_enter_track_attachment_from_swept_motion
     0x42CA90,  # is_point_inside_track_attachment
+    0x42F5C0,  # is_bod_after_sprites
+    0x42F5D0,  # set_bod_object
     0x42F650,  # initialize_renderable_bod
     0x42F5F0,  # initialize_bod_base
+    0x42F680,  # apply_bod_position
     0x42F6E0,  # initialize_object_constructor_thunk
     0x433060,  # initialize_track_render_cache_manager
     0x433220,  # build_track_render_caches
@@ -261,6 +291,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x445D50,  # build_snail_hotspots
     0x447090,  # initialize_fringe_manager
     0x4470A0,  # allocate_fringe_object
+    0x447290,  # recycle_bod_to_free_list
 )
 
 GOLB_SHOT_EXPECTED_SIZE = 0x2E8
@@ -864,12 +895,36 @@ SUBHOVER_PLAYER_ROOT_OFFSET_OPERANDS = (
 
 TRUSTED_DECLARATIONS = [
     (
+        "add_bod_to_front",
+        "void __thiscall add_bod_to_front(BodList* list, BodNode* node);",
+    ),
+    (
+        "append_bod_to_end",
+        "void __thiscall append_bod_to_end(BodList* list, BodNode* node);",
+    ),
+    (
+        "is_bod_after_sprites",
+        "bool __thiscall is_bod_after_sprites(BodBase* bod);",
+    ),
+    (
+        "set_bod_object",
+        "int32_t __thiscall set_bod_object(BodBase* bod, Object* object);",
+    ),
+    (
         "initialize_bod_base",
         "BodBase* __thiscall initialize_bod_base(BodBase* bod);",
     ),
     (
         "initialize_renderable_bod",
         "RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body);",
+    ),
+    (
+        "apply_bod_position",
+        "Object* __thiscall apply_bod_position(BodBase* bod, TransformMatrix* matrix);",
+    ),
+    (
+        "recycle_bod_to_free_list",
+        "int32_t __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node);",
     ),
     (
         "initialize_active_bod",
@@ -2660,19 +2715,34 @@ def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]
 
 def _sync_types(header_path: pathlib.Path) -> int:
     header_text = header_path.read_text(encoding="utf-8")
-    missing_owner_markers = [
+    missing_bod_core_owner_markers = [
+        marker
+        for marker in BOD_CORE_OWNER_MARKERS
+        if marker not in header_text
+    ]
+    missing_track_render_cache_owner_markers = [
         marker
         for marker in TRACK_RENDER_CACHE_OWNER_MARKERS
         if marker not in header_text
     ]
-    if missing_owner_markers:
+    if missing_bod_core_owner_markers or missing_track_render_cache_owner_markers:
+        marker_failures = []
+        if missing_bod_core_owner_markers:
+            marker_failures.append({"reason": "noncanonical_bod_core_header"})
+        if missing_track_render_cache_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_track_render_cache_header"}
+            )
         print(
             json.dumps(
                 {
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
-                    "missing_owner_markers": missing_owner_markers,
-                    "failed": [{"reason": "noncanonical_track_render_cache_header"}],
+                    "missing_bod_core_owner_markers": missing_bod_core_owner_markers,
+                    "missing_track_render_cache_owner_markers": (
+                        missing_track_render_cache_owner_markers
+                    ),
+                    "failed": marker_failures,
                 },
                 indent=2,
             )
@@ -2680,13 +2750,29 @@ def _sync_types(header_path: pathlib.Path) -> int:
         return 1
 
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    bod_core_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in BOD_CORE_OWNER_SIZES
+    }
     track_render_cache_owner_sizes = {
         name: _named_struct_size(name)
         for name in TRACK_RENDER_CACHE_OWNER_SIZES
     }
-    owner_size_failures = [
+    bod_core_owner_size_failures = [
         {
             "selector": name,
+            "owner_group": "bod_core",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": bod_core_owner_sizes[name],
+        }
+        for name, expected_size in BOD_CORE_OWNER_SIZES.items()
+        if bod_core_owner_sizes[name] != expected_size
+    ]
+    track_render_cache_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "track_render_cache",
             "reason": "owner_size_mismatch",
             "expected": expected_size,
             "observed": track_render_cache_owner_sizes[name],
@@ -2694,6 +2780,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in TRACK_RENDER_CACHE_OWNER_SIZES.items()
         if track_render_cache_owner_sizes[name] != expected_size
     ]
+    owner_size_failures = (
+        bod_core_owner_size_failures + track_render_cache_owner_size_failures
+    )
     if parse_errors or owner_size_failures:
         print(
             json.dumps(
@@ -2701,6 +2790,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "parse_errors": parse_errors,
+                    "bod_core_owner_sizes": bod_core_owner_sizes,
                     "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                     "failed": owner_size_failures,
                 },
@@ -3128,6 +3218,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "bod_core_owner_sizes": bod_core_owner_sizes,
                 "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                 "applied": applied,
                 "unchanged": unchanged,

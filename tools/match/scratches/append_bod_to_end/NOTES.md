@@ -17,3 +17,9 @@ The tail insertion is another operation on the complete root-owned `BodList`,
 not a method of a derived endpoint shell. Moving it onto `BodList` removes the
 cast-only `BodListEndpointsView` without changing receiver identity or object
 extent. Focused output remains exact.
+
+## 2026-07-18 analyzer ownership replay
+
+The canonical analyzer ABI is now `void __thiscall(BodList*, BodNode*)`, shared
+with the front insertion helper rather than a synthetic tail view. The replay
+fails closed unless the complete list and intrusive-node sizes remain exact.

@@ -11,3 +11,9 @@ an object-list allocation, another BOD's object, or null.
 The Binary Ninja replay now uses the same `BodBase*` receiver and `Object*`
 argument. This removes the former `void*`/integer ABI and lets callers retain
 their render-object ownership across the attachment call.
+
+## 2026-07-18 paired analyzer replay
+
+The same `int32_t __thiscall(BodBase*, Object*)` contract is now durable in IDA
+as well as Binary Ninja. The return remains the updated flag word; it is not
+coerced to `void` merely because most attachment callers ignore it.
