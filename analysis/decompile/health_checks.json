@@ -5670,6 +5670,8 @@
         "void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)",
         "sub_lazer->body.transform.position",
         "sub_lazer->body.bod.bod.list_flags",
+        "track_runtime_cell_at_world_z->primary_attachment_cell->attachment_template_record,",
+        "track_runtime_cell_at_world_z->secondary_attachment_cell->attachment_template_record,",
         "deactivate_sub_lazer_projectile(sub_lazer)",
         "&g_game_base->active_bod_list"
       ],
@@ -5678,6 +5680,7 @@
         "sub_4417D0",
         "_DWORD *this",
         "sub_lazer->bod.",
+        "attachment_template_record->bod.bod.vtable",
         "__asm",
         "_ET1"
       ]
@@ -7322,7 +7325,8 @@
         "struct RuntimeRowStrideAnchor* zero_runtime_row_anchor",
         "zero_runtime_row_anchor->row.projection_payload.x",
         "struct SubRow* projection_row",
-        "projection_row->primary_attachment_cell"
+        "projection_row->primary_attachment_cell",
+        "get_path_position_at_node(projection_row->primary_attachment_cell->attachment_template_record"
       ],
       "forbidden_substrings": [
         "TrackAttachmentRuntimeRow",
@@ -7334,6 +7338,7 @@
         "void* edi_35",
         "int32_t* esi_18",
         "struct Game* game",
+        "attachment_template_record->bod.bod.vtable",
         "return place_challenge_parcels_on_track(game)",
         "return i_4",
         "__asm",
@@ -7352,7 +7357,8 @@
         "struct RuntimeRowStrideAnchor* challenge_runtime_row_anchor",
         "challenge_runtime_row_anchor->row.projection_payload.x",
         "struct SubRow* projection_row",
-        "projection_row->primary_attachment_cell"
+        "projection_row->primary_attachment_cell",
+        "get_path_position_at_node(projection_row->primary_attachment_cell->attachment_template_record"
       ],
       "forbidden_substrings": [
         "TrackAttachmentRuntimeRow",
@@ -7362,6 +7368,7 @@
         "data_5ccb60",
         "int32_t* esi_1",
         "*(arg1 + 0x28)",
+        "attachment_template_record->bod.bod.vtable",
         "return i_4",
         "__asm",
         "_ET1"
@@ -7412,7 +7419,9 @@
         "RuntimeRowStrideAnchor *zero_runtime_row_anchor",
         "zero_runtime_row_anchor->row.projection_payload.x",
         "SubRow *projection_row",
-        "projection_row->primary_attachment_cell"
+        "projection_row->primary_attachment_cell",
+        "get_path_position_at_node(",
+        "projection_row->primary_attachment_cell->attachment_template_record,"
       ],
       "forbidden_substrings": [
         "int32_t __thiscall place_parcels_on_track",
@@ -7421,6 +7430,7 @@
         "unk_5CCB58",
         "1520344",
         "1520343",
+        "attachment_template_record->bod.bod.vtable",
         "return result;",
         "__asm",
         "_ET1"
@@ -7438,7 +7448,9 @@
         "RuntimeRowStrideAnchor *challenge_runtime_row_anchor",
         "challenge_runtime_row_anchor->row.projection_payload.x",
         "SubRow *projection_row",
-        "projection_row->primary_attachment_cell"
+        "projection_row->primary_attachment_cell",
+        "get_path_position_at_node(",
+        "projection_row->primary_attachment_cell->attachment_template_record,"
       ],
       "forbidden_substrings": [
         "int32_t __thiscall place_challenge_parcels_on_track",
@@ -7450,6 +7462,7 @@
         "1520344",
         "uint8_t *v12",
         "char *v14",
+        "attachment_template_record->bod.bod.vtable",
         "return result;",
         "__asm",
         "_ET1"
@@ -11657,6 +11670,51 @@
       ]
     },
     {
+      "name": "bn_path_position_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0042b9c0-get_path_position_at_node.c",
+      "required_substrings": [
+        "struct PathTemplateSample* primary_samples = self->primary_samples",
+        "local->x",
+        "local->y",
+        "node * 0x15",
+        "float* out_1 = out",
+        "out_1[2] =",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "arg4",
+        "arg5",
+        "struct Vector3",
+        "return result",
+        "struct PathTemplate*"
+      ]
+    },
+    {
+      "name": "ida_path_position_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/0042b9c0-get_path_position_at_node.c",
+      "required_substrings": [
+        "void __thiscall get_path_position_at_node(Path *self, Vec3 *out, int32_t node, int32_t row_index, Vec3 *local)",
+        "&self->primary_samples[node]",
+        "local->x",
+        "local->y",
+        "transform.position.x",
+        "out->x",
+        "out->y",
+        "out->z"
+      ],
+      "forbidden_substrings": [
+        "sub_42B9C0",
+        "_DWORD *this",
+        "float *a2",
+        "Vector3",
+        "return LODWORD",
+        "PathTemplate *"
+      ]
+    },
+    {
       "name": "bn_path_attachment_search_owner_abi",
       "artifact": "analysis/decompile/binja/functions/0042ca90-is_point_inside_track_attachment.c",
       "required_substrings": [
@@ -11678,6 +11736,31 @@
         "arg5",
         "_pad_40",
         "struct PathTemplate*"
+      ]
+    },
+    {
+      "name": "ida_path_attachment_search_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/0042ca90-is_point_inside_track_attachment.c",
+      "required_substrings": [
+        "bool __thiscall is_point_inside_track_attachment(Path *self, Vec3 probe, Vec3 swept_motion, TrackRowCell *cell)",
+        "cell->anchor_position",
+        "self->segment_count",
+        "self->secondary_samples",
+        "Vec3 vector",
+        "probe.x",
+        "probe.y",
+        "probe.z",
+        "inverse_matrix",
+        "self->width_cells"
+      ],
+      "forbidden_substrings": [
+        "sub_42CA90",
+        "_DWORD *this",
+        "float a2",
+        "float *a8",
+        "PathTemplate *",
+        "__asm",
+        "_ET1"
       ]
     },
     {

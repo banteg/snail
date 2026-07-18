@@ -18,7 +18,7 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
   RuntimeRowStrideAnchor *challenge_runtime_row_anchor; // ecx
   int v13; // ecx
   SubRow *projection_row; // esi
-  int v15; // edi
+  int32_t v15; // edi
   TrackRowCell *primary_attachment_cell; // ecx
   float y; // ecx
   int32_t track_cell_row_index; // eax
@@ -133,11 +133,11 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
         {
           track_cell_row_index = get_track_cell_row_index(primary_attachment_cell);
           get_path_position_at_node(
-            &projection_row->primary_attachment_cell->attachment_template_record->bod.bod.vtable,
-            &projection_row->projection_payload.x,
+            projection_row->primary_attachment_cell->attachment_template_record,
+            &projection_row->projection_payload,
             v15,
             track_cell_row_index,
-            &projection_row->projection_payload.x);
+            &projection_row->projection_payload);
         }
       }
       ++projection_row;

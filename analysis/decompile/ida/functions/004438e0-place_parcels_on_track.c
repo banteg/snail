@@ -61,7 +61,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
   int32_t v54; // eax
   int32_t parcel_quota; // ecx
   SubRow *projection_row; // esi
-  int v57; // edi
+  int32_t v57; // edi
   TrackRowCell *primary_attachment_cell; // ecx
   float y; // edx
   int32_t track_cell_row_index; // eax
@@ -488,11 +488,11 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
             {
               track_cell_row_index = get_track_cell_row_index(primary_attachment_cell);
               get_path_position_at_node(
-                &projection_row->primary_attachment_cell->attachment_template_record->bod.bod.vtable,
-                &projection_row->projection_payload.x,
+                projection_row->primary_attachment_cell->attachment_template_record,
+                &projection_row->projection_payload,
                 v57,
                 track_cell_row_index,
-                &projection_row->projection_payload.x);
+                &projection_row->projection_payload);
             }
           }
           ++projection_row;

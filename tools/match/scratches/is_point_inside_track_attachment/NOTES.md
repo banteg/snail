@@ -81,3 +81,15 @@ masked operands.
 - Scalar delta reconstructions reached 99.10% but left one independent
   `fsub`/reload swap; the vector subtraction expression resolves it without
   distortion.
+
+## 2026-07-18 Path receiver caller closure
+
+Focused replay now guards the complete `Path*` receiver ABI and all four owner
+sizes in both analysis databases. Refreshing IDA removes its stale scalar
+prototype, reconstructs the two by-value `Vec3` arguments, and makes both
+`update_sub_lazer_projectile` callsites borrow the primary or secondary
+`attachment_template_record` directly. Binary Ninja was already semantically
+current and remained idempotent.
+
+This is analysis ownership recovery only. The exact matcher source is
+unchanged at 111/111 instructions, full prefix, with six clean masked operands.

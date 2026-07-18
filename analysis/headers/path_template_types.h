@@ -2461,6 +2461,13 @@ void __thiscall try_enter_track_attachment_from_swept_motion(
     float sweep_dz,
     TrackRowCell* source_cell
 );
+void __thiscall get_path_position_at_node(
+    Path* self,
+    Vec3* out,
+    int32_t node,
+    int32_t row_index,
+    Vec3* local
+);
 bool __thiscall is_point_inside_track_attachment(
     Path* self,
     Vec3 probe,

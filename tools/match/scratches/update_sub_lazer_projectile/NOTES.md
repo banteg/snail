@@ -186,3 +186,16 @@ inherited transform and intrusive-list accesses resolve through
 `body.transform` and `body.bod.bod`, while the manager continues to own 20
 inline 0xb0-byte records. No change is claimed for the three established x87
 ordering residuals; the honest matcher result remains 97.25%.
+
+## 2026-07-18 borrowed Path receiver replay
+
+Refreshing the exact `is_point_inside_track_attachment` ABI removes IDA's old
+scalar argument expansion at both containment calls. The tracked artifact now
+passes the primary and secondary `attachment_template_record` fields directly
+as borrowed `Path*` receivers and groups each probe/swept pair as real by-value
+`Vec3` objects. Health checks reject regression to a nested zero-offset BOD
+vtable expression.
+
+No matcher source change is justified. Focused output remains 97.25%, 218/218
+instructions, prefix 82/218, with all 24 operands clean; the three residual
+pairs remain only commutative x87 load/add orderings.

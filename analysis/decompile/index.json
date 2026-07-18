@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 5,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 4,
-  "ida_exported": 4,
+  "bn_exported": 5,
+  "ida_exported": 5,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,23 +17,27 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "begin_post_follow_carryover",
-      "address": "0x43af60"
+      "name": "get_path_position_at_node",
+      "address": "0x42b9c0"
     },
     {
-      "name": "update_subgoldy",
-      "address": "0x43b120"
+      "name": "is_point_inside_track_attachment",
+      "address": "0x42ca90"
     },
     {
-      "name": "handle_subgoldy_collisions",
-      "address": "0x444cf0"
+      "name": "update_sub_lazer_projectile",
+      "address": "0x4417d0"
     },
     {
-      "name": "kill_subgoldy",
-      "address": "0x445840"
+      "name": "place_parcels_on_track",
+      "address": "0x4438e0"
+    },
+    {
+      "name": "place_challenge_parcels_on_track",
+      "address": "0x444240"
     }
   ],
-  "health_check_count": 744,
+  "health_check_count": 747,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

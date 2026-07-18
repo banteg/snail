@@ -7334,6 +7334,16 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
         analysis_header.split()
     )
 
+    path_position_prototype = (
+        "void __thiscall get_path_position_at_node("
+        "Path* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local)"
+    )
+    assert path_position_prototype in binja_sync
+    assert path_position_prototype + ";" in ida_sync
+    assert "".join((path_position_prototype + ";").split()) in "".join(
+        analysis_header.split()
+    )
+
     follow_update_prototype = (
         "int32_t __thiscall update_track_attachment_follow_state("
         "FollowState* follow_state, float path_factor, Vec3* out_position, "
@@ -7345,6 +7355,7 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
 
     for address in (
         "0x420CB0",
+        "0x42B9C0",
         "0x42C600",
         "0x42C770",
         "0x42CA90",
@@ -7386,6 +7397,80 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     assert "idc.op_num(address, operand_index)" in ida_sync
     assert "for address in PATH_OWNERSHIP_DIRTY_FUNCTIONS:" in ida_sync
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_sync
+
+
+def test_path_receiver_replay_keeps_exact_abis_and_reanalyzes_callers() -> None:
+    binja_sync = (BINJA_DIR / "sync_path_receiver_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_receiver_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_path_receiver_types.py").read_text(
+        encoding="utf-8"
+    )
+    broad_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    broad_ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    declarations = (
+        "void __thiscall get_path_position_at_node(Path* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local)",
+        "bool __thiscall is_point_inside_track_attachment(Path* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)",
+    )
+    for source in (
+        binja_sync,
+        ida_sync,
+        broad_binja_sync,
+        broad_ida_sync,
+    ):
+        for declaration in declarations:
+            assert declaration in source
+    compact_analysis_header = "".join(analysis_header.split())
+    for declaration in declarations:
+        assert "".join((declaration + ";").split()) in compact_analysis_header
+
+    for source in (binja_sync, ida_sync):
+        for owner, size in (
+            ('"Vec3"', "0xC"),
+            ('"TrackRowCell"', "0x54"),
+            ('"PathTemplateSample"', "0xA8"),
+            ('"Path"', "0xA8"),
+        ):
+            assert f"{owner}: {size}" in source
+
+    for address, name in (
+        ("0x42b9c0", "get_path_position_at_node"),
+        ("0x42ca90", "is_point_inside_track_attachment"),
+    ):
+        assert f'("{address}", "{name}")' in binja_sync
+        assert f'("{address}", "{name}")' in broad_binja_sync
+        ida_address = address.upper().replace("0X", "0x")
+        assert f'({ida_address}, "{name}")' in ida_sync
+        assert f'({ida_address}, "{name}")' in broad_ida_sync
+
+    for address in (
+        "0x42B9C0",
+        "0x42CA90",
+        "0x4417D0",
+        "0x4438E0",
+        "0x444240",
+    ):
+        assert address in ida_sync
+
+    assert "types_declare_if_missing" in binja_sync
+    assert "owner_size_mismatch" in ida_sync
+    assert "missing_reanalysis_function" in ida_sync
+    assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_sync
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"'
+        in ida_runner
+    )
 
 
 def test_remove_subgame_bods_cursor_ownership_is_replayed() -> None:

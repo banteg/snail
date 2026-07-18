@@ -273,3 +273,17 @@ No scratch source change was justified: it already expresses the direct
 `runtime_rows[absolute_row]` claims and sequential projection cursor. Focused
 Wibo therefore remains honestly at 33.81% (633/639 instructions, 40 clean
 masked operands, two known candidate-bank address-shape mismatches).
+
+## 2026-07-18 final projection Path borrow
+
+The final runtime-row projection call now shares the exact
+`get_path_position_at_node(Path*, Vec3*, int32_t, int32_t, Vec3*)` ABI in both
+analysis lanes. Its receiver is the borrowed
+`primary_attachment_cell->attachment_template_record`, while
+`projection_payload` is borrowed as both input and output; neither helper nor
+row cursor owns either object. Refreshed IDA output no longer represents the
+receiver through the address of the Path's zero-offset BOD vtable.
+
+No source-shape change was made. Focused Wibo remains honestly at 33.81%,
+633/639 instructions, with 40 clean operands and the same two known
+candidate-bank address-shape mismatches.

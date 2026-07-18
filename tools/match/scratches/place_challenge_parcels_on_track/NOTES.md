@@ -161,3 +161,16 @@ No source change is justified. Focused Wibo remains honestly at 81.40%
 (171 target versus 173 candidate instructions, 33 clean masked operands); the
 two-instruction/frame residual remains the documented source-cell borrow
 lifetime rather than something to force with a cast or dummy local.
+
+## 2026-07-18 final projection Path borrow
+
+The survival projection tail now consumes the same exact
+`get_path_position_at_node` contract as normal parcel placement. The sequential
+`SubRow*` cursor borrows its primary cell's `attachment_template_record` as a
+`Path*`, and borrows `projection_payload` for both the local input and projected
+output. Binary Ninja and refreshed IDA artifacts agree on that ownership graph
+without a nested zero-offset vtable expression.
+
+No matcher source was changed. Focused Wibo remains 81.40%, 171 target versus
+173 candidate instructions, with all 33 operands clean; the honest frame and
+source-cell lifetime residual is unchanged.

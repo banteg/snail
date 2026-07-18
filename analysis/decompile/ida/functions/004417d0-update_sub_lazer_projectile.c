@@ -14,18 +14,10 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
   Vec4 *p_position; // edi
   TrackRowCell *track_grid_cell_at_world_position; // ebp
   SubRow *track_runtime_cell_at_world_z; // ebx
-  int v11; // [esp+10h] [ebp-18h]
-  float v12; // [esp+10h] [ebp-18h]
-  int v13; // [esp+14h] [ebp-14h]
-  float v14; // [esp+14h] [ebp-14h]
-  int v15; // [esp+18h] [ebp-10h]
-  float v16; // [esp+18h] [ebp-10h]
-  float v17; // [esp+1Ch] [ebp-Ch]
-  int v18; // [esp+1Ch] [ebp-Ch]
-  float v19; // [esp+20h] [ebp-8h]
-  int v20; // [esp+20h] [ebp-8h]
-  float v21; // [esp+24h] [ebp-4h]
-  int v22; // [esp+24h] [ebp-4h]
+  Vec3 v11; // 0:^2C.12
+  Vec3 v12; // 0:^2C.12
+  Vec3 v13; // 0:^38.12
+  Vec3 v14; // 0:^38.12
 
   if ( sub_lazer->owner_game->subgame_pause_gate )
     return;
@@ -54,39 +46,31 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
       if ( track_grid_cell_at_world_position->tile_id != 14 || sub_lazer->body.transform.position.y >= 7.0 )
       {
         if ( (track_runtime_cell_at_world_z->flags & 0x40) == 0
-          || (*(float *)&v11 = sub_lazer->velocity.x * 1.05,
-              *(float *)&v13 = sub_lazer->velocity.y * 1.05,
-              *(float *)&v15 = sub_lazer->velocity.z * 1.05,
-              v17 = sub_lazer->velocity.x + p_position->x,
-              v19 = sub_lazer->velocity.y + sub_lazer->body.transform.position.y,
-              v21 = sub_lazer->velocity.z + sub_lazer->body.transform.position.z,
+          || (v11.x = sub_lazer->velocity.x * 1.05,
+              v11.y = sub_lazer->velocity.y * 1.05,
+              v11.z = sub_lazer->velocity.z * 1.05,
+              v13.x = sub_lazer->velocity.x + p_position->x,
+              v13.y = sub_lazer->velocity.y + sub_lazer->body.transform.position.y,
+              v13.z = sub_lazer->velocity.z + sub_lazer->body.transform.position.z,
               !is_point_inside_track_attachment(
-                 &track_runtime_cell_at_world_z->primary_attachment_cell->attachment_template_record->bod.bod.vtable,
-                 v17,
-                 v19,
-                 v21,
-                 v11,
+                 track_runtime_cell_at_world_z->primary_attachment_cell->attachment_template_record,
                  v13,
-                 v15,
-                 (float *)track_runtime_cell_at_world_z->primary_attachment_cell)) )
+                 v11,
+                 track_runtime_cell_at_world_z->primary_attachment_cell)) )
         {
           if ( SLOBYTE(track_runtime_cell_at_world_z->flags) >= 0 )
             return;
-          *(float *)&v18 = sub_lazer->velocity.x * 1.05;
-          *(float *)&v20 = sub_lazer->velocity.y * 1.05;
-          *(float *)&v22 = sub_lazer->velocity.z * 1.05;
-          v12 = sub_lazer->velocity.x + p_position->x;
-          v14 = sub_lazer->velocity.y + sub_lazer->body.transform.position.y;
-          v16 = sub_lazer->velocity.z + sub_lazer->body.transform.position.z;
+          v14.x = sub_lazer->velocity.x * 1.05;
+          v14.y = sub_lazer->velocity.y * 1.05;
+          v14.z = sub_lazer->velocity.z * 1.05;
+          v12.x = sub_lazer->velocity.x + p_position->x;
+          v12.y = sub_lazer->velocity.y + sub_lazer->body.transform.position.y;
+          v12.z = sub_lazer->velocity.z + sub_lazer->body.transform.position.z;
           if ( !is_point_inside_track_attachment(
-                  &track_runtime_cell_at_world_z->secondary_attachment_cell->attachment_template_record->bod.bod.vtable,
+                  track_runtime_cell_at_world_z->secondary_attachment_cell->attachment_template_record,
                   v12,
                   v14,
-                  v16,
-                  v18,
-                  v20,
-                  v22,
-                  (float *)track_runtime_cell_at_world_z->secondary_attachment_cell) )
+                  track_runtime_cell_at_world_z->secondary_attachment_cell) )
             return;
         }
         debug_report_stub();

@@ -52,3 +52,18 @@ Rejected probes:
 - a distinct result for the whole second addition loaded the output pointer too
   early and folded the row with `fiadd`; copying only after that addition
   recovered the authored final-value lifetime and the exact tail.
+
+## 2026-07-18 Path receiver replay
+
+The exact member ABI is now durable in the canonical analysis header and in
+focused plus broad Binary Ninja/IDA replay. The first focused Binary Ninja run
+found one real analysis-only gap: the method already returned `void` and owned
+a `Path*`, but its two vector pointers still used the legacy `Vector3` alias.
+Replay canonicalized both to `Vec3*` and verified `Vec3` at `0x0c`,
+`TrackRowCell` at `0x54`, and both `PathTemplateSample` and `Path` at `0xa8`.
+
+Refreshed artifacts now expose the void method directly in both lanes, and both
+parcel-placement callers borrow `attachment_template_record` as the receiver
+instead of taking the address of its zero-offset BOD vtable. The matcher source
+was not changed: it remains byte-identical at 56/56 instructions with a full
+prefix and no masked operands.

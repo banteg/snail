@@ -38,6 +38,8 @@ TRUSTED_NAMES = [
     (0x43A300, "update_movement_flag_emitters"),
     (0x43A370, "end_jetpack_hover"),
     (0x4182F0, "load_landscape_script_by_name"),
+    (0x42B9C0, "get_path_position_at_node"),
+    (0x42CA90, "is_point_inside_track_attachment"),
     (0x42F6E0, "initialize_object_constructor_thunk"),
     (0x42F5F0, "initialize_bod_base"),
     (0x42F650, "initialize_renderable_bod"),
@@ -168,6 +170,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x420CB0,  # update_track_attachment_follow_state
     0x421770,  # initialize_path_follow_golb
     0x4217B0,  # calc_path_length_z
+    0x42B9C0,  # get_path_position_at_node
     0x42C600,  # finalize_path_template
     0x42C770,  # try_enter_track_attachment_from_swept_motion
     0x42CA90,  # is_point_inside_track_attachment
@@ -1715,6 +1718,10 @@ TRUSTED_DECLARATIONS = [
     (
         "try_enter_track_attachment_from_swept_motion",
         "void __thiscall try_enter_track_attachment_from_swept_motion(Path* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, TrackRowCell* source_cell);",
+    ),
+    (
+        "get_path_position_at_node",
+        "void __thiscall get_path_position_at_node(Path* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local);",
     ),
     (
         "is_point_inside_track_attachment",

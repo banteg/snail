@@ -94,6 +94,8 @@ SYMBOL_UPDATES = (
     ("0x44d820", "initialize_matrix_from_quaternion"),
     ("0x44d920", "interpolate_matrix_rotation"),
     ("0x44dbd0", "set_color_rgb"),
+    ("0x42b9c0", "get_path_position_at_node"),
+    ("0x42ca90", "is_point_inside_track_attachment"),
     ("0x4086d0", "initialize_player_presentation_controller"),
     ("0x43a010", "health_collect_particles"),
     ("0x43a300", "update_movement_flag_emitters"),
@@ -2704,6 +2706,10 @@ CORE_SUBGAME_PROTO_UPDATES = (
     (
         "try_enter_track_attachment_from_swept_motion",
         "void __thiscall try_enter_track_attachment_from_swept_motion(Path* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, TrackRowCell* source_cell)",
+    ),
+    (
+        "get_path_position_at_node",
+        "void __thiscall get_path_position_at_node(Path* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local)",
     ),
     (
         "is_point_inside_track_attachment",
