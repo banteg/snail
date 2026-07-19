@@ -2401,7 +2401,7 @@
     {
       "address": "0x43d6c0",
       "name": "spawn_track_health_pickup",
-      "description": "Allocates and seeds one live `SubHealth` from the eight-record owned array. Android and iOS retain `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction now keeps the honest void contract instead of exporting incompatible incidental register values."
+      "description": "Allocates and seeds one live `SubHealth` from the eight-record owned array, then inserts its zero-offset inherited `BodNode` into the borrowed `GameRoot::active_bod_list` head without transferring pickup ownership. Android and iOS retain `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction keeps the honest void contract instead of exporting incompatible incidental register values."
     },
     {
       "address": "0x43d880",
@@ -2414,7 +2414,7 @@
     {
       "address": "0x43d890",
       "name": "spawn_track_jetpack_pickup",
-      "description": "Seeds the owned `JetPack` singleton from the active runtime cell. Android and iOS retain `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction keeps the honest void contract rather than exporting incompatible incidental register values."
+      "description": "Seeds the owned `JetPack` singleton from the active runtime cell, then inserts its zero-offset inherited `BodNode` into the borrowed `GameRoot::active_bod_list` head without creating a list-owned JetPack view. Android and iOS retain `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction keeps the honest void contract rather than exporting incompatible incidental register values."
     },
     {
       "address": "0x43da80",

@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 2,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 2,
+  "ida_exported": 2,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,8 +17,12 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "handle_subgoldy_collisions",
-      "address": "0x444cf0"
+      "name": "spawn_track_health_pickup",
+      "address": "0x43d6c0"
+    },
+    {
+      "name": "spawn_track_jetpack_pickup",
+      "address": "0x43d890"
     }
   ],
   "health_check_count": 898,

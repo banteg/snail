@@ -174,3 +174,15 @@ at `0x356000`, exactly where the eight-record `SubHealth` pool begins. Applying
 the cursor type to the exact MLIL variable makes both decompilers expose the
 same nested BOD, sprite, source-cell, and bobbing owners while preserving the
 native cursor shape.
+
+## 2026-07-19 intrusive-list lifetime replay
+
+The allocator's `233/EAX` lifetime is the borrowed address of
+`GameRoot::active_bod_list.first`, so its real type is `BodNode **`, not
+`JetPack **`. Preserving that exact identity removes Binary Ninja's false
+`JetPack::vtable` traversal: both non-empty and empty branches now walk
+`BodNode::list_prev/list_next`, matching IDA and the shared inline
+`BodList::add_bod` source. The singleton remains owned by `SubgameRuntime`;
+list membership does not create or transfer a JetPack owner. Focused matching
+remains honestly unchanged at `84.72%`, `144/144` instructions, prefix `7/144`,
+with nine clean masked operands.

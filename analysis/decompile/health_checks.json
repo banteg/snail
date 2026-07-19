@@ -7907,12 +7907,26 @@
         "health_cursor->health.bod.position",
         "health_cursor->health.sprite",
         "health_cursor->health.source_cell",
+        "struct BodNode* old_first",
+        "old_first->list_prev->list_next = old_first",
+        "struct BodNode* old_first_reload",
+        "struct BodNode* inserted_node_reload = old_first_reload->list_prev",
+        "inserted_node_reload->list_prev = nullptr",
+        "struct BodNode* installed_first",
+        "installed_first->list_next = first",
+        "allocate_sprite(&g_sprite_manager",
         "cell_1->anchor_position",
         "return"
       ],
       "forbidden_substrings": [
         "struct Game*",
         "TrackPickupRuntime",
+        "void* edx_3",
+        "void* edx_4",
+        "void* edx_5",
+        "void* ecx_3",
+        "*(edx_3 + 8)",
+        "SubHealth**",
         "__offset(Game",
         "__asm",
         "_ET1"
@@ -7929,6 +7943,10 @@
         "health_cursor->health.bod.position",
         "health_cursor->health.sprite",
         "health_cursor->health.source_cell",
+        "BodNode **p_first;",
+        "p_first = &g_game_base->active_bod_list.first;",
+        "(*p_first)->list_prev->list_next = *p_first;",
+        "allocate_sprite(&g_sprite_manager",
         "game->health_pickups[v3].bob_phase_step",
         "return;"
       ],
@@ -7937,6 +7955,9 @@
         "spawn_track_health_pickup(Game *game",
         "sub_43D6C0",
         "return result",
+        "SubHealth **p_first",
+        "(Sprite *)allocate_sprite",
+        "allocate_sprite(g_sprite_manager",
         "__asm",
         "_ET1"
       ]
@@ -7952,12 +7973,20 @@
         "jetpack_cursor->jetpack.bod.position",
         "jetpack_cursor->jetpack.sprite",
         "jetpack_cursor->jetpack.source_cell",
+        "struct BodNode* first_1 = game_base_1->active_bod_list.first",
+        "first_1->list_prev->list_next = first_1",
+        "struct BodNode* list_prev = game_base_1->active_bod_list.first->list_prev",
+        "game_base_1->active_bod_list.first->list_next = nullptr",
         "cell->anchor_position",
         "return"
       ],
       "forbidden_substrings": [
         "struct Game*",
         "TrackPickupRuntime",
+        "struct JetPack* first_1",
+        "->vtable.56",
+        "list_prev->bod.bod",
+        "JetPack**",
         "__offset(Game",
         "__asm",
         "_ET1"
@@ -7974,6 +8003,10 @@
         "jetpack_cursor->jetpack.bod.position",
         "jetpack_cursor->jetpack.sprite",
         "jetpack_cursor->jetpack.source_cell",
+        "BodNode **p_first;",
+        "p_first = &g_game_base->active_bod_list.first;",
+        "(*p_first)->list_prev->list_next = *p_first;",
+        "allocate_sprite(&g_sprite_manager",
         "cell->anchor_position",
         "return;"
       ],
@@ -7982,6 +8015,7 @@
         "spawn_track_jetpack_pickup(Game *game",
         "sub_43D890",
         "return result",
+        "JetPack **p_first",
         "__asm",
         "_ET1"
       ]

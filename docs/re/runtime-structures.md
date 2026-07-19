@@ -1258,6 +1258,10 @@ Current practical read:
 - `spawn_track_health_pickup` populates `health_pickups[i]`
 - `spawn_track_jetpack_pickup` populates the single `jetpack_pickup` slot
 - both helpers lift the spawn point above the authored floor height, attach a sprite using `player->player_slot`, and store the source runtime cell
+- both helpers insert the pickup's zero-offset inherited `BodNode` into
+  `GameRoot::active_bod_list`; the `BodNode **` head address and every branch
+  reload are borrowed list lifetimes, while `SubgameRuntime` retains the
+  `SubHealth` array and `JetPack` singleton ownership
 - health seeds a parity-based `phase_offset` (`0.0` on odd `z`, `0.5` on even `z`) plus a `1/60` phase step, and `update_track_health_pickup` applies the native sprite-only bob `base_y + (sin(phase * tau) + 1.0) * 0.3`
 - jetpack seeds the same source-cell/parity lane but also applies the native ramp-side lateral bias at spawn time:
   - `+0.5` when `edge_mask & 7 == 3` and neighbor tiles `(lane - 1, lane + 2)` are both `0x0e`

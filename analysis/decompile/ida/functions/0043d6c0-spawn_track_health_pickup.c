@@ -62,7 +62,7 @@ void __thiscall spawn_track_health_pickup(SubgameRuntime *game, TrackRowCell *ce
     BYTE1(list_flags) |= 2u;
     health_cursor->health.bod.bod.list_flags = list_flags;
   }
-  sprite = (Sprite *)allocate_sprite(g_sprite_manager, player->player_slot, 57, -1, -1);
+  sprite = allocate_sprite(&g_sprite_manager, player->player_slot, 57, -1, -1);
   health_cursor->health.sprite = sprite;
   flags = sprite->flags;
   BYTE1(flags) |= 8u;

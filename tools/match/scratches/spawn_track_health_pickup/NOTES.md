@@ -225,3 +225,16 @@ that type to the exact MLIL variable proves every later write belongs to the
 same `health` record without pretending the compiler chose a direct pickup
 pointer. Binary Ninja and IDA now independently render the cursor, inherited
 BOD, sprite, source-cell, and bobbing fields through that owner.
+
+## 2026-07-19 intrusive-list lifetime replay
+
+The inline list insertion takes the address of
+`GameRoot::active_bod_list.first`; that address is a borrowed `BodNode **`, not
+a health-pool owner. Binary Ninja now preserves its exact MLIL identity
+`168/ECX` plus the five branch-local `BodNode *` reloads at `199/EDX`,
+`201/EBP`, `207/EDX`, `213/EDX`, and `189/ECX`. This replaces anonymous
+`void *` arithmetic with `list_prev`/`list_next` ownership while retaining the
+honest zero-offset `SubHealth -> BodBase -> BodNode` conversion. IDA already
+renders the same `BodNode **p_first` chain. Focused matching remains honestly
+unchanged at `90.08%`, `120/122` instructions, prefix `6/122`, with seven clean
+masked operands.

@@ -24,35 +24,35 @@
 0043d76e        struct BodNode* first = game_base_1->active_bod_list.first
 0043d776        if (first != 0)
 0043d784        first->list_prev = &health_cursor->health
-0043d787        void* edx_3
-0043d787        edx_3.b = game_base_1->active_bod_list.first.b
-0043d787        edx_3:1.b = *(&game_base_1->active_bod_list.first + 1)
-0043d787        edx_3:2.b = *(&game_base_1->active_bod_list.first + 2)
-0043d787        edx_3:3.b = *(&game_base_1->active_bod_list.first + 3)
-0043d78c        *(*(edx_3 + 8) + 0xc) = edx_3
-0043d78f        void* edx_4
-0043d78f        edx_4.b = game_base_1->active_bod_list.first.b
-0043d78f        edx_4:1.b = *(&game_base_1->active_bod_list.first + 1)
-0043d78f        edx_4:2.b = *(&game_base_1->active_bod_list.first + 2)
-0043d78f        edx_4:3.b = *(&game_base_1->active_bod_list.first + 3)
+0043d787        struct BodNode* old_first
+0043d787        old_first.b = game_base_1->active_bod_list.first.b
+0043d787        old_first:1.b = *(&game_base_1->active_bod_list.first + 1)
+0043d787        old_first:2.b = *(&game_base_1->active_bod_list.first + 2)
+0043d787        old_first:3.b = *(&game_base_1->active_bod_list.first + 3)
+0043d78c        old_first->list_prev->list_next = old_first
+0043d78f        struct BodNode* old_first_reload
+0043d78f        old_first_reload.b = game_base_1->active_bod_list.first.b
+0043d78f        old_first_reload:1.b = *(&game_base_1->active_bod_list.first + 1)
+0043d78f        old_first_reload:2.b = *(&game_base_1->active_bod_list.first + 2)
+0043d78f        old_first_reload:3.b = *(&game_base_1->active_bod_list.first + 3)
 0043d791        cell_1 = cell
-0043d795        void* edx_5 = *(edx_4 + 8)
-0043d798        game_base_1->active_bod_list.first.b = edx_5.b
-0043d798        *(&game_base_1->active_bod_list.first + 1) = edx_5:1.b
-0043d798        *(&game_base_1->active_bod_list.first + 2) = edx_5:2.b
-0043d798        *(&game_base_1->active_bod_list.first + 3) = edx_5:3.b
-0043d79a        *(edx_5 + 8) = 0
+0043d795        struct BodNode* inserted_node_reload = old_first_reload->list_prev
+0043d798        game_base_1->active_bod_list.first.b = inserted_node_reload.b
+0043d798        *(&game_base_1->active_bod_list.first + 1) = inserted_node_reload:1.b
+0043d798        *(&game_base_1->active_bod_list.first + 2) = inserted_node_reload:2.b
+0043d798        *(&game_base_1->active_bod_list.first + 3) = inserted_node_reload:3.b
+0043d79a        inserted_node_reload->list_prev = nullptr
 0043d778        game_base_1->active_bod_list.first.b = (&health_cursor->health).b
 0043d778        *(&game_base_1->active_bod_list.first + 1) = (&health_cursor->health):1.b
 0043d778        *(&game_base_1->active_bod_list.first + 2) = (&health_cursor->health):2.b
 0043d778        *(&game_base_1->active_bod_list.first + 3) = (&health_cursor->health):3.b
 0043d77a        health_cursor->health.bod.bod.list_prev = first
-0043d77d        void* ecx_3
-0043d77d        ecx_3.b = game_base_1->active_bod_list.first.b
-0043d77d        ecx_3:1.b = *(&game_base_1->active_bod_list.first + 1)
-0043d77d        ecx_3:2.b = *(&game_base_1->active_bod_list.first + 2)
-0043d77d        ecx_3:3.b = *(&game_base_1->active_bod_list.first + 3)
-0043d77f        *(ecx_3 + 0xc) = first
+0043d77d        struct BodNode* installed_first
+0043d77d        installed_first.b = game_base_1->active_bod_list.first.b
+0043d77d        installed_first:1.b = *(&game_base_1->active_bod_list.first + 1)
+0043d77d        installed_first:2.b = *(&game_base_1->active_bod_list.first + 2)
+0043d77d        installed_first:3.b = *(&game_base_1->active_bod_list.first + 3)
+0043d77f        installed_first->list_next = first
 0043d7a1        uint32_t list_flags = health_cursor->health.bod.bod.list_flags
 0043d7a4        list_flags:1.b |= 2
 0043d7a7        health_cursor->health.bod.bod.list_flags = list_flags
@@ -68,15 +68,15 @@
 0043d7fc        health_cursor->health.sprite->size_start = 0.600000024f
 0043d805        health_cursor->health.sprite->size_end = 0.600000024f
 0043d80e        float x_1 = health_cursor->health.bod.position.x
-0043d810        char* ecx_7 = &health_cursor->health.sprite->position
-0043d813        *ecx_7 = x_1.b
-0043d813        ecx_7[1] = x_1:1.b
-0043d813        ecx_7[2] = x_1:2.b
-0043d813        ecx_7[3] = x_1:3.b
-0043d818        *(ecx_7 + 4) = health_cursor->health.bod.position.y
+0043d810        char* ecx_5 = &health_cursor->health.sprite->position
+0043d813        *ecx_5 = x_1.b
+0043d813        ecx_5[1] = x_1:1.b
+0043d813        ecx_5[2] = x_1:2.b
+0043d813        ecx_5[3] = x_1:3.b
+0043d818        *(ecx_5 + 4) = health_cursor->health.bod.position.y
 0043d81b        int16_t z = (health_cursor->health.bod.position.z).w
-0043d81e        ecx_7[8] = z.b
-0043d81e        ecx_7[9] = z:1.b
+0043d81e        ecx_5[8] = z.b
+0043d81e        ecx_5[9] = z:1.b
 0043d821        health_cursor->health.source_cell = cell_1
 0043d827        health_cursor->health.bob_phase = 0f
 0043d83a        int16_t x87control

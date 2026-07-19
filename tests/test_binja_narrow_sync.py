@@ -6255,6 +6255,64 @@ def test_track_pickup_state_and_authored_owners_stay_aligned() -> None:
         assert constant in scratch
 
 
+def test_pickup_list_replay_keeps_the_intrusive_owner_graph() -> None:
+    replay = (BINJA_DIR / "sync_pickup_list_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for struct_name, offset, field_name, field_type in (
+        ("BodNode", "0x04", "list_flags", "uint32_t"),
+        ("BodNode", "0x08", "list_prev", "BodNode*"),
+        ("BodNode", "0x0C", "list_next", "BodNode*"),
+        ("BodList", "0x04", "first", "BodNode*"),
+        ("GameRoot", "0x05A8", "active_bod_list", "BodList"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for function_name, index, storage, name, type_name in (
+        (
+            "spawn_track_health_pickup",
+            168,
+            67,
+            "bod_list_first_ref",
+            "BodNode**",
+        ),
+        ("spawn_track_health_pickup", 199, 68, "old_first", "BodNode*"),
+        ("spawn_track_health_pickup", 201, 71, "inserted_node", "BodNode*"),
+        ("spawn_track_health_pickup", 207, 68, "old_first_reload", "BodNode*"),
+        (
+            "spawn_track_health_pickup",
+            213,
+            68,
+            "inserted_node_reload",
+            "BodNode*",
+        ),
+        ("spawn_track_health_pickup", 189, 67, "installed_first", "BodNode*"),
+        (
+            "spawn_track_jetpack_pickup",
+            233,
+            66,
+            "bod_list_first_ref",
+            "BodNode**",
+        ),
+    ):
+        expected = (
+            f'        "{function_name}",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "apply_user_var_updates" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "SubHealth**" not in replay
+    assert "JetPack**" not in replay
+
+
 def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     hazard_sync = (BINJA_DIR / "sync_subgame_hazard_pool_types.py").read_text(
