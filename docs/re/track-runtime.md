@@ -270,7 +270,10 @@ High-confidence findings:
   expiry marks it recycle-pending, and actor AI returns that state through the
   root active-BOD list
 - salt is managed separately from slugs
-- slugs use an `8`-slot pool and a different runtime path
+- slugs use an `8`-slot pool and a different runtime path: tile `0x12` scans
+  for `SUB_SLUG_STATE_INACTIVE`, activates the selected slot, and later
+  collision accepts only `ACTIVE` or `LATERAL_ACTIVE`; kill advances an active
+  slot through `DEATH_TOSS_PENDING` and `TEARDOWN_PENDING` before recycle
 - authored `R` rows map onto ring-effect helpers through the packed ring bits
 - runtime tile `0x18` exists in the track builder but the later entity-population path calls a stubbed `nullsub`, not a live pickup or hazard spawner
 - `Ring=None` suppresses the helper
@@ -460,7 +463,9 @@ Recovered gameplay entity-population tile semantics from `update_subgame`:
     50-slot pool and activates the slot; collision/Golb consumers transition
     it through `BURST_PENDING` to the exact AI's `BURST` state
 - `0x22` -> `spawn_salt_hazard`
-- `0x12` -> `spawn_slug_hazard` when `build_flags & 0x80`
+- `0x12` -> `spawn_slug_hazard` when `build_flags & 0x80`; the exact allocator
+  claims one inactive record from the eight owned `0xec`-byte slots and writes
+  `SUB_SLUG_STATE_ACTIVE`
 - `0x01` and `0x15` can also produce garbage through the randomized fallback branch when `build_flags & 0x2`
 - `0x01` and `0x0f` can also produce salt through the randomized fallback branch when `build_flags & 0x10000`
 - `0x23` plus the ramp ring family `0x02..0x0a` feed `spawn_track_ring_or_special_effect`

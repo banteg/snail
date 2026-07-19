@@ -38,7 +38,7 @@ void __thiscall update_track_jetpack_pickup(JetPack *jetpack)
           {
 LABEL_6:
             report_errorf(aListRemove);
-            kill_sprite((int)jetpack->sprite);
+            kill_sprite(jetpack->sprite);
             return;
           }
           if ( (list_flags & 0x40) != 0 )
@@ -57,7 +57,7 @@ LABEL_21:
             sprite = jetpack->sprite;
             BYTE1(v11) &= ~2u;
             jetpack->bod.bod.list_flags = v11;
-            kill_sprite((int)sprite);
+            kill_sprite(sprite);
             return;
           }
           goto LABEL_20;
@@ -74,7 +74,7 @@ LABEL_21:
         {
 LABEL_8:
           report_errorf(aListRemoveNext);
-          kill_sprite((int)jetpack->sprite);
+          kill_sprite(jetpack->sprite);
           return;
         }
         v9 = jetpack->bod.bod.list_next;

@@ -186,3 +186,13 @@ propagating an earlier `Player*` owner onto `next_math_random_value()`. Its
 type-presence probe is batched into one bridge request, reducing an idempotent
 replay from minutes to 8.7 seconds while keeping the existing `Slug` and
 `SubRing` metadata intact.
+
+## 2026-07-19 typed allocator lifecycle
+
+The matcher owner and both analysis lanes now agree that the field-first
+allocator cursor scans `SUB_SLUG_STATE_INACTIVE` and that the selected slot is
+written `SUB_SLUG_STATE_ACTIVE`. Promoting the physical `state_ref` pointer to
+`SubSlugState*` is the required source-level consequence of typing the owner;
+it preserves the exact 160/160 instructions and all 18 clean operands. The
+eight-slot capacity, root-biased selected-slot cursor, and unresolved return
+contract remain unchanged.

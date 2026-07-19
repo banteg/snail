@@ -12,5 +12,5 @@
 0043f594        g_game_base->subgame.slug_voice_manager.active = 1
 0043f59a        slug->voice_active = 1
 0043f5aa        slug->voice_progress = 0f
-0043f5b4        play_voice_backend(sample_index, sample_index, 1f, -1f, 0f)
+0043f5b4        play_voice_backend(sample_index, 1f, -1f, 0f)
 0043f5bc        return

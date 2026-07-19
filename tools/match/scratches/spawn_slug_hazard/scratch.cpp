@@ -30,7 +30,7 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
         return slot_index;
     }
 
-    int* state_ref = &slug_hazards.slots[slot_index].state;
+    SubSlugState* state_ref = &slug_hazards.slots[slot_index].state;
     Player** player_ref = &slug_hazards.slots[slot_index].owner_player;
     *state_ref = SUB_SLUG_STATE_ACTIVE;
     *player_ref = owner_player;

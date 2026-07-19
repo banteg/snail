@@ -122,3 +122,12 @@ so the focused result remains 97.61%, 146/147 instructions, prefix 79, and 32
 clean masked operands. This retires the artificial named `staged_velocity`
 owner without changing bytes; the remaining gap is still only the documented
 owner-load/x87 schedule and is not forced.
+
+## 2026-07-19 analysis owner lift
+
+Reanalysis through the complete `Slug` and shared sprite prototypes lifts the
+IDA artifact from raw `char*`/dword arithmetic to an owned `Sprite*` with
+typed flags, progress, color, size, gravity, velocity, and position. The two
+intermediate vectors also render as `Vec3` values. This improves the tracked
+analysis artifact only: focused matching remains the honest 97.61%, 146/147,
+prefix 79, with all 32 operands clean and the documented x87 scheduling gap.

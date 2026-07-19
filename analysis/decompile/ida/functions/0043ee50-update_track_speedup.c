@@ -36,7 +36,7 @@ void __thiscall update_track_speedup(SubSpeedUp *speedup)
         {
 LABEL_8:
           report_errorf(aListRemoveNext);
-          kill_sprite((int)speedup->sprite);
+          kill_sprite(speedup->sprite);
           return;
         }
         list_next = speedup->body.bod.bod.list_next;
@@ -53,7 +53,7 @@ LABEL_21:
           sprite = speedup->sprite;
           BYTE1(v11) &= ~2u;
           speedup->body.bod.bod.list_flags = v11;
-          kill_sprite((int)sprite);
+          kill_sprite(sprite);
           return;
         }
       }
@@ -68,7 +68,7 @@ LABEL_21:
         {
 LABEL_6:
           report_errorf(aListRemove);
-          kill_sprite((int)speedup->sprite);
+          kill_sprite(speedup->sprite);
           return;
         }
         if ( (v8 & 0x40) != 0 )

@@ -65,6 +65,23 @@ SUB_GARBAGE_OWNER_EXPECTED_MEMBERS = (
     (0xC0, 4, "owner_player", "Player *"),
 )
 
+SLUG_OWNER_EXPECTED_SIZE = 0xEC
+SLUG_POOL_EXPECTED_SIZE = 0x760
+SLUG_STATE_CURSOR_EXPECTED_SIZE = 0xEC
+SLUG_OWNER_EXPECTED_MEMBERS = (
+    (0x80, 4, "state", "SubSlugState"),
+    (0x84, 4, "death_toss_direction", "SubSlugDeathTossDirection"),
+    (0x88, 4, "owner_game", "SubgameRuntime *"),
+    (0x8C, 12, "velocity", "Vec3"),
+    (0x98, 4, "attachment_facing_angle", "float"),
+    (0xAC, 4, "sprite", "Sprite *"),
+    (0xB0, 4, "source_cell", "TrackRowCell *"),
+    (0xC0, 4, "owner_player", "Player *"),
+)
+SLUG_STATE_CURSOR_EXPECTED_MEMBERS = (
+    (0x00, 4, "state", "SubSlugState"),
+)
+
 
 TRUSTED_DECLARATIONS = [
     (
@@ -411,15 +428,24 @@ REANALYSIS_FUNCTIONS = (
     0x404CF0,  # update_row_event_display
     0x408060,  # initialize_runtime_pools_and_path_template_bank
     0x408550,  # initialize_garbage_hazard
+    0x408530,  # initialize_slug_hazard_runtime
     0x414820,  # update_golb_ai
     0x408860,  # initialize_track_parcel_runtime
     0x435DF0,  # set_subgame_features
     0x437270,  # normalize_segment_glyph_for_track_flags
     0x437EB0,  # build_subgame_level
+    0x437B10,  # reset_subgame
     0x438B90,  # update_subgame
     0x43B120,  # update_subgoldy
     0x43D5A0,  # spawn_garbage_smoke_particle
     0x43DA80,  # spawn_track_garbage_hazard
+    0x43DC80,  # spawn_slug_hazard
+    0x43F520,  # update_slug_voice_ai
+    0x43F560,  # play_slug_voice
+    0x43F620,  # hit_slug_hazard
+    0x43F680,  # explode_slug_hazard
+    0x43F8B0,  # kill_slug_hazard
+    0x43F930,  # update_slug_hazard_ai
     0x43F130,  # destroy_garbage_hazard
     0x43F200,  # update_garbage_hazard
     0x440600,  # uninit_pause_menu
@@ -627,6 +653,81 @@ def _sub_garbage_owner_readback() -> dict[str, object]:
                 "type": member_type,
             }
             for offset, member_size, member_name, member_type in SUB_GARBAGE_OWNER_EXPECTED_MEMBERS
+        ],
+    }
+
+
+def _slug_owner_readback() -> dict[str, object]:
+    members = _named_struct_members("Slug")
+    selected = [] if members is None else [
+        member
+        for member in members
+        if int(member["offset"])
+        in {expected[0] for expected in SLUG_OWNER_EXPECTED_MEMBERS}
+    ]
+    observed = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected
+    )
+    cursor_members = _named_struct_members("SlugStateStrideCursor")
+    selected_cursor = [] if cursor_members is None else [
+        member
+        for member in cursor_members
+        if int(member["offset"])
+        in {expected[0] for expected in SLUG_STATE_CURSOR_EXPECTED_MEMBERS}
+    ]
+    observed_cursor = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected_cursor
+    )
+    size = _named_struct_size("Slug")
+    pool_size = _named_struct_size("SlugPool")
+    cursor_size = _named_struct_size("SlugStateStrideCursor")
+    return {
+        "status": (
+            "verified"
+            if size == SLUG_OWNER_EXPECTED_SIZE
+            and pool_size == SLUG_POOL_EXPECTED_SIZE
+            and cursor_size == SLUG_STATE_CURSOR_EXPECTED_SIZE
+            and observed == SLUG_OWNER_EXPECTED_MEMBERS
+            and observed_cursor == SLUG_STATE_CURSOR_EXPECTED_MEMBERS
+            else "failed"
+        ),
+        "size": size,
+        "pool_size": pool_size,
+        "cursor_size": cursor_size,
+        "members": selected,
+        "cursor_members": selected_cursor,
+        "expected_size": SLUG_OWNER_EXPECTED_SIZE,
+        "expected_pool_size": SLUG_POOL_EXPECTED_SIZE,
+        "expected_cursor_size": SLUG_STATE_CURSOR_EXPECTED_SIZE,
+        "expected_members": [
+            {
+                "offset": offset,
+                "size": member_size,
+                "name": member_name,
+                "type": member_type,
+            }
+            for offset, member_size, member_name, member_type in SLUG_OWNER_EXPECTED_MEMBERS
+        ],
+        "expected_cursor_members": [
+            {
+                "offset": offset,
+                "size": member_size,
+                "name": member_name,
+                "type": member_type,
+            }
+            for offset, member_size, member_name, member_type in SLUG_STATE_CURSOR_EXPECTED_MEMBERS
         ],
     }
 
@@ -1015,6 +1116,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {"selector": "SubGarbage", "owner_readback": sub_garbage_owner_readback}
         )
 
+    slug_owner_readback = _slug_owner_readback()
+    if slug_owner_readback["status"] != "verified":
+        failed.append(
+            {"selector": "Slug", "owner_readback": slug_owner_readback}
+        )
+
     reanalyzed = []
     for address in REANALYSIS_FUNCTIONS:
         function = ida_funcs.get_func(address)
@@ -1044,6 +1151,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "salt_owner_readback": salt_owner_readback,
                 "sub_lazer_owner_readback": sub_lazer_owner_readback,
                 "sub_garbage_owner_readback": sub_garbage_owner_readback,
+                "slug_owner_readback": slug_owner_readback,
                 "type_sizes": {
                     "SubgameRuntime": _named_struct_size("SubgameRuntime"),
                     "SubRingStar": _named_struct_size("SubRingStar"),
@@ -1064,6 +1172,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "SubLazerManager": _named_struct_size("SubLazerManager"),
                     "SubGarbage": _named_struct_size("SubGarbage"),
                     "SubGarbagePool": _named_struct_size("SubGarbagePool"),
+                    "Slug": _named_struct_size("Slug"),
+                    "SlugPool": _named_struct_size("SlugPool"),
                     "Salt": _named_struct_size("Salt"),
                     "SaltManager": _named_struct_size("SaltManager"),
                 },

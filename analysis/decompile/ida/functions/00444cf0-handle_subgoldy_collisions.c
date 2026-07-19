@@ -16,7 +16,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   __int64 v10; // rax
   int m; // edi
   SubgameRuntime *game; // edx
-  int32_t state; // ecx
+  SubSlugState state; // ecx
   SlugSlotCursor *slug_cursor; // eax
   double v15; // st7
   double v16; // st7
@@ -147,7 +147,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
       game = player->game;
       state = game->slug_hazards.slots[m].state;
       slug_cursor = (SlugSlotCursor *)(&game->scan_reset + m * 236);
-      if ( state == 1 || state == 4 )
+      if ( state == SUB_SLUG_STATE_ACTIVE || state == SUB_SLUG_STATE_LATERAL_ACTIVE )
       {
         v61.x = slug_cursor->slug.body.transform.position.x - player->cached_camera_target_world.x;
         v61.y = slug_cursor->slug.body.transform.position.y - player->cached_camera_target_world.y;

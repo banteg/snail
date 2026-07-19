@@ -1795,6 +1795,9 @@
         "salt_cursor->salt.body.transform.position.z",
         "sub_lazer_cursor->sub_lazer.state == SUB_LAZER_STATE_ACTIVE",
         "sub_lazer_cursor->sub_lazer.body.transform.position.z",
+        "enum SubSlugState slug_state",
+        "slug_state == SUB_SLUG_STATE_ACTIVE",
+        "slug_state == SUB_SLUG_STATE_LATERAL_ACTIVE",
         "slug_cursor->slug.body.transform.position.z",
         "parcel_cursor->parcel.position.z",
         "health_cursor->health.bod.position.z",
@@ -1840,6 +1843,8 @@
         "sub_lazer_cursor->sub_lazer.state == SUB_LAZER_STATE_ACTIVE",
         "sub_lazer_cursor->sub_lazer.body.transform.position.z",
         "player->game->sub_lazers.slots[j].state = SUB_LAZER_STATE_RECYCLE_PENDING;",
+        "SubSlugState state;",
+        "state == SUB_SLUG_STATE_ACTIVE || state == SUB_SLUG_STATE_LATERAL_ACTIVE",
         "slug_cursor->slug.body.transform.position.z",
         "parcel_cursor->parcel.bod.position.z",
         "health_cursor->health.bod.position.z",
@@ -6621,10 +6626,126 @@
       ]
     },
     {
+      "name": "bn_slug_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/00408530-initialize_slug_hazard_runtime.c",
+      "required_substrings": [
+        "initialize_renderable_bod(slug)",
+        "slug->body.bod.bod.vtable",
+        "return slug"
+      ],
+      "forbidden_substrings": [
+        "SlugHazardRuntime",
+        "slug->unknown_00",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_slug_constructor_owner",
+      "artifact": "analysis/decompile/ida/functions/00408530-initialize_slug_hazard_runtime.c",
+      "required_substrings": [
+        "Slug *__thiscall initialize_slug_hazard_runtime(Slug *slug)",
+        "initialize_renderable_bod(&slug->body);",
+        "slug->body.bod.bod.vtable = &g_slug_vtable;",
+        "return slug;"
+      ],
+      "forbidden_substrings": [
+        "SlugHazardRuntime",
+        "_DWORD *slug",
+        "slug->unknown_00"
+      ]
+    },
+    {
+      "name": "bn_slug_explosion_sprite_vector_owners",
+      "artifact": "analysis/decompile/binja/functions/0043f680-explode_slug_hazard.c",
+      "required_substrings": [
+        "struct Sprite* eax_3 = allocate_sprite",
+        "enum SpriteFlag flags = eax_3->flags",
+        "eax_3->velocity.x",
+        "eax_3->velocity.y",
+        "eax_3->velocity.z",
+        "eax_3->position.x",
+        "eax_3->position.y",
+        "eax_3->position.z",
+        "slug->owner_game->subgame_rate",
+        "slug->body.transform.position"
+      ],
+      "forbidden_substrings": [
+        "SlugHazardRuntime",
+        "*(eax_3 +",
+        "*(slug +"
+      ]
+    },
+    {
+      "name": "ida_slug_explosion_sprite_vector_owners",
+      "artifact": "analysis/decompile/ida/functions/0043f680-explode_slug_hazard.c",
+      "required_substrings": [
+        "void __thiscall explode_slug_hazard(Slug *slug)",
+        "Sprite *sprite;",
+        "SpriteFlag flags;",
+        "Vec3 v19;",
+        "Vec3 v20;",
+        "sprite->velocity = v19;",
+        "sprite->position = v20;",
+        "slug->owner_game->subgame_rate",
+        "slug->body.transform.position"
+      ],
+      "forbidden_substrings": [
+        "SlugHazardRuntime",
+        "char *sprite;",
+        "*((_DWORD *)sprite",
+        "(float *)sprite"
+      ]
+    },
+    {
+      "name": "bn_slug_kill_lifecycle_owner",
+      "artifact": "analysis/decompile/binja/functions/0043f8b0-kill_slug_hazard.c",
+      "required_substrings": [
+        "slug->state != SUB_SLUG_STATE_ACTIVE",
+        "slug->state = SUB_SLUG_STATE_DEATH_TOSS_PENDING",
+        "slug->death_toss_direction = SUB_SLUG_DEATH_TOSS_LEFT",
+        "slug->death_toss_direction = SUB_SLUG_DEATH_TOSS_RIGHT",
+        "add_subgoldy_score(&slug->owner_game->player",
+        "explode_slug_hazard(slug)"
+      ],
+      "forbidden_substrings": [
+        "SlugHazardRuntime",
+        "slug->state != 1",
+        "slug->death_toss_direction = 1",
+        "slug->death_toss_direction = 2"
+      ]
+    },
+    {
+      "name": "ida_slug_kill_lifecycle_owner",
+      "artifact": "analysis/decompile/ida/functions/0043f8b0-kill_slug_hazard.c",
+      "required_substrings": [
+        "void __thiscall kill_slug_hazard(Slug *slug)",
+        "slug->state == SUB_SLUG_STATE_ACTIVE",
+        "slug->state = SUB_SLUG_STATE_DEATH_TOSS_PENDING;",
+        "slug->death_toss_direction = SUB_SLUG_DEATH_TOSS_LEFT;",
+        "slug->death_toss_direction = SUB_SLUG_DEATH_TOSS_RIGHT;",
+        "add_subgoldy_score(&slug->owner_game->player",
+        "explode_slug_hazard(slug);"
+      ],
+      "forbidden_substrings": [
+        "SlugHazardRuntime",
+        "slug->state == 1",
+        "slug->death_toss_direction = 1",
+        "slug->death_toss_direction = 2"
+      ]
+    },
+    {
       "name": "bn_slug_hazard_ai_body_available",
       "artifact": "analysis/decompile/binja/functions/0043f930-update_slug_hazard_ai.c",
       "required_substrings": [
-        "slug->state",
+        "enum SubSlugState state = slug->state",
+        "state u> SUB_SLUG_STATE_LATERAL_ACTIVE",
+        "case SUB_SLUG_STATE_ACTIVE",
+        "case SUB_SLUG_STATE_DEATH_TOSS_PENDING",
+        "case SUB_SLUG_STATE_TEARDOWN_PENDING",
+        "case SUB_SLUG_STATE_LATERAL_ACTIVE",
+        "enum SubSlugDeathTossDirection death_toss_direction",
+        "death_toss_direction == SUB_SLUG_DEATH_TOSS_RIGHT",
+        "death_toss_direction == SUB_SLUG_DEATH_TOSS_LEFT",
         "update_slug_voice_ai(slug)",
         "slug->player_encounter_latched",
         "slug->engagement_voice_gate",
@@ -6649,7 +6770,15 @@
       "artifact": "analysis/decompile/ida/functions/0043f930-update_slug_hazard_ai.c",
       "required_substrings": [
         "void __thiscall update_slug_hazard_ai(Slug *slug)",
-        "slug->state",
+        "switch ( slug->state )",
+        "case SUB_SLUG_STATE_INACTIVE:",
+        "case SUB_SLUG_STATE_ACTIVE:",
+        "case SUB_SLUG_STATE_DEATH_TOSS_PENDING:",
+        "case SUB_SLUG_STATE_TEARDOWN_PENDING:",
+        "case SUB_SLUG_STATE_LATERAL_ACTIVE:",
+        "SubSlugDeathTossDirection death_toss_direction;",
+        "death_toss_direction == SUB_SLUG_DEATH_TOSS_RIGHT",
+        "death_toss_direction != SUB_SLUG_DEATH_TOSS_LEFT",
         "update_slug_voice_ai(slug)",
         "slug->body.transform.position",
         "slug->body.bod.bod.list_flags",
@@ -6916,6 +7045,7 @@
       "artifact": "analysis/decompile/binja/functions/00437b10-reset_subgame.c",
       "required_substrings": [
         "garbage_hazards.slots[0].state = SUB_GARBAGE_STATE_INACTIVE",
+        "slug_hazards.slots[0].state = SUB_SLUG_STATE_INACTIVE",
         "ring_effects.slots[0].state = SUB_RING_STATE_INACTIVE",
         "ring_effects.slots[0].rate_source = game",
         "game->slug_hazards.slots[0].owner_game"
@@ -9374,8 +9504,9 @@
       "required_substrings": [
         "&game->slug_hazards.slots[0].state",
         "struct SlugStateStrideCursor* slug_state_cursor",
-        "slug_state_cursor->state",
+        "slug_state_cursor->state != SUB_SLUG_STATE_INACTIVE",
         "struct SlugSlotCursor* slug_slot_cursor",
+        "slug_slot_cursor->slug.state = SUB_SLUG_STATE_ACTIVE",
         "slug_slot_cursor->slug.owner_player = owner_player",
         "slug_slot_cursor->slug.sprite->position",
         "int32_t blink_random_value = next_math_random_value()",
@@ -9403,6 +9534,7 @@
         "struct SlugStateStrideCursor *slug_state_cursor",
         "struct SlugSlotCursor *slug_slot_cursor",
         "slug_state_cursor->state",
+        "slug_slot_cursor->slug.state = SUB_SLUG_STATE_ACTIVE;",
         "slug_slot_cursor->slug.owner_player = owner_player",
         "slug_slot_cursor->slug.sprite->position",
         "game->next_slug_voice_trigger_z"

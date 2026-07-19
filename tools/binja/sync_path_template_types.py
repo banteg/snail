@@ -374,6 +374,10 @@ REQUIRED_HEADER_STRUCTS = (
     "SubgameRuntimeFlagPreset",
     "SubRingState",
     "SubRingKind",
+    "SubSlugState",
+    "SubSlugDeathTossDirection",
+    "Slug",
+    "SlugStateStrideCursor",
     "SubRingSlotCursor",
     "JetPackSlotCursor",
     "SubHealthSlotCursor",
@@ -469,6 +473,8 @@ def ensure_path_analysis_views(
         "PresentationWobbleController",
         "RuntimeCellStrideAnchor",
         "SubLocTileId",
+        "SubSlugState",
+        "SubSlugDeathTossDirection",
         "SubLazerState",
         "SaltState",
         "SubGarbageState",
@@ -1400,6 +1406,14 @@ COLLISION_POOL_CURSOR_USER_VAR_UPDATES = (
     (
         "handle_subgoldy_collisions",
         "RegisterVariableSourceType",
+        821,
+        67,
+        "slug_state",
+        "SubSlugState",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
         80,
         66,
         "salt_cursor",
@@ -2036,6 +2050,15 @@ JETPACK_FIELD_UPDATES = (
 
 SUB_HEALTH_FIELD_UPDATES = (
     ("0x00", "bod", "BodBase"),
+)
+
+SLUG_FIELD_UPDATES = (
+    ("0x80", "state", "SubSlugState"),
+    ("0x84", "death_toss_direction", "SubSlugDeathTossDirection"),
+)
+
+SLUG_STATE_CURSOR_FIELD_UPDATES = (
+    ("0x00", "state", "SubSlugState"),
 )
 
 SUB_SPEED_UP_FIELD_UPDATES = (
@@ -3914,6 +3937,8 @@ def main() -> int:
                 ("Vapour", VAPOUR_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),
                 ("SubHealth", SUB_HEALTH_FIELD_UPDATES),
+                ("Slug", SLUG_FIELD_UPDATES),
+                ("SlugStateStrideCursor", SLUG_STATE_CURSOR_FIELD_UPDATES),
                 ("SubSpeedUp", SUB_SPEED_UP_FIELD_UPDATES),
                 ("Banner", BANNER_FIELD_UPDATES),
                 ("Warning", WARNING_FIELD_UPDATES),

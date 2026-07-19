@@ -10,6 +10,7 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_user_var_updates,
+    current_enum_members,
     current_type_widths,
     emit_summary,
     types_declare_missing_only,
@@ -36,6 +37,25 @@ REQUIRED_POOL_TYPES = (
     "SubRingState",
     "SubRingKind",
 )
+
+SLUG_ENUM_TYPE_REPLACEMENTS = (
+    "SubSlugState",
+    "SubSlugDeathTossDirection",
+)
+
+EXPECTED_SLUG_ENUM_MEMBERS = {
+    "SubSlugState": (
+        ("SUB_SLUG_STATE_INACTIVE", 0),
+        ("SUB_SLUG_STATE_ACTIVE", 1),
+        ("SUB_SLUG_STATE_DEATH_TOSS_PENDING", 2),
+        ("SUB_SLUG_STATE_TEARDOWN_PENDING", 3),
+        ("SUB_SLUG_STATE_LATERAL_ACTIVE", 4),
+    ),
+    "SubSlugDeathTossDirection": (
+        ("SUB_SLUG_DEATH_TOSS_RIGHT", 1),
+        ("SUB_SLUG_DEATH_TOSS_LEFT", 2),
+    ),
+}
 
 TYPE_REPLACEMENTS = (
     "Slug",
@@ -64,17 +84,13 @@ SUBGAME_FIELD_UPDATES = (
 )
 
 SUB_SPEEDUP_FIELD_UPDATES = (
-    ("0x10", "bod_position", "Vec3"),
-    ("0x1c", "render_arg_1c", "float"),
-    ("0x20", "render_arg_20", "float"),
-    ("0x24", "object", "void*"),
-    ("0x28", "color", "tColour"),
+    ("0x00", "body", "RenderableBod"),
     ("0x80", "state", "TrackPickupState"),
     ("0x8c", "owner_game", "SubgameRuntime*"),
 )
 
 VAPOUR_FIELD_UPDATES = (
-    ("0x24", "owner", "Object*"),
+    ("0x00", "body", "RenderableBod"),
     ("0x80", "point_count", "int32_t"),
     ("0x84", "capacity", "int32_t"),
     ("0x88", "half_width", "float"),
@@ -96,14 +112,18 @@ SUB_HEALTH_FIELD_UPDATES = (
 
 SLUG_FIELD_UPDATES = (
     ("0x00", "body", "RenderableBod"),
-    ("0x80", "state", "int32_t"),
-    ("0x84", "death_toss_direction", "int32_t"),
+    ("0x80", "state", "SubSlugState"),
+    ("0x84", "death_toss_direction", "SubSlugDeathTossDirection"),
     ("0x88", "owner_game", "SubgameRuntime*"),
     ("0x98", "attachment_facing_angle", "float"),
     ("0x9c", "unknown_9c", "uint8_t[0x10]"),
     ("0xac", "sprite", "Sprite*"),
     ("0xb0", "source_cell", "TrackRowCell*"),
     ("0xc0", "owner_player", "Player*"),
+)
+
+SLUG_STATE_CURSOR_FIELD_UPDATES = (
+    ("0x00", "state", "SubSlugState"),
 )
 
 SUB_RING_FIELD_UPDATES = (
@@ -233,6 +253,21 @@ SPAWN_SLUG_HAZARD_USER_VAR_UPDATES = (
     ),
 )
 
+# The collision dispatcher reads one Slug::state lane into ECX immediately
+# before forming the already-recovered root-biased SlugSlotCursor in EAX.
+# Preserve that independent enum lifetime instead of allowing the temporary
+# register value to collapse back to an anonymous int32_t.
+COLLISION_SLUG_STATE_USER_VAR_UPDATES = (
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        821,
+        67,
+        "slug_state",
+        "SubSlugState",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -260,6 +295,7 @@ def main() -> int:
         type_names=(
             *REQUIRED_HEADER_STRUCTS,
             *REQUIRED_POOL_TYPES,
+            *SLUG_ENUM_TYPE_REPLACEMENTS,
             *SLUG_ALLOCATOR_CURSOR_TYPES,
             "FrameSubgameRuntime",
         ),
@@ -309,6 +345,32 @@ def main() -> int:
             include_types=SLUG_ALLOCATOR_CURSOR_TYPES,
         )
     )
+    current_slug_enums = current_enum_members(
+        REPO_ROOT,
+        target=args.target,
+        enum_names=SLUG_ENUM_TYPE_REPLACEMENTS,
+    )
+    slug_enums_present = all(
+        current_slug_enums.get(name) == expected
+        for name, expected in EXPECTED_SLUG_ENUM_MEMBERS.items()
+    )
+    slug_enum_operation = (
+        {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "canonical slug lifecycle enums already present",
+            "header": str(header_path),
+            "required_types": SLUG_ENUM_TYPE_REPLACEMENTS,
+        }
+        if slug_enums_present
+        else types_declare_missing_only(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            replace_types=SLUG_ENUM_TYPE_REPLACEMENTS,
+            include_types=SLUG_ENUM_TYPE_REPLACEMENTS,
+        )
+    )
 
     struct_updates = [
         ("SubgameRuntime", SUBGAME_FIELD_UPDATES),
@@ -317,6 +379,7 @@ def main() -> int:
         ("JetPack", JETPACK_FIELD_UPDATES),
         ("SubHealth", SUB_HEALTH_FIELD_UPDATES),
         ("Slug", SLUG_FIELD_UPDATES),
+        ("SlugStateStrideCursor", SLUG_STATE_CURSOR_FIELD_UPDATES),
         ("SubRing", SUB_RING_FIELD_UPDATES),
     ]
     if (type_widths.get("FrameSubgameRuntime") or 0) > 0:
@@ -325,6 +388,7 @@ def main() -> int:
     operations: list[dict[str, object]] = [
         type_operation,
         cursor_type_operation,
+        slug_enum_operation,
         *apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,
@@ -334,7 +398,10 @@ def main() -> int:
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=SPAWN_SLUG_HAZARD_USER_VAR_UPDATES,
+            updates=(
+                *SPAWN_SLUG_HAZARD_USER_VAR_UPDATES,
+                *COLLISION_SLUG_STATE_USER_VAR_UPDATES,
+            ),
         ),
     ]
 

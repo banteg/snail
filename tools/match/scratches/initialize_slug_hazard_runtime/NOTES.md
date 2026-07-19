@@ -18,3 +18,11 @@ pool element too. The Binary Ninja view replaces the stale anonymous 0x80-byte
 prefix with the exact inherited `RenderableBod body`, so list links and world
 position resolve through the authored base. The state-two writes at
 `+0x9c..+0xab` remain `unknown_9c`; no unobserved ownership was inferred.
+
+## 2026-07-19 lifecycle enum ownership
+
+Both analysis lanes now preserve `SubSlugState` at owner `+0x80` and
+`SubSlugDeathTossDirection` at `+0x84`. IDA verifies the exact `0xec` owner,
+`0x760` eight-slot pool, and `0xec` state-stride cursor before saving; Binary
+Ninja independently replays the exact enum member sets. The constructor stays
+exact at 7/7 instructions and does not seed speculative fields.

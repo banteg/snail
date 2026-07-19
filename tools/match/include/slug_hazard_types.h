@@ -39,8 +39,8 @@ public:
     void kill_slug_hazard();                              // @ 0x43f8b0
     void update_slug_hazard_ai();                         // @ 0x43f930
 
-    int state;                         // +0x80, SubSlugState
-    int death_toss_direction;          // +0x84, SubSlugDeathTossDirection
+    SubSlugState state;                // +0x80
+    SubSlugDeathTossDirection death_toss_direction; // +0x84
     SubgameRuntime* owner_game;        // +0x88, borrowed containing subgame
     Vector3 velocity;                  // +0x8c
     float attachment_facing_angle;     // +0x98, projection output added to player heading

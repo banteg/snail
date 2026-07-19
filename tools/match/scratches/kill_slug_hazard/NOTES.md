@@ -33,3 +33,11 @@ death-toss-pending state two and on direction one/two selecting the positive-x
 right side or non-positive-x left side. Those roles now come from shared enums
 rather than isolated literals. The exact 35-instruction body and all seven
 masked operands remain byte-identical.
+
+## 2026-07-19 typed death transition
+
+Binary Ninja and IDA now render the exact gate and stores as
+`SUB_SLUG_STATE_ACTIVE -> SUB_SLUG_STATE_DEATH_TOSS_PENDING` plus
+`SUB_SLUG_DEATH_TOSS_RIGHT/LEFT`. This is the existing cross-port lifecycle
+evidence carried through the real owner, not a new matching condition; focused
+Wibo remains exact at 35/35 instructions with all seven operands clean.

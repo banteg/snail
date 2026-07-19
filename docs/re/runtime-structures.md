@@ -558,7 +558,9 @@ only as historical decompiler spelling in older evidence.
 - `+0x355e64`: `jetpack_pickup`
   - exact `0x19c`-byte `cRJetPack` singleton
   - two complete embedded `0x94`-byte `cRVapour` children at `+0x74` and
-    `+0x108`; each retains the real output `cRObject*` at child `+0x24`
+    `+0x108`; each begins with its complete inherited `RenderableBod`, and the
+    retained output `cRObject*` at child `+0x24` is
+    `body.bod.object`, not a separate sibling owner field
 - `+0x356000`: `health_pickups`
   - eight inline exact `0x74`-byte authored `cRSubHealth` slots
   - `cRSubSpeedUp`, `cRJetPack`, and `cRSubHealth` share the recovered
@@ -1391,8 +1393,8 @@ High-confidence current fields:
 
 - `+0x00..+0x7f`: inherited `RenderableBod body`
 - `+0x68`: inherited `body.transform.position`
-- `+0x80`: `state`
-- `+0x84`: `death_toss_direction`
+- `+0x80`: `SubSlugState state`
+- `+0x84`: `SubSlugDeathTossDirection death_toss_direction`
 - `+0x88`: `owner_game`
 - `+0x8c`: `velocity`
 - `+0x98`: `attachment_facing_angle`
@@ -1418,15 +1420,28 @@ High-confidence current fields:
 
 Current practical read:
 
-- `spawn_slug_hazard` allocates from the `8`-slot Windows pool, projects the spawn onto attachments, and seeds forward velocity from `track_center_x`
-- `handle_subgoldy_collisions` reads the same slots back through the `slug_hazards` array
+- `SubSlugState` is the exact 32-bit lifecycle owner: `INACTIVE (0)`,
+  `ACTIVE (1)`, `DEATH_TOSS_PENDING (2)`, `TEARDOWN_PENDING (3)`, and
+  `LATERAL_ACTIVE (4)`
+- `SubSlugDeathTossDirection` is the exact 32-bit death-flight selector:
+  `RIGHT (1)` and `LEFT (2)`
+- `spawn_slug_hazard` scans the `8`-slot Windows pool for `INACTIVE`, writes
+  `ACTIVE`, projects the spawn onto attachments, and seeds forward velocity
+  from `track_center_x`
+- `handle_subgoldy_collisions` reads the same slots back through the
+  `slug_hazards` array and accepts exactly `ACTIVE` or `LATERAL_ACTIVE`
 - `update_slug_hazard_ai` owns the ambient slug alert: state `1` checks `player->live_matrix.position.z + 1.0 > world_position.z`, latches `player_encounter_latched`, rolls the native math RNG, and calls `play_slug_voice(slot, 30 - scaled_random)` only when the first roll is above `0.600000024`
 - the same state sets `passed_player` after the slug's world `z` falls behind the player and clears `engagement_voice_gate` before `play_voice_manager(..., 2, 1, -1)` when the player is within `16` rows; this is separate from the direct ambient `play_slug_voice` one-shot
 - `hit_slug_hazard` decrements `hit_points`, latches `hit_flash_pending`, and calls `play_slug_voice(slot, 36 - scaled_random)` while the slot remains alive, mapping to `SLUG-HIT1..3`
-- `kill_slug_hazard` only acts on live state `1`; it calls `play_slug_voice(slot, 28 - scaled_random)` for `SLUG-DEATH1..2`, switches the slot to explosion state `2`, records the left/right toss selector from `world_position.x`, awards slug score, and then calls `explode_slug_hazard`
+- `kill_slug_hazard` only acts on `ACTIVE`; it calls `play_slug_voice(slot, 28 - scaled_random)` for `SLUG-DEATH1..2`, switches the slot to `DEATH_TOSS_PENDING`, records `LEFT` or `RIGHT` from `world_position.x`, awards slug score, and then calls `explode_slug_hazard`
 - `spawn_slug_hazard` passes `attachment_facing_angle` to the track-attachment projector, and `update_slug_hazard_ai` later adds that projected angle to the player's heading for the sprite; the garbage family has the same producer/consumer contract at its own `attachment_facing_angle`
 - `play_slug_voice` and `update_slug_voice_ai` use the per-slot `voice_active`, `voice_progress`, and `voice_progress_step` fields in addition to the global slug voice manager gate
 - later Android and iOS ports still use the same semantic fields, but at least one later build expands the slug capacity beyond the Windows `8`-slot pool
+- the exact constructor, reset, allocator, kill, and AI paths plus the collision
+  consumer agree on the five state values and two toss directions; Binary
+  Ninja and IDA now preserve those enums through the owner, allocator stride
+  cursor, AI switch, and collision-local lifetime without changing matcher
+  codegen
 
 ## cRSubLazer and cRSalt Runtime
 

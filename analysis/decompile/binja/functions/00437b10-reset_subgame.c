@@ -29,7 +29,7 @@
 00437b5f        struct SubgameRuntime** eax_2 = &game->slug_hazards.slots[0].owner_game
 00437b65        int32_t i_6 = 8
 00437b75        int32_t i_2
-00437b6a        (eax_2 - 0x356428)->slug_hazards.slots[0].state = 0
+00437b6a        (eax_2 - 0x356428)->slug_hazards.slots[0].state = SUB_SLUG_STATE_INACTIVE
 00437b6d        (eax_2 - 0x356428)->slug_hazards.slots[0].owner_game = game
 00437b6f        eax_2 = &eax_2[0x3b]
 00437b74        i_2 = i_6

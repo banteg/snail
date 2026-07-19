@@ -5574,6 +5574,9 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     ida_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
         encoding="utf-8"
     )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
     analysis_headers = tuple(
         (HEADER_DIR / name).read_text(encoding="utf-8")
         for name in ("bn_subgame_pool_types.h", "path_template_types.h")
@@ -5595,20 +5598,49 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     assert '"slug_state_cursor",\n        "SlugStateStrideCursor*"' in pool_sync
     assert '"slug_slot_cursor",\n        "SlugSlotCursor*"' in pool_sync
     assert '"blink_random_value",\n        "int32_t"' in pool_sync
+    assert (
+        '"handle_subgoldy_collisions",\n        "RegisterVariableSourceType",\n'
+        '        821,\n        67,\n        "slug_state",\n        "SubSlugState"'
+        in pool_sync
+    )
     assert "apply_user_var_updates" in pool_sync
     assert "current_type_widths" in pool_sync
+    assert "current_enum_members" in pool_sync
+    assert "SLUG_ENUM_TYPE_REPLACEMENTS" in pool_sync
+    assert "EXPECTED_SLUG_ENUM_MEMBERS" in pool_sync
     assert "struct_exists" not in pool_sync
+    assert '("0x80", "state", "SubSlugState")' in pool_sync
+    assert (
+        '("0x84", "death_toss_direction", "SubSlugDeathTossDirection")'
+        in pool_sync
+    )
+    assert '("SlugStateStrideCursor", SLUG_STATE_CURSOR_FIELD_UPDATES)' in pool_sync
 
     for header in (*analysis_headers, matcher_header):
         assert "Slug slots[SUB_SLUG_SLOT_CAPACITY]" in header
         assert "unknown_9c[0xac - 0x9c]" in header
+        assert "SUB_SLUG_STATE_INACTIVE = 0" in header
+        assert "SUB_SLUG_STATE_ACTIVE = 1" in header
+        assert "SUB_SLUG_STATE_DEATH_TOSS_PENDING = 2" in header
+        assert "SUB_SLUG_STATE_TEARDOWN_PENDING = 3" in header
+        assert "SUB_SLUG_STATE_LATERAL_ACTIVE = 4" in header
+        assert "SUB_SLUG_DEATH_TOSS_RIGHT = 1" in header
+        assert "SUB_SLUG_DEATH_TOSS_LEFT = 2" in header
+        assert "SubSlugState state;" in header
+        assert "SubSlugDeathTossDirection death_toss_direction;" in header
 
     for header in analysis_headers:
         assert "typedef struct Slug" in header
+        assert "typedef enum SubSlugState" in header
+        assert "typedef enum SubSlugDeathTossDirection" in header
         assert "RenderableBod body;" in header
         assert "typedef struct SlugHazardRuntime" not in header
         assert "typedef struct SlugStateStrideCursor" in header
         assert "uint8_t slot_stride_tail[0xe8];" in header
+        assert (
+            "typedef struct SlugStateStrideCursor {\n    SubSlugState state;"
+            in header
+        )
         assert "typedef struct SlugSlotCursor" in header
         assert "uint8_t subgame_prefix[0x3563a0];" in header
         assert "Slug slug;" in header
@@ -5636,6 +5668,34 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     assert '"sprite"' in ida_sync
     assert '"Sprite"' in ida_sync
     assert "SlugHazardRuntime*" not in ida_sync
+    assert "SLUG_OWNER_EXPECTED_SIZE = 0xEC" in ida_sync
+    assert "SLUG_POOL_EXPECTED_SIZE = 0x760" in ida_sync
+    assert "SLUG_STATE_CURSOR_EXPECTED_SIZE = 0xEC" in ida_sync
+    assert '(0x80, 4, "state", "SubSlugState")' in ida_sync
+    assert (
+        '(0x84, 4, "death_toss_direction", "SubSlugDeathTossDirection")'
+        in ida_sync
+    )
+    assert "slug_owner_readback = _slug_owner_readback()" in ida_sync
+    for type_name in (
+        "SubSlugState",
+        "SubSlugDeathTossDirection",
+        "Slug",
+        "SlugStateStrideCursor",
+    ):
+        assert f'"{type_name}",' in path_sync
+    assert '("Slug", SLUG_FIELD_UPDATES)' in path_sync
+    assert (
+        '("SlugStateStrideCursor", SLUG_STATE_CURSOR_FIELD_UPDATES)'
+        in path_sync
+    )
+    assert (
+        '"handle_subgoldy_collisions",\n        "RegisterVariableSourceType",\n'
+        '        821,\n        67,\n        "slug_state",\n        "SubSlugState"'
+        in path_sync
+    )
+    assert "int state;" not in matcher_header
+    assert "int death_toss_direction;" not in matcher_header
 
 
 def test_parcel_state_ownership_stays_aligned() -> None:
@@ -6099,7 +6159,10 @@ def test_track_pickup_state_and_authored_owners_stay_aligned() -> None:
     assert '"TrackPickupState"' in pool_sync
     assert '("0x80", "state", "TrackPickupState")' in pool_sync
     assert pool_sync.count('("0x38", "state", "TrackPickupState")') == 2
-    assert '("0x1c", "render_arg_1c", "float")' in pool_sync
+    assert (
+        'SUB_SPEEDUP_FIELD_UPDATES = (\n    ("0x00", "body", "RenderableBod")'
+        in pool_sync
+    )
     assert '("0x355db0", "speedup_pickup", "SubSpeedUp")' in pool_sync
     assert '("0x356000", "health_pickups", "SubHealth[0x8]")' in pool_sync
     assert '("JetPack", JETPACK_FIELD_UPDATES)' in runtime_sync
@@ -6122,6 +6185,7 @@ def test_track_pickup_state_and_authored_owners_stay_aligned() -> None:
     pool_header, path_header, *_ = analysis_headers
     for header in (pool_header, path_header):
         assert "typedef struct SubSpeedUp" in header
+        assert "typedef struct SubSpeedUp {\n    RenderableBod body;" in header
         assert "typedef struct SubHealth" in header
         assert "typedef SubHealth TrackHealthPickup" in header
 
@@ -8882,6 +8946,9 @@ def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
+    pool_header = (HEADER_DIR / "bn_subgame_pool_types.h").read_text(
+        encoding="utf-8"
+    )
     matcher_header = (repo_root / "tools/match/include/vapour.h").read_text(
         encoding="utf-8"
     )
@@ -8895,6 +8962,9 @@ def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
     binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
+    pool_sync = (BINJA_DIR / "sync_subgame_pool_types.py").read_text(
+        encoding="utf-8"
+    )
     ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -8902,6 +8972,8 @@ def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
     assert "class Vapour : public RenderableBod" in matcher_header
     assert "virtual void update_vapour" not in matcher_header
     assert "Object* owner;" not in matcher_header
+    assert "typedef struct Vapour {\n    RenderableBod body;" in pool_header
+    assert "Object* owner;" not in pool_header
     for declaration in (
         "typedef struct Vapour {\n    RenderableBod body;",
         "typedef struct JetPack {\n    BodBase bod;",
@@ -8935,6 +9007,13 @@ def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
         assert update in binja_sync
     assert '("0x00", "body", "RenderableBod")' in binja_sync
     assert '("0x00", "bod", "BodBase")' in binja_sync
+    assert 'VAPOUR_FIELD_UPDATES = (\n    ("0x00", "body", "RenderableBod")' in pool_sync
+    assert (
+        'SUB_SPEEDUP_FIELD_UPDATES = (\n    ("0x00", "body", "RenderableBod")'
+        in pool_sync
+    )
+    assert '("0x24", "owner", "Object*")' not in pool_sync
+    assert '("0x10", "bod_position", "Vec3")' not in pool_sync
     assert '"JetPackSlotCursor",' in binja_sync
     for replay in (
         '"spawn_track_health_pickup",\n        "RegisterVariableSourceType",\n        60,\n        72,\n        "health_cursor",\n        "SubHealthSlotCursor*"',

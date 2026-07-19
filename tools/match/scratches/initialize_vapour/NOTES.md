@@ -17,3 +17,11 @@ zero-offset `RenderableBod` prefix before installing the cRVapour callback
 table. `Vapour +0x24` is therefore the inherited `BodBase::object`, not a
 parallel trail-specific owner field. The exact 0x94-byte extent and this
 initializer's 19/19 machine-code match are unchanged.
+
+## 2026-07-19 analysis-lane base composition
+
+The narrow Binary Ninja header now mirrors the same complete zero-offset
+`RenderableBod body` as the broad header and matcher. Removing its synthetic
+`Object* owner` prevents broad/narrow replay order from changing the type;
+the retained pointer still resolves honestly as `body.bod.object` at `+0x24`.
+The exact 19/19 matcher body is unchanged.

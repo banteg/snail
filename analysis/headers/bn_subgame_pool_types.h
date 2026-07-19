@@ -71,11 +71,7 @@ typedef struct RenderableBod {
 
 /* Exact 0x94-byte Windows cRVapour owner. */
 typedef struct Vapour {
-    void* vtable;
-    int32_t flags;
-    uint8_t unknown_08[0x24 - 0x08];
-    Object* owner;
-    uint8_t unknown_28[0x80 - 0x28];
+    RenderableBod body;
     int32_t point_count;
     int32_t capacity;
     union {
@@ -93,25 +89,7 @@ typedef enum TrackPickupState {
 } TrackPickupState;
 
 typedef struct SubSpeedUp {
-    void* vtable;
-    uint32_t list_flags;
-    struct SubSpeedUp* list_prev;
-    struct SubSpeedUp* list_next;
-    Vec3 bod_position;
-    float render_arg_1c;
-    float render_arg_20;
-    void* object;
-    tColour color;
-    Vec3 basis_right;
-    float basis_right_w;
-    Vec3 basis_up;
-    float basis_up_w;
-    Vec3 basis_forward;
-    float basis_forward_w;
-    Vec3 world_position;
-    float world_position_w;
-    void* render_animation_manager;
-    uint8_t unknown_7c[0x04];
+    RenderableBod body;
     TrackPickupState state;
     struct Player* owner;
     uint8_t unknown_88[0x04];
@@ -163,18 +141,18 @@ typedef struct SubHealth {
 
 typedef SubHealth TrackHealthPickup;
 
-enum SubSlugState {
+typedef enum SubSlugState {
     SUB_SLUG_STATE_INACTIVE = 0,
     SUB_SLUG_STATE_ACTIVE = 1,
     SUB_SLUG_STATE_DEATH_TOSS_PENDING = 2,
     SUB_SLUG_STATE_TEARDOWN_PENDING = 3,
     SUB_SLUG_STATE_LATERAL_ACTIVE = 4,
-};
+} SubSlugState;
 
-enum SubSlugDeathTossDirection {
+typedef enum SubSlugDeathTossDirection {
     SUB_SLUG_DEATH_TOSS_RIGHT = 1,
     SUB_SLUG_DEATH_TOSS_LEFT = 2,
-};
+} SubSlugDeathTossDirection;
 
 enum {
     SUB_SLUG_SLOT_CAPACITY = 8,
@@ -183,8 +161,8 @@ enum {
 /* Exact 0xec-byte authored cRSlug owner. */
 typedef struct Slug {
     RenderableBod body;
-    int32_t state;
-    int32_t death_toss_direction;
+    SubSlugState state;
+    SubSlugDeathTossDirection death_toss_direction;
     SubgameRuntime* owner_game;
     Vec3 velocity;
     float attachment_facing_angle;
@@ -221,7 +199,7 @@ typedef struct SlugPool {
  * bytes alias the remainder of each owned Slug slot.
  */
 typedef struct SlugStateStrideCursor {
-    int32_t state;
+    SubSlugState state;
     uint8_t slot_stride_tail[0xe8];
 } SlugStateStrideCursor;
 

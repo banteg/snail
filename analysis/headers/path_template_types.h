@@ -792,18 +792,18 @@ typedef struct SubHealth {
 typedef SubHealth TrackHealthPickup;
 
 /* Exact 0xec-byte authored cRSlug hazard slot. */
-enum SubSlugState {
+typedef enum SubSlugState {
     SUB_SLUG_STATE_INACTIVE = 0,
     SUB_SLUG_STATE_ACTIVE = 1,
     SUB_SLUG_STATE_DEATH_TOSS_PENDING = 2,
     SUB_SLUG_STATE_TEARDOWN_PENDING = 3,
     SUB_SLUG_STATE_LATERAL_ACTIVE = 4,
-};
+} SubSlugState;
 
-enum SubSlugDeathTossDirection {
+typedef enum SubSlugDeathTossDirection {
     SUB_SLUG_DEATH_TOSS_RIGHT = 1,
     SUB_SLUG_DEATH_TOSS_LEFT = 2,
-};
+} SubSlugDeathTossDirection;
 
 enum {
     SUB_SLUG_SLOT_CAPACITY = 8,
@@ -811,8 +811,8 @@ enum {
 
 typedef struct Slug {
     RenderableBod body;
-    int32_t state;
-    int32_t death_toss_direction;
+    SubSlugState state;
+    SubSlugDeathTossDirection death_toss_direction;
     SubgameRuntime* owner_game;
     Vec3 velocity;
     float attachment_facing_angle;
@@ -993,7 +993,7 @@ typedef struct SlugSlotCursor {
  * the tail aliases the rest of each embedded Slug rather than owning storage.
  */
 typedef struct SlugStateStrideCursor {
-    int32_t state;
+    SubSlugState state;
     uint8_t slot_stride_tail[0xe8];
 } SlugStateStrideCursor;
 

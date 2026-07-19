@@ -79,9 +79,9 @@
 0044501d        void* i_3 = nullptr
 0044524b        while (i_3 s< 0x760)
 0044501f        struct SubgameRuntime* game_8 = player->game
-00445025        int32_t ecx_13 = *(&game_8->slug_hazards.slots[0].state + i_3)
+00445025        enum SubSlugState slug_state = *(&game_8->slug_hazards.slots[0].state + i_3)
 0044502c        struct SlugSlotCursor* slug_cursor = i_3 + game_8
-00445036        if (ecx_13 == 1 || ecx_13 == 4)
+00445036        if (slug_state == SUB_SLUG_STATE_ACTIVE || slug_state == SUB_SLUG_STATE_LATERAL_ACTIVE)
 00445062        long double x87_r7_39 = fconvert.t(slug_cursor->slug.body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
 00445070        vector.x = fconvert.s(fconvert.t(slug_cursor->slug.body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
 00445074        vector.y = fconvert.s(fconvert.t(slug_cursor->slug.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))

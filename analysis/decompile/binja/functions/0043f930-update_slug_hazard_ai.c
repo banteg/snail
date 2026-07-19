@@ -5,9 +5,9 @@
 
 0043f943        if (slug->owner_game->subgame_pause_gate != 0)
 0043f943        return
-0043f949        int32_t state = slug->state
+0043f949        enum SubSlugState state = slug->state
 0043f952        struct BodList* ecx_16
-0043f952        if (state u> 4)
+0043f952        if (state u> SUB_SLUG_STATE_LATERAL_ACTIVE)
 0043fcd9        label_43fcd9:
 0043fcd9        slug->sprite->facing_angle = fconvert.s(fconvert.t(slug->owner_player->heading_roll) + fconvert.t(slug->attachment_facing_angle))
 0043fcdc        struct Player* owner_player_2 = slug->owner_player
@@ -16,7 +16,7 @@
 0043fcfa        sprite->facing_angle = fconvert.s(fconvert.t(owner_player_2->follow_state.orientation_b) + fconvert.t(sprite->facing_angle))
 0043fcff        update_slug_voice_ai(slug)
 0043f958        switch (state)
-0043f96d        case 1
+0043f96d        case SUB_SLUG_STATE_ACTIVE
 0043f96d        if (slug->hit_flash_pending != 0 && g_render_queue_active != 0)
 0043f96f        float hit_flash_progress_step = slug->hit_flash_progress_step
 0043f975        slug->hit_flash_pending = 0
@@ -88,8 +88,8 @@
 0043fbd5        play_voice_manager(&g_voice_manager, 2, 1, 0xffffffff)
 0043fbe5        int32_t* eax_12 = &slug->sprite->position
 0043fbea        *eax_12 = slug->body.transform.position.x
-0043fbef        eax_12[1] = slug->body.transform.position.y
-0043fbf5        eax_12[2] = slug->body.transform.position.z
+0043fbef        *&eax_12[1] = slug->body.transform.position.y
+0043fbf5        *&eax_12[2] = slug->body.transform.position.z
 0043fbf8        struct Player* owner_player_1 = slug->owner_player
 0043fbfe        long double x87_r7_19 = fconvert.t(slug->body.transform.position.z)
 0043fc01        long double temp16_1 = fconvert.t(owner_player_1->interaction_max_z)
@@ -103,7 +103,7 @@
 0043fcbc        append_subgame_contact_target(&slug->owner_game->enemy_manager, &slug->body.transform.position, 2f, 1, slug)
 0043fcbc        goto label_43fcd9
 0043fc0e        uint16_t list_flags = (slug->body.bod.bod.list_flags).w
-0043fc11        slug->state = 0
+0043fc11        slug->state = SUB_SLUG_STATE_INACTIVE
 0043fc20        ecx_16 = &g_game_base->active_bod_list
 0043fc26        if ((list_flags:1.b & 2) == 0)
 0043fc2d        report_errorf("List remove")
@@ -121,9 +121,9 @@
 0043fc7c        goto label_43ffdf
 0043fc85        list_prev->list_next = slug->body.bod.bod.list_next
 0043fc88        goto label_43ffe5
-0043fe46        case 2
+0043fe46        case SUB_SLUG_STATE_DEATH_TOSS_PENDING
 0043fe46        int32_t var_24_4 = 0
-0043fe4c        slug->state = 3
+0043fe4c        slug->state = SUB_SLUG_STATE_TEARDOWN_PENDING
 0043fe5b        float var_10_1 = fconvert.s(random_float_below(0.300000012f))
 0043fe5f        int32_t var_2c_1 = 0
 0043fe70        void* var_34_1 = &data_4a4e70
@@ -131,8 +131,8 @@
 0043fea6        slug->velocity.x = fconvert.s(random_signed_float_below(0.100000001f))
 0043feac        slug->velocity.y = var_14_3
 0043feb3        slug->velocity.z = var_10_1
-0043feb6        int32_t death_toss_direction = slug->death_toss_direction
-0043febf        if (death_toss_direction == 1)
+0043feb6        enum SubSlugDeathTossDirection death_toss_direction = slug->death_toss_direction
+0043febf        if (death_toss_direction == SUB_SLUG_DEATH_TOSS_RIGHT)
 0043fec1        long double x87_r7_38 = fconvert.t(slug->velocity.x)
 0043fec3        long double temp2_1 = fconvert.t(0f)
 0043fec3        x87_r7_38 - temp2_1
@@ -140,7 +140,7 @@
 0043fed0        if ((((x87_r7_38 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_38, temp2_1) ? 1 : 0) << 0xa | (x87_r7_38 == temp2_1 ? 1 : 0) << 0xe | 0x3800):1.b & 1) != 0)
 0043fed2        x87_r7_39 = fneg(x87_r7_39)
 0043fef0        slug->velocity.x = fconvert.s(x87_r7_39)
-0043fed9        if (death_toss_direction == 2)
+0043fed9        if (death_toss_direction == SUB_SLUG_DEATH_TOSS_LEFT)
 0043fedb        long double x87_r7_40 = fconvert.t(slug->velocity.x)
 0043fedd        long double temp7_1 = fconvert.t(0f)
 0043fedd        x87_r7_40 - temp7_1
@@ -174,10 +174,10 @@
 0043ff4f        slug->unknown_9c[4].d = fconvert.s(x87_r7_48)
 0043ff5e        slug->unknown_9c[0xc].d = fconvert.s(fconvert.t(owner_game->subgame_rate) * fconvert.t(0.166666672f))
 0043feff        goto label_43ff64
-0043ff64        case 3
+0043ff64        case SUB_SLUG_STATE_TEARDOWN_PENDING
 0043ff64        label_43ff64:
 0043ff64        uint16_t list_flags_2 = (slug->body.bod.bod.list_flags).w
-0043ff67        slug->state = 0
+0043ff67        slug->state = SUB_SLUG_STATE_INACTIVE
 0043ff73        ecx_16 = &g_game_base->active_bod_list
 0043ff7c        if ((list_flags_2:1.b & 2) == 0)
 0043ff83        report_errorf("List remove")
@@ -203,7 +203,7 @@
 0043fff4        list_flags_3:1.b &= 0xfd
 0043fff7        slug->body.bod.bod.list_flags = list_flags_3
 0043fffa        kill_sprite(slug->sprite)
-0043fd11        case 4
+0043fd11        case SUB_SLUG_STATE_LATERAL_ACTIVE
 0043fd11        long double x87_r7_26 = fconvert.t(slug->lateral_phase_step) + fconvert.t(slug->lateral_phase)
 0043fd17        long double temp0_1 = fconvert.t(6.28318548f)
 0043fd17        x87_r7_26 - temp0_1
@@ -233,7 +233,7 @@
 0043fe3c        kill_slug_hazard(slug)
 0043fe34        goto label_43fcd9
 0043fda4        uint16_t list_flags_1 = (slug->body.bod.bod.list_flags).w
-0043fda7        slug->state = 0
+0043fda7        slug->state = SUB_SLUG_STATE_INACTIVE
 0043fdb3        ecx_16 = &g_game_base->active_bod_list
 0043fdbc        if ((list_flags_1:1.b & 2) == 0)
 0043fdc3        report_errorf("List remove")

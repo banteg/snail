@@ -169,3 +169,12 @@ Focused matching is now exact: **100.00%, 464/464 instructions, full 464/464
 prefix, and 71 clean masked operands with zero mismatches**. The four teardown
 scratch lanes at `+0x9c..+0xa8` remain deliberately unnamed because exact
 codegen does not establish their downstream ownership.
+
+## 2026-07-19 typed switch and direction owner
+
+The five proved state roles and two death-toss directions now survive as exact
+enums in both decompilers. Binary Ninja exposes a `SubSlugState` switch and a
+`SubSlugDeathTossDirection` local; IDA renders the same named cases and
+right/left tests. Broad and narrow replays are idempotent in either order, so
+the analysis views no longer fall back to integer literals. The already exact
+464/464 matcher body and its 71 clean operands are unchanged.

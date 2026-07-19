@@ -31,7 +31,7 @@ int32_t __thiscall spawn_slug_hazard(SubgameRuntime *game, TrackRowCell *cell, P
       return result;
   }
   slug_slot_cursor = (struct SlugSlotCursor *)((char *)game + 236 * result);
-  slug_slot_cursor->slug.state = 1;
+  slug_slot_cursor->slug.state = SUB_SLUG_STATE_ACTIVE;
   slug_slot_cursor->slug.owner_player = owner_player;
   set_matrix_identity(&slug_slot_cursor->slug.body.transform);
   v7 = cell->anchor_position.y + 1.7;
@@ -75,7 +75,7 @@ int32_t __thiscall spawn_slug_hazard(SubgameRuntime *game, TrackRowCell *cell, P
     BYTE1(list_flags) |= 2u;
     slug_slot_cursor->slug.body.bod.bod.list_flags = list_flags;
   }
-  sprite = (Sprite *)allocate_sprite(g_sprite_manager, owner_player->player_slot, 118, -1, -1);
+  sprite = allocate_sprite(&g_sprite_manager, owner_player->player_slot, 118, -1, -1);
   slug_slot_cursor->slug.sprite = sprite;
   flags = sprite->flags;
   BYTE1(flags) |= 8u;

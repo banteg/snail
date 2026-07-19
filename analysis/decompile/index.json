@@ -1,63 +1,47 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 10,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 10,
-  "ida_exported": 10,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_runtime_pools_and_path_template_bank",
-      "address": "0x408060"
+      "name": "initialize_slug_hazard_runtime",
+      "address": "0x408530"
     },
     {
-      "name": "initialize_garbage_hazard",
-      "address": "0x408550"
+      "name": "spawn_slug_hazard",
+      "address": "0x43dc80"
     },
     {
-      "name": "update_golb_ai",
-      "address": "0x414820"
+      "name": "kill_slug_hazard",
+      "address": "0x43f8b0"
     },
     {
-      "name": "reset_subgame",
-      "address": "0x437b10"
+      "name": "update_slug_hazard_ai",
+      "address": "0x43f930"
     },
     {
-      "name": "spawn_garbage_smoke_particle",
-      "address": "0x43d5a0"
-    },
-    {
-      "name": "spawn_track_garbage_hazard",
-      "address": "0x43da80"
-    },
-    {
-      "name": "destroy_garbage_hazard",
-      "address": "0x43f130"
-    },
-    {
-      "name": "update_garbage_hazard",
-      "address": "0x43f200"
-    },
-    {
-      "name": "remove_subgame_bods",
-      "address": "0x440910"
+      "name": "initialize_vapour",
+      "address": "0x442500"
     },
     {
       "name": "handle_subgoldy_collisions",
       "address": "0x444cf0"
     }
   ],
-  "health_check_count": 892,
+  "health_check_count": 898,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

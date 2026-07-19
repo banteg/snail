@@ -29,7 +29,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
   struct BodNode *v24; // eax
   double v25; // st7
   Vec3 *p_velocity; // ecx
-  int32_t death_toss_direction; // eax
+  SubSlugDeathTossDirection death_toss_direction; // eax
   double x; // st7
   char v30; // c0
   double v32; // st7
@@ -50,9 +50,9 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
   {
     switch ( slug->state )
     {
-      case 0:
+      case SUB_SLUG_STATE_INACTIVE:
         return;
-      case 1:
+      case SUB_SLUG_STATE_ACTIVE:
         if ( slug->hit_flash_pending && g_render_queue_active )
         {
           hit_flash_progress_step = slug->hit_flash_progress_step;
@@ -140,7 +140,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
           goto LABEL_39;
         }
         list_flags = slug->body.bod.bod.list_flags;
-        slug->state = 0;
+        slug->state = SUB_SLUG_STATE_INACTIVE;
         p_active_bod_list = &g_game_base->active_bod_list;
         if ( (list_flags & 0x200) == 0 )
           goto LABEL_70;
@@ -156,8 +156,8 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
           goto LABEL_78;
         }
         goto LABEL_77;
-      case 2:
-        slug->state = 3;
+      case SUB_SLUG_STATE_DEATH_TOSS_PENDING:
+        slug->state = SUB_SLUG_STATE_TEARDOWN_PENDING;
         v43 = random_float_below(0.30000001);
         v41 = random_float_below(0.2) + 0.1;
         v25 = random_signed_float_below(0.1);
@@ -167,7 +167,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
         slug->velocity.y = v41;
         slug->velocity.z = v43;
         death_toss_direction = slug->death_toss_direction;
-        if ( death_toss_direction == 1 )
+        if ( death_toss_direction == SUB_SLUG_DEATH_TOSS_RIGHT )
         {
           x = p_velocity->x;
           if ( v30 )
@@ -175,7 +175,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
         }
         else
         {
-          if ( death_toss_direction != 2 )
+          if ( death_toss_direction != SUB_SLUG_DEATH_TOSS_LEFT )
             goto LABEL_65;
           v32 = p_velocity->x;
           if ( v33 )
@@ -197,7 +197,7 @@ LABEL_65:
         *(float *)&slug->unknown_9c[12] = owner_game->subgame_rate * 0.16666667;
 LABEL_69:
         v36 = slug->body.bod.bod.list_flags;
-        slug->state = 0;
+        slug->state = SUB_SLUG_STATE_INACTIVE;
         p_active_bod_list = &g_game_base->active_bod_list;
         if ( (v36 & 0x200) == 0 )
           goto LABEL_70;
@@ -211,9 +211,9 @@ LABEL_69:
           goto LABEL_77;
         v38->list_next = slug->body.bod.bod.list_next;
         goto LABEL_78;
-      case 3:
+      case SUB_SLUG_STATE_TEARDOWN_PENDING:
         goto LABEL_69;
-      case 4:
+      case SUB_SLUG_STATE_LATERAL_ACTIVE:
         v14 = slug->lateral_phase_step + slug->lateral_phase;
         slug->lateral_phase = v14;
         if ( !(v16 | v17) )
@@ -242,7 +242,7 @@ LABEL_39:
         else
         {
           v22 = slug->body.bod.bod.list_flags;
-          slug->state = 0;
+          slug->state = SUB_SLUG_STATE_INACTIVE;
           p_active_bod_list = &g_game_base->active_bod_list;
           if ( (v22 & 0x200) != 0 )
           {

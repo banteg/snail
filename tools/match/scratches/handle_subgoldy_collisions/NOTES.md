@@ -612,3 +612,12 @@ The existing borrowed `SubGarbage*` active-chain walk now renders the proved
 analysis lanes. This is an ownership clarification only: the byte-strided
 multi-pool matcher remains honestly 54.23%, 651/673 instructions, prefix
 8/673, with all 88 operands clean.
+
+## 2026-07-19 borrowed slug lifecycle consumer
+
+The collision loop's physical ECX state load is now replayed as a distinct
+`SubSlugState` lifetime immediately before the existing root-biased
+`SlugSlotCursor`. Both analysis lanes therefore show that collision accepts
+exactly `ACTIVE` or `LATERAL_ACTIVE`; no new owner storage is invented. The
+byte-strided multi-pool matcher remains honestly 54.23%, 651/673 instructions,
+prefix 8/673, with all 88 operands clean.

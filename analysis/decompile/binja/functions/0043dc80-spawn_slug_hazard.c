@@ -5,13 +5,13 @@
 
 0043dc83        int32_t eax = 0
 0043dc88        struct SlugStateStrideCursor* slug_state_cursor = &game->slug_hazards.slots[0].state
-0043dc91        while (slug_state_cursor->state != 0)
+0043dc91        while (slug_state_cursor->state != SUB_SLUG_STATE_INACTIVE)
 0043dc93        eax += 1
 0043dc94        slug_state_cursor = &slug_state_cursor[1]
 0043dc9d        if (eax s>= 8)
 0043dca3        return eax
 0043dcbc        struct SlugSlotCursor* slug_slot_cursor = game + eax * 0xec
-0043dcbf        slug_slot_cursor->slug.state = 1
+0043dcbf        slug_slot_cursor->slug.state = SUB_SLUG_STATE_ACTIVE
 0043dcc9        slug_slot_cursor->slug.owner_player = owner_player
 0043dcd5        set_matrix_identity(&slug_slot_cursor->slug.body.transform)
 0043dcef        float x = cell->anchor_position.x

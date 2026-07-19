@@ -495,7 +495,7 @@
     {
       "address": "0x408530",
       "name": "initialize_slug_hazard_runtime",
-      "description": "Exact Windows constructor for one authored `Slug` (`cRSlug` cross-port): constructs the inherited renderable BOD and installs the table whose entry is `update_slug_hazard_ai`. `initialize_runtime_pools_and_path_template_bank` walks eight inline 0xec-byte records whose 0x760 extent exactly matches the native `Size of cRSlug` ledger."
+      "description": "Exact Windows constructor for one authored `Slug` (`cRSlug` cross-port): constructs the inherited renderable BOD and installs the table whose entry is `update_slug_hazard_ai`. `initialize_runtime_pools_and_path_template_bank` walks eight inline 0xec-byte records whose 0x760 extent exactly matches the native `Size of cRSlug` ledger; reset seeds each slot's typed `SubSlugState` to `INACTIVE`."
     },
     {
       "address": "0x408550",
@@ -2424,7 +2424,7 @@
     {
       "address": "0x43dc80",
       "name": "spawn_slug_hazard",
-      "description": "Exact allocator for one live `Slug`: scans the eight owned 0xec-byte records, installs the borrowed owner Player, scales `(0, 0, -0.2)` by the subgame rate, links the inherited body before the embedded Player tail, and arms the spaced engagement-voice gate. Android and iOS identify the owning caller as `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`. The Windows result shape remains intentionally unresolved: its sole caller discards EAX, but a void probe removes two native instructions."
+      "description": "Exact allocator for one live `Slug`: scans the eight owned 0xec-byte records for `SUB_SLUG_STATE_INACTIVE`, writes `SUB_SLUG_STATE_ACTIVE`, installs the borrowed owner Player, scales `(0, 0, -0.2)` by the subgame rate, links the inherited body before the embedded Player tail, and arms the spaced engagement-voice gate. Android and iOS identify the owning caller as `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`. The Windows result shape remains intentionally unresolved: its sole caller discards EAX, but a void probe removes two native instructions."
     },
     {
       "address": "0x43df10",
@@ -2509,12 +2509,12 @@
     {
       "address": "0x43f8b0",
       "name": "kill_slug_hazard",
-      "description": "Exact `Slug` kill transition from active to death-toss-pending: plays the death voice, records the right/left toss side, awards the slug score event through the containing SubgameRuntime's Player, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`."
+      "description": "Exact `Slug` kill transition from `SUB_SLUG_STATE_ACTIVE` to `SUB_SLUG_STATE_DEATH_TOSS_PENDING`: plays the death voice, records `SUB_SLUG_DEATH_TOSS_RIGHT` or `LEFT`, awards the slug score event through the containing SubgameRuntime's Player, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`."
     },
     {
       "address": "0x43f930",
       "name": "update_slug_hazard_ai",
-      "description": "Void slot-zero callback running one owned `SlugPool` record through inactive, active, lateral-active, death-toss-pending, and teardown-pending states. Each record borrows its containing SubgameRuntime, embedded owner Player, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`."
+      "description": "Void slot-zero callback running one owned `SlugPool` record through the typed `SubSlugState` lifecycle: inactive, active, lateral-active, death-toss-pending, and teardown-pending, with death flight oriented by `SubSlugDeathTossDirection`. Each record borrows its containing SubgameRuntime, embedded owner Player, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`."
     },
     {
       "address": "0x440020",
@@ -2692,7 +2692,7 @@
     {
       "address": "0x442500",
       "name": "initialize_vapour",
-      "description": "Exact void Windows `cRVapour::Init(cRObject*, float)`: stores the authored half-width, derives point capacity from the retained output `Object::facequad_count`, allocates the transform history, and resets the exact 0x94-byte Vapour owner. Android preserves the void contract and the same retained `cRObject*`; the explicit object argument is unused on both ports."
+      "description": "Exact void Windows `cRVapour::Init(cRObject*, float)`: stores the authored half-width, derives point capacity from the retained inherited `RenderableBod::bod.object` handle's `facequad_count`, allocates the transform history, and resets the exact 0x94-byte Vapour owner. Android preserves the void contract and the same retained `cRObject*`; the explicit object argument is unused on both ports."
     },
     {
       "address": "0x442540",

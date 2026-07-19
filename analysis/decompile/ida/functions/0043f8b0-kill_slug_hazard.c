@@ -8,16 +8,16 @@ void __thiscall kill_slug_hazard(Slug *slug)
   __int64 v2; // rax
   double x; // st7
 
-  if ( slug->state == 1 )
+  if ( slug->state == SUB_SLUG_STATE_ACTIVE )
   {
     v2 = (__int64)((double)next_math_random_value() * -0.000061035156);
     play_slug_voice(slug, 28 - v2);
     x = slug->body.transform.position.x;
-    slug->state = 2;
+    slug->state = SUB_SLUG_STATE_DEATH_TOSS_PENDING;
     if ( x <= 0.0 )
-      slug->death_toss_direction = 2;
+      slug->death_toss_direction = SUB_SLUG_DEATH_TOSS_LEFT;
     else
-      slug->death_toss_direction = 1;
+      slug->death_toss_direction = SUB_SLUG_DEATH_TOSS_RIGHT;
     add_subgoldy_score(&slug->owner_game->player, 1, 0);
     explode_slug_hazard(slug);
   }

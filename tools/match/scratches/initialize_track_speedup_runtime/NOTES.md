@@ -14,3 +14,11 @@ The complete object is 0xb4 bytes and ends exactly at the adjacent
 from the `RenderableBod` initialized here. This retires its duplicated
 `BodBase + TransformMatrix` fields while preserving inherited zero-offset list
 linkage. The constructor remains exact at 7/7 with both operands clean.
+
+## 2026-07-19 analysis-lane base composition
+
+The narrow Binary Ninja view now owns the same complete zero-offset
+`RenderableBod body` as the broad path header and matcher instead of replaying
+flattened base subfields. Broad and narrow syncs are consequently idempotent
+in either order. The constructor remains exact at 7/7 with both operands
+clean.
