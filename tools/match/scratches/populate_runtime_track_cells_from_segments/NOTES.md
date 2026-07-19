@@ -705,3 +705,29 @@ because VC6 ordinary enums are four bytes. Rebuilding the broad scratch leaves
 the honest result unchanged at 29.67%, 1,229/1,245 instructions, 66 clean
 operands, and the same two jump-table operand mismatches. No branch, table,
 register, or source dependency was changed for score.
+
+## 2026-07-19 runtime grid clear lifetimes
+
+The non-random length pass borrows `SubSegment::row_count` from each of the
+authored segment slots. Binary Ninja's exact EAX/ECX/EDX identities now expose
+that loop as `segment_slot_index`, `segment_row_count_cursor`, and
+`segment_row_count`; the cursor advances by `0x4220`, exactly
+`sizeof(SubSegment)`. It remains an `int32_t*` field cursor rather than being
+promoted to a fabricated, negatively biased `SubSegment*` owner.
+
+The following 3,200-row reset carries two more physical field cursors. The
+row cursor starts at `SubRow::projection_payload.y` and advances by `0xf4`,
+while the cell cursor starts at `TrackRowCell::fringe_front`, derives the
+neighboring `lane_and_flags` word at `-4`, and advances each lane by `0x54`.
+The replay names both outer countdowns, the lane-and-flags and list-flags
+values, and the current/next fringe-link cursors. It deliberately leaves the
+compiler's old-value loop temporaries anonymous and does not pretend either
+field cursor is a complete record owner.
+
+All 12 annotations survive reanalysis and a second guarded replay skips all 12
+as already current. The strict focused export passes both decompilers and all
+898 pre-existing health checks; the new owner-graph check pins the exact
+stride/cursor result. Matcher source and operands remain untouched at the
+honest 29.67%, 1,229/1,245-instruction frontier with 66 clean operands and the
+same two documented mismatches. No score-shaped source or operand fakematch
+was introduced.

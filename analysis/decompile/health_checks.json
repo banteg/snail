@@ -13420,6 +13420,42 @@
       ]
     },
     {
+      "name": "bn_runtime_grid_clear_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00435eb0-populate_runtime_track_cells_from_segments.c",
+      "required_substrings": [
+        "int32_t segment_slot_index = 0",
+        "int32_t* segment_row_count_cursor = &game->level_definition.segment_slots[0].row_count",
+        "int32_t segment_row_count",
+        "game->runtime_row_count += segment_row_count",
+        "segment_row_count_cursor = &segment_row_count_cursor[0x1088]",
+        "struct Fringe** row_fringe_front_cursor = &game->runtime_cells[0][0].fringe_front",
+        "int32_t* row_projection_y_cursor = &game->runtime_rows[0].projection_payload.y",
+        "int32_t rows_remaining = 0xc80",
+        "int32_t cell_lanes_remaining = 8",
+        "uint32_t* lane_and_flags_cursor = &row_fringe_front_cursor[-1]",
+        "uint32_t cell_lane_and_flags = *lane_and_flags_cursor",
+        "uint32_t cell_list_flags = lane_and_flags_cursor[-0xf]",
+        "struct Fringe** next_row_fringe_front_cursor = row_fringe_front_cursor",
+        "struct Fringe** cell_fringe_front_cursor = next_row_fringe_front_cursor",
+        "row_fringe_front_cursor = next_row_fringe_front_cursor",
+        "row_projection_y_cursor = &row_projection_y_cursor[0x3d]",
+        "rows_remaining -= 1"
+      ],
+      "forbidden_substrings": [
+        "int32_t* ecx_10",
+        "int32_t edx_7",
+        "struct Fringe** var_28",
+        "int32_t* edi",
+        "int32_t var_30 = 0xc80",
+        "int32_t i_7 = 8",
+        "uint32_t* esi_5",
+        "uint32_t lane_and_flags_1",
+        "uint32_t list_flags_29",
+        "struct Fringe** eax_20",
+        "struct Fringe** esi_6"
+      ]
+    },
+    {
       "name": "bn_runtime_cell_stride_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00435eb0-populate_runtime_track_cells_from_segments.c",
       "required_substrings": [

@@ -47,34 +47,34 @@
 00436043        level_mode_2, x87control_1 = ftol(x87control_1, (fconvert.t(game->challenge_difficulty_scalar) * fconvert.t(0.649999976f) + fconvert.t(0.349999994f)) * float.t(random_length_1))
 00436048        game->runtime_row_count = level_mode_2
 00436053        if (game->level_definition.random_enabled == 0)
-00436063        int32_t i = 0
+00436063        int32_t segment_slot_index = 0
 00436065        game->runtime_row_count = game->level_definition.last_segment.row_count + game->level_definition.first_segment.row_count
 00436070        if (game->level_definition.segment_count s> 0)
-00436072        int32_t* ecx_10 = &game->level_definition.segment_slots[0].row_count
-00436078        int32_t edx_7
-00436078        edx_7.b = (ecx_10 - 0xa87c)->:0xa87c.b
-00436078        edx_7:1.b = (ecx_10 - 0xa87c)->:0xa87d.b
-00436078        edx_7:2.b = (ecx_10 - 0xa87c)->:0xa87e.b
-00436078        edx_7:3.b = (ecx_10 - 0xa87c)->:0xa87f.b
-0043607f        i += 1
-00436080        game->runtime_row_count += edx_7
-00436089        ecx_10 = &ecx_10[0x1088]
-00436091        do while (i s< game->level_definition.segment_count)
+00436072        int32_t* segment_row_count_cursor = &game->level_definition.segment_slots[0].row_count
+00436078        int32_t segment_row_count
+00436078        segment_row_count.b = *segment_row_count_cursor
+00436078        segment_row_count:1.b = *(segment_row_count_cursor + 1)
+00436078        segment_row_count:2.b = *(segment_row_count_cursor + 2)
+00436078        segment_row_count:3.b = *(segment_row_count_cursor + 3)
+0043607f        segment_slot_index += 1
+00436080        game->runtime_row_count += segment_row_count
+00436089        segment_row_count_cursor = &segment_row_count_cursor[0x1088]
+00436091        do while (segment_slot_index s< game->level_definition.segment_count)
 00436093        segment_cursor = 0
 004360a2        game->completion_row_start = game->runtime_row_count - game->level_definition.last_segment.row_count
 004360ad        if (game->runtime_row_count s>= 0xc1c)
 004360c0        report_errorf("Track (%s) too long, Maximum Length %i", &game->level_definition.level_display_name, 0xc1c)
 00435fbc        if (level_mode_2 == 3)
 00435fc8        game->first_block_row_count = game->level_definition.first_segment.row_count
-00435fd9        int32_t i_6 = 0x10
+00435fd9        int32_t i_5 = 0x10
 00435fde        game->runtime_row_count = game->level_definition.last_segment.row_count + game->level_definition.first_segment.row_count
 00435ff2        int32_t esi_1
-00435ff2        int32_t i_1
+00435ff2        int32_t i
 00435fea        esi_1 = game->runtime_row_count + game->level_definition.segment_slots[0].row_count
-00435fec        i_1 = i_6
-00435fec        i_6 -= 1
+00435fec        i = i_5
+00435fec        i_5 -= 1
 00435fed        game->runtime_row_count = esi_1
-00435ff2        do while (i_1 != 1)
+00435ff2        do while (i != 1)
 00435ffa        segment_cursor = 0
 00436000        game->completion_row_start = esi_1 - game->level_definition.last_segment.row_count
 0043600d        game->completion_row_start = esi_1 - game->level_definition.last_segment.row_count
@@ -84,78 +84,73 @@
 004360d9        char first_or_last_row = 0
 004360de        int32_t row_event_owner = 0
 004360e2        game->player.follow_state.flag_3c = 0
-004360e9        struct Fringe** var_28 = &game->runtime_cells[0][0].fringe_front
-004360ed        int32_t* edi = &game->runtime_rows[0].projection_payload.y
-004360f3        int32_t var_30 = 0xc80
+004360e9        struct Fringe** row_fringe_front_cursor = &game->runtime_cells[0][0].fringe_front
+004360ed        int32_t* row_projection_y_cursor = &game->runtime_rows[0].projection_payload.y
+004360f3        int32_t rows_remaining = 0xc80
 00436192        bool cond:3_1
-004360fd        int32_t i_7 = 8
-00436102        edi[-0x25] = 0
-00436108        edi[6] = 0
-0043610b        edi[3] = 0
-0043610e        edi[0x15] = 0
-00436111        edi[4] = 0
-00436114        edi[1] = 0
-00436117        *edi = 0
-00436119        edi[-1] = 0
-0043611c        edi[2] = 0
-0043611f        edi[0x16] = 0
-00436122        edi[0x17] = 0
-00436129        uint32_t* esi_5 = &var_28[-1]
-0043615f        int32_t i_2
-0043612c        uint32_t lane_and_flags_1 = (esi_5 - 0x3bfb08)->runtime_cells[0][0].lane_and_flags
-0043612e        lane_and_flags_1:1.b &= 0x5f
-00436131        (esi_5 - 0x3bfb08)->runtime_cells[0][0].lane_and_flags = lane_and_flags_1
-00436133        (esi_5 - 0x3bfb08)->:0x3bfb05.b = 0
-00436137        (esi_5 - 0x3bfb08)->:0x3bfb08.w = 0
-00436146        (esi_5 - 0x3bfb08)->runtime_cells[0][0].lane_and_flags &= 0xffffafa7
-00436148        (esi_5 - 0x3bfb08)->:0x3bfb08.w = 0
-0043614d        uint32_t list_flags_29 = (esi_5 - 0x3bfb08)->runtime_cells[0][0].bod.list_flags
-00436150        list_flags_29.b &= 0x7f
-00436153        (esi_5 - 0x3bfb08)->runtime_cells[0][0].bod.list_flags = list_flags_29
-00436156        set_color_white(&esi_5[-6])
-0043615b        esi_5 = &esi_5[0x15]
-0043615e        i_2 = i_7
-0043615e        i_7 -= 1
-0043615f        do while (i_2 != 1)
-00436161        struct Fringe** eax_20 = var_28
+004360fd        int32_t cell_lanes_remaining = 8
+00436102        row_projection_y_cursor[-0x25] = 0
+00436108        row_projection_y_cursor[6] = 0
+0043610e        __builtin_memset(&row_projection_y_cursor[0x15], 0, 0xc)
+00436114        __builtin_memset(&row_projection_y_cursor[1], 0, 0x10)
+00436117        *row_projection_y_cursor = 0
+00436119        row_projection_y_cursor[-1] = 0
+00436129        uint32_t* lane_and_flags_cursor = &row_fringe_front_cursor[-1]
+0043615f        int32_t i_1
+0043612c        uint32_t cell_lane_and_flags = *lane_and_flags_cursor
+0043612e        cell_lane_and_flags:1.b &= 0x5f
+00436131        *lane_and_flags_cursor = cell_lane_and_flags
+00436133        *(lane_and_flags_cursor - 3) = 0
+00436137        *lane_and_flags_cursor = 0
+00436146        *lane_and_flags_cursor &= 0xffffafa7
+00436148        *lane_and_flags_cursor = 0
+0043614d        uint32_t cell_list_flags = lane_and_flags_cursor[-0xf]
+00436150        cell_list_flags.b &= 0x7f
+00436153        lane_and_flags_cursor[-0xf] = cell_list_flags
+00436156        set_color_white(&lane_and_flags_cursor[-6])
+0043615b        lane_and_flags_cursor = &lane_and_flags_cursor[0x15]
+0043615e        i_1 = cell_lanes_remaining
+0043615e        cell_lanes_remaining -= 1
+0043615f        do while (i_1 != 1)
+00436161        struct Fringe** next_row_fringe_front_cursor = row_fringe_front_cursor
 00436165        int32_t remaining_cell_lanes = 8
-0043617d        int32_t i_3
-0043616a        struct Fringe** esi_6 = eax_20
-0043616e        eax_20 = &eax_20[0x15]
-00436171        i_3 = remaining_cell_lanes
+0043617d        int32_t i_2
+0043616a        struct Fringe** cell_fringe_front_cursor = next_row_fringe_front_cursor
+0043616e        next_row_fringe_front_cursor = &next_row_fringe_front_cursor[0x15]
+00436171        i_2 = remaining_cell_lanes
 00436171        remaining_cell_lanes -= 1
-00436172        (esi_6 - 0x3bfb0c)->runtime_cells[0][0].fringe_front = nullptr
-00436174        (esi_6 - 0x3bfb0c)->runtime_cells[0][0].fringe_right = nullptr
-00436177        (esi_6 - 0x3bfb0c)->runtime_cells[0][0].fringe_left = nullptr
-0043617a        (esi_6 - 0x3bfb0c)->runtime_cells[0][0].fringe_back = nullptr
-0043617d        do while (i_3 != 1)
-0043617f        var_28 = eax_20
-00436187        edi = &edi[0x3d]
-0043618d        cond:3_1 = var_30 != 1
-0043618e        var_30 -= 1
+00436172        *cell_fringe_front_cursor = nullptr
+00436174        cell_fringe_front_cursor[1] = 0
+00436177        cell_fringe_front_cursor[2] = 0
+0043617a        cell_fringe_front_cursor[3] = 0
+0043617d        do while (i_2 != 1)
+0043617f        row_fringe_front_cursor = next_row_fringe_front_cursor
+00436187        row_projection_y_cursor = &row_projection_y_cursor[0x3d]
+0043618d        cond:3_1 = rows_remaining != 1
+0043618e        rows_remaining -= 1
 00436192        do while (cond:3_1)
 0043619f        if (game->level_definition.random_enabled == 1)
-004361a7        int32_t i_4 = 0
+004361a7        int32_t i_3 = 0
 004361ab        if (game->level_definition.segment_count s> 0)
 004361ad        uint8_t* visited_cursor = &game->level_definition.segment_slots[0].visited
 004361b3        *visited_cursor = 0
-004361bc        i_4 += 1
+004361bc        i_3 += 1
 004361bd        visited_cursor = &visited_cursor[0x4220]
-004361c5        do while (i_4 s< game->level_definition.segment_count)
+004361c5        do while (i_3 s< game->level_definition.segment_count)
 004361ca        int32_t build_row = 0
 004361d4        if (game->runtime_row_count s<= 0)
 004361d4        return
-004361da        int32_t i_5 = 0
+004361da        int32_t i_4 = 0
 004361de        struct SubgameRuntime* runtime = game
 004361e4        struct SubSegment* active_segment
 004361e4        int32_t segment_row_index_1
 004361e4        struct SubSegment* active_segment_4
-004361e4        if (i_5 == 0)
+004361e4        if (i_4 == 0)
 004361e6        active_segment_4 = &runtime->level_definition.first_segment
 004361ec        first_or_last_row = 1
 004361f1        active_segment = active_segment_4
-004361f5        active_segment_4->row_base = i_5
-00436209        if (i_5 != runtime->completion_row_start || runtime->level_definition.random_enabled != 0)
+004361f5        active_segment_4->row_base = i_4
+00436209        if (i_4 != runtime->completion_row_start || runtime->level_definition.random_enabled != 0)
 00436221        runtime->base_subgame_rate = 1f
 00436230        if (runtime->level_definition.random_enabled != 1)
 004362a4        int32_t segment_cursor_1 = segment_cursor
@@ -169,25 +164,25 @@
 00436241        char* var_58_5 = "Segdif"
 0043624c        x87_r7_9 = (fconvert.t(runtime->challenge_difficulty_scalar) * fconvert.t(0.899999976f) + fconvert.t(0.100000001f)) * float.t(runtime->level_definition.segment_count)
 0043625f        int32_t segment_row_index_2 = segment_row_index_1
-0043626b        int32_t eax_27
+0043626b        int32_t eax_26
 0043626b        int16_t x87control_2
-0043626b        eax_27, x87control_2 = ftol(x87control_1, random_float_below(fconvert.s(x87_r7_9)))
-0043627b        int32_t eax_28
-0043627b        eax_28, x87control_1 = ftol(x87control_2, float.t(eax_27) * fconvert.t(runtime->base_subgame_rate))
-0043628f        active_segment_4 = &runtime->level_definition.segment_slots[eax_28]
+0043626b        eax_26, x87control_2 = ftol(x87control_1, random_float_below(fconvert.s(x87_r7_9)))
+0043627b        int32_t eax_27
+0043627b        eax_27, x87control_1 = ftol(x87control_2, float.t(eax_26) * fconvert.t(runtime->base_subgame_rate))
+0043628f        active_segment_4 = &runtime->level_definition.segment_slots[eax_27]
 00436296        active_segment = active_segment_4
 0043629a        active_segment_4->visited = 1
 0043620b        active_segment_4 = &runtime->level_definition.last_segment
 00436211        first_or_last_row = 1
 00436216        active_segment = active_segment_4
-0043621a        active_segment_4->row_base = i_5
+0043621a        active_segment_4->row_base = i_4
 004362c7        segment_row_index_1 = switch_track_mirror(runtime)
 004362cc        int32_t row_count = active_segment_4->row_count
-004362cf        active_segment_4->row_base = i_5
+004362cf        active_segment_4->row_base = i_4
 004362d3        if (row_count s< 0)
 004362da        segment_row_index_1 = report_errorf("Negative Segment Length")
 004362e5        int32_t segment_row_index = 0
-004362ef        if (i_5 s< runtime->runtime_row_count)
+004362ef        if (i_4 s< runtime->runtime_row_count)
 00437168        int32_t j
 004362f9        segment_row_index_1 = segment_row_index
 00436300        if (segment_row_index_1 s>= *(active_segment + 4))
@@ -196,42 +191,42 @@
 0043630c        if (level_mode_3 != 2)
 0043630e        j = runtime->completion_row_start
 00436313        struct SubSegment* active_segment_1
-00436313        if (level_mode_3 == 2 || i_5 s< j)
+00436313        if (level_mode_3 == 2 || i_4 s< j)
 0043634b        active_segment_1 = active_segment
 00436326        if (level_mode_3 != 0 && level_mode_3 != 4 && level_mode_3 != 1 && level_mode_3 != 7)
 0043632b        active_segment_1 = &runtime->level_definition_scratch.segment_slots[1]
 00436331        if (level_mode_3 == 0 || level_mode_3 == 4 || level_mode_3 == 1 || level_mode_3 == 7 || level_mode_3 == 3)
 00436333        active_segment_1 = &runtime->level_definition.last_segment
 0043633b        active_segment = active_segment_1
-0043633f        if (i_5 == j)
+0043633f        if (i_4 == j)
 00436341        segment_row_index = 0
 00436352        if (level_mode_3 != 2)
 00436354        j = active_segment_1->row_count
 0043635b        int32_t completion_row_start = runtime->completion_row_start
-00436366        if (j - segment_row_index + i_5 s<= completion_row_start)
+00436366        if (j - segment_row_index + i_4 s<= completion_row_start)
 004363c5        active_segment_1 = active_segment
 00436368        active_segment_1 = active_segment
 004363a0        if (active_segment_1 != &runtime->level_definition_scratch.segment_slots[1] && active_segment_1 != &runtime->level_definition_scratch.segment_slots[3] && active_segment_1 != &runtime->level_definition_scratch.segment_slots[4] && (level_mode_3 == 0 || level_mode_3 == 4 || level_mode_3 == 1 || level_mode_3 == 7 || level_mode_3 == 3) && active_segment_1 != &runtime->level_definition.last_segment)
-004363b7        j = j - completion_row_start - segment_row_index + i_5
-004363bb        int32_t ecx_26 = runtime->runtime_row_count + j
+004363b7        j = j - completion_row_start - segment_row_index + i_4
+004363bb        int32_t ecx_25 = runtime->runtime_row_count + j
 004363bd        runtime->completion_row_start = completion_row_start + j
-004363c0        runtime->runtime_row_count = ecx_26
+004363c0        runtime->runtime_row_count = ecx_25
 004363ce        if (runtime->track_mirror_enabled != 0)
-004363d6        int32_t ecx_27 = i_5 * 0x3d
-004363ea        *(&runtime->runtime_rows + (ecx_27 << 2)) |= 0x20
-004363f7        int32_t ecx_31 = segment_row_index * 7
-00436403        struct SubSegmentRowStrideAnchor* segment_row_anchor = active_segment_1 + (ecx_31 << 3)
-00436406        if (((*(&active_segment_1->rows + (ecx_31 << 3))).w:1.b & 1) != 0)
-0043640e        int32_t ecx_32 = i_5 * 0x3d
-00436418        int32_t ecx_33 = *(&runtime->runtime_rows + (ecx_32 << 2))
-0043641f        ecx_33:1.b |= 1
-00436422        *(&runtime->runtime_rows + (ecx_32 << 2)) = ecx_33
+004363d6        int32_t ecx_26 = i_4 * 0x3d
+004363ea        *(&runtime->runtime_rows + (ecx_26 << 2)) |= 0x20
+004363f7        int32_t ecx_30 = segment_row_index * 7
+00436403        struct SubSegmentRowStrideAnchor* segment_row_anchor = active_segment_1 + (ecx_30 << 3)
+00436406        if (((*(&active_segment_1->rows + (ecx_30 << 3))).w:1.b & 1) != 0)
+0043640e        int32_t ecx_31 = i_4 * 0x3d
+00436418        int32_t ecx_32 = *(&runtime->runtime_rows + (ecx_31 << 2))
+0043641f        ecx_32:1.b |= 1
+00436422        *(&runtime->runtime_rows + (ecx_31 << 2)) = ecx_32
 0043642d        if (((segment_row_anchor->row.flags).w:1.b & 0x80) != 0)
-00436435        int32_t ecx_34 = i_5 * 0x3d
-0043643f        int32_t ecx_35 = *(&runtime->runtime_rows + (ecx_34 << 2))
-00436446        ecx_35:1.b |= 0x80
-00436449        *(&runtime->runtime_rows + (ecx_34 << 2)) = ecx_35
-00436458        struct RuntimeRowStrideAnchor* runtime_row_anchor = runtime + i_5 * 0xf4
+00436435        int32_t ecx_33 = i_4 * 0x3d
+0043643f        int32_t ecx_34 = *(&runtime->runtime_rows + (ecx_33 << 2))
+00436446        ecx_34:1.b |= 0x80
+00436449        *(&runtime->runtime_rows + (ecx_33 << 2)) = ecx_34
+00436458        struct RuntimeRowStrideAnchor* runtime_row_anchor = runtime + i_4 * 0xf4
 0043645c        runtime_row_anchor->row.source_segment = active_segment_1
 00436462        runtime_row_anchor->row.row_event_id = row_event_owner
 0043646f        if ((segment_row_anchor->row.flags.b & 2) != 0)
@@ -240,17 +235,17 @@
 0043647d        runtime_row_anchor->row.flags = flags
 004364a5        set_bod_object(&runtime_row_anchor->row.row_model, g_game_base->directx_loader.cached_x_mesh_slots[segment_row_anchor->row.object_id].object)
 004364b0        set_matrix_identity(&runtime_row_anchor->row.row_model.body.transform)
-004364c5        int32_t eax_49
-004364c5        eax_49.b = segment_row_anchor->row.object_position.x.b
-004364c5        eax_49:1.b = segment_row_anchor->row.object_position.x:1.b
-004364c5        eax_49:2.b = segment_row_anchor->row.object_position.x:2.b
-004364c5        eax_49:3.b = segment_row_anchor->row.object_position.x:3.b
-004364c7        runtime_row_anchor->row.row_model.body.transform.position.x = eax_49
+004364c5        int32_t eax_48
+004364c5        eax_48.b = segment_row_anchor->row.object_position.x.b
+004364c5        eax_48:1.b = segment_row_anchor->row.object_position.x:1.b
+004364c5        eax_48:2.b = segment_row_anchor->row.object_position.x:2.b
+004364c5        eax_48:3.b = segment_row_anchor->row.object_position.x:3.b
+004364c7        runtime_row_anchor->row.row_model.body.transform.position.x = eax_48
 004364cc        runtime_row_anchor->row.row_model.body.transform.position.y = segment_row_anchor->row.object_position.y
-004364cf        float ecx_43
-004364cf        ecx_43.b = segment_row_anchor->row.object_position.z.b
-004364cf        ecx_43:1.b = segment_row_anchor->row.object_position.z:1.b
-004364d2        runtime_row_anchor->row.row_model.body.transform.position.z = ecx_43
+004364cf        float ecx_42
+004364cf        ecx_42.b = segment_row_anchor->row.object_position.z.b
+004364cf        ecx_42:1.b = segment_row_anchor->row.object_position.z:1.b
+004364d2        runtime_row_anchor->row.row_model.body.transform.position.z = ecx_42
 004364db        runtime_row_anchor->row.row_model.body.transform.position.z = fconvert.s(float.t(build_row) + fconvert.t(runtime_row_anchor->row.row_model.body.transform.position.z))
 004364e8        if ((segment_row_anchor->row.flags.b & 8) == 0)
 0043651c        runtime_row_anchor->row.row_model.velocity.z = 0f
@@ -296,7 +291,7 @@
 0043661e        runtime_row_anchor->row.flags |= 0x1000
 00436631        char attachment_entry_installed = 0
 00436636        int32_t lane = 0
-00436648        *(runtime + ((i_5 + (i_5 * 3 + 0x12414) * 0x14 + 0x615c) << 2)) = segment_row_anchor->row.ring_speed.bits
+00436648        *(runtime + ((i_4 + (i_4 * 3 + 0x12414) * 0x14 + 0x615c) << 2)) = segment_row_anchor->row.ring_speed.bits
 00437143        bool cond:12_1
 00436655        int32_t lane_1
 00436655        int32_t lane_2
@@ -321,15 +316,15 @@
 004366e4        struct SubSegment* active_segment_2 = active_segment
 004366ee        char* ebp_3 = &active_segment_2->glyph_rows[0][(lane_2 << 8) + segment_row_index]
 004366f2        active_segment_2.b = *ebp_3
-004366f6        char eax_67 = normalize_segment_glyph_for_track_flags(game, active_segment_2.b, build_row, random_length_1.b)
-00436704        if (sx.d(eax_67) - 0x20 u> 0x5d)
+004366f6        char eax_66 = normalize_segment_glyph_for_track_flags(game, active_segment_2.b, build_row, random_length_1.b)
+00436704        if (sx.d(eax_66) - 0x20 u> 0x5d)
 00436eb5        label_436eb5:
 00436eb5        struct SubSegment* active_segment_3 = active_segment
 00436ebd        active_segment_3->source_name
 00436ec0        active_segment_3.b = *ebp_3
-0043670a        int32_t edx_29 = 0
-0043670c        edx_29.b = *(sx.d(eax_67) + &populate_runtime_track_cells_glyph_jump_table[0x14])
-00436712        switch (edx_29)
+0043670a        int32_t edx_28 = 0
+0043670c        edx_28.b = *(sx.d(eax_66) + &populate_runtime_track_cells_glyph_jump_table[0x14])
+00436712        switch (edx_28)
 00436719        case 0
 00436719        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_EMPTY
 00436720        uint32_t list_flags = runtime_cell_anchor->cell.bod.list_flags
@@ -369,13 +364,13 @@
 00436a14        uint32_t ebp_5 = runtime_cell_anchor->cell.bod.list_flags & 0xffffffdf
 00436a1a        trampoline_counter = trampoline_counter_1
 00436a1e        runtime_cell_anchor->cell.bod.list_flags = ebp_5
-00436a24        uint32_t eax_78 = ebp_5
+00436a24        uint32_t eax_77 = ebp_5
 00436a26        if (trampoline_counter_1 == 0xf)
 00436a28        trampoline_counter = 0
 00436a30        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_TRAMPOLINE
 00436a3f        if (trampoline_counter_1 != 8)
-00436aab        eax_78.b &= 0xdf
-00436aad        runtime_cell_anchor->cell.bod.list_flags = eax_78
+00436aab        eax_77.b &= 0xdf
+00436aad        runtime_cell_anchor->cell.bod.list_flags = eax_77
 00436ab3        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_TRAMPOLINE
 00436a41        struct GameRoot* game_base_5 = g_game_base
 00436a47        struct Object* object_4
@@ -521,17 +516,17 @@
 00436861        list_flags_8.b |= 0x20
 00436863        runtime_cell_anchor->cell.bod.list_flags = list_flags_8
 00436ce0        case 0x13
-00436ce0        if (eax_67 == 0x50)
+00436ce0        if (eax_66 == 0x50)
 00436ce2        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_PATH_ENTRY_UPPERCASE
-00436ced        if (eax_67 == 0x70)
+00436ced        if (eax_66 == 0x70)
 00436cef        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_PATH_ENTRY_LOWERCASE
 00436cfa        int32_t attachment_template_index = runtime_row_anchor->row.attachment_template_index
-00436d05        int32_t eax_92 = attachment_template_index << 3
-00436d0c        struct Path* ecx_99
+00436d05        int32_t eax_91 = attachment_template_index << 3
+00436d0c        struct Path* ecx_98
 00436d0c        if (game->track_mirror_enabled == 0)
-00436d27        ecx_99 = &game->path_pairs + (eax_92 - attachment_template_index) * 0x30
-00436d16        ecx_99 = &game->path_pairs[0].secondary + (eax_92 - attachment_template_index) * 0x30
-00436d32        runtime_cell_anchor->cell.attachment_template_record = ecx_99
+00436d27        ecx_98 = &game->path_pairs + (eax_91 - attachment_template_index) * 0x30
+00436d16        ecx_98 = &game->path_pairs[0].secondary + (eax_91 - attachment_template_index) * 0x30
+00436d32        runtime_cell_anchor->cell.attachment_template_record = ecx_98
 00436d43        runtime_cell_anchor->cell.bod.list_flags &= 0xffffffdf
 00436d49        if (attachment_entry_installed == 0)
 00436d57        attachment_entry_installed = 1
@@ -543,23 +538,23 @@
 00436db4        int32_t k = 0
 00436dbb        if (runtime_cell_anchor->cell.attachment_template_record->row_span_count s> 0)
 00436dc1        struct SubRow* stamped_row = &runtime_row_anchor->row
-00436dc7        int32_t eax_101
-00436dc7        eax_101.b = stamped_row->flags.b
-00436dc7        eax_101:1.b = stamped_row->flags:1.b
-00436dc7        eax_101:2.b = stamped_row->flags:2.b
-00436dc7        eax_101:3.b = stamped_row->flags:3.b
-00436dcb        if ((eax_101.b & 0x40) == 0)
-00436dd9        eax_101.b |= 0x40
-00436ddb        stamped_row->flags.b = eax_101.b
-00436ddb        stamped_row->flags:1.b = eax_101:1.b
-00436ddb        stamped_row->flags:2.b = eax_101:2.b
-00436ddb        stamped_row->flags:3.b = eax_101:3.b
+00436dc7        int32_t eax_100
+00436dc7        eax_100.b = stamped_row->flags.b
+00436dc7        eax_100:1.b = stamped_row->flags:1.b
+00436dc7        eax_100:2.b = stamped_row->flags:2.b
+00436dc7        eax_100:3.b = stamped_row->flags:3.b
+00436dcb        if ((eax_100.b & 0x40) == 0)
+00436dd9        eax_100.b |= 0x40
+00436ddb        stamped_row->flags.b = eax_100.b
+00436ddb        stamped_row->flags:1.b = eax_100:1.b
+00436ddb        stamped_row->flags:2.b = eax_100:2.b
+00436ddb        stamped_row->flags:3.b = eax_100:3.b
 00436ddd        stamped_row->primary_attachment_cell = &runtime_cell_anchor->cell
-00436dcd        eax_101.b |= 0x80
-00436dcf        stamped_row->flags.b = eax_101.b
-00436dcf        stamped_row->flags:1.b = eax_101:1.b
-00436dcf        stamped_row->flags:2.b = eax_101:2.b
-00436dcf        stamped_row->flags:3.b = eax_101:3.b
+00436dcd        eax_100.b |= 0x80
+00436dcf        stamped_row->flags.b = eax_100.b
+00436dcf        stamped_row->flags:1.b = eax_100:1.b
+00436dcf        stamped_row->flags:2.b = eax_100:2.b
+00436dcf        stamped_row->flags:3.b = eax_100:3.b
 00436dd1        stamped_row->secondary_attachment_cell = &runtime_cell_anchor->cell
 00436de9        k += 1
 00436dea        stamped_row = &stamped_row[1]
@@ -644,11 +639,11 @@
 00436ef8        runtime_row_anchor->row.attachment_body.position.y = 0f
 00436efe        runtime_row_anchor->row.attachment_body.position.x = 0
 00436f04        enum SubLocTileId tile_id = runtime_cell_anchor->cell.tile_id
-00436f10        float var_28_2
+00436f10        float var_28_1
 00436f10        if (tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE)
 00436f67        runtime_cell_anchor->cell.anchor_position.x = 0
 00436f69        long double x87_r7_28 = float.t(build_row) + fconvert.t(0.5f)
-00436f6f        var_28_2 = fconvert.s(x87_r7_28)
+00436f6f        var_28_1 = fconvert.s(x87_r7_28)
 00436f73        long double x87_r7_29 = x87_r7_28 - fconvert.t(0.5f)
 00436f79        runtime_cell_anchor->cell.anchor_position.z = fconvert.s(x87_r7_29)
 00436f86        if ((g_runtime_config.render_flags.b & 0x20) == 0)
@@ -658,45 +653,45 @@
 00436f88        runtime_row_anchor->row.attachment_body.position.x = 0
 00436f92        runtime_row_anchor->row.attachment_body.position.z = fconvert.s(x87_r7_29)
 00436fa4        struct tColour out
-00436fa4        struct tColour* eax_110 = get_track_skirt_color(&g_game_base->subgame, &out)
-00436fb4        float r = eax_110->r
+00436fa4        struct tColour* eax_109 = get_track_skirt_color(&g_game_base->subgame, &out)
+00436fb4        float r = eax_109->r
 00436fb6        runtime_row_anchor->row.attachment_body.color.r.b = r.b
 00436fb6        runtime_row_anchor->row.attachment_body.color.r:1.b = r:1.b
 00436fb6        runtime_row_anchor->row.attachment_body.color.r:2.b = r:2.b
 00436fb6        runtime_row_anchor->row.attachment_body.color.r:3.b = r:3.b
-00436fbb        runtime_row_anchor->row.attachment_body.color.g = eax_110->g
-00436fbe        int16_t b_1 = (eax_110->b).w
+00436fbb        runtime_row_anchor->row.attachment_body.color.g = eax_109->g
+00436fbe        int16_t b_1 = (eax_109->b).w
 00436fc1        runtime_row_anchor->row.attachment_body.color.b.b = b_1.b
 00436fc1        runtime_row_anchor->row.attachment_body.color.b:1.b = b_1:1.b
-00436fc7        runtime_row_anchor->row.attachment_body.color.a = eax_110->a
-00436fd3        float g = eax_110->g
-00436fdc        float b = eax_110->b
-00436fdf        float a = eax_110->a
-00436fe9        x87control_1 = set_object_color(runtime_row_anchor->row.attachment_body.object, eax_110->r)
+00436fc7        runtime_row_anchor->row.attachment_body.color.a = eax_109->a
+00436fd3        float g = eax_109->g
+00436fdc        float b = eax_109->b
+00436fdf        float a = eax_109->a
+00436fe9        x87control_1 = set_object_color(runtime_row_anchor->row.attachment_body.object, eax_109->r)
 00436f22        runtime_cell_anchor->cell.anchor_position.x = fconvert.s(float.t(lane) - fconvert.t(4f) + fconvert.t(0.5f))
 00436f24        runtime_cell_anchor->cell.anchor_position.y = 0f
 00436f2a        tile_id = runtime_cell_anchor->cell.tile_id
 00436f3a        if (tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED || tile_id == SUBLOC_TILE_RAMP_GREATER_RAISED || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED)
 00436f3c        runtime_cell_anchor->cell.anchor_position.y = 0.5f
-00436f50        var_28_2 = fconvert.s(float.t(build_row) + fconvert.t(0.5f))
-00436f58        runtime_cell_anchor->cell.anchor_position.z = var_28_2
+00436f50        var_28_1 = fconvert.s(float.t(build_row) + fconvert.t(0.5f))
+00436f58        runtime_cell_anchor->cell.anchor_position.z = var_28_1
 00437014        if (build_row s< 4 && game->level_mode != 2)
 0043701f        runtime_cell_anchor->cell.anchor_position.y = game->path_pairs[0x24].primary.primary_samples->transform.position.y
 0043702c        if (runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_UNIVERSE_HOLE)
 0043703a        runtime_cell_anchor->cell.anchor_position.y = fconvert.s(fconvert.t(runtime_cell_anchor->cell.anchor_position.y) - fconvert.t(0.0299999993f))
 00437040        tile_id = runtime_cell_anchor->cell.tile_id
 00437080        if (tile_id == SUBLOC_TILE_FLOOR_DOT || tile_id == SUBLOC_TILE_FLOOR_DASH || tile_id == SUBLOC_TILE_FLOOR_VARIANT_14 || tile_id == SUBLOC_TILE_GARBAGE_HAZARD || tile_id == SUBLOC_TILE_SALT_HAZARD || tile_id == SUBLOC_TILE_SLIDE_UNDERSCORE || tile_id == SUBLOC_TILE_SLIDE_O || tile_id == SUBLOC_TILE_HEALTH_PICKUP || tile_id == SUBLOC_TILE_SPEEDUP_PICKUP || tile_id == SUBLOC_TILE_JETPACK_PICKUP || tile_id == SUBLOC_TILE_SLIDE_VARIANT_1A || tile_id == SUBLOC_TILE_FLOOR_VARIANT_1B || tile_id == SUBLOC_TILE_SLUG_HAZARD || tile_id == SUBLOC_TILE_SLIDE_F || tile_id == SUBLOC_TILE_GLYPH_G)
-0043708d        int32_t ecx_120 = build_row & 0x80000007
+0043708d        int32_t ecx_119 = build_row & 0x80000007
 004370a1        runtime_cell_anchor->cell.render_arg_1c = fconvert.s(float.t(8 - lane) * fconvert.t(0.125f))
-004370a7        if (ecx_120 s< 0)
-004370ad        ecx_120 = ((ecx_120 - 1) | 0xfffffff8) + 1
-004370bc        runtime_cell_anchor->cell.render_arg_20 = fconvert.s(float.t(ecx_120) * fconvert.t(0.125f))
+004370a7        if (ecx_119 s< 0)
+004370ad        ecx_119 = ((ecx_119 - 1) | 0xfffffff8) + 1
+004370bc        runtime_cell_anchor->cell.render_arg_20 = fconvert.s(float.t(ecx_119) * fconvert.t(0.125f))
 004370c9        if (runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_WIDE_VARIANT_1F)
 004370d3        runtime_cell_anchor->cell.anchor_position.x = fconvert.s(fconvert.t(runtime_cell_anchor->cell.anchor_position.x) * fconvert.t(1.10000002f))
 004370dc        if (runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_TRAMPOLINE)
 004370ea        if (game->level_mode != 3 || ((game->runtime_flags).w:1.b & 4) != 0)
 004370ec        runtime_cell_anchor->cell.anchor_position.y = -3f
-004370fa        runtime_cell_anchor->cell.anchor_position.z = var_28_2
+004370fa        runtime_cell_anchor->cell.anchor_position.z = var_28_1
 00437100        struct Fringe** fringe_slot = &runtime_cell_anchor->cell.fringe_front
 00437104        int32_t remaining_fringe_slots = 4
 00437135        int32_t k_1
@@ -727,10 +722,10 @@
 00437159        j = build_row + 1
 0043715a        segment_row_index += 1
 00437160        build_row = j
-00437164        i_5 = j
+00437164        i_4 = j
 00437166        runtime = game
 00437168        do while (j s< game->runtime_row_count)
 0043717a        if (runtime->level_mode != 3 || first_or_last_row == 0)
 0043717c        row_event_owner += 1
-00437183        do while (i_5 s< runtime->runtime_row_count)
+00437183        do while (i_4 s< runtime->runtime_row_count)
 00437190        return

@@ -9439,6 +9439,141 @@ def test_subgame_player_teardown_lifetime_replay_stays_guarded() -> None:
     assert "apply_user_var_updates" in replay
 
 
+def test_runtime_grid_clear_lifetime_replay_stays_guarded() -> None:
+    replay = (BINJA_DIR / "sync_runtime_grid_clear_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for owner_name, expected_size in (
+        ("BodNode", "0x10"),
+        ("Vec3", "0x0C"),
+        ("tColour", "0x10"),
+        ("Fringe", "0x38"),
+        ("SubSegment", "0x4220"),
+        ("SubTracks", "0x1A5978"),
+        ("TrackRowCell", "0x54"),
+        ("SubRow", "0xF4"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("SubSegment", "0x04", "row_count", "int32_t"),
+        ("SubTracks", "0x04", "segment_slots", "SubSegment[100]"),
+        ("TrackRowCell", "0x28", "color", "tColour"),
+        ("TrackRowCell", "0x3D", "open_edge_mask", "uint8_t"),
+        ("TrackRowCell", "0x40", "lane_and_flags", "uint32_t"),
+        ("TrackRowCell", "0x44", "fringe_front", "Fringe*"),
+        ("SubRow", "0x90", "projection_payload", "Vec3"),
+        ("SubRow", "0xA4", "primary_attachment_cell", "TrackRowCell*"),
+        ("SubRow", "0xEC", "source_segment", "SubSegment*"),
+        ("SubgameRuntime", "0xA874", "level_definition", "SubTracks"),
+        (
+            "SubgameRuntime",
+            "0x3BFAC8",
+            "runtime_cells",
+            "TrackRowCell[3200][8]",
+        ),
+        (
+            "SubgameRuntime",
+            "0x5CCAC8",
+            "runtime_rows",
+            "SubRow[3200]",
+        ),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        ("RegisterVariableSourceType", 435, 66, "segment_slot_index", "int32_t"),
+        (
+            "RegisterVariableSourceType",
+            450,
+            67,
+            "segment_row_count_cursor",
+            "int32_t*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            456,
+            68,
+            "segment_row_count",
+            "int32_t",
+        ),
+        (
+            "StackVariableSourceType",
+            569,
+            -40,
+            "row_fringe_front_cursor",
+            "Fringe**",
+        ),
+        (
+            "RegisterVariableSourceType",
+            573,
+            73,
+            "row_projection_y_cursor",
+            "int32_t*",
+        ),
+        ("StackVariableSourceType", 579, -48, "rows_remaining", "int32_t"),
+        (
+            "RegisterVariableSourceType",
+            636,
+            71,
+            "cell_lanes_remaining",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            633,
+            72,
+            "lane_and_flags_cursor",
+            "uint32_t*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            638,
+            67,
+            "cell_lane_and_flags",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            669,
+            68,
+            "cell_list_flags",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            689,
+            66,
+            "next_row_fringe_front_cursor",
+            "Fringe**",
+        ),
+        (
+            "RegisterVariableSourceType",
+            698,
+            72,
+            "cell_fringe_front_cursor",
+            "Fringe**",
+        ),
+    ):
+        expected = (
+            '        "populate_runtime_track_cells_from_segments",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert "remaining_cell_lanes" not in replay
+
+
 def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     track_sync = (BINJA_DIR / "sync_track_render_cache_types.py").read_text(
         encoding="utf-8"
