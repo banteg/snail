@@ -32,3 +32,22 @@ seven clean operands.
   position/UV deduplicate-or-append algorithm, but it lacks the Windows
   projected-UV, diffuse-color, and capacity wrapper. It is corroborating
   behavior, not asserted as this exact Windows owner or ABI.
+
+## 2026-07-19 exact UV-pair cursor
+
+The final scheduling residual identified one narrower borrowed owner inside
+the staging record. Treating `ObjectRenderVertex::u` and `::v` as a two-float
+cursor, writing U through `*vertex_uv++` and then the already-live flipped V
+through `*vertex_uv`, gives VC6 the native store dependency without a barrier,
+volatile qualifier, or register-shaped construct. Focused Wibo is now exact:
+`100.00%`, `103/103` instructions, prefix `103`, with all seven masked
+operands clean.
+
+This does not invent a second retained object. The cursor borrows the
+contiguous texture-coordinate lane at `ObjectRenderVertex +0x10..+0x17`, then
+expires before the diffuse write and count update. A canonical `ObjectUv*`
+view and moving or reversing the scalar declarations were tested: all remain
+at `99.03%` because VC6 independently schedules the V store before U. The
+post-increment cursor is therefore the smallest source-shaped expression that
+both captures the pair ownership and explains the native order; the broader
+record layout remains unchanged.

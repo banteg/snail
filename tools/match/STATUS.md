@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**626/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **100057/317040** bytes (**31.56%**) are proof-grade, and overall fuzzy is **76.21%**.
+**627/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **100356/317040** bytes (**31.65%**) are proof-grade, and overall fuzzy is **76.21%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
-## Proof Grade (626)
+## Proof Grade (627)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -311,6 +311,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_authored_view_width | 0x433030 | 7 | 2/2 | 100.00% | 2/2 | 1 ok |  |
 | ✅ | get_authored_view_height | 0x433040 | 7 | 2/2 | 100.00% | 2/2 | 1 ok |  |
 | ✅ | launch_alpha72_url | 0x433050 | 16 | 3/3 | 100.00% | 3/3 | 2 ok |  |
+| ✅ | add_track_cache_vertex | 0x433830 | 299 | 103/103 | 100.00% | 103/103 | 7 ok |  |
 | ✅ | update_track_render_cache_rows | 0x433b30 | 848 | 227/227 | 100.00% | 227/227 | 27 ok |  |
 | ✅ | update_active_bod | 0x433e80 | 147 | 50/50 | 100.00% | 50/50 | 7 ok |  |
 | ✅ | bind_subgame_owner | 0x433fc0 | 13 | 4/4 | 100.00% | 4/4 | 1 ok |  |
@@ -637,7 +638,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (28)
+## Near Match (95-99.99%) (27)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -657,7 +658,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.32% | 408/440 | 73 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 99.18% | 29/122 | 18 ok |  |
 | 🚧 | build_track_render_caches | 0x433220 | 1552 | 475/475 | 99.79% | 90/475 | 20 ok |  |
-| 🚧 | add_track_cache_vertex | 0x433830 | 299 | 103/103 | 99.03% | 76/103 | 7 ok |  |
 | 🚧 | append_track_cache_object | 0x433960 | 454 | 167/167 | 95.81% | 16/167 | 6 ok |  |
 | 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 97.57% | 126/247 | 25 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 99/99 | 98.99% | 79/99 | - |  |

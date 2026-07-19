@@ -48,8 +48,9 @@ int SegmentCache::add_track_cache_vertex(
     vertex->x = transformed.x;
     vertex->y = transformed.y;
     vertex->z = transformed.z;
-    vertex->u = u;
-    vertex->v = flipped_v;
+    float* vertex_uv = &vertex->u;
+    *vertex_uv++ = u;
+    *vertex_uv = flipped_v;
     vertex->diffuse = color;
 
     ++*vertex_count;
