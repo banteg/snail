@@ -80,3 +80,22 @@ The analysis prototype now preserves that contract as
 `void __thiscall select_track_tile_edge_variants(SubgameRuntime*)`. This
 removes a fabricated return value from both decompilers without altering one
 matcher byte or weakening any existing ownership check.
+
+## 2026-07-19 tile-cursor lifetime
+
+The live ESI induction variable is a borrowed field-first view rooted at
+`TrackRowCell::tile_id`, not a complete `TrackRowCell` owner. Replaying it as
+`TrackRowCellTileByteView*` recovers the current cell's `tile_id`,
+`open_edge_mask`, and packed `lane_and_flags` accesses plus the exact `0x54`
+cell stride. The view's tail only provides that stride and does not claim
+ownership of the bytes it overlaps.
+
+Neighbor and containing-cell borrows remain explicit physical displacements
+from the field-first cursor: `-0x90` for the previous lane, `+0x18` for the
+next lane, `-0x2dc` for the previous row, `+0x264` for the next row, and
+`-0x3c` for the containing cell passed to the BOD helpers. This keeps the
+analysis honest while eliminating the former fabricated giant-owner
+expressions such as `(esi_1 - 0x3bfb04)->:0x3bfb04.b`.
+
+The matcher remains exact at 220/220 instructions with 18 clean operand
+constraints; no matching source or expected byte was changed.

@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "mark_track_warning_zones",
-      "address": "0x4354f0"
+      "name": "select_track_tile_edge_variants",
+      "address": "0x435a80"
     }
   ],
   "health_check_count": 903,

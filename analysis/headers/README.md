@@ -291,9 +291,10 @@ borrow automatic with `uv run python
 tools/binja/sync_landscape_activation_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 
-After the canonical runtime grid exists, replay the three field-first warning
-scan cursors with `uv run python tools/binja/sync_track_warning_lifetimes.py
---target SnailMail_unwrapped.exe.bndb`.
+After the canonical runtime grid exists, replay the field-first warning and
+edge-selection scan cursors with `uv run python
+tools/binja/sync_track_warning_lifetimes.py --target
+SnailMail_unwrapped.exe.bndb`.
 
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded

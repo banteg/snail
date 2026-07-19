@@ -11406,4 +11406,14 @@ def test_track_warning_replay_preserves_field_first_cell_borrows() -> None:
     assert "types_declare_if_missing" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert (
+        '        "select_track_tile_edge_variants",\n'
+        '        "RegisterVariableSourceType",\n'
+        '        28,\n'
+        '        72,\n'
+        '        "tile_cursor",\n'
+        '        "TrackRowCellTileByteView*"'
+        in replay
+    )
+    assert "TRACK_TILE_EDGE_USER_VAR_UPDATES" in replay
     assert "TrackRowCell*" not in replay.split("TRACK_WARNING_USER_VAR_UPDATES", 1)[1]

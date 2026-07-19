@@ -8155,13 +8155,22 @@
       "required_substrings": [
         "game->runtime_row_count",
         "&game->runtime_cells[0][0].tile_id",
-        "runtime_cells[0][0].lane_and_flags",
+        "struct TrackRowCellTileByteView* tile_cursor",
+        "tile_cursor->open_edge_mask = 0",
+        "tile_cursor->lane_and_flags",
+        "enum SubLocTileId tile_id = tile_cursor->tile_id",
+        "is_sub_loc_empty(tile_cursor - 0x90)",
+        "set_bod_object(tile_cursor - 0x3c",
+        "tile_cursor = &tile_cursor[1]",
         "g_game_base->root_bod_catalog.floor_corners",
         "g_game_base->root_bod_catalog.slide_corners"
       ],
       "forbidden_substrings": [
         "struct Game*",
         "__offset(Game",
+        "enum SubLocTileId* esi_1",
+        "(esi_1 - 0x3bfb04)",
+        ":0x3bfb05.b",
         "__asm",
         "_ET1"
       ]

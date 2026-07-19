@@ -73,12 +73,27 @@ TRACK_WARNING_USER_VAR_UPDATES = (
     ),
 )
 
+# SmoothTrack uses the same field-first tile cursor for its exact 220/220 edge
+# selection pass. The neighboring full-cell borrows remain explicit byte
+# displacements from this cursor; this update only restores the current cell's
+# tile/open-edge/packed-flag fields and the exact 0x54 induction.
+TRACK_TILE_EDGE_USER_VAR_UPDATES = (
+    (
+        "select_track_tile_edge_variants",
+        "RegisterVariableSourceType",
+        28,
+        72,
+        "tile_cursor",
+        "TrackRowCellTileByteView*",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the field-first TrackRowCell tile cursors in "
-            "mark_track_warning_zones."
+            "Replay the field-first TrackRowCell tile cursors in the warning "
+            "and edge-selection passes."
         )
     )
     parser.add_argument(
@@ -152,7 +167,10 @@ def main() -> int:
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=TRACK_WARNING_USER_VAR_UPDATES,
+            updates=(
+                *TRACK_WARNING_USER_VAR_UPDATES,
+                *TRACK_TILE_EDGE_USER_VAR_UPDATES,
+            ),
         ),
     ]
     return emit_summary(
