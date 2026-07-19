@@ -1715,11 +1715,11 @@ typedef enum CompletionState {
 } CompletionState;
 
 typedef struct Completion {
-    void* widget_a;
-    void* delivered_count_widget;
-    void* bonus_widget;
-    void* widget_d;
-    void* continue_widget;
+    FrontendWidget* widget_a;
+    FrontendWidget* delivered_count_widget;
+    FrontendWidget* bonus_widget;
+    FrontendWidget* widget_d;
+    FrontendWidget* continue_widget;
     CompletionState state;
     uint8_t gate_18;
     uint8_t _pad_19[0x3];

@@ -106,3 +106,30 @@ one-at-a-time delivery-sprite setup. The state name also closes the shared
 0x50-byte owner's transition into its exact AI and teardown members. Focused
 output remains byte-stable at 89.89%, 276/278 instructions, prefix 23/278,
 with all 44 operands clean.
+
+## 2026-07-19 canonical replay ownership
+
+- The dedicated IDA completion header duplicated the full frontend type
+  universe and also replayed three unrelated `Exit` methods with stale `int`
+  ABIs. The completion lane now owns only the four retained
+  `cRCompletion` methods and imports the aggregate path-template ownership
+  header. A trial import of the narrower SubgameRuntime header was rejected
+  because its intentionally sparse Player prefix regressed already-recovered
+  presentation fields; this is concrete evidence that the aggregate header is
+  still useful rather than campaign clutter.
+- The aggregate `Completion` now types all five UI handles as borrowed
+  `FrontendWidget*` values. IDA consequently recovers the sprite shadow,
+  text-buffer, and widget calls without `void*` casts. The initializer's exact
+  stack local at definition `0x404a5f`, stack offset `48`, is replayed as the
+  canonical `tColour`, removing the residual `Color4f` alias and casts.
+- Binary Ninja gained a previewed transactional function-reanalysis batch, so
+  an otherwise-current owner replay still refreshes these four lifecycle
+  decompiles. Both tracked lanes now expose `GameRoot::subgame`, the selected
+  `SubSolution`, `BorderManager`, completion bonus tables, and the shared
+  `CompletionState` transitions; health checks prevent the raw root global or
+  the retired `CompletionResultScreen` overlay from returning.
+
+This is analysis/replay ownership work only. The candidate remains honestly at
+89.89%, 276/278 instructions, prefix 23/278, with all 44 operands clean; the
+documented x/y register allocation residual remains visible and was not
+fakematched.

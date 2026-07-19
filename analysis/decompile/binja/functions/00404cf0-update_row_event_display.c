@@ -61,7 +61,7 @@
 00404e49        struct GameRoot* game_base_2 = g_game_base
 00404e55        if (game_base_2->subgame.level_mode == 1)
 00404e63        add_subgoldy_score(&game_base_2->subgame.player, 5, completion->bonus_score)
-00404e6f        play_sound_effect(0x31)
+00404e6f        play_sound_effect(&g_sound_effect_manager, 0x31)
 00404e74        label_404e74:
 00404e74        game_base_2 = g_game_base
 00404e7c        if (completion->bonus_enabled != 0)
@@ -78,7 +78,7 @@
 00404eb1        game_base_2 = g_game_base
 00404ec2        if (((game_base_2->players[0].game_input->input.pressed_buttons).w:1.b & 0x40) != 0)
 00404ecb        completion->state = COMPLETION_STATE_CONTINUE_ACCEPTED
-00404ed2        play_sound_effect(8)
+00404ed2        play_sound_effect(&g_sound_effect_manager, 8)
 00404ed7        label_404ed7:
 00404ed7        game_base_2 = g_game_base
 00404f08        long double x87_r6_5 = fconvert.t(game_base_2->players[0].body.transform.basis_up.x)

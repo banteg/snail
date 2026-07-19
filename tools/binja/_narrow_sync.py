@@ -287,6 +287,24 @@ try:
             affected_functions.append(str(function.name))
             continue
 
+        if kind == "reanalyze_function":
+            function = find_function(operation["identifier"])
+            before = {
+                "name": str(function.name),
+                "address": hex(int(function.start)),
+            }
+            function.reanalyze()
+            results.append({
+                "op": kind,
+                "identifier": str(operation["identifier"]),
+                "function": str(function.name),
+                "address": hex(int(function.start)),
+                "before": before,
+                "changed": True,
+            })
+            affected_functions.append(str(function.name))
+            continue
+
         if kind == "struct_field_set":
             struct_name = str(operation["struct_name"])
             type_obj = bv.get_type_by_name(struct_name)
@@ -347,6 +365,14 @@ try:
             }
             entry["observed"] = observed
             entry["verified"] = observed == entry["expected"]
+        elif entry["op"] == "reanalyze_function":
+            function = find_function(entry["identifier"])
+            observed = {
+                "name": str(function.name),
+                "address": hex(int(function.start)),
+            }
+            entry["observed"] = observed
+            entry["verified"] = observed == entry["before"]
         else:
             type_obj = bv.get_type_by_name(entry["struct_name"])
             member = (
@@ -470,6 +496,32 @@ def run_previewed_bn_batch(
         },
         "apply": applied,
     }
+
+
+def reanalyze_functions(
+    repo_root: Path, *, target: str, identifiers: Iterable[str]
+) -> list[dict[str, object]]:
+    operations = [
+        {
+            "op": "reanalyze_function",
+            "identifier": identifier,
+        }
+        for identifier in identifiers
+    ]
+    if not operations:
+        return []
+    return [
+        {
+            "op": "function_reanalysis_batch",
+            "operation_count": len(operations),
+            "operations": operations,
+            "result": run_previewed_bn_batch(
+                repo_root,
+                target=target,
+                operations=operations,
+            ),
+        }
+    ]
 
 
 def apply_direct_proto_updates_batch(

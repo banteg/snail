@@ -34,21 +34,21 @@ void __thiscall update_row_event_display(Completion *completion)
 
   if ( completion->state )
   {
-    delivered_count_widget = (FrontendWidget *)completion->delivered_count_widget;
+    delivered_count_widget = completion->delivered_count_widget;
     if ( g_game_base->subgame.subgame_pause_gate )
     {
       hide_border_init(delivered_count_widget);
-      hide_border_init((FrontendWidget *)completion->widget_a);
-      hide_border_init((FrontendWidget *)completion->widget_d);
-      hide_border_init((FrontendWidget *)completion->bonus_widget);
-      hide_border_init((FrontendWidget *)completion->continue_widget);
+      hide_border_init(completion->widget_a);
+      hide_border_init(completion->widget_d);
+      hide_border_init(completion->bonus_widget);
+      hide_border_init(completion->continue_widget);
     }
     else
     {
       unhide_border_init(delivered_count_widget);
-      unhide_border_init((FrontendWidget *)completion->widget_a);
-      unhide_border_init((FrontendWidget *)completion->widget_d);
-      unhide_border_init((FrontendWidget *)completion->continue_widget);
+      unhide_border_init(completion->widget_a);
+      unhide_border_init(completion->widget_d);
+      unhide_border_init(completion->continue_widget);
       switch ( completion->state )
       {
         case COMPLETION_STATE_INACTIVE:
@@ -90,20 +90,20 @@ void __thiscall update_row_event_display(Completion *completion)
           }
           goto LABEL_27;
         case COMPLETION_STATE_SUMMARY_PENDING:
-          unhide_border_init((FrontendWidget *)completion->continue_widget);
+          unhide_border_init(completion->continue_widget);
           bonus_enabled = completion->bonus_enabled;
           completion->gate_18 = 0;
           completion->state = COMPLETION_STATE_SUMMARY_ACTIVE;
           if ( !bonus_enabled )
             goto LABEL_18;
-          unhide_border_init((FrontendWidget *)completion->bonus_widget);
+          unhide_border_init(completion->bonus_widget);
           if ( completion->parcel_target_count )
             goto LABEL_18;
           v11 = g_game_base;
           if ( g_game_base->subgame.level_mode == 1 )
           {
             add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), 5, completion->bonus_score);
-            play_sound_effect(49);
+            play_sound_effect(&g_sound_effect_manager, 49);
 LABEL_18:
             v11 = g_game_base;
           }
@@ -113,7 +113,7 @@ LABEL_18:
             completion->bonus_blink_progress = v12;
             if ( v12 > 1.0 )
             {
-              bonus_widget = (FrontendWidget *)completion->bonus_widget;
+              bonus_widget = completion->bonus_widget;
               completion->bonus_blink_progress = 0.0;
               if ( (bonus_widget->widget_flags & 0x1000) != 0 )
                 unhide_border_init(bonus_widget);
@@ -125,7 +125,7 @@ LABEL_18:
           if ( (v11->players[0].game_input->input.pressed_buttons & 0x4000) != 0 )
           {
             completion->state = COMPLETION_STATE_CONTINUE_ACCEPTED;
-            play_sound_effect(8);
+            play_sound_effect(&g_sound_effect_manager, 8);
 LABEL_27:
             v11 = g_game_base;
           }
@@ -151,10 +151,10 @@ LABEL_27:
           completion->widget_world.z = v19;
           delivered_parcel_count = completion->delivered_parcel_count;
           if ( delivered_parcel_count >= 10 )
-            *((_BYTE *)completion->delivered_count_widget + 716) = delivered_parcel_count / 10 + 48;
+            completion->delivered_count_widget->text_buffer.raw[0] = delivered_parcel_count / 10 + 48;
           else
-            *((_BYTE *)completion->delivered_count_widget + 716) = 32;
-          *((_BYTE *)completion->delivered_count_widget + 717) = completion->delivered_parcel_count % 10 + 48;
+            completion->delivered_count_widget->text_buffer.raw[0] = 32;
+          completion->delivered_count_widget->text_buffer.raw[1] = completion->delivered_parcel_count % 10 + 48;
           break;
         case COMPLETION_STATE_SUMMARY_ACTIVE:
           goto LABEL_18;

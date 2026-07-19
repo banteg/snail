@@ -9,7 +9,7 @@ import sys
 from runner import DEFAULT_IDA_DB_PATH, REPO_ROOT, find_ida_binary, run_ida_script
 
 
-DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/completion_screen_types.h"
+DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_completion_screen_types.py"
 
 
@@ -31,7 +31,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Path to the checked-in completion-screen type header.",
+        help="Path to the canonical aggregate IDA ownership header.",
     )
     return parser.parse_args()
 

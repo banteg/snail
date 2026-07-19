@@ -13,6 +13,7 @@ from _narrow_sync import (
     apply_struct_and_proto_updates,
     current_struct_size,
     emit_summary,
+    reanalyze_functions,
     struct_exists,
     types_declare_if_missing,
 )
@@ -103,6 +104,13 @@ PARCEL_EXPECTED_SIZES = {
     "Parcel": 0x8C,
     "ParcelManager": 0x1B58,
 }
+
+COMPLETION_REANALYSIS_FUNCTIONS = (
+    "flush_row_event_display",
+    "initialize_completion_screen",
+    "update_row_event_display",
+    "register_parcel_delivery",
+)
 
 GALAXY_DATA_SYMBOL_UPDATES = (
     ("0x4a1c4c", "g_galaxy_group_points"),
@@ -563,6 +571,13 @@ def main() -> int:
             # The batch helper applies prototypes through the same verified
             # direct-user-type path, but amortizes analysis across the batch.
             proto_updates=PROTO_UPDATES,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=COMPLETION_REANALYSIS_FUNCTIONS,
         )
     )
     return emit_summary(

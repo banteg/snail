@@ -10,7 +10,7 @@ void __thiscall flush_row_event_display(Completion *completion)
   int32_t v4; // ecx
   int32_t v5; // eax
   int32_t display_token; // eax
-  _DWORD *widget_a; // [esp-4h] [ebp-8h]
+  FrontendWidget *widget_a; // [esp-4h] [ebp-8h]
 
   if ( completion->state )
   {
@@ -35,10 +35,10 @@ void __thiscall flush_row_event_display(Completion *completion)
     widget_a = completion->widget_a;
     ++completion->delivered_parcel_count;
     kill_border(widget_a);
-    kill_border((_DWORD *)completion->delivered_count_widget);
-    kill_border((_DWORD *)completion->widget_d);
-    kill_border((_DWORD *)completion->bonus_widget);
-    kill_border((_DWORD *)completion->continue_widget);
+    kill_border(&completion->delivered_count_widget->list_kind);
+    kill_border(&completion->widget_d->list_kind);
+    kill_border(&completion->bonus_widget->list_kind);
+    kill_border(&completion->continue_widget->list_kind);
     display_token = completion->display_token;
     if ( g_game_base->subgame.player.total_score != display_token )
       g_game_base->subgame.player.total_score = display_token;

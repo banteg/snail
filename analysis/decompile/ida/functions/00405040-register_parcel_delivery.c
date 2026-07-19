@@ -9,13 +9,13 @@ void __thiscall register_parcel_delivery(Completion *completion)
   {
     add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), 4, 0);
     ++completion->delivered_parcel_count;
-    play_sound_effect(45);
+    play_sound_effect(&g_sound_effect_manager, 45);
     if ( completion->delivered_parcel_count == completion->parcel_target_count )
     {
       if ( completion->bonus_enabled )
       {
         add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), 5, completion->bonus_score);
-        play_sound_effect(49);
+        play_sound_effect(&g_sound_effect_manager, 49);
       }
       completion->state = COMPLETION_STATE_SUMMARY_PENDING;
     }

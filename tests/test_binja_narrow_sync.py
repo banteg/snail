@@ -5884,7 +5884,6 @@ def test_completion_state_ownership_stays_aligned() -> None:
     analysis_headers = tuple(
         (HEADER_DIR / name).read_text(encoding="utf-8")
         for name in (
-            "completion_screen_types.h",
             "path_template_types.h",
             "bn_subgame_runtime_types.h",
             "ida_subgame_runtime_types.h",
@@ -5905,6 +5904,8 @@ def test_completion_state_ownership_stays_aligned() -> None:
         assert "COMPLETION_STATE_SUMMARY_ACTIVE = 4" in header
         assert "COMPLETION_STATE_CONTINUE_ACCEPTED = 5" in header
         assert "COMPLETION_STATE_EMPTY_DELIVERY_DELAY = 6" in header
+        assert "FrontendWidget* delivered_count_widget;" in header
+        assert "FrontendWidget* continue_widget;" in header
 
     consumers = {
         "initialize_completion_screen": "COMPLETION_STATE_STAGING_PARCELS",
@@ -5919,6 +5920,51 @@ def test_completion_state_ownership_stays_aligned() -> None:
             repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
         ).read_text(encoding="utf-8")
         assert constant in scratch
+
+
+def test_completion_replay_uses_the_canonical_subgame_owner() -> None:
+    binja_runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_apply = (IDA_DIR / "apply_completion_screen_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_completion_screen_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert not (HEADER_DIR / "completion_screen_types.h").exists()
+    assert "path_template_types.h" in ida_runner
+    assert "completion_screen_types.h" not in ida_runner
+    assert "sync_game_root_owner_graph(require=True)" in ida_apply
+    assert '"Completion": 0x50' in ida_apply
+    assert '"SubSolution": 0x1FAC0' in ida_apply
+    assert '"SubgameRuntime": 0x1272838' in ida_apply
+    assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_apply
+    assert "idc.save_database(idc.get_idb_path(), 0)" in ida_apply
+    assert "INITIALIZER_COLOR_DEFINITION_ADDRESS = 0x404A5F" in ida_apply
+    assert "INITIALIZER_COLOR_STACK_OFFSET = 48" in ida_apply
+    assert "_sync_initializer_color_lvar()" in ida_apply
+
+    completion_methods = (
+        "flush_row_event_display",
+        "initialize_completion_screen",
+        "update_row_event_display",
+        "register_parcel_delivery",
+    )
+    for method in completion_methods:
+        assert method in ida_apply
+        assert method in binja_runtime_sync
+
+    for unrelated_exit_method in (
+        "destroy_completion_screen",
+        "initialize_exit_prompt",
+        "update_completion_screen",
+    ):
+        assert unrelated_exit_method not in ida_apply
+
+    assert "COMPLETION_REANALYSIS_FUNCTIONS" in binja_runtime_sync
+    assert "reanalyze_functions(" in binja_runtime_sync
 
 
 def test_times_up_state_ownership_stays_aligned() -> None:
@@ -6257,7 +6303,6 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in (
             "bn_frontend_widget_types.h",
-            "completion_screen_types.h",
             "frontend_replay_types.h",
             "path_template_types.h",
         )
@@ -7524,6 +7569,64 @@ def test_previewed_batch_can_transactionally_set_a_user_variable() -> None:
     assert "bv.revert_undo_actions(state)" in code
 
 
+def test_previewed_batch_can_transactionally_reanalyze_functions() -> None:
+    code = _narrow_sync._batch_python_code(
+        [
+            {
+                "op": "reanalyze_function",
+                "identifier": "initialize_completion_screen",
+            }
+        ],
+        preview=True,
+    )
+
+    assert "function.reanalyze()" in code
+    assert 'elif entry["op"] == "reanalyze_function"' in code
+    assert 'entry["verified"] = observed == entry["before"]' in code
+    assert "bv.update_analysis_and_wait()" in code
+    assert "bv.revert_undo_actions(state)" in code
+
+
+def test_function_reanalysis_uses_a_previewed_batch(monkeypatch) -> None:
+    calls = []
+
+    def fake_previewed_batch(_repo_root, *, target, operations):
+        calls.append((target, operations))
+        return {
+            "preview": {"success": True},
+            "apply": {"success": True, "committed": True},
+        }
+
+    monkeypatch.setattr(
+        _narrow_sync,
+        "run_previewed_bn_batch",
+        fake_previewed_batch,
+    )
+    result = _narrow_sync.reanalyze_functions(
+        Path("."),
+        target="snail-mail.exe",
+        identifiers=("initialize_completion_screen", "flush_row_event_display"),
+    )
+
+    assert calls == [
+        (
+            "snail-mail.exe",
+            [
+                {
+                    "op": "reanalyze_function",
+                    "identifier": "initialize_completion_screen",
+                },
+                {
+                    "op": "reanalyze_function",
+                    "identifier": "flush_row_event_display",
+                },
+            ],
+        )
+    ]
+    assert result[0]["op"] == "function_reanalysis_batch"
+    assert result[0]["operation_count"] == 2
+
+
 def test_user_variable_replay_skips_apply_when_current(monkeypatch) -> None:
     calls = []
 
@@ -8026,7 +8129,6 @@ def test_input_ok_overlay_and_void_abis_are_persisted() -> None:
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in (
             "bn_frontend_widget_types.h",
-            "completion_screen_types.h",
             "frontend_replay_types.h",
             "path_template_types.h",
         )
@@ -8090,7 +8192,6 @@ def test_twinkle_array_ownership_and_void_abis_are_persisted() -> None:
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in (
             "bn_frontend_widget_types.h",
-            "completion_screen_types.h",
             "frontend_replay_types.h",
             "path_template_types.h",
         )

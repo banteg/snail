@@ -15277,6 +15277,43 @@
         "_DWORD **",
         "4955094"
       ]
+    },
+    {
+      "name": "bn_completion_initializer_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00404920-initialize_completion_screen.c",
+      "required_substrings": [
+        "struct GameRoot* game_base_1 = g_game_base",
+        "game_base_1->subgame.selected_level_record",
+        "completion->display_token = g_game_base->subgame.player.total_score",
+        "allocate_border(&g_game_base->border_manager)",
+        "struct tColour color_2",
+        "completion->state = COMPLETION_STATE_STAGING_PARCELS"
+      ],
+      "forbidden_substrings": [
+        "data_4df904",
+        "CompletionResultScreen",
+        "screen->"
+      ]
+    },
+    {
+      "name": "ida_completion_initializer_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00404920-initialize_completion_screen.c",
+      "required_substrings": [
+        "void __thiscall initialize_completion_screen(Completion *completion, int32_t delivered_count, uint8_t perfect_delivery)",
+        "SubSolution *selected_level_record",
+        "g_runtime_config.completion_bonus_x_source",
+        "g_completion_bonus_y_table",
+        "completion->display_token = bonus_score + g_game_base->subgame.player.total_score",
+        "struct tColour color;",
+        "allocate_border(&g_game_base->border_manager)",
+        "completion->state = COMPLETION_STATE_STAGING_PARCELS"
+      ],
+      "forbidden_substrings": [
+        "MEMORY[0x4DF904]",
+        "CompletionResultScreen",
+        "Color4f color",
+        "(tColour *)&color"
+      ]
     }
   ]
 }
