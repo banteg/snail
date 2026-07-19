@@ -5,23 +5,23 @@
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
   "bn_exported": 1,
-  "ida_exported": 1,
+  "ida_exported": 714,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "ida_refreshed": true,
+  "ida_refreshed": false,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "set_snail_weapon",
-      "address": "0x445920"
+      "name": "update_subgoldy",
+      "address": "0x43b120"
     }
   ],
-  "health_check_count": 901,
+  "health_check_count": 902,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

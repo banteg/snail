@@ -642,3 +642,35 @@ replays carry the same facts. This is analysis-only ownership recovery: the
 matching source and masks are unchanged, so the honest focused result remains
 74.43%, 2,070/2,087 normalized instructions, prefix 12/2,087, with 290 clean
 audited operands and the same one bounded jump-table mismatch.
+
+## 2026-07-19 Player position cursor lifetime
+
+The playback and recording arms both initialize EBX from
+`Player + offsetof(Player, body.transform.position) == Player + 0x68`, at
+`0x43b2c0` and `0x43b4f6`. Binary Ninja kept those definitions separate from
+the post-branch PHI at `0x43b694`, leaving nearly every movement, attachment,
+wall-probe, camera-target, and follow-state consumer on the opaque `ebx_1`.
+The guarded replay now splits and merges the two producer definitions, then
+names the stable joined lifetime `p_position` as `Vec3 *`. The bounded EAX
+copy at `0x43bdb9`, used only to marshal the first swept-motion aggregate
+argument, is also typed `Vec3 *`; that removes the false `int32_t *` view
+without inventing another owner.
+
+The replay exposed a stale broad-header spelling before it changed the
+database. Canonical `TransformMatrix` storage is four `Vec3` rows, each
+followed by its authored scalar W component; in particular, `position` at
+`+0x30` is `Vec3` and `position_w` is the adjacent float at `+0x3c`.
+`path_template_types.h` now preserves that ownership instead of flattening
+each row to `Vec4`, while retaining the exact 0x40-byte matrix layout. The
+now-unused broad-header `Vec4` alias was retired with the correction.
+
+The raw replay-Z expression was deliberately left alone. The owned
+`current_high_score_record.run_records[cursor].delta_z` address is
+`game + 0xfd2b82 + cursor * 6`; because `0xfd2b82 / 6 == 0x2a31eb`, VC6 folds
+the field offset into the record index and emits
+`game + (cursor + 0x2a31eb) * 6`. A fabricated replay-record pointer would
+hide real code generation rather than recover ownership.
+
+This slice is analysis-only. The matching source remains unchanged at 74.43%,
+2,070/2,087 normalized instructions, prefix 12/2,087, with 290 clean audited
+operands and the same one bounded jump-table mismatch.

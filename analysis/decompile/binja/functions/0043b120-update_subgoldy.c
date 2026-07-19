@@ -30,7 +30,6 @@
 0043b275        if (game->replay_update_cursor s> 0x14 && game->track_state_latch == 0)
 0043b277        game->track_state_latch = 1
 0043b27e        struct SubgameRuntime* eax_8 = player->game
-0043b291        struct Vec3* ebx_1
 0043b291        long double st0_1
 0043b291        int16_t top_1
 0043b291        struct SubgameRuntime* game_2
@@ -95,12 +94,11 @@
 0043b4ae        x87_r7_26 = fconvert.t(-3.70000005f)
 0043b4d1        if (player->click_start.state != CLICK_START_STATE_WAITING_FOR_START)
 0043b4ec        player->body.transform.position.x = fconvert.s(fconvert.t(player->game->subgame_rate) * fconvert.t(0.200000003f) * (x87_r7_26 - fconvert.t(player->body.transform.position.x)) + fconvert.t(player->body.transform.position.x))
-0043b4f6        ebx_1 = &player->body.transform.position
 0043b504        int16_t eax_17
 0043b504        int80_t st0_3
 0043b504        st0_3, eax_17 = convert_math_type32_to_16(player->body.transform.position.x, 16f)
 0043b50d        long double st0_4 = convert_math_type16_to_32(eax_17, 16f)
-0043b51f        ebx_1->x = fconvert.s(st0_4)
+0043b51f        player->body.transform.position.x = fconvert.s(st0_4)
 0043b521        struct SubgameRuntime* game_20 = player->game
 0043b528        int16_t eax_19
 0043b528        int80_t st0_5
@@ -152,10 +150,9 @@
 0043b29d        eax_8 = eax_8->replay_update_cursor
 0043b2b2        if (eax_8 s>= selected_level_record->replay_sample_count || player->click_start.state == CLICK_START_STATE_WAITING_FOR_START)
 0043b2a6        goto label_43b360
-0043b2c0        ebx_1 = &player->body.transform.position
 0043b2c3        eax_8.w = selected_level_record->run_records[eax_8].lateral_x
 0043b2c9        st0_1 = convert_math_type16_to_32(eax_8.w, 16f)
-0043b2ce        ebx_1->x = fconvert.s(st0_1)
+0043b2ce        player->body.transform.position.x = fconvert.s(st0_1)
 0043b2ce        top_1 = 0
 0043b2d0        struct SubgameRuntime* game_1 = player->game
 0043b2ed        if ((game_1->selected_level_record->run_records[game_1->replay_update_cursor].flags.b & 4) == 0)
@@ -175,8 +172,9 @@
 0043b696        bool c2_7 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497420]}, temp9_1)
 0043b696        bool c3_7 = unimplemented  {fcomp st0, dword [0x497420]} f== temp9_1
 0043b696        unimplemented  {fcomp st0, dword [0x497420]}
+0043b6a1        struct Vec3* p_position
 0043b6a1        if ((((c0_7 ? 1 : 0) << 8 | (c2_7 ? 1 : 0) << 0xa | (c3_7 ? 1 : 0) << 0xe | (top_1 & 7) << 0xb):1.b & 1) != 0)
-0043b6a3        ebx_1->x = 0xc0800000
+0043b6a3        p_position->x = 0xc0800000
 0043b6a9        player->velocity.x = 0
 0043b6b3        unimplemented  {fld st0, dword [ebx]}
 0043b6b5        long double temp10_1 = fconvert.t(4f)
@@ -187,12 +185,12 @@
 0043b6b5        unimplemented  {fcomp st0, dword [0x497210]}
 0043b6bb        int16_t eax_31 = (c0_8 ? 1 : 0) << 8 | (c2_8 ? 1 : 0) << 0xa | (c3_8 ? 1 : 0) << 0xe | (top_1 & 7) << 0xb
 0043b6c0        if ((eax_31:1.b & 0x41) == 0)
-0043b6c2        ebx_1->x = 0x40800000
+0043b6c2        p_position->x = 0x40800000
 0043b6c8        player->velocity.x = 0
 0043b6d2        eax_31.b = player->resurrect_active.b
 0043b6da        if (eax_31.b != 0)
 0043b6de        update_subgoldy_resurrect(player)
-0043b6ea        struct TrackRowCell* eax_32 = get_track_grid_cell_at_world_position(player->game, ebx_1)
+0043b6ea        struct TrackRowCell* eax_32 = get_track_grid_cell_at_world_position(player->game, p_position)
 0043b6ef        struct SubgameRuntime* game_21 = player->game
 0043b706        int32_t eax_34 = get_track_cell_row_index(eax_32) * 0x3d
 0043b710        int32_t row_event_id = (&game_21->runtime_rows[0].row_event_id)[eax_34]
@@ -232,7 +230,7 @@
 0043b882        if (eax_43.b == 0x1d || eax_43.b == 0x1e)
 0043b884        eax_43.b = player->follow_state.active
 0043b88c        if (eax_43.b == 0)
-0043b89b        begin_track_attachment_follow_state(&player->follow_state, eax_32, ebx_1, player)
+0043b89b        begin_track_attachment_follow_state(&player->follow_state, eax_32, p_position, player)
 0043b8aa        if (player->follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM)
 0043b8b7        play_voice_manager(&g_voice_manager, 0xc, 0, 0xffffffff)
 0043b8bc        eax_43.b = player->control_override_active
@@ -301,15 +299,15 @@
 0043b981        if (eax_43.b != 1)
 0043bac4        unimplemented  {fld st0, dword [ebp+0x410]}
 0043baca        unimplemented  {fadd dword [ebx]}
-0043bacc        ebx_1->x = fconvert.s(unimplemented  {fstp dword [ebx], st0})
+0043bacc        p_position->x = fconvert.s(unimplemented  {fstp dword [ebx], st0})
 0043bacc        unimplemented  {fstp dword [ebx], st0}
 0043bace        unimplemented  {fld st0, dword [ebp+0x414]}
 0043bad4        unimplemented  {fadd dword [ebx+0x4]}
-0043bad7        ebx_1->y = fconvert.s(unimplemented  {fstp dword [ebx+0x4], st0})
+0043bad7        p_position->y = fconvert.s(unimplemented  {fstp dword [ebx+0x4], st0})
 0043bad7        unimplemented  {fstp dword [ebx+0x4], st0}
 0043bada        unimplemented  {fld st0, dword [ebp+0x418]}
 0043bae0        unimplemented  {fadd dword [ebx+0x8]}
-0043bae3        ebx_1->z = fconvert.s(unimplemented  {fstp dword [ebx+0x8], st0})
+0043bae3        p_position->z = fconvert.s(unimplemented  {fstp dword [ebx+0x8], st0})
 0043bae3        unimplemented  {fstp dword [ebx+0x8], st0}
 0043bae6        unimplemented  {fld st0, dword [ebx]}
 0043bae8        long double temp16_1 = fconvert.t(-4f)
@@ -319,7 +317,7 @@
 0043bae8        bool c3_16 = unimplemented  {fcomp st0, dword [0x497420]} f== temp16_1
 0043bae8        unimplemented  {fcomp st0, dword [0x497420]}
 0043baf3        if ((((c0_16 ? 1 : 0) << 8 | (c2_16 ? 1 : 0) << 0xa | (c3_16 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb):1.b & 1) != 0)
-0043baf5        ebx_1->x = 0xc0800000
+0043baf5        p_position->x = 0xc0800000
 0043bafb        player->velocity.x = 0
 0043bb05        unimplemented  {fld st0, dword [ebx]}
 0043bb07        long double temp17_1 = fconvert.t(4f)
@@ -330,11 +328,11 @@
 0043bb07        unimplemented  {fcomp st0, dword [0x497210]}
 0043bb0d        eax_43 = (c0_17 ? 1 : 0) << 8 | (c2_17 ? 1 : 0) << 0xa | (c3_17 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
 0043bb12        if ((eax_43:1.b & 0x41) == 0)
-0043bb14        ebx_1->x = 0x40800000
+0043bb14        p_position->x = 0x40800000
 0043bb1a        player->velocity.x = 0
 0043bb24        eax_43.b = player->completion_handoff_active
 0043bb2c        if (eax_43.b == 0)
-0043bb42        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_SLIDE_UNDERSCORE)
+0043bb42        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_SLIDE_UNDERSCORE)
 0043bba0        label_43bba0:
 0043bba0        unimplemented  {fld st0, dword [eax+0x38]}
 0043bba3        unimplemented  {fld st0, st0}
@@ -366,13 +364,13 @@
 0043bbe3        unimplemented  {fadd dword [0x497220]}
 0043bbe9        player->slide_extension_threshold_z = fconvert.s(unimplemented  {fstp dword [ebp+0x2738], st0})
 0043bbe9        unimplemented  {fstp dword [ebp+0x2738], st0}
-0043bb54        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_SLIDE_O)
+0043bb54        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_SLIDE_O)
 0043bb54        goto label_43bba0
-0043bb66        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_SLUG_HAZARD)
+0043bb66        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_SLUG_HAZARD)
 0043bb66        goto label_43bba0
-0043bb78        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_SLIDE_F)
+0043bb78        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_SLIDE_F)
 0043bb78        goto label_43bba0
-0043bb81        if (player->damage_gauge.state == DAMAGE_GUAGE_STATE_DRAINING && is_sub_loc_floor(get_track_grid_cell_at_world_position(player->game, ebx_1)) != 0)
+0043bb81        if (player->damage_gauge.state == DAMAGE_GUAGE_STATE_DRAINING && is_sub_loc_floor(get_track_grid_cell_at_world_position(player->game, p_position)) != 0)
 0043bb98        goto label_43bba0
 0043bbf6        if (player->sub_hover.state == SUB_HOVER_STATE_ACTIVE)
 0043bbfe        unimplemented  {fld st0, dword [edx+0x38]}
@@ -408,7 +406,7 @@
 0043bc90        if (player->boost_one_tick == 0)
 0043bcc8        struct TrackRowCell* cell
 0043bcc8        int16_t x87control_1
-0043bcc8        cell, x87control_1 = get_track_grid_cell_at_world_position(player->game, ebx_1)
+0043bcc8        cell, x87control_1 = get_track_grid_cell_at_world_position(player->game, p_position)
 0043bcd7        if (player->attachment_exit_pending != 0)
 0043bd11        if (((player->game->runtime_rows[get_track_cell_row_index(cell)].flags).w:1.b & 1) == 0 && player->sub_hover.state == SUB_HOVER_STATE_INACTIVE && player->control_override_active == 0)
 0043bd13        unimplemented  {fld st0, dword [edi+0x38]}
@@ -431,7 +429,7 @@
 0043bd80        float sweep_dz = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
 0043bd80        unimplemented  {fstp dword [esp+0x1c], st0}
 0043bd98        struct TrackRowCell* source_cell = (&player->game->runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]
-0043bdf0        x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, ebx_1->x, ebx_1->y, ebx_1->z, sweep_dx, sweep_dy, sweep_dz, source_cell)
+0043bdf0        x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, p_position->x, p_position->y, p_position->z, sweep_dx, sweep_dy, sweep_dz, source_cell)
 0043bdfd        if (player->attachment_exit_pending != 0 && (player->game->runtime_rows[get_track_cell_row_index(cell)].flags.b & 0x80) != 0)
 0043be27        unimplemented  {fld st0, dword [ebp+0x410]}
 0043be2d        unimplemented  {fmul st0, dword [0x4975c8]}
@@ -447,7 +445,7 @@
 0043be55        unimplemented  {fstp dword [esp+0x1c], st0}
 0043be6d        struct TrackRowCell* source_cell_1 = (&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]
 0043bec5        int32_t eax_85
-0043bec5        eax_85, x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, ebx_1->x, ebx_1->y, ebx_1->z, sweep_dx_1, sweep_dy_1, sweep_dz_1, source_cell_1)
+0043bec5        eax_85, x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, p_position->x, p_position->y, p_position->z, sweep_dx_1, sweep_dy_1, sweep_dz_1, source_cell_1)
 0043beca        int16_t eax_86
 0043beca        eax_86.b = player->follow_state.active
 0043bed2        if (eax_86.b == 0)
@@ -556,7 +554,7 @@
 0043c008        begin_post_follow_carryover(player)
 0043c011        struct SubgameRuntime* game_11 = player->game
 0043c01b        if (game_11->level_mode == 3)
-0043c01e        get_track_grid_cell_at_world_position(game_11, ebx_1)
+0043c01e        get_track_grid_cell_at_world_position(game_11, p_position)
 0043c038        if (((player->game->runtime_flags).w:1.b & 4) == 0 || (g_cheat_state.flags.b & 2) != 0)
 0043c03a        unimplemented  {fld st0, dword [ebp+0x6c]}
 0043c03d        long double temp48_1 = fconvert.t(0.49000001f)
@@ -628,7 +626,7 @@
 0043c37b        unimplemented  {fstp st0, st0}
 0043c37b        unimplemented  {fstp st0, st0}
 0043c37b        top_13 = top_66
-0043c388        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_TRAMPOLINE)
+0043c388        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_TRAMPOLINE)
 0043c38a        unimplemented  {fld st0, dword [esi+0x14]}
 0043c38d        unimplemented  {fadd dword [0x4973e8]}
 0043c393        long double temp36_1 = fconvert.t(player->body.transform.position.y)
@@ -659,7 +657,7 @@
 0043c3ea        player->attachment_exit_pending = 0
 0043c3f1        player->trampoline_bounce_active = 1
 0043c3f8        play_sound_effect(&g_sound_effect_manager, 0x29)
-0043c0e9        st0_1 = sample_track_floor_height_at_position(player->game, ebx_1)
+0043c0e9        st0_1 = sample_track_floor_height_at_position(player->game, p_position)
 0043c0e9        unimplemented  {call 0x43d4d0}
 0043c0ee        unimplemented  {fadd dword [0x4973e8]}
 0043c0f4        long double temp33_1 = fconvert.t(player->body.transform.position.y)
@@ -695,23 +693,23 @@
 0043c115        player->body.transform.position.y = fconvert.s(unimplemented  {fstp dword [ebp+0x6c], st0})
 0043c115        unimplemented  {fstp dword [ebp+0x6c], st0}
 0043c115        top_105 = top_66
-0043c12c        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED)
+0043c12c        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED)
 0043c2ea        label_43c2ea:
 0043c2ea        unimplemented  {fld st0, dword [ecx+0x38]}
 0043c2ed        unimplemented  {fmul st0, dword [0x4973d8]}
 0043c2f3        player->velocity.y = fconvert.s(unimplemented  {fstp dword [ebp+0x414], st0})
 0043c2f3        unimplemented  {fstp dword [ebp+0x414], st0}
-0043c142        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_GREATER_RAISED)
+0043c142        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_GREATER_RAISED)
 0043c142        goto label_43c2ea
-0043c158        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED)
+0043c158        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED)
 0043c158        goto label_43c2ea
-0043c16e        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH)
+0043c16e        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH)
 0043c16e        goto label_43c2ea
-0043c184        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_GREATER_BACKPATCH)
+0043c184        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_GREATER_BACKPATCH)
 0043c184        goto label_43c2ea
-0043c19a        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH)
+0043c19a        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH)
 0043c19a        goto label_43c2ea
-0043c1b0        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE)
+0043c1b0        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE)
 0043c271        label_43c271:
 0043c271        unimplemented  {fld st0, dword [ebp+0x1dc]}
 0043c277        long double temp58_1 = fconvert.t(0f)
@@ -742,17 +740,17 @@
 0043c2c8        animation_id_1 = 4
 0043c2d0        dispatch_cutscene_animation(&player->presentation, animation_id_1, 1, 0xffffffff)
 0043c2dd        dispatch_cutscene_animation(&player->presentation, 1, 0, 0xffffffff)
-0043c1c6        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_GREATER)
+0043c1c6        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_GREATER)
 0043c1c6        goto label_43c271
-0043c1dc        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE)
+0043c1dc        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE)
 0043c1dc        goto label_43c271
-0043c1f2        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET)
+0043c1f2        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET)
 0043c1f2        goto label_43c271
-0043c204        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LESS)
+0043c204        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LESS)
 0043c204        goto label_43c271
-0043c216        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACKET)
+0043c216        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACKET)
 0043c216        goto label_43c271
-0043c229        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id != SUBLOC_TILE_EMPTY && get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id != SUBLOC_TILE_RING_MARKER && get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id != SUBLOC_TILE_TRAMPOLINE)
+0043c229        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id != SUBLOC_TILE_EMPTY && get_track_grid_cell_at_world_position(player->game, p_position)->tile_id != SUBLOC_TILE_RING_MARKER && get_track_grid_cell_at_world_position(player->game, p_position)->tile_id != SUBLOC_TILE_TRAMPOLINE)
 0043c25b        player->trampoline_bounce_active = 0
 0043c262        player->velocity.y = 0f
 0043c31e        unimplemented  {fld st0, dword [ebp+0x6c]}
@@ -773,7 +771,7 @@
 0043c338        unimplemented  {fcomp st0, dword [0x497234]}
 0043c343        if ((((c0_37 ? 1 : 0) << 8 | (c2_37 ? 1 : 0) << 0xa | (c3_37 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb):1.b & 0x41) != 0)
 0043c34b        begin_post_follow_carryover(player)
-0043b9a6        switch (update_track_attachment_follow_state(&player->follow_state, player->velocity.z, ebx_1, &player->velocity))
+0043b9a6        switch (update_track_attachment_follow_state(&player->follow_state, player->velocity.z, p_position, &player->velocity))
 0043b9cc        case 0
 0043b9cc        if (player->follow_state.template_record->kind != PATH_TEMPLATE_KIND_DETOUR)
 0043b9d4        unimplemented  {fld st0, dword [ecx+0x38]}
@@ -794,15 +792,15 @@
 0043b9f1        label_43b9f1:
 0043b9f1        unimplemented  {fld st0, dword [ebx]}
 0043b9f3        unimplemented  {fadd dword [esi]}
-0043b9f5        ebx_1->x = fconvert.s(unimplemented  {fstp dword [ebx], st0})
+0043b9f5        p_position->x = fconvert.s(unimplemented  {fstp dword [ebx], st0})
 0043b9f5        unimplemented  {fstp dword [ebx], st0}
 0043b9f7        unimplemented  {fld st0, dword [esi+0x4]}
 0043b9fa        unimplemented  {fadd dword [ebx+0x4]}
-0043b9fd        ebx_1->y = fconvert.s(unimplemented  {fstp dword [ebx+0x4], st0})
+0043b9fd        p_position->y = fconvert.s(unimplemented  {fstp dword [ebx+0x4], st0})
 0043b9fd        unimplemented  {fstp dword [ebx+0x4], st0}
 0043ba00        unimplemented  {fld st0, dword [esi+0x8]}
 0043ba03        unimplemented  {fadd dword [ebx+0x8]}
-0043ba06        ebx_1->z = fconvert.s(unimplemented  {fstp dword [ebx+0x8], st0})
+0043ba06        p_position->z = fconvert.s(unimplemented  {fstp dword [ebx+0x8], st0})
 0043ba06        unimplemented  {fstp dword [ebx+0x8], st0}
 0043ba0f        unimplemented  {fld st0, dword [edx+0x38]}
 0043ba12        unimplemented  {fmul st0, dword [0x4975d0]}
@@ -840,7 +838,7 @@
 0043ba87        unimplemented  {fcomp st0, dword [0x497420]}
 0043ba92        int16_t top_38
 0043ba92        if ((((c0_14 ? 1 : 0) << 8 | (c2_14 ? 1 : 0) << 0xa | (c3_14 ? 1 : 0) << 0xe | (top_38 & 7) << 0xb):1.b & 1) != 0)
-0043ba94        ebx_1->x = 0xc0800000
+0043ba94        p_position->x = 0xc0800000
 0043ba9a        player->velocity.x = 0
 0043baa0        unimplemented  {fld st0, dword [ebx]}
 0043baa2        long double temp19_1 = fconvert.t(4f)
@@ -851,7 +849,7 @@
 0043baa2        unimplemented  {fcomp st0, dword [0x497210]}
 0043baa2        top_13 = top_38
 0043baad        if ((((c0_15 ? 1 : 0) << 8 | (c2_15 ? 1 : 0) << 0xa | (c3_15 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb):1.b & 0x41) == 0)
-0043bab3        ebx_1->x = 0x40800000
+0043bab3        p_position->x = 0x40800000
 0043bab9        player->velocity.x = 0
 0043c403        update_warning(&player->warning)
 0043c41e        struct Vec3 position
@@ -859,8 +857,8 @@
 0043c510        player->barrier_hold_progress = 0f
 0043c424        unimplemented  {fld st0, dword [ebx+0x8]}
 0043c427        unimplemented  {fadd dword [0x4973e8]}
-0043c42d        float x = ebx_1->x
-0043c42f        float y_1 = ebx_1->y
+0043c42d        float x = p_position->x
+0043c42f        float y_1 = p_position->y
 0043c432        float x_2 = x
 0043c438        float y_2 = y_1
 0043c43e        float var_34_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
@@ -916,7 +914,7 @@
 0043c503        if (eax_117.b == 0)
 0043c507        begin_post_follow_carryover(player)
 0043c51c        if (player->lane_lean_state == 0)
-0043c532        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE)
+0043c532        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE)
 0043c5d0        label_43c5d0:
 0043c5d0        int16_t eax_119
 0043c5d0        eax_119.b = player->attachment_exit_pending
@@ -933,35 +931,35 @@
 0043c5fc        unimplemented  {fmul st0, dword [0x4975b4]}
 0043c602        player->lane_lean_progress_step = fconvert.s(unimplemented  {fstp dword [ebp+0x35c], st0})
 0043c602        unimplemented  {fstp dword [ebp+0x35c], st0}
-0043c617        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE)
+0043c617        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE)
 0043c665        player->lane_lean_state = 1
 0043c66f        player->lane_lean_amplitude = 1f
-0043c629        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET)
+0043c629        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET)
 0043c665        player->lane_lean_state = 1
 0043c66f        player->lane_lean_amplitude = 1f
-0043c63b        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED)
+0043c63b        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED)
 0043c665        player->lane_lean_state = 1
 0043c66f        player->lane_lean_amplitude = 1f
-0043c64d        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH)
+0043c64d        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH)
 0043c665        player->lane_lean_state = 1
 0043c66f        player->lane_lean_amplitude = 1f
 0043c64f        player->lane_lean_state = 2
 0043c659        player->lane_lean_amplitude = -1f
-0043c548        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE)
+0043c548        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE)
 0043c548        goto label_43c5d0
-0043c55e        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET)
+0043c55e        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET)
 0043c55e        goto label_43c5d0
-0043c570        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACKET)
+0043c570        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACKET)
 0043c570        goto label_43c5d0
-0043c582        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED)
+0043c582        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED)
 0043c582        goto label_43c5d0
-0043c594        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED)
+0043c594        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED)
 0043c594        goto label_43c5d0
-0043c5a6        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED)
+0043c5a6        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED)
 0043c5a6        goto label_43c5d0
-0043c5b8        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH)
+0043c5b8        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH)
 0043c5b8        goto label_43c5d0
-0043c5ca        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH)
+0043c5ca        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH)
 0043c5ca        goto label_43c5d0
 0043c679        unimplemented  {fld st0, dword [ebp+0x1d4]}
 0043c67f        long double temp21_1 = fconvert.t(0f)
@@ -1202,13 +1200,13 @@
 0043ca45        return
 0043ca22        game_base_4->players[0].frontend_state = 0x1a
 0043ca33        return
-0043ca9c        float x_1 = ebx_1->x
-0043caa5        float y = ebx_1->y
-0043caac        float z = ebx_1->z
+0043ca9c        float x_1 = p_position->x
+0043caa5        float y = p_position->y
+0043caac        float z = p_position->z
 0043cab8        if (player->follow_state.active == 1)
-0043cac4        ebx_1->x = player->follow_state.output_position.x
-0043cac9        ebx_1->y = player->follow_state.output_position.y
-0043cacf        ebx_1->z = player->follow_state.output_position.z
+0043cac4        p_position->x = player->follow_state.output_position.x
+0043cac9        p_position->y = player->follow_state.output_position.y
+0043cacf        p_position->z = player->follow_state.output_position.z
 0043cad8        update_jetpack_gauge(&player->sub_hover)
 0043cae5        if (player->completion_handoff_active != 0)
 0043cae7        struct GameRoot* game_base_3 = g_game_base
@@ -1221,9 +1219,9 @@
 0043cb29        update_progress_bar(&player->progress_bar)
 0043cb36        unimplemented  {fld st0, dword [ebp+0x276c]}
 0043cb40        unimplemented  {fld st0, st0}
-0043cb42        player->cached_camera_target_world.x = ebx_1->x
-0043cb4a        player->cached_camera_target_world.y = ebx_1->y
-0043cb4d        player->cached_camera_target_world.z = ebx_1->z
+0043cb42        player->cached_camera_target_world.x = p_position->x
+0043cb4a        player->cached_camera_target_world.y = p_position->y
+0043cb4d        player->cached_camera_target_world.z = p_position->z
 0043cb50        unimplemented  {fmul st0, dword [ebp+0x58]}
 0043cb53        float var_18_1 = fconvert.s(unimplemented  {fstp dword [esp+0x38], st0})
 0043cb53        unimplemented  {fstp dword [esp+0x38], st0}
@@ -1287,7 +1285,7 @@
 0043cbed        if (skin_hold_ticks s> 0)
 0043cbf0        player->damage_gauge.skin_hold_ticks = skin_hold_ticks i- 1
 0043cbfd        if (player->follow_state.active == 1)
-0043cc03        ebx_1->x = x_1
+0043cc03        p_position->x = x_1
 0043cc0b        unimplemented  {fld st0, dword [ecx+0x38]}
 0043cc0e        unimplemented  {fmul st0, dword [0x4975b4]}
 0043cc14        player->lane_lean_progress_step = fconvert.s(unimplemented  {fst dword [ebp+0x35c], st0})

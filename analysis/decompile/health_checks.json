@@ -517,6 +517,20 @@
       }
     },
     {
+      "name": "bn_update_subgoldy_player_position_lifetime",
+      "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "struct Vec3* p_position",
+        "get_track_grid_cell_at_world_position(player->game, p_position)",
+        "p_position->x = player->follow_state.output_position.x",
+        "player->cached_camera_target_world.x = p_position->x"
+      ],
+      "forbidden_substrings": [
+        "struct Vec3* ebx_1",
+        "int32_t* p_position_1"
+      ]
+    },
+    {
       "name": "ida_update_subgoldy_high_level",
       "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
       "required_substrings": [

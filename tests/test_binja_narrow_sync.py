@@ -10904,6 +10904,55 @@ def test_snail_weapon_state_lifetime_replay_stays_guarded() -> None:
     assert "current_struct_fields_batch" in replay
 
 
+def test_subgoldy_position_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_subgoldy_position_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("Vec3", "0xC"),
+        ("TransformMatrix", "0x40"),
+        ("RenderableBod", "0x80"),
+        ("Player", "0x4364"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("TransformMatrix", "0x30", "position", "Vec3"),
+        ("TransformMatrix", "0x3C", "position_w", "float"),
+        ("RenderableBod", "0x38", "transform", "TransformMatrix"),
+        ("Player", "0x00", "body", "RenderableBod"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for definition in (
+        '"0x43b2c0", "mlil", "RegisterVariableSourceType", 416, 69',
+        '"0x43b4f6", "mlil", "RegisterVariableSourceType", 982, 69',
+    ):
+        assert definition in replay
+    assert 'variable_name="p_position"' in replay
+    assert 'variable_type="Vec3*"' in replay
+    assert (
+        '        "RegisterVariableSourceType",\n'
+        "        1396,\n"
+        "        69,\n"
+        '        "p_position",\n'
+        '        "Vec3*"'
+    ) in replay
+    assert (
+        '        "RegisterVariableSourceType",\n'
+        "        3225,\n"
+        "        67,\n"
+        '        "swept_position",\n'
+        '        "Vec3*"'
+    ) in replay
+    assert "apply_split_user_var_update" in replay
+    assert "apply_user_var_updates" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+
+
 def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
     repo_root = Path(__file__).parents[1]
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(

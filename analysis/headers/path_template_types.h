@@ -21,18 +21,15 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
-typedef struct Vec4 {
-    float x;
-    float y;
-    float z;
-    float w;
-} Vec4;
-
 typedef struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
+    Vec3 basis_right;
+    float basis_right_w;
+    Vec3 basis_up;
+    float basis_up_w;
+    Vec3 basis_forward;
+    float basis_forward_w;
+    Vec3 position;
+    float position_w;
 } TransformMatrix;
 
 typedef struct tColour {
