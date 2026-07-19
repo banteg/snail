@@ -4286,6 +4286,45 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
     )
 
 
+def test_vertex_buffer_factory_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_vertex_buffer_factory_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("ObjectRenderBuffers", "0x0C"),
+        ("VertexBufferFactory", "0x8CA4"),
+        ("Direct3DRenderer", "0xBCC0"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("ObjectRenderBuffers", "0x08", "vertex_buffer", "ObjectVertexBuffer*"),
+        ("VertexBufferFactory", "0x04", "buffers", "ObjectRenderBuffers[3000]"),
+        ("Direct3DRenderer", "0xBB94", "device", "Direct3DDevice8*"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for index, storage, name in (
+        (80, 73, "create_result"),
+        (247, 68, "next_count"),
+    ):
+        expected = (
+            '        "create_vertex_buffer",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            '        "int32_t"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+
+
 def test_render_camera_replay_owns_pipeline_without_splitting_device_alias() -> None:
     binja_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
         encoding="utf-8"

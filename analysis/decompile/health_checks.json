@@ -10791,10 +10791,16 @@
         "factory->buffers[factory->count].fvf = fvf",
         "g_direct3d_renderer.device",
         "CreateVertexBuffer",
-        "factory->count"
+        "int32_t create_result",
+        "if (create_result != 0)",
+        "int32_t next_count = factory->count + 1",
+        "factory->count = next_count",
+        "return factory + next_count * 0xc - 8"
       ],
       "forbidden_substrings": [
         "create_object_vertex_buffer_resource",
+        "vertex_count_1",
+        "edx_5",
         "data_502fec",
         "arg1",
         "unimplemented"

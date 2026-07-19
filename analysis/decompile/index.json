@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "refresh_object_vertex_buffer",
-      "address": "0x412250"
+      "name": "create_vertex_buffer",
+      "address": "0x4114b0"
     }
   ],
   "health_check_count": 898,

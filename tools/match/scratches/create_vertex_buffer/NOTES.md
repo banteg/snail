@@ -50,3 +50,16 @@ receiver, embedded slot array, real device vtable call, and stable
 failed exact decompiler readback, and were removed rather than forced. Strict
 dual-lane export passes all 760 health checks; matcher source and the honest
 76.68% focused result are unchanged.
+
+2026-07-19 lifetime closure: exact Binary Ninja SSA readback separates the
+three-way `CreateVertexBuffer` HRESULT from the incoming vertex count as
+`create_result`, then separates the post-allocation pool cursor as
+`next_count`. The latter now visibly owns the count store, overflow comparison,
+and returned 12-byte slot selection. These are register-lifetime annotations,
+not new retained fields: guarded replay first verifies the canonical
+`ObjectRenderBuffers`, `VertexBufferFactory`, and enclosing
+`Direct3DRenderer.device` layouts. Attempts to type the unsplit out-pointer and
+return expression did not survive exact user-variable readback and were
+removed. Strict dual-lane export has zero mismatches, and health checks reject
+the former false `vertex_count_1` and anonymous `edx_5` lifetimes. Matcher
+source and the honest 76.68% focused result remain unchanged.
