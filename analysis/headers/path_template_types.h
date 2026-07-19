@@ -1066,6 +1066,20 @@ typedef struct LandscapeManager {
 } LandscapeManager;
 
 /*
+ * Analysis-only manager-relative view used by landscape activation. Native
+ * code adds script_index * 0x124 to the LandscapeManager base and retains that
+ * biased address, so the selected script remains at +0x5a4 from the cursor.
+ * The prefix aliases manager storage; only script is consumed through it.
+ */
+typedef struct LandscapeScriptStrideAnchor {
+    uint8_t manager_prefix[0x5a4];
+    LandscapeScriptRecord script;
+} LandscapeScriptStrideAnchor;
+typedef char LandscapeScriptStrideAnchor_must_be_0x6c8[
+    (sizeof(LandscapeScriptStrideAnchor) == 0x6c8) ? 1 : -1
+];
+
+/*
  * Bounded view of the Object prefix inherited by FrameSequence. The renderer
  * lane owns the complete Object declaration; this path/subgame lane only needs
  * the independently consumed face array and count.

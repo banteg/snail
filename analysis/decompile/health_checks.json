@@ -12008,10 +12008,13 @@
       ]
     },
     {
-      "name": "bn_activate_landscape_entry_fog_owner",
+      "name": "bn_activate_landscape_entry_cursor_owners",
       "artifact": "analysis/decompile/binja/functions/00418870-activate_landscape_entry.c",
       "required_substrings": [
-        "manager + script_index * 0x124",
+        "struct LandscapeScriptStrideAnchor* selected_script_anchor = manager + script_index * 0x124",
+        "selected_script_anchor->script.object_index",
+        "change_backdrop(&g_game_base->backdrop, &selected_script_anchor->script, flip)",
+        "selected_script_anchor->script.fog_color.r",
         "&manager->active_entries[0].bod.bod.bod.list_flags",
         "active_entries[0].repeat_z_span",
         "active_entries[0].reference_bod",
@@ -12024,6 +12027,9 @@
         "g_game_base->unknown_000000",
         "data_4df904 + 0x14",
         "FrameBorderManager",
+        "void* edi",
+        "*(edi +",
+        "active_entry_list_flags_cursor",
         "unimplemented"
       ]
     },

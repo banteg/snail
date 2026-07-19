@@ -285,6 +285,12 @@ After those canonical ring types exist, replay the exact carried child cursor
 with `uv run python tools/binja/sync_ring_particle_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 
+After the canonical landscape manager and script records exist, replay the
+manager-relative selected-script anchor and keep the active-entry interior
+borrow automatic with `uv run python
+tools/binja/sync_landscape_activation_lifetimes.py --target
+SnailMail_unwrapped.exe.bndb`.
+
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
 `GameInput.input` field proven by the exact Windows bridge and iOS

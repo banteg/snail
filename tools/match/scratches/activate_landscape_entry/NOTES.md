@@ -91,3 +91,27 @@ Both tracked decompilers now render the final script-color copy through
 forbidden by the health checks. No matching source changed, and the focused
 result remains 99.19% with 123/123 instructions and 20 clean operands; the
 sole residual is still the existing instruction-order swap at target index 65.
+
+## 2026-07-19 selected-script stride ownership
+
+The activator's EDI value is not a direct `LandscapeScriptRecord*`. Native code
+adds `script_index * 0x124` to the `LandscapeManager` base and then reaches the
+selected record at the manager-relative `+0x5a4` displacement. The
+analysis-only `LandscapeScriptStrideAnchor` preserves that exact biased address:
+its prefix aliases manager storage and its `script +0x5a4` member is the only
+owned record consumed through the view. Binary Ninja now renders object lookup,
+backdrop activation, and all four fog channels through
+`selected_script_anchor->script` instead of raw `edi +0x6b0..0x6c0` offsets.
+
+The active-entry ESI induction begins at each entry's inherited `list_flags`
+word, four bytes after the actual `ActiveLandscapeEntry` base. A named
+`uint32_t*` user variable was tested and rejected: it suppressed Binary Ninja's
+containing-owner recovery and degraded the body, state, transform, repeat span,
+and reference fields into integer indices. A direct `ActiveLandscapeEntry*`
+would be physically shifted and false. The replay therefore removes that
+experiment and deliberately leaves this interior borrow automatic, retaining
+the correctly recovered enclosing entry fields.
+
+Matching source remains unchanged at the honest 99.19%, 123/123-instruction,
+20-clean-operand frontier. The sole residual is still the independent state
+store/list-flag load schedule; no source was reshaped for score.

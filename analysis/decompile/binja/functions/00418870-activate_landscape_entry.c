@@ -17,9 +17,9 @@
 004188b4        flip = 0
 004188d3        int32_t i = 0
 004188d5        int32_t i_1 = 0
-004188df        void* edi = manager + script_index * 0x124
+004188df        struct LandscapeScriptStrideAnchor* selected_script_anchor = manager + script_index * 0x124
 004188e2        uint32_t* esi_1 = &manager->active_entries[0].bod.bod.bod.list_flags
-004188ec        if (*(edi + 0x6b0) != 0xffffffff)
+004188ec        if (selected_script_anchor->script.object_index != 0xffffffff)
 0041890a        struct BodBase* eax_4 = &g_game_base->subgame.landscape_slice_list_head
 00418915        if ((((esi_1 - 4)->active_entries[0].bod.bod.bod.list_flags).w:1.b & 2) == 0)
 00418926        (esi_1 - 4)->active_entries[0].bod.bod.bod.list_prev = eax_4
@@ -36,7 +36,7 @@
 0041894d        uint32_t list_flags_1 = (esi_1 - 4)->active_entries[0].bod.bod.bod.list_flags
 0041894f        list_flags_1.b |= 0x20
 00418951        (esi_1 - 4)->active_entries[0].bod.bod.bod.list_flags = list_flags_1
-00418972        set_bod_object(&esi_1[-1], g_game_base->directx_loader.cached_x_mesh_slots[*(edi + 0x6b0)].object)
+00418972        set_bod_object(&esi_1[-1], g_game_base->directx_loader.cached_x_mesh_slots[selected_script_anchor->script.object_index].object)
 00418977        struct Object* object = (esi_1 - 4)->active_entries[0].bod.bod.object
 00418989        (esi_1 - 4)->active_entries[0].repeat_z_span = fconvert.s(fconvert.t(object->bounds_max.z) - fconvert.t(object->bounds_min.z))
 0041898f        set_matrix_identity(&esi_1[0xd])
@@ -48,11 +48,11 @@
 004189ba        esi_1 = &esi_1[0x24]
 004189c3        i_1 = i
 004189c7        do while (i s< 0xa)
-004189e5        change_backdrop(&g_game_base->backdrop, edi + 0x5a4, flip)
+004189e5        change_backdrop(&g_game_base->backdrop, &selected_script_anchor->script, flip)
 004189f8        set_border_justify_centre(&g_game_base->border_manager, 0f)
 00418a08        struct FrameColor4f* eax_9 = &g_game_base->fog_color
-00418a0d        eax_9->r = *(edi + 0x6b4)
-00418a12        eax_9->g = *(edi + 0x6b8)
-00418a18        eax_9->b = *(edi + 0x6bc)
-00418a20        eax_9->a = *(edi + 0x6c0)
+00418a0d        eax_9->r = selected_script_anchor->script.fog_color.r
+00418a12        eax_9->g = selected_script_anchor->script.fog_color.g
+00418a18        eax_9->b = selected_script_anchor->script.fog_color.b
+00418a20        eax_9->a = selected_script_anchor->script.fog_color.a
 00418a27        return

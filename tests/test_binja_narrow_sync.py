@@ -11310,3 +11310,52 @@ def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
         "_sync_spawn_track_jetpack_lvars()",
     ):
         assert replay in ida_sync
+
+
+def test_landscape_activation_replay_preserves_stride_and_interior_borrows() -> None:
+    header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+    replay = (
+        BINJA_DIR / "sync_landscape_activation_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    assert "typedef struct LandscapeScriptStrideAnchor {" in header
+    assert "uint8_t manager_prefix[0x5a4];" in header
+    assert "LandscapeScriptRecord script;" in header
+    assert "LandscapeScriptStrideAnchor_must_be_0x6c8" in header
+
+    for type_name, width in (
+        ("ActiveLandscapeEntry", "0x90"),
+        ("LandscapeScriptRecord", "0x124"),
+        ("LandscapeManager", "0x97A4"),
+        ("LandscapeScriptStrideAnchor", "0x6C8"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    assert "types_declare_if_missing" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert (
+        '"activate_landscape_entry",\n'
+        '        "RegisterVariableSourceType",\n'
+        '        111,\n'
+        '        73,\n'
+        '        "selected_script_anchor",\n'
+        '        "LandscapeScriptStrideAnchor*"'
+        in replay
+    )
+    rejected_cursor = (
+        '"activate_landscape_entry",\n'
+        '        "RegisterVariableSourceType",\n'
+        '        114,\n'
+        '        72,\n'
+        '        "active_entry_list_flags_cursor",\n'
+        '        "uint32_t*"'
+    )
+    assert rejected_cursor in replay
+    assert "remove_user_var_updates" in replay
+    assert rejected_cursor not in replay.split(
+        "LANDSCAPE_ACTIVATION_USER_VAR_UPDATES", 1
+    )[1].split("REJECTED_ACTIVE_ENTRY_CURSOR_REMOVALS", 1)[0]
+    assert "ActiveLandscapeEntry*" not in replay.split(
+        "LANDSCAPE_ACTIVATION_USER_VAR_UPDATES", 1
+    )[1].split("REJECTED_ACTIVE_ENTRY_CURSOR_REMOVALS", 1)[0]

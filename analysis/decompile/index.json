@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_ring_or_special_effect_parent",
-      "address": "0x43e830"
+      "name": "activate_landscape_entry",
+      "address": "0x418870"
     }
   ],
   "health_check_count": 903,
