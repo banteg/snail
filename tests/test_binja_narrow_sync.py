@@ -9574,6 +9574,81 @@ def test_runtime_grid_clear_lifetime_replay_stays_guarded() -> None:
     assert "remaining_cell_lanes" not in replay
 
 
+def test_subgame_level_activation_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_subgame_level_activation_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("BodNode", "0x10"),
+        ("BodList", "0x0C"),
+        ("BodBase", "0x38"),
+        ("RenderableBod", "0x80"),
+        ("Weapon", "0x3DC"),
+        ("Invincible", "0xA4"),
+        ("Snail", "0x19B4"),
+        ("Player", "0x4364"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("BodNode", "0x08", "list_prev", "BodNode*"),
+        ("BodNode", "0x0C", "list_next", "BodNode*"),
+        ("BodList", "0x04", "first", "BodNode*"),
+        ("BodBase", "0x00", "bod", "BodNode"),
+        ("RenderableBod", "0x00", "bod", "BodBase"),
+        ("Weapon", "0x00", "body", "RenderableBod"),
+        ("Invincible", "0x00", "body", "RenderableBod"),
+        ("Snail", "0x064C", "weapon_channels", "Weapon[3]"),
+        ("Snail", "0x11E0", "jetpack_channel", "Weapon"),
+        ("Snail", "0x1894", "invincible_shell", "Invincible"),
+        ("Player", "0x0000", "body", "RenderableBod"),
+        ("Player", "0x2984", "presentation", "Snail"),
+        ("SubgameRuntime", "0x3BB764", "player", "Player"),
+        ("GameRoot", "0x05A8", "active_bod_list", "BodList"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for index, storage, name in (
+        (1402, 68, "active_first_weapon_0"),
+        (1423, 68, "active_first_link_weapon_0"),
+        (1438, 68, "active_new_first_weapon_0"),
+        (1490, 68, "active_first_weapon_1"),
+        (1511, 68, "active_first_link_weapon_1"),
+        (1526, 68, "active_new_first_weapon_1"),
+        (1578, 68, "active_first_weapon_2"),
+        (1599, 68, "active_first_link_weapon_2"),
+        (1614, 68, "active_new_first_weapon_2"),
+        (1666, 68, "active_first_invincible_shell"),
+        (1687, 68, "active_first_link_invincible_shell"),
+        (1702, 68, "active_new_first_invincible_shell"),
+        (1769, 68, "active_first_presentation"),
+        (1790, 68, "active_first_link_presentation"),
+        (1805, 68, "active_new_first_presentation"),
+        (1846, 67, "active_first_player"),
+        (1867, 67, "active_first_link_player"),
+        (1875, 67, "active_first_reload_player"),
+        (1877, 67, "active_new_first_player_reloaded"),
+    ):
+        expected = (
+            '        "build_subgame_level",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            '        "BodNode*"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    for hidden_ssa_name in ("edx_13", "edx_15", "ebp_1"):
+        assert hidden_ssa_name not in replay
+
+
 def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     track_sync = (BINJA_DIR / "sync_track_render_cache_types.py").read_text(
         encoding="utf-8"

@@ -190,14 +190,14 @@
 004383bc        report_errorf("List ADD")
 0043840f        if ((0x200 & game->player.presentation.weapon_channels[0].body.bod.bod.list_flags) == 0)
 00438425        struct BodNode** active_first_ref_weapon_0 = &g_game_base->active_bod_list.first
-0043842a        struct BodNode* edx_12 = *active_first_ref_weapon_0
-0043842e        if (edx_12 != 0)
-0043843c        edx_12->list_prev = &game->player.presentation.weapon_channels
-0043843f        struct BodNode* edx_14 = *active_first_ref_weapon_0
-00438444        edx_14->list_prev->list_next = edx_14
-0043844e        struct BodNode* list_prev = (*active_first_ref_weapon_0)->list_prev
-00438451        *active_first_ref_weapon_0 = list_prev
-00438453        list_prev->list_prev = nullptr
+0043842a        struct BodNode* active_first_weapon_0 = *active_first_ref_weapon_0
+0043842e        if (active_first_weapon_0 != 0)
+0043843c        active_first_weapon_0->list_prev = &game->player.presentation.weapon_channels
+0043843f        struct BodNode* active_first_link_weapon_0 = *active_first_ref_weapon_0
+00438444        active_first_link_weapon_0->list_prev->list_next = active_first_link_weapon_0
+0043844e        struct BodNode* active_new_first_weapon_0 = (*active_first_ref_weapon_0)->list_prev
+00438451        *active_first_ref_weapon_0 = active_new_first_weapon_0
+00438453        active_new_first_weapon_0->list_prev = nullptr
 00438430        *active_first_ref_weapon_0 = &game->player.presentation.weapon_channels
 00438432        game->player.__offset(0x2fd8).b = nullptr
 00438432        game->player.__offset(0x2fd9).b = 0
@@ -206,14 +206,14 @@
 00438416        report_errorf("List ADD")
 00438467        if ((0x200 & game->player.presentation.weapon_channels[1].body.bod.bod.list_flags) == 0)
 0043847d        struct BodNode** active_first_ref_weapon_1 = &g_game_base->active_bod_list.first
-00438482        struct BodNode* edx_16 = *active_first_ref_weapon_1
-00438486        if (edx_16 != 0)
-00438494        edx_16->list_prev = &game->player.presentation.weapon_channels[1]
-00438497        struct BodNode* edx_18 = *active_first_ref_weapon_1
-0043849c        edx_18->list_prev->list_next = edx_18
-004384a6        struct BodNode* list_prev_1 = (*active_first_ref_weapon_1)->list_prev
-004384a9        *active_first_ref_weapon_1 = list_prev_1
-004384ab        list_prev_1->list_prev = nullptr
+00438482        struct BodNode* active_first_weapon_1 = *active_first_ref_weapon_1
+00438486        if (active_first_weapon_1 != 0)
+00438494        active_first_weapon_1->list_prev = &game->player.presentation.weapon_channels[1]
+00438497        struct BodNode* active_first_link_weapon_1 = *active_first_ref_weapon_1
+0043849c        active_first_link_weapon_1->list_prev->list_next = active_first_link_weapon_1
+004384a6        struct BodNode* active_new_first_weapon_1 = (*active_first_ref_weapon_1)->list_prev
+004384a9        *active_first_ref_weapon_1 = active_new_first_weapon_1
+004384ab        active_new_first_weapon_1->list_prev = nullptr
 00438488        *active_first_ref_weapon_1 = &game->player.presentation.weapon_channels[1]
 0043848a        game->player.presentation.weapon_channels[1].body.bod.bod.list_prev.b = nullptr
 0043848a        game->player.presentation.weapon_channels[1].body.bod.bod.list_prev:1.b = 0
@@ -222,14 +222,14 @@
 0043846e        report_errorf("List ADD")
 004384bf        if ((0x200 & game->player.presentation.weapon_channels[2].body.bod.bod.list_flags) == 0)
 004384d5        struct BodNode** active_first_ref_weapon_2 = &g_game_base->active_bod_list.first
-004384da        struct BodNode* edx_20 = *active_first_ref_weapon_2
-004384de        if (edx_20 != 0)
-004384ec        edx_20->list_prev = &game->player.presentation.weapon_channels[2]
-004384ef        struct BodNode* edx_22 = *active_first_ref_weapon_2
-004384f4        edx_22->list_prev->list_next = edx_22
-004384fe        struct BodNode* list_prev_2 = (*active_first_ref_weapon_2)->list_prev
-00438501        *active_first_ref_weapon_2 = list_prev_2
-00438503        list_prev_2->list_prev = nullptr
+004384da        struct BodNode* active_first_weapon_2 = *active_first_ref_weapon_2
+004384de        if (active_first_weapon_2 != 0)
+004384ec        active_first_weapon_2->list_prev = &game->player.presentation.weapon_channels[2]
+004384ef        struct BodNode* active_first_link_weapon_2 = *active_first_ref_weapon_2
+004384f4        active_first_link_weapon_2->list_prev->list_next = active_first_link_weapon_2
+004384fe        struct BodNode* active_new_first_weapon_2 = (*active_first_ref_weapon_2)->list_prev
+00438501        *active_first_ref_weapon_2 = active_new_first_weapon_2
+00438503        active_new_first_weapon_2->list_prev = nullptr
 004384e0        *active_first_ref_weapon_2 = &game->player.presentation.weapon_channels[2]
 004384e2        game->player.presentation.weapon_channels[2].body.bod.bod.list_prev.b = nullptr
 004384e2        game->player.presentation.weapon_channels[2].body.bod.bod.list_prev:1.b = 0
@@ -238,14 +238,14 @@
 004384c6        report_errorf("List ADD")
 00438517        if ((0x200 & game->player.presentation.invincible_shell.body.bod.bod.list_flags) == 0)
 0043852d        struct BodNode** active_first_ref_invincible_shell = &g_game_base->active_bod_list.first
-00438532        struct BodNode* edx_24 = *active_first_ref_invincible_shell
-00438536        if (edx_24 != 0)
-00438544        edx_24->list_prev = &game->player.presentation.invincible_shell
-00438547        struct BodNode* edx_26 = *active_first_ref_invincible_shell
-0043854c        edx_26->list_prev->list_next = edx_26
-00438556        struct BodNode* list_prev_3 = (*active_first_ref_invincible_shell)->list_prev
-00438559        *active_first_ref_invincible_shell = list_prev_3
-0043855b        list_prev_3->list_prev = nullptr
+00438532        struct BodNode* active_first_invincible_shell = *active_first_ref_invincible_shell
+00438536        if (active_first_invincible_shell != 0)
+00438544        active_first_invincible_shell->list_prev = &game->player.presentation.invincible_shell
+00438547        struct BodNode* active_first_link_invincible_shell = *active_first_ref_invincible_shell
+0043854c        active_first_link_invincible_shell->list_prev->list_next = active_first_link_invincible_shell
+00438556        struct BodNode* active_new_first_invincible_shell = (*active_first_ref_invincible_shell)->list_prev
+00438559        *active_first_ref_invincible_shell = active_new_first_invincible_shell
+0043855b        active_new_first_invincible_shell->list_prev = nullptr
 00438538        *active_first_ref_invincible_shell = &game->player.presentation.invincible_shell
 0043853a        game->player.presentation.invincible_shell.body.bod.bod.list_prev.b = nullptr
 0043853a        game->player.presentation.invincible_shell.body.bod.bod.list_prev:1.b = 0
@@ -257,14 +257,14 @@
 0043856a        game->player.presentation.invincible_shell.body.bod.bod.list_flags = list_flags_1
 0043857e        if ((0x200 & game->player.presentation.body.bod.bod.list_flags) == 0)
 00438594        struct BodNode** active_first_ref_presentation = &g_game_base->active_bod_list.first
-00438599        struct BodNode* edx_29 = *active_first_ref_presentation
-0043859d        if (edx_29 != 0)
-004385ab        edx_29->list_prev = &game->player.presentation
-004385ae        struct BodNode* edx_31 = *active_first_ref_presentation
-004385b3        edx_31->list_prev->list_next = edx_31
-004385bd        struct BodNode* list_prev_4 = (*active_first_ref_presentation)->list_prev
-004385c0        *active_first_ref_presentation = list_prev_4
-004385c2        list_prev_4->list_prev = nullptr
+00438599        struct BodNode* active_first_presentation = *active_first_ref_presentation
+0043859d        if (active_first_presentation != 0)
+004385ab        active_first_presentation->list_prev = &game->player.presentation
+004385ae        struct BodNode* active_first_link_presentation = *active_first_ref_presentation
+004385b3        active_first_link_presentation->list_prev->list_next = active_first_link_presentation
+004385bd        struct BodNode* active_new_first_presentation = (*active_first_ref_presentation)->list_prev
+004385c0        *active_first_ref_presentation = active_new_first_presentation
+004385c2        active_new_first_presentation->list_prev = nullptr
 0043859f        *active_first_ref_presentation = &game->player.presentation
 004385a1        game->player.presentation.body.bod.bod.list_prev.b = nullptr
 004385a1        game->player.presentation.body.bod.bod.list_prev:1.b = 0
@@ -273,22 +273,22 @@
 00438585        report_errorf("List ADD")
 004385cb        if ((game->player.body.bod.bod.list_flags & 0x200) == 0)
 004385e1        struct BodNode** active_first_ref_player = &g_game_base->active_bod_list.first
-004385e6        struct BodNode* ecx_40 = *active_first_ref_player
-004385ea        if (ecx_40 != 0)
-004385f8        ecx_40->list_prev.b = (&game->player).b
-004385f8        ecx_40->list_prev:1.b = (&game->player):1.b
-004385fb        struct BodNode* ecx_42 = *active_first_ref_player
+004385e6        struct BodNode* active_first_player = *active_first_ref_player
+004385ea        if (active_first_player != 0)
+004385f8        active_first_player->list_prev.b = (&game->player).b
+004385f8        active_first_player->list_prev:1.b = (&game->player):1.b
+004385fb        struct BodNode* active_first_link_player = *active_first_ref_player
 004385fd        struct BodNode* active_new_first_player
-004385fd        active_new_first_player.b = ecx_42->list_prev.b
-004385fd        active_new_first_player:1.b = ecx_42->list_prev:1.b
-00438600        active_new_first_player->list_next = ecx_42
-00438603        struct BodNode* ecx_43 = *active_first_ref_player
-00438605        struct BodNode* ecx_44
-00438605        ecx_44.b = ecx_43->list_prev.b
-00438605        ecx_44:1.b = ecx_43->list_prev:1.b
-00438608        *active_first_ref_player = ecx_44
-0043860a        ecx_44->list_prev.b = nullptr
-0043860a        ecx_44->list_prev:1.b = 0
+004385fd        active_new_first_player.b = active_first_link_player->list_prev.b
+004385fd        active_new_first_player:1.b = active_first_link_player->list_prev:1.b
+00438600        active_new_first_player->list_next = active_first_link_player
+00438603        struct BodNode* active_first_reload_player = *active_first_ref_player
+00438605        struct BodNode* active_new_first_player_reloaded
+00438605        active_new_first_player_reloaded.b = active_first_reload_player->list_prev.b
+00438605        active_new_first_player_reloaded:1.b = active_first_reload_player->list_prev:1.b
+00438608        *active_first_ref_player = active_new_first_player_reloaded
+0043860a        active_new_first_player_reloaded->list_prev.b = nullptr
+0043860a        active_new_first_player_reloaded->list_prev:1.b = 0
 004385ec        *active_first_ref_player = &game->player
 004385ee        game->player.body.bod.bod.list_prev = nullptr
 004385f3        (*active_first_ref_player)->list_next = nullptr

@@ -447,3 +447,27 @@ expressions are unresolved Player-internal bytes, not receiver ambiguity.
 IDA was already fully typed, so the two decompiler views now agree on the
 outer owner. Matching source is unchanged at the honest 77.67%, 560/555
 frontier with all 101 operands clean.
+
+## 2026-07-19 player actor activation lifetimes
+
+The start-level tail reactivates six Player-owned actors after
+`initialize_subgoldy`: three `Weapon` channels, the `Invincible` shell, the
+`Snail` presentation body, and the Player body itself. Each inline
+`BodList::add_bod` borrows the actor's inherited zero-offset `BodNode` and
+splices it through `GameRoot::active_bod_list.first`; neither the root list nor
+the temporary first/new-first pointers own the backing actor storage.
+
+Binary Ninja already had the six exact `BodNode**` root anchors, while IDA
+already named the first and promoted-first nodes. A narrow guarded replay now
+names the 19 remaining visible BN lifetimes: first, link, and new-first nodes
+for the five presentation blocks plus the Player reload pair. Analyzer-folded
+SSA intermediates remain untouched. All 19 survive reanalysis, and a second
+replay skips all 19 as already current.
+
+The weapon-channel-0 partial `list_prev` clear still renders as two raw Player
+bytes because Binary Ninja does not fold that partial pointer store. Its exact
+owner is already proved by `Player::presentation`, `Snail::weapon_channels`,
+and the neighboring full-width list operations, so no synthetic overlay was
+added merely to improve the display. Matcher source remains untouched at the
+honest 77.67%, 560/555-instruction frontier, prefix 177/555, with all 101
+masked operands clean. No fakematch was introduced.
