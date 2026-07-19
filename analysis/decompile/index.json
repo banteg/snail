@@ -1,99 +1,55 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 19,
+  "function_count": 8,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 19,
-  "ida_exported": 19,
+  "bn_exported": 8,
+  "ida_exported": 8,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "binja_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_golb_ai",
-      "address": "0x414820"
+      "name": "initialize_runtime_pools_and_path_template_bank",
+      "address": "0x408060"
     },
     {
-      "name": "is_neighbor_cell_solid",
-      "address": "0x434b60"
+      "name": "initialize_salt_hazard_runtime",
+      "address": "0x408630"
     },
     {
-      "name": "build_track_fringe_objects",
-      "address": "0x434be0"
-    },
-    {
-      "name": "merge_track_tile_runs",
-      "address": "0x435180"
-    },
-    {
-      "name": "harmonize_center_lane_floor_slide_variants",
-      "address": "0x4356f0"
-    },
-    {
-      "name": "select_track_tile_edge_variants",
-      "address": "0x435a80"
-    },
-    {
-      "name": "populate_runtime_track_cells_from_segments",
-      "address": "0x435eb0"
+      "name": "build_subgame_level",
+      "address": "0x437eb0"
     },
     {
       "name": "update_subgame",
       "address": "0x438b90"
     },
     {
-      "name": "is_sub_loc_floor",
-      "address": "0x439a40"
+      "name": "initialize_salt_hazard_pool",
+      "address": "0x441540"
     },
     {
-      "name": "is_sub_loc_ramp",
-      "address": "0x439a70"
+      "name": "spawn_salt_hazard",
+      "address": "0x441560"
     },
     {
-      "name": "is_sub_loc_empty",
-      "address": "0x439ab0"
+      "name": "update_salt_hazard",
+      "address": "0x441c10"
     },
     {
-      "name": "is_sub_loc_slide",
-      "address": "0x439ad0"
-    },
-    {
-      "name": "remove_sub_loc",
-      "address": "0x439bc0"
-    },
-    {
-      "name": "update_sub_loc",
-      "address": "0x439d50"
-    },
-    {
-      "name": "update_subgoldy",
-      "address": "0x43b120"
-    },
-    {
-      "name": "sample_track_floor_height_at_position",
-      "address": "0x43d4d0"
-    },
-    {
-      "name": "spawn_track_jetpack_pickup",
-      "address": "0x43d890"
-    },
-    {
-      "name": "spawn_track_ring_or_special_effect",
-      "address": "0x43df10"
-    },
-    {
-      "name": "update_sub_lazer_projectile",
-      "address": "0x4417d0"
+      "name": "handle_subgoldy_collisions",
+      "address": "0x444cf0"
     }
   ],
-  "health_check_count": 876,
+  "health_check_count": 880,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

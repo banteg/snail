@@ -104,26 +104,26 @@ def _apply_manifest(args: argparse.Namespace) -> int:
         current_name = function.name
         if current_name == symbol.name:
             skipped.append({"address": symbol.address_hex, "name": symbol.name})
-            continue
-        if is_curated_function_name(current_name) and not args.replace_existing:
-            conflicts.append(
+        else:
+            if is_curated_function_name(current_name) and not args.replace_existing:
+                conflicts.append(
+                    {
+                        "address": symbol.address_hex,
+                        "expected": symbol.name,
+                        "current": current_name,
+                    }
+                )
+                continue
+
+            if not args.dry_run:
+                function.name = symbol.name
+            renamed.append(
                 {
                     "address": symbol.address_hex,
-                    "expected": symbol.name,
-                    "current": current_name,
+                    "old_name": current_name,
+                    "new_name": symbol.name,
                 }
             )
-            continue
-
-        if not args.dry_run:
-            function.name = symbol.name
-        renamed.append(
-            {
-                "address": symbol.address_hex,
-                "old_name": current_name,
-                "new_name": symbol.name,
-            }
-        )
         current_comment = getattr(function, "comment", None)
         if isinstance(current_comment, str):
             current_comment = current_comment.strip() or None

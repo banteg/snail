@@ -74,9 +74,10 @@ now defines the method on `Salt`; matching remains exact at 83/83 with twelve
 clean operands.
 
 2026-07-13 Binary Ninja ownership consolidation: the callback now consumes the
-canonical authored `Salt` established by startup. Its `Vec3 velocity` at
-`+0x8c` carries the fade, spawn-y, and collision-latch overlays already proved
-by the exact scratch, while `owner_game +0x88` is a borrowed `SubgameRuntime*`.
+canonical authored `Salt` established by startup. The lanes at `+0x8c`,
+`+0x90`, and `+0x94` are the fade, spawn-y, and collision-latch fields proved
+across the exact spawn, update, and collision paths, while `owner_game +0x88`
+is a borrowed `SubgameRuntime*`.
 `SubgameRuntime` owns the exact 40-slot `SaltManager` at `+0x3578c0`; this
 replaces both the stale sparse slot experiment and lane-local `FrameSaltSlot`.
 Matching remains exact at 83/83.
@@ -92,3 +93,8 @@ the authored `Salt` receiver in both lanes. The inherited transform, colour,
 and list node resolve through `body`, while the proved `+0x8c/+0x90/+0x94`
 fade, spawn-y, and collision-latch overlays retain their semantic names.
 Matching remains exact; no source-shape claim was changed.
+
+2026-07-19 lifecycle-state closure: state `0/1/2` is now the 32-bit
+`SaltState` owner (`INACTIVE`, `ACTIVE`, `RECYCLE_PENDING`), and the updater
+writes `fade_alpha` directly. The exact 83/83 code and twelve clean operands
+are unchanged; the old `Vec3` overlay is retired.

@@ -43,8 +43,7 @@ void Player::handle_subgoldy_collisions()
             + offsetof(TransformMatrix, position),
         SALT_COLLISION_ARMED_FROM_SUBGAME =
             SALT_POOL_FROM_SUBGAME
-            + offsetof(Salt, velocity)
-            + offsetof(Vector3, z),
+            + offsetof(Salt, collision_armed),
         SUB_LAZER_POOL_FROM_SUBGAME =
             offsetof(SubgameRuntime, sub_lazers)
             + offsetof(SubLazerManager, slots),

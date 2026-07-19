@@ -2,14 +2,13 @@
 
 #include "salt_hazard_types.h"
 
-int* SaltManager::initialize_salt_hazard_pool()
+void SaltManager::initialize_salt_hazard_pool()
 {
-    int* state = &slots[0].state;
+    SaltState* state = &slots[0].state;
     int count = sizeof(slots) / sizeof(slots[0]);
     do {
-        *state = 0;
-        state += sizeof(Salt) / sizeof(int);
+        *state = SALT_STATE_INACTIVE;
+        state += sizeof(Salt) / sizeof(SaltState);
         --count;
     } while (count);
-    return state;
 }

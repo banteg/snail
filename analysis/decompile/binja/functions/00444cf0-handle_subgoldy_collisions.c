@@ -11,7 +11,7 @@
 00444d33        int32_t i = 0
 00444e11        while (i s< 0x17c0)
 00444d40        struct SaltSlotCursor* salt_cursor = player->game + i
-00444d55        if (salt_cursor->salt.state == 1 && salt_cursor->salt.collision_armed == 1)
+00444d55        if (salt_cursor->salt.state == SALT_STATE_ACTIVE && salt_cursor->salt.collision_armed == 1)
 00444d85        long double x87_r7_6 = fconvert.t(salt_cursor->salt.body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
 00444d8f        vector_2.x = fconvert.s(fconvert.t(salt_cursor->salt.body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
 00444d93        vector_2.y = fconvert.s(fconvert.t(salt_cursor->salt.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))

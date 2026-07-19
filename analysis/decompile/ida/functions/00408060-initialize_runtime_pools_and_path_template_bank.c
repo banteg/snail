@@ -25,7 +25,11 @@ SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(Subga
 
   p_segment_cache = &game->segment_cache;
   noop_this_constructor(&game->segment_cache);
-  initialize_array_with_constructor(p_segment_cache->slots, 60, 715, initialize_active_bod);
+  initialize_array_with_constructor(
+    p_segment_cache->slots,
+    60,
+    715,
+    (void *(__thiscall *)(void *))initialize_active_bod);
   initialize_array_with_constructor(game->level_definition.segment_slots, 16928, 100, noop_runtime_slot_constructor);
   initialize_array_with_constructor(game->level_definition.first_segment.rows, 56, 256, noop_runtime_slot_constructor);
   initialize_array_with_constructor(game->level_definition.last_segment.rows, 56, 256, noop_runtime_slot_constructor);
@@ -171,7 +175,11 @@ SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(Subga
     50,
     (void *(__thiscall *)(void *))initialize_track_parcel_runtime);
   initialize_array_with_constructor(game->galaxy.route_slots, 672, 101, noop_runtime_slot_constructor);
-  initialize_array_with_constructor(game->galaxy.route_names, 160, 10, initialize_galaxy_route_name_record);
+  initialize_array_with_constructor(
+    game->galaxy.route_names,
+    160,
+    10,
+    (void *(__thiscall *)(void *))initialize_galaxy_route_name_record);
   initialize_array_with_constructor(game->enemy_manager.entries, 24, 256, noop_runtime_slot_constructor);
   return game;
 }

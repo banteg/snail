@@ -9,17 +9,24 @@
 
 class SubgameRuntime;
 
+enum SaltState {
+    SALT_STATE_INACTIVE = 0,
+    SALT_STATE_ACTIVE = 1,
+    SALT_STATE_RECYCLE_PENDING = 2,
+};
+
 class Salt : public RenderableBod {
 public:
     Salt* initialize_salt_hazard_runtime(); // @ 0x408630
-    void update_salt_hazard();    // @ 0x441c10
-    float& fade_alpha() { return velocity.x; } // +0x8c overlay in update_salt_hazard
-    unsigned char& collision_armed() { return *(unsigned char*)&velocity.z; } // +0x94
+    void update_salt_hazard(); // @ 0x441c10
 
-    int state;                 // +0x80
+    SaltState state;            // +0x80
     char unknown_84[0x88 - 0x84];
     SubgameRuntime* owner_game; // +0x88
-    Vector3 velocity;          // +0x8c, spawn motion/fade/collision overlay
+    float fade_alpha;           // +0x8c
+    float spawn_velocity_y;     // +0x90
+    unsigned char collision_armed; // +0x94
+    char unknown_95[0x98 - 0x95];
 };
 
 typedef Salt SaltHazardSlot;
@@ -30,7 +37,7 @@ typedef BodList SaltListAnchor;
 
 class SaltManager {
 public:
-    int* initialize_salt_hazard_pool();              // @ 0x441540
+    void initialize_salt_hazard_pool();              // @ 0x441540
     int spawn_salt_hazard(const Vector3* position);  // @ 0x441560
 
     Salt slots[40];

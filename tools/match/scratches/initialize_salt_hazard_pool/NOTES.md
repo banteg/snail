@@ -18,3 +18,9 @@ seven instructions remain byte-identical.
 `SaltManager::slots`; the normalized listing remains byte-identical
 (`9e9acb9a24cf1ec53427f178fcd11efb8cc51807eda1b2b6c9b610bac24970a7`)
 and exact at 7/7 instructions.
+
+2026-07-19 state and ABI closure: the cursor now points at the authored
+32-bit `SaltState`, and initialization writes `SALT_STATE_INACTIVE`. The sole
+Windows callsite in `build_subgame_level` discards EAX, Android preserves the
+`cRSaltManager::Init()` owner, and the natural `void` method still compiles to
+the exact seven instructions. The previous end-pointer return was incidental.

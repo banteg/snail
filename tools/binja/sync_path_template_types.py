@@ -396,6 +396,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Banner",
     "Vapour",
     "TrackPickupState",
+    "SaltState",
     "JetPack",
     "ParcelState",
     "CompletionState",
@@ -465,6 +466,7 @@ def ensure_path_analysis_views(
         "PresentationWobbleController",
         "RuntimeCellStrideAnchor",
         "SubLocTileId",
+        "SaltState",
     )
     equivalence = current_header_type_equivalence(
         REPO_ROOT,

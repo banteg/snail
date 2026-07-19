@@ -1465,6 +1465,18 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall spawn_garbage_smoke_particle(SubGarbage* sub_garbage, Vec3* position, Vec3* velocity, Player* owner_player);",
     ),
     (
+        "initialize_salt_hazard_runtime",
+        "Salt* __thiscall initialize_salt_hazard_runtime(Salt* salt);",
+    ),
+    (
+        "initialize_salt_hazard_pool",
+        "void __thiscall initialize_salt_hazard_pool(SaltManager* manager);",
+    ),
+    (
+        "spawn_salt_hazard",
+        "int32_t __thiscall spawn_salt_hazard(SaltManager* manager, const Vec3* position);",
+    ),
+    (
         "update_salt_hazard",
         "void __thiscall update_salt_hazard(Salt* salt);",
     ),

@@ -430,6 +430,47 @@ def test_binja_export_rejects_unresolved_skipped_function(
         module._reanalyze_timed_out_functions("snail-mail.bndb", [function])
 
 
+def test_binja_symbol_apply_updates_comment_when_name_is_current(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/binja/sync_symbols.py",
+        "test_binja_sync_symbols_comment",
+    )
+    function = types.SimpleNamespace(
+        name="spawn_salt_hazard",
+        comment="stale description",
+    )
+    view = types.SimpleNamespace(
+        get_function_at=lambda address: function if address == 0x441560 else None,
+        file=types.SimpleNamespace(filename="snail-mail.bndb"),
+    )
+    symbol = module.FunctionSymbol(
+        address=0x441560,
+        name="spawn_salt_hazard",
+        description="recovered ownership description",
+    )
+    manifest = types.SimpleNamespace(functions=(symbol,))
+    monkeypatch.setattr(module, "_load_binary_view", lambda _binary: view)
+    monkeypatch.setattr(
+        module,
+        "load_function_symbol_manifest",
+        lambda _manifest_path: manifest,
+    )
+    args = types.SimpleNamespace(
+        binary=None,
+        manifest=tmp_path / "gameplay-functions.json",
+        dry_run=False,
+        replace_existing=False,
+    )
+
+    assert module._apply_manifest(args) == 0
+    assert function.name == "spawn_salt_hazard"
+    assert function.comment == "recovered ownership description"
+
+
 def test_ida_symbol_sync_can_split_a_main_function_chunk() -> None:
     source = (REPO_ROOT / "tools/ida/apply_symbol_manifest.py").read_text(
         encoding="utf-8"

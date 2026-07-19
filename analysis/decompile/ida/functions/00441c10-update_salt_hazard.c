@@ -6,7 +6,7 @@
 void __thiscall update_salt_hazard(Salt *salt)
 {
   SubgameRuntime *owner_game; // eax
-  uint32_t v3; // ecx
+  __int32 v3; // ecx
   BodList *p_active_bod_list; // ecx
   uint32_t list_flags; // eax
   struct BodNode *list_next; // eax
@@ -19,7 +19,7 @@ void __thiscall update_salt_hazard(Salt *salt)
   if ( !owner_game->subgame_pause_gate )
   {
     v3 = salt->state - 1;
-    if ( salt->state == 1 )
+    if ( salt->state == SALT_STATE_ACTIVE )
     {
       v9 = 1.0 - (salt->body.transform.position.z - owner_game->player.body.transform.position.z) * 0.021739131;
       salt->fade_alpha = v9;
@@ -34,7 +34,7 @@ void __thiscall update_salt_hazard(Salt *salt)
       salt->fade_alpha = v9;
       set_color_alpha(&salt->body.bod.color, 0.89999998);
       if ( salt->body.transform.position.z < (double)salt->owner_game->player.interaction_max_z )
-        salt->state = 2;
+        salt->state = SALT_STATE_RECYCLE_PENDING;
     }
     else if ( v3 == 1 )
     {
@@ -45,7 +45,7 @@ void __thiscall update_salt_hazard(Salt *salt)
         if ( (list_flags & 0x40) != 0 )
         {
           report_errorf(aListRemoveNext);
-          salt->state = 0;
+          salt->state = SALT_STATE_INACTIVE;
         }
         else
         {
@@ -60,7 +60,7 @@ void __thiscall update_salt_hazard(Salt *salt)
           salt->body.bod.bod.list_next = p_active_bod_list->free_top;
           p_active_bod_list->free_top = &salt->body.bod.bod;
           v8 = salt->body.bod.bod.list_flags;
-          salt->state = 0;
+          salt->state = SALT_STATE_INACTIVE;
           BYTE1(v8) &= ~2u;
           salt->body.bod.bod.list_flags = v8;
         }
@@ -68,7 +68,7 @@ void __thiscall update_salt_hazard(Salt *salt)
       else
       {
         report_errorf(aListRemove);
-        salt->state = 0;
+        salt->state = SALT_STATE_INACTIVE;
       }
     }
   }

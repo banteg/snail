@@ -11,7 +11,7 @@ int SaltManager::spawn_salt_hazard(const Vector3* position)
     int index = 0;
     Salt* scan = slots;
     while (1) {
-        if (!scan->state)
+        if (scan->state == SALT_STATE_INACTIVE)
             break;
         ++index;
         ++scan;
@@ -20,16 +20,16 @@ int SaltManager::spawn_salt_hazard(const Vector3* position)
     }
 
     Salt* slot = &slots[index];
-    slot->state = 1;
-    slot->velocity.x = 0.0f;
-    slot->velocity.y = g_game->subgame.subgame_rate * 0.033333335f;
+    slot->state = SALT_STATE_ACTIVE;
+    slot->fade_alpha = 0.0f;
+    slot->spawn_velocity_y = g_game->subgame.subgame_rate * 0.033333335f;
     TransformMatrix* live_matrix = &slot->transform;
     Vector3* spawn_position = &slot->transform.position;
     *spawn_position = *position;
     live_matrix->set_matrix_rotation_identity();
     live_matrix->rotate_matrix_local_y(
         ((float)next_math_random_value() - 16384.0f) * 0.0001917476f);
-    slot->collision_armed() = 1;
+    slot->collision_armed = 1;
     int* list_flags = &slot->list_flags;
     BodNode* head = &g_game->subgame.salt_hazard_list_head;
     if ((*list_flags & BOD_FLAG_LINKED) != 0)

@@ -6166,6 +6166,17 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     matcher_salt = (
         repo_root / "tools/match/include/salt_hazard_types.h"
     ).read_text(encoding="utf-8")
+    salt_scratches = {
+        name: (
+            repo_root / f"tools/match/scratches/{name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        for name in (
+            "initialize_salt_hazard_pool",
+            "spawn_salt_hazard",
+            "update_salt_hazard",
+            "handle_subgoldy_collisions",
+        )
+    }
 
     for header in analysis_headers:
         assert "typedef struct SubLazer {" in header
@@ -6175,19 +6186,50 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         assert header.count("RenderableBod body;") >= 2
         assert "SubLazer slots[SUB_LAZER_SLOT_CAPACITY];" in header
         assert "Salt slots[40];" in header
+        assert "typedef enum SaltState {" in header
+        assert "SALT_STATE_INACTIVE = 0" in header
+        assert "SALT_STATE_ACTIVE = 1" in header
+        assert "SALT_STATE_RECYCLE_PENDING = 2" in header
+        assert "SaltState state;" in header
+        assert "float fade_alpha;" in header
+        assert "float spawn_velocity_y;" in header
+        assert "uint8_t collision_armed;" in header
 
     assert '("0x00", "body", "RenderableBod")' in hazard_sync
     assert '("SubLazer", SUB_LAZER_FIELD_UPDATES)' in hazard_sync
     assert '("Salt", SALT_FIELD_UPDATES)' in hazard_sync
+    assert '("0x80", "state", "SaltState")' in hazard_sync
+    assert 'SALT_STATE_TYPE_REPLACEMENTS = ("SaltState",)' in hazard_sync
+    assert "apply_user_var_updates" in hazard_sync
+    assert "SALT_USER_VAR_UPDATES" in hazard_sync
+    assert (
+        '"spawn_salt_hazard",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        37,\n"
+        "        72,\n"
+        '        "salt",\n'
+        '        "Salt*",'
+    ) in hazard_sync
     assert "SubLazer* sub_lazer" in hazard_sync
     assert "Salt* salt" in hazard_sync
     for ida_sync in (ida_runtime_sync, ida_path_sync):
+        assert (
+            "void __thiscall initialize_salt_hazard_pool("
+            "SaltManager* manager);"
+        ) in ida_sync
+        assert (
+            "int32_t __thiscall spawn_salt_hazard("
+            "SaltManager* manager, const Vec3* position);"
+        ) in ida_sync
         assert "void __thiscall update_salt_hazard(Salt* salt);" in ida_sync
         assert (
             "void __thiscall clear_active_landscape_entries("
             "LandscapeManager* manager);"
         ) in ida_sync
         assert "SaltHazardSlot* slot" not in ida_sync
+    assert "SALT_OWNER_EXPECTED_SIZE = 0x98" in ida_runtime_sync
+    assert '(0x80, 4, "state", "SaltState")' in ida_runtime_sync
+    assert 'salt_owner_readback = _salt_owner_readback()' in ida_runtime_sync
     for declaration in (
         "SubLazer* __thiscall initialize_sub_lazer_runtime(SubLazer* sub_lazer);",
         "void __thiscall update_sub_lazer_projectile(SubLazer* sub_lazer);",
@@ -6197,6 +6239,28 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
 
     assert "class SubLazer : public RenderableBod" in matcher_sub_lazer
     assert "class Salt : public RenderableBod" in matcher_salt
+    assert "enum SaltState {" in matcher_salt
+    assert "SaltState state;" in matcher_salt
+    assert "float fade_alpha;" in matcher_salt
+    assert "float spawn_velocity_y;" in matcher_salt
+    assert "unsigned char collision_armed;" in matcher_salt
+    assert "Vector3 velocity;" not in matcher_salt
+    assert "fade_alpha()" not in matcher_salt
+    assert "collision_armed()" not in matcher_salt
+    assert (
+        "void SaltManager::initialize_salt_hazard_pool()"
+        in salt_scratches["initialize_salt_hazard_pool"]
+    )
+    assert "SALT_STATE_ACTIVE" in salt_scratches["spawn_salt_hazard"]
+    assert "slot->fade_alpha = 0.0f;" in salt_scratches["spawn_salt_hazard"]
+    assert "slot->spawn_velocity_y" in salt_scratches["spawn_salt_hazard"]
+    assert "slot->collision_armed = 1;" in salt_scratches["spawn_salt_hazard"]
+    assert "SALT_STATE_RECYCLE_PENDING" in salt_scratches["update_salt_hazard"]
+    assert "fade_alpha = alpha;" in salt_scratches["update_salt_hazard"]
+    assert (
+        "offsetof(Salt, collision_armed)"
+        in salt_scratches["handle_subgoldy_collisions"]
+    )
 
 
 def test_banner_backlink_owner_survives_every_replay_lane() -> None:

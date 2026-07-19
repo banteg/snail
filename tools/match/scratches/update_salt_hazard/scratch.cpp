@@ -13,7 +13,7 @@ void Salt::update_salt_hazard()
         return;
 
     switch (state) {
-    case 2: {
+    case SALT_STATE_RECYCLE_PENDING: {
         GameRoot* game = g_game;
         SaltListAnchor* anchor = &game->active_bod_list;
         int flags = list_flags;
@@ -23,7 +23,7 @@ void Salt::update_salt_hazard()
         } else {
             if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
                 report_errorf("List remove NEXTBOD");
-                state = 0;
+                state = SALT_STATE_INACTIVE;
                 return;
             } else {
                 if (list_next)
@@ -35,29 +35,29 @@ void Salt::update_salt_hazard()
                 list_next = anchor->free_top;
                 anchor->free_top = this;
                 int updated = list_flags;
-                state = 0;
+                state = SALT_STATE_INACTIVE;
                 updated &= ~BOD_FLAG_LINKED;
                 list_flags = updated;
             }
         }
         return;
     first_remove_error:
-        state = 0;
+        state = SALT_STATE_INACTIVE;
         return;
     }
-    case 1: {
+    case SALT_STATE_ACTIVE: {
         float alpha =
             1.0f - (transform.position.z - owner_game->player.transform.position.z) * 0.021739131f;
-        fade_alpha() = alpha;
+        fade_alpha = alpha;
         if (alpha < 0.0f) {
             alpha = 0.0f;
         } else if (alpha > 1.0f) {
             alpha = 1.0f;
         }
-        fade_alpha() = alpha;
+        fade_alpha = alpha;
         color.set_color_alpha(0.899999976f);
         if (transform.position.z < owner_game->player.interaction_max_z)
-            state = 2;
+            state = SALT_STATE_RECYCLE_PENDING;
         return;
     }
     }

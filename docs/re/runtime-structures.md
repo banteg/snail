@@ -1437,8 +1437,13 @@ only; live receivers and manager arrays use `SubLazer` and `Salt`.
   installs the table at `0x497340`; its callback is the exact
   `cRSalt::AI()` at `update_salt_hazard`
 - `SaltManager` owns 40 inline `0x98`-byte actors, exactly matching the native
-  `0x17c0` size ledger; `+0x8c/+0x90/+0x94` are the proved fade-alpha,
-  spawn-y, and collision-latch overlays used across spawn, collision, and AI
+  `0x17c0` size ledger; each actor owns a 32-bit `SaltState` at `+0x80` and
+  independent fade-alpha, spawn-y, and collision-latch fields at
+  `+0x8c/+0x90/+0x94`, proved across spawn, collision, and AI
+- `initialize_salt_hazard_pool` is the exact void `cRSaltManager::Init()`;
+  `spawn_salt_hazard` keeps a conservative `int32_t` analysis result because
+  its Windows exits are return-sensitive even though the sole caller discards
+  EAX
 
 No field beyond those observed lanes is inferred: the cRSubLazer tail
 `+0xa0..+0xaf` and the padding around both actors' state/backlink fields remain

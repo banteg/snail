@@ -279,16 +279,22 @@ High-confidence findings:
 
 Recovered salt-slot lifecycle:
 
+- `initialize_salt_hazard_pool` is the exact void `cRSaltManager::Init()` and
+  clears all 40 inline slots to `SALT_STATE_INACTIVE`
 - `spawn_salt_hazard` scans a `40`-slot pool with stride `0x98`
-- slot state lives at `slot + 0x80`
-- a free slot is one with state `0`
+- `SaltState` lives at `slot + 0x80`: inactive `0`, active `1`, and
+  recycle-pending `2`
+- a free slot is one with state `SALT_STATE_INACTIVE`
 - spawn initializes:
-  - `slot + 0x80 = 1`
-  - `slot + 0x8c = 0`
-  - `slot + 0x90 = game_dt * 0.0333333351`
-  - `slot + 0x94 = 1`
+  - `state = SALT_STATE_ACTIVE`
+  - `fade_alpha +0x8c = 0`
+  - `spawn_velocity_y +0x90 = game_dt * 0.0333333351`
+  - `collision_armed +0x94 = 1`
   - `slot + 0x68/+0x6c/+0x70 = spawn xyz`
 - the slot also enters a linked list and sets runtime flag `0x200`
+- the Windows Add caller discards EAX, but the exact function has
+  return-sensitive exit shapes; its analysis ABI remains conservatively
+  `int32_t` and no slot-index result is claimed
 
 2026-06-16 correction:
 
@@ -297,7 +303,8 @@ Recovered salt-slot lifecycle:
 - `0x441740` is the paired sub-lazer deactivate helper
 - the salt vtable installed by `initialize_salt_hazard_runtime` points at
   `0x441c10`; that updater computes a fade fraction at `slot + 0x8c`,
-  updates alpha, and moves the slot to state `2` after the z cutoff
+  updates alpha, and moves the slot to `SALT_STATE_RECYCLE_PENDING` after the
+  z cutoff
 
 The older claim that salt update integrates `slot +0x8c/+0x90/+0x94` as
 velocity came from the shifted `0x4417d0` label.

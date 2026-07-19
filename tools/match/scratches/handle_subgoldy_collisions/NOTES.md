@@ -41,7 +41,7 @@ game-base byte cursor (`0..0x17c0`, stride `0x98`), which restores the target's
 long-lived byte offset register and improves the focused result from `52.85%`
 (`659/673`) to `53.46%` (`655/673`). The raw spelling does not make ownership
 unknown: `SubgameRuntime::salt_hazards`, `SaltManager::slots`, `Salt::state`,
-`Salt::position`, and `Salt::collision_armed()` jointly prove every accessed
+`Salt::transform.position`, and `Salt::collision_armed` jointly prove every accessed
 lane. It is retained only because spelling the same walk as `Salt*` changes
 VC6's register allocation in this large function.
 
@@ -84,9 +84,8 @@ the zero-offset `BodNode` list overlay for teardown.
 2026-06-16 salt BOD/renderable consolidation: `SaltHazardSlot` now uses the
 shared `BodNode` prefix and `BodList` anchor, and exposes the BodBase/renderable
 fields through `position +0x68`. This collision scratch consumes the salt
-position vector and the low byte at `+0x94`; the latter remains represented as
-`*(unsigned char*)&slot->velocity.z` because spawn and collision prove the
-byte latch but not a clean source-level field name.
+position vector and the `collision_armed` byte at `+0x94`; spawn sets that
+latch and collision both tests and clears it.
 
 2026-06-16 ring reward ladder pass: the ring/special-effect reward ladder is
 not a native `switch`. Replacing the scratch `switch (effect_kind)` with a
@@ -205,9 +204,8 @@ useful cross-confirmations are:
   `player.h`. This collision scratch still keeps a broad local `Player` window
   because it touches several not-yet-promoted lanes, but these three fields are
   no longer scratch-only evidence.
-- The salt collision live byte remains deliberately spelled as
-  `*(unsigned char*)&slot->velocity.z`: the byte is cross-confirmed by the
-  salt spawner, but the surrounding semantic field is still not named.
+- The salt collision live byte is `Salt::collision_armed`: the exact spawner
+  sets it, and this collision path tests and clears it after damage.
 
 2026-06-16 player subobject consolidation: shared `player.h` now records the
 `Nuke nuke` object at `Player +0x150` and embedded
@@ -511,7 +509,7 @@ The two remaining absolute fixed-pool address families are now compile-time
 derivations from their recovered owners while preserving the native byte
 cursors. Salt state, inherited render position, and collision-armed byte come
 from `SubgameRuntime::salt_hazards`, `SaltManager::slots`, `Salt::state`,
-`Salt::transform.position`, and the proven `Salt::velocity.z` overlay. The
+`Salt::transform.position`, and `Salt::collision_armed`. The
 sub-lazer state and inherited render position similarly come from
 `SubgameRuntime::sub_lazers`, `SubLazerManager::slots`, `SubLazer::state`, and
 `SubLazer::transform.position`. This removes the raw `0x3579xx` and `0x356bxx`
@@ -522,6 +520,15 @@ Focused output remains 53.93% (651/673 instructions, prefix 8, 86 clean
 operands). Saved pre-change and rebuilt normalized candidate listings have the
 same SHA-256,
 `e1e032120cb1016572a143f75cd82849fe408b46dab7c7d9818668a012b67db2`.
+
+## 2026-07-19 salt collision-latch field closure
+
+The salt pool offset now derives directly from `offsetof(Salt,
+collision_armed)` instead of the retired `velocity.z` overlay. The exact spawn
+producer, this collision consumer, and the 0x98-byte owner ledger establish an
+independent byte field at `+0x94`. The broad collision scratch remains at its
+established 54.23% (651/673 instructions) with all 88 masked operands clean;
+no register-allocation workaround or fake type was introduced.
 
 ## 2026-07-14 sub-lazer collision transition
 

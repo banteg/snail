@@ -1607,7 +1607,7 @@
       "android_symbol": "cRSaltManager::Init()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Both walk 40 inline cRSalt records and clear the state at slot +0x80."
+      "notes": "Both walk 40 inline cRSalt records and clear the SaltState at slot +0x80. The sole Windows caller discards EAX, and the exact body naturally retains its seven instructions as a void method."
     },
     {
       "address": "0x441560",
@@ -1616,7 +1616,7 @@
       "android_symbol": "cRSaltManager::Add(tVector&)",
       "source_object": null,
       "confidence": "high",
-      "notes": "Windows and Android share the vector-only manager body; iOS v1.9 adds the owning Goldy argument."
+      "notes": "Windows and Android share the vector-only manager body; iOS v1.9 adds the owning Goldy argument. The sole Windows caller discards EAX, but distinct return-sensitive exits make int32_t the conservative analysis ABI; no slot-index result is claimed."
     },
     {
       "address": "0x441c10",

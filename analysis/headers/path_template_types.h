@@ -724,9 +724,15 @@ extern VoiceManager g_voice_manager;
  * Native functions: initialize_salt_hazard_pool @ 0x441540, spawn_salt_hazard
  * @ 0x441560, update_salt_hazard @ 0x441c10.
  */
+typedef enum SaltState {
+    SALT_STATE_INACTIVE = 0,
+    SALT_STATE_ACTIVE = 1,
+    SALT_STATE_RECYCLE_PENDING = 2,
+} SaltState;
+
 typedef struct Salt {
     RenderableBod body;
-    uint32_t state;
+    SaltState state;
     uint8_t _pad_84[0x4];
     SubgameRuntime* owner_game;
     float fade_alpha;
@@ -2901,6 +2907,17 @@ void __thiscall destroy_subgame(SubgameRuntime* game);
 void __thiscall update_subgame(SubgameRuntime* game);
 
 void __thiscall remove_subgame_bods(SubgameRuntime* game);
+
+Salt* __thiscall initialize_salt_hazard_runtime(Salt* salt);
+
+void __thiscall initialize_salt_hazard_pool(SaltManager* manager);
+
+int32_t __thiscall spawn_salt_hazard(
+    SaltManager* manager,
+    const Vec3* position
+);
+
+void __thiscall update_salt_hazard(Salt* salt);
 
 void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game);
 

@@ -31,6 +31,15 @@ TRUSTED_NAMES = (
     (0x443730, "spawn_track_parcel"),
 )
 
+SALT_OWNER_EXPECTED_SIZE = 0x98
+SALT_OWNER_EXPECTED_MEMBERS = (
+    (0x80, 4, "state", "SaltState"),
+    (0x88, 4, "owner_game", "SubgameRuntime *"),
+    (0x8C, 4, "fade_alpha", "float"),
+    (0x90, 4, "spawn_velocity_y", "float"),
+    (0x94, 1, "collision_armed", "uint8_t"),
+)
+
 
 TRUSTED_DECLARATIONS = [
     (
@@ -187,7 +196,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_salt_hazard_pool",
-        "int32_t* __thiscall initialize_salt_hazard_pool(SaltManager* manager);",
+        "void __thiscall initialize_salt_hazard_pool(SaltManager* manager);",
     ),
     (
         "spawn_salt_hazard",
@@ -433,6 +442,69 @@ def _named_struct_size(name: str) -> int | None:
     if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
         return None
     return value.get_size()
+
+
+def _normalize_owner_member_type(value: str) -> str:
+    normalized = _normalize_type_text(value) or ""
+    return re.sub(r"\b(?:struct|class|union|enum)\s+", "", normalized)
+
+
+def _named_struct_members(name: str) -> list[dict[str, object]] | None:
+    owner = ida_typeinf.tinfo_t()
+    if not owner.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
+        return None
+    members = ida_typeinf.udt_type_data_t()
+    if not owner.get_udt_details(members):
+        return None
+    return [
+        {
+            "offset": int(member.offset) // 8,
+            "size": int(member.size) // 8,
+            "name": member.name,
+            "type": _normalize_owner_member_type(member.type.dstr()),
+        }
+        for member in members
+    ]
+
+
+def _salt_owner_readback() -> dict[str, object]:
+    members = _named_struct_members("Salt")
+    selected = [] if members is None else [
+        member
+        for member in members
+        if int(member["offset"])
+        in {expected[0] for expected in SALT_OWNER_EXPECTED_MEMBERS}
+    ]
+    observed = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected
+    )
+    size = _named_struct_size("Salt")
+    return {
+        "status": (
+            "verified"
+            if size == SALT_OWNER_EXPECTED_SIZE
+            and observed == SALT_OWNER_EXPECTED_MEMBERS
+            else "failed"
+        ),
+        "size": size,
+        "members": selected,
+        "expected_size": SALT_OWNER_EXPECTED_SIZE,
+        "expected_members": [
+            {
+                "offset": offset,
+                "size": member_size,
+                "name": member_name,
+                "type": member_type,
+            }
+            for offset, member_size, member_name, member_type in SALT_OWNER_EXPECTED_MEMBERS
+        ],
+    }
 
 
 def _normalize_pointer_type(value: str | None) -> str:
@@ -803,6 +875,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {"selector": "GameRoot", "owner_graph": game_root_owner_graph}
         )
 
+    salt_owner_readback = _salt_owner_readback()
+    if salt_owner_readback["status"] != "verified":
+        failed.append({"selector": "Salt", "owner_readback": salt_owner_readback})
+
     reanalyzed = []
     for address in REANALYSIS_FUNCTIONS:
         function = ida_funcs.get_func(address)
@@ -829,6 +905,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "contact_header": str(contact_header_path),
                 "parcel_owner_sizes": parcel_owner_sizes,
+                "salt_owner_readback": salt_owner_readback,
                 "type_sizes": {
                     "SubgameRuntime": _named_struct_size("SubgameRuntime"),
                     "SubRingStar": _named_struct_size("SubRingStar"),
@@ -845,6 +922,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "ParcelManager": _named_struct_size("ParcelManager"),
                     "Completion": _named_struct_size("Completion"),
                     "TimesUp": _named_struct_size("TimesUp"),
+                    "Salt": _named_struct_size("Salt"),
+                    "SaltManager": _named_struct_size("SaltManager"),
                 },
                 "parse_errors": parse_errors,
                 "applied": applied,

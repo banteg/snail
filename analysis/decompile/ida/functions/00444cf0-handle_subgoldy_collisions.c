@@ -80,7 +80,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
       for ( i = 0; i < 40; ++i )
       {
         salt_cursor = (SaltSlotCursor *)(&player->game->scan_reset + i * 152);
-        if ( salt_cursor->salt.state == 1 && salt_cursor->salt.collision_armed == 1 )
+        if ( salt_cursor->salt.state == SALT_STATE_ACTIVE && salt_cursor->salt.collision_armed == 1 )
         {
           v61.x = salt_cursor->salt.body.transform.position.x - player->cached_camera_target_world.x;
           v61.y = salt_cursor->salt.body.transform.position.y - player->cached_camera_target_world.y;

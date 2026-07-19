@@ -6,26 +6,26 @@ source shape tried (for-with-increment, while, for(;;)+break,
 do-while+goto) rotates and duplicates the state test under our compiler
 pass ordering. All semantics verified in the diff body:
 
-- free scan over `slots[i].state` (+0x80, stride 0x98), bails with
-  `return index` at 40
-- seeding order: state=1, velocity.x +0x8c=0.0f, velocity.y +0x90 =
+- free scan over `slots[i].state` (+0x80, stride 0x98), bails when all 40 slots
+  are occupied
+- seeding order: state=active, fade alpha +0x8c=0.0f, spawn-y +0x90 =
   `Game::subgame_rate * (1/30)`, position triple into the live-matrix
   position row (+0x68), `set_matrix_rotation_identity` on +0x38,
   random world-y rotation `(rand() - 16384) * 0.0001917476` (±π),
-  then a one-byte write to velocity.z +0x94
-- `+0x8c..+0x94` is still a spawn-time velocity-looking lane, and spawn only
-  pokes the low byte of `+0x94` to `1`. The earlier claim that
+  then arms the one-byte collision latch at +0x94
+- `+0x8c`, `+0x90`, and `+0x94` are independent fields: fade alpha,
+  spawn-time y velocity, and collision latch. The earlier claim that
   `update_salt_hazard` proves integration was based on the shifted
   `0x4417d0` name; the actual salt updater at `0x441c10` uses `+0x8c` as a
   fade fraction and does not read `+0x90/+0x94`.
 - live-list add-after onto the node-shaped anchor at game+0x3ca224,
-  flag 0x200, prev/next at +0x08/+0x0c, returns `list_flags |= 0x200`
+  flag 0x200, prev/next at +0x08/+0x0c; the final flags value remains in EAX
 - spawn's true extent ends at 0x44164c; an uncurated 20-slot pool
   initializer sits between it and deactivate (worth curating)
 
 2026-06-13 pin audit: focused matcher still verifies 74.07%, 68/67 insns.
 Keep pinned; the remaining diff is free-scan loop rotation plus scheduling,
-while the velocity.z low-byte poke and list-link semantics are recovered.
+while the collision-latch store and list-link semantics are recovered.
 
 2026-06-16 BOD/renderable consolidation: `SaltHazardSlot` now inherits the
 shared `BodNode` prefix, aliases the free-list anchor to `BodList`, and exposes
@@ -33,8 +33,8 @@ the renderable/BodBase fields used by salt. This spawn path proves the
 zero-offset live-list overlay and writes the matrix position row at `+0x68`;
 `initialize_salt_hazard_runtime` calls `initialize_renderable_bod()`, and the
 updater drives `color +0x28`. Focused Wibo remains `74.07%`, with `8` masked
-operands OK. The `+0x94` low-byte poke remains spelled as an overlay on
-`velocity.z` until more source evidence gives it a better semantic name.
+operands OK. Later collision evidence names the `+0x94` byte
+`collision_armed`.
 
 2026-06-20 volatile audit: direct `g_game` no longer needs `volatile` in this
 spawn path. Focused Wibo improves from 74.07% to 77.04%, still 67 target / 68
@@ -67,8 +67,7 @@ instructions, with `10` clean masked operands.
 2026-07-10 collision-latch closure: the spawn-time low byte at slot `+0x94`
 is now named `collision_armed`. `spawn_salt_hazard` sets it to `1`, and
 `handle_subgoldy_collisions` is the confirming consumer: it gates contact on
-that byte and clears it after damage. The accessor preserves the proven
-`velocity.z` storage overlay and this scratch remains exact at `100.00%`,
+that byte and clears it after damage. This scratch remains exact at `100.00%`,
 `67/67`, with `10` clean masked operands.
 
 2026-07-11 salt-list ownership closure: startup constructs a complete
@@ -99,3 +98,13 @@ Matching remains exact at 67/67 with ten clean operands.
 typed `Salt*` through `SaltManager::slots` instead of treating each 0x98-byte
 record as 38 integer lanes. This is byte-identical at 67/67 instructions with
 all ten operands clean.
+
+2026-07-19 state and field closure: the exact manager method now consumes the
+authored `SaltState` values and writes independent `fade_alpha`,
+`spawn_velocity_y`, and `collision_armed` fields. This retires the false
+`Vec3 velocity` overlay without changing the 67/67 listing. The sole Windows
+caller discards EAX, and the function's full-pool and successful exits leave
+different residual values. A `void` source experiment changed the exact
+Windows epilogue to 88.55%, so the analysis ABI remains conservatively
+`int32_t` pending stronger independent evidence; no slot-index return is
+claimed.

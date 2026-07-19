@@ -91,9 +91,15 @@ typedef struct SubLazerManager {
     SubLazer slots[SUB_LAZER_SLOT_CAPACITY];
 } SubLazerManager;
 
+typedef enum SaltState {
+    SALT_STATE_INACTIVE = 0,
+    SALT_STATE_ACTIVE = 1,
+    SALT_STATE_RECYCLE_PENDING = 2,
+} SaltState;
+
 typedef struct Salt {
     RenderableBod body;
-    int32_t state;
+    SaltState state;
     uint8_t unknown_84[0x4];
     SubgameRuntime* owner_game;
     float fade_alpha;

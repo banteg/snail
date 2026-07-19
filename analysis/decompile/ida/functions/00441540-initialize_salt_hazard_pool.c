@@ -2,20 +2,19 @@
 /* function: initialize_salt_hazard_pool @ 0x441540 */
 /* selector: initialize_salt_hazard_pool */
 
-// Exact Windows `cRSaltManager::Init()`: clears the state at +0x80 for each of the manager's 40 inline Salt records. Android preserves the same manager method and loop.
-int32_t *__thiscall initialize_salt_hazard_pool(SaltManager *manager)
+// Exact void Windows `cRSaltManager::Init()`: clears the 32-bit SaltState at +0x80 for each of the manager's 40 inline Salt records. Its sole Windows caller discards EAX, and Android preserves the same manager method and loop.
+void __thiscall initialize_salt_hazard_pool(SaltManager *manager)
 {
-  int32_t *result; // eax
+  SaltState *p_state; // eax
   int v2; // ecx
 
-  result = (int32_t *)&manager->slots[0].state;
+  p_state = &manager->slots[0].state;
   v2 = 40;
   do
   {
-    *result = 0;
-    result += 38;
+    *p_state = SALT_STATE_INACTIVE;
+    p_state += 38;
     --v2;
   }
   while ( v2 );
-  return result;
 }

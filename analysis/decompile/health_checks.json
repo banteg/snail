@@ -1786,6 +1786,8 @@
         "struct SubGarbage* i_2 = player->game->garbage_hazards.active_head",
         "i_2->body.transform.position.z",
         "player->presentation.wobble.lift_phase_step",
+        "salt_cursor->salt.state == SALT_STATE_ACTIVE",
+        "salt_cursor->salt.collision_armed == 1",
         "salt_cursor->salt.body.transform.position.z",
         "sub_lazer_cursor->sub_lazer.body.transform.position.z",
         "slug_cursor->slug.body.transform.position.z",
@@ -1823,6 +1825,8 @@
         "ParcelSlotCursor *parcel_cursor",
         "SubHealthSlotCursor *health_cursor",
         "SubRingSlotCursor *ring_cursor",
+        "salt_cursor->salt.state == SALT_STATE_ACTIVE",
+        "salt_cursor->salt.collision_armed == 1",
         "salt_cursor->salt.body.transform.position.z",
         "sub_lazer_cursor->sub_lazer.body.transform.position.z",
         "slug_cursor->slug.body.transform.position.z",
@@ -6451,11 +6455,86 @@
       ]
     },
     {
+      "name": "bn_salt_manager_init_void_state_owner",
+      "artifact": "analysis/decompile/binja/functions/00441540-initialize_salt_hazard_pool.c",
+      "required_substrings": [
+        "enum SaltState*",
+        "state = SALT_STATE_INACTIVE",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "int32_t* result",
+        "state = 0",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_salt_manager_init_void_state_owner",
+      "artifact": "analysis/decompile/ida/functions/00441540-initialize_salt_hazard_pool.c",
+      "required_substrings": [
+        "void __thiscall initialize_salt_hazard_pool(SaltManager *manager)",
+        "SaltState *p_state",
+        "*p_state = SALT_STATE_INACTIVE"
+      ],
+      "forbidden_substrings": [
+        "int32_t *__thiscall initialize_salt_hazard_pool",
+        "*p_state = 0",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_salt_manager_add_state_and_field_owners",
+      "artifact": "analysis/decompile/binja/functions/00441560-spawn_salt_hazard.c",
+      "required_substrings": [
+        "enum SaltState*",
+        "SALT_STATE_INACTIVE",
+        "SALT_STATE_ACTIVE",
+        "fade_alpha",
+        "spawn_velocity_y",
+        "collision_armed"
+      ],
+      "forbidden_substrings": [
+        "int32_t* edx",
+        "velocity.x",
+        "velocity.y",
+        "velocity.z",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_salt_manager_add_state_and_field_owners",
+      "artifact": "analysis/decompile/ida/functions/00441560-spawn_salt_hazard.c",
+      "required_substrings": [
+        "int32_t __thiscall spawn_salt_hazard(SaltManager *manager, const Vec3 *position)",
+        "SaltState *i",
+        "SALT_STATE_ACTIVE",
+        "fade_alpha",
+        "spawn_velocity_y",
+        "collision_armed"
+      ],
+      "forbidden_substrings": [
+        "uint32_t *i",
+        "velocity.x",
+        "velocity.y",
+        "velocity.z",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_salt_owner_and_inherited_bod",
       "artifact": "analysis/decompile/binja/functions/00441c10-update_salt_hazard.c",
       "required_substrings": [
         "salt->owner_game",
         "salt->state",
+        "state == SALT_STATE_ACTIVE",
+        "salt->state = SALT_STATE_RECYCLE_PENDING",
+        "salt->state = SALT_STATE_INACTIVE",
         "salt->fade_alpha",
         "salt->body.transform.position.z",
         "set_color_alpha(&salt->body.bod.color",
@@ -6478,6 +6557,9 @@
         "void __thiscall update_salt_hazard(Salt *salt)",
         "salt->owner_game",
         "salt->state",
+        "salt->state == SALT_STATE_ACTIVE",
+        "salt->state = SALT_STATE_RECYCLE_PENDING",
+        "salt->state = SALT_STATE_INACTIVE",
         "salt->fade_alpha",
         "salt->body.transform.position.z",
         "set_color_alpha(&salt->body.bod.color, 0.89999998)",
