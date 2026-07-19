@@ -23,8 +23,8 @@ void Path::build_track_fringe_mesh(char* texture_path, float clamp_side)
     mesh->request_object_vertices((segment_count << 2) + 4);
     mesh->request_object_facequads(segment_count << 1);
 
-    ObjectFaceQuad* facequads = mesh->facequads;
     Vector3* destination = mesh->vertices;
+    ObjectFaceQuad* facequads = mesh->facequads;
 
     int row = 0;
     if (segment_count >= 0) {

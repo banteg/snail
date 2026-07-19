@@ -10953,6 +10953,155 @@ def test_subgoldy_position_lifetime_replay_stays_guarded() -> None:
     assert "current_struct_fields_batch" in replay
 
 
+def test_track_fringe_mesh_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_track_fringe_mesh_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("Vec3", "0x0C"),
+        ("BodBase", "0x38"),
+        ("ObjectFaceQuad", "0x30"),
+        ("Object", "0xDC"),
+        ("Path", "0xA8"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("Vec3", "0x00", "x", "float"),
+        ("BodBase", "0x24", "object", "Object*"),
+        ("ObjectFaceQuad", "0x02", "vertex_0", "uint16_t"),
+        ("ObjectFaceQuad", "0x0C", "texture_ref", "TextureRef*"),
+        ("Object", "0x38", "vertices", "Vec3*"),
+        ("Object", "0x5C", "facequads", "ObjectFaceQuad*"),
+        ("Path", "0x44", "segment_count", "uint32_t"),
+        ("Path", "0x60", "fringe_mesh_bod", "BodBase"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for function_name, source_type, index, storage, name, variable_type in (
+        (
+            "build_track_fringe_mesh",
+            "RegisterVariableSourceType",
+            58,
+            69,
+            "generated_mesh",
+            "Object*",
+        ),
+        (
+            "build_track_fringe_mesh",
+            "RegisterVariableSourceType",
+            140,
+            72,
+            "generated_vertices",
+            "Vec3*",
+        ),
+        (
+            "build_track_fringe_mesh",
+            "RegisterVariableSourceType",
+            221,
+            69,
+            "generated_row",
+            "Vec3*",
+        ),
+        (
+            "build_track_fringe_mesh",
+            "StackVariableSourceType",
+            143,
+            -92,
+            "generated_facequads",
+            "ObjectFaceQuad*",
+        ),
+        (
+            "build_track_fringe_supertramp_mesh",
+            "RegisterVariableSourceType",
+            28,
+            69,
+            "generated_mesh",
+            "Object*",
+        ),
+        (
+            "build_track_fringe_supertramp_mesh",
+            "RegisterVariableSourceType",
+            89,
+            73,
+            "generated_vertices",
+            "Vec3*",
+        ),
+        (
+            "build_track_fringe_supertramp_mesh",
+            "RegisterVariableSourceType",
+            92,
+            69,
+            "generated_facequads",
+            "ObjectFaceQuad*",
+        ),
+        (
+            "build_track_fringe_supertramp_mesh",
+            "RegisterVariableSourceType",
+            836,
+            66,
+            "final_row_first_edge",
+            "Vec3*",
+        ),
+        (
+            "build_track_fringe_supertramp_mesh",
+            "RegisterVariableSourceType",
+            852,
+            67,
+            "first_cap_vertex",
+            "Vec3*",
+        ),
+        (
+            "build_track_fringe_supertramp_mesh",
+            "RegisterVariableSourceType",
+            959,
+            66,
+            "final_row_second_edge",
+            "Vec3*",
+        ),
+        (
+            "build_track_fringe_supertramp_mesh",
+            "RegisterVariableSourceType",
+            1086,
+            68,
+            "first_cap_vertex_copy",
+            "Vec3*",
+        ),
+        (
+            "build_track_fringe_supertramp_mesh",
+            "RegisterVariableSourceType",
+            1093,
+            66,
+            "final_row_copy",
+            "Vec3*",
+        ),
+        (
+            "build_track_fringe_supertramp_mesh",
+            "RegisterVariableSourceType",
+            1122,
+            73,
+            "final_generated_row",
+            "Vec3*",
+        ),
+    ):
+        expected = (
+            f'        "{function_name}",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}"'
+        )
+        assert expected in replay
+
+    assert "face_vertex_cursor" not in replay
+    assert "apply_user_var_updates" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+
+
 def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
     repo_root = Path(__file__).parents[1]
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(

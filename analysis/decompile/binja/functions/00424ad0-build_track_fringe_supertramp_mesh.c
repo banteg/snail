@@ -4,18 +4,18 @@
 /* function: build_track_fringe_supertramp_mesh @ 0x424ad0 */
 
 00424ae7        set_bod_object(&self->fringe_mesh_bod, add_object_to_list(&g_object_list))
-00424aec        struct Object* object = self->fringe_mesh_bod.object
-00424af2        enum ObjectFlag flags = object->flags
-00424af5        object->blend_mode = 5
-00424b02        object->flags = flags | OBJECT_FLAG_DISABLE_CULLING
-00424b12        request_object_vertices(object, (self->segment_count << 2) + 6)
-00424b21        request_object_facequads(object, self->segment_count * 2 + 1)
-00424b29        struct Vec3* vertices = object->vertices
-00424b2c        struct ObjectFaceQuad* facequads = object->facequads
+00424aec        struct Object* generated_mesh = self->fringe_mesh_bod.object
+00424af2        enum ObjectFlag flags = generated_mesh->flags
+00424af5        generated_mesh->blend_mode = 5
+00424b02        generated_mesh->flags = flags | OBJECT_FLAG_DISABLE_CULLING
+00424b12        request_object_vertices(generated_mesh, (self->segment_count << 2) + 6)
+00424b21        request_object_facequads(generated_mesh, self->segment_count * 2 + 1)
+00424b29        struct Vec3* generated_vertices = generated_mesh->vertices
+00424b2c        struct ObjectFaceQuad* generated_facequads = generated_mesh->facequads
 00424b2f        int32_t i = 0
-00424b33        struct Vec3* vertices_1 = vertices
+00424b33        struct Vec3* generated_vertices_1 = generated_vertices
 00424b37        if (self->segment_count s>= 0)
-00424b3d        void* __offset(Vec3, 0x14) edi_1 = vertices + 0x14
+00424b3d        void* __offset(Vec3, 0x14) edi_1 = generated_vertices + 0x14
 00424b54        int32_t* edx_2 = &self->bod.object->vertices[(self->width_cells + 1) * i + 1]
 00424b59        (edi_1 - 0x14)->x = *edx_2
 00424b5e        (edi_1 - 0x14)->y = edx_2[1]
@@ -56,11 +56,11 @@
 00424d08        (edi_1 - 0x14)->__offset(0xffffffffffffffec).d = var_20_1
 00424d13        (edi_1 - 0x14)->__offset(0xfffffffffffffff0).d = fconvert.s(x87_r7_30)
 00424d1b        do while (i s<= self->segment_count)
-00424d21        vertices = vertices_1
+00424d21        generated_vertices = generated_vertices_1
 00424d28        int32_t ebp = 0
 00424d2c        int32_t var_5c = 0
 00424d30        if (self->segment_count s> 0)
-00424d36        uint16_t* edi_2 = &facequads->vertex_0
+00424d36        uint16_t* edi_2 = &generated_facequads->vertex_0
 00424d59        while (true)
 00424d59        (edi_2 - 2)->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0)
 00424d5c        int16_t ebp_1 = (ebp << 2).w
@@ -91,52 +91,52 @@
 00424dfd        if (not(cond:2_1))
 00424dfd        break
 00424d3b        ebp = var_5c
-00424e03        vertices = vertices_1
+00424e03        generated_vertices = generated_vertices_1
 00424e07        uint32_t segment_count_1 = self->segment_count
-00424e14        float* eax_45 = &vertices[segment_count_1 * 4]
-00424e24        float* ecx_25 = ((segment_count_1 * 3 + 3) << 4) + vertices
-00424e67        float var_20_2 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_45[1]) - fconvert.t(eax_45[-0xb]))) * fconvert.t(0.400000006f))) + fconvert.t(eax_45[1]))
-00424e6f        long double x87_r7_38 = fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_45[2]) - fconvert.t(eax_45[-0xa]))) * fconvert.t(0.400000006f))) + fconvert.t(eax_45[2])
-00424e76        *ecx_25 = fconvert.s((fconvert.t(*eax_45) - fconvert.t(eax_45[-0xc])) * fconvert.t(0.400000006f) + fconvert.t(*eax_45))
-00424e78        ecx_25[1] = var_20_2
-00424e83        ecx_25[2] = fconvert.s(x87_r7_38)
-00424e8f        void* eax_50 = &vertices[self->segment_count * 4]
-00424ee2        float var_20_3 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(eax_50 + 0x1c)) - fconvert.t(*(eax_50 - 0x14)))) * fconvert.t(0.400000006f))) + fconvert.t(*(eax_50 + 0x1c)))
-00424eea        long double x87_r7_46 = fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(eax_50 + 0x20)) - fconvert.t(*(eax_50 - 0x10)))) * fconvert.t(0.400000006f))) + fconvert.t(*(eax_50 + 0x20))
-00424ef1        *(eax_50 + 0x3c) = fconvert.s((fconvert.t(*(eax_50 + 0x18)) - fconvert.t(*(eax_50 - 0x18))) * fconvert.t(0.400000006f) + fconvert.t(*(eax_50 + 0x18)))
-00424ef3        *(eax_50 + 0x40) = var_20_3
-00424efe        *(eax_50 + 0x44) = fconvert.s(x87_r7_46)
+00424e14        struct Vec3* final_row_first_edge = &generated_vertices[segment_count_1 * 4]
+00424e24        struct Vec3* first_cap_vertex = ((segment_count_1 * 3 + 3) << 4) + generated_vertices
+00424e67        float var_20_2 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(final_row_first_edge->y) - fconvert.t(final_row_first_edge->__offset(0xffffffffffffffd4).d))) * fconvert.t(0.400000006f))) + fconvert.t(final_row_first_edge->y))
+00424e6f        long double x87_r7_38 = fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(final_row_first_edge->z) - fconvert.t(final_row_first_edge->__offset(0xffffffffffffffd8).d))) * fconvert.t(0.400000006f))) + fconvert.t(final_row_first_edge->z)
+00424e76        first_cap_vertex->x = fconvert.s((fconvert.t(final_row_first_edge->x) - fconvert.t(final_row_first_edge->__offset(0xffffffffffffffd0).d)) * fconvert.t(0.400000006f) + fconvert.t(final_row_first_edge->x))
+00424e78        first_cap_vertex->y = var_20_2
+00424e83        first_cap_vertex->z = fconvert.s(x87_r7_38)
+00424e8f        struct Vec3* final_row_second_edge = &generated_vertices[self->segment_count * 4]
+00424ee2        float var_20_3 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(final_row_second_edge->__offset(0x1c).d) - fconvert.t(final_row_second_edge->__offset(0xffffffffffffffec).d))) * fconvert.t(0.400000006f))) + fconvert.t(final_row_second_edge->__offset(0x1c).d))
+00424eea        long double x87_r7_46 = fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(final_row_second_edge->__offset(0x20).d) - fconvert.t(final_row_second_edge->__offset(0xfffffffffffffff0).d))) * fconvert.t(0.400000006f))) + fconvert.t(final_row_second_edge->__offset(0x20).d)
+00424ef1        final_row_second_edge->__offset(0x3c).d = fconvert.s((fconvert.t(final_row_second_edge->__offset(0x18).d) - fconvert.t(final_row_second_edge->__offset(0xffffffffffffffe8).d)) * fconvert.t(0.400000006f) + fconvert.t(final_row_second_edge->__offset(0x18).d))
+00424ef3        final_row_second_edge->__offset(0x40).d = var_20_3
+00424efe        final_row_second_edge->__offset(0x44).d = fconvert.s(x87_r7_46)
 00424f01        uint32_t segment_count = self->segment_count
-00424f0e        int32_t* edx_22 = ((segment_count * 3 + 3) << 4) + vertices
-00424f15        int32_t* eax_54 = &vertices[segment_count * 4]
-00424f17        *eax_54 = *edx_22
-00424f1c        eax_54[1] = edx_22[1]
-00424f24        eax_54[2] = edx_22[2]
-00424f32        void* edi_3 = &vertices[self->segment_count * 4]
-00424f3c        *(edi_3 + 0x18) = *(edi_3 + 0x3c)
-00424f46        *(edi_3 + 0x1c) = *(edi_3 + 0x40)
-00424f4c        *(edi_3 + 0x20) = *(edi_3 + 0x44)
-00424f54        struct TextureRef* eax_59 = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0)
-00424f5f        uint32_t ecx_34 = self->segment_count * 0x60
-00424f62        *(&facequads->texture_ref + ecx_34) = eax_59
-00424f78        facequads[self->segment_count * 2].vertex_0 = (self->segment_count.w << 2) + 1
-00424f80        ecx_34.w = self->segment_count.w
-00424f87        ecx_34.w <<= 2
-00424f8e        int32_t ecx_35 = ecx_34 + 3
-00424f91        facequads[self->segment_count * 2].vertex_1 = ecx_35.w
-00424f99        ecx_35.w = self->segment_count.w
-00424fa0        ecx_35.w <<= 2
-00424fa7        int32_t ecx_36 = ecx_35 + 5
-00424faa        facequads[self->segment_count * 2].vertex_2 = ecx_36.w
-00424fb2        ecx_36.w = self->segment_count.w
-00424fb9        ecx_36.w += 1
-00424fc1        facequads[self->segment_count * 2].vertex_3 = (ecx_36 << 2).w
-00424fd6        facequads[self->segment_count * 2].uv[0].u = 0x3f000000
-00424fe3        facequads[self->segment_count * 2].uv[0].v = 0
-00424ff0        facequads[self->segment_count * 2].uv[1].u = 0x3f000000
-00424ffd        facequads[self->segment_count * 2].uv[1].v = 0
-0042500a        facequads[self->segment_count * 2].uv[2].u = 0x3f000000
-0042501c        facequads[self->segment_count * 2].uv[2].v = 0x3f800000
-0042502a        facequads[self->segment_count * 2].uv[3].u = 0x3f000000
-00425039        facequads[self->segment_count * 2].uv[3].v = 0x3f800000
+00424f0e        struct Vec3* first_cap_vertex_copy = ((segment_count * 3 + 3) << 4) + generated_vertices
+00424f15        struct Vec3* final_row_copy = &generated_vertices[segment_count * 4]
+00424f17        final_row_copy->x = first_cap_vertex_copy->x
+00424f1c        final_row_copy->y = first_cap_vertex_copy->y
+00424f24        final_row_copy->z = first_cap_vertex_copy->z
+00424f32        struct Vec3* final_generated_row = &generated_vertices[self->segment_count * 4]
+00424f3c        final_generated_row->__offset(0x18).d = final_generated_row->__offset(0x3c).d
+00424f46        final_generated_row->__offset(0x1c).d = final_generated_row->__offset(0x40).d
+00424f4c        final_generated_row->__offset(0x20).d = final_generated_row->__offset(0x44).d
+00424f54        struct TextureRef* eax_56 = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0)
+00424f5f        uint32_t ecx_33 = self->segment_count * 0x60
+00424f62        *(&generated_facequads->texture_ref + ecx_33) = eax_56
+00424f78        generated_facequads[self->segment_count * 2].vertex_0 = (self->segment_count.w << 2) + 1
+00424f80        ecx_33.w = self->segment_count.w
+00424f87        ecx_33.w <<= 2
+00424f8e        int32_t ecx_34 = ecx_33 + 3
+00424f91        generated_facequads[self->segment_count * 2].vertex_1 = ecx_34.w
+00424f99        ecx_34.w = self->segment_count.w
+00424fa0        ecx_34.w <<= 2
+00424fa7        int32_t ecx_35 = ecx_34 + 5
+00424faa        generated_facequads[self->segment_count * 2].vertex_2 = ecx_35.w
+00424fb2        ecx_35.w = self->segment_count.w
+00424fb9        ecx_35.w += 1
+00424fc1        generated_facequads[self->segment_count * 2].vertex_3 = (ecx_35 << 2).w
+00424fd6        generated_facequads[self->segment_count * 2].uv[0].u = 0x3f000000
+00424fe3        generated_facequads[self->segment_count * 2].uv[0].v = 0
+00424ff0        generated_facequads[self->segment_count * 2].uv[1].u = 0x3f000000
+00424ffd        generated_facequads[self->segment_count * 2].uv[1].v = 0
+0042500a        generated_facequads[self->segment_count * 2].uv[2].u = 0x3f000000
+0042501c        generated_facequads[self->segment_count * 2].uv[2].v = 0x3f800000
+0042502a        generated_facequads[self->segment_count * 2].uv[3].u = 0x3f000000
+00425039        generated_facequads[self->segment_count * 2].uv[3].v = 0x3f800000
 00425041        return

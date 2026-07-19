@@ -10104,17 +10104,19 @@
       "artifact": "analysis/decompile/binja/functions/004246a0-build_track_fringe_mesh.c",
       "required_substrings": [
         "set_bod_object(&self->fringe_mesh_bod",
-        "struct Object* object = self->fringe_mesh_bod.object",
+        "struct Object* generated_mesh = self->fringe_mesh_bod.object",
         "self->fringe_mesh_bod.color.r",
-        "object->flags | OBJECT_FLAG_TINT_DIRTY | OBJECT_FLAG_DISABLE_CULLING",
-        "object->blend_mode = 5",
+        "generated_mesh->flags | OBJECT_FLAG_TINT_DIRTY | OBJECT_FLAG_DISABLE_CULLING",
+        "generated_mesh->blend_mode = 5",
         "self->bod.object->vertices",
-        "object->facequads",
+        "generated_mesh->facequads",
+        "struct Vec3* generated_row",
         "self->segment_count",
         "self->width_cells"
       ],
       "forbidden_substrings": [
         "PathTemplateStripMesh",
+        "face_vertex_cursor",
         "arg1",
         "analysis skipped",
         "unimplemented"
@@ -10147,16 +10149,22 @@
       "artifact": "analysis/decompile/binja/functions/00424ad0-build_track_fringe_supertramp_mesh.c",
       "required_substrings": [
         "set_bod_object(&self->fringe_mesh_bod",
-        "struct Object* object = self->fringe_mesh_bod.object",
-        "object->flags = flags | OBJECT_FLAG_DISABLE_CULLING",
-        "object->blend_mode = 5",
+        "struct Object* generated_mesh = self->fringe_mesh_bod.object",
+        "generated_mesh->flags = flags | OBJECT_FLAG_DISABLE_CULLING",
+        "generated_mesh->blend_mode = 5",
+        "struct Vec3* generated_vertices = generated_mesh->vertices",
+        "struct ObjectFaceQuad* generated_facequads = generated_mesh->facequads",
+        "struct Vec3* final_row_first_edge",
+        "struct Vec3* first_cap_vertex",
+        "struct Vec3* final_row_second_edge",
+        "struct Vec3* final_generated_row",
         "self->bod.object->vertices",
-        "object->facequads",
         "self->segment_count",
         "self->width_cells"
       ],
       "forbidden_substrings": [
         "PathTemplateStripMesh",
+        "face_vertex_cursor",
         "arg1",
         "analysis skipped",
         "unimplemented"

@@ -20,7 +20,7 @@ Important type notes:
 
 Current focused result:
 
-- match: 92.87%
+- match: 94.54%
 - target/candidate instructions: 421 / 421
 - prefix: 69 / 421
 - masked operands: 25 clean, 0 unresolved, 0 mismatched
@@ -93,3 +93,19 @@ blend mode, vertices, and facequads plus the sampled
 `self->bod.object->vertices` source bank; `PathTemplateStripMesh` no longer
 appears. The remaining raw offsets are derived row/face cursor expressions,
 not an unresolved owner. Focused matching remains byte-identical at 92.87%.
+
+## 2026-07-19 generated cap lifetimes
+
+The paired guarded replay now separates this builder's generated `Object*`,
+vertex bank, and face bank from the sampled `Path::bod.object` source. Its tail
+also retains typed `Vec3*` lifetimes for the final generated row, the two
+extrapolated cap vertices, and the subsequent cap-to-row copies. Those pointers
+all borrow the allocation owned by the generated Object; none is a second bank
+or an ownership transfer.
+
+The same replay covers the ordinary fringe builder and verifies the canonical
+`Path`, `BodBase`, `Object`, `ObjectFaceQuad`, and `Vec3` layouts before either
+function is touched. An attempted name for the compiler's interior face cursor
+was rejected because it degraded shifted-structure recovery, so that cursor
+remains automatic. Matching source is unchanged at the current 94.54%,
+421/421-instruction frontier with 25 clean operands.

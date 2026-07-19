@@ -14,9 +14,9 @@ clears it after calling `set_object_color`.
 
 Current focused result:
 
-- match: 89.31%
+- match: 92.77%
 - target/candidate instructions: 318 / 318
-- prefix: 18 / 318
+- prefix: 100 / 318
 - masked operands: 23 clean, 0 unresolved, 0 mismatched
 
 Important type notes:
@@ -36,12 +36,11 @@ Important type notes:
 
 Remaining gap:
 
-The remaining gap is now register and store scheduling. The exact `0x68` stack
-frame, row-centered generated-vertex cursor, vector temporary family, face-loop
-instruction count, and near/far source-column ownership are recovered. Native
-keeps the generated `Object` in `ebx` during setup where the current candidate
-uses `esi`, and schedules a few vector-result and face index/UV stores
-differently.
+The remaining gap is now local store scheduling. The exact `0x68` stack frame,
+row-centered generated-vertex cursor, vector temporary family, face-loop
+instruction count, near/far source-column ownership, and generated-object
+register handoff are recovered. Native still schedules a few vector-result and
+face index/UV stores differently.
 
 ## 2026-07-12 authored vector and clamp recovery
 
@@ -108,3 +107,26 @@ bank as `self->bod.object->vertices`, and both allocation calls without the
 obsolete 0x60-byte `PathTemplateStripMesh` prefix. The remaining raw offsets
 are derived row/face cursor expressions; they do not represent an unresolved
 object owner. Focused matching remains byte-identical at 89.31%.
+
+## 2026-07-19 generated-bank lifetime order
+
+The generated vertex bank is now declared before the generated face bank, the
+same natural lifetime order already used by `BuildFringeSuperTramp`: vertices
+feed the first loop immediately, while faces are retained for the later loop.
+That ordinary declaration order lets VC6 keep the generated `Object*` in EBX
+through allocation and then hand ESI directly to the vertex walk, matching the
+native setup. Focused matching improves from 90.25% to 92.77%, the common
+prefix advances from 18 to 100 instructions, and the exact 318-instruction and
+23-operand shapes remain intact.
+
+A guarded Binary Ninja replay now names the borrowed generated `Object*`, its
+vertex and face banks, and the per-row `Vec3*` clamp cursor in this builder. The
+same replay names the SuperTramp builder's generated banks plus both cap
+extrapolation and copy lifetimes, all after verifying the canonical `Path`,
+`BodBase`, `Object`, `ObjectFaceQuad`, and `Vec3` layouts.
+
+The compiler's interior face-vertex cursor was deliberately left automatic.
+Naming that `uint16_t*` made Binary Ninja discard its better shifted
+`ObjectFaceQuad` field rendering, so the probe was removed before export. The
+remaining interior row/face expressions are borrowed cursors into the two
+Object-managed allocations, not evidence for another owner or transfer.

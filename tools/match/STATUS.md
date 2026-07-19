@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**627/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **100356/317040** bytes (**31.65%**) are proof-grade, and overall fuzzy is **76.21%**.
+**627/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **100356/317040** bytes (**31.65%**) are proof-grade, and overall fuzzy is **76.22%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -694,7 +694,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | mini_delete_high_score_entry | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  |
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 523/521 | 88.31% | 88/521 | 66 ok |  |
-| 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 90.25% | 18/318 | 23 ok |  |
+| 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 92.77% | 100/318 | 23 ok |  |
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 94.54% | 69/421 | 25 ok |  |
 | 🚧 | finalize_path_template | 0x42c600 | 363 | 112/113 | 81.78% | 24/113 | 9 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 436/437 | 90.03% | 27/437 | 22 ok |  |
