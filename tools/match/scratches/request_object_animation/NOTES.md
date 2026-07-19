@@ -156,3 +156,21 @@ the authored `int` API but never narrowed into this member.
 normal rebuild keeps the exact void `Object` animation owner and normalizes its
 integer formals to the shared `int32_t` surface in the tracked IDA artifact.
 The matcher remains proof-grade at 231/231 with all 17 operands clean.
+
+## 2026-07-19 retained frame-graph lifetimes
+
+- A bounded Binary Ninja replay now preserves the exact graph rooted at
+  `Object::animation`: generated `ObjectAnimationFrame` owners, their `Vec3`
+  vertex/face-normal banks, and the borrowed keyframe `Object` links.
+- The tracked decompile consequently resolves validation through
+  `validation_object->vertex_count`, both frame-buffer stores through
+  `ObjectAnimationFrame` members, the interpolation destination through
+  `output_frame->vertices`, and both temporary installs through the retained
+  frame owner.
+- Only whole owners and whole `Vec3` banks receive user-variable types. The
+  byte-stride copy/interpolation cursors remain inferred because their physical
+  registers carry interior addresses rather than independently owned arrays.
+- The replay verifies the canonical 0x80-byte keyframe, 0x14-byte animation,
+  8-byte frame, and 0xdc-byte object layouts before applying any annotation.
+  A second run reports every update already current. Focused matching remains
+  exact at 231/231 instructions with all 17 masked operands clean.

@@ -12244,14 +12244,24 @@
       "artifact": "analysis/decompile/binja/functions/00430a70-request_object_animation.c",
       "required_substrings": [
         "struct XAnimationKeyframe* keyframes_2 = keyframes",
+        "validation_object->vertex_count",
         "object->animation->frames",
         "object->animation->progress_step",
+        "frame_for_vertices->vertices",
+        "frame_for_facequad_normals->facequad_normals",
+        "output_frame->vertices",
+        "installed_frame_for_vertices->vertices",
+        "installed_frame_for_normals->facequad_normals",
         "object->facequad_normals",
         "calc_object_facequad_normals(object)"
       ],
       "forbidden_substrings": [
         "arg1 + 0xbc",
         "arg2 s>",
+        "void* eax_12",
+        "void* eax_14",
+        "char* ecx_20",
+        "char* ecx_25",
         "return result"
       ]
     },
