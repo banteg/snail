@@ -1,6 +1,7 @@
 import importlib.util
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -7988,10 +7989,106 @@ def test_previewed_batch_can_transactionally_set_a_user_variable() -> None:
     )
 
     assert "function.create_user_var(variable, expected_type, expected_name)" in code
+    assert "parsed_type_cache = {}" in code
+    assert "expected_type, _ = parse_type_once(operation[\"variable_type\"])" in code
     assert '"user_defined": bool(function.is_var_user_defined(variable))' in code
     assert 'str(variable.source_type).split(".")[-1] == expected_source' in code
     assert 'entry["verified"] = observed == entry["expected"]' in code
     assert "bv.revert_undo_actions(state)" in code
+
+
+def test_previewed_batch_guards_analysis_for_current_user_variables() -> None:
+    code = _narrow_sync._batch_python_code(
+        [
+            {
+                "op": "user_var_set",
+                "identifier": "draw_frontend_widget",
+                "source_type": "RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "variable_name": "widget",
+                "variable_type": "FrontendWidget*",
+            }
+        ],
+        preview=True,
+    )
+
+    assert "analysis_changed = False" in code
+    assert "function.create_user_var(variable, expected_type, expected_name)" in code
+    assert "analysis_changed = True" in code
+    assert "if analysis_changed:\n        bv.update_analysis_and_wait()" in code
+    assert (
+        "snapshot_saved = bv.file.save_auto_snapshot() if analysis_changed else False"
+        in code
+    )
+
+
+def test_current_user_variable_preview_does_not_reanalyze() -> None:
+    variable = SimpleNamespace(
+        source_type="RegisterVariableSourceType",
+        index=0,
+        storage=67,
+        name="widget",
+        type="struct FrontendWidget*",
+    )
+
+    class FakeFunction:
+        name = "draw_frontend_widget"
+        start = 0x401130
+        vars = [variable]
+        create_calls = 0
+
+        def is_var_user_defined(self, _variable) -> bool:
+            return True
+
+        def create_user_var(self, _variable, _type, _name) -> None:
+            self.create_calls += 1
+
+    class FakeBinaryView:
+        update_calls = 0
+        revert_calls = 0
+
+        def begin_undo_actions(self) -> object:
+            return object()
+
+        def get_functions_by_name(self, name: str) -> list[FakeFunction]:
+            assert name == "draw_frontend_widget"
+            return [function]
+
+        def parse_type_string(self, type_name: str) -> tuple[str, None]:
+            assert type_name == "FrontendWidget*"
+            return "struct FrontendWidget*", None
+
+        def update_analysis_and_wait(self) -> None:
+            self.update_calls += 1
+
+        def revert_undo_actions(self, _state: object) -> None:
+            self.revert_calls += 1
+
+    function = FakeFunction()
+    bv = FakeBinaryView()
+    namespace = {"bv": bv}
+    code = _narrow_sync._batch_python_code(
+        [
+            {
+                "op": "user_var_set",
+                "identifier": "draw_frontend_widget",
+                "source_type": "RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "variable_name": "widget",
+                "variable_type": "FrontendWidget*",
+            }
+        ],
+        preview=True,
+    )
+
+    exec(code, namespace)
+
+    assert namespace["result"]["results"][0]["changed"] is False
+    assert function.create_calls == 0
+    assert bv.update_calls == 0
+    assert bv.revert_calls == 1
 
 
 def test_previewed_batch_can_transactionally_reanalyze_functions() -> None:
@@ -8057,15 +8154,14 @@ def test_user_variable_replay_skips_apply_when_current(monkeypatch) -> None:
 
     def fake_run_bn_batch(_repo_root, *, target, operations, preview):
         calls.append((target, operations, preview))
-        return {
-            "success": True,
-            "preview": preview,
-            "committed": not preview,
-            "affected_functions": ["draw_frontend_widget"],
-            "results": [{"changed": False}],
-        }
+        raise AssertionError("current user variables should not open a transaction")
 
     monkeypatch.setattr(_narrow_sync, "run_bn_batch", fake_run_bn_batch)
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_user_var_states",
+        lambda *_args, **_kwargs: [{"changed": False}],
+    )
     result = _narrow_sync.apply_user_var_updates(
         Path("."),
         target="snail-mail.exe",
@@ -8081,10 +8177,58 @@ def test_user_variable_replay_skips_apply_when_current(monkeypatch) -> None:
         ),
     )
 
-    assert len(calls) == 1
-    assert calls[0][2] is True
+    assert calls == []
     assert result[0]["status"] == "skipped"
     assert result[0]["reason"] == "already current"
+
+
+def test_user_var_readback_skips_type_parsing(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        code = args[args.index("--code") + 1]
+        assert "parse_type_string" not in code
+        return {
+            "result": {
+                "user_vars": [
+                    {
+                        "identifier": "request_object_animation",
+                        "source_type": "RegisterVariableSourceType",
+                        "index": 29,
+                        "storage": 71,
+                        "observed": {
+                            "name": "validation_object",
+                            "type": "struct Object*",
+                            "user_defined": True,
+                        },
+                    }
+                ],
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+    operations = _narrow_sync.user_var_operations(
+        (
+            (
+                "request_object_animation",
+                "RegisterVariableSourceType",
+                29,
+                71,
+                "validation_object",
+                "Object*",
+            ),
+        )
+    )
+
+    states = _narrow_sync.current_user_var_states(
+        Path("."),
+        target="snail-mail.exe",
+        operations=operations,
+    )
+
+    assert len(calls) == 1
+    assert states[0]["changed"] is False
 
 
 def test_user_variable_replay_previews_before_apply(monkeypatch) -> None:
@@ -8102,6 +8246,11 @@ def test_user_variable_replay_previews_before_apply(monkeypatch) -> None:
         }
 
     monkeypatch.setattr(_narrow_sync, "run_bn_batch", fake_run_bn_batch)
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_user_var_states",
+        lambda *_args, **_kwargs: [{"changed": True}],
+    )
     result = _narrow_sync.apply_user_var_updates(
         Path("."),
         target="snail-mail.exe",

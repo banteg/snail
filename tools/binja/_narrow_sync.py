@@ -200,12 +200,23 @@ def find_variable(function, operation):
     return candidates[0]
 
 
+parsed_type_cache = {}
+
+
+def parse_type_once(type_text):
+    key = str(type_text)
+    if key not in parsed_type_cache:
+        parsed_type_cache[key] = bv.parse_type_string(key)
+    return parsed_type_cache[key]
+
+
 state = bv.begin_undo_actions()
 undo_closed = False
 results = []
 affected_functions = []
 affected_types = []
 snapshot_saved = False
+analysis_changed = False
 try:
     for operation in operations:
         kind = operation["op"]
@@ -221,6 +232,7 @@ try:
                 )
             changed = symbol is not None
             if changed:
+                analysis_changed = True
                 bv.undefine_user_symbol(symbol)
             results.append({
                 "op": kind,
@@ -233,10 +245,12 @@ try:
 
         if kind == "set_prototype":
             function = find_function(operation["identifier"])
-            expected_type, _ = bv.parse_type_string(str(operation["prototype"]))
+            expected_type, _ = parse_type_once(operation["prototype"])
             before = str(function.type)
             expected = str(expected_type)
-            if before != expected:
+            changed = before != expected
+            if changed:
+                analysis_changed = True
                 try:
                     function.set_user_type(expected_type)
                 except TypeError:
@@ -248,6 +262,7 @@ try:
                 "address": hex(int(function.start)),
                 "before": before,
                 "expected": expected,
+                "changed": changed,
             })
             affected_functions.append(str(function.name))
             continue
@@ -255,7 +270,7 @@ try:
         if kind == "user_var_set":
             function = find_function(operation["identifier"])
             variable = find_variable(function, operation)
-            expected_type, _ = bv.parse_type_string(str(operation["variable_type"]))
+            expected_type, _ = parse_type_once(operation["variable_type"])
             expected_name = str(operation["variable_name"])
             before = {
                 "name": str(variable.name),
@@ -269,6 +284,7 @@ try:
             }
             changed = before != expected
             if changed:
+                analysis_changed = True
                 function.create_user_var(variable, expected_type, expected_name)
             results.append({
                 "op": kind,
@@ -293,6 +309,7 @@ try:
                 "name": str(function.name),
                 "address": hex(int(function.start)),
             }
+            analysis_changed = True
             function.reanalyze()
             results.append({
                 "op": kind,
@@ -311,7 +328,7 @@ try:
             if type_obj is None:
                 raise RuntimeError(f"struct not found: {struct_name}")
             builder = type_obj.mutable_copy()
-            field_type, _ = bv.parse_type_string(str(operation["field_type"]))
+            field_type, _ = parse_type_once(operation["field_type"])
             offset = int(str(operation["offset"]), 0)
             before_member = find_member(type_obj, offset)
             before = None
@@ -327,6 +344,7 @@ try:
                 builder.width = max(int(builder.width), offset + int(field_type.width))
             except Exception:
                 pass
+            analysis_changed = True
             bv.define_user_type(struct_name, builder)
             results.append({
                 "op": kind,
@@ -341,7 +359,8 @@ try:
 
         raise RuntimeError(f"unsupported batch operation: {kind}")
 
-    bv.update_analysis_and_wait()
+    if analysis_changed:
+        bv.update_analysis_and_wait()
     for entry in results:
         if entry["op"] == "undefine_symbol":
             symbol = bv.get_symbol_at(int(entry["address"], 0))
@@ -406,15 +425,17 @@ try:
     if preview:
         bv.revert_undo_actions(state)
         undo_closed = True
-        bv.update_analysis_and_wait()
+        if analysis_changed:
+            bv.update_analysis_and_wait()
     else:
         bv.commit_undo_actions(state)
         undo_closed = True
-        snapshot_saved = bv.file.save_auto_snapshot()
+        snapshot_saved = bv.file.save_auto_snapshot() if analysis_changed else False
 except Exception:
     if not undo_closed:
         bv.revert_undo_actions(state)
-        bv.update_analysis_and_wait()
+        if analysis_changed:
+            bv.update_analysis_and_wait()
     raise
 
 result = {
@@ -1619,13 +1640,10 @@ def apply_struct_and_proto_updates(
     ]
 
 
-def apply_user_var_updates(
-    repo_root: Path,
-    *,
-    target: str,
+def user_var_operations(
     updates: Iterable[UserVarUpdate],
 ) -> list[dict[str, object]]:
-    operations = [
+    return [
         {
             "op": "user_var_set",
             "identifier": identifier,
@@ -1644,8 +1662,149 @@ def apply_user_var_updates(
             variable_type,
         ) in updates
     ]
+
+
+def current_user_var_states(
+    repo_root: Path,
+    *,
+    target: str,
+    operations: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    code = """
+import json
+
+operations = json.loads(__OPERATIONS_JSON__)
+
+
+def find_function(identifier):
+    text = str(identifier)
+    try:
+        address = int(text, 0)
+    except ValueError:
+        functions = list(bv.get_functions_by_name(text))
+        if len(functions) != 1:
+            raise RuntimeError(
+                f"expected one function named {text}, found {len(functions)}"
+            )
+        return functions[0]
+    function = bv.get_function_at(address)
+    if function is None:
+        raise RuntimeError(f"function not found at {address:#x}")
+    return function
+
+
+def find_variable(function, operation):
+    expected_source = str(operation["source_type"]).split(".")[-1]
+    expected_index = int(operation["index"])
+    expected_storage = int(operation["storage"])
+    candidates = [
+        variable
+        for variable in function.vars
+        if str(variable.source_type).split(".")[-1] == expected_source
+        and int(variable.index) == expected_index
+        and int(variable.storage) == expected_storage
+    ]
+    if len(candidates) != 1:
+        raise RuntimeError(
+            f"expected one {expected_source} variable at index {expected_index}, "
+            f"storage {expected_storage}, found {len(candidates)}"
+        )
+    return candidates[0]
+
+
+user_vars = []
+for operation in operations:
+    function = find_function(operation["identifier"])
+    variable = find_variable(function, operation)
+    observed = {
+        "name": str(variable.name),
+        "type": str(variable.type),
+        "user_defined": bool(function.is_var_user_defined(variable)),
+    }
+    user_vars.append({
+        "identifier": str(operation["identifier"]),
+        "source_type": str(operation["source_type"]),
+        "index": int(operation["index"]),
+        "storage": int(operation["storage"]),
+        "observed": observed,
+    })
+
+result = {"user_vars": user_vars}
+""".replace("__OPERATIONS_JSON__", repr(json.dumps(operations)))
+    response = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"Binary Ninja analysis readback is malformed: {response!r}")
+
+    user_vars = payload.get("user_vars")
+    if not isinstance(user_vars, list) or len(user_vars) != len(operations):
+        raise RuntimeError(
+            f"Binary Ninja user-variable readback is malformed: {response!r}"
+        )
+    for operation, entry in zip(operations, user_vars, strict=True):
+        observed = entry.get("observed") if isinstance(entry, dict) else None
+        if (
+            not isinstance(observed, dict)
+            or not isinstance(observed.get("name"), str)
+            or not isinstance(observed.get("type"), str)
+            or not isinstance(observed.get("user_defined"), bool)
+        ):
+            raise RuntimeError(
+                f"Binary Ninja user-variable readback has invalid entries: {response!r}"
+            )
+        expected = {
+            "name": str(operation["variable_name"]),
+            "type": str(operation["variable_type"]),
+            "user_defined": True,
+        }
+        entry["expected"] = expected
+        entry["changed"] = (
+            observed["name"] != expected["name"]
+            or normalize_type_name(observed["type"])
+            != normalize_type_name(expected["type"])
+            or observed["user_defined"] is not True
+        )
+    return user_vars
+
+
+def apply_user_var_updates(
+    repo_root: Path,
+    *,
+    target: str,
+    updates: Iterable[UserVarUpdate],
+) -> list[dict[str, object]]:
+    operations = user_var_operations(updates)
     if not operations:
         return []
+
+    current_results = current_user_var_states(
+        repo_root,
+        target=target,
+        operations=operations,
+    )
+    if len(current_results) != len(operations) or any(
+        not isinstance(entry.get("changed"), bool) for entry in current_results
+    ):
+        raise RuntimeError("Binary Ninja user-variable preflight does not match updates")
+    if all(entry["changed"] is False for entry in current_results):
+        return [
+            {
+                **operation,
+                "status": "skipped",
+                "reason": "already current",
+            }
+            for operation in operations
+        ]
 
     preview = run_bn_batch(
         repo_root,
