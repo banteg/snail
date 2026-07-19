@@ -229,3 +229,26 @@ cursor intentionally remains raw: it points at the manager base plus a
 `0x3c` row offset and only reaches the first slot after a further `0x58`, so
 typing that pre-slot cursor as `TrackRenderCacheSlot*` would claim ownership at
 the wrong address.
+
+## 2026-07-19 Binary Ninja lifetime closure
+
+The guarded live-database replay now recovers the builder's disjoint native
+lifetimes without changing the source candidate. The runtime traversal retains
+its real byte-offset induction variable, but the borrows it produces are now
+typed as `Fringe*`, `Object*`, and `ObjectFaceQuad*`; the selected cache object
+therefore visibly receives the source facequad's borrowed texture reference.
+
+The five-family flush separately owns its `Object**` slot cursor, typed vertex
+and index-buffer resources, locked stream pointers, and flushed `Object*`.
+The final capacity scan has its own family counter, row countdown, `Object**`
+cursor, and `Object*` borrow. Every annotation is replayed only after checking
+the canonical `BodBase`, `Fringe`, `TrackRowCell`, `ObjectFaceQuad`, render
+buffer, `Object`, and `SegmentCache` widths and owner fields.
+
+The last debug-name switch genuinely reuses the earlier `row_index` stack slot
+for the `Floor`/`Slide`/`Warn`/`Ramp`/`Fringe` string pointer. It remains visible
+as compiler stack reuse rather than being split into a synthetic owner. The
+natural commutative reorder of the first fringe position expression was also
+tested and compiled identically, so it was restored. The honest matcher result
+remains 99.79%, 475/475 instructions, a 90-instruction common prefix, and 20
+clean operands; the sole residual is the equivalent SIB base/index encoding.

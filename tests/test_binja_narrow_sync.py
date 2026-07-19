@@ -8509,6 +8509,94 @@ def test_track_cache_face_lifetime_replay_stays_guarded() -> None:
     assert "face_flag_bytes" not in replay
 
 
+def test_track_cache_builder_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_track_cache_builder_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("Vec3", "0x0C"),
+        ("Fringe", "0x38"),
+        ("TrackRowCell", "0x54"),
+        ("ObjectFaceQuad", "0x30"),
+        ("Object", "0xDC"),
+        ("SegmentCache", "0xA7F8"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("BodBase", "0x24", "object", "Object*"),
+        ("TrackRowCell", "0x40", "lane_and_flags", "uint32_t"),
+        ("ObjectFaceQuad", "0x0C", "texture_ref", "TextureRef*"),
+        ("Object", "0xC0", "render_buffers", "ObjectRenderBuffers*"),
+        ("Object", "0xC8", "index_buffer", "ObjectIndexBuffer*"),
+        ("SegmentCache", "0x54", "owner_subgame", "SubgameRuntime*"),
+        ("SegmentCache", "0x58", "slots", "TrackRenderCacheSlot[143][5]"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        (
+            "RegisterVariableSourceType",
+            65,
+            73,
+            "cell_byte_offset",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            240,
+            68,
+            "fringe_object",
+            "Fringe*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            466,
+            67,
+            "source_facequads",
+            "ObjectFaceQuad*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1042,
+            71,
+            "cache_object_ref",
+            "Object**",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1206,
+            66,
+            "index_buffer_unlock",
+            "ObjectIndexBufferResource*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1386,
+            66,
+            "max_scan_object",
+            "Object*",
+        ),
+    ):
+        expected = (
+            '        "build_track_render_caches",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert "apply_split_user_var_update" not in replay
+    assert "cache_name" not in replay
+
+
 def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     track_sync = (BINJA_DIR / "sync_track_render_cache_types.py").read_text(
         encoding="utf-8"

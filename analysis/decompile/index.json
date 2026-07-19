@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "append_track_cache_object",
-      "address": "0x433960"
+      "name": "build_track_render_caches",
+      "address": "0x433220"
     }
   ],
   "health_check_count": 898,
