@@ -1265,6 +1265,10 @@ Current practical read:
 - `handle_subgoldy_collisions` reads the same runtime slots back with pickup-specific gates:
   - health: `player_world_y >= 0.49`, `delta_z < 1.0`, `abs(delta_y) < 0.4`, normalized distance `< 0.98`
   - jetpack: `player_world_y >= 0.49`, `delta_z < 1.0`, normalized distance `< 3.0`
+- the Windows byte-strided parcel and health sweeps keep their active-state
+  loads as independent `ParcelState` and `TrackPickupState` register
+  lifetimes; those values and the cursor views both borrow the same embedded
+  SubgameRuntime banks rather than introducing separate slot owners
 - health collection also triggers `health_collect_particles`, which allocates `8` `SMOKE.TGA` sprites (`sprite id 128`) with:
   - radial world-axis velocity `sin/cos(i * pi / 4) * 0.015`
   - forward velocity `player->velocity.z * 0.4`

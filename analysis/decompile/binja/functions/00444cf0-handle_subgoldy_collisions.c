@@ -128,7 +128,7 @@
 0044535a        while (i_4 s< 0x1b58)
 00445253        struct SubgameRuntime* game_4 = player->game
 00445259        struct ParcelSlotCursor* parcel_cursor = i_4 + game_4
-00445265        if (*(&game_4->parcel_manager.slots[0].state + i_4) == 1)
+00445265        if (*(&game_4->parcel_manager.slots[0].state + i_4) == PARCEL_STATE_TRACK_ACTIVE)
 00445277        vector_2.x = fconvert.s(fconvert.t(parcel_cursor->parcel.position.x) - fconvert.t(player->cached_camera_target_world.x))
 0044528b        vector_2.y = fconvert.s(fconvert.t(parcel_cursor->parcel.position.y) - fconvert.t(player->cached_camera_target_world.y))
 00445295        long double x87_r7_56 = fconvert.t(parcel_cursor->parcel.position.z) - fconvert.t(player->cached_camera_target_world.z)
@@ -161,7 +161,7 @@
 00445475        while (i_5 s< 0x3a0)
 00445369        struct SubgameRuntime* game_5 = player->game
 0044536f        struct SubHealthSlotCursor* health_cursor = i_5 + game_5
-0044537b        if (*(&game_5->health_pickups[0].state + i_5) == 1)
+0044537b        if (*(&game_5->health_pickups[0].state + i_5) == TRACK_PICKUP_STATE_ACTIVE)
 0044538d        vector.x = fconvert.s(fconvert.t(health_cursor->health.bod.position.x) - fconvert.t(player->cached_camera_target_world.x))
 004453a1        vector.y = fconvert.s(fconvert.t(health_cursor->health.bod.position.y) - fconvert.t(player->cached_camera_target_world.y))
 004453b5        vector_1.x = vector.x

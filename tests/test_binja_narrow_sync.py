@@ -5487,6 +5487,9 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
+    collision_state_sync = (
+        BINJA_DIR / "sync_collision_state_lifetimes.py"
+    ).read_text(encoding="utf-8")
     ida_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
         encoding="utf-8"
     )
@@ -5508,21 +5511,20 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     assert "int32_t requested_kind" in pool_sync
     assert '"SubRingState",' in path_sync
     assert '"SubRingKind",' in path_sync
-    for replay in (pool_sync, path_sync):
-        for index, storage, name, type_name in (
-            (2346, 67, "ring_state", "SubRingState"),
-            (2516, 66, "ring_kind", "SubRingKind"),
-            (2573, 66, "effect_kind", "SubRingKind"),
-        ):
-            expected = (
-                '"handle_subgoldy_collisions",\n'
-                '        "RegisterVariableSourceType",\n'
-                f"        {index},\n"
-                f"        {storage},\n"
-                f'        "{name}",\n'
-                f'        "{type_name}"'
-            )
-            assert expected in replay
+    for index, storage, name, type_name in (
+        (2346, 67, "ring_state", "SubRingState"),
+        (2516, 66, "ring_kind", "SubRingKind"),
+        (2573, 66, "effect_kind", "SubRingKind"),
+    ):
+        expected = (
+            '"handle_subgoldy_collisions",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in collision_state_sync
 
     for header in (*analysis_headers, matcher_header):
         assert "SUB_RING_STATE_INACTIVE = 0" in header
@@ -5592,6 +5594,9 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
+    collision_state_sync = (
+        BINJA_DIR / "sync_collision_state_lifetimes.py"
+    ).read_text(encoding="utf-8")
     analysis_headers = tuple(
         (HEADER_DIR / name).read_text(encoding="utf-8")
         for name in ("bn_subgame_pool_types.h", "path_template_types.h")
@@ -5616,7 +5621,7 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     assert (
         '"handle_subgoldy_collisions",\n        "RegisterVariableSourceType",\n'
         '        821,\n        67,\n        "slug_state",\n        "SubSlugState"'
-        in pool_sync
+        in collision_state_sync
     )
     assert "apply_user_var_updates" in pool_sync
     assert "current_type_widths" in pool_sync
@@ -5707,7 +5712,7 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     assert (
         '"handle_subgoldy_collisions",\n        "RegisterVariableSourceType",\n'
         '        821,\n        67,\n        "slug_state",\n        "SubSlugState"'
-        in path_sync
+        in collision_state_sync
     )
     collision_scratch = (
         repo_root
@@ -5726,6 +5731,9 @@ def test_parcel_state_ownership_stays_aligned() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
+    collision_state_sync = (
+        BINJA_DIR / "sync_collision_state_lifetimes.py"
+    ).read_text(encoding="utf-8")
     analysis_headers = tuple(
         (HEADER_DIR / name).read_text(encoding="utf-8")
         for name in (
@@ -5741,6 +5749,15 @@ def test_parcel_state_ownership_stays_aligned() -> None:
     assert '"ParcelState",' in runtime_sync
     assert '("0x38", "state", "ParcelState")' in runtime_sync
     assert '"ParcelState",' in path_sync
+    assert (
+        '"handle_subgoldy_collisions",\n'
+        '        "RegisterVariableSourceType",\n'
+        '        1388,\n'
+        '        67,\n'
+        '        "parcel_state",\n'
+        '        "ParcelState"'
+        in collision_state_sync
+    )
     for header in (*analysis_headers, matcher_header):
         assert "PARCEL_STATE_INACTIVE = 0" in header
         assert "PARCEL_STATE_TRACK_ACTIVE = 1" in header
@@ -6160,6 +6177,9 @@ def test_track_pickup_state_and_authored_owners_stay_aligned() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
+    collision_state_sync = (
+        BINJA_DIR / "sync_collision_state_lifetimes.py"
+    ).read_text(encoding="utf-8")
     ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -6188,6 +6208,15 @@ def test_track_pickup_state_and_authored_owners_stay_aligned() -> None:
     assert '("JetPack", JETPACK_FIELD_UPDATES)' in runtime_sync
     assert '("0x38", "state", "TrackPickupState")' in runtime_sync
     assert '"TrackPickupState",' in path_sync
+    assert (
+        '"handle_subgoldy_collisions",\n'
+        '        "RegisterVariableSourceType",\n'
+        '        1666,\n'
+        '        67,\n'
+        '        "health_state",\n'
+        '        "TrackPickupState"'
+        in collision_state_sync
+    )
     for function_name in (
         "initialize_track_speedup_runtime",
         "update_track_speedup",
@@ -8897,6 +8926,9 @@ def test_collision_pool_cursor_ownership_is_replayed() -> None:
     ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
+    collision_state_sync = (
+        BINJA_DIR / "sync_collision_state_lifetimes.py"
+    ).read_text(encoding="utf-8")
 
     for cursor_name, prefix, field_declaration in (
         ("SubHealthSlotCursor", "0x356000", "SubHealth health;"),
@@ -8919,9 +8951,6 @@ def test_collision_pool_cursor_ownership_is_replayed() -> None:
         (1385, 66),
         (1663, 66),
         (2353, 66),
-        (2346, 67),
-        (2516, 66),
-        (2573, 66),
     ):
         assert (
             f'"RegisterVariableSourceType",\n        {index},\n        {storage},'
@@ -8934,13 +8963,36 @@ def test_collision_pool_cursor_ownership_is_replayed() -> None:
         ("parcel_cursor", "ParcelSlotCursor*"),
         ("health_cursor", "SubHealthSlotCursor*"),
         ("ring_cursor", "SubRingSlotCursor*"),
-        ("ring_state", "SubRingState"),
-        ("ring_kind", "SubRingKind"),
-        ("effect_kind", "SubRingKind"),
     ):
         assert f'"{name}"' in binja_sync
         assert f'"{type_name}"' in binja_sync
     assert "*COLLISION_POOL_CURSOR_USER_VAR_UPDATES" in binja_sync
+    assert "apply_user_var_updates" in collision_state_sync
+    for index, storage, name, type_name in (
+        (821, 67, "slug_state", "SubSlugState"),
+        (1388, 67, "parcel_state", "ParcelState"),
+        (1666, 67, "health_state", "TrackPickupState"),
+        (2346, 67, "ring_state", "SubRingState"),
+        (2516, 66, "ring_kind", "SubRingKind"),
+        (2573, 66, "effect_kind", "SubRingKind"),
+    ):
+        expected = (
+            '"handle_subgoldy_collisions",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in collision_state_sync
+    for enum_name in (
+        "ParcelState",
+        "TrackPickupState",
+        "SubSlugState",
+        "SubRingState",
+        "SubRingKind",
+    ):
+        assert f'"{enum_name}": (' in collision_state_sync
 
     assert "COLLISION_POOL_CURSOR_LVAR_SPECS" in ida_sync
     for definition_address in (

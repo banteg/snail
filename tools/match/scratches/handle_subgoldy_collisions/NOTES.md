@@ -1,7 +1,22 @@
-# WIP scratch — 54.23%, 651/673 insns (2026-07-19 ring-lifetime pass)
+# WIP scratch — 54.23%, 651/673 insns (2026-07-19 collision-state pass)
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
+
+2026-07-19 collision pickup-state pass: the byte-strided parcel and health
+walks each retain their state load in a physical ECX lifetime separate from
+the EAX slot cursor. Binary Ninja now preserves those exact identities as
+`parcel_state: ParcelState` (MLIL 1388/ECX) and
+`health_state: TrackPickupState` (MLIL 1666/ECX), so the active comparisons
+render with the same enums already proved by the exact allocators and
+updaters. Both values are borrowed reads from SubgameRuntime-owned embedded
+banks; neither creates another parcel, pickup, or manager owner. A dedicated
+`sync_collision_state_lifetimes.py` replay verifies the five canonical enum
+definitions and updates only the six state/kind register lifetimes in this
+function. This avoids running the multi-minute broad path/runtime mutations
+for a collision-local iteration. The scratch remains unchanged and focused
+matching stays honestly at `54.23%`, `651/673` instructions, prefix `8/673`,
+with `88 ok / 0 unresolved / 0 mismatch` masked operands.
 
 2026-07-19 collision ring-lifetime pass: the byte-strided two-slot walk keeps
 one `SubRingState` load and two independent `SubRingKind` loads alive in
