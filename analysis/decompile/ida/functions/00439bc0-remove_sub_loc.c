@@ -6,7 +6,7 @@
 void __thiscall remove_sub_loc(SubLoc *cell)
 {
   int32_t track_cell_row_index; // eax
-  uint8_t tile_id; // cl
+  SubLocTileId tile_id; // cl
   int v4; // eax
   char v5; // cl
   void **v6; // eax
@@ -29,7 +29,7 @@ void __thiscall remove_sub_loc(SubLoc *cell)
 
   track_cell_row_index = get_track_cell_row_index(cell);
   tile_id = cell->tile_id;
-  if ( tile_id == 29 || tile_id == 30 )
+  if ( tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE )
   {
     v4 = 61 * track_cell_row_index;
     v5 = unk_6410E0[(_DWORD)g_game_base + 4 * v4];

@@ -369,31 +369,32 @@ void SubgameRuntime::update_subgame()
                             --fringe_count;
                         } while (fringe_count != zero);
 
-                        if (cell_slot->cell.tile_id == 23
+                        if (cell_slot->cell.tile_id == SUBLOC_TILE_HEALTH_PICKUP
                             && (runtime_flags & SUBGAME_RUNTIME_FLAG_HEALTH_PICKUPS)
                                 != zero
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start)
                             spawn_track_health_pickup(&cell_slot->cell, &player);
 
-                        if (cell_slot->cell.tile_id == 24
+                        if (cell_slot->cell.tile_id == SUBLOC_TILE_SPEEDUP_PICKUP
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start)
                             spawn_track_speedup(&cell_slot->cell, &player);
 
-                        if (cell_slot->cell.tile_id == 25
+                        if (cell_slot->cell.tile_id == SUBLOC_TILE_JETPACK_PICKUP
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start)
                             spawn_track_jetpack_pickup(&cell_slot->cell, &player);
 
                         unsigned char hazard_tile = cell_slot->cell.tile_id;
-                        if (hazard_tile == 33) {
+                        if (hazard_tile == SUBLOC_TILE_GARBAGE_HAZARD) {
                             spawn_track_garbage_hazard(
                                 &cell_slot->cell, &player);
                         } else if ((cell_slot->cell.lane_and_flags
                                         & SUBLOC_FLAG_SUPPRESS_GARBAGE_SPAWN)
                                 == 0
-                                && (hazard_tile == 1 || hazard_tile == 21)
+                                && (hazard_tile == SUBLOC_TILE_FLOOR_DOT
+                                    || hazard_tile == SUBLOC_TILE_FLOOR_DASH)
                                 && (runtime_flags
                                         & SUBGAME_RUNTIME_FLAG_AMBIENT_GARBAGE)
                                     != 0
@@ -401,15 +402,23 @@ void SubgameRuntime::update_subgame()
                                     > (1.0f - garbage_frequency) * 0.2f
                                         + 0.8f
                                 && (attachment_count == 0
-                                    || (&cell_slot->cell)[-1].tile_id == 1
-                                    || (&cell_slot->cell)[-1].tile_id == 20
-                                    || (&cell_slot->cell)[-1].tile_id == 21
-                                    || (&cell_slot->cell)[-1].tile_id == 32)
+                                    || (&cell_slot->cell)[-1].tile_id
+                                        == SUBLOC_TILE_FLOOR_DOT
+                                    || (&cell_slot->cell)[-1].tile_id
+                                        == SUBLOC_TILE_FLOOR_VARIANT_14
+                                    || (&cell_slot->cell)[-1].tile_id
+                                        == SUBLOC_TILE_FLOOR_DASH
+                                    || (&cell_slot->cell)[-1].tile_id
+                                        == SUBLOC_TILE_FLOOR_HASH_MARKER)
                                 && (attachment_count == SUBGAME_TRACK_LANE_COUNT - 1
-                                    || (&cell_slot->cell)[1].tile_id == 1
-                                    || (&cell_slot->cell)[1].tile_id == 20
-                                    || (&cell_slot->cell)[1].tile_id == 21
-                                    || (&cell_slot->cell)[1].tile_id == 32)
+                                    || (&cell_slot->cell)[1].tile_id
+                                        == SUBLOC_TILE_FLOOR_DOT
+                                    || (&cell_slot->cell)[1].tile_id
+                                        == SUBLOC_TILE_FLOOR_VARIANT_14
+                                    || (&cell_slot->cell)[1].tile_id
+                                        == SUBLOC_TILE_FLOOR_DASH
+                                    || (&cell_slot->cell)[1].tile_id
+                                        == SUBLOC_TILE_FLOOR_HASH_MARKER)
                                 && cell_index >= first_block_row_count
                                 && cell_index < completion_row_start
                                 && player.click_start.state
@@ -425,7 +434,7 @@ void SubgameRuntime::update_subgame()
                         }
 
                         hazard_tile = cell_slot->cell.tile_id;
-                        if (hazard_tile == 34) {
+                        if (hazard_tile == SUBLOC_TILE_SALT_HAZARD) {
                             if (cell_index >= first_block_row_count
                                 && cell_index < completion_row_start) {
                                 salt_hazards.spawn_salt_hazard(
@@ -434,7 +443,8 @@ void SubgameRuntime::update_subgame()
                         } else if ((cell_slot->cell.lane_and_flags
                                         & SUBLOC_FLAG_SUPPRESS_SALT_SPAWN)
                                 == 0
-                            && (hazard_tile == 1 || hazard_tile == 15)
+                            && (hazard_tile == SUBLOC_TILE_FLOOR_DOT
+                                || hazard_tile == SUBLOC_TILE_SLIDE_UNDERSCORE)
                             && player.click_start.state
                                 != CLICK_START_STATE_WAITING_FOR_START
                             && (runtime_flags & SUBGAME_RUNTIME_FLAG_AMBIENT_SALT)
@@ -449,7 +459,7 @@ void SubgameRuntime::update_subgame()
                         }
 
                         if ((runtime_flags & SUBGAME_RUNTIME_FLAG_SLUG_HAZARDS) != 0
-                            && cell_slot->cell.tile_id == 18
+                            && cell_slot->cell.tile_id == SUBLOC_TILE_SLUG_HAZARD
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start) {
                             spawn_slug_hazard(&cell_slot->cell, &player);
@@ -457,7 +467,7 @@ void SubgameRuntime::update_subgame()
 
                         unsigned int ring_flags = runtime_rows[cell_index].flags;
                         if ((ring_flags & SUBROW_FLAG_RING_NONE) == 0) {
-                            if (cell_slot->cell.tile_id == 35) {
+                            if (cell_slot->cell.tile_id == SUBLOC_TILE_RING_MARKER) {
                                 if ((ring_flags & SUBROW_FLAG_RING_NORMAL) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, SUB_RING_KIND_NORMAL_AUTHORED, &player,
@@ -481,9 +491,18 @@ void SubgameRuntime::update_subgame()
                                     cell_slot->cell.position.z;
 after_authored_ring:
                                 ;
-                            } else if ((cell_slot->cell.tile_id == 2 || cell_slot->cell.tile_id == 3
-                                    || cell_slot->cell.tile_id == 4 || cell_slot->cell.tile_id == 5
-                                    || cell_slot->cell.tile_id == 6 || cell_slot->cell.tile_id == 7)
+                            } else if ((cell_slot->cell.tile_id
+                                            == SUBLOC_TILE_RAMP_LEFT_BRACE
+                                    || cell_slot->cell.tile_id
+                                        == SUBLOC_TILE_RAMP_GREATER
+                                    || cell_slot->cell.tile_id
+                                        == SUBLOC_TILE_RAMP_RIGHT_BRACE
+                                    || cell_slot->cell.tile_id
+                                        == SUBLOC_TILE_RAMP_LEFT_BRACKET
+                                    || cell_slot->cell.tile_id
+                                        == SUBLOC_TILE_RAMP_LESS
+                                    || cell_slot->cell.tile_id
+                                        == SUBLOC_TILE_RAMP_RIGHT_BRACKET)
                                 && player.last_ring_spawn_z + 10.0f
                                     < cell_slot->cell.position.z
                                 && cell_index < completion_row_start) {
@@ -522,8 +541,12 @@ after_authored_ring:
                                             != 0
                                     && (random_float_below(1.0f, "R") > 0.7f
                                         || level_mode == 7)
-                                    && cell_slot->cell.tile_id != 5 && cell_slot->cell.tile_id != 6
-                                    && cell_slot->cell.tile_id != 7) {
+                                    && cell_slot->cell.tile_id
+                                        != SUBLOC_TILE_RAMP_LEFT_BRACKET
+                                    && cell_slot->cell.tile_id
+                                        != SUBLOC_TILE_RAMP_LESS
+                                    && cell_slot->cell.tile_id
+                                        != SUBLOC_TILE_RAMP_RIGHT_BRACKET) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, SUB_RING_KIND_NORMAL_DEFAULT,
                                         &player, 0.0f);
@@ -534,8 +557,12 @@ after_authored_ring:
                                         player.last_ring_spawn_z =
                                             cell_slot->cell.position.z + 35.0f;
                                 }
-                            } else if ((cell_slot->cell.tile_id == 8 || cell_slot->cell.tile_id == 9
-                                    || cell_slot->cell.tile_id == 10)
+                            } else if ((cell_slot->cell.tile_id
+                                            == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+                                    || cell_slot->cell.tile_id
+                                        == SUBLOC_TILE_RAMP_GREATER_RAISED
+                                    || cell_slot->cell.tile_id
+                                        == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED)
                                 && player.last_ring_spawn_z + 10.0f
                                     < cell_slot->cell.position.z
                                 && cell_index < completion_row_start) {

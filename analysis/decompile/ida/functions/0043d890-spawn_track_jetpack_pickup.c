@@ -41,13 +41,13 @@ void __thiscall spawn_track_jetpack_pickup(SubgameRuntime *game, TrackRowCell *c
   jetpack_cursor->jetpack.bod.position.y = v17;
   jetpack_cursor->jetpack.bod.position.z = z;
   v7 = cell->lane_and_flags & 7;
-  if ( v7 == 3 && cell[-1].tile_id == 14 && cell[2].tile_id == 14 )
+  if ( v7 == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2 && cell[2].tile_id == SUBLOC_TILE_WALL2 )
   {
     v8 = *position_x + 0.5;
   }
   else
   {
-    if ( v7 != 4 || cell[-2].tile_id != 14 || cell[1].tile_id != 14 )
+    if ( v7 != 4 || cell[-2].tile_id != SUBLOC_TILE_WALL2 || cell[1].tile_id != SUBLOC_TILE_WALL2 )
       goto LABEL_14;
     v8 = *position_x - 0.5;
   }
@@ -80,7 +80,7 @@ LABEL_14:
     BYTE1(list_flags) |= 2u;
     jetpack_cursor->jetpack.bod.bod.list_flags = list_flags;
   }
-  sprite = (Sprite *)allocate_sprite(g_sprite_manager, player->player_slot, 124, -1, -1);
+  sprite = allocate_sprite(&g_sprite_manager, player->player_slot, 124, -1, -1);
   jetpack_cursor->jetpack.sprite = sprite;
   flags = sprite->flags;
   BYTE1(flags) |= 8u;

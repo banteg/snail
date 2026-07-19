@@ -25,14 +25,14 @@
 00434c48        edi_1 = 2
 00434c52        if (open_edge_mask == 6)
 00434c54        edi_1 = 4
-00434c59        uint8_t tile_id = cell->tile_id
-00434c66        if (tile_id == 2 || tile_id == 8 || tile_id == 5)
+00434c59        enum SubLocTileId tile_id = cell->tile_id
+00434c66        if (tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET)
 00434c68        edi_1 = 5
-00434c83        if (tile_id == 3 || tile_id == 9 || tile_id == 0xb || tile_id == 0xc || tile_id == 0xd || tile_id == 6)
+00434c83        if (tile_id == SUBLOC_TILE_RAMP_GREATER || tile_id == SUBLOC_TILE_RAMP_GREATER_RAISED || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH || tile_id == SUBLOC_TILE_RAMP_GREATER_BACKPATCH || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH || tile_id == SUBLOC_TILE_RAMP_LESS)
 00434c85        edi_1 = 6
-00434c94        if (tile_id == 4 || tile_id == 0xa || tile_id == 7)
+00434c94        if (tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACKET)
 00434c96        edi_1 = 7
-00434cbb        if ((row->flags.b & 4) != 0 || open_edge_mask == 0 || tile_id == 0x20 || (g_runtime_config.render_flags.b & 0x20) == 0)
+00434cbb        if ((row->flags.b & 4) != 0 || open_edge_mask == 0 || tile_id == SUBLOC_TILE_FLOOR_HASH_MARKER || (g_runtime_config.render_flags.b & 0x20) == 0)
 004350e0        cell->fringe_front = nullptr
 004350e3        cell->fringe_right = nullptr
 004350e6        cell->fringe_left = nullptr

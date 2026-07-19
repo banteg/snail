@@ -6,31 +6,31 @@
 double __thiscall sample_track_floor_height_at_position(SubgameRuntime *game, Vec3 *position)
 {
   TrackRowCell *track_grid_cell_at_world_position; // eax
-  uint8_t tile_id; // cl
+  SubLocTileId tile_id; // cl
 
   track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(game, position);
   tile_id = track_grid_cell_at_world_position->tile_id;
   switch ( tile_id )
   {
-    case 1u:
-    case 0xFu:
-    case 0xEu:
+    case SUBLOC_TILE_FLOOR_DOT:
+    case SUBLOC_TILE_SLIDE_UNDERSCORE:
+    case SUBLOC_TILE_WALL2:
       return 0.0;
-    case 2u:
-    case 3u:
-    case 4u:
-    case 5u:
-    case 6u:
-    case 7u:
-    case 0xBu:
-    case 0xCu:
-    case 0xDu:
+    case SUBLOC_TILE_RAMP_LEFT_BRACE:
+    case SUBLOC_TILE_RAMP_GREATER:
+    case SUBLOC_TILE_RAMP_RIGHT_BRACE:
+    case SUBLOC_TILE_RAMP_LEFT_BRACKET:
+    case SUBLOC_TILE_RAMP_LESS:
+    case SUBLOC_TILE_RAMP_RIGHT_BRACKET:
+    case SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH:
+    case SUBLOC_TILE_RAMP_GREATER_BACKPATCH:
+    case SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH:
       return (position->z - (double)(int)(__int64)position->z) * 0.40000001;
-    case 8u:
-    case 9u:
-    case 0xAu:
+    case SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED:
+    case SUBLOC_TILE_RAMP_GREATER_RAISED:
+    case SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED:
       return (position->z - (double)(int)(__int64)position->z) * 0.40000001 + 0.5;
-    case 0x16u:
+    case SUBLOC_TILE_TRAMPOLINE:
       return track_grid_cell_at_world_position->anchor_position.y;
   }
   return -100.0;

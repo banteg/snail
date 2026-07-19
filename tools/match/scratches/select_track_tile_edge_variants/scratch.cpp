@@ -10,8 +10,12 @@
 
 
 #define IS_STRAIGHT_TRACK_FAMILY(tile) \
-    ((tile) == 1 || (tile) == 0x14 || (tile) == 0x15 || (tile) == 0x1b \
-        || (tile) == 0x21 || (tile) == 0x22)
+    ((tile) == SUBLOC_TILE_FLOOR_DOT \
+        || (tile) == SUBLOC_TILE_FLOOR_VARIANT_14 \
+        || (tile) == SUBLOC_TILE_FLOOR_DASH \
+        || (tile) == SUBLOC_TILE_FLOOR_VARIANT_1B \
+        || (tile) == SUBLOC_TILE_GARBAGE_HAZARD \
+        || (tile) == SUBLOC_TILE_SALT_HAZARD)
 
 void SubgameRuntime::select_track_tile_edge_variants()
 {
@@ -38,8 +42,12 @@ void SubgameRuntime::select_track_tile_edge_variants()
                 *lane_and_flags &= ~SUBLOC_FLAG_CORNER_OBJECT;
 
                 unsigned char skip_tile = cell->tile_id;
-                if (skip_tile != 0 && skip_tile != 0x23 && skip_tile != 0x1c
-                    && skip_tile != 0x1d && skip_tile != 0x1e && skip_tile != 0x0e) {
+                if (skip_tile != SUBLOC_TILE_EMPTY
+                    && skip_tile != SUBLOC_TILE_RING_MARKER
+                    && skip_tile != SUBLOC_TILE_UNIVERSE_HOLE
+                    && skip_tile != SUBLOC_TILE_PATH_ENTRY_LOWERCASE
+                    && skip_tile != SUBLOC_TILE_PATH_ENTRY_UPPERCASE
+                    && skip_tile != SUBLOC_TILE_WALL2) {
                     if (lane == 0
                         || ((SubLoc*)((char*)cell - TILE_VIEW_TO_PREVIOUS_LANE))
                                 ->is_sub_loc_empty()
@@ -76,7 +84,8 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                         g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_0_STORAGE_INDEX]
                                             .object);
-                            } else if (tile != 0x16 && tile != 0x0e
+                            } else if (tile != SUBLOC_TILE_TRAMPOLINE
+                                && tile != SUBLOC_TILE_WALL2
                                 && ((SubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                         ->is_sub_loc_ramp()
                                     == 0) {
@@ -99,7 +108,8 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                         g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_1_STORAGE_INDEX]
                                             .object);
-                            } else if (tile != 0x16 && tile != 0x0e
+                            } else if (tile != SUBLOC_TILE_TRAMPOLINE
+                                && tile != SUBLOC_TILE_WALL2
                                 && ((SubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                         ->is_sub_loc_ramp()
                                     == 0) {
@@ -122,7 +132,8 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                         g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_3_STORAGE_INDEX]
                                             .object);
-                            } else if (tile != 0x16 && tile != 0x0e
+                            } else if (tile != SUBLOC_TILE_TRAMPOLINE
+                                && tile != SUBLOC_TILE_WALL2
                                 && ((SubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                         ->is_sub_loc_ramp()
                                     == 0) {
@@ -145,7 +156,8 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                         g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_2_STORAGE_INDEX]
                                             .object);
-                            } else if (tile != 0x16 && tile != 0x0e
+                            } else if (tile != SUBLOC_TILE_TRAMPOLINE
+                                && tile != SUBLOC_TILE_WALL2
                                 && ((SubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                         ->is_sub_loc_ramp()
                                     == 0) {

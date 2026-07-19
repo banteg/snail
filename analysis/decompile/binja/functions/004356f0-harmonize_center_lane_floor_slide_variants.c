@@ -18,7 +18,7 @@
 00435746        int32_t edx_3 = (ecx_2 + (i << 3)) * 0x15
 00435752        struct RuntimeCellStrideAnchor* forward_cell_anchor = game_1 + (edx_3 << 2)
 00435755        if (((&game_1->runtime_cells[0][0].lane_and_flags)[edx_3].b & 0x20) == 0)
-00435762        if ((forward_cell_anchor->next_row_same_lane.lane_and_flags.b & 0x20) == 0 && is_sub_loc_floor(&forward_cell_anchor->cell) == 1 && (is_sub_loc_slide(&forward_cell_anchor->next_row_same_lane) == 1 || forward_cell_anchor->next_row_same_lane.tile_id == 0x1e))
+00435762        if ((forward_cell_anchor->next_row_same_lane.lane_and_flags.b & 0x20) == 0 && is_sub_loc_floor(&forward_cell_anchor->cell) == 1 && (is_sub_loc_slide(&forward_cell_anchor->next_row_same_lane) == 1 || forward_cell_anchor->next_row_same_lane.tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE))
 00435795        struct GameRoot* game_base_1 = g_game_base
 004357a6        if (forward_cell_anchor->cell.object == game_base_1->root_bod_catalog.floor_slices.storage[0].object)
 004357b1        set_bod_object(&forward_cell_anchor->cell, game_base_1->root_bod_catalog.slide_slices.storage[0].object)
@@ -47,7 +47,7 @@
 004358c7        if (edx_2 == 5)
 004358dc        struct RuntimeCellStrideAnchor* backward_cell_anchor = game_1 + (ecx_2 + (i << 3)) * 0x54
 004358e6        if ((backward_cell_anchor->cell.lane_and_flags.b & 0x20) == 0)
-004358f3        if ((backward_cell_anchor->previous_row_same_lane.lane_and_flags.b & 0x20) == 0 && is_sub_loc_floor(&backward_cell_anchor->cell) == 1 && (is_sub_loc_slide(&backward_cell_anchor->previous_row_same_lane) == 1 || backward_cell_anchor->previous_row_same_lane.tile_id == 0x20))
+004358f3        if ((backward_cell_anchor->previous_row_same_lane.lane_and_flags.b & 0x20) == 0 && is_sub_loc_floor(&backward_cell_anchor->cell) == 1 && (is_sub_loc_slide(&backward_cell_anchor->previous_row_same_lane) == 1 || backward_cell_anchor->previous_row_same_lane.tile_id == SUBLOC_TILE_FLOOR_HASH_MARKER))
 00435926        struct GameRoot* game_base_3 = g_game_base
 00435937        if (backward_cell_anchor->cell.object == game_base_3->root_bod_catalog.floor_slices.storage[0].object)
 00435942        set_bod_object(&backward_cell_anchor->cell, game_base_3->root_bod_catalog.slide_slices.storage[0].object)

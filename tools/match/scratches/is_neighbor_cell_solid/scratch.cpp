@@ -23,10 +23,10 @@ bool SubgameRuntime::is_neighbor_cell_solid(SubLoc* cell, int dx, int dz)
             neighbor = (SubLoc*)((char*)neighbor
                 + (int)offsetof(SubgameRuntime, runtime_cells));
             if (!neighbor->is_sub_loc_empty()
-                && tile != 0
-                && tile != 35
-                && tile != 28
-                && tile != 22) {
+                && tile != SUBLOC_TILE_EMPTY
+                && tile != SUBLOC_TILE_RING_MARKER
+                && tile != SUBLOC_TILE_UNIVERSE_HOLE
+                && tile != SUBLOC_TILE_TRAMPOLINE) {
                 return true;
             }
         }

@@ -1,24 +1,36 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 19,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 4,
-  "ida_exported": 4,
+  "bn_exported": 19,
+  "ida_exported": 19,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "promote_track_tiles_to_fringe_variants",
-      "address": "0x4355f0"
+      "name": "update_golb_ai",
+      "address": "0x414820"
+    },
+    {
+      "name": "is_neighbor_cell_solid",
+      "address": "0x434b60"
+    },
+    {
+      "name": "build_track_fringe_objects",
+      "address": "0x434be0"
+    },
+    {
+      "name": "merge_track_tile_runs",
+      "address": "0x435180"
     },
     {
       "name": "harmonize_center_lane_floor_slide_variants",
@@ -29,8 +41,56 @@
       "address": "0x435a80"
     },
     {
-      "name": "rebuild_track_runtime_from_segments",
-      "address": "0x437de0"
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
+    },
+    {
+      "name": "update_subgame",
+      "address": "0x438b90"
+    },
+    {
+      "name": "is_sub_loc_floor",
+      "address": "0x439a40"
+    },
+    {
+      "name": "is_sub_loc_ramp",
+      "address": "0x439a70"
+    },
+    {
+      "name": "is_sub_loc_empty",
+      "address": "0x439ab0"
+    },
+    {
+      "name": "is_sub_loc_slide",
+      "address": "0x439ad0"
+    },
+    {
+      "name": "remove_sub_loc",
+      "address": "0x439bc0"
+    },
+    {
+      "name": "update_sub_loc",
+      "address": "0x439d50"
+    },
+    {
+      "name": "update_subgoldy",
+      "address": "0x43b120"
+    },
+    {
+      "name": "sample_track_floor_height_at_position",
+      "address": "0x43d4d0"
+    },
+    {
+      "name": "spawn_track_jetpack_pickup",
+      "address": "0x43d890"
+    },
+    {
+      "name": "spawn_track_ring_or_special_effect",
+      "address": "0x43df10"
+    },
+    {
+      "name": "update_sub_lazer_projectile",
+      "address": "0x4417d0"
     }
   ],
   "health_check_count": 876,

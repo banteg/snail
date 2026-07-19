@@ -48,17 +48,25 @@ int SubgameRuntime::build_track_fringe_objects()
                 }
 
                 unsigned char tile_id = cell->tile_id;
-                if (tile_id == 2 || tile_id == 8 || tile_id == 5)
+                if (tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE
+                    || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+                    || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET)
                     family = 5;
-                if (tile_id == 3 || tile_id == 9 || tile_id == 11
-                    || tile_id == 12 || tile_id == 13 || tile_id == 6)
+                if (tile_id == SUBLOC_TILE_RAMP_GREATER
+                    || tile_id == SUBLOC_TILE_RAMP_GREATER_RAISED
+                    || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH
+                    || tile_id == SUBLOC_TILE_RAMP_GREATER_BACKPATCH
+                    || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH
+                    || tile_id == SUBLOC_TILE_RAMP_LESS)
                     family = 6;
-                if (tile_id == 4 || tile_id == 10 || tile_id == 7)
+                if (tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE
+                    || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
+                    || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACKET)
                     family = 7;
 
                 if ((row_record->flags & SUBROW_FLAG_SUPPRESS_TRACK_RENDER) != 0
                     || open_edge_mask == 0
-                    || tile_id == 0x20
+                    || tile_id == SUBLOC_TILE_FLOOR_HASH_MARKER
                     || (g_runtime_config.render_flags & RUNTIME_RENDER_TRACK_FRINGE) == 0) {
                     cell->fringe_front = 0;
                     cell->fringe_right = 0;

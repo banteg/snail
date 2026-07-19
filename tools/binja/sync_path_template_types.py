@@ -411,6 +411,7 @@ REQUIRED_HEADER_STRUCTS = (
     "AuthoredSegmentRowFlag",
     "SubSegmentRowStrideAnchor",
     "SubLocOpenEdgeFlag",
+    "SubLocTileId",
     "SubLocFlag",
     "TrackRowCell",
     "SubRowFlag",
@@ -463,6 +464,7 @@ def ensure_path_analysis_views(
     type_names = (
         "PresentationWobbleController",
         "RuntimeCellStrideAnchor",
+        "SubLocTileId",
     )
     equivalence = current_header_type_equivalence(
         REPO_ROOT,
@@ -2104,7 +2106,7 @@ TRACK_ROW_CELL_FIELD_UPDATES = (
     ("0x24", "object", "Object*"),
     ("0x28", "color", "tColour"),
     ("0x38", "attachment_template_record", "Path*"),
-    ("0x3c", "tile_id", "uint8_t"),
+    ("0x3c", "tile_id", "SubLocTileId"),
     ("0x3d", "open_edge_mask", "uint8_t"),
     ("0x40", "lane_and_flags", "uint32_t"),
     ("0x44", "fringe_front", "Fringe*"),

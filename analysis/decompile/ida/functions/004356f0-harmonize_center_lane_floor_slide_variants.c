@@ -45,7 +45,7 @@ void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *game)
           if ( (forward_cell_anchor->next_row_same_lane.lane_and_flags & 0x20) == 0
             && (unsigned __int8)is_sub_loc_floor(&forward_cell_anchor->cell) == 1
             && ((unsigned __int8)is_sub_loc_slide(&forward_cell_anchor->next_row_same_lane) == 1
-             || forward_cell_anchor->next_row_same_lane.tile_id == 30) )
+             || forward_cell_anchor->next_row_same_lane.tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE) )
           {
             v8 = g_game_base;
             if ( forward_cell_anchor->cell.object == g_game_base->root_bod_catalog.floor_slices.storage[0].object )
@@ -104,7 +104,7 @@ void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *game)
           if ( (backward_cell_anchor->previous_row_same_lane.lane_and_flags & 0x20) == 0
             && (unsigned __int8)is_sub_loc_floor(&backward_cell_anchor->cell) == 1
             && ((unsigned __int8)is_sub_loc_slide(&backward_cell_anchor->previous_row_same_lane) == 1
-             || backward_cell_anchor->previous_row_same_lane.tile_id == 32) )
+             || backward_cell_anchor->previous_row_same_lane.tile_id == SUBLOC_TILE_FLOOR_HASH_MARKER) )
           {
             v13 = g_game_base;
             if ( backward_cell_anchor->cell.object == g_game_base->root_bod_catalog.floor_slices.storage[0].object )

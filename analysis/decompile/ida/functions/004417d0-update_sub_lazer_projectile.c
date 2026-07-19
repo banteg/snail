@@ -43,7 +43,8 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
       track_runtime_cell_at_world_z = get_track_runtime_cell_at_world_z(
                                         &g_game_base->subgame,
                                         (Vec3 *)&sub_lazer->body.transform.position);
-      if ( track_grid_cell_at_world_position->tile_id != 14 || sub_lazer->body.transform.position.y >= 7.0 )
+      if ( track_grid_cell_at_world_position->tile_id != SUBLOC_TILE_WALL2
+        || sub_lazer->body.transform.position.y >= 7.0 )
       {
         if ( (track_runtime_cell_at_world_z->flags & 0x40) == 0
           || (v11.x = sub_lazer->velocity.x * 1.05,

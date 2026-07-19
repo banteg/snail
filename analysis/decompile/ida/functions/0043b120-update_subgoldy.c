@@ -34,7 +34,7 @@ void __thiscall update_subgoldy(Player *player)
   int32_t v29; // eax
   int v30; // esi
   SubgameRuntime *v31; // edx
-  uint8_t tile_id; // al
+  SubLocTileId tile_id; // al
   double subgame_rate; // st7
   SubgameRuntime *v34; // ecx
   Vec3 *p_velocity; // esi
@@ -47,7 +47,7 @@ void __thiscall update_subgoldy(Player *player)
   SubgameRuntime *v42; // edi
   int32_t track_cell_row_index; // eax
   int32_t v44; // eax
-  uint8_t v45; // al
+  SubLocTileId v45; // al
   uint8_t open_edge_mask; // al
   double v47; // st7
   double v48; // st6
@@ -256,7 +256,8 @@ LABEL_60:
         if ( !player->attachment_exit_pending )
         {
           tile_id = source_cell->tile_id;
-          if ( (tile_id == 29 || tile_id == 30) && !player->follow_state.active )
+          if ( (tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE)
+            && !player->follow_state.active )
           {
             begin_track_attachment_follow_state(&player->follow_state, source_cell, p_position, player);
             if ( player->follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM )
@@ -347,10 +348,10 @@ LABEL_101:
           }
           if ( !player->completion_handoff_active )
           {
-            if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 15
-              || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 16
-              || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 18
-              || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 19
+            if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_SLIDE_UNDERSCORE
+              || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_SLIDE_O
+              || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_SLUG_HAZARD
+              || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_SLIDE_F
               || player->damage_gauge.state == DAMAGE_GUAGE_STATE_DRAINING
               && (v37 = get_track_grid_cell_at_world_position(player->game, p_position),
                   (unsigned __int8)is_sub_loc_floor(v37)) )
@@ -442,7 +443,7 @@ LABEL_101:
               if ( player->body.transform.position.y < 0.49000001
                 && player->body.transform.position.y > -0.16333334
                 && !(unsigned __int8)is_sub_loc_empty(v41)
-                && v41->tile_id != 22 )
+                && v41->tile_id != SUBLOC_TILE_TRAMPOLINE )
               {
                 set_matrix_rotation_identity(&player->body.transform);
                 player->trampoline_bounce_active = 0;
@@ -459,7 +460,9 @@ LABEL_101:
                 player->attachment_exit_pending = 0;
               }
               v45 = v41->tile_id;
-              if ( (!v45 || v45 == 35) && player->body.transform.position.y < 0.49000001 && player->velocity.y <= 0.0 )
+              if ( (v45 == SUBLOC_TILE_EMPTY || v45 == SUBLOC_TILE_RING_MARKER)
+                && player->body.transform.position.y < 0.49000001
+                && player->velocity.y <= 0.0 )
               {
                 open_edge_mask = v41->open_edge_mask;
                 v47 = player->body.transform.position.z - (double)(int)(__int64)player->body.transform.position.z;
@@ -502,7 +505,7 @@ LABEL_101:
                                + player->velocity.y;
             v53 = get_track_grid_cell_at_world_position(player->game, p_position);
             v54 = v53;
-            if ( v53->tile_id == 22
+            if ( v53->tile_id == SUBLOC_TILE_TRAMPOLINE
               && v53->anchor_position.y + 0.49000001 > player->body.transform.position.y
               && v53->anchor_position.y - 0.49000001 < player->body.transform.position.y )
             {
@@ -526,21 +529,21 @@ LABEL_101:
             {
               if ( player->velocity.y <= 0.0 )
                 player->body.transform.position.y = v51;
-              if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 8
-                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 9
-                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 10
-                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 11
-                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 12
-                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 13 )
+              if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_GREATER_RAISED
+                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
+                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH
+                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_GREATER_BACKPATCH
+                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH )
               {
                 player->velocity.y = player->game->subgame_rate * 0.30000001;
               }
-              else if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 2
-                     || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 3
-                     || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 4
-                     || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 5
-                     || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 6
-                     || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 7 )
+              else if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE
+                     || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_GREATER
+                     || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE
+                     || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET
+                     || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LESS
+                     || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACKET )
               {
                 if ( player->surface_reaction_timer == 0.0 )
                   player->surface_reaction_timer = player->surface_reaction_step;
@@ -555,8 +558,8 @@ LABEL_101:
                 }
               }
               else if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id
-                     && get_track_grid_cell_at_world_position(player->game, p_position)->tile_id != 35
-                     && get_track_grid_cell_at_world_position(player->game, p_position)->tile_id != 22 )
+                     && get_track_grid_cell_at_world_position(player->game, p_position)->tile_id != SUBLOC_TILE_RING_MARKER
+                     && get_track_grid_cell_at_world_position(player->game, p_position)->tile_id != SUBLOC_TILE_TRAMPOLINE )
               {
                 player->trampoline_bounce_active = 0;
                 player->velocity.y = 0.0;
@@ -576,7 +579,7 @@ LABEL_98:
               position.z = v134,
               v56 = player->game,
               position.y = v55,
-              get_track_grid_cell_at_world_position(v56, &position)->tile_id != 14)
+              get_track_grid_cell_at_world_position(v56, &position)->tile_id != SUBLOC_TILE_WALL2)
           || player->body.transform.position.y >= 6.5 )
         {
           player->barrier_hold_progress = 0.0;
@@ -599,23 +602,23 @@ LABEL_98:
           }
         }
         if ( !player->lane_lean_state
-          && (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 2
-           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 4
-           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 5
-           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 7
-           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 10
-           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 8
-           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 10
-           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 11
-           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 13)
+          && (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE
+           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE
+           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET
+           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACKET
+           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
+           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
+           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH
+           || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH)
           && !player->attachment_exit_pending
           && player->body.transform.position.y <= 0.98000002 )
         {
           player->lane_lean_progress_step = player->game->subgame_rate * 0.037037037;
-          if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 2
-            || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 5
-            || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 8
-            || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 11 )
+          if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE
+            || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET
+            || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+            || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH )
           {
             player->lane_lean_state = 1;
             player->lane_lean_amplitude = 1.0;

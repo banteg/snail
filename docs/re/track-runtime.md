@@ -373,10 +373,13 @@ Recovered from `get_track_grid_cell_at_world_position` and `get_track_runtime_ce
 - the checked-in typed slice for one gameplay/render cell also exposes:
   - `anchor_position`
   - `attachment_template_record`
-  - `tile_id`
+  - byte-sized `SubLocTileId tile_id`
   - `open_edge_mask`
   - `lane_and_flags`
   - four fringe/cache object slots at `+0x44..+0x50`
+- `+0x3e..+0x3f` is proved alignment padding: the live Binary Ninja database
+  has no field xrefs there, unlike `tile_id`, `open_edge_mask`, and
+  `lane_and_flags` on either side.
 - `open_edge_mask` is produced from the four adjacent cells:
   - `0x01` previous row/back
   - `0x02` next row/front
@@ -396,6 +399,30 @@ Recovered from `get_track_grid_cell_at_world_position` and `get_track_runtime_ce
 That is the sampling path used both by player movement and by the floor-height helper.
 
 ## Runtime Tile Families
+
+The shared `SubLocTileId` vocabulary now connects the glyph builder to every
+typed consumer. Names are limited to behavior proved in Windows or preserved
+cross-port predicates:
+
+- `SUBLOC_TILE_EMPTY` (`0x00`) and `SUBLOC_TILE_FLOOR_DOT` (`0x01`)
+- the twelve ramp identities `0x02..0x0d`, named by their authored
+  brace/bracket/angle producer and raised/backpatch role
+- `SUBLOC_TILE_WALL2` (`0x0e`), the pillar-bodied tile whose `cRSubLoc::AI`
+  path emits SubLazer projectiles
+- slide/floor glyph variants `0x0f..0x15`, including the exact `_`, `o`, `F`,
+  `G`, and `-` producers plus the predicate-only variants
+- `SUBLOC_TILE_TRAMPOLINE` (`0x16`), health/speedup/jetpack markers
+  (`0x17..0x19`), and the remaining predicate-only slide/floor variants
+  (`0x1a..0x1b`)
+- `SUBLOC_TILE_UNIVERSE_HOLE` (`0x1c`), lowercase/uppercase path entries
+  (`0x1d/0x1e`), and the width-only variant (`0x1f`)
+- hash, garbage, salt, and ring markers (`0x20..0x23`)
+
+The VC6 matcher lane keeps `SubLocTileId` as a byte typedef and puts the named
+constants in `SubLocTileIdValue`, because ordinary VC6 enums are four bytes.
+The analysis header instead uses a fixed-width one-byte `SubLocTileId` enum,
+which lets Binary Ninja and IDA render the same values without widening the
+shipped `cRSubLoc +0x3c` field.
 
 Recovered helper predicates:
 

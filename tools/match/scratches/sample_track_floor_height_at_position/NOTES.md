@@ -15,3 +15,10 @@ The live BN prototype now matches that exact source evidence as
 identity. Refreshed BN and IDA output agree on the typed grid lookup,
 `TrackRowCell::tile_id`, and the stored `anchor_position.y` special case. The
 63/63 matcher remains byte-identical.
+
+## 2026-07-19 tile identity vocabulary
+
+The exact source now spells the flat, ramp, raised-ramp, backpatch, Wall2, and
+trampoline cases through `SubLocTileIdValue`. These are compile-time names over
+the same byte values; the helper remains exact at 63/63 with eight clean
+operands.

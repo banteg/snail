@@ -174,7 +174,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
 
     TrackRowCell* result = get_track_grid_cell_at_world_position(
         &slot_cursor->ring.transform.position);
-    if (result->tile_id != 14) {
+    if (result->tile_id != SUBLOC_TILE_WALL2) {
         slot_cursor->ring.kind = (SubRingKind)requested_kind;
         slot_cursor->ring.owner_lives_snapshot = player->lives;
         slot_cursor->ring.state = SUB_RING_STATE_ACTIVE;

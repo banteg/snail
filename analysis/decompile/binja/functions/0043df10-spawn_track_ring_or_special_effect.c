@@ -138,7 +138,7 @@
 0043e2b8        slot_cursor->ring.world_position.z:1.b = z:1.b
 0043e346        slot_cursor->ring.active_phase = fconvert.s(random_float_below(1f) * fconvert.t(6.28318548f))
 0043e365        slot_cursor->ring.active_phase_step = fconvert.s(fconvert.t(1f) / (fconvert.t(ring_speed) * fconvert.t(60f)) * fconvert.t(game->subgame_rate) * fconvert.t(6.28318548f))
-0043e37d        if (get_track_grid_cell_at_world_position(game, &slot_cursor->ring.world_position)->tile_id == 0xe)
+0043e37d        if (get_track_grid_cell_at_world_position(game, &slot_cursor->ring.world_position)->tile_id == SUBLOC_TILE_WALL2)
 0043e37d        return
 0043e387        slot_cursor->ring.kind = effective_kind
 0043e38d        void* var_24_13 = &data_4a4e18

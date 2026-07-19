@@ -2590,6 +2590,27 @@ def _named_struct_size(name: str) -> int | None:
     return value.get_size()
 
 
+def _named_struct_member_readback(
+    struct_name: str, offset: int
+) -> dict[str, object] | None:
+    owner = ida_typeinf.tinfo_t()
+    if not owner.get_named_type(None, struct_name, ida_typeinf.BTF_STRUCT):
+        return None
+    members = ida_typeinf.udt_type_data_t()
+    if not owner.get_udt_details(members):
+        return None
+    for member in members:
+        member_offset = int(member.offset) // 8
+        if member_offset == offset:
+            return {
+                "offset": hex(member_offset),
+                "size": int(member.size) // 8,
+                "name": member.name,
+                "type": _normalize_udt_type(member.type.dstr()),
+            }
+    return None
+
+
 def _normalize_root_offset_operands(
     operand_specs: tuple[tuple[int, int, int], ...],
 ) -> list[dict[str, object]]:
@@ -2828,6 +2849,13 @@ def _sync_types(header_path: pathlib.Path) -> int:
         name: _named_struct_size(name)
         for name in TRACK_RENDER_CACHE_OWNER_SIZES
     }
+    track_row_cell_tile_owner = _named_struct_member_readback("TrackRowCell", 0x3C)
+    expected_track_row_cell_tile_owner = {
+        "offset": "0x3c",
+        "size": 1,
+        "name": "tile_id",
+        "type": "SubLocTileId",
+    }
     bod_core_owner_size_failures = [
         {
             "selector": name,
@@ -2866,6 +2894,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
         + fringe_owner_size_failures
         + track_render_cache_owner_size_failures
     )
+    if track_row_cell_tile_owner != expected_track_row_cell_tile_owner:
+        owner_size_failures.append(
+            {
+                "selector": "TrackRowCell.tile_id",
+                "owner_group": "track_row_cell",
+                "reason": "tile_owner_mismatch",
+                "expected": expected_track_row_cell_tile_owner,
+                "observed": track_row_cell_tile_owner,
+            }
+        )
     if parse_errors or owner_size_failures:
         print(
             json.dumps(
@@ -2876,6 +2914,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "bod_core_owner_sizes": bod_core_owner_sizes,
                     "fringe_owner_sizes": fringe_owner_sizes,
                     "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
+                    "track_row_cell_tile_owner": track_row_cell_tile_owner,
                     "failed": owner_size_failures,
                 },
                 indent=2,
@@ -3317,6 +3356,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "bod_core_owner_sizes": bod_core_owner_sizes,
                 "fringe_owner_sizes": fringe_owner_sizes,
                 "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
+                "track_row_cell_tile_owner": track_row_cell_tile_owner,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

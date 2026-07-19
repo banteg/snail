@@ -40,11 +40,11 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
     *live_position = staged_position;
 
     int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;
-    if (lane == 3 && cell[-1].tile_id == 14
-        && cell[2].tile_id == 14) {
+    if (lane == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2
+        && cell[2].tile_id == SUBLOC_TILE_WALL2) {
         live_position->x = live_position->x + 0.5f;
-    } else if (lane == 4 && cell[-2].tile_id == 14
-        && cell[1].tile_id == 14) {
+    } else if (lane == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2
+        && cell[1].tile_id == SUBLOC_TILE_WALL2) {
         live_position->x = live_position->x - 0.5f;
     }
 

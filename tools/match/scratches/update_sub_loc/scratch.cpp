@@ -17,7 +17,7 @@ void SubLoc::update_sub_loc()
         return;
     if (g_game->subgame.subgame_pause_gate)
         return;
-    if (tile_id == 14) {
+    if (tile_id == SUBLOC_TILE_WALL2) {
         if ((float)g_game->subgame.first_block_row_count
             >= g_game->subgame.embedded_player()->transform.position.z)
             goto cull_check;
@@ -47,13 +47,14 @@ cull_check:
         return;
     }
 
-    if (tile_id == 22) {
+    if (tile_id == SUBLOC_TILE_TRAMPOLINE) {
         if (position.z >= g_game->subgame.embedded_player()->interaction_max_z)
             return;
         goto destroy;
     }
 
-    if (tile_id == 29 || tile_id == 30) {
+    if (tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE
+        || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE) {
         if (attachment_template_record->kind == 24) {
             render_arg_20 =
                 render_arg_20 - g_game->subgame.subgame_rate * 0.033333335f;

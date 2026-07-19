@@ -4533,13 +4533,36 @@ def test_sub_loc_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     matcher_header = (
         repo_root / "tools/match/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
+    matcher_tile_ids = (
+        repo_root / "tools/match/include/sub_loc_tile_ids.h"
+    ).read_text(encoding="utf-8")
     tile_view_header = (
         repo_root / "tools/match/include/track_row_cell_tile_views.h"
     ).read_text(encoding="utf-8")
 
+    assert '("0x3c", "tile_id", "SubLocTileId")' in binja_source
     assert '("0x3d", "open_edge_mask", "uint8_t")' in binja_source
     assert '"SubLocOpenEdgeFlag",' in binja_source
+    assert '"SubLocTileId",' in binja_source
     assert '"SubLocFlag",' in binja_source
+    ida_path_sync = (
+        repo_root / "tools/ida/apply_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    assert "track_row_cell_tile_owner" in ida_path_sync
+    assert '"selector": "TrackRowCell.tile_id"' in ida_path_sync
+    assert '"type": "SubLocTileId"' in ida_path_sync
+    for header in (analysis_header, matcher_tile_ids):
+        assert "typedef" in header and "SubLocTileId;" in header
+        assert "SUBLOC_TILE_EMPTY = 0x00" in header
+        assert "SUBLOC_TILE_WALL2 = 0x0e" in header
+        assert "SUBLOC_TILE_TRAMPOLINE = 0x16" in header
+        assert "SUBLOC_TILE_PATH_ENTRY_UPPERCASE = 0x1e" in header
+        assert "SUBLOC_TILE_SALT_HAZARD = 0x22" in header
+        assert "SUBLOC_TILE_RING_MARKER = 0x23" in header
+
+    assert "typedef enum SubLocTileId : uint8_t" in analysis_header
+    assert "enum SubLocTileIdValue" in matcher_tile_ids
+
     for header in (analysis_header, matcher_header):
         assert "SUBLOC_OPEN_PREVIOUS_ROW = 0x01" in header
         assert "SUBLOC_OPEN_NEXT_ROW = 0x02" in header
@@ -4550,9 +4573,13 @@ def test_sub_loc_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert "SUBLOC_FLAG_AI_ENABLED = 0x2000" in header
         assert "SUBLOC_FLAG_UNCACHED_BODY = 0x4000" in header
         assert "SUBLOC_FLAG_CORNER_OBJECT = 0x8000" in header
+        assert "SubLocTileId tile_id;" in header
+        assert "_pad_3e" in header
         assert "open_edge_mask" in header
         assert "tile_flags_3d" not in header
 
+    assert "SubLocTileId tile_id" in tile_view_header
+    assert "_pad_02" in tile_view_header
     assert "open_edge_mask" in tile_view_header
     assert "tile_flags_3d" not in tile_view_header
 

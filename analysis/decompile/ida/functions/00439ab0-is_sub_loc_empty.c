@@ -2,11 +2,17 @@
 /* function: is_sub_loc_empty @ 0x439ab0 */
 /* selector: is_sub_loc_empty */
 
-bool __thiscall sub_439AB0(_BYTE *this)
+// Exact Windows counterpart of cross-port `cRSubLoc::IsEmpty()`: accepts tile ids 0, 28, 35, 14, and 29.
+int32_t __fastcall is_sub_loc_empty(TrackRowCell *cell)
 {
-  char v1; // al
+  SubLocTileId tile_id; // al
+  int32_t result; // eax
 
-  v1 = *(this + 60);
-  return !v1 || v1 == 28 || v1 == 35 || v1 == 14 || v1 == 29;
+  tile_id = cell->tile_id;
+  LOBYTE(result) = tile_id == SUBLOC_TILE_EMPTY
+                || tile_id == SUBLOC_TILE_UNIVERSE_HOLE
+                || tile_id == SUBLOC_TILE_RING_MARKER
+                || tile_id == SUBLOC_TILE_WALL2
+                || tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE;
+  return result;
 }
-

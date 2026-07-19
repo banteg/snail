@@ -333,7 +333,9 @@ steering_stored:
 
     if (!attachment_exit_pending) {
         unsigned char tile_id = source_cell->tile_id;
-        if ((tile_id == 29 || tile_id == 30) && !follow_state.active) {
+        if ((tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE
+                || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE)
+            && !follow_state.active) {
             follow_state.begin_track_attachment_follow_state(
                 source_cell, p_position, this);
             if (follow_state.template_record->kind == 24)
@@ -414,10 +416,14 @@ steering_stored:
         }
         if (!completion_handoff_active) {
             SubLoc* slide_cell;
-            if (game->get_track_grid_cell_at_world_position(p_position)->tile_id == 15
-                || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 16
-                || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 18
-                || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 19
+            if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                    == SUBLOC_TILE_SLIDE_UNDERSCORE
+                || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                    == SUBLOC_TILE_SLIDE_O
+                || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                    == SUBLOC_TILE_SLUG_HAZARD
+                || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                    == SUBLOC_TILE_SLIDE_F
                 || damage_gauge.state == DAMAGE_GUAGE_STATE_DRAINING
                        && (slide_cell = game->get_track_grid_cell_at_world_position(p_position),
                            slide_cell->is_sub_loc_floor())) {
@@ -498,7 +504,7 @@ steering_stored:
                 if (transform.position.y < 0.49000001f
                     && transform.position.y > -0.16333334f
                     && !landing_cell->is_sub_loc_empty()
-                    && landing_cell->tile_id != 22) {
+                    && landing_cell->tile_id != SUBLOC_TILE_TRAMPOLINE) {
                     transform.set_matrix_rotation_identity();
                     trampoline_bounce_active = 0;
                     if (velocity.y < -0.029999999f) {
@@ -558,24 +564,31 @@ steering_stored:
             if (floor_top > transform.position.y) {
                 if (velocity.y <= 0.0f)
                     transform.position.y = floor_top;
-                if (game->get_track_grid_cell_at_world_position(p_position)->tile_id == 8
-                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 9
-                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 10
-                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 11
-                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 12
-                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 13) {
+                if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                        == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                        == SUBLOC_TILE_RAMP_GREATER_RAISED
+                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                        == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
+                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                        == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH
+                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                        == SUBLOC_TILE_RAMP_GREATER_BACKPATCH
+                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                        == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH) {
                     velocity.y = game->subgame_rate * 0.30000001f;
-                } else if (game->get_track_grid_cell_at_world_position(p_position)->tile_id == 2
+                } else if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                               == SUBLOC_TILE_RAMP_LEFT_BRACE
                            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
-                                  == 3
+                                  == SUBLOC_TILE_RAMP_GREATER
                            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
-                                  == 4
+                                  == SUBLOC_TILE_RAMP_RIGHT_BRACE
                            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
-                                  == 5
+                                  == SUBLOC_TILE_RAMP_LEFT_BRACKET
                            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
-                                  == 6
+                                  == SUBLOC_TILE_RAMP_LESS
                            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
-                                  == 7) {
+                                  == SUBLOC_TILE_RAMP_RIGHT_BRACKET) {
                     if (surface_reaction_timer == 0.0f)
                         surface_reaction_timer = surface_reaction_step;
                     velocity.y = game->subgame_rate * 0.2f;
@@ -591,9 +604,9 @@ steering_stored:
                     }
                 } else if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
                            && game->get_track_grid_cell_at_world_position(p_position)->tile_id
-                                  != 35
+                                  != SUBLOC_TILE_RING_MARKER
                            && game->get_track_grid_cell_at_world_position(p_position)->tile_id
-                                  != 22) {
+                                  != SUBLOC_TILE_TRAMPOLINE) {
                     trampoline_bounce_active = 0;
                     velocity.y = 0.0f;
                 }
@@ -612,7 +625,7 @@ steering_stored:
             }
             SubLoc* trampoline_cell =
                 game->get_track_grid_cell_at_world_position(p_position);
-            if (trampoline_cell->tile_id == 22
+            if (trampoline_cell->tile_id == SUBLOC_TILE_TRAMPOLINE
                 && trampoline_cell->position.y + 0.49000001f > transform.position.y
                 && trampoline_cell->position.y - 0.49000001f < transform.position.y) {
                 squidge.start_squidge_y(velocity.y);
@@ -634,7 +647,8 @@ steering_stored:
         if (boost_one_tick || follow_state.active
             || (probe_y = p_position->y, probe_z = p_position->z + 0.49000001f,
                 wall_probe.x = p_position->x, wall_probe.z = probe_z, wall_probe.y = probe_y,
-                game->get_track_grid_cell_at_world_position(&wall_probe)->tile_id != 14)
+                game->get_track_grid_cell_at_world_position(&wall_probe)->tile_id
+                    != SUBLOC_TILE_WALL2)
             || transform.position.y >= 6.5f) {
             barrier_hold_progress = 0.0f;
         } else {
@@ -654,21 +668,34 @@ steering_stored:
     }
 
     if (!lane_lean_state
-        && (game->get_track_grid_cell_at_world_position(p_position)->tile_id == 2
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 4
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 5
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 7
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 10
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 8
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 10
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 11
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 13)
+        && (game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_LEFT_BRACE
+            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_RIGHT_BRACE
+            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_LEFT_BRACKET
+            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_RIGHT_BRACKET
+            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
+            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
+            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH
+            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH)
         && !attachment_exit_pending && transform.position.y <= 0.98000002f) {
         lane_lean_progress_step = game->subgame_rate * 0.037037037f;
-        if (game->get_track_grid_cell_at_world_position(p_position)->tile_id == 2
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 5
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 8
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 11) {
+        if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_LEFT_BRACE
+            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_LEFT_BRACKET
+            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH) {
             lane_lean_state = 1;
             lane_lean_amplitude = 1.0f;
         } else {

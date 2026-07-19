@@ -71,7 +71,8 @@ void SubLoc::remove_sub_loc()
     unsigned char tile = tile_id;
     DWORD unlink_mask = ~BOD_FLAG_LINKED;
 
-    if (tile == 0x1d || tile == 0x1e) {
+    if (tile == SUBLOC_TILE_PATH_ENTRY_LOWERCASE
+        || tile == SUBLOC_TILE_PATH_ENTRY_UPPERCASE) {
         char* row_record = (char*)g_game + row_index * sizeof(SubRow);
         if ((OUTER_RUNTIME_ROW(row_record)->flags
                 & SUBROW_FLAG_PATH_OR_MODEL_VELOCITY)

@@ -34,9 +34,9 @@
 00435208        if (eax_2 == 0 || (eax_3:1.b & 0x80) != 0 || (eax_3.b & 0x40) != 0)
 004352c9        if (is_sub_loc_slide(&cell_lane_flags[-0x10]).b == 0)
 004353e2        label_4353e2:
-004353e2        uint8_t eax_18 = cell_lane_flags[-0x10]:0x3c.b
+004353e2        enum SubLocTileId eax_18 = cell_lane_flags[-0x10]:0x3c.b
 004353e5        uint8_t* wall_tile_cursor = &cell_lane_flags[-1]
-004353ea        if (eax_18 == 0xe)
+004353ea        if (eax_18 == SUBLOC_TILE_WALL2)
 004353f0        uint32_t eax_19 = *cell_lane_flags
 004353f2        int32_t esi_4 = 0
 004353f4        eax_19:1.b &= 0xf1
@@ -71,7 +71,7 @@
 004354a1        i_10 -= 1
 004354a2        wall_cleanup_lane_flags[0x15] &= 0xffff9fff
 004354a5        do while (i_1 != 1)
-004354b2        if (eax_18 == 0 || eax_18 == 0x23)
+004354b2        if (eax_18 == SUBLOC_TILE_EMPTY || eax_18 == SUBLOC_TILE_RING_MARKER)
 004354b8        uint32_t eax_24 = *cell_lane_flags
 004354ba        eax_24:1.b &= 0xdf
 004354bd        *cell_lane_flags = eax_24

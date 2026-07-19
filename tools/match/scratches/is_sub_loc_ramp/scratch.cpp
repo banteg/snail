@@ -6,18 +6,18 @@ unsigned char SubLoc::is_sub_loc_ramp()
 {
     unsigned char tile_id = this->tile_id;
     unsigned char result;
-    if (tile_id == 2
-        || tile_id == 3
-        || tile_id == 4
-        || tile_id == 8
-        || tile_id == 9
-        || tile_id == 10
-        || tile_id == 11
-        || tile_id == 12
-        || tile_id == 13
-        || tile_id == 5
-        || tile_id == 6
-        || tile_id == 7) {
+    if (tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE
+        || tile_id == SUBLOC_TILE_RAMP_GREATER
+        || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE
+        || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+        || tile_id == SUBLOC_TILE_RAMP_GREATER_RAISED
+        || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
+        || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH
+        || tile_id == SUBLOC_TILE_RAMP_GREATER_BACKPATCH
+        || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH
+        || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET
+        || tile_id == SUBLOC_TILE_RAMP_LESS
+        || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACKET) {
         result = 1;
     } else {
         result = 0;

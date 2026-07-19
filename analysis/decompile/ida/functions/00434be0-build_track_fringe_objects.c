@@ -11,7 +11,7 @@ int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)
   TrackRowCell *cell; // esi
   uint8_t open_edge_mask; // cl
   int v6; // edi
-  uint8_t tile_id; // al
+  SubLocTileId tile_id; // al
   int v8; // ebp
   Fringe *fringe_front_new; // eax
   int v10; // ebp
@@ -65,13 +65,31 @@ int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)
             break;
         }
         tile_id = cell->tile_id;
-        if ( tile_id == 2 || tile_id == 8 || tile_id == 5 )
+        if ( tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE
+          || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+          || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACKET )
+        {
           v6 = 5;
-        if ( tile_id == 3 || tile_id == 9 || tile_id == 11 || tile_id == 12 || tile_id == 13 || tile_id == 6 )
+        }
+        if ( tile_id == SUBLOC_TILE_RAMP_GREATER
+          || tile_id == SUBLOC_TILE_RAMP_GREATER_RAISED
+          || tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH
+          || tile_id == SUBLOC_TILE_RAMP_GREATER_BACKPATCH
+          || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH
+          || tile_id == SUBLOC_TILE_RAMP_LESS )
+        {
           v6 = 6;
-        if ( tile_id == 4 || tile_id == 10 || tile_id == 7 )
+        }
+        if ( tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE
+          || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
+          || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACKET )
+        {
           v6 = 7;
-        if ( (row->flags & 4) != 0 || !open_edge_mask || tile_id == 32 || (g_runtime_config.render_flags & 0x20) == 0 )
+        }
+        if ( (row->flags & 4) != 0
+          || !open_edge_mask
+          || tile_id == SUBLOC_TILE_FLOOR_HASH_MARKER
+          || (g_runtime_config.render_flags & 0x20) == 0 )
         {
           cell->fringe_front = nullptr;
           cell->fringe_right = nullptr;

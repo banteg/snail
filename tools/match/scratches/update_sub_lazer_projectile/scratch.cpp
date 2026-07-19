@@ -39,7 +39,8 @@ void SubLazer::update_sub_lazer_projectile()
                 g_game->subgame.get_track_grid_cell_at_world_position(live_position);
             SubRow* cell =
                 g_game->subgame.get_track_runtime_cell_at_world_z(live_position);
-            if (grid->tile_id != 14 || transform.position.y >= 7.0f) {
+            if (grid->tile_id != SUBLOC_TILE_WALL2
+                || transform.position.y >= 7.0f) {
                 if ((cell->flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0
                     && cell->primary_attachment_cell->attachment_template_record->is_point_inside_track_attachment(
                         Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z),

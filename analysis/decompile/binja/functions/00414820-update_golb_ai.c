@@ -219,7 +219,7 @@
 00415214        return
 00415083        i += 0xec
 00415089        esi_8 += 1
-00415225        if (get_track_grid_cell_at_world_position(shot->game, &shot->source_matrix.position)->tile_id == 0xe)
+00415225        if (get_track_grid_cell_at_world_position(shot->game, &shot->source_matrix.position)->tile_id == SUBLOC_TILE_WALL2)
 00415230        float x = shot->source_matrix.position.x
 00415232        float y = shot->source_matrix.position.y
 00415237        float x_1 = x

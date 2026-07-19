@@ -29,7 +29,7 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
   uint32_t *slide_cleanup_lane_flags; // eax
   int v23; // ebp
   uint32_t v24; // edx
-  uint8_t tile_id; // al
+  SubLocTileId tile_id; // al
   uint8_t *wall_tile_cursor; // edx
   int v27; // esi
   uint32_t v28; // eax
@@ -86,8 +86,8 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
             || (*cell_lane_flags & 0x40) != 0 )
           {
             tile_id = cell->tile_id;
-            wall_tile_cursor = &cell->tile_id;
-            if ( tile_id == 14 )
+            wall_tile_cursor = (uint8_t *)&cell->tile_id;
+            if ( tile_id == SUBLOC_TILE_WALL2 )
             {
               v28 = *cell_lane_flags;
               v27 = 0;
@@ -132,7 +132,7 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
                 }
               }
             }
-            else if ( !tile_id || tile_id == 35 )
+            else if ( tile_id == SUBLOC_TILE_EMPTY || tile_id == SUBLOC_TILE_RING_MARKER )
             {
               v35 = *cell_lane_flags;
               BYTE1(v35) = BYTE1(*cell_lane_flags) & 0xDF;
@@ -195,7 +195,7 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
         {
           v10 = 0;
           v11 = v8;
-          floor_tile_cursor = &cell->tile_id;
+          floor_tile_cursor = (uint8_t *)&cell->tile_id;
           do
           {
             v13 = *floor_tile_cursor;

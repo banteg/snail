@@ -689,3 +689,19 @@ at the honest 29.67%, 1,229/1,245-instruction frontier with 66 clean operands
 and the same two documented alignment mismatches. This pass only corrects
 durable analysis ownership and adds checks rejecting the former false runtime
 owner; no score-shaped source or operand fakematch was introduced.
+
+## 2026-07-19 runtime tile identity ownership
+
+The authored glyph switch now writes the shared byte-sized `SubLocTileId`
+vocabulary instead of anonymous integers. The names preserve exact producer
+evidence: glyph-derived floor/slide/ramp variants, the Wall2 projectile tile,
+pickup and hazard markers, path-entry case, and the ring marker. The same
+constants are consumed by `cRSubLoc::IsFloor/IsRamp/IsEmpty/IsSlide`, the floor
+height sampler, edge/fringe passes, runtime dispatcher, player movement, Golb,
+and SubLazer paths.
+
+The field remains an unsigned byte; the value enum is deliberately separate
+because VC6 ordinary enums are four bytes. Rebuilding the broad scratch leaves
+the honest result unchanged at 29.67%, 1,229/1,245 instructions, 66 clean
+operands, and the same two jump-table operand mismatches. No branch, table,
+register, or source dependency was changed for score.

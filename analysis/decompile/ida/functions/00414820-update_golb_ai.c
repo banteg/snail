@@ -2,7 +2,7 @@
 /* function: update_golb_ai @ 0x414820 */
 /* selector: update_golb_ai */
 
-// Advances one live Golb shot actor, borrowing the authored `SubLoc`/`Path` follow owners and the shared `SubGarbagePool` collision chain for straight-flight or path-follow motion, impact transitions, trail effects, and final cleanup.
+// Advances one live Golb shot actor, borrowing the authored `SubLoc`/`Path` follow owners and shared `SubGarbagePool` collision chain while updating the embedded `Vapour` trail or `tertiary_body.transform` rocket owner for straight-flight, path-follow motion, impacts, and cleanup.
 void __thiscall update_golb_ai(GolbShot *shot)
 {
   GolbPathFollowState *p_path_follow; // ecx
@@ -185,7 +185,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
                                                 shot->game,
                                                 (Vec3 *)&shot->source_matrix.position);
           v19 = track_grid_cell_at_world_position;
-          if ( track_grid_cell_at_world_position->tile_id == 30 )
+          if ( track_grid_cell_at_world_position->tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE )
           {
             shot->path_entry_z_latch = shot->source_matrix.position.z;
             initialize_path_follow_golb(
@@ -194,7 +194,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
               (const Vec3 *)&shot->flight_transform.position,
               shot);
           }
-          if ( shot->velocity.z > 1.0 && v19[-8].tile_id == 30 )
+          if ( shot->velocity.z > 1.0 && v19[-8].tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE )
           {
             shot->path_entry_z_latch = shot->source_matrix.position.z + 1.0;
             initialize_path_follow_golb(
@@ -408,7 +408,7 @@ LABEL_53:
             }
             ++v47;
           }
-          if ( get_track_grid_cell_at_world_position(shot->game, (Vec3 *)&shot->source_matrix.position)->tile_id != 14 )
+          if ( get_track_grid_cell_at_world_position(shot->game, (Vec3 *)&shot->source_matrix.position)->tile_id != SUBLOC_TILE_WALL2 )
             return;
           v58 = shot->source_matrix.position.z - 1.0;
           v59 = shot->source_matrix.position.y;

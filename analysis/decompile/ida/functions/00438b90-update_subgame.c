@@ -27,7 +27,7 @@ void __thiscall update_subgame(SubgameRuntime *game)
   struct BodNode *list_prev; // edx
   uint32_t list_flags; // eax
   RuntimeCellStrideAnchor *runtime_cell_anchor; // edi
-  uint8_t tile_id; // al
+  SubLocTileId tile_id; // al
   TrackRowCell *v25; // eax
   struct BodNode *v26; // ecx
   TrackRowCell *p_cell; // eax
@@ -39,14 +39,14 @@ void __thiscall update_subgame(SubgameRuntime *game)
   struct BodNode *v33; // eax
   struct BodNode *v34; // ecx
   uint32_t v35; // ecx
-  uint8_t v36; // al
-  uint8_t v37; // al
-  uint8_t v38; // al
-  uint8_t v39; // al
+  SubLocTileId v36; // al
+  SubLocTileId v37; // al
+  SubLocTileId v38; // al
+  SubLocTileId v39; // al
   uint32_t flags; // edx
-  uint8_t v41; // cl
+  SubLocTileId v41; // cl
   float z; // edx
-  uint8_t v43; // al
+  SubLocTileId v43; // al
   int32_t v44; // eax
   char *v45; // eax
   TimeTrialRouteRecordCursor *time_trial_route_cursor; // eax
@@ -290,7 +290,7 @@ LABEL_65:
           if ( (runtime_cell_anchor->cell.lane_and_flags & 0x4000) != 0 )
           {
             tile_id = runtime_cell_anchor->cell.tile_id;
-            if ( tile_id == 29 || tile_id == 30 )
+            if ( tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE )
             {
               if ( runtime_cell_anchor->cell.object )
               {
@@ -379,41 +379,41 @@ LABEL_65:
             --v53;
           }
           while ( v53 );
-          if ( runtime_cell_anchor->cell.tile_id == 23
+          if ( runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_HEALTH_PICKUP
             && (game->runtime_flags & 0x800) != 0
             && runtime_row_scan_begin >= game->first_block_row_count
             && runtime_row_scan_begin < game->completion_row_start )
           {
             spawn_track_health_pickup(game, &runtime_cell_anchor->cell, &game->player);
           }
-          if ( runtime_cell_anchor->cell.tile_id == 24
+          if ( runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_SPEEDUP_PICKUP
             && runtime_row_scan_begin >= game->first_block_row_count
             && runtime_row_scan_begin < game->completion_row_start )
           {
             spawn_track_speedup((int)&runtime_cell_anchor->cell, (int)&game->player);
           }
-          if ( runtime_cell_anchor->cell.tile_id == 25
+          if ( runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_JETPACK_PICKUP
             && runtime_row_scan_begin >= game->first_block_row_count
             && runtime_row_scan_begin < game->completion_row_start )
           {
             spawn_track_jetpack_pickup(game, &runtime_cell_anchor->cell, &game->player);
           }
           v36 = runtime_cell_anchor->cell.tile_id;
-          if ( v36 == 33
+          if ( v36 == SUBLOC_TILE_GARBAGE_HAZARD
             || (runtime_cell_anchor->cell.lane_and_flags & 0x10) == 0
-            && (v36 == 1 || v36 == 21)
+            && (v36 == SUBLOC_TILE_FLOOR_DOT || v36 == SUBLOC_TILE_FLOOR_DASH)
             && (game->runtime_flags & 2) != 0
             && (1.0 - game->garbage_frequency) * 0.2 + 0.80000001 < random_float_below(1.0)
             && (!v52
-             || (v37 = runtime_cell_anchor->previous_lane_same_row.tile_id, v37 == 1)
-             || v37 == 20
-             || v37 == 21
-             || v37 == 32)
+             || (v37 = runtime_cell_anchor->previous_lane_same_row.tile_id, v37 == SUBLOC_TILE_FLOOR_DOT)
+             || v37 == SUBLOC_TILE_FLOOR_VARIANT_14
+             || v37 == SUBLOC_TILE_FLOOR_DASH
+             || v37 == SUBLOC_TILE_FLOOR_HASH_MARKER)
             && (v52 == 7
-             || (v38 = runtime_cell_anchor->next_lane_same_row.tile_id, v38 == 1)
-             || v38 == 20
-             || v38 == 21
-             || v38 == 32)
+             || (v38 = runtime_cell_anchor->next_lane_same_row.tile_id, v38 == SUBLOC_TILE_FLOOR_DOT)
+             || v38 == SUBLOC_TILE_FLOOR_VARIANT_14
+             || v38 == SUBLOC_TILE_FLOOR_DASH
+             || v38 == SUBLOC_TILE_FLOOR_HASH_MARKER)
             && runtime_row_scan_begin >= game->first_block_row_count
             && runtime_row_scan_begin < game->completion_row_start
             && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START
@@ -423,7 +423,7 @@ LABEL_65:
             spawn_track_garbage_hazard(game, &runtime_cell_anchor->cell, &game->player);
           }
           v39 = runtime_cell_anchor->cell.tile_id;
-          if ( v39 == 34 )
+          if ( v39 == SUBLOC_TILE_SALT_HAZARD )
           {
             if ( runtime_row_scan_begin >= game->first_block_row_count
               && runtime_row_scan_begin < game->completion_row_start )
@@ -432,7 +432,7 @@ LABEL_65:
             }
           }
           else if ( (runtime_cell_anchor->cell.lane_and_flags & 8) == 0
-                 && (v39 == 1 || v39 == 15)
+                 && (v39 == SUBLOC_TILE_FLOOR_DOT || v39 == SUBLOC_TILE_SLIDE_UNDERSCORE)
                  && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START
                  && (game->runtime_flags & 0x10000) != 0
                  && (1.0 - game->salt_frequency) * 0.02 + 0.98000002 < random_float_below(1.0)
@@ -443,7 +443,7 @@ LABEL_158:
             spawn_salt_hazard(&game->salt_hazards, &runtime_cell_anchor->cell.anchor_position);
           }
           if ( SLOBYTE(game->runtime_flags) < 0
-            && runtime_cell_anchor->cell.tile_id == 18
+            && runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_SLUG_HAZARD
             && runtime_row_scan_begin >= game->first_block_row_count
             && runtime_row_scan_begin < game->completion_row_start )
           {
@@ -453,7 +453,7 @@ LABEL_158:
           if ( (flags & 0x200) != 0 )
             goto LABEL_209;
           v41 = runtime_cell_anchor->cell.tile_id;
-          if ( v41 == 35 )
+          if ( v41 == SUBLOC_TILE_RING_MARKER )
           {
             if ( (flags & 0x400) != 0 )
             {
@@ -498,11 +498,18 @@ LABEL_158:
           }
           else
           {
-            if ( v41 != 2 && v41 != 3 && v41 != 4 && v41 != 5 && v41 != 6 && v41 != 7
+            if ( v41 != SUBLOC_TILE_RAMP_LEFT_BRACE
+              && v41 != SUBLOC_TILE_RAMP_GREATER
+              && v41 != SUBLOC_TILE_RAMP_RIGHT_BRACE
+              && v41 != SUBLOC_TILE_RAMP_LEFT_BRACKET
+              && v41 != SUBLOC_TILE_RAMP_LESS
+              && v41 != SUBLOC_TILE_RAMP_RIGHT_BRACKET
               || game->player.last_ring_spawn_z + 10.0 >= runtime_cell_anchor->cell.anchor_position.z
               || runtime_row_scan_begin >= game->completion_row_start )
             {
-              if ( v41 != 8 && v41 != 9 && v41 != 10
+              if ( v41 != SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+                && v41 != SUBLOC_TILE_RAMP_GREATER_RAISED
+                && v41 != SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
                 || game->player.last_ring_spawn_z + 10.0 >= runtime_cell_anchor->cell.anchor_position.z
                 || runtime_row_scan_begin >= game->completion_row_start )
               {
@@ -569,8 +576,12 @@ LABEL_208:
             if ( (game->runtime_flags & 8) == 0 || random_float_below(1.0) <= 0.69999999 && game->level_mode != 7 )
               goto LABEL_209;
             v43 = runtime_cell_anchor->cell.tile_id;
-            if ( v43 == 5 || v43 == 6 || v43 == 7 )
+            if ( v43 == SUBLOC_TILE_RAMP_LEFT_BRACKET
+              || v43 == SUBLOC_TILE_RAMP_LESS
+              || v43 == SUBLOC_TILE_RAMP_RIGHT_BRACKET )
+            {
               goto LABEL_209;
+            }
             spawn_track_ring_or_special_effect(game, &runtime_cell_anchor->cell, 4, &game->player, 0.0);
             if ( game->player.lives < 10 )
               goto LABEL_207;

@@ -27,7 +27,7 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                         if ((next->lane_and_flags & SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0
                             && is_sub_loc_floor(cell) == 1
                             && (is_sub_loc_slide(next) == 1
-                                || next->tile_id == 0x1e)) {
+                                || next->tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE)) {
                             GameRoot* game = g_game;
                             if (((BodBase*)cell)->object
                                 == game->root_bod_catalog.floor_slices.storage[0]
@@ -101,7 +101,7 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                         if ((previous->lane_and_flags & SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0
                             && is_sub_loc_floor(cell) == 1
                             && (is_sub_loc_slide(previous) == 1
-                                || previous->tile_id == 0x20)) {
+                                || previous->tile_id == SUBLOC_TILE_FLOOR_HASH_MARKER)) {
                             GameRoot* game = g_game;
                             if (((BodBase*)cell)->object
                                 == game->root_bod_catalog.floor_slices.storage[0]

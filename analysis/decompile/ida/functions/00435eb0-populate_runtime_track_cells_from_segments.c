@@ -93,13 +93,13 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   uint32_t v87; // eax
   uint32_t v88; // eax
   Vec3 *p_anchor_position; // edi
-  uint8_t tile_id; // al
-  uint8_t v91; // al
+  SubLocTileId tile_id; // al
+  SubLocTileId v91; // al
   double v92; // st7
   double v93; // st7
   tColour *track_skirt_color; // eax
   int v95; // eax
-  uint8_t v96; // al
+  SubLocTileId v96; // al
   Fringe **fringe_slot; // ecx
   int32_t remaining_fringe_slots; // edx
   Fringe *fringe_object; // eax
@@ -118,8 +118,8 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   float v113; // [esp+34h] [ebp-28h]
   int32_t segment_cursor; // [esp+38h] [ebp-24h]
   int32_t trampoline_counter; // [esp+3Ch] [ebp-20h]
-  int random_length; // [esp+40h] [ebp-1Ch]
-  char v117; // [esp+40h] [ebp-1Ch]
+  int edge_row; // [esp+40h] [ebp-1Ch]
+  char edge_rowa; // [esp+40h] [ebp-1Ch]
   tColour out; // [esp+4Ch] [ebp-10h] BYREF
 
   if ( game->selected_level_record_active )
@@ -191,11 +191,11 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   if ( !v7 || v7 == 7 || v7 == 4 || v7 == 1 )
   {
     game->first_block_row_count = game->level_definition.first_segment.row_count;
-    random_length = game->level_definition.random_length;
-    game->runtime_row_count = random_length;
+    edge_row = game->level_definition.random_length;
+    game->runtime_row_count = edge_row;
     if ( v7 == 1 )
       game->runtime_row_count = (__int64)((game->challenge_difficulty_scalar * 0.64999998 + 0.34999999)
-                                        * (double)random_length);
+                                        * (double)edge_row);
     if ( !game->level_definition.random_enabled )
     {
       v10 = 0;
@@ -508,22 +508,22 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
             runtime_cell_anchor->cell.fringe_right = nullptr;
             runtime_cell_anchor->cell.fringe_left = nullptr;
             runtime_cell_anchor->cell.fringe_back = nullptr;
-            if ( build_row < game->first_block_row_count || (v117 = 0, build_row >= game->completion_row_start) )
-              v117 = 1;
+            if ( build_row < game->first_block_row_count || (edge_rowa = 0, build_row >= game->completion_row_start) )
+              edge_rowa = 1;
             p_cell = &runtime_cell_anchor->cell;
             set_bod_object((BodBase *)&runtime_cell_anchor->cell, nullptr);
             v50 = &active_segment->glyph_rows[v46][segment_row_index];
-            v51 = normalize_segment_glyph_for_track_flags((int)game, *v50, build_row, v117);
+            v51 = normalize_segment_glyph_for_track_flags(game, *v50, build_row, edge_rowa);
             switch ( v51 )
             {
               case ' ':
-                runtime_cell_anchor->cell.tile_id = 0;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_EMPTY;
                 list_flags = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(list_flags) = list_flags & 0xDF;
                 runtime_cell_anchor->cell.bod.list_flags = list_flags;
                 break;
               case '#':
-                runtime_cell_anchor->cell.tile_id = 32;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_FLOOR_HASH_MARKER;
                 v54 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v54) = v54 & 0xDF;
                 runtime_cell_anchor->cell.bod.list_flags = v54;
@@ -532,7 +532,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 23;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_HEALTH_PICKUP;
                 v57 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v57) = v57 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v57;
@@ -541,7 +541,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.floor_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 34;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SALT_HAZARD;
                 v63 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v63) = v63 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v63;
@@ -555,7 +555,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 if ( v71 )
                 {
                   trampoline_counter = 0;
-                  runtime_cell_anchor->cell.tile_id = 22;
+                  runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_TRAMPOLINE;
                 }
                 else
                 {
@@ -572,14 +572,14 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                     LOBYTE(v72) = v70 & 0xDF;
                     runtime_cell_anchor->cell.bod.list_flags = v72;
                   }
-                  runtime_cell_anchor->cell.tile_id = 22;
+                  runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_TRAMPOLINE;
                 }
                 break;
               case '+':
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 24;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SPEEDUP_PICKUP;
                 v65 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v65) = v65 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v65;
@@ -588,7 +588,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.universe_hole.object);
-                runtime_cell_anchor->cell.tile_id = 28;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_UNIVERSE_HOLE;
                 v64 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v64) = v64 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v64;
@@ -597,7 +597,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.floor_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 21;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_FLOOR_DASH;
                 v67 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v67) = v67 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v67;
@@ -606,7 +606,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.floor_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 1;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_FLOOR_DOT;
                 v61 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v61) = v61 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v61;
@@ -640,7 +640,7 @@ LABEL_173:
                 v88 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v88) = v88 & 0xDF;
                 runtime_cell_anchor->cell.bod.list_flags = v88;
-                runtime_cell_anchor->cell.tile_id = 0;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_EMPTY;
                 break;
               case '<':
                 set_bod_object(
@@ -648,7 +648,7 @@ LABEL_173:
                   g_game_base->root_bod_catalog.ramp_edges[1].object);
                 runtime_cell_anchor->cell.render_arg_1c = 0.0;
                 runtime_cell_anchor->cell.render_arg_20 = 0.0;
-                runtime_cell_anchor->cell.tile_id = 6;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LESS;
                 v79 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v79) = v79 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v79;
@@ -656,24 +656,24 @@ LABEL_173:
               case '=':
               case '|':
                 set_bod_object((BodBase *)&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.pillars[0].object);
-                runtime_cell_anchor->cell.tile_id = 14;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_WALL2;
                 v68 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v68) = v68 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v68;
                 break;
               case '>':
-                if ( build_row > 0 && runtime_cell_anchor->previous_row_same_lane.tile_id == 3 )
+                if ( build_row > 0 && runtime_cell_anchor->previous_row_same_lane.tile_id == SUBLOC_TILE_RAMP_GREATER )
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
                     g_game_base->root_bod_catalog.ramp_edges[1].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
-                  runtime_cell_anchor->cell.tile_id = 9;
+                  runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_GREATER_RAISED;
                   v73 = runtime_cell_anchor->cell.bod.list_flags;
                   LOBYTE(v73) = v73 | 0x20;
                   runtime_cell_anchor->cell.bod.list_flags = v73;
-                  runtime_cell_anchor->previous_row_same_lane.tile_id = 12;
+                  runtime_cell_anchor->previous_row_same_lane.tile_id = SUBLOC_TILE_RAMP_GREATER_BACKPATCH;
                 }
                 else
                 {
@@ -682,14 +682,14 @@ LABEL_173:
                     g_game_base->root_bod_catalog.ramp_edges[1].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
-                  runtime_cell_anchor->cell.tile_id = 3;
+                  runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_GREATER;
                   v74 = runtime_cell_anchor->cell.bod.list_flags;
                   LOBYTE(v74) = v74 | 0x20;
                   runtime_cell_anchor->cell.bod.list_flags = v74;
                 }
                 break;
               case '@':
-                runtime_cell_anchor->cell.tile_id = 0;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_EMPTY;
                 v55 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v55) = v55 & 0xDF;
                 runtime_cell_anchor->cell.bod.list_flags = v55;
@@ -699,7 +699,7 @@ LABEL_173:
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 19;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SLIDE_F;
                 v60 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v60) = v60 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v60;
@@ -708,7 +708,7 @@ LABEL_173:
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 17;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_GLYPH_G;
                 v56 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v56) = v56 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v56;
@@ -717,7 +717,7 @@ LABEL_173:
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 25;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_JETPACK_PICKUP;
                 v66 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v66) = v66 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v66;
@@ -726,7 +726,7 @@ LABEL_173:
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 18;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SLUG_HAZARD;
                 v59 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v59) = v59 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v59;
@@ -735,11 +735,11 @@ LABEL_173:
               case 'p':
                 if ( v51 == 80 )
                 {
-                  runtime_cell_anchor->cell.tile_id = 30;
+                  runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_PATH_ENTRY_UPPERCASE;
                 }
                 else if ( v51 == 112 )
                 {
-                  runtime_cell_anchor->cell.tile_id = 29;
+                  runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_PATH_ENTRY_LOWERCASE;
                 }
                 v81 = *(_DWORD *)((char *)&unk_5CCB68 + (_DWORD)runtime_row_anchor);
                 if ( game->track_mirror_enabled )
@@ -787,7 +787,7 @@ LABEL_173:
                 }
                 break;
               case 'R':
-                runtime_cell_anchor->cell.tile_id = 35;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RING_MARKER;
                 v53 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v53) = v53 & 0xDF;
                 runtime_cell_anchor->cell.bod.list_flags = v53;
@@ -798,7 +798,7 @@ LABEL_173:
                   g_game_base->root_bod_catalog.ramp_edges[0].object);
                 runtime_cell_anchor->cell.render_arg_1c = 0.0;
                 runtime_cell_anchor->cell.render_arg_20 = 0.0;
-                runtime_cell_anchor->cell.tile_id = 5;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LEFT_BRACKET;
                 v80 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v80) = v80 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v80;
@@ -808,7 +808,7 @@ LABEL_174:
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 15;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SLIDE_UNDERSCORE;
                 v87 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v87) = v87 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v87;
@@ -817,7 +817,7 @@ LABEL_174:
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 16;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SLIDE_O;
                 v58 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v58) = v58 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v58;
@@ -826,24 +826,24 @@ LABEL_174:
                 set_bod_object(
                   (BodBase *)&runtime_cell_anchor->cell,
                   g_game_base->root_bod_catalog.floor_slices.storage[0].object);
-                runtime_cell_anchor->cell.tile_id = 33;
+                runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_GARBAGE_HAZARD;
                 v62 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v62) = v62 | 0x20;
                 runtime_cell_anchor->cell.bod.list_flags = v62;
                 break;
               case '{':
-                if ( build_row > 0 && runtime_cell_anchor->previous_row_same_lane.tile_id == 3 )
+                if ( build_row > 0 && runtime_cell_anchor->previous_row_same_lane.tile_id == SUBLOC_TILE_RAMP_GREATER )
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
                     g_game_base->root_bod_catalog.ramp_edges[0].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
-                  runtime_cell_anchor->cell.tile_id = 8;
+                  runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED;
                   v77 = runtime_cell_anchor->cell.bod.list_flags;
                   LOBYTE(v77) = v77 | 0x20;
                   runtime_cell_anchor->cell.bod.list_flags = v77;
-                  runtime_cell_anchor->previous_row_same_lane.tile_id = 11;
+                  runtime_cell_anchor->previous_row_same_lane.tile_id = SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH;
                 }
                 else
                 {
@@ -852,25 +852,25 @@ LABEL_174:
                     g_game_base->root_bod_catalog.ramp_edges[0].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
-                  runtime_cell_anchor->cell.tile_id = 2;
+                  runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LEFT_BRACE;
                   v78 = runtime_cell_anchor->cell.bod.list_flags;
                   LOBYTE(v78) = v78 | 0x20;
                   runtime_cell_anchor->cell.bod.list_flags = v78;
                 }
                 break;
               case '}':
-                if ( build_row > 0 && runtime_cell_anchor->previous_row_same_lane.tile_id == 3 )
+                if ( build_row > 0 && runtime_cell_anchor->previous_row_same_lane.tile_id == SUBLOC_TILE_RAMP_GREATER )
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
                     g_game_base->root_bod_catalog.ramp_edges[2].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
-                  runtime_cell_anchor->cell.tile_id = 10;
+                  runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED;
                   v75 = runtime_cell_anchor->cell.bod.list_flags;
                   LOBYTE(v75) = v75 | 0x20;
                   runtime_cell_anchor->cell.bod.list_flags = v75;
-                  runtime_cell_anchor->previous_row_same_lane.tile_id = 13;
+                  runtime_cell_anchor->previous_row_same_lane.tile_id = SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH;
                 }
                 else
                 {
@@ -879,14 +879,14 @@ LABEL_174:
                     g_game_base->root_bod_catalog.ramp_edges[2].object);
                   runtime_cell_anchor->cell.render_arg_1c = 0.0;
                   runtime_cell_anchor->cell.render_arg_20 = 0.0;
-                  runtime_cell_anchor->cell.tile_id = 4;
+                  runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_RIGHT_BRACE;
                   v76 = runtime_cell_anchor->cell.bod.list_flags;
                   LOBYTE(v76) = v76 | 0x20;
                   runtime_cell_anchor->cell.bod.list_flags = v76;
                 }
                 break;
               default:
-                normalize_segment_glyph_for_track_flags((int)game, *v50, build_row, 1);
+                normalize_segment_glyph_for_track_flags(game, *v50, build_row, 1);
                 debug_report_stub();
                 break;
             }
@@ -898,7 +898,7 @@ LABEL_174:
             *(_DWORD *)((char *)&unk_5CCB8C + (_DWORD)runtime_row_anchor) = 0;
             *(_DWORD *)((char *)&unk_5CCB88 + (_DWORD)runtime_row_anchor) = 0;
             tile_id = runtime_cell_anchor->cell.tile_id;
-            if ( tile_id == 29 || tile_id == 30 )
+            if ( tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE )
             {
               p_anchor_position->x = 0.0;
               v92 = (double)build_row + 0.5;
@@ -925,38 +925,42 @@ LABEL_174:
               p_anchor_position->x = (double)lane - 4.0 + 0.5;
               runtime_cell_anchor->cell.anchor_position.y = 0.0;
               v91 = runtime_cell_anchor->cell.tile_id;
-              if ( v91 == 8 || v91 == 9 || v91 == 10 )
+              if ( v91 == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+                || v91 == SUBLOC_TILE_RAMP_GREATER_RAISED
+                || v91 == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED )
+              {
                 runtime_cell_anchor->cell.anchor_position.y = 0.5;
+              }
               v113 = (double)build_row + 0.5;
               runtime_cell_anchor->cell.anchor_position.z = v113;
             }
             if ( build_row < 4 && game->level_mode != 2 )
               runtime_cell_anchor->cell.anchor_position.y = game->path_pairs[36].primary.primary_samples->transform.position.y;
-            if ( runtime_cell_anchor->cell.tile_id == 28 )
+            if ( runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_UNIVERSE_HOLE )
               runtime_cell_anchor->cell.anchor_position.y = runtime_cell_anchor->cell.anchor_position.y - 0.029999999;
             v96 = runtime_cell_anchor->cell.tile_id;
-            if ( v96 == 1
-              || v96 == 21
-              || v96 == 20
-              || v96 == 33
-              || v96 == 34
-              || v96 == 15
-              || v96 == 16
-              || v96 == 23
-              || v96 == 24
-              || v96 == 25
-              || v96 == 26
-              || v96 == 27
-              || v96 == 18
-              || v96 == 19
-              || v96 == 17 )
+            if ( v96 == SUBLOC_TILE_FLOOR_DOT
+              || v96 == SUBLOC_TILE_FLOOR_DASH
+              || v96 == SUBLOC_TILE_FLOOR_VARIANT_14
+              || v96 == SUBLOC_TILE_GARBAGE_HAZARD
+              || v96 == SUBLOC_TILE_SALT_HAZARD
+              || v96 == SUBLOC_TILE_SLIDE_UNDERSCORE
+              || v96 == SUBLOC_TILE_SLIDE_O
+              || v96 == SUBLOC_TILE_HEALTH_PICKUP
+              || v96 == SUBLOC_TILE_SPEEDUP_PICKUP
+              || v96 == SUBLOC_TILE_JETPACK_PICKUP
+              || v96 == SUBLOC_TILE_SLIDE_VARIANT_1A
+              || v96 == SUBLOC_TILE_FLOOR_VARIANT_1B
+              || v96 == SUBLOC_TILE_SLUG_HAZARD
+              || v96 == SUBLOC_TILE_SLIDE_F
+              || v96 == SUBLOC_TILE_GLYPH_G )
             {
               runtime_cell_anchor->cell.render_arg_1c = (double)(8 - lane) * 0.125;
               runtime_cell_anchor->cell.render_arg_20 = (double)(build_row % 8) * 0.125;
             }
-            if ( runtime_cell_anchor->cell.tile_id == 31 )
+            if ( runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_WIDE_VARIANT_1F )
               p_anchor_position->x = p_anchor_position->x * 1.1;
-            if ( runtime_cell_anchor->cell.tile_id == 22 )
+            if ( runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_TRAMPOLINE )
             {
               if ( game->level_mode != 3 || (game->runtime_flags & 0x400) != 0 )
                 runtime_cell_anchor->cell.anchor_position.y = -3.0;

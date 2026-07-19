@@ -9,6 +9,7 @@
 #include "bod_types.h"
 #include "fringe_fwd.h"
 #include "object_render_types.h"
+#include "sub_loc_tile_ids.h"
 #include "sub_loc_fwd.h"
 #include "vector3.h"
 #include "vector_types.h"
@@ -321,9 +322,9 @@ struct SubLoc : public BodBase {
     unsigned char is_sub_loc_slide(); // @ 0x439ad0, cRSubLoc::IsSlide
 
     Path* attachment_template_record; // +0x38, installed by P/p entry tiles
-    unsigned char tile_id;              // +0x3c
+    SubLocTileId tile_id;                // +0x3c, SubLocTileIdValue
     unsigned char open_edge_mask;       // +0x3d, SubLocOpenEdgeFlag bits
-    char unknown_3e[0x40 - 0x3e];
+    char _pad_3e[0x40 - 0x3e];
     unsigned int lane_and_flags;        // +0x40, lane index plus SubLocFlag bits
     union {
         struct {

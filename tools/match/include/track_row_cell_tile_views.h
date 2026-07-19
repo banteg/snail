@@ -8,13 +8,14 @@
 #define TRACK_ROW_CELL_TILE_VIEWS_H
 
 #include "fringe_fwd.h"
+#include "sub_loc_tile_ids.h"
 
 struct TrackRowCellTileByteView {
-    unsigned char tile_id; // TrackRowCell +0x3c
+    SubLocTileId tile_id; // TrackRowCell +0x3c
     unsigned char open_edge_mask; // TrackRowCell +0x3d, SubLocOpenEdgeFlag bits
-    char unknown_02[0x04 - 0x02];
+    char _pad_02[0x04 - 0x02];
     unsigned int lane_and_flags; // TrackRowCell +0x40, SubLocFlag bits
-    char unknown_08[0x54 - 0x08];
+    char _tail_08[0x54 - 0x08];
 };
 
 // Field-first view beginning at TrackRowCell +0x44. These are non-owning

@@ -125,12 +125,13 @@ void GolbShot::update_golb_ai()
         source_matrix.position = flight_transform.position;
         if (path_entry_z_latch < source_matrix.position.z && flight_transform.position.y < 1.0f && flight_transform.position.y > 0.0f) {
             SubLoc* cell = game->get_track_grid_cell_at_world_position(&source_matrix.position);
-            if (cell->tile_id == 30) {
+            if (cell->tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE) {
                 path_entry_z_latch = source_matrix.position.z;
                 path_follow.initialize_path_follow_golb(
                     cell, &flight_transform.position, this);
             }
-            if (velocity.z > 1.0f && (cell - 8)->tile_id == 30) {
+            if (velocity.z > 1.0f
+                && (cell - 8)->tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE) {
                 path_entry_z_latch = source_matrix.position.z + 1.0f;
                 path_follow.initialize_path_follow_golb(
                     cell - 8, &flight_transform.position, this);
@@ -289,7 +290,8 @@ garbage_hit:
             return;
 
 wall_probe:
-            if (game->get_track_grid_cell_at_world_position(new_output)->tile_id != 14)
+            if (game->get_track_grid_cell_at_world_position(new_output)->tile_id
+                != SUBLOC_TILE_WALL2)
                 return;
             wall_impact.x = new_output->x;
             wall_impact.y = new_output->y;

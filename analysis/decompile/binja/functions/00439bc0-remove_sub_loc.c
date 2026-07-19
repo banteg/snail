@@ -4,8 +4,8 @@
 /* function: remove_sub_loc @ 0x439bc0 */
 
 00439bc6        int32_t eax = get_track_cell_row_index(cell)
-00439bcb        uint8_t tile_id = cell->tile_id
-00439bdb        if (tile_id == 0x1d || tile_id == 0x1e)
+00439bcb        enum SubLocTileId tile_id = cell->tile_id
+00439bdb        if (tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE)
 00439be1        struct GameRoot* game_base_1 = g_game_base
 00439bed        int32_t eax_1 = eax * 0x3d
 00439bfa        void* eax_2 = game_base_1 + (eax_1 << 2)

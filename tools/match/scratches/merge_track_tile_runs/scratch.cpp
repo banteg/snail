@@ -12,8 +12,11 @@ unsigned char __fastcall is_sub_loc_floor(TrackRowCell* cell);
 unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
 
 #define IS_FLOOR_RUN_TILE(tile) \
-    ((tile) == 1 || (tile) == 0x15 || (tile) == 0x1b || (tile) == 0x21 \
-        || (tile) == 0x22)
+    ((tile) == SUBLOC_TILE_FLOOR_DOT \
+        || (tile) == SUBLOC_TILE_FLOOR_DASH \
+        || (tile) == SUBLOC_TILE_FLOOR_VARIANT_1B \
+        || (tile) == SUBLOC_TILE_GARBAGE_HAZARD \
+        || (tile) == SUBLOC_TILE_SALT_HAZARD)
 
 #define CELL_FROM_LANE_FLAGS(lane_flags) \
     ((TrackRowCell*)((char*)(lane_flags) \
@@ -126,7 +129,7 @@ void SubgameRuntime::merge_track_tile_runs()
                     }
                 } else {
                     unsigned char tile = cell->tile_id;
-                    if (tile == 0x0e) {
+                    if (tile == SUBLOC_TILE_WALL2) {
                         int flags = *cell_lane_flags;
                         flags &= ~SUBLOC_MERGED_RUN_WIDTH_REMAINDER_MASK;
                         flags |= SUBLOC_MERGED_RUN_WIDTH_ONE;
@@ -138,7 +141,7 @@ void SubgameRuntime::merge_track_tile_runs()
                         while (lane_cursor
                                    < (int)(sizeof(runtime_cells[0])
                                        / sizeof(runtime_cells[0][0]))
-                               && cursor->tile_id == 0x0e
+                               && cursor->tile_id == SUBLOC_TILE_WALL2
                                && (*cell_lane_flags & SUBLOC_FLAG_UNCACHED_BODY)
                                    == SUBLOC_FLAG_UNCACHED_BODY) {
                             *cell_lane_flags =
@@ -161,7 +164,8 @@ void SubgameRuntime::merge_track_tile_runs()
                                     << SUBLOC_MERGED_RUN_WIDTH_SHIFT);
                             CLEAR_MERGED_CONTINUATIONS(this, row_index, lane, run_length);
                         }
-                    } else if (tile == 0 || tile == 0x23) {
+                    } else if (tile == SUBLOC_TILE_EMPTY
+                        || tile == SUBLOC_TILE_RING_MARKER) {
                         *cell_lane_flags &= ~SUBLOC_FLAG_AI_ENABLED;
                         if (level_mode == 2) {
                             ((BodBase*)CELL_FROM_LANE_FLAGS(cell_lane_flags))

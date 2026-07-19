@@ -331,12 +331,12 @@
 0043670c        edx_29.b = *(sx.d(eax_67) + &populate_runtime_track_cells_glyph_jump_table[0x14])
 00436712        switch (edx_29)
 00436719        case 0
-00436719        runtime_cell_anchor->cell.tile_id = 0
+00436719        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_EMPTY
 00436720        uint32_t list_flags = runtime_cell_anchor->cell.bod.list_flags
 00436726        list_flags.b &= 0xdf
 00436728        runtime_cell_anchor->cell.bod.list_flags = list_flags
 0043674d        case 1
-0043674d        runtime_cell_anchor->cell.tile_id = 0x20
+0043674d        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_FLOOR_HASH_MARKER
 00436754        uint32_t list_flags_2 = runtime_cell_anchor->cell.bod.list_flags
 0043675a        list_flags_2.b &= 0xdf
 0043675c        runtime_cell_anchor->cell.bod.list_flags = list_flags_2
@@ -348,7 +348,7 @@
 004367eb        object:2.b = game_base_1->root_bod_catalog.slide_slices.storage[0].object:2.b
 004367eb        object:3.b = game_base_1->root_bod_catalog.slide_slices.storage[0].object:3.b
 004367f4        set_bod_object(&runtime_cell_anchor->cell, object)
-004367f9        runtime_cell_anchor->cell.tile_id = 0x17
+004367f9        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_HEALTH_PICKUP
 00436800        uint32_t list_flags_6 = runtime_cell_anchor->cell.bod.list_flags
 00436806        list_flags_6.b |= 0x20
 00436808        runtime_cell_anchor->cell.bod.list_flags = list_flags_6
@@ -360,7 +360,7 @@
 004368fd        object_2:2.b = game_base_3->root_bod_catalog.floor_slices.storage[0].object:2.b
 004368fd        object_2:3.b = game_base_3->root_bod_catalog.floor_slices.storage[0].object:3.b
 00436906        set_bod_object(&runtime_cell_anchor->cell, object_2)
-0043690b        runtime_cell_anchor->cell.tile_id = 0x22
+0043690b        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SALT_HAZARD
 00436912        uint32_t list_flags_12 = runtime_cell_anchor->cell.bod.list_flags
 00436918        list_flags_12.b |= 0x20
 0043691a        runtime_cell_anchor->cell.bod.list_flags = list_flags_12
@@ -372,11 +372,11 @@
 00436a24        uint32_t eax_78 = ebp_5
 00436a26        if (trampoline_counter_1 == 0xf)
 00436a28        trampoline_counter = 0
-00436a30        runtime_cell_anchor->cell.tile_id = 0x16
+00436a30        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_TRAMPOLINE
 00436a3f        if (trampoline_counter_1 != 8)
 00436aab        eax_78.b &= 0xdf
 00436aad        runtime_cell_anchor->cell.bod.list_flags = eax_78
-00436ab3        runtime_cell_anchor->cell.tile_id = 0x16
+00436ab3        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_TRAMPOLINE
 00436a41        struct GameRoot* game_base_5 = g_game_base
 00436a47        struct Object* object_4
 00436a47        object_4.b = game_base_5->root_bod_catalog.trampoline.object.b
@@ -386,28 +386,28 @@
 00436a50        set_bod_object(&runtime_cell_anchor->cell, object_4)
 00436a72        runtime_cell_anchor->cell.bod.list_flags |= 0x20
 00436a9a        store_color4f(game + (lane + (build_row << 3) + 0xb6cc) * 0x54, 1f, 1f, 1f, 0.999000013f)
-00436a9f        runtime_cell_anchor->cell.tile_id = 0x16
+00436a9f        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_TRAMPOLINE
 00436961        case 5
 00436961        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.slide_slices.storage[0].object)
-00436966        runtime_cell_anchor->cell.tile_id = 0x18
+00436966        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SPEEDUP_PICKUP
 0043696d        uint32_t list_flags_14 = runtime_cell_anchor->cell.bod.list_flags
 00436973        list_flags_14.b |= 0x20
 00436975        runtime_cell_anchor->cell.bod.list_flags = list_flags_14
 00436933        case 6
 00436933        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.universe_hole.object)
-00436938        runtime_cell_anchor->cell.tile_id = 0x1c
+00436938        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_UNIVERSE_HOLE
 0043693f        uint32_t list_flags_13 = runtime_cell_anchor->cell.bod.list_flags
 00436945        list_flags_13.b |= 0x20
 00436947        runtime_cell_anchor->cell.bod.list_flags = list_flags_13
 004369bc        case 7
-004369bc        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.floor_slices.storage[0].object)
-004369c1        runtime_cell_anchor->cell.tile_id = 0x15
+004369bc        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.floor_slices.storage[0].object)
+004369c1        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_FLOOR_DASH
 004369c8        uint32_t list_flags_16 = runtime_cell_anchor->cell.bod.list_flags
 004369ce        list_flags_16.b |= 0x20
 004369d0        runtime_cell_anchor->cell.bod.list_flags = list_flags_16
 004368aa        case 8
 004368aa        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.floor_slices.storage[0].object)
-004368af        runtime_cell_anchor->cell.tile_id = 1
+004368af        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_FLOOR_DOT
 004368b6        uint32_t list_flags_10 = runtime_cell_anchor->cell.bod.list_flags
 004368bc        list_flags_10.b |= 0x20
 004368be        runtime_cell_anchor->cell.bod.list_flags = list_flags_10
@@ -429,9 +429,9 @@
 00436e9e        uint32_t list_flags_27 = runtime_cell_anchor->cell.bod.list_flags
 00436ea4        list_flags_27.b &= 0xdf
 00436ea6        runtime_cell_anchor->cell.bod.list_flags = list_flags_27
-00436eac        runtime_cell_anchor->cell.tile_id = 0
+00436eac        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_EMPTY
 00436e82        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.slide_slices.storage[0].object)
-00436e87        runtime_cell_anchor->cell.tile_id = 0xf
+00436e87        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SLIDE_UNDERSCORE
 00436e8e        uint32_t list_flags_26 = runtime_cell_anchor->cell.bod.list_flags
 00436e94        list_flags_26.b |= 0x20
 00436e96        runtime_cell_anchor->cell.bod.list_flags = list_flags_26
@@ -445,22 +445,22 @@
 00436c76        set_bod_object(&runtime_cell_anchor->cell, object_7)
 00436c7d        runtime_cell_anchor->cell.render_arg_1c = 0
 00436c83        runtime_cell_anchor->cell.render_arg_20 = 0f
-00436c89        runtime_cell_anchor->cell.tile_id = 6
+00436c89        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LESS
 00436c90        uint32_t list_flags_24 = runtime_cell_anchor->cell.bod.list_flags
 00436c96        list_flags_24.b |= 0x20
 00436c98        runtime_cell_anchor->cell.bod.list_flags = list_flags_24
 004369ea        case 0xc
 004369ea        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.pillars[0].object)
-004369ef        runtime_cell_anchor->cell.tile_id = 0xe
+004369ef        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_WALL2
 004369f6        uint32_t list_flags_17 = runtime_cell_anchor->cell.bod.list_flags
 004369fc        list_flags_17.b |= 0x20
 004369fe        runtime_cell_anchor->cell.bod.list_flags = list_flags_17
 00436ad0        case 0xd
-00436ad0        if (build_row s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != 3)
-00436b21        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[1].object)
+00436ad0        if (build_row s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != SUBLOC_TILE_RAMP_GREATER)
+00436b21        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.ramp_edges[1].object)
 00436b26        runtime_cell_anchor->cell.render_arg_1c = 0
 00436b2c        runtime_cell_anchor->cell.render_arg_20 = 0f
-00436b32        runtime_cell_anchor->cell.tile_id = 3
+00436b32        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_GREATER
 00436b39        uint32_t list_flags_19 = runtime_cell_anchor->cell.bod.list_flags
 00436b3f        list_flags_19.b |= 0x20
 00436b41        runtime_cell_anchor->cell.bod.list_flags = list_flags_19
@@ -473,13 +473,13 @@
 00436ae1        set_bod_object(&runtime_cell_anchor->cell, object_5)
 00436ae6        runtime_cell_anchor->cell.render_arg_1c = 0
 00436aec        runtime_cell_anchor->cell.render_arg_20 = 0f
-00436af2        runtime_cell_anchor->cell.tile_id = 9
+00436af2        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_GREATER_RAISED
 00436af9        uint32_t list_flags_18 = runtime_cell_anchor->cell.bod.list_flags
 00436aff        list_flags_18.b |= 0x20
 00436b01        runtime_cell_anchor->cell.bod.list_flags = list_flags_18
-00436b07        runtime_cell_anchor->previous_row_same_lane.tile_id = 0xc
+00436b07        runtime_cell_anchor->previous_row_same_lane.tile_id = SUBLOC_TILE_RAMP_GREATER_BACKPATCH
 0043676b        case 0xe
-0043676b        runtime_cell_anchor->cell.tile_id = 0
+0043676b        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_EMPTY
 00436772        uint32_t list_flags_3 = runtime_cell_anchor->cell.bod.list_flags
 00436778        list_flags_3.b &= 0xdf
 0043677a        runtime_cell_anchor->cell.bod.list_flags = list_flags_3
@@ -492,13 +492,13 @@
 00436874        object_1:2.b = game_base_2->root_bod_catalog.slide_slices.storage[0].object:2.b
 00436874        object_1:3.b = game_base_2->root_bod_catalog.slide_slices.storage[0].object:3.b
 0043687d        set_bod_object(&runtime_cell_anchor->cell, object_1)
-00436882        runtime_cell_anchor->cell.tile_id = 0x13
+00436882        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SLIDE_F
 00436889        uint32_t list_flags_9 = runtime_cell_anchor->cell.bod.list_flags
 0043688f        list_flags_9.b |= 0x20
 00436891        runtime_cell_anchor->cell.bod.list_flags = list_flags_9
 00436798        case 0x10
 00436798        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.slide_slices.storage[0].object)
-0043679d        runtime_cell_anchor->cell.tile_id = 0x11
+0043679d        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_GLYPH_G
 004367a4        uint32_t list_flags_4 = runtime_cell_anchor->cell.bod.list_flags
 004367aa        list_flags_4.b |= 0x20
 004367ac        runtime_cell_anchor->cell.bod.list_flags = list_flags_4
@@ -510,21 +510,21 @@
 00436986        object_3:2.b = game_base_4->root_bod_catalog.slide_slices.storage[0].object:2.b
 00436986        object_3:3.b = game_base_4->root_bod_catalog.slide_slices.storage[0].object:3.b
 0043698f        set_bod_object(&runtime_cell_anchor->cell, object_3)
-00436994        runtime_cell_anchor->cell.tile_id = 0x19
+00436994        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_JETPACK_PICKUP
 0043699b        uint32_t list_flags_15 = runtime_cell_anchor->cell.bod.list_flags
 004369a1        list_flags_15.b |= 0x20
 004369a3        runtime_cell_anchor->cell.bod.list_flags = list_flags_15
 0043684f        case 0x12
 0043684f        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.slide_slices.storage[0].object)
-00436854        runtime_cell_anchor->cell.tile_id = 0x12
+00436854        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SLUG_HAZARD
 0043685b        uint32_t list_flags_8 = runtime_cell_anchor->cell.bod.list_flags
 00436861        list_flags_8.b |= 0x20
 00436863        runtime_cell_anchor->cell.bod.list_flags = list_flags_8
 00436ce0        case 0x13
 00436ce0        if (eax_67 == 0x50)
-00436ce2        runtime_cell_anchor->cell.tile_id = 0x1e
+00436ce2        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_PATH_ENTRY_UPPERCASE
 00436ced        if (eax_67 == 0x70)
-00436cef        runtime_cell_anchor->cell.tile_id = 0x1d
+00436cef        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_PATH_ENTRY_LOWERCASE
 00436cfa        int32_t attachment_template_index = runtime_row_anchor->row.attachment_template_index
 00436d05        int32_t eax_92 = attachment_template_index << 3
 00436d0c        struct Path* ecx_99
@@ -565,7 +565,7 @@
 00436dea        stamped_row = &stamped_row[1]
 00436df3        do while (k s< runtime_cell_anchor->cell.attachment_template_record->row_span_count)
 00436733        case 0x14
-00436733        runtime_cell_anchor->cell.tile_id = 0x23
+00436733        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RING_MARKER
 0043673a        uint32_t list_flags_1 = runtime_cell_anchor->cell.bod.list_flags
 00436740        list_flags_1.b &= 0xdf
 00436742        runtime_cell_anchor->cell.bod.list_flags = list_flags_1
@@ -573,47 +573,47 @@
 00436cb1        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.ramp_edges[0].object)
 00436cb8        runtime_cell_anchor->cell.render_arg_1c = 0
 00436cbe        runtime_cell_anchor->cell.render_arg_20 = 0f
-00436cc4        runtime_cell_anchor->cell.tile_id = 5
+00436cc4        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LEFT_BRACKET
 00436ccb        uint32_t list_flags_25 = runtime_cell_anchor->cell.bod.list_flags
 00436cd1        list_flags_25.b |= 0x20
 00436cd3        runtime_cell_anchor->cell.bod.list_flags = list_flags_25
 004367c6        case 0x16
 004367c6        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.slide_slices.storage[0].object)
-004367cb        runtime_cell_anchor->cell.tile_id = 0xf
+004367cb        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SLIDE_UNDERSCORE
 004367d2        uint32_t list_flags_5 = runtime_cell_anchor->cell.bod.list_flags
 004367d8        list_flags_5.b |= 0x20
 004367da        runtime_cell_anchor->cell.bod.list_flags = list_flags_5
 00436821        case 0x17
 00436821        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.slide_slices.storage[0].object)
-00436826        runtime_cell_anchor->cell.tile_id = 0x10
+00436826        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_SLIDE_O
 0043682d        uint32_t list_flags_7 = runtime_cell_anchor->cell.bod.list_flags
 00436833        list_flags_7.b |= 0x20
 00436835        runtime_cell_anchor->cell.bod.list_flags = list_flags_7
 004368d8        case 0x18
 004368d8        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.floor_slices.storage[0].object)
-004368dd        runtime_cell_anchor->cell.tile_id = 0x21
+004368dd        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_GARBAGE_HAZARD
 004368e4        uint32_t list_flags_11 = runtime_cell_anchor->cell.bod.list_flags
 004368ea        list_flags_11.b |= 0x20
 004368ec        runtime_cell_anchor->cell.bod.list_flags = list_flags_11
 00436beb        case 0x19
-00436beb        if (build_row s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != 3)
+00436beb        if (build_row s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != SUBLOC_TILE_RAMP_GREATER)
 00436c3c        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[0].object)
 00436c41        runtime_cell_anchor->cell.render_arg_1c = 0
 00436c47        runtime_cell_anchor->cell.render_arg_20 = 0f
-00436c4d        runtime_cell_anchor->cell.tile_id = 2
+00436c4d        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LEFT_BRACE
 00436c54        uint32_t list_flags_23 = runtime_cell_anchor->cell.bod.list_flags
 00436c5a        list_flags_23.b |= 0x20
 00436c5c        runtime_cell_anchor->cell.bod.list_flags = list_flags_23
 00436bfb        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[0].object)
 00436c00        runtime_cell_anchor->cell.render_arg_1c = 0
 00436c06        runtime_cell_anchor->cell.render_arg_20 = 0f
-00436c0c        runtime_cell_anchor->cell.tile_id = 8
+00436c0c        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
 00436c13        uint32_t list_flags_22 = runtime_cell_anchor->cell.bod.list_flags
 00436c19        list_flags_22.b |= 0x20
 00436c1b        runtime_cell_anchor->cell.bod.list_flags = list_flags_22
-00436c21        runtime_cell_anchor->previous_row_same_lane.tile_id = 0xb
+00436c21        runtime_cell_anchor->previous_row_same_lane.tile_id = SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH
 00436b5d        case 0x1a
-00436b5d        if (build_row s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != 3)
+00436b5d        if (build_row s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != SUBLOC_TILE_RAMP_GREATER)
 00436ba0        struct GameRoot* game_base_7 = g_game_base
 00436ba6        struct Object* object_6
 00436ba6        object_6.b = game_base_7->root_bod_catalog.ramp_edges[2].object.b
@@ -623,18 +623,18 @@
 00436baf        set_bod_object(&runtime_cell_anchor->cell, object_6)
 00436bb4        runtime_cell_anchor->cell.render_arg_1c = 0
 00436bba        runtime_cell_anchor->cell.render_arg_20 = 0f
-00436bc0        runtime_cell_anchor->cell.tile_id = 4
+00436bc0        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_RIGHT_BRACE
 00436bc7        uint32_t list_flags_21 = runtime_cell_anchor->cell.bod.list_flags
 00436bcd        list_flags_21.b |= 0x20
 00436bcf        runtime_cell_anchor->cell.bod.list_flags = list_flags_21
 00436b6e        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[2].object)
 00436b73        runtime_cell_anchor->cell.render_arg_1c = 0
 00436b79        runtime_cell_anchor->cell.render_arg_20 = 0f
-00436b7f        runtime_cell_anchor->cell.tile_id = 0xa
+00436b7f        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
 00436b86        uint32_t list_flags_20 = runtime_cell_anchor->cell.bod.list_flags
 00436b8c        list_flags_20.b |= 0x20
 00436b8e        runtime_cell_anchor->cell.bod.list_flags = list_flags_20
-00436b94        runtime_cell_anchor->previous_row_same_lane.tile_id = 0xd
+00436b94        runtime_cell_anchor->previous_row_same_lane.tile_id = SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH
 00436712        case 0x1b
 00436712        goto label_436eb5
 00436eea        runtime_cell_anchor->cell.anchor_position.z = 0f
@@ -643,9 +643,9 @@
 00436ef2        runtime_row_anchor->row.attachment_body.position.z = 0f
 00436ef8        runtime_row_anchor->row.attachment_body.position.y = 0f
 00436efe        runtime_row_anchor->row.attachment_body.position.x = 0
-00436f04        uint8_t tile_id = runtime_cell_anchor->cell.tile_id
+00436f04        enum SubLocTileId tile_id = runtime_cell_anchor->cell.tile_id
 00436f10        float var_28_2
-00436f10        if (tile_id == 0x1d || tile_id == 0x1e)
+00436f10        if (tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE)
 00436f67        runtime_cell_anchor->cell.anchor_position.x = 0
 00436f69        long double x87_r7_28 = float.t(build_row) + fconvert.t(0.5f)
 00436f6f        var_28_2 = fconvert.s(x87_r7_28)
@@ -676,24 +676,24 @@
 00436f22        runtime_cell_anchor->cell.anchor_position.x = fconvert.s(float.t(lane) - fconvert.t(4f) + fconvert.t(0.5f))
 00436f24        runtime_cell_anchor->cell.anchor_position.y = 0f
 00436f2a        tile_id = runtime_cell_anchor->cell.tile_id
-00436f3a        if (tile_id == 8 || tile_id == 9 || tile_id == 0xa)
+00436f3a        if (tile_id == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED || tile_id == SUBLOC_TILE_RAMP_GREATER_RAISED || tile_id == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED)
 00436f3c        runtime_cell_anchor->cell.anchor_position.y = 0.5f
 00436f50        var_28_2 = fconvert.s(float.t(build_row) + fconvert.t(0.5f))
 00436f58        runtime_cell_anchor->cell.anchor_position.z = var_28_2
 00437014        if (build_row s< 4 && game->level_mode != 2)
 0043701f        runtime_cell_anchor->cell.anchor_position.y = game->path_pairs[0x24].primary.primary_samples->transform.position.y
-0043702c        if (runtime_cell_anchor->cell.tile_id == 0x1c)
+0043702c        if (runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_UNIVERSE_HOLE)
 0043703a        runtime_cell_anchor->cell.anchor_position.y = fconvert.s(fconvert.t(runtime_cell_anchor->cell.anchor_position.y) - fconvert.t(0.0299999993f))
 00437040        tile_id = runtime_cell_anchor->cell.tile_id
-00437080        if (tile_id == 1 || tile_id == 0x15 || tile_id == 0x14 || tile_id == 0x21 || tile_id == 0x22 || tile_id == 0xf || tile_id == 0x10 || tile_id == 0x17 || tile_id == 0x18 || tile_id == 0x19 || tile_id == 0x1a || tile_id == 0x1b || tile_id == 0x12 || tile_id == 0x13 || tile_id == 0x11)
+00437080        if (tile_id == SUBLOC_TILE_FLOOR_DOT || tile_id == SUBLOC_TILE_FLOOR_DASH || tile_id == SUBLOC_TILE_FLOOR_VARIANT_14 || tile_id == SUBLOC_TILE_GARBAGE_HAZARD || tile_id == SUBLOC_TILE_SALT_HAZARD || tile_id == SUBLOC_TILE_SLIDE_UNDERSCORE || tile_id == SUBLOC_TILE_SLIDE_O || tile_id == SUBLOC_TILE_HEALTH_PICKUP || tile_id == SUBLOC_TILE_SPEEDUP_PICKUP || tile_id == SUBLOC_TILE_JETPACK_PICKUP || tile_id == SUBLOC_TILE_SLIDE_VARIANT_1A || tile_id == SUBLOC_TILE_FLOOR_VARIANT_1B || tile_id == SUBLOC_TILE_SLUG_HAZARD || tile_id == SUBLOC_TILE_SLIDE_F || tile_id == SUBLOC_TILE_GLYPH_G)
 0043708d        int32_t ecx_120 = build_row & 0x80000007
 004370a1        runtime_cell_anchor->cell.render_arg_1c = fconvert.s(float.t(8 - lane) * fconvert.t(0.125f))
 004370a7        if (ecx_120 s< 0)
 004370ad        ecx_120 = ((ecx_120 - 1) | 0xfffffff8) + 1
 004370bc        runtime_cell_anchor->cell.render_arg_20 = fconvert.s(float.t(ecx_120) * fconvert.t(0.125f))
-004370c9        if (runtime_cell_anchor->cell.tile_id == 0x1f)
+004370c9        if (runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_WIDE_VARIANT_1F)
 004370d3        runtime_cell_anchor->cell.anchor_position.x = fconvert.s(fconvert.t(runtime_cell_anchor->cell.anchor_position.x) * fconvert.t(1.10000002f))
-004370dc        if (runtime_cell_anchor->cell.tile_id == 0x16)
+004370dc        if (runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_TRAMPOLINE)
 004370ea        if (game->level_mode != 3 || ((game->runtime_flags).w:1.b & 4) != 0)
 004370ec        runtime_cell_anchor->cell.anchor_position.y = -3f
 004370fa        runtime_cell_anchor->cell.anchor_position.z = var_28_2

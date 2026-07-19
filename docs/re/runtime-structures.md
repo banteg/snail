@@ -1507,9 +1507,14 @@ the follow helpers and the render-cache builders:
 
 - `+0x10..+0x18`: `anchor_position`
 - `+0x38`: `attachment_template_record`
-- `+0x3c`: `tile_id`
+- `+0x3c`: byte-sized `SubLocTileId tile_id`; the shared value vocabulary now
+  names the builder's floor/ramp/Wall2/slide, pickup, hazard, attachment, and
+  ring identities without widening the one-byte field
 - `+0x3d`: `open_edge_mask`, with previous/next row bits `0x01/0x02` and
   next/previous lane bits `0x04/0x08`
+- `+0x3e..+0x3f`: alignment padding. Binary Ninja reports no code or data
+  references to this interval, while both adjacent byte fields and the dword at
+  `+0x40` have independent producer/consumer xrefs.
 - `+0x40`: `lane_and_flags`, carrying the low lane index plus the proved
   hazard-suppression, cache-family, merged-run-width, AI, uncached-body, and
   corner-object lanes
