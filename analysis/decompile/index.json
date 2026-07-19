@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "activate_landscape_entry",
-      "address": "0x418870"
+      "name": "initialize_star_field",
+      "address": "0x434310"
     }
   ],
   "health_check_count": 903,

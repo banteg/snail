@@ -71,9 +71,25 @@ integer retype initially made the decompiler index the final
 even though EDI still addressed the prior entry. That annotation was removed
 before export; only the independently materialized pointers are retained. The
 guarded replay verifies all five owner widths and their exact fields before
-setting the eleven stable register lifetimes, and a second run is idempotent.
+setting the stable register lifetimes, and a second run is idempotent.
 
 Matcher source is unchanged at the honest 97.57%, 247/247-instruction frontier,
 prefix 126, with all 25 operands clean. Reversing the commutative corner-scale
 multiply was codegen-neutral and was reverted; the remaining six instructions
 are scheduling only.
+
+## 2026-07-19 remaining Sprite member lifetimes
+
+Eight additional SSA definitions reload the same entry-owned borrowed
+`Sprite*` for isolated member stores. They now retain that type through
+`progress`, `progress_step`, `gravity_step`, `color`, `size_start`,
+`corner_scale`, and `facing_refresh_progress`; the corner-scale path also
+materializes its true `StarManagerEntry*` before following `entry->sprite`.
+This removes the last raw Sprite `+0x60/+0x68/+0x6c/+0x78/+0x88/+0x8c`
+offsets from the Binary Ninja listing.
+
+These are borrowed lifetimes into sprites allocated by `SpriteManager`; they
+do not move ownership into `StarManagerEntry`. The EDI induction remains an
+automatic byte offset for the previously documented reason. The replay now
+guards nineteen stable definitions and remains idempotent. Matching source and
+the honest 97.57%, 247/247-instruction, 25-clean-operand result are unchanged.

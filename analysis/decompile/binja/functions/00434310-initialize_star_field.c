@@ -51,21 +51,21 @@
 00434572        motion_entry->position.z = fconvert.s(x87_r7_27 * fconvert.t(motion_entry->velocity.z) / x87_r6_13 + fconvert.t(motion_entry->position.z))
 00434578        struct Sprite* sprite = *(&manager->entries->sprite + edi_1)
 00434585        sprite->flags |= SPRITE_FLAG_ORIENT_TO_MOTION | SPRITE_FLAG_THROTTLE_FACING_REFRESH
-0043458f        *(*(&manager->entries->sprite + edi_1) + 0x68) = 0
-00434599        *(*(&manager->entries->sprite + edi_1) + 0x6c) = 0
-004345a7        *(*(&manager->entries->sprite + edi_1) + 0x78) = 0
+0043458f        (*(&manager->entries->sprite + edi_1))->progress = 0f
+00434599        (*(&manager->entries->sprite + edi_1))->progress_step = 0f
+004345a7        (*(&manager->entries->sprite + edi_1))->gravity_step = 0f
 004345aa        struct tColour color
-004345aa        struct tColour* eax_20 = set_color_rgba(&color, 0.800000012f, 0.800000012f, 1f, 0.400000006f)
-004345b8        struct tColour* sprite_color = *(&manager->entries->sprite + edi_1) + 0x2c
-004345bb        sprite_color->r = eax_20->r
-004345c0        sprite_color->g = eax_20->g
-004345c6        sprite_color->b = eax_20->b
-004345cc        sprite_color->a = eax_20->a
-004345d6        *(*(&manager->entries->sprite + edi_1) + 0x60) = 0x3f4ccccd
+004345aa        struct tColour* eax_19 = set_color_rgba(&color, 0.800000012f, 0.800000012f, 1f, 0.400000006f)
+004345b8        struct tColour* sprite_color = &(*(&manager->entries->sprite + edi_1))->color
+004345bb        sprite_color->r = eax_19->r
+004345c0        sprite_color->g = eax_19->g
+004345c6        sprite_color->b = eax_19->b
+004345cc        sprite_color->a = eax_19->a
+004345d6        (*(&manager->entries->sprite + edi_1))->size_start = 0.800000012f
 004345e0        struct Sprite* size_sprite = *(&manager->entries->sprite + edi_1)
 004345e7        size_sprite->size_end = size_sprite->size_start
 004345ea        struct StarManagerEntry* entries_1 = manager->entries
-00434603        *(*(&entries_1->sprite + edi_1) + 0x88) = fconvert.s((fconvert.t(*(&entries_1->speed + edi_1)) + fconvert.t(1f)) * fconvert.t(4f))
+00434603        (edi_1 + entries_1)->sprite->corner_scale = fconvert.s((fconvert.t(*(&entries_1->speed + edi_1)) + fconvert.t(1f)) * fconvert.t(4f))
 0043460c        struct StarManagerEntry* velocity_entry = edi_1 + manager->entries
 00434615        struct Vec3* sprite_velocity = &velocity_entry->sprite->velocity
 0043461a        sprite_velocity->x = velocity_entry->velocity.x
@@ -77,7 +77,7 @@
 00434639        sprite_position->x = position_entry->position.x
 0043463e        sprite_position->y = position_entry->position.y
 00434644        sprite_position->z = position_entry->position.z
-0043464e        *(*(&manager->entries->sprite + edi_1) + 0x8c) = 0
+0043464e        (*(&manager->entries->sprite + edi_1))->facing_refresh_progress = 0f
 00434659        do while (i_1 s< manager->count)
 00434663        (*manager->bod.bod.vtable)()
 0043466c        return

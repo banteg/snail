@@ -3732,12 +3732,19 @@
         "struct Vec3* scaled_velocity",
         "struct StarManagerEntry* motion_entry",
         "struct Sprite* sprite",
+        "->progress = 0f",
+        "->progress_step = 0f",
+        "->gravity_step = 0f",
         "struct tColour* sprite_color",
+        "->color",
+        "->size_start = 0.800000012f",
         "struct Sprite* size_sprite",
+        "->sprite->corner_scale",
         "struct StarManagerEntry* velocity_entry",
         "struct Vec3* sprite_velocity",
         "struct StarManagerEntry* position_entry",
         "struct Vec3* sprite_position",
+        "->facing_refresh_progress = 0f",
         "manager->bod.bod.vtable"
       ],
       "forbidden_substrings": [
@@ -3747,6 +3754,12 @@
         "void* eax_26",
         "void* eax_29",
         "void* eax_33",
+        "+ 0x60) = 0x3f4ccccd",
+        "+ 0x68) = 0",
+        "+ 0x6c) = 0",
+        "+ 0x78) = 0",
+        "+ 0x88) =",
+        "+ 0x8c) = 0",
         "__asm",
         "_ET1"
       ]

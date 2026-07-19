@@ -1670,12 +1670,20 @@ def test_star_field_lifetime_replay_stays_guarded() -> None:
         (392, 66, "scaled_velocity", "Vec3*"),
         (507, 66, "motion_entry", "StarManagerEntry*"),
         (616, 66, "sprite", "Sprite*"),
+        (635, 68, "progress_sprite", "Sprite*"),
+        (645, 67, "progress_step_sprite", "Sprite*"),
+        (659, 66, "gravity_sprite", "Sprite*"),
+        (674, 68, "color_sprite", "Sprite*"),
         (680, 68, "sprite_color", "tColour*"),
         (720, 66, "size_sprite", "Sprite*"),
+        (706, 68, "size_start_sprite", "Sprite*"),
+        (743, 66, "corner_entry", "StarManagerEntry*"),
+        (752, 66, "corner_scale_sprite", "Sprite*"),
         (764, 66, "velocity_entry", "StarManagerEntry*"),
         (773, 66, "sprite_velocity", "Vec3*"),
         (795, 66, "position_entry", "StarManagerEntry*"),
         (803, 68, "sprite_position", "Vec3*"),
+        (826, 66, "facing_refresh_sprite", "Sprite*"),
     ):
         expected = (
             '        "initialize_star_field",\n'
