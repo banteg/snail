@@ -36,7 +36,7 @@
 004423bb        game_base_2->subgame.current_high_score_record.source_tail = game_base_2->subgame.replay_update_cursor
 004423cd        set_input_controller_pointer_authored_xy(0, 320f, 240f)
 004423de        set_input_controller_pointer_authored_xy(1, 320f, 240f)
-004423ed        play_sound_effect(8)
+004423ed        play_sound_effect(&g_sound_effect_manager, 8)
 004423f3        return
 00442326        if (selected_level_record_active == 0)
 00442326        goto label_442332
@@ -46,12 +46,11 @@
 0044240f        click_start->state = CLICK_START_STATE_TEARDOWN
 00442419        click_start->teardown_progress = 0f
 00442423        click_start->teardown_progress_step = 0.0166666675f
-0044242d        g_game_base
-0044243a        kill_border(prompt_1)
+0044243a        kill_border(&g_game_base->border_manager, prompt_1)
 0044244e        label_44244e:
 0044244e        click_start->bod.transform.position.y = fconvert.s(fconvert.t(click_start->teardown_progress) * fconvert.t(16f) + fconvert.t(click_start->bod.transform.position.y))
 0044245d        click_start->teardown_progress = fconvert.s(fconvert.t(click_start->teardown_progress_step) + fconvert.t(click_start->teardown_progress))
-00442468        struct BodList* ecx_9 = &g_game_base->active_bod_list
+00442468        struct BodList* ecx_8 = &g_game_base->active_bod_list
 0044246e        uint16_t list_flags = (click_start->bod.bod.bod.list_flags).w
 00442474        if ((list_flags:1.b & 2) == 0)
 0044247b        report_errorf("List remove")
@@ -66,10 +65,10 @@
 004424b6        list_next->list_prev = click_start->bod.bod.bod.list_prev
 004424b9        struct BodNode* list_prev = click_start->bod.bod.bod.list_prev
 004424be        if (list_prev == 0)
-004424cb        ecx_9->first = click_start->bod.bod.bod.list_next
+004424cb        ecx_8->first = click_start->bod.bod.bod.list_next
 004424c3        list_prev->list_next = click_start->bod.bod.bod.list_next
-004424d1        click_start->bod.bod.bod.list_next = ecx_9->free_top
-004424d4        ecx_9->free_top = click_start
+004424d1        click_start->bod.bod.bod.list_next = ecx_8->free_top
+004424d4        ecx_8->free_top = click_start
 004424d7        uint32_t list_flags_1 = click_start->bod.bod.bod.list_flags
 004424da        click_start->state = CLICK_START_STATE_INACTIVE
 004424e4        list_flags_1:1.b &= 0xfd

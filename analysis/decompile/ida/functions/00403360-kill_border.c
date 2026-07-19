@@ -2,28 +2,28 @@
 /* function: kill_border @ 0x403360 */
 /* selector: kill_border */
 
-void __stdcall sub_403360(_DWORD *a1)
+// Exact cRBorderManager::Kill(cRBorder*) recursive teardown request over the manager-owned widget tree. Every audited Windows caller discards EAX, and the native exits leave incompatible incidental values, but a direct VC6 void transcription tail-recurses the third child and falls to 73.33%; the matcher therefore keeps its isolated result-shaped compiler harness until a natural authored source shape is recovered.
+void __thiscall kill_border(BorderManager *manager, FrontendWidget *widget)
 {
-  int v1; // eax
+  FrontendWidgetFlag widget_flags; // eax
 
-  if ( a1 )
+  if ( widget )
   {
-    v1 = a1[104];
-    if ( v1 )
+    widget_flags = widget->widget_flags;
+    if ( widget_flags )
     {
-      if ( (v1 & 0x400) == 0 )
+      if ( (BYTE1(widget_flags) & 4) == 0 )
       {
-        LOBYTE(v1) = v1 & 1;
-        BYTE1(v1) |= 2u;
-        a1[104] = v1;
-        if ( (v1 & 0x100000) != 0 )
+        LOBYTE(widget_flags) = widget_flags & 1;
+        BYTE1(widget_flags) |= 2u;
+        widget->widget_flags = widget_flags;
+        if ( (widget_flags & 0x100000) != 0 )
         {
-          kill_border(a1[454]);
-          kill_border(a1[455]);
-          kill_border(a1[456]);
+          kill_border(manager, widget->slider_less_widget);
+          kill_border(manager, widget->slider_more_widget);
+          kill_border(manager, widget->slider_value_widget);
         }
       }
     }
   }
 }
-

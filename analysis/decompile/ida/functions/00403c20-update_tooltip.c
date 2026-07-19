@@ -43,7 +43,7 @@ void __thiscall update_tooltip(FrontendWidgetTooltip *tooltip)
       {
         tooltip_widget = tooltip->tooltip_widget;
         tooltip->state = 1;
-        kill_border(tooltip_widget);
+        kill_border(&g_game_base->border_manager, tooltip_widget);
         tooltip->tooltip_widget = nullptr;
       }
       return;

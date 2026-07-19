@@ -6,5 +6,5 @@
 void __thiscall uninit_times_up(TimesUp *times_up)
 {
   if ( times_up->state )
-    kill_border(&times_up->border->list_kind);
+    kill_border(&g_game_base->border_manager, times_up->border);
 }

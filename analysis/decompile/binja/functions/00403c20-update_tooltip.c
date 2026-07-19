@@ -118,7 +118,6 @@
 00403c47        if (state == 3 && (tooltip->owner_widget->widget_flags & FRONTEND_WIDGET_FLAG_POINTER_INSIDE) == 0)
 00403c4d        struct FrontendWidget* tooltip_widget_1 = tooltip->tooltip_widget
 00403c50        tooltip->state = 1
-00403c57        g_game_base
-00403c64        kill_border(tooltip_widget_1)
+00403c64        kill_border(&g_game_base->border_manager, tooltip_widget_1)
 00403c69        tooltip->tooltip_widget = nullptr
 00403f54        return

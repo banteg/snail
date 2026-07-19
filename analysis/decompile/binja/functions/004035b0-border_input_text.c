@@ -7,7 +7,7 @@
 004035bc        uint32_t input_flags = widget->input_flags
 004035c4        if ((input_flags.b & 0xc) != 0)
 004035cc        update_input_ok(&widget->tooltip.input_ok_state)
-004035f7        if (((input_flags.b & 0xc) != 0 && (*(widget->tooltip.input_ok_state.ok_widget + 0x1a0) & 0x20) != 0) || eax == 5 || (widget->widget_flags & 0x8000000) != 0)
+004035f7        if (((input_flags.b & 0xc) != 0 && (*(widget->tooltip.input_ok_state.ok_widget + 0x1a0) & 0x20) != 0) || eax == 5 || (widget->widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED) != 0)
 00403b60        int32_t input_cursor_9 = widget->input_cursor
 00403b6d        char* eax_28 = &widget->text_buffer.raw[input_cursor_9]
 00403b76        if (widget->text_buffer.raw[input_cursor_9] != 0)
@@ -26,8 +26,7 @@
 00403bae        widget->widget_flags = widget_flags_1
 00403bb4        layout_frontend_widget(widget)
 00403bc0        if ((widget->input_flags.b & 0xc) != 0)
-00403bc2        g_game_base
-00403bd4        kill_border(widget->tooltip.input_ok_state.ok_widget)
+00403bd4        kill_border(&g_game_base->border_manager, widget->tooltip.input_ok_state.ok_widget)
 00403bdc        return
 00403601        if (eax == 6)
 00403603        uint8_t input_flags_1 = (widget->input_flags).b

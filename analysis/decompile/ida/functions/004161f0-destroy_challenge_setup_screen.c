@@ -16,29 +16,29 @@ void __thiscall destroy_challenge_setup_screen(GUI *gui)
     {
       if ( v3 == 3 )
       {
-        kill_border(&gui->next_level_button->list_kind);
-        kill_border(&gui->previous_level_button->list_kind);
-        kill_border(&gui->level_name_widget->list_kind);
-        kill_border(&gui->play_button->list_kind);
-        kill_border(&gui->back_button->list_kind);
-        kill_border(&gui->replay_button->list_kind);
+        kill_border(&g_game_base->border_manager, gui->next_level_button);
+        kill_border(&g_game_base->border_manager, gui->previous_level_button);
+        kill_border(&g_game_base->border_manager, gui->level_name_widget);
+        kill_border(&g_game_base->border_manager, gui->play_button);
+        kill_border(&g_game_base->border_manager, gui->back_button);
+        kill_border(&g_game_base->border_manager, gui->replay_button);
       }
     }
     else
     {
-      kill_border(&gui->play_button->list_kind);
-      kill_border(&gui->back_button->list_kind);
-      kill_border(&gui->speed_slider->list_kind);
-      kill_border(&gui->difficulty_slider->list_kind);
-      kill_border(&gui->replay_button->list_kind);
+      kill_border(&g_game_base->border_manager, gui->play_button);
+      kill_border(&g_game_base->border_manager, gui->back_button);
+      kill_border(&g_game_base->border_manager, gui->speed_slider);
+      kill_border(&g_game_base->border_manager, gui->difficulty_slider);
+      kill_border(&g_game_base->border_manager, gui->replay_button);
     }
   }
   else
   {
-    kill_border(&gui->next_level_button->list_kind);
-    kill_border(&gui->previous_level_button->list_kind);
-    kill_border(&gui->level_name_widget->list_kind);
-    kill_border(&gui->play_button->list_kind);
-    kill_border(&gui->back_button->list_kind);
+    kill_border(&g_game_base->border_manager, gui->next_level_button);
+    kill_border(&g_game_base->border_manager, gui->previous_level_button);
+    kill_border(&g_game_base->border_manager, gui->level_name_widget);
+    kill_border(&g_game_base->border_manager, gui->play_button);
+    kill_border(&g_game_base->border_manager, gui->back_button);
   }
 }

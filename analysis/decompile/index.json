@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 16,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 4,
-  "ida_exported": 4,
+  "bn_exported": 16,
+  "ida_exported": 16,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,23 +17,71 @@
   "strict": true,
   "selected_functions": [
     {
+      "name": "kill_border",
+      "address": "0x403360"
+    },
+    {
+      "name": "border_input_text",
+      "address": "0x4035b0"
+    },
+    {
+      "name": "reset_tooltip",
+      "address": "0x403be0"
+    },
+    {
+      "name": "update_tooltip",
+      "address": "0x403c20"
+    },
+    {
       "name": "flush_row_event_display",
       "address": "0x404830"
     },
     {
-      "name": "initialize_completion_screen",
-      "address": "0x404920"
+      "name": "destroy_completion_screen",
+      "address": "0x406060"
     },
     {
-      "name": "update_row_event_display",
-      "address": "0x404cf0"
+      "name": "destroy_galaxy",
+      "address": "0x408c10"
     },
     {
-      "name": "register_parcel_delivery",
-      "address": "0x405040"
+      "name": "destroy_challenge_setup_screen",
+      "address": "0x4161f0"
+    },
+    {
+      "name": "destroy_options_menu",
+      "address": "0x41aee0"
+    },
+    {
+      "name": "uninit_thanks_screen",
+      "address": "0x4340c0"
+    },
+    {
+      "name": "destroy_subgame",
+      "address": "0x438850"
+    },
+    {
+      "name": "uninit_pause_menu",
+      "address": "0x440600"
+    },
+    {
+      "name": "update_click_start",
+      "address": "0x442290"
+    },
+    {
+      "name": "uninit_times_up",
+      "address": "0x445e70"
+    },
+    {
+      "name": "uninit_warning",
+      "address": "0x446f10"
+    },
+    {
+      "name": "kill_tip_widgets",
+      "address": "0x4489e0"
     }
   ],
-  "health_check_count": 874,
+  "health_check_count": 876,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

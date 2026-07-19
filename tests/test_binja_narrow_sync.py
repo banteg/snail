@@ -7949,6 +7949,13 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     assert '"kill_all_borders"' in frame_sync
     assert "void __thiscall kill_all_borders" in frame_sync
     assert "void __thiscall kill_all_borders" in ida_frame_sync
+    assert '"kill_border"' in frame_sync
+    assert "void __thiscall kill_border" in frame_sync
+    assert 'f"{border_manager_type}* manager, FrontendWidget* widget)"' in frame_sync
+    assert "void __thiscall kill_border" in ida_frame_sync
+    assert "BorderManager *manager, FrontendWidget *widget" in ida_frame_sync
+    assert "BORDER_KILL_REANALYSIS_FUNCTIONS" in frame_sync
+    assert "BORDER_KILL_REANALYSIS_FUNCTIONS" in ida_frame_sync
     assert '"set_border_justify_centre"' in frame_sync
     assert "void __thiscall set_border_justify_centre" in frame_sync
     assert "float justify_centre" in frame_sync
@@ -8020,14 +8027,15 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
         assert stale not in ida_path_sync
         assert stale not in ida_logo_sync
 
-    # kill_border has a separate VC6 recursion-shape constraint and is not
-    # widened into this lifecycle proof.
+    # The matcher keeps an intentional result-shaped VC6 harness, while the
+    # analysis databases persist the independently evidenced semantic void ABI.
     assert "int kill_border(FrontendWidget* border);" in matcher_border_header
     assert "void set_border_justify_centre(" in matcher_border_header
     assert "float justify_centre);" in matcher_border_header
     assert "int set_border_justify_centre" not in matcher_border_header
     assert "justify_centre_bits" not in matcher_border_header
-    assert '"kill_border",' not in frame_sync
+    assert "int __thiscall kill_border" not in frame_sync
+    assert "int __thiscall kill_border" not in ida_frame_sync
 
 
 def test_challenge_gui_owner_and_void_initializer_are_persisted() -> None:

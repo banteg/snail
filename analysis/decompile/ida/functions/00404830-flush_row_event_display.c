@@ -34,11 +34,11 @@ void __thiscall flush_row_event_display(Completion *completion)
     }
     widget_a = completion->widget_a;
     ++completion->delivered_parcel_count;
-    kill_border(widget_a);
-    kill_border(&completion->delivered_count_widget->list_kind);
-    kill_border(&completion->widget_d->list_kind);
-    kill_border(&completion->bonus_widget->list_kind);
-    kill_border(&completion->continue_widget->list_kind);
+    kill_border(&g_game_base->border_manager, widget_a);
+    kill_border(&g_game_base->border_manager, completion->delivered_count_widget);
+    kill_border(&g_game_base->border_manager, completion->widget_d);
+    kill_border(&g_game_base->border_manager, completion->bonus_widget);
+    kill_border(&g_game_base->border_manager, completion->continue_widget);
     display_token = completion->display_token;
     if ( g_game_base->subgame.player.total_score != display_token )
       g_game_base->subgame.player.total_score = display_token;

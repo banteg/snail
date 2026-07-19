@@ -430,7 +430,7 @@
       "required_substrings": [
         "times_up->state != TIMES_UP_STATE_INACTIVE",
         "g_game_base",
-        "kill_border(times_up->border)"
+        "kill_border(&g_game_base->border_manager, times_up->border)"
       ],
       "forbidden_substrings": [
         "controller->",
@@ -446,7 +446,7 @@
       "required_substrings": [
         "void __thiscall uninit_times_up(TimesUp *times_up)",
         "if ( times_up->state )",
-        "kill_border(&times_up->border->list_kind);"
+        "kill_border(&g_game_base->border_manager, times_up->border);"
       ],
       "forbidden_substrings": [
         "sub_445E70",
@@ -2195,7 +2195,7 @@
       "name": "bn_thanks_screen_teardown_owner_abi",
       "artifact": "analysis/decompile/binja/functions/004340c0-uninit_thanks_screen.c",
       "required_substrings": [
-        "kill_border(thanks_screen->message_widget)",
+        "kill_border(&g_game_base->border_manager, thanks_screen->message_widget)",
         "g_game_base->players[0].frontend_state = 0xe",
         "return"
       ],
@@ -2210,7 +2210,7 @@
       "artifact": "analysis/decompile/ida/functions/004340c0-uninit_thanks_screen.c",
       "required_substrings": [
         "void __thiscall uninit_thanks_screen(ThanksScreen *thanks_screen)",
-        "kill_border(&thanks_screen->message_widget->list_kind)",
+        "kill_border(&g_game_base->border_manager, thanks_screen->message_widget)",
         "g_game_base->players[0].frontend_state = 14"
       ],
       "forbidden_substrings": [
@@ -3022,13 +3022,51 @@
       ]
     },
     {
+      "name": "bn_border_kill_manager_and_widget_owner",
+      "artifact": "analysis/decompile/binja/functions/00403360-kill_border.c",
+      "required_substrings": [
+        "if (widget == 0)",
+        "enum FrontendWidgetFlag widget_flags = widget->widget_flags",
+        "kill_border(manager, widget->slider_less_widget)",
+        "kill_border(manager, widget->slider_more_widget)",
+        "kill_border(manager, widget->slider_value_widget)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(widget +",
+        "int32_t result",
+        "return result",
+        "__offset(",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_border_kill_manager_and_widget_owner",
+      "artifact": "analysis/decompile/ida/functions/00403360-kill_border.c",
+      "required_substrings": [
+        "void __thiscall kill_border(BorderManager *manager, FrontendWidget *widget)",
+        "widget_flags = widget->widget_flags;",
+        "kill_border(manager, widget->slider_less_widget);",
+        "kill_border(manager, widget->slider_more_widget);",
+        "kill_border(manager, widget->slider_value_widget);"
+      ],
+      "forbidden_substrings": [
+        "void __stdcall sub_403360",
+        "_DWORD *a1",
+        "a1[",
+        "int __thiscall kill_border",
+        "return result",
+        "MEMORY["
+      ]
+    },
+    {
       "name": "bn_frontend_widget_tooltip_reset_void_owner",
       "artifact": "analysis/decompile/binja/functions/00403be0-reset_tooltip.c",
       "required_substrings": [
         "int32_t state = tooltip->state",
         "if (state == 2)",
         "if (state == 3)",
-        "kill_border(tooltip->tooltip_widget)",
+        "kill_border(&g_game_base->border_manager, tooltip->tooltip_widget)",
         "tooltip->tooltip_widget = nullptr",
         "tooltip->state = 1",
         "00403c12        return"
@@ -3049,7 +3087,7 @@
         "void __thiscall reset_tooltip(FrontendWidgetTooltip *tooltip)",
         "if ( tooltip->state != 2 )",
         "if ( tooltip->state != 3 )",
-        "kill_border(&tooltip->tooltip_widget->list_kind);",
+        "kill_border(&g_game_base->border_manager, tooltip->tooltip_widget);",
         "tooltip->tooltip_widget = nullptr;",
         "tooltip->state = 1;"
       ],
@@ -3072,7 +3110,7 @@
         "struct GameRoot* game_base_1 = g_game_base",
         "game_base_1->players[0].mouse_cursor.saved_x",
         "struct tColour",
-        "kill_border(tooltip_widget_1)",
+        "kill_border(&g_game_base->border_manager, tooltip_widget_1)",
         "layout_frontend_widget(tooltip->tooltip_widget)",
         "00403f54        return"
       ],
@@ -3098,7 +3136,7 @@
         "allocate_border(&g_game_base->border_manager)",
         "g_game_base->players[0].mouse_cursor.saved_x",
         "layout_frontend_widget(tooltip->tooltip_widget);",
-        "kill_border(tooltip_widget);"
+        "kill_border(&g_game_base->border_manager, tooltip_widget);"
       ],
       "forbidden_substrings": [
         "int32_t __thiscall update_tooltip",
@@ -5853,9 +5891,9 @@
       "name": "bn_pause_menu_teardown_owner",
       "artifact": "analysis/decompile/binja/functions/00440600-uninit_pause_menu.c",
       "required_substrings": [
-        "kill_border(pause->options_widget)",
-        "kill_border(pause->end_game_widget)",
-        "kill_border(pause->resume_widget)",
+        "kill_border(&g_game_base->border_manager, pause->options_widget)",
+        "kill_border(&g_game_base->border_manager, pause->end_game_widget)",
+        "kill_border(&g_game_base->border_manager, pause->resume_widget)",
         "release_mouse_cursor(&g_game_base->players[0].mouse_cursor)",
         "return"
       ],
@@ -6942,9 +6980,9 @@
       "artifact": "analysis/decompile/binja/functions/004161f0-destroy_challenge_setup_screen.c",
       "required_substrings": [
         "int32_t level_mode = gui->game->level_mode",
-        "kill_border(gui->next_level_button)",
-        "kill_border(gui->difficulty_slider)",
-        "kill_border(gui->replay_button)"
+        "kill_border(&g_game_base->border_manager, gui->next_level_button)",
+        "kill_border(&g_game_base->border_manager, gui->difficulty_slider)",
+        "kill_border(&g_game_base->border_manager, gui->replay_button)"
       ],
       "forbidden_substrings": [
         "arg1->",
@@ -6958,8 +6996,8 @@
       "required_substrings": [
         "void __thiscall destroy_challenge_setup_screen(GUI *gui)",
         "level_mode = gui->game->level_mode",
-        "gui->difficulty_slider->list_kind",
-        "gui->replay_button->list_kind"
+        "kill_border(&g_game_base->border_manager, gui->difficulty_slider);",
+        "kill_border(&g_game_base->border_manager, gui->replay_button);"
       ],
       "forbidden_substrings": [
         "int __thiscall destroy_challenge_setup_screen",
@@ -10726,7 +10764,7 @@
       "name": "bn_options_uninit_void_owner",
       "artifact": "analysis/decompile/binja/functions/0041aee0-destroy_options_menu.c",
       "required_substrings": [
-        "kill_border(options->back_widget)",
+        "kill_border(&g_game_base->border_manager, options->back_widget)",
         "save_config_file(\"SnailMail.cfg\", &g_runtime_config, 0xc4)",
         "return"
       ],
@@ -15038,7 +15076,7 @@
       "name": "bn_tip_kill_widgets_owner_graph",
       "artifact": "analysis/decompile/binja/functions/004489e0-kill_tip_widgets.c",
       "required_substrings": [
-        "kill_border(tip->widget_main)",
+        "kill_border(&g_game_base->border_manager, tip->widget_main)",
         "struct FrontendWidget* widget_ok = tip->widget_ok",
         "tip->active = 0"
       ],
@@ -15053,7 +15091,7 @@
       "artifact": "analysis/decompile/ida/functions/004489e0-kill_tip_widgets.c",
       "required_substrings": [
         "void __thiscall kill_tip_widgets(Tip *tip)",
-        "kill_border(&tip->widget_main->list_kind);",
+        "kill_border(&g_game_base->border_manager, tip->widget_main);",
         "tip->active = 0;"
       ],
       "forbidden_substrings": [

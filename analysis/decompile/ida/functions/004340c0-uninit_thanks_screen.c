@@ -4,6 +4,6 @@
 
 void __thiscall uninit_thanks_screen(ThanksScreen *thanks_screen)
 {
-  kill_border(&thanks_screen->message_widget->list_kind);
+  kill_border(&g_game_base->border_manager, thanks_screen->message_widget);
   g_game_base->players[0].frontend_state = 14;
 }

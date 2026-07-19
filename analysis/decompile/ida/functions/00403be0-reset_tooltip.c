@@ -9,7 +9,7 @@ void __thiscall reset_tooltip(FrontendWidgetTooltip *tooltip)
   {
     if ( tooltip->state != 3 )
       return;
-    kill_border(&tooltip->tooltip_widget->list_kind);
+    kill_border(&g_game_base->border_manager, tooltip->tooltip_widget);
     tooltip->tooltip_widget = nullptr;
   }
   tooltip->state = 1;

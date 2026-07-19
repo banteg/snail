@@ -125,10 +125,8 @@
 00438ac4        list_flags_7:1.b &= 0xfd
 00438ac7        game->barrier.bod.bod.list_flags = list_flags_7
 00438a8c        report_errorf("List remove NEXTBOD")
-00438aca        g_game_base
-00438adc        kill_border(game->top_score_widget)
-00438ae7        g_game_base
-00438af4        kill_border(game->bottom_score_widget)
+00438adc        kill_border(&g_game_base->border_manager, game->top_score_widget)
+00438af4        kill_border(&g_game_base->border_manager, game->bottom_score_widget)
 00438b02        if (game->selected_level_record_persistent != 0)
 00438b09        g_game_base->players[0].saved_frontend_state = 0x12
 00438b13        game->selected_level_record_persistent = 0
@@ -136,15 +134,12 @@
 00438b26        g_game_base->subgame.level_mode = 2
 00438b35        if (game->level_mode != 0)
 00438b35        return
-00438b37        g_game_base
-00438b49        kill_border(game->lives_icon_widget)
-00438b54        g_game_base
-00438b61        kill_border(game->lives_text_widget)
+00438b49        kill_border(&g_game_base->border_manager, game->lives_icon_widget)
+00438b61        kill_border(&g_game_base->border_manager, game->lives_text_widget)
 00438b66        struct FrontendWidget* (* esi_5)[0x9] = &game->life_stock_widgets
 00438b6c        int32_t i_7 = 9
 00438b89        int32_t i_3
-00438b73        g_game_base
-00438b80        kill_border((esi_5 - 0x35bb98)->life_stock_widgets[0])
+00438b80        kill_border(&g_game_base->border_manager, (esi_5 - 0x35bb98)->life_stock_widgets[0])
 00438b85        esi_5 = &(*esi_5)[1]
 00438b88        i_3 = i_7
 00438b88        i_7 -= 1

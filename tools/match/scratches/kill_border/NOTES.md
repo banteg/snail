@@ -57,3 +57,12 @@ child into the function loop and falls to 73.33% despite retaining 30/30
 instructions. Because adding a synthetic post-call use would only hide that
 compiler behavior, the exact result-shaped harness remains explicit debt rather
 than being presented as recovered source ownership.
+
+2026-07-19 analysis replay: native disassembly preserves the incoming `ecx`
+receiver in `edi`, restores it before recursive calls, and returns with `ret 4`.
+Every direct non-recursive callsite pushes a `FrontendWidget*` and loads
+`GameRoot::border_manager` (`g_game_base + 0xb4c`) into `ecx`. Binary Ninja and
+IDA therefore use the semantic `void __thiscall kill_border(BorderManager*,
+FrontendWidget*)` prototype. This does not alter the exact matcher declaration:
+its artificial `int` result remains isolated compiler-harness debt, not an
+ownership claim.

@@ -14,6 +14,7 @@ from _narrow_sync import (
     apply_user_var_updates,
     current_struct_size,
     emit_summary,
+    reanalyze_functions,
     types_declare_if_missing,
 )
 
@@ -141,6 +142,25 @@ PROTO_UPDATES = (
         "select_level_track_texture_set",
         "void __thiscall select_level_track_texture_set(Track* track, int32_t texture_set)",
     ),
+)
+
+BORDER_KILL_REANALYSIS_FUNCTIONS = (
+    "kill_border",
+    "border_input_text",
+    "reset_tooltip",
+    "update_tooltip",
+    "flush_row_event_display",
+    "destroy_completion_screen",
+    "destroy_galaxy",
+    "destroy_challenge_setup_screen",
+    "destroy_options_menu",
+    "uninit_thanks_screen",
+    "destroy_subgame",
+    "uninit_pause_menu",
+    "update_click_start",
+    "uninit_times_up",
+    "uninit_warning",
+    "kill_tip_widgets",
 )
 
 MOUSE_CURSOR_FIELD_UPDATES = (
@@ -473,6 +493,11 @@ def resolved_proto_updates(*, target: str) -> tuple[tuple[str, str], ...]:
             f"void __thiscall kill_all_borders({border_manager_type}* manager)",
         ),
         (
+            "kill_border",
+            "void __thiscall kill_border("
+            f"{border_manager_type}* manager, FrontendWidget* widget)",
+        ),
+        (
             "allocate_border",
             f"FrontendWidget* __thiscall allocate_border({border_manager_type}* manager)",
         ),
@@ -606,6 +631,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=RENDER_USER_VAR_UPDATES,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=BORDER_KILL_REANALYSIS_FUNCTIONS,
         )
     )
     return emit_summary(

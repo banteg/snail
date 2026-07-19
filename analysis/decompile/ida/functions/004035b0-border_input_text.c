@@ -418,5 +418,5 @@ LABEL_99:
   widget->widget_flags = v77;
   layout_frontend_widget(widget);
   if ( (widget->input_flags & 0xC) != 0 )
-    kill_border(&widget->tooltip.input_ok_state.ok_widget->list_kind);
+    kill_border(&g_game_base->border_manager, widget->tooltip.input_ok_state.ok_widget);
 }

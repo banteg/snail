@@ -89,6 +89,11 @@ TRUSTED_FUNCTION_DECLARATIONS = [
         "void __thiscall kill_all_borders(BorderManager *manager);",
     ),
     (
+        "kill_border",
+        "void __thiscall kill_border("
+        "BorderManager *manager, FrontendWidget *widget);",
+    ),
+    (
         "set_border_justify_centre",
         "void __thiscall set_border_justify_centre("
         "BorderManager *manager, float justify_centre);",
@@ -172,6 +177,25 @@ TRUSTED_FUNCTION_DECLARATIONS = [
         "void __thiscall select_level_track_texture_set(Track *track, int32_t texture_set);",
     ),
 ]
+
+BORDER_KILL_REANALYSIS_FUNCTIONS = (
+    "kill_border",
+    "border_input_text",
+    "reset_tooltip",
+    "update_tooltip",
+    "flush_row_event_display",
+    "destroy_completion_screen",
+    "destroy_galaxy",
+    "destroy_challenge_setup_screen",
+    "destroy_options_menu",
+    "uninit_thanks_screen",
+    "destroy_subgame",
+    "uninit_pause_menu",
+    "update_click_start",
+    "uninit_times_up",
+    "uninit_warning",
+    "kill_tip_widgets",
+)
 
 TRUSTED_DATA_DECLARATIONS = [
     (
@@ -694,6 +718,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "draw_sprite_quad",
             "update_sprite_facing_angle",
             "render_game_frame",
+            *BORDER_KILL_REANALYSIS_FUNCTIONS,
         )
     }
     for selector, result in invalidated_cfuncs.items():

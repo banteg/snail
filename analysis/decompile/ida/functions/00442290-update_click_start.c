@@ -50,7 +50,7 @@ void __thiscall update_click_start(ClickStart *click_start)
         }
         set_input_controller_pointer_authored_xy(0, 320.0, 240.0);
         set_input_controller_pointer_authored_xy(1, 320.0, 240.0);
-        play_sound_effect(8);
+        play_sound_effect(&g_sound_effect_manager, 8);
         break;
       case CLICK_START_STATE_START_PENDING:
         set_math_random_seed(g_game_base->subgame.current_high_score_record.runtime_build_seed);
@@ -58,7 +58,7 @@ void __thiscall update_click_start(ClickStart *click_start)
         click_start->state = CLICK_START_STATE_TEARDOWN;
         click_start->teardown_progress = 0.0;
         click_start->teardown_progress_step = 0.016666668;
-        kill_border(v4);
+        kill_border(&g_game_base->border_manager, v4);
         goto LABEL_17;
       case CLICK_START_STATE_TEARDOWN:
 LABEL_17:

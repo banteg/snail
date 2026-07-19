@@ -172,8 +172,8 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
       report_errorf(aListRemove);
     }
   }
-  kill_border(&game->top_score_widget->list_kind);
-  kill_border(&game->bottom_score_widget->list_kind);
+  kill_border(&g_game_base->border_manager, game->top_score_widget);
+  kill_border(&g_game_base->border_manager, game->bottom_score_widget);
   if ( game->selected_level_record_persistent )
   {
     g_game_base->players[0].saved_frontend_state = 18;
@@ -183,13 +183,13 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
     g_game_base->subgame.level_mode = 2;
   if ( !game->level_mode )
   {
-    kill_border(&game->lives_icon_widget->list_kind);
-    kill_border(&game->lives_text_widget->list_kind);
+    kill_border(&g_game_base->border_manager, game->lives_icon_widget);
+    kill_border(&g_game_base->border_manager, game->lives_text_widget);
     life_stock_widgets = game->life_stock_widgets;
     v26 = 9;
     do
     {
-      kill_border(*life_stock_widgets++);
+      kill_border(&g_game_base->border_manager, *life_stock_widgets++);
       --v26;
     }
     while ( v26 );

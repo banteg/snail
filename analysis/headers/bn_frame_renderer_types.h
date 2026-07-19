@@ -279,6 +279,7 @@ BorderRecord* __thiscall initialize_border_record(BorderRecord* record);
 FrontendWidget* __thiscall allocate_border(BorderManager* manager);
 void __thiscall activate_all_borders(BorderManager* manager);
 void __thiscall kill_all_borders(BorderManager* manager);
+void __thiscall kill_border(BorderManager* manager, FrontendWidget* widget);
 void __thiscall hide_all_borders(BorderManager* manager);
 void __thiscall unhide_all_borders(BorderManager* manager);
 char __thiscall queue_frontend_widget_flag_after_delay(
