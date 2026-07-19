@@ -114,3 +114,25 @@ The paired replay replaces IDA's `_DWORD*` receiver with the canonical
 borrowed `SubgameRuntime*` rate source plus live `Sprite` fields. Strict export
 reports no database/export mismatches. The source and bytes remain exact at
 153/153 instructions with ten clean operands.
+
+## 2026-07-19 carried child ownership
+
+Binary Ninja had promoted `&ring->particles` to a pointer to the complete
+ten-element array. Native instead carries ESI as one `SubRingStar*` and
+advances it by the proved `0x20` child stride. The bounded
+`sync_ring_particle_lifetimes.py` replay verifies the `0x20` child, `0x1f8`
+parent, `0x3f0` pool, and `particles +0x90` ownership graph before persisting
+that exact ESI lifetime; an idempotent replay takes 7.9 seconds. The tracked
+artifact now reaches the child parent,
+sprite, phase, phase step, and loop increment directly; the former
+`(particle - 0x90)->particles[0]` and pointer-to-array expressions are gone.
+
+An attempted EBX suffix view was rejected and removed from both the database
+and source. Although EBX physically borrows `&particle->base_position`, the
+extra annotation made Binary Ninja merge the suffix back into ESI and obscured
+the already-correct parent and phase fields. The three remaining interior
+`Vec3.__offset` expressions are therefore kept as honest analysis debt. IDA's
+paired refresh also adopts the canonical `allocate_sprite(&g_sprite_manager,
+...)` receiver already proved by the sprite owner graph. Focused matching is
+unchanged and exact at 153/153 instructions with all ten operands clean; no
+source or fakematch change was made.

@@ -7301,13 +7301,22 @@
       "name": "bn_subring_sprite_fields_intact",
       "artifact": "analysis/decompile/binja/functions/0043e470-initialize_ring_or_special_effect_particles.c",
       "required_substrings": [
+        "struct SubRingStar* particle = &ring->particles",
+        "particle->parent = ring",
+        "particle->sprite = allocate_sprite(&g_sprite_manager",
         "sprite->draw_mode",
         "sprite->color",
         "sprite->progress",
         "sprite->size_start",
-        "sprite->position"
+        "sprite->position",
+        "particle->phase",
+        "particle->phase_step",
+        "particle = &particle[1]"
       ],
       "forbidden_substrings": [
+        "struct SubRingStar (* particle)[0xa]",
+        "(particle - 0x90)",
+        "(particle + 8)->",
         "sprite->__offset(",
         "__offset(Sprite",
         "__asm",
@@ -7406,6 +7415,7 @@
         "SubRingStar *particles",
         "ring->state = SUB_RING_STATE_ACTIVE",
         "ring->rate_source->subgame_rate",
+        "allocate_sprite(&g_sprite_manager",
         "particles->sprite->draw_mode",
         "update_ring_or_special_effect_particle(particles++)"
       ],
@@ -7414,6 +7424,7 @@
         "_DWORD *this",
         "RingEffectRateSource",
         "RingOrSpecialEffectParticle",
+        "allocate_sprite(g_sprite_manager",
         "__offset("
       ]
     },

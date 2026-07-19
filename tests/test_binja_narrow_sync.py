@@ -5484,6 +5484,9 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     pool_sync = (BINJA_DIR / "sync_subgame_pool_types.py").read_text(
         encoding="utf-8"
     )
+    particle_lifetime_sync = (
+        BINJA_DIR / "sync_ring_particle_lifetimes.py"
+    ).read_text(encoding="utf-8")
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -5509,6 +5512,22 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     assert '("0x80", "state", "SubRingState")' in pool_sync
     assert '("0x88", "kind", "SubRingKind")' in pool_sync
     assert "int32_t requested_kind" in pool_sync
+    assert "current_type_widths" in particle_lifetime_sync
+    assert "current_struct_fields_batch" in particle_lifetime_sync
+    assert "RING_PARTICLE_USER_VAR_UPDATES" in particle_lifetime_sync
+    assert '"SubRingStar": 0x20' in particle_lifetime_sync
+    assert '"SubRing": 0x1F8' in particle_lifetime_sync
+    assert '"SubRingPool": 0x3F0' in particle_lifetime_sync
+    assert '0x90: ("particles", "SubRingStar[10]")' in particle_lifetime_sync
+    assert (
+        '"initialize_ring_or_special_effect_particles",\n'
+        '        "RegisterVariableSourceType",\n'
+        '        34,\n'
+        '        72,\n'
+        '        "particle",\n'
+        '        "SubRingStar*"'
+        in particle_lifetime_sync
+    )
     assert '"SubRingState",' in path_sync
     assert '"SubRingKind",' in path_sync
     for index, storage, name, type_name in (

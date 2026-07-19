@@ -109,6 +109,7 @@ uv run python tools/ida/query_function_lvars.py <function> [<function> ...]
 uv run python tools/binja/sync_collision_state_lifetimes.py --target SnailMail_unwrapped.exe.bndb
 uv run python tools/binja/sync_garbage_allocator_lifetimes.py --target SnailMail_unwrapped.exe.bndb
 uv run python tools/binja/sync_pickup_list_lifetimes.py --target SnailMail_unwrapped.exe.bndb
+uv run python tools/binja/sync_ring_particle_lifetimes.py --target SnailMail_unwrapped.exe.bndb
 ```
 
 The data-type query reports the containing item head and extent, which makes

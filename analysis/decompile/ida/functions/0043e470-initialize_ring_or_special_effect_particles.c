@@ -35,19 +35,19 @@ int32_t __thiscall initialize_ring_or_special_effect_particles(SubRing *ring, in
       case SUB_RING_KIND_NORMAL_DEFAULT:
       case SUB_RING_KIND_NORMAL_AUTHORED:
       case SUB_RING_KIND_POWER_UP_AUTHORED:
-        particles->sprite = (Sprite *)allocate_sprite(g_sprite_manager, ring->owner_player->player_slot, 135, -1, -1);
+        particles->sprite = allocate_sprite(&g_sprite_manager, ring->owner_player->player_slot, 135, -1, -1);
         ring->star_sprite_id = 136;
         particles->sprite->draw_mode = 9;
         break;
       case SUB_RING_KIND_EXPLODE_RAMP:
       case SUB_RING_KIND_EXPLODE_AUTHORED:
-        particles->sprite = (Sprite *)allocate_sprite(g_sprite_manager, ring->owner_player->player_slot, 131, -1, -1);
+        particles->sprite = allocate_sprite(&g_sprite_manager, ring->owner_player->player_slot, 131, -1, -1);
         ring->star_sprite_id = 132;
         particles->sprite->draw_mode = 13;
         break;
       case SUB_RING_KIND_SLOW_DEFAULT:
       case SUB_RING_KIND_SLOW_AUTHORED:
-        particles->sprite = (Sprite *)allocate_sprite(g_sprite_manager, ring->owner_player->player_slot, 133, -1, -1);
+        particles->sprite = allocate_sprite(&g_sprite_manager, ring->owner_player->player_slot, 133, -1, -1);
         ring->star_sprite_id = 134;
         particles->sprite->draw_mode = 13;
         break;

@@ -281,6 +281,10 @@ field and prototype changes. The paired IDA subgame-runtime replay consumes the
 same canonical header, so both databases retain identical parent, child, pool,
 and borrowed-runtime ownership after regeneration.
 
+After those canonical ring types exist, replay the exact carried child cursor
+with `uv run python tools/binja/sync_ring_particle_lifetimes.py --target
+SnailMail_unwrapped.exe.bndb`.
+
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
 `GameInput.input` field proven by the exact Windows bridge and iOS
