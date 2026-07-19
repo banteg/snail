@@ -39,3 +39,24 @@ The triangle/quad branch now uses `OBJECT_FACEQUAD_FLAG_TRIANGLE`. The X mesh
 loader sets that bit only for three-index authored faces, and this cache helper
 consumes it by emitting three rather than six indices; it does not own or
 mutate the borrowed face record.
+
+## Borrowed face and staging-cursor lifetimes (2026-07-19)
+
+Exact Binary Ninja SSA readback now preserves the two coupled loop cursors:
+`face_index` counts records while `face_byte_offset` advances by the native
+`0x30`-byte `ObjectFaceQuad` stride. Four short EAX lifetimes are typed as the
+borrowed face used for vertices 0 through 3. This recovers every source vertex
+and UV pair as `face_vertex_n->vertex_n` and `face_vertex_n->uv[n]` instead of
+anonymous `void*` arithmetic. The copied `Vec3` is likewise named
+`local_position`, and the triangle/quad index bases join through the real
+`next_index_count` staging cursor before it is stored back to the caller-owned
+count.
+
+The replay first guards `Vec3`, `ObjectUv`, `ObjectFaceQuad`, `Object`, and
+`SegmentCache` widths and owner fields. A temporary byte-view annotation for
+the triangle flag survived as a user variable but produced a misleading scaled
+array expression, so it was deleted after exact readback rather than retained.
+Direct-return, declaration-scope, comparison, and scalar-copy source probes
+were codegen-neutral or worse. The honest matcher source therefore remains at
+`95.81%`, `167/167` instructions, prefix `16`, with six clean operands; no
+scheduling-only construct was kept.

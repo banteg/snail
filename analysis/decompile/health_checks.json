@@ -4766,11 +4766,26 @@
         "source->facequad_count",
         "source->facequads",
         "add_track_cache_vertex(manager, source",
-        "indices[*index_count]"
+        "indices[*index_count]",
+        "int32_t face_byte_offset = 0",
+        "int32_t face_index = 0",
+        "struct Vec3 local_position",
+        "struct ObjectFaceQuad* face_vertex_0",
+        "face_vertex_0->vertex_0",
+        "face_vertex_3->uv[3].v",
+        "int32_t triangle_index_base = *index_count",
+        "int32_t next_index_count",
+        "*index_count = next_index_count"
       ],
       "forbidden_substrings": [
         "PathTemplateStripMesh",
         "source->__offset(",
+        "int32_t ebp = 0",
+        "int32_t var_10 = 0",
+        "position_1",
+        "void* eax_3",
+        "source_index_3",
+        "eax_15",
         "__asm",
         "_ET1"
       ]

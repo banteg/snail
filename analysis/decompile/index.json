@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "create_vertex_buffer",
-      "address": "0x4114b0"
+      "name": "append_track_cache_object",
+      "address": "0x433960"
     }
   ],
   "health_check_count": 898,

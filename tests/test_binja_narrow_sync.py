@@ -8444,6 +8444,71 @@ def test_apply_proto_updates_batches_only_stale_prototypes(monkeypatch) -> None:
     ]
 
 
+def test_track_cache_face_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_track_cache_face_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("Vec3", "0x0C"),
+        ("ObjectUv", "0x08"),
+        ("ObjectFaceQuad", "0x30"),
+        ("Object", "0xDC"),
+        ("SegmentCache", "0xA7F8"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("ObjectFaceQuad", "0x02", "vertex_0", "uint16_t"),
+        ("ObjectFaceQuad", "0x10", "uv", "ObjectUv[4]"),
+        ("Object", "0x5C", "facequads", "ObjectFaceQuad*"),
+        ("SegmentCache", "0x54", "owner_subgame", "SubgameRuntime*"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        ("RegisterVariableSourceType", 9, 71, "face_byte_offset", "int32_t"),
+        ("StackVariableSourceType", 25, -16, "face_index", "int32_t"),
+        ("StackVariableSourceType", 0, -12, "local_position", "Vec3"),
+        (
+            "RegisterVariableSourceType",
+            71,
+            66,
+            "face_vertex_0",
+            "ObjectFaceQuad*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            356,
+            67,
+            "source_vertex_3",
+            "uint16_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            388,
+            66,
+            "next_index_count",
+            "int32_t",
+        ),
+    ):
+        expected = (
+            '        "append_track_cache_object",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert "face_flag_bytes" not in replay
+
+
 def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     track_sync = (BINJA_DIR / "sync_track_render_cache_types.py").read_text(
         encoding="utf-8"
