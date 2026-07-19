@@ -10219,10 +10219,19 @@
         "object_1->facequad_normals = animation->frames",
         "apply_distort_to_object(&object_1->distort, object_1)",
         "object_1->render_buffers->vertex_buffer",
-        "object_1->grouped_vertex_count"
+        "object_1->grouped_vertex_count",
+        "struct Vec3* animated_source_vertex",
+        "struct ObjectRenderVertex* animated_vertex",
+        "animated_vertex->x = animated_source_vertex->x",
+        "struct Vec3* dynamic_source_vertex",
+        "struct ObjectRenderVertex* dynamic_vertex",
+        "dynamic_vertex->x = dynamic_source_vertex->x"
       ],
       "forbidden_substrings": [
         "apply_distort_to_object(esi i+ 0x80",
+        "&object->_pad_00",
+        "int32_t* edi_2",
+        "int32_t* edx_9",
         "unimplemented"
       ]
     },

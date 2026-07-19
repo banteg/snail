@@ -104,3 +104,24 @@ idempotent, and a health check rejects the old argument alias.
 No matcher source changed. Focused Wibo remains `90.58%`, `137/139`, prefix
 `7`, with four clean masks; the two residual instructions remain ordinary
 source/destination address-formation scheduling differences.
+
+## 2026-07-19 Binary Ninja locked-stream lifetimes
+
+- Direct3D `Lock` writes the mapped `ObjectRenderVertex*` into the incoming
+  `Object*` argument's caller-owned stack slot. Binary Ninja does not expose
+  that external memory write as an MLIL variable definition, so the parameter
+  itself cannot be split honestly in this database.
+- Six exact post-lock register lifetimes now preserve the two borrowed stream
+  bases plus the current `Vec3*` source and `ObjectRenderVertex*` destination
+  elements. Both upload loops consequently render explicit `x/y/z` ownership
+  instead of `Object::_pad_00` and untyped `int32_t*` copies.
+- Two attempted UV-only base reload annotations had no decompile or ownership
+  effect and were removed. The UV stores remain raw stack-slot expressions;
+  claiming a split output variable there would exceed the analysis evidence.
+- The bounded replay verifies the canonical 0x0c-byte `Vec3`, 0x18-byte render
+  vertex, render-buffer chain, and 0xdc-byte `Object` before applying any
+  annotations. A second run reports all six lifetimes already current in
+  0.74 seconds.
+
+No matcher source changed. Focused Wibo remains `90.58%`, `137/139`, prefix
+`7`, with four clean masks and the same two honest scheduling residuals.

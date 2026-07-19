@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "request_object_animation",
-      "address": "0x430a70"
+      "name": "refresh_object_vertex_buffer",
+      "address": "0x412250"
     }
   ],
   "health_check_count": 898,

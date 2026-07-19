@@ -11,23 +11,23 @@
 00412350        vertex_buffer_2->vtbl->Lock(vertex_buffer_2, 0, object_1->grouped_vertex_count * 0x18, &object, 0)
 00412359        int32_t i = 0
 0041235d        if (object_1->grouped_vertex_count s> 0)
-0041235f        int32_t edi_5 = 0
-00412361        void* ebx_3 = nullptr
-00412368        int32_t* edx_9 = ebx_3 + object_1->vertices
-0041236e        int32_t* eax_8 = &object->_pad_00[edi_5]
-00412370        ebx_3 += 0xc
-00412375        edi_5 += 0x18
-00412378        *eax_8 = *edx_9
-0041237d        eax_8[1] = edx_9[1]
-00412383        eax_8[2] = edx_9[2]
-00412388        int32_t eax_10
-00412388        int32_t edx_11
-00412388        edx_11:eax_10 = sx.q(i)
-00412397        int32_t edx_14 = i & 3
+0041235f        int32_t edi_4 = 0
+00412361        void* ebx_1 = nullptr
+00412368        struct Vec3* dynamic_source_vertex = ebx_1 + object_1->vertices
+0041236e        struct ObjectRenderVertex* dynamic_vertex = object + edi_4
+00412370        ebx_1 += 0xc
+00412375        edi_4 += 0x18
+00412378        dynamic_vertex->x = dynamic_source_vertex->x
+0041237d        dynamic_vertex->y = dynamic_source_vertex->y
+00412383        dynamic_vertex->z = dynamic_source_vertex->z
+00412388        int32_t eax_8
+00412388        int32_t edx_10
+00412388        edx_10:eax_8 = sx.q(i)
+00412397        int32_t edx_13 = i & 3
 0041239a        i += 1
-0041239e        int32_t eax_14 = edx_14 + ((eax_10 + (edx_11 & 3)) s>> 2) * 6
-004123a8        *(edi_5 + object - 8) = object_1->facequads->uv[eax_14].u
-004123b7        *(edi_5 + object - 4) = object_1->facequads->uv[eax_14].v
+0041239e        int32_t eax_12 = edx_13 + ((eax_8 + (edx_10 & 3)) s>> 2) * 6
+004123a8        *(edi_4 + object - 8) = object_1->facequads->uv[eax_12].u
+004123b7        *(edi_4 + object - 4) = object_1->facequads->uv[eax_12].v
 004123c3        do while (i s< object_1->grouped_vertex_count)
 004123cb        struct ObjectVertexBuffer* vertex_buffer_3 = object_1->render_buffers->vertex_buffer
 004123d1        vertex_buffer_3->vtbl->Unlock(vertex_buffer_3)
@@ -47,14 +47,14 @@
 004122dd        if (object_1->grouped_vertex_count s> 0)
 004122df        int32_t edx_4 = 0
 004122e1        void* ecx_9 = nullptr
-004122e8        int32_t* edi_2 = ecx_9 + object_1->vertices
-004122ee        int32_t* ebx_2 = &object->_pad_00[edx_4]
+004122e8        struct Vec3* animated_source_vertex = ecx_9 + object_1->vertices
+004122ee        struct ObjectRenderVertex* animated_vertex = object + edx_4
 004122f0        i_1 += 1
 004122f3        ecx_9 += 0xc
-004122f6        *ebx_2 = *edi_2
+004122f6        animated_vertex->x = animated_source_vertex->x
 004122f8        edx_4 += 0x18
-004122fe        ebx_2[1] = edi_2[1]
-00412304        ebx_2[2] = edi_2[2]
+004122fe        animated_vertex->y = animated_source_vertex->y
+00412304        animated_vertex->z = animated_source_vertex->z
 0041230f        do while (i_1 s< object_1->grouped_vertex_count)
 00412317        struct ObjectVertexBuffer* vertex_buffer_1 = object_1->render_buffers->vertex_buffer
 0041231d        vertex_buffer_1->vtbl->Unlock(vertex_buffer_1)
