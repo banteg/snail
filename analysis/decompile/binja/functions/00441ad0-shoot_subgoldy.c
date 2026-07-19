@@ -5,8 +5,8 @@
 
 00441ad5        int32_t i = 0
 00441ad8        int32_t var_1c = 0
-00441adc        int32_t* ecx = &manager->slots[0].state
-00441ae5        if ((ecx - 0x80)->slots[0].state == 0)
+00441adc        enum SubLazerState* ecx = &manager->slots[0].state
+00441ae5        if ((ecx - 0x80)->slots[0].state == SUB_LAZER_STATE_INACTIVE)
 00441b21        struct Vec3 origin_1
 00441b21        origin_1.x = origin->x
 00441b30        origin_1.y = fconvert.s(float.t(i) * fconvert.t(-0.00999999978f) + fconvert.t(origin->y))

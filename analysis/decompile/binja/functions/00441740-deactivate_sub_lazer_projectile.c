@@ -3,28 +3,27 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: deactivate_sub_lazer_projectile @ 0x441740 */
 
-00441746        struct BodNode* sub_lazer_1 = sub_lazer
 00441748        struct BodList* ecx = &g_game_base->active_bod_list
-0044174e        uint16_t list_flags = (sub_lazer_1->list_flags).w
+0044174e        uint16_t list_flags = (sub_lazer->body.bod.bod.list_flags).w
 00441754        if ((list_flags:1.b & 2) == 0)
 0044175b        report_errorf("List remove")
-00441763        sub_lazer_1->__offset(0x80).d = 0
+00441763        sub_lazer->state = SUB_LAZER_STATE_INACTIVE
 0044176e        return
 00441771        if ((list_flags.b & 0x40) != 0)
 00441778        report_errorf("List remove NEXTBOD")
-00441780        sub_lazer_1->__offset(0x80).d = 0
+00441780        sub_lazer->state = SUB_LAZER_STATE_INACTIVE
 0044178b        return
-0044178c        struct BodNode* list_next = sub_lazer_1->list_next
+0044178c        struct BodNode* list_next = sub_lazer->body.bod.bod.list_next
 00441791        if (list_next != 0)
-00441796        list_next->list_prev = sub_lazer_1->list_prev
-00441799        struct BodNode* list_prev = sub_lazer_1->list_prev
+00441796        list_next->list_prev = sub_lazer->body.bod.bod.list_prev
+00441799        struct BodNode* list_prev = sub_lazer->body.bod.bod.list_prev
 0044179e        if (list_prev == 0)
-004417ab        ecx->first = sub_lazer_1->list_next
-004417a3        list_prev->list_next = sub_lazer_1->list_next
-004417b1        sub_lazer_1->list_next = ecx->free_top
-004417b4        ecx->free_top = sub_lazer_1
-004417b7        uint32_t list_flags_1 = sub_lazer_1->list_flags
-004417ba        sub_lazer_1->__offset(0x80).d = 0
+004417ab        ecx->first = sub_lazer->body.bod.bod.list_next
+004417a3        list_prev->list_next = sub_lazer->body.bod.bod.list_next
+004417b1        sub_lazer->body.bod.bod.list_next = ecx->free_top
+004417b4        ecx->free_top = sub_lazer
+004417b7        uint32_t list_flags_1 = sub_lazer->body.bod.bod.list_flags
+004417ba        sub_lazer->state = SUB_LAZER_STATE_INACTIVE
 004417c4        list_flags_1:1.b &= 0xfd
-004417c7        sub_lazer_1->list_flags = list_flags_1
+004417c7        sub_lazer->body.bod.bod.list_flags = list_flags_1
 004417cb        return

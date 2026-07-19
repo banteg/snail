@@ -25,3 +25,9 @@ cursor left in EAX by the loop. Windows' level-build caller and Android's
 `cRSubLazerManager::Init()` caller both discard it. Removing the synthetic
 return leaves the exact 7/7-instruction object byte-identical, so the authored
 manager lifecycle method is now declared `void`.
+
+2026-07-19 lifecycle-owner replay: the slot lane at `+0x80` is now a 32-bit
+`SubLazerState`, not an anonymous integer. Both analysis databases verify the
+`0xb0` actor and `0xdc0` manager extents; this exact initializer walks the
+manager-owned array with a typed state cursor and writes
+`SUB_LAZER_STATE_INACTIVE` without changing its 7/7-instruction object.

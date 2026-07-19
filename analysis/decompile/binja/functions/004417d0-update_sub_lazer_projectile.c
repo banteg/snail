@@ -5,14 +5,14 @@
 
 004417e4        if (sub_lazer->owner_game->subgame_pause_gate != 0)
 004417e4        return
-004417ea        int32_t state = sub_lazer->state
-004417f1        if (state == 1)
+004417ea        enum SubLazerState state = sub_lazer->state
+004417f1        if (state == SUB_LAZER_STATE_ACTIVE)
 004418a0        long double x87_r7_2 = fconvert.t(sub_lazer->sprite_bob_phase_step) + fconvert.t(sub_lazer->sprite_bob_phase)
 004418a6        sub_lazer->sprite_bob_phase = fconvert.s(x87_r7_2)
 004418ac        long double temp1_1 = fconvert.t(1f)
 004418ac        x87_r7_2 - temp1_1
 004418b7        if ((((x87_r7_2 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp1_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-004418b9        sub_lazer->state = 2
+004418b9        sub_lazer->state = SUB_LAZER_STATE_RECYCLE_PENDING
 004418ca        return
 004418d7        sub_lazer->body.transform.position.x = fconvert.s(fconvert.t(sub_lazer->velocity.x) + fconvert.t(sub_lazer->body.transform.position.x))
 004418e2        sub_lazer->body.transform.position.y = fconvert.s(fconvert.t(sub_lazer->velocity.y) + fconvert.t(sub_lazer->body.transform.position.y))
@@ -65,11 +65,11 @@
 00441807        struct BodList* ecx_2 = &g_game_base->active_bod_list
 00441810        if ((list_flags:1.b & 2) == 0)
 00441817        report_errorf("List remove")
-0044181f        sub_lazer->state = 0
+0044181f        sub_lazer->state = SUB_LAZER_STATE_INACTIVE
 00441830        return
 00441833        if ((list_flags.b & 0x40) != 0)
 0044183a        report_errorf("List remove NEXTBOD")
-00441842        sub_lazer->state = 0
+00441842        sub_lazer->state = SUB_LAZER_STATE_INACTIVE
 00441853        return
 00441854        struct BodNode* list_next = sub_lazer->body.bod.bod.list_next
 00441859        if (list_next != 0)
@@ -81,7 +81,7 @@
 00441879        sub_lazer->body.bod.bod.list_next = ecx_2->free_top
 0044187c        ecx_2->free_top = sub_lazer
 0044187f        uint32_t list_flags_1 = sub_lazer->body.bod.bod.list_flags
-00441882        sub_lazer->state = 0
+00441882        sub_lazer->state = SUB_LAZER_STATE_INACTIVE
 0044188c        list_flags_1:1.b &= 0xfd
 0044188f        sub_lazer->body.bod.bod.list_flags = list_flags_1
 00441acf        return

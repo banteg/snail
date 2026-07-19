@@ -1650,7 +1650,7 @@
       "android_symbol": "cRSubLazerManager::Init()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Both walk the manager's 20 owned inline slots and clear each SubLazer state at +0x80. Windows' exact body remains byte-identical when declared void; the apparent end-pointer result is only the loop cursor left in EAX."
+      "notes": "Both walk the manager's 20 owned inline actors and clear the 32-bit SubLazerState at +0x80 to SUB_LAZER_STATE_INACTIVE. Windows' exact body remains byte-identical when declared void; the apparent end-pointer result is only the loop cursor left in EAX."
     },
     {
       "address": "0x441670",
@@ -1659,7 +1659,7 @@
       "android_symbol": "cRSubLazer::Shoot(tVector, tVector)",
       "source_object": null,
       "confidence": "high",
-      "notes": "Windows and Android share the two-vector slot-level body; iOS v1.9 adds the owning Goldy argument."
+      "notes": "Windows and Android share the two-vector actor-level body and set SubLazerState to SUB_LAZER_STATE_ACTIVE; iOS v1.9 adds the owning Goldy argument."
     },
     {
       "address": "0x441740",
@@ -1667,7 +1667,7 @@
       "android_symbol": "cRSubLazer::Kill()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Both clear the active state and unlink the inherited BOD node. The Windows helper remains exact at 43 instructions when declared void; Android's apparent result is the list-removal call value left in r0."
+      "notes": "Both set SubLazerState to SUB_LAZER_STATE_INACTIVE and unlink the inherited BOD node. The Windows helper remains exact at 43 instructions when declared void; Android's apparent result is the list-removal call value left in r0."
     },
     {
       "address": "0x4417d0",
@@ -1676,7 +1676,7 @@
       "android_symbol": "cRSubLazer::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Windows cRSubLazer constructor table at 0x49733c points directly to this helper. Native Windows control flow also preserves distinct primary and secondary attachment-hit debug markers before Kill."
+      "notes": "The Windows cRSubLazer constructor table at 0x49733c points directly to this helper. It integrates SUB_LAZER_STATE_ACTIVE and recycles SUB_LAZER_STATE_RECYCLE_PENDING; native control flow also preserves distinct primary and secondary attachment-hit debug markers before Kill."
     },
     {
       "address": "0x441ad0",
@@ -1685,7 +1685,7 @@
       "android_symbol": "cRSubLazerManager::Shoot(tVector, tVector)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All ports scan the manager's 20 owned SubLazer slots, dispatch the slot-level Shoot method, and play the positional fire cue."
+      "notes": "All ports scan the manager's 20 owned SubLazer actors for SUB_LAZER_STATE_INACTIVE, dispatch the actor-level Shoot method, and play the positional fire cue."
     },
     {
       "address": "0x441b70",

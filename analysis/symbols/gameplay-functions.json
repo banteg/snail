@@ -2612,27 +2612,27 @@
     {
       "address": "0x441650",
       "name": "initialize_sub_lazer_pool",
-      "description": "Exact void Windows `cRSubLazerManager::Init()`: clears the 20 owned inline SubLazer records at `SubgameRuntime +0x356b00` by setting each slot inactive before a level build. Android preserves the same manager method and loop; the end pointer left in EAX is incidental."
+      "description": "Exact void Windows `cRSubLazerManager::Init()`: clears the 32-bit SubLazerState of all 20 owned inline actors at `SubgameRuntime +0x356b00` to SUB_LAZER_STATE_INACTIVE before a level build. Android preserves the same manager method and loop; the end pointer left in EAX is incidental."
     },
     {
       "address": "0x441670",
       "name": "spawn_sub_lazer_projectile",
-      "description": "Exact Windows `cRSubLazer::Shoot` implementation: activates one manager-owned SubLazer, stores body position at +0x68, velocity at +0x8c, resets its bob phase, links the inherited BOD node, and refreshes the forward basis. Android preserves the two-vector signature; iOS v1.9 adds the owning Goldy argument."
+      "description": "Exact Windows `cRSubLazer::Shoot` implementation: sets one manager-owned actor to SUB_LAZER_STATE_ACTIVE, stores body position at +0x68 and velocity at +0x8c, resets its bob phase, links the inherited BOD node, and refreshes the forward basis. Android preserves the two-vector signature; iOS v1.9 adds the owning Goldy argument."
     },
     {
       "address": "0x441740",
       "name": "deactivate_sub_lazer_projectile",
-      "description": "Exact void Windows `cRSubLazer::Kill()`: marks one SubLazer inactive and unlinks its inherited BOD node through GameRoot's active/free list after collision or path exit. Android preserves the authored method name; its apparent result is only the list-removal call value left in the return register."
+      "description": "Exact void Windows `cRSubLazer::Kill()`: sets one actor to SUB_LAZER_STATE_INACTIVE and unlinks its inherited BOD node through GameRoot's active/free list after collision or path exit. Android preserves the authored method name; its apparent result is only the list-removal call value left in the return register."
     },
     {
       "address": "0x4417d0",
       "name": "update_sub_lazer_projectile",
-      "description": "Windows `cRSubLazer::AI()`: returns recycle-pending projectiles through GameRoot's shared active BOD list, integrates one active SubLazer, distinguishes primary and secondary track-attachment hits with their native debug markers, and dispatches void Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and Android/iOS preserve the authored owner. The honest Windows scratch is 97.25% with 218/218 instructions; only three commutative x87 add orders differ."
+      "description": "Windows `cRSubLazer::AI()`: returns SUB_LAZER_STATE_RECYCLE_PENDING actors through GameRoot's shared active BOD list, integrates SUB_LAZER_STATE_ACTIVE actors, distinguishes primary and secondary track-attachment hits with their native debug markers, and dispatches void Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and Android/iOS preserve the authored owner. The honest Windows scratch is 97.25% with 218/218 instructions; only three commutative x87 add orders differ."
     },
     {
       "address": "0x441ad0",
       "name": "shoot_subgoldy",
-      "description": "Exact `cRSubLazerManager::Shoot(tVector, tVector)`: finds a free SubLazer in the manager's 20 inline slots, dispatches its Shoot method, and plays the positional fire cue. Cross-port iOS v1.5 preserves the manager signature."
+      "description": "Exact `cRSubLazerManager::Shoot(tVector, tVector)`: scans the manager's 20 inline actors for SUB_LAZER_STATE_INACTIVE, dispatches that actor's Shoot method, and plays the positional fire cue. Cross-port iOS v1.5 preserves the manager signature."
     },
     {
       "address": "0x441b70",

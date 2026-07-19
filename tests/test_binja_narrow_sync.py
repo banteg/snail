@@ -6147,6 +6147,9 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     hazard_sync = (BINJA_DIR / "sync_subgame_hazard_pool_types.py").read_text(
         encoding="utf-8"
     )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
     ida_runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
         encoding="utf-8"
     )
@@ -6185,6 +6188,11 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         assert "typedef Salt SaltHazardSlot;" in header
         assert header.count("RenderableBod body;") >= 2
         assert "SubLazer slots[SUB_LAZER_SLOT_CAPACITY];" in header
+        assert "typedef enum SubLazerState {" in header
+        assert "SUB_LAZER_STATE_INACTIVE = 0" in header
+        assert "SUB_LAZER_STATE_ACTIVE = 1" in header
+        assert "SUB_LAZER_STATE_RECYCLE_PENDING = 2" in header
+        assert "SubLazerState state;" in header
         assert "Salt slots[40];" in header
         assert "typedef enum SaltState {" in header
         assert "SALT_STATE_INACTIVE = 0" in header
@@ -6197,11 +6205,23 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
 
     assert '("0x00", "body", "RenderableBod")' in hazard_sync
     assert '("SubLazer", SUB_LAZER_FIELD_UPDATES)' in hazard_sync
+    assert '("0x80", "state", "SubLazerState")' in hazard_sync
     assert '("Salt", SALT_FIELD_UPDATES)' in hazard_sync
     assert '("0x80", "state", "SaltState")' in hazard_sync
-    assert 'SALT_STATE_TYPE_REPLACEMENTS = ("SaltState",)' in hazard_sync
+    assert (
+        'HAZARD_STATE_TYPE_REPLACEMENTS = ("SubLazerState", "SaltState")'
+        in hazard_sync
+    )
     assert "apply_user_var_updates" in hazard_sync
-    assert "SALT_USER_VAR_UPDATES" in hazard_sync
+    assert "HAZARD_USER_VAR_UPDATES" in hazard_sync
+    assert (
+        '"deactivate_sub_lazer_projectile",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        6,\n"
+        "        72,\n"
+        '        "sub_lazer_1",\n'
+        '        "SubLazer*",'
+    ) in hazard_sync
     assert (
         '"spawn_salt_hazard",\n'
         '        "RegisterVariableSourceType",\n'
@@ -6226,10 +6246,27 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
             "void __thiscall clear_active_landscape_entries("
             "LandscapeManager* manager);"
         ) in ida_sync
+        assert (
+            "void __thiscall calc_subgame_rate(SubgameRuntime* game);"
+            in ida_sync
+        )
         assert "SaltHazardSlot* slot" not in ida_sync
     assert "SALT_OWNER_EXPECTED_SIZE = 0x98" in ida_runtime_sync
     assert '(0x80, 4, "state", "SaltState")' in ida_runtime_sync
     assert 'salt_owner_readback = _salt_owner_readback()' in ida_runtime_sync
+    assert "SUB_LAZER_OWNER_EXPECTED_SIZE = 0xB0" in ida_runtime_sync
+    assert "SUB_LAZER_MANAGER_EXPECTED_SIZE = 0xDC0" in ida_runtime_sync
+    assert '(0x80, 4, "state", "SubLazerState")' in ida_runtime_sync
+    assert (
+        "sub_lazer_owner_readback = _sub_lazer_owner_readback()"
+        in ida_runtime_sync
+    )
+    assert '"SubLazer": _named_struct_size("SubLazer")' in ida_runtime_sync
+    assert (
+        '"SubLazerManager": _named_struct_size("SubLazerManager")'
+        in ida_runtime_sync
+    )
+    assert '"SubLazerState",' in path_sync
     for declaration in (
         "SubLazer* __thiscall initialize_sub_lazer_runtime(SubLazer* sub_lazer);",
         "void __thiscall update_sub_lazer_projectile(SubLazer* sub_lazer);",
@@ -6238,6 +6275,8 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         assert declaration in ida_runtime_sync
 
     assert "class SubLazer : public RenderableBod" in matcher_sub_lazer
+    assert "SubLazerState state;" in matcher_sub_lazer
+    assert "int state;" not in matcher_sub_lazer
     assert "class Salt : public RenderableBod" in matcher_salt
     assert "enum SaltState {" in matcher_salt
     assert "SaltState state;" in matcher_salt
@@ -6251,6 +6290,9 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         "void SaltManager::initialize_salt_hazard_pool()"
         in salt_scratches["initialize_salt_hazard_pool"]
     )
+    assert "SubLazerState* state" in (
+        repo_root / "tools/match/scratches/initialize_sub_lazer_pool/scratch.cpp"
+    ).read_text(encoding="utf-8")
     assert "SALT_STATE_ACTIVE" in salt_scratches["spawn_salt_hazard"]
     assert "slot->fade_alpha = 0.0f;" in salt_scratches["spawn_salt_hazard"]
     assert "slot->spawn_velocity_y" in salt_scratches["spawn_salt_hazard"]

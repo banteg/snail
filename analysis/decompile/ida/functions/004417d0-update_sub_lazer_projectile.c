@@ -2,7 +2,7 @@
 /* function: update_sub_lazer_projectile @ 0x4417d0 */
 /* selector: update_sub_lazer_projectile */
 
-// Windows `cRSubLazer::AI()`: returns recycle-pending projectiles through GameRoot's shared active BOD list, integrates one active SubLazer, distinguishes primary and secondary track-attachment hits with their native debug markers, and dispatches void Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and Android/iOS preserve the authored owner. The honest Windows scratch is 97.25% with 218/218 instructions; only three commutative x87 add orders differ.
+// Windows `cRSubLazer::AI()`: returns SUB_LAZER_STATE_RECYCLE_PENDING actors through GameRoot's shared active BOD list, integrates SUB_LAZER_STATE_ACTIVE actors, distinguishes primary and secondary track-attachment hits with their native debug markers, and dispatches void Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and Android/iOS preserve the authored owner. The honest Windows scratch is 97.25% with 218/218 instructions; only three commutative x87 add orders differ.
 void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
 {
   uint32_t list_flags; // eax
@@ -21,13 +21,13 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
 
   if ( sub_lazer->owner_game->subgame_pause_gate )
     return;
-  if ( sub_lazer->state == 1 )
+  if ( sub_lazer->state == SUB_LAZER_STATE_ACTIVE )
   {
     v7 = sub_lazer->sprite_bob_phase_step + sub_lazer->sprite_bob_phase;
     sub_lazer->sprite_bob_phase = v7;
     if ( v7 > 1.0 )
     {
-      sub_lazer->state = 2;
+      sub_lazer->state = SUB_LAZER_STATE_RECYCLE_PENDING;
       return;
     }
     p_position = &sub_lazer->body.transform.position;
@@ -80,7 +80,7 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
     deactivate_sub_lazer_projectile(sub_lazer);
     return;
   }
-  if ( sub_lazer->state == 2 )
+  if ( sub_lazer->state == SUB_LAZER_STATE_RECYCLE_PENDING )
   {
     list_flags = sub_lazer->body.bod.bod.list_flags;
     p_active_bod_list = &g_game_base->active_bod_list;
@@ -89,7 +89,7 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
       if ( (list_flags & 0x40) != 0 )
       {
         report_errorf(aListRemoveNext);
-        sub_lazer->state = 0;
+        sub_lazer->state = SUB_LAZER_STATE_INACTIVE;
       }
       else
       {
@@ -104,7 +104,7 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
         sub_lazer->body.bod.bod.list_next = p_active_bod_list->free_top;
         p_active_bod_list->free_top = &sub_lazer->body.bod.bod;
         v6 = sub_lazer->body.bod.bod.list_flags;
-        sub_lazer->state = 0;
+        sub_lazer->state = SUB_LAZER_STATE_INACTIVE;
         BYTE1(v6) &= ~2u;
         sub_lazer->body.bod.bod.list_flags = v6;
       }
@@ -112,7 +112,7 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
     else
     {
       report_errorf(aListRemove);
-      sub_lazer->state = 0;
+      sub_lazer->state = SUB_LAZER_STATE_INACTIVE;
     }
   }
 }

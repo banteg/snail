@@ -86,3 +86,8 @@ at 63/63 with six clean operands.
 `SUB_LAZER_STATE_ACTIVE` rather than an anonymous state 1. The manager's exact
 20-record constructor pass and free-slot scan prove the complementary inactive
 state and owned `SUB_LAZER_SLOT_CAPACITY`; spawn remains exact at 63/63.
+
+2026-07-19 analysis replay: Binary Ninja and IDA now carry the same
+`SubLazerState` member at `+0x80`, so the tracked decompiles render this exact
+transition as `SUB_LAZER_STATE_ACTIVE` while retaining the inherited
+`RenderableBod`, owner backlink, velocity, and bob-phase fields.

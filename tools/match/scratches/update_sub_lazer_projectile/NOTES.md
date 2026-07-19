@@ -199,3 +199,11 @@ vtable expression.
 No matcher source change is justified. Focused output remains 97.25%, 218/218
 instructions, prefix 82/218, with all 24 operands clean; the three residual
 pairs remain only commutative x87 load/add orderings.
+
+## 2026-07-19 lifecycle enum replay
+
+The analysis owner at `+0x80` is now the same 32-bit `SubLazerState` used by
+the exact matcher sources. Both decompilers name the active dispatch and the
+inactive/recycle-pending stores through the authored actor instead of treating
+the lane as a raw integer. The honest matcher result remains 97.25%; no source
+nudge is taken for the three commutative x87 pairs.

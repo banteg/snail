@@ -34,7 +34,7 @@
 00444e1e        int32_t i_1 = 0
 00444ece        while (i_1 s< 0xdc0)
 00444e26        struct SubLazerSlotCursor* sub_lazer_cursor = player->game + i_1
-00444e2e        if (sub_lazer_cursor->sub_lazer.state == 1)
+00444e2e        if (sub_lazer_cursor->sub_lazer.state == SUB_LAZER_STATE_ACTIVE)
 00444e5e        long double x87_r7_14 = fconvert.t(sub_lazer_cursor->sub_lazer.body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
 00444e68        vector.x = fconvert.s(fconvert.t(sub_lazer_cursor->sub_lazer.body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
 00444e6c        vector.y = fconvert.s(fconvert.t(sub_lazer_cursor->sub_lazer.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))

@@ -78,3 +78,8 @@ operands clean.
 `SUB_LAZER_STATE_INACTIVE` and the proved `SUB_LAZER_SLOT_CAPACITY`. This keeps
 the authored manager-owned 20-slot extent visible without changing the exact
 48/48-instruction output.
+
+2026-07-19 analysis replay: both decompilers now scan a `SubLazerState*`
+through the 20 inline actors and compare against
+`SUB_LAZER_STATE_INACTIVE`. This closes the manager-to-actor lifecycle owner
+without changing the exact 48/48-instruction implementation.

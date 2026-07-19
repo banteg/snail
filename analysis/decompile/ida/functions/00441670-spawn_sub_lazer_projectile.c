@@ -2,7 +2,7 @@
 /* function: spawn_sub_lazer_projectile @ 0x441670 */
 /* selector: spawn_sub_lazer_projectile */
 
-// Exact Windows `cRSubLazer::Shoot` implementation: activates one manager-owned SubLazer, stores body position at +0x68, velocity at +0x8c, resets its bob phase, links the inherited BOD node, and refreshes the forward basis. Android preserves the two-vector signature; iOS v1.9 adds the owning Goldy argument.
+// Exact Windows `cRSubLazer::Shoot` implementation: sets one manager-owned actor to SUB_LAZER_STATE_ACTIVE, stores body position at +0x68 and velocity at +0x8c, resets its bob phase, links the inherited BOD node, and refreshes the forward basis. Android preserves the two-vector signature; iOS v1.9 adds the owning Goldy argument.
 void __thiscall spawn_sub_lazer_projectile(SubLazer *sub_lazer, const Vec3 *origin, const Vec3 *direction)
 {
   TransformMatrix *p_transform; // edi
@@ -14,7 +14,7 @@ void __thiscall spawn_sub_lazer_projectile(SubLazer *sub_lazer, const Vec3 *orig
   struct BodNode *list_next; // eax
 
   p_transform = &sub_lazer->body.transform;
-  sub_lazer->state = 1;
+  sub_lazer->state = SUB_LAZER_STATE_ACTIVE;
   set_matrix_identity(&sub_lazer->body.transform);
   sub_lazer->body.transform.position.x = origin->x;
   sub_lazer->body.transform.position.y = origin->y;

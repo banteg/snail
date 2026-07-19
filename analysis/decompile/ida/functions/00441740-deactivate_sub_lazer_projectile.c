@@ -2,7 +2,7 @@
 /* function: deactivate_sub_lazer_projectile @ 0x441740 */
 /* selector: deactivate_sub_lazer_projectile */
 
-// Exact void Windows `cRSubLazer::Kill()`: marks one SubLazer inactive and unlinks its inherited BOD node through GameRoot's active/free list after collision or path exit. Android preserves the authored method name; its apparent result is only the list-removal call value left in the return register.
+// Exact void Windows `cRSubLazer::Kill()`: sets one actor to SUB_LAZER_STATE_INACTIVE and unlinks its inherited BOD node through GameRoot's active/free list after collision or path exit. Android preserves the authored method name; its apparent result is only the list-removal call value left in the return register.
 void __thiscall deactivate_sub_lazer_projectile(SubLazer *sub_lazer)
 {
   BodList *p_active_bod_list; // ecx
@@ -18,7 +18,7 @@ void __thiscall deactivate_sub_lazer_projectile(SubLazer *sub_lazer)
     if ( (list_flags & 0x40) != 0 )
     {
       report_errorf(aListRemoveNext);
-      sub_lazer->state = 0;
+      sub_lazer->state = SUB_LAZER_STATE_INACTIVE;
     }
     else
     {
@@ -33,7 +33,7 @@ void __thiscall deactivate_sub_lazer_projectile(SubLazer *sub_lazer)
       sub_lazer->body.bod.bod.list_next = p_active_bod_list->free_top;
       p_active_bod_list->free_top = &sub_lazer->body.bod.bod;
       v6 = sub_lazer->body.bod.bod.list_flags;
-      sub_lazer->state = 0;
+      sub_lazer->state = SUB_LAZER_STATE_INACTIVE;
       BYTE1(v6) &= ~2u;
       sub_lazer->body.bod.bod.list_flags = v6;
     }
@@ -41,6 +41,6 @@ void __thiscall deactivate_sub_lazer_projectile(SubLazer *sub_lazer)
   else
   {
     report_errorf(aListRemove);
-    sub_lazer->state = 0;
+    sub_lazer->state = SUB_LAZER_STATE_INACTIVE;
   }
 }

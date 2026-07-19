@@ -64,11 +64,11 @@ typedef struct RenderableBod {
     uint8_t unknown_7c[0x4];
 } RenderableBod;
 
-enum SubLazerState {
+typedef enum SubLazerState {
     SUB_LAZER_STATE_INACTIVE = 0,
     SUB_LAZER_STATE_ACTIVE = 1,
     SUB_LAZER_STATE_RECYCLE_PENDING = 2,
-};
+} SubLazerState;
 
 enum {
     SUB_LAZER_SLOT_CAPACITY = 20,
@@ -76,7 +76,7 @@ enum {
 
 typedef struct SubLazer {
     RenderableBod body;
-    int32_t state;
+    SubLazerState state;
     uint8_t unknown_84[0x4];
     SubgameRuntime* owner_game;
     Vec3 velocity;

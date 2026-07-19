@@ -4,11 +4,11 @@
 
 void SubLazerManager::initialize_sub_lazer_pool()
 {
-    int* state = &slots[0].state;
+    SubLazerState* state = &slots[0].state;
     int count = sizeof(slots) / sizeof(slots[0]);
     do {
         *state = SUB_LAZER_STATE_INACTIVE;
-        state += sizeof(SubLazer) / sizeof(int);
+        state += sizeof(SubLazer) / sizeof(SubLazerState);
         --count;
     } while (count);
 }

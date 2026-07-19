@@ -72,3 +72,11 @@ Keeping the proven anchor-before-flags expression order is sufficient for the
 native lifetime; the global itself can now be declared as `GameRoot*` and reach
 `active_bod_list` directly. The lifecycle method remains exact at 43/43
 instructions with all five operands clean.
+
+## 2026-07-19 lifecycle-owner replay
+
+The exact receiver copy in Binary Ninja is now persisted as `SubLazer*`, so
+Kill no longer loses the actor behind a `BodNode*` or offset expression. Both
+analysis lanes resolve the `+0x80` store as
+`state = SUB_LAZER_STATE_INACTIVE`; the matcher remains exact at 43/43 with
+all five operands clean.

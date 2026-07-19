@@ -752,11 +752,11 @@ typedef Salt SaltHazardSlot;
  * deactivate_sub_lazer_projectile @ 0x441740, update_sub_lazer_projectile
  * @ 0x4417d0.
  */
-enum SubLazerState {
+typedef enum SubLazerState {
     SUB_LAZER_STATE_INACTIVE = 0,
     SUB_LAZER_STATE_ACTIVE = 1,
     SUB_LAZER_STATE_RECYCLE_PENDING = 2,
-};
+} SubLazerState;
 
 enum {
     SUB_LAZER_SLOT_CAPACITY = 20,
@@ -764,7 +764,7 @@ enum {
 
 typedef struct SubLazer {
     RenderableBod body;
-    uint32_t state;
+    SubLazerState state;
     uint8_t _pad_84[0x4];
     SubgameRuntime* owner_game;
     Vec3 velocity;

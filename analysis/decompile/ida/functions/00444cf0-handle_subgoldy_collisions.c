@@ -100,7 +100,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
     for ( j = 0; j < 20; ++j )
     {
       sub_lazer_cursor = (SubLazerSlotCursor *)(&player->game->scan_reset + j * 176);
-      if ( sub_lazer_cursor->sub_lazer.state == 1 )
+      if ( sub_lazer_cursor->sub_lazer.state == SUB_LAZER_STATE_ACTIVE )
       {
         v61.x = sub_lazer_cursor->sub_lazer.body.transform.position.x - player->cached_camera_target_world.x;
         v61.y = sub_lazer_cursor->sub_lazer.body.transform.position.y - player->cached_camera_target_world.y;
@@ -109,7 +109,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
         v59 = v61;
         if ( v7 < 1.0 && normalize_vector(&v59) < 0.49000001 )
         {
-          player->game->sub_lazers.slots[j].state = 2;
+          player->game->sub_lazers.slots[j].state = SUB_LAZER_STATE_RECYCLE_PENDING;
           apply_damage_gauge_delta(&player->damage_gauge, 0.02, 0);
         }
       }

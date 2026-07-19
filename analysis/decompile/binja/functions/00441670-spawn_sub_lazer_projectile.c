@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: spawn_sub_lazer_projectile @ 0x441670 */
 
-00441678        sub_lazer->state = 1
+00441678        sub_lazer->state = SUB_LAZER_STATE_ACTIVE
 00441684        set_matrix_identity(&sub_lazer->body.transform)
 00441698        sub_lazer->body.transform.position.x = origin->x
 0044169d        sub_lazer->body.transform.position.y = origin->y

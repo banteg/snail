@@ -2,11 +2,11 @@
 /* function: shoot_subgoldy @ 0x441ad0 */
 /* selector: shoot_subgoldy */
 
-// Exact `cRSubLazerManager::Shoot(tVector, tVector)`: finds a free SubLazer in the manager's 20 inline slots, dispatches its Shoot method, and plays the positional fire cue. Cross-port iOS v1.5 preserves the manager signature.
+// Exact `cRSubLazerManager::Shoot(tVector, tVector)`: scans the manager's 20 inline actors for SUB_LAZER_STATE_INACTIVE, dispatches that actor's Shoot method, and plays the positional fire cue. Cross-port iOS v1.5 preserves the manager signature.
 void __thiscall shoot_subgoldy(SubLazerManager *manager, Vec3 *origin, const Vec3 *direction)
 {
   int v4; // eax
-  uint32_t *i; // ecx
+  SubLazerState *i; // ecx
   float v6; // [esp+Ch] [ebp-14h]
   float z; // [esp+10h] [ebp-10h]
   Vec3 v8; // [esp+14h] [ebp-Ch] BYREF

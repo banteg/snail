@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 8,
+  "function_count": 10,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 8,
-  "ida_exported": 8,
+  "bn_exported": 10,
+  "ida_exported": 10,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -21,8 +21,8 @@
       "address": "0x408060"
     },
     {
-      "name": "initialize_salt_hazard_runtime",
-      "address": "0x408630"
+      "name": "initialize_sub_lazer_runtime",
+      "address": "0x408610"
     },
     {
       "name": "build_subgame_level",
@@ -33,23 +33,31 @@
       "address": "0x438b90"
     },
     {
-      "name": "initialize_salt_hazard_pool",
-      "address": "0x441540"
+      "name": "initialize_sub_lazer_pool",
+      "address": "0x441650"
     },
     {
-      "name": "spawn_salt_hazard",
-      "address": "0x441560"
+      "name": "spawn_sub_lazer_projectile",
+      "address": "0x441670"
     },
     {
-      "name": "update_salt_hazard",
-      "address": "0x441c10"
+      "name": "deactivate_sub_lazer_projectile",
+      "address": "0x441740"
+    },
+    {
+      "name": "update_sub_lazer_projectile",
+      "address": "0x4417d0"
+    },
+    {
+      "name": "shoot_subgoldy",
+      "address": "0x441ad0"
     },
     {
       "name": "handle_subgoldy_collisions",
       "address": "0x444cf0"
     }
   ],
-  "health_check_count": 880,
+  "health_check_count": 890,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

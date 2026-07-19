@@ -1428,8 +1428,12 @@ only; live receivers and manager arrays use `SubLazer` and `Salt`.
   `update_sub_lazer_projectile`, preserved as `cRSubLazer::AI()` on Android and
   iOS
 - `SubLazerManager` owns 20 inline `0xb0`-byte actors, exactly matching the
-  native `0xdc0` size ledger; each actor stores its borrowed `owner_game` at
-  `+0x88`, velocity at `+0x8c`, and bob phase pair at `+0x98/+0x9c`
+  native `0xdc0` size ledger; each actor owns a 32-bit `SubLazerState` at
+  `+0x80`, stores its borrowed `owner_game` at `+0x88`, velocity at `+0x8c`,
+  and bob phase pair at `+0x98/+0x9c`
+- the three proved SubLazer states are inactive `0`, active `1`, and
+  recycle-pending `2`: manager initialization and Kill write inactive, Shoot
+  writes active, and AI consumes recycle-pending after bob expiry or collision
 - `spawn_sub_lazer_projectile` is the slot-level authored `Shoot`, while
   `deactivate_sub_lazer_projectile` is `cRSubLazer::Kill()`; the manager-level
   `shoot_subgoldy` scans the same inline array

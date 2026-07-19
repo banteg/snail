@@ -40,6 +40,16 @@ SALT_OWNER_EXPECTED_MEMBERS = (
     (0x94, 1, "collision_armed", "uint8_t"),
 )
 
+SUB_LAZER_OWNER_EXPECTED_SIZE = 0xB0
+SUB_LAZER_MANAGER_EXPECTED_SIZE = 0xDC0
+SUB_LAZER_OWNER_EXPECTED_MEMBERS = (
+    (0x80, 4, "state", "SubLazerState"),
+    (0x88, 4, "owner_game", "SubgameRuntime *"),
+    (0x8C, 12, "velocity", "Vec3"),
+    (0x98, 4, "sprite_bob_phase", "float"),
+    (0x9C, 4, "sprite_bob_phase_step", "float"),
+)
+
 
 TRUSTED_DECLARATIONS = [
     (
@@ -286,7 +296,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "calc_subgame_rate",
-        "void __thiscall calc_subgame_rate(SubgameRuntime* runtime);",
+        "void __thiscall calc_subgame_rate(SubgameRuntime* game);",
     ),
     (
         "complete_subgame",
@@ -394,6 +404,11 @@ REANALYSIS_FUNCTIONS = (
     0x440600,  # uninit_pause_menu
     0x440660,  # initialize_pause_menu
     0x4407A0,  # update_pause_menu
+    0x441650,  # initialize_sub_lazer_pool
+    0x441670,  # spawn_sub_lazer_projectile
+    0x441740,  # deactivate_sub_lazer_projectile
+    0x4417D0,  # update_sub_lazer_projectile
+    0x441AD0,  # shoot_subgoldy
     0x443130,  # update_track_parcels
     0x443160,  # initialize_track_parcel_slots
     0x443190,  # allocate_track_parcel_slot
@@ -503,6 +518,50 @@ def _salt_owner_readback() -> dict[str, object]:
                 "type": member_type,
             }
             for offset, member_size, member_name, member_type in SALT_OWNER_EXPECTED_MEMBERS
+        ],
+    }
+
+
+def _sub_lazer_owner_readback() -> dict[str, object]:
+    members = _named_struct_members("SubLazer")
+    selected = [] if members is None else [
+        member
+        for member in members
+        if int(member["offset"])
+        in {expected[0] for expected in SUB_LAZER_OWNER_EXPECTED_MEMBERS}
+    ]
+    observed = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected
+    )
+    size = _named_struct_size("SubLazer")
+    manager_size = _named_struct_size("SubLazerManager")
+    return {
+        "status": (
+            "verified"
+            if size == SUB_LAZER_OWNER_EXPECTED_SIZE
+            and manager_size == SUB_LAZER_MANAGER_EXPECTED_SIZE
+            and observed == SUB_LAZER_OWNER_EXPECTED_MEMBERS
+            else "failed"
+        ),
+        "size": size,
+        "manager_size": manager_size,
+        "members": selected,
+        "expected_size": SUB_LAZER_OWNER_EXPECTED_SIZE,
+        "expected_manager_size": SUB_LAZER_MANAGER_EXPECTED_SIZE,
+        "expected_members": [
+            {
+                "offset": offset,
+                "size": member_size,
+                "name": member_name,
+                "type": member_type,
+            }
+            for offset, member_size, member_name, member_type in SUB_LAZER_OWNER_EXPECTED_MEMBERS
         ],
     }
 
@@ -879,6 +938,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
     if salt_owner_readback["status"] != "verified":
         failed.append({"selector": "Salt", "owner_readback": salt_owner_readback})
 
+    sub_lazer_owner_readback = _sub_lazer_owner_readback()
+    if sub_lazer_owner_readback["status"] != "verified":
+        failed.append(
+            {"selector": "SubLazer", "owner_readback": sub_lazer_owner_readback}
+        )
+
     reanalyzed = []
     for address in REANALYSIS_FUNCTIONS:
         function = ida_funcs.get_func(address)
@@ -906,6 +971,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "contact_header": str(contact_header_path),
                 "parcel_owner_sizes": parcel_owner_sizes,
                 "salt_owner_readback": salt_owner_readback,
+                "sub_lazer_owner_readback": sub_lazer_owner_readback,
                 "type_sizes": {
                     "SubgameRuntime": _named_struct_size("SubgameRuntime"),
                     "SubRingStar": _named_struct_size("SubRingStar"),
@@ -922,6 +988,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "ParcelManager": _named_struct_size("ParcelManager"),
                     "Completion": _named_struct_size("Completion"),
                     "TimesUp": _named_struct_size("TimesUp"),
+                    "SubLazer": _named_struct_size("SubLazer"),
+                    "SubLazerManager": _named_struct_size("SubLazerManager"),
                     "Salt": _named_struct_size("Salt"),
                     "SaltManager": _named_struct_size("SaltManager"),
                 },

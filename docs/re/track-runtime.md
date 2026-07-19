@@ -263,6 +263,12 @@ High-confidence findings:
 - startup likewise clones the root lazer donor into the `20` inline
   `0xb0`-byte sub-lazer slots at `SubgameRuntime +0x356b00`
 - both slot families borrow their owning subgame through slot `+0x88`
+- `SubLazerState` is the 32-bit slot owner at `+0x80`: inactive `0`, active
+  `1`, and recycle-pending `2`
+- `cRSubLazerManager::Init()` clears every slot to inactive; the manager Shoot
+  scan selects an inactive actor, actor Shoot marks it active, collision or bob
+  expiry marks it recycle-pending, and actor AI returns that state through the
+  root active-BOD list
 - salt is managed separately from slugs
 - slugs use an `8`-slot pool and a different runtime path
 - authored `R` rows map onto ring-effect helpers through the packed ring bits

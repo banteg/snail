@@ -1789,6 +1789,7 @@
         "salt_cursor->salt.state == SALT_STATE_ACTIVE",
         "salt_cursor->salt.collision_armed == 1",
         "salt_cursor->salt.body.transform.position.z",
+        "sub_lazer_cursor->sub_lazer.state == SUB_LAZER_STATE_ACTIVE",
         "sub_lazer_cursor->sub_lazer.body.transform.position.z",
         "slug_cursor->slug.body.transform.position.z",
         "parcel_cursor->parcel.position.z",
@@ -1828,7 +1829,9 @@
         "salt_cursor->salt.state == SALT_STATE_ACTIVE",
         "salt_cursor->salt.collision_armed == 1",
         "salt_cursor->salt.body.transform.position.z",
+        "sub_lazer_cursor->sub_lazer.state == SUB_LAZER_STATE_ACTIVE",
         "sub_lazer_cursor->sub_lazer.body.transform.position.z",
+        "player->game->sub_lazers.slots[j].state = SUB_LAZER_STATE_RECYCLE_PENDING;",
         "slug_cursor->slug.body.transform.position.z",
         "parcel_cursor->parcel.bod.position.z",
         "health_cursor->health.bod.position.z",
@@ -6003,9 +6006,189 @@
       ]
     },
     {
+      "name": "bn_sub_lazer_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/00408610-initialize_sub_lazer_runtime.c",
+      "required_substrings": [
+        "initialize_renderable_bod(sub_lazer)",
+        "sub_lazer->body.bod.bod.vtable = &data_49733c",
+        "return sub_lazer"
+      ],
+      "forbidden_substrings": [
+        "SubLazerSlot",
+        "sub_lazer->bod.",
+        "sub_lazer->__offset",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_sub_lazer_constructor_owner",
+      "artifact": "analysis/decompile/ida/functions/00408610-initialize_sub_lazer_runtime.c",
+      "required_substrings": [
+        "SubLazer *__thiscall initialize_sub_lazer_runtime(SubLazer *sub_lazer)",
+        "initialize_renderable_bod(&sub_lazer->body);",
+        "sub_lazer->body.bod.bod.vtable = &g_sub_lazer_vtable;",
+        "return sub_lazer;"
+      ],
+      "forbidden_substrings": [
+        "SubLazerSlot",
+        "initialize_renderable_bod(sub_lazer);",
+        "sub_lazer->bod.",
+        "sub_408610",
+        "_DWORD *this"
+      ]
+    },
+    {
+      "name": "bn_sub_lazer_pool_state_owner",
+      "artifact": "analysis/decompile/binja/functions/00441650-initialize_sub_lazer_pool.c",
+      "required_substrings": [
+        "enum SubLazerState* eax = &manager->slots[0].state",
+        "(eax - 0x80)->slots[0].state = SUB_LAZER_STATE_INACTIVE",
+        "eax = &eax[0x2c]",
+        "00441669        return"
+      ],
+      "forbidden_substrings": [
+        "int32_t* eax",
+        "state = 0",
+        "SubLazerSlot",
+        "__offset",
+        "return eax"
+      ]
+    },
+    {
+      "name": "ida_sub_lazer_pool_state_owner",
+      "artifact": "analysis/decompile/ida/functions/00441650-initialize_sub_lazer_pool.c",
+      "required_substrings": [
+        "void __thiscall initialize_sub_lazer_pool(SubLazerManager *manager)",
+        "SubLazerState *p_state;",
+        "p_state = &manager->slots[0].state;",
+        "*p_state = SUB_LAZER_STATE_INACTIVE;",
+        "p_state += 44;"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall initialize_sub_lazer_pool",
+        "int *p_state",
+        "_DWORD *p_state",
+        "SubLazerSlot",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_sub_lazer_spawn_state_and_body_owner",
+      "artifact": "analysis/decompile/binja/functions/00441670-spawn_sub_lazer_projectile.c",
+      "required_substrings": [
+        "sub_lazer->state = SUB_LAZER_STATE_ACTIVE",
+        "set_matrix_identity(&sub_lazer->body.transform)",
+        "sub_lazer->velocity.x = direction->x",
+        "sub_lazer->sprite_bob_phase_step",
+        "sub_lazer->owner_game",
+        "sub_lazer->body.bod.bod.list_flags"
+      ],
+      "forbidden_substrings": [
+        "state = 1",
+        "SubLazerSlot",
+        "sub_lazer->bod.",
+        "sub_lazer->__offset",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_sub_lazer_spawn_state_and_body_owner",
+      "artifact": "analysis/decompile/ida/functions/00441670-spawn_sub_lazer_projectile.c",
+      "required_substrings": [
+        "void __thiscall spawn_sub_lazer_projectile(SubLazer *sub_lazer, const Vec3 *origin, const Vec3 *direction)",
+        "sub_lazer->state = SUB_LAZER_STATE_ACTIVE;",
+        "set_matrix_identity(&sub_lazer->body.transform);",
+        "sub_lazer->velocity.x = direction->x;",
+        "owner_game = sub_lazer->owner_game;",
+        "sub_lazer->body.bod.bod.list_flags"
+      ],
+      "forbidden_substrings": [
+        "state = 1;",
+        "SubLazerSlot",
+        "sub_lazer->bod.",
+        "sub_441670",
+        "_DWORD *this"
+      ]
+    },
+    {
+      "name": "bn_sub_lazer_kill_state_and_root_list_owner",
+      "artifact": "analysis/decompile/binja/functions/00441740-deactivate_sub_lazer_projectile.c",
+      "required_substrings": [
+        "&g_game_base->active_bod_list",
+        "sub_lazer->body.bod.bod.list_flags",
+        "sub_lazer->state = SUB_LAZER_STATE_INACTIVE",
+        "sub_lazer->body.bod.bod.list_next = ecx->free_top",
+        "ecx->free_top = sub_lazer"
+      ],
+      "forbidden_substrings": [
+        "state = 0",
+        "SubLazerSlot",
+        "sub_lazer->bod.",
+        "__offset",
+        "return 0"
+      ]
+    },
+    {
+      "name": "ida_sub_lazer_kill_state_and_root_list_owner",
+      "artifact": "analysis/decompile/ida/functions/00441740-deactivate_sub_lazer_projectile.c",
+      "required_substrings": [
+        "void __thiscall deactivate_sub_lazer_projectile(SubLazer *sub_lazer)",
+        "p_active_bod_list = &g_game_base->active_bod_list;",
+        "sub_lazer->body.bod.bod.list_flags",
+        "sub_lazer->state = SUB_LAZER_STATE_INACTIVE;",
+        "p_active_bod_list->free_top = &sub_lazer->body.bod.bod;"
+      ],
+      "forbidden_substrings": [
+        "state = 0;",
+        "SubLazerSlot",
+        "sub_lazer->bod.",
+        "sub_441740",
+        "_DWORD *this"
+      ]
+    },
+    {
+      "name": "bn_sub_lazer_manager_state_scan",
+      "artifact": "analysis/decompile/binja/functions/00441ad0-shoot_subgoldy.c",
+      "required_substrings": [
+        "enum SubLazerState* ecx = &manager->slots[0].state",
+        "slots[0].state == SUB_LAZER_STATE_INACTIVE",
+        "spawn_sub_lazer_projectile(&manager->slots[i], &origin_1, direction)",
+        "play_sound_effect_at_position(&g_sound_effect_manager, 0xf, origin)"
+      ],
+      "forbidden_substrings": [
+        "int32_t* ecx",
+        "state == 0",
+        "SubLazerSlot",
+        "manager->__offset",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_sub_lazer_manager_state_scan",
+      "artifact": "analysis/decompile/ida/functions/00441ad0-shoot_subgoldy.c",
+      "required_substrings": [
+        "void __thiscall shoot_subgoldy(SubLazerManager *manager, Vec3 *origin, const Vec3 *direction)",
+        "SubLazerState *i;",
+        "for ( i = &manager->slots[0].state; *i; i += 44 )",
+        "spawn_sub_lazer_projectile(&manager->slots[v4], &v8, direction);",
+        "play_sound_effect_at_position(&g_sound_effect_manager, 15, origin);"
+      ],
+      "forbidden_substrings": [
+        "int *i;",
+        "_DWORD *i;",
+        "SubLazerSlot",
+        "sub_441AD0",
+        "_DWORD *this"
+      ]
+    },
+    {
       "name": "bn_sub_lazer_attachment_owner_graph",
       "artifact": "analysis/decompile/binja/functions/004417d0-update_sub_lazer_projectile.c",
       "required_substrings": [
+        "enum SubLazerState state = sub_lazer->state",
+        "state == SUB_LAZER_STATE_ACTIVE",
+        "sub_lazer->state = SUB_LAZER_STATE_RECYCLE_PENDING",
+        "sub_lazer->state = SUB_LAZER_STATE_INACTIVE",
         "get_track_grid_cell_at_world_position(&g_game_base->subgame,",
         "get_track_runtime_cell_at_world_z(&g_game_base->subgame,",
         "struct SubRow*",
@@ -6021,6 +6204,9 @@
       ],
       "forbidden_substrings": [
         "SubLazerSlot",
+        "state == 1",
+        "sub_lazer->state = 2",
+        "sub_lazer->state = 0",
         "slot->position",
         "sub_lazer->bod.",
         "g_game_base[0x74618]",
@@ -6035,6 +6221,10 @@
       "artifact": "analysis/decompile/ida/functions/004417d0-update_sub_lazer_projectile.c",
       "required_substrings": [
         "void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)",
+        "sub_lazer->state == SUB_LAZER_STATE_ACTIVE",
+        "sub_lazer->state = SUB_LAZER_STATE_RECYCLE_PENDING;",
+        "sub_lazer->state == SUB_LAZER_STATE_RECYCLE_PENDING",
+        "sub_lazer->state = SUB_LAZER_STATE_INACTIVE;",
         "sub_lazer->body.transform.position",
         "sub_lazer->body.bod.bod.list_flags",
         "track_runtime_cell_at_world_z->primary_attachment_cell->attachment_template_record,",
@@ -6044,6 +6234,10 @@
       ],
       "forbidden_substrings": [
         "SubLazerSlot",
+        "sub_lazer->state == 1",
+        "sub_lazer->state = 2;",
+        "sub_lazer->state == 2",
+        "sub_lazer->state = 0;",
         "sub_4417D0",
         "_DWORD *this",
         "sub_lazer->bod.",
