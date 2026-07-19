@@ -9,46 +9,46 @@ void __thiscall spawn_garbage_smoke_particle(
         Vec3 *velocity,
         Player *owner_player)
 {
-  float *sprite; // esi
-  int v6; // eax
+  Sprite *sprite; // esi
+  SpriteFlag flags; // eax
   double v7; // st7
   tColour *v8; // eax
   float a; // eax
-  float *v10; // ecx
+  Vec3 *p_velocity; // ecx
   double v11; // st7
   float g; // eax
   Color4f color; // [esp+4h] [ebp-10h] BYREF
 
   if ( (g_runtime_config.render_flags & 0x10) != 0 )
   {
-    sprite = (float *)allocate_sprite(g_sprite_manager, owner_player->player_slot, 33, -1, -1);
-    v6 = *((_DWORD *)sprite + 1);
-    sprite[26] = 0.0;
-    BYTE1(v6) |= 8u;
-    *((_DWORD *)sprite + 1) = v6;
+    sprite = allocate_sprite(&g_sprite_manager, owner_player->player_slot, 33, -1, -1);
+    flags = sprite->flags;
+    sprite->progress = 0.0;
+    BYTE1(flags) |= 8u;
+    sprite->flags = flags;
     v7 = sub_garbage->owner_game->subgame_rate * 0.033333335;
-    sprite[28] = 0.0;
-    sprite[27] = v7;
-    sprite[29] = sub_garbage->owner_game->subgame_rate * 0.41666669;
+    sprite->lifetime = 0.0;
+    sprite->progress_step = v7;
+    sprite->lifetime_step = sub_garbage->owner_game->subgame_rate * 0.41666669;
     v8 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
-    sprite[11] = v8->r;
-    sprite[12] = v8->g;
-    sprite[13] = v8->b;
+    sprite->color.r = v8->r;
+    sprite->color.g = v8->g;
+    sprite->color.b = v8->b;
     a = v8->a;
-    sprite[24] = 0.30000001;
-    sprite[25] = 1.3;
-    sprite[14] = a;
-    v10 = sprite + 21;
-    sprite += 18;
+    sprite->size_start = 0.30000001;
+    sprite->size_end = 1.3;
+    sprite->color.a = a;
+    p_velocity = &sprite->velocity;
+    sprite = (Sprite *)((char *)sprite + 72);
     color.r = velocity->x * 0.2;
     color.g = velocity->y * 0.2;
     v11 = velocity->z * 0.2;
     g = color.g;
-    *v10 = color.r;
-    sprite[12] = 0.0;
-    v10[1] = g;
+    p_velocity->x = color.r;
+    sprite->color.g = 0.0;
+    p_velocity->y = g;
     color.b = v11;
-    v10[2] = color.b;
-    *(Vec3 *)sprite = *position;
+    p_velocity->z = color.b;
+    *(Vec3 *)&sprite->object_ref = *position;
   }
 }

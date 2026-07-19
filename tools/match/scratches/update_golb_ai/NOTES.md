@@ -562,3 +562,11 @@ access.
 Binary Ninja and IDA independently read back the same nested owners. Focused
 matching remains honestly byte-stable at 81.88% (669/694 instructions) with 66
 clean masked operands and no unresolved or mismatched operands.
+
+## 2026-07-19 borrowed garbage lifecycle consumer
+
+Both analysis lanes now show the two borrowed
+`shot->game->garbage_hazards.active_head` walks selecting
+`SUB_GARBAGE_STATE_ACTIVE`, transitioning hits to `BURST_PENDING`, and writing
+the recovered right/left collision side. This clarifies the pool owner without
+changing the honest 81.88% (669/694) matching frontier.

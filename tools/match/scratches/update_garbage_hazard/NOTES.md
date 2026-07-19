@@ -310,3 +310,12 @@ the callback as a void thiscall at `0x43f200`, agreeing with the constructor
 table and the retained cross-port `cRSubGarbage::AI()` symbol. The exact
 217/217 matcher proof is unchanged; this pass recovers the same ownership in
 both analysis lanes.
+
+## 2026-07-19 lifecycle and collision-side ownership
+
+The canonical owner now carries `SubGarbageState state` at `+0x84` and
+`SubGarbageCollisionSide collision_side` at `+0x88`. Binary Ninja recovers
+enum-typed `state` and `collision_side` locals and names every transition;
+IDA independently renders the four switch states and both right/left burst
+sides. The matcher stays genuinely exact at 217/217 with all 22 operands
+clean—these names expose proved semantics and do not alter source shape.

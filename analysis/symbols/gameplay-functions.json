@@ -500,7 +500,7 @@
     {
       "address": "0x408550",
       "name": "initialize_garbage_hazard",
-      "description": "Exact Windows constructor for one authored `SubGarbage` (`cRSubGarbage` cross-port): constructs the inherited renderable BOD and installs the table whose entry is `update_garbage_hazard`. `initialize_runtime_pools_and_path_template_bank` walks 50 inline 0xc4-byte records, and the resulting 0x2648 extent exactly matches the native `Size of cRSubGarbage` ledger."
+      "description": "Exact Windows constructor for one authored `SubGarbage` (`cRSubGarbage` cross-port): constructs the inherited renderable BOD and installs the table whose entry is `update_garbage_hazard`. `initialize_runtime_pools_and_path_template_bank` walks 50 inline 0xc4-byte records, and the resulting 0x2648 extent exactly matches the native `Size of cRSubGarbage` ledger; reset and teardown independently seed `SUB_GARBAGE_STATE_INACTIVE`."
     },
     {
       "address": "0x408570",
@@ -2419,7 +2419,7 @@
     {
       "address": "0x43da80",
       "name": "spawn_track_garbage_hazard",
-      "description": "Exact void allocator and initializer for one live `SubGarbage` from the active runtime row state. It scans the 50 owned 0xc4-byte records after the pool's borrowed active-chain head; the sole Windows caller discards EAX, while Android leaves incompatible incidental results on success and exhaustion. Android and iOS identify the caller-owned method as `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`."
+      "description": "Exact void allocator and initializer for one live `SubGarbage` from the active runtime row state. It scans the 50 owned 0xc4-byte records for `SUB_GARBAGE_STATE_INACTIVE` after the pool's borrowed active-chain head, then activates the selected slot; the sole Windows caller discards EAX, while Android leaves incompatible incidental results on success and exhaustion. Android and iOS identify the caller-owned method as `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`."
     },
     {
       "address": "0x43dc80",
@@ -2469,12 +2469,12 @@
     {
       "address": "0x43f130",
       "name": "destroy_garbage_hazard",
-      "description": "Exact `SubGarbage` teardown: removes the inherited BOD from the live lists, kills its sprite, and unlinks it from the pool's borrowed active-chain head after collision or expiry. Android retains the authored member as `cRSubGarbage::Kill()`."
+      "description": "Exact `SubGarbage` teardown: writes `SUB_GARBAGE_STATE_INACTIVE`, removes the inherited BOD from the live lists, kills its sprite, and unlinks it from the pool's borrowed active-chain head after collision or expiry. Android retains the authored member as `cRSubGarbage::Kill()`."
     },
     {
       "address": "0x43f200",
       "name": "update_garbage_hazard",
-      "description": "Void `cRSubGarbage::AI()` callback advancing one owned pool slot through inactive, active, burst-pending, and burst states before teardown. The exact Windows constructor table at 0x497328 points directly here, and the active-BOD dispatcher invokes slot zero through a virtual void method; Android and iOS retain the same authored member."
+      "description": "Void `cRSubGarbage::AI()` callback advancing one owned pool slot through the typed `SubGarbageState` lifecycle (`INACTIVE`, `ACTIVE`, `BURST_PENDING`, `BURST`) and orienting its burst through `SubGarbageCollisionSide` (`RIGHT` or `LEFT`) before teardown. The exact Windows constructor table at 0x497328 points directly here, and the active-BOD dispatcher invokes slot zero through a virtual void method; Android and iOS retain the same authored member."
     },
     {
       "address": "0x43f520",

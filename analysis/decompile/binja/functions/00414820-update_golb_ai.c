@@ -230,7 +230,7 @@
 0041525c        spawn_golb_impact_sprite(shot, &position_3)
 00415263        kill_golb(shot)
 00414e90        while (true)
-00414e90        if (esi_7->state == 1)
+00414e90        if (esi_7->state == SUB_GARBAGE_STATE_ACTIVE)
 00414eb0        long double x87_r7_81 = fconvert.t(esi_7->body.transform.position.z) - fconvert.t(shot->source_matrix.position.z)
 00414eb7        vector.x = fconvert.s(fconvert.t(esi_7->body.transform.position.x) - fconvert.t(shot->source_matrix.position.x))
 00414ebb        vector.y = fconvert.s(fconvert.t(esi_7->body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
@@ -247,13 +247,13 @@
 00414ef6        long double x87_r6_29 = fconvert.t(esi_7->radius) + fconvert.t(0.49000001f)
 00414efe        st0_4 - x87_r6_29
 00414f05        if ((((st0_4 < x87_r6_29 ? 1 : 0) << 8 | (is_unordered.t(st0_4, x87_r6_29) ? 1 : 0) << 0xa | (st0_4 == x87_r6_29 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00414f07        esi_7->state = 2
+00414f07        esi_7->state = SUB_GARBAGE_STATE_BURST_PENDING
 00414f0d        long double x87_r7_84 = fconvert.t(vector.x)
 00414f11        long double temp23_1 = fconvert.t(0f)
 00414f11        x87_r7_84 - temp23_1
 00414f1c        if ((((x87_r7_84 < temp23_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_84, temp23_1) ? 1 : 0) << 0xa | (x87_r7_84 == temp23_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
-00414f30        esi_7->collision_side = 1
-00414f1e        esi_7->collision_side = 2
+00414f30        esi_7->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT
+00414f1e        esi_7->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT
 00414f40        add_subgoldy_score(shot->owner_player, 0, 0)
 00414f4b        if (shot->kind != 1)
 0041509d        kill_golb(shot)
@@ -261,7 +261,7 @@
 004150b1        if (shot->kind == 2)
 004150bd        struct SubGarbage* i_1 = shot->game->garbage_hazards.active_head
 004150c5        if (i_1 != 0)
-004150d1        if (i_1->state == 1)
+004150d1        if (i_1->state == SUB_GARBAGE_STATE_ACTIVE)
 004150f8        vector.x = fconvert.s(fconvert.t(i_1->body.transform.position.x) - fconvert.t(shot->source_matrix.position.x))
 004150fc        vector.y = fconvert.s(fconvert.t(i_1->body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
 0041510c        vector.z = fconvert.s(fconvert.t(i_1->body.transform.position.z) - fconvert.t(shot->source_matrix.position.z))
@@ -269,13 +269,13 @@
 00415115        long double temp24_1 = fconvert.t(3f)
 00415115        st0_8 - temp24_1
 00415120        if ((((st0_8 < temp24_1 ? 1 : 0) << 8 | (is_unordered.t(st0_8, temp24_1) ? 1 : 0) << 0xa | (st0_8 == temp24_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00415127        i_1->state = 2
+00415127        i_1->state = SUB_GARBAGE_STATE_BURST_PENDING
 0041512d        long double x87_r7_108 = fconvert.t(vector.x)
 00415131        long double temp25_1 = fconvert.t(0f)
 00415131        x87_r7_108 - temp25_1
 0041513c        if ((((x87_r7_108 < temp25_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_108, temp25_1) ? 1 : 0) << 0xa | (x87_r7_108 == temp25_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
-00415146        i_1->collision_side = 1
-0041513e        i_1->collision_side = 2
+00415146        i_1->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT
+0041513e        i_1->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT
 00415156        add_subgoldy_score(shot->owner_player, 0, 0)
 0041515b        i_1 = i_1->next_active
 00415163        do while (i_1 != 0)

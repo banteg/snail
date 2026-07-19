@@ -50,6 +50,21 @@ SUB_LAZER_OWNER_EXPECTED_MEMBERS = (
     (0x9C, 4, "sprite_bob_phase_step", "float"),
 )
 
+SUB_GARBAGE_OWNER_EXPECTED_SIZE = 0xC4
+SUB_GARBAGE_POOL_EXPECTED_SIZE = 0x264C
+SUB_GARBAGE_OWNER_EXPECTED_MEMBERS = (
+    (0x80, 4, "next_active", "SubGarbage *"),
+    (0x84, 4, "state", "SubGarbageState"),
+    (0x88, 4, "collision_side", "SubGarbageCollisionSide"),
+    (0x8C, 4, "owner_game", "SubgameRuntime *"),
+    (0x90, 12, "velocity", "Vec3"),
+    (0x9C, 4, "radius", "float"),
+    (0xA0, 4, "attachment_facing_angle", "float"),
+    (0xB4, 4, "sprite", "Sprite *"),
+    (0xB8, 4, "source_cell", "TrackRowCell *"),
+    (0xC0, 4, "owner_player", "Player *"),
+)
+
 
 TRUSTED_DECLARATIONS = [
     (
@@ -395,12 +410,18 @@ EXPECTED_PARCEL_OWNER_SIZES = {
 REANALYSIS_FUNCTIONS = (
     0x404CF0,  # update_row_event_display
     0x408060,  # initialize_runtime_pools_and_path_template_bank
+    0x408550,  # initialize_garbage_hazard
+    0x414820,  # update_golb_ai
     0x408860,  # initialize_track_parcel_runtime
     0x435DF0,  # set_subgame_features
     0x437270,  # normalize_segment_glyph_for_track_flags
     0x437EB0,  # build_subgame_level
     0x438B90,  # update_subgame
     0x43B120,  # update_subgoldy
+    0x43D5A0,  # spawn_garbage_smoke_particle
+    0x43DA80,  # spawn_track_garbage_hazard
+    0x43F130,  # destroy_garbage_hazard
+    0x43F200,  # update_garbage_hazard
     0x440600,  # uninit_pause_menu
     0x440660,  # initialize_pause_menu
     0x4407A0,  # update_pause_menu
@@ -562,6 +583,50 @@ def _sub_lazer_owner_readback() -> dict[str, object]:
                 "type": member_type,
             }
             for offset, member_size, member_name, member_type in SUB_LAZER_OWNER_EXPECTED_MEMBERS
+        ],
+    }
+
+
+def _sub_garbage_owner_readback() -> dict[str, object]:
+    members = _named_struct_members("SubGarbage")
+    selected = [] if members is None else [
+        member
+        for member in members
+        if int(member["offset"])
+        in {expected[0] for expected in SUB_GARBAGE_OWNER_EXPECTED_MEMBERS}
+    ]
+    observed = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected
+    )
+    size = _named_struct_size("SubGarbage")
+    pool_size = _named_struct_size("SubGarbagePool")
+    return {
+        "status": (
+            "verified"
+            if size == SUB_GARBAGE_OWNER_EXPECTED_SIZE
+            and pool_size == SUB_GARBAGE_POOL_EXPECTED_SIZE
+            and observed == SUB_GARBAGE_OWNER_EXPECTED_MEMBERS
+            else "failed"
+        ),
+        "size": size,
+        "pool_size": pool_size,
+        "members": selected,
+        "expected_size": SUB_GARBAGE_OWNER_EXPECTED_SIZE,
+        "expected_pool_size": SUB_GARBAGE_POOL_EXPECTED_SIZE,
+        "expected_members": [
+            {
+                "offset": offset,
+                "size": member_size,
+                "name": member_name,
+                "type": member_type,
+            }
+            for offset, member_size, member_name, member_type in SUB_GARBAGE_OWNER_EXPECTED_MEMBERS
         ],
     }
 
@@ -944,6 +1009,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {"selector": "SubLazer", "owner_readback": sub_lazer_owner_readback}
         )
 
+    sub_garbage_owner_readback = _sub_garbage_owner_readback()
+    if sub_garbage_owner_readback["status"] != "verified":
+        failed.append(
+            {"selector": "SubGarbage", "owner_readback": sub_garbage_owner_readback}
+        )
+
     reanalyzed = []
     for address in REANALYSIS_FUNCTIONS:
         function = ida_funcs.get_func(address)
@@ -972,6 +1043,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parcel_owner_sizes": parcel_owner_sizes,
                 "salt_owner_readback": salt_owner_readback,
                 "sub_lazer_owner_readback": sub_lazer_owner_readback,
+                "sub_garbage_owner_readback": sub_garbage_owner_readback,
                 "type_sizes": {
                     "SubgameRuntime": _named_struct_size("SubgameRuntime"),
                     "SubRingStar": _named_struct_size("SubRingStar"),
@@ -990,6 +1062,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "TimesUp": _named_struct_size("TimesUp"),
                     "SubLazer": _named_struct_size("SubLazer"),
                     "SubLazerManager": _named_struct_size("SubLazerManager"),
+                    "SubGarbage": _named_struct_size("SubGarbage"),
+                    "SubGarbagePool": _named_struct_size("SubGarbagePool"),
                     "Salt": _named_struct_size("Salt"),
                     "SaltManager": _named_struct_size("SaltManager"),
                 },

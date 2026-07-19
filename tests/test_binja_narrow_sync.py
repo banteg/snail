@@ -6385,6 +6385,9 @@ def test_sub_garbage_owner_replays_stay_aligned() -> None:
     path_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
     matcher_header = (
         repo_root / "tools/match/include/garbage_hazard_slot.h"
     ).read_text(encoding="utf-8")
@@ -6398,10 +6401,29 @@ def test_sub_garbage_owner_replays_stay_aligned() -> None:
         assert "SubGarbage* active_head;" in header
         assert "SubGarbage slots[" in header
         assert "typedef SubGarbagePool GarbageHazardPool;" in header
+        assert "typedef enum SubGarbageState {" in header
+        assert "SUB_GARBAGE_STATE_INACTIVE = 0" in header
+        assert "SUB_GARBAGE_STATE_ACTIVE = 1" in header
+        assert "SUB_GARBAGE_STATE_BURST_PENDING = 2" in header
+        assert "SUB_GARBAGE_STATE_BURST = 3" in header
+        assert "typedef enum SubGarbageCollisionSide {" in header
+        assert "SUB_GARBAGE_COLLISION_SIDE_RIGHT = 1" in header
+        assert "SUB_GARBAGE_COLLISION_SIDE_LEFT = 2" in header
+        assert "SubGarbageState state;" in header
+        assert "SubGarbageCollisionSide collision_side;" in header
 
     assert 'struct_name="SubGarbage"' in garbage_sync
     assert 'struct_name="SubGarbagePool"' in garbage_sync
     assert '("0x00", "body", "RenderableBod")' in garbage_sync
+    assert '("0x84", "state", "SubGarbageState")' in garbage_sync
+    assert (
+        '("0x88", "collision_side", "SubGarbageCollisionSide")'
+        in garbage_sync
+    )
+    assert "GARBAGE_ENUM_TYPE_REPLACEMENTS" in garbage_sync
+    assert "EXPECTED_GARBAGE_ENUM_MEMBERS" in garbage_sync
+    assert "current_enum_members" in garbage_sync
+    assert "types_declare_missing_only" in garbage_sync
     assert "SubGarbage* sub_garbage" in garbage_sync
     assert "GarbageHazardRuntime" not in garbage_sync
     assert 'parser.add_argument("--target", default=DEFAULT_TARGET' in garbage_sync
@@ -6415,7 +6437,30 @@ def test_sub_garbage_owner_replays_stay_aligned() -> None:
             assert declaration in ida_sync
         assert "GarbageHazardSlot* slot" not in ida_sync
 
+    assert "SUB_GARBAGE_OWNER_EXPECTED_SIZE = 0xC4" in ida_runtime_sync
+    assert "SUB_GARBAGE_POOL_EXPECTED_SIZE = 0x264C" in ida_runtime_sync
+    assert '(0x84, 4, "state", "SubGarbageState")' in ida_runtime_sync
+    assert (
+        '(0x88, 4, "collision_side", "SubGarbageCollisionSide")'
+        in ida_runtime_sync
+    )
+    assert (
+        "sub_garbage_owner_readback = _sub_garbage_owner_readback()"
+        in ida_runtime_sync
+    )
+    assert '"SubGarbage": _named_struct_size("SubGarbage")' in ida_runtime_sync
+    assert (
+        '"SubGarbagePool": _named_struct_size("SubGarbagePool")'
+        in ida_runtime_sync
+    )
+    assert '"SubGarbageState",' in path_sync
+    assert '"SubGarbageCollisionSide",' in path_sync
+
     assert "class SubGarbage : public RenderableBod" in matcher_header
+    assert "SubGarbageState state;" in matcher_header
+    assert "SubGarbageCollisionSide collision_side;" in matcher_header
+    assert "int state;" not in matcher_header
+    assert "int collision_side;" not in matcher_header
 
 
 def test_warning_state_ownership_stays_aligned() -> None:

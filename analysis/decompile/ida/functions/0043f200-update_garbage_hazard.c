@@ -2,17 +2,17 @@
 /* function: update_garbage_hazard @ 0x43f200 */
 /* selector: update_garbage_hazard */
 
-// Void `cRSubGarbage::AI()` callback advancing one owned pool slot through inactive, active, burst-pending, and burst states before teardown. The exact Windows constructor table at 0x497328 points directly here, and the active-BOD dispatcher invokes slot zero through a virtual void method; Android and iOS retain the same authored member.
+// Void `cRSubGarbage::AI()` callback advancing one owned pool slot through the typed `SubGarbageState` lifecycle (`INACTIVE`, `ACTIVE`, `BURST_PENDING`, `BURST`) and orienting its burst through `SubGarbageCollisionSide` (`RIGHT` or `LEFT`) before teardown. The exact Windows constructor table at 0x497328 points directly here, and the active-BOD dispatcher invokes slot zero through a virtual void method; Android and iOS retain the same authored member.
 void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
 {
-  Vec3 *p_position; // edi
+  Vec4 *p_position; // edi
   Player *owner_player; // ecx
   double x; // st7
   double v5; // st7
   SubgameRuntime *owner_game; // edx
   Vec3 *p_velocity; // ecx
   double subgame_rate; // st6
-  int32_t collision_side; // eax
+  SubGarbageCollisionSide collision_side; // eax
   double v11; // st7
   char v12; // c0
   double v14; // st7
@@ -34,33 +34,33 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
   {
     switch ( sub_garbage->state )
     {
-      case 0:
+      case SUB_GARBAGE_STATE_INACTIVE:
         return;
-      case 1:
+      case SUB_GARBAGE_STATE_ACTIVE:
         p_position = &sub_garbage->body.transform.position;
-        sub_garbage->sprite->position = sub_garbage->body.transform.position;
+        sub_garbage->sprite->position = *(Vec3 *)&sub_garbage->body.transform.position.x;
         owner_player = sub_garbage->owner_player;
         if ( sub_garbage->body.transform.position.z < (double)owner_player->interaction_max_z )
           goto LABEL_4;
         if ( owner_player->nuke_effect_progress > 0.0 )
         {
           x = p_position->x;
-          sub_garbage->state = 2;
+          sub_garbage->state = SUB_GARBAGE_STATE_BURST_PENDING;
           if ( x <= 0.0 )
-            sub_garbage->collision_side = 2;
+            sub_garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
           else
-            sub_garbage->collision_side = 1;
+            sub_garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
           add_subgoldy_score(owner_player, 0, 0);
         }
         append_subgame_contact_target(
           &sub_garbage->owner_game->enemy_manager,
-          &sub_garbage->body.transform.position,
+          (const Vec3 *)&sub_garbage->body.transform.position,
           sub_garbage->radius,
           0,
           (ContactTargetObject *)sub_garbage);
         goto LABEL_27;
-      case 2:
-        sub_garbage->state = 3;
+      case SUB_GARBAGE_STATE_BURST_PENDING:
+        sub_garbage->state = SUB_GARBAGE_STATE_BURST;
         v26 = random_signed_float_below(0.1);
         v27 = random_float_below(0.2) + 0.1;
         v5 = random_float_below(0.30000001);
@@ -74,7 +74,7 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
         v25 = v5 * subgame_rate;
         sub_garbage->velocity.z = v25;
         collision_side = sub_garbage->collision_side;
-        if ( collision_side == 1 )
+        if ( collision_side == SUB_GARBAGE_COLLISION_SIDE_RIGHT )
         {
           v11 = p_velocity->x;
           if ( v12 )
@@ -82,7 +82,7 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
         }
         else
         {
-          if ( collision_side != 2 )
+          if ( collision_side != SUB_GARBAGE_COLLISION_SIDE_LEFT )
             goto LABEL_19;
           v14 = p_velocity->x;
           if ( v15 )
@@ -129,7 +129,7 @@ LABEL_4:
             sub_garbage->smoke_timer = 0.0;
             spawn_garbage_smoke_particle(
               sub_garbage,
-              &sub_garbage->body.transform.position,
+              (Vec3 *)&sub_garbage->body.transform.position,
               &sub_garbage->velocity,
               v19);
           }
@@ -141,7 +141,7 @@ LABEL_27:
             sub_garbage->sprite->facing_angle = v21->follow_state.orientation_b + sub_garbage->sprite->facing_angle;
         }
         break;
-      case 3:
+      case SUB_GARBAGE_STATE_BURST:
         goto LABEL_23;
       default:
         goto LABEL_27;

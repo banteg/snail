@@ -455,15 +455,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
     {
       report_errorf(aListRemove);
     }
-    recycle_bod_to_free_list(
-      &g_game_base->active_bod_list.unknown_00,
-      &game->player.presentation.weapon_channels[1].body.bod.bod.vtable);
-    recycle_bod_to_free_list(
-      &g_game_base->active_bod_list.unknown_00,
-      &game->player.presentation.weapon_channels[2].body.bod.bod.vtable);
-    recycle_bod_to_free_list(
-      &g_game_base->active_bod_list.unknown_00,
-      &game->player.presentation.invincible_shell.body.bod.bod.vtable);
+    recycle_bod_to_free_list(&g_game_base->active_bod_list, &game->player.presentation.weapon_channels[1].body.bod.bod);
+    recycle_bod_to_free_list(&g_game_base->active_bod_list, &game->player.presentation.weapon_channels[2].body.bod.bod);
+    recycle_bod_to_free_list(&g_game_base->active_bod_list, &game->player.presentation.invincible_shell.body.bod.bod);
     game->player.movement_mode_selector = 0;
     noop_runtime_ai();
   }
@@ -479,8 +473,8 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
   while ( v64 );
   if ( (game->player.click_start.bod.bod.bod.list_flags & 0x200) != 0 )
   {
-    recycle_bod_to_free_list(&g_game_base->active_bod_list.unknown_00, &game->player.click_start.bod.bod.bod.vtable);
+    recycle_bod_to_free_list(&g_game_base->active_bod_list, &game->player.click_start.bod.bod.bod);
     game->player.click_start.state = CLICK_START_STATE_INACTIVE;
   }
-  kill_game_sprites();
+  kill_game_sprites(&g_sprite_manager);
 }

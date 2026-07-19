@@ -456,6 +456,9 @@ Recovered gameplay entity-population tile semantics from `update_subgame`:
 - `0x18` -> stubbed `nullsub`
 - `0x19` -> `spawn_track_jetpack_pickup`
 - `0x21` -> `spawn_track_garbage_hazard`
+  - the exact allocator selects `SUB_GARBAGE_STATE_INACTIVE` from the owned
+    50-slot pool and activates the slot; collision/Golb consumers transition
+    it through `BURST_PENDING` to the exact AI's `BURST` state
 - `0x22` -> `spawn_salt_hazard`
 - `0x12` -> `spawn_slug_hazard` when `build_flags & 0x80`
 - `0x01` and `0x15` can also produce garbage through the randomized fallback branch when `build_flags & 0x2`

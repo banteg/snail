@@ -2,7 +2,7 @@
 /* function: destroy_garbage_hazard @ 0x43f130 */
 /* selector: destroy_garbage_hazard */
 
-// Exact `SubGarbage` teardown: removes the inherited BOD from the live lists, kills its sprite, and unlinks it from the pool's borrowed active-chain head after collision or expiry. Android retains the authored member as `cRSubGarbage::Kill()`.
+// Exact `SubGarbage` teardown: writes `SUB_GARBAGE_STATE_INACTIVE`, removes the inherited BOD from the live lists, kills its sprite, and unlinks it from the pool's borrowed active-chain head after collision or expiry. Android retains the authored member as `cRSubGarbage::Kill()`.
 SubGarbage *__thiscall destroy_garbage_hazard(SubGarbage *sub_garbage)
 {
   BodList *p_active_bod_list; // ecx
@@ -14,7 +14,7 @@ SubGarbage *__thiscall destroy_garbage_hazard(SubGarbage *sub_garbage)
   SubGarbage *result; // eax
   SubGarbage *next_active; // ecx
 
-  sub_garbage->state = 0;
+  sub_garbage->state = SUB_GARBAGE_STATE_INACTIVE;
   p_active_bod_list = &g_game_base->active_bod_list;
   list_flags = sub_garbage->body.bod.bod.list_flags;
   if ( (list_flags & 0x200) != 0 )
@@ -44,7 +44,7 @@ SubGarbage *__thiscall destroy_garbage_hazard(SubGarbage *sub_garbage)
   {
     report_errorf(aListRemove);
   }
-  kill_sprite((int)sub_garbage->sprite);
+  kill_sprite(sub_garbage->sprite);
   owner_game = sub_garbage->owner_game;
   result = owner_game->garbage_hazards.active_head;
   if ( result == sub_garbage )

@@ -852,11 +852,23 @@ typedef struct SaltManager {
 } SaltManager;
 
 typedef struct SubGarbage SubGarbage;
+typedef enum SubGarbageState {
+    SUB_GARBAGE_STATE_INACTIVE = 0,
+    SUB_GARBAGE_STATE_ACTIVE = 1,
+    SUB_GARBAGE_STATE_BURST_PENDING = 2,
+    SUB_GARBAGE_STATE_BURST = 3,
+} SubGarbageState;
+
+typedef enum SubGarbageCollisionSide {
+    SUB_GARBAGE_COLLISION_SIDE_RIGHT = 1,
+    SUB_GARBAGE_COLLISION_SIDE_LEFT = 2,
+} SubGarbageCollisionSide;
+
 struct SubGarbage {
     RenderableBod body;
     SubGarbage* next_active;
-    int32_t state;
-    int32_t collision_side;
+    SubGarbageState state;
+    SubGarbageCollisionSide collision_side;
     SubgameRuntime* owner_game;
     Vec3 velocity;
     float radius;

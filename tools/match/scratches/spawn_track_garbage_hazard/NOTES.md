@@ -262,3 +262,11 @@ the exact 0x264c-byte `SubGarbagePool`, with its active head followed by 50
 inline `SubGarbage` records. Both decompiler lanes recover the pool scan and
 active-head splice under that owner; the exact 143/143 matcher proof remains
 unchanged.
+
+## 2026-07-19 lifecycle ownership replay
+
+The free-slot cursor is now typed as `SubGarbageState*`, and both analysis
+lanes read the scan as selecting `SUB_GARBAGE_STATE_INACTIVE` from the owned
+pool. The matcher was already source-shaped around the same four values and
+remains exactly 143/143 with all 16 operands clean; no scheduling or return
+fakematch was introduced.

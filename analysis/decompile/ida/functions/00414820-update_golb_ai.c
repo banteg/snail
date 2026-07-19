@@ -302,7 +302,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
           {
             while ( 1 )
             {
-              if ( active_head->state == 1 )
+              if ( active_head->state == SUB_GARBAGE_STATE_ACTIVE )
               {
                 v64.x = active_head->body.transform.position.x - v36->x;
                 v64.y = active_head->body.transform.position.y - shot->source_matrix.position.y;
@@ -313,8 +313,10 @@ void __thiscall update_golb_ai(GolbShot *shot)
                   v44 = -v44;
                 if ( v44 < 3.0 && normalize_vector(&v62) < active_head->radius + 0.49000001 )
                 {
-                  active_head->state = 2;
-                  active_head->collision_side = v62.x >= 0.0 ? 1 : 2;
+                  active_head->state = SUB_GARBAGE_STATE_BURST_PENDING;
+                  active_head->collision_side = v62.x >= 0.0
+                                              ? SUB_GARBAGE_COLLISION_SIDE_RIGHT
+                                              : SUB_GARBAGE_COLLISION_SIDE_LEFT;
                   add_subgoldy_score(shot->owner_player, 0, 0);
                   if ( shot->kind != 1 )
                     break;
@@ -330,7 +332,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
             {
               for ( i = shot->game->garbage_hazards.active_head; i; i = i->next_active )
               {
-                if ( i->state == 1 )
+                if ( i->state == SUB_GARBAGE_STATE_ACTIVE )
                 {
                   v64.x = i->body.transform.position.x - v36->x;
                   v64.y = i->body.transform.position.y - shot->source_matrix.position.y;
@@ -338,11 +340,11 @@ void __thiscall update_golb_ai(GolbShot *shot)
                   v62 = v64;
                   if ( normalize_vector(&v62) < 3.0 )
                   {
-                    i->state = 2;
+                    i->state = SUB_GARBAGE_STATE_BURST_PENDING;
                     if ( v62.x >= 0.0 )
-                      i->collision_side = 1;
+                      i->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
                     else
-                      i->collision_side = 2;
+                      i->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
                     add_subgoldy_score(shot->owner_player, 0, 0);
                   }
                 }

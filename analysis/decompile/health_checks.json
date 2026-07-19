@@ -1784,6 +1784,10 @@
       "required_substrings": [
         "struct SubgameRuntime* game",
         "struct SubGarbage* i_2 = player->game->garbage_hazards.active_head",
+        "i_2->state == SUB_GARBAGE_STATE_ACTIVE",
+        "i_2->state = SUB_GARBAGE_STATE_BURST_PENDING",
+        "i_2->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT",
+        "i_2->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT",
         "i_2->body.transform.position.z",
         "player->presentation.wobble.lift_phase_step",
         "salt_cursor->salt.state == SALT_STATE_ACTIVE",
@@ -1826,6 +1830,10 @@
         "ParcelSlotCursor *parcel_cursor",
         "SubHealthSlotCursor *health_cursor",
         "SubRingSlotCursor *ring_cursor",
+        "k->state == SUB_GARBAGE_STATE_ACTIVE",
+        "k->state = SUB_GARBAGE_STATE_BURST_PENDING;",
+        "k->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;",
+        "k->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;",
         "salt_cursor->salt.state == SALT_STATE_ACTIVE",
         "salt_cursor->salt.collision_armed == 1",
         "salt_cursor->salt.body.transform.position.z",
@@ -1909,9 +1917,40 @@
       ]
     },
     {
+      "name": "bn_sub_garbage_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/00408550-initialize_garbage_hazard.c",
+      "required_substrings": [
+        "initialize_renderable_bod(sub_garbage)",
+        "sub_garbage->body.bod.bod.vtable = &data_497328",
+        "return sub_garbage"
+      ],
+      "forbidden_substrings": [
+        "GarbageHazardSlot",
+        "GarbageHazardRuntime",
+        "initialize_renderable_bod(&sub_garbage->body)",
+        "__offset("
+      ]
+    },
+    {
+      "name": "ida_sub_garbage_constructor_owner",
+      "artifact": "analysis/decompile/ida/functions/00408550-initialize_garbage_hazard.c",
+      "required_substrings": [
+        "SubGarbage *__thiscall initialize_garbage_hazard(SubGarbage *sub_garbage)",
+        "initialize_renderable_bod(&sub_garbage->body);",
+        "sub_garbage->body.bod.bod.vtable = &g_sub_garbage_vtable;",
+        "return sub_garbage;"
+      ],
+      "forbidden_substrings": [
+        "GarbageHazardSlot",
+        "GarbageHazardRuntime",
+        "_DWORD *sub_garbage"
+      ]
+    },
+    {
       "name": "bn_nested_subgame_destroy_garbage_owner",
       "artifact": "analysis/decompile/binja/functions/0043f130-destroy_garbage_hazard.c",
       "required_substrings": [
+        "sub_garbage->state = SUB_GARBAGE_STATE_INACTIVE",
         "sub_garbage->body.bod.bod.list_flags",
         "struct SubgameRuntime* owner_game",
         "struct SubGarbage* active_head",
@@ -1930,6 +1969,13 @@
       "artifact": "analysis/decompile/binja/functions/0043f200-update_garbage_hazard.c",
       "required_substrings": [
         "sub_garbage->owner_game->subgame_pause_gate",
+        "enum SubGarbageState state = sub_garbage->state",
+        "case SUB_GARBAGE_STATE_ACTIVE",
+        "sub_garbage->state = SUB_GARBAGE_STATE_BURST_PENDING",
+        "sub_garbage->state = SUB_GARBAGE_STATE_BURST",
+        "enum SubGarbageCollisionSide collision_side",
+        "SUB_GARBAGE_COLLISION_SIDE_RIGHT",
+        "SUB_GARBAGE_COLLISION_SIDE_LEFT",
         "sub_garbage->body.transform.position.x",
         "struct SubgameRuntime* owner_game",
         "owner_game->subgame_rate"
@@ -1947,6 +1993,7 @@
       "artifact": "analysis/decompile/ida/functions/0043f130-destroy_garbage_hazard.c",
       "required_substrings": [
         "SubGarbage *__thiscall destroy_garbage_hazard(SubGarbage *sub_garbage)",
+        "sub_garbage->state = SUB_GARBAGE_STATE_INACTIVE;",
         "sub_garbage->body.bod.bod.list_flags",
         "SubGarbage *result",
         "owner_game->garbage_hazards.active_head"
@@ -1964,6 +2011,13 @@
       "required_substrings": [
         "void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)",
         "sub_garbage->owner_game->subgame_pause_gate",
+        "case SUB_GARBAGE_STATE_INACTIVE:",
+        "case SUB_GARBAGE_STATE_ACTIVE:",
+        "case SUB_GARBAGE_STATE_BURST_PENDING:",
+        "case SUB_GARBAGE_STATE_BURST:",
+        "SubGarbageCollisionSide collision_side;",
+        "SUB_GARBAGE_COLLISION_SIDE_RIGHT",
+        "SUB_GARBAGE_COLLISION_SIDE_LEFT",
         "sub_garbage->body.transform.position.x",
         "SubgameRuntime *owner_game",
         "owner_game->subgame_rate"
@@ -6615,7 +6669,9 @@
       "name": "bn_subgame_garbage_pool_owner",
       "artifact": "analysis/decompile/binja/functions/0043da80-spawn_track_garbage_hazard.c",
       "required_substrings": [
+        "enum SubGarbageState* ecx = &game->garbage_hazards.slots[0].state",
         "game->garbage_hazards.slots[0].state",
+        "SUB_GARBAGE_STATE_INACTIVE",
         "game->garbage_hazards.active_head",
         "game->player.body.bod.bod.list_prev",
         "project_position_onto_track_attachment(game,",
@@ -6626,6 +6682,7 @@
         "__offset(SubgameRuntime, 0x3591c8)",
         "GarbageHazardSlot",
         "GarbageHazardRuntime",
+        "int32_t* ecx = &game->garbage_hazards.slots[0].state",
         "__asm",
         "_ET1"
       ]
@@ -6635,6 +6692,7 @@
       "artifact": "analysis/decompile/ida/functions/0043da80-spawn_track_garbage_hazard.c",
       "required_substrings": [
         "void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *cell, Player *player)",
+        "SubGarbageState *i;",
         "game->garbage_hazards.slots[0].state",
         "game->garbage_hazards.active_head",
         "game->player"
@@ -6644,6 +6702,7 @@
         "return result",
         "GarbageHazardSlot",
         "GarbageHazardRuntime",
+        "int *i;",
         "__asm",
         "_ET1"
       ]
@@ -6856,6 +6915,7 @@
       "name": "bn_subring_pool_backlink_owner",
       "artifact": "analysis/decompile/binja/functions/00437b10-reset_subgame.c",
       "required_substrings": [
+        "garbage_hazards.slots[0].state = SUB_GARBAGE_STATE_INACTIVE",
         "ring_effects.slots[0].state = SUB_RING_STATE_INACTIVE",
         "ring_effects.slots[0].rate_source = game",
         "game->slug_hazards.slots[0].owner_game"
@@ -7962,6 +8022,10 @@
       "artifact": "analysis/decompile/binja/functions/00414820-update_golb_ai.c",
       "required_substrings": [
         "add_vapour_point(&shot->vapour, &shot->source_matrix)",
+        "esi_7->state == SUB_GARBAGE_STATE_ACTIVE",
+        "esi_7->state = SUB_GARBAGE_STATE_BURST_PENDING",
+        "SUB_GARBAGE_COLLISION_SIDE_RIGHT",
+        "SUB_GARBAGE_COLLISION_SIDE_LEFT",
         "__builtin_memcpy(&shot->tertiary_body.transform, &shot->source_matrix, 0x40)",
         "set_matrix_z_direction(&shot->tertiary_body.transform, &shot->direction)",
         "rotate_matrix_local_z(&shot->tertiary_body.transform, shot->spin)"
@@ -7976,6 +8040,10 @@
       "artifact": "analysis/decompile/ida/functions/00414820-update_golb_ai.c",
       "required_substrings": [
         "void __thiscall update_golb_ai(GolbShot *shot)",
+        "active_head->state == SUB_GARBAGE_STATE_ACTIVE",
+        "active_head->state = SUB_GARBAGE_STATE_BURST_PENDING;",
+        "SUB_GARBAGE_COLLISION_SIDE_RIGHT",
+        "SUB_GARBAGE_COLLISION_SIDE_LEFT",
         "add_vapour_point(&shot->vapour, &shot->source_matrix);",
         "qmemcpy(&shot->tertiary_body.transform, &shot->source_matrix, sizeof(shot->tertiary_body.transform));",
         "set_matrix_z_direction(&shot->tertiary_body.transform, &shot->direction);"

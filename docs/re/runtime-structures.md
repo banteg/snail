@@ -1335,8 +1335,10 @@ High-confidence current fields:
 - `+0x00..+0x7f`: inherited `RenderableBod body`
 - `+0x68`: inherited `body.transform.position`
 - `+0x80`: `next_active`
-- `+0x84`: `state`
-- `+0x88`: `collision_side`
+- `+0x84`: `SubGarbageState state`
+  - `INACTIVE = 0`, `ACTIVE = 1`, `BURST_PENDING = 2`, `BURST = 3`
+- `+0x88`: `SubGarbageCollisionSide collision_side`
+  - `RIGHT = 1`, `LEFT = 2`
 - `+0x8c`: `owner_game`
 - `+0x90`: `velocity`
 - `+0x9c`: `radius`
@@ -1361,7 +1363,11 @@ Current practical read:
 - `update_golb_ai` borrows the same `SubGarbagePool::active_head` chain twice:
   direct projectile contact uses the slot radius, while kind-2 impact splash
   marks every nearby live slot through the same state and collision-side fields
-- on collision, the slot flips to state `2`, records the left or right impact side in `collision_side`, and contributes the recovered `+0.04` gauge delta
+- on collision, the slot flips from `SUB_GARBAGE_STATE_ACTIVE` to
+  `SUB_GARBAGE_STATE_BURST_PENDING`, records
+  `SUB_GARBAGE_COLLISION_SIDE_RIGHT` or
+  `SUB_GARBAGE_COLLISION_SIDE_LEFT`, and contributes the recovered `+0.04`
+  gauge delta
 - `update_garbage_hazard` matches Android and iOS `cRSubGarbage::AI()`: after collision, the slot bursts outward with randomized velocity, emits periodic smoke, and self-destructs when it falls below the track or behind the player
   - the Zig port now emits the smoke through a native-shaped burst event (`SMOKE.TGA`, position from the live garbage slot, `velocity * 0.2`, size `0.3 x 1.3`, and an ~8-tick lifetime) instead of hand-placing two collision puffs
 - `destroy_garbage_hazard` matches Android `cRSubGarbage::Kill()` and unlinks
@@ -1369,6 +1375,11 @@ Current practical read:
   `owner_game->garbage_hazards.active_head`
 - Android `cRSubGame::AddGarbage` confirms the same random scale and active-list
   pattern, while Windows fixes the exact storage layout and wrapper boundary
+- the exact constructor, allocator, reset, teardown, and AI paths plus both
+  partial high-fanout consumers (`update_golb_ai` and
+  `handle_subgoldy_collisions`) independently agree on those four lifecycle
+  values and two impact-side values; the enum names are analysis ownership,
+  not a matching workaround
 
 ## cRSlug Runtime
 

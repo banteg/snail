@@ -116,7 +116,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
     }
     for ( k = player->game->garbage_hazards.active_head; k; k = k->next_active )
     {
-      if ( k->state == 1 )
+      if ( k->state == SUB_GARBAGE_STATE_ACTIVE )
       {
         v61.x = k->body.transform.position.x - player->cached_camera_target_world.x;
         v61.y = k->body.transform.position.y - player->cached_camera_target_world.y;
@@ -130,11 +130,11 @@ void __thiscall handle_subgoldy_collisions(Player *player)
             player->velocity.x = player->velocity.x - v59.x * player->velocity.z * 0.18000001;
             player->velocity.z = player->velocity.z - v59.z * player->velocity.z * 0.1;
           }
-          k->state = 2;
+          k->state = SUB_GARBAGE_STATE_BURST_PENDING;
           if ( v59.x >= 0.0 )
-            k->collision_side = 1;
+            k->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
           else
-            k->collision_side = 2;
+            k->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
           add_subgoldy_score(player, 0, 0);
           apply_damage_gauge_delta(&player->damage_gauge, 0.039999999, 0);
           v10 = (__int64)((double)next_math_random_value() * -0.000061035156);

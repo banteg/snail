@@ -2,19 +2,19 @@
 /* function: spawn_track_garbage_hazard @ 0x43da80 */
 /* selector: spawn_track_garbage_hazard */
 
-// Exact void allocator and initializer for one live `SubGarbage` from the active runtime row state. It scans the 50 owned 0xc4-byte records after the pool's borrowed active-chain head; the sole Windows caller discards EAX, while Android leaves incompatible incidental results on success and exhaustion. Android and iOS identify the caller-owned method as `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`.
+// Exact void allocator and initializer for one live `SubGarbage` from the active runtime row state. It scans the 50 owned 0xc4-byte records for `SUB_GARBAGE_STATE_INACTIVE` after the pool's borrowed active-chain head, then activates the selected slot; the sole Windows caller discards EAX, while Android leaves incompatible incidental results on success and exhaustion. Android and iOS identify the caller-owned method as `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`.
 void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *cell, Player *player)
 {
   int v3; // eax
-  int32_t *i; // ecx
+  SubGarbageState *i; // ecx
   char *v6; // esi
   struct BodNode *v7; // ebp
   float *p_radius; // ebx
   Player *p_player; // edi
   BodList *p_active_bod_list; // eax
   __int64 v11; // rax
-  _DWORD *sprite; // eax
-  int v13; // edx
+  Sprite *sprite; // eax
+  SpriteFlag flags; // edx
   _DWORD *v14; // eax
   float v15; // [esp+Ch] [ebp-8h]
   float z; // [esp+10h] [ebp-4h]
@@ -42,7 +42,7 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
   *((_DWORD *)v6 + 877675) = LODWORD(cell->anchor_position.x);
   *((float *)v6 + 877676) = v15;
   *((float *)v6 + 877677) = z;
-  project_position_onto_track_attachment(game, (float *)v6 + 877675, (float *)v6 + 877689);
+  project_position_onto_track_attachment(game, (Vec3 *)(v6 + 3510700), (float *)v6 + 877689);
   p_player = &game->player;
   p_active_bod_list = &g_game_base->active_bod_list;
   if ( (*((_DWORD *)v6 + 877650) & 0x200) != 0 )
@@ -67,11 +67,11 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
     *((_DWORD *)v6 + 877650) |= 0x200u;
   }
   v11 = (__int64)((double)next_math_random_value() * -0.00012207031);
-  sprite = allocate_sprite(g_sprite_manager, *(_DWORD *)(*((_DWORD *)v6 + 877697) + 896), 114 - v11, -1, -1);
+  sprite = allocate_sprite(&g_sprite_manager, *(_DWORD *)(*((_DWORD *)v6 + 877697) + 896), 114 - v11, -1, -1);
   *((_DWORD *)v6 + 877694) = sprite;
-  v13 = sprite[1];
-  BYTE1(v13) |= 8u;
-  sprite[1] = v13;
+  flags = sprite->flags;
+  BYTE1(flags) |= 8u;
+  sprite->flags = flags;
   *(_DWORD *)(*((_DWORD *)v6 + 877694) + 120) = 0;
   *(_DWORD *)(*((_DWORD *)v6 + 877694) + 104) = 0;
   *(_DWORD *)(*((_DWORD *)v6 + 877694) + 108) = 0;

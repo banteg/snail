@@ -12,9 +12,11 @@ from _narrow_sync import (
     apply_proto_updates,
     apply_struct_field_updates,
     apply_symbol_updates,
+    current_enum_members,
     emit_summary,
     struct_exists,
     types_declare_if_missing,
+    types_declare_missing_only,
 )
 
 
@@ -30,6 +32,24 @@ REQUIRED_HEADER_STRUCTS = (
     "Sprite",
     "SpriteManager",
 )
+
+GARBAGE_ENUM_TYPE_REPLACEMENTS = (
+    "SubGarbageState",
+    "SubGarbageCollisionSide",
+)
+
+EXPECTED_GARBAGE_ENUM_MEMBERS = {
+    "SubGarbageState": (
+        ("SUB_GARBAGE_STATE_INACTIVE", 0),
+        ("SUB_GARBAGE_STATE_ACTIVE", 1),
+        ("SUB_GARBAGE_STATE_BURST_PENDING", 2),
+        ("SUB_GARBAGE_STATE_BURST", 3),
+    ),
+    "SubGarbageCollisionSide": (
+        ("SUB_GARBAGE_COLLISION_SIDE_RIGHT", 1),
+        ("SUB_GARBAGE_COLLISION_SIDE_LEFT", 2),
+    ),
+}
 
 GAME_FIELD_UPDATES = (
     ("0x5a8", "active_bod_list", "BodList"),
@@ -89,8 +109,8 @@ SPRITE_MANAGER_FIELD_UPDATES = (
 SUB_GARBAGE_FIELD_UPDATES = (
     ("0x00", "body", "RenderableBod"),
     ("0x80", "next_active", "SubGarbage*"),
-    ("0x84", "state", "int32_t"),
-    ("0x88", "collision_side", "int32_t"),
+    ("0x84", "state", "SubGarbageState"),
+    ("0x88", "collision_side", "SubGarbageCollisionSide"),
     ("0x8c", "owner_game", "SubgameRuntime*"),
     ("0x90", "velocity", "Vec3"),
     ("0x9c", "radius", "float"),
@@ -190,6 +210,33 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    current_garbage_enums = current_enum_members(
+        REPO_ROOT,
+        target=args.target,
+        enum_names=GARBAGE_ENUM_TYPE_REPLACEMENTS,
+    )
+    garbage_enums_present = all(
+        current_garbage_enums.get(name) == expected
+        for name, expected in EXPECTED_GARBAGE_ENUM_MEMBERS.items()
+    )
+    garbage_enum_operation = (
+        {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "canonical garbage lifecycle enums already present",
+            "header": str(header_path),
+            "required_types": GARBAGE_ENUM_TYPE_REPLACEMENTS,
+        }
+        if garbage_enums_present
+        else types_declare_missing_only(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            replace_types=GARBAGE_ENUM_TYPE_REPLACEMENTS,
+            include_types=GARBAGE_ENUM_TYPE_REPLACEMENTS,
+        )
+    )
+
     operations: list[dict[str, object]] = [
         types_declare_if_missing(
             REPO_ROOT,
@@ -197,6 +244,7 @@ def main() -> int:
             header_path=header_path,
             required_structs=REQUIRED_HEADER_STRUCTS,
         ),
+        garbage_enum_operation,
         *apply_struct_field_updates(
             REPO_ROOT,
             target=args.target,

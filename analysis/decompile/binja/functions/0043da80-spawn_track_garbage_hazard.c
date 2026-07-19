@@ -4,8 +4,8 @@
 /* function: spawn_track_garbage_hazard @ 0x43da80 */
 
 0043da83        int32_t eax = 0
-0043da88        int32_t* ecx = &game->garbage_hazards.slots[0].state
-0043da91        while ((ecx - 0x3591c8)->garbage_hazards.slots[0].state != 0)
+0043da88        enum SubGarbageState* ecx = &game->garbage_hazards.slots[0].state
+0043da91        while ((ecx - 0x3591c8)->garbage_hazards.slots[0].state != SUB_GARBAGE_STATE_INACTIVE)
 0043da93        eax += 1
 0043da94        ecx = &ecx[0x31]
 0043da9d        if (eax s>= 0x32)

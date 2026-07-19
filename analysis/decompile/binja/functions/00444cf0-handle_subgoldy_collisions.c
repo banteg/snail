@@ -51,7 +51,7 @@
 00444ec2        i_1 += 0xb0
 00444eda        struct SubGarbage* i_2 = player->game->garbage_hazards.active_head
 00444ee2        while (i_2 != 0)
-00444eee        if (i_2->state == 1)
+00444eee        if (i_2->state == SUB_GARBAGE_STATE_ACTIVE)
 00444f15        long double x87_r7_21 = fconvert.t(i_2->body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
 00444f1f        vector.x = fconvert.s(fconvert.t(i_2->body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
 00444f23        vector.y = fconvert.s(fconvert.t(i_2->body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
@@ -66,13 +66,13 @@
 00444f64        if ((player->movement_flags.b & 0x80) == 0)
 00444f7c        player->velocity.x = fconvert.s(fconvert.t(player->velocity.x) - fconvert.t(vector.x) * fconvert.t(player->velocity.z) * fconvert.t(0.180000007f))
 00444f98        player->velocity.z = fconvert.s(fconvert.t(player->velocity.z) - fconvert.t(vector.z) * fconvert.t(player->velocity.z) * fconvert.t(0.100000001f))
-00444fa3        i_2->state = 2
+00444fa3        i_2->state = SUB_GARBAGE_STATE_BURST_PENDING
 00444fa9        long double x87_r7_31 = fconvert.t(vector.x)
 00444fad        long double temp24_1 = fconvert.t(0f)
 00444fad        x87_r7_31 - temp24_1
 00444fb8        if ((((x87_r7_31 < temp24_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_31, temp24_1) ? 1 : 0) << 0xa | (x87_r7_31 == temp24_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
-00444fc2        i_2->collision_side = 1
-00444fba        i_2->collision_side = 2
+00444fc2        i_2->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT
+00444fba        i_2->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT
 00444fce        add_subgoldy_score(player, 0, 0)
 0044500a        x87control = play_sound_effect(&g_sound_effect_manager, 0x27 - ftol(apply_damage_gauge_delta(&player->damage_gauge, 0.0399999991f, false), float.t(next_math_random_value()) * fconvert.t(-6.10351562e-05f)))
 0044500f        i_2 = i_2->next_active

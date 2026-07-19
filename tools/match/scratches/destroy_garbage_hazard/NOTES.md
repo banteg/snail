@@ -82,3 +82,11 @@ Binary Ninja and IDA now read the exact teardown through the primary
 `body.bod.bod.list_flags` path and the borrowed
 `owner_game->garbage_hazards.active_head` chain, cleanly separating root BOD
 membership from pool ownership. The 62/62 source match remains unchanged.
+
+## 2026-07-19 lifecycle ownership replay
+
+Both decompilers now render the first store as
+`sub_garbage->state = SUB_GARBAGE_STATE_INACTIVE` while preserving the exact
+root-BOD removal and pool-chain unlink. Narrow and broad replay lanes agree on
+the typed field and exact `0xc4`/`0x264c` owner sizes; matching remains 62/62
+with all six operands clean.

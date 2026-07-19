@@ -38,3 +38,11 @@ with `RenderableBod body` at `+0x00`, and `SubGarbagePool` as a 0x264c-byte
 wrapper with 50 inline records. Binary Ninja and IDA both read this constructor
 back as `SubGarbage* __thiscall(SubGarbage*)`; the old flattened
 `GarbageHazardRuntime` analysis shell is retired.
+
+## 2026-07-19 lifecycle ownership replay
+
+The constructor, 50-slot reset, exact allocator, exact Kill path, and exact AI
+now share a real `SubGarbageState` owner rather than an integer field. The live
+Binary Ninja and IDA replays preserve `sizeof(SubGarbage) == 0xc4` and
+`sizeof(SubGarbagePool) == 0x264c`; this exact 7/7 constructor remains the
+independent zero-offset `RenderableBod` proof.

@@ -604,3 +604,11 @@ independent 100% match closes the ABI as void, while the six analytical pool
 cursors remain borrowed SubgameRuntime-relative views rather than new owners.
 Focused matching remains 54.23%, 651/673 instructions, prefix 8/673, with all
 88 masked operands clean and no mismatches.
+
+## 2026-07-19 borrowed garbage lifecycle consumer
+
+The existing borrowed `SubGarbage*` active-chain walk now renders the proved
+`ACTIVE -> BURST_PENDING` transition and the right/left impact side in both
+analysis lanes. This is an ownership clarification only: the byte-strided
+multi-pool matcher remains honestly 54.23%, 651/673 instructions, prefix
+8/673, with all 88 operands clean.

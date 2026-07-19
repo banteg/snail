@@ -398,6 +398,8 @@ REQUIRED_HEADER_STRUCTS = (
     "TrackPickupState",
     "SubLazerState",
     "SaltState",
+    "SubGarbageState",
+    "SubGarbageCollisionSide",
     "JetPack",
     "ParcelState",
     "CompletionState",
@@ -469,6 +471,8 @@ def ensure_path_analysis_views(
         "SubLocTileId",
         "SubLazerState",
         "SaltState",
+        "SubGarbageState",
+        "SubGarbageCollisionSide",
     )
     equivalence = current_header_type_equivalence(
         REPO_ROOT,

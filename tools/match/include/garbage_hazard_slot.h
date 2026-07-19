@@ -37,8 +37,8 @@ public:
         Vector3* position, Vector3* velocity, Player* owner_player);
 
     SubGarbage* next_active; // +0x80, borrowed link within the owning pool
-    int state;               // +0x84, SubGarbageState
-    int collision_side;      // +0x88, SubGarbageCollisionSide
+    SubGarbageState state; // +0x84
+    SubGarbageCollisionSide collision_side; // +0x88
     SubgameRuntime* owner_game; // +0x8c, borrowed containing subgame
     Vector3 velocity;               // +0x90
     float radius;                   // +0x9c

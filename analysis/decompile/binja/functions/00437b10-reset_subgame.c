@@ -19,7 +19,7 @@
 00437b44        struct SubgameRuntime** eax_1 = &game->garbage_hazards.slots[0].owner_game
 00437b4a        int32_t i_5 = 0x32
 00437b5d        int32_t i_1
-00437b4f        (eax_1 - 0x3591d0)->garbage_hazards.slots[0].state = 0
+00437b4f        (eax_1 - 0x3591d0)->garbage_hazards.slots[0].state = SUB_GARBAGE_STATE_INACTIVE
 00437b52        (eax_1 - 0x3591d0)->garbage_hazards.slots[0].owner_game = game
 00437b54        (eax_1 - 0x3591d0)->garbage_hazards.slots[0].next_active = nullptr
 00437b57        eax_1 = &eax_1[0x31]

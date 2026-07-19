@@ -5,8 +5,8 @@
 
 0043f213        if (sub_garbage->owner_game->subgame_pause_gate != 0)
 0043f213        return
-0043f219        int32_t state = sub_garbage->state
-0043f222        if (state u> 3)
+0043f219        enum SubGarbageState state = sub_garbage->state
+0043f222        if (state u> SUB_GARBAGE_STATE_BURST)
 0043f4de        label_43f4de:
 0043f4de        sub_garbage->sprite->facing_angle = fconvert.s(fconvert.t(sub_garbage->owner_player->heading_roll) + fconvert.t(sub_garbage->attachment_facing_angle))
 0043f4e1        struct Player* owner_player = sub_garbage->owner_player
@@ -14,7 +14,7 @@
 0043f4f0        struct Sprite* sprite = sub_garbage->sprite
 0043f4ff        sprite->facing_angle = fconvert.s(fconvert.t(owner_player->follow_state.orientation_b) + fconvert.t(sprite->facing_angle))
 0043f228        switch (state)
-0043f23a        case 1
+0043f23a        case SUB_GARBAGE_STATE_ACTIVE
 0043f23a        struct Vec3* ecx_1 = &sub_garbage->sprite->position
 0043f23f        ecx_1->x = sub_garbage->body.transform.position.x
 0043f244        ecx_1->y = sub_garbage->body.transform.position.y
@@ -33,16 +33,16 @@
 0043f284        long double x87_r7_3 = fconvert.t(sub_garbage->body.transform.position.x)
 0043f286        long double temp6_1 = fconvert.t(0f)
 0043f286        x87_r7_3 - temp6_1
-0043f291        sub_garbage->state = 2
+0043f291        sub_garbage->state = SUB_GARBAGE_STATE_BURST_PENDING
 0043f29c        if ((((x87_r7_3 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp6_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp6_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
-0043f2aa        sub_garbage->collision_side = 2
-0043f29e        sub_garbage->collision_side = 1
+0043f2aa        sub_garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT
+0043f29e        sub_garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT
 0043f2b2        add_subgoldy_score(owner_player_1, 0, 0)
 0043f2cd        append_subgame_contact_target(&sub_garbage->owner_game->enemy_manager, &sub_garbage->body.transform.position, sub_garbage->radius, 0, sub_garbage)
 0043f2d2        goto label_43f4de
-0043f2d7        case 2
+0043f2d7        case SUB_GARBAGE_STATE_BURST_PENDING
 0043f2d7        void* __saved_ebp_2 = &data_4a4e6c
-0043f2e1        sub_garbage->state = 3
+0043f2e1        sub_garbage->state = SUB_GARBAGE_STATE_BURST
 0043f2f0        float var_c_1 = fconvert.s(random_signed_float_below(0.100000001f))
 0043f2f4        int32_t var_34_2 = 0
 0043f305        int32_t var_3c_1 = 0
@@ -53,8 +53,8 @@
 0043f33c        sub_garbage->velocity.x = fconvert.s(x87_r6_1 * fconvert.t(var_c_1))
 0043f34a        sub_garbage->velocity.y = fconvert.s(fconvert.t(var_8_1) * x87_r6_1)
 0043f355        sub_garbage->velocity.z = fconvert.s(st0_3 * x87_r6_1)
-0043f358        int32_t collision_side = sub_garbage->collision_side
-0043f363        if (collision_side == 1)
+0043f358        enum SubGarbageCollisionSide collision_side = sub_garbage->collision_side
+0043f363        if (collision_side == SUB_GARBAGE_COLLISION_SIDE_RIGHT)
 0043f365        long double x87_r7_10 = fconvert.t(sub_garbage->velocity.x)
 0043f367        long double temp4_1 = fconvert.t(0f)
 0043f367        x87_r7_10 - temp4_1
@@ -62,7 +62,7 @@
 0043f374        if ((((x87_r7_10 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_10, temp4_1) ? 1 : 0) << 0xa | (x87_r7_10 == temp4_1 ? 1 : 0) << 0xe | 0x3800):1.b & 1) != 0)
 0043f376        x87_r7_11 = fneg(x87_r7_11)
 0043f394        sub_garbage->velocity.x = fconvert.s(x87_r7_11)
-0043f37d        if (collision_side == 2)
+0043f37d        if (collision_side == SUB_GARBAGE_COLLISION_SIDE_LEFT)
 0043f37f        long double x87_r7_12 = fconvert.t(sub_garbage->velocity.x)
 0043f381        long double temp8_1 = fconvert.t(0f)
 0043f381        x87_r7_12 - temp8_1
@@ -90,15 +90,15 @@
 0043f3f0        sub_garbage->burst_rate_step = fconvert.s(x87_r7_21)
 0043f3ff        sub_garbage->smoke_timer_step = fconvert.s(fconvert.t(owner_game->subgame_rate) * fconvert.t(0.277777791f))
 0043f3a3        goto label_43f41a
-0043f41a        case 3
+0043f41a        case SUB_GARBAGE_STATE_BURST
 0043f41a        label_43f41a:
 0043f41a        sub_garbage->body.transform.position.x = fconvert.s(fconvert.t(sub_garbage->velocity.x) + fconvert.t(sub_garbage->body.transform.position.x))
 0043f422        sub_garbage->body.transform.position.y = fconvert.s(fconvert.t(sub_garbage->velocity.y) + fconvert.t(sub_garbage->body.transform.position.y))
 0043f42b        sub_garbage->body.transform.position.z = fconvert.s(fconvert.t(sub_garbage->velocity.z) + fconvert.t(sub_garbage->body.transform.position.z))
 0043f436        float* eax_10 = &sub_garbage->sprite->position
 0043f439        *eax_10 = sub_garbage->body.transform.position.x
-0043f43e        eax_10[1] = sub_garbage->body.transform.position.y
-0043f445        eax_10[2] = sub_garbage->body.transform.position.z
+0043f43e        *&eax_10[1] = sub_garbage->body.transform.position.y
+0043f445        *&eax_10[2] = sub_garbage->body.transform.position.z
 0043f44e        long double x87_r7_30 = fconvert.t(sub_garbage->owner_game->subgame_rate)
 0043f461        sub_garbage->velocity.y = fconvert.s(x87_r7_30 * x87_r7_30 * fconvert.t(-0.00999999978f) + fconvert.t(sub_garbage->velocity.y))
 0043f469        long double x87_r7_32 = fconvert.t(sub_garbage->body.transform.position.y)
