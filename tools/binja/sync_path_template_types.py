@@ -1459,6 +1459,30 @@ COLLISION_POOL_CURSOR_USER_VAR_UPDATES = (
         "ring_cursor",
         "SubRingSlotCursor*",
     ),
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        2346,
+        67,
+        "ring_state",
+        "SubRingState",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        2516,
+        66,
+        "ring_kind",
+        "SubRingKind",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        2573,
+        66,
+        "effect_kind",
+        "SubRingKind",
+    ),
 )
 
 # VC6 retains containing-owner bases while advancing one authored row, one

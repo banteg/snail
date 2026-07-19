@@ -1,7 +1,22 @@
-# WIP scratch — 54.23%, 651/673 insns (2026-07-15 RNG source-type pass)
+# WIP scratch — 54.23%, 651/673 insns (2026-07-19 ring-lifetime pass)
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
+
+2026-07-19 collision ring-lifetime pass: the byte-strided two-slot walk keeps
+one `SubRingState` load and two independent `SubRingKind` loads alive in
+physical registers. Binary Ninja now preserves those exact lifetimes as
+`ring_state`, `ring_kind`, and `effect_kind`; IDA uniquely identifies the two
+kind locals by Hex-Rays definition addresses `0x4456c5` and `0x4456fe`. The
+first kind read owns only the slow-versus-forward velocity response, while the
+second owns the reward/effect ladder. Both are borrowed reads of the same
+`SubgameRuntime::ring_effects.slots[jj].kind`, not separate storage owners.
+The broad path-template replay followed by the narrow pool replay reports all
+three Binary Ninja variables already current, proving the two replay paths
+compose idempotently. The scratch also carries the already-proved slug state as
+`SubSlugState`; that spelling is codegen-neutral. Focused matching remains an
+honest `54.23%`, `651/673` instructions, prefix `8/673`, with `88 ok / 0
+unresolved / 0 mismatch` masked operands.
 
 2026-07-17 collision-pool cursor ownership pass: the six byte-strided sweeps
 that VC6 carries as `SubgameRuntime + slot_offset` now have explicit

@@ -51,9 +51,9 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   SubRingSlotCursor *ring_cursor; // eax
   double v48; // st7
   SubgameRuntime *v49; // ecx
-  SubRingKind kind; // eax
+  SubRingKind ring_kind; // eax
   SubgameRuntime *v51; // ecx
-  SubRingKind v52; // eax
+  SubRingKind effect_kind; // eax
   int32_t v53; // eax
   int v54; // eax
   int32_t lives; // eax
@@ -317,8 +317,8 @@ void __thiscall handle_subgoldy_collisions(Player *player)
         if ( !player->completion_handoff_active )
         {
           v49 = player->game;
-          kind = v49->ring_effects.slots[jj].kind;
-          if ( kind == SUB_RING_KIND_SLOW_DEFAULT || kind == SUB_RING_KIND_SLOW_AUTHORED )
+          ring_kind = v49->ring_effects.slots[jj].kind;
+          if ( ring_kind == SUB_RING_KIND_SLOW_DEFAULT || ring_kind == SUB_RING_KIND_SLOW_AUTHORED )
           {
             player->velocity.z = -0.1;
             play_sound_effect(&g_sound_effect_manager, 43);
@@ -329,8 +329,8 @@ void __thiscall handle_subgoldy_collisions(Player *player)
           }
         }
         v51 = player->game;
-        v52 = v51->ring_effects.slots[jj].kind;
-        switch ( v52 )
+        effect_kind = v51->ring_effects.slots[jj].kind;
+        switch ( effect_kind )
         {
           case SUB_RING_KIND_NORMAL_DEFAULT:
           case SUB_RING_KIND_NORMAL_AUTHORED:

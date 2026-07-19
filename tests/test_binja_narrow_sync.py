@@ -5508,6 +5508,21 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     assert "int32_t requested_kind" in pool_sync
     assert '"SubRingState",' in path_sync
     assert '"SubRingKind",' in path_sync
+    for replay in (pool_sync, path_sync):
+        for index, storage, name, type_name in (
+            (2346, 67, "ring_state", "SubRingState"),
+            (2516, 66, "ring_kind", "SubRingKind"),
+            (2573, 66, "effect_kind", "SubRingKind"),
+        ):
+            expected = (
+                '"handle_subgoldy_collisions",\n'
+                '        "RegisterVariableSourceType",\n'
+                f"        {index},\n"
+                f"        {storage},\n"
+                f'        "{name}",\n'
+                f'        "{type_name}"'
+            )
+            assert expected in replay
 
     for header in (*analysis_headers, matcher_header):
         assert "SUB_RING_STATE_INACTIVE = 0" in header
@@ -5694,6 +5709,11 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
         '        821,\n        67,\n        "slug_state",\n        "SubSlugState"'
         in path_sync
     )
+    collision_scratch = (
+        repo_root
+        / "tools/match/scratches/handle_subgoldy_collisions/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "SubSlugState state = slug->state;" in collision_scratch
     assert "int state;" not in matcher_header
     assert "int death_toss_direction;" not in matcher_header
 
@@ -8899,6 +8919,9 @@ def test_collision_pool_cursor_ownership_is_replayed() -> None:
         (1385, 66),
         (1663, 66),
         (2353, 66),
+        (2346, 67),
+        (2516, 66),
+        (2573, 66),
     ):
         assert (
             f'"RegisterVariableSourceType",\n        {index},\n        {storage},'
@@ -8911,6 +8934,9 @@ def test_collision_pool_cursor_ownership_is_replayed() -> None:
         ("parcel_cursor", "ParcelSlotCursor*"),
         ("health_cursor", "SubHealthSlotCursor*"),
         ("ring_cursor", "SubRingSlotCursor*"),
+        ("ring_state", "SubRingState"),
+        ("ring_kind", "SubRingKind"),
+        ("effect_kind", "SubRingKind"),
     ):
         assert f'"{name}"' in binja_sync
         assert f'"{type_name}"' in binja_sync
@@ -8924,6 +8950,8 @@ def test_collision_pool_cursor_ownership_is_replayed() -> None:
         "0x44525A",
         "0x445370",
         "0x445622",
+        "0x4456C5",
+        "0x4456FE",
     ):
         assert definition_address in ida_sync
     for name, declaration in (
@@ -8933,6 +8961,8 @@ def test_collision_pool_cursor_ownership_is_replayed() -> None:
         ("parcel_cursor", "ParcelSlotCursor *parcel_cursor;"),
         ("health_cursor", "SubHealthSlotCursor *health_cursor;"),
         ("ring_cursor", "SubRingSlotCursor *ring_cursor;"),
+        ("ring_kind", "SubRingKind ring_kind;"),
+        ("effect_kind", "SubRingKind effect_kind;"),
     ):
         assert f'"{name}"' in ida_sync
         assert f'"{declaration}"' in ida_sync

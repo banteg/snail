@@ -1309,6 +1309,10 @@ Current practical read:
 - `handle_subgoldy_collisions` reads the same runtime slots back with the shared ring gate:
   - `delta_z < 1.0`
   - normalized distance `< 0.98`
+- the Windows collision body keeps two independent `SubRingKind` read lifetimes
+  over the same selected slot: `ring_kind` gates the slow-versus-forward motion
+  response, then `effect_kind` drives the reward/effect ladder; neither is a
+  second owner of the slot or its kind field
 - on hit, the slot does not die immediately: `handle_subgoldy_collisions` moves `ACTIVE -> COLLECT_PENDING`, and the slot's `update_ring_or_special_effect_parent` vtable advances `COLLECT_PENDING -> COLLECTING` before teardown
 - the collect transition (`2 -> 3`) and expand transition (`4 -> 5`) seed `effect_progress_step` from `Game.track_center_x * 0.0694444478`, not from the live subgame speed scalar
 - the same vtable owns the `EXPAND_PENDING -> EXPANDING` teardown lane keyed from `movement_flag_selector_snapshot`

@@ -251,7 +251,7 @@
 00445829        while (i_6 s< 0x3f0)
 00445614        struct SubgameRuntime* game_9 = player->game
 00445621        struct SubRingSlotCursor* ring_cursor = i_6 + game_9
-00445627        if (*(&game_9->ring_effects.slots[0].state + i_6) == 1)
+00445627        if (*(&game_9->ring_effects.slots[0].state + i_6) == SUB_RING_STATE_ACTIVE)
 00445639        vector_2.x = fconvert.s(fconvert.t(ring_cursor->ring.world_position.x) - fconvert.t(player->cached_camera_target_world.x))
 00445649        vector_2.y = fconvert.s(fconvert.t(ring_cursor->ring.world_position.y) - fconvert.t(player->cached_camera_target_world.y))
 00445653        long double x87_r7_96 = fconvert.t(ring_cursor->ring.world_position.z) - fconvert.t(player->cached_camera_target_world.z)
@@ -270,15 +270,15 @@
 004456a9        *(&player->game->ring_effects.slots[0].state + i_6) = 2
 004456bc        if (player->completion_handoff_active == 0)
 004456be        struct SubgameRuntime* game_6 = player->game
-004456c4        int32_t eax_54 = *(&game_6->ring_effects.slots[0].kind + i_6)
-004456d2        if (eax_54 == 3 || eax_54 == 7)
+004456c4        enum SubRingKind ring_kind = *(&game_6->ring_effects.slots[0].kind + i_6)
+004456d2        if (ring_kind == SUB_RING_KIND_SLOW_DEFAULT || ring_kind == SUB_RING_KIND_SLOW_AUTHORED)
 004456ec        player->velocity.z = -0.100000001f
 004456f2        play_sound_effect(&g_sound_effect_manager, 0x2b)
 004456dd        player->velocity.z = fconvert.s(fconvert.t(game_6->subgame_rate) * fconvert.t(0.5f))
 004456f7        struct SubgameRuntime* game_7 = player->game
-004456fd        int32_t eax_55 = *(&game_7->ring_effects.slots[0].kind + i_6)
-00445710        int32_t eax_58
-00445710        if (eax_55 == 4 || eax_55 == 5)
+004456fd        enum SubRingKind effect_kind = *(&game_7->ring_effects.slots[0].kind + i_6)
+00445710        int32_t eax_56
+00445710        if (effect_kind == SUB_RING_KIND_NORMAL_DEFAULT || effect_kind == SUB_RING_KIND_NORMAL_AUTHORED)
 004457ab        int32_t lives = player->lives
 004457b4        if (lives s< 0xa)
 004457c0        if ((game_7->runtime_flags.b & 0x10) != 0 && game_7->level_mode != 3)
@@ -289,28 +289,28 @@
 004457e5        player->movement_flag_selector = movement_flag_selector_1 + 1
 004457ed        if (movement_flag_selector_1 == 8)
 004457ef        player->movement_flag_selector = 7
-004457fb        eax_58 = player->movement_flag_selector - 1
-004457ff        if (eax_58 s> 6)
+004457fb        eax_56 = player->movement_flag_selector - 1
+004457ff        if (eax_56 s> 6)
 004457ff        goto label_445801
-0044580d        play_sound_effect(&g_sound_effect_manager, eax_58 + 1)
+0044580d        play_sound_effect(&g_sound_effect_manager, eax_56 + 1)
 00445818        add_subgoldy_score(player, 2, 0)
-00445719        if (eax_55 == 8)
+00445719        if (effect_kind == SUB_RING_KIND_POWER_UP_AUTHORED)
 0044571b        int32_t movement_flag_selector = player->movement_flag_selector
 00445724        if (movement_flag_selector s< 8)
 00445727        player->movement_flag_selector = movement_flag_selector + 1
 0044572f        if (movement_flag_selector == 8)
 00445731        player->movement_flag_selector = 7
-0044573d        eax_58 = player->movement_flag_selector - 1
-00445741        if (eax_58 s<= 6)
-0044580d        play_sound_effect(&g_sound_effect_manager, eax_58 + 1)
+0044573d        eax_56 = player->movement_flag_selector - 1
+00445741        if (eax_56 s<= 6)
+0044580d        play_sound_effect(&g_sound_effect_manager, eax_56 + 1)
 00445818        add_subgoldy_score(player, 2, 0)
 00445801        label_445801:
 0044580d        play_sound_effect(&g_sound_effect_manager, 6 + 1)
 00445818        add_subgoldy_score(player, 2, 0)
-0044574f        if (eax_55 == 1)
+0044574f        if (effect_kind == SUB_RING_KIND_UNKNOWN_1)
 00445757        add_subgoldy_score(player, 2, 0)
 00445763        play_sound_effect(&g_sound_effect_manager, 1)
-00445775        if (eax_55 == 2 || eax_55 == 6)
+00445775        if (effect_kind == SUB_RING_KIND_EXPLODE_RAMP || effect_kind == SUB_RING_KIND_EXPLODE_AUTHORED)
 00445781        add_subgoldy_score(player, 2, 0)
 0044578d        play_sound_effect(&g_sound_effect_manager, 0x2a)
 00445798        player->nuke_effect_progress = player->nuke_effect_progress_step

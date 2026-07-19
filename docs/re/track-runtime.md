@@ -285,6 +285,10 @@ High-confidence findings:
   - ramp `Ring=PowerUp`/`Ring=Explode`/`Ring=Slow` calls pass the cell `48` rows ahead (`0xfc0 / 0x54`) and use that target cell directly
   - explosive ramp tiles `0x08..0x0a` still use the current cell and receive the native `+17` row z offset in the `SUB_RING_KIND_EXPLODE_RAMP` (`2`) branch
 - kinds `0` and `1` remain named `UNKNOWN_0` and `UNKNOWN_1`: their distinct native spawn/consumer paths are preserved, but no live Windows producer has been recovered
+- collision borrows the selected SubgameRuntime-owned slot twice: the first
+  typed kind lifetime chooses slow versus forward motion, and the second drives
+  the reward/effect ladder; these are two register lifetimes for one stored
+  `SubRingKind`, not two ring owners
 
 Recovered salt-slot lifecycle:
 

@@ -2847,7 +2847,7 @@
     {
       "address": "0x444cf0",
       "name": "handle_subgoldy_collisions",
-      "description": "Void `Player` member that processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and contact damage. Its sole `update_subgoldy` caller discards EAX, and the terminal register value is only the last incidental score-helper result. The first slug hit scales `(0, 0.2, -0.2)` by the subgame rate and emits a burst through the Player-owned Firework controller. Cross-port Android and iOS symbols identify `cRSubGoldy::Collision()`."
+      "description": "Void `Player` member that processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and contact damage. The ring sweep borrows one SubgameRuntime-owned slot and preserves separate typed `SubRingKind` lifetimes for the motion response and reward/effect ladder before the parent AI owns collection teardown. Its sole `update_subgoldy` caller discards EAX, and the terminal register value is only the last incidental score-helper result. The first slug hit scales `(0, 0.2, -0.2)` by the subgame rate and emits a burst through the Player-owned Firework controller. Cross-port Android and iOS symbols identify `cRSubGoldy::Collision()`."
     },
     {
       "address": "0x445840",

@@ -582,6 +582,8 @@ COLLISION_POOL_CURSOR_LVAR_SPECS = (
         None,
     ),
     ("ring_cursor", "SubRingSlotCursor *ring_cursor;", 0x445622, None),
+    ("ring_kind", "SubRingKind ring_kind;", 0x4456C5, None),
+    ("effect_kind", "SubRingKind effect_kind;", 0x4456FE, None),
 )
 
 MERGE_RUNTIME_LVAR_SPECS = (

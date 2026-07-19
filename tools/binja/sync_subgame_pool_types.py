@@ -268,6 +268,37 @@ COLLISION_SLUG_STATE_USER_VAR_UPDATES = (
     ),
 )
 
+# The ring sweep has three independent physical enum lifetimes: ECX carries
+# the active-state load, then EAX is reloaded once for the slow-ring response
+# and once for the reward/effect ladder. Preserve all three instead of letting
+# the byte-strided pool access collapse them to anonymous int32_t values.
+COLLISION_RING_LIFETIME_USER_VAR_UPDATES = (
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        2346,
+        67,
+        "ring_state",
+        "SubRingState",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        2516,
+        66,
+        "ring_kind",
+        "SubRingKind",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        2573,
+        66,
+        "effect_kind",
+        "SubRingKind",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -401,6 +432,7 @@ def main() -> int:
             updates=(
                 *SPAWN_SLUG_HAZARD_USER_VAR_UPDATES,
                 *COLLISION_SLUG_STATE_USER_VAR_UPDATES,
+                *COLLISION_RING_LIFETIME_USER_VAR_UPDATES,
             ),
         ),
     ]
