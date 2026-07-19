@@ -1385,6 +1385,16 @@ typedef struct TrackRenderCacheSlot {
     float cache_row_base;
 } TrackRenderCacheSlot;
 
+/*
+ * Analysis-only manager-relative view used by the constructor's slot walk.
+ * The cursor begins at SegmentCache + n * sizeof(TrackRenderCacheSlot), then
+ * reaches the owned slot through the real SegmentCache::slots offset.
+ */
+typedef struct TrackRenderCacheSlotCursor {
+    uint8_t manager_prefix[0x58];
+    TrackRenderCacheSlot slot;
+} TrackRenderCacheSlotCursor;
+
 typedef struct SegmentCache {
     tColourSmall skirt_color_bgra;
     int32_t max_vertex_counts[5];

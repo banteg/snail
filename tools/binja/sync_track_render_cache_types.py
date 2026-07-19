@@ -28,12 +28,17 @@ OBJECT_REQUIRED_STRUCTS = (
 )
 SEGMENT_CACHE_REQUIRED_STRUCTS = (
     "TrackRenderCacheSlot",
+    "TrackRenderCacheSlotCursor",
     "SegmentCache",
 )
 
 TRACK_RENDER_CACHE_SLOT_FIELDS = (
     ("0x00", "bod", "BodBase"),
     ("0x38", "cache_row_base", "float"),
+)
+
+TRACK_RENDER_CACHE_SLOT_CURSOR_FIELDS = (
+    ("0x58", "slot", "TrackRenderCacheSlot"),
 )
 
 SEGMENT_CACHE_FIELDS = (
@@ -100,6 +105,14 @@ def main() -> int:
     operations.extend(
         apply_struct_field_updates(
             REPO_ROOT, target=args.target, struct_name="TrackRenderCacheSlot", updates=TRACK_RENDER_CACHE_SLOT_FIELDS
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="TrackRenderCacheSlotCursor",
+            updates=TRACK_RENDER_CACHE_SLOT_CURSOR_FIELDS,
         )
     )
     operations.extend(

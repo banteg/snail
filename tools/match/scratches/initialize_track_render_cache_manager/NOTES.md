@@ -143,3 +143,27 @@ pointer with unrelated world-initialization state. Removing the synthetic
 return preserves the complete 122/122 instruction stream at 99.18%, with all
 18 operands clean and only the equivalent slot-index SIB ordering remaining.
 The Binary Ninja and IDA replay lanes now carry the real void initializer ABI.
+
+## 2026-07-19 constructor lifetime closure
+
+Binary Ninja now has an explicitly analysis-only manager-relative cursor for
+the constructor's native `manager + slot_index * 0x3c` induction value. Its
+`+0x58` member is the real `TrackRenderCacheSlot`, so the complete construction
+path reads through `slot_cursor->slot.bod.object`: list attachment, geometry
+clears, renderer/index-buffer creation, three texture-group allocations, and
+the fringe-family blend-mode override all retain their actual owners.
+
+The cursor does not claim an independent allocation. Its prefix aliases the
+enclosing `SegmentCache`, and guarded replay checks the `0x94` analysis-view
+width, the slot at `+0x58`, the inherited `BodBase::object`, every populated
+`Object` field, and the complete `0xa7f8` manager layout before applying local
+lifetimes.
+
+Two tempting annotations were rejected after live readback. Typing the native
+four-byte zeroing sequence as `int32_t*` made Binary Ninja print four dword
+stores, so the final replay retains a byte cursor. Naming/retyping the mixed
+shared-buffer induction value hid the manager-owned capacity and vertex/index
+array fields, so that user annotation was deleted and the clearer automatic
+`SegmentCache` field recovery remains. No matcher source changed: the result
+stays honestly at 99.18%, 122/122 instructions, prefix 29, with 18 clean
+operands and only the equivalent slot-index SIB ordering unresolved.
