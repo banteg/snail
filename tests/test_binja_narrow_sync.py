@@ -10590,6 +10590,78 @@ def test_collision_pool_cursor_ownership_is_replayed() -> None:
     assert "0x444CF0,  # handle_subgoldy_collisions" in ida_sync
 
 
+def test_collision_pool_offset_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_collision_pool_offset_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("Salt", "0x98"),
+        ("SaltManager", "0x17C0"),
+        ("SubLazer", "0xB0"),
+        ("SubLazerManager", "0xDC0"),
+        ("Slug", "0xEC"),
+        ("SlugPool", "0x760"),
+        ("Parcel", "0x8C"),
+        ("ParcelManager", "0x1B58"),
+        ("SubHealth", "0x74"),
+        ("SubGarbage", "0xC4"),
+        ("SubGarbagePool", "0x264C"),
+        ("SubRing", "0x1F8"),
+        ("SubRingPool", "0x3F0"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("SaltManager", "0x00", "slots", "Salt[40]"),
+        ("SubLazerManager", "0x00", "slots", "SubLazer[20]"),
+        ("SlugPool", "0x00", "slots", "Slug[8]"),
+        ("ParcelManager", "0x00", "slots", "Parcel[50]"),
+        ("SubRingPool", "0x00", "slots", "SubRing[2]"),
+        ("SubGarbagePool", "0x00", "active_head", "SubGarbage*"),
+        ("SubGarbagePool", "0x04", "slots", "SubGarbage[50]"),
+        ("SubgameRuntime", "0x356000", "health_pickups", "SubHealth[8]"),
+        ("SubgameRuntime", "0x3563A0", "slug_hazards", "SlugPool"),
+        ("SubgameRuntime", "0x356B00", "sub_lazers", "SubLazerManager"),
+        ("SubgameRuntime", "0x3578C0", "salt_hazards", "SaltManager"),
+        (
+            "SubgameRuntime",
+            "0x359140",
+            "garbage_hazards",
+            "SubGarbagePool",
+        ),
+        ("SubgameRuntime", "0x35B78C", "ring_effects", "SubRingPool"),
+        ("SubgameRuntime", "0x125E480", "parcel_manager", "ParcelManager"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for index, name in (
+        (67, "salt_pool_byte_offset"),
+        (304, "sub_lazer_pool_byte_offset"),
+        (490, "active_garbage"),
+        (815, "slug_pool_byte_offset"),
+        (1377, "parcel_pool_byte_offset"),
+        (1657, "health_pool_byte_offset"),
+        (2328, "ring_pool_byte_offset"),
+    ):
+        variable_type = "SubGarbage*" if name == "active_garbage" else "int32_t"
+        expected = (
+            '        "handle_subgoldy_collisions",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            "        73,\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+
+
 def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
     repo_root = Path(__file__).parents[1]
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(

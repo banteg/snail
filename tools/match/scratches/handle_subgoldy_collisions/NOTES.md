@@ -651,3 +651,24 @@ The collision loop's physical ECX state load is now replayed as a distinct
 exactly `ACTIVE` or `LATERAL_ACTIVE`; no new owner storage is invented. The
 byte-strided multi-pool matcher remains honestly 54.23%, 651/673 instructions,
 prefix 8/673, with all 88 operands clean.
+
+## 2026-07-19 collision pool traversal ownership
+
+The complete collision sweep now distinguishes its two traversal models. The
+garbage branch borrows real `SubGarbage*` nodes from
+`SubGarbagePool::active_head` and follows `next_active`. Salt, sub-lazer, slug,
+parcel, health, and ring branches instead retain one signed byte offset from
+the enclosing `SubgameRuntime`, then form a separately typed borrowed slot
+cursor at each use.
+
+Exact owner extents close every loop independently: `SaltManager 0x17c0` by
+`Salt 0x98`, `SubLazerManager 0xdc0` by `SubLazer 0xb0`, `SlugPool 0x760` by
+`Slug 0xec`, `ParcelManager 0x1b58` by `Parcel 0x8c`, eight `SubHealth` slots
+at `0x74` each, and `SubRingPool 0x3f0` by `SubRing 0x1f8`. A guarded replay
+names the intrusive cursor plus all six byte offsets and rejects incompatible
+pool or `SubgameRuntime` layouts before mutation. All seven annotations survive
+reanalysis; a second complete replay skips all seven as already current.
+
+Matcher source remains untouched at the honest 54.23%, 651/673-instruction
+frontier, prefix 8/673, with all 88 operands clean and no mismatches. No
+fakematch or synthetic owner was introduced.
