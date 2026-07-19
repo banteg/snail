@@ -3727,10 +3727,26 @@
         "manager->fade",
         "travel_distance",
         "alpha_scale",
+        "struct Vec3* entry_position",
+        "struct Vec3* entry_velocity",
+        "struct Vec3* scaled_velocity",
+        "struct StarManagerEntry* motion_entry",
+        "struct Sprite* sprite",
+        "struct tColour* sprite_color",
+        "struct Sprite* size_sprite",
+        "struct StarManagerEntry* velocity_entry",
+        "struct Vec3* sprite_velocity",
+        "struct StarManagerEntry* position_entry",
+        "struct Vec3* sprite_position",
         "manager->bod.bod.vtable"
       ],
       "forbidden_substrings": [
         "arg1[0x",
+        "void* eax_17",
+        "void* eax_20",
+        "void* eax_26",
+        "void* eax_29",
+        "void* eax_33",
         "__asm",
         "_ET1"
       ]

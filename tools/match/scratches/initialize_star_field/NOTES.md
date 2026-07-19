@@ -30,13 +30,14 @@
   per-entry `alpha_scale +0x28` feeds sprite alpha directly in
   `update_star_positions`. These replace the weaker `phase`/`twinkle` labels.
 
-Current focused result: 98.38%, 247/247 candidate/target instructions,
-29-instruction prefix, and 25 masked operands clean. The four residual
-instruction-order differences are VC6 scheduling around the random travel
-store/color arguments and the corner-scale sprite dereference; the candidate
-otherwise has the exact instruction count and semantics. A retained tail-entry
-pointer probe regressed to 66.80% by changing register ownership, so it was
-rejected rather than forcing the final scheduling differences.
+Current focused result after the shared vector-operator consolidation: 97.57%,
+247/247 candidate/target instructions, a 126-instruction prefix, and 25 masked
+operands clean. The six residual instruction-order differences are VC6
+scheduling around the random travel store/color arguments and the corner-scale
+sprite dereference; the candidate otherwise has the exact instruction count
+and semantics. A retained tail-entry pointer probe regressed to 66.80% by
+changing register ownership, so it was rejected rather than forcing the final
+scheduling differences.
 
 ## 2026-07-11 cRStarManager ownership
 
@@ -53,3 +54,26 @@ owner instead of a raw `char*` base followed by a local cast. This is
 byte-identical at 98.38%, 247/247 instructions, with all 25 operands clean;
 the remaining differences are still only the documented random/color and
 corner-scale scheduling windows.
+
+## 2026-07-19 entry and Sprite lifetimes
+
+Binary Ninja now preserves each materialized `StarManagerEntry*`, its borrowed
+`Sprite*`, and the `Vec3*`/`tColour*` children used by the position, velocity,
+color, size, and final copy phases. The refreshed listing consequently exposes
+the entry's speed/travel/position/velocity fields and the Sprite flag, color,
+size, position, and velocity fields instead of `void*` plus numeric offsets.
+The manager remains the owner of the entry bank; every entry merely borrows its
+Sprite from `SpriteManager`.
+
+The native EDI value is deliberately left as an automatic byte offset. A live
+integer retype initially made the decompiler index the final
+`facing_refresh_progress` store with the already incremented EBX loop counter,
+even though EDI still addressed the prior entry. That annotation was removed
+before export; only the independently materialized pointers are retained. The
+guarded replay verifies all five owner widths and their exact fields before
+setting the eleven stable register lifetimes, and a second run is idempotent.
+
+Matcher source is unchanged at the honest 97.57%, 247/247-instruction frontier,
+prefix 126, with all 25 operands clean. Reversing the commutative corner-scale
+multiply was codegen-neutral and was reverted; the remaining six instructions
+are scheduling only.

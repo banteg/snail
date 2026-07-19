@@ -1,10 +1,10 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
+  "bn_exported": 1,
   "ida_exported": 714,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
@@ -17,12 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "build_track_fringe_mesh",
-      "address": "0x4246a0"
-    },
-    {
-      "name": "build_track_fringe_supertramp_mesh",
-      "address": "0x424ad0"
+      "name": "initialize_star_field",
+      "address": "0x434310"
     }
   ],
   "health_check_count": 902,

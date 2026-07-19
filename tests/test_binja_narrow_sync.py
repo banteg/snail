@@ -1637,6 +1637,62 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "int16_t arg4" not in path_analysis_header
 
 
+def test_star_field_lifetime_replay_stays_guarded() -> None:
+    replay = (BINJA_DIR / "sync_star_field_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for owner_name, expected_size in (
+        ("Vec3", "0x0C"),
+        ("tColour", "0x10"),
+        ("Sprite", "0xB4"),
+        ("StarManagerEntry", "0x2C"),
+        ("StarManager", "0x4C"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("Vec3", "0x00", "x", "float"),
+        ("tColour", "0x0C", "a", "float"),
+        ("Sprite", "0x04", "flags", "SpriteFlag"),
+        ("Sprite", "0x48", "position", "Vec3"),
+        ("Sprite", "0x54", "velocity", "Vec3"),
+        ("StarManagerEntry", "0x1C", "sprite", "Sprite*"),
+        ("StarManagerEntry", "0x24", "travel_distance", "float"),
+        ("StarManager", "0x3C", "entries", "StarManagerEntry*"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for index, storage, name, variable_type in (
+        (245, 67, "entry_position", "Vec3*"),
+        (318, 68, "entry_velocity", "Vec3*"),
+        (392, 66, "scaled_velocity", "Vec3*"),
+        (507, 66, "motion_entry", "StarManagerEntry*"),
+        (616, 66, "sprite", "Sprite*"),
+        (680, 68, "sprite_color", "tColour*"),
+        (720, 66, "size_sprite", "Sprite*"),
+        (764, 66, "velocity_entry", "StarManagerEntry*"),
+        (773, 66, "sprite_velocity", "Vec3*"),
+        (795, 66, "position_entry", "StarManagerEntry*"),
+        (803, 68, "sprite_position", "Vec3*"),
+    ):
+        expected = (
+            '        "initialize_star_field",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}"'
+        )
+        assert expected in replay
+
+    assert "Retyping that offset as an integer" in replay
+    assert "apply_user_var_updates" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+
+
 def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:
     source = (BINJA_DIR / "sync_frontend_menu_types.py").read_text(encoding="utf-8")
     header = (HEADER_DIR / "bn_frontend_menu_types.h").read_text(encoding="utf-8")
