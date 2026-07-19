@@ -22,7 +22,7 @@ void __thiscall initialize_jet_particles(SubHover *sub_hover)
     v2 = 2;
     do
     {
-      sprite = allocate_sprite((SpriteManager *)g_sprite_manager, 1, 158, -1, -1);
+      sprite = allocate_sprite(&g_sprite_manager, 1, 158, -1, -1);
       particle_slots->sprite = sprite;
       flags = sprite->flags;
       BYTE1(flags) |= 8u;

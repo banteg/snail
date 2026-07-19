@@ -81,7 +81,7 @@ void __thiscall update_jet_particles(SubHover *sub_hover)
         {
           if ( (double)next_math_random_value() * 0.000030517578 > 0.89999998 )
           {
-            sprite = allocate_sprite((SpriteManager *)g_sprite_manager, sub_hover->game->player.player_slot, 33, -1, -1);
+            sprite = allocate_sprite(&g_sprite_manager, sub_hover->game->player.player_slot, 33, -1, -1);
             flags = sprite->flags;
             BYTE1(flags) |= 8u;
             sprite->flags = flags;

@@ -8036,6 +8036,29 @@ def test_previewed_batch_can_transactionally_set_a_user_variable() -> None:
     assert "bv.revert_undo_actions(state)" in code
 
 
+def test_previewed_batch_can_transactionally_delete_an_exact_user_variable() -> None:
+    code = _narrow_sync._batch_python_code(
+        [
+            {
+                "op": "user_var_delete",
+                "identifier": "update_jet_particles",
+                "source_type": "RegisterVariableSourceType",
+                "index": 543,
+                "storage": 67,
+                "variable_name": "trail_velocity",
+                "variable_type": "Vec3*",
+            }
+        ],
+        preview=True,
+    )
+
+    assert "function.delete_user_var(variable)" in code
+    assert "refusing to delete an unexpected user variable" in code
+    assert 'entry["verified"] = observed["user_defined"] is False' in code
+    assert '"already automatic"' in code
+    assert "bv.revert_undo_actions(state)" in code
+
+
 def test_previewed_batch_guards_analysis_for_current_user_variables() -> None:
     code = _narrow_sync._batch_python_code(
         [
@@ -8219,6 +8242,41 @@ def test_user_variable_replay_skips_apply_when_current(monkeypatch) -> None:
     assert calls == []
     assert result[0]["status"] == "skipped"
     assert result[0]["reason"] == "already current"
+
+
+def test_user_variable_removal_skips_apply_when_already_automatic(
+    monkeypatch,
+) -> None:
+    calls = []
+
+    def fake_run_bn_batch(_repo_root, *, target, operations, preview):
+        calls.append((target, operations, preview))
+        raise AssertionError("automatic variables should not open a transaction")
+
+    monkeypatch.setattr(_narrow_sync, "run_bn_batch", fake_run_bn_batch)
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_user_var_states",
+        lambda *_args, **_kwargs: [{"changed": False}],
+    )
+    result = _narrow_sync.remove_user_var_updates(
+        Path("."),
+        target="snail-mail.exe",
+        removals=(
+            (
+                "update_jet_particles",
+                "RegisterVariableSourceType",
+                543,
+                67,
+                "trail_velocity",
+                "Vec3*",
+            ),
+        ),
+    )
+
+    assert calls == []
+    assert result[0]["status"] == "skipped"
+    assert result[0]["reason"] == "already automatic"
 
 
 def test_user_var_readback_skips_type_parsing(monkeypatch) -> None:
@@ -10660,6 +10718,103 @@ def test_collision_pool_offset_lifetime_replay_stays_guarded() -> None:
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
+
+
+def test_jet_particle_bank_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_jet_particle_bank_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("Vec3", "0xC"),
+        ("tColour", "0x10"),
+        ("JetParticleSlot", "0x10"),
+        ("SubHover", "0x214"),
+        ("RenderableBod", "0x80"),
+        ("Weapon", "0x3DC"),
+        ("Snail", "0x19B4"),
+        ("Player", "0x4364"),
+        ("Sprite", "0xB4"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("JetParticleSlot", "0x00", "sprite", "Sprite*"),
+        ("SubHover", "0x10", "player", "Player*"),
+        ("SubHover", "0x20", "particle_slots", "JetParticleSlot[30]"),
+        ("SubHover", "0x200", "game", "SubgameRuntime*"),
+        ("Player", "0x380", "player_slot", "int32_t"),
+        ("Player", "0x410", "velocity", "Vec3"),
+        ("Player", "0x2750", "sub_hover", "SubHover"),
+        ("Player", "0x2984", "presentation", "Snail"),
+        ("Snail", "0x11E0", "jetpack_channel", "Weapon"),
+        ("Snail", "0x17B0", "snail_hotspots_world", "Vec3[19]"),
+        ("Sprite", "0x48", "position", "Vec3"),
+        ("Sprite", "0x54", "velocity", "Vec3"),
+        ("Sprite", "0x78", "gravity_step", "float"),
+        ("SubgameRuntime", "0x3BB764", "player", "Player"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for function_name, source_type, index, storage, name, type_name in (
+        (
+            "initialize_jet_particles",
+            "RegisterVariableSourceType",
+            7,
+            72,
+            "particle_slot_cursor",
+            "JetParticleSlot*",
+        ),
+        (
+            "uninit_jet_particles",
+            "RegisterVariableSourceType",
+            3,
+            72,
+            "particle_slot_cursor",
+            "JetParticleSlot*",
+        ),
+        (
+            "update_jet_particles",
+            "StackVariableSourceType",
+            74,
+            -60,
+            "random_back_seed",
+            "float",
+        ),
+        (
+            "update_jet_particles",
+            "RegisterVariableSourceType",
+            295,
+            66,
+            "particle_slot",
+            "JetParticleSlot*",
+        ),
+        (
+            "update_jet_particles",
+            "RegisterVariableSourceType",
+            429,
+            66,
+            "trail_puff",
+            "Sprite*",
+        ),
+    ):
+        expected = (
+            f'        "{function_name}",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "STALE_JET_PARTICLE_USER_VARS" in replay
+    assert "remove_user_var_updates" in replay
+    assert "apply_user_var_updates" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
 
 
 def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:

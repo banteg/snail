@@ -1557,29 +1557,39 @@
       "name": "bn_subhover_jet_particle_teardown_owner",
       "artifact": "analysis/decompile/binja/functions/0043a580-uninit_jet_particles.c",
       "required_substrings": [
-        "&sub_hover->particle_slots",
-        "particle_slots[0].sprite",
-        "kill_sprite"
+        "struct JetParticleSlot* particle_slot_cursor = &sub_hover->particle_slots",
+        "int32_t rows_remaining = 0xf",
+        "int32_t columns_remaining = 2",
+        "kill_sprite(particle_slot_cursor->sprite)",
+        "particle_slot_cursor = &particle_slot_cursor[1]"
       ],
       "forbidden_substrings": [
         "gauge->",
         "int32_t result",
-        "return result"
+        "return result",
+        "struct JetParticleSlot (*",
+        "(esi - 0x20)"
       ]
     },
     {
       "name": "bn_subhover_jet_particle_init_owner",
       "artifact": "analysis/decompile/binja/functions/0043a5b0-initialize_jet_particles.c",
       "required_substrings": [
-        "&sub_hover->particle_slots",
-        "struct Sprite* eax_1 = allocate_sprite(&g_sprite_manager",
-        "particle_slots[0].sprite->velocity",
-        "particle_slots[0].sprite->color"
+        "struct JetParticleSlot* particle_slot_cursor = &sub_hover->particle_slots",
+        "int32_t rows_remaining = 0xf",
+        "int32_t columns_remaining = 2",
+        "struct Sprite* particle_sprite = allocate_sprite(&g_sprite_manager",
+        "particle_slot_cursor->sprite = particle_sprite",
+        "&particle_slot_cursor->sprite->velocity",
+        "struct tColour* particle_color = &particle_slot_cursor->sprite->color",
+        "particle_slot_cursor = &particle_slot_cursor[1]"
       ],
       "forbidden_substrings": [
         "gauge->",
         "char* gauge",
-        "return eax"
+        "return eax",
+        "struct JetParticleSlot (*",
+        "(esi - 0x20)"
       ]
     },
     {
@@ -1589,14 +1599,19 @@
         "struct SubgameRuntime* game = sub_hover->game",
         "game->player.presentation.jetpack_channel",
         "sub_hover->game->player.presentation.snail_hotspots_world",
-        "sub_hover->game->player.velocity",
-        "eax_18->gravity_step"
+        "struct JetParticleSlot* particle_slot",
+        "particle_slot->sprite->size_end = particle_size",
+        "struct Sprite* trail_puff = allocate_sprite(&g_sprite_manager",
+        "struct Vec3* player_velocity = &sub_hover->game->player.velocity",
+        "trail_puff->gravity_step"
       ],
       "forbidden_substrings": [
         "struct Game*",
         "gauge->",
         "data_4df904",
-        "__offset("
+        "__offset(",
+        "void** eax_12",
+        "struct Sprite* eax_18"
       ]
     },
     {

@@ -24,6 +24,7 @@ SplitVarSpec = tuple[str, int, int]
 SplitVarDefinition = tuple[str, str, str, int, int]
 StructUpdateGroup = tuple[str, Iterable[FieldUpdate]]
 UserVarUpdate = tuple[str, str, int, int, str, str]
+UserVarRemoval = tuple[str, str, int, int, str, str]
 
 
 def _read_bn_spill(stdout: str, stderr: str) -> tuple[Path | None, object | None]:
@@ -303,6 +304,45 @@ try:
             affected_functions.append(str(function.name))
             continue
 
+        if kind == "user_var_delete":
+            function = find_function(operation["identifier"])
+            variable = find_variable(function, operation)
+            expected_type, _ = parse_type_once(operation["variable_type"])
+            expected_name = str(operation["variable_name"])
+            before = {
+                "name": str(variable.name),
+                "type": str(variable.type),
+                "user_defined": bool(function.is_var_user_defined(variable)),
+            }
+            if before["user_defined"] and before != {
+                "name": expected_name,
+                "type": str(expected_type),
+                "user_defined": True,
+            }:
+                raise RuntimeError(
+                    "refusing to delete an unexpected user variable: "
+                    f"expected {expected_name} as {expected_type}, found {before}"
+                )
+            changed = before["user_defined"]
+            if changed:
+                analysis_changed = True
+                function.delete_user_var(variable)
+            results.append({
+                "op": kind,
+                "identifier": str(operation["identifier"]),
+                "function": str(function.name),
+                "address": hex(int(function.start)),
+                "source_type": str(operation["source_type"]),
+                "index": int(operation["index"]),
+                "storage": int(operation["storage"]),
+                "variable_name": expected_name,
+                "variable_type": str(expected_type),
+                "before": before,
+                "changed": changed,
+            })
+            affected_functions.append(str(function.name))
+            continue
+
         if kind == "reanalyze_function":
             function = find_function(operation["identifier"])
             before = {
@@ -384,6 +424,16 @@ try:
             }
             entry["observed"] = observed
             entry["verified"] = observed == entry["expected"]
+        elif entry["op"] == "user_var_delete":
+            function = find_function(entry["identifier"])
+            variable = find_variable(function, entry)
+            observed = {
+                "name": str(variable.name),
+                "type": str(variable.type),
+                "user_defined": bool(function.is_var_user_defined(variable)),
+            }
+            entry["observed"] = observed
+            entry["verified"] = observed["user_defined"] is False
         elif entry["op"] == "reanalyze_function":
             function = find_function(entry["identifier"])
             observed = {
@@ -412,12 +462,20 @@ try:
             }
         if not entry["verified"]:
             raise RuntimeError(f"batch verification failed: {entry!r}")
-        if entry["op"] in {"undefine_symbol", "user_var_set"} and not entry["changed"]:
+        if entry["op"] in {
+            "undefine_symbol",
+            "user_var_set",
+            "user_var_delete",
+        } and not entry["changed"]:
             entry["status"] = "skipped"
             entry["reason"] = (
                 "already absent"
                 if entry["op"] == "undefine_symbol"
-                else "already current"
+                else (
+                    "already automatic"
+                    if entry["op"] == "user_var_delete"
+                    else "already current"
+                )
             )
         else:
             entry["status"] = "verified"
@@ -1664,6 +1722,30 @@ def user_var_operations(
     ]
 
 
+def user_var_removal_operations(
+    removals: Iterable[UserVarRemoval],
+) -> list[dict[str, object]]:
+    return [
+        {
+            "op": "user_var_delete",
+            "identifier": identifier,
+            "source_type": source_type,
+            "index": index,
+            "storage": storage,
+            "variable_name": variable_name,
+            "variable_type": variable_type,
+        }
+        for (
+            identifier,
+            source_type,
+            index,
+            storage,
+            variable_name,
+            variable_type,
+        ) in removals
+    ]
+
+
 def current_user_var_states(
     repo_root: Path,
     *,
@@ -1762,18 +1844,22 @@ result = {"user_vars": user_vars}
             raise RuntimeError(
                 f"Binary Ninja user-variable readback has invalid entries: {response!r}"
             )
+        deleting = operation.get("op") == "user_var_delete"
         expected = {
             "name": str(operation["variable_name"]),
             "type": str(operation["variable_type"]),
-            "user_defined": True,
+            "user_defined": not deleting,
         }
         entry["expected"] = expected
-        entry["changed"] = (
-            observed["name"] != expected["name"]
-            or normalize_type_name(observed["type"])
-            != normalize_type_name(expected["type"])
-            or observed["user_defined"] is not True
-        )
+        if deleting:
+            entry["changed"] = observed["user_defined"] is True
+        else:
+            entry["changed"] = (
+                observed["name"] != expected["name"]
+                or normalize_type_name(observed["type"])
+                != normalize_type_name(expected["type"])
+                or observed["user_defined"] is not True
+            )
     return user_vars
 
 
@@ -1837,6 +1923,82 @@ def apply_user_var_updates(
     return [
         {
             "op": "user_var_batch",
+            "operation_count": len(operations),
+            "operations": operations,
+            "preview": {
+                "success": preview.get("success"),
+                "message": preview.get("message"),
+                "affected_function_count": len(
+                    preview.get("affected_functions", ())
+                ),
+            },
+            "result": applied,
+        }
+    ]
+
+
+def remove_user_var_updates(
+    repo_root: Path,
+    *,
+    target: str,
+    removals: Iterable[UserVarRemoval],
+) -> list[dict[str, object]]:
+    operations = user_var_removal_operations(removals)
+    if not operations:
+        return []
+
+    current_results = current_user_var_states(
+        repo_root,
+        target=target,
+        operations=operations,
+    )
+    if len(current_results) != len(operations) or any(
+        not isinstance(entry.get("changed"), bool) for entry in current_results
+    ):
+        raise RuntimeError("Binary Ninja user-variable removal preflight is malformed")
+    if all(entry["changed"] is False for entry in current_results):
+        return [
+            {
+                **operation,
+                "status": "skipped",
+                "reason": "already automatic",
+            }
+            for operation in operations
+        ]
+
+    preview = run_bn_batch(
+        repo_root,
+        target=target,
+        operations=operations,
+        preview=True,
+    )
+    preview_results = preview.get("results")
+    if not isinstance(preview_results, list):
+        raise RuntimeError(
+            f"Binary Ninja user-variable removal preview is malformed: {preview!r}"
+        )
+    if all(
+        isinstance(entry, dict) and entry.get("changed") is False
+        for entry in preview_results
+    ):
+        return [
+            {
+                **operation,
+                "status": "skipped",
+                "reason": "already automatic",
+            }
+            for operation in operations
+        ]
+
+    applied = run_bn_batch(
+        repo_root,
+        target=target,
+        operations=operations,
+        preview=False,
+    )
+    return [
+        {
+            "op": "user_var_delete_batch",
             "operation_count": len(operations),
             "operations": operations,
             "preview": {

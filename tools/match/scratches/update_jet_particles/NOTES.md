@@ -147,3 +147,25 @@ fields. The focused replay verifies `SubHover` 0x214, `Player` 0x4364, and
 `Sprite` 0xb4 before exporting. This is an ownership/export improvement only:
 focused Wibo stays at the honest 52.96%, 174/181, prefix 0, with all 16 masks
 clean and no fabricated source shape.
+
+## 2026-07-19 complete jet-particle bank lifetime replay
+
+The three authored `cRSubHover::{JetInit, Jets, JetUnInit}` methods now share
+one guarded lifetime replay for the exact 0x214-byte owner and its inline
+`JetParticleSlot[30]` bank. Init and teardown flatten the 15-by-2 grid through
+a borrowed `JetParticleSlot*` cursor with explicit row and column counts; no
+slot pointer escapes the call. The updater retains distinct trail and nozzle
+indices, borrows the left/right authored hotspots and Player forward basis,
+then resolves each slot's Sprite position and the detached trail-puff Sprite.
+
+The replay verifies the complete SubHover -> Player/Snail -> runtime graph plus
+the exact Sprite fields before mutation. Live readback also rejected two
+interior `Vec3*` annotations because they obscured the enclosing
+`Sprite::gravity_step` access. The narrow-sync helper now previews, verifies,
+and saves exact user-variable removals, so that rejection is durable and
+idempotent rather than an ad-hoc database edit.
+
+Matcher source remains untouched at the honest 52.96%, 174/181-instruction
+frontier, prefix 0/181, with all 16 operands clean. This slice recovers
+ownership and lifetime boundaries only; it does not add padding, volatile
+state, or any other fakematch.
