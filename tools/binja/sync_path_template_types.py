@@ -381,6 +381,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SubRingSlotCursor",
     "JetPackSlotCursor",
     "SubHealthSlotCursor",
+    "SubGarbageSlotCursor",
     "SlugSlotCursor",
     "SubLazerSlotCursor",
     "SaltSlotCursor",

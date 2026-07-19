@@ -982,6 +982,11 @@ typedef struct SubHealthSlotCursor {
     SubHealth health;
 } SubHealthSlotCursor;
 
+typedef struct SubGarbageSlotCursor {
+    uint8_t subgame_prefix[0x359144];
+    SubGarbage garbage;
+} SubGarbageSlotCursor;
+
 typedef struct SlugSlotCursor {
     uint8_t subgame_prefix[0x3563a0];
     Slug slug;

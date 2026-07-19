@@ -6844,6 +6844,12 @@
         "game->garbage_hazards.slots[0].state",
         "SUB_GARBAGE_STATE_INACTIVE",
         "game->garbage_hazards.active_head",
+        "struct SubGarbageSlotCursor* garbage_slot_cursor",
+        "garbage_slot_cursor->garbage.next_active",
+        "garbage_slot_cursor->garbage.owner_player",
+        "garbage_slot_cursor->garbage.body.transform.position",
+        "garbage_slot_cursor->garbage.sprite->gravity_step",
+        "garbage_slot_cursor->garbage.source_cell",
         "game->player.body.bod.bod.list_prev",
         "project_position_onto_track_attachment(game,",
         "return"
@@ -6854,6 +6860,9 @@
         "GarbageHazardSlot",
         "GarbageHazardRuntime",
         "int32_t* ecx = &game->garbage_hazards.slots[0].state",
+        "void* esi = game +",
+        "*(esi + 0x359",
+        "(esi + 0x359144)->",
         "__asm",
         "_ET1"
       ]
@@ -6866,6 +6875,12 @@
         "SubGarbageState *i;",
         "game->garbage_hazards.slots[0].state",
         "game->garbage_hazards.active_head",
+        "struct SubGarbageSlotCursor *garbage_slot_cursor;",
+        "garbage_slot_cursor->garbage.next_active",
+        "garbage_slot_cursor->garbage.owner_player",
+        "garbage_slot_cursor->garbage.body.transform.position",
+        "garbage_slot_cursor->garbage.sprite->position",
+        "garbage_slot_cursor->garbage.source_cell",
         "game->player"
       ],
       "forbidden_substrings": [
@@ -6874,6 +6889,10 @@
         "GarbageHazardSlot",
         "GarbageHazardRuntime",
         "int *i;",
+        "char *v6;",
+        "(_DWORD *)v6",
+        "v6 + 351",
+        "v6[351",
         "__asm",
         "_ET1"
       ]

@@ -29,6 +29,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SpriteFlag",
     "SubGarbagePool",
     "SubGarbage",
+    "SubGarbageSlotCursor",
     "Sprite",
     "SpriteManager",
 )
@@ -188,7 +189,6 @@ PROTO_UPDATES = (
         "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* player)",
     ),
 )
-
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(

@@ -107,6 +107,7 @@ uv run python tools/ida/query_data_types.py <data-name-or-address> [<data-name-o
 uv run python tools/ida/query_function_types.py <function-or-address> [<function-or-address> ...]
 uv run python tools/ida/query_function_lvars.py <function> [<function> ...]
 uv run python tools/binja/sync_collision_state_lifetimes.py --target SnailMail_unwrapped.exe.bndb
+uv run python tools/binja/sync_garbage_allocator_lifetimes.py --target SnailMail_unwrapped.exe.bndb
 uv run python tools/binja/sync_pickup_list_lifetimes.py --target SnailMail_unwrapped.exe.bndb
 ```
 

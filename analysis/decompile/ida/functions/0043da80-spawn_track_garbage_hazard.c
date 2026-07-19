@@ -7,15 +7,15 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
 {
   int v3; // eax
   SubGarbageState *i; // ecx
-  char *v6; // esi
-  struct BodNode *v7; // ebp
+  struct SubGarbageSlotCursor *garbage_slot_cursor; // esi
+  SubGarbage *p_garbage; // ebp
   float *p_radius; // ebx
   Player *p_player; // edi
   BodList *p_active_bod_list; // eax
   __int64 v11; // rax
   Sprite *sprite; // eax
   SpriteFlag flags; // edx
-  _DWORD *v14; // eax
+  Vec3 *p_position; // eax
   float v15; // [esp+Ch] [ebp-8h]
   float z; // [esp+10h] [ebp-4h]
 
@@ -28,59 +28,62 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
       return;
     }
   }
-  v6 = (char *)game + 196 * v3;
-  *((_DWORD *)v6 + 877681) = game->garbage_hazards.active_head;
-  v7 = (struct BodNode *)(v6 + 3510596);
-  game->garbage_hazards.active_head = (SubGarbage *)(v6 + 3510596);
+  garbage_slot_cursor = (struct SubGarbageSlotCursor *)((char *)game + 196 * v3);
+  garbage_slot_cursor->garbage.next_active = game->garbage_hazards.active_head;
+  p_garbage = &garbage_slot_cursor->garbage;
+  game->garbage_hazards.active_head = &garbage_slot_cursor->garbage;
   p_radius = &game->garbage_hazards.slots[v3].radius;
-  *((_DWORD *)v6 + 877697) = player;
+  garbage_slot_cursor->garbage.owner_player = player;
   *p_radius = (random_float_below(0.40000001) + 1.0) * 0.60000002;
-  *((_DWORD *)v6 + 877682) = 1;
-  set_matrix_identity((TransformMatrix *)(v6 + 3510652));
+  garbage_slot_cursor->garbage.state = SUB_GARBAGE_STATE_ACTIVE;
+  set_matrix_identity(&garbage_slot_cursor->garbage.body.transform);
   z = cell->anchor_position.z;
   v15 = *p_radius + cell->anchor_position.y;
-  *((_DWORD *)v6 + 877675) = LODWORD(cell->anchor_position.x);
-  *((float *)v6 + 877676) = v15;
-  *((float *)v6 + 877677) = z;
-  project_position_onto_track_attachment(game, (Vec3 *)(v6 + 3510700), (float *)v6 + 877689);
+  garbage_slot_cursor->garbage.body.transform.position.x = cell->anchor_position.x;
+  garbage_slot_cursor->garbage.body.transform.position.y = v15;
+  garbage_slot_cursor->garbage.body.transform.position.z = z;
+  project_position_onto_track_attachment(
+    game,
+    (Vec3 *)&garbage_slot_cursor->garbage.body.transform.position,
+    &garbage_slot_cursor->garbage.attachment_facing_angle);
   p_player = &game->player;
   p_active_bod_list = &g_game_base->active_bod_list;
-  if ( (*((_DWORD *)v6 + 877650) & 0x200) != 0 )
+  if ( (garbage_slot_cursor->garbage.body.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddbefore);
   }
   else
   {
-    *((_DWORD *)v6 + 877652) = p_player;
+    garbage_slot_cursor->garbage.body.bod.bod.list_next = &p_player->body.bod.bod;
     if ( (Player *)p_active_bod_list->first == p_player )
     {
-      p_player->body.bod.bod.list_prev = v7;
-      p_active_bod_list->first = v7;
-      *((_DWORD *)v6 + 877651) = 0;
+      p_player->body.bod.bod.list_prev = &p_garbage->body.bod.bod;
+      p_active_bod_list->first = &p_garbage->body.bod.bod;
+      garbage_slot_cursor->garbage.body.bod.bod.list_prev = nullptr;
     }
     else
     {
-      *((_DWORD *)v6 + 877651) = p_player->body.bod.bod.list_prev;
-      p_player->body.bod.bod.list_prev = v7;
-      *(_DWORD *)(*((_DWORD *)v6 + 877651) + 12) = v7;
+      garbage_slot_cursor->garbage.body.bod.bod.list_prev = p_player->body.bod.bod.list_prev;
+      p_player->body.bod.bod.list_prev = &p_garbage->body.bod.bod;
+      garbage_slot_cursor->garbage.body.bod.bod.list_prev->list_next = &p_garbage->body.bod.bod;
     }
-    *((_DWORD *)v6 + 877650) |= 0x200u;
+    garbage_slot_cursor->garbage.body.bod.bod.list_flags |= 0x200u;
   }
   v11 = (__int64)((double)next_math_random_value() * -0.00012207031);
-  sprite = allocate_sprite(&g_sprite_manager, *(_DWORD *)(*((_DWORD *)v6 + 877697) + 896), 114 - v11, -1, -1);
-  *((_DWORD *)v6 + 877694) = sprite;
+  sprite = allocate_sprite(&g_sprite_manager, garbage_slot_cursor->garbage.owner_player->player_slot, 114 - v11, -1, -1);
+  garbage_slot_cursor->garbage.sprite = sprite;
   flags = sprite->flags;
   BYTE1(flags) |= 8u;
   sprite->flags = flags;
-  *(_DWORD *)(*((_DWORD *)v6 + 877694) + 120) = 0;
-  *(_DWORD *)(*((_DWORD *)v6 + 877694) + 104) = 0;
-  *(_DWORD *)(*((_DWORD *)v6 + 877694) + 108) = 0;
-  *(float *)(*((_DWORD *)v6 + 877694) + 96) = *p_radius;
-  *(float *)(*((_DWORD *)v6 + 877694) + 100) = *p_radius;
-  v14 = (_DWORD *)(*((_DWORD *)v6 + 877694) + 72);
-  *v14 = *((_DWORD *)v6 + 877675);
-  v14[1] = *((_DWORD *)v6 + 877676);
-  v14[2] = *((_DWORD *)v6 + 877677);
-  *((_DWORD *)v6 + 877695) = cell;
-  v6[3510784] = 0;
+  garbage_slot_cursor->garbage.sprite->gravity_step = 0.0;
+  garbage_slot_cursor->garbage.sprite->progress = 0.0;
+  garbage_slot_cursor->garbage.sprite->progress_step = 0.0;
+  garbage_slot_cursor->garbage.sprite->size_start = *p_radius;
+  garbage_slot_cursor->garbage.sprite->size_end = *p_radius;
+  p_position = &garbage_slot_cursor->garbage.sprite->position;
+  p_position->x = garbage_slot_cursor->garbage.body.transform.position.x;
+  p_position->y = garbage_slot_cursor->garbage.body.transform.position.y;
+  p_position->z = garbage_slot_cursor->garbage.body.transform.position.z;
+  garbage_slot_cursor->garbage.source_cell = cell;
+  garbage_slot_cursor->garbage.hidden = 0;
 }

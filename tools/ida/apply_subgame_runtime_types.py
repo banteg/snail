@@ -52,6 +52,7 @@ SUB_LAZER_OWNER_EXPECTED_MEMBERS = (
 
 SUB_GARBAGE_OWNER_EXPECTED_SIZE = 0xC4
 SUB_GARBAGE_POOL_EXPECTED_SIZE = 0x264C
+SUB_GARBAGE_SLOT_CURSOR_EXPECTED_SIZE = 0x359208
 SUB_GARBAGE_OWNER_EXPECTED_MEMBERS = (
     (0x80, 4, "next_active", "SubGarbage *"),
     (0x84, 4, "state", "SubGarbageState"),
@@ -63,6 +64,9 @@ SUB_GARBAGE_OWNER_EXPECTED_MEMBERS = (
     (0xB4, 4, "sprite", "Sprite *"),
     (0xB8, 4, "source_cell", "TrackRowCell *"),
     (0xC0, 4, "owner_player", "Player *"),
+)
+SUB_GARBAGE_SLOT_CURSOR_EXPECTED_MEMBERS = (
+    (0x359144, 0xC4, "garbage", "SubGarbage"),
 )
 
 SLUG_OWNER_EXPECTED_SIZE = 0xEC
@@ -417,6 +421,7 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "Parcel_must_be_0x8c",
     "Parcel slots[50];",
     "ParcelManager_must_be_0x1b58",
+    "typedef struct SubGarbageSlotCursor {",
 )
 
 EXPECTED_PARCEL_OWNER_SIZES = {
@@ -632,19 +637,41 @@ def _sub_garbage_owner_readback() -> dict[str, object]:
     )
     size = _named_struct_size("SubGarbage")
     pool_size = _named_struct_size("SubGarbagePool")
+    cursor_members = _named_struct_members("SubGarbageSlotCursor")
+    selected_cursor = [] if cursor_members is None else [
+        member
+        for member in cursor_members
+        if int(member["offset"])
+        in {expected[0] for expected in SUB_GARBAGE_SLOT_CURSOR_EXPECTED_MEMBERS}
+    ]
+    observed_cursor = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected_cursor
+    )
+    cursor_size = _named_struct_size("SubGarbageSlotCursor")
     return {
         "status": (
             "verified"
             if size == SUB_GARBAGE_OWNER_EXPECTED_SIZE
             and pool_size == SUB_GARBAGE_POOL_EXPECTED_SIZE
             and observed == SUB_GARBAGE_OWNER_EXPECTED_MEMBERS
+            and cursor_size == SUB_GARBAGE_SLOT_CURSOR_EXPECTED_SIZE
+            and observed_cursor == SUB_GARBAGE_SLOT_CURSOR_EXPECTED_MEMBERS
             else "failed"
         ),
         "size": size,
         "pool_size": pool_size,
+        "cursor_size": cursor_size,
         "members": selected,
+        "cursor_members": selected_cursor,
         "expected_size": SUB_GARBAGE_OWNER_EXPECTED_SIZE,
         "expected_pool_size": SUB_GARBAGE_POOL_EXPECTED_SIZE,
+        "expected_cursor_size": SUB_GARBAGE_SLOT_CURSOR_EXPECTED_SIZE,
         "expected_members": [
             {
                 "offset": offset,
@@ -653,6 +680,15 @@ def _sub_garbage_owner_readback() -> dict[str, object]:
                 "type": member_type,
             }
             for offset, member_size, member_name, member_type in SUB_GARBAGE_OWNER_EXPECTED_MEMBERS
+        ],
+        "expected_cursor_members": [
+            {
+                "offset": offset,
+                "size": member_size,
+                "name": member_name,
+                "type": member_type,
+            }
+            for offset, member_size, member_name, member_type in SUB_GARBAGE_SLOT_CURSOR_EXPECTED_MEMBERS
         ],
     }
 
@@ -736,16 +772,16 @@ def _normalize_pointer_type(value: str | None) -> str:
     return (_normalize_type_text(value) or "").removeprefix("struct ")
 
 
-def _sync_slug_allocator_lvar(
+def _sync_allocator_lvar(
     *,
+    selector: str,
     definition_address: int,
     accepted_names: set[str],
     accepted_types: set[str],
     target_name: str,
     target_struct_name: str,
 ) -> dict[str, object]:
-    """Persist one exact borrowed-cursor relationship in AddSlug."""
-    selector = "spawn_slug_hazard"
+    """Persist one exact borrowed-cursor relationship in an allocator."""
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR:
         return {"status": "failed", "reason": "missing_function", "selector": selector}
@@ -768,7 +804,7 @@ def _sync_slug_allocator_lvar(
     if len(candidates) != 1:
         return {
             "status": "failed",
-            "reason": "unexpected_slug_allocator_lvar_candidates",
+            "reason": "unexpected_allocator_lvar_candidates",
             "selector": selector,
             "definition_address": hex(definition_address),
             "target_name": target_name,
@@ -797,7 +833,7 @@ def _sync_slug_allocator_lvar(
     ):
         return {
             "status": "failed",
-            "reason": "missing_slug_allocator_lvar_type",
+            "reason": "missing_allocator_lvar_type",
             "selector": selector,
             "target_struct_name": target_struct_name,
         }
@@ -806,7 +842,7 @@ def _sync_slug_allocator_lvar(
     if not pointer_type.create_ptr(target_type):
         return {
             "status": "failed",
-            "reason": "create_slug_allocator_pointer_type_failed",
+            "reason": "create_allocator_pointer_type_failed",
             "selector": selector,
             "target_struct_name": target_struct_name,
         }
@@ -822,7 +858,7 @@ def _sync_slug_allocator_lvar(
     ):
         return {
             "status": "failed",
-            "reason": "modify_slug_allocator_lvar_failed",
+            "reason": "modify_allocator_lvar_failed",
             "selector": selector,
             "target_name": target_name,
         }
@@ -841,7 +877,7 @@ def _sync_slug_allocator_lvar(
     if len(verified) != 1:
         return {
             "status": "failed",
-            "reason": "slug_allocator_lvar_readback_failed",
+            "reason": "allocator_lvar_readback_failed",
             "selector": selector,
             "definition_address": hex(definition_address),
             "target_name": target_name,
@@ -889,6 +925,17 @@ SPAWN_SLUG_HAZARD_LVAR_SPECS = (
         {"_DWORD *", "Sprite *"},
         "sprite",
         "Sprite",
+    ),
+)
+
+SPAWN_GARBAGE_HAZARD_LVAR_SPECS = (
+    (
+        "selected_slot_cursor",
+        0x43DAC5,
+        {"v6", "garbage_slot_cursor"},
+        {"char *", "void *", "SubGarbageSlotCursor *"},
+        "garbage_slot_cursor",
+        "SubGarbageSlotCursor",
     ),
 )
 
@@ -1064,6 +1111,37 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
         applied += 1
 
+    garbage_allocator_lvars = {}
+    for (
+        result_name,
+        definition_address,
+        accepted_names,
+        accepted_types,
+        target_name,
+        target_struct_name,
+    ) in SPAWN_GARBAGE_HAZARD_LVAR_SPECS:
+        result = _sync_allocator_lvar(
+            selector="spawn_track_garbage_hazard",
+            definition_address=definition_address,
+            accepted_names=accepted_names,
+            accepted_types=accepted_types,
+            target_name=target_name,
+            target_struct_name=target_struct_name,
+        )
+        garbage_allocator_lvars[result_name] = result
+        if result.get("status") == "applied":
+            applied += 1
+        elif result.get("status") == "unchanged":
+            unchanged += 1
+        else:
+            failed.append(
+                {
+                    "selector": "spawn_track_garbage_hazard",
+                    "lvar": result_name,
+                    "result": result,
+                }
+            )
+
     slug_allocator_lvars = {}
     for (
         result_name,
@@ -1073,7 +1151,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         target_name,
         target_struct_name,
     ) in SPAWN_SLUG_HAZARD_LVAR_SPECS:
-        result = _sync_slug_allocator_lvar(
+        result = _sync_allocator_lvar(
+            selector="spawn_slug_hazard",
             definition_address=definition_address,
             accepted_names=accepted_names,
             accepted_types=accepted_types,
@@ -1172,6 +1251,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "SubLazerManager": _named_struct_size("SubLazerManager"),
                     "SubGarbage": _named_struct_size("SubGarbage"),
                     "SubGarbagePool": _named_struct_size("SubGarbagePool"),
+                    "SubGarbageSlotCursor": _named_struct_size(
+                        "SubGarbageSlotCursor"
+                    ),
                     "Slug": _named_struct_size("Slug"),
                     "SlugPool": _named_struct_size("SlugPool"),
                     "Salt": _named_struct_size("Salt"),
@@ -1184,6 +1266,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "names_unchanged": names_unchanged,
                 "reanalyzed": reanalyzed,
                 "game_root_owner_graph": game_root_owner_graph,
+                "garbage_allocator_lvars": garbage_allocator_lvars,
                 "slug_allocator_lvars": slug_allocator_lvars,
                 "missing": missing,
                 "failed": failed,

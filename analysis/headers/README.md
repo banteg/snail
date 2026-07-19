@@ -184,6 +184,9 @@ intentional.
 - `uv run python tools/binja/sync_garbage_hazard_types.py --target SnailMail_unwrapped.exe.bndb`
   - Promotes the exact `SubGarbage` / `SubGarbagePool` owner pair, preserving
     the inherited `RenderableBod` at offset zero and the 50-slot inline pool.
+  - After the canonical types exist, replay the selected AddGarbage slot with
+    `uv run python tools/binja/sync_garbage_allocator_lifetimes.py --target
+    SnailMail_unwrapped.exe.bndb`.
 - `bn_high_score_bank_types.h`
 - `uv run python tools/binja/sync_high_score_bank_types.py`
 - `bn_subgame_runtime_types.h`

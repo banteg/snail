@@ -180,6 +180,16 @@ typedef struct SubGarbagePool {
 
 typedef SubGarbagePool GarbageHazardPool;
 
+/*
+ * Analysis-only root-biased view retained by AddGarbage after multiplying the
+ * slot index. The prefix aliases SubgameRuntime; garbage is one pool-owned
+ * record, not separately allocated storage.
+ */
+typedef struct SubGarbageSlotCursor {
+    uint8_t subgame_prefix[0x359144];
+    SubGarbage garbage;
+} SubGarbageSlotCursor;
+
 void __thiscall initialize_sprite_manager(SpriteManager* manager);
 Sprite* __thiscall allocate_sprite(
     SpriteManager* manager,

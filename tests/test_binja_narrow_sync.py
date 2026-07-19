@@ -6544,6 +6544,9 @@ def test_sub_garbage_owner_replays_stay_aligned() -> None:
     garbage_sync = (BINJA_DIR / "sync_garbage_hazard_types.py").read_text(
         encoding="utf-8"
     )
+    garbage_lifetime_sync = (
+        BINJA_DIR / "sync_garbage_allocator_lifetimes.py"
+    ).read_text(encoding="utf-8")
     ida_runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
         encoding="utf-8"
     )
@@ -6572,6 +6575,9 @@ def test_sub_garbage_owner_replays_stay_aligned() -> None:
         assert "SubGarbage* active_head;" in header
         assert "SubGarbage slots[" in header
         assert "typedef SubGarbagePool GarbageHazardPool;" in header
+        assert "typedef struct SubGarbageSlotCursor {" in header
+        assert "uint8_t subgame_prefix[0x359144];" in header
+        assert "SubGarbage garbage;" in header
         assert "typedef enum SubGarbageState {" in header
         assert "SUB_GARBAGE_STATE_INACTIVE = 0" in header
         assert "SUB_GARBAGE_STATE_ACTIVE = 1" in header
@@ -6595,6 +6601,24 @@ def test_sub_garbage_owner_replays_stay_aligned() -> None:
     assert "EXPECTED_GARBAGE_ENUM_MEMBERS" in garbage_sync
     assert "current_enum_members" in garbage_sync
     assert "types_declare_missing_only" in garbage_sync
+    assert '"SubGarbageSlotCursor",' in garbage_sync
+    assert "apply_user_var_updates" not in garbage_sync
+    assert "current_type_widths" in garbage_lifetime_sync
+    assert "current_struct_fields_batch" in garbage_lifetime_sync
+    assert "GARBAGE_ALLOCATOR_USER_VAR_UPDATES" in garbage_lifetime_sync
+    assert '"SubGarbage": 0xC4' in garbage_lifetime_sync
+    assert '"SubGarbagePool": 0x264C' in garbage_lifetime_sync
+    assert '"SubGarbageSlotCursor": 0x359208' in garbage_lifetime_sync
+    assert '0x359144: ("garbage", "SubGarbage")' in garbage_lifetime_sync
+    assert (
+        '"spawn_track_garbage_hazard",\n'
+        '        "RegisterVariableSourceType",\n'
+        '        68,\n'
+        '        72,\n'
+        '        "garbage_slot_cursor",\n'
+        '        "SubGarbageSlotCursor*"'
+        in garbage_lifetime_sync
+    )
     assert "SubGarbage* sub_garbage" in garbage_sync
     assert "GarbageHazardRuntime" not in garbage_sync
     assert 'parser.add_argument("--target", default=DEFAULT_TARGET' in garbage_sync
@@ -6610,6 +6634,11 @@ def test_sub_garbage_owner_replays_stay_aligned() -> None:
 
     assert "SUB_GARBAGE_OWNER_EXPECTED_SIZE = 0xC4" in ida_runtime_sync
     assert "SUB_GARBAGE_POOL_EXPECTED_SIZE = 0x264C" in ida_runtime_sync
+    assert "SUB_GARBAGE_SLOT_CURSOR_EXPECTED_SIZE = 0x359208" in ida_runtime_sync
+    assert "SPAWN_GARBAGE_HAZARD_LVAR_SPECS" in ida_runtime_sync
+    assert "0x43DAC5" in ida_runtime_sync
+    assert '"garbage_slot_cursor"' in ida_runtime_sync
+    assert '"SubGarbageSlotCursor"' in ida_runtime_sync
     assert '(0x84, 4, "state", "SubGarbageState")' in ida_runtime_sync
     assert (
         '(0x88, 4, "collision_side", "SubGarbageCollisionSide")'
@@ -6624,8 +6653,10 @@ def test_sub_garbage_owner_replays_stay_aligned() -> None:
         '"SubGarbagePool": _named_struct_size("SubGarbagePool")'
         in ida_runtime_sync
     )
+    assert '"SubGarbageSlotCursor": _named_struct_size(' in ida_runtime_sync
     assert '"SubGarbageState",' in path_sync
     assert '"SubGarbageCollisionSide",' in path_sync
+    assert '"SubGarbageSlotCursor",' in path_sync
 
     assert "class SubGarbage : public RenderableBod" in matcher_header
     assert "SubGarbageState state;" in matcher_header

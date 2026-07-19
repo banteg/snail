@@ -270,3 +270,23 @@ lanes read the scan as selecting `SUB_GARBAGE_STATE_INACTIVE` from the owned
 pool. The matcher was already source-shaped around the same four values and
 remains exactly 143/143 with all 16 operands clean; no scheduling or return
 fakematch was introduced.
+
+## 2026-07-19 selected-slot ownership replay
+
+The allocator preserves ESI as `SubgameRuntime + slot_index * 0xc4`, rather
+than rebasing it to the selected `SubGarbage`. Both analysis lanes now model
+that physical value with the analysis-only `SubGarbageSlotCursor`: its
+`0x359144` prefix aliases the runtime root and its one `SubGarbage` member is
+the pool-owned selected slot. This recovers the active-chain splice, actor
+state and transform, intrusive BOD membership, sprite, source cell, hidden
+flag, and player backlink without pretending the register holds a direct
+actor pointer.
+
+The bounded `sync_garbage_allocator_lifetimes.py` replay first verifies the
+canonical `0xc4` actor, `0x264c` pool, and `0x359208` cursor layouts, then owns
+only the exact ESI lifetime. An idempotent replay completed in 6.6 seconds,
+versus roughly 61.5 seconds for the broad garbage type replay. The paired
+Binary Ninja and IDA exports now contain no raw selected-slot `esi` / `v6`
+displacement accesses. The source matcher remains exactly 143/143 with all 16
+masked operands clean, so this is analysis ownership recovery and introduces
+no source-shape change or fakematch.
