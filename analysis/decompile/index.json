@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "build_subgame_level",
-      "address": "0x437eb0"
+      "name": "update_subgame",
+      "address": "0x438b90"
     }
   ],
   "health_check_count": 899,

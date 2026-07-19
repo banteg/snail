@@ -9649,6 +9649,72 @@ def test_subgame_level_activation_lifetime_replay_stays_guarded() -> None:
         assert hidden_ssa_name not in replay
 
 
+def test_update_subgame_fringe_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_update_subgame_fringe_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("BodNode", "0x10"),
+        ("BodBase", "0x38"),
+        ("Fringe", "0x38"),
+        ("tColour", "0x10"),
+        ("TrackRowCell", "0x54"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("BodNode", "0x08", "list_prev", "BodNode*"),
+        ("BodNode", "0x0C", "list_next", "BodNode*"),
+        ("BodBase", "0x00", "bod", "BodNode"),
+        ("BodBase", "0x28", "color", "tColour"),
+        ("Fringe", "0x00", "bod", "BodBase"),
+        ("tColour", "0x00", "r", "float"),
+        ("tColour", "0x0C", "a", "float"),
+        ("TrackRowCell", "0x44", "fringe_front", "Fringe*"),
+        ("TrackRowCell", "0x50", "fringe_back", "Fringe*"),
+        (
+            "SubgameRuntime",
+            "0x355B64",
+            "fringe_attachment_list_head",
+            "BodBase",
+        ),
+        (
+            "SubgameRuntime",
+            "0x3BFAC8",
+            "runtime_cells",
+            "TrackRowCell[3200][8]",
+        ),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, variable_type in (
+        ("StackVariableSourceType", 1730, -56, "fringe_slots_remaining", "uint32_t"),
+        ("RegisterVariableSourceType", 1738, 69, "fringe_slot_cursor", "Fringe**"),
+        ("RegisterVariableSourceType", 1738, 66, "current_fringe", "Fringe*"),
+        ("RegisterVariableSourceType", 1785, 67, "fringe_list_next", "BodNode*"),
+        ("RegisterVariableSourceType", 1795, 67, "fringe_list_flags", "uint32_t"),
+        ("RegisterVariableSourceType", 1821, 66, "skirt_color", "tColour*"),
+        ("RegisterVariableSourceType", 1826, 68, "reloaded_fringe", "Fringe*"),
+        ("RegisterVariableSourceType", 1830, 68, "fringe_color", "tColour*"),
+    ):
+        expected = (
+            '        "update_subgame",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+
+
 def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     track_sync = (BINJA_DIR / "sync_track_render_cache_types.py").read_text(
         encoding="utf-8"

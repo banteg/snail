@@ -204,6 +204,29 @@ target tables. Their destination sequences differ because the surrounding
 state dispatch is still structurally unmatched. They remain two real masked
 mismatches with 116 other operands clean; no aliases are registered.
 
+## 2026-07-19 directional fringe-slot ownership
+
+The state-2 runtime-cell consumer walks the four contiguous directional
+`Fringe*` slots at `TrackRowCell +0x44..+0x50`. The cell owns those pointer
+slots; each non-null `Fringe` remains borrowed from the embedded
+`FringeManager`, is temporarily linked through
+`SubgameRuntime::fringe_attachment_list_head`, and receives a copied skirt
+colour through its inherited `BodBase::color`.
+
+A narrow guarded Binary Ninja replay now pins eight lifetimes around that
+operation: the slot cursor/count, current object, attachment-list successor and
+flags, returned skirt colour, explicit post-call object reload, and destination
+colour. The reload is visible in MLIL and independently required by the
+matching scratch to preserve the native `0x3c` frame/register allocation; HLIL
+folds it back into `*fringe_slot_cursor`. The corrected `tColour*` return local
+now renders four named component copies instead of an `int32_t*` array.
+
+All eight annotations survive reanalysis, and a second replay skips all eight
+as already current. Matcher source is unchanged; this is ownership recovery,
+not a score-shaping edit. The focused result remains exactly 79.75%,
+1036/1033 instructions, prefix 9/1033, with 117 clean operands and the same two
+honest jump-table mismatches. No fakematch was introduced.
+
 2026-07-11 slug voice manager ownership: the state-2 update now calls the
 embedded `SubgameRuntime::slug_voice_manager` directly. Android retains the
 same owner/member as `cRSlugVoiceManager::AI()`, and the preceding exact
