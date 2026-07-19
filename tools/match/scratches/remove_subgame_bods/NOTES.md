@@ -284,3 +284,19 @@ intact. All twelve annotations replay idempotently behind exact owner-layout
 guards. No matcher source changed, so focused output remains 67.67%, 495/501
 instructions, prefix 6, with 64 clean operands and the same one string-order
 mismatch.
+
+## 2026-07-19 Player presentation-bank teardown lifetimes
+
+The Player body, embedded `Snail`, jetpack animation channel, and weapon
+channel zero now retain four distinct intrusive-list lifetimes. Each block
+names its borrowed root list, flags, next/previous nodes, and post-clear value;
+the Player block also identifies the free-stack head that Binary Ninja splits
+into byte copies. Channels one and two plus the invincible shell remain the
+native out-of-line recycler calls, so no artificial inline symmetry is added.
+
+The replay guards the exact `Player -> Snail -> Weapon` ownership chain and all
+zero-offset `RenderableBod -> BodBase -> BodNode` inheritance before applying
+its 24 annotations. Partial-register rendering is retained where the analyzer
+still emits it. No matcher source changed, and focused output remains 67.67%,
+495/501 instructions, prefix 6, with 64 clean operands and the same one
+string-order mismatch.

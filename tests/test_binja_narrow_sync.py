@@ -9271,6 +9271,174 @@ def test_subgame_pickup_teardown_lifetime_replay_stays_guarded() -> None:
     assert "apply_user_var_updates" in replay
 
 
+def test_subgame_player_teardown_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_subgame_player_teardown_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("BodNode", "0x10"),
+        ("BodList", "0x0C"),
+        ("BodBase", "0x38"),
+        ("RenderableBod", "0x80"),
+        ("Weapon", "0x3DC"),
+        ("Snail", "0x19B4"),
+        ("Player", "0x4364"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("BodNode", "0x04", "list_flags", "uint32_t"),
+        ("BodNode", "0x08", "list_prev", "BodNode*"),
+        ("BodNode", "0x0C", "list_next", "BodNode*"),
+        ("BodList", "0x04", "first", "BodNode*"),
+        ("BodList", "0x08", "free_top", "BodNode*"),
+        ("BodBase", "0x00", "bod", "BodNode"),
+        ("RenderableBod", "0x00", "bod", "BodBase"),
+        ("Weapon", "0x00", "body", "RenderableBod"),
+        ("Snail", "0x00", "body", "RenderableBod"),
+        ("Snail", "0x064C", "weapon_channels", "Weapon[3]"),
+        ("Snail", "0x11E0", "jetpack_channel", "Weapon"),
+        ("Player", "0x0000", "body", "RenderableBod"),
+        ("Player", "0x2984", "presentation", "Snail"),
+        ("SubgameRuntime", "0x3BB764", "player", "Player"),
+        ("GameRoot", "0x05A8", "active_bod_list", "BodList"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        ("RegisterVariableSourceType", 1002, 66, "player_list_flags", "uint32_t"),
+        ("RegisterVariableSourceType", 1014, 67, "player_active_list", "BodList*"),
+        ("RegisterVariableSourceType", 1059, 66, "player_list_next", "BodNode*"),
+        ("RegisterVariableSourceType", 1072, 66, "player_list_prev", "BodNode*"),
+        ("RegisterVariableSourceType", 1093, 68, "player_free_top", "BodNode*"),
+        (
+            "RegisterVariableSourceType",
+            1102,
+            66,
+            "player_flags_after_clear",
+            "uint32_t",
+        ),
+        ("RegisterVariableSourceType", 1123, 68, "snail_active_list", "BodList*"),
+        ("RegisterVariableSourceType", 1129, 67, "snail_list_flags", "uint32_t"),
+        ("RegisterVariableSourceType", 1172, 67, "snail_list_next", "BodNode*"),
+        (
+            "RegisterVariableSourceType",
+            1179,
+            73,
+            "snail_list_prev_for_next",
+            "BodNode*",
+        ),
+        ("RegisterVariableSourceType", 1185, 67, "snail_list_prev", "BodNode*"),
+        (
+            "RegisterVariableSourceType",
+            1215,
+            67,
+            "snail_flags_after_clear",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1230,
+            67,
+            "jetpack_channel_list_flags",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1242,
+            68,
+            "jetpack_channel_active_list",
+            "BodList*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1288,
+            67,
+            "jetpack_channel_list_next",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1295,
+            73,
+            "jetpack_channel_list_prev_for_next",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1301,
+            67,
+            "jetpack_channel_list_prev",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1331,
+            67,
+            "jetpack_channel_flags_after_clear",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1346,
+            67,
+            "weapon_channel_0_list_flags",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1358,
+            68,
+            "weapon_channel_0_active_list",
+            "BodList*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1404,
+            67,
+            "weapon_channel_0_list_next",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1411,
+            73,
+            "weapon_channel_0_list_prev_for_next",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1417,
+            67,
+            "weapon_channel_0_list_prev",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1447,
+            67,
+            "weapon_channel_0_flags_after_clear",
+            "uint32_t",
+        ),
+    ):
+        expected = (
+            '        "remove_subgame_bods",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+
+
 def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     track_sync = (BINJA_DIR / "sync_track_render_cache_types.py").read_text(
         encoding="utf-8"
