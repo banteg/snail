@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "remove_track_render_cache_bods",
-      "address": "0x433f20"
+      "name": "build_track_fringe_objects",
+      "address": "0x434be0"
     }
   ],
   "health_check_count": 898,

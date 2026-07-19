@@ -8775,6 +8775,139 @@ def test_track_cache_teardown_lifetime_replay_stays_guarded() -> None:
     assert "TrackRenderCacheSlotCursor" not in replay
 
 
+def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_track_fringe_builder_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("SubRow", "0xF4"),
+        ("TrackRowCell", "0x54"),
+        ("Fringe", "0x38"),
+        ("FringeManager", "0x5FB44"),
+        ("RootTrackFringeBodCatalog", "0x3F00"),
+        ("RootBodCatalog", "0x4D00"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("TrackRowCell", "0x44", "fringe_front", "Fringe*"),
+        ("TrackRowCell", "0x48", "fringe_right", "Fringe*"),
+        ("TrackRowCell", "0x4C", "fringe_left", "Fringe*"),
+        ("TrackRowCell", "0x50", "fringe_back", "Fringe*"),
+        ("Fringe", "0x00", "bod", "BodBase"),
+        ("FringeManager", "0x00", "objects", "Fringe[7000]"),
+        ("FringeManager", "0x5FB40", "count", "int32_t"),
+        (
+            "RootTrackFringeBodCatalog",
+            "0x00",
+            "entries",
+            "RootBodCatalogEntry[8][4][3][3]",
+        ),
+        (
+            "RootBodCatalog",
+            "0xCB0",
+            "fringe_catalog",
+            "RootTrackFringeBodCatalog",
+        ),
+        (
+            "SubgameRuntime",
+            "0x35BBBC",
+            "fringe_manager",
+            "FringeManager",
+        ),
+        (
+            "SubgameRuntime",
+            "0x3BFAC8",
+            "runtime_cells",
+            "TrackRowCell[3200][8]",
+        ),
+        (
+            "SubgameRuntime",
+            "0x5CCAC8",
+            "runtime_rows",
+            "SubRow[3200]",
+        ),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        ("RegisterVariableSourceType", 10, 71, "runtime", "SubgameRuntime*"),
+        (
+            "StackVariableSourceType",
+            18,
+            -80,
+            "runtime_saved",
+            "SubgameRuntime*",
+        ),
+        ("RegisterVariableSourceType", 30, 69, "edge_variant_a", "int32_t"),
+        ("StackVariableSourceType", 34, -72, "row_index", "int32_t"),
+        ("RegisterVariableSourceType", 44, 68, "row", "SubRow*"),
+        ("RegisterVariableSourceType", 52, 72, "cell", "TrackRowCell*"),
+        ("StackVariableSourceType", 58, -68, "row_cursor", "SubRow*"),
+        (
+            "StackVariableSourceType",
+            70,
+            -76,
+            "cells_remaining",
+            "int32_t",
+        ),
+        ("RegisterVariableSourceType", 73, 73, "fringe_family", "int32_t"),
+        (
+            "RegisterVariableSourceType",
+            316,
+            71,
+            "front_edge_variant_b",
+            "int32_t",
+        ),
+        ("RegisterVariableSourceType", 355, 66, "front_fringe", "Fringe*"),
+        ("StackVariableSourceType", 0, -64, "front_color", "tColour"),
+        (
+            "RegisterVariableSourceType",
+            576,
+            71,
+            "right_edge_variant_b",
+            "int32_t",
+        ),
+        ("RegisterVariableSourceType", 615, 66, "right_fringe", "Fringe*"),
+        ("StackVariableSourceType", 0, -48, "right_color", "tColour"),
+        (
+            "RegisterVariableSourceType",
+            836,
+            71,
+            "left_edge_variant_b",
+            "int32_t",
+        ),
+        ("RegisterVariableSourceType", 875, 66, "left_fringe", "Fringe*"),
+        ("StackVariableSourceType", 0, -32, "left_color", "tColour"),
+        (
+            "RegisterVariableSourceType",
+            1096,
+            71,
+            "back_edge_variant_b",
+            "int32_t",
+        ),
+        ("RegisterVariableSourceType", 1135, 66, "back_fringe", "Fringe*"),
+        ("StackVariableSourceType", 0, -16, "back_color", "tColour"),
+    ):
+        expected = (
+            '        "build_track_fringe_objects",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert "FringeObject" not in replay
+
+
 def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     track_sync = (BINJA_DIR / "sync_track_render_cache_types.py").read_text(
         encoding="utf-8"

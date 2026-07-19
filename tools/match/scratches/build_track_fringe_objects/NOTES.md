@@ -230,3 +230,20 @@ directional cell fields are explicit borrowed `Fringe*` handles, while
 cursor. Focused replay also types the exact constructor, pool reset/allocation,
 and vtable callback together, preventing the cell handles and pool element from
 drifting into separate same-sized analyzer types.
+
+## 2026-07-19 builder lifetime closure
+
+Binary Ninja now preserves the saved `SubgameRuntime*` receiver, independent
+`SubRow*` and `TrackRowCell*` iterators, row/cell loop bounds, fringe-family
+selector, and both directional edge selectors. Each allocation result is named
+as the corresponding borrowed `Fringe*`, while the four color temporaries stay
+direction-local. This makes the ownership chain explicit: the subgame owns the
+runtime slabs and fringe pool, the root catalog owns render BODs, and each cell
+stores only non-owning handles to emitted fringe records.
+
+The replay first verifies all owner widths and exact fields, including the
+7000-record pool, 3200-by-8 cell slab, 3200-row slab, and 8-by-4-by-3-by-3 root
+catalog. No matcher source changed. Focused matching remains honestly partial
+at 60.39%, 492 candidate / 495 target instructions, prefix 3, with all 48
+operands clean; the remaining difference is the documented VC6 register
+scheduling, so no register-shaped source construct is introduced.
