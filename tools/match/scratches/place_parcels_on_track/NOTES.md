@@ -287,3 +287,23 @@ receiver through the address of the Path's zero-offset BOD vtable.
 No source-shape change was made. Focused Wibo remains honestly at 33.81%,
 633/639 instructions, with 40 clean operands and the same two known
 candidate-bank address-shape mismatches.
+
+## Parcel scratch-bank cursor lifetimes (2026-07-19)
+
+Binary Ninja now retains five exact borrowed lifetimes across the two pool
+compaction paths. The positive-set path carries `ParcelCandidate*` source,
+destination, and write cursors while copying the next bucket's 16-byte records;
+the digit-0 path carries a `Vec3*` candidate-position borrow and a
+`ParcelBucket*` destination cursor while publishing the copied candidate and
+its `candidate_count`, `set_id`, and `segment_index`. These views expose the
+already-proven `ParcelCandidate` and `ParcelBucket` fields without moving either
+2048-entry global scratch bank under `SubgameRuntime` ownership.
+
+A stack-variable split at the digit-0 destination definition was tested and
+rejected. Splitting the reused `out_angle` slot changed downstream MLIL variable
+identities and attached otherwise-valid register types to unrelated
+temporaries. The split and all displaced annotations were removed, the original
+stack variable was restored, and the five stable register lifetimes were then
+replayed twice with identical results. No source-shape change was justified;
+focused Wibo remains honestly at 33.81% (633/639 instructions, 40 clean masked
+operands, two known candidate-bank address-shape mismatches).

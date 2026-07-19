@@ -6051,6 +6051,51 @@ def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
         assert "int32_t __thiscall place_challenge_parcels_on_track" not in source
 
 
+def test_parcel_bucket_lifetime_replay_stays_guarded() -> None:
+    source = (BINJA_DIR / "sync_parcel_bucket_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("ParcelCandidate", "0x10"),
+        ("ParcelBucket", "0x20C"),
+    ):
+        assert f'"{type_name}": {width}' in source
+
+    for owner, offset, field, field_type in (
+        ("ParcelCandidate", "0x00", "row", "int32_t"),
+        ("ParcelCandidate", "0x04", "position", "Vec3"),
+        ("ParcelBucket", "0x000", "candidates", "ParcelCandidate[32]"),
+        ("ParcelBucket", "0x200", "candidate_count", "int32_t"),
+        ("ParcelBucket", "0x204", "set_id", "int32_t"),
+        ("ParcelBucket", "0x208", "segment_index", "int32_t"),
+    ):
+        assert f'"{owner}": {{' in source
+        assert f'{offset}: ("{field}", "{field_type}")' in source
+
+    for index, storage, name, var_type in (
+        (1494, 67, "destination_candidate", "ParcelCandidate*"),
+        (1500, 72, "source_candidate", "ParcelCandidate*"),
+        (1506, 73, "destination_candidate_write", "ParcelCandidate*"),
+        (1875, 67, "zero_candidate_position", "Vec3*"),
+        (1972, 66, "zero_destination_bucket", "ParcelBucket*"),
+    ):
+        expected = (
+            '"place_parcels_on_track",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{var_type}",'
+        )
+        assert expected in source
+
+    assert "verify_owner_layouts(args.target)" in source
+    assert "apply_user_var_updates(" in source
+    assert "apply_split_user_var_update" not in source
+
+
 def test_track_colour_banks_replay_semantic_owners_without_collapsing_slide() -> None:
     repo_root = Path(__file__).parents[1]
     header = (HEADER_DIR / "track_colour_bank_types.h").read_text(
