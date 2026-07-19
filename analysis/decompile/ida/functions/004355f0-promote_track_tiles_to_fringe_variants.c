@@ -2,59 +2,56 @@
 /* function: promote_track_tiles_to_fringe_variants @ 0x4355f0 */
 /* selector: promote_track_tiles_to_fringe_variants */
 
-int32_t __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime *game)
+// Void cRSubGame normalization pass that promotes floor/slide runtime cells to their warning-fringe object variants when the same lane in the next row is open. Its sole caller consumes only the grid mutation; the count-derived EAX residue is incidental.
+void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime *game)
 {
-  int32_t result; // eax
   void **p_object; // esi
-  int v3; // ebp
-  GameRoot *v4; // eax
+  int v2; // ebp
+  GameRoot *v3; // eax
   int i; // edi
   int j; // edi
-  int32_t v7; // [esp+0h] [ebp-8h]
+  int v6; // [esp+0h] [ebp-8h]
 
-  result = game->runtime_row_count - 1;
-  v7 = 0;
-  if ( result > 0 )
+  v6 = 0;
+  if ( game->runtime_row_count - 1 > 0 )
   {
     p_object = &game->runtime_cells[0][0].object;
     do
     {
-      v3 = 8;
+      v2 = 8;
       do
       {
         p_object[7] = (void *)((unsigned int)p_object[7] & 0xFFFFFFDF);
         if ( (unsigned __int8)is_sub_loc_empty((TrackRowCell *)(p_object + 159)) )
         {
-          v4 = g_game_base;
+          v3 = g_game_base;
           for ( i = 0; i < 8; ++i )
           {
-            if ( *p_object == v4->root_bod_catalog.floor_slices.storage[i].object
-              || *p_object == v4->root_bod_catalog.slide_slices.storage[i].object )
+            if ( *p_object == v3->root_bod_catalog.floor_slices.storage[i].object
+              || *p_object == v3->root_bod_catalog.slide_slices.storage[i].object )
             {
-              set_bod_object((BodBase *)(p_object - 9), v4->root_bod_catalog.warning_slices.storage[i].object);
+              set_bod_object((BodBase *)(p_object - 9), v3->root_bod_catalog.warning_slices.storage[i].object);
               p_object[7] = (void *)((unsigned int)p_object[7] | 0x20);
-              v4 = g_game_base;
+              v3 = g_game_base;
             }
           }
           for ( j = 0; j < 4; ++j )
           {
-            if ( *p_object == v4->root_bod_catalog.floor_corners.storage[j].object
-              || *p_object == v4->root_bod_catalog.slide_corners.storage[j].object )
+            if ( *p_object == v3->root_bod_catalog.floor_corners.storage[j].object
+              || *p_object == v3->root_bod_catalog.slide_corners.storage[j].object )
             {
-              set_bod_object((BodBase *)(p_object - 9), v4->root_bod_catalog.warning_corners.storage[j].object);
+              set_bod_object((BodBase *)(p_object - 9), v3->root_bod_catalog.warning_corners.storage[j].object);
               p_object[7] = (void *)((unsigned int)p_object[7] | 0x20);
-              v4 = g_game_base;
+              v3 = g_game_base;
             }
           }
         }
         p_object += 21;
-        --v3;
+        --v2;
       }
-      while ( v3 );
-      result = v7 + 1;
-      v7 = result;
+      while ( v2 );
+      ++v6;
     }
-    while ( result < game->runtime_row_count - 1 );
+    while ( v6 < game->runtime_row_count - 1 );
   }
-  return result;
 }

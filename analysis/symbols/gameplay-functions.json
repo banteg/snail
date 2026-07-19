@@ -2177,17 +2177,18 @@
     },
     {
       "address": "0x4355f0",
-      "name": "promote_track_tiles_to_fringe_variants"
+      "name": "promote_track_tiles_to_fringe_variants",
+      "description": "Void cRSubGame normalization pass that promotes floor/slide runtime cells to their warning-fringe object variants when the same lane in the next row is open. Its sole caller consumes only the grid mutation; the count-derived EAX residue is incidental."
     },
     {
       "address": "0x4356f0",
       "name": "harmonize_center_lane_floor_slide_variants",
-      "description": "Normalizes center-lane floor and slide seam variants after the main edge pass: a floor current cell beside a slide neighbor is promoted to the matching slide object, while a slide current cell beside a floor neighbor is restored to the floor object. Cross-port Android and iOS symbols match this pass to `cRSubGame::SlideSmoothTrack()`."
+      "description": "Void cRSubGame normalization pass that harmonizes center-lane floor and slide seam variants after the main edge pass: a floor current cell beside a slide neighbor is promoted to the matching slide object, while a slide current cell beside a floor neighbor is restored to the floor object. Cross-port Android and iOS symbols match this pass to `cRSubGame::SlideSmoothTrack()`."
     },
     {
       "address": "0x435a80",
       "name": "select_track_tile_edge_variants",
-      "description": "Computes neighbor masks and chooses edge or corner variants for special runtime tile classes. Cross-port Android and iOS symbols match this pass to `cRSubGame::SmoothTrack()`."
+      "description": "Void cRSubGame normalization pass that computes neighbor masks and chooses edge or corner variants for special runtime tile classes. Cross-port Android and iOS symbols match this pass to `cRSubGame::SmoothTrack()`."
     },
     {
       "address": "0x435d40",

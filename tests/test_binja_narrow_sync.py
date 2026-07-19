@@ -1865,8 +1865,11 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert '("SubSpeedUp", SUB_SPEED_UP_FIELD_UPDATES)' in source
     assert '"SaltHazardSlot"' not in source
     stable_prototypes = source.split("CORE_SUBGAME_PROTO_UPDATES = (", 1)[1].split(
-        "\n)\n\n# These five receivers", 1
+        "\n)\n\n# These remaining lifecycle", 1
     )[0]
+    normalization_prototypes = source.split(
+        "TRACK_NORMALIZATION_VOID_PROTO_UPDATES = (", 1
+    )[1].split("\n)\n\nPROTO_UPDATES", 1)[0]
     deferred_prototypes = source.split(
         "DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (", 1
     )[1].split("\n)\n\n\nDEFERRED_PATH_OWNER_PROTO_UPDATES", 1)[0]
@@ -1882,9 +1885,6 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "update_subgame",
         "remove_subgame_bods",
         "build_track_fringe_objects",
-        "promote_track_tiles_to_fringe_variants",
-        "harmonize_center_lane_floor_slide_variants",
-        "select_track_tile_edge_variants",
         "get_track_grid_cell_at_world_position",
         "sample_track_floor_height_at_position",
         "spawn_track_health_pickup",
@@ -1906,6 +1906,32 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
             f'"{function_name}", "void __thiscall '
             f'{function_name}(SubgameRuntime* game)"'
         ) in deferred_prototypes
+    for function_name in (
+        "select_track_tile_edge_variants",
+        "promote_track_tiles_to_fringe_variants",
+        "harmonize_center_lane_floor_slide_variants",
+    ):
+        declaration = (
+            f"void __thiscall {function_name}(SubgameRuntime* game)"
+        )
+        assert declaration in normalization_prototypes
+        assert declaration + ";" in ida_source
+        assert "".join((declaration + ";").split()) in compact_header
+        repair_spec = repair_source.split(f'"{function_name}": {{', 1)[1].split(
+            "\n    },", 1
+        )[0]
+        assert (
+            '"expected_prototype": "void __thiscall(struct SubgameRuntime* game)"'
+            in repair_spec
+        )
+        assert (
+            '"stale_prototype": '
+            '"int32_t __thiscall(struct SubgameRuntime* game)"'
+            in repair_spec
+        )
+        assert '"int32_t __thiscall(struct Game* game)"' in repair_spec
+        assert f'"void __thiscall {function_name}("' in repair_spec
+    assert "*TRACK_NORMALIZATION_VOID_PROTO_UPDATES" in source
     assert '"address": 0x4374B0' in repair_source
     assert '"expected_prototype": "void __thiscall(struct SubgameRuntime* game)"' in repair_source
     assert '"stale_prototype": "void __fastcall(struct Game* game)"' in repair_source

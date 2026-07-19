@@ -264,9 +264,12 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4340F0,  # update_thanks_for_playing_screen
     0x434BE0,  # build_track_fringe_objects
     0x435180,  # merge_track_tile_runs
+    0x4355F0,  # promote_track_tiles_to_fringe_variants
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
+    0x435A80,  # select_track_tile_edge_variants
     0x435EB0,  # populate_runtime_track_cells_from_segments
     0x4374B0,  # initialize_subgame
+    0x437DE0,  # rebuild_track_runtime_from_segments
     0x437EB0,  # build_subgame_level
     0x438B90,  # update_subgame
     0x439B00,  # refresh_fringe_object_draw_list
@@ -2071,7 +2074,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "select_track_tile_edge_variants",
-        "int32_t __thiscall select_track_tile_edge_variants(SubgameRuntime* game);",
+        "void __thiscall select_track_tile_edge_variants(SubgameRuntime* game);",
     ),
     (
         "merge_track_tile_runs",
@@ -2079,11 +2082,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "promote_track_tiles_to_fringe_variants",
-        "int32_t __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime* game);",
+        "void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime* game);",
     ),
     (
         "harmonize_center_lane_floor_slide_variants",
-        "int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime* game);",
+        "void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime* game);",
     ),
     (
         "build_track_fringe_objects",

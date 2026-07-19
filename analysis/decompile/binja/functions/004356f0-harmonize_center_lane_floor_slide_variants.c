@@ -7,7 +7,8 @@
 004356f6        int32_t i = 0
 004356f8        struct SubgameRuntime* game_2 = game_1
 004356ff        int32_t i_1 = 0
-00435706        if (game_1->runtime_row_count - 1 s> 0)
+00435706        if (game_1->runtime_row_count - 1 s<= 0)
+00435706        return
 00435716        int32_t ecx_2 = 0
 00435718        int32_t edx_2 = i & 7
 0043571b        int32_t var_c_1 = 0
@@ -83,4 +84,4 @@
 00435a66        i = i_1 + 1
 00435a6a        i_1 = i
 00435a71        do while (i s< game_1->runtime_row_count - 1)
-00435a7e        return i
+00435a7e        return

@@ -157,10 +157,13 @@ FUNCTION_SPECS = {
     },
     "promote_track_tiles_to_fringe_variants": {
         "address": 0x4355F0,
-        "expected_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
-        "stale_prototype": "int32_t __thiscall(struct Game* game)",
+        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "legacy_prototypes": (
+            "int32_t __thiscall(struct Game* game)",
+        ),
         "declaration": (
-            "int32_t __thiscall promote_track_tiles_to_fringe_variants("
+            "void __thiscall promote_track_tiles_to_fringe_variants("
             "SubgameRuntime* game)"
         ),
         "parameter_count": 1,
@@ -176,10 +179,13 @@ FUNCTION_SPECS = {
     },
     "harmonize_center_lane_floor_slide_variants": {
         "address": 0x4356F0,
-        "expected_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
-        "stale_prototype": "int32_t __thiscall(struct Game* game)",
+        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "legacy_prototypes": (
+            "int32_t __thiscall(struct Game* game)",
+        ),
         "declaration": (
-            "int32_t __thiscall harmonize_center_lane_floor_slide_variants("
+            "void __thiscall harmonize_center_lane_floor_slide_variants("
             "SubgameRuntime* game)"
         ),
         "parameter_count": 1,
@@ -195,10 +201,13 @@ FUNCTION_SPECS = {
     },
     "select_track_tile_edge_variants": {
         "address": 0x435A80,
-        "expected_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
-        "stale_prototype": "int32_t __thiscall(struct Game* game)",
+        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "legacy_prototypes": (
+            "int32_t __thiscall(struct Game* game)",
+        ),
         "declaration": (
-            "int32_t __thiscall select_track_tile_edge_variants("
+            "void __thiscall select_track_tile_edge_variants("
             "SubgameRuntime* game)"
         ),
         "parameter_count": 1,

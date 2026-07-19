@@ -1,84 +1,36 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 16,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 16,
-  "ida_exported": 16,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "binja_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "kill_border",
-      "address": "0x403360"
+      "name": "promote_track_tiles_to_fringe_variants",
+      "address": "0x4355f0"
     },
     {
-      "name": "border_input_text",
-      "address": "0x4035b0"
+      "name": "harmonize_center_lane_floor_slide_variants",
+      "address": "0x4356f0"
     },
     {
-      "name": "reset_tooltip",
-      "address": "0x403be0"
+      "name": "select_track_tile_edge_variants",
+      "address": "0x435a80"
     },
     {
-      "name": "update_tooltip",
-      "address": "0x403c20"
-    },
-    {
-      "name": "flush_row_event_display",
-      "address": "0x404830"
-    },
-    {
-      "name": "destroy_completion_screen",
-      "address": "0x406060"
-    },
-    {
-      "name": "destroy_galaxy",
-      "address": "0x408c10"
-    },
-    {
-      "name": "destroy_challenge_setup_screen",
-      "address": "0x4161f0"
-    },
-    {
-      "name": "destroy_options_menu",
-      "address": "0x41aee0"
-    },
-    {
-      "name": "uninit_thanks_screen",
-      "address": "0x4340c0"
-    },
-    {
-      "name": "destroy_subgame",
-      "address": "0x438850"
-    },
-    {
-      "name": "uninit_pause_menu",
-      "address": "0x440600"
-    },
-    {
-      "name": "update_click_start",
-      "address": "0x442290"
-    },
-    {
-      "name": "uninit_times_up",
-      "address": "0x445e70"
-    },
-    {
-      "name": "uninit_warning",
-      "address": "0x446f10"
-    },
-    {
-      "name": "kill_tip_widgets",
-      "address": "0x4489e0"
+      "name": "rebuild_track_runtime_from_segments",
+      "address": "0x437de0"
     }
   ],
   "health_check_count": 876,

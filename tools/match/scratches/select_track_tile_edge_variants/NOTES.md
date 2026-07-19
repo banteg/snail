@@ -66,3 +66,17 @@ now reach the live BN prototype as `SubgameRuntime*`; the old same-size `Game*`
 identity is gone. Refreshed BN and IDA artifacts both expose
 `runtime_row_count`, `runtime_cells`, `tile_id`, and `lane_and_flags` under the
 canonical owner. Matcher bytes remain exact and unchanged.
+
+## 2026-07-19 void mutator ABI
+
+`rebuild_track_runtime_from_segments` is the only native caller. Its call at
+`0x437e09` discards EAX and immediately reloads ECX for the next normalization
+pass. The empty and populated exits leave unrelated row-count and receiver
+temporaries, while the independently named `cRSubGame::SmoothTrack()` member
+and the exact 220/220 Windows transcription are both source-shaped void
+mutators.
+
+The analysis prototype now preserves that contract as
+`void __thiscall select_track_tile_edge_variants(SubgameRuntime*)`. This
+removes a fabricated return value from both decompilers without altering one
+matcher byte or weakening any existing ownership check.

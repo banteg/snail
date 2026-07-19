@@ -3,10 +3,11 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: promote_track_tiles_to_fringe_variants @ 0x4355f0 */
 
-004355fa        int32_t i = game->runtime_row_count - 1
 004355fb        int32_t i_1 = 0
-00435605        if (i s> 0)
+00435605        if (game->runtime_row_count - 1 s<= 0)
+00435605        return
 0043560f        struct Object** esi_1 = &game->runtime_cells[0][0].object
+004356dd        int32_t i
 0043561a        int32_t j_1 = 8
 004356c4        int32_t j
 0043562b        (esi_1 - 0x3bfaec)->runtime_cells[0][0].lane_and_flags &= 0xffffffdf
@@ -35,4 +36,4 @@
 004356d2        i = i_1 + 1
 004356d6        i_1 = i
 004356dd        do while (i s< game->runtime_row_count - 1)
-004356ea        return i
+004356ea        return

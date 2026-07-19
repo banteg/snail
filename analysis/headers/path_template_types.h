@@ -2477,6 +2477,9 @@ void __thiscall spawn_track_health_pickup(SubgameRuntime* game, TrackRowCell* ce
 void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player);
 int32_t __thiscall merge_track_tile_runs(SubgameRuntime* game);
 void __thiscall mark_track_warning_zones(SubgameRuntime* game);
+void __thiscall select_track_tile_edge_variants(SubgameRuntime* game);
+void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime* game);
+void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime* game);
 void __thiscall try_enter_track_attachment_from_swept_motion(
     Path* self,
     float world_x,

@@ -494,14 +494,16 @@
       "windows_name": "harmonize_center_lane_floor_slide_variants",
       "ios_symbol": "cRSubGame::SlideSmoothTrack()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The sole Windows caller discards EAX and immediately restores ECX for the next mutator. The source-shaped Windows transcription and independent mobile body are both side-effect-only; the empty and populated paths leave loop temporaries rather than an authored result, proving the void contract."
     },
     {
       "address": "0x435a80",
       "windows_name": "select_track_tile_edge_variants",
       "ios_symbol": "cRSubGame::SmoothTrack()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The sole Windows caller discards EAX and immediately restores ECX for the next mutator. The exact 220/220 void transcription reproduces the native body, whose exits leave incompatible receiver and row-count temporaries rather than an authored result."
     },
     {
       "address": "0x435d40",

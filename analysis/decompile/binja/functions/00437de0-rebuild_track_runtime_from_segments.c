@@ -5,7 +5,7 @@
 
 00437dea        runtime->level_mode_arg = level_index
 00437ded        set_subgame_features(runtime)
-00437df4        build_track_colours()
+00437df4        build_track_colours(runtime)
 00437dfb        populate_runtime_track_cells_from_segments(runtime)
 00437e02        place_parcels_on_track(runtime)
 00437e09        select_track_tile_edge_variants(runtime)

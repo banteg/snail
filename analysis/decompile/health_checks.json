@@ -6534,6 +6534,9 @@
       "required_substrings": [
         "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime *game, int32_t level_index)",
         "populate_runtime_track_cells_from_segments(game)",
+        "select_track_tile_edge_variants(game)",
+        "promote_track_tiles_to_fringe_variants(game)",
+        "harmonize_center_lane_floor_slide_variants(game)",
         "mark_track_warning_zones(game)",
         "build_track_fringe_objects(game)"
       ],
@@ -7240,13 +7243,14 @@
       "name": "ida_promote_track_tiles_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/004355f0-promote_track_tiles_to_fringe_variants.c",
       "required_substrings": [
-        "int32_t __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime *game)",
+        "void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime *game)",
         "game->runtime_row_count",
         "&game->runtime_cells[0][0].object",
         "root_bod_catalog.floor_slices.storage",
         "root_bod_catalog.warning_corners.storage"
       ],
       "forbidden_substrings": [
+        "int32_t __thiscall promote_track_tiles_to_fringe_variants",
         "promote_track_tiles_to_fringe_variants(Game *game)",
         "unknown_000b48[",
         "unknown_044100",
@@ -7276,11 +7280,12 @@
       "name": "ida_harmonize_track_tiles_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/004356f0-harmonize_center_lane_floor_slide_variants.c",
       "required_substrings": [
-        "int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *game)",
+        "void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *game)",
         "game->runtime_row_count",
         "v1->runtime_cells[0][v5].lane_and_flags"
       ],
       "forbidden_substrings": [
+        "int32_t __thiscall harmonize_center_lane_floor_slide_variants",
         "harmonize_center_lane_floor_slide_variants(Game *game)",
         "sub_4356F0",
         "__asm",
@@ -7308,13 +7313,14 @@
       "name": "ida_select_track_tiles_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/00435a80-select_track_tile_edge_variants.c",
       "required_substrings": [
-        "int32_t __thiscall select_track_tile_edge_variants(SubgameRuntime *game)",
+        "void __thiscall select_track_tile_edge_variants(SubgameRuntime *game)",
         "game->runtime_row_count",
         "&game->runtime_cells[0][0].tile_id",
         "root_bod_catalog.floor_corners.storage",
         "root_bod_catalog.slide_corners.storage"
       ],
       "forbidden_substrings": [
+        "int32_t __thiscall select_track_tile_edge_variants",
         "select_track_tile_edge_variants(Game *game)",
         "unknown_000b48[",
         "unknown_044100",

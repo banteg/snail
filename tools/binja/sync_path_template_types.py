@@ -2517,6 +2517,21 @@ TIP_PROTO_UPDATES = (
     ),
 )
 
+TRACK_NORMALIZATION_VOID_PROTO_UPDATES = (
+    (
+        "select_track_tile_edge_variants",
+        "void __thiscall select_track_tile_edge_variants(SubgameRuntime* game)",
+    ),
+    (
+        "promote_track_tiles_to_fringe_variants",
+        "void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime* game)",
+    ),
+    (
+        "harmonize_center_lane_floor_slide_variants",
+        "void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime* game)",
+    ),
+)
+
 PROTO_UPDATES = (
     *GOLB_PROTO_UPDATES,
     *ROW_MODEL_PROTO_UPDATES,
@@ -2528,6 +2543,7 @@ PROTO_UPDATES = (
     *BOD_CORE_PROTO_UPDATES,
     *FRINGE_PROTO_UPDATES,
     *TRACK_RENDER_CACHE_PROTO_UPDATES,
+    *TRACK_NORMALIZATION_VOID_PROTO_UPDATES,
     (
         "initialize_noop_renderable_bod",
         "RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body)",
@@ -3102,16 +3118,14 @@ CORE_SUBGAME_PROTO_UPDATES = (
     ),
 )
 
-# These lifecycle and track-normalization receivers are already SubgameRuntime
-# methods in the exact/working matching sources and in the cross-port cRSubGame
-# symbol evidence. The exact runtime-row lookup has the same owner proof through
-# the canonical array. Older BN databases pin a separate user-defined Game*
-# parameter variable on these functions. Both the previewed prototype setter and local
-# retype API reject the owner-only correction, so report the drift instead of
-# claiming a mutation that analysis immediately restores. The guarded repair
-# catalog handles only the exact known stale identities and defaults to a
-# read-only inspection because function recreation is not covered by ordinary
-# Binary Ninja undo.
+# These remaining lifecycle, track-cache, and runtime lookup receivers already
+# have their semantic owners in the matching/cross-port evidence. Older BN
+# databases pin a separate user-defined Game* parameter variable on them. Both
+# the previewed prototype setter and local retype API reject the owner-only
+# correction, so report the drift instead of claiming a mutation that analysis
+# immediately restores. The guarded repair catalog handles only the exact known
+# stale identities and defaults to a read-only inspection because function
+# recreation is not covered by ordinary Binary Ninja undo.
 DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
     ("initialize_subgame", "void __thiscall initialize_subgame(SubgameRuntime* game)"),
     (
@@ -3128,18 +3142,6 @@ DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
     (
         "build_track_fringe_objects",
         "int32_t __thiscall build_track_fringe_objects(SubgameRuntime* game)",
-    ),
-    (
-        "promote_track_tiles_to_fringe_variants",
-        "int32_t __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime* game)",
-    ),
-    (
-        "harmonize_center_lane_floor_slide_variants",
-        "int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime* game)",
-    ),
-    (
-        "select_track_tile_edge_variants",
-        "int32_t __thiscall select_track_tile_edge_variants(SubgameRuntime* game)",
     ),
     (
         "get_track_grid_cell_at_world_position",

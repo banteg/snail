@@ -102,6 +102,21 @@ split is now clearer: the candidate materializes current/neighbor cell pointers,
 while native retains the containing runtime-stride cursor. No padded matcher
 view or register-shaped construct is introduced merely to force that schedule.
 
+## 2026-07-19 void mutator ABI
+
+The sole Windows caller invokes this pass at `0x437e17`, ignores EAX, and
+immediately restores the same receiver for `CondenseTrack`. Native's empty path
+leaves the prologue's zero in EAX, while the populated path leaves the final row
+loop index. Those are control-flow temporaries, not one stable semantic result.
+The void matcher member and the independent
+`cRSubGame::SlideSmoothTrack()` body agree that the operation owns only its
+in-place `SubLoc` mutations.
+
+The replayed analysis prototype is therefore
+`void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime*)`.
+No matcher expression or operand was changed; the honest 58.98% result and the
+evidence-backed predicate ordering remain intact.
+
 The replay also exposed and fixed a tooling gap: required-type existence was
 not enough to refresh an evolved analysis view. Mutable path analysis views now
 compare exact parsed type equivalence, so a stale same-name layout is replaced
