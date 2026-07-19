@@ -9130,6 +9130,147 @@ def test_subgame_bulk_teardown_lifetime_replay_stays_guarded() -> None:
     assert "linked_flags_gate" not in replay
 
 
+def test_subgame_pickup_teardown_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_subgame_pickup_teardown_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("BodNode", "0x10"),
+        ("BodList", "0x0C"),
+        ("BodBase", "0x38"),
+        ("RenderableBod", "0x80"),
+        ("SubSpeedUp", "0xB4"),
+        ("JetPack", "0x19C"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("BodNode", "0x04", "list_flags", "uint32_t"),
+        ("BodNode", "0x08", "list_prev", "BodNode*"),
+        ("BodNode", "0x0C", "list_next", "BodNode*"),
+        ("BodList", "0x04", "first", "BodNode*"),
+        ("BodList", "0x08", "free_top", "BodNode*"),
+        ("BodBase", "0x00", "bod", "BodNode"),
+        ("RenderableBod", "0x00", "bod", "BodBase"),
+        ("SubSpeedUp", "0x00", "body", "RenderableBod"),
+        ("SubSpeedUp", "0x80", "state", "TrackPickupState"),
+        ("JetPack", "0x00", "bod", "BodBase"),
+        ("JetPack", "0x38", "state", "TrackPickupState"),
+        (
+            "SubgameRuntime",
+            "0x355DB0",
+            "speedup_pickup",
+            "SubSpeedUp",
+        ),
+        ("SubgameRuntime", "0x355E64", "jetpack_pickup", "JetPack"),
+        ("GameRoot", "0x05A8", "active_bod_list", "BodList"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        (
+            "RegisterVariableSourceType",
+            336,
+            68,
+            "speedup_active_list",
+            "BodList*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            342,
+            67,
+            "speedup_list_flags",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            385,
+            67,
+            "speedup_list_next",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            392,
+            72,
+            "speedup_list_prev_for_next",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            398,
+            67,
+            "speedup_list_prev",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            428,
+            67,
+            "speedup_flags_after_clear",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            460,
+            67,
+            "jetpack_list_flags",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            472,
+            68,
+            "jetpack_active_list",
+            "BodList*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            518,
+            67,
+            "jetpack_list_next",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            525,
+            72,
+            "jetpack_list_prev_for_next",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            531,
+            67,
+            "jetpack_list_prev",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            561,
+            67,
+            "jetpack_flags_after_clear",
+            "uint32_t",
+        ),
+    ):
+        expected = (
+            '        "remove_subgame_bods",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+
+
 def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     track_sync = (BINJA_DIR / "sync_track_render_cache_types.py").read_text(
         encoding="utf-8"

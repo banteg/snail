@@ -269,3 +269,18 @@ analyzer still renders a few full-width loads/stores as byte fragments; those
 are left honest rather than forced with register-shaped types. No matcher
 source changed, and focused output remains 67.67%, 495/501 instructions,
 prefix 6, with 64 clean operands and the one existing string-order mismatch.
+
+## 2026-07-19 embedded pickup teardown lifetimes
+
+The two singleton pickup blocks now keep independent `BodList*`, flag,
+next-node, previous-node, and post-clear lifetimes. `SubSpeedUp` and `JetPack`
+remain complete embedded `SubgameRuntime` owners, while only their inherited
+zero-offset `BodNode` membership is transferred from the root active list to
+its free stack before each owner returns to `TRACK_PICKUP_STATE_INACTIVE`.
+
+Binary Ninja splits the previous-node copy into two byte writes in both blocks;
+the replay names the proven `BodNode*` value but leaves that analyzer rendering
+intact. All twelve annotations replay idempotently behind exact owner-layout
+guards. No matcher source changed, so focused output remains 67.67%, 495/501
+instructions, prefix 6, with 64 clean operands and the same one string-order
+mismatch.

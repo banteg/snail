@@ -75,47 +75,47 @@
 00440a46        health_remaining -= 1
 00440a47        do while (i_1 != 1)
 00440a52        if (((game->speedup_pickup.body.bod.bod.list_flags).w:1.b & 2) != 0)
-00440a60        struct BodList* edx_9 = &g_game_base->active_bod_list
-00440a66        uint16_t list_flags_2 = (game->speedup_pickup.body.bod.bod.list_flags).w
-00440a6c        if ((list_flags_2:1.b & 2) == 0)
+00440a60        struct BodList* speedup_active_list = &g_game_base->active_bod_list
+00440a66        uint32_t speedup_list_flags = game->speedup_pickup.body.bod.bod.list_flags
+00440a6c        if ((speedup_list_flags:1.b & 2) == 0)
 00440a73        report_errorf("List remove")
-00440a80        if ((list_flags_2.b & 0x40) == 0)
-00440a91        struct BodNode* list_next_1 = game->speedup_pickup.body.bod.bod.list_next
-00440a96        if (list_next_1 != 0)
-00440a98        int16_t list_prev_6 = (game->speedup_pickup.body.bod.bod.list_prev).w
-00440a9b        list_next_1->list_prev.b = list_prev_6.b
-00440a9b        list_next_1->list_prev:1.b = list_prev_6:1.b
-00440a9e        struct BodNode* list_prev_1 = game->speedup_pickup.body.bod.bod.list_prev
-00440aa3        if (list_prev_1 == 0)
-00440ab0        edx_9->first = game->speedup_pickup.body.bod.bod.list_next
-00440aa8        list_prev_1->list_next = game->speedup_pickup.body.bod.bod.list_next
-00440ab6        game->speedup_pickup.body.bod.bod.list_next = edx_9->free_top
-00440ab9        edx_9->free_top = &game->speedup_pickup
-00440abc        uint32_t list_flags_3 = game->speedup_pickup.body.bod.bod.list_flags
-00440abf        list_flags_3:1.b &= 0xfd
-00440ac2        game->speedup_pickup.body.bod.bod.list_flags = list_flags_3
+00440a80        if ((speedup_list_flags.b & 0x40) == 0)
+00440a91        struct BodNode* speedup_list_next = game->speedup_pickup.body.bod.bod.list_next
+00440a96        if (speedup_list_next != 0)
+00440a98        struct BodNode* speedup_list_prev_for_next = game->speedup_pickup.body.bod.bod.list_prev
+00440a9b        speedup_list_next->list_prev.b = speedup_list_prev_for_next.b
+00440a9b        speedup_list_next->list_prev:1.b = speedup_list_prev_for_next:1.b
+00440a9e        struct BodNode* speedup_list_prev = game->speedup_pickup.body.bod.bod.list_prev
+00440aa3        if (speedup_list_prev == 0)
+00440ab0        speedup_active_list->first = game->speedup_pickup.body.bod.bod.list_next
+00440aa8        speedup_list_prev->list_next = game->speedup_pickup.body.bod.bod.list_next
+00440ab6        game->speedup_pickup.body.bod.bod.list_next = speedup_active_list->free_top
+00440ab9        speedup_active_list->free_top = &game->speedup_pickup
+00440abc        uint32_t speedup_flags_after_clear = game->speedup_pickup.body.bod.bod.list_flags
+00440abf        speedup_flags_after_clear:1.b &= 0xfd
+00440ac2        game->speedup_pickup.body.bod.bod.list_flags = speedup_flags_after_clear
 00440a87        report_errorf("List remove NEXTBOD")
 00440ac5        game->speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE
 00440ad4        if (((game->jetpack_pickup.bod.bod.list_flags).w:1.b & 2) != 0)
-00440adc        uint16_t list_flags_4 = (game->jetpack_pickup.bod.bod.list_flags).w
-00440ae8        struct BodList* edx_13 = &g_game_base->active_bod_list
-00440af1        if ((list_flags_4:1.b & 2) == 0)
+00440adc        uint32_t jetpack_list_flags = game->jetpack_pickup.bod.bod.list_flags
+00440ae8        struct BodList* jetpack_active_list = &g_game_base->active_bod_list
+00440af1        if ((jetpack_list_flags:1.b & 2) == 0)
 00440af8        report_errorf("List remove")
-00440b05        if ((list_flags_4.b & 0x40) == 0)
-00440b16        struct BodNode* list_next_2 = game->jetpack_pickup.bod.bod.list_next
-00440b1b        if (list_next_2 != 0)
-00440b1d        int16_t list_prev_7 = (game->jetpack_pickup.bod.bod.list_prev).w
-00440b20        list_next_2->list_prev.b = list_prev_7.b
-00440b20        list_next_2->list_prev:1.b = list_prev_7:1.b
-00440b23        struct BodNode* list_prev_2 = game->jetpack_pickup.bod.bod.list_prev
-00440b28        if (list_prev_2 == 0)
-00440b35        edx_13->first = game->jetpack_pickup.bod.bod.list_next
-00440b2d        list_prev_2->list_next = game->jetpack_pickup.bod.bod.list_next
-00440b3b        game->jetpack_pickup.bod.bod.list_next = edx_13->free_top
-00440b3e        edx_13->free_top = &game->jetpack_pickup
-00440b41        uint32_t list_flags_5 = game->jetpack_pickup.bod.bod.list_flags
-00440b44        list_flags_5:1.b &= 0xfd
-00440b47        game->jetpack_pickup.bod.bod.list_flags = list_flags_5
+00440b05        if ((jetpack_list_flags.b & 0x40) == 0)
+00440b16        struct BodNode* jetpack_list_next = game->jetpack_pickup.bod.bod.list_next
+00440b1b        if (jetpack_list_next != 0)
+00440b1d        struct BodNode* jetpack_list_prev_for_next = game->jetpack_pickup.bod.bod.list_prev
+00440b20        jetpack_list_next->list_prev.b = jetpack_list_prev_for_next.b
+00440b20        jetpack_list_next->list_prev:1.b = jetpack_list_prev_for_next:1.b
+00440b23        struct BodNode* jetpack_list_prev = game->jetpack_pickup.bod.bod.list_prev
+00440b28        if (jetpack_list_prev == 0)
+00440b35        jetpack_active_list->first = game->jetpack_pickup.bod.bod.list_next
+00440b2d        jetpack_list_prev->list_next = game->jetpack_pickup.bod.bod.list_next
+00440b3b        game->jetpack_pickup.bod.bod.list_next = jetpack_active_list->free_top
+00440b3e        jetpack_active_list->free_top = &game->jetpack_pickup
+00440b41        uint32_t jetpack_flags_after_clear = game->jetpack_pickup.bod.bod.list_flags
+00440b44        jetpack_flags_after_clear:1.b &= 0xfd
+00440b47        game->jetpack_pickup.bod.bod.list_flags = jetpack_flags_after_clear
 00440b0c        report_errorf("List remove NEXTBOD")
 00440b4a        game->jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE
 00440b50        struct BodNode** garbage_list_next_cursor = &game->garbage_hazards.slots[0].body.bod.bod.list_next
@@ -224,75 +224,75 @@
 00440d45        if (list_prev == 0)
 00440d52        ecx_11->first = game->player.body.bod.bod.list_next
 00440d4a        list_prev->list_next = game->player.body.bod.bod.list_next
-00440d55        struct BodNode* edx_31
-00440d55        edx_31.b = ecx_11->free_top.b
-00440d55        edx_31:1.b = ecx_11->free_top:1.b
-00440d58        game->player.body.bod.bod.list_next = edx_31
+00440d55        struct BodNode* edx_29
+00440d55        edx_29.b = ecx_11->free_top.b
+00440d55        edx_29:1.b = ecx_11->free_top:1.b
+00440d58        game->player.body.bod.bod.list_next = edx_29
 00440d5b        ecx_11->free_top.b = (&game->player).b
 00440d5b        ecx_11->free_top:1.b = (&game->player):1.b
 00440d5e        uint32_t list_flags_1 = game->player.body.bod.bod.list_flags
 00440d61        list_flags_1:1.b &= 0xfd
 00440d64        game->player.body.bod.bod.list_flags = list_flags_1
 00440d29        report_errorf("List remove NEXTBOD")
-00440d73        struct BodList* edx_32 = &g_game_base->active_bod_list
-00440d79        uint16_t list_flags_6 = (game->player.presentation.body.bod.bod.list_flags).w
-00440d7f        if ((list_flags_6:1.b & 2) == 0)
+00440d73        struct BodList* edx_30 = &g_game_base->active_bod_list
+00440d79        uint16_t list_flags_2 = (game->player.presentation.body.bod.bod.list_flags).w
+00440d7f        if ((list_flags_2:1.b & 2) == 0)
 00440d86        report_errorf("List remove")
-00440d93        if ((list_flags_6.b & 0x40) == 0)
-00440da4        struct BodNode* list_next_3 = game->player.presentation.body.bod.bod.list_next
-00440da9        if (list_next_3 != 0)
-00440dab        int16_t list_prev_8 = (game->player.presentation.body.bod.bod.list_prev).w
-00440dae        list_next_3->list_prev.b = list_prev_8.b
-00440dae        list_next_3->list_prev:1.b = list_prev_8:1.b
-00440db1        struct BodNode* list_prev_3 = game->player.presentation.body.bod.bod.list_prev
-00440db6        if (list_prev_3 == 0)
-00440dc3        edx_32->first = game->player.presentation.body.bod.bod.list_next
-00440dbb        list_prev_3->list_next = game->player.presentation.body.bod.bod.list_next
-00440dc9        game->player.presentation.body.bod.bod.list_next = edx_32->free_top
-00440dcc        edx_32->free_top = &game->player.presentation
-00440dcf        uint32_t list_flags_7 = game->player.presentation.body.bod.bod.list_flags
-00440dd2        list_flags_7:1.b &= 0xfd
-00440dd5        game->player.presentation.body.bod.bod.list_flags = list_flags_7
+00440d93        if ((list_flags_2.b & 0x40) == 0)
+00440da4        struct BodNode* list_next_1 = game->player.presentation.body.bod.bod.list_next
+00440da9        if (list_next_1 != 0)
+00440dab        int16_t list_prev_4 = (game->player.presentation.body.bod.bod.list_prev).w
+00440dae        list_next_1->list_prev.b = list_prev_4.b
+00440dae        list_next_1->list_prev:1.b = list_prev_4:1.b
+00440db1        struct BodNode* list_prev_1 = game->player.presentation.body.bod.bod.list_prev
+00440db6        if (list_prev_1 == 0)
+00440dc3        edx_30->first = game->player.presentation.body.bod.bod.list_next
+00440dbb        list_prev_1->list_next = game->player.presentation.body.bod.bod.list_next
+00440dc9        game->player.presentation.body.bod.bod.list_next = edx_30->free_top
+00440dcc        edx_30->free_top = &game->player.presentation
+00440dcf        uint32_t list_flags_3 = game->player.presentation.body.bod.bod.list_flags
+00440dd2        list_flags_3:1.b &= 0xfd
+00440dd5        game->player.presentation.body.bod.bod.list_flags = list_flags_3
 00440d9a        report_errorf("List remove NEXTBOD")
-00440dde        uint16_t list_flags_8 = (game->player.presentation.jetpack_channel.body.bod.bod.list_flags).w
-00440dea        struct BodList* edx_34 = &g_game_base->active_bod_list
-00440df3        if ((list_flags_8:1.b & 2) == 0)
+00440dde        uint16_t list_flags_4 = (game->player.presentation.jetpack_channel.body.bod.bod.list_flags).w
+00440dea        struct BodList* edx_32 = &g_game_base->active_bod_list
+00440df3        if ((list_flags_4:1.b & 2) == 0)
 00440dfa        report_errorf("List remove")
-00440e07        if ((list_flags_8.b & 0x40) == 0)
-00440e18        struct BodNode* list_next_4 = game->player.presentation.jetpack_channel.body.bod.bod.list_next
-00440e1d        if (list_next_4 != 0)
-00440e1f        int16_t list_prev_9 = (game->player.presentation.jetpack_channel.body.bod.bod.list_prev).w
-00440e22        list_next_4->list_prev.b = list_prev_9.b
-00440e22        list_next_4->list_prev:1.b = list_prev_9:1.b
-00440e25        struct BodNode* list_prev_4 = game->player.presentation.jetpack_channel.body.bod.bod.list_prev
-00440e2a        if (list_prev_4 == 0)
-00440e37        edx_34->first = game->player.presentation.jetpack_channel.body.bod.bod.list_next
-00440e2f        list_prev_4->list_next = game->player.presentation.jetpack_channel.body.bod.bod.list_next
-00440e3d        game->player.presentation.jetpack_channel.body.bod.bod.list_next = edx_34->free_top
-00440e40        edx_34->free_top = &game->player.presentation.jetpack_channel
-00440e43        uint32_t list_flags_9 = game->player.presentation.jetpack_channel.body.bod.bod.list_flags
-00440e46        list_flags_9:1.b &= 0xfd
-00440e49        game->player.presentation.jetpack_channel.body.bod.bod.list_flags = list_flags_9
+00440e07        if ((list_flags_4.b & 0x40) == 0)
+00440e18        struct BodNode* list_next_2 = game->player.presentation.jetpack_channel.body.bod.bod.list_next
+00440e1d        if (list_next_2 != 0)
+00440e1f        int16_t list_prev_5 = (game->player.presentation.jetpack_channel.body.bod.bod.list_prev).w
+00440e22        list_next_2->list_prev.b = list_prev_5.b
+00440e22        list_next_2->list_prev:1.b = list_prev_5:1.b
+00440e25        struct BodNode* list_prev_2 = game->player.presentation.jetpack_channel.body.bod.bod.list_prev
+00440e2a        if (list_prev_2 == 0)
+00440e37        edx_32->first = game->player.presentation.jetpack_channel.body.bod.bod.list_next
+00440e2f        list_prev_2->list_next = game->player.presentation.jetpack_channel.body.bod.bod.list_next
+00440e3d        game->player.presentation.jetpack_channel.body.bod.bod.list_next = edx_32->free_top
+00440e40        edx_32->free_top = &game->player.presentation.jetpack_channel
+00440e43        uint32_t list_flags_5 = game->player.presentation.jetpack_channel.body.bod.bod.list_flags
+00440e46        list_flags_5:1.b &= 0xfd
+00440e49        game->player.presentation.jetpack_channel.body.bod.bod.list_flags = list_flags_5
 00440e0e        report_errorf("List remove NEXTBOD")
-00440e52        uint16_t list_flags_10 = (game->player.presentation.weapon_channels[0].body.bod.bod.list_flags).w
-00440e5e        struct BodList* edx_36 = &g_game_base->active_bod_list
-00440e67        if ((list_flags_10:1.b & 2) == 0)
+00440e52        uint16_t list_flags_6 = (game->player.presentation.weapon_channels[0].body.bod.bod.list_flags).w
+00440e5e        struct BodList* edx_34 = &g_game_base->active_bod_list
+00440e67        if ((list_flags_6:1.b & 2) == 0)
 00440e6e        report_errorf("List remove")
-00440e7b        if ((list_flags_10.b & 0x40) == 0)
-00440e8c        struct BodNode* list_next_5 = game->player.presentation.weapon_channels[0].body.bod.bod.list_next
-00440e91        if (list_next_5 != 0)
-00440e93        int16_t list_prev_10 = (game->player.presentation.weapon_channels[0].body.bod.bod.list_prev).w
-00440e96        list_next_5->list_prev.b = list_prev_10.b
-00440e96        list_next_5->list_prev:1.b = list_prev_10:1.b
-00440e99        struct BodNode* list_prev_5 = game->player.presentation.weapon_channels[0].body.bod.bod.list_prev
-00440e9e        if (list_prev_5 == 0)
-00440eab        edx_36->first = game->player.presentation.weapon_channels[0].body.bod.bod.list_next
-00440ea3        list_prev_5->list_next = game->player.presentation.weapon_channels[0].body.bod.bod.list_next
-00440eb1        game->player.presentation.weapon_channels[0].body.bod.bod.list_next = edx_36->free_top
-00440eb4        edx_36->free_top = &game->player.presentation.weapon_channels
-00440eb7        uint32_t list_flags_11 = game->player.presentation.weapon_channels[0].body.bod.bod.list_flags
-00440eba        list_flags_11:1.b &= 0xfd
-00440ebd        game->player.presentation.weapon_channels[0].body.bod.bod.list_flags = list_flags_11
+00440e7b        if ((list_flags_6.b & 0x40) == 0)
+00440e8c        struct BodNode* list_next_3 = game->player.presentation.weapon_channels[0].body.bod.bod.list_next
+00440e91        if (list_next_3 != 0)
+00440e93        int16_t list_prev_6 = (game->player.presentation.weapon_channels[0].body.bod.bod.list_prev).w
+00440e96        list_next_3->list_prev.b = list_prev_6.b
+00440e96        list_next_3->list_prev:1.b = list_prev_6:1.b
+00440e99        struct BodNode* list_prev_3 = game->player.presentation.weapon_channels[0].body.bod.bod.list_prev
+00440e9e        if (list_prev_3 == 0)
+00440eab        edx_34->first = game->player.presentation.weapon_channels[0].body.bod.bod.list_next
+00440ea3        list_prev_3->list_next = game->player.presentation.weapon_channels[0].body.bod.bod.list_next
+00440eb1        game->player.presentation.weapon_channels[0].body.bod.bod.list_next = edx_34->free_top
+00440eb4        edx_34->free_top = &game->player.presentation.weapon_channels
+00440eb7        uint32_t list_flags_7 = game->player.presentation.weapon_channels[0].body.bod.bod.list_flags
+00440eba        list_flags_7:1.b &= 0xfd
+00440ebd        game->player.presentation.weapon_channels[0].body.bod.bod.list_flags = list_flags_7
 00440e82        report_errorf("List remove NEXTBOD")
 00440ed2        recycle_bod_to_free_list(&g_game_base->active_bod_list, &game->player.presentation.weapon_channels[1])
 00440eea        recycle_bod_to_free_list(&g_game_base->active_bod_list, &game->player.presentation.weapon_channels[2])
