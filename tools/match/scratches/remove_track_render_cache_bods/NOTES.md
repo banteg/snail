@@ -135,3 +135,23 @@ with the five construction/activation helpers and refuses to run unless the
 slot and cache owner sizes read back as `0x3c` and `0xa7f8`. The ownership
 cleanup does not reshape the source: focused matching remains honestly partial
 at 70.59%, 61/58 instructions, with all five operands clean.
+
+## 2026-07-19 link-cursor lifetime closure
+
+The compiler walks one continuous `BodNode::list_next` cursor across both the
+143-row and five-family loops. Binary Ninja now names that `BodNode**` borrow,
+the independent row/family countdowns, and the root-owned `BodList*`. Derived
+`list_flags`, `list_next`, and `list_prev` lifetimes are also fixed explicitly,
+so unlinking, head replacement, free-stack insertion, and the linked-bit clear
+remain typed after the cursor annotation.
+
+Guarded replay first proves the `BodNode`, `BodList`, `BodBase`, cache-slot,
+and full `SegmentCache` widths and the exact intrusive-list fields. The cursor
+is anchored once at `manager->slots[0][0].bod.bod.list_next`; it does not claim
+that the root list owns the embedded cache records.
+
+Spelling the native stride directly as 15 `BodNode**` elements is an ordinary
+typed cleanup and compiles identically. It does not resolve the honest VC6
+register-lifetime residual: focused matching remains 70.59%, 61/58 candidate
+and target instructions, prefix 5, with five clean operands. No artificial
+mask locals or forced register tricks were retained.

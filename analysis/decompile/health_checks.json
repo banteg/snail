@@ -4991,14 +4991,29 @@
       "artifact": "analysis/decompile/binja/functions/00433f20-remove_track_render_cache_bods.c",
       "required_substrings": [
         "struct SegmentCache* manager_1 = manager",
-        "&manager->slots[0][0].bod.bod.list_next",
-        "&g_game_base->active_bod_list",
-        "ecx->first",
-        "ecx->free_top"
+        "struct BodNode** next_ref = &manager->slots[0][0].bod.bod.list_next",
+        "int32_t rows_remaining = 0x8f",
+        "int32_t families_remaining = 5",
+        "uint32_t list_flags = next_ref[-2]",
+        "struct BodList* active_list = &g_game_base->active_bod_list",
+        "struct BodNode* list_next = *next_ref",
+        "list_next->list_prev = next_ref[-1]",
+        "struct BodNode* list_prev = next_ref[-1]",
+        "list_prev->list_next = *next_ref",
+        "active_list->first = *next_ref",
+        "*next_ref = active_list->free_top",
+        "active_list->free_top = &next_ref[-3]",
+        "next_ref = &next_ref[0xf]"
       ],
       "forbidden_substrings": [
         "TrackRenderCacheManager",
         "g_game_base[0x5a8]",
+        "struct BodNode** esi",
+        "int32_t var_4",
+        "int32_t i_1",
+        "struct BodList* ecx",
+        "void* eax_4",
+        "(esi - 0x64)",
         "unimplemented"
       ]
     },

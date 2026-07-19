@@ -8682,6 +8682,99 @@ def test_track_cache_manager_lifetime_replay_stays_guarded() -> None:
     assert '"slot_cursor",\n        "TrackRenderCacheSlot*"' not in replay
 
 
+def test_track_cache_teardown_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_track_cache_teardown_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("BodNode", "0x10"),
+        ("BodList", "0x0C"),
+        ("BodBase", "0x38"),
+        ("TrackRenderCacheSlot", "0x3C"),
+        ("SegmentCache", "0xA7F8"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("BodNode", "0x04", "list_flags", "uint32_t"),
+        ("BodNode", "0x08", "list_prev", "BodNode*"),
+        ("BodNode", "0x0C", "list_next", "BodNode*"),
+        ("BodList", "0x04", "first", "BodNode*"),
+        ("BodList", "0x08", "free_top", "BodNode*"),
+        ("TrackRenderCacheSlot", "0x00", "bod", "BodBase"),
+        ("SegmentCache", "0x58", "slots", "TrackRenderCacheSlot[143][5]"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        (
+            "RegisterVariableSourceType",
+            5,
+            72,
+            "next_ref",
+            "BodNode**",
+        ),
+        (
+            "StackVariableSourceType",
+            8,
+            -4,
+            "rows_remaining",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            34,
+            73,
+            "families_remaining",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            41,
+            67,
+            "active_list",
+            "BodList*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            47,
+            66,
+            "list_flags",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            88,
+            66,
+            "list_next",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            100,
+            66,
+            "list_prev",
+            "BodNode*",
+        ),
+    ):
+        expected = (
+            '        "remove_track_render_cache_bods",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert "TrackRenderCacheSlotCursor" not in replay
+
+
 def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     track_sync = (BINJA_DIR / "sync_track_render_cache_types.py").read_text(
         encoding="utf-8"
