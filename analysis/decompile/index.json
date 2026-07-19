@@ -17,11 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "place_parcels_on_track",
-      "address": "0x4438e0"
+      "name": "update_ring_or_special_effect_parent",
+      "address": "0x43e830"
     }
   ],
-  "health_check_count": 902,
+  "health_check_count": 903,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -5624,6 +5624,25 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
         '        "SubRingStar*"'
         in particle_lifetime_sync
     )
+    for index, storage, name, type_name in (
+        (199, 73, "active_particle_cursor", "SubRingStar*"),
+        (356, 72, "active_cleanup_particle", "SubRingStar*"),
+        (464, 73, "collect_particle_cursor", "SubRingStar*"),
+        (630, 72, "collect_cleanup_particle", "SubRingStar*"),
+        (797, 72, "collect_base_position", "Vec3*"),
+        (875, 73, "expand_particle_cursor", "SubRingStar*"),
+        (1041, 72, "expand_cleanup_particle", "SubRingStar*"),
+        (1093, 72, "expand_base_position", "Vec3*"),
+    ):
+        expected = (
+            '"update_ring_or_special_effect_parent",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in particle_lifetime_sync
     assert '"SubRingState",' in path_sync
     assert '"SubRingKind",' in path_sync
     for index, storage, name, type_name in (

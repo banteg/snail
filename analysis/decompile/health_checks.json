@@ -7707,6 +7707,33 @@
       ]
     },
     {
+      "name": "bn_subring_parent_embedded_child_lifetimes",
+      "artifact": "analysis/decompile/binja/functions/0043e830-update_ring_or_special_effect_parent.c",
+      "required_substrings": [
+        "struct SubgameRuntime* rate_source = ring->rate_source",
+        "struct SubRingStar* active_particle_cursor = &ring->particles",
+        "update_ring_or_special_effect_particle(active_particle_cursor)",
+        "kill_sprite(active_cleanup_particle->sprite)",
+        "struct SubRingStar* collect_particle_cursor = &ring->particles",
+        "kill_sprite(collect_cleanup_particle->sprite)",
+        "collect_base_position->x = ring->world_position.x",
+        "struct SubRingStar* expand_particle_cursor = &ring->particles",
+        "kill_sprite(expand_cleanup_particle->sprite)",
+        "expand_base_position->x = ring->world_position.x"
+      ],
+      "forbidden_substrings": [
+        "struct SubRingStar (*",
+        "(esi_1 - 0x90)",
+        "(esi_2 - 0x90)",
+        "(esi_4 - 0x90)",
+        "RingEffectRateSource",
+        "RingOrSpecialEffectParent",
+        "RingOrSpecialEffectParticle",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "ida_subring_parent_update_owner",
       "artifact": "analysis/decompile/ida/functions/0043e830-update_ring_or_special_effect_parent.c",
       "required_substrings": [

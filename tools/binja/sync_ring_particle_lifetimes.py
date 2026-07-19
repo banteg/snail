@@ -43,10 +43,12 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# Init carries ESI as one SubRingStar* and advances it by the exact 0x20 child
-# stride. Binary Ninja otherwise promotes &ring->particles to a pointer to the
-# complete ten-element array, forcing every child access through a false
-# parent-relative subtraction. Keep this exact physical cursor separate from
+# Init and the three parent-AI state paths each carry one SubRingStar* and
+# advance it by the exact 0x20 embedded-child stride. Binary Ninja otherwise
+# promotes &ring->particles to a pointer to the complete ten-element array,
+# forcing child update and Sprite-manager cleanup through false parent-relative
+# subtraction. The two transition paths also carry a direct Vec3* borrow into
+# each child's base_position. Keep these exact physical cursors separate from
 # the broad type/prototype replay.
 RING_PARTICLE_USER_VAR_UPDATES = (
     (
@@ -57,14 +59,78 @@ RING_PARTICLE_USER_VAR_UPDATES = (
         "particle",
         "SubRingStar*",
     ),
+    (
+        "update_ring_or_special_effect_parent",
+        "RegisterVariableSourceType",
+        199,
+        73,
+        "active_particle_cursor",
+        "SubRingStar*",
+    ),
+    (
+        "update_ring_or_special_effect_parent",
+        "RegisterVariableSourceType",
+        356,
+        72,
+        "active_cleanup_particle",
+        "SubRingStar*",
+    ),
+    (
+        "update_ring_or_special_effect_parent",
+        "RegisterVariableSourceType",
+        464,
+        73,
+        "collect_particle_cursor",
+        "SubRingStar*",
+    ),
+    (
+        "update_ring_or_special_effect_parent",
+        "RegisterVariableSourceType",
+        630,
+        72,
+        "collect_cleanup_particle",
+        "SubRingStar*",
+    ),
+    (
+        "update_ring_or_special_effect_parent",
+        "RegisterVariableSourceType",
+        797,
+        72,
+        "collect_base_position",
+        "Vec3*",
+    ),
+    (
+        "update_ring_or_special_effect_parent",
+        "RegisterVariableSourceType",
+        875,
+        73,
+        "expand_particle_cursor",
+        "SubRingStar*",
+    ),
+    (
+        "update_ring_or_special_effect_parent",
+        "RegisterVariableSourceType",
+        1041,
+        72,
+        "expand_cleanup_particle",
+        "SubRingStar*",
+    ),
+    (
+        "update_ring_or_special_effect_parent",
+        "RegisterVariableSourceType",
+        1093,
+        72,
+        "expand_base_position",
+        "Vec3*",
+    ),
 )
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay only the carried SubRingStar cursor in "
-            "initialize_ring_or_special_effect_particles."
+            "Replay the carried SubRingStar and child-position cursors in "
+            "the ring particle initializer and parent AI."
         )
     )
     parser.add_argument(

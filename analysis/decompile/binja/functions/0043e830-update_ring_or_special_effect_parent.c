@@ -28,10 +28,10 @@
 0043e8af        ring->active_phase = fconvert.s(x87_r7_2 - fconvert.t(6.28318548f))
 0043e8e9        ring->world_position.x = fconvert.s(sine(ring->active_phase) * fconvert.t(3f))
 0043e8f2        int32_t i_10 = 0xa
-0043e8f7        struct SubRingStar (* particle)[0xa] = &ring->particles
+0043e8f7        struct SubRingStar* active_particle_cursor = &ring->particles
 0043e904        int32_t i
-0043e8fb        update_ring_or_special_effect_particle(particle)
-0043e900        particle = &(*particle)[1]
+0043e8fb        update_ring_or_special_effect_particle(active_particle_cursor)
+0043e900        active_particle_cursor = &active_particle_cursor[1]
 0043e903        i = i_10
 0043e903        i_10 -= 1
 0043e904        do while (i != 1)
@@ -59,11 +59,11 @@
 0043e98e        list_flags_1:1.b &= 0xfd
 0043e991        ring->bod.list_flags = list_flags_1
 0043e956        report_errorf("List remove NEXTBOD")
-0043e994        struct SubRingStar (* esi_1)[0xa] = &ring->particles
+0043e994        struct SubRingStar* active_cleanup_particle = &ring->particles
 0043e996        int32_t i_13 = 0xa
 0043e9a6        int32_t i_1
-0043e99d        kill_sprite((esi_1 - 0x90)->particles[0].sprite)
-0043e9a2        esi_1 = &(*esi_1)[1]
+0043e99d        kill_sprite(active_cleanup_particle->sprite)
+0043e9a2        active_cleanup_particle = &active_cleanup_particle[1]
 0043e9a5        i_1 = i_13
 0043e9a5        i_13 -= 1
 0043e9a6        do while (i_1 != 1)
@@ -76,10 +76,10 @@
 0043e9ef        ring->transition_step = fconvert.s(fconvert.t(rate_source->subgame_rate) * fconvert.t(0.0694444478f))
 0043e9fb        label_43e9fb:
 0043e9fb        int32_t i_11 = 0xa
-0043ea00        struct SubRingStar (* particle_1)[0xa] = &ring->particles
+0043ea00        struct SubRingStar* collect_particle_cursor = &ring->particles
 0043ea0d        int32_t i_2
-0043ea04        update_ring_or_special_effect_particle(particle_1)
-0043ea09        particle_1 = &(*particle_1)[1]
+0043ea04        update_ring_or_special_effect_particle(collect_particle_cursor)
+0043ea09        collect_particle_cursor = &collect_particle_cursor[1]
 0043ea0c        i_2 = i_11
 0043ea0c        i_11 -= 1
 0043ea0d        do while (i_2 != 1)
@@ -96,14 +96,14 @@
 0043eb40        ring->world_position.z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_10->z) + fconvert.t(0.200000003f))) - fconvert.t(ring->world_position.z))) * fconvert.t(0.939999998f))) + fconvert.t(ring->world_position.z))
 0043eb67        int32_t i_3
 0043eb45        long double x87_r7_22 = fconvert.t((ecx_13 - 0xac)->particles[0].radius) * fconvert.t(0.939999998f)
-0043eb4d        struct Vec3* esi_3 = &ecx_13[-5]
+0043eb4d        struct Vec3* collect_base_position = &ecx_13[-5]
 0043eb50        ecx_13 = &ecx_13[8]
 0043eb53        i_3 = i_9
 0043eb53        i_9 -= 1
 0043eb54        (ecx_13 - 0xac)->owner_lives_snapshot = fconvert.s(x87_r7_22)
-0043eb59        esi_3->x = ring->world_position.x
-0043eb5e        esi_3->y = ring->world_position.y
-0043eb64        esi_3->z = ring->world_position.z
+0043eb59        collect_base_position->x = ring->world_position.x
+0043eb5e        collect_base_position->y = ring->world_position.y
+0043eb64        collect_base_position->z = ring->world_position.z
 0043eb67        do while (i_3 != 1)
 0043eb70        return
 0043ea32        uint16_t list_flags_2 = (ring->bod.list_flags).w
@@ -125,11 +125,11 @@
 0043eaa0        list_flags_3:1.b &= 0xfd
 0043eaa3        ring->bod.list_flags = list_flags_3
 0043ea68        report_errorf("List remove NEXTBOD")
-0043eaa6        struct SubRingStar (* esi_2)[0xa] = &ring->particles
+0043eaa6        struct SubRingStar* collect_cleanup_particle = &ring->particles
 0043eaa8        int32_t i_14 = 0xa
 0043eab8        int32_t i_4
-0043eaaf        kill_sprite((esi_2 - 0x90)->particles[0].sprite)
-0043eab4        esi_2 = &(*esi_2)[1]
+0043eaaf        kill_sprite(collect_cleanup_particle->sprite)
+0043eab4        collect_cleanup_particle = &collect_cleanup_particle[1]
 0043eab7        i_4 = i_14
 0043eab7        i_14 -= 1
 0043eab8        do while (i_4 != 1)
@@ -141,10 +141,10 @@
 0043eb8a        ring->transition_step = fconvert.s(fconvert.t(rate_source->subgame_rate) * fconvert.t(0.0694444478f))
 0043eb96        label_43eb96:
 0043eb96        int32_t i_12 = 0xa
-0043eb9b        struct SubRingStar (* particle_2)[0xa] = &ring->particles
+0043eb9b        struct SubRingStar* expand_particle_cursor = &ring->particles
 0043eba8        int32_t i_5
-0043eb9f        update_ring_or_special_effect_particle(particle_2)
-0043eba4        particle_2 = &(*particle_2)[1]
+0043eb9f        update_ring_or_special_effect_particle(expand_particle_cursor)
+0043eba4        expand_particle_cursor = &expand_particle_cursor[1]
 0043eba7        i_5 = i_12
 0043eba7        i_12 -= 1
 0043eba8        do while (i_5 != 1)
@@ -172,11 +172,11 @@
 0043ec3b        list_flags_5:1.b &= 0xfd
 0043ec3e        ring->bod.list_flags = list_flags_5
 0043ec03        report_errorf("List remove NEXTBOD")
-0043ec41        struct SubRingStar (* esi_4)[0xa] = &ring->particles
+0043ec41        struct SubRingStar* expand_cleanup_particle = &ring->particles
 0043ec43        int32_t i_15 = 0xa
 0043ec53        int32_t i_6
-0043ec4a        kill_sprite((esi_4 - 0x90)->particles[0].sprite)
-0043ec4f        esi_4 = &(*esi_4)[1]
+0043ec4a        kill_sprite(expand_cleanup_particle->sprite)
+0043ec4f        expand_cleanup_particle = &expand_cleanup_particle[1]
 0043ec52        i_6 = i_15
 0043ec52        i_15 -= 1
 0043ec53        do while (i_6 != 1)
@@ -185,14 +185,14 @@
 0043ec66        int32_t i_8 = 0xa
 0043ec8f        int32_t i_7
 0043ec6d        long double x87_r7_28 = fconvert.t((eax_15 - 0xac)->particles[0].radius) * fconvert.t(1.10000002f)
-0043ec75        struct Vec3* esi_5 = &eax_15[-5]
+0043ec75        struct Vec3* expand_base_position = &eax_15[-5]
 0043ec78        eax_15 = &eax_15[8]
 0043ec7b        i_7 = i_8
 0043ec7b        i_8 -= 1
 0043ec7c        (eax_15 - 0xac)->owner_lives_snapshot = fconvert.s(x87_r7_28)
-0043ec81        esi_5->x = ring->world_position.x
-0043ec86        esi_5->y = ring->world_position.y
-0043ec8c        esi_5->z = ring->world_position.z
+0043ec81        expand_base_position->x = ring->world_position.x
+0043ec86        expand_base_position->y = ring->world_position.y
+0043ec8c        expand_base_position->z = ring->world_position.z
 0043ec8f        do while (i_7 != 1)
 0043e879        case SUB_RING_STATE_EXPANDING
 0043e879        goto label_43eb96

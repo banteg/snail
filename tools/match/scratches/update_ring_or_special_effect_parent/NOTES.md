@@ -201,3 +201,21 @@ active-list teardown. Readback confirms the `0x20` child, `0x1f8` parent, and
 `0x3f0` two-slot pool; the synthetic `RingEffectRateSource` owner is gone and
 strict paired export reports no mismatches. Matching remains 98.21%, 336/336
 instructions, prefix 193/336, with 37 clean operands.
+
+## 2026-07-19 embedded-child lifetime replay
+
+Binary Ninja now retains the six exact `SubRingStar*` element walks used by
+the active, collecting, and expanding state paths. Each update cursor borrows
+one element from the parent's fixed `particles[10]` array and advances by the
+proved `0x20` child stride. Each corresponding cleanup cursor reads that
+embedded child's `sprite` handle before returning the separately allocated
+sprite to `SpriteManager`; it neither frees nor transfers the embedded
+`SubRingStar` record itself. This removes the analyzer's false pointer-to-array
+view and its parent-relative `(cursor - 0x90)->particles[0]` cleanup accesses.
+
+The two radius-transition loops also retain their direct `Vec3*` borrows into
+each child's `base_position`, making the parent-to-child position copy visible
+without inventing a partial object around the interior radius cursor. A second
+guarded replay was fully idempotent. No matcher source change was justified:
+focused Wibo remains honestly at 98.21% (336/336 instructions, prefix 193/336,
+37 clean masked operands), with the two documented scheduling regions intact.
