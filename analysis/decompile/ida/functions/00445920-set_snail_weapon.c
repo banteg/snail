@@ -142,7 +142,7 @@ LABEL_35:
   if ( v10 == v12 )
   {
     if ( v3 )
-      play_sound_effect(25);
+      play_sound_effect(&g_sound_effect_manager, 25);
     return;
   }
   v11 = v10 - 1;
@@ -164,7 +164,7 @@ LABEL_40:
       set_weapon_animation(&snail->weapon_channels[2], 1, movement_flagsc, 4);
       set_weapon_animation(&snail->weapon_channels[2], 0, 0, -1);
       snail->weapon_channels[2].selected_state = 1;
-      play_sound_effect(25);
+      play_sound_effect(&g_sound_effect_manager, 25);
       return;
     }
     if ( v12 == 3 )
@@ -172,7 +172,7 @@ LABEL_40:
       set_weapon_animation(&snail->weapon_channels[2], 4, movement_flagsc, 4);
       set_weapon_animation(&snail->weapon_channels[2], 3, 0, -1);
       snail->weapon_channels[2].selected_state = 3;
-      play_sound_effect(25);
+      play_sound_effect(&g_sound_effect_manager, 25);
       return;
     }
   }
@@ -181,5 +181,5 @@ LABEL_40:
     set_weapon_animation(&snail->weapon_channels[2], -1, 0, -1);
   }
   snail->weapon_channels[2].selected_state = v12;
-  play_sound_effect(25);
+  play_sound_effect(&g_sound_effect_manager, 25);
 }

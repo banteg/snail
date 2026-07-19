@@ -55,3 +55,20 @@ each incoming transition uses once, and its queued base/draw followup preserves
 the clip's current mode flags. Animation id `-1` is separately named as the
 manager's hide-channel queue sentinel. Focused code remains byte-identical at
 68.29%, 244/248, with the same 23 clean operands and one jump-table-only mask.
+
+## 2026-07-19 channel-state lifetime closure
+
+The live Windows stack/register ownership now matches the three-channel model
+instead of leaking compiler reuse into the decompile. VC6 first spills the
+`Snail*` receiver and then reuses that dead stack slot for channel 2's target
+state. A guarded split keeps the prologue pointer separate and leaves the
+default movement arm's channel-2 state honestly uninitialized, exactly as the
+native body and Android control flow imply; it does not invent a fallback.
+
+The overwritten low byte of `movement_flags` is likewise three disjoint
+per-channel `immediate` lifetimes, each with its own initial write, optional
+clear, and SSA join. Binja now exposes all three target states, all three
+selected states, the prior-channel change latch, and those transition flags
+without pointer casts or parameter-byte aliases. The matcher source only gains
+the same ownership names: focused code remains at the honest 68.29%, 244/248,
+with 23 clean masks and the lone compiler-local jump-table mismatch.

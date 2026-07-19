@@ -12622,6 +12622,43 @@
       ]
     },
     {
+      "name": "bn_snail_weapon_channel_state_lifetimes",
+      "artifact": "analysis/decompile/binja/functions/00445920-set_snail_weapon.c",
+      "required_substrings": [
+        "uint8_t any_channel_changed = 0",
+        "int32_t target_channel_2_state",
+        "target_channel_0_state = movement_flags",
+        "channel_0_selected_state = snail->weapon_channels[0].selected_state",
+        "uint8_t channel_0_immediate = 1",
+        "set_weapon_animation(&snail->weapon_channels[1], 1, channel_1_immediate, 4)",
+        "snail->weapon_channels[2].selected_state = target_channel_2_state"
+      ],
+      "forbidden_substrings": [
+        "snail_1 = 1",
+        "snail_2",
+        "movement_flags.b",
+        "->__offset("
+      ]
+    },
+    {
+      "name": "ida_snail_weapon_channel_state_owner",
+      "artifact": "analysis/decompile/ida/functions/00445920-set_snail_weapon.c",
+      "required_substrings": [
+        "void __thiscall set_snail_weapon(Snail *snail, int32_t movement_flags)",
+        "snail->weapon_channels[0].selected_state",
+        "snail->weapon_channels[1].selected_state",
+        "snail->weapon_channels[2].selected_state",
+        "set_weapon_animation(&snail->weapon_channels[2]",
+        "play_sound_effect(&g_sound_effect_manager, 25)"
+      ],
+      "forbidden_substrings": [
+        "sub_445920",
+        "MEMORY[",
+        "int this",
+        "snail + 0x64C"
+      ]
+    },
+    {
       "name": "bn_weapon_animation_channel_owner",
       "artifact": "analysis/decompile/binja/functions/004446e0-set_weapon_animation.c",
       "required_substrings": [

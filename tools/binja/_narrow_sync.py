@@ -2022,6 +2022,8 @@ def apply_split_user_var_update(
     target_var: SplitVarSpec,
     variable_name: str,
     variable_type: str,
+    _merge_definitions: bool = True,
+    _operation_name: str = "split_user_var_set",
 ) -> list[dict[str, object]]:
     definition_list = [
         {
@@ -2054,8 +2056,11 @@ def apply_split_user_var_update(
     }
     if len(definition_keys) != len(definition_list):
         raise ValueError("split-variable definitions require unique variable identities")
-    if (target_source_type, target_index, target_storage) not in definition_keys:
+    target_key = (target_source_type, target_index, target_storage)
+    if _merge_definitions and target_key not in definition_keys:
         raise ValueError("split-variable target must be one of the definition identities")
+    if not _merge_definitions and target_key in definition_keys:
+        raise ValueError("split-away residual target must not be a detached definition")
 
     def run_batch(*, preview: bool) -> dict[str, object]:
         code = f"""
@@ -2064,6 +2069,7 @@ definitions = {json.dumps(definition_list)}
 target_spec = {json.dumps(target_spec)}
 variable_name = {variable_name!r}
 variable_type = {variable_type!r}
+merge_definitions = {_merge_definitions!r}
 preview = {preview!r}
 
 
@@ -2144,7 +2150,7 @@ def merge_snapshot(function):
 
 
 def state_snapshot(function):
-    relevant_keys = {{spec_key(spec) for spec in definitions}}
+    relevant_keys = {{spec_key(spec) for spec in definitions}} | {{spec_key(target_spec)}}
     relevant_variables = sorted(
         (
             variable_key(variable),
@@ -2164,24 +2170,27 @@ def state_snapshot(function):
 
 
 def inspect_expected_state(function, expected_type):
-    expected_keys = [spec_key(spec) for spec in definitions]
-    expected_key_set = set(expected_keys)
+    definition_keys = {{spec_key(spec) for spec in definitions}}
     expected_target_key = spec_key(target_spec)
-    expected_source_keys = expected_key_set - {{expected_target_key}}
+    relevant_keys = definition_keys | {{expected_target_key}}
+    expected_source_keys = (
+        definition_keys - {{expected_target_key}} if merge_definitions else set()
+    )
     split_keys = {{variable_key(variable) for variable in function.split_vars}}
     variables = {{
         variable_key(variable): variable
         for variable in function.vars
-        if variable_key(variable) in expected_key_set
+        if variable_key(variable) in relevant_keys
     }}
     merge_entries = {{
         variable_key(merge_target): {{variable_key(source) for source in sources}}
         for merge_target, sources in function.merged_vars.items()
     }}
     for merge_target_key, source_keys in merge_entries.items():
-        touched = ({{merge_target_key}} | source_keys) & expected_key_set
+        touched = ({{merge_target_key}} | source_keys) & relevant_keys
         if touched and not (
-            merge_target_key == expected_target_key
+            merge_definitions
+            and merge_target_key == expected_target_key
             and source_keys == expected_source_keys
         ):
             raise RuntimeError(
@@ -2195,13 +2204,20 @@ def inspect_expected_state(function, expected_type):
         and str(target_variable.type) == str(expected_type)
         and bool(function.is_var_user_defined(target_variable))
     )
-    return {{
-        "all_split": expected_key_set.issubset(split_keys),
-        "merge_current": (
+    if merge_definitions:
+        merge_current = (
             merge_entries.get(expected_target_key) == expected_source_keys
             if expected_source_keys
             else expected_target_key not in merge_entries
-        ),
+        )
+    else:
+        merge_current = not any(
+            ({{merge_target_key}} | source_keys) & relevant_keys
+            for merge_target_key, source_keys in merge_entries.items()
+        )
+    return {{
+        "all_split": definition_keys.issubset(split_keys),
+        "merge_current": merge_current,
         "target_current": target_current,
         "target_variable": target_variable,
         "variables": variables,
@@ -2243,12 +2259,20 @@ try:
 
         expected_target_key = expected["expected_target_key"]
         expected_source_keys = expected["expected_source_keys"]
+        if expected_target_key not in resolved_variables:
+            target_variable = find_current_variable(function, target_spec)
+            if target_variable is None:
+                raise RuntimeError(
+                    f"residual target variable missing after split: {{target_spec!r}}"
+                )
+            resolved_variables[expected_target_key] = target_variable
         current_merge_entries = {{
             variable_key(merge_target): {{variable_key(source) for source in sources}}
             for merge_target, sources in function.merged_vars.items()
         }}
         if (
-            expected_source_keys
+            merge_definitions
+            and expected_source_keys
             and current_merge_entries.get(expected_target_key) != expected_source_keys
         ):
             function.merge_vars(
@@ -2275,7 +2299,8 @@ try:
     if preview:
         bv.revert_undo_actions(state)
         undo_closed = True
-        bv.update_analysis_and_wait()
+        if changed:
+            bv.update_analysis_and_wait()
         restored = state_snapshot(function)
         if restored != before:
             raise RuntimeError("split user-variable rollback failed")
@@ -2347,7 +2372,7 @@ result = {{
         raise RuntimeError(f"split user-variable result is malformed: {payload!r}")
     return [
         {
-            "op": "split_user_var_set",
+            "op": _operation_name,
             "identifier": identifier,
             "definitions": definition_list,
             "target_var": target_spec,
@@ -2357,6 +2382,30 @@ result = {{
             "reason": None if payload["changed"] else "already current",
         }
     ]
+
+
+def apply_split_away_user_var_update(
+    repo_root: Path,
+    *,
+    target: str,
+    identifier: str,
+    detached_definitions: Iterable[SplitVarDefinition],
+    residual_var: SplitVarSpec,
+    variable_name: str,
+    variable_type: str,
+) -> list[dict[str, object]]:
+    """Split dead definitions away before typing the residual physical lifetime."""
+    return apply_split_user_var_update(
+        repo_root,
+        target=target,
+        identifier=identifier,
+        definitions=detached_definitions,
+        target_var=residual_var,
+        variable_name=variable_name,
+        variable_type=variable_type,
+        _merge_definitions=False,
+        _operation_name="split_away_user_var_set",
+    )
 
 
 def current_symbol_names(

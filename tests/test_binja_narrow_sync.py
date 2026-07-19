@@ -8446,6 +8446,52 @@ def test_split_user_variable_replay_skips_current_cluster(monkeypatch) -> None:
     assert len(calls) == 1
     assert result[0]["status"] == "skipped"
     assert result[0]["reason"] == "already current"
+    assert "if changed:\n            bv.update_analysis_and_wait()" in calls[0][-1]
+
+
+def test_split_away_user_variable_replay_types_the_residual_lifetime(
+    monkeypatch,
+) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        code = args[-1]
+        preview = "preview = True" in code
+        return {
+            "result": {
+                "success": True,
+                "preview": preview,
+                "committed": not preview,
+                "changed": True,
+                "snapshot_saved": not preview,
+                "operation": {
+                    "identifier": "set_snail_weapon",
+                    "before_hlil": "struct Snail* snail_1 = snail",
+                    "after_hlil": "int32_t target_channel_2_state",
+                },
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+    result = _narrow_sync.apply_split_away_user_var_update(
+        Path("."),
+        target="snail-mail.exe",
+        identifier="set_snail_weapon",
+        detached_definitions=(
+            ("0x445920", "mlil", "StackVariableSourceType", 524288, -4),
+        ),
+        residual_var=("StackVariableSourceType", 40, -4),
+        variable_name="target_channel_2_state",
+        variable_type="int32_t",
+    )
+
+    assert ["preview = True" in call[-1] for call in calls] == [True, False]
+    assert result[0]["op"] == "split_away_user_var_set"
+    assert result[0]["status"] == "verified"
+    assert "merge_definitions = False" in calls[0][-1]
+    assert "definition_keys.issubset(split_keys)" in calls[0][-1]
+    assert "residual target variable missing after split" in calls[0][-1]
 
 
 def test_split_user_variable_replay_validates_definition_specs() -> None:
@@ -10812,6 +10858,47 @@ def test_jet_particle_bank_lifetime_replay_stays_guarded() -> None:
 
     assert "STALE_JET_PARTICLE_USER_VARS" in replay
     assert "remove_user_var_updates" in replay
+    assert "apply_user_var_updates" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+
+
+def test_snail_weapon_state_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_snail_weapon_state_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("Weapon", "0x3DC"),
+        ("Snail", "0x19B4"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("Weapon", "0x104", "selected_state", "int32_t"),
+        ("Snail", "0x064C", "weapon_channels", "Weapon[3]"),
+        ("Snail", "0x11E0", "jetpack_channel", "Weapon"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    assert '"0x445920", "mlil", "StackVariableSourceType", 524288, -4' in replay
+    assert '"StackVariableSourceType",\n    40,\n    -4' in replay
+    for name in (
+        "target_channel_2_state",
+        "channel_0_immediate",
+        "channel_1_immediate",
+        "channel_2_immediate",
+        "any_channel_changed",
+        "target_channel_0_state",
+        "target_channel_1_state",
+        "channel_0_selected_state",
+        "channel_1_selected_state",
+        "channel_2_selected_state",
+    ):
+        assert f'"{name}"' in replay
+    assert "apply_split_away_user_var_update" in replay
+    assert "apply_split_user_var_update" in replay
     assert "apply_user_var_updates" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
