@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "build_track_fringe_objects",
-      "address": "0x434be0"
+      "name": "remove_subgame_bods",
+      "address": "0x440910"
     }
   ],
   "health_check_count": 898,

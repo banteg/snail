@@ -250,3 +250,22 @@ Both databases were previewed, applied, read back, and exported through the
 checked-in replay tooling. No matcher source changed. Focused output remains
 the honest 67.67%, 495/501-instruction frontier with 64 clean operands and the
 single alignment-sensitive string mismatch.
+
+## 2026-07-19 bulk-pool teardown lifetime closure
+
+Binary Ninja now preserves the five independent teardown countdowns and their
+borrowed `GameRoot::active_bod_list` lifetimes for rows, health pickups,
+garbage hazards, slugs, and ring effects. Each unlink block names the loaded
+list flags, next/previous nodes, free-stack head, and post-clear flags; the row
+block also keeps its nested eight-cell countdown distinct from the 3200-row
+extent. The backing arrays remain owned by `SubgameRuntime`; only their
+embedded `BodNode` memberships move through the root intrusive list.
+
+The guarded replay verifies every relevant owner width and exact field before
+touching the function. Three proposed flag-gate annotations were rejected and
+removed because Binary Ninja folds those values into direct expressions, so
+they added invisible metadata without improving the tracked decompile. The
+analyzer still renders a few full-width loads/stores as byte fragments; those
+are left honest rather than forced with register-shaped types. No matcher
+source changed, and focused output remains 67.67%, 495/501 instructions,
+prefix 6, with 64 clean operands and the one existing string-order mismatch.

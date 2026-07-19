@@ -8908,6 +8908,228 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
     assert "FringeObject" not in replay
 
 
+def test_subgame_bulk_teardown_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_subgame_bulk_teardown_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("BodNode", "0x10"),
+        ("BodList", "0x0C"),
+        ("RenderableBod", "0x80"),
+        ("RowModel", "0x8C"),
+        ("SubRow", "0xF4"),
+        ("TrackRowCell", "0x54"),
+        ("SubHealth", "0x74"),
+        ("SubGarbage", "0xC4"),
+        ("SubGarbagePool", "0x264C"),
+        ("Slug", "0xEC"),
+        ("SlugPool", "0x760"),
+        ("SubRing", "0x1F8"),
+        ("SubRingPool", "0x3F0"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("BodNode", "0x04", "list_flags", "uint32_t"),
+        ("BodNode", "0x08", "list_prev", "BodNode*"),
+        ("BodNode", "0x0C", "list_next", "BodNode*"),
+        ("BodList", "0x04", "first", "BodNode*"),
+        ("BodList", "0x08", "free_top", "BodNode*"),
+        ("RowModel", "0x00", "body", "RenderableBod"),
+        ("SubRow", "0x04", "row_model", "RowModel"),
+        ("TrackRowCell", "0x00", "bod", "BodNode"),
+        ("SubHealth", "0x38", "state", "TrackPickupState"),
+        ("SubGarbagePool", "0x04", "slots", "SubGarbage[50]"),
+        ("SlugPool", "0x00", "slots", "Slug[8]"),
+        ("SubRingPool", "0x00", "slots", "SubRing[2]"),
+        (
+            "SubgameRuntime",
+            "0x356000",
+            "health_pickups",
+            "SubHealth[8]",
+        ),
+        ("SubgameRuntime", "0x3563A0", "slug_hazards", "SlugPool"),
+        (
+            "SubgameRuntime",
+            "0x359140",
+            "garbage_hazards",
+            "SubGarbagePool",
+        ),
+        ("SubgameRuntime", "0x35B78C", "ring_effects", "SubRingPool"),
+        (
+            "SubgameRuntime",
+            "0x3BFAC8",
+            "runtime_cells",
+            "TrackRowCell[3200][8]",
+        ),
+        (
+            "SubgameRuntime",
+            "0x5CCAC8",
+            "runtime_rows",
+            "SubRow[3200]",
+        ),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        ("RegisterVariableSourceType", 21, 71, "rows_remaining", "int32_t"),
+        ("RegisterVariableSourceType", 39, 67, "row_active_list", "BodList*"),
+        ("RegisterVariableSourceType", 45, 66, "row_list_flags", "uint32_t"),
+        ("RegisterVariableSourceType", 87, 66, "row_list_next", "BodNode*"),
+        ("RegisterVariableSourceType", 99, 66, "row_list_prev", "BodNode*"),
+        ("RegisterVariableSourceType", 118, 68, "row_free_top", "BodNode*"),
+        (
+            "RegisterVariableSourceType",
+            129,
+            66,
+            "row_flags_after_clear",
+            "uint32_t",
+        ),
+        ("RegisterVariableSourceType", 138, 69, "cells_remaining", "int32_t"),
+        (
+            "RegisterVariableSourceType",
+            187,
+            73,
+            "health_remaining",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            194,
+            66,
+            "health_list_flags",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            208,
+            67,
+            "health_active_list",
+            "BodList*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            253,
+            66,
+            "health_list_next",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            265,
+            66,
+            "health_list_prev",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            284,
+            68,
+            "health_free_top",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            295,
+            66,
+            "health_flags_after_clear",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            582,
+            73,
+            "garbage_remaining",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            604,
+            66,
+            "garbage_list_flags",
+            "uint32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            610,
+            67,
+            "garbage_active_list",
+            "BodList*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            652,
+            66,
+            "garbage_list_next",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            664,
+            66,
+            "garbage_list_prev",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            683,
+            68,
+            "garbage_free_top",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            694,
+            66,
+            "garbage_flags_after_clear",
+            "uint32_t",
+        ),
+        ("RegisterVariableSourceType", 718, 73, "slug_remaining", "int32_t"),
+        ("RegisterVariableSourceType", 740, 66, "slug_list_flags", "uint32_t"),
+        ("RegisterVariableSourceType", 743, 67, "slug_active_list", "BodList*"),
+        ("RegisterVariableSourceType", 788, 66, "slug_list_next", "BodNode*"),
+        ("RegisterVariableSourceType", 800, 66, "slug_list_prev", "BodNode*"),
+        ("RegisterVariableSourceType", 819, 68, "slug_free_top", "BodNode*"),
+        (
+            "RegisterVariableSourceType",
+            830,
+            66,
+            "slug_flags_after_clear",
+            "uint32_t",
+        ),
+        ("RegisterVariableSourceType", 854, 73, "ring_remaining", "int32_t"),
+        ("RegisterVariableSourceType", 870, 66, "ring_list_flags", "uint32_t"),
+        ("RegisterVariableSourceType", 873, 67, "ring_active_list", "BodList*"),
+        ("RegisterVariableSourceType", 918, 66, "ring_list_next", "BodNode*"),
+        ("RegisterVariableSourceType", 930, 66, "ring_list_prev", "BodNode*"),
+        ("RegisterVariableSourceType", 949, 68, "ring_free_top", "BodNode*"),
+        (
+            "RegisterVariableSourceType",
+            960,
+            66,
+            "ring_flags_after_clear",
+            "uint32_t",
+        ),
+    ):
+        expected = (
+            '        "remove_subgame_bods",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert "linked_flags_gate" not in replay
+
+
 def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     track_sync = (BINJA_DIR / "sync_track_render_cache_types.py").read_text(
         encoding="utf-8"
