@@ -1233,6 +1233,23 @@ typedef struct TrackRowCell {
     Fringe* fringe_back;
 } TrackRowCell;
 
+/*
+ * Analysis-only field-first view used while scanning TrackRowCell::tile_id.
+ * Native advances this borrowed pointer by the full 0x54 cell stride. The
+ * tail therefore aliases the remainder of the current cell and the prefix of
+ * the next one; this view never owns either cell.
+ */
+typedef struct TrackRowCellTileByteView {
+    SubLocTileId tile_id;
+    uint8_t open_edge_mask;
+    uint8_t _pad_02[0x2];
+    uint32_t lane_and_flags;
+    uint8_t stride_tail[0x54 - 0x08];
+} TrackRowCellTileByteView;
+typedef char TrackRowCellTileByteView_must_stride_0x54[
+    (sizeof(TrackRowCellTileByteView) == 0x54) ? 1 : -1
+];
+
 typedef enum SubRowFlag {
     SUBROW_FLAG_PARCEL_CANDIDATE = 0x0001,
     SUBROW_FLAG_ROW_MODEL_PRESENT = 0x0002,

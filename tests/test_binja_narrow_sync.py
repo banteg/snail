@@ -11367,3 +11367,43 @@ def test_landscape_activation_replay_preserves_stride_and_interior_borrows() -> 
     assert "ActiveLandscapeEntry*" not in replay.split(
         "LANDSCAPE_ACTIVATION_USER_VAR_UPDATES", 1
     )[1].split("REJECTED_ACTIVE_ENTRY_CURSOR_REMOVALS", 1)[0]
+
+
+def test_track_warning_replay_preserves_field_first_cell_borrows() -> None:
+    header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+    replay = (BINJA_DIR / "sync_track_warning_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "typedef struct TrackRowCellTileByteView {" in header
+    assert "SubLocTileId tile_id;" in header
+    assert "uint32_t lane_and_flags;" in header
+    assert "uint8_t stride_tail[0x54 - 0x08];" in header
+    assert "TrackRowCellTileByteView_must_stride_0x54" in header
+
+    for type_name, width in (
+        ("TrackRowCell", "0x54"),
+        ("TrackRowCellTileByteView", "0x54"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for index, storage, name in (
+        (25, 66, "row_tile_cursor"),
+        (39, 68, "cell_tile_cursor"),
+        (35, -8, "saved_cell_tile_cursor"),
+    ):
+        expected = (
+            '        "mark_track_warning_zones",\n'
+            f'        "{"RegisterVariableSourceType" if storage >= 0 else "StackVariableSourceType"}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            '        "TrackRowCellTileByteView*"'
+        )
+        assert expected in replay
+
+    assert "types_declare_if_missing" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "TrackRowCell*" not in replay.split("TRACK_WARNING_USER_VAR_UPDATES", 1)[1]

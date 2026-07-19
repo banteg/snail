@@ -76,3 +76,24 @@ matching from `98.99%` to `97.98%`. Neither changed the saved-row-first reload;
 the latter also scheduled the pointer add before the column increment. The
 source-shaped `++col, ++cell` loop remains the best form, and the final two
 independent loads remain intentionally unmatched rather than barrier-forced.
+
+## 2026-07-19 field-first scan ownership
+
+Binary Ninja now carries the source-level `TrackRowCellTileByteView` across all
+three native pointer lifetimes: the EAX row cursor, EDX current-cell cursor,
+and saved stack copy. This view begins at `TrackRowCell::tile_id +0x3c` and has
+the exact `0x54` induction stride; its tail aliases surrounding grid storage
+and does not claim a standalone allocation or full-cell ownership.
+
+The tracked decompile consequently reads `cell_tile_cursor->tile_id`, names the
+real `SubLocTileId` values in the seed predicate, advances
+`cell_tile_cursor[1]`, and hands that exact pointer back to the next-row cursor.
+The previous synthetic subtraction from the runtime base is gone. Destination
+stamps remain rooted in the owning `SubgameRuntime::runtime_cells` slab, so the
+field-first scan view and complete-cell owner stay distinct.
+
+The guarded replay verifies the `0x54` cell and view widths, the exact tile and
+flag fields, the `0x1272838` runtime extent, and all three SSA identities before
+mutation; a second run is idempotent. Matching source remains unchanged at the
+honest 98.99%, 99/99-instruction frontier with no masked operands. The sole
+residual remains the independent reload order documented above.

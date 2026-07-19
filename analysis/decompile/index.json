@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_star_field",
-      "address": "0x434310"
+      "name": "mark_track_warning_zones",
+      "address": "0x4354f0"
     }
   ],
   "health_check_count": 903,

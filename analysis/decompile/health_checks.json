@@ -3570,12 +3570,22 @@
       "required_substrings": [
         "game->runtime_row_count",
         "game->runtime_cells[0][0].tile_id",
+        "struct TrackRowCellTileByteView* row_tile_cursor",
+        "struct TrackRowCellTileByteView* cell_tile_cursor",
+        "struct TrackRowCellTileByteView* saved_cell_tile_cursor",
+        "enum SubLocTileId tile_id = cell_tile_cursor->tile_id",
+        "cell_tile_cursor = &cell_tile_cursor[1]",
+        "row_tile_cursor = cell_tile_cursor",
         "game->runtime_cells[0][0].lane_and_flags",
         "|= 0x18"
       ],
       "forbidden_substrings": [
         "struct Game",
         "__offset(Game",
+        ")->:0x3bfb04.b",
+        "uint8_t* eax_2",
+        "uint8_t* edx_1",
+        "uint8_t* var_8_1",
         "return result",
         "__asm",
         "_ET1"
