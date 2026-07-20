@@ -141,3 +141,19 @@ Direct readback confirms a void `Path*` owner and all eight parameters including
 with an ordinary `finalize_path_template(self)` call. Focused Wibo remains
 40.91% (640/685), with 35 masked operands ok, 0 unresolved, 0 mismatch; the
 source was not changed to manufacture the recovered unused interface inputs.
+
+## 2026-07-20 sample and mesh lifetimes
+
+The native orientation loop retains the preceding primary and secondary
+`basis_right` vectors, then reloads each current `PathTemplateSample` for the
+cross-product call. The terminal stores are exactly the preceding samples'
+`delta_dir_to_next` fields. The strip-mesh loop owns one complete primary sample
+and two complete `ObjectFaceQuad` records, including all vertex, texture, and UV
+fields.
+
+A transactional Binary Ninja preview rejected the earlier current-sample
+temporaries because typing them introduced negative `__offset` expressions.
+The narrower replay retains nine proven lifetimes with no such regression.
+Matcher source and bytes remain unchanged at the honest 40.91% frontier
+(640/685 instructions, 35 clean masked operands); this is ownership recovery
+only, with no source-shaped coercion.

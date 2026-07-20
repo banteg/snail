@@ -127,3 +127,17 @@ the refreshed decompilation exposes `height_scale` in the negative cosine
 profile and no longer returns the finalizer. Focused Wibo remains 40.57%
 (641/690), with 34 masked operands ok, 0 unresolved, 0 mismatch. No dummy use
 was added for uniform interface arguments that this body optimizes away.
+
+## 2026-07-20 sample and mesh lifetimes
+
+The dump constructor shares the hump constructor's post-curve native lifetime
+skeleton with a ten-identity shift: preceding-sample `basis_right` vectors,
+current-sample reloads for orientation, terminal `delta_dir_to_next` fields, one
+complete mesh sample, and two complete `ObjectFaceQuad` records.
+
+The shared replay checks the canonical owner widths and fields before applying
+only the nine identities whose transaction preview produced direct fields and
+zero negative `__offset` expressions. The two earlier current-sample views were
+explicitly rejected. Matcher source and bytes remain unchanged at the honest
+40.57% frontier (641/690 instructions, 34 clean masked operands); no
+fakematching is involved.
