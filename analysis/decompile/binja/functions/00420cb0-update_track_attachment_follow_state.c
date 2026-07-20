@@ -121,55 +121,58 @@
 00421147        float* edi_1
 00421147        if (template_record_3->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
 004212dc        struct PathTemplateSample* secondary_samples_3 = template_record_3->secondary_samples
-004212ec        void* esi_8 = secondary_samples_3 + eax_28
+004212ec        struct PathTemplateSample* secondary_sample = secondary_samples_3 + eax_28
 004212ef        struct TrackRowCell* source_cell = follow_state->source_cell
-004212fc        float var_174_2 = fconvert.s(fconvert.t(var_17c) * fconvert.t(*(&secondary_samples_3->delta_dir_to_next + eax_28)) * fconvert.t(var_180_1) + fconvert.t(source_cell->anchor_position.x) + fconvert.t(*(esi_8 + 0x30)))
-00421314        float var_170_2 = fconvert.s(fconvert.t(var_17c) * fconvert.t(*(esi_8 + 0x84)) * fconvert.t(var_180_1) + fconvert.t(source_cell->anchor_position.y) + fconvert.t(*(esi_8 + 0x34)))
-00421328        float var_16c_2 = fconvert.s(fconvert.t(var_17c) * fconvert.t(*(esi_8 + 0x88)) + fconvert.t(source_cell->anchor_position.z) + fconvert.t(*(esi_8 + 0x38)))
+004212fc        float var_174_2 = fconvert.s(fconvert.t(var_17c) * fconvert.t(*(&secondary_samples_3->delta_dir_to_next + eax_28)) * fconvert.t(var_180_1) + fconvert.t(source_cell->anchor_position.x) + fconvert.t(secondary_sample->transform.position.x))
+00421314        float var_170_2 = fconvert.s(fconvert.t(var_17c) * fconvert.t(secondary_sample->delta_dir_to_next.y) * fconvert.t(var_180_1) + fconvert.t(source_cell->anchor_position.y) + fconvert.t(secondary_sample->transform.position.y))
+00421328        float var_16c_2 = fconvert.s(fconvert.t(var_17c) * fconvert.t(secondary_sample->delta_dir_to_next.z) + fconvert.t(source_cell->anchor_position.z) + fconvert.t(secondary_sample->transform.position.z))
 0042132c        if (sample_index_3 != edi)
 00421349        struct TransformMatrix from
-00421349        __builtin_memcpy(&from, esi_8, 0x40)
+00421349        __builtin_memcpy(&from, secondary_sample, 0x40)
 0042134b        long double x87_r7_58 = fconvert.t(var_17c)
 0042136d        struct TransformMatrix to
-0042136d        int32_t ecx_59 = __builtin_memcpy(&to, &template_record_3->secondary_samples[sample_index_3 + 1], 0x40)
+0042136d        int32_t ecx_58 = __builtin_memcpy(&to, &template_record_3->secondary_samples[sample_index_3 + 1], 0x40)
 00421385        __builtin_memset(&from.position, 0, 0xc)
 004213a6        __builtin_memset(&to.position, 0, 0xc)
-004213b4        int32_t var_194_3 = ecx_59
+004213b4        int32_t var_194_3 = ecx_58
 004213d3        linear_interpolate_matrix(&var_164, &from, &to, fconvert.s(x87_r7_58 / fconvert.t(*(&template_record_3->secondary_samples->delta_length + eax_28))))
 00421332        set_matrix_identity(&var_164)
 004213ee        esi_7 = &follow_state->output_position
 004213f1        out_position_1 = out_position
 004213f8        edi_1 = &motion->y
+004213fb        char* ecx_60 = esi_7
 004213fd        var_164.basis_right.x = fconvert.s(fconvert.t(var_164.basis_right.x) * fconvert.t(var_180_1))
 00421409        var_164.basis_right.y = fconvert.s(fconvert.t(var_164.basis_right.y) * fconvert.t(var_180_1))
 00421415        var_164.basis_right.z = fconvert.s(fconvert.t(var_164.basis_right.z) * fconvert.t(var_180_1))
 0042141b        long double x87_r7_67 = fconvert.t((edi_1 - 4)->y) + fconvert.t(follow_state->vertical_offset)
 0042141e        follow_state->vertical_offset = fconvert.s(x87_r7_67)
-00421441        long double x87_r6_24 = fconvert.t(*out_position) - fconvert.t(var_168)
+0042143b        long double x87_r7_68 = x87_r7_67 * fconvert.t(var_164.basis_up.z)
+00421441        long double x87_r6_24 = fconvert.t(out_position->x) - fconvert.t(var_168)
+00421475        long double x87_r6_26 = x87_r6_24 * fconvert.t(var_164.basis_right.z) + fconvert.t(var_16c_2)
 00421484        float var_174_3 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(x87_r6_24 * fconvert.t(var_164.basis_right.x))) + fconvert.t(var_174_2))) + fconvert.t(fconvert.s(fconvert.t(var_164.basis_up.x) * x87_r7_67)))
-00421497        esi_7->x.b = var_174_3.b
-00421497        esi_7->x:1.b = var_174_3:1.b
-00421497        esi_7->x:2.b = var_174_3:2.b
-00421497        esi_7->x:3.b = var_174_3:3.b
-004214a1        long double x87_r6_27 = x87_r6_24 * fconvert.t(var_164.basis_right.z) + fconvert.t(var_16c_2) + x87_r7_67 * fconvert.t(var_164.basis_up.z)
-004214a3        esi_7->y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_164.basis_right.y) * x87_r6_24)) + fconvert.t(var_170_2))) + fconvert.t(fconvert.s(fconvert.t(var_164.basis_up.y) * x87_r7_67)))
-004214ae        esi_7->z = fconvert.s(x87_r6_27)
-004214ba        struct TransformMatrix* eax_61 = &g_game_base->subgame.player.body.transform
-004214c1        eax_61->basis_right.x = var_164.basis_right.x
-004214c7        eax_61->basis_right.y = var_164.basis_right.y
-004214ce        eax_61->basis_right.z = var_164.basis_right.z
-004214db        struct Vec3* edx_35 = &g_game_base->subgame.player.body.transform.basis_up
-004214e1        edx_35->x = var_164.basis_up.x
-004214e7        edx_35->y = var_164.basis_up.y
-004214ee        edx_35->z = var_164.basis_up.z
+0042148c        long double x87_r5_23 = fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_164.basis_right.y) * x87_r6_24)) + fconvert.t(var_170_2))) + fconvert.t(fconvert.s(fconvert.t(var_164.basis_up.y) * x87_r7_67))
+00421497        *ecx_60 = var_174_3.b
+00421497        ecx_60[1] = var_174_3:1.b
+00421497        ecx_60[2] = var_174_3:2.b
+00421497        ecx_60[3] = var_174_3:3.b
+004214a3        *(ecx_60 + 4) = fconvert.s(x87_r5_23)
+004214ae        *(ecx_60 + 8) = fconvert.s(x87_r6_26 + x87_r7_68)
+004214ba        struct TransformMatrix* player_transform = &g_game_base->subgame.player.body.transform
+004214c1        player_transform->basis_right.x = var_164.basis_right.x
+004214c7        player_transform->basis_right.y = var_164.basis_right.y
+004214ce        player_transform->basis_right.z = var_164.basis_right.z
+004214db        struct Vec3* player_up_reloaded = &g_game_base->subgame.player.body.transform.basis_up
+004214e1        player_up_reloaded->x = var_164.basis_up.x
+004214e7        player_up_reloaded->y = var_164.basis_up.y
+004214ee        player_up_reloaded->z = var_164.basis_up.z
 004214f7        float x_2 = var_164.basis_forward.x
-004214fb        struct Vec3* ecx_66 = &g_game_base->subgame.player.body.transform.basis_forward
-00421501        ecx_66->x.b = x_2.b
-00421501        ecx_66->x:1.b = x_2:1.b
-00421501        ecx_66->x:2.b = x_2:2.b
-00421501        ecx_66->x:3.b = x_2:3.b
-00421507        ecx_66->y = var_164.basis_forward.y
-0042150e        ecx_66->z = var_164.basis_forward.z
+004214fb        struct Vec3* player_forward_reloaded = &g_game_base->subgame.player.body.transform.basis_forward
+00421501        player_forward_reloaded->x.b = x_2.b
+00421501        player_forward_reloaded->x:1.b = x_2:1.b
+00421501        player_forward_reloaded->x:2.b = x_2:2.b
+00421501        player_forward_reloaded->x:3.b = x_2:3.b
+00421507        player_forward_reloaded->y = var_164.basis_forward.y
+0042150e        player_forward_reloaded->z = var_164.basis_forward.z
 0042114d        out_position_1 = out_position
 0042115c        float* out_angle = &var_17c
 00421167        struct TransformMatrix* transform = &var_164
@@ -198,7 +201,7 @@
 0042121a        struct PathTemplateSample* secondary_samples_1 = follow_state->template_record->secondary_samples
 00421234        edi_1 = &motion->y
 0042123a        float y = var_164.position.y
-0042123e        long double x87_r7_43 = fconvert.t((&secondary_samples_1->delta_dir_to_next.z)[ecx_48 * 2]) * fconvert.t(follow_state->progress) + fconvert.t(follow_state->source_cell->anchor_position.z) + fconvert.t((&secondary_samples_1->transform.position.z)[ecx_48 * 2])
+0042123e        long double x87_r7_43 = fconvert.t((&secondary_samples_1->delta_dir_to_next.z)[ecx_48 * 2]) * fconvert.t(follow_state->progress) + fconvert.t(follow_state->source_cell->anchor_position.z) + fconvert.t((secondary_samples_1 + (ecx_48 << 3))->transform.position.z)
 0042124d        var_164.basis_right.x = fconvert.s(fconvert.t(var_164.basis_right.x) * fconvert.t(var_180_1))
 00421259        var_164.basis_right.y = fconvert.s(fconvert.t(var_164.basis_right.y) * fconvert.t(var_180_1))
 00421265        var_164.basis_right.z = fconvert.s(fconvert.t(var_164.basis_right.z) * fconvert.t(var_180_1))
@@ -208,33 +211,33 @@
 00421274        follow_state->output_position.y = y
 00421277        follow_state->vertical_offset = fconvert.s(x87_r6_18)
 0042127a        follow_state->output_position.z = fconvert.s(x87_r7_43)
-00421283        float* edx_26 = &g_game_base->subgame.player.body.transform
-00421289        *edx_26 = x
-0042128f        edx_26[1] = var_164.basis_right.y
-00421296        edx_26[2] = var_164.basis_right.z
+00421283        struct Vec3* player_right = &g_game_base->subgame.player.body.transform
+00421289        player_right->x = x
+0042128f        player_right->y = var_164.basis_right.y
+00421296        player_right->z = var_164.basis_right.z
 0042129f        float x_1 = var_164.basis_up.x
-004212a3        struct Vec3* ecx_52 = &g_game_base->subgame.player.body.transform.basis_up
-004212a9        ecx_52->x.b = x_1.b
-004212a9        ecx_52->x:1.b = x_1:1.b
-004212a9        ecx_52->x:2.b = x_1:2.b
-004212a9        ecx_52->x:3.b = x_1:3.b
-004212af        ecx_52->y = var_164.basis_up.y
-004212b6        ecx_52->z = var_164.basis_up.z
-004212c2        struct Vec3* eax_57 = &g_game_base->subgame.player.body.transform.basis_forward
-004212c7        eax_57->x = var_164.basis_forward.x
-004212cd        eax_57->y = var_164.basis_forward.y
-004212d4        eax_57->z = var_164.basis_forward.z
+004212a3        struct Vec3* player_up = &g_game_base->subgame.player.body.transform.basis_up
+004212a9        player_up->x.b = x_1.b
+004212a9        player_up->x:1.b = x_1:1.b
+004212a9        player_up->x:2.b = x_1:2.b
+004212a9        player_up->x:3.b = x_1:3.b
+004212af        player_up->y = var_164.basis_up.y
+004212b6        player_up->z = var_164.basis_up.z
+004212c2        struct Vec3* player_forward = &g_game_base->subgame.player.body.transform.basis_forward
+004212c7        player_forward->x = var_164.basis_forward.x
+004212cd        player_forward->y = var_164.basis_forward.y
+004212d4        player_forward->z = var_164.basis_forward.z
 0042151c        follow_state->orientation_up.x = var_164.basis_up.x
 00421523        follow_state->orientation_up.y = var_164.basis_up.y
 00421526        struct Path* template_record_5 = follow_state->template_record
 00421529        follow_state->orientation_up.z = var_164.basis_up.z
 0042152f        uint32_t sample_index_1 = follow_state->sample_index
-00421539        uint32_t ecx_71 = sample_index_1 << 3
-00421540        uint32_t ecx_74
+00421539        uint32_t ecx_69 = sample_index_1 << 3
+00421540        uint32_t ecx_72
 00421540        if (sample_index_1 != template_record_5->segment_count - 1)
 0042156b        struct PathTemplateSample* primary_samples = template_record_5->primary_samples
-00421571        ecx_74 = (ecx_71 - sample_index_1) * 0x18
-0042157b        long double x87_r7_71 = fconvert.t(*(primary_samples + ecx_74 + 0x140)) - fconvert.t(*(&primary_samples->rotation_scalar_98 + ecx_74))
+00421571        ecx_72 = (ecx_69 - sample_index_1) * 0x18
+0042157b        long double x87_r7_71 = fconvert.t(*(primary_samples + ecx_72 + 0x140)) - fconvert.t(*(&primary_samples->rotation_scalar_98 + ecx_72))
 00421585        long double temp5_1 = fconvert.t(3.14159274f)
 00421585        x87_r7_71 - temp5_1
 00421590        if ((((x87_r7_71 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_71, temp5_1) ? 1 : 0) << 0xa | (x87_r7_71 == temp5_1 ? 1 : 0) << 0xe | 0x3800):1.b & 0x41) != 0)
@@ -243,9 +246,9 @@
 004215a5        if ((((x87_r7_71 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_71, temp6_1) ? 1 : 0) << 0xa | (x87_r7_71 == temp6_1 ? 1 : 0) << 0xe | 0x3800):1.b & 1) != 0)
 004215a7        x87_r7_71 = x87_r7_71 + fconvert.t(6.28318548f)
 00421592        x87_r7_71 = x87_r7_71 - fconvert.t(6.28318548f)
-004215c2        follow_state->orientation_b = fconvert.s(fconvert.t(follow_state->progress) / fconvert.t(*(&template_record_5->secondary_samples->delta_length + ecx_74)) * x87_r7_71 + fconvert.t(*(&primary_samples->rotation_scalar_98 + ecx_74)))
+004215c2        follow_state->orientation_b = fconvert.s(fconvert.t(follow_state->progress) / fconvert.t(*(&template_record_5->secondary_samples->delta_length + ecx_72)) * x87_r7_71 + fconvert.t(*(&primary_samples->rotation_scalar_98 + ecx_72)))
 004215c5        struct PathTemplateSample* primary_samples_1 = template_record_5->primary_samples
-004215d1        long double x87_r7_74 = fconvert.t(*(primary_samples_1 + ecx_74 + 0x13c)) - fconvert.t(*(&primary_samples_1->rotation_scalar_94 + ecx_74))
+004215d1        long double x87_r7_74 = fconvert.t(*(primary_samples_1 + ecx_72 + 0x13c)) - fconvert.t(*(&primary_samples_1->rotation_scalar_94 + ecx_72))
 004215db        long double temp7_1 = fconvert.t(3.14159274f)
 004215db        x87_r7_74 - temp7_1
 004215e6        if ((((x87_r7_74 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_74, temp7_1) ? 1 : 0) << 0xa | (x87_r7_74 == temp7_1 ? 1 : 0) << 0xe | 0x3800):1.b & 0x41) != 0)
@@ -255,12 +258,12 @@
 004215fd        x87_r7_74 = x87_r7_74 + fconvert.t(6.28318548f)
 004215e8        x87_r7_74 = x87_r7_74 - fconvert.t(6.28318548f)
 00421618        out_position_1 = out_position
-0042161f        follow_state->orientation_a = fconvert.s(fconvert.t(follow_state->progress) / fconvert.t(*(&template_record_5->secondary_samples->delta_length + ecx_74)) * x87_r7_74 + fconvert.t(*(&primary_samples_1->rotation_scalar_94 + ecx_74)))
-0042154a        ecx_74 = (ecx_71 - sample_index_1) * 0x18
-00421554        follow_state->orientation_b = *(&template_record_5->primary_samples->rotation_scalar_98 + ecx_74)
-00421561        follow_state->orientation_a = *(&template_record_5->primary_samples->rotation_scalar_94 + ecx_74)
+0042161f        follow_state->orientation_a = fconvert.s(fconvert.t(follow_state->progress) / fconvert.t(*(&template_record_5->secondary_samples->delta_length + ecx_72)) * x87_r7_74 + fconvert.t(*(&primary_samples_1->rotation_scalar_94 + ecx_72)))
+0042154a        ecx_72 = (ecx_69 - sample_index_1) * 0x18
+00421554        follow_state->orientation_b = *(&template_record_5->primary_samples->rotation_scalar_98 + ecx_72)
+00421561        follow_state->orientation_a = *(&template_record_5->primary_samples->rotation_scalar_94 + ecx_72)
 00421631        struct Player* player_3 = follow_state->player
-00421641        follow_state->orientation_b = fconvert.s((fconvert.t(follow_state->progress) / fconvert.t(*(&template_record_5->secondary_samples->delta_length + ecx_74)) + float.t(sample_index_1)) * fconvert.t(template_record_5->installed_heading_delta) / float.t(template_record_5->segment_count))
+00421641        follow_state->orientation_b = fconvert.s((fconvert.t(follow_state->progress) / fconvert.t(*(&template_record_5->secondary_samples->delta_length + ecx_72)) + float.t(sample_index_1)) * fconvert.t(template_record_5->installed_heading_delta) / float.t(template_record_5->segment_count))
 0042164b        if (player_3->sub_hover.state != SUB_HOVER_STATE_ACTIVE)
 00421653        long double x87_r7_82 = fconvert.t(out_position_1->x) - fconvert.t(var_168)
 00421657        long double temp9_1 = fconvert.t(0f)
@@ -274,32 +277,31 @@
 00421687        long double temp11_1 = fconvert.t(0f)
 00421687        x87_r7_84 - temp11_1
 00421692        if ((((x87_r7_84 < temp11_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_84, temp11_1) ? 1 : 0) << 0xa | (x87_r7_84 == temp11_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
-0042169a        float* out_position_2 = out_position_1
-0042169c        *out_position_2 = esi_7->x
-004216a1        out_position_2[1] = esi_7->y
-004216a7        out_position_2[2] = esi_7->z
+0042169c        out_position_1->x = esi_7->x
+004216a1        out_position_1->y = esi_7->y
+004216a7        out_position_1->z = esi_7->z
 004216ad        struct Player* player_2 = follow_state->player
 004216bc        player_2->heading_roll = fconvert.s(fconvert.t(follow_state->template_record->installed_heading_delta) + fconvert.t(player_2->heading_roll))
 004216c2        long double x87_r7_87 = fconvert.t(out_position_1->x)
 004216c4        long double temp12 = fconvert.t(-4f)
 004216c4        x87_r7_87 - temp12
 004216cf        if ((((x87_r7_87 < temp12 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_87, temp12) ? 1 : 0) << 0xa | (x87_r7_87 == temp12 ? 1 : 0) << 0xe):1.b & 1) != 0)
-004216d7        int32_t eax_79 = 0
+004216d7        int32_t eax_76 = 0
 004216da        out_position_1->x = fconvert.s(fconvert.t(-4f))
-004216e7        eax_79.b = follow_state->template_record->side_exit_mode == 0
-004216f0        return eax_79
+004216e7        eax_76.b = follow_state->template_record->side_exit_mode == 0
+004216f0        return eax_76
 004216f3        long double x87_r7_89 = fconvert.t(out_position_1->x)
 004216f5        long double temp13 = fconvert.t(4f)
 004216f5        x87_r7_89 - temp13
 00421700        if ((((x87_r7_89 < temp13 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_89, temp13) ? 1 : 0) << 0xa | (x87_r7_89 == temp13 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
-00421726        int32_t eax_81 = 0
+00421726        int32_t eax_78 = 0
 00421729        out_position_1->x = fconvert.s(fconvert.t(out_position_1->x))
-00421736        eax_81.b = follow_state->template_record->side_exit_mode == 0
-0042173f        return eax_81
-00421708        int32_t eax_80 = 0
+00421736        eax_78.b = follow_state->template_record->side_exit_mode == 0
+0042173f        return eax_78
+00421708        int32_t eax_77 = 0
 0042170b        out_position_1->x = fconvert.s(fconvert.t(4f))
-00421718        eax_80.b = follow_state->template_record->side_exit_mode == 0
-00421721        return eax_80
+00421718        eax_77.b = follow_state->template_record->side_exit_mode == 0
+00421721        return eax_77
 00421742        long double x87_r7_92 = fconvert.t(follow_state->vertical_offset)
 00421745        long double temp8 = fconvert.t(0f)
 00421745        x87_r7_92 - temp8

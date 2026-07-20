@@ -12161,3 +12161,42 @@ def test_loopbow_replay_preserves_staged_basis_and_mesh_owners() -> None:
     assert '0x8C: ("delta_length", "float")' in replay
     assert '0x90: ("center_x", "float")' in replay
     assert "(2180, 66," not in replay
+
+
+def test_attachment_follow_replay_preserves_samples_and_player_matrix() -> None:
+    replay = (BINJA_DIR / "sync_attachment_follow_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("TransformMatrix", "0x40"),
+        ("PathTemplateSample", "0xA8"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    assert '"update_track_attachment_follow_state"' in replay
+    for index, storage, name, variable_type in (
+        (1406, 66, "current_secondary_sample", "PathTemplateSample*"),
+        (1596, 72, "secondary_sample", "PathTemplateSample*"),
+        (1717, 72, "next_secondary_sample", "PathTemplateSample*"),
+        (1491, 68, "player_right", "Vec3*"),
+        (1523, 67, "player_up", "Vec3*"),
+        (1554, 66, "player_forward", "Vec3*"),
+        (2058, 66, "player_transform", "TransformMatrix*"),
+        (2091, 68, "player_up_reloaded", "Vec3*"),
+        (2123, 67, "player_forward_reloaded", "Vec3*"),
+        (2538, 68, "output_position_copy", "Vec3*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "ATTACHMENT_FOLLOW_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x00: ("basis_right", "Vec3")' in replay
+    assert '0x20: ("basis_forward", "Vec3")' in replay
+    for rejected_index in (559, 744):
+        assert f"({rejected_index}," not in replay

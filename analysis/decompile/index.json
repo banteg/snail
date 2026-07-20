@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_loopbow_path_template_pair",
-      "address": "0x42ba80"
+      "name": "update_track_attachment_follow_state",
+      "address": "0x420cb0"
     }
   ],
   "health_check_count": 903,

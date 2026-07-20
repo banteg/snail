@@ -342,3 +342,19 @@ No matcher source changed. Focused matching remains 72.89%, 698/726
 instructions, with the exact 122/726 prefix and 63/0/0 clean operand masks;
 the remaining 28 instructions are matrix-stack, x87 scheduling, and duplicated
 epilogue shape rather than missing ownership evidence.
+
+## 2026-07-20 sample and player-matrix lifetimes
+
+Transactional Binary Ninja previews now preserve ten additional complete
+lifetimes across the ordinary traversal and output-copy branches. The current
+and next secondary samples retain `PathTemplateSample*`; both publications of
+the interpolated basis retain their `TransformMatrix`/`Vec3` row owners; and
+the final caller output copy retains a complete `Vec3*` destination. The
+resulting decompile stays at zero synthetic `__offset` expressions.
+
+Two broader sample views were rejected. The primary interpolation cursor spans
+current and next fields, and forcing it to `PathTemplateSample*` introduced
+three forward offsets. The terminal boundary intentionally reads the previous
+sample and introduced five negative offsets. Both remain byte views rather
+than being disguised as complete samples. Matcher source remains unchanged at
+72.89% (698/726 instructions, prefix 122/726, all 63 operands clean).
