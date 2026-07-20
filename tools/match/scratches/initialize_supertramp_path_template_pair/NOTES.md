@@ -164,3 +164,13 @@ Windows pushes and callee dataflow therefore remain authoritative here rather
 than forcing the portable signature onto this build. This closure is
 analysis-only: focused Wibo remains 51.62% (529/552), with a 15-instruction
 prefix and 32 clean masked operands.
+
+2026-07-20 live mesh-owner closure: transactional MLIL preview recovers a
+complete primary lead-in sample, both curved-section right vectors, the
+secondary curved sample, the primary mesh sample, each complete generated
+`Vec3` vertex, and both complete facequad records. These eight lifetimes expose
+direct sample, transform, vertex, texture, and UV fields without introducing
+an `__offset` expression. The replay extends ownership from the path arrays
+into the object mesh while preserving the independently proven constructor
+shape. This is analysis-only: focused Wibo remains 51.62% (529/552), with a
+15-instruction prefix and 32 clean masked operands.

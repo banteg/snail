@@ -197,3 +197,13 @@ prototype with no pending operation. The refreshed callee exposes `Path` fields
 and void finalizer flow, while both initializer callsites use the primary and
 secondary `Path` owners with all six stack operands. This is analysis-only:
 focused matching remains 60.84% (603/610) with 31 clean masked operands.
+
+2026-07-20 live mesh-owner closure: the separately previewed start schedule
+recovers the primary curved sample, both previous-sample right vectors, both
+current-sample cross-product reloads, the primary mesh sample, each generated
+`Vec3` vertex, and the two complete facequad records. The intermediate
+secondary current-sample cursor stays automatic because typing its negative
+byte-relative accesses made the decompile less exact. All nine retained owners
+render direct fields and introduce no `__offset` expression. This is
+analysis-only: focused matching remains 60.84% (603/610), with 31 clean masked
+operands.

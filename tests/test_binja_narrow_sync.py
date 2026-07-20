@@ -11663,3 +11663,52 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
     assert "apply_user_var_updates" in replay
     for rejected_index in (825, 939, 1745, 1814):
         assert f"({rejected_index}, 66," not in replay
+
+
+def test_supertramp_start_path_replay_preserves_mesh_owner_lifetimes() -> None:
+    replay = (BINJA_DIR / "sync_supertramp_start_path_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("PathTemplateSample", "0xA8"),
+        ("ObjectFaceQuad", "0x30"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for function_name in (
+        "initialize_supertramp_path_template_pair",
+        "initialize_start_path_template_pair",
+    ):
+        assert f'("{function_name}", ' in replay
+
+    for index, storage, name, variable_type in (
+        (187, 66, "primary_seed_sample", "PathTemplateSample*"),
+        (637, 67, "primary_right", "Vec3*"),
+        (744, 66, "secondary_right", "Vec3*"),
+        (772, 66, "secondary_curve_sample", "PathTemplateSample*"),
+        (1185, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1268, 67, "vertex", "Vec3*"),
+        (1499, 71, "face_first", "ObjectFaceQuad*"),
+        (1696, 71, "face_second", "ObjectFaceQuad*"),
+        (660, 66, "primary_curve_sample", "PathTemplateSample*"),
+        (831, 66, "primary_right", "Vec3*"),
+        (949, 66, "primary_sample_cursor_reloaded", "PathTemplateSample*"),
+        (1001, 67, "secondary_right", "Vec3*"),
+        (1116, 66, "secondary_sample_cursor_reloaded", "PathTemplateSample*"),
+        (1517, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1596, 67, "vertex", "Vec3*"),
+        (1820, 71, "face_first", "ObjectFaceQuad*"),
+        (1988, 71, "face_second", "ObjectFaceQuad*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "SUPERTRAMP_START_PATH_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x90: ("center_x", "float")' in replay
+    assert "(1035, 66," not in replay
