@@ -75,3 +75,18 @@ their ownership without inventing uses.
 The source is unchanged by the metadata repair. Focused Wibo remains 64.47%
 (706/721), with a 9-instruction exact prefix and 46 masked operands ok,
 0 unresolved, 0 mismatch.
+
+## 2026-07-20 path-lifetime ownership replay
+
+Transactional Binary Ninja inspection recovered eleven complete register
+lifetimes in the remaining builder body. The primary and secondary basis-right
+vectors now render as `Vec3` owners both at initialization and at the later
+cross-product reload. The two terminal delta records, ordinary and terminal
+mesh vertices, and both complete facequad records likewise expose their real
+owners instead of scalar or integer-pointer stores.
+
+The replay verifies the canonical `Vec3`, `PathTemplateSample`, and
+`ObjectFaceQuad` widths and key fields before applying the address-anchored
+variables. Preview and exported readback both retain zero `__offset`
+expressions. This is decompiler ownership recovery only: the honest scratch and
+its 64.47% focused match remain unchanged.

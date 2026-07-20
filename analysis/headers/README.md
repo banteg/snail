@@ -341,6 +341,11 @@ mesh-vertex, and facequad lifetime schedules with `uv run python
 tools/binja/sync_toad_hill_sbend_path_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 
+Replay the separately proven loop-the-loop, W-loop, and loopout basis-vector,
+terminal-delta, mesh-vertex, and facequad lifetime schedules with `uv run python
+tools/binja/sync_loop_family_path_lifetimes.py --target
+SnailMail_unwrapped.exe.bndb`.
+
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
 `GameInput.input` field proven by the exact Windows bridge and iOS

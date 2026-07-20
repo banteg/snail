@@ -75,3 +75,17 @@ dummy uses.
 The source is unchanged by the metadata repair. Focused Wibo remains 55.77%
 (702/718), with no exact prefix and 45 masked operands ok, 0 unresolved,
 0 mismatch.
+
+## 2026-07-20 path-lifetime ownership replay
+
+Loopout shares the loop builders' terminal-delta and mesh ownership skeleton,
+but its approach and departure setup produce a different SSA schedule. Live
+inspection therefore recovered its eleven lifetimes independently: both
+initialized and cross-product-reloaded basis-right vectors, both terminal
+deltas, the primary mesh sample, ordinary and terminal vertices, and the two
+complete facequad records.
+
+The replay encodes those loopout-specific register IDs behind canonical
+`Vec3`, `PathTemplateSample`, and `ObjectFaceQuad` layout checks. Transactional
+preview and exported readback both retain zero `__offset` expressions. No
+scratch source changed, preserving the honest 55.77% focused match.

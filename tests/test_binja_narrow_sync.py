@@ -11903,3 +11903,70 @@ def test_toad_hill_sbend_replay_preserves_mesh_owner_lifetimes() -> None:
     assert '0x90: ("center_x", "float")' in replay
     for rejected_index in (798, 965, 533):
         assert f"({rejected_index}, 66," not in replay
+
+
+def test_loop_family_replay_preserves_mesh_owner_lifetimes() -> None:
+    replay = (BINJA_DIR / "sync_loop_family_path_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("PathTemplateSample", "0xA8"),
+        ("ObjectFaceQuad", "0x30"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for function_name in (
+        "initialize_looptheloop_path_template_pair",
+        "initialize_looptheloopw_path_template_pair",
+        "initialize_loopout_path_template_pair",
+    ):
+        assert f'"{function_name}"' in replay
+
+    for index, storage, name, variable_type in (
+        (1047, 66, "primary_right", "Vec3*"),
+        (1122, 66, "primary_right_reloaded", "Vec3*"),
+        (1152, 68, "secondary_right", "Vec3*"),
+        (1225, 66, "secondary_right_reloaded", "Vec3*"),
+        (1524, 68, "primary_terminal_delta", "Vec3*"),
+        (1613, 67, "secondary_terminal_delta", "Vec3*"),
+        (1778, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1844, 67, "vertex", "Vec3*"),
+        (1966, 68, "terminal_vertex", "Vec3*"),
+        (2210, 71, "face_first", "ObjectFaceQuad*"),
+        (2389, 71, "face_second", "ObjectFaceQuad*"),
+        (1111, 66, "primary_right", "Vec3*"),
+        (1181, 66, "primary_right_reloaded", "Vec3*"),
+        (1224, 68, "secondary_right", "Vec3*"),
+        (1301, 66, "secondary_right_reloaded", "Vec3*"),
+        (1613, 68, "primary_terminal_delta", "Vec3*"),
+        (1702, 67, "secondary_terminal_delta", "Vec3*"),
+        (1867, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1933, 67, "vertex", "Vec3*"),
+        (2055, 68, "terminal_vertex", "Vec3*"),
+        (2299, 71, "face_first", "ObjectFaceQuad*"),
+        (2484, 71, "face_second", "ObjectFaceQuad*"),
+        (1025, 67, "primary_right", "Vec3*"),
+        (1112, 66, "primary_right_reloaded", "Vec3*"),
+        (1141, 66, "secondary_right", "Vec3*"),
+        (1215, 66, "secondary_right_reloaded", "Vec3*"),
+        (1515, 68, "primary_terminal_delta", "Vec3*"),
+        (1604, 67, "secondary_terminal_delta", "Vec3*"),
+        (1769, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1835, 67, "vertex", "Vec3*"),
+        (1957, 68, "terminal_vertex", "Vec3*"),
+        (2201, 71, "face_first", "ObjectFaceQuad*"),
+        (2380, 71, "face_second", "ObjectFaceQuad*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "LOOP_FAMILY_PATH_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
+    assert '0x8C: ("delta_length", "float")' in replay
+    assert '0x90: ("center_x", "float")' in replay

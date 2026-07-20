@@ -77,3 +77,17 @@ callsites rather than fabricated source references.
 The source is unchanged by the metadata repair. Focused Wibo remains 63.27%
 (728/745), with a 10-instruction exact prefix and 51 masked operands ok,
 0 unresolved, 0 mismatch.
+
+## 2026-07-20 path-lifetime ownership replay
+
+The W-loop body independently proves the same eleven canonical lifetimes as
+its non-W sibling: initialized and reloaded basis-right vectors for both path
+halves, two terminal deltas, the primary mesh sample, ordinary and terminal
+vertices, and both complete facequads. Transactional preview turned every
+member access into the corresponding `Vec3`, `PathTemplateSample`, or
+`ObjectFaceQuad` field without introducing an `__offset` expression.
+
+The guarded replay records this constructor's distinct SSA indices and checks
+the canonical owner layouts before mutation. The source remains untouched, so
+the honest 63.27% focused match and its remaining compiler-scheduling residuals
+are preserved.
