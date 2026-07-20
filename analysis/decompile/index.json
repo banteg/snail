@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_worm_path_template_pair",
-      "address": "0x420170"
+      "name": "initialize_cage2_path_template_pair",
+      "address": "0x42e720"
     }
   ],
   "health_check_count": 903,

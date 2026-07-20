@@ -12064,3 +12064,52 @@ def test_worm_replay_preserves_two_stage_mesh_owner_lifetimes() -> None:
     assert '0x9C: ("lateral_scale", "float")' in replay
     for rejected_index in (713, 912):
         assert f"({rejected_index}, 66," not in replay
+
+
+def test_cage2_replay_splits_terminal_scalar_and_preserves_mesh_owners() -> None:
+    replay = (BINJA_DIR / "sync_cage2_path_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("PathTemplateSample", "0xA8"),
+        ("ObjectFaceQuad", "0x30"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    assert '"initialize_cage2_path_template_pair"' in replay
+    assert (
+        '("0x42eb3f", "mlil", "RegisterVariableSourceType", 1055, 67)'
+        in replay
+    )
+    assert (
+        '("0x42eb26", "mlil", "RegisterVariableSourceType", 1030, 67)'
+        in replay
+    )
+    assert "CAGE2_TERMINAL_CENTER_VAR" in replay
+    assert 'variable_name="terminal_center_x"' in replay
+    assert 'variable_type="float"' in replay
+
+    for index, storage, name, variable_type in (
+        (614, 66, "primary_up", "Vec3*"),
+        (732, 66, "primary_sample_cursor_reloaded", "PathTemplateSample*"),
+        (835, 66, "secondary_up", "Vec3*"),
+        (953, 66, "secondary_sample_cursor_reloaded", "PathTemplateSample*"),
+        (1352, 67, "primary_terminal_delta", "Vec3*"),
+        (1441, 66, "secondary_terminal_delta", "Vec3*"),
+        (1600, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1662, 66, "vertex", "Vec3*"),
+        (2010, 71, "face_first", "ObjectFaceQuad*"),
+        (2189, 71, "face_second", "ObjectFaceQuad*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "apply_split_away_user_var_update" in replay
+    assert "CAGE2_PATH_USER_VAR_UPDATES" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x90: ("center_x", "float")' in replay
+    for rejected_index in (659, 880, 1685):
+        assert f"({rejected_index}, 66," not in replay

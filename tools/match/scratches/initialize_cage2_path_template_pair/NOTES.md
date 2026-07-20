@@ -184,3 +184,21 @@ The tracked caller now renders the full `Path` owner and all four stack
 arguments. The matcher source already carried this honest member declaration,
 so focused Wibo remains **56.54%** (629/648), with 39 masked operands accepted
 and the existing single symbolic-call mismatch unchanged.
+
+## 2026-07-20 terminal scalar split and mesh lifetimes
+
+The fixed final-sample seed leaves ECX holding the terminal center-X float bits,
+then reuses that physical register for a previous secondary transform and a
+rotation-helper result inside the curve loop. Splitting those later definitions
+away recovers the initial value as `float terminal_center_x`; the earlier
+decompile incorrectly rendered it as a `TransformMatrix*` loaded from a sample
+scalar.
+
+Ten further complete owners survive transactional preview without increasing
+Cage2's thirteen pre-existing fixed-sample offset views: both basis-up vectors,
+both reloaded sample cursors, both terminal deltas, the ordinary mesh sample and
+vertex, and two simultaneous facequad records. The two byte-biased forward
+vectors were rejected for adding eight backward offsets, and the current-sample
+terminal mesh view was rejected for adding six. Matcher source remains honest
+and unchanged at 56.54% (629/648 instructions, 39 accepted masked operands and
+one existing call-symbol mismatch).
