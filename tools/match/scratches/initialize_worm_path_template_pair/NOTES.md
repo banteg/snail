@@ -150,3 +150,18 @@ user-defined stack-8 `arg2`: all native callers pass only `texture_path`, while
 the old variable was a pinned decompiler artifact. Focused matching remains
 72.32%, 727/736 instructions; no source-shape padding or synthetic argument
 was introduced.
+
+## 2026-07-20 two-stage basis and mesh lifetimes
+
+Live Binary Ninja inspection recovers fifteen complete owners across Worm's
+distinctive two-cross basis construction and cylindrical strip mesh. Each side
+keeps its basis-up vector and reloads the enclosing sample for both cross
+products; the tail owns both terminal deltas, the lateral-scale/basis-up mesh
+sample, its basis-right reload and position vector, the ordinary and copied
+terminal vertices, and one facequad cursor reused across the winding branch.
+
+The two byte-biased forward-vector candidates were rejected because typing
+them introduced eight backward `__offset` expressions in adjacent position
+reads. The retained transaction previews with zero offsets. Matcher source and
+bytes remain unchanged at the honest 72.32% frontier (727/736 instructions,
+37 clean masked operands); this is ownership recovery, not matching coercion.

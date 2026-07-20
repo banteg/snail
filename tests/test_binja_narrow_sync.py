@@ -12021,3 +12021,46 @@ def test_dip_screw_replay_preserves_mesh_owner_lifetimes() -> None:
     assert '0x90: ("center_x", "float")' in replay
     for rejected_index in (724, 891, 842, 1061):
         assert f"({rejected_index}, 66," not in replay
+
+
+def test_worm_replay_preserves_two_stage_mesh_owner_lifetimes() -> None:
+    replay = (BINJA_DIR / "sync_worm_path_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("PathTemplateSample", "0xA8"),
+        ("ObjectFaceQuad", "0x30"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    assert '"initialize_worm_path_template_pair"' in replay
+    for index, storage, name, variable_type in (
+        (668, 68, "primary_up", "Vec3*"),
+        (788, 66, "primary_sample_cursor_first", "PathTemplateSample*"),
+        (819, 66, "primary_sample_cursor_second", "PathTemplateSample*"),
+        (870, 67, "secondary_up", "Vec3*"),
+        (985, 66, "secondary_sample_cursor_first", "PathTemplateSample*"),
+        (1017, 66, "secondary_sample_cursor_second", "PathTemplateSample*"),
+        (1351, 68, "primary_terminal_delta", "Vec3*"),
+        (1442, 66, "secondary_terminal_delta", "Vec3*"),
+        (1663, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1754, 66, "primary_mesh_sample_reloaded", "PathTemplateSample*"),
+        (1848, 66, "primary_position", "Vec3*"),
+        (2008, 66, "vertex", "Vec3*"),
+        (2091, 66, "previous_row_vertex", "Vec3*"),
+        (2094, 68, "terminal_vertex", "Vec3*"),
+        (2384, 73, "face", "ObjectFaceQuad*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "WORM_PATH_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x9C: ("lateral_scale", "float")' in replay
+    for rejected_index in (713, 912):
+        assert f"({rejected_index}, 66," not in replay
