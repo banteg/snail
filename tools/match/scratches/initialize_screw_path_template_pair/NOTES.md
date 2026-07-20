@@ -62,3 +62,17 @@ The guarded recreation now owns the exact `Path*` receiver and six stack
 arguments through `cap_texture`; direct readback confirms storages `+4..+24`.
 This is analysis-only: focused Wibo remains 39.88% (619/685), with 32 clean
 masked operands and no unresolved or mismatched operands.
+
+## 2026-07-20 path-lifetime ownership replay
+
+The screw constructor independently proves seven complete owners: primary and
+secondary basis-up vectors, both terminal deltas, the primary mesh sample, the
+shared ordinary/terminal vertex, and one facequad cursor reused by the native
+two-pass inner loop. That single face lifetime is deliberately distinct from
+the adjacent dip builder's simultaneous first/second records.
+
+The two byte-biased forward-vector candidates were rejected because they added
+four backward `__offset` expressions to neighboring sample reads. The guarded
+replay retains only the zero-offset set behind canonical layout checks. The
+scratch remains unchanged at its honest 39.88% focused match with 32 clean
+masked operands.

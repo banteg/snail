@@ -60,3 +60,18 @@ The guarded recreation now owns the exact `Path*` receiver and six stack
 arguments through `cap_texture`; direct readback confirms storages `+4..+24`.
 This is analysis-only: focused Wibo remains 34.74% (600/655), with 26 clean
 masked operands and no unresolved or mismatched operands.
+
+## 2026-07-20 path-lifetime ownership replay
+
+Live Binary Ninja inspection recovers nine complete owners from the remaining
+body: primary and secondary basis-right vectors, both terminal deltas, the
+primary mesh sample, ordinary and terminal vertices, and the two simultaneous
+facequad records. The replay verifies canonical `Vec3`,
+`PathTemplateSample`, and `ObjectFaceQuad` layouts before applying their exact
+register-variable IDs.
+
+Two tempting forward-vector addresses were rejected. Although each points at a
+real preceding-sample member, typing the byte-biased lifetimes introduced eight
+backward `__offset` expressions in adjacent position reads. The retained set
+previews and exports with zero offsets. No scratch source changed, preserving
+the honest 34.74% focused match and 26 clean masked operands.

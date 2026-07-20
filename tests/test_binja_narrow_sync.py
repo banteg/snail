@@ -11970,3 +11970,54 @@ def test_loop_family_replay_preserves_mesh_owner_lifetimes() -> None:
     assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
     assert '0x8C: ("delta_length", "float")' in replay
     assert '0x90: ("center_x", "float")' in replay
+
+
+def test_dip_screw_replay_preserves_mesh_owner_lifetimes() -> None:
+    replay = (BINJA_DIR / "sync_dip_screw_path_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("PathTemplateSample", "0xA8"),
+        ("ObjectFaceQuad", "0x30"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for function_name in (
+        "initialize_dip_path_template_pair",
+        "initialize_screw_path_template_pair",
+    ):
+        assert f'"{function_name}"' in replay
+
+    for index, storage, name, variable_type in (
+        (679, 66, "primary_right", "Vec3*"),
+        (849, 67, "secondary_right", "Vec3*"),
+        (1303, 68, "primary_terminal_delta", "Vec3*"),
+        (1392, 67, "secondary_terminal_delta", "Vec3*"),
+        (1553, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1619, 67, "vertex", "Vec3*"),
+        (1740, 67, "terminal_vertex", "Vec3*"),
+        (1976, 71, "face_first", "ObjectFaceQuad*"),
+        (2155, 71, "face_second", "ObjectFaceQuad*"),
+        (797, 67, "primary_up", "Vec3*"),
+        (981, 68, "secondary_up", "Vec3*"),
+        (1446, 68, "primary_terminal_delta", "Vec3*"),
+        (1535, 67, "secondary_terminal_delta", "Vec3*"),
+        (1694, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1756, 66, "vertex", "Vec3*"),
+        (2094, 73, "face", "ObjectFaceQuad*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "DIP_SCREW_PATH_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
+    assert '0x8C: ("delta_length", "float")' in replay
+    assert '0x90: ("center_x", "float")' in replay
+    for rejected_index in (724, 891, 842, 1061):
+        assert f"({rejected_index}, 66," not in replay
