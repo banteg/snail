@@ -326,6 +326,11 @@ and facequad lifetime schedules with `uv run python
 tools/binja/sync_supertramp_start_path_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 
+Replay the separately proven turnover, turnover-double, and turn-under sample,
+vector, mesh-vertex, and facequad lifetime schedules with `uv run python
+tools/binja/sync_turnover_family_path_lifetimes.py --target
+SnailMail_unwrapped.exe.bndb`.
+
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
 `GameInput.input` field proven by the exact Windows bridge and iOS

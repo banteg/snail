@@ -11712,3 +11712,66 @@ def test_supertramp_start_path_replay_preserves_mesh_owner_lifetimes() -> None:
     assert "apply_user_var_updates" in replay
     assert '0x90: ("center_x", "float")' in replay
     assert "(1035, 66," not in replay
+
+
+def test_turnover_family_path_replay_preserves_mesh_owner_lifetimes() -> None:
+    replay = (BINJA_DIR / "sync_turnover_family_path_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("PathTemplateSample", "0xA8"),
+        ("ObjectFaceQuad", "0x30"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for function_name in (
+        "initialize_turnover_path_template_pair",
+        "initialize_turnoverdouble_path_template_pair",
+        "initialize_turnunder_path_template_pair",
+    ):
+        assert f'"{function_name}"' in replay
+
+    for index, storage, name, variable_type in (
+        (191, 66, "primary_seed_sample", "PathTemplateSample*"),
+        (858, 67, "primary_up", "Vec3*"),
+        (1044, 66, "secondary_position", "Vec3*"),
+        (1358, 67, "primary_terminal_delta", "Vec3*"),
+        (1446, 67, "secondary_terminal_delta", "Vec3*"),
+        (1609, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1671, 66, "vertex", "Vec3*"),
+        (2017, 69, "face_first", "ObjectFaceQuad*"),
+        (2195, 69, "face_second", "ObjectFaceQuad*"),
+        (191, 66, "primary_seed_sample", "PathTemplateSample*"),
+        (892, 67, "primary_up", "Vec3*"),
+        (1075, 66, "secondary_position", "Vec3*"),
+        (1389, 67, "primary_terminal_delta", "Vec3*"),
+        (1477, 67, "secondary_terminal_delta", "Vec3*"),
+        (1640, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1702, 66, "vertex", "Vec3*"),
+        (2048, 69, "face_first", "ObjectFaceQuad*"),
+        (2226, 69, "face_second", "ObjectFaceQuad*"),
+        (195, 66, "primary_seed_sample", "PathTemplateSample*"),
+        (902, 66, "primary_up", "Vec3*"),
+        (1098, 66, "secondary_position", "Vec3*"),
+        (1412, 67, "primary_terminal_delta", "Vec3*"),
+        (1500, 67, "secondary_terminal_delta", "Vec3*"),
+        (1663, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1725, 66, "vertex", "Vec3*"),
+        (2071, 69, "face_first", "ObjectFaceQuad*"),
+        (2249, 69, "face_second", "ObjectFaceQuad*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "TURNOVER_FAMILY_PATH_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
+    assert '0x8C: ("delta_length", "float")' in replay
+    assert '0x90: ("center_x", "float")' in replay
+    for rejected_index in (884, 918):
+        assert f"({rejected_index}, 66," not in replay

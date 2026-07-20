@@ -27,9 +27,9 @@
 004276e1        *(&self->primary_samples->special_scalar + i) = 0
 004276eb        *(&self->primary_samples->lateral_scale + i) = 0x3f800000
 004276f7        set_matrix_identity(self->primary_samples + i)
-004276ff        void* eax_4 = self->primary_samples + i
+004276ff        struct PathTemplateSample* primary_seed_sample = self->primary_samples + i
 00427701        long double x87_r7_8 = float.t(width_cells_)
-0042770b        *(eax_4 + 0x30) = *(eax_4 + 0x90)
+0042770b        primary_seed_sample->transform.position.x = primary_seed_sample->center_x
 00427715        *(&self->primary_samples->transform.position.y + i) = 0
 0042771c        *(&self->primary_samples->transform.position.z + i) = fconvert.s(x87_r7_8)
 00427723        *(&self->primary_samples->delta_length + i) = 0x3f800000
@@ -93,16 +93,16 @@
 00427996        *(&self->primary_samples->transform.position.y + ebx) = fconvert.s((fconvert.t(length) - cosine(var_50_1) * fconvert.t(length)) * fconvert.t(0.400000006f))
 0042799f        float var_40_6 = fconvert.s(cosine(var_50_1))
 004279a4        long double st0_6 = sine(var_50_1)
-004279bc        float* ecx_25 = &self->primary_samples->transform.basis_up + ebx
-004279c7        *ecx_25 = fconvert.s(st0_6)
-004279cd        ecx_25[1] = var_40_6
-004279d0        ecx_25[2] = 0
-004279d6        void* eax_25 = self->primary_samples + ebx
-004279e8        float var_2c_1 = fconvert.s(fconvert.t(*(eax_25 + 0x34)) - fconvert.t(*(eax_25 - 0x74)))
-004279f2        float var_28_1 = fconvert.s(fconvert.t(*(eax_25 + 0x38)) - fconvert.t(*(eax_25 - 0x70)))
-00427a01        *(eax_25 + 0x20) = fconvert.s(fconvert.t(*(eax_25 + 0x30)) - fconvert.t(*(eax_25 - 0x78)))
-00427a07        *(eax_25 + 0x24) = var_2c_1
-00427a0a        *(eax_25 + 0x28) = var_28_1
+004279bc        struct Vec3* primary_up = &self->primary_samples->transform.basis_up + ebx
+004279c7        primary_up->x = fconvert.s(st0_6)
+004279cd        primary_up->y = var_40_6
+004279d0        primary_up->z = 0f
+004279d6        void* eax_24 = self->primary_samples + ebx
+004279e8        float var_2c_1 = fconvert.s(fconvert.t(*(eax_24 + 0x34)) - fconvert.t(*(eax_24 - 0x74)))
+004279f2        float var_28_1 = fconvert.s(fconvert.t(*(eax_24 + 0x38)) - fconvert.t(*(eax_24 - 0x70)))
+00427a01        *(eax_24 + 0x20) = fconvert.s(fconvert.t(*(eax_24 + 0x30)) - fconvert.t(*(eax_24 - 0x78)))
+00427a07        *(eax_24 + 0x24) = var_2c_1
+00427a0a        *(eax_24 + 0x28) = var_28_1
 00427a14        normalize_vector(&self->primary_samples->transform.basis_forward + ebx)
 00427a1e        struct Vec3* out = self->primary_samples + ebx
 00427a29        cross_vectors(out, out + 0x10, out + 0x20)
@@ -112,11 +112,11 @@
 00427a5c        i_1 = i_6
 00427a66        float var_20_1 = fconvert.s(fconvert.t(*(&primary_samples_2->transform.basis_up.y + ebx)) * fconvert.t(0.49000001f))
 00427a6d        long double x87_r6_7 = fconvert.t(*(&primary_samples_2->transform.basis_up.z + ebx)) * fconvert.t(0.49000001f)
-00427a73        float* eax_30 = &self->secondary_samples->transform.position + ebx
+00427a73        struct Vec3* secondary_position = &self->secondary_samples->transform.position + ebx
 00427a77        ebx += 0xa8
-00427a83        *eax_30 = fconvert.s(x87_r7_49 + fconvert.t(*eax_30))
-00427a8c        eax_30[1] = fconvert.s(fconvert.t(var_20_1) + fconvert.t(eax_30[1]))
-00427a96        eax_30[2] = fconvert.s(fconvert.t(fconvert.s(x87_r6_7)) + fconvert.t(eax_30[2]))
+00427a83        secondary_position->x = fconvert.s(x87_r7_49 + fconvert.t(secondary_position->x))
+00427a8c        secondary_position->y = fconvert.s(fconvert.t(var_20_1) + fconvert.t(secondary_position->y))
+00427a96        secondary_position->z = fconvert.s(fconvert.t(fconvert.s(x87_r6_7)) + fconvert.t(secondary_position->z))
 00427a9e        cond:1_1 = width_cells_ + 1 s< i_1
 00427aa0        width_cells_ += 1
 00427aa4        do while (cond:1_1)
@@ -140,15 +140,15 @@
 00427b6a        *(&self->secondary_samples->delta_length + edi_6) = fconvert.s(normalize_vector(&self->secondary_samples->delta_dir_to_next + edi_6))
 00427b74        edi_6 += 0xa8
 00427b7d        do while (i_2 s< self->segment_count - 1)
-00427bad        int32_t* ecx_38 = &self->primary_samples[self->segment_count] - 0x28
-00427bc1        *ecx_38 = 0
-00427bd7        ecx_38[1] = 0
-00427bda        ecx_38[2] = 0x3f800000
+00427bad        struct Vec3* primary_terminal_delta = &self->primary_samples[self->segment_count] - 0x28
+00427bc1        primary_terminal_delta->x = 0
+00427bd7        primary_terminal_delta->y = 0f
+00427bda        primary_terminal_delta->z = 1f
 00427bef        *(&self->primary_samples[self->segment_count] - 0x1c) = 0x3f800000
-00427c05        int32_t* ecx_42 = &self->secondary_samples[self->segment_count] - 0x28
-00427c11        *ecx_42 = 0
-00427c17        ecx_42[1] = 0
-00427c1a        ecx_42[2] = 0x3f800000
+00427c05        struct Vec3* secondary_terminal_delta = &self->secondary_samples[self->segment_count] - 0x28
+00427c11        secondary_terminal_delta->x = 0
+00427c17        secondary_terminal_delta->y = 0f
+00427c1a        secondary_terminal_delta->z = 1f
 00427c2f        *(&self->secondary_samples[self->segment_count] - 0x1c) = 0x3f800000
 00427c42        request_object_vertices(self->bod.object, (self->width_cells + 1) * (self->segment_count + 1))
 00427c54        request_object_facequads(self->bod.object, (self->width_cells * self->segment_count) << 1)
@@ -166,25 +166,25 @@
 00427c88        if (width_cells s>= 0)
 00427c9b        struct PathTemplateSample* primary_samples = self->primary_samples
 00427ca4        long double x87_r7_70 = float.t(length) - float.t(width_cells_) * fconvert.t(0.5f)
-00427ca6        int32_t* eax_60
-00427ca6        float ecx_53
+00427ca6        struct Vec3* vertex
+00427ca6        float ecx_50
 00427ca6        if (i_3 == self->segment_count)
-00427cfc        void* eax_61 = primary_samples + esi_4
+00427cfc        void* eax_57 = primary_samples + esi_4
 00427d0d        vertices = vertices_1
-00427d52        float var_38_3 = fconvert.s(fconvert.t(*(eax_61 - 0x74)) + fconvert.t(fconvert.s(x87_r7_70 * fconvert.t(*(eax_61 - 0xa4)))))
-00427d5a        long double x87_r6_27 = fconvert.t(fconvert.s(fconvert.t(*(eax_61 - 0x70)) + fconvert.t(1f))) + x87_r7_70 * fconvert.t(*(eax_61 - 0xa0))
-00427d5c        eax_60 = &vertices[(width_cells + 1) * i_3 i+ length_1]
-00427d63        *eax_60 = fconvert.s(fconvert.t(*(eax_61 - 0x78)) + fconvert.t(fconvert.s(x87_r7_70 * fconvert.t(*(eax_61 - 0xa8)))))
-00427d6d        eax_60[1] = var_38_3
-00427d70        ecx_53 = fconvert.s(x87_r6_27)
-00427ca8        float* eax_56 = primary_samples + esi_4
-00427cd0        float var_2c_3 = fconvert.s(fconvert.t(fconvert.s(x87_r7_70 * fconvert.t(eax_56[1]))) + fconvert.t(eax_56[0xd]))
-00427cdd        float var_28_3 = fconvert.s(x87_r7_70 * fconvert.t(eax_56[2]) + fconvert.t(eax_56[0xe]))
-00427ce6        eax_60 = &vertices[(width_cells + 1) * i_3 i+ length_1]
-00427ced        *eax_60 = fconvert.s(fconvert.t(fconvert.s(x87_r7_70 * fconvert.t(*eax_56))) + fconvert.t(eax_56[0xc]))
-00427cf3        eax_60[1] = var_2c_3
-00427cf6        ecx_53 = var_28_3
-00427d76        eax_60[2] = ecx_53
+00427d52        float var_38_3 = fconvert.s(fconvert.t(*(eax_57 - 0x74)) + fconvert.t(fconvert.s(x87_r7_70 * fconvert.t(*(eax_57 - 0xa4)))))
+00427d5a        long double x87_r6_27 = fconvert.t(fconvert.s(fconvert.t(*(eax_57 - 0x70)) + fconvert.t(1f))) + x87_r7_70 * fconvert.t(*(eax_57 - 0xa0))
+00427d5c        vertex = &vertices[(width_cells + 1) * i_3 i+ length_1]
+00427d63        vertex->x = fconvert.s(fconvert.t(*(eax_57 - 0x78)) + fconvert.t(fconvert.s(x87_r7_70 * fconvert.t(*(eax_57 - 0xa8)))))
+00427d6d        vertex->y = var_38_3
+00427d70        ecx_50 = fconvert.s(x87_r6_27)
+00427ca8        struct PathTemplateSample* primary_mesh_sample = primary_samples + esi_4
+00427cd0        float var_2c_3 = fconvert.s(fconvert.t(fconvert.s(x87_r7_70 * fconvert.t(primary_mesh_sample->transform.basis_right.y))) + fconvert.t(primary_mesh_sample->transform.position.y))
+00427cdd        float var_28_3 = fconvert.s(x87_r7_70 * fconvert.t(primary_mesh_sample->transform.basis_right.z) + fconvert.t(primary_mesh_sample->transform.position.z))
+00427ce6        vertex = &vertices[(width_cells + 1) * i_3 i+ length_1]
+00427ced        vertex->x = fconvert.s(fconvert.t(fconvert.s(x87_r7_70 * fconvert.t(primary_mesh_sample->transform.basis_right.x))) + fconvert.t(primary_mesh_sample->transform.position.x))
+00427cf3        vertex->y = var_2c_3
+00427cf6        ecx_50 = var_28_3
+00427d76        vertex->z = ecx_50
 00427d79        width_cells = self->width_cells
 00427d7c        length_1 += 1
 00427d7d        width_cells_ = width_cells
@@ -198,71 +198,71 @@
 00427daf        int32_t j = 0
 00427db3        length = 0f
 00427db7        if (self->width_cells s> 0)
-00427dbf        int32_t eax_69 = i_4 & 0x80000007
-00427dc4        if (eax_69 s< 0)
-00427dca        eax_69 = ((eax_69 - 1) | 0xfffffff8) + 1
-00427dde        width_cells_ = fconvert.s(float.t(eax_69) * fconvert.t(0.125f))
-00427dec        float var_50_2 = fconvert.s(float.t(eax_69 + 1) * fconvert.t(0.125f))
-00427df7        int32_t ecx_57 = 0
+00427dbf        int32_t eax_65 = i_4 & 0x80000007
+00427dc4        if (eax_65 s< 0)
+00427dca        eax_65 = ((eax_65 - 1) | 0xfffffff8) + 1
+00427dde        width_cells_ = fconvert.s(float.t(eax_65) * fconvert.t(0.125f))
+00427dec        float var_50_2 = fconvert.s(float.t(eax_65 + 1) * fconvert.t(0.125f))
+00427df7        int32_t ecx_54 = 0
 00427dfd        int32_t var_48_1 = 0
 00427e07        length = fconvert.s(float.t(length) * fconvert.t(0.125f))
 00427e15        float var_4c_1 = fconvert.s(float.t(j + 1) * fconvert.t(0.125f))
 00427e29        while (true)
-00427e29        int32_t eax_76 = ecx_57 + ((self->width_cells * i_4 + j) << 1)
-00427e2c        if (ecx_57 != 0)
+00427e29        int32_t eax_72 = ecx_54 + ((self->width_cells * i_4 + j) << 1)
+00427e2c        if (ecx_54 != 0)
 00427ee7        struct ObjectFaceQuad* facequads_1 = facequads
-00427ef2        int16_t* ebx_3 = &facequads_1[eax_76]
-00427ef5        *ebx_3 = 0
-00427efa        ecx_57.w = self->width_cells.w
-00427efe        ecx_57.w += 1
-00427f07        ebx_3[1] = ecx_57.w * i_4.w + j.w + 1
+00427ef2        struct ObjectFaceQuad* face_second = &facequads_1[eax_72]
+00427ef5        __builtin_memset(face_second, 0, 2)
+00427efa        ecx_54.w = self->width_cells.w
+00427efe        ecx_54.w += 1
+00427f07        face_second->vertex_0 = ecx_54.w * i_4.w + j.w + 1
 00427f0b        facequads_1.w = self->width_cells.w
 00427f0f        facequads_1.w += 1
-00427f16        ebx_3[2] = facequads_1.w * i_4.w + j.w
-00427f28        ebx_3[3] = (self->width_cells.w + 1) * (i_4.w + 1) + j.w
-00427f40        ebx_3[4] = (self->width_cells.w + 1) * (i_4.w + 1) + j.w + 1
+00427f16        face_second->vertex_1 = facequads_1.w * i_4.w + j.w
+00427f28        face_second->vertex_2 = (self->width_cells.w + 1) * (i_4.w + 1) + j.w
+00427f40        face_second->vertex_3 = (self->width_cells.w + 1) * (i_4.w + 1) + j.w + 1
 00427f44        char* texture_path_1
 00427f44        if (((j.b ^ i_4.b) & 1) != 0)
 00427fd4        texture_path_1 = texture_b
 00427f4e        texture_path_1 = texture_b
-00427f61        *(ebx_3 + 0xc) = get_or_create_texture_ref(&g_texture_refs, texture_path_1, 0, 0)
-00427f68        *(ebx_3 + 0x10) = var_4c_1
-00427f6b        *(ebx_3 + 0x14) = width_cells_
-00427f70        *(ebx_3 + 0x18) = length
-00427f79        *(ebx_3 + 0x1c) = width_cells_
-00427f80        *(ebx_3 + 0x20) = length
-00427f83        *(ebx_3 + 0x24) = var_50_2
-00427f88        *(ebx_3 + 0x28) = var_4c_1
-00427f8b        *(ebx_3 + 0x2c) = var_50_2
-00427e39        int32_t ecx_59 = eax_76 * 0x30
-00427e40        int16_t* ebx_2 = ecx_59 + facequads
-00427e43        *ebx_2 = 0
-00427e48        eax_76.w = self->width_cells.w
-00427e4c        eax_76.w += 1
-00427e53        ebx_2[1] = eax_76.w * i_4.w + j.w
-00427e57        ecx_59.w = self->width_cells.w
-00427e5b        ecx_59.w += 1
-00427e67        ebx_2[2] = ecx_59.w * i_4.w + j.w + 1
-00427e78        ebx_2[3] = (self->width_cells.w + 1) * (i_4.w + 1) + j.w + 1
-00427e8e        ebx_2[4] = (self->width_cells.w + 1) * (i_4.w + 1) + j.w
+00427f61        face_second->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path_1, nullptr, 0)
+00427f68        face_second->uv[0].u = var_4c_1
+00427f6b        face_second->uv[0].v = width_cells_
+00427f70        face_second->uv[1].u = length
+00427f79        face_second->uv[1].v = width_cells_
+00427f80        face_second->uv[2].u = length
+00427f83        face_second->uv[2].v = var_50_2
+00427f88        face_second->uv[3].u = var_4c_1
+00427f8b        face_second->uv[3].v = var_50_2
+00427e39        int32_t ecx_56 = eax_72 * 0x30
+00427e40        struct ObjectFaceQuad* face_first = ecx_56 + facequads
+00427e43        __builtin_memset(face_first, 0, 2)
+00427e48        eax_72.w = self->width_cells.w
+00427e4c        eax_72.w += 1
+00427e53        face_first->vertex_0 = eax_72.w * i_4.w + j.w
+00427e57        ecx_56.w = self->width_cells.w
+00427e5b        ecx_56.w += 1
+00427e67        face_first->vertex_1 = ecx_56.w * i_4.w + j.w + 1
+00427e78        face_first->vertex_2 = (self->width_cells.w + 1) * (i_4.w + 1) + j.w + 1
+00427e8e        face_first->vertex_3 = (self->width_cells.w + 1) * (i_4.w + 1) + j.w
 00427e92        char* texture_path
 00427e92        if (((j.b ^ i_4.b) & 1) != 0)
 00427ee1        texture_path = texture_a
 00427e98        texture_path = texture_a
-00427eab        *(ebx_2 + 0xc) = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0)
-00427eb2        *(ebx_2 + 0x10) = length
-00427eb5        *(ebx_2 + 0x14) = width_cells_
-00427eba        *(ebx_2 + 0x18) = var_4c_1
-00427ec3        *(ebx_2 + 0x1c) = width_cells_
-00427eca        *(ebx_2 + 0x20) = var_4c_1
-00427ecd        *(ebx_2 + 0x24) = var_50_2
-00427ed2        *(ebx_2 + 0x28) = length
-00427ed5        *(ebx_2 + 0x2c) = var_50_2
+00427eab        face_first->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0)
+00427eb2        face_first->uv[0].u = length
+00427eb5        face_first->uv[0].v = width_cells_
+00427eba        face_first->uv[1].u = var_4c_1
+00427ec3        face_first->uv[1].v = width_cells_
+00427eca        face_first->uv[2].u = var_4c_1
+00427ecd        face_first->uv[2].v = var_50_2
+00427ed2        face_first->uv[3].u = length
+00427ed5        face_first->uv[3].v = var_50_2
 00427f93        bool cond:10_1 = var_48_1 + 1 s< 2
 00427f96        var_48_1 += 1
 00427f9a        if (not(cond:10_1))
 00427f9a        break
-00427e1b        ecx_57 = var_48_1
+00427e1b        ecx_54 = var_48_1
 00427fa0        j += 1
 00427fa9        length = j
 00427fad        do while (j s< self->width_cells)

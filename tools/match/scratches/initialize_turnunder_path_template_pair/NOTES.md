@@ -102,3 +102,14 @@ prototype with no pending operation. The refreshed caller passes all six stack
 operands through `path_pairs[0x27].primary`, and the callee exposes `Path`
 fields plus void finalizer flow. This is analysis-only: focused matching remains
 48.06% (628/687) with 41 clean masked operands.
+
+## 2026-07-20 live lifetime ownership
+
+A guarded transaction proves nine complete live owners: the primary seed and
+mesh samples, primary up vector, secondary position, both terminal deltas, mesh
+vertex, and the two face records. Their fields now render directly through
+`PathTemplateSample`, `Vec3`, and `ObjectFaceQuad`, with no `__offset`
+expressions. Unlike its turnover siblings, this constructor already expresses
+the curved-body sample through typed base arithmetic and needs no additional
+cursor view. Focused matching remains 48.06% (628/687) with 41 clean masked
+operands.
