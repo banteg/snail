@@ -84,3 +84,12 @@ texture_b, char* vertical_texture)`, and the tracked caller renders the complete
 ABI including `Objects/Path/VeryDark.tga`. The matcher source already carried
 that honest declaration, so focused Wibo remains **45.89%** (601/663), with its
 1-instruction prefix and clean 27-operand masked audit unchanged.
+
+## 2026-07-20 live lifetime ownership
+
+A guarded Binary Ninja transaction now preserves eight complete live owners:
+the interior primary right vector, secondary position, both terminal deltas,
+the mesh sample and vertex, and both face records. Their accesses render
+through `Vec3`, `PathTemplateSample`, and `ObjectFaceQuad` with zero residual
+`__offset` expressions. Focused matching remains 45.89% (601/663), with its
+1-instruction prefix and 27 clean masked operands.

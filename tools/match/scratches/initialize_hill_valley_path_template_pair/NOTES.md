@@ -99,3 +99,12 @@ ABI and the full family-10 owner flow. Correcting the shared declaration and
 scratch from `int centered` to `char centered` is a real source improvement:
 focused Wibo rises from 23.32% to 23.63% (610/668), while all 36 masked
 operands remain clean.
+
+## 2026-07-20 live lifetime ownership
+
+A guarded transaction proves nine complete live owners: the seed sample,
+primary and secondary right vectors, both terminal deltas, the mesh sample and
+vertex, and both face records. The retained decompile has zero `__offset`
+expressions. Typing the two byte-biased forward cursors was rejected because
+it introduced eight backward-offset artifacts. Focused matching remains 23.63%
+(610/668), with 36 clean masked operands.

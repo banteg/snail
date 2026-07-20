@@ -76,3 +76,12 @@ ABI and the centered branch on its real byte owner. Correcting the shared
 declaration and scratch from `int centered` to `char centered` is a genuine
 source improvement: focused Wibo rises from 40.61% to 40.79% (529/579), while
 all 36 masked operands remain clean.
+
+## 2026-07-20 live lifetime ownership
+
+A guarded transaction proves ten complete live owners: the seed sample,
+primary up/right vectors, secondary position, both terminal deltas, the mesh
+sample and vertex, and both face records. The retained decompile has zero
+`__offset` expressions. Typing the byte-biased forward cursor was rejected
+because it introduced four backward-offset artifacts. Focused matching remains
+40.79% (529/579), with 36 clean masked operands.
