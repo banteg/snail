@@ -99,3 +99,15 @@ contract and all six stack arguments. Post-restart readback confirms authored
 parameter storages `+4..+24`. This is analysis-only: focused Wibo remains
 28.64% (617/696), with 27 clean masked operands and no unresolved or mismatched
 operands.
+
+## 2026-07-20 sample and mesh lifetimes
+
+The native function has the same size and exact MLIL variable identities as
+the smaller slalom constructor. Their shared replay records the preceding
+`basis_forward` vectors, current-sample reloads, terminal deltas, one complete
+mesh sample, and the reusable front/back `ObjectFaceQuad` record.
+
+The replay first checks all canonical owner widths and fields, and its
+transaction preview yields no negative `__offset` expressions. Matcher source
+and bytes remain unchanged at 28.64% (617/696 instructions, 27 clean masked
+operands); no source coercion or fakematching is involved.

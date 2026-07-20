@@ -306,6 +306,11 @@ sample, and facequad lifetimes with `uv run python
 tools/binja/sync_hump_dump_path_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 
+Replay the identical slalom/slalom-big basis-vector, terminal-delta, mesh
+sample, and reusable facequad lifetime schedule with `uv run python
+tools/binja/sync_slalom_path_lifetimes.py --target
+SnailMail_unwrapped.exe.bndb`.
+
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
 `GameInput.input` field proven by the exact Windows bridge and iOS

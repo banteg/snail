@@ -92,3 +92,17 @@ first texture onto the mode slot, retained a user-authored `char*` at stack
 confirms signed width and storages `+4..+24`. This is analysis-only: focused
 Wibo remains 28.42% (627/696), with 27 clean masked operands and no unresolved
 or mismatched operands.
+
+## 2026-07-20 sample and mesh lifetimes
+
+The native orientation loop retains each preceding sample's `basis_forward`,
+reloads the current `PathTemplateSample` for the cross product, and finishes
+with exact terminal `delta_dir_to_next` owners. The mesh loop keeps one complete
+primary sample and reuses one complete `ObjectFaceQuad` record across the
+front/back branch.
+
+A transactional preview produced direct vector, sample, vertex, texture, and UV
+fields with zero negative `__offset` expressions. The earlier current-sample,
+roll-source, and previous-row temporaries remain deliberately untyped. Matcher
+source and bytes remain unchanged at 28.42% (627/696 instructions, 27 clean
+masked operands); this is ownership recovery only.
