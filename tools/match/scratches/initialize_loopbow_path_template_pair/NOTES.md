@@ -172,3 +172,19 @@ incidental EAX state: both are honestly `void`, matching the native caller and
 callee contracts. That source correction is byte-identical at 67.54%
 (800/796), with the existing 60 clean operands and two multiply-thunk symbol
 mismatches.
+
+## 2026-07-20 staged basis and mesh lifetimes
+
+Transactional Binary Ninja previews now recover nineteen complete owners while
+keeping this constructor at zero synthetic `__offset` expressions. The durable
+schedule covers both right vectors, the split sample cursors used to derive the
+up and forward basis vectors, the primary-up/secondary-position offset step,
+both normalized delta vectors, both terminal deltas, the ordinary mesh sample,
+ordinary and terminal vertices, and the two simultaneous facequad records.
+
+The terminal mesh branch deliberately computes the synthetic final row from
+the previous `0xa8`-byte sample. Typing its byte-biased current-sample cursor as
+`PathTemplateSample*` introduced six negative offsets, so that candidate is
+rejected rather than disguised. The matcher source remains honest and
+unchanged at 67.54% (800/796 instructions), with 60 accepted masked operands
+and the two existing multiply-thunk symbol mismatches.

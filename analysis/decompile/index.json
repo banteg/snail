@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_cage2_path_template_pair",
-      "address": "0x42e720"
+      "name": "initialize_loopbow_path_template_pair",
+      "address": "0x42ba80"
     }
   ],
   "health_check_count": 903,

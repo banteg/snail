@@ -12113,3 +12113,51 @@ def test_cage2_replay_splits_terminal_scalar_and_preserves_mesh_owners() -> None
     assert '0x90: ("center_x", "float")' in replay
     for rejected_index in (659, 880, 1685):
         assert f"({rejected_index}, 66," not in replay
+
+
+def test_loopbow_replay_preserves_staged_basis_and_mesh_owners() -> None:
+    replay = (BINJA_DIR / "sync_loopbow_path_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("PathTemplateSample", "0xA8"),
+        ("ObjectFaceQuad", "0x30"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    assert '"initialize_loopbow_path_template_pair"' in replay
+    for index, storage, name, variable_type in (
+        (1091, 66, "primary_right", "Vec3*"),
+        (1122, 66, "primary_sample_cursor_first", "PathTemplateSample*"),
+        (1143, 66, "primary_sample_cursor_second", "PathTemplateSample*"),
+        (1164, 66, "primary_sample", "PathTemplateSample*"),
+        (1194, 68, "secondary_right", "Vec3*"),
+        (1229, 66, "secondary_sample_cursor_first", "PathTemplateSample*"),
+        (1248, 66, "secondary_sample_cursor_second", "PathTemplateSample*"),
+        (1270, 66, "secondary_sample", "PathTemplateSample*"),
+        (1490, 66, "primary_up", "Vec3*"),
+        (1516, 66, "secondary_position", "Vec3*"),
+        (1658, 67, "primary_delta_dir", "Vec3*"),
+        (1749, 67, "secondary_delta_dir", "Vec3*"),
+        (1832, 68, "primary_terminal_delta", "Vec3*"),
+        (1921, 67, "secondary_terminal_delta", "Vec3*"),
+        (2086, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (2152, 67, "vertex", "Vec3*"),
+        (2278, 67, "terminal_vertex", "Vec3*"),
+        (2514, 69, "face_first", "ObjectFaceQuad*"),
+        (2698, 69, "face_second", "ObjectFaceQuad*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "LOOPBOW_PATH_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
+    assert '0x8C: ("delta_length", "float")' in replay
+    assert '0x90: ("center_x", "float")' in replay
+    assert "(2180, 66," not in replay
