@@ -291,8 +291,8 @@ borrow automatic with `uv run python
 tools/binja/sync_landscape_activation_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 
-After the canonical runtime grid exists, replay the field-first warning and
-edge-selection scan cursors with `uv run python
+After the canonical runtime grid exists, replay the field-first warning,
+edge-selection, and warning-variant promotion scan cursors with `uv run python
 tools/binja/sync_track_warning_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 

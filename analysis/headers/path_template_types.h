@@ -1234,6 +1234,22 @@ typedef struct TrackRowCell {
 } TrackRowCell;
 
 /*
+ * Analysis-only field-first view used while scanning TrackRowCell::object.
+ * Native advances this borrowed pointer by the full 0x54 cell stride. The
+ * tail aliases the next cell's prefix solely to preserve that induction; this
+ * view never owns either cell.
+ */
+typedef struct TrackRowCellObjectSlotView {
+    void* object;
+    uint8_t object_to_lane_and_flags[0x18];
+    uint32_t lane_and_flags;
+    uint8_t stride_tail[0x54 - 0x20];
+} TrackRowCellObjectSlotView;
+typedef char TrackRowCellObjectSlotView_must_stride_0x54[
+    (sizeof(TrackRowCellObjectSlotView) == 0x54) ? 1 : -1
+];
+
+/*
  * Analysis-only field-first view used while scanning TrackRowCell::tile_id.
  * Native advances this borrowed pointer by the full 0x54 cell stride. The
  * tail therefore aliases the remainder of the current cell and the prefix of

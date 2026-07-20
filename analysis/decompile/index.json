@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "select_track_tile_edge_variants",
-      "address": "0x435a80"
+      "name": "promote_track_tiles_to_fringe_variants",
+      "address": "0x4355f0"
     }
   ],
   "health_check_count": 903,

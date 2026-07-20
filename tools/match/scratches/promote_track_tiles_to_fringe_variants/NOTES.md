@@ -90,3 +90,19 @@ This is an ownership-only correction: matcher source, bytes, score, and the
 documented object-cursor residual are unchanged. `merge_track_tile_runs` and
 `build_track_fringe_objects` remain conservatively integer; this pass does not
 serve as precedent for erasing their separately documented result evidence.
+
+## 2026-07-20 analysis object-slot lifetime
+
+The native ESI induction is exactly the object-field borrow documented above:
+it starts at `runtime_cells[0][0] + 0x24`, reads the current object at `+0x00`
+and packed flags at `+0x1c`, advances by the full `0x54` cell stride, reaches
+the next-row same-lane cell base at `+0x27c`, and rebases the containing cell
+only at BOD helper calls via `-0x24`.
+
+The analysis-only `TrackRowCellObjectSlotView` records those physical fields
+and the stride without claiming ownership of either complete cell. It is not
+used in matcher source: the retained `TrackRowCell*` spelling remains the
+honest 81.33%, 75/75 form because the source-level object-slot form triggers
+the already measured VC6 CSE/register-allocation regression. The analysis
+annotation therefore removes a fabricated giant `SubgameRuntime` rebase while
+preserving every matcher byte and all six clean operand constraints.

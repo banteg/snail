@@ -11380,9 +11380,15 @@ def test_track_warning_replay_preserves_field_first_cell_borrows() -> None:
     assert "uint32_t lane_and_flags;" in header
     assert "uint8_t stride_tail[0x54 - 0x08];" in header
     assert "TrackRowCellTileByteView_must_stride_0x54" in header
+    assert "typedef struct TrackRowCellObjectSlotView {" in header
+    assert "void* object;" in header
+    assert "uint8_t object_to_lane_and_flags[0x18];" in header
+    assert "uint8_t stride_tail[0x54 - 0x20];" in header
+    assert "TrackRowCellObjectSlotView_must_stride_0x54" in header
 
     for type_name, width in (
         ("TrackRowCell", "0x54"),
+        ("TrackRowCellObjectSlotView", "0x54"),
         ("TrackRowCellTileByteView", "0x54"),
         ("SubgameRuntime", "0x1272838"),
     ):
@@ -11416,4 +11422,14 @@ def test_track_warning_replay_preserves_field_first_cell_borrows() -> None:
         in replay
     )
     assert "TRACK_TILE_EDGE_USER_VAR_UPDATES" in replay
+    assert (
+        '        "promote_track_tiles_to_fringe_variants",\n'
+        '        "RegisterVariableSourceType",\n'
+        '        31,\n'
+        '        72,\n'
+        '        "cell_object_cursor",\n'
+        '        "TrackRowCellObjectSlotView*"'
+        in replay
+    )
+    assert "TRACK_TILE_PROMOTION_USER_VAR_UPDATES" in replay
     assert "TrackRowCell*" not in replay.split("TRACK_WARNING_USER_VAR_UPDATES", 1)[1]

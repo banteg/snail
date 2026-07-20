@@ -21,6 +21,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
     "TrackRowCell": 0x54,
+    "TrackRowCellObjectSlotView": 0x54,
     "TrackRowCellTileByteView": 0x54,
     "SubgameRuntime": 0x1272838,
 }
@@ -30,6 +31,10 @@ EXPECTED_STRUCT_FIELDS = {
         0x3C: ("tile_id", "SubLocTileId"),
         0x3D: ("open_edge_mask", "uint8_t"),
         0x40: ("lane_and_flags", "uint32_t"),
+    },
+    "TrackRowCellObjectSlotView": {
+        0x00: ("object", "void*"),
+        0x1C: ("lane_and_flags", "uint32_t"),
     },
     "TrackRowCellTileByteView": {
         0x00: ("tile_id", "SubLocTileId"),
@@ -88,12 +93,27 @@ TRACK_TILE_EDGE_USER_VAR_UPDATES = (
     ),
 )
 
+# This pass carries ESI at TrackRowCell::object (+0x24) and advances it by the
+# complete 0x54 cell stride. Preserve that borrowed field identity instead of
+# letting BN fabricate a SubgameRuntime owner by subtracting the runtime-grid
+# base from the cursor.
+TRACK_TILE_PROMOTION_USER_VAR_UPDATES = (
+    (
+        "promote_track_tiles_to_fringe_variants",
+        "RegisterVariableSourceType",
+        31,
+        72,
+        "cell_object_cursor",
+        "TrackRowCellObjectSlotView*",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the field-first TrackRowCell tile cursors in the warning "
-            "and edge-selection passes."
+            "Replay the field-first TrackRowCell cursors in the warning, "
+            "edge-selection, and warning-variant promotion passes."
         )
     )
     parser.add_argument(
@@ -161,7 +181,10 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
-            required_structs=("TrackRowCellTileByteView",),
+            required_structs=(
+                "TrackRowCellObjectSlotView",
+                "TrackRowCellTileByteView",
+            ),
         ),
         verify_owner_layouts(args.target),
         *apply_user_var_updates(
@@ -170,6 +193,7 @@ def main() -> int:
             updates=(
                 *TRACK_WARNING_USER_VAR_UPDATES,
                 *TRACK_TILE_EDGE_USER_VAR_UPDATES,
+                *TRACK_TILE_PROMOTION_USER_VAR_UPDATES,
             ),
         ),
     ]

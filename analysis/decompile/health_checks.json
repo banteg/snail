@@ -8084,13 +8084,21 @@
       "artifact": "analysis/decompile/binja/functions/004355f0-promote_track_tiles_to_fringe_variants.c",
       "required_substrings": [
         "game->runtime_row_count",
+        "struct TrackRowCellObjectSlotView* cell_object_cursor",
         "&game->runtime_cells[0][0].object",
-        "runtime_cells[0][0].lane_and_flags",
+        "cell_object_cursor->lane_and_flags &= 0xffffffdf",
+        "is_sub_loc_empty(cell_object_cursor + 0x27c)",
+        "void* object = cell_object_cursor->object",
+        "set_bod_object(cell_object_cursor - 0x24",
+        "cell_object_cursor = &cell_object_cursor[1]",
         "root_bod_catalog.floor_slices.storage[0].object",
         "root_bod_catalog.warning_slices.storage[0].object"
       ],
       "forbidden_substrings": [
         "struct Game*",
+        "struct Object** esi_1",
+        "(esi_1 - 0x3bfaec)",
+        "&esi_1[0x9f]",
         "__offset(Game",
         "__asm",
         "_ET1"
