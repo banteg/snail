@@ -194,3 +194,13 @@ six stack operands through `path_pairs[0x2a].primary`, and the callee ends in
 void finalizer flow. Focused matching remains 37.04% (659/707) with 46 clean
 masked operands, and the world initializer remains byte-for-byte unchanged at
 80.50% (5392/5411).
+
+## 2026-07-20 live lifetime ownership
+
+A guarded transaction proves eleven complete live owners across the lead-in,
+curve orientation, secondary offset, terminal deltas, mesh vertex generation,
+and both face records. The single existing fixed-index sample `__offset`
+remains unchanged. Typing the pre-biased curved-sample cursor was rejected
+because it added three backward `__offset` accesses; the retained replay keeps
+that cursor automatic. Focused matching remains 37.04% (659/707) with 46 clean
+masked operands.

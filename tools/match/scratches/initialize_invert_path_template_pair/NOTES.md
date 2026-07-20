@@ -95,3 +95,13 @@ parameter `Path*` prototype with no pending operation. The refreshed caller
 shows full-arity owners at public slot `0x29` and transition slot `0x3e`, and
 the callee now ends in void finalizer flow. This is analysis-only: focused
 matching remains 49.66% (564/600) with 30 clean masked operands.
+
+## 2026-07-20 live lifetime ownership
+
+A guarded transaction proves ten complete live owners: the primary seed,
+up/right vectors, secondary position, both terminal deltas, mesh sample and
+vertex, and both face records. Their accesses now render through
+`PathTemplateSample`, `Vec3`, and `ObjectFaceQuad`. The constructor retains its
+16 existing fixed-index `__offset` occurrences for samples 32/33, but the
+replay adds none. Focused matching remains 49.66% (564/600) with 30 clean
+masked operands.

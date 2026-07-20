@@ -9845,6 +9845,30 @@
         "self->width_cells = width_cells_",
         "self->segment_count = 0x20",
         "allocate_path_template_samples(self)",
+        "struct PathTemplateSample* primary_seed_sample",
+        "primary_seed_sample->transform.position.x",
+        "struct Vec3* primary_up",
+        "primary_up->x",
+        "struct Vec3* primary_right",
+        "cross_vectors(primary_right",
+        "struct Vec3* secondary_position",
+        "secondary_position->x",
+        "struct Vec3* primary_terminal_delta",
+        "primary_terminal_delta->z",
+        "struct Vec3* secondary_terminal_delta",
+        "secondary_terminal_delta->z",
+        "struct PathTemplateSample* primary_mesh_sample",
+        "primary_mesh_sample->transform.basis_right.x",
+        "struct Vec3* vertex",
+        "vertex->x",
+        "vertex->y",
+        "vertex->z",
+        "struct ObjectFaceQuad* face_first",
+        "face_first->vertex_0",
+        "face_first->texture_ref",
+        "face_first->uv[3].v",
+        "struct ObjectFaceQuad* face_second",
+        "face_second->vertex_3",
         "finalize_path_template(self)"
       ],
       "forbidden_substrings": [
@@ -9852,7 +9876,10 @@
         "arg2",
         "arg3",
         "return finalize_path_template"
-      ]
+      ],
+      "max_counts": {
+        "__offset": 16
+      }
     },
     {
       "name": "bn_invert_path_full_owner_abi",
@@ -9862,6 +9889,30 @@
         "self->width_cells = width_cells_",
         "self->segment_count = 0x22",
         "allocate_path_template_samples(self)",
+        "struct PathTemplateSample* primary_seed_sample",
+        "primary_seed_sample->transform.position.x",
+        "struct Vec3* primary_up",
+        "primary_up->x",
+        "struct Vec3* primary_right",
+        "cross_vectors(primary_right",
+        "struct Vec3* secondary_position",
+        "secondary_position->x",
+        "struct Vec3* primary_terminal_delta",
+        "primary_terminal_delta->z",
+        "struct Vec3* secondary_terminal_delta",
+        "secondary_terminal_delta->z",
+        "struct PathTemplateSample* primary_mesh_sample",
+        "primary_mesh_sample->transform.basis_right.x",
+        "struct Vec3* vertex",
+        "vertex->x",
+        "vertex->y",
+        "vertex->z",
+        "struct ObjectFaceQuad* face_first",
+        "face_first->vertex_0",
+        "face_first->texture_ref",
+        "face_first->uv[3].v",
+        "struct ObjectFaceQuad* face_second",
+        "face_second->vertex_3",
         "finalize_path_template(self)"
       ],
       "forbidden_substrings": [
@@ -9869,7 +9920,10 @@
         "arg2",
         "arg3",
         "return finalize_path_template"
-      ]
+      ],
+      "max_counts": {
+        "__offset": 16
+      }
     },
     {
       "name": "bn_halfpipe_path_full_owner_abi",
@@ -9879,6 +9933,32 @@
         "self->width_cells = width_cells_",
         "self->segment_count = 0x42",
         "allocate_path_template_samples(self)",
+        "struct PathTemplateSample* primary_leadin_sample",
+        "primary_leadin_sample->transform.position.x",
+        "struct Vec3* primary_up",
+        "primary_up->x",
+        "struct Vec3* primary_right",
+        "cross_vectors(primary_right",
+        "struct Vec3* primary_up_reloaded",
+        "primary_up_reloaded->y",
+        "struct Vec3* secondary_position",
+        "secondary_position->x",
+        "struct Vec3* primary_terminal_delta",
+        "primary_terminal_delta->z",
+        "struct Vec3* secondary_terminal_delta",
+        "secondary_terminal_delta->z",
+        "struct PathTemplateSample* primary_mesh_sample",
+        "primary_mesh_sample->transform.basis_right.x",
+        "struct Vec3* vertex",
+        "vertex->x",
+        "vertex->y",
+        "vertex->z",
+        "struct ObjectFaceQuad* face_first",
+        "face_first->vertex_0",
+        "face_first->texture_ref",
+        "face_first->uv[3].v",
+        "struct ObjectFaceQuad* face_second",
+        "face_second->vertex_3",
         "finalize_path_template(self)"
       ],
       "forbidden_substrings": [
@@ -9886,7 +9966,10 @@
         "arg2",
         "arg3",
         "return finalize_path_template"
-      ]
+      ],
+      "max_counts": {
+        "__offset": 1
+      }
     },
     {
       "name": "bn_twister_path_full_owner_abi",

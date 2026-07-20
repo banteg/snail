@@ -101,3 +101,13 @@ parameter `Path*` prototype with no pending operation. The refreshed caller
 uses `path_pairs[0x28].primary` with all six stack operands, and the callee now
 ends in void finalizer flow. This is analysis-only: focused matching remains
 55.68% (545/608) with 35 clean masked operands.
+
+## 2026-07-20 live lifetime ownership
+
+A guarded transaction proves ten complete live owners: the primary seed,
+up/right vectors, secondary position, both terminal deltas, mesh sample and
+vertex, and both face records. Their accesses now render through
+`PathTemplateSample`, `Vec3`, and `ObjectFaceQuad`. The constructor retains its
+16 existing fixed-index `__offset` occurrences for samples 30/31, but the
+replay adds none. Focused matching remains 55.68% (545/608) with 35 clean
+masked operands.

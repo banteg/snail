@@ -11775,3 +11775,68 @@ def test_turnover_family_path_replay_preserves_mesh_owner_lifetimes() -> None:
     assert '0x90: ("center_x", "float")' in replay
     for rejected_index in (884, 918):
         assert f"({rejected_index}, 66," not in replay
+
+
+def test_wibble_invert_halfpipe_replay_preserves_mesh_owner_lifetimes() -> None:
+    replay = (
+        BINJA_DIR / "sync_wibble_invert_halfpipe_path_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("PathTemplateSample", "0xA8"),
+        ("ObjectFaceQuad", "0x30"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for function_name in (
+        "initialize_wibble_path_template_pair",
+        "initialize_invert_path_template_pair",
+        "initialize_halfpipe_path_template_pair",
+    ):
+        assert f'"{function_name}"' in replay
+
+    for index, storage, name, variable_type in (
+        (134, 66, "primary_seed_sample", "PathTemplateSample*"),
+        (640, 68, "primary_up", "Vec3*"),
+        (745, 67, "primary_right", "Vec3*"),
+        (830, 66, "secondary_position", "Vec3*"),
+        (1139, 67, "primary_terminal_delta", "Vec3*"),
+        (1228, 66, "secondary_terminal_delta", "Vec3*"),
+        (1389, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1451, 66, "vertex", "Vec3*"),
+        (1797, 73, "face_first", "ObjectFaceQuad*"),
+        (1975, 73, "face_second", "ObjectFaceQuad*"),
+        (609, 68, "primary_up", "Vec3*"),
+        (714, 67, "primary_right", "Vec3*"),
+        (799, 66, "secondary_position", "Vec3*"),
+        (1108, 67, "primary_terminal_delta", "Vec3*"),
+        (1197, 66, "secondary_terminal_delta", "Vec3*"),
+        (1358, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1420, 66, "vertex", "Vec3*"),
+        (1766, 73, "face_first", "ObjectFaceQuad*"),
+        (1944, 73, "face_second", "ObjectFaceQuad*"),
+        (240, 66, "primary_leadin_sample", "PathTemplateSample*"),
+        (873, 67, "primary_up", "Vec3*"),
+        (974, 67, "primary_right", "Vec3*"),
+        (1012, 66, "primary_up_reloaded", "Vec3*"),
+        (1049, 66, "secondary_position", "Vec3*"),
+        (1367, 67, "primary_terminal_delta", "Vec3*"),
+        (1456, 66, "secondary_terminal_delta", "Vec3*"),
+        (1626, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (1692, 67, "vertex", "Vec3*"),
+        (2167, 73, "face_first", "ObjectFaceQuad*"),
+        (2351, 73, "face_second", "ObjectFaceQuad*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "WIBBLE_INVERT_HALFPIPE_PATH_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
+    assert '0x8C: ("delta_length", "float")' in replay
+    assert '0x90: ("center_x", "float")' in replay
+    assert "(896, 66," not in replay
