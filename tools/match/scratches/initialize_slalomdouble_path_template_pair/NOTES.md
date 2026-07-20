@@ -110,3 +110,14 @@ recreation now owns the exact void `Path*` contract and all six stack arguments.
 Post-restart readback confirms authored parameter storages `+4..+24`. This is
 analysis-only: focused Wibo remains 33.98% (606/683), with 33 clean masked
 operands and no unresolved or mismatched operands.
+
+2026-07-20 live lifetime closure: transactional MLIL preview recovers the
+preceding primary/secondary forward vectors, both current-sample reloads, both
+terminal deltas, the current mesh sample, and the complete facequad record
+reused by the native two-variant mesh branch. All eight owners render direct
+`Vec3`, `PathTemplateSample`, or `ObjectFaceQuad` fields without introducing an
+`__offset` expression. The earlier sample and rotation cursors and the
+previous-row mesh cursor remain automatic because typing their byte-relative
+addresses did not improve ownership. This is analysis-only: focused Wibo
+remains 33.98% (606/683), with 33 clean masked operands and no unresolved or
+mismatched operands.

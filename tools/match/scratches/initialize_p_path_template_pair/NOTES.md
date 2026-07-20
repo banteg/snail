@@ -134,3 +134,14 @@ Guarded Binary Ninja recreation and readback now recover that exact void member
 ABI and the full owner flow (`kind = variant + 0x21`, width, samples, mesh, and
 finalizer). This is analysis-only: focused Wibo remains 44.05% (615/679), with
 33 clean operands and no unresolved or mismatched operands.
+
+2026-07-20 live lifetime closure: the separately previewed P schedule recovers
+the preceding primary/secondary forward vectors, both current-sample reloads,
+both terminal deltas, and the current mesh sample. More importantly, MLIL
+proves that the two integer-looking EBP values each span a complete 0x30-byte
+face record; typing them as `ObjectFaceQuad*` resolves every vertex, texture,
+and UV write directly. The previous-row mesh cursor stays automatic because
+its negative byte-relative address became less exact when typed. The preview
+introduces no `__offset` expressions. This is analysis-only: focused Wibo
+remains 44.05% (615/679), with 33 clean operands and no unresolved or
+mismatched operands.
