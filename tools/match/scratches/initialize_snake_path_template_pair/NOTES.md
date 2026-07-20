@@ -151,3 +151,16 @@ contract and all six stack arguments. Post-restart readback confirms authored
 parameter storages `+4..+24`. This is analysis-only: focused Wibo remains
 30.61% (570/652), with 37 clean masked operands and no unresolved or mismatched
 operands.
+
+2026-07-20 live lifetime closure: the separately previewed snake schedule
+recovers nine clean borrowed owners: the preceding primary/secondary right
+vectors, both current-sample reloads, both terminal deltas, the current mesh
+sample, and two complete facequad records. The initial sample cursor and
+previous-row cursor stay automatic because their negative byte-relative
+addresses became less exact when typed. One existing decompiler presentation
+residual remains honest: `primary_samples_4->__offset(0x1050).d` is the MLIL
+read of `primary_samples[24].center_x`, because the 24-sample stride plus the
+field offset is `24 * 0xa8 + 0x90 == 0x1050`; there is no distinct pointer
+lifetime to rename or type. No synthetic array view is introduced.
+This is analysis-only: focused Wibo remains 30.61% (570/652), with 37 clean
+masked operands and no unresolved or mismatched operands.

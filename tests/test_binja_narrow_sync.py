@@ -11563,3 +11563,54 @@ def test_slalom_path_replay_preserves_shared_owner_lifetimes() -> None:
     assert "apply_user_var_updates" in replay
     for rejected_index in (853, 962, 1052, 1845):
         assert f"({rejected_index}, 66," not in replay
+
+
+def test_sweep_snake_path_replay_preserves_clean_owner_lifetimes() -> None:
+    replay = (BINJA_DIR / "sync_sweep_snake_path_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("PathTemplateSample", "0xA8"),
+        ("ObjectFaceQuad", "0x30"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for function_name in (
+        "initialize_sweep_path_template_pair",
+        "initialize_snake_path_template_pair",
+    ):
+        assert f'("{function_name}", ' in replay
+
+    for index, storage, name, variable_type in (
+        (726, 67, "primary_forward", "Vec3*"),
+        (841, 66, "primary_sample_cursor_reloaded", "PathTemplateSample*"),
+        (893, 67, "secondary_forward", "Vec3*"),
+        (1008, 66, "secondary_sample_cursor_reloaded", "PathTemplateSample*"),
+        (1352, 68, "primary_terminal_delta", "Vec3*"),
+        (1441, 67, "secondary_terminal_delta", "Vec3*"),
+        (1600, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (2010, 71, "face_first", "ObjectFaceQuad*"),
+        (2189, 71, "face_second", "ObjectFaceQuad*"),
+        (727, 68, "primary_right", "Vec3*"),
+        (847, 66, "primary_sample_cursor_reloaded", "PathTemplateSample*"),
+        (898, 66, "secondary_right", "Vec3*"),
+        (1016, 66, "secondary_sample_cursor_reloaded", "PathTemplateSample*"),
+        (1360, 68, "primary_terminal_delta", "Vec3*"),
+        (1449, 67, "secondary_terminal_delta", "Vec3*"),
+        (1608, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (2018, 71, "face_first", "ObjectFaceQuad*"),
+        (2197, 71, "face_second", "ObjectFaceQuad*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "SWEEP_SNAKE_PATH_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x90: ("center_x", "float")' in replay
+    for rejected_index in (760, 1685, 769, 1693):
+        assert f"({rejected_index}, 66," not in replay

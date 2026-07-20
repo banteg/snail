@@ -115,3 +115,14 @@ absent. The guarded recreation now owns the exact void `Path*` contract and all
 six stack arguments. Post-restart readback confirms authored parameter storages
 `+4..+24`. This is analysis-only: focused Wibo remains 33.20% (565/652), with
 34 clean masked operands and no unresolved or mismatched operands.
+
+2026-07-20 live lifetime closure: transactional MLIL preview identifies nine
+clean borrowed owners without changing the native source hypothesis: the
+preceding primary/secondary forward vectors, both current-sample reloads, both
+terminal deltas, the current mesh sample, and the two complete facequad
+records. Their guarded replay resolves direct `Vec3`, `PathTemplateSample`, and
+`ObjectFaceQuad` fields throughout the exported decompile. The initial sample
+cursor and previous-row cursor remain automatic because typing their negative
+byte-relative addressing made the output less exact. This is analysis-only:
+focused Wibo remains 33.20% (565/652), with 34 clean masked operands and no
+unresolved or mismatched operands.

@@ -17,12 +17,12 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_slalom_path_template_pair",
-      "address": "0x41f760"
+      "name": "initialize_sweep_path_template_pair",
+      "address": "0x422c00"
     },
     {
-      "name": "initialize_slalombig_path_template_pair",
-      "address": "0x4221f0"
+      "name": "initialize_snake_path_template_pair",
+      "address": "0x423580"
     }
   ],
   "health_check_count": 903,
