@@ -117,3 +117,17 @@ shows full-arity handedness-1 and handedness-0 owners at slots `0x2d` and
 `0x2e`; the callee keeps its distinct 52-sample kind while sharing the proved
 sibling ABI. Focused matching remains 27.72% (593/677) with 40 clean masked
 operands.
+
+## 2026-07-20 sample and mesh lifetimes
+
+This sibling has the same native MLIL variable identities as the 34-sample
+twister: borrowed preceding-sample up vectors, reloadable current-sample
+pointers, exact terminal `delta_dir_to_next` fields, one complete mesh sample,
+and two complete `ObjectFaceQuad` records. The shared replay applies the same
+owner types to both constructors only after checking their canonical widths
+and fields.
+
+Matcher source and bytes remain unchanged at the honest 27.72%,
+593/677-instruction frontier with 40 clean operands. The replay only replaces
+analyzer-generated integer/void pointer views with proven sample and mesh
+lifetimes; it does not alter the retained source shape for score.

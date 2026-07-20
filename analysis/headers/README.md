@@ -296,6 +296,11 @@ edge-selection, and warning-variant promotion scan cursors with `uv run python
 tools/binja/sync_track_warning_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 
+After the canonical path sample and object facequad types exist, replay the
+shared twister-constructor sample-vector, terminal-delta, and facequad lifetimes
+with `uv run python tools/binja/sync_twister_path_lifetimes.py --target
+SnailMail_unwrapped.exe.bndb`.
+
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
 `GameInput.input` field proven by the exact Windows bridge and iOS

@@ -11433,3 +11433,43 @@ def test_track_warning_replay_preserves_field_first_cell_borrows() -> None:
     )
     assert "TRACK_TILE_PROMOTION_USER_VAR_UPDATES" in replay
     assert "TrackRowCell*" not in replay.split("TRACK_WARNING_USER_VAR_UPDATES", 1)[1]
+
+
+def test_twister_path_replay_preserves_sample_and_facequad_lifetimes() -> None:
+    replay = (BINJA_DIR / "sync_twister_path_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("PathTemplateSample", "0xA8"),
+        ("ObjectFaceQuad", "0x30"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for function_name in (
+        "initialize_twister_path_template_pair",
+        "initialize_twister2_path_template_pair",
+    ):
+        assert f'        "{function_name}",' in replay
+
+    for index, storage, name, variable_type in (
+        (746, 68, "primary_up", "Vec3*"),
+        (866, 66, "primary_sample_cursor", "PathTemplateSample*"),
+        (963, 68, "secondary_up", "Vec3*"),
+        (1083, 66, "secondary_sample_cursor", "PathTemplateSample*"),
+        (1470, 67, "primary_terminal_delta", "Vec3*"),
+        (1559, 66, "secondary_terminal_delta", "Vec3*"),
+        (1718, 66, "primary_mesh_sample", "PathTemplateSample*"),
+        (2128, 71, "face_first", "ObjectFaceQuad*"),
+        (2307, 71, "face_second", "ObjectFaceQuad*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "TWISTER_PATH_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert "(1803, 66" not in replay

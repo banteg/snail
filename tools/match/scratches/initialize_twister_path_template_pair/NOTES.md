@@ -119,3 +119,18 @@ shows full-arity handedness-1 and handedness-0 owners at slots `0x2b` and
 `0x2c`; the callee uses named `height`, `width_cells_`, and `handedness` fields
 and ends in void finalizer flow. Focused matching remains 27.72% (593/677) with
 40 clean masked operands.
+
+## 2026-07-20 sample and mesh lifetimes
+
+The native orientation loop carries borrowed `Vec3*` bases for the preceding
+primary and secondary up vectors, plus reloadable pointers to the current
+`PathTemplateSample`. Its terminal writes point exactly at the preceding
+sample's `delta_dir_to_next`. The strip-mesh loop separately retains a complete
+primary sample and two complete `ObjectFaceQuad` records; their vertex indices,
+texture handle, and four UV pairs are fields, not an `int16_t` buffer.
+
+The guarded Binary Ninja replay records those exact register lifetimes and
+verifies `Vec3 == 0x0c`, `PathTemplateSample == 0xa8`, and
+`ObjectFaceQuad == 0x30` before mutation. Matcher source and bytes remain
+unchanged at the honest 27.72%, 593/677-instruction frontier with 40 clean
+operands; no source-shaped padding or register coercion is introduced.

@@ -1,10 +1,10 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 2,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
+  "bn_exported": 2,
   "ida_exported": 714,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
@@ -17,8 +17,12 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "promote_track_tiles_to_fringe_variants",
-      "address": "0x4355f0"
+      "name": "initialize_twister_path_template_pair",
+      "address": "0x42a540"
+    },
+    {
+      "name": "initialize_twister2_path_template_pair",
+      "address": "0x42af30"
     }
   ],
   "health_check_count": 903,
