@@ -10319,6 +10319,102 @@ def test_object_list_lifetime_replay_keeps_array_owners_and_integer_offsets() ->
     assert '"append_index_times_55",\n        "Object*"' not in replay
 
 
+def test_object_vertex_storage_replay_keeps_banks_and_byte_offsets_distinct() -> None:
+    replay = (BINJA_DIR / "sync_object_vertex_storage_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for owner_name, expected_size in (
+        ("Vec3", "0x0C"),
+        ("tColour", "0x10"),
+        ("Object", "0xDC"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("Vec3", "0x00", "x", "float"),
+        ("Vec3", "0x04", "y", "float"),
+        ("Vec3", "0x08", "z", "float"),
+        ("tColour", "0x00", "r", "float"),
+        ("tColour", "0x04", "g", "float"),
+        ("tColour", "0x08", "b", "float"),
+        ("tColour", "0x0C", "a", "float"),
+        ("Object", "0x2C", "vertex_count", "int32_t"),
+        ("Object", "0x38", "vertices", "Vec3*"),
+        ("Object", "0x3C", "copied_vertices", "Vec3*"),
+        ("Object", "0x48", "vertex_colours", "tColour*"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for function_name, source_type, index, storage, name, type_name in (
+        (
+            "copy_object_vertices",
+            "RegisterVariableSourceType",
+            12,
+            66,
+            "vertex_byte_offset",
+            "int32_t",
+        ),
+        (
+            "copy_object_vertices",
+            "RegisterVariableSourceType",
+            19,
+            72,
+            "source_vertex",
+            "Vec3*",
+        ),
+        (
+            "copy_object_vertices",
+            "RegisterVariableSourceType",
+            24,
+            73,
+            "copied_vertex",
+            "Vec3*",
+        ),
+        (
+            "request_object_vertex_colours",
+            "RegisterVariableSourceType",
+            15,
+            66,
+            "allocated_colours",
+            "tColour*",
+        ),
+        (
+            "request_object_vertex_colours",
+            "RegisterVariableSourceType",
+            36,
+            66,
+            "colour_byte_offset",
+            "int32_t",
+        ),
+        (
+            "request_object_vertex_colours",
+            "RegisterVariableSourceType",
+            43,
+            73,
+            "red_colour_bank",
+            "tColour*",
+        ),
+    ):
+        expected = (
+            f'        "{function_name}",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '"vertex_byte_offset",\n        "Vec3*"' not in replay
+    assert '"source_vertex_byte_offset",\n        "Vec3*"' not in replay
+    assert '"colour_byte_offset",\n        "tColour*"' not in replay
+
+
 def test_track_cache_teardown_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_track_cache_teardown_lifetimes.py"

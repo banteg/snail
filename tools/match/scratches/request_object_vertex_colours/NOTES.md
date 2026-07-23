@@ -21,3 +21,17 @@ clean.
 2026-07-15 Binary Ninja replay: the live fastcall prototype and tracked
 artifact now retain the canonical `Object* object` receiver. Matching remains
 exact.
+
+## 2026-07-23 colour-bank byte-cursor replay
+
+The guarded vertex-storage replay now preserves the allocation as the
+Object-owned `tColour* vertex_colours` bank and the native EAX walk as an
+integer `colour_byte_offset`. The loop writes only the `r`, `g`, and `b` lanes
+at offsets 0, 4, and 8 and advances by `sizeof(tColour) == 0x10`; alpha remains
+intentionally untouched. Native MLIL never materializes a per-colour pointer,
+so the replay does not invent one.
+
+The replay verifies `tColour` at 0x10, `Object` at 0xdc, and the colour/count
+fields before mutation, saves and reads back all annotations, and is fully
+idempotent. The matcher remains unchanged at 100.00%, 30/30 instructions,
+prefix 30/30, with two clean masked operands.

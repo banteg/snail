@@ -24,3 +24,18 @@ matcher and repeatable Binary Ninja sync. The refreshed decompile reads the
 source `vertices` view and writes the Object-owned `copied_vertices` bank for
 exactly `vertex_count` entries; the old untyped fastcall/`void*` view is gone.
 Focused matching remains exact at 28/28 instructions.
+
+## 2026-07-23 element-borrow lifetime replay
+
+The guarded vertex-storage replay now distinguishes the integer
+`vertex_byte_offset` from the completed `Vec3* source_vertex` and
+`Vec3* copied_vertex` borrows. Binary Ninja consequently renders the native
+three-dword transfer as the real component copy:
+
+`copied_vertex->{x,y,z} = source_vertex->{x,y,z}`.
+
+The replay verifies `Vec3` at 0x0c, `Object` at 0xdc, and the
+`vertex_count`/`vertices`/`copied_vertices` fields before mutation, saves and
+reads back every annotation, and is fully idempotent. The exact matcher source
+remains unchanged at 100.00%, 28/28 instructions, prefix 28/28, with no masked
+operands.

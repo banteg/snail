@@ -11565,13 +11565,46 @@
       "name": "bn_object_vertex_copy_owner",
       "artifact": "analysis/decompile/binja/functions/0042f790-copy_object_vertices.c",
       "required_substrings": [
+        "int32_t vertex_index = 0",
         "object->vertex_count",
-        "object->vertices",
-        "object->copied_vertices"
+        "int32_t vertex_byte_offset = 0",
+        "struct Vec3* source_vertex = vertex_byte_offset + object->vertices",
+        "struct Vec3* copied_vertex = object->copied_vertices + vertex_byte_offset",
+        "vertex_byte_offset += 0xc",
+        "copied_vertex->x = source_vertex->x",
+        "copied_vertex->y = source_vertex->y",
+        "copied_vertex->z = source_vertex->z"
       ],
       "forbidden_substrings": [
         "arg1",
+        "void* eax",
+        "void* vertex_byte_offset",
+        "struct Vec3* vertex_byte_offset",
+        "int32_t* source_vertex",
+        "int32_t* copied_vertex",
+        "int32_t* esi_2",
+        "int32_t* edi_3",
         "*(object +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_vertex_colour_bank_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f850-request_object_vertex_colours.c",
+      "required_substrings": [
+        "object->vertex_colours = allocate_tracked_memory(object->vertex_count << 4, \"Object Vertex Colours List\")",
+        "int32_t vertex_index = 0",
+        "int32_t colour_byte_offset = 0",
+        "*(colour_byte_offset + object->vertex_colours) = 0x3f800000",
+        "*(&object->vertex_colours->g + colour_byte_offset) = 0x3f800000",
+        "*(&object->vertex_colours->b + colour_byte_offset) = 0x3f800000",
+        "colour_byte_offset += 0x10"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "int32_t* eax_4",
+        "void* colour_byte_offset",
+        "struct tColour* colour_byte_offset",
         "unimplemented"
       ]
     },
