@@ -8640,8 +8640,18 @@
       "artifact": "analysis/decompile/binja/functions/00414820-update_golb_ai.c",
       "required_substrings": [
         "add_vapour_point(&shot->vapour, &shot->source_matrix)",
-        "esi_7->state == SUB_GARBAGE_STATE_ACTIVE",
-        "esi_7->state = SUB_GARBAGE_STATE_BURST_PENDING",
+        "struct Vec3* render_position = &shot->render_body_owner->position",
+        "struct SubGarbage* active_garbage = shot->game->garbage_hazards.active_head",
+        "active_garbage->state == SUB_GARBAGE_STATE_ACTIVE",
+        "active_garbage->state = SUB_GARBAGE_STATE_BURST_PENDING",
+        "struct SlugSlotCursor* slug_slot_cursor",
+        "enum SubSlugState slug_state = slug_slot_cursor->slug.state",
+        "slug_slot_cursor->slug.body.transform.position",
+        "hit_slug_hazard(&shot->game->slug_hazards.slots[slug_slot_index]",
+        "struct SubGarbage* splash_garbage",
+        "splash_garbage->state = SUB_GARBAGE_STATE_BURST_PENDING",
+        "struct Vec3 wall_impact",
+        "spawn_golb_impact_sprite(shot, &wall_impact)",
         "SUB_GARBAGE_COLLISION_SIDE_RIGHT",
         "SUB_GARBAGE_COLLISION_SIDE_LEFT",
         "__builtin_memcpy(&shot->tertiary_body.transform, &shot->source_matrix, 0x40)",
@@ -8650,7 +8660,13 @@
       ],
       "forbidden_substrings": [
         "secondary_body",
-        "shot->live_matrix"
+        "shot->live_matrix",
+        "float* ecx_20",
+        "void* eax_41",
+        "struct SubGarbage* esi_7",
+        "struct SubGarbage* i_1",
+        "float position_3",
+        "__offset"
       ]
     },
     {

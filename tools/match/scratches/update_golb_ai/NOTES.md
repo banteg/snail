@@ -1,4 +1,23 @@
-# WIP scratch — 73.34%, 645/694 insns (2026-06-21)
+# WIP scratch — 81.88%, 669/694 insns (2026-07-23)
+
+## 2026-07-23 Binary Ninja collision-owner lifetimes
+
+The updater now preserves the owner splits already expressed by the matching
+source. In the kind-zero branch, the variant pointer at `GolbShot +0x248` is
+borrowed as the `Sprite*` allocated by `create_golb`, exposing its complete
+`position` vector. The byte-indexed slug loop retains the native offset/index
+schedule but roots each probe in the shared manager-relative
+`SlugSlotCursor`, so state and render position resolve through the owned
+`Slug`. The direct-contact and kind-two splash traversals now have distinct
+named `SubGarbage*` lifetimes over the one `SubGarbagePool::active_head`
+chain, and the terminal wall effect is recovered as one stack `Vec3`.
+
+Typing the path-entry result as `TrackRowCell*` was previewed and rejected:
+the same lifetime checks `(cell - 8)->tile_id`, and Binary Ninja degraded that
+known row relationship into a negative `__offset`. The raw lifetime remains
+until it can be split without obscuring the evidence. These analysis-only
+changes leave focused Wibo honestly unchanged at 81.88%, `669/694`
+instructions, prefix `9/694`, with 66 clean masked operands.
 
 ## 2026-07-14 kind-0 sprite ownership
 

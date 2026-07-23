@@ -12244,3 +12244,86 @@ def test_golb_path_follow_replay_preserves_sample_and_flight_owners() -> None:
     assert '0x258: ("direction", "Vec3")' in replay
     for rejected_index in (193, 354):
         assert f"({rejected_index}," not in replay
+
+
+def test_golb_ai_replay_preserves_collision_owner_lifetimes() -> None:
+    replay = (BINJA_DIR / "sync_golb_ai_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("Sprite", "0xB4"),
+        ("Slug", "0xEC"),
+        ("SlugSlotCursor", "0x35648C"),
+        ("SubGarbage", "0xC4"),
+        ("GolbShot", "0x2E8"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for source_type, index, storage, name, variable_type in (
+        ("RegisterVariableSourceType", 1119, 67, "render_sprite", "Sprite*"),
+        ("RegisterVariableSourceType", 1133, 67, "render_position", "Vec3*"),
+        (
+            "RegisterVariableSourceType",
+            1627,
+            72,
+            "active_garbage",
+            "SubGarbage*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1862,
+            69,
+            "slug_pool_byte_offset",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1864,
+            72,
+            "slug_slot_index",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1870,
+            66,
+            "slug_slot_cursor",
+            "SlugSlotCursor*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1872,
+            67,
+            "slug_state",
+            "SubSlugState",
+        ),
+        (
+            "RegisterVariableSourceType",
+            2205,
+            72,
+            "splash_garbage",
+            "SubGarbage*",
+        ),
+        ("StackVariableSourceType", 0, -12, "wall_impact", "Vec3"),
+    ):
+        expected = (
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert expected in replay
+
+    assert "GOLB_AI_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x48: ("position", "Vec3")' in replay
+    assert '0x3563A0: ("slug", "Slug")' in replay
+    assert '0x80: ("next_active", "SubGarbage*")' in replay
+    for rejected_index in (765, 770):
+        assert f"\n        {rejected_index},\n" not in replay

@@ -70,7 +70,7 @@
 00414ab5        if ((((x87_r7_33 < temp14_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_33, temp14_1) ? 1 : 0) << 0xa | (x87_r7_33 == temp14_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
 00414ab5        goto label_414ac7
 00415263        kill_golb(shot)
-0041525c        spawn_golb_impact_sprite(shot, &shot->flight_transform.position.x)
+0041525c        spawn_golb_impact_sprite(shot, &shot->flight_transform.position)
 00415263        kill_golb(shot)
 00414a01        return
 00414ac7        label_414ac7:
@@ -98,14 +98,14 @@
 00414b4b        x87_r7_37 - temp16_1
 00414b5e        if ((((x87_r7_37 < temp16_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_37, temp16_1) ? 1 : 0) << 0xa | (x87_r7_37 == temp16_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 && *(source_cell - 0x264) == 0x1e)
 00414b7b        shot->path_entry_z_latch = fconvert.s(fconvert.t(shot->source_matrix.position.z) + fconvert.t(1f))
-00414b81        initialize_path_follow_golb(&shot->path_follow, source_cell - 0x2a0, &shot->flight_transform.position.x, shot)
+00414b81        initialize_path_follow_golb(&shot->path_follow, source_cell - 0x2a0, &shot->flight_transform.position, shot)
 00414b86        label_414b86:
 00414b86        int32_t kind_1 = shot->kind
 00414b8f        if (kind_1 == 0)
-00414c8d        float* ecx_20 = shot->render_body_owner + 0x48
-00414c93        *ecx_20 = shot->source_matrix.position.x
-00414c98        ecx_20[1] = shot->source_matrix.position.y
-00414c9e        ecx_20[2] = shot->source_matrix.position.z
+00414c8d        struct Vec3* render_position = &shot->render_body_owner->position
+00414c93        render_position->x = shot->source_matrix.position.x
+00414c98        render_position->y = shot->source_matrix.position.y
+00414c9e        render_position->z = shot->source_matrix.position.z
 00414ca3        spawn_golb_trail_sprite(shot, &shot->source_matrix.position)
 00414ce9        struct Vec3 position_1
 00414ce9        position_1.x = fconvert.s(fconvert.t(shot->source_matrix.position.x) - fconvert.t(shot->direction.x) * fconvert.t(0.300000012f))
@@ -163,19 +163,19 @@
 00414e6f        if ((((x87_r7_75 < temp17_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_75, temp17_1) ? 1 : 0) << 0xa | (x87_r7_75 == temp17_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00415263        kill_golb(shot)
 00415263        return
-00414e7b        struct SubGarbage* esi_7 = shot->game->garbage_hazards.active_head
+00414e7b        struct SubGarbage* active_garbage = shot->game->garbage_hazards.active_head
 00414e83        struct Vec3 vector
-00414e83        if (esi_7 == 0)
+00414e83        if (active_garbage == 0)
 00414f64        label_414f64:
-00414f64        int32_t esi_8 = 0
-00414f66        int32_t i = 0
-00415090        while (i s< 0x760)
-00414f6e        void* eax_41 = shot->game + i
-00414f70        int32_t ecx_37 = *(eax_41 + 0x356420)
-00414f7e        if (ecx_37 == 1 || ecx_37 == 4)
-00414fa7        long double x87_r7_90 = fconvert.t(*(eax_41 + 0x356410)) - fconvert.t(shot->source_matrix.position.z)
-00414fae        vector.x = fconvert.s(fconvert.t(*(eax_41 + 0x356408)) - fconvert.t(shot->source_matrix.position.x))
-00414fb2        vector.y = fconvert.s(fconvert.t(*(eax_41 + 0x35640c)) - fconvert.t(shot->source_matrix.position.y))
+00414f64        int32_t slug_slot_index = 0
+00414f66        int32_t slug_pool_byte_offset = 0
+00415090        while (slug_pool_byte_offset s< 0x760)
+00414f6e        struct SlugSlotCursor* slug_slot_cursor = shot->game + slug_pool_byte_offset
+00414f70        enum SubSlugState slug_state = slug_slot_cursor->slug.state
+00414f7e        if (slug_state == SUB_SLUG_STATE_ACTIVE || slug_state == SUB_SLUG_STATE_LATERAL_ACTIVE)
+00414fa7        long double x87_r7_90 = fconvert.t(slug_slot_cursor->slug.body.transform.position.z) - fconvert.t(shot->source_matrix.position.z)
+00414fae        vector.x = fconvert.s(fconvert.t(slug_slot_cursor->slug.body.transform.position.x) - fconvert.t(shot->source_matrix.position.x))
+00414fb2        vector.y = fconvert.s(fconvert.t(slug_slot_cursor->slug.body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
 00414fb6        long double temp19_1 = fconvert.t(0f)
 00414fb6        x87_r7_90 - temp19_1
 00414fbc        bool c1_3 = unknown  {fst dword [esp+0x34], st0}
@@ -203,12 +203,12 @@
 0041506c        if (kind_2 == 1)
 00415173        kill_golb(shot)
 0041517b        spawn_golb_impact_sprite(shot, &shot->source_matrix.position)
-0041519e        hit_slug_hazard(&shot->game->slug_hazards.slots[esi_8], 2)
+0041519e        hit_slug_hazard(&shot->game->slug_hazards.slots[slug_slot_index], 2)
 004151aa        return
 00415075        if (kind_2 == 2)
 004151ad        kill_golb(shot)
 004151b5        spawn_golb_impact_sprite(shot, &shot->source_matrix.position)
-004151d8        hit_slug_hazard(&shot->game->slug_hazards.slots[esi_8], 4)
+004151d8        hit_slug_hazard(&shot->game->slug_hazards.slots[slug_slot_index], 4)
 004151e4        return
 0041507d        if (kind_2 == 0)
 004151ed        if (shot->slug_bounce_armed == 0)
@@ -217,23 +217,24 @@
 00415200        kill_golb(shot)
 00415208        spawn_golb_impact_sprite(shot, &shot->source_matrix.position)
 00415214        return
-00415083        i += 0xec
-00415089        esi_8 += 1
+00415083        slug_pool_byte_offset += 0xec
+00415089        slug_slot_index += 1
 00415225        if (get_track_grid_cell_at_world_position(shot->game, &shot->source_matrix.position)->tile_id == SUBLOC_TILE_WALL2)
 00415230        float x = shot->source_matrix.position.x
 00415232        float y = shot->source_matrix.position.y
 00415237        float x_1 = x
 0041523b        float y_1 = y
-0041523f        float position_3 = x
-00415251        float y_2 = y
-00415255        float var_4_1 = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(1f))
-0041525c        spawn_golb_impact_sprite(shot, &position_3)
+0041523f        struct Vec3 wall_impact
+0041523f        wall_impact.x = x
+00415251        wall_impact.y = y
+00415255        wall_impact.z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(1f))
+0041525c        spawn_golb_impact_sprite(shot, &wall_impact)
 00415263        kill_golb(shot)
 00414e90        while (true)
-00414e90        if (esi_7->state == SUB_GARBAGE_STATE_ACTIVE)
-00414eb0        long double x87_r7_81 = fconvert.t(esi_7->body.transform.position.z) - fconvert.t(shot->source_matrix.position.z)
-00414eb7        vector.x = fconvert.s(fconvert.t(esi_7->body.transform.position.x) - fconvert.t(shot->source_matrix.position.x))
-00414ebb        vector.y = fconvert.s(fconvert.t(esi_7->body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
+00414e90        if (active_garbage->state == SUB_GARBAGE_STATE_ACTIVE)
+00414eb0        long double x87_r7_81 = fconvert.t(active_garbage->body.transform.position.z) - fconvert.t(shot->source_matrix.position.z)
+00414eb7        vector.x = fconvert.s(fconvert.t(active_garbage->body.transform.position.x) - fconvert.t(shot->source_matrix.position.x))
+00414ebb        vector.y = fconvert.s(fconvert.t(active_garbage->body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
 00414ebf        long double temp18_1 = fconvert.t(0f)
 00414ebf        x87_r7_81 - temp18_1
 00414ec5        bool c1_2 = unknown  {fst dword [esp+0x34], st0}
@@ -244,44 +245,44 @@
 00414eda        x87_r7_81 - temp20_1
 00414ee5        if ((((x87_r7_81 < temp20_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_81, temp20_1) ? 1 : 0) << 0xa | (x87_r7_81 == temp20_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00414eeb        long double st0_4 = normalize_vector(&vector)
-00414ef6        long double x87_r6_29 = fconvert.t(esi_7->radius) + fconvert.t(0.49000001f)
+00414ef6        long double x87_r6_29 = fconvert.t(active_garbage->radius) + fconvert.t(0.49000001f)
 00414efe        st0_4 - x87_r6_29
 00414f05        if ((((st0_4 < x87_r6_29 ? 1 : 0) << 8 | (is_unordered.t(st0_4, x87_r6_29) ? 1 : 0) << 0xa | (st0_4 == x87_r6_29 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00414f07        esi_7->state = SUB_GARBAGE_STATE_BURST_PENDING
+00414f07        active_garbage->state = SUB_GARBAGE_STATE_BURST_PENDING
 00414f0d        long double x87_r7_84 = fconvert.t(vector.x)
 00414f11        long double temp23_1 = fconvert.t(0f)
 00414f11        x87_r7_84 - temp23_1
 00414f1c        if ((((x87_r7_84 < temp23_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_84, temp23_1) ? 1 : 0) << 0xa | (x87_r7_84 == temp23_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
-00414f30        esi_7->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT
-00414f1e        esi_7->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT
+00414f30        active_garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT
+00414f1e        active_garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT
 00414f40        add_subgoldy_score(shot->owner_player, 0, 0)
 00414f4b        if (shot->kind != 1)
 0041509d        kill_golb(shot)
 004150a5        spawn_golb_impact_sprite(shot, &shot->source_matrix.position)
 004150b1        if (shot->kind == 2)
-004150bd        struct SubGarbage* i_1 = shot->game->garbage_hazards.active_head
-004150c5        if (i_1 != 0)
-004150d1        if (i_1->state == SUB_GARBAGE_STATE_ACTIVE)
-004150f8        vector.x = fconvert.s(fconvert.t(i_1->body.transform.position.x) - fconvert.t(shot->source_matrix.position.x))
-004150fc        vector.y = fconvert.s(fconvert.t(i_1->body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
-0041510c        vector.z = fconvert.s(fconvert.t(i_1->body.transform.position.z) - fconvert.t(shot->source_matrix.position.z))
+004150bd        struct SubGarbage* splash_garbage = shot->game->garbage_hazards.active_head
+004150c5        if (splash_garbage != 0)
+004150d1        if (splash_garbage->state == SUB_GARBAGE_STATE_ACTIVE)
+004150f8        vector.x = fconvert.s(fconvert.t(splash_garbage->body.transform.position.x) - fconvert.t(shot->source_matrix.position.x))
+004150fc        vector.y = fconvert.s(fconvert.t(splash_garbage->body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
+0041510c        vector.z = fconvert.s(fconvert.t(splash_garbage->body.transform.position.z) - fconvert.t(shot->source_matrix.position.z))
 00415110        long double st0_8 = normalize_vector(&vector)
 00415115        long double temp24_1 = fconvert.t(3f)
 00415115        st0_8 - temp24_1
 00415120        if ((((st0_8 < temp24_1 ? 1 : 0) << 8 | (is_unordered.t(st0_8, temp24_1) ? 1 : 0) << 0xa | (st0_8 == temp24_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00415127        i_1->state = SUB_GARBAGE_STATE_BURST_PENDING
+00415127        splash_garbage->state = SUB_GARBAGE_STATE_BURST_PENDING
 0041512d        long double x87_r7_108 = fconvert.t(vector.x)
 00415131        long double temp25_1 = fconvert.t(0f)
 00415131        x87_r7_108 - temp25_1
 0041513c        if ((((x87_r7_108 < temp25_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_108, temp25_1) ? 1 : 0) << 0xa | (x87_r7_108 == temp25_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
-00415146        i_1->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT
-0041513e        i_1->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT
+00415146        splash_garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT
+0041513e        splash_garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT
 00415156        add_subgoldy_score(shot->owner_player, 0, 0)
-0041515b        i_1 = i_1->next_active
-00415163        do while (i_1 != 0)
+0041515b        splash_garbage = splash_garbage->next_active
+00415163        do while (splash_garbage != 0)
 00415170        return
 004150b1        break
-00414f56        esi_7 = esi_7->next_active
-00414f5e        if (esi_7 == 0)
+00414f56        active_garbage = active_garbage->next_active
+00414f5e        if (active_garbage == 0)
 00414f5e        goto label_414f64
 0041526f        return

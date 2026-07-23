@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "calc_path_length_z",
-      "address": "0x4217b0"
+      "name": "update_golb_ai",
+      "address": "0x414820"
     }
   ],
   "health_check_count": 903,
