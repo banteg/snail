@@ -75,3 +75,19 @@ The analysis databases now agree on the two float scale parameters, the
 The refreshed snapshots expose the atlas, texture-reference, marker, and scale
 fields without altering the matcher source or hiding the documented register
 ownership residual.
+
+## 2026-07-23 atlas image lifetime
+
+The restarted Binary Ninja database initially skipped this function after
+exceeding its analysis-time budget. The canonical font replay now pins the
+registrar to `NeverSkipFunctionAnalysis`, restores HLIL, types the
+`load_file_bytes` result as `TgaImageView*`, and records its sole retained
+lifetime as `image`. The decompile consequently exposes `image->width`,
+`image->height`, both typed `sample_tga_pixel_rgb(image, ...)` calls, and the
+terminal `free_tracked_memory(image)` ownership release.
+
+IDA independently corroborates the same `+0x0c` width, `+0x0e` height, and two
+sampler callsites in its tracked artifact; its replay now carries the shared
+typed helper prototype as well. This is analysis-only: the matcher source is
+unchanged, so the honest 75.41% result (`275/274`, 51 clean operands) and the
+documented `slot_count`/`font_kind` register-owner residual remain intact.

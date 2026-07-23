@@ -17,15 +17,15 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "border_mouse_test",
-      "address": "0x404580"
+      "name": "register_font_texture_sheet",
+      "address": "0x449f50"
     },
     {
-      "name": "get_sprite_texture_ref",
-      "address": "0x44e580"
+      "name": "sample_tga_pixel_rgb",
+      "address": "0x44e780"
     }
   ],
-  "health_check_count": 921,
+  "health_check_count": 922,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

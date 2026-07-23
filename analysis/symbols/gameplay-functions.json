@@ -3893,7 +3893,7 @@
     {
       "address": "0x44e780",
       "name": "sample_tga_pixel_rgb",
-      "description": "Samples one bottom-up TGA-style pixel from the loaded font texture sheet buffer, expanding 8-bit grayscale pixels or returning packed 24-bit RGB."
+      "description": "Exact TgaImageView pixel sampler used at both callsites in register_font_texture_sheet: reads the temporary loaded buffer's width, height, bits-per-pixel, and trailing pixel payload to sample bottom-up rows, expanding 8-bit grayscale or returning packed 24-bit RGB."
     },
     {
       "address": "0x44e800",

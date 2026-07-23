@@ -7748,6 +7748,7 @@ def test_font_system_ownership_stays_aligned() -> None:
         assert "g_registered_font_count" in source
         assert "measure_font_text_width" in source
         assert "register_font_texture_sheet" in source
+        assert "sample_tga_pixel_rgb" in source
         assert "draw_font_text_instance" in source
         assert "draw_queued_font_quad_instance" in source
         assert "draw_font_text_queue" in source
@@ -7766,6 +7767,10 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert '("0x7c", "blend_mode", "int32_t")' in binja_sync
     assert '("0x80", "rotation", "float")' in binja_sync
     assert "float __cdecl measure_font_text_width" in binja_sync
+    assert (
+        "int32_t __cdecl sample_tga_pixel_rgb(TgaImageView* image, "
+        "int32_t x, int32_t y)"
+    ) in binja_sync
     assert "float width_scale, float height_scale" in binja_sync
     assert "void __cdecl initialize_font3d_objects(int16_t font_id)" in binja_sync
     assert "void __cdecl draw_font_text_queue(uint32_t render_mask)" in binja_sync
@@ -7775,6 +7780,16 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert "float* __cdecl layout_and_queue_wrapped_font_text" in binja_sync
     assert "cFontPrintBuffer g_font_queue[0x400];" in ida_sync
     assert "FontSheet g_font_sheets[1];" in ida_sync
+    assert "TgaImageView *image, int32_t x, int32_t y" in ida_sync
+    assert "typedef struct TgaImageView {" in analysis_header
+    assert "uint8_t pixels[1];" in analysis_header
+    assert '"TgaImageView": 0x14' in binja_sync
+    assert "ensure_function_analysis" in binja_sync
+    assert "apply_user_var_updates" in binja_sync
+    assert '"register_font_texture_sheet"' in binja_sync
+    assert '"image"' in binja_sync
+    assert '"TgaImageView*"' in binja_sync
+    assert "\n        45,\n        66," in binja_sync
 
     references = json.loads(
         (repo_root / "analysis/symbols/gameplay-references.json").read_text(

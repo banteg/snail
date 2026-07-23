@@ -20,6 +20,7 @@ TRUSTED_NAMES = (
     (0x449C50, "initialize_global_font_queue_colors"),
     (0x449E90, "measure_font_text_width"),
     (0x449F50, "register_font_texture_sheet"),
+    (0x44E780, "sample_tga_pixel_rgb"),
     (0x44A360, "draw_font_text_instance"),
     (0x44A6D0, "draw_queued_font_quad_instance"),
     (0x44A730, "draw_font_text_queue"),
@@ -64,6 +65,10 @@ TRUSTED_FUNCTION_DECLARATIONS = (
     (
         "measure_font_text_width",
         "float __cdecl measure_font_text_width(char *text, int32_t font_id, float scale);",
+    ),
+    (
+        "sample_tga_pixel_rgb",
+        "int32_t __cdecl sample_tga_pixel_rgb(TgaImageView *image, int32_t x, int32_t y);",
     ),
     (
         "register_font_texture_sheet",
@@ -126,6 +131,7 @@ TRUSTED_DATA_DECLARATIONS = (
 DIRTY_FUNCTIONS = (
     0x449E90,
     0x449F50,
+    0x44E780,
     0x44A360,
     0x44A6D0,
     0x44A730,

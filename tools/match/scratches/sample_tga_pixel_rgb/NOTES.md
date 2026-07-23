@@ -43,3 +43,16 @@ one `red`/`green`/`blue` return path recovers native's `edx` image base,
 the sampled value in `blue`, `green`, then `red` order gives the native
 `ecx -> edi -> esi` copy chain. Focused matcher result is now 100.00%, 49/49
 instructions, full 49/49 prefix, and no masked operands.
+
+## 2026-07-23 TGA payload ownership
+
+The analysis header and both decompiler replays now carry the exact `0x14`-byte
+`TgaImageView` owner rather than a generic file buffer. Binary Ninja exposes
+`height`, `bits_per_pixel`, `width`, and the trailing `pixels` payload directly;
+the remaining `+0x13`/`+0x14` expressions are honest indexing of the second and
+third bytes after the flexible payload start.
+
+Both xrefs are the two atlas-marker probes inside
+`register_font_texture_sheet`. This analysis-only ownership recovery leaves the
+exact matcher source untouched and preserves 100.00%, 49/49 instructions, a
+49/49 prefix, and no masked operands.

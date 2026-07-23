@@ -35,6 +35,23 @@ typedef enum TextureRefFlags {
     TEXTURE_REF_HAS_ALPHA = 0x10000,
 } TextureRefFlags;
 
+typedef struct TgaImageView {
+    uint8_t id_length;
+    uint8_t color_map_type;
+    uint8_t image_type;
+    uint8_t color_map_spec[5];
+    unsigned short x_origin;
+    unsigned short y_origin;
+    unsigned short width;
+    unsigned short height;
+    uint8_t bits_per_pixel;
+    uint8_t descriptor;
+    uint8_t pixels[1];
+} TgaImageView;
+
+typedef char TgaImageView_must_be_0x14[
+    (sizeof(TgaImageView) == 0x14) ? 1 : -1];
+
 typedef struct TextureRef {
     TextureRefFlags flags;
     int32_t loaded_width;
@@ -111,6 +128,8 @@ void __cdecl initialize_global_font3d_bods(void);
 void __cdecl initialize_global_font_queue_colors_thunk(void);
 void __cdecl initialize_global_font_queue_colors(void);
 float __cdecl measure_font_text_width(char* text, int32_t font_id, float scale);
+int32_t __cdecl sample_tga_pixel_rgb(
+    TgaImageView* image, int32_t x, int32_t y);
 int32_t __cdecl register_font_texture_sheet(
     char* texture_path,
     int32_t font_kind,

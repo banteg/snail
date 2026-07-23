@@ -11,8 +11,10 @@ from _narrow_sync import (
     apply_data_var_updates,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
+    apply_user_var_updates,
     current_struct_size,
     emit_summary,
+    ensure_function_analysis,
     types_declare_missing_only,
 )
 
@@ -27,6 +29,7 @@ EXPECTED_PREREQUISITE_SIZES = {
 }
 
 EXPECTED_STRUCT_SIZES = {
+    "TgaImageView": 0x14,
     "FontSheet": 0x828,
     "cFontPrintBuffer": 0x84,
 }
@@ -89,6 +92,7 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x449c50", "initialize_global_font_queue_colors"),
     ("0x449e90", "measure_font_text_width"),
     ("0x449f50", "register_font_texture_sheet"),
+    ("0x44e780", "sample_tga_pixel_rgb"),
     ("0x44a360", "draw_font_text_instance"),
     ("0x44a6d0", "draw_queued_font_quad_instance"),
     ("0x44a730", "draw_font_text_queue"),
@@ -154,6 +158,10 @@ PROTO_UPDATES = (
         "float __cdecl measure_font_text_width(char* text, int32_t font_id, float scale)",
     ),
     (
+        "sample_tga_pixel_rgb",
+        "int32_t __cdecl sample_tga_pixel_rgb(TgaImageView* image, int32_t x, int32_t y)",
+    ),
+    (
         "register_font_texture_sheet",
         "int32_t __cdecl register_font_texture_sheet(char* texture_path, int32_t font_kind, float width_scale, float height_scale)",
     ),
@@ -192,6 +200,21 @@ PROTO_UPDATES = (
     (
         "initialize_font3d_objects",
         "void __cdecl initialize_font3d_objects(int16_t font_id)",
+    ),
+)
+
+ANALYSIS_GUARD_FUNCTIONS = (
+    "register_font_texture_sheet",
+)
+
+FONT_TGA_USER_VAR_UPDATES = (
+    (
+        "register_font_texture_sheet",
+        "RegisterVariableSourceType",
+        45,
+        66,
+        "image",
+        "TgaImageView*",
     ),
 )
 
@@ -286,6 +309,16 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=DATA_VAR_UPDATES,
+        ),
+        *ensure_function_analysis(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=ANALYSIS_GUARD_FUNCTIONS,
+        ),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=FONT_TGA_USER_VAR_UPDATES,
         ),
     ]
     return emit_summary(
