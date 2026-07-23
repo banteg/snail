@@ -10221,25 +10221,56 @@ def test_object_list_texture_replace_lifetime_replay_stays_guarded() -> None:
     assert '"face_byte_offset",\n        "ObjectFaceQuad*"' not in replay
 
 
-def test_object_texture_group_rebuild_lifetime_replay_stays_guarded() -> None:
-    replay = (
-        BINJA_DIR / "sync_object_texture_group_rebuild_lifetimes.py"
-    ).read_text(encoding="utf-8")
+def test_object_texture_group_lifetime_replay_stays_guarded() -> None:
+    replay = (BINJA_DIR / "sync_object_texture_group_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
 
     for owner_name, expected_size in (
+        ("TransformMatrix", "0x40"),
+        ("tColour", "0x10"),
         ("TextureRef", "0xA4"),
         ("ObjectFaceQuad", "0x30"),
+        ("ObjectVertexBuffer", "0x04"),
+        ("ObjectRenderBuffers", "0x0C"),
+        ("ObjectIndexBufferResource", "0x04"),
+        ("ObjectIndexBuffer", "0x04"),
         ("Object", "0xDC"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
     for struct_name, offset, field_name, field_type in (
+        ("tColour", "0x0C", "a", "float"),
         ("TextureRef", "0x00", "flags", "TextureRefFlags"),
         ("ObjectFaceQuad", "0x0C", "texture_ref", "TextureRef*"),
+        ("ObjectVertexBuffer", "0x00", "vtbl", "ObjectVertexBufferVtbl*"),
+        ("ObjectRenderBuffers", "0x08", "vertex_buffer", "ObjectVertexBuffer*"),
+        (
+            "ObjectIndexBufferResource",
+            "0x00",
+            "vtbl",
+            "ObjectIndexBufferResourceVtbl*",
+        ),
+        (
+            "ObjectIndexBuffer",
+            "0x00",
+            "buffer",
+            "ObjectIndexBufferResource*",
+        ),
         ("Object", "0x10", "flags", "ObjectFlag"),
+        ("Object", "0x14", "blend_mode", "int32_t"),
+        ("Object", "0x18", "override_texture_ref", "TextureRef*"),
+        ("Object", "0x2C", "vertex_count", "int32_t"),
         ("Object", "0x54", "facequad_count", "int32_t"),
         ("Object", "0x5C", "facequads", "ObjectFaceQuad*"),
+        ("Object", "0x64", "texture_group_count", "int32_t"),
         ("Object", "0x6C", "texture_group_ends", "int32_t*"),
+        ("Object", "0xC0", "render_buffers", "ObjectRenderBuffers*"),
+        ("Object", "0xC4", "grouped_vertex_count", "int32_t"),
+        ("Object", "0xC8", "index_buffer", "ObjectIndexBuffer*"),
+        ("Object", "0xCC", "group_index_starts", "int32_t*"),
+        ("Object", "0xD0", "group_texture_refs", "TextureRef**"),
+        ("Object", "0xD4", "group_primitive_counts", "int32_t*"),
     ):
         assert f'"{struct_name}": {{' in replay
         assert f'{offset}: ("{field_name}", "{field_type}")' in replay
@@ -10373,6 +10404,130 @@ def test_object_texture_group_rebuild_lifetime_replay_stays_guarded() -> None:
         )
         assert expected in replay
 
+    for source_type, index, storage, name, type_name in (
+        (
+            "StackVariableSourceType",
+            0,
+            -64,
+            "world_matrix",
+            "TransformMatrix",
+        ),
+        (
+            "StackVariableSourceType",
+            233,
+            -84,
+            "texture_to_bind",
+            "TextureRef*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            121,
+            72,
+            "texture_group_index",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            139,
+            67,
+            "render_pass_filter",
+            "uint8_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            160,
+            68,
+            "opaque_pass_texture",
+            "TextureRef*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            192,
+            68,
+            "alpha_pass_texture",
+            "TextureRef*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            213,
+            66,
+            "group_texture_to_bind",
+            "TextureRef*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            356,
+            66,
+            "blend_gate_texture",
+            "TextureRef*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            449,
+            67,
+            "render_buffers",
+            "ObjectRenderBuffers*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            462,
+            67,
+            "vertex_buffer",
+            "ObjectVertexBuffer*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            496,
+            68,
+            "index_buffer",
+            "ObjectIndexBuffer*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            509,
+            68,
+            "index_buffer_resource",
+            "ObjectIndexBufferResource*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            521,
+            68,
+            "group_primitive_counts",
+            "int32_t*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            538,
+            68,
+            "group_index_starts",
+            "int32_t*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            566,
+            66,
+            "group_primitive_counts_for_stats",
+            "int32_t*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            578,
+            67,
+            "drawn_primitive_count",
+            "int32_t",
+        ),
+    ):
+        expected = (
+            '        "render_object",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
@@ -10380,6 +10535,9 @@ def test_object_texture_group_rebuild_lifetime_replay_stays_guarded() -> None:
     assert '"insert_face_byte_offset",\n        "ObjectFaceQuad*"' not in replay
     assert '"face_byte_offset",\n        "char*"' not in replay
     assert '"active_texture",\n        "int32_t*"' not in replay
+    assert '"texture_group_index",\n        "TextureRef*"' not in replay
+    assert '"opaque_pass_texture",\n        "int32_t*"' not in replay
+    assert '"alpha_pass_texture",\n        "int32_t*"' not in replay
 
 
 def test_object_list_lifetime_replay_keeps_array_owners_and_integer_offsets() -> None:

@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "render_object_toon",
-      "address": "0x4123e0"
+      "name": "render_object",
+      "address": "0x4126c0"
     }
   ],
   "health_check_count": 920,

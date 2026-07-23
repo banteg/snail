@@ -19,12 +19,24 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
+    "TransformMatrix": 0x40,
+    "tColour": 0x10,
     "TextureRef": 0xA4,
     "ObjectFaceQuad": 0x30,
+    "ObjectVertexBuffer": 0x04,
+    "ObjectRenderBuffers": 0x0C,
+    "ObjectIndexBufferResource": 0x04,
+    "ObjectIndexBuffer": 0x04,
     "Object": 0xDC,
 }
 
 EXPECTED_STRUCT_FIELDS = {
+    "tColour": {
+        0x00: ("r", "float"),
+        0x04: ("g", "float"),
+        0x08: ("b", "float"),
+        0x0C: ("a", "float"),
+    },
     "TextureRef": {
         0x00: ("flags", "TextureRefFlags"),
     },
@@ -32,11 +44,33 @@ EXPECTED_STRUCT_FIELDS = {
         0x00: ("", "union"),
         0x0C: ("texture_ref", "TextureRef*"),
     },
+    "ObjectVertexBuffer": {
+        0x00: ("vtbl", "ObjectVertexBufferVtbl*"),
+    },
+    "ObjectRenderBuffers": {
+        0x08: ("vertex_buffer", "ObjectVertexBuffer*"),
+    },
+    "ObjectIndexBufferResource": {
+        0x00: ("vtbl", "ObjectIndexBufferResourceVtbl*"),
+    },
+    "ObjectIndexBuffer": {
+        0x00: ("buffer", "ObjectIndexBufferResource*"),
+    },
     "Object": {
         0x10: ("flags", "ObjectFlag"),
+        0x14: ("blend_mode", "int32_t"),
+        0x18: ("override_texture_ref", "TextureRef*"),
+        0x2C: ("vertex_count", "int32_t"),
         0x54: ("facequad_count", "int32_t"),
         0x5C: ("facequads", "ObjectFaceQuad*"),
+        0x64: ("texture_group_count", "int32_t"),
         0x6C: ("texture_group_ends", "int32_t*"),
+        0xC0: ("render_buffers", "ObjectRenderBuffers*"),
+        0xC4: ("grouped_vertex_count", "int32_t"),
+        0xC8: ("index_buffer", "ObjectIndexBuffer*"),
+        0xCC: ("group_index_starts", "int32_t*"),
+        0xD0: ("group_texture_refs", "TextureRef**"),
+        0xD4: ("group_primitive_counts", "int32_t*"),
     },
 }
 
@@ -415,12 +449,196 @@ OBJECT_TEXTURE_GROUP_REBUILD_USER_VAR_UPDATES = (
     ),
 )
 
+# The render consumer does not retain one current TextureRef. Native reloads
+# four independent short-lived borrows for opaque filtering, alpha filtering,
+# binding, and blend gating. The grouped start/primitive banks are borrowed
+# independently at draw and counter-update sites; their indices remain scalar.
+OBJECT_TEXTURE_GROUP_RENDER_USER_VAR_UPDATES = (
+    (
+        "render_object",
+        "StackVariableSourceType",
+        0,
+        -64,
+        "world_matrix",
+        "TransformMatrix",
+    ),
+    (
+        "render_object",
+        "StackVariableSourceType",
+        233,
+        -84,
+        "texture_to_bind",
+        "TextureRef*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        121,
+        72,
+        "texture_group_index",
+        "int32_t",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        131,
+        69,
+        "pass_side",
+        "char",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        135,
+        73,
+        "tint",
+        "tColour*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        139,
+        67,
+        "render_pass_filter",
+        "uint8_t",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        160,
+        68,
+        "opaque_pass_texture",
+        "TextureRef*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        192,
+        68,
+        "alpha_pass_texture",
+        "TextureRef*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        213,
+        66,
+        "group_texture_to_bind",
+        "TextureRef*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        230,
+        67,
+        "override_texture",
+        "TextureRef*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        356,
+        66,
+        "blend_gate_texture",
+        "TextureRef*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        449,
+        67,
+        "render_buffers",
+        "ObjectRenderBuffers*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        462,
+        67,
+        "vertex_buffer",
+        "ObjectVertexBuffer*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        496,
+        68,
+        "index_buffer",
+        "ObjectIndexBuffer*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        509,
+        68,
+        "index_buffer_resource",
+        "ObjectIndexBufferResource*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        521,
+        68,
+        "group_primitive_counts",
+        "int32_t*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        532,
+        68,
+        "primitive_count",
+        "int32_t",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        538,
+        68,
+        "group_index_starts",
+        "int32_t*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        544,
+        68,
+        "start_index",
+        "int32_t",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        548,
+        68,
+        "grouped_vertex_count",
+        "int32_t",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        566,
+        66,
+        "group_primitive_counts_for_stats",
+        "int32_t*",
+    ),
+    (
+        "render_object",
+        "RegisterVariableSourceType",
+        578,
+        67,
+        "drawn_primitive_count",
+        "int32_t",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the object texture-group sort and rebuild passes' borrowed "
-            "face banks, TextureRef values, cumulative ends, and byte cursors."
+            "Replay object texture-group sort, rebuild, and render lifetimes: "
+            "borrowed face/texture banks, cumulative ends, integer cursors, "
+            "and grouped draw resources."
         )
     )
     parser.add_argument(
@@ -471,7 +689,7 @@ def verify_owner_layouts(target: str) -> dict[str, object]:
             + "\n".join(mismatches)
         )
     return {
-        "op": "verify_object_texture_group_rebuild_owner_layouts",
+        "op": "verify_object_texture_group_owner_layouts",
         "status": "verified",
         "types": tuple(EXPECTED_TYPE_WIDTHS),
     }
@@ -496,6 +714,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=OBJECT_TEXTURE_GROUP_REBUILD_USER_VAR_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=OBJECT_TEXTURE_GROUP_RENDER_USER_VAR_UPDATES,
         )
     )
     return emit_summary(

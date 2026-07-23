@@ -131,3 +131,20 @@ come from the canonical process renderer bank produced by camera and frame
 setup. The global device reference remains the documented relocation alias of
 `g_direct3d_renderer.device`. The object renderer stays exact at 196/196 with
 all 25 operands clean.
+
+## 2026-07-23 texture-group consumer ownership
+
+The texture-group replay now follows the producer-owned arrays into this exact
+consumer. Native keeps independent short-lived `TextureRef*` borrows for the
+opaque filter, alpha filter, bind selection, and blend gate rather than one
+false long-lived current texture. The tracked decompile now names the group
+index, render-pass filter, copied world matrix, group texture borrow, and
+selected `texture_to_bind`; typed reloads also recover
+`TEXTURE_REF_HAS_ALPHA` and preserve the grouped vertex/index-buffer,
+start-index, and primitive-count banks.
+
+The replay helper was broadened from
+`sync_object_texture_group_rebuild_lifetimes.py` to
+`sync_object_texture_group_lifetimes.py` so its producer-to-consumer scope is
+explicit. No matcher source changed; focused output remains exact at 196/196
+instructions with all 25 operands clean.
