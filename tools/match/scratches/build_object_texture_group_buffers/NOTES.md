@@ -103,3 +103,30 @@ helper and the shared typed workspace globals instead of redeclaring them in
 this translation unit. Binary Ninja replay shows the same temporary stream
 flowing into the Object-retained vertex/index buffers. Focused matching remains
 exact at 373/373 instructions with all 29 operands clean.
+
+## 2026-07-23 durable face, index-stream, and D3D lock lifetimes
+
+The guarded Binary Ninja replay now preserves 39 physical lifetimes across the
+exact builder:
+
+- the three group-metadata allocations remain rooted in `Object`;
+- the archive-end borrow is a `uint16_t*` index scratch, with six independent
+  triangle/quad lane cursors;
+- the dynamic warm-up scan and four grouped-face reloads carry complete
+  `ObjectFaceQuad*` borrows and resolve their vertex/UV members;
+- the retained index-buffer wrapper is distinct from the borrowed vertex and
+  index resources used for `Lock`/`Unlock`;
+- both lock outputs are typed (`ObjectRenderVertex*` and `uint16_t*`), and the
+  upload loop preserves the borrowed `ObjectUv`, `Vec3`, and destination
+  `ObjectRenderVertex` records.
+
+Native reuses the dead incoming `Object*` stack home as its advancing index
+count. This Binary Ninja database exposes that stack home as one unsplit
+variable, so a few assignments still render as `object += 3/6` before the
+typed `index_count_base` register takes over. The replay deliberately does not
+retype the parameter or invent a second stack owner; the real `Object*`
+receiver remains intact everywhere it is live.
+
+A second replay is fully idempotent. Matcher source is unchanged and remains
+proof-grade at **100.00%**, 373/373 instructions, with all 29 masked operands
+clean.

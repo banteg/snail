@@ -1153,6 +1153,97 @@ def test_x_animation_loader_replay_keeps_keyframes_and_parser_lifetimes() -> Non
         assert marker in replay
 
 
+def test_object_texture_group_builder_replay_keeps_resource_and_stream_owners() -> None:
+    owner_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    replay = (
+        BINJA_DIR / "sync_object_texture_group_builder_lifetimes.py"
+    ).read_text(encoding="utf-8")
+    header = (HEADER_DIR / "bn_object_render_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    prototype = (
+        "void __cdecl build_object_texture_group_buffers(Object* object)"
+    )
+    assert prototype in owner_sync
+    assert prototype in replay
+    assert prototype + ";" in header
+    assert "apply_direct_proto_update(" in replay
+    assert "apply_user_var_updates(" in replay
+    assert "verify_object_texture_group_builder_owner_layouts" in replay
+    for index, storage, name, variable_type in (
+        (13, 73, "scan_face_byte_offset", "int32_t"),
+        (80, 66, "allocated_group_index_starts", "int32_t*"),
+        (103, 66, "allocated_group_texture_refs", "TextureRef**"),
+        (150, 66, "index_scratch", "uint16_t*"),
+        (168, 67, "group_face_index", "int32_t"),
+        (191, 72, "source_vertex_index", "int32_t"),
+        (217, 66, "scan_face", "ObjectFaceQuad*"),
+        (347, 66, "group_index", "int32_t"),
+        (385, 73, "face_byte_offset", "int32_t"),
+        (424, 72, "index_0_cursor", "uint16_t*"),
+        (435, 71, "index_2_cursor", "uint16_t*"),
+        (441, 66, "index_count_base", "int32_t"),
+        (472, 66, "face_for_vertex_0", "ObjectFaceQuad*"),
+        (499, 66, "face_for_vertex_1", "ObjectFaceQuad*"),
+        (532, 66, "face_for_vertex_2", "ObjectFaceQuad*"),
+        (599, 66, "face_for_vertex_3", "ObjectFaceQuad*"),
+        (690, 66, "next_primitive_count", "int32_t"),
+        (874, 66, "allocated_index_buffer", "ObjectIndexBuffer*"),
+        (896, 66, "locked_vertex_buffer", "ObjectVertexBuffer*"),
+        (925, 68, "upload_index", "int32_t"),
+        (931, 66, "locked_vertex_byte_offset", "int32_t"),
+        (933, 67, "grouped_vertex_byte_offset", "int32_t"),
+        (963, 72, "grouped_vertex_uv", "ObjectUv*"),
+        (994, 72, "grouped_vertex_position", "Vec3*"),
+        (996, 73, "locked_vertex", "ObjectRenderVertex*"),
+        (1043, 66, "unlock_vertex_buffer", "ObjectVertexBuffer*"),
+        (1058, 72, "index_byte_count", "int32_t"),
+        (
+            1063,
+            66,
+            "locked_index_buffer_resource",
+            "ObjectIndexBufferResource*",
+        ),
+        (
+            1108,
+            66,
+            "unlock_index_buffer_resource",
+            "ObjectIndexBufferResource*",
+        ),
+    ):
+        marker = (
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert marker in replay
+    for index, storage, name, variable_type in (
+        (172, -20, "face_index", "int32_t"),
+        (204, -12, "scan_face_index", "int32_t"),
+        (351, -12, "current_group_index", "int32_t"),
+        (378, -28, "primitive_count", "int32_t"),
+        (427, -24, "index_5_cursor", "uint16_t*"),
+        (445, -32, "index_4_cursor", "uint16_t*"),
+        (457, -36, "index_3_cursor", "uint16_t*"),
+        (461, -40, "index_1_cursor", "uint16_t*"),
+        (0, -16, "locked_vertices", "ObjectRenderVertex*"),
+        (0, -4, "locked_indices", "uint16_t*"),
+    ):
+        marker = (
+            '        "StackVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert marker in replay
+
+
 def test_intro_logo_lifetime_replay_keeps_real_owners_and_staged_stride() -> None:
     source = (BINJA_DIR / "sync_intro_logo_lifetimes.py").read_text(
         encoding="utf-8"
