@@ -5,8 +5,8 @@
 
 0042fadb        if (object_list->count == object_list->capacity)
 0042fae2        report_errorf("Too many Objects - Increase ObjectList.Init(MAX) in G0.cpp")
-0042faea        int32_t count = object_list->count
-0042faf3        object_list->count = count + 1
-0042fafb        struct Object* object = &object_list->objects->_pad_00[count * 0xdc]
-0042fb00        initialize_object(object)
-0042fb09        return object
+0042faea        int32_t append_index = object_list->count
+0042faf3        object_list->count = append_index + 1
+0042fafb        struct Object* new_object = &object_list->objects->_pad_00[append_index * 0xdc]
+0042fb00        initialize_object(new_object)
+0042fb09        return new_object

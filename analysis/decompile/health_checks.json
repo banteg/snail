@@ -11407,16 +11407,52 @@
       "name": "bn_object_list_initializer_owner_and_void_abi",
       "artifact": "analysis/decompile/binja/functions/0042f990-initialize_object_list.c",
       "required_substrings": [
+        "int32_t remaining_capacity = capacity",
         "object_list->count = 0",
-        "object_list->capacity = esi",
-        "object_list->objects = allocate_tracked_memory(esi * 0xdc, \"Object List\")",
-        "initialize_object(ebx_1 + object_list->objects)",
+        "object_list->capacity = remaining_capacity",
+        "object_list->objects = allocate_tracked_memory(remaining_capacity * 0xdc, \"Object List\")",
+        "int32_t object_byte_offset = 0",
+        "initialize_object(&object_list->objects->_pad_00[object_byte_offset])",
+        "object_byte_offset += 0xdc",
+        "remaining_capacity -= 1",
         "0042f9dd        return"
       ],
       "forbidden_substrings": [
         "arg1",
         "arg2",
+        "void* ebx_1",
+        "void* object_byte_offset",
+        "struct Object* object_byte_offset",
         "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_list_build_pipeline_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f9e0-build_all_objects.c",
+      "required_substrings": [
+        "int32_t object_index = 0",
+        "object_list->count",
+        "int32_t object_byte_offset = 0",
+        "struct Object* current_object = &object_list->objects->_pad_00[object_byte_offset]",
+        "current_object->vertex_count",
+        "calc_object_bounding_box(current_object)",
+        "sort_object_faces_by_texture_group(&object_list->objects->_pad_00[object_byte_offset])",
+        "calc_object_texture_groups(&object_list->objects->_pad_00[object_byte_offset])",
+        "struct Object* toon_objects = object_list->objects",
+        "toon_objects->flags",
+        "calc_object_facequad_normals(&toon_objects->_pad_00[object_byte_offset])",
+        "calc_object_edges(&object_list->objects->_pad_00[object_byte_offset])",
+        "build_object_texture_group_buffers(&object_list->objects->_pad_00[object_byte_offset])",
+        "object_byte_offset += 0xdc"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "void* current_object",
+        "int32_t* current_object",
+        "void* object_byte_offset",
+        "struct Object* object_byte_offset",
+        "edi_1",
         "unimplemented"
       ]
     },
@@ -11443,13 +11479,17 @@
       "artifact": "analysis/decompile/binja/functions/0042fad0-add_object_to_list.c",
       "required_substrings": [
         "object_list->count == object_list->capacity",
-        "struct Object* object = &object_list->objects",
-        "initialize_object(object)",
-        "return object"
+        "int32_t append_index = object_list->count",
+        "object_list->count = append_index + 1",
+        "struct Object* new_object = &object_list->objects->_pad_00[append_index * 0xdc]",
+        "initialize_object(new_object)",
+        "return new_object"
       ],
       "forbidden_substrings": [
         "arg1",
         "*arg1",
+        "void* new_object",
+        "int32_t* new_object",
         "void* result",
         "unimplemented"
       ]

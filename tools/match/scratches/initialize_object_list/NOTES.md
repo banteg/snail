@@ -21,3 +21,16 @@ contract rather than treating the final constructed slot as a returned owner.
 Both analyzer replays now bind the 0x0c-byte global container at `0x4b7648`,
 width-gate its count/capacity/backing-pointer layout, and reanalyze the full
 allocator consumer set. The initializer remains exact at 30/30 instructions.
+
+## 2026-07-23 backing-array lifetime replay
+
+The guarded ObjectList replay now preserves the allocation and construction
+walk in Binary Ninja. `ObjectList::objects` is the owned `Object*` allocation;
+each completed address is a borrowed `Object*`, while the native 0xdc traversal
+state remains an integer `object_byte_offset` rather than a fake pointer. The
+replay verifies `sizeof(ObjectList) == 0x0c`, `sizeof(Object) == 0xdc`, and the
+count/capacity/objects layout before mutation, then saves and reads back every
+annotation. A second replay is fully idempotent.
+
+The exact matcher source remains unchanged at 100.00%, 30/30 instructions,
+prefix 30/30, with three clean masked operands.

@@ -10191,6 +10191,134 @@ def test_object_texture_group_rebuild_lifetime_replay_stays_guarded() -> None:
     assert '"active_texture",\n        "int32_t*"' not in replay
 
 
+def test_object_list_lifetime_replay_keeps_array_owners_and_integer_offsets() -> None:
+    replay = (BINJA_DIR / "sync_object_list_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for owner_name, expected_size in (
+        ("ObjectList", "0x0C"),
+        ("Object", "0xDC"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("ObjectList", "0x00", "count", "int32_t"),
+        ("ObjectList", "0x04", "capacity", "int32_t"),
+        ("ObjectList", "0x08", "objects", "Object*"),
+        ("Object", "0x10", "flags", "ObjectFlag"),
+        ("Object", "0x2C", "vertex_count", "int32_t"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for function_name, source_type, index, storage, name, type_name in (
+        (
+            "initialize_object_list",
+            "RegisterVariableSourceType",
+            35,
+            66,
+            "allocated_objects",
+            "Object*",
+        ),
+        (
+            "initialize_object_list",
+            "RegisterVariableSourceType",
+            51,
+            69,
+            "object_byte_offset",
+            "int32_t",
+        ),
+        (
+            "initialize_object_list",
+            "RegisterVariableSourceType",
+            58,
+            67,
+            "current_object",
+            "Object*",
+        ),
+        (
+            "build_all_objects",
+            "RegisterVariableSourceType",
+            16,
+            73,
+            "object_byte_offset",
+            "int32_t",
+        ),
+        (
+            "build_all_objects",
+            "RegisterVariableSourceType",
+            47,
+            67,
+            "current_object",
+            "Object*",
+        ),
+        (
+            "build_all_objects",
+            "StackVariableSourceType",
+            66,
+            -16,
+            "sort_object_argument",
+            "Object*",
+        ),
+        (
+            "build_all_objects",
+            "RegisterVariableSourceType",
+            88,
+            67,
+            "toon_object",
+            "Object*",
+        ),
+        (
+            "build_all_objects",
+            "StackVariableSourceType",
+            120,
+            -16,
+            "buffer_object_argument",
+            "Object*",
+        ),
+        (
+            "add_object_to_list",
+            "RegisterVariableSourceType",
+            37,
+            68,
+            "append_index_times_55",
+            "int32_t",
+        ),
+        (
+            "add_object_to_list",
+            "RegisterVariableSourceType",
+            43,
+            73,
+            "new_object",
+            "Object*",
+        ),
+        (
+            "add_object_to_list",
+            "RegisterVariableSourceType",
+            53,
+            66,
+            "result_object",
+            "Object*",
+        ),
+    ):
+        expected = (
+            f'        "{function_name}",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '"object_byte_offset",\n        "Object*"' not in replay
+    assert '"append_index_times_55",\n        "Object*"' not in replay
+
+
 def test_track_cache_teardown_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_track_cache_teardown_lifetimes.py"

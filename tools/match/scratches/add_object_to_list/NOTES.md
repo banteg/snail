@@ -30,3 +30,15 @@ object-render replays now own the three list lifecycle names, the exact 0x0c
 global `g_object_list`, and all direct callers so a fresh export cannot regress
 to `_DWORD* this`, `unk_4B7648`, or a hand-scaled opaque result. The allocator
 remains exact at 24/24 instructions with three clean operands.
+
+## 2026-07-23 append-slot lifetime replay
+
+The guarded ObjectList replay now preserves the append index as an integer,
+the strength-reduced `index * 55` intermediate as an integer, and only the
+completed slot address as the borrowed `Object* new_object`. That object is
+initialized in place and returned to the caller; the list retains ownership of
+the backing allocation. The replay width- and field-gates both owner types,
+saves and reads back the annotations, and is fully idempotent.
+
+The exact matcher source remains unchanged at 100.00%, 24/24 instructions,
+prefix 24/24, with three clean masked operands.
