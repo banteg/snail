@@ -71,3 +71,12 @@ edge-bank sync exposes the already-proven
 `get_sprite_texture(&g_sprite_manager, 0x5d)` owner in both generated
 artifacts. This is an artifact freshness fix; the scratch remains exact at
 219/219 with all 31 operands clean.
+
+2026-07-23 downstream edge ownership: the guarded edge-builder replay now
+continues into this consumer. The index-buffer `Lock` output is a borrowed
+`uint16_t*`, `edge_index` and the 0x24-stride `edge_byte_offset` remain
+independent integers, and only the post-addition borrow is typed
+`ObjectToonEdge*`. The same replay records the projection, view vector,
+per-edge delta, normal A/B, source vertex, and reloaded index-buffer
+lifetimes. No matcher source changed; focused output remains exact at 219/219
+instructions with all 31 operands clean.

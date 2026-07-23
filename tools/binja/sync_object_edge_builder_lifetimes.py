@@ -20,12 +20,26 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
+    "Vec3": 0x0C,
+    "TransformMatrix": 0x40,
     "ObjectFaceQuad": 0x30,
     "ObjectToonEdge": 0x24,
+    "ObjectVertexBuffer": 0x04,
+    "ObjectRenderBuffers": 0x0C,
+    "ObjectIndexBufferResource": 0x04,
+    "ObjectIndexBuffer": 0x04,
     "Object": 0xDC,
 }
 
 EXPECTED_STRUCT_FIELDS = {
+    "Vec3": {
+        0x00: ("x", "float"),
+        0x04: ("y", "float"),
+        0x08: ("z", "float"),
+    },
+    "TransformMatrix": {
+        0x30: ("position", "Vec3"),
+    },
     "ObjectFaceQuad": {
         0x00: ("", "union"),
         0x02: ("vertex_0", "uint16_t"),
@@ -42,12 +56,30 @@ EXPECTED_STRUCT_FIELDS = {
         0x14: ("direction", "Vec3"),
         0x20: ("length", "float"),
     },
+    "ObjectVertexBuffer": {
+        0x00: ("vtbl", "ObjectVertexBufferVtbl*"),
+    },
+    "ObjectRenderBuffers": {
+        0x08: ("vertex_buffer", "ObjectVertexBuffer*"),
+    },
+    "ObjectIndexBufferResource": {
+        0x00: ("vtbl", "ObjectIndexBufferResourceVtbl*"),
+    },
+    "ObjectIndexBuffer": {
+        0x00: ("buffer", "ObjectIndexBufferResource*"),
+    },
     "Object": {
         0x10: ("flags", "ObjectFlag"),
+        0x2C: ("vertex_count", "int32_t"),
+        0x38: ("vertices", "Vec3*"),
         0x54: ("facequad_count", "int32_t"),
         0x5C: ("facequads", "ObjectFaceQuad*"),
+        0x60: ("facequad_normals", "Vec3*"),
         0x70: ("edge_count", "int32_t"),
         0x74: ("edges", "ObjectToonEdge*"),
+        0xC0: ("render_buffers", "ObjectRenderBuffers*"),
+        0xC4: ("grouped_vertex_count", "int32_t"),
+        0xD8: ("toon_index_buffer", "ObjectIndexBuffer*"),
     },
 }
 
@@ -246,12 +278,140 @@ OBJECT_EDGE_BUILDER_USER_VAR_UPDATES = (
     ),
 )
 
+# The consumer keeps two independent scalar loop owners: a stack edge index
+# and EBP's byte offset into the ObjectToonEdge bank. The index-buffer Lock
+# output is the only uint16_t bank; the current edge and vertex become typed
+# borrows only after their respective address calculations.
+OBJECT_TOON_CONSUMER_USER_VAR_UPDATES = (
+    (
+        "render_object_toon",
+        "StackVariableSourceType",
+        0,
+        -176,
+        "toon_indices",
+        "uint16_t*",
+    ),
+    (
+        "render_object_toon",
+        "StackVariableSourceType",
+        271,
+        -160,
+        "edge_index",
+        "int32_t",
+    ),
+    (
+        "render_object_toon",
+        "StackVariableSourceType",
+        0,
+        -156,
+        "view_vector",
+        "Vec3",
+    ),
+    (
+        "render_object_toon",
+        "StackVariableSourceType",
+        461,
+        -144,
+        "side_b",
+        "float",
+    ),
+    (
+        "render_object_toon",
+        "StackVariableSourceType",
+        0,
+        -140,
+        "edge_delta",
+        "Vec3",
+    ),
+    (
+        "render_object_toon",
+        "StackVariableSourceType",
+        0,
+        -128,
+        "projection",
+        "TransformMatrix",
+    ),
+    (
+        "render_object_toon",
+        "RegisterVariableSourceType",
+        288,
+        71,
+        "edge_byte_offset",
+        "int32_t",
+    ),
+    (
+        "render_object_toon",
+        "RegisterVariableSourceType",
+        296,
+        72,
+        "emitted_index_count",
+        "int32_t",
+    ),
+    (
+        "render_object_toon",
+        "RegisterVariableSourceType",
+        303,
+        66,
+        "toon_index_buffer",
+        "ObjectIndexBufferResource*",
+    ),
+    (
+        "render_object_toon",
+        "RegisterVariableSourceType",
+        322,
+        66,
+        "edge",
+        "ObjectToonEdge*",
+    ),
+    (
+        "render_object_toon",
+        "RegisterVariableSourceType",
+        361,
+        68,
+        "normal_a_index",
+        "int32_t",
+    ),
+    (
+        "render_object_toon",
+        "RegisterVariableSourceType",
+        374,
+        73,
+        "normal_a",
+        "Vec3*",
+    ),
+    (
+        "render_object_toon",
+        "RegisterVariableSourceType",
+        389,
+        67,
+        "normal_b",
+        "Vec3*",
+    ),
+    (
+        "render_object_toon",
+        "RegisterVariableSourceType",
+        403,
+        66,
+        "vertex",
+        "Vec3*",
+    ),
+    (
+        "render_object_toon",
+        "RegisterVariableSourceType",
+        534,
+        66,
+        "toon_index_buffer_for_unlock",
+        "ObjectIndexBufferResource*",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Replay calc_object_edges' reused local slot, temporary edge bank, "
-            "compaction offsets, record borrows, and final copy cursors."
+            "compaction offsets, record borrows, final copy cursors, and "
+            "render_object_toon's downstream edge/index-buffer borrows."
         )
     )
     parser.add_argument(
@@ -342,6 +502,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=OBJECT_EDGE_BUILDER_USER_VAR_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=OBJECT_TOON_CONSUMER_USER_VAR_UPDATES,
         )
     )
     return emit_summary(

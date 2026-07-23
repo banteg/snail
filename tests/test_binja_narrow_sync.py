@@ -9828,21 +9828,49 @@ def test_object_edge_builder_lifetime_replay_stays_guarded() -> None:
     ).read_text(encoding="utf-8")
 
     for owner_name, expected_size in (
+        ("Vec3", "0x0C"),
+        ("TransformMatrix", "0x40"),
         ("ObjectFaceQuad", "0x30"),
         ("ObjectToonEdge", "0x24"),
+        ("ObjectVertexBuffer", "0x04"),
+        ("ObjectRenderBuffers", "0x0C"),
+        ("ObjectIndexBufferResource", "0x04"),
+        ("ObjectIndexBuffer", "0x04"),
         ("Object", "0xDC"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
     for struct_name, offset, field_name, field_type in (
+        ("Vec3", "0x08", "z", "float"),
+        ("TransformMatrix", "0x30", "position", "Vec3"),
         ("ObjectFaceQuad", "0x08", "vertex_3", "uint16_t"),
         ("ObjectToonEdge", "0x00", "flags", "ObjectToonEdgeFlag"),
         ("ObjectToonEdge", "0x14", "direction", "Vec3"),
         ("ObjectToonEdge", "0x20", "length", "float"),
+        ("ObjectVertexBuffer", "0x00", "vtbl", "ObjectVertexBufferVtbl*"),
+        ("ObjectRenderBuffers", "0x08", "vertex_buffer", "ObjectVertexBuffer*"),
+        (
+            "ObjectIndexBufferResource",
+            "0x00",
+            "vtbl",
+            "ObjectIndexBufferResourceVtbl*",
+        ),
+        (
+            "ObjectIndexBuffer",
+            "0x00",
+            "buffer",
+            "ObjectIndexBufferResource*",
+        ),
+        ("Object", "0x2C", "vertex_count", "int32_t"),
+        ("Object", "0x38", "vertices", "Vec3*"),
         ("Object", "0x54", "facequad_count", "int32_t"),
         ("Object", "0x5C", "facequads", "ObjectFaceQuad*"),
+        ("Object", "0x60", "facequad_normals", "Vec3*"),
         ("Object", "0x70", "edge_count", "int32_t"),
         ("Object", "0x74", "edges", "ObjectToonEdge*"),
+        ("Object", "0xC0", "render_buffers", "ObjectRenderBuffers*"),
+        ("Object", "0xC4", "grouped_vertex_count", "int32_t"),
+        ("Object", "0xD8", "toon_index_buffer", "ObjectIndexBuffer*"),
     ):
         assert f'"{struct_name}": {{' in replay
         assert f'{offset}: ("{field_name}", "{field_type}")' in replay
@@ -9939,10 +9967,128 @@ def test_object_edge_builder_lifetime_replay_stays_guarded() -> None:
         )
         assert expected in replay
 
+    for source_type, index, storage, name, type_name in (
+        (
+            "StackVariableSourceType",
+            0,
+            -176,
+            "toon_indices",
+            "uint16_t*",
+        ),
+        (
+            "StackVariableSourceType",
+            271,
+            -160,
+            "edge_index",
+            "int32_t",
+        ),
+        (
+            "StackVariableSourceType",
+            0,
+            -156,
+            "view_vector",
+            "Vec3",
+        ),
+        (
+            "StackVariableSourceType",
+            461,
+            -144,
+            "side_b",
+            "float",
+        ),
+        (
+            "StackVariableSourceType",
+            0,
+            -140,
+            "edge_delta",
+            "Vec3",
+        ),
+        (
+            "StackVariableSourceType",
+            0,
+            -128,
+            "projection",
+            "TransformMatrix",
+        ),
+        (
+            "RegisterVariableSourceType",
+            288,
+            71,
+            "edge_byte_offset",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            296,
+            72,
+            "emitted_index_count",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            303,
+            66,
+            "toon_index_buffer",
+            "ObjectIndexBufferResource*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            322,
+            66,
+            "edge",
+            "ObjectToonEdge*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            361,
+            68,
+            "normal_a_index",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            374,
+            73,
+            "normal_a",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            389,
+            67,
+            "normal_b",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            403,
+            66,
+            "vertex",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            534,
+            66,
+            "toon_index_buffer_for_unlock",
+            "ObjectIndexBufferResource*",
+        ),
+    ):
+        expected = (
+            '        "render_object_toon",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
     assert "apply_split_user_var_update" in replay
     assert "apply_user_var_updates" in replay
     assert '"edge_byte_offset",\n        "Object*"' not in replay
     assert '"edge_byte_offset",\n        "ObjectToonEdge*"' not in replay
+    assert '"edge_byte_offset",\n        "Vec3*"' not in replay
     assert '"edge_byte_offset_spill",\n            variable_type="Object*"' not in replay
 
 
