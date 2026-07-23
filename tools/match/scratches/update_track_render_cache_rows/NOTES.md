@@ -50,3 +50,24 @@ Fringe links through `fringe_attachment_list_head`, the other four families
 link through `track_body_list_head`, and skirt color is borrowed from the same
 subgame. These are decompiler ownership improvements only: the scratch remains
 exact at 227/227 instructions with all 27 operands clean.
+
+## 2026-07-23 durable cache-row borrow lifetimes
+
+The guarded Binary Ninja replay now preserves 22 physical lifetimes across the
+five family activation blocks. `SegmentCache` remains the sole owner of its
+143-by-5 embedded `TrackRenderCacheSlot` grid; each block temporarily borrows
+the selected complete slot, its `Vec3` position, its `tColour`, and the
+root-owned `BodNode` draw-list sentinel. The Fringe block also names the
+stack-backed skirt-color result and the returned `tColour*` borrow.
+
+This resolves each three-component position clear to one typed `Vec3` memset,
+keeps intrusive-list accesses under `TrackRenderCacheSlot -> BodBase ->
+BodNode`, and removes the false `BodBase*` view of the list sentinels. Binary
+Ninja may inline the short-lived slot/position/color locals into those owner
+expressions, but their user-variable types are retained and replayed.
+
+Native computes the 300-byte row stride through multiply/add stages. Those
+registers remain integers: typing any scaled offset as a slot pointer would be
+fakematching. A second replay is fully idempotent. Matcher source is unchanged
+and remains proof-grade at **100.00%**, 227/227 instructions, with all 27
+masked operands clean.

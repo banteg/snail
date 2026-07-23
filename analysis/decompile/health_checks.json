@@ -5065,14 +5065,28 @@
       "artifact": "analysis/decompile/binja/functions/00433b30-update_track_render_cache_rows.c",
       "required_substrings": [
         "subgame.player.body.transform.position.z",
-        "subgame.fringe_attachment_list_head",
-        "get_track_skirt_color(&g_game_base->subgame,",
-        "subgame.track_body_list_head",
+        "subgame.fringe_attachment_list_head.bod",
+        "__builtin_memset(&manager->slots[manager->next_cache_row_index][4].bod.position, 0, 0xc)",
+        "struct tColour skirt_color_out",
+        "struct tColour* skirt_color = get_track_skirt_color(&g_game_base->subgame, &skirt_color_out)",
+        "struct BodNode* floor_active_list = &g_game_base->subgame.track_body_list_head",
+        "floor_active_list->list_next",
+        "__builtin_memset(&manager->slots[manager->next_cache_row_index][0].bod.position, 0, 0xc)",
+        "struct BodNode* slide_active_list",
+        "__builtin_memset(&manager->slots[manager->next_cache_row_index][1].bod.position, 0, 0xc)",
+        "struct BodNode* ramp_active_list",
+        "__builtin_memset(&manager->slots[manager->next_cache_row_index][3].bod.position, 0, 0xc)",
+        "struct BodNode* warning_active_list",
+        "__builtin_memset(&manager->slots[manager->next_cache_row_index][2].bod.position, 0, 0xc)",
         "manager->next_cache_row_z"
       ],
       "forbidden_substrings": [
         "g_game_base[0x74618]",
         "g_game_base->subgame.scan_reset",
+        "struct BodBase* ecx_",
+        "struct tColour* eax_11",
+        "bod.position.z)[",
+        "bod.color.g)[",
         "unimplemented"
       ]
     },

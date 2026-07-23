@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "build_object_texture_group_buffers",
-      "address": "0x413d50"
+      "name": "update_track_render_cache_rows",
+      "address": "0x433b30"
     }
   ],
   "health_check_count": 917,

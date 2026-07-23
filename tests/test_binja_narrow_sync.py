@@ -9278,6 +9278,130 @@ def test_track_cache_manager_lifetime_replay_stays_guarded() -> None:
     assert '"slot_cursor",\n        "TrackRenderCacheSlot*"' not in replay
 
 
+def test_track_cache_row_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_track_cache_row_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("BodNode", "0x10"),
+        ("Vec3", "0x0C"),
+        ("tColour", "0x10"),
+        ("BodBase", "0x38"),
+        ("TrackRenderCacheSlot", "0x3C"),
+        ("SegmentCache", "0xA7F8"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("BodNode", "0x08", "list_prev", "BodNode*"),
+        ("BodNode", "0x0C", "list_next", "BodNode*"),
+        ("Vec3", "0x08", "z", "float"),
+        ("tColour", "0x0C", "a", "float"),
+        ("BodBase", "0x10", "position", "Vec3"),
+        ("BodBase", "0x28", "color", "tColour"),
+        ("TrackRenderCacheSlot", "0x00", "bod", "BodBase"),
+        ("SegmentCache", "0x58", "slots", "TrackRenderCacheSlot[143][5]"),
+        ("SegmentCache", "0xA7F4", "next_cache_row_index", "int32_t"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        (
+            "RegisterVariableSourceType",
+            56,
+            67,
+            "fringe_active_list",
+            "BodNode*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            78,
+            66,
+            "fringe_slot",
+            "TrackRenderCacheSlot*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            149,
+            66,
+            "fringe_position",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            196,
+            68,
+            "fringe_color",
+            "tColour*",
+        ),
+        (
+            "StackVariableSourceType",
+            0,
+            -16,
+            "skirt_color_out",
+            "tColour",
+        ),
+        (
+            "RegisterVariableSourceType",
+            252,
+            66,
+            "floor_slot",
+            "TrackRenderCacheSlot*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            392,
+            66,
+            "slide_slot",
+            "TrackRenderCacheSlot*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            534,
+            66,
+            "ramp_slot",
+            "TrackRenderCacheSlot*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            676,
+            66,
+            "warning_slot",
+            "TrackRenderCacheSlot*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            742,
+            66,
+            "warning_position",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            772,
+            67,
+            "warning_color",
+            "tColour*",
+        ),
+    ):
+        expected = (
+            '        "update_track_render_cache_rows",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert "row_index_pointer" not in replay
+
+
 def test_track_cache_teardown_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_track_cache_teardown_lifetimes.py"
