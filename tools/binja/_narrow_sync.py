@@ -2145,12 +2145,22 @@ def spec_key(spec):
     )
 
 
+def known_variables(function):
+    variables = {{}}
+    for variable in function.vars:
+        variables[variable_key(variable)] = variable
+    for variable in function.split_vars:
+        variables.setdefault(variable_key(variable), variable)
+    for merge_target, sources in function.merged_vars.items():
+        variables.setdefault(variable_key(merge_target), merge_target)
+        for source in sources:
+            variables.setdefault(variable_key(source), source)
+    return variables
+
+
 def find_current_variable(function, spec):
     key = spec_key(spec)
-    candidates = [variable for variable in function.vars if variable_key(variable) == key]
-    if len(candidates) > 1:
-        raise RuntimeError(f"multiple live variables match {{key!r}}")
-    return candidates[0] if candidates else None
+    return known_variables(function).get(key)
 
 
 def find_definition_variable(function, spec):
@@ -2224,11 +2234,12 @@ def inspect_expected_state(function, expected_type):
     }}
     for merge_target_key, source_keys in merge_entries.items():
         touched = ({{merge_target_key}} | source_keys) & relevant_keys
-        if touched and not (
+        safe_same_target_extension = (
             merge_definitions
             and merge_target_key == expected_target_key
-            and source_keys == expected_source_keys
-        ):
+            and source_keys.issubset(expected_source_keys)
+        )
+        if touched and not safe_same_target_extension:
             raise RuntimeError(
                 "refusing to replace conflicting variable merge: "
                 f"target={{merge_target_key!r}}, sources={{sorted(source_keys)!r}}"

@@ -8903,6 +8903,9 @@ def test_split_user_variable_replay_previews_before_saved_apply(monkeypatch) -> 
     assert "instruction.get_split_var_for_definition" in calls[0][-1]
     assert "function.split_var(split_variable)" in calls[0][-1]
     assert "function.merge_vars(" in calls[0][-1]
+    assert "source_keys.issubset(expected_source_keys)" in calls[0][-1]
+    assert "for variable in function.split_vars" in calls[0][-1]
+    assert "for merge_target, sources in function.merged_vars.items()" in calls[0][-1]
     assert "bv.file.save_auto_snapshot()" in calls[0][-1]
 
 
