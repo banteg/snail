@@ -100,3 +100,19 @@ half-height through the dead incoming `width` slot; rewriting the source around
 that compiler allocation regresses the focused result to 95.63% and reverses
 several natural floating-point operand orders. The retained 98.34% residual is
 therefore bounded x87 scheduling, not evidence for argument-slot ownership.
+
+2026-07-23 transient vertex-block ownership: the 0x60-byte Lock output is now
+viewed in Binary Ninja as one borrowed `ImmediateQuadVertexBlock` containing
+four shared 0x18-byte `ObjectRenderVertex` records. The wrapper is analysis-only:
+`g_direct3d_renderer.renderer_state->vertex_buffer` remains the retained owner.
+All three native paths now expose the same `vertices[0..3].{x,y,z,diffuse,u,v}`
+layout instead of a flat `float*`. The tracked IDA decompile independently
+corroborates record bases at +0x00/+0x18/+0x30/+0x48, color at record +0x0c,
+UVs at +0x10/+0x14, Lock size 96, stream stride 24, FVF 322 (`0x142`), and two
+submitted primitives.
+
+The function also exceeded Binary Ninja's ordinary analysis-time budget after
+a GUI restart. Its narrow replay now persists the per-function
+`NeverSkipFunctionAnalysis` override, rejects non-timeout skip reasons, verifies
+HLIL before applying the stack lifetime, and restores the prior override during
+preview. A second replay performs no type, analysis, or variable mutation.

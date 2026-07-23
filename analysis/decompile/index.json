@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "add_track_cache_vertex",
-      "address": "0x433830"
+      "name": "draw_textured_quad_immediate",
+      "address": "0x413030"
     }
   ],
   "health_check_count": 921,

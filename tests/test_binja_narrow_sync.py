@@ -8750,6 +8750,65 @@ def test_function_reanalysis_uses_a_previewed_batch(monkeypatch) -> None:
     assert result[0]["operation_count"] == 2
 
 
+def test_previewed_batch_can_pin_timed_out_function_analysis() -> None:
+    code = _narrow_sync._batch_python_code(
+        [
+            {
+                "op": "ensure_function_analysis",
+                "identifier": "draw_textured_quad_immediate",
+            }
+        ],
+        preview=True,
+    )
+
+    assert "FunctionAnalysisSkipOverride.NeverSkipFunctionAnalysis" in code
+    assert "ExceedFunctionAnalysisTimeSkipReason" in code
+    assert "refusing to override a non-timeout analysis skip" in code
+    assert "function.analysis_skip_override = desired_override" in code
+    assert "function.reanalyze()" in code
+    assert 'observed["analysis_skipped"] is False' in code
+    assert 'observed["has_hlil"] is True' in code
+    assert "analysis_skip_override_restorations" in code
+    assert "function.analysis_skip_override = original_override" in code
+    assert '"analysis already pinned with HLIL"' in code
+
+
+def test_function_analysis_guard_uses_a_previewed_batch(monkeypatch) -> None:
+    calls = []
+
+    def fake_previewed_batch(_repo_root, *, target, operations):
+        calls.append((target, operations))
+        return {
+            "preview": {"success": True},
+            "apply": {"success": True, "committed": True},
+        }
+
+    monkeypatch.setattr(
+        _narrow_sync,
+        "run_previewed_bn_batch",
+        fake_previewed_batch,
+    )
+    result = _narrow_sync.ensure_function_analysis(
+        Path("."),
+        target="snail-mail.exe",
+        identifiers=("draw_textured_quad_immediate",),
+    )
+
+    assert calls == [
+        (
+            "snail-mail.exe",
+            [
+                {
+                    "op": "ensure_function_analysis",
+                    "identifier": "draw_textured_quad_immediate",
+                }
+            ],
+        )
+    ]
+    assert result[0]["op"] == "function_analysis_guard_batch"
+    assert result[0]["operation_count"] == 1
+
+
 def test_user_variable_replay_skips_apply_when_current(monkeypatch) -> None:
     calls = []
 
@@ -9229,6 +9288,79 @@ def test_track_cache_vertex_lifetime_replay_stays_guarded() -> None:
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
     assert "x87_r7" not in replay
+
+
+def test_immediate_quad_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_immediate_quad_lifetimes.py"
+    ).read_text(encoding="utf-8")
+    header = (HEADER_DIR / "bn_object_render_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "typedef struct ImmediateQuadVertexBlock {" in header
+    assert "ObjectRenderVertex vertices[4];" in header
+    assert "borrowed 0x60-byte immediate-mode lock" in header
+
+    for owner_name, expected_size in (
+        ("ObjectRenderVertex", "0x18"),
+        ("ImmediateQuadVertexBlock", "0x60"),
+        ("ObjectVertexBuffer", "0x04"),
+        ("ObjectRenderBuffers", "0x0C"),
+        ("Direct3DRenderer", "0xBCC0"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("ObjectRenderVertex", "0x0C", "diffuse", "uint32_t"),
+        ("ObjectRenderVertex", "0x14", "v", "float"),
+        (
+            "ImmediateQuadVertexBlock",
+            "0x00",
+            "vertices",
+            "ObjectRenderVertex[4]",
+        ),
+        (
+            "ObjectRenderBuffers",
+            "0x08",
+            "vertex_buffer",
+            "ObjectVertexBuffer*",
+        ),
+        (
+            "Direct3DRenderer",
+            "0xBB88",
+            "renderer_state",
+            "ObjectRenderBuffers*",
+        ),
+        (
+            "Direct3DRenderer",
+            "0xBB94",
+            "device",
+            "Direct3DDevice8*",
+        ),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    expected = (
+        '        "draw_textured_quad_immediate",\n'
+        '        "StackVariableSourceType",\n'
+        "        0,\n"
+        "        -8,\n"
+        '        "quad",\n'
+        '        "ImmediateQuadVertexBlock*"'
+    )
+    assert expected in replay
+    assert 'include_types=("ImmediateQuadVertexBlock",)' in replay
+    assert replay.index("types_declare_missing_only(") < replay.index(
+        "ensure_function_analysis("
+    )
+    assert replay.index("ensure_function_analysis(") < replay.index(
+        "apply_user_var_updates("
+    )
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "float* data" not in replay
 
 
 def test_track_cache_builder_lifetime_replay_stays_guarded() -> None:

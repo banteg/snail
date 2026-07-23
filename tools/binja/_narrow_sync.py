@@ -220,6 +220,7 @@ prototype_reanalysis_identifiers = []
 user_var_reanalysis_identifiers = []
 snapshot_saved = False
 analysis_changed = False
+analysis_skip_override_restorations = []
 try:
     for operation in operations:
         kind = operation["op"]
@@ -378,6 +379,56 @@ try:
             affected_functions.append(str(function.name))
             continue
 
+        if kind == "ensure_function_analysis":
+            from binaryninja import FunctionAnalysisSkipOverride
+
+            function = find_function(operation["identifier"])
+            before = {
+                "name": str(function.name),
+                "address": hex(int(function.start)),
+                "analysis_skipped": bool(function.analysis_skipped),
+                "analysis_skip_reason": str(function.analysis_skip_reason),
+                "analysis_skip_override": str(function.analysis_skip_override),
+                "has_hlil": function.hlil is not None,
+            }
+            if (
+                before["analysis_skipped"]
+                and "ExceedFunctionAnalysisTimeSkipReason"
+                not in before["analysis_skip_reason"]
+            ):
+                raise RuntimeError(
+                    "refusing to override a non-timeout analysis skip for "
+                    f"{function.name}: {before['analysis_skip_reason']}"
+                )
+            desired_override = (
+                FunctionAnalysisSkipOverride.NeverSkipFunctionAnalysis
+            )
+            override_changed = function.analysis_skip_override != desired_override
+            needs_reanalysis = (
+                before["analysis_skipped"] or not before["has_hlil"]
+            )
+            changed = override_changed or needs_reanalysis
+            if override_changed:
+                analysis_skip_override_restorations.append(
+                    (function, function.analysis_skip_override)
+                )
+                function.analysis_skip_override = desired_override
+            if needs_reanalysis:
+                function.reanalyze()
+            if changed:
+                analysis_changed = True
+            results.append({
+                "op": kind,
+                "identifier": str(operation["identifier"]),
+                "function": str(function.name),
+                "address": hex(int(function.start)),
+                "before": before,
+                "expected_override": str(desired_override),
+                "changed": changed,
+            })
+            affected_functions.append(str(function.name))
+            continue
+
         if kind == "struct_field_set":
             struct_name = str(operation["struct_name"])
             type_obj = bv.get_type_by_name(struct_name)
@@ -458,6 +509,21 @@ try:
             }
             entry["observed"] = observed
             entry["verified"] = observed == entry["before"]
+        elif entry["op"] == "ensure_function_analysis":
+            function = find_function(entry["identifier"])
+            observed = {
+                "analysis_skipped": bool(function.analysis_skipped),
+                "analysis_skip_reason": str(function.analysis_skip_reason),
+                "analysis_skip_override": str(function.analysis_skip_override),
+                "has_hlil": function.hlil is not None,
+            }
+            entry["observed"] = observed
+            entry["verified"] = (
+                observed["analysis_skipped"] is False
+                and observed["has_hlil"] is True
+                and observed["analysis_skip_override"]
+                == entry["expected_override"]
+            )
         else:
             type_obj = bv.get_type_by_name(entry["struct_name"])
             member = (
@@ -480,6 +546,7 @@ try:
             raise RuntimeError(f"batch verification failed: {entry!r}")
         if entry["op"] in {
             "undefine_symbol",
+            "ensure_function_analysis",
             "user_var_set",
             "user_var_delete",
         } and not entry["changed"]:
@@ -488,9 +555,13 @@ try:
                 "already absent"
                 if entry["op"] == "undefine_symbol"
                 else (
+                    "analysis already pinned with HLIL"
+                    if entry["op"] == "ensure_function_analysis"
+                    else (
                     "already automatic"
                     if entry["op"] == "user_var_delete"
                     else "already current"
+                    )
                 )
             )
         else:
@@ -510,6 +581,8 @@ try:
             ):
                 find_function(identifier).reanalyze()
             bv.update_analysis_and_wait()
+        for function, original_override in analysis_skip_override_restorations:
+            function.analysis_skip_override = original_override
     else:
         bv.commit_undo_actions(state)
         undo_closed = True
@@ -524,6 +597,8 @@ except Exception:
             ):
                 find_function(identifier).reanalyze()
             bv.update_analysis_and_wait()
+        for function, original_override in analysis_skip_override_restorations:
+            function.analysis_skip_override = original_override
     raise
 
 result = {
@@ -622,6 +697,33 @@ def reanalyze_functions(
     return [
         {
             "op": "function_reanalysis_batch",
+            "operation_count": len(operations),
+            "operations": operations,
+            "result": run_previewed_bn_batch(
+                repo_root,
+                target=target,
+                operations=operations,
+            ),
+        }
+    ]
+
+
+def ensure_function_analysis(
+    repo_root: Path, *, target: str, identifiers: Iterable[str]
+) -> list[dict[str, object]]:
+    """Persist per-function analysis for owners that can exceed the time limit."""
+    operations = [
+        {
+            "op": "ensure_function_analysis",
+            "identifier": identifier,
+        }
+        for identifier in identifiers
+    ]
+    if not operations:
+        return []
+    return [
+        {
+            "op": "function_analysis_guard_batch",
             "operation_count": len(operations),
             "operations": operations,
             "result": run_previewed_bn_batch(
