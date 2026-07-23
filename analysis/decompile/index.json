@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_font3d_objects",
-      "address": "0x44ae10"
+      "name": "draw_font_text_instance",
+      "address": "0x44a360"
     }
   ],
   "health_check_count": 924,

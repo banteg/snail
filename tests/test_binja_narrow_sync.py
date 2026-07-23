@@ -7785,8 +7785,23 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert "uint8_t pixels[1];" in analysis_header
     assert '"TgaImageView": 0x14' in binja_sync
     assert "ensure_function_analysis" in binja_sync
+    assert "apply_split_user_var_update" in binja_sync
     assert "apply_user_var_updates" in binja_sync
     assert '"register_font_texture_sheet"' in binja_sync
+    assert '"draw_font_text_instance"' in binja_sync
+    assert "FONT_DRAW_CURSOR_X_DEFINITIONS" in binja_sync
+    assert binja_sync.count('"StackVariableSourceType", 12, 4') == 1
+    assert "FONT_DRAW_CURSOR_X_VAR" in binja_sync
+    assert '"0x44a36c"' in binja_sync
+    assert '"0x44a39f"' in binja_sync
+    assert '"0x44a3c9"' in binja_sync
+    assert '"0x44a3f3"' in binja_sync
+    assert '"0x44a3f9", "mlil_ssa"' in binja_sync
+    assert '"0x44a414", "mlil_ssa"' in binja_sync
+    assert '"0x44a6b1"' in binja_sync
+    assert '"0x44a6c2", "mlil_ssa"' in binja_sync
+    assert 'variable_name="cursor_x"' in binja_sync
+    assert 'variable_type="float"' in binja_sync
     assert '"image"' in binja_sync
     assert '"TgaImageView*"' in binja_sync
     assert "\n        45,\n        66," in binja_sync

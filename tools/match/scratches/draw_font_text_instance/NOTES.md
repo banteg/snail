@@ -53,3 +53,18 @@ unresolved or mismatched in the initial run.
   the tracked decompiles.
 - No matcher source changed. The honest 35.70% result remains visible; this
   slice recovers durable ownership rather than forcing a compiler schedule.
+
+## 2026-07-23 horizontal cursor lifetime
+
+VC6 copies the borrowed `cFontPrintBuffer*` argument into `esi`, then reuses
+the incoming `[esp+4]` argument slot as the float horizontal cursor. IDA
+independently exposes that recycled slot as `entrya`; Binary Ninja previously
+rendered its stores and arithmetic as assignments to, and floating-point
+conversions of, the entry pointer.
+
+The canonical Binary Ninja replay now pins this function against analysis
+skipping and merges all five cursor definitions plus the three SSA joins into
+one `float cursor_x` lifetime. The tracked decompile consequently preserves
+`entry->...` for queue-record ownership while using `cursor_x` for alignment,
+wave displacement, and per-glyph advance. No matcher source changed, so the
+honest 35.70% result and 19 clean masked operands remain unchanged.

@@ -9,6 +9,7 @@ import sys
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
+    apply_split_user_var_update,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
     apply_user_var_updates,
@@ -215,6 +216,27 @@ PROTO_UPDATES = (
 
 ANALYSIS_GUARD_FUNCTIONS = (
     "register_font_texture_sheet",
+    "draw_font_text_instance",
+)
+
+# VC6 copies the queue-entry pointer into ESI, then recycles the incoming
+# [esp+4] argument slot as the horizontal glyph cursor. The three alignment
+# branches and loop back-edge feed the same float lifetime through SSA joins.
+FONT_DRAW_CURSOR_X_DEFINITIONS = (
+    ("0x44a36c", "mlil", "StackVariableSourceType", 12, 4),
+    ("0x44a39f", "mlil", "StackVariableSourceType", 63, 4),
+    ("0x44a3c9", "mlil", "StackVariableSourceType", 105, 4),
+    ("0x44a3f3", "mlil", "StackVariableSourceType", 147, 4),
+    ("0x44a3f9", "mlil_ssa", "StackVariableSourceType", 153, 4),
+    ("0x44a414", "mlil_ssa", "StackVariableSourceType", 180, 4),
+    ("0x44a6b1", "mlil", "StackVariableSourceType", 849, 4),
+    ("0x44a6c2", "mlil_ssa", "StackVariableSourceType", 866, 4),
+)
+
+FONT_DRAW_CURSOR_X_VAR = (
+    "StackVariableSourceType",
+    12,
+    4,
 )
 
 FONT_TGA_USER_VAR_UPDATES = (
@@ -402,6 +424,15 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             identifiers=ANALYSIS_GUARD_FUNCTIONS,
+        ),
+        *apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="draw_font_text_instance",
+            definitions=FONT_DRAW_CURSOR_X_DEFINITIONS,
+            target_var=FONT_DRAW_CURSOR_X_VAR,
+            variable_name="cursor_x",
+            variable_type="float",
         ),
         *apply_user_var_updates(
             REPO_ROOT,

@@ -9254,13 +9254,18 @@
       "name": "bn_font_draw_queue_owner",
       "artifact": "analysis/decompile/binja/functions/0044a360-draw_font_text_instance.c",
       "required_substrings": [
-        "struct cFontPrintBuffer* entry_1 = entry",
-        "entry_1->font_id",
-        "entry_1->text_scale",
-        "entry_1->color",
+        "float cursor_x = entry->x0",
+        "cursor_x = fconvert.s",
+        "fconvert.t(cursor_x)",
+        "entry->font_id",
+        "entry->text_scale",
+        "entry->color",
         "g_font_sheets[font_id_1].spacing_scale"
       ],
       "forbidden_substrings": [
+        "struct cFontPrintBuffer* entry_1 = entry",
+        "entry = fconvert.s",
+        "fconvert.t(entry)",
         "data_7772f8",
         "__asm",
         "_ET1"
