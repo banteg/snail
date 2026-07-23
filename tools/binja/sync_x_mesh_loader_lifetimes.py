@@ -24,6 +24,13 @@ X_MESH_LOADER_PROTOTYPE = (
     "DirectXLoader* loader, char* mesh_path, Object* object, "
     "int32_t options_flags)"
 )
+DIRECTX_LOADER_INIT_PROTOTYPE = (
+    "void __thiscall initialize_directx_loader(DirectXLoader* loader)"
+)
+CACHED_X_MESH_LOADER_PROTOTYPE = (
+    "int32_t __thiscall load_or_reuse_cached_x_mesh("
+    "DirectXLoader* loader, char* mesh_name)"
+)
 
 EXPECTED_TYPE_WIDTHS = {
     "ObjectUv": 0x08,
@@ -50,6 +57,10 @@ EXPECTED_STRUCT_FIELDS = {
         0x38: ("vertices", "Vec3*"),
         0x5C: ("facequads", "ObjectFaceQuad*"),
     },
+    "CachedXMeshSlot": {
+        0x24: ("object", "Object*"),
+        0x3C: ("name", "char[128]"),
+    },
     "DirectXLoader": {
         0x00: ("animation_bytes", "char*"),
         0x04: ("cached_x_mesh_count", "int32_t"),
@@ -65,6 +76,11 @@ EXPECTED_STRUCT_FIELDS = {
 # They never own or free that storage. The temporary UV, remap, and material
 # banks are heap owners already recovered from typed allocation/call flows, so
 # this replay deliberately leaves their SSA-scoped registers inferred.
+#
+# The cache wrapper's EBX lifetime is likewise a borrowed cursor: native starts
+# it at CachedXMeshSlot::name and advances it by the exact 0xbc slot stride.
+# EDI carries the corresponding slot index, while the miss path allocates one
+# Object into the selected slot and retains the incremented cache count in EAX.
 X_MESH_LOADER_USER_VAR_UPDATES = (
     (
         "load_x_mesh",
@@ -130,14 +146,46 @@ X_MESH_LOADER_USER_VAR_UPDATES = (
         "texture_path",
         "char[0x100]",
     ),
+    (
+        "load_or_reuse_cached_x_mesh",
+        "RegisterVariableSourceType",
+        10,
+        73,
+        "cached_slot_index",
+        "int32_t",
+    ),
+    (
+        "load_or_reuse_cached_x_mesh",
+        "RegisterVariableSourceType",
+        19,
+        69,
+        "cached_name_cursor",
+        "char*",
+    ),
+    (
+        "load_or_reuse_cached_x_mesh",
+        "RegisterVariableSourceType",
+        80,
+        66,
+        "new_object",
+        "Object*",
+    ),
+    (
+        "load_or_reuse_cached_x_mesh",
+        "RegisterVariableSourceType",
+        133,
+        66,
+        "new_cached_x_mesh_count",
+        "int32_t",
+    ),
 )
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay load_x_mesh's authored member ABI, borrowed parser "
-            "cursors, and adjacent path-buffer lifetimes."
+            "Replay the DirectX X-mesh loader family's authored member ABIs, "
+            "borrowed parser/cache cursors, and retained object lifetimes."
         )
     )
     parser.add_argument(
@@ -207,6 +255,18 @@ def main() -> int:
             target=args.target,
             identifier="load_x_mesh",
             prototype=X_MESH_LOADER_PROTOTYPE,
+        ),
+        apply_direct_proto_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="initialize_directx_loader",
+            prototype=DIRECTX_LOADER_INIT_PROTOTYPE,
+        ),
+        apply_direct_proto_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="load_or_reuse_cached_x_mesh",
+            prototype=CACHED_X_MESH_LOADER_PROTOTYPE,
         ),
         *apply_user_var_updates(
             REPO_ROOT,

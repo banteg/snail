@@ -11476,6 +11476,44 @@
       ]
     },
     {
+      "name": "bn_directx_loader_root_owners",
+      "artifact": "analysis/decompile/binja/functions/00405c90-initialize_directx_loader.c",
+      "required_substrings": [
+        "loader->cached_x_mesh_count = 0",
+        "loader->animation_bytes = load_file_bytes(\"X/_Animation.txt\", nullptr)",
+        "initialize_duplicate_vertices(&loader->duplicate_vertices, 0x7d0)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "&loader[0x1782]",
+        "return initialize_duplicate_vertices",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_cached_x_mesh_lifetimes",
+      "artifact": "analysis/decompile/binja/functions/00405cc0-load_or_reuse_cached_x_mesh.c",
+      "required_substrings": [
+        "int32_t cached_slot_index = 0",
+        "char* cached_name_cursor = &loader->cached_x_mesh_slots[0].name",
+        "cached_name_cursor = &cached_name_cursor[0xbc]",
+        "struct Object* new_object = add_object_to_list(&g_object_list)",
+        "set_bod_object(&loader->cached_x_mesh_slots[loader->cached_x_mesh_count], new_object)",
+        "int32_t new_cached_x_mesh_count = loader->cached_x_mesh_count + 1",
+        "loader->cached_x_mesh_count = new_cached_x_mesh_count"
+      ],
+      "forbidden_substrings": [
+        "int32_t i = 0",
+        "ebx_1",
+        "char (*",
+        "int32_t eax_7",
+        "struct Object* object =",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "ida_object_mesh_loader_owner",
       "artifact": "analysis/decompile/ida/functions/00405640-load_x_mesh.c",
       "required_substrings": [

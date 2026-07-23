@@ -1010,7 +1010,7 @@ def test_object_loader_replay_keeps_authored_abi_and_exact_frame_owners() -> Non
         assert marker in replay
 
 
-def test_x_mesh_loader_replay_keeps_borrowed_cursors_and_path_buffers() -> None:
+def test_x_mesh_loader_replay_keeps_cache_and_parser_lifetimes() -> None:
     owner_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
         encoding="utf-8"
     )
@@ -1037,6 +1037,26 @@ def test_x_mesh_loader_replay_keeps_borrowed_cursors_and_path_buffers() -> None:
     assert "apply_direct_proto_update(" in replay
     assert "apply_user_var_updates(" in replay
     assert "verify_x_mesh_loader_owner_layouts" in replay
+    for prototype, fragments in (
+        (
+            "void __thiscall initialize_directx_loader(DirectXLoader* loader)",
+            ("void __thiscall initialize_directx_loader(",),
+        ),
+        (
+            (
+                "int32_t __thiscall load_or_reuse_cached_x_mesh("
+                "DirectXLoader* loader, char* mesh_name)"
+            ),
+            (
+                "int32_t __thiscall load_or_reuse_cached_x_mesh(",
+                "DirectXLoader* loader, char* mesh_name)",
+            ),
+        ),
+    ):
+        assert prototype in owner_sync
+        assert prototype + ";" in header
+        for fragment in fragments:
+            assert fragment in replay
     for storage, name, variable_type in (
         (-564, "mesh_cursor", "char*"),
         (-556, "material_cursor", "char*"),
@@ -1050,6 +1070,20 @@ def test_x_mesh_loader_replay_keeps_borrowed_cursors_and_path_buffers() -> None:
         marker = (
             '        "StackVariableSourceType",\n'
             "        0,\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert marker in replay
+    for index, storage, name, variable_type in (
+        (10, 73, "cached_slot_index", "int32_t"),
+        (19, 69, "cached_name_cursor", "char*"),
+        (80, 66, "new_object", "Object*"),
+        (133, 66, "new_cached_x_mesh_count", "int32_t"),
+    ):
+        marker = (
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
             f"        {storage},\n"
             f'        "{name}",\n'
             f'        "{variable_type}",'

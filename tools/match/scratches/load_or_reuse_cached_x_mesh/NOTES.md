@@ -16,3 +16,11 @@ duplicate-vertex types now live in the shared BN/IDA object slice. The four
 loader-family prototypes use the authored `cRDirectX` receiver; in particular,
 `load_x_mesh` is no longer mis-typed as a free stdcall over a partial path-mesh
 view. This exact cache method remains `65/65` with six clean masked operands.
+
+2026-07-23 durable cache-lifetime replay: the X-mesh loader replay now also
+pins this helper's member ABI, integer slot index, borrowed name cursor, newly
+allocated `Object`, and post-increment cache count. The name cursor starts at
+`cached_x_mesh_slots[0].name` and advances by the independently proven `0xbc`
+slot extent; it does not own separate string storage. Focused matching remains
+intentionally unchanged at **100.00%**, 65/65 instructions, with all six
+masked operands clean.

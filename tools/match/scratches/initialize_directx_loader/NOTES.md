@@ -11,3 +11,10 @@ The exact containing layout is `0x5e10` bytes: `animation_bytes +0x00`,
 and authored `cRDuplicateVertices +0x5e08`. Its sole startup caller discards `eax`;
 changing the former helper-pointer result to `void` preserves the proof-grade
 `13/13` match with three clean masked operands.
+
+2026-07-23 tracked-owner refresh: the shared X-mesh replay now explicitly
+reasserts this member ABI alongside the cache helper and the full mesh loader.
+The tracked Binary Ninja artifact therefore carries the root
+`DirectXLoader::{cached_x_mesh_count, animation_bytes, duplicate_vertices}`
+owners instead of stale `arg1` indexing. Focused matching remains **100.00%**,
+13/13 instructions, with all three masked operands clean.
