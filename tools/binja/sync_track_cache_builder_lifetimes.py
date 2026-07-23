@@ -23,7 +23,9 @@ EXPECTED_TYPE_WIDTHS = {
     "BodBase": 0x38,
     "Fringe": 0x38,
     "TrackRowCell": 0x54,
+    "TextureRef": 0xA4,
     "ObjectFaceQuad": 0x30,
+    "ObjectRenderVertex": 0x18,
     "ObjectRenderBuffers": 0x0C,
     "ObjectVertexBuffer": 0x04,
     "ObjectIndexBufferResource": 0x04,
@@ -83,9 +85,10 @@ EXPECTED_STRUCT_FIELDS = {
 
 # The builder intentionally retains byte-offset induction variables while it
 # traverses the 3200-by-8 runtime-cell slab. Later lifetimes are narrower
-# borrows: one Fringe, the selected source/destination Objects, the two locked
-# D3D streams, and Object** cursors over the five family slots. The final scan
-# reuses the same registers for a separate family and cache-row reduction.
+# borrows: one Fringe, the selected source/destination Objects and face banks,
+# the typed staging/locked D3D streams, and Object** cursors over the five
+# family slots. The final scan reuses the same registers for a separate family
+# and cache-row reduction.
 TRACK_CACHE_BUILDER_USER_VAR_UPDATES = (
     (
         "build_track_render_caches",
@@ -130,6 +133,54 @@ TRACK_CACHE_BUILDER_USER_VAR_UPDATES = (
     (
         "build_track_render_caches",
         "RegisterVariableSourceType",
+        305,
+        67,
+        "fringe_texture_source",
+        "Fringe*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        311,
+        68,
+        "fringe_source_object",
+        "Object*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        317,
+        67,
+        "fringe_source_facequads",
+        "ObjectFaceQuad*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        323,
+        66,
+        "fringe_cache_object",
+        "Object*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        330,
+        68,
+        "fringe_cache_texture_refs",
+        "TextureRef**",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        336,
+        66,
+        "fringe_texture_ref",
+        "TextureRef*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
         375,
         66,
         "warning_cell_base",
@@ -158,6 +209,38 @@ TRACK_CACHE_BUILDER_USER_VAR_UPDATES = (
         67,
         "cell_flags",
         "uint32_t",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        459,
+        66,
+        "warning_source_object",
+        "Object*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        614,
+        66,
+        "slide_source_object",
+        "Object*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        771,
+        66,
+        "floor_source_object",
+        "Object*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        912,
+        68,
+        "ramp_source_object",
+        "Object*",
     ),
     (
         "build_track_render_caches",
@@ -261,7 +344,7 @@ TRACK_CACHE_BUILDER_USER_VAR_UPDATES = (
         0,
         -52,
         "locked_vertices",
-        "void*",
+        "ObjectRenderVertex*",
     ),
     (
         "build_track_render_caches",
@@ -269,7 +352,39 @@ TRACK_CACHE_BUILDER_USER_VAR_UPDATES = (
         0,
         -48,
         "locked_indices",
-        "void*",
+        "uint16_t*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        1122,
+        72,
+        "staged_vertices",
+        "ObjectRenderVertex*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        1125,
+        73,
+        "locked_vertex_cursor",
+        "ObjectRenderVertex*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        1156,
+        72,
+        "staged_indices",
+        "uint16_t*",
+    ),
+    (
+        "build_track_render_caches",
+        "RegisterVariableSourceType",
+        1159,
+        73,
+        "locked_index_cursor",
+        "uint16_t*",
     ),
     (
         "build_track_render_caches",

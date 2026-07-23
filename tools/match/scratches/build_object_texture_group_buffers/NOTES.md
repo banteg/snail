@@ -130,3 +130,17 @@ receiver remains intact everywhere it is live.
 A second replay is fully idempotent. Matcher source is unchanged and remains
 proof-grade at **100.00%**, 373/373 instructions, with all 29 masked operands
 clean.
+
+## 2026-07-23 stack-home split audit
+
+The remaining `object += 3/6` presentation was re-audited against MLIL SSA.
+Native zeroes the incoming argument home through an inline `memset`, then
+reuses that physical stack slot as the advancing index count. Binary Ninja
+exposes split definitions for the later `+3` and `+6` stores, but not for the
+zeroing memory write; its scalar phi therefore still begins at the original
+`Object*` parameter definition.
+
+Splitting only the visible stores would create a false pointer-to-integer phi
+and would not recover the initial scalar owner. No mutation is retained. The
+typed `index_count_base` register remains the first honest split lifetime, and
+the exact 373/373 matcher result is unchanged.

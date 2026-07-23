@@ -60,7 +60,7 @@
 00433317        color_2.r = manager->skirt_color_bgra.r
 00433317        color_2.a = manager->skirt_color_bgra.a
 00433349        append_track_cache_object(manager, row_index, fringe_object->bod.object, &owner_subgame->runtime_cells[0][0].anchor_position + cell_byte_offset, manager->shared_vertex_buffers[4], &vertex_count_5, manager->shared_index_buffers[4], &index_count_4, manager->max_vertex_counts[4], manager->max_index_counts[4], color_2, 0)
-00433373        *(&manager->slots[0][4].bod.object)[cache_row_index * 0x4b]->group_texture_refs = *(*(*(*(manager->owner_subgame + fringe_byte_offset) + 0x24) + 0x5c) + 0xc)
+00433373        *(&manager->slots[0][4].bod.object)[cache_row_index * 0x4b]->group_texture_refs = (*(manager->owner_subgame + fringe_byte_offset))->bod.object->facequads->texture_ref
 00433378        *(manager->owner_subgame + fringe_byte_offset) = 0
 00433383        fringe_byte_offset += 4
 00433386        cond:2_1 = var_44_1 != 1
@@ -72,34 +72,34 @@
 004333ab        struct Object* cache_object
 004333ab        struct ObjectFaceQuad* source_facequads
 004333ab        if ((cell_flags.b & 0x20) == 0 || (cell_flags & 0x4000) != 0x4000)
-00433410        char eax_22 = is_sub_loc_floor(&warning_cell_base[0x3bfac8])
+00433410        char eax_19 = is_sub_loc_floor(&warning_cell_base[0x3bfac8])
 00433417        uint8_t* floor_or_slide_cell_base
 00433417        uint32_t floor_cell_flags
-00433417        if (eax_22 != 0)
+00433417        if (eax_19 != 0)
 0043341d        struct SubgameRuntime* owner_subgame_3 = manager->owner_subgame
 00433420        floor_cell_flags = *(&owner_subgame_3->runtime_cells[0][0].lane_and_flags + cell_byte_offset)
 00433427        floor_or_slide_cell_base = cell_byte_offset + owner_subgame_3
 00433438        uint32_t color
-00433438        if (eax_22 != 0 && (floor_cell_flags & 0x4000) == 0x4000)
+00433438        if (eax_19 != 0 && (floor_cell_flags & 0x4000) == 0x4000)
 00433443        int32_t var_60_1 = 1
 00433448        color = color_1
 00433449        if ((floor_cell_flags.b & 0x40) != 0x40)
 0043351b        label_43351b:
 0043351b        append_track_cache_object(manager, row_index, *(floor_or_slide_cell_base + 0x3bfaec), &floor_or_slide_cell_base[0x3bfad8], manager->shared_vertex_buffers[0], &vertex_count_1, manager->shared_index_buffers[0], &index_count, manager->max_vertex_counts[0], manager->max_index_counts[0], color, 1)
-0043352a        source_facequads = *(*(&manager->owner_subgame->runtime_cells[0][0].object + cell_byte_offset) + 0x5c)
+0043352a        source_facequads = (*(&manager->owner_subgame->runtime_cells[0][0].object + cell_byte_offset))->facequads
 00433536        cache_object = (&manager->slots[0][0].bod.object)[cache_row_index * 0x4b]
 0043353a        goto label_4335d0
 0043347e        label_43347e:
 0043347e        append_track_cache_object(manager, row_index, *(floor_or_slide_cell_base + 0x3bfaec), &floor_or_slide_cell_base[0x3bfad8], manager->shared_vertex_buffers[1], &vertex_count_2, manager->shared_index_buffers[1], &index_count_1, manager->max_vertex_counts[1], manager->max_index_counts[1], color, 1)
-0043348d        source_facequads = *(*(&manager->owner_subgame->runtime_cells[0][0].object + cell_byte_offset) + 0x5c)
+0043348d        source_facequads = (*(&manager->owner_subgame->runtime_cells[0][0].object + cell_byte_offset))->facequads
 00433499        cache_object = (&manager->slots[0][1].bod.object)[cache_row_index * 0x4b]
 004334a0        goto label_4335d0
-004334af        char eax_27 = is_sub_loc_slide(&manager->owner_subgame->runtime_cells + cell_byte_offset)
+004334af        char eax_23 = is_sub_loc_slide(&manager->owner_subgame->runtime_cells + cell_byte_offset)
 004334b6        uint32_t slide_cell_flags
-004334b6        if (eax_27 != 0)
+004334b6        if (eax_23 != 0)
 004334bf        floor_or_slide_cell_base = manager->owner_subgame + cell_byte_offset
 004334c1        slide_cell_flags = *(floor_or_slide_cell_base + 0x3bfb08)
-004334d5        if (eax_27 != 0 && (slide_cell_flags & 0x4000) == 0x4000)
+004334d5        if (eax_23 != 0 && (slide_cell_flags & 0x4000) == 0x4000)
 004334e0        int32_t var_60_2 = 1
 004334e5        color = color_1
 004334e6        if ((slide_cell_flags.b & 0x40) != 0x40)
@@ -109,11 +109,11 @@
 00433559        uint8_t* ramp_cell_base = manager->owner_subgame + cell_byte_offset
 0043356d        if ((*(ramp_cell_base + 0x3bfb08) & 0x4000) == 0x4000)
 004335a5        append_track_cache_object(manager, row_index, *(ramp_cell_base + 0x3bfaec), &ramp_cell_base[0x3bfad8], manager->shared_vertex_buffers[3], &vertex_count_4, manager->shared_index_buffers[3], &index_count_3, manager->max_vertex_counts[3], manager->max_index_counts[3], color_1, 0)
-004335ba        source_facequads = *(*(&manager->owner_subgame->runtime_cells[0][0].object + cell_byte_offset) + 0x5c)
+004335ba        source_facequads = (*(&manager->owner_subgame->runtime_cells[0][0].object + cell_byte_offset))->facequads
 004335c0        cache_object = (&manager->slots[0][3].bod.object)[cache_row_index * 0x4b]
 004335c0        goto label_4335d0
 004333e3        append_track_cache_object(manager, row_index, *(warning_cell_base + 0x3bfaec), &warning_cell_base[0x3bfad8], manager->shared_vertex_buffers[2], &vertex_count_3, manager->shared_index_buffers[2], &index_count_2, manager->max_vertex_counts[2], manager->max_index_counts[2], color_1, 1)
-004333f2        source_facequads = *(*(&manager->owner_subgame->runtime_cells[0][0].object + cell_byte_offset) + 0x5c)
+004333f2        source_facequads = (*(&manager->owner_subgame->runtime_cells[0][0].object + cell_byte_offset))->facequads
 004333fe        cache_object = (&manager->slots[0][2].bod.object)[cache_row_index * 0x4b]
 004335d0        label_4335d0:
 004335d0        *cache_object->group_texture_refs = source_facequads->texture_ref
@@ -132,21 +132,21 @@
 00433632        struct Object** cache_object_ref = &(&manager->slots[0][0].bod.object)[cache_row_index * 0x4b]
 00433646        while (true)
 0043364e        struct ObjectVertexBuffer* vertex_buffer = (*cache_object_ref)->render_buffers->vertex_buffer
-0043365d        void* locked_vertices
+0043365d        struct ObjectRenderVertex* locked_vertices
 0043365d        vertex_buffer->vtbl->Lock(vertex_buffer, 0, *max_vertex_count_cursor * 0x18, &locked_vertices, 0)
 00433673        struct ObjectIndexBufferResource* index_buffer = (*cache_object_ref)->index_buffer->buffer
-0043367d        void* locked_indices
+0043367d        uint16_t* locked_indices
 0043367d        index_buffer->vtbl->Lock(index_buffer, 0, max_vertex_count_cursor[5] << 1, &locked_indices, 0)
-0043368c        int32_t ecx_52 = *max_vertex_count_cursor * 0x18
-00433694        int32_t esi_3
-00433694        int32_t edi_2
-00433694        edi_2, esi_3 = __builtin_memcpy(locked_vertices, max_vertex_count_cursor[0xa], ecx_52 & 0xfffffffc)
-0043369f        __builtin_memcpy(edi_2, esi_3, ecx_52 & 3)
-004336ab        int32_t ecx_57 = family_staging_cursor[5] << 1
-004336b2        int32_t esi_5
-004336b2        int32_t edi_4
-004336b2        edi_4, esi_5 = __builtin_memcpy(locked_indices, family_staging_cursor[0xf], ecx_57 & 0xfffffffc)
-004336b9        __builtin_memcpy(edi_4, esi_5, ecx_57 & 3)
+0043368c        int32_t ecx_50 = *max_vertex_count_cursor * 0x18
+00433694        int32_t esi_2
+00433694        int32_t edi_1
+00433694        edi_1, esi_2 = __builtin_memcpy(locked_vertices, max_vertex_count_cursor[0xa], ecx_50 & 0xfffffffc)
+0043369f        __builtin_memcpy(edi_1, esi_2, ecx_50 & 3)
+004336ab        int32_t ecx_55 = family_staging_cursor[5] << 1
+004336b2        int32_t esi_3
+004336b2        int32_t edi_2
+004336b2        edi_2, esi_3 = __builtin_memcpy(locked_indices, family_staging_cursor[0xf], ecx_55 & 0xfffffffc)
+004336b9        __builtin_memcpy(edi_2, esi_3, ecx_55 & 3)
 004336c4        struct ObjectVertexBuffer* vertex_buffer_1 = (*cache_object_ref)->render_buffers->vertex_buffer
 004336ca        vertex_buffer_1->vtbl->Unlock(vertex_buffer_1)
 004336d0        struct ObjectIndexBuffer* index_buffer_1 = (*cache_object_ref)->index_buffer
@@ -159,11 +159,11 @@
 004336e2        struct Object* flushed_object = *cache_object_ref
 004336e9        cache_object_ref = &cache_object_ref[0xf]
 004336f0        flushed_object->grouped_vertex_count = *(&vertex_count_1 + family_count_byte_offset)
-004336ff        int32_t eax_53
-004336ff        int32_t edx_48
-004336ff        edx_48:eax_53 = muls.dp.d(0x55555556, *(&index_count + family_count_byte_offset))
+004336ff        int32_t eax_48
+004336ff        int32_t edx_45
+004336ff        edx_45:eax_48 = muls.dp.d(0x55555556, *(&index_count + family_count_byte_offset))
 00433714        family_staging_cursor = &family_staging_cursor[1]
-00433718        *cache_object_ref[-0xf]->group_primitive_counts = edx_48 + (edx_48 u>> 0x1f)
+00433718        *cache_object_ref[-0xf]->group_primitive_counts = edx_45 + (edx_45 u>> 0x1f)
 00433721        cache_object_ref[-0xf]->vertex_count = *(&vertex_count_1 + family_count_byte_offset)
 00433727        bool cond:6_1 = family_count_byte_offset + 4 s< 0x14
 0043372a        family_count_byte_offset += 4
@@ -181,11 +181,11 @@
 0043375d        int32_t family_index_saved = 0
 00433769        int32_t max_vertices_seen = 0
 0043376b        int32_t max_indices_seen = 0
-00433770        int32_t eax_60
-00433770        int32_t edx_53
-00433770        edx_53:eax_60 = muls.dp.d(0x2aaaaaab, manager->owner_subgame->runtime_row_count)
-00433772        int32_t edx_54 = edx_53 s>> 2
-0043377a        int32_t cache_rows_remaining = edx_54 + (edx_54 u>> 0x1f)
+00433770        int32_t eax_55
+00433770        int32_t edx_50
+00433770        edx_50:eax_55 = muls.dp.d(0x2aaaaaab, manager->owner_subgame->runtime_row_count)
+00433772        int32_t edx_51 = edx_50 s>> 2
+0043377a        int32_t cache_rows_remaining = edx_51 + (edx_51 u>> 0x1f)
 0043377e        if (cache_rows_remaining s> 0)
 00433786        struct Object** max_scan_object_ref = &(&manager->slots[0][0].bod.object)[family_index * 0xf]
 004337ad        int32_t j

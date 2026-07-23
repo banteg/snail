@@ -252,3 +252,23 @@ natural commutative reorder of the first fringe position expression was also
 tested and compiled identically, so it was restored. The honest matcher result
 remains 99.79%, 475/475 instructions, a 90-instruction common prefix, and 20
 clean operands; the sole residual is the equivalent SIB base/index encoding.
+
+## 2026-07-23 source-object and staging-stream ownership
+
+The guarded Binary Ninja replay now follows the post-call fringe reload through
+its complete borrowed chain: `Fringe` to `BodBase::object`, then
+`Object::facequads`, and finally the face's `TextureRef`. This is independent
+of the pre-call fringe borrow because the mesh append call clobbers the native
+registers. The warning, slide, floor, and ramp paths likewise keep four
+short-lived `Object*` reloads, so their shared face-bank lifetime resolves
+through `TrackRowCell::object` instead of raw `+0x5c` dereferences.
+
+The flush phase now distinguishes the retained D3D resources from the two
+borrowed lock outputs and their shared staging sources. Vertex streams are
+`ObjectRenderVertex*`; index streams are `uint16_t*`. The replay guards all 45
+physical lifetimes against the canonical owner widths and fields and is fully
+idempotent on a second run.
+
+No matcher source changed. Focused output remains honestly at **99.79%**,
+475/475 instructions, prefix 90, with all 20 operands clean; the sole residual
+is still the equivalent SIB base/index encoding documented above.
