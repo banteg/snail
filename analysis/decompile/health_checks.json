@@ -4920,6 +4920,41 @@
       ]
     },
     {
+      "name": "bn_track_cache_vertex_staging_owner",
+      "artifact": "analysis/decompile/binja/functions/00433830-add_track_cache_vertex.c",
+      "required_substrings": [
+        "struct Vec3* source_vertices = source->vertices",
+        "int32_t source_vertex_component_index = source_index * 3",
+        "struct Vec3* source_vertex",
+        "struct Vec3 transformed",
+        "transformed.y",
+        "transformed.z",
+        "int32_t vertex_index = 0",
+        "int32_t existing_vertex_count = *vertex_count",
+        "float* existing_vertex_z_cursor = &vertices->z",
+        "existing_vertex_z_cursor[-2]",
+        "struct ObjectRenderVertex* staged_vertex",
+        "staged_vertex->y = transformed.y",
+        "staged_vertex->z = transformed.z",
+        "staged_vertex->u = u",
+        "staged_vertex->v",
+        "staged_vertex->diffuse = color",
+        "int32_t next_vertex_count = *vertex_count + 1"
+      ],
+      "forbidden_substrings": [
+        "void* eax_2",
+        "float* position_1",
+        "float var_8",
+        "float var_4",
+        "int32_t esi = *vertex_count",
+        "float* edx_1",
+        "void* eax_5",
+        "*(eax_5 +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "ida_track_cache_vertex_staging_owner",
       "artifact": "analysis/decompile/ida/functions/00433830-add_track_cache_vertex.c",
       "required_substrings": [

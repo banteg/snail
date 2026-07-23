@@ -9155,6 +9155,82 @@ def test_track_cache_face_lifetime_replay_stays_guarded() -> None:
     assert "face_flag_bytes" not in replay
 
 
+def test_track_cache_vertex_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_track_cache_vertex_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("Vec3", "0x0C"),
+        ("ObjectRenderVertex", "0x18"),
+        ("Object", "0xDC"),
+        ("SegmentCache", "0xA7F8"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("Vec3", "0x04", "y", "float"),
+        ("ObjectRenderVertex", "0x0C", "diffuse", "uint32_t"),
+        ("ObjectRenderVertex", "0x14", "v", "float"),
+        ("Object", "0x38", "vertices", "Vec3*"),
+        (
+            "SegmentCache",
+            "0x2C",
+            "shared_vertex_buffers",
+            "ObjectRenderVertex*[5]",
+        ),
+        ("SegmentCache", "0xA7EC", "build_cache_row_base", "float"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        ("StackVariableSourceType", 0, -12, "transformed", "Vec3"),
+        (
+            "RegisterVariableSourceType",
+            20,
+            66,
+            "source_vertex",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            114,
+            68,
+            "existing_vertex_z_cursor",
+            "float*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            220,
+            66,
+            "staged_vertex",
+            "ObjectRenderVertex*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            252,
+            68,
+            "next_vertex_count",
+            "int32_t",
+        ),
+    ):
+        expected = (
+            '        "add_track_cache_vertex",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert "x87_r7" not in replay
+
+
 def test_track_cache_builder_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_track_cache_builder_lifetimes.py"

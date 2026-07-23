@@ -51,3 +51,25 @@ at `99.03%` because VC6 independently schedules the V store before U. The
 post-increment cursor is therefore the smallest source-shaped expression that
 both captures the pair ownership and explains the native order; the broader
 record layout remains unchanged.
+
+## 2026-07-23 source and staging record lifetimes
+
+Exact Binary Ninja SSA now preserves the optimized source shape across the
+helper. `source_vertex` borrows one `Vec3` from `Object::vertices`; VC6 keeps
+the transformed X value in x87 while materializing transformed Y and Z in the
+tail of one real `Vec3` stack home. The deduplication loop physically advances
+a `float*` anchored at each staging record's Z lane, so its `[-2]`, `[-1]`,
+`[0]`, `[2]`, and `[3]` accesses are the honest x/y/z/u/v comparison tuple.
+Typing that cursor as an `ObjectRenderVertex*` was rejected because its
+physical address is eight bytes inside the record.
+
+After the first X store, the compiler materializes the real
+`ObjectRenderVertex* staged_vertex`; the remaining y/z/u/v/diffuse stores now
+resolve through that borrowed staging record before `next_vertex_count` is
+written back. The replay guards `Vec3`, `ObjectRenderVertex`, `Object`, and
+`SegmentCache` widths plus the source, staging-bank, and projected-UV owner
+fields. x87 temporaries were deliberately left automatic: forcing a user type
+rendered misleading `.q` conversions without recovering a new owner.
+
+The matcher source is unchanged and remains exact at `100.00%`, `103/103`
+instructions, prefix `103`, with seven clean operands.
