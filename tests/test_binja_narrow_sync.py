@@ -1941,6 +1941,7 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert '("0x4b7790", "g_texture_refs")' in source
     assert '("0x4b7790", "TextureRefList")' in source
     assert "apply_data_var_updates" in source
+    assert "apply_user_var_updates" in source
     assert "types_declare(" not in source
     for declaration, ida_declaration in (
         (
@@ -1976,8 +1977,8 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
             "TextureRef *__thiscall get_sprite_texture(SpriteManager *manager, int32_t texture_id);",
         ),
         (
-            "void* __thiscall get_sprite_texture_ref(SpriteManager* manager, int32_t texture_id)",
-            "void *__thiscall get_sprite_texture_ref(SpriteManager *manager, int32_t texture_id);",
+            "TgaImageView* __thiscall get_sprite_texture_ref(SpriteManager* manager, int32_t texture_id)",
+            "TgaImageView *__thiscall get_sprite_texture_ref(SpriteManager *manager, int32_t texture_id);",
         ),
         (
             "void __thiscall update_sprite_facing_angle(Sprite* sprite, const TransformMatrix* matrix)",
@@ -2001,14 +2002,21 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert '"Object": 0xDC' in ida_source
     assert '"BodBase": 0x38' in ida_source
     assert '"TransformMatrix": 0x40' in ida_source
+    assert '"TgaImageView": 0x14' in source
+    assert '"TgaImageView": 0x14' in ida_source
     assert '"TextureRefList": 0x14058' in source
     assert '"TextureRefList": 0x14058' in ida_source
     assert 're.sub(r"\\b(?:struct|union|enum)\\s+", "", normalized)' in ida_source
     assert "0x40A490" in ida_source
     assert "0x40ACF0" in ida_source
     assert "0x44E410" in ida_source
+    assert "0x404580" in ida_source
+    assert "0x44E580" in ida_source
     assert "0x44E800" in ida_source
     assert "0x44E810" in ida_source
+    assert '"border_mouse_test"' in source
+    assert '"mask"' in source
+    assert '"TgaImageView*"' in source
     for function_name in (
         "destroy_star_field",
         "initialize_star_field",
@@ -2030,6 +2038,9 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "const struct TransformMatrix* matrix" in star_analysis_header
     assert "typedef struct TransformMatrix TransformMatrix;" not in star_analysis_header
     assert "#define TEXTURE_REF_LIST_CAPACITY 500" in star_analysis_header
+    assert "typedef struct TgaImageView {" in star_analysis_header
+    assert "uint8_t pixels[1];" in star_analysis_header
+    assert "TgaImageView* __thiscall get_sprite_texture_ref(" in star_analysis_header
     assert "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];" in star_analysis_header
     assert "extern TextureRefList g_texture_refs;" in star_analysis_header
     assert "TEXTURE_REF_LIST_CAPACITY = 500" in sprite_matcher_header

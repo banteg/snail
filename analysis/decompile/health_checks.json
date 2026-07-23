@@ -3897,11 +3897,18 @@
         "widget->texture_hit_y",
         "widget->texture_hit_width",
         "widget->texture_hit_height",
-        "widget->target_padding"
+        "widget->target_padding",
+        "struct TgaImageView* mask",
+        "get_sprite_texture_ref(&g_sprite_manager",
+        "mask->width",
+        "mask->height"
       ],
       "forbidden_substrings": [
         "arg1 + 0x5c",
         "arg1 + 0x240",
+        "void* eax_2",
+        "*(eax_2 + 0xc)",
+        "*(eax_2 + 0xe)",
         "__asm",
         "_ET1"
       ]

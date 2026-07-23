@@ -76,3 +76,13 @@ begin at `+0x12`. Android calls this exact border path through
 payload just like Windows `0x44e580`. The shared typed view and corrected
 manager method preserve the honest 98.29%, 117/117 result; the only residual
 is still the documented multiply destination.
+
+## 2026-07-23 borrowed mask replay
+
+The Windows getter has only this caller. Replaying its cross-port-proved
+`TgaImageView*` result into Binary Ninja now keeps the borrowed mask as
+`TgaImageView* mask` and renders `mask->width` / `mask->height` instead of a
+`void*` plus raw `+0x0c/+0x0e` loads. The final pixel address remains the
+native factored `(row + x + 6) * 3` expression over the inline payload; forcing
+that arithmetic into a prettier field access would invent source shape and is
+intentionally rejected.

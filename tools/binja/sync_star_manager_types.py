@@ -11,9 +11,11 @@ from _narrow_sync import (
     apply_data_var_updates,
     apply_symbol_updates,
     apply_struct_and_proto_updates,
+    apply_user_var_updates,
     current_struct_size,
     current_type_widths,
     emit_summary,
+    reanalyze_functions,
     types_declare_if_missing,
     types_declare_missing_only,
 )
@@ -49,6 +51,7 @@ BOD_BASE_FIELD_UPDATES = (
 EXPECTED_STRUCT_SIZES = {
     "Vec3": 0xC,
     "tColour": 0x10,
+    "TgaImageView": 0x14,
     "BodNode": 0x10,
     "BodBase": 0x38,
     "TextureRef": 0xA4,
@@ -190,7 +193,7 @@ PROTO_UPDATES = (
     ),
     (
         "get_sprite_texture_ref",
-        "void* __thiscall get_sprite_texture_ref(SpriteManager* manager, int32_t texture_id)",
+        "TgaImageView* __thiscall get_sprite_texture_ref(SpriteManager* manager, int32_t texture_id)",
     ),
     ("destroy_star_field", "void __thiscall destroy_star_field(StarManager* manager)"),
     (
@@ -207,6 +210,21 @@ PROTO_UPDATES = (
     (
         "update_star_positions",
         "void __thiscall update_star_positions(StarManager* manager, float fade_alpha)",
+    ),
+)
+
+SPRITE_TGA_REANALYSIS_FUNCTIONS = (
+    "border_mouse_test",
+)
+
+SPRITE_TGA_USER_VAR_UPDATES = (
+    (
+        "border_mouse_test",
+        "RegisterVariableSourceType",
+        181,
+        66,
+        "mask",
+        "TgaImageView*",
     ),
 )
 
@@ -339,6 +357,16 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=DATA_VAR_UPDATES,
+        ),
+        *reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=SPRITE_TGA_REANALYSIS_FUNCTIONS,
+        ),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SPRITE_TGA_USER_VAR_UPDATES,
         ),
     ]
     return emit_summary(

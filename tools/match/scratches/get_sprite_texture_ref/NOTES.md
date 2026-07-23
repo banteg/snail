@@ -15,3 +15,12 @@ record `+0x98`. This Windows helper returns `TextureRef::texture_ref` at
 `+0x98`, and `cRBorder::MouseTest()` consumes it as an inline TGA header plus
 pixels. The source is now the real `SpriteManager::get_sprite_tga()` member
 with a borrowed `TgaImageView*` result. It remains exact at 4/4 instructions.
+
+## 2026-07-23 cross-decompiler return ownership
+
+The canonical Binary Ninja and IDA prototype replays now preserve the borrowed
+`TgaImageView*` result instead of widening it back to `void*`. Binary Ninja
+readback proves the 0x14-byte TGA view and exposes its width and height fields
+in the sole Windows caller. The generic `TextureRef::texture_ref` storage
+remains `void*`: registration accepts arbitrary caller payloads, while this
+accessor supplies the narrower borrowed view.

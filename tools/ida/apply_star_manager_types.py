@@ -93,7 +93,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "get_sprite_texture_ref",
-        "void *__thiscall get_sprite_texture_ref(SpriteManager *manager, int32_t texture_id);",
+        "TgaImageView *__thiscall get_sprite_texture_ref(SpriteManager *manager, int32_t texture_id);",
     ),
     (
         "destroy_star_field",
@@ -133,6 +133,8 @@ REQUIRED_OWNER_MARKERS = (
     "#define TEXTURE_REF_LIST_CAPACITY 500",
     "typedef struct TextureRefList {",
     "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];",
+    "typedef struct TgaImageView {",
+    "TgaImageView* __thiscall get_sprite_texture_ref(",
     "void __thiscall initialize_texture_list(",
     "TextureRef* __thiscall get_or_create_texture_ref(",
     "extern TextureRefList g_texture_refs;",
@@ -150,6 +152,7 @@ EXPECTED_OWNER_SIZES = {
     "Object": 0xDC,
     "BodBase": 0x38,
     "TransformMatrix": 0x40,
+    "TgaImageView": 0x14,
     "TextureRef": 0xA4,
     "TextureRefList": 0x14058,
     "Sprite": 0xB4,
@@ -163,10 +166,12 @@ DEPENDENCY_HEADER_NAMES = (
 )
 
 REANALYSIS_FUNCTIONS = (
+    0x404580,
     0x40ACF0,
     0x40A490,
     0x44E0F0,
     0x44E410,
+    0x44E580,
     0x44E800,
     0x44E810,
 )

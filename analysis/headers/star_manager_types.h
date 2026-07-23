@@ -29,6 +29,28 @@ typedef struct tColour {
     float a;
 } tColour;
 
+/*
+ * Borrowed TGA header plus its inline pixel payload. SpriteManager::GetTga
+ * returns TextureRef::texture_ref with this view; the field itself stays
+ * generic because texture registration also accepts arbitrary caller payloads.
+ */
+typedef struct TgaImageView {
+    uint8_t id_length;
+    uint8_t color_map_type;
+    uint8_t image_type;
+    uint8_t color_map_spec[5];
+    unsigned short x_origin;
+    unsigned short y_origin;
+    unsigned short width;
+    unsigned short height;
+    uint8_t bits_per_pixel;
+    uint8_t descriptor;
+    uint8_t pixels[1];
+} TgaImageView;
+
+typedef char TgaImageView_must_be_0x14[
+    (sizeof(TgaImageView) == 0x14) ? 1 : -1];
+
 typedef struct BodNode {
     void* vtable;
     uint32_t list_flags;
@@ -170,6 +192,8 @@ void __thiscall initialize_texture_list(
 TextureRef* __thiscall get_or_create_texture_ref(
     TextureRefList* texture_list, char* texture_path, void* payload,
     int32_t flags);
+TgaImageView* __thiscall get_sprite_texture_ref(
+    SpriteManager* manager, int32_t texture_id);
 
 extern TextureRefList g_texture_refs;
 
