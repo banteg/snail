@@ -12036,7 +12036,7 @@ def test_subgame_player_teardown_lifetime_replay_stays_guarded() -> None:
     assert "apply_user_var_updates" in replay
 
 
-def test_runtime_grid_clear_lifetime_replay_stays_guarded() -> None:
+def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
     replay = (BINJA_DIR / "sync_runtime_grid_clear_lifetimes.py").read_text(
         encoding="utf-8"
     )
@@ -12154,6 +12154,63 @@ def test_runtime_grid_clear_lifetime_replay_stays_guarded() -> None:
             "cell_fringe_front_cursor",
             "Fringe**",
         ),
+        (
+            "StackVariableSourceType",
+            0,
+            -28,
+            "authored_random_length",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1948,
+            72,
+            "runtime_grid_owner",
+            "SubgameRuntime*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            2110,
+            71,
+            "authored_glyph_cursor",
+            "char*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            2114,
+            68,
+            "authored_glyph",
+            "char",
+        ),
+        (
+            "RegisterVariableSourceType",
+            2118,
+            66,
+            "normalized_glyph",
+            "char",
+        ),
+        (
+            "RegisterVariableSourceType",
+            4180,
+            66,
+            "tile_id",
+            "SubLocTileId",
+        ),
+        ("StackVariableSourceType", 4256, -40, "cell_anchor_z", "float"),
+        (
+            "RegisterVariableSourceType",
+            4562,
+            71,
+            "uv_lane",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            4573,
+            67,
+            "uv_row_index",
+            "int32_t",
+        ),
     ):
         expected = (
             '        "populate_runtime_track_cells_from_segments",\n'
@@ -12167,7 +12224,27 @@ def test_runtime_grid_clear_lifetime_replay_stays_guarded() -> None:
 
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert "apply_split_user_var_update" in replay
+    assert "apply_split_away_user_var_update" in replay
     assert "apply_user_var_updates" in replay
+    for address, index, storage in (
+        ("0x436657", 1959, 68),
+        ("0x436664", 1972, 68),
+        ("0x43666a", 1978, 68),
+        ("0x436660", 1968, 71),
+        ("0x436668", 1976, 71),
+        ("0x43666a", 1978, 71),
+        ("0x4366b6", 2054, -28),
+        ("0x4366bf", 2063, -28),
+        ("0x4366c4", 2068, -28),
+        ("0x4366f2", 2114, 68),
+    ):
+        assert f'("{address}",' in replay
+        assert f"{index}, {storage})" in replay
+    assert '"runtime_lane"' in replay
+    assert '"authored_lane"' in replay
+    assert '"edge_row"' in replay
+    assert '"glyph_segment"' in replay
     assert "remaining_cell_lanes" not in replay
 
 

@@ -7,6 +7,8 @@ from pathlib import Path
 import sys
 
 from _narrow_sync import (
+    apply_split_away_user_var_update,
+    apply_split_user_var_update,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
@@ -174,12 +176,137 @@ RUNTIME_GRID_CLEAR_USER_VAR_UPDATES = (
     ),
 )
 
+# The lane loop always writes the runtime-grid lane to EDX, while the glyph
+# lookup uses either that lane or its mirrored 7-lane value in EBP. Binary
+# Ninja presents each branch definition as a distinct split variable; merge
+# only the two definitions belonging to each authored value.
+RUNTIME_GRID_LANE_SPLITS = (
+    (
+        (
+            ("0x436657", "mlil", "RegisterVariableSourceType", 1959, 68),
+            ("0x436664", "mlil", "RegisterVariableSourceType", 1972, 68),
+            ("0x43666a", "mlil_ssa", "RegisterVariableSourceType", 1978, 68),
+        ),
+        ("RegisterVariableSourceType", 1959, 68),
+        "runtime_lane",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x436660", "mlil", "RegisterVariableSourceType", 1968, 71),
+            ("0x436668", "mlil", "RegisterVariableSourceType", 1976, 71),
+            ("0x43666a", "mlil_ssa", "RegisterVariableSourceType", 1978, 71),
+        ),
+        ("RegisterVariableSourceType", 1968, 71),
+        "authored_lane",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x4366b6", "mlil_ssa", "StackVariableSourceType", 2054, -28),
+            ("0x4366bf", "mlil_ssa", "StackVariableSourceType", 2063, -28),
+            ("0x4366c4", "mlil_ssa", "StackVariableSourceType", 2068, -28),
+        ),
+        ("StackVariableSourceType", 2063, -28),
+        "edge_row",
+        "char",
+    ),
+)
+
+# EDX borrows the active SubSegment long enough to form one glyph pointer,
+# then its low byte is overwritten by the authored glyph. Split that byte
+# definition away before preserving the residual pointer lifetime.
+AUTHORED_GLYPH_DETACHED_DEFINITIONS = (
+    ("0x4366f2", "mlil_ssa", "RegisterVariableSourceType", 2114, 68),
+)
+
+GLYPH_SEGMENT_VAR = (
+    "RegisterVariableSourceType",
+    2100,
+    68,
+)
+
+RUNTIME_GRID_GLYPH_USER_VAR_UPDATES = (
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        0,
+        -28,
+        "authored_random_length",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        1948,
+        72,
+        "runtime_grid_owner",
+        "SubgameRuntime*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        2110,
+        71,
+        "authored_glyph_cursor",
+        "char*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        2114,
+        68,
+        "authored_glyph",
+        "char",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        2118,
+        66,
+        "normalized_glyph",
+        "char",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        4180,
+        66,
+        "tile_id",
+        "SubLocTileId",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        4256,
+        -40,
+        "cell_anchor_z",
+        "float",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        4562,
+        71,
+        "uv_lane",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        4573,
+        67,
+        "uv_row_index",
+        "int32_t",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay only the authored row-count and runtime-grid clear "
-            "lifetimes in populate_runtime_track_cells_from_segments."
+            "Replay the authored row-count, runtime-grid clear, lane, glyph, "
+            "and anchor lifetimes in populate_runtime_track_cells_from_segments."
         )
     )
     parser.add_argument(
@@ -242,14 +369,42 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    operations = [
-        verify_owner_layouts(args.target),
-        *apply_user_var_updates(
+    operations = [verify_owner_layouts(args.target)]
+    for definitions, target_var, variable_name, variable_type in (
+        RUNTIME_GRID_LANE_SPLITS
+    ):
+        operations.extend(
+            apply_split_user_var_update(
+                REPO_ROOT,
+                target=args.target,
+                identifier="populate_runtime_track_cells_from_segments",
+                definitions=definitions,
+                target_var=target_var,
+                variable_name=variable_name,
+                variable_type=variable_type,
+            )
+        )
+    operations.extend(
+        apply_split_away_user_var_update(
             REPO_ROOT,
             target=args.target,
-            updates=RUNTIME_GRID_CLEAR_USER_VAR_UPDATES,
-        ),
-    ]
+            identifier="populate_runtime_track_cells_from_segments",
+            detached_definitions=AUTHORED_GLYPH_DETACHED_DEFINITIONS,
+            residual_var=GLYPH_SEGMENT_VAR,
+            variable_name="glyph_segment",
+            variable_type="SubSegment*",
+        )
+    )
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=(
+                *RUNTIME_GRID_CLEAR_USER_VAR_UPDATES,
+                *RUNTIME_GRID_GLYPH_USER_VAR_UPDATES,
+            ),
+        )
+    )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,

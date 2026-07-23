@@ -731,3 +731,35 @@ stride/cursor result. Matcher source and operands remain untouched at the
 honest 29.67%, 1,229/1,245-instruction frontier with 66 clean operands and the
 same two documented mismatches. No score-shaped source or operand fakematch
 was introduced.
+
+## 2026-07-24 authored glyph lane ownership
+
+The eight-lane materialization loop now keeps its two lane identities
+separate. `runtime_lane` selects the physical `SubLoc` written in
+`runtime_cells`, while `authored_lane` is either that lane or `7 - lane` and
+indexes the borrowed active `SubSegment::glyph_rows`. Their two branch
+definitions and SSA joins are replayed as complete lifetimes; naming only the
+branch writes left anonymous join values and was rejected before export.
+
+The stack slot used for `SubTracks::random_length` during setup is reused much
+later as the byte `edge_row` normalizer argument. Its first/last-block writes
+and SSA join are split away from the earlier integer lifetime, so HLIL now
+passes `edge_row` to `normalize_segment_glyph_for_track_flags` instead of
+falsely displaying the low byte of the authored random length. The active
+segment register is likewise split from the byte glyph loaded through it.
+Together these recover the direct producer chain
+`active_segment->glyph_rows[authored_lane][segment_row_index]` to
+`normalized_glyph` without inventing a new owner.
+
+IDA independently preserves the same `lane`/mirrored-lane distinction, names
+the stack byte `edge_rowa`, and carries a `char*` glyph cursor into the same
+normalizer call. The following anchor and UV lane now retain `cell_anchor_z`
+and `uv_row_index`; Binary Ninja also recovers the correct
+`set_bod_object(&runtime_cell_anchor->cell, ...)` receiver on several switch
+arms instead of the former interior `bod.vtable` display.
+
+Matcher source and operands remain untouched. This is durable analysis
+ownership only: no branch, table, dummy dependency, or masked operand was
+changed to improve the score. The focused matcher remains at the honest
+29.67%, 1,229/1,245-instruction frontier with 66 clean operands and the same
+two documented jump-table/call-alignment mismatches.

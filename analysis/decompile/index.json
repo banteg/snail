@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "register_font_texture_sheet",
-      "address": "0x449f50"
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
     }
   ],
   "health_check_count": 924,
