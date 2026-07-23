@@ -7828,6 +7828,25 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert '"image"' in binja_sync
     assert '"TgaImageView*"' in binja_sync
     assert "\n        45,\n        66," in binja_sync
+    assert '"split_x"' in binja_sync
+    assert '"path_char"' in binja_sync
+    assert '"path_index"' in binja_sync
+    assert '"run_width"' in binja_sync
+    assert '"glyph_slot"' in binja_sync
+    assert '"last_x"' in binja_sync
+    assert '"glyph_run_width"' in binja_sync
+    assert '"pixel_color"' in binja_sync
+    assert '"glyph_left"' in binja_sync
+    assert "STALE_FONT_TGA_USER_VAR_REMOVALS" in binja_sync
+    assert "remove_user_var_updates" in binja_sync
+    assert "\n        265,\n        67," in binja_sync
+    assert '"centered_left"' in binja_sync
+    assert '"centered_last"' in binja_sync
+    assert '"line_marker_y"' in binja_sync
+    assert '"page0_texture_ref"' in binja_sync
+    assert '"flagged_texture_ref"' in binja_sync
+    assert '"texture_path_0"' in binja_sync
+    assert binja_sync.count('"texture_path_1"') == 1
     assert "FONT_QUEUE_COLOR_USER_VAR_UPDATES" in binja_sync
     assert binja_sync.count('"entry_color"') == 4
     assert binja_sync.count('"tColour*"') == 5

@@ -91,3 +91,29 @@ sampler callsites in its tracked artifact; its replay now carries the shared
 typed helper prototype as well. This is analysis-only: the matcher source is
 unchanged, so the honest 75.41% result (`275/274`, 51 clean operands) and the
 documented `slot_count`/`font_kind` register-owner residual remain intact.
+
+## 2026-07-23 registrar value ownership
+
+The atlas producer now names its durable native values without introducing a
+long-lived `FontSheet*` that the executable does not carry. The split-page
+branch owns two `0x100`-byte stack paths plus `split_x`, `path_char`, and
+`path_index`; the row-0 scan owns `run_width`, its stack-published
+`glyph_run_width`, `last_x`, `glyph_left`, `glyph_slot`, `pixel_color`, and the
+two centered atlas coordinates. The column-0 scan separately owns
+`line_marker_y`.
+
+The texture registry returns borrowed handles. The split branch retains its
+first handle as `page0_texture_ref`, while `flagged_texture_ref` is the final
+handle whose flags are committed in both the split-page and single-page paths.
+The loaded `TgaImageView` remains the function's sole released allocation.
+
+IDA independently corroborates EBX as the split boundary, EDI/EBP and the
+three adjacent stack slots as the x/run/slot scan state, and its two texture
+return values as registry handles. One rejected annotation briefly named only
+the hidden stack spill of `glyph_left`; the canonical replay explicitly retires
+that annotation and names the visible ECX lifetime instead.
+
+No matcher source changed. Focused Wibo therefore remains the honest 75.41%
+result (`275/274`, prefix `0/274`, 51 clean masked operands) with the existing
+`slot_count`/`font_kind` compiler-owner mismatch still documented rather than
+forced.

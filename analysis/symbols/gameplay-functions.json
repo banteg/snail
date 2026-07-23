@@ -3285,7 +3285,7 @@
     {
       "address": "0x449f50",
       "name": "register_font_texture_sheet",
-      "description": "Loads one FONT-MENU-HOVER atlas, scans row-0 white delimiters into resettable glyph runs and the column-0 height marker, registers single- or split-page texture refs with their source-retention policy, and stores per-font UV, page, and scale metadata."
+      "description": "Owns one loaded FONT-MENU-HOVER atlas buffer through its terminal release, derives stack-local page paths for split atlases, scans row-0 white delimiters into resettable glyph runs and the column-0 height marker, and stores registry-backed texture refs plus per-font UV, page, and scale metadata."
     },
     {
       "address": "0x44a360",
