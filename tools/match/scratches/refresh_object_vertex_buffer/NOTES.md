@@ -125,3 +125,21 @@ source/destination address-formation scheduling differences.
 
 No matcher source changed. Focused Wibo remains `90.58%`, `137/139`, prefix
 `7`, with four clean masks and the same two honest scheduling residuals.
+
+## 2026-07-23 upload cursor ownership
+
+The guarded replay now preserves the native integer byte-cursor model on both
+upload paths: each borrowed `Vec3` source advances by `0x0c`, while each
+locked `ObjectRenderVertex` destination advances independently by `0x18`.
+Binary Ninja had inferred the two zero-initialized source cursors as `void*`;
+all four cursors now remain `int32_t`, and only their completed addresses carry
+record-pointer ownership.
+
+The D3D `Lock` output still aliases the incoming `Object*` stack slot because
+the database exposes no honest MLIL definition that can split that external
+write. The replay deliberately leaves that limitation visible rather than
+inventing a stream-base owner. Preview/apply readback verified the ten bounded
+lifetimes, and a second run skipped all ten as already current.
+
+No matcher source changed. Focused Wibo remains `90.58%`, `137/139`, prefix
+`7`, with four clean masks and the same two scheduling residuals.

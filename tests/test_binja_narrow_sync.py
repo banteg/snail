@@ -10415,6 +10415,51 @@ def test_object_vertex_storage_replay_keeps_banks_and_byte_offsets_distinct() ->
     assert '"colour_byte_offset",\n        "tColour*"' not in replay
 
 
+def test_object_vertex_upload_replay_keeps_cursors_and_streams_distinct() -> None:
+    replay = (BINJA_DIR / "sync_object_vertex_upload_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for owner_name, expected_size in (
+        ("Vec3", "0x0C"),
+        ("ObjectRenderVertex", "0x18"),
+        ("ObjectRenderBuffers", "0x0C"),
+        ("ObjectVertexBuffer", "0x04"),
+        ("Object", "0xDC"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for index, storage, name, type_name in (
+        (143, 68, "animated_render_vertex_byte_offset", "int32_t"),
+        (145, 67, "animated_source_vertex_byte_offset", "int32_t"),
+        (154, 69, "animated_vertices", "ObjectRenderVertex*"),
+        (152, 73, "animated_source_vertex", "Vec3*"),
+        (158, 69, "animated_vertex", "ObjectRenderVertex*"),
+        (271, 73, "dynamic_render_vertex_byte_offset", "int32_t"),
+        (273, 69, "dynamic_source_vertex_byte_offset", "int32_t"),
+        (282, 66, "dynamic_vertices", "ObjectRenderVertex*"),
+        (280, 68, "dynamic_source_vertex", "Vec3*"),
+        (286, 66, "dynamic_vertex", "ObjectRenderVertex*"),
+    ):
+        expected = (
+            '        "refresh_object_vertex_buffer",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '"animated_source_vertex_byte_offset",\n        "Vec3*"' not in replay
+    assert '"dynamic_source_vertex_byte_offset",\n        "Vec3*"' not in replay
+    assert '"animated_render_vertex_byte_offset",\n        "ObjectRenderVertex*"' not in replay
+    assert '"dynamic_render_vertex_byte_offset",\n        "ObjectRenderVertex*"' not in replay
+
+
 def test_track_cache_teardown_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_track_cache_teardown_lifetimes.py"

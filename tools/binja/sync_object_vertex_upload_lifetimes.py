@@ -49,8 +49,26 @@ EXPECTED_STRUCT_FIELDS = {
 # argument's caller-owned stack slot. Binary Ninja cannot split that external
 # memory definition, but it does expose the later register reloads as distinct
 # lifetimes. At those exact points the slot no longer carries Object ownership:
-# it borrows the locked 24-byte ObjectRenderVertex stream until Unlock.
+# it borrows the locked 24-byte ObjectRenderVertex stream until Unlock. VC6
+# walks each source and destination with independent integer byte offsets; only
+# the completed addresses are Vec3/ObjectRenderVertex pointers.
 OBJECT_VERTEX_UPLOAD_USER_VAR_UPDATES = (
+    (
+        "refresh_object_vertex_buffer",
+        "RegisterVariableSourceType",
+        143,
+        68,
+        "animated_render_vertex_byte_offset",
+        "int32_t",
+    ),
+    (
+        "refresh_object_vertex_buffer",
+        "RegisterVariableSourceType",
+        145,
+        67,
+        "animated_source_vertex_byte_offset",
+        "int32_t",
+    ),
     (
         "refresh_object_vertex_buffer",
         "RegisterVariableSourceType",
@@ -74,6 +92,22 @@ OBJECT_VERTEX_UPLOAD_USER_VAR_UPDATES = (
         69,
         "animated_vertex",
         "ObjectRenderVertex*",
+    ),
+    (
+        "refresh_object_vertex_buffer",
+        "RegisterVariableSourceType",
+        271,
+        73,
+        "dynamic_render_vertex_byte_offset",
+        "int32_t",
+    ),
+    (
+        "refresh_object_vertex_buffer",
+        "RegisterVariableSourceType",
+        273,
+        69,
+        "dynamic_source_vertex_byte_offset",
+        "int32_t",
     ),
     (
         "refresh_object_vertex_buffer",
@@ -105,8 +139,8 @@ OBJECT_VERTEX_UPLOAD_USER_VAR_UPDATES = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay only the locked render-stream reload lifetimes in "
-            "refresh_object_vertex_buffer."
+            "Replay the integer upload cursors and locked render-stream reload "
+            "lifetimes in refresh_object_vertex_buffer."
         )
     )
     parser.add_argument(
