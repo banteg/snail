@@ -9650,6 +9650,128 @@ def test_object_normal_rebuild_lifetime_replay_stays_guarded() -> None:
     assert '"geometry_byte_offset",\n        "ObjectFaceQuad*"' not in replay
 
 
+def test_object_edge_merge_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_object_edge_merge_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("Vec3", "0x0C"),
+        ("ObjectToonEdge", "0x24"),
+        ("Object", "0xDC"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("Vec3", "0x08", "z", "float"),
+        ("ObjectToonEdge", "0x00", "flags", "ObjectToonEdgeFlag"),
+        ("ObjectToonEdge", "0x08", "vertex_b", "int32_t"),
+        ("ObjectToonEdge", "0x10", "normal_b", "int32_t"),
+        ("ObjectToonEdge", "0x14", "direction", "Vec3"),
+        ("ObjectToonEdge", "0x20", "length", "float"),
+        ("Object", "0x38", "vertices", "Vec3*"),
+        ("Object", "0x60", "facequad_normals", "Vec3*"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    assert (
+        '("0x4305f8", "mlil_ssa", "StackVariableSourceType", 88, 8)'
+        in replay
+    )
+    assert "TARGET_VERTEX_VAR = (\n    \"StackVariableSourceType\",\n    88,\n    8," in replay
+    assert 'variable_name="target_vertex"' in replay
+    assert 'variable_type="Vec3*"' in replay
+
+    for source_type, index, storage, name, type_name in (
+        (
+            "RegisterVariableSourceType",
+            97,
+            71,
+            "edge_vertex_b_cursor",
+            "int32_t*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            109,
+            73,
+            "existing_vertex_a",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            177,
+            69,
+            "candidate_vertex_a",
+            "Vec3*",
+        ),
+        (
+            "StackVariableSourceType",
+            0,
+            -48,
+            "direction",
+            "Vec3",
+        ),
+        (
+            "RegisterVariableSourceType",
+            504,
+            72,
+            "edge_byte_offset",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            573,
+            67,
+            "face_normal_a",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            603,
+            66,
+            "face_normal_b",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            714,
+            66,
+            "shift_byte_offset",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            723,
+            72,
+            "shift_source_edge",
+            "ObjectToonEdge*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            727,
+            73,
+            "shift_destination_edge",
+            "ObjectToonEdge*",
+        ),
+    ):
+        expected = (
+            '        "add_object_edge",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "apply_split_user_var_update" in replay
+    assert "apply_user_var_updates" in replay
+    assert '"edge_vertex_b_cursor",\n        "ObjectToonEdge*"' not in replay
+    assert '"edge_byte_offset",\n        "ObjectToonEdge*"' not in replay
+    assert '"shift_byte_offset",\n        "ObjectToonEdge*"' not in replay
+
+
 def test_track_cache_teardown_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_track_cache_teardown_lifetimes.py"
