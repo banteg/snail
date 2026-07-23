@@ -9394,9 +9394,17 @@
         "g_font_queue[font_queue_count_1].flags",
         "g_font_queue[font_queue_count_1].text",
         "g_font_queue[font_queue_count_1].color",
+        "struct tColour* entry_color",
+        "entry_color->g",
+        "entry_color->b",
+        "entry_color->a",
         "g_font_text_buffer"
       ],
       "forbidden_substrings": [
+        "void* edx_4",
+        "*(edx_4 + 4)",
+        "*(edx_4 + 8)",
+        "*(edx_4 + 0xc)",
         "data_4b7236",
         "data_7544e8",
         "data_753ce8",
@@ -9429,13 +9437,64 @@
         "g_render_queue_active",
         "&g_font_queue[0].texture_id",
         "&g_font_queue[0].color",
+        "struct tColour* entry_color",
+        "entry_color->r",
+        "entry_color->g",
+        "entry_color->b",
+        "entry_color->a",
         "&g_font_queue[0].blend_mode",
         "&g_font_queue[0].rotation"
       ],
       "forbidden_substrings": [
+        "float* edx_4",
+        "edx_4[1]",
+        "edx_4[2]",
+        "edx_4[3]",
         "data_4b7236",
         "data_7544e8",
         "&g_font_queue[0].layer",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_font_quad_default_color_owner",
+      "artifact": "analysis/decompile/binja/functions/0044a8b0-queue_axis_aligned_textured_quad.c",
+      "required_substrings": [
+        "struct tColour* entry_color",
+        "entry_color->r",
+        "entry_color->g",
+        "entry_color->b",
+        "entry_color->a",
+        "&g_font_queue[0].blend_mode",
+        "&g_font_queue[0].rotation"
+      ],
+      "forbidden_substrings": [
+        "float* esi_4",
+        "esi_4[1]",
+        "esi_4[2]",
+        "esi_4[3]",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_font_quad_corner_color_owner",
+      "artifact": "analysis/decompile/binja/functions/0044aac0-queue_textured_quad_corners.c",
+      "required_substrings": [
+        "struct tColour* entry_color",
+        "entry_color->r",
+        "entry_color->g",
+        "entry_color->b",
+        "entry_color->a",
+        "&g_font_queue[0].x3",
+        "&g_font_queue[0].rotation"
+      ],
+      "forbidden_substrings": [
+        "float* esi_4",
+        "esi_4[1]",
+        "esi_4[2]",
+        "esi_4[3]",
         "__asm",
         "_ET1"
       ]

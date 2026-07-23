@@ -62,3 +62,11 @@ and float `rotation`, matching their downstream renderer types in both
 analysis databases. The focused candidate stays at `87.14%` (`71/69`, 18 clean
 operands and two real scheduling mismatches). No source distortion was added
 to conceal the remaining aggregate-color/count-store ordering gap.
+
+## 2026-07-23 embedded color owner
+
+The native `esi` lifetime starts at the embedded queue-entry color and advances
+through its four float lanes. Binary Ninja now types that destination as
+`tColour* entry_color`, in agreement with IDA's named `p_color` RGBA stores.
+The matcher source remains untouched and focused Wibo stays honestly at 87.14%
+(`71/69`, prefix `3/69`, 20 clean operands and no masked mismatches).

@@ -7790,6 +7790,13 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert '"image"' in binja_sync
     assert '"TgaImageView*"' in binja_sync
     assert "\n        45,\n        66," in binja_sync
+    assert "FONT_QUEUE_COLOR_USER_VAR_UPDATES" in binja_sync
+    assert binja_sync.count('"entry_color"') == 4
+    assert binja_sync.count('"tColour*"') == 4
+    assert "\n        134,\n        68," in binja_sync
+    assert "\n        127,\n        72," in binja_sync
+    assert "\n        124,\n        68," in binja_sync
+    assert "\n        85,\n        72," in binja_sync
 
     references = json.loads(
         (repo_root / "analysis/symbols/gameplay-references.json").read_text(

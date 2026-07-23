@@ -55,3 +55,11 @@ authored argument is an integer `blend_mode`; this default-UV producer clears
 the separate float `rotation` field. The focused result remains honestly
 partial at `89.39%` (`67/65`, 17 clean operands). Its documented count-store
 and incidental-return scheduling residuals were not forced into a fake match.
+
+## 2026-07-23 embedded color owner
+
+The saved `esi` copy destination is the embedded
+`g_font_queue[index].color`, not an unstructured float array. Binary Ninja now
+tracks it as `tColour* entry_color`, agreeing with IDA's four named RGBA stores.
+This analysis-only replay leaves the candidate untouched at 89.39% (`67/65`,
+prefix `3/65`, 17 clean operands and no masked mismatches).

@@ -17,11 +17,11 @@
 0044a801        g_font_queue[font_queue_count_1].anchor_x = anchor_x
 0044a807        char* font_text_cursor_1 = g_font_text_cursor
 0044a80e        g_font_queue[font_queue_count_1].text = font_text_cursor_1
-0044a816        void* edx_4 = &g_font_queue[font_queue_count_1].color
+0044a816        struct tColour* entry_color = &g_font_queue[font_queue_count_1].color
 0044a81c        g_font_queue[font_queue_count_1].color.r = color->r
-0044a825        *(edx_4 + 4) = color->g
-0044a82b        *(edx_4 + 8) = color->b
-0044a832        *(edx_4 + 0xc) = color->a
+0044a825        entry_color->g = color->g
+0044a82b        entry_color->b = color->b
+0044a832        entry_color->a = color->a
 0044a839        g_font_queue[font_queue_count_1].text_wave_amplitude = text_wave_amplitude
 0044a843        g_font_queue[font_queue_count_1].text_wave_enabled = text_wave_enabled
 0044a849        char* text_1 = text

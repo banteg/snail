@@ -66,3 +66,11 @@ forwarder independently resolve this producer's final pair as integer
 typed queue fields directly. The source remains at the honest `92.54%`
 frontier (`68/66`, all 19 masked operands clean); the known count-store and
 return-register scheduling differences remain documented rather than shaped.
+
+## 2026-07-23 embedded color owner
+
+The register previously rendered as `float* edx_4` is exactly
+`&g_font_queue[index].color`. The canonical BN replay now records it as
+`tColour* entry_color`, yielding all four RGBA fields and matching IDA's
+independent `p_color` view. No source-shape probe was retained: focused Wibo
+stays at 92.54% (`68/66`, prefix `2/66`, 19 clean operands).

@@ -218,6 +218,41 @@ FONT_TGA_USER_VAR_UPDATES = (
     ),
 )
 
+FONT_QUEUE_COLOR_USER_VAR_UPDATES = (
+    (
+        "queue_font_text_instance",
+        "RegisterVariableSourceType",
+        134,
+        68,
+        "entry_color",
+        "tColour*",
+    ),
+    (
+        "queue_axis_aligned_textured_quad",
+        "RegisterVariableSourceType",
+        127,
+        72,
+        "entry_color",
+        "tColour*",
+    ),
+    (
+        "queue_axis_aligned_textured_quad_uv",
+        "RegisterVariableSourceType",
+        124,
+        68,
+        "entry_color",
+        "tColour*",
+    ),
+    (
+        "queue_textured_quad_corners",
+        "RegisterVariableSourceType",
+        85,
+        72,
+        "entry_color",
+        "tColour*",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -319,6 +354,11 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=FONT_TGA_USER_VAR_UPDATES,
+        ),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=FONT_QUEUE_COLOR_USER_VAR_UPDATES,
         ),
     ]
     return emit_summary(

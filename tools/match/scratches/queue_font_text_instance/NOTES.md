@@ -51,3 +51,14 @@ The live Binary Ninja and IDA views now recover this as the void producer for
 and all authored text/color/alignment fields are named directly. This is an
 analysis-ownership improvement only; the proof-grade `73/73` candidate and its
 24 clean operands remain byte-identical.
+
+## 2026-07-23 embedded color owner
+
+The destination of the native four-lane color copy is exactly
+`&g_font_queue[font_queue_count].color`. Binary Ninja now retains that register
+lifetime as `tColour* entry_color`, exposing the green, blue, and alpha stores
+as fields instead of `void*` byte offsets; IDA independently emits the same
+aggregate `g_font_queue[v11].color = *color` ownership.
+
+No matcher source changed. Focused Wibo remains proof-grade at 100.00%, 73/73
+instructions, a 73/73 prefix, and 24 clean masked operands.
