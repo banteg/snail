@@ -7802,12 +7802,35 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert '"0x44a6c2", "mlil_ssa"' in binja_sync
     assert 'variable_name="cursor_x"' in binja_sync
     assert 'variable_type="float"' in binja_sync
+    assert "FONT_DRAW_CURRENT_CHAR_DEFINITIONS" in binja_sync
+    assert '"0x44a408", "mlil_ssa"' in binja_sync
+    assert '"0x44a690", "mlil_ssa"' in binja_sync
+    assert 'variable_name="current_char"' in binja_sync
+    assert 'variable_type="char"' in binja_sync
+    assert "FONT_DRAW_GLYPH_ADVANCE_DEFINITIONS" in binja_sync
+    assert '"0x44a687", "mlil_ssa"' in binja_sync
+    assert 'variable_name="glyph_advance"' in binja_sync
+    assert 'variable_type="int32_t"' in binja_sync
+    assert "FONT_DRAW_GLYPH_USER_VAR_UPDATES" in binja_sync
+    assert '"text_cursor"' in binja_sync
+    assert '"wave_index"' in binja_sync
+    assert '"text_resume"' in binja_sync
+    assert '"glyph_slot"' in binja_sync
+    assert '"atlas_u0"' in binja_sync
+    assert '"atlas_u1"' in binja_sync
+    assert '"texture_page"' in binja_sync
+    assert '"atlas_v0"' in binja_sync
+    assert '"atlas_v1"' in binja_sync
+    assert '"draw_x"' in binja_sync
+    assert '"draw_y"' in binja_sync
+    assert '"shadow_offset"' in binja_sync
+    assert '"shadow_color"' in binja_sync
     assert '"image"' in binja_sync
     assert '"TgaImageView*"' in binja_sync
     assert "\n        45,\n        66," in binja_sync
     assert "FONT_QUEUE_COLOR_USER_VAR_UPDATES" in binja_sync
     assert binja_sync.count('"entry_color"') == 4
-    assert binja_sync.count('"tColour*"') == 4
+    assert binja_sync.count('"tColour*"') == 5
     assert "\n        134,\n        68," in binja_sync
     assert "\n        127,\n        72," in binja_sync
     assert "\n        124,\n        68," in binja_sync

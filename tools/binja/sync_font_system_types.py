@@ -239,6 +239,139 @@ FONT_DRAW_CURSOR_X_VAR = (
     4,
 )
 
+# EAX first owns horizontal alignment, then a glyph byte, and finally the
+# integer width advance. Split only the loop byte and width-result definitions;
+# the alignment and intervening call-clobber lifetimes remain independent.
+FONT_DRAW_CURRENT_CHAR_DEFINITIONS = (
+    ("0x44a408", "mlil_ssa", "RegisterVariableSourceType", 168, 66),
+    ("0x44a414", "mlil_ssa", "RegisterVariableSourceType", 180, 66),
+    ("0x44a690", "mlil_ssa", "RegisterVariableSourceType", 816, 66),
+    ("0x44a6c2", "mlil_ssa", "RegisterVariableSourceType", 866, 66),
+)
+
+FONT_DRAW_CURRENT_CHAR_VAR = (
+    "RegisterVariableSourceType",
+    168,
+    66,
+)
+
+FONT_DRAW_GLYPH_ADVANCE_DEFINITIONS = (
+    ("0x44a687", "mlil_ssa", "RegisterVariableSourceType", 807, 66),
+)
+
+FONT_DRAW_GLYPH_ADVANCE_VAR = (
+    "RegisterVariableSourceType",
+    807,
+    66,
+)
+
+FONT_DRAW_GLYPH_USER_VAR_UPDATES = (
+    (
+        "draw_font_text_instance",
+        "RegisterVariableSourceType",
+        153,
+        69,
+        "text_cursor",
+        "char*",
+    ),
+    (
+        "draw_font_text_instance",
+        "StackVariableSourceType",
+        156,
+        -56,
+        "wave_index",
+        "float",
+    ),
+    (
+        "draw_font_text_instance",
+        "StackVariableSourceType",
+        164,
+        -20,
+        "text_resume",
+        "char*",
+    ),
+    (
+        "draw_font_text_instance",
+        "RegisterVariableSourceType",
+        181,
+        66,
+        "glyph_slot",
+        "int32_t",
+    ),
+    (
+        "draw_font_text_instance",
+        "RegisterVariableSourceType",
+        218,
+        68,
+        "atlas_u0",
+        "float",
+    ),
+    (
+        "draw_font_text_instance",
+        "RegisterVariableSourceType",
+        228,
+        68,
+        "atlas_u1",
+        "float",
+    ),
+    (
+        "draw_font_text_instance",
+        "RegisterVariableSourceType",
+        245,
+        67,
+        "texture_page",
+        "int32_t",
+    ),
+    (
+        "draw_font_text_instance",
+        "RegisterVariableSourceType",
+        264,
+        68,
+        "atlas_v0",
+        "float",
+    ),
+    (
+        "draw_font_text_instance",
+        "RegisterVariableSourceType",
+        270,
+        66,
+        "atlas_v1",
+        "float",
+    ),
+    (
+        "draw_font_text_instance",
+        "StackVariableSourceType",
+        369,
+        -28,
+        "draw_x",
+        "float",
+    ),
+    (
+        "draw_font_text_instance",
+        "StackVariableSourceType",
+        392,
+        -32,
+        "draw_y",
+        "float",
+    ),
+    (
+        "draw_font_text_instance",
+        "StackVariableSourceType",
+        492,
+        -52,
+        "shadow_offset",
+        "float",
+    ),
+    (
+        "draw_font_text_instance",
+        "RegisterVariableSourceType",
+        498,
+        66,
+        "shadow_color",
+        "tColour*",
+    ),
+)
+
 FONT_TGA_USER_VAR_UPDATES = (
     (
         "register_font_texture_sheet",
@@ -433,6 +566,29 @@ def main() -> int:
             target_var=FONT_DRAW_CURSOR_X_VAR,
             variable_name="cursor_x",
             variable_type="float",
+        ),
+        *apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="draw_font_text_instance",
+            definitions=FONT_DRAW_CURRENT_CHAR_DEFINITIONS,
+            target_var=FONT_DRAW_CURRENT_CHAR_VAR,
+            variable_name="current_char",
+            variable_type="char",
+        ),
+        *apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="draw_font_text_instance",
+            definitions=FONT_DRAW_GLYPH_ADVANCE_DEFINITIONS,
+            target_var=FONT_DRAW_GLYPH_ADVANCE_VAR,
+            variable_name="glyph_advance",
+            variable_type="int32_t",
+        ),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=FONT_DRAW_GLYPH_USER_VAR_UPDATES,
         ),
         *apply_user_var_updates(
             REPO_ROOT,

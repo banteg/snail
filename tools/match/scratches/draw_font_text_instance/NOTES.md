@@ -68,3 +68,23 @@ one `float cursor_x` lifetime. The tracked decompile consequently preserves
 `entry->...` for queue-record ownership while using `cursor_x` for alignment,
 wave displacement, and per-glyph advance. No matcher source changed, so the
 honest 35.70% result and 19 clean masked operands remain unchanged.
+
+## 2026-07-23 glyph-loop lifetimes
+
+The native `eax` register has three unrelated owners: initial horizontal
+alignment, the current text byte, and the integer glyph-width advance. Its
+intervening calls also clobber `eax`. Binary Ninja previously folded the byte
+and width result back into `horizontal_align`; IDA independently keeps them as
+the loop byte and integer advance.
+
+The canonical replay now splits the four byte/PHI definitions into
+`current_char` and the terminal conversion into `glyph_advance`, without
+merging either with alignment or call-clobber state. Stable locals additionally
+name the borrowed `text_cursor`, its shadow-call resume slot, `glyph_slot`,
+wave index, atlas UV/page tuple, draw coordinates, shadow offset, and shadow
+color. These are value lifetimes over the existing `FontSheet` and
+`cFontPrintBuffer` owners, not new storage or a synthetic aggregate.
+
+No matcher source changed. Focused Wibo remains 35.70%, with 221 candidate
+instructions versus 272 target instructions, a 1/272 prefix, and all 19 masked
+operands clean.

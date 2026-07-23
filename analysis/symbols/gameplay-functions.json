@@ -3290,7 +3290,7 @@
     {
       "address": "0x44a360",
       "name": "draw_font_text_instance",
-      "description": "Void FontPrintReal counterpart over one cFontPrintBuffer: preserves the borrowed queue-entry owner in ESI, reuses its incoming stack slot as the horizontal glyph cursor, maps each byte through the atlas slot table, and submits textured glyph quads. The queue drain discards EAX on every path."
+      "description": "Void FontPrintReal counterpart over one cFontPrintBuffer: preserves the borrowed queue-entry owner in ESI, reuses its incoming stack slot as the horizontal glyph cursor, separates each current byte into its glyph slot and atlas UV/page tuple, and submits textured glyph quads before advancing by the integer glyph width. The queue drain discards EAX on every path."
     },
     {
       "address": "0x44a6d0",
