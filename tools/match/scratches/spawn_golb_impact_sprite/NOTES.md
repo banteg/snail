@@ -96,3 +96,12 @@ result. The decompilers can now recover `owner_player` through the complete
 `GolbShot` receiver without inventing a generic projectile shell. Focused
 matching remains the honest 63.64%, 43/45 instruction frontier with all three
 masked operands clean.
+
+## 2026-07-23 Sprite owner lifetime replay
+
+The allocation result is now replayed as the complete `Sprite*` owner. That
+removes BN's false `strncpy` rendering of adjacent floating-point constants and
+recovers the velocity, gravity, progress, lifetime, size, and position stores
+as direct `impact_sprite` fields. No source or mask changed: focused matching
+remains honestly pinned at 63.64%, 43/45 instructions, with all three masked
+operands clean.

@@ -8688,6 +8688,75 @@
       ]
     },
     {
+      "name": "bn_spawn_golb_trail_sprite_owner",
+      "artifact": "analysis/decompile/binja/functions/00415bb0-spawn_golb_trail_sprite.c",
+      "required_substrings": [
+        "struct Sprite* trail_sprite = allocate_sprite",
+        "trail_sprite->progress_step = 0.555555582f",
+        "__builtin_memset(&trail_sprite->velocity, 0, 0xc)",
+        "trail_sprite->position.x = position->x",
+        "trail_sprite->object_ref = shot->object_ref",
+        "return trail_sprite"
+      ],
+      "forbidden_substrings": [
+        "void** result",
+        "result[",
+        "__offset"
+      ]
+    },
+    {
+      "name": "bn_spawn_golb_smoke_sprite_owner",
+      "artifact": "analysis/decompile/binja/functions/00415c60-spawn_golb_smoke.c",
+      "required_substrings": [
+        "struct Sprite* smoke_sprite = allocate_sprite",
+        "shot->game->subgame_rate",
+        "smoke_sprite->color.r",
+        "smoke_sprite->gravity_step = 0",
+        "smoke_sprite->velocity.x",
+        "smoke_sprite->position.x = position->x"
+      ],
+      "forbidden_substrings": [
+        "eax_1->",
+        "sprite_motion_cursor",
+        "__offset"
+      ]
+    },
+    {
+      "name": "bn_spawn_golb_impact_sprite_owner",
+      "artifact": "analysis/decompile/binja/functions/00415d80-spawn_golb_impact_sprite.c",
+      "required_substrings": [
+        "struct Sprite* impact_sprite = allocate_sprite",
+        "impact_sprite->gravity_step = 0f",
+        "impact_sprite->lifetime_step = 0.833333373f",
+        "impact_sprite->velocity.y = 0.0500000007f",
+        "impact_sprite->position.x = position->x"
+      ],
+      "forbidden_substrings": [
+        "__builtin_strncpy",
+        "VUU?",
+        "int32_t* position_1",
+        "__offset"
+      ]
+    },
+    {
+      "name": "bn_spawn_garbage_smoke_sprite_owner",
+      "artifact": "analysis/decompile/binja/functions/0043d5a0-spawn_garbage_smoke_particle.c",
+      "required_substrings": [
+        "struct Sprite* smoke_sprite = allocate_sprite",
+        "sub_garbage->owner_game->subgame_rate",
+        "smoke_sprite->color.r",
+        "smoke_sprite->gravity_step = 0",
+        "smoke_sprite->velocity.x",
+        "smoke_sprite->position.x = position->x"
+      ],
+      "forbidden_substrings": [
+        "eax_1->",
+        "sprite_motion_cursor",
+        "int32_t* position_1",
+        "__offset"
+      ]
+    },
+    {
       "name": "bn_world_assets_golb_nested_owners",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [

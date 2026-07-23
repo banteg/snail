@@ -84,3 +84,14 @@ owned contract. Replaying the void mutator also resolves `game`,
 `owner_player`, and `velocity` through the complete `GolbShot` owner. Focused
 matching remains honestly pinned at 84.29%, 68/72 instructions, with all eight
 masked operands clean.
+
+## 2026-07-23 shared Sprite owner lifetime replay
+
+The allocation result is now a durable `Sprite*`, and the native register that
+starts at `Sprite::position` is replayed as a byte cursor rather than BN's
+overly narrow `Vec3*`. This lets the enclosing Sprite recover color, size,
+velocity, gravity, and position fields without introducing a synthetic
+motion-tail struct. Transactional preview rejected that overlay because it
+only traded `__offset` for misleading nested `position.x` expressions. This
+analysis-only clarification leaves the honest 84.29%, 68/72 frontier and all
+eight clean masks unchanged.

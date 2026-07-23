@@ -12327,3 +12327,67 @@ def test_golb_ai_replay_preserves_collision_owner_lifetimes() -> None:
     assert '0x80: ("next_active", "SubGarbage*")' in replay
     for rejected_index in (765, 770):
         assert f"\n        {rejected_index},\n" not in replay
+
+
+def test_sprite_effect_replay_preserves_shared_sprite_owners() -> None:
+    replay = (
+        BINJA_DIR / "sync_sprite_effect_owner_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("tColour", "0x10"),
+        ("Sprite", "0xB4"),
+        ("GolbShot", "0x2E8"),
+        ("Player", "0x4364"),
+        ("SubGarbage", "0xC4"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for function_name, index, storage, name, variable_type in (
+        ("spawn_golb_trail_sprite", 28, 66, "trail_sprite", "Sprite*"),
+        ("spawn_golb_smoke", 34, 66, "smoke_sprite", "Sprite*"),
+        (
+            "spawn_golb_smoke",
+            184,
+            72,
+            "sprite_motion_cursor",
+            "uint8_t*",
+        ),
+        ("spawn_golb_impact_sprite", 41, 66, "impact_sprite", "Sprite*"),
+        (
+            "spawn_garbage_smoke_particle",
+            42,
+            66,
+            "smoke_sprite",
+            "Sprite*",
+        ),
+        (
+            "spawn_garbage_smoke_particle",
+            184,
+            72,
+            "sprite_motion_cursor",
+            "uint8_t*",
+        ),
+    ):
+        expected = (
+            f'        "{function_name}",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert expected in replay
+
+    assert "SPRITE_EFFECT_OWNER_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x48: ("position", "Vec3")' in replay
+    assert '0x54: ("velocity", "Vec3")' in replay
+    assert '0x78: ("gravity_step", "float")' in replay
+    assert '0x270: ("game", "SubgameRuntime*")' in replay
+    assert '0x8C: ("owner_game", "SubgameRuntime*")' in replay
+    assert "struct SpriteMotionTail" not in replay

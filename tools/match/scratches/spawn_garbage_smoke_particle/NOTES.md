@@ -143,3 +143,13 @@ Binary Ninja and IDA now agree on the void
 contract. The decompilers independently recover the containing subgame rate
 through `sub_garbage->owner_game`; no flattened garbage runtime or generic slot
 owner is needed. The honest 85.14% source-shaped frontier remains pinned.
+
+## 2026-07-23 shared Sprite owner lifetime replay
+
+This emitter now shares the proved smoke ownership shape with
+`spawn_golb_smoke`: the allocation result is a durable `Sprite*`, while the
+derived position-to-gravity register is an honest byte cursor instead of a
+falsely bounded `Vec3*`. The enclosing owner now exposes color, size, velocity,
+gravity, and position directly, with no synthetic tail struct or `__offset`.
+The replay is analysis-only, so focused matching remains 85.14%, 72/76
+instructions, with all nine masked operands clean.

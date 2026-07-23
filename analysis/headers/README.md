@@ -381,6 +381,11 @@ and splash garbage chains, and wall-impact vector lifetimes with `uv run python
 tools/binja/sync_golb_ai_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 
+Replay the shared Sprite owners and the two smoke emitters' derived
+position-to-gravity byte cursors with `uv run python
+tools/binja/sync_sprite_effect_owner_lifetimes.py --target
+SnailMail_unwrapped.exe.bndb`.
+
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
 `GameInput.input` field proven by the exact Windows bridge and iOS

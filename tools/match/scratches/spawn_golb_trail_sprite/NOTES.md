@@ -32,3 +32,12 @@ The durable Binary Ninja and IDA ownership replays now preserve this helper as
 body, whose success path returns the allocated sprite, and prevents either
 decompiler from falling back to a generic receiver when the shared Golb types
 are replayed. The exact 47/47 matcher result is unchanged.
+
+## 2026-07-23 Sprite owner lifetime replay
+
+Binary Ninja's allocation result is now replayed as the complete `Sprite*`
+owner for its register lifetime. The exported decompile consequently exposes
+the flags, progress, lifetime, size, velocity, gravity, position, and
+`object_ref` writes through `trail_sprite` instead of raw `void**` word
+indices. This is analysis-only and leaves the exact 47/47 source match
+unchanged.
