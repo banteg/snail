@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "calc_object_edges",
-      "address": "0x4308b0"
+      "name": "replace_object_list_texture_refs",
+      "address": "0x430d90"
     }
   ],
   "health_check_count": 917,

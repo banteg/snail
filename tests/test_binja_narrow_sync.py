@@ -9899,6 +9899,90 @@ def test_object_edge_builder_lifetime_replay_stays_guarded() -> None:
     assert '"edge_byte_offset_spill",\n            variable_type="Object*"' not in replay
 
 
+def test_object_list_texture_replace_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_object_list_texture_replace_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("ObjectFaceQuad", "0x30"),
+        ("Object", "0xDC"),
+        ("ObjectList", "0x0C"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("ObjectFaceQuad", "0x0C", "texture_ref", "TextureRef*"),
+        ("Object", "0x2C", "vertex_count", "int32_t"),
+        ("Object", "0x54", "facequad_count", "int32_t"),
+        ("Object", "0x5C", "facequads", "ObjectFaceQuad*"),
+        ("ObjectList", "0x00", "count", "int32_t"),
+        ("ObjectList", "0x08", "objects", "Object*"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        (
+            "RegisterVariableSourceType",
+            6,
+            66,
+            "object_byte_offset",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            33,
+            66,
+            "current_object",
+            "Object*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            52,
+            68,
+            "face_byte_offset",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            54,
+            67,
+            "facequads",
+            "ObjectFaceQuad*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            61,
+            67,
+            "texture_ref_slot",
+            "TextureRef**",
+        ),
+        (
+            "StackVariableSourceType",
+            82,
+            -36,
+            "current_object_argument",
+            "Object*",
+        ),
+    ):
+        expected = (
+            '        "replace_object_list_texture_refs",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '"object_byte_offset",\n        "Object*"' not in replay
+    assert '"face_byte_offset",\n        "ObjectFaceQuad*"' not in replay
+
+
 def test_track_cache_teardown_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_track_cache_teardown_lifetimes.py"

@@ -11371,14 +11371,27 @@
       "required_substrings": [
         "object_list->count",
         "object_list->objects",
+        "int32_t object_byte_offset = 0",
+        "int32_t object_byte_offset_spill = 0",
+        "struct Object* current_object",
+        "current_object->vertex_count",
+        "current_object->facequad_count",
+        "int32_t face_byte_offset = 0",
+        "struct ObjectFaceQuad* facequads = current_object->facequads",
+        "facequads->texture_ref",
         "new_texture",
         "old_texture",
-        "replace_object_group_texture_refs(eax_1, new_texture, old_texture)"
+        "replace_object_group_texture_refs(current_object, new_texture, old_texture)"
       ],
       "forbidden_substrings": [
         "arg1",
         "arg2",
         "arg3",
+        "void* current_object",
+        "int32_t facequads",
+        "struct Object* object_byte_offset",
+        "struct ObjectFaceQuad* face_byte_offset",
+        "*(current_object +",
         "return result",
         "unimplemented"
       ]

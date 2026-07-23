@@ -84,3 +84,23 @@ borrowed `TextureRef*` arguments. Focused matching remains honestly partial at
 74.77%, 54/53 candidate/target instructions, prefix 14/53, with one clean
 masked operand; the residual is still the documented object-address register
 allocation.
+
+## 2026-07-23 retained list and texture-slot replay
+
+The refreshed Binary Ninja slice now follows the complete ownership chain
+without converting either native byte cursor into a pointer. `ObjectList`
+retains the contiguous `Object` allocation; only the address formed after
+adding the running 0xdc offset is typed as the current `Object*`. That object
+borrows its `ObjectFaceQuad` bank, the inner EDX lifetime remains a 0x30 byte
+offset, and the final field address is a borrowed `TextureRef**` slot.
+
+The outgoing call spill is also typed as the same current `Object*`, so the
+handoff into `replace_object_group_texture_refs` no longer loses the owner at a
+temporary `void*`. The guarded replay verifies the 0x0c/0xdc/0x30 owner widths
+and the exact list, object, and face fields before previewing any mutation; a
+second replay is fully idempotent.
+
+Focused matching remains 74.77%, 54/53 candidate/target instructions, prefix
+14/53, with one clean masked operand. No matcher source changed: the remaining
+register-allocation delta around `objects + object_byte_offset` stays visible
+instead of being fakematched.
