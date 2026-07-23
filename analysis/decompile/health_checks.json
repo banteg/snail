@@ -11446,6 +11446,36 @@
       ]
     },
     {
+      "name": "bn_object_mesh_loader_lifetimes",
+      "artifact": "analysis/decompile/binja/functions/00405640-load_x_mesh.c",
+      "required_substrings": [
+        "char mesh_file_path[0x100]",
+        "int32_t byte_count",
+        "char* duplicate_cursor",
+        "char* mesh_cursor",
+        "char* material_header_cursor",
+        "char* texcoord_cursor",
+        "char* material_cursor",
+        "char texture_path[0x100]",
+        "request_object_facequads(object",
+        "request_object_vertices(object",
+        "object->vertices",
+        "object->facequads",
+        "object->flags"
+      ],
+      "forbidden_substrings": [
+        "char path[0x100]",
+        "char texture_path =",
+        "void var_fe",
+        "var_218",
+        "var_21c",
+        "var_22c",
+        "PathTemplateStripMesh",
+        "__stdcall load_x_mesh",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "ida_object_mesh_loader_owner",
       "artifact": "analysis/decompile/ida/functions/00405640-load_x_mesh.c",
       "required_substrings": [

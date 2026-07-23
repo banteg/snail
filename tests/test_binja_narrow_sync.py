@@ -1010,6 +1010,53 @@ def test_object_loader_replay_keeps_authored_abi_and_exact_frame_owners() -> Non
         assert marker in replay
 
 
+def test_x_mesh_loader_replay_keeps_borrowed_cursors_and_path_buffers() -> None:
+    owner_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    replay = (BINJA_DIR / "sync_x_mesh_loader_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "bn_object_render_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    prototype = (
+        "void __thiscall load_x_mesh("
+        "DirectXLoader* loader, char* mesh_path, Object* object, "
+        "int32_t options_flags)"
+    )
+    assert prototype in owner_sync
+    for fragment in (
+        "void __thiscall load_x_mesh(",
+        "DirectXLoader* loader, char* mesh_path, Object* object, ",
+        "int32_t options_flags)",
+    ):
+        assert fragment in replay
+        assert fragment in header
+    assert "apply_direct_proto_update(" in replay
+    assert "apply_user_var_updates(" in replay
+    assert "verify_x_mesh_loader_owner_layouts" in replay
+    for storage, name, variable_type in (
+        (-564, "mesh_cursor", "char*"),
+        (-556, "material_cursor", "char*"),
+        (-548, "texcoord_cursor", "char*"),
+        (-540, "material_header_cursor", "char*"),
+        (-536, "duplicate_cursor", "char*"),
+        (-516, "byte_count", "int32_t"),
+        (-512, "mesh_file_path", "char[0x100]"),
+        (-256, "texture_path", "char[0x100]"),
+    ):
+        marker = (
+            '        "StackVariableSourceType",\n'
+            "        0,\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert marker in replay
+
+
 def test_intro_logo_lifetime_replay_keeps_real_owners_and_staged_stride() -> None:
     source = (BINJA_DIR / "sync_intro_logo_lifetimes.py").read_text(
         encoding="utf-8"

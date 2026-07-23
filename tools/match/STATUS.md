@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**627/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **100356/317040** bytes (**31.65%**) are proof-grade, and overall fuzzy is **76.22%**.
+**628/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **101959/317040** bytes (**32.16%**) are proof-grade, and overall fuzzy is **76.24%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
-## Proof Grade (627)
+## Proof Grade (628)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -53,6 +53,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | save_file_bytes_with_optional_archive_scramble | 0x4052a0 | 156 | 56/56 | 100.00% | 56/56 | 10 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | delete_file_path | 0x405340 | 12 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 | - |  |
+| ✅ | load_x_mesh | 0x405640 | 1603 | 492/492 | 100.00% | 492/492 | 94 ok |  |
 | ✅ | initialize_directx_loader | 0x405c90 | 45 | 13/13 | 100.00% | 13/13 | 3 ok |  |
 | ✅ | load_or_reuse_cached_x_mesh | 0x405cc0 | 157 | 65/65 | 100.00% | 65/65 | 6 ok |  |
 | ✅ | load_x_animation_clip | 0x405d60 | 754 | 228/228 | 100.00% | 228/228 | 50 ok |  |
@@ -638,13 +639,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (27)
+## Near Match (95-99.99%) (26)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 429/429 | 99.30% | 55/429 | 1 mismatch, 49 ok |  |
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  |
-| 🚧 | load_x_mesh | 0x405640 | 1603 | 494/492 | 96.75% | 238/492 | 94 ok |  |
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1156 | 331/332 | 98.34% | 111/332 | 26 ok |  |
 | 🚧 | initialize_challenge_setup_screen | 0x415f50 | 662 | 167/167 | 96.41% | 14/167 | 36 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 600/600 | 98.00% | 80/600 | 137 ok |  |

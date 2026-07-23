@@ -17,11 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "load_object_definition",
-      "address": "0x44c420"
+      "name": "load_x_mesh",
+      "address": "0x405640"
     }
   ],
-  "health_check_count": 913,
+  "health_check_count": 914,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

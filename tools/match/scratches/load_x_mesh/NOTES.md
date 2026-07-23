@@ -152,3 +152,31 @@ vertex, facequad, texture, and flag writes.
 No matcher source changed. Focused Wibo remains honestly at `96.75%`,
 `494/492`, prefix `238`, with 94 clean masks; the residual is still the
 documented face-flag instruction expansion and resulting branch displacement.
+
+## 2026-07-23 exact face-header and parser-lifetime closure
+
+- The triangle producer updates the already-proven two-byte
+  `ObjectFaceQuad::header_word` owner with
+  `OBJECT_FACEQUAD_FLAG_TRIANGLE`. VC6 narrows that constant update to the
+  native low-byte memory `or`; spelling the same operation through the
+  anonymous byte view made VC6 materialize a temporary byte and two extra
+  instructions. This is a representation correction, not a raw-pointer or
+  control-flow workaround: the symbolic bit remains the primary flag byte's
+  `0x80`, the high byte is preserved, and every consumer still observes the
+  same header owner.
+- That correction closes the function exactly at `100.00%`: 492/492
+  instructions, a full 492-instruction prefix, and all 94 masked operands
+  clean with no unresolved operands or mismatches.
+- The dedicated Binary Ninja lifetime replay now verifies the complete
+  `DirectXLoader`/`Object`/`ObjectFaceQuad`/`TextureRef` graph and preserves
+  the void thiscall ABI. It installs five independent borrowed X-file cursors:
+  `mesh_cursor`, `duplicate_cursor`, `texcoord_cursor`,
+  `material_header_cursor`, and `material_cursor`.
+- The native frame's adjacent `mesh_file_path[0x100]` and
+  `texture_path[0x100]` buffers are now explicit, with the archive loader's
+  `byte_count` out parameter between the cursor region and the first buffer.
+  Neither cursor owns the shared archive bytes; the temporary remap, UV, and
+  material banks remain the only allocations freed by this routine.
+- Preview/apply readback verified all eight user variables and saved the
+  snapshot. A second replay skipped the prototype and every lifetime as
+  already current, proving the replay is idempotent after reanalysis.
