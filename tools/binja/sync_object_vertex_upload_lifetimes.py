@@ -31,6 +31,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x00: ("x", "float"),
         0x04: ("y", "float"),
         0x08: ("z", "float"),
+        0x0C: ("diffuse", "uint32_t"),
         0x10: ("u", "float"),
         0x14: ("v", "float"),
     },
@@ -51,8 +52,33 @@ EXPECTED_STRUCT_FIELDS = {
 # lifetimes. At those exact points the slot no longer carries Object ownership:
 # it borrows the locked 24-byte ObjectRenderVertex stream until Unlock. VC6
 # walks each source and destination with independent integer byte offsets; only
-# the completed addresses are Vec3/ObjectRenderVertex pointers.
+# the completed addresses are Vec3/ObjectRenderVertex pointers. The exact tint
+# helper uses the same locked stream with a 0x18-byte integer write cursor.
 OBJECT_VERTEX_UPLOAD_USER_VAR_UPDATES = (
+    (
+        "set_object_color",
+        "StackVariableSourceType",
+        0,
+        -4,
+        "locked_vertices",
+        "ObjectRenderVertex*",
+    ),
+    (
+        "set_object_color",
+        "RegisterVariableSourceType",
+        90,
+        67,
+        "render_vertex_byte_offset",
+        "int32_t",
+    ),
+    (
+        "set_object_color",
+        "RegisterVariableSourceType",
+        92,
+        73,
+        "locked_vertices_base",
+        "ObjectRenderVertex*",
+    ),
     (
         "refresh_object_vertex_buffer",
         "RegisterVariableSourceType",
@@ -139,8 +165,8 @@ OBJECT_VERTEX_UPLOAD_USER_VAR_UPDATES = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the integer upload cursors and locked render-stream reload "
-            "lifetimes in refresh_object_vertex_buffer."
+            "Replay integer upload cursors and locked render-stream lifetimes "
+            "in set_object_color and refresh_object_vertex_buffer."
         )
     )
     parser.add_argument(

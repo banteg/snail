@@ -172,6 +172,7 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x414650", "reset_render_counters"),
     ("0x413bb0", "get_or_append_object_texture_group_vertex"),
     ("0x413d50", "build_object_texture_group_buffers"),
+    ("0x4145c0", "replace_object_group_texture_refs"),
     ("0x419fd0", "sort_object_faces_by_texture_group"),
     ("0x42f930", "request_object_texture_groups"),
     ("0x42f990", "initialize_object_list"),
@@ -440,6 +441,10 @@ PROTO_UPDATES = (
     (
         "get_or_append_object_texture_group_vertex",
         "int32_t __cdecl get_or_append_object_texture_group_vertex(Object* object, int32_t vertex_index, float u, float v)",
+    ),
+    (
+        "replace_object_group_texture_refs",
+        "void __cdecl replace_object_group_texture_refs(Object* object, TextureRef* new_texture, TextureRef* old_texture)",
     ),
     (
         "refresh_object_vertex_buffer",

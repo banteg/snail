@@ -537,6 +537,8 @@ void __cdecl sort_object_faces_by_texture_group(Object* object);
 void __cdecl build_object_texture_group_buffers(Object* object);
 int32_t __cdecl get_or_append_object_texture_group_vertex(
     Object* object, int32_t vertex_index, float u, float v);
+void __cdecl replace_object_group_texture_refs(
+    Object* object, TextureRef* new_texture, TextureRef* old_texture);
 void __cdecl refresh_object_vertex_buffer(Object* object);
 tColourSmall* __thiscall pack_color_rgba_u8(
     tColourSmall* out, tColour* color);

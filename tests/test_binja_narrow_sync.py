@@ -9947,9 +9947,31 @@ def test_object_edge_builder_lifetime_replay_stays_guarded() -> None:
 
 
 def test_object_list_texture_replace_lifetime_replay_stays_guarded() -> None:
+    owner_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
     replay = (
         BINJA_DIR / "sync_object_list_texture_replace_lifetimes.py"
     ).read_text(encoding="utf-8")
+    header = (HEADER_DIR / "bn_object_render_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    prototype = (
+        "void __cdecl replace_object_group_texture_refs("
+        "Object* object, TextureRef* new_texture, TextureRef* old_texture)"
+    )
+    assert prototype in owner_sync
+    for fragment in (
+        "void __cdecl replace_object_group_texture_refs(",
+        "Object* object, TextureRef* new_texture, TextureRef* old_texture)",
+    ):
+        assert fragment in replay
+    for fragment in (
+        "void __cdecl replace_object_group_texture_refs(",
+        "Object* object, TextureRef* new_texture, TextureRef* old_texture);",
+    ):
+        assert fragment in header
 
     for owner_name, expected_size in (
         ("ObjectFaceQuad", "0x30"),
@@ -9960,9 +9982,12 @@ def test_object_list_texture_replace_lifetime_replay_stays_guarded() -> None:
 
     for struct_name, offset, field_name, field_type in (
         ("ObjectFaceQuad", "0x0C", "texture_ref", "TextureRef*"),
+        ("Object", "0x10", "flags", "ObjectFlag"),
         ("Object", "0x2C", "vertex_count", "int32_t"),
         ("Object", "0x54", "facequad_count", "int32_t"),
         ("Object", "0x5C", "facequads", "ObjectFaceQuad*"),
+        ("Object", "0x64", "texture_group_count", "int32_t"),
+        ("Object", "0xD0", "group_texture_refs", "TextureRef**"),
         ("ObjectList", "0x00", "count", "int32_t"),
         ("ObjectList", "0x08", "objects", "Object*"),
     ):
@@ -10023,8 +10048,28 @@ def test_object_list_texture_replace_lifetime_replay_stays_guarded() -> None:
         )
         assert expected in replay
 
+    for index, storage, name, type_name in (
+        (524288, 68, "object", "Object*"),
+        (16, 67, "group_index", "int32_t"),
+        (24, 72, "old_texture", "TextureRef*"),
+        (29, 73, "new_texture", "TextureRef*"),
+        (33, 66, "group_texture_refs", "TextureRef**"),
+        (39, 69, "texture", "TextureRef*"),
+        (42, 66, "texture_slot", "TextureRef**"),
+    ):
+        expected = (
+            '        "replace_object_group_texture_refs",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert "apply_direct_proto_update" in replay
     assert "apply_user_var_updates" in replay
     assert '"object_byte_offset",\n        "Object*"' not in replay
     assert '"face_byte_offset",\n        "ObjectFaceQuad*"' not in replay
@@ -10429,21 +10474,117 @@ def test_object_vertex_upload_replay_keeps_cursors_and_streams_distinct() -> Non
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
-    for index, storage, name, type_name in (
-        (143, 68, "animated_render_vertex_byte_offset", "int32_t"),
-        (145, 67, "animated_source_vertex_byte_offset", "int32_t"),
-        (154, 69, "animated_vertices", "ObjectRenderVertex*"),
-        (152, 73, "animated_source_vertex", "Vec3*"),
-        (158, 69, "animated_vertex", "ObjectRenderVertex*"),
-        (271, 73, "dynamic_render_vertex_byte_offset", "int32_t"),
-        (273, 69, "dynamic_source_vertex_byte_offset", "int32_t"),
-        (282, 66, "dynamic_vertices", "ObjectRenderVertex*"),
-        (280, 68, "dynamic_source_vertex", "Vec3*"),
-        (286, 66, "dynamic_vertex", "ObjectRenderVertex*"),
+    assert '0x0C: ("diffuse", "uint32_t")' in replay
+
+    for function_name, source_type, index, storage, name, type_name in (
+        (
+            "set_object_color",
+            "StackVariableSourceType",
+            0,
+            -4,
+            "locked_vertices",
+            "ObjectRenderVertex*",
+        ),
+        (
+            "set_object_color",
+            "RegisterVariableSourceType",
+            90,
+            67,
+            "render_vertex_byte_offset",
+            "int32_t",
+        ),
+        (
+            "set_object_color",
+            "RegisterVariableSourceType",
+            92,
+            73,
+            "locked_vertices_base",
+            "ObjectRenderVertex*",
+        ),
+        (
+            "refresh_object_vertex_buffer",
+            "RegisterVariableSourceType",
+            143,
+            68,
+            "animated_render_vertex_byte_offset",
+            "int32_t",
+        ),
+        (
+            "refresh_object_vertex_buffer",
+            "RegisterVariableSourceType",
+            145,
+            67,
+            "animated_source_vertex_byte_offset",
+            "int32_t",
+        ),
+        (
+            "refresh_object_vertex_buffer",
+            "RegisterVariableSourceType",
+            154,
+            69,
+            "animated_vertices",
+            "ObjectRenderVertex*",
+        ),
+        (
+            "refresh_object_vertex_buffer",
+            "RegisterVariableSourceType",
+            152,
+            73,
+            "animated_source_vertex",
+            "Vec3*",
+        ),
+        (
+            "refresh_object_vertex_buffer",
+            "RegisterVariableSourceType",
+            158,
+            69,
+            "animated_vertex",
+            "ObjectRenderVertex*",
+        ),
+        (
+            "refresh_object_vertex_buffer",
+            "RegisterVariableSourceType",
+            271,
+            73,
+            "dynamic_render_vertex_byte_offset",
+            "int32_t",
+        ),
+        (
+            "refresh_object_vertex_buffer",
+            "RegisterVariableSourceType",
+            273,
+            69,
+            "dynamic_source_vertex_byte_offset",
+            "int32_t",
+        ),
+        (
+            "refresh_object_vertex_buffer",
+            "RegisterVariableSourceType",
+            282,
+            66,
+            "dynamic_vertices",
+            "ObjectRenderVertex*",
+        ),
+        (
+            "refresh_object_vertex_buffer",
+            "RegisterVariableSourceType",
+            280,
+            68,
+            "dynamic_source_vertex",
+            "Vec3*",
+        ),
+        (
+            "refresh_object_vertex_buffer",
+            "RegisterVariableSourceType",
+            286,
+            66,
+            "dynamic_vertex",
+            "ObjectRenderVertex*",
+        ),
     ):
         expected = (
-            '        "refresh_object_vertex_buffer",\n'
-            '        "RegisterVariableSourceType",\n'
+            f'        "{function_name}",\n'
+            f'        "{source_type}",\n'
             f"        {index},\n"
             f"        {storage},\n"
             f'        "{name}",\n'
@@ -10454,6 +10595,7 @@ def test_object_vertex_upload_replay_keeps_cursors_and_streams_distinct() -> Non
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
+    assert '"render_vertex_byte_offset",\n        "ObjectRenderVertex*"' not in replay
     assert '"animated_source_vertex_byte_offset",\n        "Vec3*"' not in replay
     assert '"dynamic_source_vertex_byte_offset",\n        "Vec3*"' not in replay
     assert '"animated_render_vertex_byte_offset",\n        "ObjectRenderVertex*"' not in replay

@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 from _narrow_sync import (
+    apply_direct_proto_update,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
@@ -17,6 +18,10 @@ from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
+REPLACE_OBJECT_GROUP_TEXTURE_REFS_PROTOTYPE = (
+    "void __cdecl replace_object_group_texture_refs("
+    "Object* object, TextureRef* new_texture, TextureRef* old_texture)"
+)
 
 EXPECTED_TYPE_WIDTHS = {
     "ObjectFaceQuad": 0x30,
@@ -29,9 +34,12 @@ EXPECTED_STRUCT_FIELDS = {
         0x0C: ("texture_ref", "TextureRef*"),
     },
     "Object": {
+        0x10: ("flags", "ObjectFlag"),
         0x2C: ("vertex_count", "int32_t"),
         0x54: ("facequad_count", "int32_t"),
         0x5C: ("facequads", "ObjectFaceQuad*"),
+        0x64: ("texture_group_count", "int32_t"),
+        0xD0: ("group_texture_refs", "TextureRef**"),
     },
     "ObjectList": {
         0x00: ("count", "int32_t"),
@@ -43,7 +51,9 @@ EXPECTED_STRUCT_FIELDS = {
 # each borrowed face bank with a 0x30 byte offset. Those two cursors remain
 # integers. Only the address formed after adding the list base is an Object*;
 # the face-bank load is an ObjectFaceQuad* borrow, and the final +0x0c address
-# is a TextureRef** slot within that borrowed record.
+# is a TextureRef** slot within that borrowed record. The exact grouped-render
+# callee then borrows Object::group_texture_refs and its TextureRef* entries;
+# its ABI and register lifetimes complete the same replacement ownership chain.
 OBJECT_LIST_TEXTURE_REPLACE_USER_VAR_UPDATES = (
     (
         "replace_object_list_texture_refs",
@@ -181,6 +191,62 @@ OBJECT_LIST_TEXTURE_REPLACE_USER_VAR_UPDATES = (
         "next_object_index",
         "int32_t",
     ),
+    (
+        "replace_object_group_texture_refs",
+        "RegisterVariableSourceType",
+        524288,
+        68,
+        "object",
+        "Object*",
+    ),
+    (
+        "replace_object_group_texture_refs",
+        "RegisterVariableSourceType",
+        16,
+        67,
+        "group_index",
+        "int32_t",
+    ),
+    (
+        "replace_object_group_texture_refs",
+        "RegisterVariableSourceType",
+        24,
+        72,
+        "old_texture",
+        "TextureRef*",
+    ),
+    (
+        "replace_object_group_texture_refs",
+        "RegisterVariableSourceType",
+        29,
+        73,
+        "new_texture",
+        "TextureRef*",
+    ),
+    (
+        "replace_object_group_texture_refs",
+        "RegisterVariableSourceType",
+        33,
+        66,
+        "group_texture_refs",
+        "TextureRef**",
+    ),
+    (
+        "replace_object_group_texture_refs",
+        "RegisterVariableSourceType",
+        39,
+        69,
+        "texture",
+        "TextureRef*",
+    ),
+    (
+        "replace_object_group_texture_refs",
+        "RegisterVariableSourceType",
+        42,
+        66,
+        "texture_slot",
+        "TextureRef**",
+    ),
 )
 
 
@@ -188,7 +254,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Replay the retained ObjectList allocation, borrowed Object and "
-            "ObjectFaceQuad records, texture-ref slot, and integer byte cursors."
+            "ObjectFaceQuad records, grouped TextureRef slots, and integer "
+            "byte cursors."
         )
     )
     parser.add_argument(
@@ -251,7 +318,15 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    operations = [verify_owner_layouts(args.target)]
+    operations = [
+        verify_owner_layouts(args.target),
+        apply_direct_proto_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="replace_object_group_texture_refs",
+            prototype=REPLACE_OBJECT_GROUP_TEXTURE_REFS_PROTOTYPE,
+        ),
+    ]
     operations.extend(
         apply_user_var_updates(
             REPO_ROOT,

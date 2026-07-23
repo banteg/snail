@@ -36,3 +36,17 @@ Cross-port ownership and ABI closure:
   leaves either the pack helper's pointer or the D3D `Unlock` result in `eax`;
   removing the synthetic result variable and returns is codegen-neutral at
   47/47 instructions with all three operands clean.
+
+## 2026-07-23 locked diffuse stream ownership
+
+Binary Ninja now preserves the D3D lock output as the borrowed
+`ObjectRenderVertex*` stream shared with `refresh_object_vertex_buffer`.
+The native loop's `0x18`-byte strength-reduced cursor remains an integer, while
+the completed store resolves through `locked_vertices->diffuse`; the previous
+`void* data + 0x0c` presentation is gone. The replay verifies the canonical
+24-byte render vertex and retained render-buffer chain before mutation.
+
+Preview/apply readback verified the stack output, integer byte cursor, and
+post-lock stream reload. A second run skipped all three as already current.
+No matcher source changed: focused output remains exact at `100.00%`, `47/47`
+instructions, prefix `47/47`, with all three operands clean.
