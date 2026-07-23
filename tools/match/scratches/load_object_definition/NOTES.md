@@ -120,3 +120,29 @@ were introduced to conceal that residual.
   (314/316, 30-instruction prefix, 36 clean and 12 mismatched operands) to
   100.00% (316/316, full prefix, all 59 operands clean). No register hints,
   volatile barriers, dummy locals, or byte-shaped fakematch were used.
+
+2026-07-23 live ownership closure:
+
+- Explicit function reanalysis in the shared Binary Ninja mutation path clears
+  the formerly resistant user type. The live database now retains and
+  independently reads back the authored
+  `void load_object_definition(char* path, Object* object)` ABI after unrelated
+  local mutations and after a second replay.
+- The exact native frame proves three disjoint automatic arrays:
+  `object_file_path[0x100]` at `-0x100`, `texture_path[0x80]` at `-0x180`, and
+  `texture_name[0x80]` at `-0x200`. The adjacent `byte_count` at `-0x204` is
+  the archive loader's out parameter. These are real source objects already
+  present in the exact scratch, not overlays introduced to improve HLIL.
+- The stack pointer at `-0x238` is the consuming outer `cursor`; the pointer at
+  `-0x23c` is the borrowed `line_cursor` copy used to count or parse a section
+  without consuming the outer traversal. Naming both lifetimes makes the two
+  parser roles explicit without splitting or merging native storage.
+- Ownership is now visible end to end: `path` and `object` are borrowed
+  parameters; the shared archive byte bank is borrowed for the duration of the
+  parse; both cursors are borrowed interior views; the loader installs owned
+  vertex and facequad banks on `object`; and each facequad borrows its resolved
+  `TextureRef*` from `g_texture_refs`.
+- `sync_object_render_types.py` carries the canonical ABI, while
+  `sync_object_loader_lifetimes.py` verifies the `Object`/`ObjectFaceQuad`/`Vec3`
+  layouts and replays only these six proven frame owners. A second lifetime
+  replay skips every mutation as already current.

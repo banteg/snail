@@ -974,6 +974,42 @@ def test_crt_variadic_replay_covers_the_complete_sprintf_xref_set() -> None:
         assert f'"{caller}"' in source
 
 
+def test_object_loader_replay_keeps_authored_abi_and_exact_frame_owners() -> None:
+    owner_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    replay = (BINJA_DIR / "sync_object_loader_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "bn_object_render_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    prototype = "void __cdecl load_object_definition(char* path, Object* object)"
+    assert prototype in owner_sync
+    assert prototype in replay
+    assert prototype + ";" in header
+    assert "apply_direct_proto_update(" in replay
+    assert "apply_user_var_updates(" in replay
+    assert "verify_object_loader_owner_layouts" in replay
+    for storage, name, variable_type in (
+        (-572, "line_cursor", "char*"),
+        (-568, "cursor", "char*"),
+        (-516, "byte_count", "int32_t"),
+        (-512, "texture_name", "char[0x80]"),
+        (-384, "texture_path", "char[0x80]"),
+        (-256, "object_file_path", "char[0x100]"),
+    ):
+        marker = (
+            '        "StackVariableSourceType",\n'
+            "        0,\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert marker in replay
+
+
 def test_intro_logo_lifetime_replay_keeps_real_owners_and_staged_stride() -> None:
     source = (BINJA_DIR / "sync_intro_logo_lifetimes.py").read_text(
         encoding="utf-8"
@@ -8249,6 +8285,11 @@ def test_previewed_batch_can_transactionally_set_a_user_variable() -> None:
     assert '"user_defined": bool(function.is_var_user_defined(variable))' in code
     assert 'str(variable.source_type).split(".")[-1] == expected_source' in code
     assert 'entry["verified"] = observed == entry["expected"]' in code
+    assert "user_var_reanalysis_identifiers.append" in code
+    assert (
+        "prototype_reanalysis_identifiers\n"
+        "                + user_var_reanalysis_identifiers"
+    ) in code
     assert "bv.revert_undo_actions(state)" in code
 
 
@@ -8271,6 +8312,7 @@ def test_previewed_batch_can_transactionally_delete_an_exact_user_variable() -> 
     assert "function.delete_user_var(variable)" in code
     assert "refusing to delete an unexpected user variable" in code
     assert 'entry["verified"] = observed["user_defined"] is False' in code
+    assert "user_var_reanalysis_identifiers.append" in code
     assert '"already automatic"' in code
     assert "bv.revert_undo_actions(state)" in code
 

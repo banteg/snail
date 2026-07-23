@@ -217,6 +217,7 @@ results = []
 affected_functions = []
 affected_types = []
 prototype_reanalysis_identifiers = []
+user_var_reanalysis_identifiers = []
 snapshot_saved = False
 analysis_changed = False
 try:
@@ -296,6 +297,9 @@ try:
             if changed:
                 analysis_changed = True
                 function.create_user_var(variable, expected_type, expected_name)
+                user_var_reanalysis_identifiers.append(
+                    str(operation["identifier"])
+                )
             results.append({
                 "op": kind,
                 "identifier": str(operation["identifier"]),
@@ -336,6 +340,9 @@ try:
             if changed:
                 analysis_changed = True
                 function.delete_user_var(variable)
+                user_var_reanalysis_identifiers.append(
+                    str(operation["identifier"])
+                )
             results.append({
                 "op": kind,
                 "identifier": str(operation["identifier"]),
@@ -493,7 +500,14 @@ try:
         bv.revert_undo_actions(state)
         undo_closed = True
         if analysis_changed:
-            for identifier in prototype_reanalysis_identifiers:
+            # Reverting a user-variable mutation has the same stale-HLIL
+            # failure mode as reverting a prototype mutation: a bare
+            # update_analysis_and_wait() can leave the previewed owner visible
+            # until some later action happens to queue the function.
+            for identifier in dict.fromkeys(
+                prototype_reanalysis_identifiers
+                + user_var_reanalysis_identifiers
+            ):
                 find_function(identifier).reanalyze()
             bv.update_analysis_and_wait()
     else:
@@ -504,7 +518,10 @@ except Exception:
     if not undo_closed:
         bv.revert_undo_actions(state)
         if analysis_changed:
-            for identifier in prototype_reanalysis_identifiers:
+            for identifier in dict.fromkeys(
+                prototype_reanalysis_identifiers
+                + user_var_reanalysis_identifiers
+            ):
                 find_function(identifier).reanalyze()
             bv.update_analysis_and_wait()
     raise

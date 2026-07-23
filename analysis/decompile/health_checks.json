@@ -17355,16 +17355,26 @@
       ]
     },
     {
-      "name": "bn_crt_variadic_object_loader_materialized",
+      "name": "bn_object_loader_owners",
       "artifact": "analysis/decompile/binja/functions/0044c420-load_object_definition.c",
       "required_substrings": [
-        "sprintf(&var_100, \"%s/_Object.txt\", arg1)",
-        "request_object_vertices(arg2, vertex_count)",
-        "request_object_facequads(arg2, facequad_count)",
+        "char object_file_path[0x100]",
+        "sprintf(&object_file_path, \"%s/_Object.txt\", path)",
+        "int32_t byte_count",
+        "char texture_name[0x80]",
+        "char texture_path[0x80]",
+        "parse_next_space_delimited_token(&line_cursor, &texture_name)",
+        "request_object_vertices(object, vertex_count)",
+        "request_object_facequads(object, facequad_count)",
         "get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)"
       ],
       "forbidden_substrings": [
-        "sprintf(&var_100, \"%s/_Object.txt\")",
+        "arg1",
+        "arg2",
+        "char out = 0",
+        "void texture_path",
+        "var_100",
+        "char* load_object_definition(",
         "int32_t load_object_definition()",
         "sub_48b32c",
         "unimplemented"

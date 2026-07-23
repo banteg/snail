@@ -214,11 +214,11 @@ DATA_VAR_UPDATES = (
     ("0x503318", "int32_t"),
 )
 
-# `load_object_definition` is declared in the canonical header, but the live
-# database's pre-existing zero-argument user type rejects both `proto set` and
-# direct Function.set_user_type updates. Keep it out of the repeatable sync
-# until that Binary Ninja function-type defect is cleared.
 PROTO_UPDATES = (
+    (
+        "load_object_definition",
+        "void __cdecl load_object_definition(char* path, Object* object)",
+    ),
     (
         "initialize_textured_backdrop_quad",
         "void __cdecl initialize_textured_backdrop_quad(Object* object, char* texture_path, float x_offset)",

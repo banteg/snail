@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_intro_screen",
-      "address": "0x4191e0"
+      "name": "load_object_definition",
+      "address": "0x44c420"
     }
   ],
   "health_check_count": 913,
