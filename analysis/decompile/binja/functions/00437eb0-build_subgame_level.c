@@ -307,8 +307,7 @@
 00438636        report_errorf("List ADDafter")
 0043865c        game->barrier.owner_player = &game->player
 00438665        if (game->level_mode == 0)
-00438673        int32_t __saved_ebp_15 = game->level_definition.parcel_count
-00438680        sprintf(&game->lives_text_widget->text_buffer, "0/%i")
+00438680        sprintf(&game->lives_text_widget->text_buffer, "0/%i", game->level_definition.parcel_count)
 0043868e        unhide_border_init(game->lives_icon_widget)
 00438699        unhide_border_init(game->lives_text_widget)
 004386aa        set_input_controller_pointer_authored_xy(0, 320f, 240f)

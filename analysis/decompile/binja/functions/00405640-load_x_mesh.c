@@ -3,33 +3,34 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: load_x_mesh @ 0x405640 */
 
-0040564a        void* buffer = get_archive_data_base()
-0040565f        char* var_250
-0040565f        char* var_24c
+0040564a        void* buffer_1 = get_archive_data_base()
+0040565f        char* buffer
+0040565f        char* format
+0040565f        char* mesh_path_1
 0040565f        char path[0x100]
 0040565f        if (is_archive_index_loaded() == 0)
-00405688        char* mesh_path_2 = mesh_path
-00405689        var_24c = "X/%s"
-00405692        var_250 = &path
-00405661        char* mesh_path_3 = mesh_path
+00405688        mesh_path_1 = mesh_path
+00405689        format = "X/%s"
+00405692        buffer = &path
+00405661        char* mesh_path_2 = mesh_path
 00405663        int32_t i = 0xffffffff
-00405668        char* mesh_path_1 = mesh_path
+00405668        mesh_path_1 = mesh_path
 00405669        while (i != 0)
-00405669        bool cond:0_1 = 0 != *mesh_path_3
-00405669        mesh_path_3 = &mesh_path_3[1]
+00405669        bool cond:0_1 = 0 != *mesh_path_2
+00405669        mesh_path_2 = &mesh_path_2[1]
 00405669        i -= 1
 00405669        if (not(cond:0_1))
 00405669        break
 00405673        if (mesh_path[not.d(i) - 2] == 0x32)
-00405680        var_24c = "X/%s"
-00405685        var_250 = &path
-00405675        var_24c = "X/%s2"
-00405692        var_250 = &path
-00405693        sprintf(var_250, var_24c)
+00405680        format = "X/%s"
+00405685        buffer = &path
+00405675        format = "X/%s2"
+00405692        buffer = &path
+00405693        sprintf(buffer, format, mesh_path_1)
 004056a6        int32_t out_size
-004056a6        load_file_bytes_from_archive_or_fs(&path, buffer, &out_size)
-004056b5        *(out_size + buffer - 2) = 0
-004056ba        char* eax_2 = find_case_insensitive_substring("Frame ", buffer)
+004056a6        load_file_bytes_from_archive_or_fs(&path, buffer_1, &out_size)
+004056b5        *(out_size + buffer_1 - 2) = 0
+004056ba        char* eax_2 = find_case_insensitive_substring("Frame ", buffer_1)
 004056ca        if (eax_2 == 0)
 004056d6        report_errorf("No 'Frame ' Data in %s", &path)
 004056e8        return
@@ -122,7 +123,7 @@
 00405a15        *(&object->facequads->uv[3] + esi_1) = pointer_1[ebx_3 * 2]
 00405a25        *(&object->facequads->uv[3].v + esi_1) = pointer_1[ebx_3 * 2 + 1]
 00405a31        esi_1 = &esi_1[0x18]
-00405a34        *(esi_1 + object->facequads - 0x24) = get_or_create_texture_ref(&g_texture_refs, "X/snail-turbo.tga", 0, 0)
+00405a34        *(esi_1 + object->facequads - 0x24) = get_or_create_texture_ref(&g_texture_refs, "X/snail-turbo.tga", nullptr, 0)
 00405a40        int32_t* eax_24 = *(esi_1 + object->facequads - 0x24)
 00405a44        int32_t edx_16 = *eax_24
 00405a46        edx_16:1.b |= 0x10
@@ -172,7 +173,7 @@
 00405bf6        eax_36[2] = 0x67
 00405bfa        eax_36[3] = 0x61
 00405bfd        eax_36[4] = 0
-00405c09        struct TextureRef* eax_40 = get_or_create_texture_ref(&g_texture_refs, &texture_path, 0, 0)
+00405c09        struct TextureRef* eax_40 = get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)
 00405c0e        *pointer_4 = eax_40
 00405c10        enum TextureRefFlags flags = eax_40->flags
 00405c12        flags:1.b |= 0x10
@@ -184,7 +185,7 @@
 00405c29        eax_42->flags = flags_1
 00405b77        if ((options_flags.b & 2) == 0)
 00405b84        report_warningf("No TextureFilename for Material %i in %s", ebp_1, &path)
-00405b9f        *pointer_4 = get_or_create_texture_ref(&g_texture_refs, "Sprites/debug.tga", 0, 0)
+00405b9f        *pointer_4 = get_or_create_texture_ref(&g_texture_refs, "Sprites/debug.tga", nullptr, 0)
 00405ba1        esi_3 = var_22c
 00405c2f        ebp_1 += 1
 00405c30        pointer_4 = &pointer_4[1]

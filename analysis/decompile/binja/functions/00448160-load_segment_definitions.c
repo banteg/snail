@@ -20,13 +20,11 @@
 004481d3        int32_t arg_14 = 0
 004481d7        EnumeratedEntryName (* arg_8)[0x200] = &names
 004481db        int32_t* arg_4 = &tracks_after_stack_probe->entries[0].row_count
-004481f3        while (true)
-004481f3        void buffer
-004481f3        void* var_14_1 = &buffer
-004481f4        EnumeratedEntryName (* var_18_1)[0x200] = edi_1
-004481fb        void path
-004481fb        sprintf(&path, "Segments/%s")
-00448211        load_file_bytes_from_archive_or_fs(&path, &buffer, nullptr)
+004481fb        while (true)
+004481fb        char arg_2e0[0x200]
+004481fb        void buffer
+004481fb        sprintf(&arg_2e0, "Segments/%s", edi_1, &buffer)
+00448211        load_file_bytes_from_archive_or_fs(&arg_2e0, &buffer, nullptr)
 00448223        char* eax = find_case_insensitive_substring("ID:", &buffer)
 0044822d        int32_t __saved_edi
 0044822d        if (eax == 0)
@@ -42,9 +40,8 @@
 00448250        i = *eax_1
 00448255        if (i s< 0x30)
 00448255        break
-0044825b        EnumeratedEntryName (* var_14_2)[0x200] = edi_1
 00448265        arg_4[-0x22]:4.2478000[0].id = edx_1
-00448268        sprintf(&arg_4[-0x11], "%s")
+00448268        sprintf(&arg_4[-0x11], "%s", edi_1)
 0044827a        char* eax_3 = find_case_insensitive_substring("Name:'", &buffer)
 00448284        if (eax_3 == 0)
 00448831        report_errorf("Cannot find Name: in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])

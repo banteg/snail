@@ -1,10 +1,10 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 14,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
+  "bn_exported": 14,
   "ida_exported": 714,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
@@ -17,19 +17,63 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "kill_golb",
-      "address": "0x414670"
+      "name": "update_frontend_widget_interaction",
+      "address": "0x402820"
     },
     {
-      "name": "update_golb_ai",
-      "address": "0x414820"
+      "name": "load_x_mesh",
+      "address": "0x405640"
     },
     {
-      "name": "create_golb",
-      "address": "0x415280"
+      "name": "load_x_animation_clip",
+      "address": "0x405d60"
+    },
+    {
+      "name": "load_galaxy_layout",
+      "address": "0x4088e0"
+    },
+    {
+      "name": "load_landscape_script_by_name",
+      "address": "0x4182f0"
+    },
+    {
+      "name": "open_logo",
+      "address": "0x419110"
+    },
+    {
+      "name": "initialize_intro_screen",
+      "address": "0x4191e0"
+    },
+    {
+      "name": "build_subgame_level",
+      "address": "0x437eb0"
+    },
+    {
+      "name": "load_frontend_level_by_mode_and_index",
+      "address": "0x443650"
+    },
+    {
+      "name": "handle_subgoldy_collisions",
+      "address": "0x444cf0"
+    },
+    {
+      "name": "load_level_definition_file",
+      "address": "0x447480"
+    },
+    {
+      "name": "load_segment_definitions",
+      "address": "0x448160"
+    },
+    {
+      "name": "format_time_trial_string",
+      "address": "0x448960"
+    },
+    {
+      "name": "load_object_definition",
+      "address": "0x44c420"
     }
   ],
-  "health_check_count": 908,
+  "health_check_count": 913,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

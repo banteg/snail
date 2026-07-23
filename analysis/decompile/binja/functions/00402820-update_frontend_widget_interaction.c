@@ -92,7 +92,7 @@
 00402c09        enum FrontendWidgetFlag widget_flags_3 = widget->widget_flags
 00402c15        if ((widget_flags_3.b & 2) == 0 && (widget_flags_3.b & 4) != 0)
 00402c1c        if ((widget_flags_3 & FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE) == 0)
-00402c25        play_sound_effect(9)
+00402c25        play_sound_effect(&g_sound_effect_manager, 9)
 00402c2a        enum FrontendWidgetFlag widget_flags_4 = widget->widget_flags
 00402c30        widget_flags_4.b |= 2
 00402c32        widget->widget_flags = widget_flags_4
@@ -113,7 +113,7 @@
 00402c65        widget_flags_5.b |= 0x20
 00402c67        widget->widget_flags = widget_flags_5
 00402c87        if ((widget->widget_flags & &data_800000) == 0)
-00402c90        play_sound_effect(8)
+00402c90        play_sound_effect(&g_sound_effect_manager, 8)
 00402c9c        if ((widget->tooltip.mode_flags.b & 0x20) == 0)
 00402ca4        reset_tooltip(&widget->tooltip)
 00402ca9        game_base_1 = g_game_base
@@ -129,7 +129,7 @@
 00402ce6        queue_frontend_widget_flag_after_delay(&game_base_1->border_manager, widget, 0x80)
 00402cd0        widget_flags_6.b |= 0x80
 00402cd2        widget->widget_flags = widget_flags_6
-00402cf2        play_sound_effect(8)
+00402cf2        play_sound_effect(&g_sound_effect_manager, 8)
 00402cfd        reset_tooltip(&widget->tooltip)
 00402ad4        widget->text_effect_target = 0f
 00402ade        widget_flags_1 = widget->widget_flags
@@ -172,15 +172,15 @@
 00402e6c        update_twinkle_manager(&widget->twinkle_manager)
 00402e77        update_tooltip(&widget->tooltip)
 00402e87        uint8_t pulse_alpha = (widget->widget_flags u>> 8).b & 1
-00402e8d        int32_t ecx_32
+00402e8d        int32_t ecx_29
 00402e8d        int16_t x87control_1
-00402e8d        ecx_32, x87control_1 = layout_frontend_widget(widget)
+00402e8d        ecx_29, x87control_1 = layout_frontend_widget(widget)
 00402e9b        if (((widget->widget_flags).w:1.b & 0x10) == 0)
 00402ea7        long double x87_r7_41 = fconvert.t(1f) - fconvert.t(widget->hover_blend_current)
-00402ec1        int32_t var_18_1 = ecx_32
-00402ee1        int32_t var_1c_4 = ecx_32
-00402efb        int32_t var_20_1 = ecx_32
-00402f15        int32_t var_24_1 = ecx_32
+00402ec1        int32_t var_18_1 = ecx_29
+00402ee1        int32_t var_1c_4 = ecx_29
+00402efb        int32_t var_20_1 = ecx_29
+00402f15        int32_t var_24_1 = ecx_29
 00402f1d        store_color4f(&widget->current_fill_color, fconvert.s(fconvert.t(widget->hover_blend_current) * fconvert.t(widget->hot_fill_color.r) + x87_r7_41 * fconvert.t(widget->idle_fill_color.r)), fconvert.s(fconvert.t(widget->hover_blend_current) * fconvert.t(widget->hot_fill_color.g) + x87_r7_41 * fconvert.t(widget->idle_fill_color.g)), fconvert.s(fconvert.t(widget->hover_blend_current) * fconvert.t(widget->hot_fill_color.b) + x87_r7_41 * fconvert.t(widget->idle_fill_color.b)), fconvert.s(fconvert.t(widget->hover_blend_current) * fconvert.t(widget->hot_fill_color.a) + x87_r7_41 * fconvert.t(widget->idle_fill_color.a)))
 00402f28        long double x87_r7_45 = fconvert.t(1f) - fconvert.t(widget->hover_blend_current)
 00402f42        struct tColour* var_18_3 = &widget->current_fill_color
@@ -252,15 +252,15 @@
 004031f9        enum FrontendWidgetFlag widget_flags_13 = slider_more_widget->widget_flags
 004031ff        widget_flags_13:1.b |= 0x80
 00403202        slider_more_widget->widget_flags = widget_flags_13
-0040321c        struct tColour* ecx_46 = &widget->slider_value_widget->current_text_color
-00403224        ecx_46->r = widget->current_text_color.r
-00403229        ecx_46->g = widget->current_text_color.g
-0040322f        ecx_46->b = widget->current_text_color.b
-00403235        ecx_46->a = widget->current_text_color.a
+0040321c        struct tColour* ecx_43 = &widget->slider_value_widget->current_text_color
+00403224        ecx_43->r = widget->current_text_color.r
+00403229        ecx_43->g = widget->current_text_color.g
+0040322f        ecx_43->b = widget->current_text_color.b
+00403235        ecx_43->a = widget->current_text_color.a
 00403244        widget->slider_value_widget->hover_blend_target = widget->hover_blend_target
 00403256        widget->slider_value_widget->hover_blend_current = widget->hover_blend_current
-00403279        int32_t var_18_6 = ftol(x87control_1, fconvert.t(widget->slider_position_target) * fconvert.t(100f) + fconvert.t(0.100000001f))
-00403286        sprintf(&widget->slider_value_widget->text_buffer, "%02i%%")
+0040326e        int32_t eax_41 = ftol(x87control_1, fconvert.t(widget->slider_position_target) * fconvert.t(100f) + fconvert.t(0.100000001f))
+00403286        sprintf(&widget->slider_value_widget->text_buffer, "%02i%%", eax_41)
 00403294        return
 00402a46        ecx_5 = &g_game_base->active_bod_list
 00402a4c        uint16_t list_flags_3 = (widget->list_flags).w

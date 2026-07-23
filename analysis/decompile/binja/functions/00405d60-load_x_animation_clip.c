@@ -4,11 +4,10 @@
 /* function: load_x_animation_clip @ 0x405d60 */
 
 00405d6a        char* mesh_name_1 = mesh_name
-00405d78        char* mesh_name_2 = mesh_name_1
-00405d81        void pattern
-00405d81        sprintf(&pattern, "%s")
-00405d9a        char* cursor = &pattern
-00405da3        char* cursor_1 = &find_case_insensitive_substring("-", &pattern)[1]
+00405d81        void var_100
+00405d81        sprintf(&var_100, "%s", mesh_name_1)
+00405d9a        char* cursor = &var_100
+00405da3        char* cursor_1 = &find_case_insensitive_substring("-", &var_100)[1]
 00405daa        cursor = cursor_1
 00405db6        char* cursor_2 = &find_case_insensitive_substring("-", cursor_1)[1]
 00405db7        cursor = cursor_2
@@ -26,7 +25,7 @@
 00405e08        *cursor = 0
 00405e10        cursor = &cursor[1]
 00405e1f        int32_t out_count
-00405e1f        enumerate_matching_archive_or_fs_entries("X", &pattern, &out_count, &data_4b2f50)
+00405e1f        enumerate_matching_archive_or_fs_entries("X", &var_100, &out_count, &data_4b2f50)
 00405e31        struct XAnimationKeyframe* keyframes = allocate_tracked_memory(out_count << 7, "Anim Key frame bods")
 00405e36        int32_t unused = out_count
 00405e3d        int32_t ebp = 0
@@ -50,11 +49,10 @@
 00405ed0        clean_duplicate_vertices(&loader->duplicate_vertices, unused)
 00405ee6        load_x_mesh(loader, &data_4b2f50, object, 0)
 00405eed        request_object_vertices_copy(object)
-00405ef5        char* mesh_name_3 = mesh_name_1
 00405f01        object->flags |= &data_800000
-00405f09        void var_180
-00405f09        sprintf(&var_180, "Anim:%s")
-00405f16        char* eax_13 = find_case_insensitive_substring(&var_180, loader->animation_bytes)
+00405f09        void buffer
+00405f09        sprintf(&buffer, "Anim:%s", mesh_name_1)
+00405f16        char* eax_13 = find_case_insensitive_substring(&buffer, loader->animation_bytes)
 00405f22        float progress_step
 00405f22        int32_t flags
 00405f22        if (eax_13 == 0)

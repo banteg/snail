@@ -216,6 +216,7 @@ undo_closed = False
 results = []
 affected_functions = []
 affected_types = []
+prototype_reanalysis_identifiers = []
 snapshot_saved = False
 analysis_changed = False
 try:
@@ -256,6 +257,14 @@ try:
                     function.set_user_type(expected_type)
                 except TypeError:
                     function.set_user_type(expected)
+                # Binary Ninja can retain the previously materialized function
+                # type until this function is explicitly queued again. This is
+                # especially visible when changing a fixed CRT prototype to a
+                # variadic one: update_analysis_and_wait() alone is not enough.
+                function.reanalyze()
+                prototype_reanalysis_identifiers.append(
+                    str(operation["identifier"])
+                )
             results.append({
                 "op": kind,
                 "identifier": str(operation["identifier"]),
@@ -484,6 +493,8 @@ try:
         bv.revert_undo_actions(state)
         undo_closed = True
         if analysis_changed:
+            for identifier in prototype_reanalysis_identifiers:
+                find_function(identifier).reanalyze()
             bv.update_analysis_and_wait()
     else:
         bv.commit_undo_actions(state)
@@ -493,6 +504,8 @@ except Exception:
     if not undo_closed:
         bv.revert_undo_actions(state)
         if analysis_changed:
+            for identifier in prototype_reanalysis_identifiers:
+                find_function(identifier).reanalyze()
             bv.update_analysis_and_wait()
     raise
 
@@ -634,12 +647,15 @@ def normalize_function_type(value):
 
 state = bv.begin_undo_actions()
 applied = []
+reanalysis_identifiers = []
 try:
     for identifier, prototype in updates:
         fn = find_function(identifier)
         before = str(fn.type)
         parsed_type, _ = bv.parse_type_string(prototype)
         fn.set_user_type(parsed_type)
+        fn.reanalyze()
+        reanalysis_identifiers.append(identifier)
         applied.append({{
             "identifier": identifier,
             "before": before,
@@ -658,6 +674,8 @@ try:
     snapshot_saved = bv.file.save_auto_snapshot()
 except Exception:
     bv.revert_undo_actions(state)
+    for identifier in reanalysis_identifiers:
+        find_function(identifier).reanalyze()
     bv.update_analysis_and_wait()
     raise
 result = {{"applied": applied, "snapshot_saved": snapshot_saved}}
@@ -1429,6 +1447,7 @@ fn = functions[0]
 before = str(fn.type)
 parsed_type, _ = bv.parse_type_string({json.dumps(prototype)})
 fn.set_user_type(parsed_type)
+fn.reanalyze()
 bv.update_analysis_and_wait()
 result = {{
     "function": identifier,

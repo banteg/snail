@@ -933,7 +933,45 @@ def test_direct_proto_batch_accepts_address_identifiers(monkeypatch) -> None:
     assert "address = int(text, 0)" in code
     assert "function = bv.get_function_at(address)" in code
     assert 'fn = find_function(identifier)' in code
+    assert "fn.reanalyze()" in code
+    assert "reanalysis_identifiers" in code
     assert 'return str(value).replace(" __pure", "")' in code
+
+
+def test_crt_variadic_replay_covers_the_complete_sprintf_xref_set() -> None:
+    source = Path("tools/binja/sync_crt_variadic_prototypes.py").read_text(
+        encoding="utf-8"
+    )
+    header = Path("analysis/headers/bn_crt_variadic_prototypes.h").read_text(
+        encoding="utf-8"
+    )
+
+    prototype = "int32_t __cdecl sprintf(char* buffer, const char* format, ...)"
+    assert prototype in source
+    assert prototype + ";" in header
+    assert "apply_proto_updates(" in source
+    assert "reanalyze_functions(" in source
+    for caller in (
+        "update_frontend_widget_interaction",
+        "load_x_mesh",
+        "load_x_animation_clip",
+        "load_galaxy_layout",
+        "load_landscape_script_by_name",
+        "open_logo",
+        "initialize_intro_screen",
+        "build_subgame_level",
+        "load_frontend_level_by_mode_and_index",
+        "handle_subgoldy_collisions",
+        "load_level_definition_file",
+        "load_segment_definitions",
+        "format_time_trial_string",
+        "load_object_definition",
+        "sub_46120b",
+        "sub_47d91e",
+        "sub_47f8dc",
+        "sub_485cf8",
+    ):
+        assert f'"{caller}"' in source
 
 
 def test_direct_proto_batch_requires_saved_snapshot(monkeypatch) -> None:
@@ -8118,6 +8156,8 @@ def test_previewed_batch_uses_one_transactional_python_preview_and_apply(monkeyp
     assert "preview = True" in calls[0][calls[0].index("--code") + 1]
     assert "preview = False" in calls[1][calls[1].index("--code") + 1]
     assert 'return str(value).replace(" __pure", "")' in calls[0][calls[0].index("--code") + 1]
+    assert "function.reanalyze()" in calls[0][calls[0].index("--code") + 1]
+    assert "prototype_reanalysis_identifiers" in calls[0][calls[0].index("--code") + 1]
     assert result["apply"]["committed"] is True
 
 

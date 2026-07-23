@@ -25,10 +25,9 @@
 0040899b        int32_t var_cc = 0
 0040899f        float* i_3 = &g_galaxy_group_points[0].y
 004089a3        struct tColour* edi = &galaxy->route_names[0].color
-004089b1        int32_t var_e8_1 = var_d0
-004089b8        void var_c0
-004089b8        sprintf(&var_c0, "Galaxy%i:")
-004089c7        char* eax_5 = find_case_insensitive_substring(&var_c0, eax_3)
+004089b8        void buffer
+004089b8        sprintf(&buffer, "Galaxy%i:", var_d0)
+004089c7        char* eax_5 = find_case_insensitive_substring(&buffer, eax_3)
 004089d1        char* var_d4 = eax_5
 004089d5        if (eax_5 == 0)
 00408bd8        report_errorf("Cannot find Galaxy %i in _Galaxy.txt")
@@ -66,11 +65,10 @@
 00408ab9        (&galaxy->route_slots[0].record.map_x)[galaxy->record_count * 0xa8] = g_galaxy_route_points[1 + divs.dp.d(sx.q(ebp), (edi - 0x109b4)->route_names[0].star_count) + var_cc].x
 00408ae4        (&galaxy->route_slots[0].record.map_y)[galaxy->record_count * 0xa8] = g_galaxy_route_points[1 + divs.dp.d(sx.q(ebp), (edi - 0x109b4)->route_names[0].star_count) + var_cc].y
 00408afe        (&galaxy->route_slots[0].record.map_z)[galaxy->record_count * 0xa8] = 0
-00408b09        int32_t record_count = galaxy->record_count
-00408b10        void var_80
-00408b10        sprintf(&var_80, "LEVEL %i MISSING")
-00408b31        rstrcpy_checked_ascii(&galaxy->route_slots[0].record.detail_text[galaxy->record_count * 0x2a0], &var_80)
-00408b55        rstrcpy_checked_ascii(&galaxy->route_slots[0].record.description_text[galaxy->record_count * 0x2a0], &var_80)
+00408b10        void buffer_1
+00408b10        sprintf(&buffer_1, "LEVEL %i MISSING", galaxy->record_count)
+00408b31        rstrcpy_checked_ascii(&galaxy->route_slots[0].record.detail_text[galaxy->record_count * 0x2a0], &buffer_1)
+00408b55        rstrcpy_checked_ascii(&galaxy->route_slots[0].record.description_text[galaxy->record_count * 0x2a0], &buffer_1)
 00408b61        j_1 += 1
 00408b62        galaxy->record_count += 1
 00408b68        ebp += 0xa

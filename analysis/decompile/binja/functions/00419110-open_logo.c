@@ -20,10 +20,9 @@
 00419181        int32_t esi_1 = 0
 00419185        if (result s> 0)
 00419187        EnumeratedEntryName (* edi)[0x80] = &names
-0041918e        EnumeratedEntryName (* var_c_4)[0x80] = edi
-00419199        void texture_path
-00419199        sprintf(&texture_path, "Intro/%s")
-004191af        struct TextureRef* eax_4 = get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)
+00419199        char arg_4[0x80]
+00419199        sprintf(&arg_4, "Intro/%s", edi)
+004191af        struct TextureRef* eax_4 = get_or_create_texture_ref(&g_texture_refs, &arg_4, nullptr, 0)
 004191b4        enum TextureRefFlags flags = eax_4->flags
 004191b6        edi = &(*edi)[1]
 004191bc        flags:1.b |= 4

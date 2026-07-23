@@ -13118,9 +13118,12 @@
       "name": "bn_frontend_level_loader_owner_and_void_abi",
       "artifact": "analysis/decompile/binja/functions/00443650-load_frontend_level_by_mode_and_index.c",
       "required_substrings": [
+        "char var_80[0x80]",
         "switch (mode)",
         "level_index",
-        "load_level_definition_file(tracks, &filename)",
+        "sprintf(&var_80, \"Arcade%03i.txt\", level_index)",
+        "sprintf(&var_80, \"TimeTrialExtra%03i.txt\", level_index - 0x32)",
+        "load_level_definition_file(tracks, &var_80)",
         "00443708        return"
       ],
       "forbidden_substrings": [
@@ -17277,6 +17280,70 @@
         "CompletionResultScreen",
         "Color4f color",
         "(tColour *)&color"
+      ]
+    },
+    {
+      "name": "bn_crt_variadic_intro_texture_path",
+      "artifact": "analysis/decompile/binja/functions/004191e0-initialize_intro_screen.c",
+      "required_substrings": [
+        "sprintf(&var_80, \"Intro/%s\", &var_100)"
+      ],
+      "forbidden_substrings": [
+        "sprintf(&var_80, \"Intro/%s\")",
+        "sub_48b32c"
+      ]
+    },
+    {
+      "name": "bn_crt_variadic_subgame_lives_text",
+      "artifact": "analysis/decompile/binja/functions/00437eb0-build_subgame_level.c",
+      "required_substrings": [
+        "sprintf(&game->lives_text_widget->text_buffer, \"0/%i\", game->level_definition.parcel_count)"
+      ],
+      "forbidden_substrings": [
+        "sprintf(&game->lives_text_widget->text_buffer, \"0/%i\")",
+        "sub_48b32c"
+      ]
+    },
+    {
+      "name": "bn_crt_variadic_time_trial_fields",
+      "artifact": "analysis/decompile/binja/functions/00448960-format_time_trial_string.c",
+      "required_substrings": [
+        "sprintf(0x751478, \"%1i:%02i:%03i\", timer->minutes, timer->seconds, timer->display_thousandths)",
+        "sprintf(0x751478, \"%1i:%02i:%02i\", timer->minutes, timer->seconds, timer->display_hundredths)"
+      ],
+      "forbidden_substrings": [
+        "sub_48b32c",
+        "int32_t var_8 = arg1[4]",
+        "int32_t var_1c = arg1[3]"
+      ]
+    },
+    {
+      "name": "bn_crt_variadic_galaxy_labels",
+      "artifact": "analysis/decompile/binja/functions/004088e0-load_galaxy_layout.c",
+      "required_substrings": [
+        "sprintf(&buffer, \"Galaxy%i:\", var_d0)",
+        "sprintf(&buffer_1, \"LEVEL %i MISSING\", galaxy->record_count)"
+      ],
+      "forbidden_substrings": [
+        "sprintf(&buffer, \"Galaxy%i:\")",
+        "sprintf(&buffer_1, \"LEVEL %i MISSING\")",
+        "sub_48b32c"
+      ]
+    },
+    {
+      "name": "bn_crt_variadic_object_loader_materialized",
+      "artifact": "analysis/decompile/binja/functions/0044c420-load_object_definition.c",
+      "required_substrings": [
+        "sprintf(&var_100, \"%s/_Object.txt\", arg1)",
+        "request_object_vertices(arg2, vertex_count)",
+        "request_object_facequads(arg2, facequad_count)",
+        "get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)"
+      ],
+      "forbidden_substrings": [
+        "sprintf(&var_100, \"%s/_Object.txt\")",
+        "int32_t load_object_definition()",
+        "sub_48b32c",
+        "unimplemented"
       ]
     }
   ]

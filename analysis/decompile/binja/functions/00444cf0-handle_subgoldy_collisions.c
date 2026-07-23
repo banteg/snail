@@ -152,9 +152,7 @@
 0044531d        int32_t ebx_2 = player->parcels_collected + 1
 0044531e        player->parcels_collected = ebx_2
 0044532b        if (game_1->level_mode == 0)
-00445339        int32_t parcel_count = game_1->level_definition.parcel_count
-0044533a        int32_t var_8c_1 = ebx_2
-00445346        sprintf(&game_1->lives_text_widget->text_buffer, "%i/%i")
+00445346        sprintf(&game_1->lives_text_widget->text_buffer.raw, "%i/%i", ebx_2, game_1->level_definition.parcel_count)
 0044534e        parcel_pool_byte_offset += 0x8c
 00445475        struct Vec3 vector_1
 00445367        int32_t health_pool_byte_offset = 0

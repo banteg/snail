@@ -55,9 +55,8 @@
 00419389        cursor = &cursor_4[1]
 00419393        float var_170_1 = fconvert.s(parse_next_float32(&cursor))
 004193a1        float var_174_1 = fconvert.s(parse_next_float32(&cursor))
-004193b3        void* var_194_1 = &var_100
-004193ba        void texture_path
-004193ba        sprintf(&texture_path, "Intro/%s")
+004193ba        char var_80[0x80]
+004193ba        sprintf(&var_80, "Intro/%s", &var_100)
 004193bf        logo->renderable_count
 004193da        if ((0x200 & logo->letters[logo->:0x14.d].renderable.bod.bod.list_flags) == 0)
 004193eb        struct GameRoot* game_base_2 = g_game_base
@@ -75,7 +74,7 @@
 00419422        logo->letters[logo->:0x14.d].renderable.__offset(0x4).d |= 0x200
 004193e1        report_errorf("List ADD")
 00419439        set_bod_object(&logo->letters[logo->renderable_count], (var_168_1 - 0x2403c)->image_donors[0].renderable.bod.object)
-00419462        logo->letters[logo->renderable_count].renderable.bod.object->facequads->texture_ref = get_or_create_texture_ref(&g_texture_refs, &texture_path, 0, 0)
+00419462        logo->letters[logo->renderable_count].renderable.bod.object->facequads->texture_ref = get_or_create_texture_ref(&g_texture_refs, &var_80, nullptr, 0)
 00419472        set_matrix_identity(&logo->letters[logo->renderable_count].renderable.transform)
 00419477        int32_t renderable_count = logo->renderable_count
 004194b1        logo->letters[renderable_count].renderable.transform.position.x = 0
