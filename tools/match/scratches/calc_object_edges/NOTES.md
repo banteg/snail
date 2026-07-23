@@ -89,3 +89,31 @@ byte-bank transcription.
 Focused Wibo is unchanged at 75.62%, 142/141 instructions, prefix 0/141, and
 14 clean masked operands. The candidate's extra stack spill remains visible;
 no pointer cursor, raw address spelling, or other fakematch was introduced.
+
+## 2026-07-23 builder lifetime replay
+
+Native allocates this function's only local dword with `push ecx`. That
+physical slot first preserves the Object receiver, then holds the face index,
+and finally holds the edge-compaction byte offset. The guarded BN replay now
+separates all three logical lifetimes: the face zero, loop phi, and back edge
+merge into `face_index`, while the compactor zero, loop phi, and back edge
+merge into `edge_byte_offset_spill`. The retained initial lifetime remains an
+Object borrow without contaminating either scalar loop.
+
+EDX and its spill remain integer byte offsets into the temporary edge bank.
+Only the addresses formed after adding those offsets to `build_edges` receive
+`ObjectToonEdge*` ownership; optimized HLIL folds those short-lived ESI/EDI
+borrows directly into the 0x24-byte copy. The final whole-bank transfer keeps
+the source and destination banks typed, while the post-`rep movsd` ESI/EDI
+values are correctly byte-oriented tail cursors rather than new edge owners.
+
+The replay work also tightened the shared split helper. It may now extend an
+existing merge only when the current sources are a subset of the requested
+sources for the same target, and it resolves BN-hidden merged sources through
+the split and merge maps. Conflicting targets and unexpected sources still
+abort before mutation. This makes export-driven lifetime refinements
+repeatable instead of requiring an unsafe manual merge replacement.
+
+Focused Wibo remains 75.62%, 142/141 instructions, prefix 0/141, and 14 clean
+masked operands. The remaining extra spill and cleanup-loop allocation delta
+are unchanged and visible; no matching source or masked operand was altered.

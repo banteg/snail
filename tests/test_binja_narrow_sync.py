@@ -9775,6 +9775,130 @@ def test_object_edge_merge_lifetime_replay_stays_guarded() -> None:
     assert '"shift_byte_offset",\n        "ObjectToonEdge*"' not in replay
 
 
+def test_object_edge_builder_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_object_edge_builder_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("ObjectFaceQuad", "0x30"),
+        ("ObjectToonEdge", "0x24"),
+        ("Object", "0xDC"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("ObjectFaceQuad", "0x08", "vertex_3", "uint16_t"),
+        ("ObjectToonEdge", "0x00", "flags", "ObjectToonEdgeFlag"),
+        ("ObjectToonEdge", "0x14", "direction", "Vec3"),
+        ("ObjectToonEdge", "0x20", "length", "float"),
+        ("Object", "0x54", "facequad_count", "int32_t"),
+        ("Object", "0x5C", "facequads", "ObjectFaceQuad*"),
+        ("Object", "0x70", "edge_count", "int32_t"),
+        ("Object", "0x74", "edges", "ObjectToonEdge*"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for definition in (
+        '("0x4308dc", "mlil_ssa", "StackVariableSourceType", 44, -4)',
+        '("0x4308ea", "mlil_ssa", "StackVariableSourceType", 58, -4)',
+        '("0x430986", "mlil_ssa", "StackVariableSourceType", 214, -4)',
+        '("0x4309ac", "mlil_ssa", "StackVariableSourceType", 252, -4)',
+        '("0x4309b4", "mlil_ssa", "StackVariableSourceType", 260, -4)',
+        '("0x4309f8", "mlil_ssa", "StackVariableSourceType", 328, -4)',
+    ):
+        assert definition in replay
+
+    for variable_name, variable_type in (
+        ("face_index", "int32_t"),
+        ("edge_byte_offset_spill", "int32_t"),
+    ):
+        assert f'variable_name="{variable_name}"' in replay
+        assert f'variable_type="{variable_type}"' in replay
+
+    for source_type, index, storage, name, type_name in (
+        (
+            "RegisterVariableSourceType",
+            16,
+            72,
+            "face_cursor",
+            "ObjectFaceQuad*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            25,
+            73,
+            "build_edges",
+            "ObjectToonEdge*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            250,
+            68,
+            "edge_byte_offset",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            271,
+            72,
+            "shift_source_edge",
+            "ObjectToonEdge*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            275,
+            73,
+            "shift_destination_edge",
+            "ObjectToonEdge*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            347,
+            72,
+            "copy_source_edges",
+            "ObjectToonEdge*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            353,
+            73,
+            "copy_destination_edges",
+            "ObjectToonEdge*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            367,
+            72,
+            "copy_source_tail",
+            "uint8_t*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            367,
+            73,
+            "copy_destination_tail",
+            "uint8_t*",
+        ),
+    ):
+        expected = (
+            '        "calc_object_edges",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "apply_split_user_var_update" in replay
+    assert "apply_user_var_updates" in replay
+    assert '"edge_byte_offset",\n        "Object*"' not in replay
+    assert '"edge_byte_offset",\n        "ObjectToonEdge*"' not in replay
+    assert '"edge_byte_offset_spill",\n            variable_type="Object*"' not in replay
+
+
 def test_track_cache_teardown_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_track_cache_teardown_lifetimes.py"
