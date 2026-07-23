@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_track_render_cache_rows",
-      "address": "0x433b30"
+      "name": "calc_object_facequad_normals_simple",
+      "address": "0x430230"
     }
   ],
   "health_check_count": 917,

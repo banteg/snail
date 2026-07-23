@@ -39,3 +39,19 @@ normal slots per face; Binary Ninja recovers the canonical object fields while
 honestly preserving the native byte-offset face walk. Both lanes retain the
 real `Object` owner and the exact scratch remains 139/139 with five clean
 operands.
+
+2026-07-23 durable face-normal lifetimes: the Binary Ninja replay now guards
+the canonical `Object`, `ObjectFaceQuad`, and `Vec3` layouts and records the
+physical borrows emitted by native code. The face reloads are
+`ObjectFaceQuad*`; vertex 0/1/2/3 reloads are `Vec3*`; the two cross-product
+values are owned `Vec3` stack objects; and both output addresses are `Vec3*`.
+The native face and normal strides remain integer byte offsets rather than
+synthetic array indices. This recovers `vertex_0` through `vertex_3`, component
+accesses on every retained vertex pointer, and the complete first output
+normal in the exported decompile.
+
+Binary Ninja still renders the second normal's native dword `y` store as four
+byte writes because of `PartialAccessAnalysis`; disassembly at `0x4303bd`
+confirms a single `mov dword [ecx+4], eax`. The replay leaves that analyzer
+artifact visible instead of inventing another owner. The exact scratch remains
+139/139 with five clean operands.

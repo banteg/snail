@@ -9402,6 +9402,112 @@ def test_track_cache_row_lifetime_replay_stays_guarded() -> None:
     assert "row_index_pointer" not in replay
 
 
+def test_object_facequad_normal_pair_lifetime_replay_stays_guarded() -> None:
+    replay = (
+        BINJA_DIR / "sync_object_facequad_normal_pair_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for owner_name, expected_size in (
+        ("Vec3", "0x0C"),
+        ("ObjectFaceQuad", "0x30"),
+        ("Object", "0xDC"),
+    ):
+        assert f'"{owner_name}": {expected_size}' in replay
+
+    for struct_name, offset, field_name, field_type in (
+        ("Vec3", "0x08", "z", "float"),
+        ("ObjectFaceQuad", "0x00", "", "union"),
+        ("ObjectFaceQuad", "0x02", "vertex_0", "uint16_t"),
+        ("ObjectFaceQuad", "0x08", "vertex_3", "uint16_t"),
+        ("Object", "0x38", "vertices", "Vec3*"),
+        ("Object", "0x5C", "facequads", "ObjectFaceQuad*"),
+        ("Object", "0x60", "facequad_normals", "Vec3*"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for source_type, index, storage, name, type_name in (
+        (
+            "RegisterVariableSourceType",
+            31,
+            69,
+            "face_byte_offset",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            39,
+            66,
+            "face",
+            "ObjectFaceQuad*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            50,
+            73,
+            "vertex_0_for_lhs",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            67,
+            68,
+            "vertex_1",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            144,
+            66,
+            "vertex_2",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            230,
+            66,
+            "output_normal_a",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            256,
+            66,
+            "quad_face",
+            "ObjectFaceQuad*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            297,
+            66,
+            "vertex_3",
+            "Vec3*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            385,
+            67,
+            "output_normal_b",
+            "Vec3*",
+        ),
+    ):
+        expected = (
+            '        "calc_object_facequad_normals_simple",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '"face_byte_offset",\n        "ObjectFaceQuad*"' not in replay
+    assert '"normal_byte_offset",\n        "Vec3*"' not in replay
+
+
 def test_track_cache_teardown_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_track_cache_teardown_lifetimes.py"
