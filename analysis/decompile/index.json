@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "replace_object_list_texture_refs",
-      "address": "0x430d90"
+      "name": "calc_object_texture_groups",
+      "address": "0x4303f0"
     }
   ],
   "health_check_count": 917,

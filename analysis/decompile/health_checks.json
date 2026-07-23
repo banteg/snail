@@ -11269,6 +11269,10 @@
       "artifact": "analysis/decompile/binja/functions/004303f0-calc_object_texture_groups.c",
       "required_substrings": [
         "struct ObjectFaceQuad* facequads = object->facequads",
+        "int32_t face_byte_offset = 0",
+        "struct TextureRef* current_texture = facequads->texture_ref",
+        "struct TextureRef* active_texture",
+        "active_texture->flags |= 0x20",
         "facequads->texture_ref",
         "object->texture_group_ends",
         "object->facequad_count",
@@ -11276,6 +11280,9 @@
       ],
       "forbidden_substrings": [
         "arg1",
+        "char* face_byte_offset",
+        "int32_t* active_texture",
+        "struct ObjectFaceQuad* face_byte_offset",
         "*(object +",
         "return result",
         "unimplemented"

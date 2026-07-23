@@ -3,31 +3,31 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: calc_object_texture_groups @ 0x4303f0 */
 
-004303f6        int32_t i = 0
-00430468        while (i s< 2)
+004303f6        int32_t pass_index = 0
+00430468        while (pass_index s< 2)
 004303f8        struct ObjectFaceQuad* facequads = object->facequads
-004303fe        int32_t ebx_1 = 0
-00430400        int32_t j = 0
-00430402        struct TextureRef* texture_ref = facequads->texture_ref
+004303fe        int32_t group_index = 0
+00430400        int32_t face_index = 0
+00430402        struct TextureRef* current_texture = facequads->texture_ref
 00430407        if (object->facequad_count s> 0)
-00430409        char* ecx_1 = nullptr
+00430409        int32_t face_byte_offset = 0
 0043040f        if ((object->flags:1.b & 4) != 0)
-00430411        *(ecx_1 + facequads) |= 2
-00430418        int32_t* eax_2 = *(&object->facequads->texture_ref + ecx_1)
-0043041c        *eax_2 |= 0x20
+00430411        *(face_byte_offset + facequads) |= 2
+00430418        struct TextureRef* active_texture = *(&object->facequads->texture_ref + face_byte_offset)
+0043041c        active_texture->flags |= 0x20
 0043041f        facequads = object->facequads
-0043042c        if (*(&facequads->texture_ref + ecx_1) != texture_ref || (*(ecx_1 + facequads) & 0x10) != 0)
-00430431        if (i == 1)
-00430436        object->texture_group_ends[ebx_1] = j
+0043042c        if (*(&facequads->texture_ref + face_byte_offset) != current_texture || (*(face_byte_offset + facequads) & 0x10) != 0)
+00430431        if (pass_index == 1)
+00430436        object->texture_group_ends[group_index] = face_index
 00430439        facequads = object->facequads
-0043043c        ebx_1 += 1
-0043043d        texture_ref = *(&facequads->texture_ref + ecx_1)
-00430441        j += 1
-00430442        ecx_1 = &ecx_1[0x30]
-00430448        do while (j s< object->facequad_count)
-0043044d        if (i == 1)
-00430452        object->texture_group_ends[ebx_1] = j
-00430459        if (i == 0)
-0043045f        request_object_texture_groups(object, ebx_1 + 1)
-00430464        i += 1
+0043043c        group_index += 1
+0043043d        current_texture = *(&facequads->texture_ref + face_byte_offset)
+00430441        face_index += 1
+00430442        face_byte_offset += 0x30
+00430448        do while (face_index s< object->facequad_count)
+0043044d        if (pass_index == 1)
+00430452        object->texture_group_ends[group_index] = face_index
+00430459        if (pass_index == 0)
+0043045f        request_object_texture_groups(object, group_index + 1)
+00430464        pass_index += 1
 0043046e        return

@@ -118,3 +118,22 @@ receiver and synthetic return.
 No matcher source changed. Focused Wibo remains `98.18%`, exactly `55/55`
 instructions, prefix `18`, with one clean mask; the sole residual remains the
 equivalent base/index order in one SIB encoding.
+
+## 2026-07-23 byte cursor and active texture replay
+
+The guarded Binary Ninja replay now keeps the inner ECX lifetime as an
+`int32_t face_byte_offset`, matching its zero initialization and 0x30 stride.
+It is not promoted to an `ObjectFaceQuad*`; only the repeatedly loaded
+`Object::facequads` bank is a borrowed face-record pointer.
+
+Within the object-flag branch, the EAX reload is separately typed as the
+borrowed face bank and the value loaded from `ObjectFaceQuad +0x0c` is now a
+`TextureRef* active_texture`. The checked-in artifact consequently exposes the
+`TextureRef::flags` update directly instead of treating the texture owner as an
+anonymous `int32_t*`. The replay verifies the 0xa4/0x30/0xdc owner widths and
+the exact texture, face, and object fields before previewing any mutation; its
+second run is fully idempotent.
+
+Focused Wibo remains `98.18%`, exactly `55/55` instructions, prefix `18`, and
+one clean masked operand. No matcher source changed, and the sole equivalent
+SIB base/index encoding residual remains visible.
