@@ -974,6 +974,54 @@ def test_crt_variadic_replay_covers_the_complete_sprintf_xref_set() -> None:
         assert f'"{caller}"' in source
 
 
+def test_intro_logo_lifetime_replay_keeps_real_owners_and_staged_stride() -> None:
+    source = (BINJA_DIR / "sync_intro_logo_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "bn_logo_types.h").read_text(encoding="utf-8")
+
+    assert "typedef struct LogoLetterVelocityCursor {" in header
+    assert "Vec3 velocity;" in header
+    assert "uint8_t stride_tail[0x84];" in header
+    assert '"LogoLetterVelocityCursor": 0x90' in source
+    assert '"LogoLetter": 0x90' in source
+    assert '"Logo": 0x25218' in source
+    for index, storage, name, variable_type in (
+        (128, 66, "loaded_script_bytes", "char*"),
+        (261, 72, "script_bytes", "char*"),
+        (369, 66, "image_name_write", "char*"),
+        (560, 68, "active_first_link_image", "BodNode*"),
+        (570, 68, "active_new_first_image", "BodNode*"),
+        (1311, 68, "active_first_link_glyph", "BodNode*"),
+        (1321, 68, "active_new_first_glyph", "BodNode*"),
+        (1792, 66, "velocity_cursor", "LogoLetterVelocityCursor*"),
+    ):
+        marker = (
+            f'        {index},\n'
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert marker in source
+    for storage, name in ((-256, "image_name"), (-128, "texture_path")):
+        marker = (
+            '        "StackVariableSourceType",\n'
+            "        0,\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            '        "char[0x80]",'
+        )
+        assert marker in source
+    assert (
+        '        1802,\n        68,\n        "current_velocity",\n        "Vec3*",'
+        in source
+    )
+    direct_replay = source.index("updates=INTRO_LOGO_DIRECT_USER_VAR_UPDATES")
+    derived_replay = source.index("updates=INTRO_LOGO_DERIVED_USER_VAR_UPDATES")
+    assert direct_replay < derived_replay
+    assert "partial-store" not in source
+
+
 def test_direct_proto_batch_requires_saved_snapshot(monkeypatch) -> None:
     monkeypatch.setattr(
         _narrow_sync,

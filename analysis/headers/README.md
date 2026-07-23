@@ -392,6 +392,11 @@ caller set with `uv run python tools/binja/sync_crt_variadic_prototypes.py
 analysis signature that hid formatting owners and values throughout the
 tracked decompiles.
 
+Replay `initialize_intro_screen`'s retained script allocation, exact image/path
+buffers, image and glyph active-list nodes, and final strided LogoLetter
+velocity pass with `uv run python tools/binja/sync_intro_logo_lifetimes.py
+--target SnailMail_unwrapped.exe.bndb`.
+
 Replay the shared Sprite owners and the two smoke emitters' derived
 position-to-gravity byte cursors with `uv run python
 tools/binja/sync_sprite_effect_owner_lifetimes.py --target

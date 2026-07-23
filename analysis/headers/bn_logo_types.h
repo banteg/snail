@@ -63,6 +63,15 @@ typedef struct LogoLetter {
 } LogoLetter;
 typedef LogoLetter IntroLogoRenderable;
 
+/*
+ * Analysis-only projection for the native final velocity loop. EAX starts at
+ * LogoLetter::velocity and advances by one complete 0x90-byte LogoLetter.
+ */
+typedef struct LogoLetterVelocityCursor {
+    Vec3 velocity;
+    uint8_t stride_tail[0x84];
+} LogoLetterVelocityCursor;
+
 typedef struct Logo {
     float progress;
     float progress_step;

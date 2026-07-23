@@ -137,3 +137,29 @@ vtable word and must not acquire a second C++ vptr. Focused Wibo remains
   523/521 instructions, prefix 88/521, with all 66 masked operands clean. The
   two documented allocator instructions remain visible rather than being
   forced through synthetic lifetimes.
+
+## 2026-07-23 script, buffer, list, and velocity lifetimes
+
+- `load_file_bytes` returns the allocated intro script owner. The original
+  EAX definition and its retained EDI copy are now separately named
+  `loaded_script_bytes` and `script_bytes`; the latter reaches the final
+  `free_tracked_memory` call without a generic `void*` lifetime.
+- The image name and `"Intro/%s"` texture path are independently bounded
+  128-byte stack arrays. Their typed ownership also lets the recovered
+  variadic `sprintf` ABI show the image-name argument directly.
+- Image and glyph construction each splice a borrowed pair of `BodNode*`
+  values through the process-owned active-BOD list. These are distinct reload
+  lifetimes, not a new list owner or shared synthetic insertion variable.
+- Native's final EAX cursor begins at `LogoLetter::velocity` and advances by
+  one full `0x90`-byte letter record. The checked-in
+  `LogoLetterVelocityCursor` is an analysis-only projection with a leading
+  `Vec3`; the current element remains a direct `Vec3*`.
+- A direct `Vec3*` cursor was rejected because Binary Ninja rendered the native
+  stride as `velocity_cursor[0xc]`. Splitting and merging the surrounding EAX
+  definitions also degraded the loop to an undefined integer pointer. The
+  remaining partial LogoLetter stores stay unresolved instead of introducing
+  an unsupported overlay.
+
+This is codegen-neutral ownership recovery: focused Wibo remains **88.31%**,
+`523/521` candidate/target instructions, prefix 88/521, with all 66 masked
+operands clean.

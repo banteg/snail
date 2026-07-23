@@ -10,7 +10,7 @@
 00419230        change_backdrop(&game_base_1->backdrop, &game_base_1->subgame.landscape_manager.scripts[eax_1], 0)
 00419242        set_border_justify_centre(&g_game_base->border_manager, 0f)
 00419252        unhide_star_field(&g_game_base->star_manager)
-00419260        void* pointer_1 = load_file_bytes(file_name, nullptr)
+00419260        char* loaded_script_bytes = load_file_bytes(file_name, nullptr)
 0041929e        logo->saved_render_flags = g_runtime_config.render_flags
 004192a1        struct TransformMatrix transform
 004192a1        struct TransformMatrix* eax_3 = initialize_matrix_from_values(&transform, 1f, 0f, 0f, 0f, 0f, 0.634392977f, 0.773010015f, 0f, 0f, -0.773010015f, 0.634392977f, 0f, 0f, 0f, 0f, 1f)
@@ -19,14 +19,14 @@
 004192cb        logo->progress = 0
 004192ce        logo->progress_step = 0.00166666671f
 004192e0        release_mouse_cursor(&g_game_base->players[0].mouse_cursor)
-004192e5        void* pointer = pointer_1
+004192e5        char* script_bytes = loaded_script_bytes
 004192e9        logo->state = 0
 004192f2        float var_16c = 0.200000003f
 004192fa        logo->renderable_count = 0
-004192fd        char* cursor_1 = find_case_insensitive_substring("Text Start:", pointer)
+004192fd        char* cursor_1 = find_case_insensitive_substring("Text Start:", script_bytes)
 00419308        char* cursor = cursor_1
 00419312        cursor = &find_case_insensitive_substring(":", cursor_1)[1]
-0041931c        char* eax_7 = find_case_insensitive_substring("Text End:", pointer)
+0041931c        char* eax_7 = find_case_insensitive_substring("Text End:", script_bytes)
 00419321        char* cursor_3 = cursor
 0041932a        char* var_144 = eax_7
 0041932e        if (cursor_3 u< eax_7)
@@ -37,44 +37,44 @@
 00419348        char* cursor_5 = cursor_3
 0041934a        if (eax_7.b == 0x2a)
 00419350        char* cursor_4 = &cursor_3[1]
-00419351        void var_100
-00419351        char* eax_8 = &var_100
+00419351        char image_name[0x80]
+00419351        char* image_name_write = &image_name
 00419358        cursor = cursor_4
 0041935c        char i = *cursor_4
 00419361        while (i != 0x2e)
-00419363        *eax_8 = i
-00419365        eax_8 = &eax_8[1]
+00419363        *image_name_write = i
+00419365        image_name_write = &image_name_write[1]
 00419366        cursor_4 = &cursor_4[1]
 00419367        cursor = cursor_4
 0041936b        i = *cursor_4
-00419372        *eax_8 = 0x2e
-00419376        eax_8[1] = 0x74
-0041937a        eax_8[2] = 0x67
-0041937f        eax_8[3] = 0x61
-00419382        eax_8[4] = 0
+00419372        *image_name_write = 0x2e
+00419376        image_name_write[1] = 0x74
+0041937a        image_name_write[2] = 0x67
+0041937f        image_name_write[3] = 0x61
+00419382        image_name_write[4] = 0
 00419389        cursor = &cursor_4[1]
 00419393        float var_170_1 = fconvert.s(parse_next_float32(&cursor))
 004193a1        float var_174_1 = fconvert.s(parse_next_float32(&cursor))
-004193ba        char var_80[0x80]
-004193ba        sprintf(&var_80, "Intro/%s", &var_100)
+004193ba        char texture_path[0x80]
+004193ba        sprintf(&texture_path, "Intro/%s", &image_name)
 004193bf        logo->renderable_count
 004193da        if ((0x200 & logo->letters[logo->:0x14.d].renderable.bod.bod.list_flags) == 0)
 004193eb        struct GameRoot* game_base_2 = g_game_base
 004193f7        struct BodNode* first = game_base_2->active_bod_list.first
 004193ff        if (first != 0)
 0041940d        first->list_prev = &logo->letters[logo->:0x14.d]
-00419410        void* first_1 = game_base_2->active_bod_list.first
-00419415        *(*(first_1 + 8) + 0xc) = first_1
-0041941a        void* list_prev = game_base_2->active_bod_list.first->list_prev
-0041941d        game_base_2->active_bod_list.first = list_prev
-0041941f        *(list_prev + 8) = 0
+00419410        struct BodNode* active_first_link_image = game_base_2->active_bod_list.first
+00419415        active_first_link_image->list_prev->list_next = active_first_link_image
+0041941a        struct BodNode* active_new_first_image = game_base_2->active_bod_list.first->list_prev
+0041941d        game_base_2->active_bod_list.first = active_new_first_image
+0041941f        active_new_first_image->list_prev = nullptr
 00419401        game_base_2->active_bod_list.first = &logo->letters[logo->:0x14.d]
 00419403        logo->letters[logo->:0x14.d].renderable.__offset(0x8).d = nullptr
 00419408        game_base_2->active_bod_list.first->list_next = 0
 00419422        logo->letters[logo->:0x14.d].renderable.__offset(0x4).d |= 0x200
 004193e1        report_errorf("List ADD")
 00419439        set_bod_object(&logo->letters[logo->renderable_count], (var_168_1 - 0x2403c)->image_donors[0].renderable.bod.object)
-00419462        logo->letters[logo->renderable_count].renderable.bod.object->facequads->texture_ref = get_or_create_texture_ref(&g_texture_refs, &var_80, nullptr, 0)
+00419462        logo->letters[logo->renderable_count].renderable.bod.object->facequads->texture_ref = get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)
 00419472        set_matrix_identity(&logo->letters[logo->renderable_count].renderable.transform)
 00419477        int32_t renderable_count = logo->renderable_count
 004194b1        logo->letters[renderable_count].renderable.transform.position.x = 0
@@ -137,14 +137,14 @@
 004196c9        uint32_t renderable
 004196c9        if (((logo->letters[logo->:0x14.d].renderable.bod.bod.list_flags).w:1.b & 2) == 0)
 004196da        struct GameRoot* game_base_3 = g_game_base
-004196e6        struct BodNode* first_2 = game_base_3->active_bod_list.first
-004196ee        if (first_2 != 0)
-004196fc        first_2->list_prev = &logo->letters[logo->:0x14.d]
-004196ff        void* first_3 = game_base_3->active_bod_list.first
-00419704        *(*(first_3 + 8) + 0xc) = first_3
-00419709        void* list_prev_1 = game_base_3->active_bod_list.first->list_prev
-0041970c        game_base_3->active_bod_list.first = list_prev_1
-0041970e        *(list_prev_1 + 8) = 0
+004196e6        struct BodNode* first_1 = game_base_3->active_bod_list.first
+004196ee        if (first_1 != 0)
+004196fc        first_1->list_prev = &logo->letters[logo->:0x14.d]
+004196ff        struct BodNode* active_first_link_glyph = game_base_3->active_bod_list.first
+00419704        active_first_link_glyph->list_prev->list_next = active_first_link_glyph
+00419709        struct BodNode* active_new_first_glyph = game_base_3->active_bod_list.first->list_prev
+0041970c        game_base_3->active_bod_list.first = active_new_first_glyph
+0041970e        active_new_first_glyph->list_prev = nullptr
 004196f0        game_base_3->active_bod_list.first = &logo->letters[logo->:0x14.d]
 004196f2        logo->letters[logo->:0x14.d].renderable.__offset(0x8).d = nullptr
 004196f7        game_base_3->active_bod_list.first->list_next = 0
@@ -153,8 +153,8 @@
 00419717        logo->letters[logo->:0x14.d].renderable.__offset(0x4).d = renderable
 004196d0        renderable = report_errorf("List ADD")
 0041971a        renderable.b = *cursor_5
-0041971d        int32_t eax_57 = font_slot_index_for_char(renderable.b)
-00419743        set_bod_object(&logo->letters[logo->renderable_count], g_font3d_bods[eax_57].object)
+0041971d        int32_t eax_56 = font_slot_index_for_char(renderable.b)
+00419743        set_bod_object(&logo->letters[logo->renderable_count], g_font3d_bods[eax_56].object)
 00419755        set_matrix_identity(&logo->letters[logo->renderable_count].renderable.transform)
 0041975a        int32_t renderable_count_2 = logo->renderable_count
 00419776        logo->letters[renderable_count_2].renderable.transform.position.x = var_160_1
@@ -186,8 +186,8 @@
 00419865        cursor = cursor_3
 00419869        var_16c = fconvert.s(fconvert.t(var_16c) - fconvert.t(1f))
 00419871        do while (cursor_3 u< var_144)
-00419877        pointer = pointer_1
-00419881        char* cursor_2 = find_case_insensitive_substring("Duration:", pointer)
+00419877        script_bytes = loaded_script_bytes
+00419881        char* cursor_2 = find_case_insensitive_substring("Duration:", script_bytes)
 0041988c        cursor = cursor_2
 00419899        cursor = find_case_insensitive_substring(":", cursor_2)
 0041989e        long double st0_3 = parse_next_float32(&cursor)
@@ -195,13 +195,13 @@
 004198b4        int32_t var_160_2 = 0
 004198d6        float var_158_2 = fconvert.s(fconvert.t(1f) / (st0_3 * fconvert.t(60f)) * (fconvert.t(3f) - fconvert.t(var_16c)))
 004198da        if (logo->renderable_count s> 0)
-004198e0        int32_t* eax_83 = &logo->letters[0].velocity
-004198ea        int32_t* edx_36 = eax_83
+004198e0        struct LogoLetterVelocityCursor* velocity_cursor = &logo->letters[0].velocity
+004198ea        struct Vec3* current_velocity = velocity_cursor
 004198ec        i_1 += 1
-004198ed        eax_83 = &eax_83[0x24]
-004198f2        *edx_36 = var_160_2
-004198f8        edx_36[1] = 0
-004198fb        edx_36[2] = var_158_2
+004198ed        velocity_cursor = &velocity_cursor[1]
+004198f2        current_velocity->x = var_160_2
+004198f8        current_velocity->y = 0f
+004198fb        current_velocity->z = var_158_2
 00419903        do while (i_1 s< logo->renderable_count)
-00419906        free_tracked_memory(pointer)
+00419906        free_tracked_memory(script_bytes)
 00419918        return

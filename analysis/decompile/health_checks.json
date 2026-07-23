@@ -17286,10 +17286,34 @@
       "name": "bn_crt_variadic_intro_texture_path",
       "artifact": "analysis/decompile/binja/functions/004191e0-initialize_intro_screen.c",
       "required_substrings": [
-        "sprintf(&var_80, \"Intro/%s\", &var_100)"
+        "char* loaded_script_bytes = load_file_bytes(file_name, nullptr)",
+        "char* script_bytes = loaded_script_bytes",
+        "char image_name[0x80]",
+        "char* image_name_write = &image_name",
+        "char texture_path[0x80]",
+        "sprintf(&texture_path, \"Intro/%s\", &image_name)",
+        "struct BodNode* active_first_link_image",
+        "struct BodNode* active_new_first_image",
+        "struct BodNode* active_first_link_glyph",
+        "struct BodNode* active_new_first_glyph",
+        "script_bytes = loaded_script_bytes",
+        "struct LogoLetterVelocityCursor* velocity_cursor = &logo->letters[0].velocity",
+        "struct Vec3* current_velocity = velocity_cursor",
+        "velocity_cursor = &velocity_cursor[1]",
+        "current_velocity->x =",
+        "current_velocity->y = 0f",
+        "current_velocity->z =",
+        "free_tracked_memory(script_bytes)"
       ],
       "forbidden_substrings": [
-        "sprintf(&var_80, \"Intro/%s\")",
+        "sprintf(&texture_path, \"Intro/%s\")",
+        "void* pointer_1",
+        "void* pointer",
+        "void* first_1",
+        "void* first_3",
+        "int32_t* eax_83",
+        "velocity_cursor[0xc]",
+        "__offset(LogoLetterVelocityCursor",
         "sub_48b32c"
       ]
     },
