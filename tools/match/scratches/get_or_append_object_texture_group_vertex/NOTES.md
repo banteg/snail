@@ -107,3 +107,25 @@ workspace owned by `build_object_texture_group_buffers`; neither is retained
 by an object. Replay health checks reject raw `_DWORD*` object arguments and
 anonymous absolute globals. Matcher source and the honest 83.14% frontier are
 unchanged.
+
+## 2026-07-23 source borrow and append-offset replay
+
+The existing texture-group builder replay now covers this private helper rather
+than adding a second overlapping script. It distinguishes the retained
+`Object::vertices` bank from the one borrowed `Vec3* source_vertex`, and names
+the x/y/z component lifetimes that native copies into its stack position
+record. The search cursor remains an intentional `float*` interior borrow
+starting at `ObjectGroupedVertex::y`.
+
+The ESI strength-reduction chain for `index * 0x1c` is explicitly kept as
+integer arithmetic, ending in `int32_t append_byte_offset`; the former
+`float*` inference was false ownership. Optimized HLIL folds that verified
+offset back into `g_object_grouped_vertex_scratch[grouped_vertex_index]`, so
+all appended x/y/z, UV, diffuse, and source-index stores now visibly target the
+same builder-owned record.
+
+The shared replay guards the `Vec3`, `ObjectGroupedVertex`, and `Object`
+layouts before previewing any mutation, and a second run is fully idempotent.
+Focused Wibo remains 83.14%, 128/127 candidate/target instructions, prefix 25,
+and all 18 masked operands clean. No matcher source changed; the loop-exit
+block-placement residual remains visible.

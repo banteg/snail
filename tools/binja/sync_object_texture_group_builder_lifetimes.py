@@ -39,8 +39,11 @@ EXPECTED_TYPE_WIDTHS = {
 EXPECTED_STRUCT_FIELDS = {
     "ObjectGroupedVertex": {
         0x00: ("x", "float"),
+        0x04: ("y", "float"),
+        0x08: ("z", "float"),
         0x0C: ("diffuse", "uint32_t"),
         0x10: ("u", "float"),
+        0x14: ("v", "float"),
         0x18: ("source_vertex", "int32_t"),
     },
     "ObjectRenderVertex": {
@@ -69,6 +72,8 @@ EXPECTED_STRUCT_FIELDS = {
     "Object": {
         0x10: ("flags", "ObjectFlag"),
         0x2C: ("vertex_count", "int32_t"),
+        0x38: ("vertices", "Vec3*"),
+        0x48: ("vertex_colours", "tColour*"),
         0x54: ("facequad_count", "int32_t"),
         0x5C: ("facequads", "ObjectFaceQuad*"),
         0x64: ("texture_group_count", "int32_t"),
@@ -82,6 +87,134 @@ EXPECTED_STRUCT_FIELDS = {
         0xD8: ("toon_index_buffer", "ObjectIndexBuffer*"),
     },
 }
+
+# The private grouped-vertex helper borrows one Vec3 from Object::vertices,
+# scans builder-owned ObjectGroupedVertex workspace through an interior float
+# cursor, and appends by integer 0x1c byte offset. Only the source vertex and
+# workspace reloads are pointers; the ESI strength-reduction chain remains
+# scalar arithmetic.
+GROUPED_VERTEX_HELPER_USER_VAR_UPDATES = (
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        4,
+        69,
+        "object_owner",
+        "Object*",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        14,
+        73,
+        "source_vertex_index",
+        "int32_t",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        35,
+        67,
+        "source_vertices",
+        "Vec3*",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        38,
+        66,
+        "source_float_index",
+        "int32_t",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        41,
+        72,
+        "grouped_vertex_count",
+        "int32_t",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        47,
+        68,
+        "source_vertex",
+        "Vec3*",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        50,
+        66,
+        "source_x",
+        "float",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        57,
+        67,
+        "source_y",
+        "float",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        64,
+        68,
+        "source_z",
+        "float",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        71,
+        68,
+        "grouped_vertex_index",
+        "int32_t",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        81,
+        66,
+        "grouped_vertices",
+        "ObjectGroupedVertex*",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        92,
+        67,
+        "grouped_vertex_y_cursor",
+        "float*",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        245,
+        72,
+        "append_index_times_eight",
+        "int32_t",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        252,
+        72,
+        "append_index_times_seven",
+        "int32_t",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "RegisterVariableSourceType",
+        254,
+        72,
+        "append_byte_offset",
+        "int32_t",
+    ),
+)
 
 # The exact builder owns three group-metadata allocations and retains the two
 # D3D wrappers on Object. Its archive workspace and both Lock outputs are
@@ -479,6 +612,11 @@ def main() -> int:
             target=args.target,
             identifier="build_object_texture_group_buffers",
             prototype=TEXTURE_GROUP_BUILDER_PROTOTYPE,
+        ),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=GROUPED_VERTEX_HELPER_USER_VAR_UPDATES,
         ),
         *apply_user_var_updates(
             REPO_ROOT,

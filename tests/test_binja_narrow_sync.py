@@ -1244,6 +1244,53 @@ def test_object_texture_group_builder_replay_keeps_resource_and_stream_owners() 
         assert marker in replay
 
 
+def test_object_texture_group_builder_replay_keeps_helper_borrows_and_offsets() -> None:
+    replay = (
+        BINJA_DIR / "sync_object_texture_group_builder_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for struct_name, offset, field_name, field_type in (
+        ("ObjectGroupedVertex", "0x04", "y", "float"),
+        ("ObjectGroupedVertex", "0x08", "z", "float"),
+        ("ObjectGroupedVertex", "0x14", "v", "float"),
+        ("Object", "0x38", "vertices", "Vec3*"),
+        ("Object", "0x48", "vertex_colours", "tColour*"),
+    ):
+        assert f'"{struct_name}": {{' in replay
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for index, storage, name, variable_type in (
+        (35, 67, "source_vertices", "Vec3*"),
+        (38, 66, "source_float_index", "int32_t"),
+        (41, 72, "grouped_vertex_count", "int32_t"),
+        (47, 68, "source_vertex", "Vec3*"),
+        (50, 66, "source_x", "float"),
+        (57, 67, "source_y", "float"),
+        (64, 68, "source_z", "float"),
+        (71, 68, "grouped_vertex_index", "int32_t"),
+        (81, 66, "grouped_vertices", "ObjectGroupedVertex*"),
+        (92, 67, "grouped_vertex_y_cursor", "float*"),
+        (245, 72, "append_index_times_eight", "int32_t"),
+        (252, 72, "append_index_times_seven", "int32_t"),
+        (254, 72, "append_byte_offset", "int32_t"),
+    ):
+        marker = (
+            '        "get_or_append_object_texture_group_vertex",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert marker in replay
+
+    helper_replay = replay.index("updates=GROUPED_VERTEX_HELPER_USER_VAR_UPDATES")
+    builder_replay = replay.index("updates=TEXTURE_GROUP_BUILDER_USER_VAR_UPDATES")
+    assert helper_replay < builder_replay
+    assert '"source_vertex",\n        "void*"' not in replay
+    assert '"append_byte_offset",\n        "float*"' not in replay
+
+
 def test_intro_logo_lifetime_replay_keeps_real_owners_and_staged_stride() -> None:
     source = (BINJA_DIR / "sync_intro_logo_lifetimes.py").read_text(
         encoding="utf-8"

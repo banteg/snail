@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "calc_object_texture_groups",
-      "address": "0x4303f0"
+      "name": "get_or_append_object_texture_group_vertex",
+      "address": "0x413bb0"
     }
   ],
   "health_check_count": 917,
