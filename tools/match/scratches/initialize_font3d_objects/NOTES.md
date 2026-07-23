@@ -107,3 +107,21 @@ low `0x10` bit is therefore the persistent
 rewrites grouped diffuse colours without clearing the bit. This distinguishes
 the shared-font policy from the one-shot fringe `OBJECT_FLAG_TINT_DIRTY` bit
 without changing the honest 96.83% scheduler residual.
+
+## 2026-07-23 synchronized glyph lanes
+
+The native `edi` cursor is anchored at `FontSheet::v0[glyph]`, advances four
+bytes per glyph, and reads the synchronized `glyph_width` and `texture_page`
+lanes at fixed `+0x200` and `+0x400` displacements. The new analysis-only
+`FontGlyphV0Cursor` records that overlapping SoA view explicitly; it does not
+claim separately owned storage or replace the real `FontSheet` layout.
+
+Binary Ninja now exposes `glyph_v0_cursor->v0`, `glyph_width`, and
+`texture_page`, plus the independent `glyph_index`, `scale_cursor`,
+`bod_object_cursor`, and `font_sheet_dword_offset` lifetimes. The two `u0`
+reads remain honest `-0x200` aliases because C structs cannot represent a
+negative member offset. IDA independently corroborates all three forward
+displacements and the four-byte cursor advance.
+
+No matcher source changed. Focused Wibo remains 96.83%, with identical
+126-instruction streams, a 37/126 prefix, and 19 clean masked operands.

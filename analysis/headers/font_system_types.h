@@ -89,6 +89,24 @@ typedef struct FontSheet {
     int32_t font_kind;
 } FontSheet;
 
+/*
+ * Analysis-only overlapping cursor anchored at FontSheet::v0[glyph].
+ * The two fixed +0x200 lanes alias glyph_width[glyph] and
+ * texture_page[glyph]; advancing one glyph moves this view by four bytes,
+ * not by sizeof(FontGlyphV0Cursor).
+ */
+typedef struct FontGlyphV0Cursor {
+    float v0;
+    float next_glyph_v0;
+    uint8_t _next_v0_to_glyph_width[0x1f8];
+    float glyph_width;
+    uint8_t _glyph_width_to_texture_page[0x1fc];
+    int32_t texture_page;
+} FontGlyphV0Cursor;
+
+typedef char FontGlyphV0Cursor_must_be_0x404[
+    (sizeof(FontGlyphV0Cursor) == 0x404) ? 1 : -1];
+
 typedef struct cFontPrintBuffer {
     uint32_t flags;
     float x0;

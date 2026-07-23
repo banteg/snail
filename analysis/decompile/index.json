@@ -1,10 +1,10 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 4,
+  "bn_exported": 1,
   "ida_exported": 714,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
@@ -17,20 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "queue_font_text_instance",
-      "address": "0x44a790"
-    },
-    {
-      "name": "queue_axis_aligned_textured_quad",
-      "address": "0x44a8b0"
-    },
-    {
-      "name": "queue_axis_aligned_textured_quad_uv",
-      "address": "0x44a9b0"
-    },
-    {
-      "name": "queue_textured_quad_corners",
-      "address": "0x44aac0"
+      "name": "initialize_font3d_objects",
+      "address": "0x44ae10"
     }
   ],
   "health_check_count": 924,

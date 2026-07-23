@@ -31,6 +31,7 @@ EXPECTED_PREREQUISITE_SIZES = {
 EXPECTED_STRUCT_SIZES = {
     "TgaImageView": 0x14,
     "FontSheet": 0x828,
+    "FontGlyphV0Cursor": 0x404,
     "cFontPrintBuffer": 0x84,
 }
 
@@ -49,6 +50,15 @@ FONT_SHEET_FIELD_UPDATES = (
     ("0x81c", "width_scale", "float"),
     ("0x820", "height_scale", "float"),
     ("0x824", "font_kind", "int32_t"),
+)
+
+FONT_GLYPH_V0_CURSOR_FIELD_UPDATES = (
+    ("0x000", "v0", "float"),
+    ("0x004", "next_glyph_v0", "float"),
+    ("0x008", "_next_v0_to_glyph_width", "uint8_t[0x1f8]"),
+    ("0x200", "glyph_width", "float"),
+    ("0x204", "_glyph_width_to_texture_page", "uint8_t[0x1fc]"),
+    ("0x400", "texture_page", "int32_t"),
 )
 
 FONT_PRINT_BUFFER_FIELD_UPDATES = (
@@ -253,6 +263,48 @@ FONT_QUEUE_COLOR_USER_VAR_UPDATES = (
     ),
 )
 
+FONT3D_GLYPH_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_font3d_objects",
+        "StackVariableSourceType",
+        16,
+        -8,
+        "glyph_index",
+        "int32_t",
+    ),
+    (
+        "initialize_font3d_objects",
+        "RegisterVariableSourceType",
+        54,
+        71,
+        "scale_cursor",
+        "float*",
+    ),
+    (
+        "initialize_font3d_objects",
+        "RegisterVariableSourceType",
+        62,
+        72,
+        "bod_object_cursor",
+        "Object**",
+    ),
+    (
+        "initialize_font3d_objects",
+        "RegisterVariableSourceType",
+        67,
+        66,
+        "font_sheet_dword_offset",
+        "int32_t",
+    ),
+    (
+        "initialize_font3d_objects",
+        "RegisterVariableSourceType",
+        73,
+        73,
+        "glyph_v0_cursor",
+        "FontGlyphV0Cursor*",
+    ),
+)
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -330,6 +382,7 @@ def main() -> int:
             target=args.target,
             struct_updates=(
                 ("FontSheet", FONT_SHEET_FIELD_UPDATES),
+                ("FontGlyphV0Cursor", FONT_GLYPH_V0_CURSOR_FIELD_UPDATES),
                 ("cFontPrintBuffer", FONT_PRINT_BUFFER_FIELD_UPDATES),
             ),
             proto_updates=PROTO_UPDATES,
@@ -359,6 +412,11 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=FONT_QUEUE_COLOR_USER_VAR_UPDATES,
+        ),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=FONT3D_GLYPH_CURSOR_USER_VAR_UPDATES,
         ),
     ]
     return emit_summary(

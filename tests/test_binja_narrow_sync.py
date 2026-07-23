@@ -7797,6 +7797,23 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert "\n        127,\n        72," in binja_sync
     assert "\n        124,\n        68," in binja_sync
     assert "\n        85,\n        72," in binja_sync
+    assert '"FontGlyphV0Cursor": 0x404' in binja_sync
+    assert "FONT3D_GLYPH_CURSOR_USER_VAR_UPDATES" in binja_sync
+    assert '"glyph_v0_cursor"' in binja_sync
+    assert '"FontGlyphV0Cursor*"' in binja_sync
+    assert '"glyph_index"' in binja_sync
+    assert '"scale_cursor"' in binja_sync
+    assert '"bod_object_cursor"' in binja_sync
+    assert '"font_sheet_dword_offset"' in binja_sync
+    assert "\n        16,\n        -8," in binja_sync
+    assert "\n        54,\n        71," in binja_sync
+    assert "\n        62,\n        72," in binja_sync
+    assert "\n        67,\n        66," in binja_sync
+    assert "\n        73,\n        73," in binja_sync
+    assert "typedef struct FontGlyphV0Cursor {" in analysis_header
+    assert "float next_glyph_v0;" in analysis_header
+    assert "uint8_t _next_v0_to_glyph_width[0x1f8];" in analysis_header
+    assert "uint8_t _glyph_width_to_texture_page[0x1fc];" in analysis_header
 
     references = json.loads(
         (repo_root / "analysis/symbols/gameplay-references.json").read_text(

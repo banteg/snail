@@ -3330,7 +3330,7 @@
     {
       "address": "0x44ae10",
       "name": "initialize_font3d_objects",
-      "description": "Void materializer for the registered font atlas: borrows one ObjectList slot per glyph into the fixed 128-entry g_font3d_bods array, applies the glyph UVs and x scale, and records the matching scale in g_font3d_scales."
+      "description": "Void materializer for the registered font atlas: advances synchronized v0, glyph_width, and texture_page lanes, borrows one ObjectList slot per glyph into the fixed 128-entry g_font3d_bods array, applies the glyph UVs and x scale, and records the matching scale in g_font3d_scales."
     },
     {
       "address": "0x44afc0",
