@@ -40,6 +40,262 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
+# The sort pass owns no face storage: it borrows Object::facequads, keeps one
+# TextureRef* grouping key, and walks two independent ObjectFaceQuad* cursors.
+# The insertion cursor advances only when a matching face joins the active
+# group, while the scan cursor advances for every inspected face. The 0x30-byte
+# stack value is the by-value ObjectFaceQuad used by the native rep-movsd swap.
+OBJECT_TEXTURE_GROUP_SORT_USER_VAR_UPDATES = (
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        5,
+        72,
+        "retained_object",
+        "Object*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        9,
+        71,
+        "base_index",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "StackVariableSourceType",
+        11,
+        -60,
+        "grouped_swaps",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        15,
+        66,
+        "facequad_count",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        18,
+        67,
+        "facequads",
+        "ObjectFaceQuad*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "StackVariableSourceType",
+        23,
+        -52,
+        "retained_facequads",
+        "ObjectFaceQuad*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "StackVariableSourceType",
+        0,
+        -48,
+        "swap_face",
+        "ObjectFaceQuad",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        35,
+        68,
+        "base_index_times_three",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        39,
+        69,
+        "scan_index",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        42,
+        68,
+        "base_face_byte_offset",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        47,
+        68,
+        "texture_ref",
+        "TextureRef*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "StackVariableSourceType",
+        51,
+        -56,
+        "retained_texture_ref",
+        "TextureRef*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        57,
+        68,
+        "scan_index_times_three",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        60,
+        66,
+        "insert_index_times_three",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        63,
+        68,
+        "scan_face_byte_offset",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        66,
+        66,
+        "insert_face_byte_offset",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        69,
+        68,
+        "scan_face",
+        "ObjectFaceQuad*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "StackVariableSourceType",
+        71,
+        -64,
+        "insert_index",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        75,
+        66,
+        "insert_face",
+        "ObjectFaceQuad*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        77,
+        73,
+        "active_texture_ref",
+        "TextureRef*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        86,
+        73,
+        "current_insert_index",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        98,
+        73,
+        "next_insert_index",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        110,
+        72,
+        "swap_source",
+        "ObjectFaceQuad*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        124,
+        72,
+        "scan_copy_source",
+        "ObjectFaceQuad*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        126,
+        73,
+        "insert_copy_destination",
+        "ObjectFaceQuad*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        142,
+        73,
+        "scan_copy_destination",
+        "ObjectFaceQuad*",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        146,
+        72,
+        "insert_index_before_increment",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        150,
+        67,
+        "grouped_swaps_before_increment",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        154,
+        72,
+        "incremented_insert_index",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        155,
+        67,
+        "incremented_grouped_swaps",
+        "int32_t",
+    ),
+    (
+        "sort_object_faces_by_texture_group",
+        "RegisterVariableSourceType",
+        172,
+        73,
+        "refreshed_facequad_count",
+        "int32_t",
+    ),
+)
+
 # The two-pass rebuild repeatedly borrows Object::facequads and keeps the
 # current texture reference in EDX. ECX is a 0x30 byte offset into that bank,
 # not a char pointer; only the face-bank reload in EAX and the texture value
@@ -163,8 +419,8 @@ OBJECT_TEXTURE_GROUP_REBUILD_USER_VAR_UPDATES = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay calc_object_texture_groups' borrowed face bank, active "
-            "TextureRef, cumulative group ends, and integer byte cursor."
+            "Replay the object texture-group sort and rebuild passes' borrowed "
+            "face banks, TextureRef values, cumulative ends, and byte cursors."
         )
     )
     parser.add_argument(
@@ -228,6 +484,13 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations = [verify_owner_layouts(args.target)]
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=OBJECT_TEXTURE_GROUP_SORT_USER_VAR_UPDATES,
+        )
+    )
     operations.extend(
         apply_user_var_updates(
             REPO_ROOT,

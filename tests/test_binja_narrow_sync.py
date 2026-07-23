@@ -10055,6 +10055,81 @@ def test_object_texture_group_rebuild_lifetime_replay_stays_guarded() -> None:
 
     for source_type, index, storage, name, type_name in (
         (
+            "StackVariableSourceType",
+            0,
+            -48,
+            "swap_face",
+            "ObjectFaceQuad",
+        ),
+        (
+            "RegisterVariableSourceType",
+            47,
+            68,
+            "texture_ref",
+            "TextureRef*",
+        ),
+        (
+            "StackVariableSourceType",
+            51,
+            -56,
+            "retained_texture_ref",
+            "TextureRef*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            63,
+            68,
+            "scan_face_byte_offset",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            66,
+            66,
+            "insert_face_byte_offset",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            69,
+            68,
+            "scan_face",
+            "ObjectFaceQuad*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            75,
+            66,
+            "insert_face",
+            "ObjectFaceQuad*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            126,
+            73,
+            "insert_copy_destination",
+            "ObjectFaceQuad*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            142,
+            73,
+            "scan_copy_destination",
+            "ObjectFaceQuad*",
+        ),
+    ):
+        expected = (
+            '        "sort_object_faces_by_texture_group",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in replay
+
+    for source_type, index, storage, name, type_name in (
+        (
             "RegisterVariableSourceType",
             18,
             68,
@@ -10110,6 +10185,8 @@ def test_object_texture_group_rebuild_lifetime_replay_stays_guarded() -> None:
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
+    assert '"scan_face_byte_offset",\n        "ObjectFaceQuad*"' not in replay
+    assert '"insert_face_byte_offset",\n        "ObjectFaceQuad*"' not in replay
     assert '"face_byte_offset",\n        "char*"' not in replay
     assert '"active_texture",\n        "int32_t*"' not in replay
 

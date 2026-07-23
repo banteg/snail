@@ -38,3 +38,22 @@ The integer return shown by both raw decompilers was only the final
 `facequad_count` load. The shared headers and repeatable Binary Ninja/IDA
 syncs now preserve the borrowed `Object*` owner and `void` ABI. Matcher source
 is unchanged at 100.00%, 75/75 instructions, with no masked operands.
+
+## 2026-07-23 face-bank cursor lifetime replay
+
+The guarded object texture-group replay now also preserves the sort pass's
+borrowed lifetimes in Binary Ninja:
+
+- `Object::facequads` remains the owning array member, while `scan_face` and
+  `insert_face` are independent borrowed `ObjectFaceQuad*` cursors;
+- the grouping key and its stack spill are `TextureRef*`, not integers;
+- the native `* 3`, `<< 4` address-strength-reduction values remain integer
+  indices and byte offsets rather than being promoted into fake pointers;
+- the 0x30-byte stack temporary is a by-value `ObjectFaceQuad swap_face`, and
+  the three `rep movsd` copies retain typed face sources and destinations.
+
+The replay verifies the canonical `TextureRef` (0xa4), `ObjectFaceQuad` (0x30),
+and `Object` (0xdc) layouts before mutation, saves and reads back every
+annotation, and is fully idempotent on a second run. The exact matcher source
+is intentionally unchanged at 100.00%, 75/75 instructions, prefix 75/75, with
+no masked operands.
