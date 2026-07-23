@@ -1057,6 +1057,68 @@ def test_x_mesh_loader_replay_keeps_borrowed_cursors_and_path_buffers() -> None:
         assert marker in replay
 
 
+def test_x_animation_loader_replay_keeps_keyframes_and_parser_lifetimes() -> None:
+    owner_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    replay = (BINJA_DIR / "sync_x_animation_loader_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "bn_object_render_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    prototype = (
+        "void __thiscall load_x_animation_clip("
+        "DirectXLoader* loader, char* mesh_name, Object* object)"
+    )
+    assert prototype in owner_sync
+    for fragment in (
+        "void __thiscall load_x_animation_clip(",
+        "DirectXLoader* loader, char* mesh_name, Object* object)",
+    ):
+        assert fragment in replay
+        assert fragment in header
+    assert "apply_direct_proto_update(" in replay
+    assert "apply_user_var_updates(" in replay
+    assert "verify_x_animation_loader_owner_layouts" in replay
+    for index, storage, name, variable_type in (
+        (0, -404, "cursor", "char*"),
+        (511, -397, "saved_end_char", "char"),
+        (575, -396, "progress_step", "float"),
+        (0, -392, "keyframe_count", "int32_t"),
+        (223, -388, "keyframes", "XAnimationKeyframe*"),
+        (0, -384, "animation_tag", "char[0x80]"),
+        (0, -256, "path_pattern", "char[0x100]"),
+    ):
+        marker = (
+            '        "StackVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert marker in replay
+    for index, storage, name, variable_type in (
+        (209, 66, "allocated_keyframes", "XAnimationKeyframe*"),
+        (214, 67, "loop_keyframe_count", "int32_t"),
+        (221, 71, "keyframe_index", "int32_t"),
+        (241, 72, "mesh_path", "char*"),
+        (246, 73, "frame_number_cursor", "int32_t*"),
+        (443, 72, "animation_block", "char*"),
+        (467, 69, "animation_end", "char*"),
+        (595, 73, "mode_flags", "int32_t"),
+    ):
+        marker = (
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert marker in replay
+
+
 def test_intro_logo_lifetime_replay_keeps_real_owners_and_staged_stride() -> None:
     source = (BINJA_DIR / "sync_intro_logo_lifetimes.py").read_text(
         encoding="utf-8"

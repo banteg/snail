@@ -17385,6 +17385,38 @@
       ]
     },
     {
+      "name": "bn_x_animation_loader_owners",
+      "artifact": "analysis/decompile/binja/functions/00405d60-load_x_animation_clip.c",
+      "required_substrings": [
+        "char path_pattern[0x100]",
+        "sprintf(&path_pattern, \"%s\", mesh_name_1)",
+        "int32_t keyframe_count",
+        "XAnimationKeyframe* allocated_keyframes",
+        "int32_t loop_keyframe_count = keyframe_count",
+        "int32_t keyframe_index = 0",
+        "loader->duplicate_vertices.active_count = 0",
+        "char* mesh_path = &data_4b2f50",
+        "int32_t* frame_number_cursor = &allocated_keyframes->frame_number",
+        "char animation_tag[0x80]",
+        "char* animation_block",
+        "char* animation_end",
+        "int32_t mode_flags",
+        "request_object_animation(object"
+      ],
+      "forbidden_substrings": [
+        "void var_100",
+        "void buffer",
+        "int32_t unused",
+        "int32_t* edi",
+        "char* eax_13",
+        "char* eax_14",
+        "int32_t flags",
+        "arg1",
+        "sub_48b32c",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_object_loader_owners",
       "artifact": "analysis/decompile/binja/functions/0044c420-load_object_definition.c",
       "required_substrings": [

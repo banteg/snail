@@ -94,3 +94,23 @@ Changing both methods to `void` preserves this loader's proof-grade
 `228/228` match and makes the callee exact at `231/231`. The missing-`AnimEnd:`
 path likewise reports the error and returns without promising the diagnostic
 integer as an animation pointer.
+
+## 2026-07-23 durable parser and keyframe replay
+
+The checked-in Binary Ninja replay now preserves the exact `0x180` bytes of
+frame storage as adjacent `path_pattern[0x100]` and
+`animation_tag[0x80]` buffers. It also pins the shared parse cursor, keyframe
+count/bank/index, `0x80`-stride directory cursor, current frame-number cursor,
+bounded animation block/end pointers, progress step, and mode flags.
+
+This makes the tracked decompile carry the same ownership graph as the exact
+matcher source: the keyframe bank is allocated once, populated through
+`XAnimationKeyframe::object/frame_number`, and retained by
+`Object::request_object_animation`; the animation text cursors only borrow
+storage from `DirectXLoader::animation_bytes`. The Windows default-path
+`allocated_keyframes | 1` mode value remains visible as the already documented
+uninitialized-register bug rather than being sanitized by a misleading type or
+fake initialization.
+
+Focused matching is intentionally unchanged at **100.00%**, 228/228
+instructions, with all 50 masked operands clean.

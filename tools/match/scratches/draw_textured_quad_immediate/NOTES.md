@@ -90,3 +90,13 @@ and `tColour*`. Readback and refreshed artifacts now expose the renderer-owned
 staging buffer, device, and named success counter without standalone interior
 globals. No source-shape change was retained; the focused result remains
 98.34%, 331/332, with all 26 masked operands clean.
+
+2026-07-23 cross-port rotated-path check: the symbol-rich iOS
+`G0RenderFont` body independently keeps distinct half-width and half-height
+values, adds them to the two center coordinates, and computes the same
+`sqrt(half_width² + half_height²) * 1.41400003f` radius before sine/cosine.
+This confirms the current source-shaped locals. Windows happens to spill the
+half-height through the dead incoming `width` slot; rewriting the source around
+that compiler allocation regresses the focused result to 95.63% and reverses
+several natural floating-point operand orders. The retained 98.34% residual is
+therefore bounded x87 scheduling, not evidence for argument-slot ownership.
