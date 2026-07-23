@@ -371,6 +371,11 @@ output-vector lifetimes with `uv run python
 tools/binja/sync_attachment_follow_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 
+Replay the Golb path-follow traversal's secondary-sample, output-vector, and
+flight-transform lifetimes with `uv run python
+tools/binja/sync_golb_path_follow_lifetimes.py --target
+SnailMail_unwrapped.exe.bndb`.
+
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
 `GameInput.input` field proven by the exact Windows bridge and iOS

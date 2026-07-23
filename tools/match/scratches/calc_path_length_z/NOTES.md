@@ -258,3 +258,20 @@ borrowed `Path*` and `SubLoc*`, progress and output state, and the owning
 the initializer and traverse ABIs, while health checks pin the owner and its
 consumer. No matching source was changed; focused matching remains honestly
 at 71.82%, 416/425 instructions, with all seven operands clean.
+
+## 2026-07-23 sample, output, and flight-transform lifetimes
+
+Transactional Binary Ninja previews preserve eleven bounded owners across the
+Golb traversal. The ordinary and kind-42 branches now retain complete
+`PathTemplateSample*` samples, the state result remains one `Vec3*`, and all
+three completion lanes publish through named `flight_transform` vector rows.
+The terminal source-cell anchor also remains a complete `Vec3*`. The resulting
+decompile contains zero synthetic `__offset` expressions.
+
+Two tempting sample casts were rejected. The primary interpolation cursor
+spans current and next samples, so forcing it to `PathTemplateSample*`
+introduced three forward offsets. The terminal secondary cursor is
+one-past-end and reads the preceding sample, so the same cast introduced five
+negative offsets. Both remain honest byte views. No matcher source changed:
+focused matching remains 71.82% (416/425 instructions) with all seven operands
+clean.

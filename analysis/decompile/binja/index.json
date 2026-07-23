@@ -5,9 +5,9 @@
     "basename": "SnailMail_unwrapped.exe.bndb",
     "filename": "/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb",
     "selector": "SnailMail_unwrapped.exe.bndb",
-    "session_id": "3850879259322943474",
-    "target_id": "51123:2:3850879259322943474",
-    "view_id": "2",
+    "session_id": "15451580136278948641",
+    "target_id": "63138:1:15451580136278948641",
+    "view_id": "1",
     "view_name": "PE"
   },
   "manifest": "analysis/symbols/gameplay-functions.json",

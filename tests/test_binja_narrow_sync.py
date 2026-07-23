@@ -12200,3 +12200,47 @@ def test_attachment_follow_replay_preserves_samples_and_player_matrix() -> None:
     assert '0x20: ("basis_forward", "Vec3")' in replay
     for rejected_index in (559, 744):
         assert f"({rejected_index}," not in replay
+
+
+def test_golb_path_follow_replay_preserves_sample_and_flight_owners() -> None:
+    replay = (BINJA_DIR / "sync_golb_path_follow_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("TransformMatrix", "0x40"),
+        ("PathTemplateSample", "0xA8"),
+        ("TrackRowCell", "0x54"),
+        ("GolbPathFollowState", "0x28"),
+        ("GolbShot", "0x2E8"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    assert '"calc_path_length_z"' in replay
+    for index, storage, name, variable_type in (
+        (261, 68, "flight_position_overflow", "Vec3*"),
+        (360, 68, "source_anchor_position", "Vec3*"),
+        (468, 68, "flight_position_terminal", "Vec3*"),
+        (827, 66, "current_secondary_sample", "PathTemplateSample*"),
+        (836, 67, "output_position", "Vec3*"),
+        (924, 72, "secondary_sample", "PathTemplateSample*"),
+        (1185, 66, "output_position_write", "Vec3*"),
+        (1313, 66, "flight_transform", "TransformMatrix*"),
+        (1341, 66, "flight_up", "Vec3*"),
+        (1369, 66, "flight_forward", "Vec3*"),
+        (1476, 68, "flight_position_side_exit", "Vec3*"),
+    ):
+        assert (
+            f'    ({index}, {storage}, "{name}", "{variable_type}"),' in replay
+        )
+
+    assert "GOLB_PATH_FOLLOW_USER_VAR_UPDATES" in replay
+    assert "current_type_widths" in replay
+    assert "current_struct_fields_batch" in replay
+    assert "apply_user_var_updates" in replay
+    assert '0x1C4: ("flight_transform", "TransformMatrix")' in replay
+    assert '0x24C: ("velocity", "Vec3")' in replay
+    assert '0x258: ("direction", "Vec3")' in replay
+    for rejected_index in (193, 354):
+        assert f"({rejected_index}," not in replay
