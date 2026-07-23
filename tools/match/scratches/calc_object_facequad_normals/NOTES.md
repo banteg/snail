@@ -82,3 +82,30 @@ Focused Wibo remains honestly unchanged at 90.03%, 436/437 instructions,
 prefix 27/437, and 22 clean masked operands. No matcher source change was
 retained; the residual is still the documented VC6 stack-slot and register
 allocation tie.
+
+## 2026-07-23 durable full-normal ownership graph
+
+The Binary Ninja replay now guards and restores 34 native lifetimes across the
+complete rebuild:
+
+- the allocation result and retained EBX owner for the heap `float` tally;
+- integer face/normal/vertex byte offsets and the two loop indices;
+- complete `ObjectFaceQuad*` borrows for primary, quad, accumulation, and
+  validation phases;
+- every retained `Vec3*` vertex borrow used to construct both face normals;
+- owned `face_normal` and `quad_normal` stack values plus their output slots;
+- all eight `Vec3*` vertex-normal accumulation slots;
+- the tally cursor and the final average, normalize, and inversion borrows.
+
+The shared EDI lifetime is deliberately `int32_t`: native advances it by
+`0x30` in the face loop, resets it, then advances it by `0x0c` in the vertex
+loop. It is never an owned `float*` or synthetic array cursor. The refreshed
+decompile now exposes `vertex_0` through `vertex_3`, component-level
+accumulation into each vertex normal, validation through a complete face, and
+the full final normal pass. Direct base-plus-offset expressions that native
+forms without first materializing a complete face pointer remain visible.
+
+The matcher source is unchanged and still reports the honest 90.03%,
+436/437-instruction result with 22 clean masked operands. This slice improves
+recoverable ownership only; it does not disguise the established VC6
+stack-slot, register-allocation, or SIB-order residuals.

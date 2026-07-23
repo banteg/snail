@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "calc_object_facequad_normals_simple",
-      "address": "0x430230"
+      "name": "calc_object_facequad_normals",
+      "address": "0x42fcb0"
     }
   ],
   "health_check_count": 917,
