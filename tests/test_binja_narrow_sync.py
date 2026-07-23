@@ -12391,3 +12391,75 @@ def test_sprite_effect_replay_preserves_shared_sprite_owners() -> None:
     assert '0x270: ("game", "SubgameRuntime*")' in replay
     assert '0x8C: ("owner_game", "SubgameRuntime*")' in replay
     assert "struct SpriteMotionTail" not in replay
+
+
+def test_create_golb_replay_splits_real_pointer_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    replay = (
+        BINJA_DIR / "sync_create_golb_owner_lifetimes.py"
+    ).read_text(encoding="utf-8")
+
+    for type_name, width in (
+        ("Vec3", "0x0C"),
+        ("tColour", "0x10"),
+        ("BodNode", "0x10"),
+        ("BodBase", "0x38"),
+        ("Sprite", "0xB4"),
+        ("ContactTargetObject", "0x08"),
+        ("ContactTargetEntry", "0x18"),
+        ("Snail", "0x19B4"),
+        ("GolbShot", "0x2E8"),
+        ("Player", "0x4364"),
+        ("SubgameRuntime", "0x1272838"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for index, storage, name, variable_type in (
+        (406, 66, "shot_velocity", "Vec3*"),
+        (904, 68, "spawn_anchor", "Vec3*"),
+        (1714, 66, "vapour_list_head", "BodBase*"),
+        (1900, 66, "render_sprite", "Sprite*"),
+        (1987, 67, "render_color", "tColour*"),
+        (2043, 66, "render_position", "Vec3*"),
+    ):
+        expected = (
+            '        "create_golb",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert expected in replay
+
+    assert "apply_split_user_var_update" in replay
+    assert "CREATE_GOLB_SPRITE_GAME_DEFINITIONS" in replay
+    assert (
+        '("0x415aae", "mlil", "RegisterVariableSourceType", 2094, 66)'
+        in replay
+    )
+    assert "CREATE_GOLB_TARGET_ENTRY_DEFINITIONS" in replay
+    assert (
+        '("0x4158ad", "mlil", "RegisterVariableSourceType", 1581, 66)'
+        in replay
+    )
+    assert 'variable_name="sprite_game"' in replay
+    assert 'variable_type="SubgameRuntime*"' in replay
+    assert 'variable_name="target_entry"' in replay
+    assert 'variable_type="ContactTargetEntry*"' in replay
+    assert '0x0248: ("render_sprite", "Sprite*")' in replay
+    assert '0x17B0: ("snail_hotspots_world", "Vec3[19]")' in replay
+    assert '0x1270FD4: ("enemy_manager", "EnemyManager")' in replay
+
+    analysis_header = (
+        repo_root / "analysis/headers/path_template_types.h"
+    ).read_text(encoding="utf-8")
+    match_header = (
+        repo_root / "tools/match/include/golb.h"
+    ).read_text(encoding="utf-8")
+    catalog_replay = (
+        BINJA_DIR / "sync_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    for text in (analysis_header, match_header, catalog_replay):
+        assert "render_body_owner" not in text
+        assert "render_sprite" in text

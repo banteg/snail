@@ -381,6 +381,11 @@ and splash garbage chains, and wall-impact vector lifetimes with `uv run python
 tools/binja/sync_golb_ai_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 
+Replay `create_golb`'s hotspot/velocity cursors, kind-zero Sprite owner,
+vapour sentinel, subgame-rate pointer split, and contact-target result with
+`uv run python tools/binja/sync_create_golb_owner_lifetimes.py --target
+SnailMail_unwrapped.exe.bndb`.
+
 Replay the shared Sprite owners and the two smoke emitters' derived
 position-to-gravity byte cursors with `uv run python
 tools/binja/sync_sprite_effect_owner_lifetimes.py --target

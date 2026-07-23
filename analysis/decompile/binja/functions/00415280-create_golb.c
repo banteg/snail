@@ -42,32 +42,32 @@
 0041538d        shot->flight_transform.position.z = fconvert.s(fconvert.t(color.b) + fconvert.t(shot->flight_transform.position.z))
 00415390        struct Player* owner_player_1 = shot->owner_player
 00415396        uint8_t movement_flags_1 = (owner_player_1->movement_flags).b
-0041539e        float* eax_7
+0041539e        struct Vec3* shot_velocity
 0041539e        float b
 0041539e        if ((movement_flags_1 & 5) != 0)
-00415606        struct Vec3 (* edx_15)[0x13]
+00415606        struct Vec3* spawn_anchor
 00415606        if (spawn_selector != 3)
 00415613        if (spawn_selector == 2)
-00415615        edx_15 = &owner_player_1->presentation.snail_hotspots_world[2]
+00415615        spawn_anchor = &owner_player_1->presentation.snail_hotspots_world[2]
 0041561b        goto label_41562c
 00415620        if (spawn_selector == 1)
-00415622        edx_15 = &owner_player_1->presentation.snail_hotspots_world[4]
+00415622        spawn_anchor = &owner_player_1->presentation.snail_hotspots_world[4]
 00415622        goto label_41562c
-00415608        edx_15 = &owner_player_1->presentation.snail_hotspots_world
+00415608        spawn_anchor = &owner_player_1->presentation.snail_hotspots_world
 0041562c        label_41562c:
-0041562c        shot->flight_transform.position.x = (edx_15 - 0x4134)->presentation.snail_hotspots_world[0].x
-00415631        shot->flight_transform.position.y = (edx_15 - 0x4134)->presentation.snail_hotspots_world[0].y
-00415637        shot->flight_transform.position.z = (edx_15 - 0x4134)->presentation.snail_hotspots_world[0].z
+0041562c        shot->flight_transform.position.x = spawn_anchor->x
+00415631        shot->flight_transform.position.y = spawn_anchor->y
+00415637        shot->flight_transform.position.z = spawn_anchor->z
 00415643        if ((owner_player_1->movement_flags.b & 4) == 0)
 00415724        long double x87_r7_34 = fconvert.t(owner_player_1->velocity.z) + fconvert.t(1f)
 0041572a        color.r = 0
-00415736        eax_7 = &shot->velocity
+00415736        shot_velocity = &shot->velocity
 0041573c        color.g = 0
-00415748        *eax_7 = color.r
+00415748        shot_velocity->x = color.r
 0041574a        color.b = fconvert.s(x87_r7_34)
 0041574e        b = color.b
-00415752        eax_7[1] = 0
-00415755        eax_7[2] = b
+00415752        shot_velocity->y = 0f
+00415755        shot_velocity->z = b
 0041564c        if (spawn_selector == 3)
 0041565a        color.r = 0x3dcccccd
 0041566c        color.g = 0
@@ -103,13 +103,13 @@
 004153fc        shot->flight_transform.position.x = fconvert.s(fconvert.t(shot->flight_transform.position.x) - fconvert.t(0.5f))
 00415404        long double x87_r7_11 = fconvert.t(owner_player_1->velocity.z) + fconvert.t(1f)
 0041540a        color.r = 0
-00415416        eax_7 = &shot->velocity
+00415416        shot_velocity = &shot->velocity
 0041541c        color.g = 0
-00415428        *eax_7 = color.r
+00415428        shot_velocity->x = color.r
 0041542a        color.b = fconvert.s(x87_r7_11)
 0041542e        b = color.b
-00415432        eax_7[1] = 0
-00415755        eax_7[2] = b
+00415432        shot_velocity->y = 0f
+00415755        shot_velocity->z = b
 0041543c        if ((movement_flags_1 & 0x18) != 0)
 0041554b        if (spawn_selector != 2)
 0041558b        shot->flight_transform.position.x = owner_player_1->presentation.snail_hotspots_world[7].x
@@ -187,26 +187,26 @@
 004159bc        struct Player* owner_player_3 = shot->owner_player
 004159c2        shot->lifetime = 0f
 004159df        shot->lifetime_step = fconvert.s(fconvert.t(game_2->subgame_rate) * fconvert.t(0.0416666679f))
-004159ec        struct Sprite* eax_37 = allocate_sprite(&g_sprite_manager, owner_player_3->player_slot, 0x82, 0xffffffff, 0xffffffff)
-004159f1        shot->render_body_owner = eax_37
-00415a05        eax_37->flags |= SPRITE_FLAG_GAMEPLAY_OWNED
-00415a18        *(shot->render_body_owner + 0x68) = 0
-00415a2a        *(shot->render_body_owner + 0x6c) = 0
-00415a33        *(shot->render_body_owner + 0x78) = 0
-00415a36        struct tColour* eax_39 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-00415a43        float* ecx_25 = shot->render_body_owner + 0x2c
-00415a46        *ecx_25 = eax_39->r
-00415a4b        ecx_25[1] = eax_39->g
-00415a51        ecx_25[2] = eax_39->b
-00415a57        ecx_25[3] = eax_39->a
-00415a65        *(shot->render_body_owner + 0x60) = 0x3efae148
-00415a70        *(shot->render_body_owner + 0x64) = 0x3efae148
-00415a7b        float* eax_42 = shot->render_body_owner + 0x48
-00415a7e        *eax_42 = shot->flight_transform.position.x
-00415a83        eax_42[1] = shot->flight_transform.position.y
-00415a89        eax_42[2] = shot->flight_transform.position.z
-00415aab        *(shot->render_body_owner + 0x7c) = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(0.000191747604f))
-00415ac7        *(shot->render_body_owner + 0x80) = fconvert.s(fconvert.t(*(shot->game i+ 0x38)) * fconvert.t(0.58177644f))
+004159ec        struct Sprite* render_sprite = allocate_sprite(&g_sprite_manager, owner_player_3->player_slot, 0x82, 0xffffffff, 0xffffffff)
+004159f1        shot->render_sprite = render_sprite
+00415a05        render_sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED
+00415a18        shot->render_sprite->progress = 0f
+00415a2a        shot->render_sprite->progress_step = 0f
+00415a33        shot->render_sprite->gravity_step = 0f
+00415a36        struct tColour* eax_36 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+00415a43        struct tColour* render_color = &shot->render_sprite->color
+00415a46        render_color->r = eax_36->r
+00415a4b        render_color->g = eax_36->g
+00415a51        render_color->b = eax_36->b
+00415a57        render_color->a = eax_36->a
+00415a65        shot->render_sprite->size_start = 0.49000001f
+00415a70        shot->render_sprite->size_end = 0.49000001f
+00415a7b        struct Vec3* render_position = &shot->render_sprite->position
+00415a7e        render_position->x = shot->flight_transform.position.x
+00415a83        render_position->y = shot->flight_transform.position.y
+00415a89        render_position->z = shot->flight_transform.position.z
+00415aab        shot->render_sprite->facing_angle = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(0.000191747604f))
+00415ac7        shot->render_sprite->facing_angle_step = fconvert.s(fconvert.t(shot->game->subgame_rate) * fconvert.t(0.58177644f))
 00415acd        shot->object_ref = emitter_index
 004157f5        if (kind == 1)
 00415900        struct SubgameRuntime* game_1 = shot->game
@@ -214,11 +214,11 @@
 00415915        long double x87_r7_50 = fconvert.t(game_1->subgame_rate) * fconvert.t(0.0416666679f)
 0041591b        shot->vapour_owner_shot = shot
 00415926        shot->lifetime_step = fconvert.s(x87_r7_50)
-00415932        struct BodBase* eax_33 = &g_game_base->subgame.golb_vapour_list_head
+00415932        struct BodBase* vapour_list_head = &g_game_base->subgame.golb_vapour_list_head
 0041593d        if ((0x200 & shot->vapour.body.bod.bod.list_flags) == 0)
-0041594e        shot->vapour.body.bod.bod.list_prev = eax_33
-00415954        shot->vapour.body.bod.bod.list_next = eax_33->bod.list_next
-00415957        eax_33->bod.list_next = &shot->vapour
+0041594e        shot->vapour.body.bod.bod.list_prev = vapour_list_head
+00415954        shot->vapour.body.bod.bod.list_next = vapour_list_head->bod.list_next
+00415957        vapour_list_head->bod.list_next = &shot->vapour
 0041595a        struct BodNode* list_next = shot->vapour.body.bod.bod.list_next
 0041595f        if (list_next != 0)
 00415961        list_next->list_prev = &shot->vapour
@@ -256,19 +256,18 @@
 00415893        shot->tertiary_body.bod.bod.list_flags = list_flags
 0041584c        report_errorf("List ADD")
 004158a7        shot->object_ref = emitter_index
-004158ad        float eax_29 = search_path_for_golb(&shot->game->enemy_manager, &shot->flight_transform.position)
-004158b4        if (eax_29 != 0)
-004158ba        struct ContactTargetObject* ecx_15 = *(eax_29 i+ 0x14)
-004158bd        shot->homing_target_object = ecx_15
-004158c7        if (*eax_29 == 0)
-004158c9        int32_t list_flags_1 = ecx_15->list_flags
+004158ad        struct ContactTargetEntry* target_entry = search_path_for_golb(&shot->game->enemy_manager, &shot->flight_transform.position)
+004158b4        if (target_entry != 0)
+004158ba        struct ContactTargetObject* object = target_entry->object
+004158bd        shot->homing_target_object = object
+004158c7        if (target_entry->kind == 0)
+004158c9        int32_t list_flags_1 = object->list_flags
 004158cc        list_flags_1:1.b |= 0x10
-004158cf        ecx_15->list_flags = list_flags_1
-004158dd        shot->homing_target.x = *(eax_29 i+ 4)
-004158e2        shot->homing_target.y = *(eax_29 i+ 8)
-004158e5        eax_29 = *(eax_29 i+ 0xc)
+004158cf        object->list_flags = list_flags_1
+004158dd        shot->homing_target.x = target_entry->position.x
+004158e2        shot->homing_target.y = target_entry->position.y
 004158e8        shot->homing_blend = 0f
-004158ee        shot->homing_target.z = eax_29
+004158ee        shot->homing_target.z = target_entry->position.z
 004158f1        shot->homing_blend_step = 0.0333333351f
 00415ad3        struct Player* owner_player_2 = shot->owner_player
 00415ae1        long double x87_r7_58

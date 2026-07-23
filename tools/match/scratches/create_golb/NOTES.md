@@ -293,3 +293,25 @@ This is deliberately an ownership correction, not a fakematch. Focused output
 remains at the current honest 34.77% frontier (459/582 instructions) with all
 35 masked operands clean. Both analysis lanes now preserve `vapour.body`, the
 backlink, and `tertiary_body` directly.
+
+## 2026-07-23 presentation and contact-owner replay
+
+All native references to `GolbShot +0x248` are kind-zero Sprite operations
+across creation, AI, and exact teardown. The canonical analysis field is now
+therefore `Sprite* render_sprite`, matching the existing source header instead
+of retaining a generic `void*` alias.
+
+Binary Ninja's one merged EAX lifetime also crossed three unrelated kind
+branches: a scalar kind discriminator, `shot->game` for the Sprite facing
+step, and the `ContactTargetEntry*` returned by `search_path_for_golb`. The
+replay splits only the two pointer definitions and leaves the scalar residual
+automatic. The constructor now exposes the target entry's `kind`, `position`,
+and borrowed `object`, plus the real subgame-rate field.
+
+Six additional complete lifetimes name the shared velocity cursor, selected
+Snail hotspot, vapour-list sentinel, allocated Sprite, Sprite color, and Sprite
+position. No source or masks changed: the current focused result remains the
+honest 34.77%, 459/582 instruction frontier, prefix 1/582, with all 35 masked
+operands clean. BN's printable immediate rendering of `spin_step` as a
+four-byte `strncpy` remains an analyzer artifact; no fake tail or string owner
+was introduced to hide it.

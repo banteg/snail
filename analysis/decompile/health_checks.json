@@ -8542,8 +8542,40 @@
         "FrameBodBase",
         "(eax_2 - 0x5ac)",
         "__offset(GolbShot, 0x118)",
+        "render_body_owner",
         "secondary_body",
         "shot->live_matrix"
+      ]
+    },
+    {
+      "name": "bn_create_golb_presentation_and_target_owners",
+      "artifact": "analysis/decompile/binja/functions/00415280-create_golb.c",
+      "required_substrings": [
+        "struct Vec3* shot_velocity",
+        "struct Vec3* spawn_anchor",
+        "shot->flight_transform.position.x = spawn_anchor->x",
+        "shot_velocity->x = color.r",
+        "struct Sprite* render_sprite = allocate_sprite",
+        "shot->render_sprite = render_sprite",
+        "struct tColour* render_color = &shot->render_sprite->color",
+        "struct Vec3* render_position = &shot->render_sprite->position",
+        "shot->render_sprite->facing_angle_step = fconvert.s(fconvert.t(shot->game->subgame_rate)",
+        "struct BodBase* vapour_list_head = &g_game_base->subgame.golb_vapour_list_head",
+        "vapour_list_head->bod.list_next",
+        "struct ContactTargetEntry* target_entry = search_path_for_golb",
+        "struct ContactTargetObject* object = target_entry->object",
+        "target_entry->kind == 0",
+        "shot->homing_target.z = target_entry->position.z"
+      ],
+      "forbidden_substrings": [
+        "render_body_owner",
+        "struct Vec3 (* edx_15)[0x13]",
+        "(edx_15 - 0x4134)",
+        "float* eax_7",
+        "*(shot->game i+ 0x38)",
+        "float eax_29 = search_path_for_golb",
+        "eax_29 i+",
+        "__offset"
       ]
     },
     {
@@ -8570,9 +8602,11 @@
       "name": "analysis_golb_shot_nested_vapour_owner",
       "artifact": "analysis/headers/path_template_types.h",
       "required_substrings": [
-        "typedef struct GolbShot {\n    RenderableBod primary_body;\n    Vapour vapour;\n    struct GolbShot* vapour_owner_shot;\n    RenderableBod tertiary_body;"
+        "typedef struct GolbShot {\n    RenderableBod primary_body;\n    Vapour vapour;\n    struct GolbShot* vapour_owner_shot;\n    RenderableBod tertiary_body;",
+        "Sprite* render_sprite;"
       ],
       "forbidden_substrings": [
+        "render_body_owner",
         "RenderableBod secondary_body",
         "uint8_t _pad_114[0x150 - 0x114]"
       ]
@@ -8613,9 +8647,11 @@
         "shot->primary_body.bod.bod.list_flags",
         "shot->vapour.body.bod.bod.list_flags",
         "edx_6->free_top = &shot->vapour",
-        "shot->tertiary_body.bod.bod.list_flags"
+        "shot->tertiary_body.bod.bod.list_flags",
+        "kill_sprite(shot->render_sprite)"
       ],
       "forbidden_substrings": [
+        "render_body_owner",
         "secondary_body",
         "shot->live_matrix",
         "__offset(GolbShot"
@@ -8640,7 +8676,7 @@
       "artifact": "analysis/decompile/binja/functions/00414820-update_golb_ai.c",
       "required_substrings": [
         "add_vapour_point(&shot->vapour, &shot->source_matrix)",
-        "struct Vec3* render_position = &shot->render_body_owner->position",
+        "struct Vec3* render_position = &shot->render_sprite->position",
         "struct SubGarbage* active_garbage = shot->game->garbage_hazards.active_head",
         "active_garbage->state == SUB_GARBAGE_STATE_ACTIVE",
         "active_garbage->state = SUB_GARBAGE_STATE_BURST_PENDING",
@@ -8659,6 +8695,7 @@
         "rotate_matrix_local_z(&shot->tertiary_body.transform, shot->spin)"
       ],
       "forbidden_substrings": [
+        "render_body_owner",
         "secondary_body",
         "shot->live_matrix",
         "float* ecx_20",

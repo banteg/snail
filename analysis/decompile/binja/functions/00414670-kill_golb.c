@@ -24,7 +24,7 @@
 004146dc        int32_t kind = shot->kind
 004146e2        shot->state = 0
 004146ef        if (kind == 0)
-0041480b        kill_sprite(shot->render_body_owner)
+0041480b        kill_sprite(shot->render_sprite)
 0041480b        return
 004146f6        if (kind == 1)
 00414795        uint16_t list_flags_5 = (shot->vapour.body.bod.bod.list_flags).w

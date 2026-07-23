@@ -1,10 +1,10 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 4,
+  "bn_exported": 3,
   "ida_exported": 714,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
@@ -17,23 +17,19 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "spawn_golb_trail_sprite",
-      "address": "0x415bb0"
+      "name": "kill_golb",
+      "address": "0x414670"
     },
     {
-      "name": "spawn_golb_smoke",
-      "address": "0x415c60"
+      "name": "update_golb_ai",
+      "address": "0x414820"
     },
     {
-      "name": "spawn_golb_impact_sprite",
-      "address": "0x415d80"
-    },
-    {
-      "name": "spawn_garbage_smoke_particle",
-      "address": "0x43d5a0"
+      "name": "create_golb",
+      "address": "0x415280"
     }
   ],
-  "health_check_count": 907,
+  "health_check_count": 908,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

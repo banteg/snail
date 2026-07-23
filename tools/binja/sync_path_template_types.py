@@ -339,7 +339,7 @@ GOLB_SHOT_FIELD_UPDATES = (
     ("0x1c4", "flight_transform", "TransformMatrix"),
     ("0x204", "previous_flight_transform", "TransformMatrix"),
     ("0x244", "state", "int32_t"),
-    ("0x248", "render_body_owner", "void*"),
+    ("0x248", "render_sprite", "Sprite*"),
     ("0x24c", "velocity", "Vec3"),
     ("0x258", "direction", "Vec3"),
     ("0x264", "path_factor", "float"),

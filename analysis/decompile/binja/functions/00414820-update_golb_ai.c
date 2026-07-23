@@ -102,7 +102,7 @@
 00414b86        label_414b86:
 00414b86        int32_t kind_1 = shot->kind
 00414b8f        if (kind_1 == 0)
-00414c8d        struct Vec3* render_position = &shot->render_body_owner->position
+00414c8d        struct Vec3* render_position = &shot->render_sprite->position
 00414c93        render_position->x = shot->source_matrix.position.x
 00414c98        render_position->y = shot->source_matrix.position.y
 00414c9e        render_position->z = shot->source_matrix.position.z

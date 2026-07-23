@@ -2043,7 +2043,7 @@ typedef struct GolbShot {
     TransformMatrix flight_transform;
     TransformMatrix previous_flight_transform;
     int32_t state;
-    void* render_body_owner;
+    Sprite* render_sprite;
     Vec3 velocity;
     Vec3 direction;
     float path_factor;

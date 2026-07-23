@@ -78,7 +78,7 @@ redefinition without changing code shape: focused Wibo remains 73.34%,
 
 The local `GolbShot` and `PathFollow` field slices are now promoted into
 `include/golb.h`. The shared projectile layout keeps the existing exact-helper
-names (`primary_body`, `vapour`, `tertiary_body`, `render_body_owner`,
+names (`primary_body`, `vapour`, `tertiary_body`, `render_sprite`,
 `object_ref`, `owner_player`) and adds the update-only views for the complete
 Vapour at `+0x80..+0x113`, `tertiary_body.transform` at `+0x150`, homing state
 at `+0x198..+0x1bf`, `owner_body`/`player` aliases, the source matrix at
@@ -589,3 +589,10 @@ Both analysis lanes now show the two borrowed
 `SUB_GARBAGE_STATE_ACTIVE`, transitioning hits to `BURST_PENDING`, and writing
 the recovered right/left collision side. This clarifies the pool owner without
 changing the honest 81.88% (669/694) matching frontier.
+
+## 2026-07-23 canonical kind-zero Sprite field
+
+The `GolbShot +0x248` lane is now `Sprite* render_sprite` in the canonical
+analysis layout, matching this function's position write and the exact
+creation/teardown consumers. Focused matching stays at 81.88%, 669/694
+instructions, with all 66 masked operands clean.

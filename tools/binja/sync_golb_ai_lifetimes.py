@@ -52,7 +52,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x9C: ("radius", "float"),
     },
     "GolbShot": {
-        0x248: ("render_body_owner", "void*"),
+        0x248: ("render_sprite", "Sprite*"),
         0x27C: ("source_matrix", "TransformMatrix"),
         0x2BC: ("path_follow", "GolbPathFollowState"),
     },

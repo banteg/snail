@@ -54,3 +54,10 @@ accounts for the former direct `live_matrix +0x150` view.
 Both tracked decompilers now show those owners without raw `+0x80`/`+0x118`
 casts. The matcher stays exact at 132/132 instructions with all 16 masked
 operands clean.
+
+## 2026-07-23 canonical kind-zero Sprite field
+
+The analysis layout now names `GolbShot +0x248` directly as
+`Sprite* render_sprite`, completing the same ownership already used by this
+exact source. Binary Ninja now emits `kill_sprite(shot->render_sprite)`;
+focused matching remains exact at 132/132 with all 16 masks clean.
