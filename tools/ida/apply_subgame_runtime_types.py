@@ -48,6 +48,7 @@ SALT_STATE_CURSOR_EXPECTED_MEMBERS = (
 
 SUB_LAZER_OWNER_EXPECTED_SIZE = 0xB0
 SUB_LAZER_MANAGER_EXPECTED_SIZE = 0xDC0
+SUB_LAZER_BODY_OBJECT_CURSOR_EXPECTED_SIZE = 0xB0
 SUB_LAZER_OWNER_EXPECTED_MEMBERS = (
     (0x80, 4, "state", "SubLazerState"),
     (0x88, 4, "owner_game", "SubgameRuntime *"),
@@ -190,6 +191,21 @@ PRESENTATION_ANIMATION_CURSOR_LVARS = (
         "target_struct_name": "PresentationAnimationObjectStrideCursor",
     },
 )
+
+SUB_LAZER_STARTUP_CURSOR_LVAR = {
+    "selector": "initialize_game_assets_and_world",
+    "definition_address": 0x40BD9C,
+    "accepted_names": {
+        "p_object",
+        "sub_lazer_body_object_cursor",
+    },
+    "accepted_types": {
+        "Object **",
+        "SubLazerBodyObjectStrideCursor *",
+    },
+    "target_name": "sub_lazer_body_object_cursor",
+    "target_struct_name": "SubLazerBodyObjectStrideCursor",
+}
 
 
 TRUSTED_DECLARATIONS = [
@@ -560,6 +576,11 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "typedef struct PresentationAnimationObjectStrideCursor {",
     "Object* object;",
     "uint8_t slot_stride_tail[0x7c];",
+    "typedef struct SubLazerBodyObjectStrideCursor {",
+    "Object* body_object;",
+    "tColour body_color;",
+    "SubgameRuntime* owner_game;",
+    "uint8_t _stride_tail[0x48];",
 )
 
 EXPECTED_PARCEL_OWNER_SIZES = {
@@ -1625,6 +1646,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
         name: _named_struct_size(name)
         for name in PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES
     }
+    sub_lazer_body_object_cursor_size = _named_struct_size(
+        "SubLazerBodyObjectStrideCursor"
+    )
     size_failures = [
         {
             "selector": name,
@@ -1657,6 +1681,18 @@ def _sync_types(header_path: pathlib.Path) -> int:
         )
         if presentation_animation_cursor_sizes[name] != expected_size
     )
+    if (
+        sub_lazer_body_object_cursor_size
+        != SUB_LAZER_BODY_OBJECT_CURSOR_EXPECTED_SIZE
+    ):
+        size_failures.append(
+            {
+                "selector": "SubLazerBodyObjectStrideCursor",
+                "reason": "owner_size_mismatch",
+                "expected": SUB_LAZER_BODY_OBJECT_CURSOR_EXPECTED_SIZE,
+                "observed": sub_lazer_body_object_cursor_size,
+            }
+        )
     if parse_errors or size_failures:
         print(
             json.dumps(
@@ -1668,6 +1704,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "banner_owner_sizes": banner_owner_sizes,
                     "presentation_animation_cursor_sizes": (
                         presentation_animation_cursor_sizes
+                    ),
+                    "sub_lazer_body_object_cursor_size": (
+                        sub_lazer_body_object_cursor_size
                     ),
                     "failed": size_failures,
                 },
@@ -1834,6 +1873,30 @@ def _sync_types(header_path: pathlib.Path) -> int:
             for local in initializer_locals
         )
 
+    sub_lazer_startup_cursor_lvar = _sync_allocator_lvar(
+        selector=str(SUB_LAZER_STARTUP_CURSOR_LVAR["selector"]),
+        definition_address=int(
+            SUB_LAZER_STARTUP_CURSOR_LVAR["definition_address"]
+        ),
+        accepted_names=set(SUB_LAZER_STARTUP_CURSOR_LVAR["accepted_names"]),
+        accepted_types=set(SUB_LAZER_STARTUP_CURSOR_LVAR["accepted_types"]),
+        target_name=str(SUB_LAZER_STARTUP_CURSOR_LVAR["target_name"]),
+        target_struct_name=str(
+            SUB_LAZER_STARTUP_CURSOR_LVAR["target_struct_name"]
+        ),
+    )
+    if sub_lazer_startup_cursor_lvar.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "initialize_game_assets_and_world",
+                "sub_lazer_startup_cursor_lvar": sub_lazer_startup_cursor_lvar,
+            }
+        )
+    elif sub_lazer_startup_cursor_lvar.get("status") == "applied":
+        applied += 1
+    else:
+        unchanged += 1
+
     garbage_allocator_lvars = {}
     for (
         result_name,
@@ -1994,6 +2057,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "presentation_animation_cursor_sizes": (
                     presentation_animation_cursor_sizes
                 ),
+                "sub_lazer_body_object_cursor_size": (
+                    sub_lazer_body_object_cursor_size
+                ),
                 "time_trial_owner_readback": time_trial_owner_readback,
                 "salt_owner_readback": salt_owner_readback,
                 "sub_lazer_owner_readback": sub_lazer_owner_readback,
@@ -2021,6 +2087,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "TimesUp": _named_struct_size("TimesUp"),
                     "SubLazer": _named_struct_size("SubLazer"),
                     "SubLazerManager": _named_struct_size("SubLazerManager"),
+                    "SubLazerBodyObjectStrideCursor": _named_struct_size(
+                        "SubLazerBodyObjectStrideCursor"
+                    ),
                     "SubGarbage": _named_struct_size("SubGarbage"),
                     "SubGarbagePool": _named_struct_size("SubGarbagePool"),
                     "SubGarbageSlotCursor": _named_struct_size(
@@ -2057,6 +2126,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "presentation_animation_cursor_lvars": (
                     presentation_animation_cursor_lvars
                 ),
+                "sub_lazer_startup_cursor_lvar": sub_lazer_startup_cursor_lvar,
                 "missing": missing,
                 "failed": failed,
             },

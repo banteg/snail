@@ -8215,6 +8215,97 @@ def test_presentation_animation_object_cursor_survives_every_replay_lane() -> No
     assert "x_offseta += 32" in ida_check["forbidden_substrings"]
 
 
+def test_sub_lazer_asset_cursor_is_field_first_borrowed_and_fail_closed() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (
+        repo_root / "tools/match/include/sub_lazer_types.h"
+    ).read_text(encoding="utf-8")
+    narrow_header = (
+        HEADER_DIR / "bn_subgame_runtime_types.h"
+    ).read_text(encoding="utf-8")
+    canonical_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    bn_runtime_sync = (
+        BINJA_DIR / "sync_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    bn_path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runtime_sync = (
+        IDA_DIR / "apply_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "SubLazerBodyObjectStrideCursor" not in matcher_header
+    assert "SubLazer slots[SUB_LAZER_SLOT_CAPACITY]; // owned storage" in (
+        matcher_header
+    )
+    for header in (narrow_header, canonical_header):
+        assert "typedef struct SubLazerBodyObjectStrideCursor {" in header
+        assert "Object* body_object;" in header
+        assert "tColour body_color;" in header
+        assert "uint8_t _pad_14[0x50];" in header
+        assert "SubgameRuntime* owner_game;" in header
+        assert "uint8_t _stride_tail[0x48];" in header
+    assert "typedef struct tColour {" in narrow_header
+
+    for sync in (bn_runtime_sync, bn_path_sync):
+        assert '"SubLazerBodyObjectStrideCursor": 0xB0' in sync
+        assert (
+            '"RegisterVariableSourceType",\n'
+            "        4267,\n"
+            "        73,\n"
+            '        "sub_lazer_body_object_cursor",\n'
+            '        "SubLazerBodyObjectStrideCursor*"'
+        ) in sync
+    assert "SUB_LAZER_STARTUP_CURSOR_EXPECTED_SIZES" in bn_runtime_sync
+    assert "SUB_LAZER_STARTUP_CURSOR_USER_VAR_UPDATES" in bn_runtime_sync
+    assert (
+        "WORLD_INITIALIZER_SUB_LAZER_ASSET_CURSOR_USER_VAR_UPDATES"
+        in bn_path_sync
+    )
+
+    assert "SUB_LAZER_BODY_OBJECT_CURSOR_EXPECTED_SIZE = 0xB0" in (
+        ida_runtime_sync
+    )
+    assert "SUB_LAZER_STARTUP_CURSOR_LVAR" in ida_runtime_sync
+    assert '"definition_address": 0x40BD9C' in ida_runtime_sync
+    assert '"target_name": "sub_lazer_body_object_cursor"' in ida_runtime_sync
+    assert (
+        '"target_struct_name": "SubLazerBodyObjectStrideCursor"'
+        in ida_runtime_sync
+    )
+    assert "WORLD_INITIALIZER_SUB_LAZER_ASSET_LVAR_SPECS" in ida_path_sync
+    assert (
+        '"SubLazerBodyObjectStrideCursor '
+        '*sub_lazer_body_object_cursor;",\n'
+        "        0x40BD9C,\n"
+        "        None,"
+    ) in ida_path_sync
+
+    health = json.loads(
+        (
+            repo_root / "analysis/decompile/health_checks.json"
+        ).read_text(encoding="utf-8")
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    bn_check = checks["bn_world_assets_sub_lazer_field_stride_owner"]
+    ida_check = checks["ida_world_assets_sub_lazer_field_stride_owner"]
+    assert (
+        "sub_lazer_body_object_cursor->owner_game = &game->subgame"
+        in bn_check["required_substrings"]
+    )
+    assert "edi_13 = &edi_13[0x2c]" in bn_check["forbidden_substrings"]
+    assert (
+        "(BodBase *)&sub_lazer_body_object_cursor[-1]._stride_tail[36],"
+        in ida_check["required_substrings"]
+    )
+    assert "p_object += 44;" in ida_check["forbidden_substrings"]
+
+
 def test_game_player_initializer_stride_view_is_borrowed_and_fail_closed() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (repo_root / "tools/match/include/game_root.h").read_text(

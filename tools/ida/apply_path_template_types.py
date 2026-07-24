@@ -338,6 +338,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
 
 GOLB_SHOT_EXPECTED_SIZE = 0x2E8
 GOLB_SHOT_ASSET_CURSOR_EXPECTED_SIZE = 0x2E8
+SUB_LAZER_ASSET_CURSOR_EXPECTED_SIZE = 0xB0
 GOLB_SHOT_PREFIX_END = 0x198
 GOLB_SHOT_PREFIX_MEMBERS = (
     (0x000, 0x080, "primary_body", "RenderableBod"),
@@ -353,6 +354,14 @@ GOLB_SHOT_HEADER_MARKERS = (
     "typedef struct GolbShotVapourObjectStrideCursor {",
     "Object* vapour_object;",
     "uint8_t _stride_tail[0x1f4];",
+)
+
+SUB_LAZER_ASSET_CURSOR_HEADER_MARKERS = (
+    "typedef struct SubLazerBodyObjectStrideCursor {",
+    "Object* body_object;",
+    "tColour body_color;",
+    "SubgameRuntime* owner_game;",
+    "uint8_t _stride_tail[0x48];",
 )
 
 GOLB_PATH_FOLLOW_DIRECTION_LVAR_DEFINITION = 0x421D22
@@ -715,6 +724,15 @@ WORLD_INITIALIZER_GOLB_ASSET_LVAR_SPECS = (
         "golb_shot_vapour_object_cursor",
         "GolbShotVapourObjectStrideCursor *golb_shot_vapour_object_cursor;",
         0x40FBE8,
+        None,
+    ),
+)
+
+WORLD_INITIALIZER_SUB_LAZER_ASSET_LVAR_SPECS = (
+    (
+        "sub_lazer_body_object_cursor",
+        "SubLazerBodyObjectStrideCursor *sub_lazer_body_object_cursor;",
+        0x40BD9C,
         None,
     ),
 )
@@ -3044,6 +3062,13 @@ def _sync_world_initializer_golb_asset_lvars() -> dict[str, object]:
     )
 
 
+def _sync_world_initializer_sub_lazer_asset_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "initialize_game_assets_and_world",
+        WORLD_INITIALIZER_SUB_LAZER_ASSET_LVAR_SPECS,
+    )
+
+
 def _sync_remove_subgame_bods_cursor_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "remove_subgame_bods",
@@ -3489,10 +3514,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in TRACK_RENDER_CACHE_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_sub_lazer_asset_cursor_markers = [
+        marker
+        for marker in SUB_LAZER_ASSET_CURSOR_HEADER_MARKERS
+        if marker not in header_text
+    ]
     if (
         missing_bod_core_owner_markers
         or missing_fringe_owner_markers
         or missing_track_render_cache_owner_markers
+        or missing_sub_lazer_asset_cursor_markers
     ):
         marker_failures = []
         if missing_bod_core_owner_markers:
@@ -3503,6 +3534,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
             marker_failures.append(
                 {"reason": "noncanonical_track_render_cache_header"}
             )
+        if missing_sub_lazer_asset_cursor_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_sub_lazer_asset_cursor_header"}
+            )
         print(
             json.dumps(
                 {
@@ -3512,6 +3547,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "missing_fringe_owner_markers": missing_fringe_owner_markers,
                     "missing_track_render_cache_owner_markers": (
                         missing_track_render_cache_owner_markers
+                    ),
+                    "missing_sub_lazer_asset_cursor_markers": (
+                        missing_sub_lazer_asset_cursor_markers
                     ),
                     "failed": marker_failures,
                 },
@@ -3535,6 +3573,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
     }
     golb_shot_asset_cursor_size = _named_struct_size(
         "GolbShotVapourObjectStrideCursor"
+    )
+    sub_lazer_asset_cursor_size = _named_struct_size(
+        "SubLazerBodyObjectStrideCursor"
     )
     track_row_cell_tile_owner = _named_struct_member_readback("TrackRowCell", 0x3C)
     expected_track_row_cell_tile_owner = {
@@ -3591,6 +3632,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "observed": golb_shot_asset_cursor_size,
             }
         )
+    if sub_lazer_asset_cursor_size != SUB_LAZER_ASSET_CURSOR_EXPECTED_SIZE:
+        owner_size_failures.append(
+            {
+                "selector": "SubLazerBodyObjectStrideCursor",
+                "owner_group": "sub_lazer_asset_cursor",
+                "reason": "owner_size_mismatch",
+                "expected": SUB_LAZER_ASSET_CURSOR_EXPECTED_SIZE,
+                "observed": sub_lazer_asset_cursor_size,
+            }
+        )
     if track_row_cell_tile_owner != expected_track_row_cell_tile_owner:
         owner_size_failures.append(
             {
@@ -3612,6 +3663,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "fringe_owner_sizes": fringe_owner_sizes,
                     "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                     "golb_shot_asset_cursor_size": golb_shot_asset_cursor_size,
+                    "sub_lazer_asset_cursor_size": sub_lazer_asset_cursor_size,
                     "track_row_cell_tile_owner": track_row_cell_tile_owner,
                     "failed": owner_size_failures,
                 },
@@ -4037,6 +4089,18 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "asset_cursor_lvars": world_initializer_golb_asset_lvars,
             }
         )
+    world_initializer_sub_lazer_asset_lvars = (
+        _sync_world_initializer_sub_lazer_asset_lvars()
+    )
+    if world_initializer_sub_lazer_asset_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "initialize_game_assets_and_world",
+                "sub_lazer_asset_cursor_lvars": (
+                    world_initializer_sub_lazer_asset_lvars
+                ),
+            }
+        )
     remove_subgame_bods_cursor_lvars = _sync_remove_subgame_bods_cursor_lvars()
     if remove_subgame_bods_cursor_lvars.get("status") == "failed":
         failed.append(
@@ -4167,6 +4231,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "fringe_owner_sizes": fringe_owner_sizes,
                 "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                 "golb_shot_asset_cursor_size": golb_shot_asset_cursor_size,
+                "sub_lazer_asset_cursor_size": sub_lazer_asset_cursor_size,
                 "track_row_cell_tile_owner": track_row_cell_tile_owner,
                 "applied": applied,
                 "unchanged": unchanged,
@@ -4209,6 +4274,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "initialize_subgoldy_lvars": initialize_subgoldy_lvars,
                 "world_initializer_golb_asset_lvars": (
                     world_initializer_golb_asset_lvars
+                ),
+                "world_initializer_sub_lazer_asset_lvars": (
+                    world_initializer_sub_lazer_asset_lvars
                 ),
                 "remove_subgame_bods_cursor_lvars": remove_subgame_bods_cursor_lvars,
                 "spawn_track_ring_lvars": spawn_track_ring_lvars,

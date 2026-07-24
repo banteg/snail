@@ -88,6 +88,11 @@ GOLB_SHOT_ASSET_CURSOR_SIZES = {
     "GolbShotVapourObjectStrideCursor": 0x2E8,
 }
 
+SUB_LAZER_ASSET_CURSOR_SIZES = {
+    "SubLazer": 0xB0,
+    "SubLazerBodyObjectStrideCursor": 0xB0,
+}
+
 TIP_FUNCTION_SYMBOL_UPDATES = (
     ("0x4489e0", "kill_tip_widgets"),
     ("0x448a40", "initialize_tip"),
@@ -480,6 +485,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Weapon",
     "GolbShot",
     "GolbShotVapourObjectStrideCursor",
+    "SubLazerBodyObjectStrideCursor",
     "Player",
     "JetParticleSlot",
     "SubHoverState",
@@ -501,6 +507,7 @@ def ensure_path_analysis_views(
         "PresentationWobbleController",
         "PresentationAnimationObjectStrideCursor",
         "GolbShotVapourObjectStrideCursor",
+        "SubLazerBodyObjectStrideCursor",
         "RuntimeCellStrideAnchor",
         "TrackRowCellSameLaneCursorView",
         "AuthoredSegmentRowPositionCursorView",
@@ -690,6 +697,28 @@ def verify_golb_shot_asset_cursor_sizes(*, target: str) -> dict[str, object]:
         "op": "owner_size_verify",
         "status": "verified",
         "owner_group": "golb_shot_asset_cursor",
+        "owner_sizes": observed,
+    }
+
+
+def verify_sub_lazer_asset_cursor_sizes(*, target: str) -> dict[str, object]:
+    """Fail closed before replaying the SubLazer body-object cursor."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=SUB_LAZER_ASSET_CURSOR_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in SUB_LAZER_ASSET_CURSOR_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"SubLazer asset cursor size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "sub_lazer_asset_cursor",
         "owner_sizes": observed,
     }
 
@@ -975,6 +1004,20 @@ WORLD_INITIALIZER_GOLB_ASSET_CURSOR_USER_VAR_UPDATES = (
         72,
         "golb_shot_vapour_object_cursor",
         "GolbShotVapourObjectStrideCursor*",
+    ),
+)
+
+# The twenty-slot asset loop carries the borrowed Object* inside SubLazer's
+# body and advances it by one exact 0xb0-byte slot while reaching body color
+# and owner_game. The view does not replace SubLazerManager::slots.
+WORLD_INITIALIZER_SUB_LAZER_ASSET_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "RegisterVariableSourceType",
+        4267,
+        73,
+        "sub_lazer_body_object_cursor",
+        "SubLazerBodyObjectStrideCursor*",
     ),
 )
 
@@ -4199,6 +4242,7 @@ def main() -> int:
             verify_presentation_animation_cursor_sizes(target=args.target)
         )
         operations.append(verify_golb_shot_asset_cursor_sizes(target=args.target))
+        operations.append(verify_sub_lazer_asset_cursor_sizes(target=args.target))
         operations.extend(
             apply_symbol_updates(
                 REPO_ROOT,
@@ -4367,6 +4411,7 @@ def main() -> int:
                 *BANNER_INITIALIZER_USER_VAR_UPDATES,
                 *PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES,
                 *WORLD_INITIALIZER_GOLB_ASSET_CURSOR_USER_VAR_UPDATES,
+                *WORLD_INITIALIZER_SUB_LAZER_ASSET_CURSOR_USER_VAR_UPDATES,
                 *NUKE_USER_VAR_UPDATES,
                 *TIP_MANAGER_USER_VAR_UPDATES,
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,

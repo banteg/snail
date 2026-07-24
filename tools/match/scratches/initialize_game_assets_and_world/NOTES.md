@@ -1215,3 +1215,35 @@ between Binary Ninja and IDA made a Ghidra replay unnecessary.
 This is analysis ownership only. No matcher source changed, and the honest
 world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
 existing 36 broad-alignment mismatches.
+
+## 2026-07-24 SubLazer body-object field-stride ownership
+
+The twenty-slot startup loop carries the exact address of
+`SubLazer::body.bod.object`, at slot-relative `+0x24`, instead of a whole
+`SubLazer*`. Positive accesses reach the borrowed body `Object*`, the adjacent
+body color at field-relative `+0x4`, and the `owner_game` backlink at
+field-relative `+0x64`. Each induction step is exactly `0xb0`, matching
+`sizeof(SubLazer)`.
+
+The analysis-only `SubLazerBodyObjectStrideCursor` records that physical
+field-first lifetime without becoming another owner.
+`SubLazerManager::slots[20]` remains the sole storage owner, while the one
+root-catalog laser mesh is borrowed by every slot. The enclosing `Bod` write
+therefore remains visibly offset-based at `-0x24`.
+
+Binary Ninja binds the exact register variable at index 4267/storage 73 and
+renders `body_object`, `body_color`, `owner_game`, and the complete slot
+increment by name. IDA independently binds the non-stack local defined at
+`0x40bd9c` and recovers the same fields and `++cursor`. Both replay lanes fail
+closed on the cursor's exact `0xb0` extent and exact variable identity.
+
+The focused Binary Ninja header also now declares its direct `tColour`
+dependency itself. This closes the sparse replay lane without replacing the
+real color type with anonymous floats or relying on a transitive import.
+Binary Ninja and IDA agree on the owner graph, so a Ghidra replay was
+unnecessary.
+
+This is analysis-only: no matcher source changed, and the honest
+world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
+existing 36 broad-alignment mismatches. No pointer arithmetic or padding was
+added to the matcher.

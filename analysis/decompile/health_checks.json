@@ -9170,6 +9170,44 @@
       ]
     },
     {
+      "name": "bn_world_assets_sub_lazer_field_stride_owner",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "struct SubLazerBodyObjectStrideCursor* sub_lazer_body_object_cursor = &game->subgame.sub_lazers.slots[0].body.bod.object",
+        "set_bod_object(sub_lazer_body_object_cursor - 0x24, game->root_bod_catalog.lazer_model.object)",
+        "sub_lazer_body_object_cursor->body_object->facequads->texture_ref",
+        "sub_lazer_body_object_cursor->owner_game = &game->subgame",
+        "store_color4f(&sub_lazer_body_object_cursor->body_color",
+        "sub_lazer_body_object_cursor = &sub_lazer_body_object_cursor[1]"
+      ],
+      "forbidden_substrings": [
+        "struct Object** edi_13 = &game->subgame.sub_lazers.slots[0].body.bod.object",
+        "set_bod_object(&edi_13[-9]",
+        "store_color4f(&edi_13[1]",
+        "edi_13 = &edi_13[0x2c]"
+      ]
+    },
+    {
+      "name": "ida_world_assets_sub_lazer_field_stride_owner",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "struct SubLazerBodyObjectStrideCursor *sub_lazer_body_object_cursor; // edi",
+        "sub_lazer_body_object_cursor = (struct SubLazerBodyObjectStrideCursor *)&game->subgame.sub_lazers.slots[0].body.bod.object;",
+        "(BodBase *)&sub_lazer_body_object_cursor[-1]._stride_tail[36],",
+        "sub_lazer_body_object_cursor->body_object->facequads->texture_ref",
+        "sub_lazer_body_object_cursor->owner_game = &game->subgame;",
+        "store_color4f(&sub_lazer_body_object_cursor->body_color",
+        "++sub_lazer_body_object_cursor;"
+      ],
+      "forbidden_substrings": [
+        "Object **p_object; // edi",
+        "set_bod_object((BodBase *)(p_object - 9)",
+        "*((SubgameRuntime **)p_object + 25) = &game->subgame;",
+        "store_color4f((tColour *)(p_object + 1)",
+        "p_object += 44;"
+      ]
+    },
+    {
       "name": "bn_complete_subgame_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00438700-complete_subgame.c",
       "required_substrings": [

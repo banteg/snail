@@ -849,6 +849,21 @@ typedef struct SubLazer {
     uint8_t _pad_a0[0x10];
 } SubLazer;
 
+/*
+ * Analysis-only field-stride view rooted at
+ * SubLazer::body.bod.object. The world initializer carries that borrowed
+ * Object* while also reaching the adjacent body color and the slot's
+ * owner-game backlink, then advances by one exact 0xb0-byte SubLazer.
+ * SubLazerManager::slots remains the sole owner.
+ */
+typedef struct SubLazerBodyObjectStrideCursor {
+    Object* body_object;
+    tColour body_color;
+    uint8_t _pad_14[0x50];
+    SubgameRuntime* owner_game;
+    uint8_t _stride_tail[0x48];
+} SubLazerBodyObjectStrideCursor;
+
 typedef SubLazer SubLazerSlot;
 
 /* Exact 0x74-byte authored cRSubHealth pickup slot. */

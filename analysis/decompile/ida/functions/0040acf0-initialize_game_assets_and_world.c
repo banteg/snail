@@ -55,10 +55,10 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   TextureRef *v49; // eax
   TextureRefFlags flags; // ecx
   Object *v51; // eax
-  Object **p_object; // edi
+  struct SubLazerBodyObjectStrideCursor *sub_lazer_body_object_cursor; // edi
   TextureRef *v53; // eax
   TextureRefFlags v54; // ecx
-  Object *v55; // ecx
+  Object *body_object; // ecx
   bool v56; // zf
   Object *v57; // eax
   SubgameRuntime **p_owner_game; // edi
@@ -298,7 +298,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   TextureRef *v292; // eax
   TextureRef *v293; // eax
   Object *v294; // eax
-  Object **v295; // eax
+  Object **p_object; // eax
   Object **v296; // esi
   int j; // edi
   Object *v298; // eax
@@ -694,21 +694,23 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   v51 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.lazer_model, v51);
   load_object_definition(path, game->root_bod_catalog.lazer_model.object);
-  p_object = &game->subgame.sub_lazers.slots[0].body.bod.object;
+  sub_lazer_body_object_cursor = (struct SubLazerBodyObjectStrideCursor *)&game->subgame.sub_lazers.slots[0].body.bod.object;
   edge_selectorb = 20;
   do
   {
-    set_bod_object((BodBase *)(p_object - 9), game->root_bod_catalog.lazer_model.object);
-    v53 = (*p_object)->facequads->texture_ref;
+    set_bod_object(
+      (BodBase *)&sub_lazer_body_object_cursor[-1]._stride_tail[36],
+      game->root_bod_catalog.lazer_model.object);
+    v53 = sub_lazer_body_object_cursor->body_object->facequads->texture_ref;
     v54 = v53->flags;
     BYTE1(v54) = ((unsigned __int16)v53->flags >> 8) | 4;
     v53->flags = v54;
-    p_object[25] = (Object *)&game->subgame;
-    store_color4f((tColour *)(p_object + 1), 1.0, 1.0, 1.0, 0.69999999);
-    v55 = *p_object;
-    p_object += 44;
+    sub_lazer_body_object_cursor->owner_game = &game->subgame;
+    store_color4f(&sub_lazer_body_object_cursor->body_color, 1.0, 1.0, 1.0, 0.69999999);
+    body_object = sub_lazer_body_object_cursor->body_object;
+    ++sub_lazer_body_object_cursor;
     v56 = edge_selectorb == 1;
-    v55->blend_mode = 9;
+    body_object->blend_mode = 9;
     --edge_selectorb;
   }
   while ( !v56 );
@@ -3061,13 +3063,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.barrier.bod.object->blend_mode = 7;
   initialize_track_render_cache_manager(&game->subgame.segment_cache);
   edge_selectorj = 0;
-  v295 = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object;
+  p_object = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object;
   do
   {
     for ( orientation = 0; orientation < 4; ++orientation )
     {
       x_offseta = 0;
-      v296 = v295;
+      v296 = p_object;
       do
       {
         for ( j = 0; j < 3; ++j )
@@ -3082,7 +3084,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
         ++x_offseta;
       }
       while ( x_offseta < 3 );
-      v295 = v296;
+      p_object = v296;
     }
     ++edge_selectorj;
   }

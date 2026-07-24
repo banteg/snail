@@ -118,6 +118,11 @@ PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES = {
     "PresentationAnimationObjectStrideCursor": 0x80,
 }
 
+SUB_LAZER_STARTUP_CURSOR_EXPECTED_SIZES = {
+    "SubLazer": 0xB0,
+    "SubLazerBodyObjectStrideCursor": 0xB0,
+}
+
 BANNER_INITIALIZER_USER_VAR_UPDATES = (
     (
         "initialize_game_assets_and_world",
@@ -172,6 +177,21 @@ PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES = (
         -300,
         "top_weapon_animation_object_cursor",
         "PresentationAnimationObjectStrideCursor*",
+    ),
+)
+
+# The twenty-slot startup loop carries SubLazer::body.bod.object in EDI, uses
+# the adjacent body color and owner-game backlink, and advances by the exact
+# 0xb0-byte SubLazer stride. Keep the field-first lifetime explicit without
+# replacing SubLazerManager::slots as the owning array.
+SUB_LAZER_STARTUP_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "RegisterVariableSourceType",
+        4267,
+        73,
+        "sub_lazer_body_object_cursor",
+        "SubLazerBodyObjectStrideCursor*",
     ),
 )
 
@@ -570,6 +590,7 @@ def main() -> int:
                 "BannerPool",
                 "BannerInitStrideView",
                 "PresentationAnimationObjectStrideCursor",
+                "SubLazerBodyObjectStrideCursor",
                 "ParcelState",
                 "Parcel",
                 "ParcelManager",
@@ -647,6 +668,30 @@ def main() -> int:
             "op": "owner_size_verify",
             "status": "verified",
             "owner_sizes": presentation_animation_cursor_sizes,
+        }
+    )
+    sub_lazer_startup_cursor_sizes = {
+        name: current_struct_size(REPO_ROOT, target=args.target, struct_name=name)
+        for name in SUB_LAZER_STARTUP_CURSOR_EXPECTED_SIZES
+    }
+    sub_lazer_startup_cursor_size_mismatches = {
+        name: {
+            "expected": expected,
+            "observed": sub_lazer_startup_cursor_sizes[name],
+        }
+        for name, expected in SUB_LAZER_STARTUP_CURSOR_EXPECTED_SIZES.items()
+        if sub_lazer_startup_cursor_sizes[name] != expected
+    }
+    if sub_lazer_startup_cursor_size_mismatches:
+        raise RuntimeError(
+            "refusing SubLazer startup cursor replay with size mismatches: "
+            f"{sub_lazer_startup_cursor_size_mismatches!r}"
+        )
+    operations.append(
+        {
+            "op": "owner_size_verify",
+            "status": "verified",
+            "owner_sizes": sub_lazer_startup_cursor_sizes,
         }
     )
     operations.extend(
@@ -732,6 +777,7 @@ def main() -> int:
             updates=(
                 *BANNER_INITIALIZER_USER_VAR_UPDATES,
                 *PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES,
+                *SUB_LAZER_STARTUP_CURSOR_USER_VAR_UPDATES,
             ),
         )
     )

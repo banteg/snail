@@ -50,6 +50,13 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
+typedef struct tColour {
+    float r;
+    float g;
+    float b;
+    float a;
+} tColour;
+
 /* Keep the narrow Binary Ninja import independently declarable. */
 typedef struct ContactTargetObject {
     void* vtable;
@@ -264,6 +271,20 @@ typedef struct PresentationAnimationObjectStrideCursor {
     Object* object;
     uint8_t slot_stride_tail[0x7c];
 } PresentationAnimationObjectStrideCursor;
+
+/*
+ * Analysis-only field-stride view rooted at
+ * SubLazer::body.bod.object. The world initializer reaches the adjacent body
+ * color and owner-game backlink before advancing by one exact 0xb0-byte slot.
+ * This narrow replay header declares its direct tColour dependency above.
+ */
+typedef struct SubLazerBodyObjectStrideCursor {
+    Object* body_object;
+    tColour body_color;
+    uint8_t _pad_14[0x50];
+    SubgameRuntime* owner_game;
+    uint8_t _stride_tail[0x48];
+} SubLazerBodyObjectStrideCursor;
 
 #define SUB_SOLUTION_STRIDE 0x1fac0
 #define SUB_SOLUTION_PLAYER_NAME_SIZE 0x14
