@@ -1288,3 +1288,35 @@ This is analysis-only: no matcher source changed, and the honest
 world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
 existing 36 broad-alignment mismatches. No pointer arithmetic or padding was
 added to the matcher.
+
+## 2026-07-24 Salt owner-game field-stride ownership
+
+The forty-slot startup loop carries the exact address of
+`Salt::owner_game`, at slot-relative `+0x88`, instead of a whole `Salt*`.
+Fixed negative byte offsets reach the enclosing body at `-0x88`, its color at
+`-0x60`, its borrowed `Object*` at `-0x64`, and its transform at `-0x50`.
+Each induction step is exactly `0x98`, matching `sizeof(Salt)`.
+
+The analysis-only `SaltOwnerGameStrideCursor` records that physical
+field-first lifetime without becoming another owner. `SaltManager::slots[40]`
+remains the sole storage owner, while every slot borrows the one root-catalog
+salt mesh. The cursor tail deliberately aliases the remainder of the current
+slot and the following slot's prefix; it owns neither.
+
+Binary Ninja binds the exact EDI register variable at index 4417/storage 73
+and renders the `owner_game` write plus the complete slot increment by name.
+IDA independently binds the same non-stack EDI local defined at `0x40be32`;
+its negative field accesses resolve to the measured enclosing-body offsets
+and it renders the induction as `++salt_owner_game_cursor`. Both replay lanes
+fail closed on the cursor's exact `0x98` extent and exact variable identity.
+
+The canonical IDA replay also now treats a Hex-Rays `struct Name *` spelling
+as equivalent to its parsed typedef spelling `Name *` when comparing locals.
+That closes an observed idempotence gap without weakening the exact function,
+definition-address, or storage-class checks.
+
+Binary Ninja and IDA agree on the owner graph, so a Ghidra replay was
+unnecessary. This is analysis-only: no matcher source changed, and the honest
+world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
+existing 36 broad-alignment mismatches. No pointer arithmetic or padding was
+added to the matcher.

@@ -286,6 +286,18 @@ typedef struct SubLazerBodyObjectStrideCursor {
     uint8_t _stride_tail[0x48];
 } SubLazerBodyObjectStrideCursor;
 
+/*
+ * Analysis-only field-first view for the salt startup loop. Native carries
+ * Salt::owner_game, uses fields behind that address through fixed negative
+ * offsets, and advances by the complete 0x98-byte Salt stride. The tail
+ * crosses the rest of the current slot and the next slot's prefix; SaltManager
+ * remains the sole owner.
+ */
+typedef struct SaltOwnerGameStrideCursor {
+    SubgameRuntime* owner_game;
+    uint8_t _stride_tail[0x94];
+} SaltOwnerGameStrideCursor;
+
 #define SUB_SOLUTION_STRIDE 0x1fac0
 #define SUB_SOLUTION_PLAYER_NAME_SIZE 0x14
 #define SUB_SOLUTION_RUN_RECORD_COUNT 21600

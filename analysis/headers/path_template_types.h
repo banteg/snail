@@ -817,6 +817,17 @@ typedef struct Salt {
     uint8_t _pad_95[0x03];
 } Salt;
 
+/*
+ * Analysis-only field-first view for the salt startup loop. The physical
+ * pointer begins at Salt::owner_game and advances by one exact 0x98-byte
+ * manager slot. The tail aliases the remainder of the current Salt and the
+ * following slot's prefix; it owns neither slot.
+ */
+typedef struct SaltOwnerGameStrideCursor {
+    SubgameRuntime* owner_game;
+    uint8_t _stride_tail[0x94];
+} SaltOwnerGameStrideCursor;
+
 typedef Salt SaltHazardSlot;
 
 /*

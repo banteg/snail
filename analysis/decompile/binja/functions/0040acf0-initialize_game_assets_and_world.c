@@ -317,15 +317,15 @@
 0040be04        do while (cond:1_1)
 0040be17        set_bod_object(&game->root_bod_catalog.salt_model.vtable, add_object_to_list(&g_object_list))
 0040be2c        load_x_mesh(&game->directx_loader, "salt.x", game->root_bod_catalog.salt_model.object, 1)
-0040be31        struct SubgameRuntime** edi_14 = &game->subgame.salt_hazards.slots[0].owner_game
+0040be31        struct SaltOwnerGameStrideCursor* salt_owner_game_cursor = &game->subgame.salt_hazards.slots[0].owner_game
 0040be37        int32_t var_128_3 = 0x28
 0040be96        bool cond:2_1
-0040be4c        set_bod_object(&edi_14[-0x22], game->root_bod_catalog.salt_model.object)
-0040be6e        (edi_14 - 0x3cbf60)->subgame.salt_hazards.slots[0].owner_game = &game->subgame
-0040be70        store_color4f(&edi_14[-0x18], 1f, 1f, 1f, 0.899999976f)
-0040be78        (edi_14 - 0x3cbf60)->subgame.salt_hazards.slots[0].body.bod.object->blend_mode = 0xc
-0040be82        set_matrix_identity(&edi_14[-0x14])
-0040be8b        edi_14 = &edi_14[0x26]
+0040be4c        set_bod_object(salt_owner_game_cursor - 0x88, game->root_bod_catalog.salt_model.object)
+0040be6e        salt_owner_game_cursor->owner_game = &game->subgame
+0040be70        store_color4f(salt_owner_game_cursor - 0x60, 1f, 1f, 1f, 0.899999976f)
+0040be78        *(salt_owner_game_cursor->__offset(0xffffffffffffff9c).d + 0x14) = 0xc
+0040be82        set_matrix_identity(salt_owner_game_cursor - 0x50)
+0040be8b        salt_owner_game_cursor = &salt_owner_game_cursor[1]
 0040be91        cond:2_1 = var_128_3 != 1
 0040be92        var_128_3 -= 1
 0040be96        do while (cond:2_1)
@@ -361,16 +361,16 @@
 0040bf85        list_flags_1:1.b |= 2
 0040bf88        game->subgame.track_body_list_head.bod.list_flags = list_flags_1
 0040bf47        report_errorf("List ADD")
-0040bf9a        if (((game->subgame.sub_lazer_list_head.bod.list_flags).w:1.b & 2) == 0)
-0040bfab        game->subgame.sub_lazer_list_head.bod.list_prev = &game->subgame.track_body_list_head
-0040bfb1        game->subgame.sub_lazer_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next
-0040bfb4        game->subgame.track_body_list_head.bod.list_next = &game->subgame.sub_lazer_list_head
-0040bfb7        struct BodNode* list_next_7 = game->subgame.sub_lazer_list_head.bod.list_next
+0040bf9a        if (((game->subgame.barrier_sub_lazer_list_head.bod.list_flags).w:1.b & 2) == 0)
+0040bfab        game->subgame.barrier_sub_lazer_list_head.bod.list_prev = &game->subgame.track_body_list_head
+0040bfb1        game->subgame.barrier_sub_lazer_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next
+0040bfb4        game->subgame.track_body_list_head.bod.list_next = &game->subgame.barrier_sub_lazer_list_head
+0040bfb7        struct BodNode* list_next_7 = game->subgame.barrier_sub_lazer_list_head.bod.list_next
 0040bfbc        if (list_next_7 != 0)
-0040bfbe        list_next_7->list_prev = &game->subgame.sub_lazer_list_head
-0040bfc1        uint32_t list_flags_2 = (&game->subgame.sub_lazer_list_head - 0x3ca1ec)->subgame.sub_lazer_list_head.bod.list_flags
+0040bfbe        list_next_7->list_prev = &game->subgame.barrier_sub_lazer_list_head
+0040bfc1        uint32_t list_flags_2 = (&game->subgame.barrier_sub_lazer_list_head - 0x3ca1ec)->subgame.barrier_sub_lazer_list_head.bod.list_flags
 0040bfc3        list_flags_2:1.b |= 2
-0040bfc6        (&game->subgame.sub_lazer_list_head - 0x3ca1ec)->subgame.sub_lazer_list_head.bod.list_flags = list_flags_2
+0040bfc6        (&game->subgame.barrier_sub_lazer_list_head - 0x3ca1ec)->subgame.barrier_sub_lazer_list_head.bod.list_flags = list_flags_2
 0040bfa1        report_errorf("List ADDafter")
 0040bfd7        if (((game->subgame.salt_hazard_list_head.bod.list_flags).w:1.b & 2) == 0)
 0040bfe8        game->subgame.salt_hazard_list_head.bod.list_prev = &game->subgame.track_body_list_head

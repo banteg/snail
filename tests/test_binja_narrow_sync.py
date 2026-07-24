@@ -8405,6 +8405,90 @@ def test_sub_lazer_asset_cursor_is_field_first_borrowed_and_fail_closed() -> Non
     assert "p_object += 44;" in ida_check["forbidden_substrings"]
 
 
+def test_salt_asset_cursor_is_field_first_borrowed_and_fail_closed() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (
+        repo_root / "tools/match/include/salt_hazard_types.h"
+    ).read_text(encoding="utf-8")
+    narrow_header = (
+        HEADER_DIR / "bn_subgame_runtime_types.h"
+    ).read_text(encoding="utf-8")
+    canonical_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    bn_runtime_sync = (
+        BINJA_DIR / "sync_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    bn_path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runtime_sync = (
+        IDA_DIR / "apply_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "SaltOwnerGameStrideCursor" not in matcher_header
+    assert "Salt slots[40];" in matcher_header
+    for header in (narrow_header, canonical_header):
+        assert "typedef struct SaltOwnerGameStrideCursor {" in header
+        assert "SubgameRuntime* owner_game;" in header
+        assert "uint8_t _stride_tail[0x94];" in header
+        assert "sole owner" in header or "owns neither slot" in header
+
+    for sync in (bn_runtime_sync, bn_path_sync):
+        assert '"SaltOwnerGameStrideCursor": 0x98' in sync
+        assert (
+            '"RegisterVariableSourceType",\n'
+            "        4417,\n"
+            "        73,\n"
+            '        "salt_owner_game_cursor",\n'
+            '        "SaltOwnerGameStrideCursor*"'
+        ) in sync
+    assert "SALT_STARTUP_CURSOR_EXPECTED_SIZES" in bn_runtime_sync
+    assert "SALT_STARTUP_CURSOR_USER_VAR_UPDATES" in bn_runtime_sync
+    assert "WORLD_INITIALIZER_SALT_ASSET_CURSOR_USER_VAR_UPDATES" in bn_path_sync
+
+    assert "SALT_OWNER_GAME_CURSOR_EXPECTED_SIZE = 0x98" in ida_runtime_sync
+    assert "SALT_STARTUP_CURSOR_LVAR" in ida_runtime_sync
+    assert '"definition_address": 0x40BE32' in ida_runtime_sync
+    assert '"target_name": "salt_owner_game_cursor"' in ida_runtime_sync
+    assert (
+        '"target_struct_name": "SaltOwnerGameStrideCursor"' in ida_runtime_sync
+    )
+    assert "WORLD_INITIALIZER_SALT_ASSET_LVAR_SPECS" in ida_path_sync
+    assert "def _normalize_lvar_type_text(" in ida_path_sync
+    assert (
+        "_normalize_lvar_type_text(str(candidate.type()))"
+        in ida_path_sync
+    )
+    assert (
+        '"SaltOwnerGameStrideCursor *salt_owner_game_cursor;",\n'
+        "        0x40BE32,\n"
+        "        None,"
+    ) in ida_path_sync
+
+    health = json.loads(
+        (
+            repo_root / "analysis/decompile/health_checks.json"
+        ).read_text(encoding="utf-8")
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    bn_check = checks["bn_world_assets_salt_owner_game_field_stride_owner"]
+    ida_check = checks["ida_world_assets_salt_owner_game_field_stride_owner"]
+    assert (
+        "salt_owner_game_cursor->owner_game = &game->subgame"
+        in bn_check["required_substrings"]
+    )
+    assert "edi_14 = &edi_14[0x26]" in bn_check["forbidden_substrings"]
+    assert (
+        "(BodBase *)&salt_owner_game_cursor[-1]._stride_tail[12]"
+        in ida_check["required_substrings"]
+    )
+    assert "p_owner_game += 38;" in ida_check["forbidden_substrings"]
+
+
 def test_game_player_initializer_stride_view_is_borrowed_and_fail_closed() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (repo_root / "tools/match/include/game_root.h").read_text(

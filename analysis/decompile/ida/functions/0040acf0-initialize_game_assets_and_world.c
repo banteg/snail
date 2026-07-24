@@ -55,13 +55,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   TextureRef *v49; // eax
   TextureRefFlags flags; // ecx
   Object *v51; // eax
-  struct SubLazerBodyObjectStrideCursor *sub_lazer_body_object_cursor; // edi
+  SubLazerBodyObjectStrideCursor *sub_lazer_body_object_cursor; // edi
   TextureRef *v53; // eax
   TextureRefFlags v54; // ecx
   Object *body_object; // ecx
   bool v56; // zf
   Object *v57; // eax
-  SubgameRuntime **p_owner_game; // edi
+  SaltOwnerGameStrideCursor *salt_owner_game_cursor; // edi
   int32_t i; // edi
   Object *v60; // eax
   BodBase *p_track_body_list_head; // edi
@@ -694,7 +694,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   v51 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.lazer_model, v51);
   load_object_definition(path, game->root_bod_catalog.lazer_model.object);
-  sub_lazer_body_object_cursor = (struct SubLazerBodyObjectStrideCursor *)&game->subgame.sub_lazers.slots[0].body.bod.object;
+  sub_lazer_body_object_cursor = (SubLazerBodyObjectStrideCursor *)&game->subgame.sub_lazers.slots[0].body.bod.object;
   edge_selectorb = 20;
   do
   {
@@ -717,16 +717,16 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   v57 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.salt_model, v57);
   load_x_mesh(&game->directx_loader, aSaltX, game->root_bod_catalog.salt_model.object, 1);
-  p_owner_game = &game->subgame.salt_hazards.slots[0].owner_game;
+  salt_owner_game_cursor = (SaltOwnerGameStrideCursor *)&game->subgame.salt_hazards.slots[0].owner_game;
   edge_selectorc = 40;
   do
   {
-    set_bod_object((BodBase *)(p_owner_game - 34), game->root_bod_catalog.salt_model.object);
-    *p_owner_game = &game->subgame;
-    store_color4f((tColour *)p_owner_game - 6, 1.0, 1.0, 1.0, 0.89999998);
-    (*(p_owner_game - 25))->sub_pause.options_widget = (FrontendWidget *)12;
-    set_matrix_identity((TransformMatrix *)(p_owner_game - 20));
-    p_owner_game += 38;
+    set_bod_object((BodBase *)&salt_owner_game_cursor[-1]._stride_tail[12], game->root_bod_catalog.salt_model.object);
+    salt_owner_game_cursor->owner_game = &game->subgame;
+    store_color4f((tColour *)&salt_owner_game_cursor[-1]._stride_tail[52], 1.0, 1.0, 1.0, 0.89999998);
+    *(_DWORD *)(*(_DWORD *)&salt_owner_game_cursor[-1]._stride_tail[48] + 20) = 12;
+    set_matrix_identity((TransformMatrix *)&salt_owner_game_cursor[-1]._stride_tail[68]);
+    ++salt_owner_game_cursor;
     --edge_selectorc;
   }
   while ( edge_selectorc );

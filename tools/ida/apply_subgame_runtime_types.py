@@ -45,6 +45,7 @@ SALT_STATE_CURSOR_EXPECTED_SIZE = 0x98
 SALT_STATE_CURSOR_EXPECTED_MEMBERS = (
     (0x00, 4, "state", "SaltState"),
 )
+SALT_OWNER_GAME_CURSOR_EXPECTED_SIZE = 0x98
 
 SUB_LAZER_OWNER_EXPECTED_SIZE = 0xB0
 SUB_LAZER_MANAGER_EXPECTED_SIZE = 0xDC0
@@ -205,6 +206,21 @@ SUB_LAZER_STARTUP_CURSOR_LVAR = {
     },
     "target_name": "sub_lazer_body_object_cursor",
     "target_struct_name": "SubLazerBodyObjectStrideCursor",
+}
+
+SALT_STARTUP_CURSOR_LVAR = {
+    "selector": "initialize_game_assets_and_world",
+    "definition_address": 0x40BE32,
+    "accepted_names": {
+        "p_owner_game",
+        "salt_owner_game_cursor",
+    },
+    "accepted_types": {
+        "SubgameRuntime **",
+        "SaltOwnerGameStrideCursor *",
+    },
+    "target_name": "salt_owner_game_cursor",
+    "target_struct_name": "SaltOwnerGameStrideCursor",
 }
 
 
@@ -581,6 +597,8 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "tColour body_color;",
     "SubgameRuntime* owner_game;",
     "uint8_t _stride_tail[0x48];",
+    "typedef struct SaltOwnerGameStrideCursor {",
+    "uint8_t _stride_tail[0x94];",
 )
 
 EXPECTED_PARCEL_OWNER_SIZES = {
@@ -1649,6 +1667,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
     sub_lazer_body_object_cursor_size = _named_struct_size(
         "SubLazerBodyObjectStrideCursor"
     )
+    salt_owner_game_cursor_size = _named_struct_size(
+        "SaltOwnerGameStrideCursor"
+    )
     size_failures = [
         {
             "selector": name,
@@ -1693,6 +1714,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "observed": sub_lazer_body_object_cursor_size,
             }
         )
+    if salt_owner_game_cursor_size != SALT_OWNER_GAME_CURSOR_EXPECTED_SIZE:
+        size_failures.append(
+            {
+                "selector": "SaltOwnerGameStrideCursor",
+                "reason": "owner_size_mismatch",
+                "expected": SALT_OWNER_GAME_CURSOR_EXPECTED_SIZE,
+                "observed": salt_owner_game_cursor_size,
+            }
+        )
     if parse_errors or size_failures:
         print(
             json.dumps(
@@ -1708,6 +1738,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "sub_lazer_body_object_cursor_size": (
                         sub_lazer_body_object_cursor_size
                     ),
+                    "salt_owner_game_cursor_size": salt_owner_game_cursor_size,
                     "failed": size_failures,
                 },
                 indent=2,
@@ -1897,6 +1928,26 @@ def _sync_types(header_path: pathlib.Path) -> int:
     else:
         unchanged += 1
 
+    salt_startup_cursor_lvar = _sync_allocator_lvar(
+        selector=str(SALT_STARTUP_CURSOR_LVAR["selector"]),
+        definition_address=int(SALT_STARTUP_CURSOR_LVAR["definition_address"]),
+        accepted_names=set(SALT_STARTUP_CURSOR_LVAR["accepted_names"]),
+        accepted_types=set(SALT_STARTUP_CURSOR_LVAR["accepted_types"]),
+        target_name=str(SALT_STARTUP_CURSOR_LVAR["target_name"]),
+        target_struct_name=str(SALT_STARTUP_CURSOR_LVAR["target_struct_name"]),
+    )
+    if salt_startup_cursor_lvar.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "initialize_game_assets_and_world",
+                "salt_startup_cursor_lvar": salt_startup_cursor_lvar,
+            }
+        )
+    elif salt_startup_cursor_lvar.get("status") == "applied":
+        applied += 1
+    else:
+        unchanged += 1
+
     garbage_allocator_lvars = {}
     for (
         result_name,
@@ -2060,6 +2111,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "sub_lazer_body_object_cursor_size": (
                     sub_lazer_body_object_cursor_size
                 ),
+                "salt_owner_game_cursor_size": salt_owner_game_cursor_size,
                 "time_trial_owner_readback": time_trial_owner_readback,
                 "salt_owner_readback": salt_owner_readback,
                 "sub_lazer_owner_readback": sub_lazer_owner_readback,
@@ -2089,6 +2141,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "SubLazerManager": _named_struct_size("SubLazerManager"),
                     "SubLazerBodyObjectStrideCursor": _named_struct_size(
                         "SubLazerBodyObjectStrideCursor"
+                    ),
+                    "SaltOwnerGameStrideCursor": _named_struct_size(
+                        "SaltOwnerGameStrideCursor"
                     ),
                     "SubGarbage": _named_struct_size("SubGarbage"),
                     "SubGarbagePool": _named_struct_size("SubGarbagePool"),
@@ -2127,6 +2182,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     presentation_animation_cursor_lvars
                 ),
                 "sub_lazer_startup_cursor_lvar": sub_lazer_startup_cursor_lvar,
+                "salt_startup_cursor_lvar": salt_startup_cursor_lvar,
                 "missing": missing,
                 "failed": failed,
             },

@@ -93,6 +93,11 @@ SUB_LAZER_ASSET_CURSOR_SIZES = {
     "SubLazerBodyObjectStrideCursor": 0xB0,
 }
 
+SALT_ASSET_CURSOR_SIZES = {
+    "Salt": 0x98,
+    "SaltOwnerGameStrideCursor": 0x98,
+}
+
 TIP_FUNCTION_SYMBOL_UPDATES = (
     ("0x4489e0", "kill_tip_widgets"),
     ("0x448a40", "initialize_tip"),
@@ -486,6 +491,7 @@ REQUIRED_HEADER_STRUCTS = (
     "GolbShot",
     "GolbShotVapourObjectStrideCursor",
     "SubLazerBodyObjectStrideCursor",
+    "SaltOwnerGameStrideCursor",
     "Player",
     "JetParticleSlot",
     "SubHoverState",
@@ -508,6 +514,7 @@ def ensure_path_analysis_views(
         "PresentationAnimationObjectStrideCursor",
         "GolbShotVapourObjectStrideCursor",
         "SubLazerBodyObjectStrideCursor",
+        "SaltOwnerGameStrideCursor",
         "RuntimeCellStrideAnchor",
         "TrackRowCellSameLaneCursorView",
         "AuthoredSegmentRowPositionCursorView",
@@ -719,6 +726,28 @@ def verify_sub_lazer_asset_cursor_sizes(*, target: str) -> dict[str, object]:
         "op": "owner_size_verify",
         "status": "verified",
         "owner_group": "sub_lazer_asset_cursor",
+        "owner_sizes": observed,
+    }
+
+
+def verify_salt_asset_cursor_sizes(*, target: str) -> dict[str, object]:
+    """Fail closed before replaying the Salt owner-game field cursor."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=SALT_ASSET_CURSOR_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in SALT_ASSET_CURSOR_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"Salt asset cursor size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "salt_asset_cursor",
         "owner_sizes": observed,
     }
 
@@ -1018,6 +1047,20 @@ WORLD_INITIALIZER_SUB_LAZER_ASSET_CURSOR_USER_VAR_UPDATES = (
         73,
         "sub_lazer_body_object_cursor",
         "SubLazerBodyObjectStrideCursor*",
+    ),
+)
+
+# The forty-slot asset loop carries the Salt::owner_game field in EDI, reaches
+# body fields through fixed negative offsets, and advances by sizeof(Salt).
+# Preserve the physical field-first cursor without replacing SaltManager.
+WORLD_INITIALIZER_SALT_ASSET_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "RegisterVariableSourceType",
+        4417,
+        73,
+        "salt_owner_game_cursor",
+        "SaltOwnerGameStrideCursor*",
     ),
 )
 
@@ -4243,6 +4286,7 @@ def main() -> int:
         )
         operations.append(verify_golb_shot_asset_cursor_sizes(target=args.target))
         operations.append(verify_sub_lazer_asset_cursor_sizes(target=args.target))
+        operations.append(verify_salt_asset_cursor_sizes(target=args.target))
         operations.extend(
             apply_symbol_updates(
                 REPO_ROOT,
@@ -4412,6 +4456,7 @@ def main() -> int:
                 *PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES,
                 *WORLD_INITIALIZER_GOLB_ASSET_CURSOR_USER_VAR_UPDATES,
                 *WORLD_INITIALIZER_SUB_LAZER_ASSET_CURSOR_USER_VAR_UPDATES,
+                *WORLD_INITIALIZER_SALT_ASSET_CURSOR_USER_VAR_UPDATES,
                 *NUKE_USER_VAR_UPDATES,
                 *TIP_MANAGER_USER_VAR_UPDATES,
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,

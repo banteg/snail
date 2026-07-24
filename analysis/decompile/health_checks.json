@@ -9236,13 +9236,15 @@
       "name": "ida_world_assets_sub_lazer_field_stride_owner",
       "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
-        "struct SubLazerBodyObjectStrideCursor *sub_lazer_body_object_cursor; // edi",
-        "sub_lazer_body_object_cursor = (struct SubLazerBodyObjectStrideCursor *)&game->subgame.sub_lazers.slots[0].body.bod.object;",
         "(BodBase *)&sub_lazer_body_object_cursor[-1]._stride_tail[36],",
         "sub_lazer_body_object_cursor->body_object->facequads->texture_ref",
         "sub_lazer_body_object_cursor->owner_game = &game->subgame;",
         "store_color4f(&sub_lazer_body_object_cursor->body_color",
         "++sub_lazer_body_object_cursor;"
+      ],
+      "required_regexes": [
+        "(?:struct )?SubLazerBodyObjectStrideCursor \\*sub_lazer_body_object_cursor; // edi",
+        "sub_lazer_body_object_cursor = \\((?:struct )?SubLazerBodyObjectStrideCursor \\*\\)&game->subgame\\.sub_lazers\\.slots\\[0\\]\\.body\\.bod\\.object;"
       ],
       "forbidden_substrings": [
         "Object **p_object; // edi",
@@ -9250,6 +9252,49 @@
         "*((SubgameRuntime **)p_object + 25) = &game->subgame;",
         "store_color4f((tColour *)(p_object + 1)",
         "p_object += 44;"
+      ]
+    },
+    {
+      "name": "bn_world_assets_salt_owner_game_field_stride_owner",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "struct SaltOwnerGameStrideCursor* salt_owner_game_cursor = &game->subgame.salt_hazards.slots[0].owner_game",
+        "set_bod_object(salt_owner_game_cursor - 0x88, game->root_bod_catalog.salt_model.object)",
+        "salt_owner_game_cursor->owner_game = &game->subgame",
+        "store_color4f(salt_owner_game_cursor - 0x60",
+        "salt_owner_game_cursor->__offset(0xffffffffffffff9c).d + 0x14",
+        "set_matrix_identity(salt_owner_game_cursor - 0x50)",
+        "salt_owner_game_cursor = &salt_owner_game_cursor[1]"
+      ],
+      "forbidden_substrings": [
+        "struct SubgameRuntime** edi_14 = &game->subgame.salt_hazards.slots[0].owner_game",
+        "set_bod_object(&edi_14[-0x22]",
+        "store_color4f(&edi_14[-0x18]",
+        "edi_14 = &edi_14[0x26]",
+        "(edi_14 - 0x3cbf60)->subgame.salt_hazards.slots[0].owner_game"
+      ]
+    },
+    {
+      "name": "ida_world_assets_salt_owner_game_field_stride_owner",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "(BodBase *)&salt_owner_game_cursor[-1]._stride_tail[12]",
+        "salt_owner_game_cursor->owner_game = &game->subgame;",
+        "(tColour *)&salt_owner_game_cursor[-1]._stride_tail[52]",
+        "*(_DWORD *)(*(_DWORD *)&salt_owner_game_cursor[-1]._stride_tail[48] + 20) = 12;",
+        "(TransformMatrix *)&salt_owner_game_cursor[-1]._stride_tail[68]",
+        "++salt_owner_game_cursor;"
+      ],
+      "required_regexes": [
+        "(?:struct )?SaltOwnerGameStrideCursor \\*salt_owner_game_cursor; // edi",
+        "salt_owner_game_cursor = \\((?:struct )?SaltOwnerGameStrideCursor \\*\\)&game->subgame\\.salt_hazards\\.slots\\[0\\]\\.owner_game;"
+      ],
+      "forbidden_substrings": [
+        "SubgameRuntime **p_owner_game; // edi",
+        "(BodBase *)(p_owner_game - 34)",
+        "*p_owner_game = &game->subgame;",
+        "(tColour *)p_owner_game - 6",
+        "p_owner_game += 38;"
       ]
     },
     {

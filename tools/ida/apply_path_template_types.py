@@ -339,6 +339,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
 GOLB_SHOT_EXPECTED_SIZE = 0x2E8
 GOLB_SHOT_ASSET_CURSOR_EXPECTED_SIZE = 0x2E8
 SUB_LAZER_ASSET_CURSOR_EXPECTED_SIZE = 0xB0
+SALT_ASSET_CURSOR_EXPECTED_SIZE = 0x98
 GOLB_SHOT_PREFIX_END = 0x198
 GOLB_SHOT_PREFIX_MEMBERS = (
     (0x000, 0x080, "primary_body", "RenderableBod"),
@@ -362,6 +363,12 @@ SUB_LAZER_ASSET_CURSOR_HEADER_MARKERS = (
     "tColour body_color;",
     "SubgameRuntime* owner_game;",
     "uint8_t _stride_tail[0x48];",
+)
+
+SALT_ASSET_CURSOR_HEADER_MARKERS = (
+    "typedef struct SaltOwnerGameStrideCursor {",
+    "SubgameRuntime* owner_game;",
+    "uint8_t _stride_tail[0x94];",
 )
 
 GOLB_PATH_FOLLOW_DIRECTION_LVAR_DEFINITION = 0x421D22
@@ -733,6 +740,15 @@ WORLD_INITIALIZER_SUB_LAZER_ASSET_LVAR_SPECS = (
         "sub_lazer_body_object_cursor",
         "SubLazerBodyObjectStrideCursor *sub_lazer_body_object_cursor;",
         0x40BD9C,
+        None,
+    ),
+)
+
+WORLD_INITIALIZER_SALT_ASSET_LVAR_SPECS = (
+    (
+        "salt_owner_game_cursor",
+        "SaltOwnerGameStrideCursor *salt_owner_game_cursor;",
+        0x40BE32,
         None,
     ),
 )
@@ -2637,8 +2653,8 @@ def _sync_exact_lvars(
             }
 
         lvar = candidates[0]
-        expected_type = _normalize_type_text(str(local_type))
-        observed_type = _normalize_type_text(str(lvar.type()))
+        expected_type = _normalize_lvar_type_text(str(local_type))
+        observed_type = _normalize_lvar_type_text(str(lvar.type()))
         if lvar.name == expected_name and observed_type == expected_type:
             results.append(
                 {
@@ -2692,7 +2708,8 @@ def _sync_exact_lvars(
             if not candidate.is_arg_var
             and candidate.name == update["expected_name"]
             and candidate.defea == update["definition_address"]
-            and _normalize_type_text(str(candidate.type())) == update["expected_type"]
+            and _normalize_lvar_type_text(str(candidate.type()))
+            == update["expected_type"]
             and (
                 (update["stack_offset"] is None and not candidate.is_stk_var())
                 or (
@@ -3068,6 +3085,12 @@ def _sync_world_initializer_sub_lazer_asset_lvars() -> dict[str, object]:
         WORLD_INITIALIZER_SUB_LAZER_ASSET_LVAR_SPECS,
     )
 
+def _sync_world_initializer_salt_asset_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "initialize_game_assets_and_world",
+        WORLD_INITIALIZER_SALT_ASSET_LVAR_SPECS,
+    )
+
 
 def _sync_remove_subgame_bods_cursor_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
@@ -3280,6 +3303,14 @@ def _normalize_type_text(value: str | None) -> str | None:
     normalized = re.sub(r"\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)", ")", normalized)
     return normalized.strip()
+
+
+def _normalize_lvar_type_text(value: str | None) -> str | None:
+    """Compare Hex-Rays locals without churning equivalent typedef spelling."""
+    normalized = _normalize_type_text(value)
+    if normalized is None:
+        return None
+    return re.sub(r"\bstruct\s+(?=[A-Za-z_]\w*\b)", "", normalized)
 
 
 def _declaration_to_observed_type(selector: str, declaration: str) -> str:
@@ -3519,11 +3550,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in SUB_LAZER_ASSET_CURSOR_HEADER_MARKERS
         if marker not in header_text
     ]
+    missing_salt_asset_cursor_markers = [
+        marker
+        for marker in SALT_ASSET_CURSOR_HEADER_MARKERS
+        if marker not in header_text
+    ]
     if (
         missing_bod_core_owner_markers
         or missing_fringe_owner_markers
         or missing_track_render_cache_owner_markers
         or missing_sub_lazer_asset_cursor_markers
+        or missing_salt_asset_cursor_markers
     ):
         marker_failures = []
         if missing_bod_core_owner_markers:
@@ -3538,6 +3575,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
             marker_failures.append(
                 {"reason": "noncanonical_sub_lazer_asset_cursor_header"}
             )
+        if missing_salt_asset_cursor_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_salt_asset_cursor_header"}
+            )
         print(
             json.dumps(
                 {
@@ -3550,6 +3591,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "missing_sub_lazer_asset_cursor_markers": (
                         missing_sub_lazer_asset_cursor_markers
+                    ),
+                    "missing_salt_asset_cursor_markers": (
+                        missing_salt_asset_cursor_markers
                     ),
                     "failed": marker_failures,
                 },
@@ -3576,6 +3620,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
     )
     sub_lazer_asset_cursor_size = _named_struct_size(
         "SubLazerBodyObjectStrideCursor"
+    )
+    salt_asset_cursor_size = _named_struct_size(
+        "SaltOwnerGameStrideCursor"
     )
     track_row_cell_tile_owner = _named_struct_member_readback("TrackRowCell", 0x3C)
     expected_track_row_cell_tile_owner = {
@@ -3642,6 +3689,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "observed": sub_lazer_asset_cursor_size,
             }
         )
+    if salt_asset_cursor_size != SALT_ASSET_CURSOR_EXPECTED_SIZE:
+        owner_size_failures.append(
+            {
+                "selector": "SaltOwnerGameStrideCursor",
+                "owner_group": "salt_asset_cursor",
+                "reason": "owner_size_mismatch",
+                "expected": SALT_ASSET_CURSOR_EXPECTED_SIZE,
+                "observed": salt_asset_cursor_size,
+            }
+        )
     if track_row_cell_tile_owner != expected_track_row_cell_tile_owner:
         owner_size_failures.append(
             {
@@ -3664,6 +3721,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                     "golb_shot_asset_cursor_size": golb_shot_asset_cursor_size,
                     "sub_lazer_asset_cursor_size": sub_lazer_asset_cursor_size,
+                    "salt_asset_cursor_size": salt_asset_cursor_size,
                     "track_row_cell_tile_owner": track_row_cell_tile_owner,
                     "failed": owner_size_failures,
                 },
@@ -4101,6 +4159,18 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 ),
             }
         )
+    world_initializer_salt_asset_lvars = (
+        _sync_world_initializer_salt_asset_lvars()
+    )
+    if world_initializer_salt_asset_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "initialize_game_assets_and_world",
+                "salt_asset_cursor_lvars": (
+                    world_initializer_salt_asset_lvars
+                ),
+            }
+        )
     remove_subgame_bods_cursor_lvars = _sync_remove_subgame_bods_cursor_lvars()
     if remove_subgame_bods_cursor_lvars.get("status") == "failed":
         failed.append(
@@ -4232,6 +4302,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                 "golb_shot_asset_cursor_size": golb_shot_asset_cursor_size,
                 "sub_lazer_asset_cursor_size": sub_lazer_asset_cursor_size,
+                "salt_asset_cursor_size": salt_asset_cursor_size,
                 "track_row_cell_tile_owner": track_row_cell_tile_owner,
                 "applied": applied,
                 "unchanged": unchanged,
@@ -4277,6 +4348,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 ),
                 "world_initializer_sub_lazer_asset_lvars": (
                     world_initializer_sub_lazer_asset_lvars
+                ),
+                "world_initializer_salt_asset_lvars": (
+                    world_initializer_salt_asset_lvars
                 ),
                 "remove_subgame_bods_cursor_lvars": remove_subgame_bods_cursor_lvars,
                 "spawn_track_ring_lvars": spawn_track_ring_lvars,

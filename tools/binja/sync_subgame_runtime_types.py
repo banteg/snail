@@ -123,6 +123,10 @@ SUB_LAZER_STARTUP_CURSOR_EXPECTED_SIZES = {
     "SubLazerBodyObjectStrideCursor": 0xB0,
 }
 
+SALT_STARTUP_CURSOR_EXPECTED_SIZES = {
+    "SaltOwnerGameStrideCursor": 0x98,
+}
+
 BANNER_INITIALIZER_USER_VAR_UPDATES = (
     (
         "initialize_game_assets_and_world",
@@ -192,6 +196,20 @@ SUB_LAZER_STARTUP_CURSOR_USER_VAR_UPDATES = (
         73,
         "sub_lazer_body_object_cursor",
         "SubLazerBodyObjectStrideCursor*",
+    ),
+)
+
+# The forty-slot startup loop carries Salt::owner_game in EDI and reaches the
+# earlier body fields through fixed negative offsets before advancing by one
+# exact 0x98-byte Salt stride. Keep SaltManager::slots as the owning array.
+SALT_STARTUP_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "RegisterVariableSourceType",
+        4417,
+        73,
+        "salt_owner_game_cursor",
+        "SaltOwnerGameStrideCursor*",
     ),
 )
 
@@ -591,6 +609,7 @@ def main() -> int:
                 "BannerInitStrideView",
                 "PresentationAnimationObjectStrideCursor",
                 "SubLazerBodyObjectStrideCursor",
+                "SaltOwnerGameStrideCursor",
                 "ParcelState",
                 "Parcel",
                 "ParcelManager",
@@ -694,6 +713,30 @@ def main() -> int:
             "owner_sizes": sub_lazer_startup_cursor_sizes,
         }
     )
+    salt_startup_cursor_sizes = {
+        name: current_struct_size(REPO_ROOT, target=args.target, struct_name=name)
+        for name in SALT_STARTUP_CURSOR_EXPECTED_SIZES
+    }
+    salt_startup_cursor_size_mismatches = {
+        name: {
+            "expected": expected,
+            "observed": salt_startup_cursor_sizes[name],
+        }
+        for name, expected in SALT_STARTUP_CURSOR_EXPECTED_SIZES.items()
+        if salt_startup_cursor_sizes[name] != expected
+    }
+    if salt_startup_cursor_size_mismatches:
+        raise RuntimeError(
+            "refusing Salt startup cursor replay with size mismatches: "
+            f"{salt_startup_cursor_size_mismatches!r}"
+        )
+    operations.append(
+        {
+            "op": "owner_size_verify",
+            "status": "verified",
+            "owner_sizes": salt_startup_cursor_sizes,
+        }
+    )
     operations.extend(
         apply_symbol_updates(
             REPO_ROOT,
@@ -778,6 +821,7 @@ def main() -> int:
                 *BANNER_INITIALIZER_USER_VAR_UPDATES,
                 *PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES,
                 *SUB_LAZER_STARTUP_CURSOR_USER_VAR_UPDATES,
+                *SALT_STARTUP_CURSOR_USER_VAR_UPDATES,
             ),
         )
     )
