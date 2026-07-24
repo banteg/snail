@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 8,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 8,
-  "ida_exported": 8,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,36 +17,8 @@
   "strict": false,
   "selected_functions": [
     {
-      "name": "queue_frontend_widget_flag_after_delay",
-      "address": "0x403f60"
-    },
-    {
-      "name": "initialize_border_stack",
-      "address": "0x404350"
-    },
-    {
-      "name": "initialize_frontend_overlay_color_lerp",
-      "address": "0x40ab00"
-    },
-    {
-      "name": "draw_frontend_overlay_color_lerp",
-      "address": "0x40ab40"
-    },
-    {
-      "name": "begin_frontend_fade_out",
-      "address": "0x40abc0"
-    },
-    {
-      "name": "begin_frontend_fade_in",
-      "address": "0x40abe0"
-    },
-    {
-      "name": "update_frontend_transition_overlay",
-      "address": "0x40abf0"
-    },
-    {
-      "name": "activate_landscape_entry",
-      "address": "0x418870"
+      "name": "initialize_game_assets_and_world",
+      "address": "0x40acf0"
     }
   ]
 }

@@ -1080,3 +1080,24 @@ the whole-record callsites; the strict IDA replay now proves the same
 `Viewport[5]` root member and helper prototypes instead of rendering the calls
 through `unknown_00`. No meaning is assigned to that untouched first dword.
 The matcher remains honestly at 80.50%, 5,392/5,411 instructions.
+
+## 2026-07-24 Banner initializer stride ownership
+
+The two-iteration startup loop owns exactly
+`SubgameRuntime::banners.slots[2]`: `sizeof(Banner) == 0x60`, the pool is
+`0xc0`, and the first actor begins at `GameRoot +0x3cd698`. Native VC6 does
+not keep a direct `Banner*`; it carries `game + i * 0x60` and applies the
+absolute root-to-Banner displacement at each access. The analysis-only
+`BannerInitStrideView` records that biased physical cursor without creating a
+second owner or falsely casting the temporary to `Banner*`.
+
+Binary Ninja now resolves the object install, xyz reset, visibility mode,
+phase, and phase step through the embedded `Banner`. IDA independently
+resolves the same fields and the separately strength-reduced
+`owner_game = &game->subgame` backlink. Both views preserve the exact
+`postofficestop.x` producer and `0.006944444` phase step. Their agreement made
+a third Ghidra opinion unnecessary.
+
+This is analysis-only. No matcher source changed, so the honest frontier
+remains 80.50% (5,392/5,411 instructions); no pointer arithmetic was added to
+imitate the compiler schedule.

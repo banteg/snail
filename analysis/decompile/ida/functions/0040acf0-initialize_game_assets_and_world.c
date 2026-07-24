@@ -62,7 +62,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   bool v56; // zf
   Object *v57; // eax
   SubgameRuntime **p_owner_game; // edi
-  int i; // edi
+  int32_t i; // edi
   Object *v60; // eax
   BodBase *p_track_body_list_head; // edi
   BodNode *v62; // ecx
@@ -321,15 +321,15 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   uint32_t *edge_selectora; // [esp+14h] [ebp-128h]
   int32_t edge_selectorb; // [esp+14h] [ebp-128h]
   int32_t edge_selectorc; // [esp+14h] [ebp-128h]
-  char *edge_selectord; // [esp+14h] [ebp-128h]
+  struct BannerInitStrideView *banner_stride_view; // [esp+14h] [ebp-128h]
+  int32_t edge_selectord; // [esp+14h] [ebp-128h]
   int32_t edge_selectore; // [esp+14h] [ebp-128h]
   int32_t edge_selectorf; // [esp+14h] [ebp-128h]
   int32_t edge_selectorg; // [esp+14h] [ebp-128h]
   int32_t edge_selectorh; // [esp+14h] [ebp-128h]
   int32_t edge_selectori; // [esp+14h] [ebp-128h]
-  int32_t edge_selectorj; // [esp+14h] [ebp-128h]
-  int edge_selectork; // [esp+14h] [ebp-128h]
-  char *edge_selectorl; // [esp+14h] [ebp-128h]
+  int edge_selectorj; // [esp+14h] [ebp-128h]
+  char *edge_selectork; // [esp+14h] [ebp-128h]
   Color4f color; // [esp+18h] [ebp-124h] BYREF
   int32_t orientation; // [esp+28h] [ebp-114h]
   TransformMatrix transform; // [esp+2Ch] [ebp-110h] BYREF
@@ -338,13 +338,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   TransformMatrix v333; // [esp+FCh] [ebp-40h] BYREF
 
   noop_this_constructor(self);
-  store_color4f((tColour *)&game->fog_color, 1.0, 1.0, 1.0, 1.0);
+  store_color4f(&game->fog_color, 1.0, 1.0, 1.0, 1.0);
   game->fog_density = 1.0;
   game->fog_start = 30.0;
   game->fog_end = 50.0;
   game->fog_enabled = 1;
   game->player_count = 2;
-  initialize_border_stack(&game->fade.state);
+  initialize_border_stack((BorderStack *)&game->fade);
   game->frontend_link_latch = 0;
   game->subgame.subgame_pause_gate = 0;
   initialize_cheat(&g_cheat_state);
@@ -730,9 +730,9 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   while ( edge_selectorc );
   for ( i = 0; i < 2; ++i )
   {
-    edge_selectord = (char *)game + 96 * i;
+    banner_stride_view = (struct BannerInitStrideView *)((char *)game + 96 * i);
     v60 = add_object_to_list(&g_object_list);
-    set_bod_object((BodBase *)(edge_selectord + 3987096), v60);
+    set_bod_object(&banner_stride_view->banner.bod, v60);
     if ( i )
     {
       if ( i == 1 )
@@ -742,13 +742,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     {
       load_x_mesh(&game->directx_loader, aPostofficestop, game->subgame.banners.slots[0].bod.object, 1);
     }
-    *((_DWORD *)edge_selectord + 996780) = 0;
-    *((_DWORD *)edge_selectord + 996779) = 0;
-    *((_DWORD *)edge_selectord + 996778) = 0;
+    banner_stride_view->banner.bod.position.z = 0.0;
+    banner_stride_view->banner.bod.position.y = 0.0;
+    banner_stride_view->banner.bod.position.x = 0.0;
     game->subgame.banners.slots[i].owner_game = &game->subgame;
-    *((_DWORD *)edge_selectord + 996788) = i;
-    *((_DWORD *)edge_selectord + 996796) = 0;
-    *((_DWORD *)edge_selectord + 996797) = 1004768824;
+    banner_stride_view->banner.visibility_mode = i;
+    banner_stride_view->banner.phase = 0.0;
+    banner_stride_view->banner.phase_step = 0.006944444;
   }
   p_track_body_list_head = &game->subgame.track_body_list_head;
   if ( (game->subgame.track_body_list_head.bod.list_flags & 0x200) != 0 )
@@ -2744,7 +2744,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433D46 + 6), v249);
   load_x_mesh(&game->directx_loader, aTurbohotspotsX, *(Object **)((char *)&game->vtable + (_DWORD)&loc_433D6F + 1), 2);
   build_snail_hotspots((Snail *)((char *)game + (_DWORD)&loc_4326FF + 1));
-  edge_selectore = 10;
+  edge_selectord = 10;
   x_offseta = (Object **)((char *)&loc_432870 + (_DWORD)game);
   do
   {
@@ -2754,9 +2754,9 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     x_offseta += 32;
     v250->distort.z_wave = 0.0;
     (*(x_offseta - 32))->distort.y_squash = 0.0;
-    v56 = edge_selectore == 1;
+    v56 = edge_selectord == 1;
     (*(x_offseta - 32))->distort.xyz_scale = 0.0;
-    --edge_selectore;
+    --edge_selectord;
   }
   while ( !v56 );
   (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4))[4] |= 4u;
@@ -2776,7 +2776,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   v253 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433AB0 + (_DWORD)game), v253);
   load_x_animation_clip(&game->directx_loader, aJetpackDraw000, *(Object **)((char *)&loc_433AD4 + (_DWORD)game));
-  edge_selectorf = 2;
+  edge_selectore = 2;
   x_offsetb = (Object **)((char *)&loc_433A54 + (_DWORD)game);
   do
   {
@@ -2786,9 +2786,9 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     x_offsetb += 32;
     v254->distort.z_wave = 0.0;
     (*(x_offsetb - 32))->distort.y_squash = 0.0;
-    v56 = edge_selectorf == 1;
+    v56 = edge_selectore == 1;
     (*(x_offsetb - 32))->distort.xyz_scale = 0.0;
-    --edge_selectorf;
+    --edge_selectore;
   }
   while ( !v56 );
   (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2))[4] |= 4u;
@@ -2829,7 +2829,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->directx_loader,
     aLaserleftDraw0,
     *(Object **)((char *)&game->vtable + (_DWORD)&loc_4330BF + 1));
-  edge_selectorg = 5;
+  edge_selectorf = 5;
   x_offsetc = (Object **)((char *)game + (_DWORD)&loc_432EBF + 1);
   do
   {
@@ -2839,9 +2839,9 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     x_offsetc += 32;
     v261->distort.z_wave = 0.0;
     (*(x_offsetc - 32))->distort.y_squash = 0.0;
-    v56 = edge_selectorg == 1;
+    v56 = edge_selectorf == 1;
     (*(x_offsetc - 32))->distort.xyz_scale = 0.0;
-    --edge_selectorg;
+    --edge_selectorf;
   }
   while ( !v56 );
   (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3))[4] |= 4u;
@@ -2879,7 +2879,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->directx_loader,
     aLaserrightDraw,
     *(Object **)((char *)&game->vtable + (_DWORD)&loc_433499 + 3));
-  edge_selectorh = 5;
+  edge_selectorg = 5;
   x_offsetd = (Object **)((char *)game + (_DWORD)&loc_43329B + 1);
   do
   {
@@ -2889,9 +2889,9 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     x_offsetd += 32;
     v268->distort.z_wave = 0.0;
     (*(x_offsetd - 32))->distort.y_squash = 0.0;
-    v56 = edge_selectorh == 1;
+    v56 = edge_selectorg == 1;
     (*(x_offsetd - 32))->distort.xyz_scale = 0.0;
-    --edge_selectorh;
+    --edge_selectorg;
   }
   while ( !v56 );
   *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + (_DWORD)game) + 16) |= 4u;
@@ -2935,7 +2935,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->directx_loader,
     aRocketlauncher_0,
     *(Object **)((char *)&game->vtable + (_DWORD)&loc_433877 + 1));
-  edge_selectori = 5;
+  edge_selectorh = 5;
   x_offsete = (Object **)((char *)game + (_DWORD)&loc_433677 + 1);
   do
   {
@@ -2945,9 +2945,9 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     x_offsete += 32;
     v275->distort.z_wave = 0.0;
     (*(x_offsete - 32))->distort.y_squash = 0.0;
-    v56 = edge_selectori == 1;
+    v56 = edge_selectorh == 1;
     (*(x_offsete - 32))->distort.xyz_scale = 0.0;
-    --edge_selectori;
+    --edge_selectorh;
   }
   while ( !v56 );
   (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5))[4] |= 4u;
@@ -2978,7 +2978,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4302E3 + 1), v277);
   load_x_mesh(&game->directx_loader, aRocketBase000X, *(Object **)((char *)&game->vtable + (_DWORD)&loc_430306 + 2), 1);
   v278 = (char *)game + (_DWORD)&loc_43026E + 2;
-  edge_selectorj = 12;
+  edge_selectori = 12;
   do
   {
     v279 = add_object_to_list(&g_object_list);
@@ -2989,9 +2989,9 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     initialize_vapour((Vapour *)(v278 - 36), *(Object **)v278, 0.16);
     set_bod_object((BodBase *)(v278 + 116), *(Object **)((char *)&game->vtable + (_DWORD)&loc_430306 + 2));
     v278 += 744;
-    --edge_selectorj;
+    --edge_selectori;
   }
-  while ( edge_selectorj );
+  while ( edge_selectori );
   v280 = get_or_create_texture_ref(&g_texture_refs, aObjectsVapourl_0, nullptr, 0);
   v281 = v280->flags;
   BYTE1(v281) = ((unsigned __int16)v280->flags >> 8) | 4;
@@ -3048,7 +3048,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   store_color4f(&game->subgame.barrier.bod.color, 1.0, 1.0, 1.0, 0.80000001);
   game->subgame.barrier.bod.object->blend_mode = 7;
   initialize_track_render_cache_manager(&game->subgame.segment_cache);
-  edge_selectork = 0;
+  edge_selectorj = 0;
   v295 = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object;
   do
   {
@@ -3062,7 +3062,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
         {
           v298 = add_object_to_list(&g_object_list);
           set_bod_object((BodBase *)(v296 - 9), v298);
-          initialize_backdrop_tile_quad(*v296, edge_selectork, orientation, x_offsetf - 1, j - 1, aObjectsUnivers_1);
+          initialize_backdrop_tile_quad(*v296, edge_selectorj, orientation, x_offsetf - 1, j - 1, aObjectsUnivers_1);
           v299 = *v296;
           v296 += 14;
           v299->blend_mode = 5;
@@ -3072,9 +3072,9 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
       while ( x_offsetf < 3 );
       v295 = v296;
     }
-    ++edge_selectork;
+    ++edge_selectorj;
   }
-  while ( edge_selectork < 8 );
+  while ( edge_selectorj < 8 );
   v300 = get_or_create_texture_ref(&g_texture_refs, aObjectsUnivers_1, nullptr, 0);
   v301 = v300->flags;
   p_input = &game->game_inputs[0].input;
@@ -3092,13 +3092,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   while ( v303 < 2 );
   for ( x_offsetg = 0; x_offsetg < game->player_count; ++x_offsetg )
   {
-    edge_selectorl = (char *)game + 504 * x_offsetg;
-    set_matrix_identity((TransformMatrix *)(edge_selectorl + 348));
-    set_matrix_identity((TransformMatrix *)(edge_selectorl + 508));
-    *((_DWORD *)edge_selectorl + 161) = 1121714176;
-    *((_DWORD *)edge_selectorl + 163) = &game->game_inputs[x_offsetg];
+    edge_selectork = (char *)game + 504 * x_offsetg;
+    set_matrix_identity((TransformMatrix *)(edge_selectork + 348));
+    set_matrix_identity((TransformMatrix *)(edge_selectork + 508));
+    *((_DWORD *)edge_selectork + 161) = 1121714176;
+    *((_DWORD *)edge_selectork + 163) = &game->game_inputs[x_offsetg];
     qmemcpy(
-      edge_selectorl + 348,
+      edge_selectork + 348,
       initialize_matrix_from_values(
         &v333,
         0.073343001,
@@ -3118,14 +3118,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
         4.477407,
         1.0),
       0x40u);
-    initialize_frontend_overlay_color_lerp((_DWORD *)edge_selectorl + 170, 0x1000000);
-    release_mouse_cursor((MouseCursorState *)(edge_selectorl + 656));
-    edge_selectorl[676] = 0;
+    initialize_frontend_overlay_color_lerp((FrontendOverlayColorLerp *)(edge_selectork + 680), 0x1000000);
+    release_mouse_cursor((MouseCursorState *)(edge_selectork + 656));
+    edge_selectork[676] = 0;
     if ( !x_offsetg )
       game->players[0].frontend_state = 12;
-    edge_selectorl[781] = 0;
-    *((_DWORD *)edge_selectorl + 196) = 0;
-    rstrcpy_checked_ascii(edge_selectorl + 420, g_runtime_config.last_entered_player_name);
+    edge_selectork[781] = 0;
+    *((_DWORD *)edge_selectork + 196) = 0;
+    rstrcpy_checked_ascii(edge_selectork + 420, g_runtime_config.last_entered_player_name);
   }
   initialize_high_score_tables((SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position
                                               + (_DWORD)game));
@@ -3146,10 +3146,10 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   open_star_field(&game->star_manager, 36);
   game->subgame.bottom_score_widget = nullptr;
   game->subgame.top_score_widget = nullptr;
-  add_bod_to_front(&game->active_bod_list, (BodNode *)&game->backdrop);
+  add_bod_to_front(&game->active_bod_list, &game->backdrop.bod.bod);
   game->backdrop.backdrop_render_enabled = 0;
   append_bod_to_end(&game->active_bod_list, (BodNode *)&game->border_manager);
-  initialize_border_stack(&game->border_manager.border_stack.generation);
+  initialize_border_stack(&game->border_manager.border_stack);
   game->border_manager.border_stack.owner = &game->border_manager;
   game->border_manager.delayed_widget_active = 0;
   set_border_justify_centre(&game->border_manager, 25.0);

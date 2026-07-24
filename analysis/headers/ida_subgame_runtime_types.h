@@ -217,6 +217,18 @@ typedef struct BannerPool {
     Banner slots[2];
 } BannerPool;
 
+/*
+ * Analysis-only root-relative stride view for the Banner startup loop.
+ * initialize_game_assets_and_world carries `game + i * sizeof(Banner)` and
+ * applies the absolute GameRoot-to-Banner offset at each access. This view is
+ * not another owner: `SubgameRuntime::banners.slots` remains the sole Banner
+ * storage.
+ */
+typedef struct BannerInitStrideView {
+    uint8_t root_to_banner[0x3cd698];
+    Banner banner;
+} BannerInitStrideView;
+
 #define SUB_SOLUTION_STRIDE 0x1fac0
 #define SUB_SOLUTION_PLAYER_NAME_SIZE 0x14
 #define SUB_SOLUTION_RUN_RECORD_COUNT 21600

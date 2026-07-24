@@ -11,6 +11,7 @@ from _narrow_sync import (
     apply_data_var_updates,
     apply_symbol_updates,
     apply_struct_and_proto_updates,
+    apply_user_var_updates,
     current_header_type_equivalence,
     current_struct_size,
     emit_summary,
@@ -106,6 +107,23 @@ PARCEL_EXPECTED_SIZES = {
     "Parcel": 0x8C,
     "ParcelManager": 0x1B58,
 }
+
+BANNER_EXPECTED_SIZES = {
+    "Banner": 0x60,
+    "BannerPool": 0xC0,
+    "BannerInitStrideView": 0x3CD6F8,
+}
+
+BANNER_INITIALIZER_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        4535,
+        -296,
+        "banner_stride_view",
+        "BannerInitStrideView*",
+    ),
+)
 
 COMPLETION_REANALYSIS_FUNCTIONS = (
     "flush_row_event_display",
@@ -500,6 +518,7 @@ def main() -> int:
                 "JetPack",
                 "Banner",
                 "BannerPool",
+                "BannerInitStrideView",
                 "ParcelState",
                 "Parcel",
                 "ParcelManager",
@@ -535,6 +554,27 @@ def main() -> int:
             "op": "owner_size_verify",
             "status": "verified",
             "owner_sizes": parcel_sizes,
+        }
+    )
+    banner_sizes = {
+        name: current_struct_size(REPO_ROOT, target=args.target, struct_name=name)
+        for name in BANNER_EXPECTED_SIZES
+    }
+    banner_size_mismatches = {
+        name: {"expected": expected, "observed": banner_sizes[name]}
+        for name, expected in BANNER_EXPECTED_SIZES.items()
+        if banner_sizes[name] != expected
+    }
+    if banner_size_mismatches:
+        raise RuntimeError(
+            "refusing Banner initializer replay with size mismatches: "
+            f"{banner_size_mismatches!r}"
+        )
+    operations.append(
+        {
+            "op": "owner_size_verify",
+            "status": "verified",
+            "owner_sizes": banner_sizes,
         }
     )
     operations.extend(
@@ -614,9 +654,19 @@ def main() -> int:
         )
     )
     operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=BANNER_INITIALIZER_USER_VAR_UPDATES,
+        )
+    )
+    operations.extend(
         reanalyze_functions(
             REPO_ROOT,
             target=args.target,
+            # apply_user_var_updates already performs and verifies the root
+            # initializer's reanalysis. Repeating that large function here
+            # adds several minutes to the replay without changing its state.
             identifiers=COMPLETION_REANALYSIS_FUNCTIONS,
         )
     )

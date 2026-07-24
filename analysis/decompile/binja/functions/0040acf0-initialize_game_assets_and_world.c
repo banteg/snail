@@ -9,7 +9,7 @@
 0040ad20        game->fog_end = 50f
 0040ad27        game->fog_enabled = 1
 0040ad2e        game->player_count = 2
-0040ad35        MemBlock::`default constructor closure'(&game->fade)
+0040ad35        initialize_border_stack(&game->fade)
 0040ad41        game->frontend_link_latch = 0
 0040ad47        game->subgame.subgame_pause_gate = 0
 0040ad4d        initialize_cheat(&g_cheat_state)
@@ -331,20 +331,20 @@
 0040be96        do while (cond:2_1)
 0040be98        int32_t options_flags = 0
 0040bf2b        while (options_flags s< 2)
-0040bea5        void* edx_29 = options_flags * 0x60 + game
-0040bebb        set_bod_object(edx_29 + 0x3cd698, add_object_to_list(&g_object_list))
+0040bea5        struct BannerInitStrideView* edx_29 = options_flags * 0x60 + game
+0040bebb        set_bod_object(&edx_29->banner, add_object_to_list(&g_object_list))
 0040bec2        if (options_flags == 0)
 0040bee3        load_x_mesh(&game->directx_loader, "postofficestop.x", game->subgame.banners.slots[0].bod.object, 1)
 0040bed2        if (options_flags == 1)
 0040bee3        load_x_mesh(&game->directx_loader, "postofficestop.x", game->subgame.banners.slots[1].bod.object, options_flags)
-0040befc        *(edx_29 + 0x3cd6b0) = 0
-0040bf02        *(edx_29 + 0x3cd6ac) = 0
-0040bf08        *(edx_29 + 0x3cd6a8) = 0
+0040befc        edx_29->banner.bod.position.z = 0f
+0040bf02        edx_29->banner.bod.position.y = 0f
+0040bf08        edx_29->banner.bod.position.x = 0
 0040bf0e        *(((options_flags * 3 + 0x1e6b7) << 5) + game) = &game->subgame
-0040bf11        *(edx_29 + 0x3cd6d0) = options_flags
+0040bf11        edx_29->banner.visibility_mode = options_flags
 0040bf17        options_flags += 1
-0040bf18        *(edx_29 + 0x3cd6f0) = 0
-0040bf21        *(edx_29 + 0x3cd6f4) = 0x3be38e38
+0040bf18        edx_29->banner.phase = 0f
+0040bf21        edx_29->banner.phase_step = 0.00694444403f
 0040bf40        if (((game->subgame.track_body_list_head.bod.list_flags).w:1.b & 2) == 0)
 0040bf51        struct BodNode* first_2 = game->active_bod_list.first
 0040bf5f        if (first_2 != 0)
@@ -1644,7 +1644,7 @@
 0040f4bb        set_bod_object(&game->subgame.player.presentation.snail_hotspot_body.bod, add_object_to_list(&g_object_list))
 0040f4d4        load_x_mesh(&game->directx_loader, "TurboHotSpots.x", game->subgame.player.presentation.snail_hotspot_body.bod.object, 2)
 0040f4df        build_snail_hotspots(&game->subgame.player.presentation)
-0040f4ea        int32_t var_128_5 = 0xa
+0040f4ea        int32_t var_128_4 = 0xa
 0040f4f2        struct Object** var_12c = &game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
 0040f53d        bool cond:5_1
 0040f4fb        struct Object* object = (var_12c - 0x432870)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
@@ -1655,9 +1655,9 @@
 0040f518        var_12c = eax_249
 0040f51c        object_14->distort.z_wave = 0
 0040f525        (eax_249 - 0x4328f0)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object->distort.y_squash = 0f
-0040f532        cond:5_1 = var_128_5 != 1
+0040f532        cond:5_1 = var_128_4 != 1
 0040f533        (eax_249 - 0x4328f0)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object->distort.xyz_scale = 0f
-0040f539        var_128_5 -= 1
+0040f539        var_128_4 -= 1
 0040f53d        do while (cond:5_1)
 0040f53f        struct Object* object_1 = game->subgame.player.presentation.body.bod.object
 0040f54c        object_1->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
@@ -1671,7 +1671,7 @@
 0040f5cb        load_x_animation_clip(&game->directx_loader, "jetpack-base-000.x", game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object)
 0040f5e1        set_bod_object(&game->subgame.player.presentation.jetpack_channel.animation_slots[1].body.bod, add_object_to_list(&g_object_list))
 0040f5f4        load_x_animation_clip(&game->directx_loader, "jetpack-draw-000.x", game->subgame.player.presentation.jetpack_channel.animation_slots[1].body.bod.object)
-0040f5ff        int32_t var_128_6 = 2
+0040f5ff        int32_t var_128_5 = 2
 0040f603        struct Object** var_12c_1 = &game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
 0040f64e        bool cond:6_1
 0040f60c        struct Object* object_2 = (var_12c_1 - 0x433a54)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
@@ -1682,9 +1682,9 @@
 0040f629        var_12c_1 = eax_259
 0040f62d        object_17->distort.z_wave = 0
 0040f636        (eax_259 - 0x433ad4)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object->distort.y_squash = 0f
-0040f643        cond:6_1 = var_128_6 != 1
+0040f643        cond:6_1 = var_128_5 != 1
 0040f644        (eax_259 - 0x433ad4)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object->distort.xyz_scale = 0f
-0040f64a        var_128_6 -= 1
+0040f64a        var_128_5 -= 1
 0040f64e        do while (cond:6_1)
 0040f650        struct Object* object_3 = game->subgame.player.presentation.jetpack_channel.body.bod.object
 0040f65d        object_3->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
@@ -1704,7 +1704,7 @@
 0040f757        load_x_animation_clip(&game->directx_loader, "Laserleft-base-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[3].body.bod.object)
 0040f76d        set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots[4].body.bod, add_object_to_list(&g_object_list))
 0040f780        load_x_animation_clip(&game->directx_loader, "Laserleft-draw-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[4].body.bod.object)
-0040f78b        int32_t var_128_7 = 5
+0040f78b        int32_t var_128_6 = 5
 0040f793        struct Object** var_12c_2 = &game->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
 0040f7de        bool cond:7_1
 0040f79c        struct Object* object_4 = (var_12c_2 - 0x432ec0)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
@@ -1715,9 +1715,9 @@
 0040f7b9        var_12c_2 = eax_273
 0040f7bd        object_15->distort.z_wave = 0
 0040f7c6        (eax_273 - 0x432f40)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object->distort.y_squash = 0f
-0040f7d3        cond:7_1 = var_128_7 != 1
+0040f7d3        cond:7_1 = var_128_6 != 1
 0040f7d4        (eax_273 - 0x432f40)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
-0040f7da        var_128_7 -= 1
+0040f7da        var_128_6 -= 1
 0040f7de        do while (cond:7_1)
 0040f7e0        struct Object* object_5 = game->subgame.player.presentation.weapon_channels[0].body.bod.object
 0040f7ed        object_5->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
@@ -1737,7 +1737,7 @@
 0040f8e7        load_x_animation_clip(&game->directx_loader, "Laserright-base-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[3].body.bod.object)
 0040f8fd        set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots[4].body.bod, add_object_to_list(&g_object_list))
 0040f910        load_x_animation_clip(&game->directx_loader, "Laserright-draw-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[4].body.bod.object)
-0040f91b        int32_t var_128_8 = 5
+0040f91b        int32_t var_128_7 = 5
 0040f923        struct Object** var_12c_3 = &game->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
 0040f96e        bool cond:8_1
 0040f92c        struct Object* object_6 = (var_12c_3 - 0x43329c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
@@ -1748,9 +1748,9 @@
 0040f949        var_12c_3 = eax_287
 0040f94d        object_18->distort.z_wave = 0
 0040f956        (eax_287 - 0x43331c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object->distort.y_squash = 0f
-0040f963        cond:8_1 = var_128_8 != 1
+0040f963        cond:8_1 = var_128_7 != 1
 0040f964        (eax_287 - 0x43331c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
-0040f96a        var_128_8 -= 1
+0040f96a        var_128_7 -= 1
 0040f96e        do while (cond:8_1)
 0040f970        struct Object* object_7 = game->subgame.player.presentation.weapon_channels[1].body.bod.object
 0040f97d        object_7->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
@@ -1770,7 +1770,7 @@
 0040fa77        load_x_animation_clip(&game->directx_loader, "rocketlauncher-base-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[3].body.bod.object)
 0040fa8d        set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots[4].body.bod, add_object_to_list(&g_object_list))
 0040faa0        load_x_animation_clip(&game->directx_loader, "rocketlauncher-draw-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[4].body.bod.object)
-0040faab        int32_t var_128_9 = 5
+0040faab        int32_t var_128_8 = 5
 0040fab3        struct Object** var_12c_4 = &game->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
 0040fafe        bool cond:9_1
 0040fabc        struct Object* object_8 = (var_12c_4 - 0x433678)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
@@ -1781,9 +1781,9 @@
 0040fad9        var_12c_4 = eax_301
 0040fadd        object_16->distort.z_wave = 0
 0040fae6        (eax_301 - 0x4336f8)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object->distort.y_squash = 0f
-0040faf3        cond:9_1 = var_128_9 != 1
+0040faf3        cond:9_1 = var_128_8 != 1
 0040faf4        (eax_301 - 0x4336f8)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object->distort.xyz_scale = 0f
-0040fafa        var_128_9 -= 1
+0040fafa        var_128_8 -= 1
 0040fafe        do while (cond:9_1)
 0040fb00        struct Object* object_9 = game->subgame.player.presentation.weapon_channels[2].body.bod.object
 0040fb0d        object_9->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
@@ -1801,7 +1801,7 @@
 0040fbcd        set_bod_object(&game->subgame.player.golb_shots[0].tertiary_body.bod, add_object_to_list(&g_object_list))
 0040fbe2        load_x_mesh(&game->directx_loader, "rocket-base-000.x", game->subgame.player.golb_shots[0].tertiary_body.bod.object, 1)
 0040fbe7        struct Object** esi_2 = &game->subgame.player.golb_shots[0].vapour.body.bod.object
-0040fbed        int32_t var_128_10 = 0xc
+0040fbed        int32_t var_128_9 = 0xc
 0040fc5d        bool cond:10_1
 0040fc03        set_bod_object(&esi_2[-9], add_object_to_list(&g_object_list))
 0040fc08        struct Object* object_11 = (esi_2 - 0x430270)->subgame.player.golb_shots[0].vapour.body.bod.object
@@ -1811,8 +1811,8 @@
 0040fc3a        initialize_vapour(&esi_2[-9], (esi_2 - 0x430270)->subgame.player.golb_shots[0].vapour.body.bod.object, 0.159999996f)
 0040fc49        set_bod_object(&esi_2[0x1d], game->subgame.player.golb_shots[0].tertiary_body.bod.object)
 0040fc52        esi_2 = &esi_2[0xba]
-0040fc58        cond:10_1 = var_128_10 != 1
-0040fc59        var_128_10 -= 1
+0040fc58        cond:10_1 = var_128_9 != 1
+0040fc59        var_128_9 -= 1
 0040fc5d        do while (cond:10_1)
 0040fc6b        struct TextureRef* eax_315 = get_or_create_texture_ref(&g_texture_refs, "Objects/VapourLazer/Lazer.tga", nullptr, 0)
 0040fc70        enum TextureRefFlags flags_2 = eax_315->flags
@@ -1943,7 +1943,7 @@
 00410258        add_bod_to_front(&game->active_bod_list, &game->backdrop)
 00410266        game->backdrop.backdrop_render_enabled = 0
 0041026c        append_bod_to_end(&game->active_bod_list, &game->border_manager.vtable)
-00410277        MemBlock::`default constructor closure'(&game->border_manager.border_stack)
+00410277        initialize_border_stack(&game->border_manager.border_stack)
 0041027c        game->border_manager.border_stack.owner = &game->border_manager.vtable
 00410289        game->border_manager.delayed_widget_active = 0
 0041028f        set_border_justify_centre(&game->border_manager.vtable, 25f)

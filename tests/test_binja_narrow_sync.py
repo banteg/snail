@@ -7951,6 +7951,9 @@ def test_banner_backlink_owner_survives_every_replay_lane() -> None:
             "sync_path_template_types.py",
         )
     )
+    ida_runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
 
     assert "SubgameRuntime* owner_game; // +0x48" in matcher
     for header in headers:
@@ -7961,13 +7964,58 @@ def test_banner_backlink_owner_survives_every_replay_lane() -> None:
         assert banner.index("owner_game") < banner.index("owner_player")
         assert "0x48 - 0x3c" in banner
         assert "0x54 - 0x4c" in banner
+        assert "typedef struct BannerInitStrideView {" in header
+        assert "uint8_t root_to_banner[0x3cd698];" in header
+        assert "Banner banner;" in header
     for sync in syncs:
         assert '("0x48", "owner_game", "SubgameRuntime*")' in sync
         assert '("Banner", BANNER_FIELD_UPDATES)' in sync
+    runtime_sync = syncs[1]
     path_sync = syncs[2]
+    for sync in (runtime_sync, path_sync):
+        assert "BANNER_INITIALIZER_USER_VAR_UPDATES" in sync
+        assert (
+            '"initialize_game_assets_and_world",\n'
+            '        "StackVariableSourceType",\n'
+            "        4535,\n"
+            "        -296,\n"
+            '        "banner_stride_view",\n'
+            '        "BannerInitStrideView*",'
+        ) in sync
+    assert '"BannerInitStrideView": 0x3CD6F8' in runtime_sync
+    assert "apply_user_var_updates already performs and verifies" in runtime_sync
+    assert '"BannerInitStrideView",' in path_sync
     assert '"update_banner"' in path_sync
     assert '"list_flags"' in path_sync
     assert '"uint32_t"' in path_sync
+    assert '"BannerInitStrideView": 0x3CD6F8' in ida_runtime_sync
+    assert '"definition_address": 0x40BEA8' in ida_runtime_sync
+    assert '"stack_offset": 84' in ida_runtime_sync
+    assert "def _sync_banner_initializer_lvar()" in ida_runtime_sync
+    assert '"banner_initializer_lvar": banner_initializer_lvar' in ida_runtime_sync
+
+    health = json.loads(
+        (
+            repo_root / "analysis/decompile/health_checks.json"
+        ).read_text(encoding="utf-8")
+    )
+    bn_initializer = next(
+        check
+        for check in health["checks"]
+        if check["name"] == "bn_game_initializer_root_ownership"
+    )
+    ida_initializer = next(
+        check
+        for check in health["checks"]
+        if check["name"] == "ida_initialize_game_assets_root_owner"
+    )
+    assert "struct BannerInitStrideView*" in bn_initializer["required_substrings"]
+    assert "0x3cd698" in bn_initializer["forbidden_substrings"]
+    assert (
+        "struct BannerInitStrideView *banner_stride_view"
+        in ida_initializer["required_substrings"]
+    )
+    assert "3987096" in ida_initializer["forbidden_substrings"]
 
 
 def test_cameraman_force_update_owner_survives_path_replay() -> None:

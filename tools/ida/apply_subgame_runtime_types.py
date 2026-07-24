@@ -92,6 +92,21 @@ SLUG_STATE_CURSOR_EXPECTED_MEMBERS = (
     (0x00, 4, "state", "SubSlugState"),
 )
 
+BANNER_OWNER_EXPECTED_SIZES = {
+    "Banner": 0x60,
+    "BannerPool": 0xC0,
+    "BannerInitStrideView": 0x3CD6F8,
+}
+BANNER_INITIALIZER_LVAR = {
+    "selector": "initialize_game_assets_and_world",
+    "definition_address": 0x40BEA8,
+    "stack_offset": 84,
+    "accepted_names": {"edge_selectord", "banner_stride_view"},
+    "accepted_types": {"char *", "BannerInitStrideView *"},
+    "target_name": "banner_stride_view",
+    "target_struct_name": "BannerInitStrideView",
+}
+
 
 TRUSTED_DECLARATIONS = [
     (
@@ -456,6 +471,8 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "Parcel slots[50];",
     "ParcelManager_must_be_0x1b58",
     "typedef struct SubGarbageSlotCursor {",
+    "typedef struct BannerInitStrideView {",
+    "uint8_t root_to_banner[0x3cd698];",
 )
 
 EXPECTED_PARCEL_OWNER_SIZES = {
@@ -1249,6 +1266,133 @@ def _sync_allocator_lvar(
     }
 
 
+def _sync_banner_initializer_lvar() -> dict[str, object]:
+    """Persist the exact root-relative stride view used by Banner startup."""
+    spec = BANNER_INITIALIZER_LVAR
+    selector = str(spec["selector"])
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    definition_address = int(spec["definition_address"])
+    stack_offset = int(spec["stack_offset"])
+    accepted_names = set(spec["accepted_names"])
+    accepted_types = {
+        _normalize_pointer_type(value) for value in spec["accepted_types"]
+    }
+    target_name = str(spec["target_name"])
+    target_struct_name = str(spec["target_struct_name"])
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.is_stk_var()
+        and lvar.defea == definition_address
+        and lvar.get_stkoff() == stack_offset
+        and lvar.name in accepted_names
+        and _normalize_pointer_type(str(lvar.type())) in accepted_types
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_banner_initializer_lvar_candidates",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+            "stack_offset": stack_offset,
+            "candidate_count": len(candidates),
+        }
+
+    lvar = candidates[0]
+    target_pointer_type = _normalize_pointer_type(f"{target_struct_name} *")
+    if (
+        lvar.name == target_name
+        and _normalize_pointer_type(str(lvar.type())) == target_pointer_type
+    ):
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "definition_address": hex(lvar.defea),
+            "stack_offset": lvar.get_stkoff(),
+        }
+
+    target_type = ida_typeinf.tinfo_t()
+    if not target_type.get_named_type(
+        None,
+        target_struct_name,
+        ida_typeinf.BTF_STRUCT,
+    ):
+        return {
+            "status": "failed",
+            "reason": "missing_banner_initializer_lvar_type",
+            "selector": selector,
+            "target_struct_name": target_struct_name,
+        }
+    pointer_type = ida_typeinf.tinfo_t()
+    if not pointer_type.create_ptr(target_type):
+        return {
+            "status": "failed",
+            "reason": "create_banner_initializer_pointer_type_failed",
+            "selector": selector,
+            "target_struct_name": target_struct_name,
+        }
+
+    before_name = lvar.name
+    before_type = str(lvar.type())
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = target_name
+    info.type = pointer_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_banner_initializer_lvar_failed",
+            "selector": selector,
+            "target_name": target_name,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and candidate.is_stk_var()
+        and candidate.defea == definition_address
+        and candidate.get_stkoff() == stack_offset
+        and candidate.name == target_name
+        and _normalize_pointer_type(str(candidate.type())) == target_pointer_type
+    ]
+    if len(verified) != 1:
+        return {
+            "status": "failed",
+            "reason": "banner_initializer_lvar_readback_failed",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+            "stack_offset": stack_offset,
+            "candidate_count": len(verified),
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "before_name": before_name,
+        "before_type": before_type,
+        "name": verified[0].name,
+        "type": str(verified[0].type()),
+        "definition_address": hex(verified[0].defea),
+        "stack_offset": verified[0].get_stkoff(),
+    }
+
+
 SPAWN_SLUG_HAZARD_LVAR_SPECS = (
     (
         "state_stride_cursor",
@@ -1346,6 +1490,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
     parcel_owner_sizes = {
         name: _named_struct_size(name) for name in EXPECTED_PARCEL_OWNER_SIZES
     }
+    banner_owner_sizes = {
+        name: _named_struct_size(name) for name in BANNER_OWNER_EXPECTED_SIZES
+    }
     size_failures = [
         {
             "selector": name,
@@ -1356,6 +1503,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in EXPECTED_PARCEL_OWNER_SIZES.items()
         if parcel_owner_sizes[name] != expected_size
     ]
+    size_failures.extend(
+        {
+            "selector": name,
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": banner_owner_sizes[name],
+        }
+        for name, expected_size in BANNER_OWNER_EXPECTED_SIZES.items()
+        if banner_owner_sizes[name] != expected_size
+    )
     if parse_errors or size_failures:
         print(
             json.dumps(
@@ -1364,6 +1521,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "header": str(header_path),
                     "parse_errors": parse_errors,
                     "parcel_owner_sizes": parcel_owner_sizes,
+                    "banner_owner_sizes": banner_owner_sizes,
                     "failed": size_failures,
                 },
                 indent=2,
@@ -1489,6 +1647,20 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "selector": GALAXY_ROUTE_POINT_OWNER_NAME,
                 "owner_readback": galaxy_route_point_owner,
+            }
+        )
+
+    banner_initializer_lvar = _sync_banner_initializer_lvar()
+    if banner_initializer_lvar.get("status") == "applied":
+        applied += 1
+    elif banner_initializer_lvar.get("status") == "unchanged":
+        unchanged += 1
+    else:
+        failed.append(
+            {
+                "selector": "initialize_game_assets_and_world",
+                "lvar": "banner_stride_view",
+                "result": banner_initializer_lvar,
             }
         )
 
@@ -1648,6 +1820,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "contact_header": str(contact_header_path),
                 "parcel_owner_sizes": parcel_owner_sizes,
+                "banner_owner_sizes": banner_owner_sizes,
                 "time_trial_owner_readback": time_trial_owner_readback,
                 "salt_owner_readback": salt_owner_readback,
                 "sub_lazer_owner_readback": sub_lazer_owner_readback,
@@ -1687,6 +1860,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "SaltStateStrideCursor": _named_struct_size(
                         "SaltStateStrideCursor"
                     ),
+                    "BannerInitStrideView": _named_struct_size(
+                        "BannerInitStrideView"
+                    ),
                 },
                 "parse_errors": parse_errors,
                 "applied": applied,
@@ -1699,6 +1875,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "garbage_allocator_lvars": garbage_allocator_lvars,
                 "slug_allocator_lvars": slug_allocator_lvars,
                 "salt_allocator_lvars": salt_allocator_lvars,
+                "banner_initializer_lvar": banner_initializer_lvar,
                 "missing": missing,
                 "failed": failed,
             },

@@ -406,6 +406,7 @@ REQUIRED_HEADER_STRUCTS = (
     "BodList",
     "BodBase",
     "Banner",
+    "BannerInitStrideView",
     "Vapour",
     "TrackPickupState",
     "SubLazerState",
@@ -841,6 +842,20 @@ UPDATE_BANNER_USER_VAR_UPDATES = (
         66,
         "list_flags",
         "uint32_t",
+    ),
+)
+
+# The startup loop carries a GameRoot-relative pointer biased before the
+# embedded Banner, then advances it by one exact 0x60-byte Banner stride. Keep
+# that physical view explicit instead of falsely naming the temporary Banner*.
+BANNER_INITIALIZER_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        4535,
+        -296,
+        "banner_stride_view",
+        "BannerInitStrideView*",
     ),
 )
 
@@ -4223,6 +4238,7 @@ def main() -> int:
                 *INITIALIZE_SUBGOLDY_USER_VAR_UPDATES,
                 *MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
+                *BANNER_INITIALIZER_USER_VAR_UPDATES,
                 *NUKE_USER_VAR_UPDATES,
                 *TIP_MANAGER_USER_VAR_UPDATES,
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
