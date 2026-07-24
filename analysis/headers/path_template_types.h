@@ -2652,7 +2652,7 @@ void __thiscall project_position_onto_track_attachment(
 double __thiscall sample_track_floor_height_at_position(SubgameRuntime* game, Vec3* position);
 void __thiscall spawn_track_health_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player);
 void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player);
-int32_t __thiscall merge_track_tile_runs(SubgameRuntime* game);
+void __thiscall merge_track_tile_runs(SubgameRuntime* game);
 void __thiscall mark_track_warning_zones(SubgameRuntime* game);
 void __thiscall select_track_tile_edge_variants(SubgameRuntime* game);
 void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime* game);

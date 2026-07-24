@@ -81,6 +81,7 @@ Current high-confidence render-normalization read:
 - `promote_track_tiles_to_fringe_variants` upgrades selected open-below cells before fringe emission
 - `harmonize_center_lane_floor_slide_variants` applies the center-seam floor/slide override bit after BOD-object table matches
 - `merge_track_tile_runs` suppresses follower cells so long horizontal strips render as one run head
+  - its authored `cRSubGame::CondenseTrack()` ABI is `void`: the iOS zero-row path leaves `this` in R0, Android leaves a GOT base, and neither mobile epilogue establishes a result
 - `mark_track_warning_zones` expands warning footprints around hazard-bearing tiles before cache build
 - `build_track_fringe_objects` allocates directional fringe objects from the post-normalized strip
   - it begins by calling `initialize_fringe_manager`

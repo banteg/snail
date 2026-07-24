@@ -2623,6 +2623,10 @@ TIP_PROTO_UPDATES = (
 
 TRACK_NORMALIZATION_VOID_PROTO_UPDATES = (
     (
+        "merge_track_tile_runs",
+        "void __thiscall merge_track_tile_runs(SubgameRuntime* game)",
+    ),
+    (
         "select_track_tile_edge_variants",
         "void __thiscall select_track_tile_edge_variants(SubgameRuntime* game)",
     ),
@@ -3239,10 +3243,6 @@ DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
     ("destroy_subgame", "void __thiscall destroy_subgame(SubgameRuntime* game)"),
     ("update_subgame", "void __thiscall update_subgame(SubgameRuntime* game)"),
     ("remove_subgame_bods", "void __thiscall remove_subgame_bods(SubgameRuntime* game)"),
-    (
-        "merge_track_tile_runs",
-        "int32_t __thiscall merge_track_tile_runs(SubgameRuntime* game)",
-    ),
     (
         "build_track_fringe_objects",
         "int32_t __thiscall build_track_fringe_objects(SubgameRuntime* game)",

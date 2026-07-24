@@ -2391,6 +2391,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
             f'{function_name}(SubgameRuntime* game)"'
         ) in deferred_prototypes
     for function_name in (
+        "merge_track_tile_runs",
         "select_track_tile_edge_variants",
         "promote_track_tiles_to_fringe_variants",
         "harmonize_center_lane_floor_slide_variants",
@@ -2415,6 +2416,20 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         )
         assert '"int32_t __thiscall(struct Game* game)"' in repair_spec
         assert f'"void __thiscall {function_name}("' in repair_spec
+        if function_name == "merge_track_tile_runs":
+            for variable_name in (
+                "row_attachment_flags",
+                "seed_lane_flags",
+                "cell_lane_flags",
+                "cell",
+                "floor_tile_cursor",
+                "floor_cleanup_lane_flags",
+                "slide_lane_flags_cursor",
+                "slide_cleanup_lane_flags",
+                "wall_tile_cursor",
+                "wall_cleanup_lane_flags",
+            ):
+                assert f'"name": "{variable_name}"' in repair_spec
     assert "*TRACK_NORMALIZATION_VOID_PROTO_UPDATES" in source
     assert '"address": 0x4374B0' in repair_source
     assert '"expected_prototype": "void __thiscall(struct SubgameRuntime* game)"' in repair_source

@@ -116,12 +116,19 @@ FUNCTION_SPECS = {
     },
     "merge_track_tile_runs": {
         "address": 0x435180,
-        "expected_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
-        "stale_prototype": "int32_t __thiscall(struct Game* game)",
+        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "legacy_prototypes": (
+            "int32_t __thiscall(struct Game* game)",
+        ),
         "declaration": (
-            "int32_t __thiscall merge_track_tile_runs(SubgameRuntime* game)"
+            "void __thiscall merge_track_tile_runs("
+            "SubgameRuntime* game)"
         ),
         "parameter_count": 1,
+        # Preserve the field-first CondenseTrack cursors recovered by the
+        # canonical path-template replay when recreating the function to
+        # change its result ABI.
         "variables": (
             {
                 "source_type": "VariableSourceType.RegisterVariableSourceType",
@@ -129,6 +136,76 @@ FUNCTION_SPECS = {
                 "storage": 67,
                 "name": "game",
                 "type": "struct SubgameRuntime*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 83,
+                "storage": -4,
+                "name": "row_attachment_flags",
+                "type": "uint32_t*",
+            },
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 20,
+                "storage": 66,
+                "name": "seed_lane_flags",
+                "type": "uint32_t*",
+            },
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 87,
+                "storage": 69,
+                "name": "cell_lane_flags",
+                "type": "uint32_t*",
+            },
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 105,
+                "storage": 73,
+                "name": "cell",
+                "type": "struct TrackRowCell*",
+            },
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 155,
+                "storage": 67,
+                "name": "floor_tile_cursor",
+                "type": "uint8_t*",
+            },
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 281,
+                "storage": 66,
+                "name": "floor_cleanup_lane_flags",
+                "type": "uint32_t*",
+            },
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 365,
+                "storage": 73,
+                "name": "slide_lane_flags_cursor",
+                "type": "uint32_t*",
+            },
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 475,
+                "storage": 66,
+                "name": "slide_cleanup_lane_flags",
+                "type": "uint32_t*",
+            },
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 613,
+                "storage": 68,
+                "name": "wall_tile_cursor",
+                "type": "uint8_t*",
+            },
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 773,
+                "storage": 66,
+                "name": "wall_cleanup_lane_flags",
+                "type": "uint32_t*",
             },
         ),
     },

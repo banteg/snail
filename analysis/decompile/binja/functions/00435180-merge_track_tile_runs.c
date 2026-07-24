@@ -18,41 +18,41 @@
 004351ae        do while (j != 1)
 004351b3        i += 1
 004351b6        do while (i s< game_1->runtime_row_count)
-004351b8        int32_t runtime_row_count = game_1->runtime_row_count
 004351bb        int32_t var_10 = 0
-004351c5        if (runtime_row_count s> 0)
+004351c5        if (game_1->runtime_row_count s<= 0)
+004351c5        return
 004351d3        uint32_t* row_attachment_flags = &game_1->runtime_rows[0].attachment_body.bod.list_flags
 004351d7        uint32_t* cell_lane_flags = &game_1->runtime_cells[0][0].lane_and_flags
 004353d4        bool cond:3_1
 004351dd        int32_t i_2 = 0
 004351df        int32_t i_6 = 0
 004351ee        while (true)
-004351ee        char eax_2 = is_sub_loc_floor(&cell_lane_flags[-0x10])
-004351f5        uint16_t eax_3
-004351f5        if (eax_2 != 0)
-004351fb        eax_3 = (*cell_lane_flags).w
-00435208        if (eax_2 == 0 || (eax_3:1.b & 0x80) != 0 || (eax_3.b & 0x40) != 0)
+004351ee        char eax_3 = is_sub_loc_floor(&cell_lane_flags[-0x10])
+004351f5        uint16_t eax_4
+004351f5        if (eax_3 != 0)
+004351fb        eax_4 = (*cell_lane_flags).w
+00435208        if (eax_3 == 0 || (eax_4:1.b & 0x80) != 0 || (eax_4.b & 0x40) != 0)
 004352c9        if (is_sub_loc_slide(&cell_lane_flags[-0x10]).b == 0)
 004353e2        label_4353e2:
-004353e2        enum SubLocTileId eax_18 = cell_lane_flags[-0x10]:0x3c.b
+004353e2        enum SubLocTileId eax_20 = cell_lane_flags[-0x10]:0x3c.b
 004353e5        uint8_t* wall_tile_cursor = &cell_lane_flags[-1]
-004353ea        if (eax_18 == SUBLOC_TILE_WALL2)
-004353f0        uint32_t eax_19 = *cell_lane_flags
+004353ea        if (eax_20 == SUBLOC_TILE_WALL2)
+004353f0        uint32_t eax_21 = *cell_lane_flags
 004353f2        int32_t esi_4 = 0
-004353f4        eax_19:1.b &= 0xf1
-004353f7        eax_19:1.b |= 1
-004353fd        *cell_lane_flags = eax_19
+004353f4        eax_21:1.b &= 0xf1
+004353f7        eax_21:1.b |= 1
+004353fd        *cell_lane_flags = eax_21
 004353ff        if (i_2 s< 8)
 00435401        int32_t i_7 = i_2
 00435406        while (*wall_tile_cursor == 0xe)
-00435416        if ((eax_19 & 0x4000) != 0x4000)
+00435416        if ((eax_21 & 0x4000) != 0x4000)
 00435416        break
-00435418        eax_19:1.b &= 0xf1
+00435418        eax_21:1.b &= 0xf1
 0043541b        wall_tile_cursor = &wall_tile_cursor[0x54]
-0043541e        eax_19:1.b |= 1
+0043541e        eax_21:1.b |= 1
 00435421        esi_4 += 1
 00435422        i_7 += 1
-00435423        *cell_lane_flags = eax_19
+00435423        *cell_lane_flags = eax_21
 00435428        if (i_7 s>= 8)
 00435428        break
 0043542d        if (esi_4 s> 1)
@@ -71,28 +71,28 @@
 004354a1        i_10 -= 1
 004354a2        wall_cleanup_lane_flags[0x15] &= 0xffff9fff
 004354a5        do while (i_1 != 1)
-004354b2        if (eax_18 == SUBLOC_TILE_EMPTY || eax_18 == SUBLOC_TILE_RING_MARKER)
-004354b8        uint32_t eax_24 = *cell_lane_flags
-004354ba        eax_24:1.b &= 0xdf
-004354bd        *cell_lane_flags = eax_24
+004354b2        if (eax_20 == SUBLOC_TILE_EMPTY || eax_20 == SUBLOC_TILE_RING_MARKER)
+004354b8        uint32_t eax_26 = *cell_lane_flags
+004354ba        eax_26:1.b &= 0xdf
+004354bd        *cell_lane_flags = eax_26
 004354c5        if (game_1->level_mode != 2)
-004354df        eax_24:1.b &= 0xbf
-004354e2        *cell_lane_flags = eax_24
+004354df        eax_26:1.b &= 0xbf
+004354e2        *cell_lane_flags = eax_26
 004354d5        set_bod_object(&cell_lane_flags[-0x10], g_game_base->root_bod_catalog.universe_hole.object)
-004352cf        uint16_t eax_9 = (*cell_lane_flags).w
-004352dc        if ((eax_9:1.b & 0x80) != 0 || (eax_9.b & 0x40) != 0)
+004352cf        uint16_t eax_10 = (*cell_lane_flags).w
+004352dc        if ((eax_10:1.b & 0x80) != 0 || (eax_10.b & 0x40) != 0)
 004352d4        goto label_4353e2
 004352e2        int32_t esi_1 = 0
 004352e7        if (i_2 s< 8)
 004352ed        uint32_t* slide_lane_flags_cursor = cell_lane_flags
 004352f9        if (is_sub_loc_slide(&slide_lane_flags_cursor[-0x10]) == 0)
 004352f9        break
-004352fb        uint16_t eax_11 = (*slide_lane_flags_cursor).w
-00435300        if ((eax_11:1.b & 0x80) != 0)
+004352fb        uint16_t eax_12 = (*slide_lane_flags_cursor).w
+00435300        if ((eax_12:1.b & 0x80) != 0)
 00435300        break
-00435305        if ((eax_11:1.b & 0x40) == 0)
+00435305        if ((eax_12:1.b & 0x40) == 0)
 00435305        break
-00435309        if ((eax_11.b & 0x60) != 0)
+00435309        if ((eax_12.b & 0x60) != 0)
 00435309        break
 0043530b        esi_1 += 1
 0043530c        slide_lane_flags_cursor = &slide_lane_flags_cursor[0x15]
@@ -116,15 +116,15 @@
 00435213        if (i_2 s< 8)
 00435219        int32_t i_4 = i_2
 0043521b        uint8_t* floor_tile_cursor = &cell_lane_flags[-1]
-0043521e        uint8_t eax_4 = *floor_tile_cursor
-00435232        if (eax_4 != 1 && eax_4 != 0x15 && eax_4 != 0x1b && eax_4 != 0x21 && eax_4 != 0x22)
+0043521e        uint8_t eax_5 = *floor_tile_cursor
+00435232        if (eax_5 != 1 && eax_5 != 0x15 && eax_5 != 0x1b && eax_5 != 0x21 && eax_5 != 0x22)
 00435232        break
-00435234        eax_3 = (*(floor_tile_cursor + 4)).w
-0043523a        if ((eax_3:1.b & 0x80) != 0)
+00435234        eax_4 = (*(floor_tile_cursor + 4)).w
+0043523a        if ((eax_4:1.b & 0x80) != 0)
 0043523a        break
-0043523f        if ((eax_3:1.b & 0x40) == 0)
+0043523f        if ((eax_4:1.b & 0x40) == 0)
 0043523f        break
-00435243        if ((eax_3.b & 0x60) != 0)
+00435243        if ((eax_4.b & 0x60) != 0)
 00435243        break
 00435245        esi += 1
 00435246        floor_tile_cursor = &floor_tile_cursor[0x54]
@@ -157,8 +157,7 @@
 004351e5        game_1 = game_2
 004353b9        game_1 = game_2
 004353c7        row_attachment_flags = &row_attachment_flags[0x3d]
-004353cb        runtime_row_count = game_1->runtime_row_count
-004353ce        cond:3_1 = var_10 + 1 s< runtime_row_count
+004353ce        cond:3_1 = var_10 + 1 s< game_1->runtime_row_count
 004353d0        var_10 += 1
 004353d4        do while (cond:3_1)
-004353e1        return runtime_row_count
+004353e1        return

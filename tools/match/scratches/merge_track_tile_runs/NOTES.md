@@ -108,11 +108,14 @@ removing the outer cell owner scored 66.43%. Both probes were rejected. The
 remaining 0x14-versus-0x10 frame and parallel cell-base lifetime are left as
 honest compiler-shape residuals.
 
-The sole Windows caller discards EAX, but the zero-row and populated exits both
-leave `runtime_row_count`. Unlike the independently proven void warning pass,
-that is not enough to exclude an integer contract, so analysis retains the
-conservative `int32_t` result while the matching member remains a side-effect
-only `cRSubGame::CondenseTrack()` transcription.
+The sole Windows caller discards EAX, while the zero-row and populated exits
+leave incidental values in that register. Mobile code independently closes the
+ABI: iOS `cRSubGame::CondenseTrack()` branches from the zero-row check to an
+epilogue that leaves the incoming `this` pointer in R0, whereas Android reaches
+its epilogue with a PC-relative GOT base in R0. Neither mobile epilogue
+establishes a result. Those incompatible zero-row residues cannot implement a
+shared return contract, so the authored member and Windows analysis prototype
+are both `void`.
 
 ## 2026-07-14 row render-suppression flag
 

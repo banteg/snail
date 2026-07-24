@@ -3743,13 +3743,14 @@
       "name": "ida_condense_track_grid_owner",
       "artifact": "analysis/decompile/ida/functions/00435180-merge_track_tile_runs.c",
       "required_substrings": [
-        "int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)",
+        "void __thiscall merge_track_tile_runs(SubgameRuntime *game)",
         "game->runtime_cells",
         "v1->level_mode",
         "g_game_base",
         "0xFFFF9FFF"
       ],
       "forbidden_substrings": [
+        "int32_t __thiscall merge_track_tile_runs",
         "Game *game",
         "game->_pad_",
         "__asm",

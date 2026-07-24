@@ -479,7 +479,7 @@
       "android_symbol": "cRSubGame::CondenseTrack()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The mobile method preserves the separate floor and slide run scans. Windows proves the embedded SubLoc grid, SubRow attachment-body cleanup, and RootBodCatalog slice owners. Its sole caller discards EAX, but both native exits leave runtime_row_count, so analysis conservatively retains the integer result until the ABI is independently resolved."
+      "notes": "The mobile method preserves the separate floor and slide run scans. Windows proves the embedded SubLoc grid, SubRow attachment-body cleanup, and RootBodCatalog slice owners. The authored member is void: neither mobile epilogue establishes a result, the iOS zero-row path leaves the incoming `this` pointer in R0, and the Android zero-row path leaves its PC-relative GOT base there. Those incompatible incidental residues independently resolve the Windows caller's discarded EAX."
     },
     {
       "address": "0x4354f0",

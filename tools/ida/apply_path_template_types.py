@@ -2157,7 +2157,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "merge_track_tile_runs",
-        "int32_t __thiscall merge_track_tile_runs(SubgameRuntime* game);",
+        "void __thiscall merge_track_tile_runs(SubgameRuntime* game);",
     ),
     (
         "promote_track_tiles_to_fringe_variants",
