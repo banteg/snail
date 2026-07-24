@@ -275,6 +275,23 @@ typedef struct SubSegmentRowStrideAnchor {
     AuthoredSegmentRow row;
 } SubSegmentRowStrideAnchor;
 
+/*
+ * update_subgoldy addresses row-event messages as
+ *   game + event_id * 0x4220 + {0xa670, 0xa870, 0xa874}
+ * after proving event_id is in the one-based range [1, segment_count].
+ * Biasing the view by one SubSegment makes element N alias the real
+ * SubTracks::segment_slots[N - 1]. Element zero is deliberately invalid and
+ * must never be dereferenced. This is a borrowed analysis view only;
+ * SubgameRuntime::level_definition remains the storage owner.
+ */
+typedef struct SubSegmentEventBiasView {
+    uint8_t subgame_prefix[0x6658];
+    SubSegment segment_slots_one_based[101];
+} SubSegmentEventBiasView;
+typedef char SubSegmentEventBiasView_must_be_0x1a7cf8[
+    (sizeof(SubSegmentEventBiasView) == 0x1a7cf8) ? 1 : -1
+];
+
 /* Exact 0x1a5978-byte authored cRSubTracks level-definition owner. */
 typedef struct SubTracks {
     int32_t segment_count;

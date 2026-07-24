@@ -479,9 +479,11 @@ repairs the sparse frame compatibility view after imports, and reapplies the
 `g_game_base` pointer because IDA retains the earlier pointed-to type snapshot
 even when its rendered declaration is still `GameRoot *`.
 
-The Binary Ninja path replay also retains three bounded register views in
-`update_subgoldy`'s row-event block. Native code uses pre-biased byte addresses
-for `SubTracks::segment_slots[event_id - 1]`; without those views HLIL
-misattributes the same bytes to nearby `SegmentCache` and `Tutorial` members.
-The replay deliberately keeps honest byte arithmetic instead of installing a
-synthetic overlapping field solely to improve pseudocode.
+The path replay also retains a bounded `SubSegmentEventBiasView` in
+`update_subgoldy`'s row-event block. Native code uses one-based event IDs and
+pre-biased addresses for `SubTracks::segment_slots[event_id - 1]`; the view's
+element zero is explicitly invalid, while element N aliases the real segment
+slot N-1. Binary Ninja applies it only to four split/short-lived game-base
+register definitions, and IDA applies it to the independently materialized
+sample-base lifetime. `SubgameRuntime::level_definition` remains the storage
+owner; no overlapping owner field is installed merely to improve pseudocode.

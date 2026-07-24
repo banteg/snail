@@ -418,8 +418,10 @@ REQUIRED_HEADER_STRUCTS = (
     "SMTracks",
     "SmtrackHeightfieldAnimator",
     "AuthoredSegmentRowFlag",
+    "SubSegment",
     "SubSegmentParcelScanAnchor",
     "SubSegmentRowStrideAnchor",
+    "SubSegmentEventBiasView",
     "SubLocOpenEdgeFlag",
     "SubLocTileId",
     "SubLocFlag",
@@ -475,6 +477,7 @@ def ensure_path_analysis_views(
         "PresentationWobbleController",
         "RuntimeCellStrideAnchor",
         "SubSegmentParcelScanAnchor",
+        "SubSegmentEventBiasView",
         "SubLocTileId",
         "SubSlugState",
         "SubSlugDeathTossDirection",
@@ -693,11 +696,25 @@ PLAYER_FIELD_UPDATES = (
     ("0x4344", "squidge", "Squidge"),
 )
 
-# The native row-event block computes three pre-biased addresses from the
-# SubgameRuntime base. HLIL otherwise chooses nearby named members before it
-# proves event_id > 0, falsely rendering the message lanes inside SegmentCache
-# and Tutorial. These bounded register views preserve the honest byte arithmetic
-# until Binary Ninja can express level_definition.segment_slots[event_id - 1].
+# The row-event ID and the direct message probe share EAX at different native
+# definitions. Split the later game-base definition before typing it: applying
+# a pointer type to the merged lifetime would falsely turn row_event_id into an
+# owner pointer. The resulting one-based view is a borrowed alias of
+# level_definition.segment_slots[event_id - 1].
+UPDATE_SUBGOLDY_EVENT_VIEW_SPLIT_DEFINITIONS = (
+    ("0x43b752", "mlil", "RegisterVariableSourceType", 1586, 66),
+)
+
+UPDATE_SUBGOLDY_EVENT_VIEW_TARGET_VAR = (
+    "RegisterVariableSourceType",
+    1586,
+    66,
+)
+
+# The remaining message, duration, and sample loads each receive their own
+# short-lived copy of Player.game. Typing only those exact definitions keeps
+# the scalar stride arithmetic honest while recovering the shared SubSegment
+# owner in HLIL.
 UPDATE_SUBGOLDY_USER_VAR_UPDATES = (
     (
         "update_subgoldy",
@@ -712,16 +729,24 @@ UPDATE_SUBGOLDY_USER_VAR_UPDATES = (
         "RegisterVariableSourceType",
         1628,
         68,
-        "game_bytes_for_message",
-        "uint8_t*",
+        "message_segment_view",
+        "SubSegmentEventBiasView*",
     ),
     (
         "update_subgoldy",
         "RegisterVariableSourceType",
         1688,
         68,
-        "game_bytes_for_duration",
-        "uint8_t*",
+        "duration_segment_view",
+        "SubSegmentEventBiasView*",
+    ),
+    (
+        "update_subgoldy",
+        "RegisterVariableSourceType",
+        1794,
+        68,
+        "sample_segment_view",
+        "SubSegmentEventBiasView*",
     ),
 )
 
@@ -3496,6 +3521,14 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Replay only the LandscapeManager cache-loader method ABI.",
     )
+    focused_group.add_argument(
+        "--update-subgoldy-only",
+        action="store_true",
+        help=(
+            "Replay only update_subgoldy's one-based row-event segment view "
+            "and its existing time-trial record cursor."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -3629,6 +3662,53 @@ def main() -> int:
                 REPO_ROOT,
                 target=args.target,
                 updates=LANDSCAPE_LOADER_PROTO_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
+    if args.update_subgoldy_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=(
+                    "SubSegment",
+                    "SubSegmentEventBiasView",
+                    "TimeTrialRouteRecordCursor",
+                ),
+            )
+        )
+        operations.append(
+            ensure_path_analysis_views(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
+            apply_split_user_var_update(
+                REPO_ROOT,
+                target=args.target,
+                identifier="update_subgoldy",
+                definitions=UPDATE_SUBGOLDY_EVENT_VIEW_SPLIT_DEFINITIONS,
+                target_var=UPDATE_SUBGOLDY_EVENT_VIEW_TARGET_VAR,
+                variable_name="row_event_segment_view",
+                variable_type="SubSegmentEventBiasView*",
+            )
+        )
+        operations.extend(
+            apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=(
+                    *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
+                    *UPDATE_SUBGOLDY_REPLAY_USER_VAR_UPDATES,
+                ),
             )
         )
         return emit_summary(
@@ -4031,6 +4111,17 @@ def main() -> int:
             target_var=CHALLENGE_PARCELS_RUNTIME_ANCHOR_TARGET_VAR,
             variable_name="challenge_runtime_row_anchor",
             variable_type="RuntimeRowStrideAnchor*",
+        )
+    )
+    operations.extend(
+        apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="update_subgoldy",
+            definitions=UPDATE_SUBGOLDY_EVENT_VIEW_SPLIT_DEFINITIONS,
+            target_var=UPDATE_SUBGOLDY_EVENT_VIEW_TARGET_VAR,
+            variable_name="row_event_segment_view",
+            variable_type="SubSegmentEventBiasView*",
         )
     )
     for definitions, target_var, variable_name, variable_type in (

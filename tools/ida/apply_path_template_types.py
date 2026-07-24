@@ -535,7 +535,13 @@ UPDATE_SUBGAME_RUNTIME_LVAR_SPECS = (
     ),
 )
 
-UPDATE_SUBGOLDY_REPLAY_LVAR_SPECS = (
+UPDATE_SUBGOLDY_LVAR_SPECS = (
+    (
+        "sample_segment_view",
+        "SubSegmentEventBiasView *sample_segment_view;",
+        0x43B823,
+        None,
+    ),
     (
         "time_trial_route_cursor",
         "TimeTrialRouteRecordCursor *time_trial_route_cursor;",
@@ -2554,10 +2560,10 @@ def _sync_update_subgame_runtime_lvars() -> dict[str, object]:
     )
 
 
-def _sync_update_subgoldy_replay_lvars() -> dict[str, object]:
+def _sync_update_subgoldy_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "update_subgoldy",
-        UPDATE_SUBGOLDY_REPLAY_LVAR_SPECS,
+        UPDATE_SUBGOLDY_LVAR_SPECS,
     )
 
 
@@ -3421,12 +3427,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "runtime_lvars": update_subgame_runtime_lvars,
             }
         )
-    update_subgoldy_replay_lvars = _sync_update_subgoldy_replay_lvars()
-    if update_subgoldy_replay_lvars.get("status") == "failed":
+    update_subgoldy_lvars = _sync_update_subgoldy_lvars()
+    if update_subgoldy_lvars.get("status") == "failed":
         failed.append(
             {
                 "selector": "update_subgoldy",
-                "replay_lvars": update_subgoldy_replay_lvars,
+                "ownership_lvars": update_subgoldy_lvars,
             }
         )
     initialize_subgoldy_lvars = _sync_initialize_subgoldy_lvars()
@@ -3580,7 +3586,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "place_parcels_runtime_lvars": place_parcels_runtime_lvars,
                 "challenge_parcels_runtime_lvars": challenge_parcels_runtime_lvars,
                 "update_subgame_runtime_lvars": update_subgame_runtime_lvars,
-                "update_subgoldy_replay_lvars": update_subgoldy_replay_lvars,
+                "update_subgoldy_lvars": update_subgoldy_lvars,
                 "initialize_subgoldy_lvars": initialize_subgoldy_lvars,
                 "remove_subgame_bods_cursor_lvars": remove_subgame_bods_cursor_lvars,
                 "spawn_track_ring_lvars": spawn_track_ring_lvars,

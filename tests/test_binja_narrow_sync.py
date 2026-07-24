@@ -690,9 +690,14 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         encoding="utf-8"
     )
     assert "UPDATE_SUBGOLDY_USER_VAR_UPDATES" in bn_path_sync
+    assert "UPDATE_SUBGOLDY_EVENT_VIEW_SPLIT_DEFINITIONS" in bn_path_sync
     assert "UPDATE_BANNER_USER_VAR_UPDATES" in bn_path_sync
-    assert '"game_bytes_for_message"' in bn_path_sync
-    assert '"game_bytes_for_duration"' in bn_path_sync
+    assert '"row_event_segment_view"' in bn_path_sync
+    assert '"message_segment_view"' in bn_path_sync
+    assert '"duration_segment_view"' in bn_path_sync
+    assert '"sample_segment_view"' in bn_path_sync
+    assert '"SubSegmentEventBiasView*"' in bn_path_sync
+    assert "--update-subgoldy-only" in bn_path_sync
     assert "*UPDATE_SUBGOLDY_USER_VAR_UPDATES" in bn_path_sync
     assert "*UPDATE_BANNER_USER_VAR_UPDATES" in bn_path_sync
 
@@ -5323,6 +5328,31 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "uint8_t segment_prefix[0x814];" in analysis_path_header
     assert "typedef struct SubSegmentParcelScanAnchor" in analysis_path_header
     assert "int32_t next_segment_row_base;" in analysis_path_header
+    assert "typedef struct SubSegmentEventBiasView" in analysis_path_header
+    assert "uint8_t subgame_prefix[0x6658];" in analysis_path_header
+    assert "SubSegment segment_slots_one_based[101];" in analysis_path_header
+    assert "SubSegmentEventBiasView_must_be_0x1a7cf8" in analysis_path_header
+    assert "UPDATE_SUBGOLDY_EVENT_VIEW_SPLIT_DEFINITIONS" in binja_source
+    assert (
+        '("0x43b752", "mlil", "RegisterVariableSourceType", 1586, 66)'
+        in binja_source
+    )
+    for identity in (
+        '"RegisterVariableSourceType",\n        1520,\n        66,',
+        '"RegisterVariableSourceType",\n        1628,\n        68,',
+        '"RegisterVariableSourceType",\n        1688,\n        68,',
+        '"RegisterVariableSourceType",\n        1794,\n        68,',
+    ):
+        assert identity in binja_source
+    for name, type_name in (
+        ("row_event_segment_view", "SubSegmentEventBiasView*"),
+        ("message_segment_view", "SubSegmentEventBiasView*"),
+        ("duration_segment_view", "SubSegmentEventBiasView*"),
+        ("sample_segment_view", "SubSegmentEventBiasView*"),
+    ):
+        assert f'"{name}"' in binja_source
+        assert f'"{type_name}"' in binja_source
+    assert "--update-subgoldy-only" in binja_source
     assert "typedef struct RuntimeRowStrideAnchor" in analysis_path_header
     assert "uint8_t runtime_prefix[0x5ccac8];" in analysis_path_header
     assert "typedef struct RuntimeCellStrideAnchor" in analysis_path_header
@@ -5519,6 +5549,22 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "_sync_fringe_runtime_lvars" in ida_path_sync
     assert "_sync_harmonize_runtime_lvars" in ida_path_sync
     assert "_sync_update_subgame_runtime_lvars" in ida_path_sync
+    assert "UPDATE_SUBGOLDY_LVAR_SPECS" in ida_path_sync
+    assert "_sync_update_subgoldy_lvars" in ida_path_sync
+    assert "0x43B823" in ida_path_sync
+    assert "0x43CD08" in ida_path_sync
+    for name, declaration in (
+        (
+            "sample_segment_view",
+            "SubSegmentEventBiasView *sample_segment_view;",
+        ),
+        (
+            "time_trial_route_cursor",
+            "TimeTrialRouteRecordCursor *time_trial_route_cursor;",
+        ),
+    ):
+        assert f'"{name}"' in ida_path_sync
+        assert f'"{declaration}"' in ida_path_sync
     for address, name in (
         ("0x447090", "initialize_fringe_manager"),
         ("0x4470A0", "allocate_fringe_object"),

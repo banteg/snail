@@ -590,6 +590,35 @@
       ]
     },
     {
+      "name": "bn_update_subgoldy_row_event_segment_owner",
+      "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "int32_t row_event_id",
+        "segment_slots_one_based[",
+        ".message_text[0]",
+        ".message_duration.bits",
+        ".message_sample_id"
+      ],
+      "forbidden_substrings": [
+        "game_bytes_for_message",
+        "game_bytes_for_duration",
+        "player->game + 0xa670",
+        "player->game + 0xa870",
+        "&player->game->level_definition +"
+      ]
+    },
+    {
+      "name": "ida_update_subgoldy_row_event_sample_owner",
+      "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "SubSegmentEventBiasView *sample_segment_view",
+        "sample_segment_view->segment_slots_one_based[v30].message_sample_id"
+      ],
+      "forbidden_substrings": [
+        "*(&v31->level_definition.segment_count + 4232 * v30)"
+      ]
+    },
+    {
       "name": "bn_remove_sub_loc_root_list_owner",
       "artifact": "analysis/decompile/binja/functions/00439bc0-remove_sub_loc.c",
       "required_substrings": [

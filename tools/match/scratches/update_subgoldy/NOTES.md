@@ -674,3 +674,40 @@ hide real code generation rather than recover ownership.
 This slice is analysis-only. The matching source remains unchanged at 74.43%,
 2,070/2,087 normalized instructions, prefix 12/2,087, with 290 clean audited
 operands and the same one bounded jump-table mismatch.
+
+## 2026-07-24 one-based row-event segment ownership
+
+The row-event message path now has one concrete owner instead of three raw or
+misattributed addresses. Native code proves `event_id > 0` and
+`event_id < level_definition.segment_count + 1`, then reads:
+
+- `game + event_id * 0x4220 + 0xa670` for `message_text`;
+- `game + event_id * 0x4220 + 0xa870` for `message_duration`;
+- `game + event_id * 0x4220 + 0xa874` for `message_sample_id`.
+
+Those addresses are exactly
+`SubTracks::segment_slots[event_id - 1] + {0x4018, 0x4218, 0x421c}` because
+`SubgameRuntime::level_definition` begins at `+0xa874` and
+`SubTracks::segment_slots` at `+0x4`. The bounded
+`SubSegmentEventBiasView` therefore starts its one-based alias at `+0x6658`;
+element N aliases the real segment slot N-1, while element zero is explicitly
+invalid. Its `0x1a7cf8` extent ends with the real 100-slot segment bank. It is
+a borrowed analysis view, not a second `SubTracks` or `SubgameRuntime` owner.
+
+Binary Ninja had merged the scalar `row_event_id` EAX lifetime with the later
+game-base load at `0x43b752`. The replay splits only that definition
+(`RegisterVariableSourceType / 1586 / EAX`) and types it plus the independent
+message, duration, and sample game-base lifetimes. The scalar remains
+`int32_t`. IDA independently materializes only the sample base as a local
+(`0x43b823`, EDX), so its replay types that honest lifetime and deliberately
+leaves the three inlined Hex-Rays expressions untouched rather than installing
+overlapping fields.
+
+The tracked Binary Ninja artifact now resolves message presence, text,
+duration, and sample through `segment_slots_one_based`; IDA resolves the sample
+through the same view. Binary Ninja's `.message_duration.bits` spelling is its
+union-member presentation for the float load; the matching source retains the
+authored `.message_duration.value`. No matching source changed. A fresh
+focused receipt remains 74.43%, 2,070/2,087 normalized instructions, prefix
+12/2,087, with 290 clean operands and the same single bounded jump-table
+mismatch.

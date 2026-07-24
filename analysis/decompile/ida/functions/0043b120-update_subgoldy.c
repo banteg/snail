@@ -33,7 +33,7 @@ void __thiscall update_subgoldy(Player *player)
   char *v28; // esi
   int32_t v29; // eax
   int v30; // esi
-  SubgameRuntime *v31; // edx
+  SubSegmentEventBiasView *sample_segment_view; // edx
   SubLocTileId tile_id; // al
   double subgame_rate; // st7
   SubgameRuntime *v34; // ecx
@@ -193,7 +193,7 @@ void __thiscall update_subgoldy(Player *player)
       if ( replay_update_cursor < selected_level_record->replay_sample_count
         && player->click_start.state != CLICK_START_STATE_WAITING_FOR_START )
       {
-        p_position = (Vec3 *)&player->body.transform.position;
+        p_position = &player->body.transform.position;
         player->body.transform.position.x = convert_math_type16_to_32(
                                               selected_level_record->run_records[replay_update_cursor].lateral_x,
                                               16.0);
@@ -247,9 +247,13 @@ LABEL_60:
               dispatch_cutscene_animation(&player->presentation, 1, 0, -1);
             }
             v30 = *((_DWORD *)v28 + 60);
-            v31 = player->game;
-            if ( *(&v31->level_definition.segment_count + 4232 * v30) != -1 )
-              play_voice_manager(&g_voice_manager, 13, 2u, *(&v31->level_definition.segment_count + 4232 * v30));
+            sample_segment_view = (SubSegmentEventBiasView *)player->game;
+            if ( sample_segment_view->segment_slots_one_based[v30].message_sample_id != -1 )
+              play_voice_manager(
+                &g_voice_manager,
+                13,
+                2u,
+                sample_segment_view->segment_slots_one_based[v30].message_sample_id);
             enqueue_tip_message(&g_game_base->tip_manager, &player->row_event.tip_definition, 1);
           }
         }
@@ -1094,7 +1098,7 @@ LABEL_40:
         player->body.transform.position.x = player->game->subgame_rate * 0.2 * (v17 - player->body.transform.position.x)
                                           + player->body.transform.position.x;
     }
-    p_position = (Vec3 *)&player->body.transform.position;
+    p_position = &player->body.transform.position;
     v18 = convert_math_type32_to_16(player->body.transform.position.x, 16.0);
     source_celld = convert_math_type16_to_32(v18, 16.0);
     player->body.transform.position.x = source_celld;

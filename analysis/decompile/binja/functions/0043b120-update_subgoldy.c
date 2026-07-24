@@ -196,12 +196,12 @@
 0043b710        int32_t row_event_id = (&game_21->runtime_rows[0].row_event_id)[eax_34]
 0043b734        if (row_event_id s> 0 && row_event_id != player->row_event.id && row_event_id s< game_21->level_definition.segment_count + 1)
 0043b73a        player->row_event.id = row_event_id
-0043b764        if (*((&game_21->runtime_rows[0].row_event_id)[eax_34] * 0x4220 + player->game + 0xa670) != 0)
+0043b764        if (player->game->segment_slots_one_based[(&game_21->runtime_rows[0].row_event_id)[eax_34]].message_text[0] != 0)
 0043b76a        player->row_event.tip_definition.flags = 2
-0043b796        player->row_event.tip_definition.text = &player->game[(&game_21->runtime_rows[0].row_event_id)[eax_34] * 0x4220 + 0xa670]
+0043b796        player->row_event.tip_definition.text = &player->game->segment_slots_one_based[(&game_21->runtime_rows[0].row_event_id)[eax_34]].message_text
 0043b79c        player->row_event.tip_definition.layout_y = 0f
 0043b7a6        player->row_event.tip_definition.text_scale = 30f
-0043b7d2        player->row_event.tip_definition.dismiss_seconds = *((&game_21->runtime_rows[0].row_event_id)[eax_34] * 0x4220 + player->game + 0xa870)
+0043b7d2        player->row_event.tip_definition.dismiss_seconds = player->game->segment_slots_one_based[(&game_21->runtime_rows[0].row_event_id)[eax_34]].message_duration.bits
 0043b7d8        int16_t eax_40
 0043b7d8        eax_40.b = player->row_event_cutscene_started
 0043b7e0        if (eax_40.b == 0)
@@ -219,9 +219,9 @@
 0043b802        animation_id = 4
 0043b80a        dispatch_cutscene_animation(&player->presentation, animation_id, 1, 0xffffffff)
 0043b817        dispatch_cutscene_animation(&player->presentation, 1, 0, 0xffffffff)
-0043b837        int32_t sample_override = *(&player->game->level_definition + (&game_21->runtime_rows[0].row_event_id)[eax_34] * 0x4220)
-0043b841        if (sample_override != 0xffffffff)
-0043b84d        play_voice_manager(&g_voice_manager, 0xd, 2, sample_override)
+0043b837        int32_t message_sample_id = player->game->segment_slots_one_based[(&game_21->runtime_rows[0].row_event_id)[eax_34]].message_sample_id
+0043b841        if (message_sample_id != 0xffffffff)
+0043b84d        play_voice_manager(&g_voice_manager, 0xd, 2, message_sample_id)
 0043b866        enqueue_tip_message(&g_game_base->tip_manager, &player->row_event.tip_definition, 1)
 0043b86b        int16_t eax_43
 0043b86b        eax_43.b = player->attachment_exit_pending
