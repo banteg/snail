@@ -196,3 +196,25 @@ written `SUB_SLUG_STATE_ACTIVE`. Promoting the physical `state_ref` pointer to
 it preserves the exact 160/160 instructions and all 18 clean operands. The
 eight-slot capacity, root-biased selected-slot cursor, and unresolved return
 contract remain unchanged.
+
+## 2026-07-24 void ABI recovery
+
+The earlier Android evidence is now corroborated independently by the retained
+iOS `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)` body:
+
+- Android exhausts the pool with the `cRSubGame*` receiver still in `r0`, while
+  successful exits leave the computed blink-step float bits there.
+- iOS likewise reaches its exhaustion epilogue with the receiver in `r0`, while
+  successful exits leave the result of one of two `gRMathRand2()` calls there.
+- The sole Windows caller ignores EAX.
+
+Neither pair of mutually incompatible residues can be an authored result
+contract. Together the two independent ports prove that `AddSlug` is `void`;
+the Windows source and both analysis lanes now record that ABI instead of
+exporting an incidental integer.
+
+The honest void reconstruction is **94.34%**, `158/160` instructions, with the
+same 18 clean masked operands. VC6 no longer emits the direct full-pool return
+epilogue or the final EAX-preserving tail instruction. Those two native
+instructions remain a documented compiler/source-shape residual; they are not
+reintroduced with a fake return value.

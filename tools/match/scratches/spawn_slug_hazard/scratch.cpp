@@ -16,7 +16,7 @@
 int next_math_random_value();
 int report_errorf(char* format, ...);
 
-int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
+void SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
 {
     int slot_index = 0;
     Slug* scan = slug_hazards.slots;
@@ -27,7 +27,7 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
         ++scan;
         if (slot_index < SUB_SLUG_SLOT_CAPACITY)
             continue;
-        return slot_index;
+        return;
     }
 
     SubSlugState* state_ref = &slug_hazards.slots[slot_index].state;
@@ -110,8 +110,8 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
     }
 
     slug_hazards.slots[slot_index].blink_progress = 0.0f;
-    int result = next_math_random_value();
+    int blink_random_value = next_math_random_value();
     slug_hazards.slots[slot_index].blink_step =
-        1.0f / (((float)result * 0.000030517578f + 1.0f) * 60.0f);
-    return result;
+        1.0f /
+        (((float)blink_random_value * 0.000030517578f + 1.0f) * 60.0f);
 }

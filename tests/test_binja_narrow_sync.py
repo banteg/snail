@@ -6365,6 +6365,19 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     ):
         assert function_name in pool_sync
         assert function_name in ida_sync
+    assert (
+        "void __thiscall spawn_slug_hazard(SubgameRuntime* game, "
+        "TrackRowCell* cell, Player* owner_player)"
+        in pool_sync
+    )
+    assert (
+        "void __thiscall spawn_slug_hazard(SubgameRuntime* game, "
+        "TrackRowCell* cell, Player* owner_player);"
+        in ida_sync
+    )
+    assert "void spawn_slug_hazard(SubLoc* cell, Player* owner_player);" in (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
     assert "SPAWN_SLUG_HAZARD_LVAR_SPECS" in ida_sync
     assert "0x43DC89" in ida_sync
     assert "0x43DCBD" in ida_sync

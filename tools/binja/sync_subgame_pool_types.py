@@ -144,7 +144,7 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_slug_hazard",
-        "int32_t __thiscall spawn_slug_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* owner_player)",
+        "void __thiscall spawn_slug_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* owner_player)",
     ),
     (
         "update_slug_voice_ai",

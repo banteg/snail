@@ -11141,7 +11141,8 @@
         "slug_slot_cursor->slug.state = SUB_SLUG_STATE_ACTIVE",
         "slug_slot_cursor->slug.owner_player = owner_player",
         "slug_slot_cursor->slug.sprite->position",
-        "int32_t blink_random_value = next_math_random_value()",
+        "slug_slot_cursor->slug.blink_step",
+        "next_math_random_value()",
         "&game->player",
         "project_position_onto_track_attachment(game,",
         "g_game_base->subgame.subgame_rate",
@@ -11162,7 +11163,7 @@
       "name": "ida_slug_allocator_cursor_owners",
       "artifact": "analysis/decompile/ida/functions/0043dc80-spawn_slug_hazard.c",
       "required_substrings": [
-        "int32_t __thiscall spawn_slug_hazard(SubgameRuntime *game, TrackRowCell *cell, Player *owner_player)",
+        "void __thiscall spawn_slug_hazard(SubgameRuntime *game, TrackRowCell *cell, Player *owner_player)",
         "struct SlugStateStrideCursor *slug_state_cursor",
         "struct SlugSlotCursor *slug_slot_cursor",
         "slug_state_cursor->state",

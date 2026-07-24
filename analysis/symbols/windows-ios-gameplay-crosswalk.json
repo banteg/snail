@@ -804,7 +804,7 @@
       "android_symbol": "cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Android body independently proves the component-wise `(0, 0, -0.2) * subgame_rate` vector operation that makes the Windows allocator exact. Windows scans `SUB_SLUG_STATE_INACTIVE` and writes `ACTIVE` across the owned eight-slot pool. The sole Windows caller discards EAX, while Android leaves the receiver on exhaustion and a blink-step value on success; however, changing Windows to void removes two real instructions, so the exact non-void spelling is retained without assigning a semantic result role."
+      "notes": "The Android body independently proves the component-wise `(0, 0, -0.2) * subgame_rate` vector operation. Windows scans `SUB_SLUG_STATE_INACTIVE` and writes `ACTIVE` across the owned eight-slot pool. The sole Windows caller discards EAX, Android leaves the receiver on exhaustion but a computed blink-step value on success, and iOS independently leaves the receiver on exhaustion but one of two random-helper results on success. Those incompatible cross-port residues prove an authored void method. The honest Windows void reconstruction retains a two-instruction epilogue residual instead of exporting incidental EAX."
     },
     {
       "address": "0x43df10",

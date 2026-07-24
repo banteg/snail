@@ -9,7 +9,7 @@
 0043dc93        eax += 1
 0043dc94        slug_state_cursor = &slug_state_cursor[1]
 0043dc9d        if (eax s>= 8)
-0043dca3        return eax
+0043dca3        return
 0043dcbc        struct SlugSlotCursor* slug_slot_cursor = game + eax * 0xec
 0043dcbf        slug_slot_cursor->slug.state = SUB_SLUG_STATE_ACTIVE
 0043dcc9        slug_slot_cursor->slug.owner_player = owner_player
@@ -89,6 +89,5 @@
 0043deab        slug_slot_cursor->slug.engagement_voice_gate = 1
 0043dec1        game->next_slug_voice_trigger_z = fconvert.s(fconvert.t(game->slug_voice_trigger_spacing_z) + fconvert.t(game->next_slug_voice_trigger_z))
 0043dec7        slug_slot_cursor->slug.blink_progress = 0f
-0043decd        int32_t blink_random_value = next_math_random_value()
-0043def2        slug_slot_cursor->slug.blink_step = fconvert.s(fconvert.t(1f) / ((float.t(blink_random_value) * fconvert.t(3.05175781e-05f) + fconvert.t(1f)) * fconvert.t(60f)))
-0043deff        return blink_random_value
+0043def2        slug_slot_cursor->slug.blink_step = fconvert.s(fconvert.t(1f) / ((float.t(next_math_random_value()) * fconvert.t(3.05175781e-05f) + fconvert.t(1f)) * fconvert.t(60f)))
+0043deff        return

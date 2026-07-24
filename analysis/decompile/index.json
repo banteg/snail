@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "spawn_salt_hazard",
-      "address": "0x441560"
+      "name": "spawn_slug_hazard",
+      "address": "0x43dc80"
     }
   ],
   "health_check_count": 926,
