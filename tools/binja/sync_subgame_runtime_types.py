@@ -114,6 +114,10 @@ BANNER_EXPECTED_SIZES = {
     "BannerInitStrideView": 0x3CD6F8,
 }
 
+PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES = {
+    "PresentationAnimationObjectStrideCursor": 0x80,
+}
+
 BANNER_INITIALIZER_USER_VAR_UPDATES = (
     (
         "initialize_game_assets_and_world",
@@ -122,6 +126,52 @@ BANNER_INITIALIZER_USER_VAR_UPDATES = (
         -296,
         "banner_stride_view",
         "BannerInitStrideView*",
+    ),
+)
+
+# Five startup cleanup loops carry the address of the Object* field inside an
+# owned 0x80-byte PresentationAnimationSlot. Preserve that field-first stride
+# instead of rebasing the values to fabricated whole-slot or GameRoot owners.
+PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        18434,
+        -300,
+        "cutscene_animation_object_cursor",
+        "PresentationAnimationObjectStrideCursor*",
+    ),
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        18707,
+        -300,
+        "jetpack_animation_object_cursor",
+        "PresentationAnimationObjectStrideCursor*",
+    ),
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        19107,
+        -300,
+        "left_weapon_animation_object_cursor",
+        "PresentationAnimationObjectStrideCursor*",
+    ),
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        19507,
+        -300,
+        "right_weapon_animation_object_cursor",
+        "PresentationAnimationObjectStrideCursor*",
+    ),
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        19907,
+        -300,
+        "top_weapon_animation_object_cursor",
+        "PresentationAnimationObjectStrideCursor*",
     ),
 )
 
@@ -519,6 +569,7 @@ def main() -> int:
                 "Banner",
                 "BannerPool",
                 "BannerInitStrideView",
+                "PresentationAnimationObjectStrideCursor",
                 "ParcelState",
                 "Parcel",
                 "ParcelManager",
@@ -575,6 +626,27 @@ def main() -> int:
             "op": "owner_size_verify",
             "status": "verified",
             "owner_sizes": banner_sizes,
+        }
+    )
+    presentation_animation_cursor_sizes = {
+        name: current_struct_size(REPO_ROOT, target=args.target, struct_name=name)
+        for name in PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES
+    }
+    presentation_animation_cursor_size_mismatches = {
+        name: {"expected": expected, "observed": presentation_animation_cursor_sizes[name]}
+        for name, expected in PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES.items()
+        if presentation_animation_cursor_sizes[name] != expected
+    }
+    if presentation_animation_cursor_size_mismatches:
+        raise RuntimeError(
+            "refusing presentation-animation cursor replay with size mismatches: "
+            f"{presentation_animation_cursor_size_mismatches!r}"
+        )
+    operations.append(
+        {
+            "op": "owner_size_verify",
+            "status": "verified",
+            "owner_sizes": presentation_animation_cursor_sizes,
         }
     )
     operations.extend(
@@ -657,7 +729,10 @@ def main() -> int:
         apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=BANNER_INITIALIZER_USER_VAR_UPDATES,
+            updates=(
+                *BANNER_INITIALIZER_USER_VAR_UPDATES,
+                *PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES,
+            ),
         )
     )
     operations.extend(

@@ -7991,7 +7991,7 @@ def test_banner_backlink_owner_survives_every_replay_lane() -> None:
     assert '"BannerInitStrideView": 0x3CD6F8' in ida_runtime_sync
     assert '"definition_address": 0x40BEA8' in ida_runtime_sync
     assert '"stack_offset": 84' in ida_runtime_sync
-    assert "def _sync_banner_initializer_lvar()" in ida_runtime_sync
+    assert "def _sync_world_initializer_stack_pointer_lvars()" in ida_runtime_sync
     assert '"banner_initializer_lvar": banner_initializer_lvar' in ida_runtime_sync
 
     health = json.loads(
@@ -8016,6 +8016,94 @@ def test_banner_backlink_owner_survives_every_replay_lane() -> None:
         in ida_initializer["required_substrings"]
     )
     assert "3987096" in ida_initializer["forbidden_substrings"]
+
+
+def test_presentation_animation_object_cursor_survives_every_replay_lane() -> None:
+    repo_root = Path(__file__).parents[1]
+    headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+            "path_template_types.h",
+        )
+    )
+    runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    matcher_weapon = (repo_root / "tools/match/include/weapon.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_player = (repo_root / "tools/match/include/player.h").read_text(
+        encoding="utf-8"
+    )
+
+    for header in headers:
+        assert "typedef struct PresentationAnimationObjectStrideCursor {" in header
+        assert "Object* object;" in header
+        assert "uint8_t slot_stride_tail[0x7c];" in header
+        assert "it owns neither the slot nor the Object" in header
+
+    assert "PresentationAnimationObjectStrideCursor" not in matcher_weapon
+    assert "PresentationAnimationSlot animation_slots[5];" in matcher_weapon
+    assert (
+        "PresentationAnimationSlot cutscene_animation_slots[10];"
+        in matcher_player
+    )
+    assert "Weapon jetpack_channel;" in matcher_player
+
+    cursor_names = (
+        "cutscene_animation_object_cursor",
+        "jetpack_animation_object_cursor",
+        "left_weapon_animation_object_cursor",
+        "right_weapon_animation_object_cursor",
+        "top_weapon_animation_object_cursor",
+    )
+    for sync in (runtime_sync, path_sync):
+        assert "PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES" in sync
+        assert '"PresentationAnimationObjectStrideCursor": 0x80' in sync
+        for cursor_name in cursor_names:
+            assert f'"{cursor_name}",' in sync
+
+    for index in (18434, 18707, 19107, 19507, 19907):
+        assert f"        {index}," in runtime_sync
+        assert f"        {index}," in path_sync
+
+    assert '"PresentationAnimationSlot": 0x80' in ida_runtime_sync
+    assert '"PresentationAnimationObjectStrideCursor": 0x80' in ida_runtime_sync
+    assert "PRESENTATION_ANIMATION_CURSOR_LVARS" in ida_runtime_sync
+    assert "def _sync_world_initializer_stack_pointer_lvars()" in ida_runtime_sync
+    assert '"presentation_animation_cursor_lvars": (' in ida_runtime_sync
+    assert "presentation_animation_cursor_lvars" in ida_runtime_sync
+    for definition_address in (0x40F4F3, 0x40F604, 0x40F794, 0x40F924, 0x40FAB4):
+        assert f'"definition_address": 0x{definition_address:X}' in ida_runtime_sync
+    for cursor_name in cursor_names:
+        assert f'"target_name": "{cursor_name}"' in ida_runtime_sync
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    bn_check = checks["bn_game_initializer_animation_object_cursor_ownership"]
+    ida_check = checks["ida_game_initializer_animation_object_cursor_ownership"]
+    assert (
+        "struct Object* object = cutscene_animation_object_cursor->object"
+        in bn_check["required_substrings"]
+    )
+    assert "(var_12c - 0x432870)->subgame" in bn_check["forbidden_substrings"]
+    assert (
+        "cutscene_animation_object_cursor[-1].object->distort.y_squash = 0.0;"
+        in ida_check["required_substrings"]
+    )
+    assert "x_offseta += 32" in ida_check["forbidden_substrings"]
 
 
 def test_cameraman_force_update_owner_survives_path_replay() -> None:
@@ -9406,6 +9494,12 @@ def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch)
     assert "commit_undo_actions" in calls[1][-1]
     assert "save_auto_snapshot" in calls[1][-1]
     assert "define_user_type" in calls[1][-1]
+    assert "def _structure_signature(type_)" in calls[0][-1]
+    assert "member.type.type_class" in calls[0][-1]
+    assert "member.type.alignment" in calls[0][-1]
+    assert "str(member.type)" in calls[0][-1]
+    assert "parsed_structure_signature is not None" in calls[0][-1]
+    assert '"verified": direct_match or structural_match' in calls[0][-1]
     assert all(call[:2] != ("types", "declare") for call in calls)
 
 

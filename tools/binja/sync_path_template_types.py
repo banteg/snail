@@ -78,6 +78,11 @@ AUTHORED_ROW_CURSOR_SIZES = {
     "AuthoredSegmentRowPositionCursorView": 0x38,
 }
 
+PRESENTATION_ANIMATION_CURSOR_SIZES = {
+    "PresentationAnimationSlot": 0x80,
+    "PresentationAnimationObjectStrideCursor": 0x80,
+}
+
 TIP_FUNCTION_SYMBOL_UPDATES = (
     ("0x4489e0", "kill_tip_widgets"),
     ("0x448a40", "initialize_tip"),
@@ -465,6 +470,7 @@ REQUIRED_HEADER_STRUCTS = (
     "PresentationWobbleController",
     "ObjectAnimation",
     "PresentationAnimationSlot",
+    "PresentationAnimationObjectStrideCursor",
     "AnimManager",
     "Weapon",
     "GolbShot",
@@ -487,6 +493,7 @@ def ensure_path_analysis_views(
         "TimeTrialCourseRecord",
         "TimeTrial",
         "PresentationWobbleController",
+        "PresentationAnimationObjectStrideCursor",
         "RuntimeCellStrideAnchor",
         "TrackRowCellSameLaneCursorView",
         "AuthoredSegmentRowPositionCursorView",
@@ -632,6 +639,28 @@ def verify_authored_row_cursor_sizes(*, target: str) -> dict[str, object]:
         "op": "owner_size_verify",
         "status": "verified",
         "owner_group": "authored_row_cursor",
+        "owner_sizes": observed,
+    }
+
+
+def verify_presentation_animation_cursor_sizes(*, target: str) -> dict[str, object]:
+    """Fail closed before replaying the animation-object field cursors."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=PRESENTATION_ANIMATION_CURSOR_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in PRESENTATION_ANIMATION_CURSOR_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"presentation animation cursor size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "presentation_animation_cursor",
         "owner_sizes": observed,
     }
 
@@ -856,6 +885,52 @@ BANNER_INITIALIZER_USER_VAR_UPDATES = (
         -296,
         "banner_stride_view",
         "BannerInitStrideView*",
+    ),
+)
+
+# Five startup cleanup loops carry the address of the Object* field inside an
+# owned 0x80-byte PresentationAnimationSlot. Preserve that field-first stride
+# instead of rebasing the values to fabricated whole-slot or GameRoot owners.
+PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        18434,
+        -300,
+        "cutscene_animation_object_cursor",
+        "PresentationAnimationObjectStrideCursor*",
+    ),
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        18707,
+        -300,
+        "jetpack_animation_object_cursor",
+        "PresentationAnimationObjectStrideCursor*",
+    ),
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        19107,
+        -300,
+        "left_weapon_animation_object_cursor",
+        "PresentationAnimationObjectStrideCursor*",
+    ),
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        19507,
+        -300,
+        "right_weapon_animation_object_cursor",
+        "PresentationAnimationObjectStrideCursor*",
+    ),
+    (
+        "initialize_game_assets_and_world",
+        "StackVariableSourceType",
+        19907,
+        -300,
+        "top_weapon_animation_object_cursor",
+        "PresentationAnimationObjectStrideCursor*",
     ),
 )
 
@@ -3778,6 +3853,9 @@ def main() -> int:
             )
         )
         operations.append(verify_authored_row_cursor_sizes(target=args.target))
+        operations.append(
+            verify_presentation_animation_cursor_sizes(target=args.target)
+        )
         operations.extend(
             apply_split_user_var_update(
                 REPO_ROOT,
@@ -4239,6 +4317,7 @@ def main() -> int:
                 *MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
                 *BANNER_INITIALIZER_USER_VAR_UPDATES,
+                *PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES,
                 *NUKE_USER_VAR_UPDATES,
                 *TIP_MANAGER_USER_VAR_UPDATES,
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,

@@ -229,6 +229,18 @@ typedef struct BannerInitStrideView {
     Banner banner;
 } BannerInitStrideView;
 
+/*
+ * Analysis-only field-first view for the animation-object cleanup loops in
+ * initialize_game_assets_and_world. The physical pointer begins at
+ * PresentationAnimationSlot::body.bod.object and advances by the complete
+ * 0x80-byte slot stride. The tail aliases the rest of the current slot and
+ * the prefix of the next one; it owns neither the slot nor the Object.
+ */
+typedef struct PresentationAnimationObjectStrideCursor {
+    Object* object;
+    uint8_t slot_stride_tail[0x7c];
+} PresentationAnimationObjectStrideCursor;
+
 #define SUB_SOLUTION_STRIDE 0x1fac0
 #define SUB_SOLUTION_PLAYER_NAME_SIZE 0x14
 #define SUB_SOLUTION_RUN_RECORD_COUNT 21600

@@ -10,15 +10,19 @@
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "ida_refreshed": true,
-  "health_check_ran": false,
-  "strict": false,
+  "health_check_ran": true,
+  "strict": true,
   "selected_functions": [
     {
       "name": "initialize_game_assets_and_world",
       "address": "0x40acf0"
     }
-  ]
+  ],
+  "health_check_count": 962,
+  "health_failing_check_count": 0,
+  "health_passed": true,
+  "health_config": "analysis/decompile/health_checks.json"
 }

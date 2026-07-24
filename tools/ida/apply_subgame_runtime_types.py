@@ -97,6 +97,12 @@ BANNER_OWNER_EXPECTED_SIZES = {
     "BannerPool": 0xC0,
     "BannerInitStrideView": 0x3CD6F8,
 }
+
+PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES = {
+    "PresentationAnimationSlot": 0x80,
+    "PresentationAnimationObjectStrideCursor": 0x80,
+}
+
 BANNER_INITIALIZER_LVAR = {
     "selector": "initialize_game_assets_and_world",
     "definition_address": 0x40BEA8,
@@ -106,6 +112,84 @@ BANNER_INITIALIZER_LVAR = {
     "target_name": "banner_stride_view",
     "target_struct_name": "BannerInitStrideView",
 }
+
+PRESENTATION_ANIMATION_CURSOR_LVARS = (
+    {
+        "selector": "initialize_game_assets_and_world",
+        "definition_address": 0x40F4F3,
+        "stack_offset": 80,
+        "accepted_names": {
+            "x_offseta",
+            "cutscene_animation_object_cursor",
+        },
+        "accepted_types": {
+            "Object **",
+            "PresentationAnimationObjectStrideCursor *",
+        },
+        "target_name": "cutscene_animation_object_cursor",
+        "target_struct_name": "PresentationAnimationObjectStrideCursor",
+    },
+    {
+        "selector": "initialize_game_assets_and_world",
+        "definition_address": 0x40F604,
+        "stack_offset": 80,
+        "accepted_names": {
+            "x_offsetb",
+            "jetpack_animation_object_cursor",
+        },
+        "accepted_types": {
+            "Object **",
+            "PresentationAnimationObjectStrideCursor *",
+        },
+        "target_name": "jetpack_animation_object_cursor",
+        "target_struct_name": "PresentationAnimationObjectStrideCursor",
+    },
+    {
+        "selector": "initialize_game_assets_and_world",
+        "definition_address": 0x40F794,
+        "stack_offset": 80,
+        "accepted_names": {
+            "x_offsetc",
+            "left_weapon_animation_object_cursor",
+        },
+        "accepted_types": {
+            "Object **",
+            "PresentationAnimationObjectStrideCursor *",
+        },
+        "target_name": "left_weapon_animation_object_cursor",
+        "target_struct_name": "PresentationAnimationObjectStrideCursor",
+    },
+    {
+        "selector": "initialize_game_assets_and_world",
+        "definition_address": 0x40F924,
+        "stack_offset": 80,
+        "accepted_names": {
+            "x_offsetd",
+            "right_weapon_animation_object_cursor",
+        },
+        "accepted_types": {
+            "Object **",
+            "PresentationAnimationObjectStrideCursor *",
+        },
+        "target_name": "right_weapon_animation_object_cursor",
+        "target_struct_name": "PresentationAnimationObjectStrideCursor",
+    },
+    {
+        "selector": "initialize_game_assets_and_world",
+        "definition_address": 0x40FAB4,
+        "stack_offset": 80,
+        "accepted_names": {
+            "x_offsete",
+            "top_weapon_animation_object_cursor",
+        },
+        "accepted_types": {
+            "Object **",
+            "PresentationAnimationObjectStrideCursor *",
+        },
+        "target_name": "top_weapon_animation_object_cursor",
+        "target_struct_name": "PresentationAnimationObjectStrideCursor",
+    },
+)
 
 
 TRUSTED_DECLARATIONS = [
@@ -473,6 +557,9 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "typedef struct SubGarbageSlotCursor {",
     "typedef struct BannerInitStrideView {",
     "uint8_t root_to_banner[0x3cd698];",
+    "typedef struct PresentationAnimationObjectStrideCursor {",
+    "Object* object;",
+    "uint8_t slot_stride_tail[0x7c];",
 )
 
 EXPECTED_PARCEL_OWNER_SIZES = {
@@ -1266,130 +1353,171 @@ def _sync_allocator_lvar(
     }
 
 
-def _sync_banner_initializer_lvar() -> dict[str, object]:
-    """Persist the exact root-relative stride view used by Banner startup."""
-    spec = BANNER_INITIALIZER_LVAR
-    selector = str(spec["selector"])
+def _sync_world_initializer_stack_pointer_lvars() -> dict[str, object]:
+    """Batch exact field-stride views in the giant world initializer."""
+    specs = (BANNER_INITIALIZER_LVAR, *PRESENTATION_ANIMATION_CURSOR_LVARS)
+    selectors = {str(spec["selector"]) for spec in specs}
+    if len(selectors) != 1:
+        return {
+            "status": "failed",
+            "reason": "world_initializer_selector_mismatch",
+            "selectors": sorted(selectors),
+        }
+    selector = selectors.pop()
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR:
         return {"status": "failed", "reason": "missing_function", "selector": selector}
 
-    definition_address = int(spec["definition_address"])
-    stack_offset = int(spec["stack_offset"])
-    accepted_names = set(spec["accepted_names"])
-    accepted_types = {
-        _normalize_pointer_type(value) for value in spec["accepted_types"]
-    }
-    target_name = str(spec["target_name"])
-    target_struct_name = str(spec["target_struct_name"])
-
     ida_hexrays.mark_cfunc_dirty(address, True)
     cfunc = ida_hexrays.decompile(address)
-    candidates = [
-        lvar
-        for lvar in cfunc.get_lvars()
-        if not lvar.is_arg_var
-        and lvar.is_stk_var()
-        and lvar.defea == definition_address
-        and lvar.get_stkoff() == stack_offset
-        and lvar.name in accepted_names
-        and _normalize_pointer_type(str(lvar.type())) in accepted_types
+    pending = []
+    results = []
+    for spec in specs:
+        definition_address = int(spec["definition_address"])
+        stack_offset = int(spec["stack_offset"])
+        accepted_names = set(spec["accepted_names"])
+        accepted_types = {
+            _normalize_pointer_type(value) for value in spec["accepted_types"]
+        }
+        target_name = str(spec["target_name"])
+        target_struct_name = str(spec["target_struct_name"])
+        target_pointer_type = _normalize_pointer_type(f"{target_struct_name} *")
+        candidates = [
+            lvar
+            for lvar in cfunc.get_lvars()
+            if not lvar.is_arg_var
+            and lvar.is_stk_var()
+            and lvar.defea == definition_address
+            and lvar.get_stkoff() == stack_offset
+            and lvar.name in accepted_names
+            and _normalize_pointer_type(str(lvar.type())) in accepted_types
+        ]
+        if len(candidates) != 1:
+            return {
+                "status": "failed",
+                "reason": "unexpected_world_initializer_lvar_candidates",
+                "selector": selector,
+                "target_name": target_name,
+                "definition_address": hex(definition_address),
+                "stack_offset": stack_offset,
+                "candidate_count": len(candidates),
+            }
+
+        lvar = candidates[0]
+        if (
+            lvar.name == target_name
+            and _normalize_pointer_type(str(lvar.type())) == target_pointer_type
+        ):
+            results.append(
+                {
+                    "status": "unchanged",
+                    "name": lvar.name,
+                    "type": str(lvar.type()),
+                    "definition_address": hex(lvar.defea),
+                    "stack_offset": lvar.get_stkoff(),
+                }
+            )
+            continue
+
+        target_type = ida_typeinf.tinfo_t()
+        if not target_type.get_named_type(
+            None,
+            target_struct_name,
+            ida_typeinf.BTF_STRUCT,
+        ):
+            return {
+                "status": "failed",
+                "reason": "missing_world_initializer_lvar_type",
+                "selector": selector,
+                "target_name": target_name,
+                "target_struct_name": target_struct_name,
+            }
+        pointer_type = ida_typeinf.tinfo_t()
+        if not pointer_type.create_ptr(target_type):
+            return {
+                "status": "failed",
+                "reason": "create_world_initializer_pointer_type_failed",
+                "selector": selector,
+                "target_name": target_name,
+                "target_struct_name": target_struct_name,
+            }
+        pending.append(
+            {
+                "lvar": lvar,
+                "target_name": target_name,
+                "pointer_type": pointer_type,
+                "target_pointer_type": target_pointer_type,
+                "definition_address": definition_address,
+                "stack_offset": stack_offset,
+                "before_name": lvar.name,
+                "before_type": str(lvar.type()),
+            }
+        )
+
+    for update in pending:
+        lvar = update["lvar"]
+        info = ida_hexrays.lvar_saved_info_t()
+        info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+        info.name = update["target_name"]
+        info.type = update["pointer_type"]
+        if not ida_hexrays.modify_user_lvar_info(
+            address,
+            ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+            info,
+        ):
+            return {
+                "status": "failed",
+                "reason": "modify_world_initializer_lvar_failed",
+                "selector": selector,
+                "target_name": update["target_name"],
+            }
+
+    if pending:
+        ida_hexrays.mark_cfunc_dirty(address, True)
+        cfunc = ida_hexrays.decompile(address)
+    for update in pending:
+        verified = [
+            candidate
+            for candidate in cfunc.get_lvars()
+            if not candidate.is_arg_var
+            and candidate.is_stk_var()
+            and candidate.defea == update["definition_address"]
+            and candidate.get_stkoff() == update["stack_offset"]
+            and candidate.name == update["target_name"]
+            and _normalize_pointer_type(str(candidate.type()))
+            == update["target_pointer_type"]
+        ]
+        if len(verified) != 1:
+            return {
+                "status": "failed",
+                "reason": "world_initializer_lvar_readback_failed",
+                "selector": selector,
+                "target_name": update["target_name"],
+                "definition_address": hex(update["definition_address"]),
+                "stack_offset": update["stack_offset"],
+                "candidate_count": len(verified),
+            }
+        results.append(
+            {
+                "status": "applied",
+                "before_name": update["before_name"],
+                "before_type": update["before_type"],
+                "name": verified[0].name,
+                "type": str(verified[0].type()),
+                "definition_address": hex(verified[0].defea),
+                "stack_offset": verified[0].get_stkoff(),
+            }
+        )
+
+    result_by_name = {str(result["name"]): result for result in results}
+    ordered_results = [
+        result_by_name[str(spec["target_name"])]
+        for spec in specs
     ]
-    if len(candidates) != 1:
-        return {
-            "status": "failed",
-            "reason": "unexpected_banner_initializer_lvar_candidates",
-            "selector": selector,
-            "definition_address": hex(definition_address),
-            "stack_offset": stack_offset,
-            "candidate_count": len(candidates),
-        }
-
-    lvar = candidates[0]
-    target_pointer_type = _normalize_pointer_type(f"{target_struct_name} *")
-    if (
-        lvar.name == target_name
-        and _normalize_pointer_type(str(lvar.type())) == target_pointer_type
-    ):
-        return {
-            "status": "unchanged",
-            "selector": selector,
-            "name": lvar.name,
-            "type": str(lvar.type()),
-            "definition_address": hex(lvar.defea),
-            "stack_offset": lvar.get_stkoff(),
-        }
-
-    target_type = ida_typeinf.tinfo_t()
-    if not target_type.get_named_type(
-        None,
-        target_struct_name,
-        ida_typeinf.BTF_STRUCT,
-    ):
-        return {
-            "status": "failed",
-            "reason": "missing_banner_initializer_lvar_type",
-            "selector": selector,
-            "target_struct_name": target_struct_name,
-        }
-    pointer_type = ida_typeinf.tinfo_t()
-    if not pointer_type.create_ptr(target_type):
-        return {
-            "status": "failed",
-            "reason": "create_banner_initializer_pointer_type_failed",
-            "selector": selector,
-            "target_struct_name": target_struct_name,
-        }
-
-    before_name = lvar.name
-    before_type = str(lvar.type())
-    info = ida_hexrays.lvar_saved_info_t()
-    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
-    info.name = target_name
-    info.type = pointer_type
-    if not ida_hexrays.modify_user_lvar_info(
-        address,
-        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
-        info,
-    ):
-        return {
-            "status": "failed",
-            "reason": "modify_banner_initializer_lvar_failed",
-            "selector": selector,
-            "target_name": target_name,
-        }
-
-    ida_hexrays.mark_cfunc_dirty(address, True)
-    verified_cfunc = ida_hexrays.decompile(address)
-    verified = [
-        candidate
-        for candidate in verified_cfunc.get_lvars()
-        if not candidate.is_arg_var
-        and candidate.is_stk_var()
-        and candidate.defea == definition_address
-        and candidate.get_stkoff() == stack_offset
-        and candidate.name == target_name
-        and _normalize_pointer_type(str(candidate.type())) == target_pointer_type
-    ]
-    if len(verified) != 1:
-        return {
-            "status": "failed",
-            "reason": "banner_initializer_lvar_readback_failed",
-            "selector": selector,
-            "definition_address": hex(definition_address),
-            "stack_offset": stack_offset,
-            "candidate_count": len(verified),
-        }
-
     return {
-        "status": "applied",
+        "status": "applied" if pending else "unchanged",
         "selector": selector,
-        "before_name": before_name,
-        "before_type": before_type,
-        "name": verified[0].name,
-        "type": str(verified[0].type()),
-        "definition_address": hex(verified[0].defea),
-        "stack_offset": verified[0].get_stkoff(),
+        "locals": ordered_results,
     }
 
 
@@ -1493,6 +1621,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
     banner_owner_sizes = {
         name: _named_struct_size(name) for name in BANNER_OWNER_EXPECTED_SIZES
     }
+    presentation_animation_cursor_sizes = {
+        name: _named_struct_size(name)
+        for name in PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES
+    }
     size_failures = [
         {
             "selector": name,
@@ -1513,6 +1645,18 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in BANNER_OWNER_EXPECTED_SIZES.items()
         if banner_owner_sizes[name] != expected_size
     )
+    size_failures.extend(
+        {
+            "selector": name,
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": presentation_animation_cursor_sizes[name],
+        }
+        for name, expected_size in (
+            PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES.items()
+        )
+        if presentation_animation_cursor_sizes[name] != expected_size
+    )
     if parse_errors or size_failures:
         print(
             json.dumps(
@@ -1522,6 +1666,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "parse_errors": parse_errors,
                     "parcel_owner_sizes": parcel_owner_sizes,
                     "banner_owner_sizes": banner_owner_sizes,
+                    "presentation_animation_cursor_sizes": (
+                        presentation_animation_cursor_sizes
+                    ),
                     "failed": size_failures,
                 },
                 indent=2,
@@ -1650,18 +1797,41 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
-    banner_initializer_lvar = _sync_banner_initializer_lvar()
-    if banner_initializer_lvar.get("status") == "applied":
-        applied += 1
-    elif banner_initializer_lvar.get("status") == "unchanged":
-        unchanged += 1
-    else:
+    world_initializer_stack_pointer_lvars = (
+        _sync_world_initializer_stack_pointer_lvars()
+    )
+    if world_initializer_stack_pointer_lvars.get("status") == "failed":
+        banner_initializer_lvar = world_initializer_stack_pointer_lvars
+        presentation_animation_cursor_lvars = (
+            world_initializer_stack_pointer_lvars
+        )
         failed.append(
             {
                 "selector": "initialize_game_assets_and_world",
-                "lvar": "banner_stride_view",
-                "result": banner_initializer_lvar,
+                "lvars": "world_initializer_stack_pointer_lvars",
+                "result": world_initializer_stack_pointer_lvars,
             }
+        )
+    else:
+        initializer_locals = world_initializer_stack_pointer_lvars["locals"]
+        banner_initializer_lvar = initializer_locals[0]
+        animation_locals = initializer_locals[1:]
+        presentation_animation_cursor_lvars = {
+            "status": (
+                "applied"
+                if any(local["status"] == "applied" for local in animation_locals)
+                else "unchanged"
+            ),
+            "selector": "initialize_game_assets_and_world",
+            "locals": animation_locals,
+        }
+        applied += sum(
+            local["status"] == "applied"
+            for local in initializer_locals
+        )
+        unchanged += sum(
+            local["status"] == "unchanged"
+            for local in initializer_locals
         )
 
     garbage_allocator_lvars = {}
@@ -1821,6 +1991,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "contact_header": str(contact_header_path),
                 "parcel_owner_sizes": parcel_owner_sizes,
                 "banner_owner_sizes": banner_owner_sizes,
+                "presentation_animation_cursor_sizes": (
+                    presentation_animation_cursor_sizes
+                ),
                 "time_trial_owner_readback": time_trial_owner_readback,
                 "salt_owner_readback": salt_owner_readback,
                 "sub_lazer_owner_readback": sub_lazer_owner_readback,
@@ -1863,6 +2036,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "BannerInitStrideView": _named_struct_size(
                         "BannerInitStrideView"
                     ),
+                    "PresentationAnimationObjectStrideCursor": (
+                        _named_struct_size(
+                            "PresentationAnimationObjectStrideCursor"
+                        )
+                    ),
                 },
                 "parse_errors": parse_errors,
                 "applied": applied,
@@ -1876,6 +2054,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "slug_allocator_lvars": slug_allocator_lvars,
                 "salt_allocator_lvars": salt_allocator_lvars,
                 "banner_initializer_lvar": banner_initializer_lvar,
+                "presentation_animation_cursor_lvars": (
+                    presentation_animation_cursor_lvars
+                ),
                 "missing": missing,
                 "failed": failed,
             },

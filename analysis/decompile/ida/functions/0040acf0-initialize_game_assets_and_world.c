@@ -310,13 +310,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   int32_t *p_flags; // eax
   int v305; // ecx
   float x_offset; // [esp+10h] [ebp-12Ch]
-  Object **x_offseta; // [esp+10h] [ebp-12Ch]
-  Object **x_offsetb; // [esp+10h] [ebp-12Ch]
-  Object **x_offsetc; // [esp+10h] [ebp-12Ch]
-  Object **x_offsetd; // [esp+10h] [ebp-12Ch]
-  Object **x_offsete; // [esp+10h] [ebp-12Ch]
-  int x_offsetf; // [esp+10h] [ebp-12Ch]
-  int32_t x_offsetg; // [esp+10h] [ebp-12Ch]
+  struct PresentationAnimationObjectStrideCursor *cutscene_animation_object_cursor; // [esp+10h] [ebp-12Ch]
+  struct PresentationAnimationObjectStrideCursor *jetpack_animation_object_cursor; // [esp+10h] [ebp-12Ch]
+  struct PresentationAnimationObjectStrideCursor *left_weapon_animation_object_cursor; // [esp+10h] [ebp-12Ch]
+  struct PresentationAnimationObjectStrideCursor *right_weapon_animation_object_cursor; // [esp+10h] [ebp-12Ch]
+  struct PresentationAnimationObjectStrideCursor *top_weapon_animation_object_cursor; // [esp+10h] [ebp-12Ch]
+  int x_offseta; // [esp+10h] [ebp-12Ch]
+  int32_t x_offsetb; // [esp+10h] [ebp-12Ch]
   uint32_t *edge_selector; // [esp+14h] [ebp-128h]
   uint32_t *edge_selectora; // [esp+14h] [ebp-128h]
   int32_t edge_selectorb; // [esp+14h] [ebp-128h]
@@ -2745,17 +2745,18 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   load_x_mesh(&game->directx_loader, aTurbohotspotsX, *(Object **)((char *)&game->vtable + (_DWORD)&loc_433D6F + 1), 2);
   build_snail_hotspots((Snail *)((char *)game + (_DWORD)&loc_4326FF + 1));
   edge_selectord = 10;
-  x_offseta = (Object **)((char *)&loc_432870 + (_DWORD)game);
+  cutscene_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)((char *)&loc_432870
+                                                                                      + (_DWORD)game);
   do
   {
-    (*x_offseta)->flags |= 4u;
-    apply_object_toon(*x_offseta, 0);
-    v250 = *x_offseta;
-    x_offseta += 32;
+    cutscene_animation_object_cursor->object->flags |= 4u;
+    apply_object_toon(cutscene_animation_object_cursor->object, 0);
+    v250 = cutscene_animation_object_cursor->object;
+    ++cutscene_animation_object_cursor;
     v250->distort.z_wave = 0.0;
-    (*(x_offseta - 32))->distort.y_squash = 0.0;
+    cutscene_animation_object_cursor[-1].object->distort.y_squash = 0.0;
     v56 = edge_selectord == 1;
-    (*(x_offseta - 32))->distort.xyz_scale = 0.0;
+    cutscene_animation_object_cursor[-1].object->distort.xyz_scale = 0.0;
     --edge_selectord;
   }
   while ( !v56 );
@@ -2777,17 +2778,17 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object((BodBase *)((char *)&loc_433AB0 + (_DWORD)game), v253);
   load_x_animation_clip(&game->directx_loader, aJetpackDraw000, *(Object **)((char *)&loc_433AD4 + (_DWORD)game));
   edge_selectore = 2;
-  x_offsetb = (Object **)((char *)&loc_433A54 + (_DWORD)game);
+  jetpack_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)((char *)&loc_433A54 + (_DWORD)game);
   do
   {
-    (*x_offsetb)->flags |= 4u;
-    apply_object_toon(*x_offsetb, 0);
-    v254 = *x_offsetb;
-    x_offsetb += 32;
+    jetpack_animation_object_cursor->object->flags |= 4u;
+    apply_object_toon(jetpack_animation_object_cursor->object, 0);
+    v254 = jetpack_animation_object_cursor->object;
+    ++jetpack_animation_object_cursor;
     v254->distort.z_wave = 0.0;
-    (*(x_offsetb - 32))->distort.y_squash = 0.0;
+    jetpack_animation_object_cursor[-1].object->distort.y_squash = 0.0;
     v56 = edge_selectore == 1;
-    (*(x_offsetb - 32))->distort.xyz_scale = 0.0;
+    jetpack_animation_object_cursor[-1].object->distort.xyz_scale = 0.0;
     --edge_selectore;
   }
   while ( !v56 );
@@ -2830,17 +2831,19 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     aLaserleftDraw0,
     *(Object **)((char *)&game->vtable + (_DWORD)&loc_4330BF + 1));
   edge_selectorf = 5;
-  x_offsetc = (Object **)((char *)game + (_DWORD)&loc_432EBF + 1);
+  left_weapon_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)((char *)game
+                                                                                         + (_DWORD)&loc_432EBF
+                                                                                         + 1);
   do
   {
-    (*x_offsetc)->flags |= 4u;
-    apply_object_toon(*x_offsetc, 0);
-    v261 = *x_offsetc;
-    x_offsetc += 32;
+    left_weapon_animation_object_cursor->object->flags |= 4u;
+    apply_object_toon(left_weapon_animation_object_cursor->object, 0);
+    v261 = left_weapon_animation_object_cursor->object;
+    ++left_weapon_animation_object_cursor;
     v261->distort.z_wave = 0.0;
-    (*(x_offsetc - 32))->distort.y_squash = 0.0;
+    left_weapon_animation_object_cursor[-1].object->distort.y_squash = 0.0;
     v56 = edge_selectorf == 1;
-    (*(x_offsetc - 32))->distort.xyz_scale = 0.0;
+    left_weapon_animation_object_cursor[-1].object->distort.xyz_scale = 0.0;
     --edge_selectorf;
   }
   while ( !v56 );
@@ -2880,17 +2883,19 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     aLaserrightDraw,
     *(Object **)((char *)&game->vtable + (_DWORD)&loc_433499 + 3));
   edge_selectorg = 5;
-  x_offsetd = (Object **)((char *)game + (_DWORD)&loc_43329B + 1);
+  right_weapon_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)((char *)game
+                                                                                          + (_DWORD)&loc_43329B
+                                                                                          + 1);
   do
   {
-    (*x_offsetd)->flags |= 4u;
-    apply_object_toon(*x_offsetd, 0);
-    v268 = *x_offsetd;
-    x_offsetd += 32;
+    right_weapon_animation_object_cursor->object->flags |= 4u;
+    apply_object_toon(right_weapon_animation_object_cursor->object, 0);
+    v268 = right_weapon_animation_object_cursor->object;
+    ++right_weapon_animation_object_cursor;
     v268->distort.z_wave = 0.0;
-    (*(x_offsetd - 32))->distort.y_squash = 0.0;
+    right_weapon_animation_object_cursor[-1].object->distort.y_squash = 0.0;
     v56 = edge_selectorg == 1;
-    (*(x_offsetd - 32))->distort.xyz_scale = 0.0;
+    right_weapon_animation_object_cursor[-1].object->distort.xyz_scale = 0.0;
     --edge_selectorg;
   }
   while ( !v56 );
@@ -2936,17 +2941,19 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     aRocketlauncher_0,
     *(Object **)((char *)&game->vtable + (_DWORD)&loc_433877 + 1));
   edge_selectorh = 5;
-  x_offsete = (Object **)((char *)game + (_DWORD)&loc_433677 + 1);
+  top_weapon_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)((char *)game
+                                                                                        + (_DWORD)&loc_433677
+                                                                                        + 1);
   do
   {
-    (*x_offsete)->flags |= 4u;
-    apply_object_toon(*x_offsete, 0);
-    v275 = *x_offsete;
-    x_offsete += 32;
+    top_weapon_animation_object_cursor->object->flags |= 4u;
+    apply_object_toon(top_weapon_animation_object_cursor->object, 0);
+    v275 = top_weapon_animation_object_cursor->object;
+    ++top_weapon_animation_object_cursor;
     v275->distort.z_wave = 0.0;
-    (*(x_offsete - 32))->distort.y_squash = 0.0;
+    top_weapon_animation_object_cursor[-1].object->distort.y_squash = 0.0;
     v56 = edge_selectorh == 1;
-    (*(x_offsete - 32))->distort.xyz_scale = 0.0;
+    top_weapon_animation_object_cursor[-1].object->distort.xyz_scale = 0.0;
     --edge_selectorh;
   }
   while ( !v56 );
@@ -3054,7 +3061,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   {
     for ( orientation = 0; orientation < 4; ++orientation )
     {
-      x_offsetf = 0;
+      x_offseta = 0;
       v296 = v295;
       do
       {
@@ -3062,14 +3069,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
         {
           v298 = add_object_to_list(&g_object_list);
           set_bod_object((BodBase *)(v296 - 9), v298);
-          initialize_backdrop_tile_quad(*v296, edge_selectorj, orientation, x_offsetf - 1, j - 1, aObjectsUnivers_1);
+          initialize_backdrop_tile_quad(*v296, edge_selectorj, orientation, x_offseta - 1, j - 1, aObjectsUnivers_1);
           v299 = *v296;
           v296 += 14;
           v299->blend_mode = 5;
         }
-        ++x_offsetf;
+        ++x_offseta;
       }
-      while ( x_offsetf < 3 );
+      while ( x_offseta < 3 );
       v295 = v296;
     }
     ++edge_selectorj;
@@ -3090,13 +3097,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     p_input += 2;
   }
   while ( v303 < 2 );
-  for ( x_offsetg = 0; x_offsetg < game->player_count; ++x_offsetg )
+  for ( x_offsetb = 0; x_offsetb < game->player_count; ++x_offsetb )
   {
-    edge_selectork = (char *)game + 504 * x_offsetg;
+    edge_selectork = (char *)game + 504 * x_offsetb;
     set_matrix_identity((TransformMatrix *)(edge_selectork + 348));
     set_matrix_identity((TransformMatrix *)(edge_selectork + 508));
     *((_DWORD *)edge_selectork + 161) = 1121714176;
-    *((_DWORD *)edge_selectork + 163) = &game->game_inputs[x_offsetg];
+    *((_DWORD *)edge_selectork + 163) = &game->game_inputs[x_offsetb];
     qmemcpy(
       edge_selectork + 348,
       initialize_matrix_from_values(
@@ -3121,7 +3128,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     initialize_frontend_overlay_color_lerp((FrontendOverlayColorLerp *)(edge_selectork + 680), 0x1000000);
     release_mouse_cursor((MouseCursorState *)(edge_selectork + 656));
     edge_selectork[676] = 0;
-    if ( !x_offsetg )
+    if ( !x_offsetb )
       game->players[0].frontend_state = 12;
     edge_selectork[781] = 0;
     *((_DWORD *)edge_selectork + 196) = 0;

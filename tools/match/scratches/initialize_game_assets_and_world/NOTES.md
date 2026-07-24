@@ -1101,3 +1101,34 @@ a third Ghidra opinion unnecessary.
 This is analysis-only. No matcher source changed, so the honest frontier
 remains 80.50% (5,392/5,411 instructions); no pointer arithmetic was added to
 imitate the compiler schedule.
+
+## 2026-07-24 presentation animation object-stride ownership
+
+Five adjacent startup cleanup loops carry the address of the borrowed
+`Object*` field at `PresentationAnimationSlot::body.bod.object`, not a
+whole-slot pointer. Each native induction step is exactly `0x80`, matching
+`sizeof(PresentationAnimationSlot)`: ten slots belong to
+`Snail::cutscene_animation_slots`, two are the active prefix of the jetpack
+`Weapon`, and the remaining three five-slot runs belong to the left, right,
+and top `Weapon` channels.
+
+The analysis-only `PresentationAnimationObjectStrideCursor` preserves that
+field-first physical cursor. Its `Object*` is followed by a `0x7c` aliasing
+tail solely to express the native stride; the view owns neither the Object nor
+any slot. Binary Ninja now renders all five starts through their canonical
+Snail/Weapon arrays and accesses each borrowed object through `->object`. IDA
+independently renders the same five typed cursors, `++cursor` steps, and
+`cursor[-1].object` distortion writes. Their agreement made a Ghidra replay
+unnecessary.
+
+Declaring the new view also exposed a replay-tool gap: Binary Ninja returns a
+newly parsed top-level structure anonymously but persists it under its user
+type name. The selective importer now accepts that name-only distinction only
+after matching structure kind, width, alignment, packing, and every member's
+name, offset, type class, width, alignment, and spelling. It still fails
+closed on any layout mismatch and reports whether readback used direct or
+structural verification.
+
+This is analysis ownership only. No matcher source changed, and the honest
+world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
+existing 36 broad-alignment mismatches.

@@ -1144,6 +1144,33 @@ parsed, errors = binaryninja.TypeParser.default.parse_types_from_source(
 if parsed is None or errors:
     raise RuntimeError("; ".join(str(error) for error in errors))
 
+
+def _structure_signature(type_):
+    if (
+        type_ is None
+        or type_.type_class != binaryninja.TypeClass.StructureTypeClass
+    ):
+        return None
+    return (
+        type_.type_class,
+        type_.width,
+        type_.alignment,
+        type_.packed,
+        str(type_).split(" ", 1)[0],
+        tuple(
+            (
+                member.name,
+                member.offset,
+                member.type.type_class,
+                member.type.width,
+                member.type.alignment,
+                str(member.type),
+            )
+            for member in type_.members
+        ),
+    )
+
+
 candidates = []
 before_types = {{}}
 for parsed_type in parsed.types:
@@ -1175,12 +1202,23 @@ try:
         parsed_name = str(parsed_type.name)
         observed = bv.get_type_by_name(parsed_type.name)
         observed_width = observed.width if observed is not None else None
+        direct_match = observed == parsed_type.type
+        parsed_structure_signature = _structure_signature(parsed_type.type)
+        structural_match = (
+            parsed_structure_signature is not None
+            and _structure_signature(observed) == parsed_structure_signature
+        )
         verification.append({{
             "name": parsed_name,
             "before_width": before_width,
             "after_width": parsed_type.type.width,
             "observed_width": observed_width,
-            "verified": observed == parsed_type.type,
+            "verification_mode": (
+                "direct" if direct_match
+                else "structure" if structural_match
+                else "mismatch"
+            ),
+            "verified": direct_match or structural_match,
         }})
     if not all(entry["verified"] for entry in verification):
         raise RuntimeError(
