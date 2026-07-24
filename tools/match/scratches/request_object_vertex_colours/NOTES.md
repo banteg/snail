@@ -35,3 +35,13 @@ The replay verifies `tColour` at 0x10, `Object` at 0xdc, and the colour/count
 fields before mutation, saves and reads back all annotations, and is fully
 idempotent. The matcher remains unchanged at 100.00%, 30/30 instructions,
 prefix 30/30, with two clean masked operands.
+
+## 2026-07-24 paired IDA ownership replay
+
+The object-render replay now applies the exact
+`void __fastcall request_object_vertex_colours(Object*)` ABI to the tracked
+IDA database. IDA now agrees with Binary Ninja that the allocation populates
+the canonical Object-owned `tColour* vertex_colours` bank and that the loop
+uses `Object::vertex_count`. This retires the stale
+`PathTemplateStripMesh`/`Color4f` owner shell without altering the exact
+matcher source or inventing an alpha write.

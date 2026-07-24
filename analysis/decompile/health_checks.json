@@ -12088,6 +12088,27 @@
       ]
     },
     {
+      "name": "ida_object_vertex_copy_owner",
+      "artifact": "analysis/decompile/ida/functions/0042f790-copy_object_vertices.c",
+      "required_substrings": [
+        "void __thiscall copy_object_vertices(Object *object)",
+        "object->vertex_count",
+        "v3 = &object->vertices[v2]",
+        "v4 = &object->copied_vertices[v2]",
+        "v4->x = v3->x",
+        "v4->y = v3->y",
+        "v4->z = v3->z"
+      ],
+      "forbidden_substrings": [
+        "sub_42F790",
+        "unsigned int *this",
+        "*(this +",
+        "_DWORD *",
+        "return v1",
+        "PathTemplateStripMesh"
+      ]
+    },
+    {
       "name": "bn_object_vertex_colour_bank_owner",
       "artifact": "analysis/decompile/binja/functions/0042f850-request_object_vertex_colours.c",
       "required_substrings": [
@@ -12105,6 +12126,25 @@
         "void* colour_byte_offset",
         "struct tColour* colour_byte_offset",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_vertex_colour_bank_owner",
+      "artifact": "analysis/decompile/ida/functions/0042f850-request_object_vertex_colours.c",
+      "required_substrings": [
+        "void __fastcall request_object_vertex_colours(Object *object)",
+        "object->vertex_colours = (tColour *)allocate_tracked_memory(16 * object->vertex_count, aObjectVertexCo)",
+        "object->vertex_colours[v3].r = 1.0",
+        "object->vertex_colours[v3].g = 1.0",
+        "object->vertex_colours[v3++].b = 1.0",
+        "while ( v2 < object->vertex_count )"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "mesh->",
+        "Color4f",
+        "(int)aObjectVertexCo",
+        "*(object +"
       ]
     },
     {

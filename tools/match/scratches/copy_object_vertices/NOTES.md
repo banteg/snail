@@ -39,3 +39,13 @@ The replay verifies `Vec3` at 0x0c, `Object` at 0xdc, and the
 reads back every annotation, and is fully idempotent. The exact matcher source
 remains unchanged at 100.00%, 28/28 instructions, prefix 28/28, with no masked
 operands.
+
+## 2026-07-24 paired IDA ownership replay
+
+The object-render replay now applies the same exact
+`void __thiscall copy_object_vertices(Object*)` ABI to the tracked IDA
+database. IDA consequently resolves the source and destination as the canonical
+Object-owned `Vec3* vertices` and `Vec3* copied_vertices` banks and renders the
+three component assignments directly. This retires the stale
+`unsigned int* this` view and its fake integer return without changing the
+already-exact matcher source.

@@ -4780,6 +4780,17 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
     ) in ida_sync_source
     assert '"void __thiscall initialize_object(Object* object);"' in ida_sync_source
     assert (
+        '"void __thiscall copy_object_vertices(Object* object);"'
+    ) in ida_sync_source
+    assert (
+        '"void __fastcall request_object_vertex_colours(Object* object);"'
+    ) in ida_sync_source
+    for address, function_name in (
+        ("0x42F790", "copy_object_vertices"),
+        ("0x42F850", "request_object_vertex_colours"),
+    ):
+        assert f'({address}, "{function_name}")' in ida_sync_source
+    assert (
         '"int32_t __cdecl get_or_append_object_texture_group_vertex(Object* object, '
         'int vertex_index, float u, float v);"'
     ) in ida_sync_source
@@ -4791,6 +4802,10 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
     for header in analysis_headers:
         assert "typedef struct ObjectRenderVertex" in header
         assert "void __thiscall copy_object_vertices(Object* object);" in header
+        assert (
+            "void __fastcall request_object_vertex_colours(Object* object);"
+            in header
+        )
         assert "ObjectDistort* distort, Object* object);" in header
         assert "void __thiscall replace_object_list_texture_refs(" in header
         assert "extern int32_t g_object_grouped_vertex_cursor;" in header

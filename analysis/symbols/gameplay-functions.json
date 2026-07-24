@@ -1583,7 +1583,8 @@
     },
     {
       "address": "0x42f790",
-      "name": "copy_object_vertices"
+      "name": "copy_object_vertices",
+      "description": "Copies exactly `vertex_count` source `Vec3` records from one Object's borrowed `vertices` view into its owned `copied_vertices` bank, preserving the x, y, and z components used by the non-destructive distortion path."
     },
     {
       "address": "0x42f7d0",
@@ -1597,7 +1598,8 @@
     },
     {
       "address": "0x42f850",
-      "name": "request_object_vertex_colours"
+      "name": "request_object_vertex_colours",
+      "description": "Allocates one Object-owned `tColour` bank sized by `vertex_count`, initializes each record's red, green, and blue lanes to 1.0, and intentionally leaves alpha untouched."
     },
     {
       "address": "0x42f8a0",

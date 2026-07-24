@@ -2,28 +2,27 @@
 /* function: copy_object_vertices @ 0x42f790 */
 /* selector: copy_object_vertices */
 
-int __thiscall sub_42F790(unsigned int *this)
+void __thiscall copy_object_vertices(Object *object)
 {
-  __int64 v1; // rax
-  _DWORD *v2; // esi
-  _DWORD *v3; // edi
+  int32_t v1; // edx
+  int v2; // eax
+  Vec3 *v3; // esi
+  Vec3 *v4; // edi
 
-  v1 = *(this + 11);
-  if ( (int)v1 > 0 )
+  v1 = 0;
+  if ( object->vertex_count > 0 )
   {
-    LODWORD(v1) = 0;
+    v2 = 0;
     do
     {
-      v2 = (_DWORD *)(*(this + 14) + v1);
-      v3 = (_DWORD *)(v1 + *(this + 15));
-      ++HIDWORD(v1);
-      LODWORD(v1) = v1 + 12;
-      *v3 = *v2;
-      v3[1] = v2[1];
-      v3[2] = v2[2];
+      v3 = &object->vertices[v2];
+      v4 = &object->copied_vertices[v2];
+      ++v1;
+      ++v2;
+      v4->x = v3->x;
+      v4->y = v3->y;
+      v4->z = v3->z;
     }
-    while ( SHIDWORD(v1) < (int)*(this + 11) );
+    while ( v1 < object->vertex_count );
   }
-  return v1;
 }
-
