@@ -378,6 +378,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SubSlugDeathTossDirection",
     "Slug",
     "SlugStateStrideCursor",
+    "SaltStateStrideCursor",
     "SubRingSlotCursor",
     "JetPackSlotCursor",
     "SubHealthSlotCursor",
@@ -483,6 +484,7 @@ def ensure_path_analysis_views(
         "SubLocTileId",
         "SubSlugState",
         "SubSlugDeathTossDirection",
+        "SaltStateStrideCursor",
         "SubLazerState",
         "SaltState",
         "SubGarbageState",
@@ -1532,6 +1534,28 @@ COLLISION_POOL_CURSOR_USER_VAR_UPDATES = (
     ),
 )
 
+# spawn_salt_hazard scans from Salt::state with a full 0x98-byte actor stride,
+# then keeps the selected manager-owned Salt in ESI. Preserve both borrowed
+# lifetimes across broad path-template replays.
+SPAWN_SALT_HAZARD_USER_VAR_UPDATES = (
+    (
+        "spawn_salt_hazard",
+        "RegisterVariableSourceType",
+        3,
+        68,
+        "salt_state_cursor",
+        "SaltStateStrideCursor*",
+    ),
+    (
+        "spawn_salt_hazard",
+        "RegisterVariableSourceType",
+        37,
+        72,
+        "salt",
+        "Salt*",
+    ),
+)
+
 # VC6 retains containing-owner bases while advancing one authored row, one
 # runtime row, and one runtime cell at their native 0x38/0xf4/0x54 strides.
 # Binary Ninja otherwise flattens all three into void-pointer displacement
@@ -2130,6 +2154,10 @@ SLUG_FIELD_UPDATES = (
 
 SLUG_STATE_CURSOR_FIELD_UPDATES = (
     ("0x00", "state", "SubSlugState"),
+)
+
+SALT_STATE_CURSOR_FIELD_UPDATES = (
+    ("0x00", "state", "SaltState"),
 )
 
 SUB_SPEED_UP_FIELD_UPDATES = (
@@ -4065,6 +4093,7 @@ def main() -> int:
                 ("SubHealth", SUB_HEALTH_FIELD_UPDATES),
                 ("Slug", SLUG_FIELD_UPDATES),
                 ("SlugStateStrideCursor", SLUG_STATE_CURSOR_FIELD_UPDATES),
+                ("SaltStateStrideCursor", SALT_STATE_CURSOR_FIELD_UPDATES),
                 ("SubSpeedUp", SUB_SPEED_UP_FIELD_UPDATES),
                 ("Banner", BANNER_FIELD_UPDATES),
                 ("Warning", WARNING_FIELD_UPDATES),
@@ -4163,6 +4192,7 @@ def main() -> int:
                 *SPAWN_TRACK_RING_USER_VAR_UPDATES,
                 *SPAWN_TRACK_PICKUP_CURSOR_USER_VAR_UPDATES,
                 *COLLISION_POOL_CURSOR_USER_VAR_UPDATES,
+                *SPAWN_SALT_HAZARD_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *FRINGE_RUNTIME_USER_VAR_UPDATES,

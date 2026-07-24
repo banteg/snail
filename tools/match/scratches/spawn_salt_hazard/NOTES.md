@@ -1,10 +1,11 @@
-# Matched — 100.00%, 67/67 insns
+# Recovered — 88.55%, 67/64 insns
 
-The free-scan loop is the only divergence: the original lays it out as a
-single top test with the bound compare as conditional back-edge; every
-source shape tried (for-with-increment, while, for(;;)+break,
-do-while+goto) rotates and duplicates the state test under our compiler
-pass ordering. All semantics verified in the diff body:
+The former scalar-result projection reached an exact Windows listing, but
+independent Android and iOS exit residues now prove the authored method is
+`void`. The honest void source drops three result-sensitive instructions and
+changes the free-scan/error joins; the historical score progression below is
+retained as evidence rather than presented as the current match. All semantics
+remain verified in the diff body:
 
 - free scan over `slots[i].state` (+0x80, stride 0x98), bails when all 40 slots
   are occupied
@@ -108,3 +109,23 @@ different residual values. A `void` source experiment changed the exact
 Windows epilogue to 88.55%, so the analysis ABI remains conservatively
 `int32_t` pending stronger independent evidence; no slot-index return is
 claimed.
+
+2026-07-24 authored void ABI: independent mobile bodies supply the evidence
+that the earlier conservative analysis lacked. Android
+`cRSaltManager::Add(tVector&)` at `0x69038` returns from the full-pool path
+with the last nonzero `SaltState` load in `R0`, but tail-calls the intrusive
+list insertion on success. iOS at `0x1dcf8` independently reaches its common
+epilogue with `this`, a matrix-call residue, or an error-call residue in `R0`.
+Those incompatible values cannot be one authored result, so the manager
+method and analysis prototype are now `void`; no slot-index or flag result is
+claimed. The resulting Windows mismatch is retained honestly rather than
+fakematched.
+
+The same pass closes the manager's free-slot traversal ownership. Its physical
+pointer starts at `Salt::state` and advances by the complete `0x98` actor
+stride, so both decompilers now use the borrowed analysis-only
+`SaltStateStrideCursor` instead of rendering the loop as a `SaltState*` stepped
+by 38 integers. The selected slot remains the real manager-owned `Salt*`.
+Binary Ninja replay declares this cursor separately from the canonical hazard
+owners; adding one analysis view therefore no longer attempts to replace the
+existing `Salt` and `SubLazer` definitions.

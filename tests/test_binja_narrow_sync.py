@@ -7175,6 +7175,8 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         assert "SALT_STATE_ACTIVE = 1" in header
         assert "SALT_STATE_RECYCLE_PENDING = 2" in header
         assert "SaltState state;" in header
+        assert "typedef struct SaltStateStrideCursor {" in header
+        assert "uint8_t slot_stride_tail[0x94];" in header
         assert "float fade_alpha;" in header
         assert "float spawn_velocity_y;" in header
         assert "uint8_t collision_armed;" in header
@@ -7185,9 +7187,15 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     assert '("Salt", SALT_FIELD_UPDATES)' in hazard_sync
     assert '("0x80", "state", "SaltState")' in hazard_sync
     assert (
+        '("SaltStateStrideCursor", SALT_STATE_CURSOR_FIELD_UPDATES)'
+        in hazard_sync
+    )
+    assert (
         'HAZARD_STATE_TYPE_REPLACEMENTS = ("SubLazerState", "SaltState")'
         in hazard_sync
     )
+    assert 'HAZARD_CURSOR_TYPES = ("SaltStateStrideCursor",)' in hazard_sync
+    assert "include_types=HAZARD_CURSOR_TYPES" in hazard_sync
     assert "apply_user_var_updates" in hazard_sync
     assert "HAZARD_USER_VAR_UPDATES" in hazard_sync
     assert (
@@ -7197,6 +7205,14 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         "        72,\n"
         '        "sub_lazer_1",\n'
         '        "SubLazer*",'
+    ) in hazard_sync
+    assert (
+        '"spawn_salt_hazard",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        3,\n"
+        "        68,\n"
+        '        "salt_state_cursor",\n'
+        '        "SaltStateStrideCursor*",'
     ) in hazard_sync
     assert (
         '"spawn_salt_hazard",\n'
@@ -7214,7 +7230,7 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
             "SaltManager* manager);"
         ) in ida_sync
         assert (
-            "int32_t __thiscall spawn_salt_hazard("
+            "void __thiscall spawn_salt_hazard("
             "SaltManager* manager, const Vec3* position);"
         ) in ida_sync
         assert "void __thiscall update_salt_hazard(Salt* salt);" in ida_sync
@@ -7227,8 +7243,13 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
             in ida_sync
         )
         assert "SaltHazardSlot* slot" not in ida_sync
+        assert "salt_state_cursor" in ida_sync
+        assert "SaltStateStrideCursor" in ida_sync
     assert "SALT_OWNER_EXPECTED_SIZE = 0x98" in ida_runtime_sync
     assert '(0x80, 4, "state", "SaltState")' in ida_runtime_sync
+    assert "SALT_STATE_CURSOR_EXPECTED_SIZE = 0x98" in ida_runtime_sync
+    assert '"state_stride_cursor",\n        0x441564,' in ida_runtime_sync
+    assert '"salt_allocator_lvars": salt_allocator_lvars' in ida_runtime_sync
     assert 'salt_owner_readback = _salt_owner_readback()' in ida_runtime_sync
     assert "SUB_LAZER_OWNER_EXPECTED_SIZE = 0xB0" in ida_runtime_sync
     assert "SUB_LAZER_MANAGER_EXPECTED_SIZE = 0xDC0" in ida_runtime_sync
@@ -7243,6 +7264,8 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         in ida_runtime_sync
     )
     assert '"SubLazerState",' in path_sync
+    assert '"SaltStateStrideCursor",' in path_sync
+    assert "SPAWN_SALT_HAZARD_USER_VAR_UPDATES" in path_sync
     for declaration in (
         "SubLazer* __thiscall initialize_sub_lazer_runtime(SubLazer* sub_lazer);",
         "void __thiscall update_sub_lazer_projectile(SubLazer* sub_lazer);",
@@ -7270,6 +7293,10 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         repo_root / "tools/match/scratches/initialize_sub_lazer_pool/scratch.cpp"
     ).read_text(encoding="utf-8")
     assert "SALT_STATE_ACTIVE" in salt_scratches["spawn_salt_hazard"]
+    assert (
+        "void SaltManager::spawn_salt_hazard("
+        in salt_scratches["spawn_salt_hazard"]
+    )
     assert "slot->fade_alpha = 0.0f;" in salt_scratches["spawn_salt_hazard"]
     assert "slot->spawn_velocity_y" in salt_scratches["spawn_salt_hazard"]
     assert "slot->collision_armed = 1;" in salt_scratches["spawn_salt_hazard"]

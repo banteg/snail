@@ -630,6 +630,15 @@ SPAWN_TRACK_JETPACK_LVAR_SPECS = (
     ("sprite_position", "Vec3 *sprite_position;", 0x43DA1A, None),
 )
 
+SPAWN_SALT_HAZARD_LVAR_SPECS = (
+    (
+        "salt_state_cursor",
+        "SaltStateStrideCursor *salt_state_cursor;",
+        0x441564,
+        None,
+    ),
+)
+
 COLLISION_POOL_CURSOR_LVAR_SPECS = (
     ("salt_cursor", "SaltSlotCursor *salt_cursor;", 0x444D41, None),
     (
@@ -1541,7 +1550,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_salt_hazard",
-        "int32_t __thiscall spawn_salt_hazard(SaltManager* manager, const Vec3* position);",
+        "void __thiscall spawn_salt_hazard(SaltManager* manager, const Vec3* position);",
     ),
     (
         "update_salt_hazard",
@@ -2602,6 +2611,13 @@ def _sync_spawn_track_jetpack_lvars() -> dict[str, object]:
     )
 
 
+def _sync_spawn_salt_hazard_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "spawn_salt_hazard",
+        SPAWN_SALT_HAZARD_LVAR_SPECS,
+    )
+
+
 def _sync_collision_pool_cursor_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "handle_subgoldy_collisions",
@@ -3475,6 +3491,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "ownership_lvars": spawn_track_jetpack_lvars,
             }
         )
+    spawn_salt_hazard_lvars = _sync_spawn_salt_hazard_lvars()
+    if spawn_salt_hazard_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "spawn_salt_hazard",
+                "ownership_lvars": spawn_salt_hazard_lvars,
+            }
+        )
     collision_pool_cursor_lvars = _sync_collision_pool_cursor_lvars()
     if collision_pool_cursor_lvars.get("status") == "failed":
         failed.append(
@@ -3592,6 +3616,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "spawn_track_ring_lvars": spawn_track_ring_lvars,
                 "spawn_track_health_lvars": spawn_track_health_lvars,
                 "spawn_track_jetpack_lvars": spawn_track_jetpack_lvars,
+                "spawn_salt_hazard_lvars": spawn_salt_hazard_lvars,
                 "collision_pool_cursor_lvars": collision_pool_cursor_lvars,
                 "merge_runtime_lvars": merge_runtime_lvars,
                 "fringe_runtime_lvars": fringe_runtime_lvars,

@@ -892,6 +892,16 @@ typedef struct SaltManager {
     Salt slots[40];
 } SaltManager;
 
+/*
+ * Analysis-only field-first view for spawn_salt_hazard's free-slot sweep.
+ * The physical pointer begins at Salt::state and advances by sizeof(Salt), so
+ * the tail aliases the rest of each embedded Salt rather than owning storage.
+ */
+typedef struct SaltStateStrideCursor {
+    SaltState state;
+    uint8_t slot_stride_tail[0x94];
+} SaltStateStrideCursor;
+
 typedef struct SubGarbage SubGarbage;
 typedef enum SubGarbageState {
     SUB_GARBAGE_STATE_INACTIVE = 0,
@@ -3044,7 +3054,7 @@ Salt* __thiscall initialize_salt_hazard_runtime(Salt* salt);
 
 void __thiscall initialize_salt_hazard_pool(SaltManager* manager);
 
-int32_t __thiscall spawn_salt_hazard(
+void __thiscall spawn_salt_hazard(
     SaltManager* manager,
     const Vec3* position
 );

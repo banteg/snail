@@ -114,4 +114,14 @@ typedef struct SaltManager {
     Salt slots[40];
 } SaltManager;
 
+/*
+ * Analysis-only field-first cursor for SaltManager::Add's free-slot sweep.
+ * The physical pointer begins at Salt::state and advances by sizeof(Salt);
+ * the trailing bytes alias the remainder of each manager-owned slot.
+ */
+typedef struct SaltStateStrideCursor {
+    SaltState state;
+    uint8_t slot_stride_tail[0x94];
+} SaltStateStrideCursor;
+
 #endif

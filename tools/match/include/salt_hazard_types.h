@@ -38,7 +38,7 @@ typedef BodList SaltListAnchor;
 class SaltManager {
 public:
     void initialize_salt_hazard_pool();              // @ 0x441540
-    int spawn_salt_hazard(const Vector3* position);  // @ 0x441560
+    void spawn_salt_hazard(const Vector3* position); // @ 0x441560
 
     Salt slots[40];
 };

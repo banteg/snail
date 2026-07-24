@@ -6,7 +6,7 @@
 int next_math_random_value();
 int report_errorf(char* format, ...);
 
-int SaltManager::spawn_salt_hazard(const Vector3* position)
+void SaltManager::spawn_salt_hazard(const Vector3* position)
 {
     int index = 0;
     Salt* scan = slots;
@@ -16,7 +16,7 @@ int SaltManager::spawn_salt_hazard(const Vector3* position)
         ++index;
         ++scan;
         if (index >= 40)
-            return index;
+            return;
     }
 
     Salt* slot = &slots[index];
@@ -32,12 +32,14 @@ int SaltManager::spawn_salt_hazard(const Vector3* position)
     slot->collision_armed = 1;
     int* list_flags = &slot->list_flags;
     BodNode* head = &g_game->subgame.salt_hazard_list_head;
-    if ((*list_flags & BOD_FLAG_LINKED) != 0)
-        return report_errorf("List ADDafter");
+    if ((*list_flags & BOD_FLAG_LINKED) != 0) {
+        report_errorf("List ADDafter");
+        return;
+    }
     slot->list_prev = head;
     slot->list_next = head->list_next;
     head->list_next = slot;
     if (slot->list_next)
         slot->list_next->list_prev = slot;
-    return *list_flags |= BOD_FLAG_LINKED;
+    *list_flags |= BOD_FLAG_LINKED;
 }

@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "dispatch_cutscene_animation",
-      "address": "0x444600"
+      "name": "spawn_salt_hazard",
+      "address": "0x441560"
     }
   ],
   "health_check_count": 926,

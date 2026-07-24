@@ -1482,10 +1482,14 @@ only; live receivers and manager arrays use `SubLazer` and `Salt`.
   `0x17c0` size ledger; each actor owns a 32-bit `SaltState` at `+0x80` and
   independent fade-alpha, spawn-y, and collision-latch fields at
   `+0x8c/+0x90/+0x94`, proved across spawn, collision, and AI
+- the allocator's state sweep is a borrowed field-first
+  `SaltStateStrideCursor`: it begins at `Salt::state` and advances by the full
+  `0x98` actor stride without claiming separate slot ownership
 - `initialize_salt_hazard_pool` is the exact void `cRSaltManager::Init()`;
-  `spawn_salt_hazard` keeps a conservative `int32_t` analysis result because
-  its Windows exits are return-sensitive even though the sole caller discards
-  EAX
+  `spawn_salt_hazard` is the authored void `cRSaltManager::Add(tVector&)`.
+  Android leaves either a slot state or list-insertion residue in `R0`, while
+  iOS independently leaves `this`, a matrix-call residue, or an error-call
+  residue, proving that none is a semantic result
 
 No field beyond those observed lanes is inferred: the cRSubLazer tail
 `+0xa0..+0xaf` and the padding around both actors' state/backlink fields remain

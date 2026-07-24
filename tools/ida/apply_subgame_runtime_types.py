@@ -39,6 +39,10 @@ SALT_OWNER_EXPECTED_MEMBERS = (
     (0x90, 4, "spawn_velocity_y", "float"),
     (0x94, 1, "collision_armed", "uint8_t"),
 )
+SALT_STATE_CURSOR_EXPECTED_SIZE = 0x98
+SALT_STATE_CURSOR_EXPECTED_MEMBERS = (
+    (0x00, 4, "state", "SaltState"),
+)
 
 SUB_LAZER_OWNER_EXPECTED_SIZE = 0xB0
 SUB_LAZER_MANAGER_EXPECTED_SIZE = 0xDC0
@@ -246,7 +250,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_salt_hazard",
-        "int32_t __thiscall spawn_salt_hazard(SaltManager* manager, const Vec3* position);",
+        "void __thiscall spawn_salt_hazard(SaltManager* manager, const Vec3* position);",
     ),
     (
         "update_salt_hazard",
@@ -456,6 +460,7 @@ REANALYSIS_FUNCTIONS = (
     0x440600,  # uninit_pause_menu
     0x440660,  # initialize_pause_menu
     0x4407A0,  # update_pause_menu
+    0x441560,  # spawn_salt_hazard
     0x441650,  # initialize_sub_lazer_pool
     0x441670,  # spawn_sub_lazer_projectile
     0x441740,  # deactivate_sub_lazer_projectile
@@ -552,16 +557,38 @@ def _salt_owner_readback() -> dict[str, object]:
         for member in selected
     )
     size = _named_struct_size("Salt")
+    cursor_members = _named_struct_members("SaltStateStrideCursor")
+    selected_cursor = [] if cursor_members is None else [
+        member
+        for member in cursor_members
+        if int(member["offset"])
+        in {expected[0] for expected in SALT_STATE_CURSOR_EXPECTED_MEMBERS}
+    ]
+    observed_cursor = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected_cursor
+    )
+    cursor_size = _named_struct_size("SaltStateStrideCursor")
     return {
         "status": (
             "verified"
             if size == SALT_OWNER_EXPECTED_SIZE
             and observed == SALT_OWNER_EXPECTED_MEMBERS
+            and cursor_size == SALT_STATE_CURSOR_EXPECTED_SIZE
+            and observed_cursor == SALT_STATE_CURSOR_EXPECTED_MEMBERS
             else "failed"
         ),
         "size": size,
+        "cursor_size": cursor_size,
         "members": selected,
+        "cursor_members": selected_cursor,
         "expected_size": SALT_OWNER_EXPECTED_SIZE,
+        "expected_cursor_size": SALT_STATE_CURSOR_EXPECTED_SIZE,
         "expected_members": [
             {
                 "offset": offset,
@@ -570,6 +597,16 @@ def _salt_owner_readback() -> dict[str, object]:
                 "type": member_type,
             }
             for offset, member_size, member_name, member_type in SALT_OWNER_EXPECTED_MEMBERS
+        ],
+        "expected_cursor_members": [
+            {
+                "offset": offset,
+                "size": member_size,
+                "name": member_name,
+                "type": member_type,
+            }
+            for offset, member_size, member_name, member_type
+            in SALT_STATE_CURSOR_EXPECTED_MEMBERS
         ],
     }
 
@@ -928,6 +965,24 @@ SPAWN_SLUG_HAZARD_LVAR_SPECS = (
     ),
 )
 
+SPAWN_SALT_HAZARD_LVAR_SPECS = (
+    (
+        "state_stride_cursor",
+        0x441564,
+        {"i", "salt_state_cursor"},
+        {
+            "_DWORD *",
+            "int *",
+            "int32_t *",
+            "unsigned int *",
+            "SaltState *",
+            "SaltStateStrideCursor *",
+        },
+        "salt_state_cursor",
+        "SaltStateStrideCursor",
+    ),
+)
+
 SPAWN_GARBAGE_HAZARD_LVAR_SPECS = (
     (
         "selected_slot_cursor",
@@ -1173,6 +1228,37 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 }
             )
 
+    salt_allocator_lvars = {}
+    for (
+        result_name,
+        definition_address,
+        accepted_names,
+        accepted_types,
+        target_name,
+        target_struct_name,
+    ) in SPAWN_SALT_HAZARD_LVAR_SPECS:
+        result = _sync_allocator_lvar(
+            selector="spawn_salt_hazard",
+            definition_address=definition_address,
+            accepted_names=accepted_names,
+            accepted_types=accepted_types,
+            target_name=target_name,
+            target_struct_name=target_struct_name,
+        )
+        salt_allocator_lvars[result_name] = result
+        if result.get("status") == "applied":
+            applied += 1
+        elif result.get("status") == "unchanged":
+            unchanged += 1
+        else:
+            failed.append(
+                {
+                    "selector": "spawn_salt_hazard",
+                    "lvar": result_name,
+                    "result": result,
+                }
+            )
+
     game_root_owner_graph = sync_game_root_owner_graph(require=True)
     if game_root_owner_graph.get("status") == "failed":
         failed.append(
@@ -1258,6 +1344,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "SlugPool": _named_struct_size("SlugPool"),
                     "Salt": _named_struct_size("Salt"),
                     "SaltManager": _named_struct_size("SaltManager"),
+                    "SaltStateStrideCursor": _named_struct_size(
+                        "SaltStateStrideCursor"
+                    ),
                 },
                 "parse_errors": parse_errors,
                 "applied": applied,
@@ -1268,6 +1357,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "game_root_owner_graph": game_root_owner_graph,
                 "garbage_allocator_lvars": garbage_allocator_lvars,
                 "slug_allocator_lvars": slug_allocator_lvars,
+                "salt_allocator_lvars": salt_allocator_lvars,
                 "missing": missing,
                 "failed": failed,
             },

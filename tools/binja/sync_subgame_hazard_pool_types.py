@@ -65,6 +65,8 @@ CANONICAL_HAZARD_STRUCTS = (
     "SaltManager",
 )
 
+HAZARD_CURSOR_TYPES = ("SaltStateStrideCursor",)
+
 EXPECTED_HAZARD_STATE_MEMBERS = {
     "SubLazerState": (
         ("SUB_LAZER_STATE_INACTIVE", 0),
@@ -108,6 +110,10 @@ SALT_MANAGER_FIELD_UPDATES = (
     ("0x00", "slots", "Salt[0x28]"),
 )
 
+SALT_STATE_CURSOR_FIELD_UPDATES = (
+    ("0x00", "state", "SaltState"),
+)
+
 BANNER_FIELD_UPDATES = (
     ("0x48", "owner_game", "SubgameRuntime*"),
 )
@@ -147,7 +153,7 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_salt_hazard",
-        "int32_t __thiscall spawn_salt_hazard(SaltManager* manager, const Vec3* position)",
+        "void __thiscall spawn_salt_hazard(SaltManager* manager, const Vec3* position)",
     ),
     (
         "update_salt_hazard",
@@ -156,8 +162,9 @@ PROTO_UPDATES = (
 )
 
 # Exact MLIL register copies can otherwise narrow the authored actor back to
-# its embedded BodNode base. Preserve the selected Salt slot in Add() and the
-# SubLazer receiver copy in Kill() as their full actor owners.
+# its embedded BodNode base. Add() also walks a physical pointer beginning at
+# Salt::state with the complete actor stride, so preserve that borrowed
+# field-first cursor without pretending it is a direct Salt owner.
 HAZARD_USER_VAR_UPDATES = (
     (
         "deactivate_sub_lazer_projectile",
@@ -166,6 +173,14 @@ HAZARD_USER_VAR_UPDATES = (
         72,
         "sub_lazer_1",
         "SubLazer*",
+    ),
+    (
+        "spawn_salt_hazard",
+        "RegisterVariableSourceType",
+        3,
+        68,
+        "salt_state_cursor",
+        "SaltStateStrideCursor*",
     ),
     (
         "spawn_salt_hazard",
@@ -244,6 +259,27 @@ def main() -> int:
             include_types=HAZARD_STATE_TYPE_REPLACEMENTS,
         )
     )
+    hazard_cursor_present = all(
+        struct_exists(REPO_ROOT, target=args.target, struct_name=struct_name)
+        for struct_name in HAZARD_CURSOR_TYPES
+    )
+    hazard_cursor_operation = (
+        {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "hazard traversal cursor already present",
+            "header": str(header_path),
+            "required_structs": HAZARD_CURSOR_TYPES,
+        }
+        if hazard_cursor_present
+        else types_declare_missing_only(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            replace_types=HAZARD_CURSOR_TYPES,
+            include_types=HAZARD_CURSOR_TYPES,
+        )
+    )
     subgame_updates = list(SUBGAME_FIELD_UPDATES)
     if struct_exists(REPO_ROOT, target=args.target, struct_name="Player"):
         subgame_updates.extend(SUBGAME_PLAYER_FIELD_UPDATES)
@@ -251,6 +287,7 @@ def main() -> int:
     operations: list[dict[str, object]] = [
         type_operation,
         hazard_state_operation,
+        hazard_cursor_operation,
         *apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,
@@ -262,6 +299,7 @@ def main() -> int:
                 ("SubLazerManager", SUB_LAZER_MANAGER_FIELD_UPDATES),
                 ("Salt", SALT_FIELD_UPDATES),
                 ("SaltManager", SALT_MANAGER_FIELD_UPDATES),
+                ("SaltStateStrideCursor", SALT_STATE_CURSOR_FIELD_UPDATES),
             ),
             proto_updates=PROTO_UPDATES,
         ),

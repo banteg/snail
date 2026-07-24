@@ -1616,7 +1616,7 @@
       "android_symbol": "cRSaltManager::Add(tVector&)",
       "source_object": null,
       "confidence": "high",
-      "notes": "Windows and Android share the vector-only manager body; iOS v1.9 adds the owning Goldy argument. The sole Windows caller discards EAX, but distinct return-sensitive exits make int32_t the conservative analysis ABI; no slot-index result is claimed."
+      "notes": "Windows and Android share the vector-only manager body; iOS v1.9 adds the owning Goldy argument. Android's full-pool and successful exits leave a slot state and list-insertion residue in R0; iOS independently leaves this, a matrix-call residue, or an error-call residue. Those incompatible residues prove the authored manager method is void and no slot-index result exists."
     },
     {
       "address": "0x441c10",
