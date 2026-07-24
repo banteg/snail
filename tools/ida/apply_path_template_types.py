@@ -948,6 +948,18 @@ HARMONIZE_RUNTIME_LVAR_SPECS = (
 
 BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS = (
     (
+        "player",
+        "Player *player;",
+        0x438335,
+        None,
+    ),
+    (
+        "jetpack_channel",
+        "Weapon *jetpack_channel;",
+        0x4383A9,
+        None,
+    ),
+    (
         "active_first_ref_jetpack",
         "BodNode **active_first_ref_jetpack;",
         0x4383CD,
@@ -963,6 +975,12 @@ BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS = (
         "active_new_first_jetpack",
         "BodNode *active_new_first_jetpack;",
         0x4383F7,
+        None,
+    ),
+    (
+        "weapon_channel_0",
+        "Weapon *weapon_channel_0;",
+        0x438408,
         None,
     ),
     (
@@ -984,6 +1002,12 @@ BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS = (
         None,
     ),
     (
+        "weapon_channel_1",
+        "Weapon *weapon_channel_1;",
+        0x438460,
+        None,
+    ),
+    (
         "active_first_ref_weapon_1",
         "BodNode **active_first_ref_weapon_1;",
         0x43847E,
@@ -999,6 +1023,12 @@ BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS = (
         "active_new_first_weapon_1",
         "BodNode *active_new_first_weapon_1;",
         0x4384A7,
+        None,
+    ),
+    (
+        "weapon_channel_2",
+        "Weapon *weapon_channel_2;",
+        0x4384B8,
         None,
     ),
     (
@@ -1020,6 +1050,12 @@ BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS = (
         None,
     ),
     (
+        "invincible_shell",
+        "Invincible *invincible_shell;",
+        0x438510,
+        None,
+    ),
+    (
         "active_first_ref_invincible_shell",
         "BodNode **active_first_ref_invincible_shell;",
         0x43852E,
@@ -1035,6 +1071,12 @@ BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS = (
         "active_new_first_invincible_shell",
         "BodNode *active_new_first_invincible_shell;",
         0x438557,
+        None,
+    ),
+    (
+        "presentation",
+        "Snail *presentation;",
+        0x438577,
         None,
     ),
     (

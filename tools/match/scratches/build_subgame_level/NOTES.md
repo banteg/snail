@@ -203,6 +203,32 @@ the active-list tail.
   This current measurement supersedes the historical `86.10%` snapshots,
   which predate later ownership-oriented source changes.
 
+## 2026-07-24 embedded presentation borrower replay
+
+- The seven active-list receivers now retain their complete embedded-owner
+  lifetimes: `Player*` for the Player body, `Weapon*` for the jetpack and three
+  weapon channels, `Invincible*` for the shell, and `Snail*` for the
+  presentation body. `SubgameRuntime::player.presentation` remains the sole
+  owner; `GameRoot::active_bod_list` only borrows each inherited `BodNode`.
+- Binary Ninja MLIL uses those exact owner pointers at the native
+  `0x4383a8..0x4385ee` definitions and inherited list accesses. Its HLIL still
+  folds the first weapon pointer into an awkward `weapon_channels.128` array
+  expression, but no longer falls back to the raw
+  `game->player.__offset(0x2fd8)` byte lane. The tracked health check guards
+  that raw-offset regression without claiming the renderer artifact is an
+  authored field.
+- IDA independently recovers the same seven definitions and renders the whole
+  sequence through `jetpack_channel`, `weapon_channel_0..2`,
+  `invincible_shell`, `presentation`, and `player`. BN and IDA agree on the
+  object boundaries, so no Ghidra tie-break was needed.
+- `sync_path_template_types.py --build-subgame-only` now replays just these
+  embedded owners and their borrowed active-list lifetimes. This bounded lane
+  avoids paying for the unrelated full-database prototype audit when refining
+  this function.
+- This is analysis-only ownership recovery. No matcher source was changed, and
+  the honest focused result remains `77.67%`, `560/555`, prefix `177/555`,
+  with `101 ok / 0 unresolved / 0 mismatch` masked operands.
+
 ## 2026-07-11 slug voice threshold ownership
 
 The two floats immediately before `enemy_manager` are now owned fields:

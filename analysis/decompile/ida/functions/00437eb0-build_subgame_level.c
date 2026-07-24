@@ -18,29 +18,29 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   struct BodNode *v13; // ecx
   uint32_t v14; // eax
   double completion_row_start; // st7
-  Player *p_player; // edi
-  Weapon *p_jetpack_channel; // eax
+  Player *player; // edi
+  Weapon *jetpack_channel; // eax
   BodNode **active_first_ref_jetpack; // ecx
   BodNode *active_first_jetpack; // edx
   BodNode *active_new_first_jetpack; // edx
-  Weapon *weapon_channels; // ecx
+  Weapon *weapon_channel_0; // ecx
   BodNode **active_first_ref_weapon_0; // eax
   BodNode *active_first_weapon_0; // edx
   BodNode *active_new_first_weapon_0; // edx
-  Weapon *v25; // ecx
+  Weapon *weapon_channel_1; // ecx
   BodNode **active_first_ref_weapon_1; // eax
   BodNode *active_first_weapon_1; // edx
   BodNode *active_new_first_weapon_1; // edx
-  Weapon *v29; // ecx
+  Weapon *weapon_channel_2; // ecx
   BodNode **active_first_ref_weapon_2; // eax
   BodNode *active_first_weapon_2; // edx
   BodNode *active_new_first_weapon_2; // edx
-  Invincible *p_invincible_shell; // ecx
+  Invincible *invincible_shell; // ecx
   BodNode **active_first_ref_invincible_shell; // eax
   BodNode *active_first_invincible_shell; // edx
   BodNode *active_new_first_invincible_shell; // edx
   uint32_t v37; // ecx
-  Snail *p_presentation; // ecx
+  Snail *presentation; // ecx
   BodNode **active_first_ref_presentation; // eax
   BodNode *active_first_presentation; // edx
   BodNode *active_new_first_presentation; // edx
@@ -223,7 +223,7 @@ LABEL_24:
   game->banners.slots[1].bod.position.x = 0.0;
   v14 = game->banners.slots[1].bod.bod.list_flags;
   completion_row_start = (double)game->completion_row_start;
-  p_player = &game->player;
+  player = &game->player;
   LOBYTE(v14) = v14 & 0xDF;
   game->banners.slots[1].owner_player = &game->player;
   game->banners.slots[1].bod.bod.list_flags = v14;
@@ -238,7 +238,7 @@ LABEL_24:
   game->player.movement_mode_selector = 1;
   game->player.steering_mode_selector = 0;
   initialize_subgoldy(&game->player, 1);
-  p_jetpack_channel = &game->player.presentation.jetpack_channel;
+  jetpack_channel = &game->player.presentation.jetpack_channel;
   if ( (game->player.presentation.jetpack_channel.body.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
@@ -249,7 +249,7 @@ LABEL_24:
     active_first_jetpack = g_game_base->active_bod_list.first;
     if ( active_first_jetpack )
     {
-      active_first_jetpack->list_prev = &p_jetpack_channel->body.bod.bod;
+      active_first_jetpack->list_prev = &jetpack_channel->body.bod.bod;
       (*active_first_ref_jetpack)->list_prev->list_next = *active_first_ref_jetpack;
       active_new_first_jetpack = (*active_first_ref_jetpack)->list_prev;
       *active_first_ref_jetpack = active_new_first_jetpack;
@@ -257,13 +257,13 @@ LABEL_24:
     }
     else
     {
-      *active_first_ref_jetpack = &p_jetpack_channel->body.bod.bod;
+      *active_first_ref_jetpack = &jetpack_channel->body.bod.bod;
       game->player.presentation.jetpack_channel.body.bod.bod.list_prev = nullptr;
       (*active_first_ref_jetpack)->list_next = nullptr;
     }
     game->player.presentation.jetpack_channel.body.bod.bod.list_flags |= 0x200u;
   }
-  weapon_channels = game->player.presentation.weapon_channels;
+  weapon_channel_0 = game->player.presentation.weapon_channels;
   if ( (game->player.presentation.weapon_channels[0].body.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
@@ -274,7 +274,7 @@ LABEL_24:
     active_first_weapon_0 = g_game_base->active_bod_list.first;
     if ( active_first_weapon_0 )
     {
-      active_first_weapon_0->list_prev = &weapon_channels->body.bod.bod;
+      active_first_weapon_0->list_prev = &weapon_channel_0->body.bod.bod;
       (*active_first_ref_weapon_0)->list_prev->list_next = *active_first_ref_weapon_0;
       active_new_first_weapon_0 = (*active_first_ref_weapon_0)->list_prev;
       *active_first_ref_weapon_0 = active_new_first_weapon_0;
@@ -282,13 +282,13 @@ LABEL_24:
     }
     else
     {
-      *active_first_ref_weapon_0 = &weapon_channels->body.bod.bod;
+      *active_first_ref_weapon_0 = &weapon_channel_0->body.bod.bod;
       game->player.presentation.weapon_channels[0].body.bod.bod.list_prev = nullptr;
       (*active_first_ref_weapon_0)->list_next = nullptr;
     }
     game->player.presentation.weapon_channels[0].body.bod.bod.list_flags |= 0x200u;
   }
-  v25 = &game->player.presentation.weapon_channels[1];
+  weapon_channel_1 = &game->player.presentation.weapon_channels[1];
   if ( (game->player.presentation.weapon_channels[1].body.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
@@ -299,7 +299,7 @@ LABEL_24:
     active_first_weapon_1 = g_game_base->active_bod_list.first;
     if ( active_first_weapon_1 )
     {
-      active_first_weapon_1->list_prev = &v25->body.bod.bod;
+      active_first_weapon_1->list_prev = &weapon_channel_1->body.bod.bod;
       (*active_first_ref_weapon_1)->list_prev->list_next = *active_first_ref_weapon_1;
       active_new_first_weapon_1 = (*active_first_ref_weapon_1)->list_prev;
       *active_first_ref_weapon_1 = active_new_first_weapon_1;
@@ -307,13 +307,13 @@ LABEL_24:
     }
     else
     {
-      *active_first_ref_weapon_1 = &v25->body.bod.bod;
+      *active_first_ref_weapon_1 = &weapon_channel_1->body.bod.bod;
       game->player.presentation.weapon_channels[1].body.bod.bod.list_prev = nullptr;
       (*active_first_ref_weapon_1)->list_next = nullptr;
     }
     game->player.presentation.weapon_channels[1].body.bod.bod.list_flags |= 0x200u;
   }
-  v29 = &game->player.presentation.weapon_channels[2];
+  weapon_channel_2 = &game->player.presentation.weapon_channels[2];
   if ( (game->player.presentation.weapon_channels[2].body.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
@@ -324,7 +324,7 @@ LABEL_24:
     active_first_weapon_2 = g_game_base->active_bod_list.first;
     if ( active_first_weapon_2 )
     {
-      active_first_weapon_2->list_prev = &v29->body.bod.bod;
+      active_first_weapon_2->list_prev = &weapon_channel_2->body.bod.bod;
       (*active_first_ref_weapon_2)->list_prev->list_next = *active_first_ref_weapon_2;
       active_new_first_weapon_2 = (*active_first_ref_weapon_2)->list_prev;
       *active_first_ref_weapon_2 = active_new_first_weapon_2;
@@ -332,13 +332,13 @@ LABEL_24:
     }
     else
     {
-      *active_first_ref_weapon_2 = &v29->body.bod.bod;
+      *active_first_ref_weapon_2 = &weapon_channel_2->body.bod.bod;
       game->player.presentation.weapon_channels[2].body.bod.bod.list_prev = nullptr;
       (*active_first_ref_weapon_2)->list_next = nullptr;
     }
     game->player.presentation.weapon_channels[2].body.bod.bod.list_flags |= 0x200u;
   }
-  p_invincible_shell = &game->player.presentation.invincible_shell;
+  invincible_shell = &game->player.presentation.invincible_shell;
   if ( (game->player.presentation.invincible_shell.body.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
@@ -349,7 +349,7 @@ LABEL_24:
     active_first_invincible_shell = g_game_base->active_bod_list.first;
     if ( active_first_invincible_shell )
     {
-      active_first_invincible_shell->list_prev = &p_invincible_shell->body.bod.bod;
+      active_first_invincible_shell->list_prev = &invincible_shell->body.bod.bod;
       (*active_first_ref_invincible_shell)->list_prev->list_next = *active_first_ref_invincible_shell;
       active_new_first_invincible_shell = (*active_first_ref_invincible_shell)->list_prev;
       *active_first_ref_invincible_shell = active_new_first_invincible_shell;
@@ -357,7 +357,7 @@ LABEL_24:
     }
     else
     {
-      *active_first_ref_invincible_shell = &p_invincible_shell->body.bod.bod;
+      *active_first_ref_invincible_shell = &invincible_shell->body.bod.bod;
       game->player.presentation.invincible_shell.body.bod.bod.list_prev = nullptr;
       (*active_first_ref_invincible_shell)->list_next = nullptr;
     }
@@ -366,7 +366,7 @@ LABEL_24:
   v37 = game->player.presentation.invincible_shell.body.bod.bod.list_flags;
   LOBYTE(v37) = v37 | 0x80;
   game->player.presentation.invincible_shell.body.bod.bod.list_flags = v37;
-  p_presentation = &game->player.presentation;
+  presentation = &game->player.presentation;
   if ( (game->player.presentation.body.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
@@ -377,7 +377,7 @@ LABEL_24:
     active_first_presentation = g_game_base->active_bod_list.first;
     if ( active_first_presentation )
     {
-      active_first_presentation->list_prev = &p_presentation->body.bod.bod;
+      active_first_presentation->list_prev = &presentation->body.bod.bod;
       (*active_first_ref_presentation)->list_prev->list_next = *active_first_ref_presentation;
       active_new_first_presentation = (*active_first_ref_presentation)->list_prev;
       *active_first_ref_presentation = active_new_first_presentation;
@@ -385,7 +385,7 @@ LABEL_24:
     }
     else
     {
-      *active_first_ref_presentation = &p_presentation->body.bod.bod;
+      *active_first_ref_presentation = &presentation->body.bod.bod;
       game->player.presentation.body.bod.bod.list_prev = nullptr;
       (*active_first_ref_presentation)->list_next = nullptr;
     }
@@ -401,7 +401,7 @@ LABEL_24:
     active_first_player = g_game_base->active_bod_list.first;
     if ( active_first_player )
     {
-      active_first_player->list_prev = &p_player->body.bod.bod;
+      active_first_player->list_prev = &player->body.bod.bod;
       (*active_first_ref_player)->list_prev->list_next = *active_first_ref_player;
       active_new_first_player = (*active_first_ref_player)->list_prev;
       *active_first_ref_player = active_new_first_player;
@@ -409,7 +409,7 @@ LABEL_24:
     }
     else
     {
-      *active_first_ref_player = &p_player->body.bod.bod;
+      *active_first_ref_player = &player->body.bod.bod;
       game->player.body.bod.bod.list_prev = nullptr;
       (*active_first_ref_player)->list_next = nullptr;
     }
@@ -432,7 +432,7 @@ LABEL_24:
     game->barrier.bod.bod.list_flags |= 0x200u;
   }
   v47 = game->level_mode;
-  game->barrier.owner_player = p_player;
+  game->barrier.owner_player = player;
   if ( !v47 )
   {
     sprintf((char *const)&game->lives_text_widget->text_buffer, "0/%i", game->level_definition.parcel_count);

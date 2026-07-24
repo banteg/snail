@@ -8881,7 +8881,12 @@
         "struct BodNode* active_first_player = *active_first_ref_player",
         "active_new_first_player->list_next",
         "struct BodNode* active_first_reload_player = *active_first_ref_player",
-        "active_new_first_player_reloaded->list_prev.b = nullptr"
+        "active_new_first_player_reloaded->list_prev.b = nullptr",
+        "game->player.presentation.jetpack_channel.body.bod.bod.list_prev = nullptr",
+        "game->player.presentation.weapon_channels[1].body.bod.bod.list_prev.b = nullptr",
+        "game->player.presentation.invincible_shell.body.bod.bod.list_prev.b = nullptr",
+        "game->player.presentation.body.bod.bod.list_prev.b = nullptr",
+        "game->player.body.bod.bod.list_prev = nullptr"
       ],
       "forbidden_substrings": [
         "struct FrameBodBase**",
@@ -8893,7 +8898,7 @@
         "struct BodNode* edx_29 =",
         "struct BodNode* ecx_40 =",
         "(ecx_35 - 0x5ac)",
-        "runtime->player.__offset(0x2fd8)",
+        "game->player.__offset(0x2fd8)",
         "initialized_player"
       ]
     },
@@ -8901,16 +8906,29 @@
       "name": "ida_build_subgame_active_bod_owners",
       "artifact": "analysis/decompile/ida/functions/00437eb0-build_subgame_level.c",
       "required_substrings": [
+        "Player *player;",
+        "Weapon *jetpack_channel;",
+        "Weapon *weapon_channel_0;",
+        "Weapon *weapon_channel_1;",
+        "Weapon *weapon_channel_2;",
+        "Invincible *invincible_shell;",
+        "Snail *presentation;",
         "BodNode **active_first_ref_jetpack",
         "(*active_first_ref_weapon_2)->list_prev->list_next",
-        "&p_invincible_shell->body.bod.bod",
-        "&p_presentation->body.bod.bod",
-        "&p_player->body.bod.bod",
+        "jetpack_channel = &game->player.presentation.jetpack_channel;",
+        "weapon_channel_0 = game->player.presentation.weapon_channels;",
+        "active_first_weapon_0->list_prev = &weapon_channel_0->body.bod.bod;",
+        "invincible_shell = &game->player.presentation.invincible_shell;",
+        "presentation = &game->player.presentation;",
+        "active_first_player->list_prev = &player->body.bod.bod;",
         "active_new_first_player->list_prev = nullptr"
       ],
       "forbidden_substrings": [
         "FrameBodBase **",
-        "(FrameBodBase *)"
+        "(FrameBodBase *)",
+        "p_invincible_shell",
+        "p_presentation",
+        "p_player"
       ]
     },
     {

@@ -1189,12 +1189,20 @@ TIP_MANAGER_USER_VAR_UPDATES = (
 # three weapon channels, invincibility shell, Snail body, and Player body. The
 # active-list anchor is the same BodNode** owner at all seven sites, but BN
 # otherwise inherits FrameBodBase** at the first lifetime and void** after the
-# register changes. Preserve those exact anchor identities and only the native
-# jetpack/Player list-node lifetimes where register reuse prevents the BodNode*
-# type from propagating through otherwise full-width pointer loads and stores.
+# register changes. Preserve those exact anchor identities together with the
+# borrowed embedded-object receivers. In particular, the first Weapon lifetime
+# otherwise remains a pointer-to-array and hides its inherited BodNode fields.
 # The former initialized_player override is intentionally absent: the canonical
 # SubgameRuntime receiver now keeps `&game->player` typed without an SSA patch.
 BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES = (
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1272,
+        66,
+        "jetpack_channel",
+        "Weapon*",
+    ),
     (
         "build_subgame_level",
         "RegisterVariableSourceType",
@@ -1254,10 +1262,26 @@ BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES = (
     (
         "build_subgame_level",
         "RegisterVariableSourceType",
+        1367,
+        67,
+        "weapon_channel_0",
+        "Weapon*",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
         1397,
         66,
         "active_first_ref_weapon_0",
         "BodNode**",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1455,
+        67,
+        "weapon_channel_1",
+        "Weapon*",
     ),
     (
         "build_subgame_level",
@@ -1270,10 +1294,26 @@ BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES = (
     (
         "build_subgame_level",
         "RegisterVariableSourceType",
+        1543,
+        67,
+        "weapon_channel_2",
+        "Weapon*",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
         1573,
         66,
         "active_first_ref_weapon_2",
         "BodNode**",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1631,
+        67,
+        "invincible_shell",
+        "Invincible*",
     ),
     (
         "build_subgame_level",
@@ -1286,10 +1326,26 @@ BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES = (
     (
         "build_subgame_level",
         "RegisterVariableSourceType",
+        1734,
+        67,
+        "presentation",
+        "Snail*",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
         1764,
         66,
         "active_first_ref_presentation",
         "BodNode**",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1156,
+        73,
+        "player",
+        "Player*",
     ),
     (
         "build_subgame_level",
@@ -3897,6 +3953,14 @@ def parse_args() -> argparse.Namespace:
             "and its existing time-trial record cursor."
         ),
     )
+    focused_group.add_argument(
+        "--build-subgame-only",
+        action="store_true",
+        help=(
+            "Replay only build_subgame_level's embedded presentation owners "
+            "and borrowed active-Bod list lifetimes."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -4087,6 +4151,37 @@ def main() -> int:
                     *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
                     *UPDATE_SUBGOLDY_REPLAY_USER_VAR_UPDATES,
                 ),
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
+    if args.build_subgame_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=(
+                    *BOD_CORE_OWNER_SIZES,
+                    "Weapon",
+                    "Invincible",
+                    "Snail",
+                    "Player",
+                    "SubgameRuntime",
+                ),
+            )
+        )
+        operations.append(verify_bod_core_owner_sizes(target=args.target))
+        operations.extend(
+            apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
             )
         )
         return emit_summary(

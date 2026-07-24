@@ -761,6 +761,8 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert '"sample_segment_view"' in bn_path_sync
     assert '"SubSegmentEventBiasView*"' in bn_path_sync
     assert "--update-subgoldy-only" in bn_path_sync
+    assert "--build-subgame-only" in bn_path_sync
+    assert "if args.build_subgame_only:" in bn_path_sync
     assert "*UPDATE_SUBGOLDY_USER_VAR_UPDATES" in bn_path_sync
     assert "*UPDATE_BANNER_USER_VAR_UPDATES" in bn_path_sync
 
@@ -6281,6 +6283,9 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert address in ida_path_sync
 
     assert "BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
+    assert "--build-subgame-only" in binja_source
+    assert "if args.build_subgame_only:" in binja_source
+    assert "updates=BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
     assert "typedef struct BodList" in analysis_path_header
     assert "BodNode* first;" in analysis_path_header
     assert '"BodList"' in binja_source
@@ -6315,6 +6320,27 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert '"BodNode**"' in binja_source
     assert '"initialized_player"' not in binja_source
     assert '"RegisterVariableSourceType",\n        1261,\n        73,' not in binja_source
+    for identity in (
+        '"RegisterVariableSourceType",\n        1272,\n        66,',
+        '"RegisterVariableSourceType",\n        1367,\n        67,',
+        '"RegisterVariableSourceType",\n        1455,\n        67,',
+        '"RegisterVariableSourceType",\n        1543,\n        67,',
+        '"RegisterVariableSourceType",\n        1631,\n        67,',
+        '"RegisterVariableSourceType",\n        1734,\n        67,',
+        '"RegisterVariableSourceType",\n        1156,\n        73,',
+    ):
+        assert identity in binja_source
+    for name, type_name in (
+        ("jetpack_channel", "Weapon*"),
+        ("weapon_channel_0", "Weapon*"),
+        ("weapon_channel_1", "Weapon*"),
+        ("weapon_channel_2", "Weapon*"),
+        ("invincible_shell", "Invincible*"),
+        ("presentation", "Snail*"),
+        ("player", "Player*"),
+    ):
+        assert f'"{name}"' in binja_source
+        assert f'"{type_name}"' in binja_source
 
     assert "RUNTIME_POOL_ROW_OFFSET_OPERANDS" in ida_path_sync
     assert "(0x4082EC, 1, 0x5CCAC8)" in ida_path_sync
@@ -6581,21 +6607,28 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
 
     assert "BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS" in ida_path_sync
     for definition_address in (
+        "0x438335",
+        "0x4383A9",
         "0x4383CD",
         "0x4383D3",
         "0x4383F7",
+        "0x438408",
         "0x438426",
         "0x43842B",
         "0x43844F",
+        "0x438460",
         "0x43847E",
         "0x438483",
         "0x4384A7",
+        "0x4384B8",
         "0x4384D6",
         "0x4384DB",
         "0x4384FF",
+        "0x438510",
         "0x43852E",
         "0x438533",
         "0x438557",
+        "0x438577",
         "0x438595",
         "0x43859A",
         "0x4385BE",
@@ -6604,6 +6637,17 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         "0x438606",
     ):
         assert definition_address in ida_path_sync
+    for name, declaration in (
+        ("player", "Player *player;"),
+        ("jetpack_channel", "Weapon *jetpack_channel;"),
+        ("weapon_channel_0", "Weapon *weapon_channel_0;"),
+        ("weapon_channel_1", "Weapon *weapon_channel_1;"),
+        ("weapon_channel_2", "Weapon *weapon_channel_2;"),
+        ("invincible_shell", "Invincible *invincible_shell;"),
+        ("presentation", "Snail *presentation;"),
+    ):
+        assert f'"{name}"' in ida_path_sync
+        assert f'"{declaration}"' in ida_path_sync
     assert "_sync_build_subgame_active_bod_lvars" in ida_path_sync
 
     assert "_sync_segment_copy_entry_anchor_lvar" in ida_segment_sync

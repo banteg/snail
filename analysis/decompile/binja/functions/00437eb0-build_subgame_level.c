@@ -199,10 +199,10 @@
 00438451        *active_first_ref_weapon_0 = active_new_first_weapon_0
 00438453        active_new_first_weapon_0->list_prev = nullptr
 00438430        *active_first_ref_weapon_0 = &game->player.presentation.weapon_channels
-00438432        game->player.__offset(0x2fd8).b = nullptr
-00438432        game->player.__offset(0x2fd9).b = 0
+00438432        game->player.presentation.weapon_channels.128.bod.bod.list_prev.b = nullptr
+00438432        game->player.presentation.weapon_channels.128.bod.bod.list_prev:1.b = 0
 00438437        (*active_first_ref_weapon_0)->list_next = nullptr
-00438456        game->player.presentation.weapon_channels[0].body.bod.bod.list_flags |= 0x200
+00438456        game->player.presentation.weapon_channels.128.bod.bod.list_flags |= 0x200
 00438416        report_errorf("List ADD")
 00438467        if ((0x200 & game->player.presentation.weapon_channels[1].body.bod.bod.list_flags) == 0)
 0043847d        struct BodNode** active_first_ref_weapon_1 = &g_game_base->active_bod_list.first
