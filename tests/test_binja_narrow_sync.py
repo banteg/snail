@@ -843,6 +843,82 @@ def test_ida_catalog_and_loader_lanes_replay_the_shared_root_graph() -> None:
     assert 'analysis/headers/bn_root_bod_catalog_types.h' in catalog_sync
 
 
+def test_root_track_slice_triplet_stride_view_is_borrowed_and_fail_closed() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (
+        repo_root / "tools/match/include/root_bod_catalog.h"
+    ).read_text(encoding="utf-8")
+    catalog_header = (HEADER_DIR / "bn_root_bod_catalog_types.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (
+        BINJA_DIR / "sync_root_bod_catalog_types.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (IDA_DIR / "apply_root_bod_catalog_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "RootTrackSliceTripletStrideView" not in matcher_header
+    for bank in ("floor_slices", "warning_slices", "slide_slices"):
+        assert f"TrackSliceBodBank {bank};" in matcher_header
+
+    assert "typedef struct RootTrackSliceTripletStrideView {" in catalog_header
+    assert "uint8_t root_to_floor_slice[0x44790];" in catalog_header
+    assert "RootBodCatalogEntry floor_slice;" in catalog_header
+    assert "uint8_t floor_to_warning_slice[0x188];" in catalog_header
+    assert "RootBodCatalogEntry warning_slice;" in catalog_header
+    assert "uint8_t warning_to_slide_slice[0x188];" in catalog_header
+    assert "RootBodCatalogEntry slide_slice;" in catalog_header
+    assert "RootBodCatalog remains the sole" in catalog_header
+
+    assert "WORLD_INITIALIZER_USER_VAR_UPDATES" in binja_sync
+    assert (
+        '"RegisterVariableSourceType",\n'
+        "        2681,\n"
+        "        73,\n"
+        '        "track_slice_triplet_stride_view",\n'
+        '        "RootTrackSliceTripletStrideView*",'
+    ) in binja_sync
+    assert '"RootTrackSliceBodBank": 0x1C0' in binja_sync
+    assert '"RootTrackSliceTripletStrideView": 0x44B48' in binja_sync
+    assert "apply_user_var_updates" in binja_sync
+    assert "reanalyze_functions" in binja_sync
+
+    assert '"RootTrackSliceTripletStrideView": 0x44B48' in ida_sync
+    assert '"definition_address": 0x40B76A' in ida_sync
+    assert '"accepted_names": {"v18", "track_slice_triplet_stride_view"}' in ida_sync
+    assert '"is_stack": False' in ida_sync
+    assert "bool(lvar.is_stk_var()) == is_stack" in ida_sync
+    assert "_sync_track_slice_triplet_lvar()" in ida_sync
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    bn_check = checks[
+        "bn_game_initializer_track_slice_triplet_stride_ownership"
+    ]
+    ida_check = checks[
+        "ida_game_initializer_track_slice_triplet_stride_ownership"
+    ]
+    assert (
+        "struct RootTrackSliceTripletStrideView* "
+        "track_slice_triplet_stride_view = game + eax_14 * 0x38"
+        in bn_check["required_substrings"]
+    )
+    assert "void* edi_5 = game + eax_14 * 0x38" in bn_check[
+        "forbidden_substrings"
+    ]
+    assert (
+        "struct RootTrackSliceTripletStrideView "
+        "*track_slice_triplet_stride_view;"
+        in ida_check["required_substrings"]
+    )
+    assert "char *v18;" in ida_check["forbidden_substrings"]
+
+
 def test_parse_struct_layout_size() -> None:
     assert _narrow_sync.parse_struct_layout_size("struct Runtime // size=0x1272838") == 0x1272838
     assert _narrow_sync.parse_struct_layout_size("struct Tiny // size=1") == 1

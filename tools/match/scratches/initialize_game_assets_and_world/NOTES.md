@@ -1133,6 +1133,34 @@ This is analysis ownership only. No matcher source changed, and the honest
 world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
 existing 36 broad-alignment mismatches.
 
+## 2026-07-24 track-slice triplet stride ownership
+
+The eight-pass backdrop loop carries `game + slice_index * 0x38`, matching one
+`RootBodCatalogEntry` stride, but it is not a pointer into one contiguous
+array. Each iteration reaches corresponding entries in three independently
+owned `RootTrackSliceBodBank`s: floor at root `+0x44790`, warning at
+`+0x44950`, and slide at `+0x44b10`. The bank starts are exactly `0x1c0`
+apart, matching eight `0x38` entries.
+
+The analysis-only `RootTrackSliceTripletStrideView` records those three fixed
+root-relative biases and borrows one entry from each bank.
+`RootBodCatalog::{floor,warning,slide}_slices` remain the sole owners; the
+view does not claim the intervening bank tails. Binary Ninja binds the exact
+register variable at index 2681/storage 73 and now renders the loop through
+named `floor_slice`, `warning_slice`, and `slide_slice` entries. IDA
+independently identifies the same non-stack `char *` lifetime at `0x40b76a`
+and produces the same three-owner view.
+
+Both replay lanes require the exact `0x38` entry, `0x1c0` bank, `0x4d00`
+catalog, and `0x44b48` shifted-view extents before applying the local type.
+The IDA replay additionally verifies the definition address and non-stack
+storage class before and after mutation. Agreement between Binary Ninja and
+IDA made a Ghidra replay unnecessary.
+
+This is analysis ownership only. No matcher source changed, and the honest
+world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
+existing 36 broad-alignment mismatches.
+
 ## 2026-07-24 player initializer shifted ownership
 
 The per-player startup loop carries `game + player_index * 0x1f8`, not a

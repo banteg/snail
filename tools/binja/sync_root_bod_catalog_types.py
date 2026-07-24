@@ -9,8 +9,10 @@ import sys
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
+    apply_user_var_updates,
     current_struct_size,
     emit_summary,
+    reanalyze_functions,
     types_declare_if_missing,
 )
 
@@ -23,12 +25,36 @@ REQUIRED_STRUCTS = (
     "RootTrackSliceBodBank",
     "RootTrackFringeBodCatalog",
     "RootBodCatalog",
+    "RootTrackSliceTripletStrideView",
 )
 ROOT_BOD_CATALOG_ENTRY_FIELD_UPDATES = (
     ("0x24", "object", "Object*"),
 )
+ROOT_TRACK_SLICE_TRIPLET_STRIDE_VIEW_FIELD_UPDATES = (
+    ("0x00", "root_to_floor_slice", "uint8_t[0x44790]"),
+    ("0x44790", "floor_slice", "RootBodCatalogEntry"),
+    ("0x447c8", "floor_to_warning_slice", "uint8_t[0x188]"),
+    ("0x44950", "warning_slice", "RootBodCatalogEntry"),
+    ("0x44988", "warning_to_slide_slice", "uint8_t[0x188]"),
+    ("0x44b10", "slide_slice", "RootBodCatalogEntry"),
+)
 GAME_ROOT_FIELD_UPDATES = (
     ("0x44100", "root_bod_catalog", "RootBodCatalog"),
+)
+
+# The backdrop-slice initializer carries `game + i * sizeof(BodBase)` while
+# touching corresponding entries in three independently owned catalog banks.
+# Preserve the shifted root-relative lifetime instead of asserting one false
+# contiguous owner across the intervening bank tails.
+WORLD_INITIALIZER_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "RegisterVariableSourceType",
+        2681,
+        73,
+        "track_slice_triplet_stride_view",
+        "RootTrackSliceTripletStrideView*",
+    ),
 )
 
 
@@ -46,7 +72,11 @@ def require_catalog_extents(*, target: str) -> None:
     """Reject an overlapping or truncated catalog before rebinding GameRoot."""
     expected_sizes = {
         "RootBodCatalogEntry": 0x38,
+        "RootTrackCornerBodBank": 0xE0,
+        "RootTrackSliceBodBank": 0x1C0,
+        "RootTrackFringeBodCatalog": 0x3F00,
         "RootBodCatalog": 0x4D00,
+        "RootTrackSliceTripletStrideView": 0x44B48,
     }
     observed_sizes = {
         name: current_struct_size(REPO_ROOT, target=target, struct_name=name)
@@ -105,9 +135,27 @@ def main() -> int:
             target=args.target,
             struct_updates=(
                 ("RootBodCatalogEntry", ROOT_BOD_CATALOG_ENTRY_FIELD_UPDATES),
+                (
+                    "RootTrackSliceTripletStrideView",
+                    ROOT_TRACK_SLICE_TRIPLET_STRIDE_VIEW_FIELD_UPDATES,
+                ),
                 ("GameRoot", GAME_ROOT_FIELD_UPDATES),
             ),
             proto_updates=PROTO_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=WORLD_INITIALIZER_USER_VAR_UPDATES,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=("initialize_game_assets_and_world",),
         )
     )
     return emit_summary(

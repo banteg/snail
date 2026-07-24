@@ -206,13 +206,13 @@
 0040b80e        long double temp0_1
 0040b756        int32_t eax_14
 0040b756        eax_14, x87control = ftol(x87control, fconvert.t(x_offset))
-0040b769        void* edi_5 = game + eax_14 * 0x38
-0040b779        set_bod_object(edi_5 + 0x44790, add_object_to_list(&g_object_list))
-0040b78f        initialize_backdrop_slice_quad(*(edi_5 + 0x447b4), "Objects/World00/Track0.tga", x_offset)
-0040b7a8        set_bod_object(edi_5 + 0x44950, add_object_to_list(&g_object_list))
-0040b7be        initialize_backdrop_slice_quad(*(edi_5 + 0x44974), "Objects/World00/TrackWarn.tga", x_offset)
-0040b7d7        set_bod_object(edi_5 + 0x44b10, add_object_to_list(&g_object_list))
-0040b7ed        initialize_backdrop_slice_quad(*(edi_5 + 0x44b34), "Objects/World00/Slide0.tga", x_offset)
+0040b769        struct RootTrackSliceTripletStrideView* track_slice_triplet_stride_view = game + eax_14 * 0x38
+0040b779        set_bod_object(&track_slice_triplet_stride_view->floor_slice.vtable, add_object_to_list(&g_object_list))
+0040b78f        initialize_backdrop_slice_quad(track_slice_triplet_stride_view->floor_slice.object, "Objects/World00/Track0.tga", x_offset)
+0040b7a8        set_bod_object(&track_slice_triplet_stride_view->warning_slice.vtable, add_object_to_list(&g_object_list))
+0040b7be        initialize_backdrop_slice_quad(track_slice_triplet_stride_view->warning_slice.object, "Objects/World00/TrackWarn.tga", x_offset)
+0040b7d7        set_bod_object(&track_slice_triplet_stride_view->slide_slice.vtable, add_object_to_list(&g_object_list))
+0040b7ed        initialize_backdrop_slice_quad(track_slice_triplet_stride_view->slide_slice.object, "Objects/World00/Slide0.tga", x_offset)
 0040b7f6        x87_r7_3 = fconvert.t(x_offset) + fconvert.t(1f)
 0040b7ff        x_offset = fconvert.s(x87_r7_3)
 0040b803        temp0_1 = fconvert.t(8f)
@@ -299,33 +299,33 @@
 0040bd6f        texture_ref_1->flags = flags
 0040bd82        set_bod_object(&game->root_bod_catalog.lazer_model.vtable, add_object_to_list(&g_object_list))
 0040bd93        load_object_definition("Objects/Lazer", game->root_bod_catalog.lazer_model.object)
-0040bd9b        struct Object** edi_14 = &game->subgame.sub_lazers.slots[0].body.bod.object
+0040bd9b        struct Object** edi_13 = &game->subgame.sub_lazers.slots[0].body.bod.object
 0040bda1        int32_t var_128_2 = 0x14
 0040be04        bool cond:1_1
-0040bdb3        set_bod_object(&edi_14[-9], game->root_bod_catalog.lazer_model.object)
-0040bdd1        struct TextureRef* texture_ref_2 = (edi_14 - 0x3cb13c)->subgame.sub_lazers.slots[0].body.bod.object->facequads->texture_ref
+0040bdb3        set_bod_object(&edi_13[-9], game->root_bod_catalog.lazer_model.object)
+0040bdd1        struct TextureRef* texture_ref_2 = (edi_13 - 0x3cb13c)->subgame.sub_lazers.slots[0].body.bod.object->facequads->texture_ref
 0040bdd4        enum TextureRefFlags flags_1 = texture_ref_2->flags
 0040bdd6        flags_1:1.b |= 4
 0040bdd9        texture_ref_2->flags = flags_1
-0040bde4        (edi_14 - 0x3cb13c)->subgame.sub_lazers.slots[0].owner_game = &game->subgame
-0040bde7        store_color4f(&edi_14[1], 1f, 1f, 1f, 0.699999988f)
-0040bdec        struct Object* object_13 = (edi_14 - 0x3cb13c)->subgame.sub_lazers.slots[0].body.bod.object
-0040bdf2        edi_14 = &edi_14[0x2c]
+0040bde4        (edi_13 - 0x3cb13c)->subgame.sub_lazers.slots[0].owner_game = &game->subgame
+0040bde7        store_color4f(&edi_13[1], 1f, 1f, 1f, 0.699999988f)
+0040bdec        struct Object* object_13 = (edi_13 - 0x3cb13c)->subgame.sub_lazers.slots[0].body.bod.object
+0040bdf2        edi_13 = &edi_13[0x2c]
 0040bdf8        cond:1_1 = var_128_2 != 1
 0040bdf9        object_13->blend_mode = 9
 0040be00        var_128_2 -= 1
 0040be04        do while (cond:1_1)
 0040be17        set_bod_object(&game->root_bod_catalog.salt_model.vtable, add_object_to_list(&g_object_list))
 0040be2c        load_x_mesh(&game->directx_loader, "salt.x", game->root_bod_catalog.salt_model.object, 1)
-0040be31        struct SubgameRuntime** edi_15 = &game->subgame.salt_hazards.slots[0].owner_game
+0040be31        struct SubgameRuntime** edi_14 = &game->subgame.salt_hazards.slots[0].owner_game
 0040be37        int32_t var_128_3 = 0x28
 0040be96        bool cond:2_1
-0040be4c        set_bod_object(&edi_15[-0x22], game->root_bod_catalog.salt_model.object)
-0040be6e        (edi_15 - 0x3cbf60)->subgame.salt_hazards.slots[0].owner_game = &game->subgame
-0040be70        store_color4f(&edi_15[-0x18], 1f, 1f, 1f, 0.899999976f)
-0040be78        (edi_15 - 0x3cbf60)->subgame.salt_hazards.slots[0].body.bod.object->blend_mode = 0xc
-0040be82        set_matrix_identity(&edi_15[-0x14])
-0040be8b        edi_15 = &edi_15[0x26]
+0040be4c        set_bod_object(&edi_14[-0x22], game->root_bod_catalog.salt_model.object)
+0040be6e        (edi_14 - 0x3cbf60)->subgame.salt_hazards.slots[0].owner_game = &game->subgame
+0040be70        store_color4f(&edi_14[-0x18], 1f, 1f, 1f, 0.899999976f)
+0040be78        (edi_14 - 0x3cbf60)->subgame.salt_hazards.slots[0].body.bod.object->blend_mode = 0xc
+0040be82        set_matrix_identity(&edi_14[-0x14])
+0040be8b        edi_14 = &edi_14[0x26]
 0040be91        cond:2_1 = var_128_3 != 1
 0040be92        var_128_3 -= 1
 0040be96        do while (cond:2_1)

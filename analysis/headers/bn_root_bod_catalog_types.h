@@ -71,4 +71,20 @@ typedef struct RootBodCatalog {
     RootBodCatalogEntry salt_model;
 } RootBodCatalog;
 
+/*
+ * Analysis-only root-relative view for the eight-pass backdrop-slice loop in
+ * initialize_game_assets_and_world. Native carries `game + i * 0x38`, then
+ * applies the three fixed GameRoot biases below. Each named entry is borrowed
+ * from its canonical RootBodCatalog bank; RootBodCatalog remains the sole
+ * owner.
+ */
+typedef struct RootTrackSliceTripletStrideView {
+    uint8_t root_to_floor_slice[0x44790];
+    RootBodCatalogEntry floor_slice;
+    uint8_t floor_to_warning_slice[0x188];
+    RootBodCatalogEntry warning_slice;
+    uint8_t warning_to_slide_slice[0x188];
+    RootBodCatalogEntry slide_slice;
+} RootTrackSliceTripletStrideView;
+
 #endif

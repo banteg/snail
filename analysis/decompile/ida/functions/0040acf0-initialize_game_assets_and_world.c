@@ -21,7 +21,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   BodNode *v15; // edx
   struct BodNode *v16; // ecx
   uint32_t v17; // ecx
-  char *v18; // edi
+  struct RootTrackSliceTripletStrideView *track_slice_triplet_stride_view; // edi
   Object *v19; // eax
   Object *v20; // eax
   Object *v21; // eax
@@ -574,16 +574,16 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   x_offset = 0.0;
   do
   {
-    v18 = (char *)game + 56 * (__int64)x_offset;
+    track_slice_triplet_stride_view = (struct RootTrackSliceTripletStrideView *)((char *)game + 56 * (__int64)x_offset);
     v19 = add_object_to_list(&g_object_list);
-    set_bod_object((BodBase *)(v18 + 280464), v19);
-    initialize_backdrop_slice_quad(*((Object **)v18 + 70125), aObjectsWorld00, x_offset);
+    set_bod_object((BodBase *)&track_slice_triplet_stride_view->floor_slice, v19);
+    initialize_backdrop_slice_quad(track_slice_triplet_stride_view->floor_slice.object, aObjectsWorld00, x_offset);
     v20 = add_object_to_list(&g_object_list);
-    set_bod_object((BodBase *)(v18 + 280912), v20);
-    initialize_backdrop_slice_quad(*((Object **)v18 + 70237), cap_texture, x_offset);
+    set_bod_object((BodBase *)&track_slice_triplet_stride_view->warning_slice, v20);
+    initialize_backdrop_slice_quad(track_slice_triplet_stride_view->warning_slice.object, cap_texture, x_offset);
     v21 = add_object_to_list(&g_object_list);
-    set_bod_object((BodBase *)(v18 + 281360), v21);
-    initialize_backdrop_slice_quad(*((Object **)v18 + 70349), texture_a, x_offset);
+    set_bod_object((BodBase *)&track_slice_triplet_stride_view->slide_slice, v21);
+    initialize_backdrop_slice_quad(track_slice_triplet_stride_view->slide_slice.object, texture_a, x_offset);
     v22 = x_offset + 1.0;
     x_offset = v22;
   }

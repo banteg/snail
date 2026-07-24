@@ -6,6 +6,7 @@ import re
 import sys
 
 import ida_funcs
+import ida_hexrays
 import ida_kernwin
 import ida_pro
 import ida_typeinf
@@ -25,6 +26,7 @@ EXPECTED_OWNER_SIZES = {
     "RootTrackSliceBodBank": 0x1C0,
     "RootTrackFringeBodCatalog": 0x3F00,
     "RootBodCatalog": 0x4D00,
+    "RootTrackSliceTripletStrideView": 0x44B48,
 }
 
 TRUSTED_DECLARATIONS = (
@@ -33,6 +35,16 @@ TRUSTED_DECLARATIONS = (
         "uint8_t __thiscall initialize_game_assets_and_world(GameRoot* game);",
     ),
 )
+
+TRACK_SLICE_TRIPLET_LVAR = {
+    "selector": "initialize_game_assets_and_world",
+    "definition_address": 0x40B76A,
+    "accepted_names": {"v18", "track_slice_triplet_stride_view"},
+    "accepted_types": {"char *", "RootTrackSliceTripletStrideView *"},
+    "target_name": "track_slice_triplet_stride_view",
+    "target_struct_name": "RootTrackSliceTripletStrideView",
+    "is_stack": False,
+}
 
 
 def _normalize_type_text(value: str | None) -> str | None:
@@ -57,6 +69,139 @@ def _named_struct_size(name: str) -> int | None:
     if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
         return None
     return value.get_size()
+
+
+def _normalize_struct_pointer_type(value: str | None) -> str:
+    normalized = (_normalize_type_text(value) or "").removeprefix("struct ")
+    return re.sub(r"\s+", "", normalized)
+
+
+def _sync_track_slice_triplet_lvar() -> dict[str, object]:
+    """Persist the exact register-backed root-relative catalog lifetime."""
+    selector = str(TRACK_SLICE_TRIPLET_LVAR["selector"])
+    definition_address = int(TRACK_SLICE_TRIPLET_LVAR["definition_address"])
+    accepted_names = set(TRACK_SLICE_TRIPLET_LVAR["accepted_names"])
+    accepted_types = {
+        _normalize_struct_pointer_type(value)
+        for value in TRACK_SLICE_TRIPLET_LVAR["accepted_types"]
+    }
+    target_name = str(TRACK_SLICE_TRIPLET_LVAR["target_name"])
+    target_struct_name = str(TRACK_SLICE_TRIPLET_LVAR["target_struct_name"])
+    is_stack = bool(TRACK_SLICE_TRIPLET_LVAR["is_stack"])
+
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and bool(lvar.is_stk_var()) == is_stack
+        and lvar.defea == definition_address
+        and lvar.name in accepted_names
+        and _normalize_struct_pointer_type(str(lvar.type())) in accepted_types
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_track_slice_triplet_lvar_candidates",
+            "selector": selector,
+            "candidate_count": len(candidates),
+            "definition_address": hex(definition_address),
+            "is_stack": is_stack,
+        }
+
+    lvar = candidates[0]
+    target_pointer_type = _normalize_struct_pointer_type(
+        f"{target_struct_name} *"
+    )
+    observed_type = _normalize_struct_pointer_type(str(lvar.type()))
+    if lvar.name == target_name and observed_type == target_pointer_type:
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "definition_address": hex(lvar.defea),
+            "is_stack": bool(lvar.is_stk_var()),
+        }
+
+    target_type = ida_typeinf.tinfo_t()
+    if not target_type.get_named_type(
+        None,
+        target_struct_name,
+        ida_typeinf.BTF_STRUCT,
+    ):
+        return {
+            "status": "failed",
+            "reason": "missing_track_slice_triplet_target_type",
+            "selector": selector,
+            "target_struct_name": target_struct_name,
+        }
+    pointer_type = ida_typeinf.tinfo_t()
+    if not pointer_type.create_ptr(target_type):
+        return {
+            "status": "failed",
+            "reason": "create_track_slice_triplet_pointer_type_failed",
+            "selector": selector,
+            "target_struct_name": target_struct_name,
+        }
+
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = target_name
+    info.type = pointer_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_track_slice_triplet_lvar_failed",
+            "selector": selector,
+            "target_name": target_name,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and bool(candidate.is_stk_var()) == is_stack
+        and candidate.defea == definition_address
+        and candidate.name == target_name
+    ]
+    verified_type = (
+        _normalize_struct_pointer_type(str(verified[0].type()))
+        if len(verified) == 1
+        else None
+    )
+    if len(verified) != 1 or verified_type != target_pointer_type:
+        return {
+            "status": "failed",
+            "reason": "track_slice_triplet_lvar_readback_failed",
+            "selector": selector,
+            "candidate_count": len(verified),
+            "observed_type": verified_type,
+            "target_type": target_pointer_type,
+            "target_name": target_name,
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "before_name": lvar.name,
+        "before_type": str(lvar.type()),
+        "name": verified[0].name,
+        "type": str(verified[0].type()),
+        "definition_address": hex(verified[0].defea),
+        "is_stack": bool(verified[0].is_stk_var()),
+    }
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
@@ -101,6 +246,20 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 continue
             applied += 1
 
+    track_slice_triplet_lvar = {
+        "status": "skipped",
+        "reason": "owner_or_prototype_preflight_failed",
+    }
+    if not parse_errors and not failed:
+        track_slice_triplet_lvar = _sync_track_slice_triplet_lvar()
+        if track_slice_triplet_lvar.get("status") == "failed":
+            failed.append(
+                {
+                    "selector": "track_slice_triplet_stride_view",
+                    "lvar_replay": track_slice_triplet_lvar,
+                }
+            )
+
     game_root_owner_graph = sync_game_root_owner_graph(require=False)
     if game_root_owner_graph.get("status") == "failed":
         failed.append({"selector": "GameRoot", "owner_graph": game_root_owner_graph})
@@ -114,6 +273,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "owner_sizes": owner_sizes,
                 "applied": applied,
                 "unchanged": unchanged,
+                "track_slice_triplet_lvar": track_slice_triplet_lvar,
                 "game_root_owner_graph": game_root_owner_graph,
                 "missing": missing,
                 "failed": failed,

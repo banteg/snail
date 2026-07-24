@@ -4123,6 +4123,52 @@
       ]
     },
     {
+      "name": "bn_game_initializer_track_slice_triplet_stride_ownership",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "struct RootTrackSliceTripletStrideView* track_slice_triplet_stride_view = game + eax_14 * 0x38",
+        "&track_slice_triplet_stride_view->floor_slice.vtable",
+        "track_slice_triplet_stride_view->floor_slice.object",
+        "&track_slice_triplet_stride_view->warning_slice.vtable",
+        "track_slice_triplet_stride_view->warning_slice.object",
+        "&track_slice_triplet_stride_view->slide_slice.vtable",
+        "track_slice_triplet_stride_view->slide_slice.object"
+      ],
+      "forbidden_substrings": [
+        "void* edi_5 = game + eax_14 * 0x38",
+        "edi_5 + 0x44790",
+        "*(edi_5 + 0x447b4)",
+        "edi_5 + 0x44950",
+        "*(edi_5 + 0x44974)",
+        "edi_5 + 0x44b10",
+        "*(edi_5 + 0x44b34)"
+      ]
+    },
+    {
+      "name": "ida_game_initializer_track_slice_triplet_stride_ownership",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "struct RootTrackSliceTripletStrideView *track_slice_triplet_stride_view;",
+        "track_slice_triplet_stride_view = (struct RootTrackSliceTripletStrideView *)((char *)game + 56 * (__int64)x_offset);",
+        "(BodBase *)&track_slice_triplet_stride_view->floor_slice",
+        "track_slice_triplet_stride_view->floor_slice.object",
+        "(BodBase *)&track_slice_triplet_stride_view->warning_slice",
+        "track_slice_triplet_stride_view->warning_slice.object",
+        "(BodBase *)&track_slice_triplet_stride_view->slide_slice",
+        "track_slice_triplet_stride_view->slide_slice.object"
+      ],
+      "forbidden_substrings": [
+        "char *v18;",
+        "v18 = (char *)game + 56",
+        "v18 + 280464",
+        "*((Object **)v18 + 70125)",
+        "v18 + 280912",
+        "*((Object **)v18 + 70237)",
+        "v18 + 281360",
+        "*((Object **)v18 + 70349)"
+      ]
+    },
+    {
       "name": "bn_game_initializer_player_stride_ownership",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
