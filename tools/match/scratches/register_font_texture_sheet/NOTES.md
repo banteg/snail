@@ -17,8 +17,8 @@ Recovered relationships:
   `TEXTURE_REF_REGISTERED` (`0x400`).
 - Both scale parameters are floats. The third argument is stored directly in
   `FontSheet::width_scale`; the exact forwarding wrapper confirms the ABI.
-- `font_kind` is later read by `draw_font_text_instance` as a positive shadow
-  pixel offset.
+- `shadow_offset_pixels` is later read by `draw_font_text_instance` as the
+  positive X/Y displacement of the black glyph pass.
 
 Initial match: 27.78%, 230 candidate instructions versus 274 target
 instructions. The residual is source order/register ownership around the atlas
@@ -52,7 +52,7 @@ neighbors included a count snapshot, late `FontSheet*` declarations,
   post-incremented registered-font index.
 - Focused Wibo improves from 72.46% (267/274, 48 clean operands) to 75.41%
   (275/274, 51 clean operands). The only masked mismatch remains the adjacent
-  `slot_count`/`font_kind` tail: native keeps split x in `ebx` and the glyph
+  `slot_count`/`shadow_offset_pixels` tail: native keeps split x in `ebx` and the glyph
   slot on the stack, while VC6 assigns those two owners oppositely in the
   candidate, adding one four-byte local. No forced spill or dummy dependency is
   used to hide that residual.
@@ -69,7 +69,7 @@ The source-only ownership change preserves the normalized candidate listing
 byte-for-byte
 (`35f3e3abff48d6ec831ea4e200f079034f640ba6b4e0c16d6668f4af4ed09e49`)
 and the honest 75.41% result (`275/274`, prefix `0/274`, 51 clean operands and
-the existing `slot_count`/`font_kind` owner mismatch).
+the existing `slot_count`/`shadow_offset_pixels` owner mismatch).
 
 The analysis databases now agree on the two float scale parameters, the
 `FontSheet` owner, and the one-sheet bank boundary at `g_registered_font_count`.
@@ -91,7 +91,7 @@ IDA independently corroborates the same `+0x0c` width, `+0x0e` height, and two
 sampler callsites in its tracked artifact; its replay now carries the shared
 typed helper prototype as well. This is analysis-only: the matcher source is
 unchanged, so the honest 75.41% result (`275/274`, 51 clean operands) and the
-documented `slot_count`/`font_kind` register-owner residual remain intact.
+documented `slot_count`/`shadow_offset_pixels` register-owner residual remain intact.
 
 ## 2026-07-23 registrar value ownership
 
@@ -116,7 +116,7 @@ that annotation and names the visible ECX lifetime instead.
 
 No matcher source changed. Focused Wibo therefore remains the honest 75.41%
 result (`275/274`, prefix `0/274`, 51 clean masked operands) with the existing
-`slot_count`/`font_kind` compiler-owner mismatch still documented rather than
+`slot_count`/`shadow_offset_pixels` compiler-owner mismatch still documented rather than
 forced.
 
 ## 2026-07-24 atlas-coordinate ownership correction
@@ -132,3 +132,13 @@ exact U0/V0/U1/V1 contract.
 This is a shared-struct naming correction, not a source-shape probe. Focused
 Wibo remains honestly at 75.41% with 51 clean operands and the existing
 compiler-owner residual.
+
+## 2026-07-24 shadow-offset producer
+
+The sole Windows registration call forwards integer 2 for
+`Objects/Font/Font-menu-hover.tga`. The registrar stores it unchanged at
+`FontSheet +0x824`; the text renderer requires it to be positive, converts it
+to float, and adds it to both glyph coordinates for the black shadow pass.
+That producer/consumer chain closes the field and parameter as
+`shadow_offset_pixels`, replacing the misleading `font_kind` vocabulary.
+The registrar remains at the honest 75.41% frontier with 51 clean operands.

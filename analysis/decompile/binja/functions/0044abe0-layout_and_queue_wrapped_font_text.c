@@ -35,7 +35,7 @@
 0044acb2        if (eax_4.b != 0)
 0044acbe        int32_t var_430_2 = ecx_5
 0044acc7        color_1.a = fconvert.s(sine(fconvert.s(fconvert.t(y_1) * fconvert.t(0.00654498488f))))
-0044ad08        queue_font_text_instance(&text_1, font_id, text_scale, x, y_1, horizontal_align, anchor_x, flags, &color_1, text_wave_amplitude, text_wave_enabled)
+0044ad08        queue_font_text_instance(&text_1, font_id, text_scale, x, y_1, horizontal_align, anchor_x, flags, &color_1, text_wave_amplitude, shadow_enabled)
 0044ad2f        eax_2 = &text_1
 0044ad3e        y_1 = fconvert.s(fconvert.t(g_font_sheets[font_id].height_scale) * fconvert.t(g_font_sheets[font_id].spacing_scale) * fconvert.t(g_font_sheets[font_id].line_marker_y) * fconvert.t(text_scale) + fconvert.t(y_1))
 0044ac5e        *eax_2 = i

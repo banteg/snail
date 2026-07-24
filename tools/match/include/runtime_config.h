@@ -8,14 +8,14 @@ enum RuntimeRenderFlag {
     RUNTIME_RENDER_PARTICLE_EFFECTS = 0x00000010,
     // Gates the runtime row attachment bodies and built track-fringe meshes.
     RUNTIME_RENDER_TRACK_FRINGE = 0x00000020,
-    // Selects per-character wave animation in the front-end font path.
-    RUNTIME_RENDER_FONT_WAVE = 0x00000100,
+    // Enables the offset black shadow pass for front-end glyphs.
+    RUNTIME_RENDER_FONT_SHADOW = 0x00000100,
     // Selects the 32-bit rather than 16-bit Direct3D display mode.
     RUNTIME_RENDER_32_BIT_COLOR = 0x00000400,
 };
 
 enum RuntimeRenderFlagBit {
-    RUNTIME_RENDER_FONT_WAVE_BIT = 8,
+    RUNTIME_RENDER_FONT_SHADOW_BIT = 8,
 };
 
 struct RuntimeConfig {

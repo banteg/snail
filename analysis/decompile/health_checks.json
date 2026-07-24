@@ -9269,6 +9269,32 @@
       ]
     },
     {
+      "name": "bn_runtime_font_shadow_flag_owner",
+      "artifact": "analysis/decompile/binja/functions/00406c20-initialize_default_runtime_config.c",
+      "required_substrings": [
+        "g_runtime_config.render_flags",
+        "RUNTIME_RENDER_FONT_SHADOW"
+      ],
+      "forbidden_substrings": [
+        "RUNTIME_RENDER_FONT_WAVE",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_runtime_font_shadow_flag_owner",
+      "artifact": "analysis/decompile/ida/functions/00406c20-initialize_default_runtime_config.c",
+      "required_substrings": [
+        "g_runtime_config.render_flags",
+        "RUNTIME_RENDER_FONT_SHADOW"
+      ],
+      "forbidden_substrings": [
+        "RUNTIME_RENDER_FONT_WAVE",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_font_width_sheet_owners",
       "artifact": "analysis/decompile/binja/functions/00449e90-measure_font_text_width.c",
       "required_substrings": [
@@ -9330,6 +9356,7 @@
         "g_font_sheets[registered_font_count_2].glyph_v0",
         "g_font_sheets[registered_font_count_2].glyph_v1",
         "g_font_sheets[registered_font_count_2].line_marker_y",
+        "g_font_sheets[registered_font_count_2].shadow_offset_pixels = shadow_offset_pixels",
         "g_font_sheets[g_registered_font_count].texture_ref_a",
         "width_scale",
         "height_scale"
@@ -9353,6 +9380,7 @@
         "g_font_sheets[0].v0",
         ".line_step",
         ".line_marker_fraction",
+        ".font_kind",
         "*(pointer + 0xc)",
         "*(pointer + 0xe)",
         "data_777704",
@@ -9383,14 +9411,17 @@
       "name": "ida_font_registrar_sheet_owners",
       "artifact": "analysis/decompile/ida/functions/00449f50-register_font_texture_sheet.c",
       "required_substrings": [
+        "int32_t shadow_offset_pixels",
         "float width_scale",
         "float height_scale",
+        ".shadow_offset_pixels = shadow_offset_pixels",
         "g_font_sheets[g_registered_font_count].line_marker_y",
         "g_font_sheets[g_registered_font_count].texture_ref_a",
         "g_font_sheets[v20].spacing_scale"
       ],
       "forbidden_substrings": [
         "sub_449F50",
+        "font_kind",
         "unk_777",
         "__asm",
         "_ET1"
@@ -9421,6 +9452,8 @@
         "float draw_y",
         "float shadow_offset",
         "struct tColour* shadow_color",
+        "entry->shadow_enabled",
+        ".shadow_offset_pixels",
         "int32_t glyph_advance",
         "current_char = text_cursor[1]",
         "entry->font_id",
@@ -9448,6 +9481,8 @@
         "float y0",
         "float var_34_1",
         "struct tColour* color_1",
+        "text_wave_enabled",
+        ".font_kind",
         "data_7772f8",
         "__asm",
         "_ET1"
@@ -9461,6 +9496,8 @@
         "entry->font_id",
         "entry->text_scale",
         "entry->color",
+        "entry->shadow_enabled",
+        ".shadow_offset_pixels",
         "g_font_sheets[0].glyph_u0",
         "g_font_sheets[0].glyph_u1",
         "g_font_sheets[font_id].glyph_v0",
@@ -9469,6 +9506,8 @@
       ],
       "forbidden_substrings": [
         "sub_44A360",
+        "text_wave_enabled",
+        ".font_kind",
         "unk_777",
         "__asm",
         "_ET1"
@@ -9614,6 +9653,7 @@
         "g_font_queue[font_queue_count_1].flags",
         "g_font_queue[font_queue_count_1].text",
         "g_font_queue[font_queue_count_1].color",
+        "g_font_queue[font_queue_count_1].shadow_enabled = shadow_enabled",
         "struct tColour* entry_color",
         "entry_color->g",
         "entry_color->b",
@@ -9625,6 +9665,7 @@
         "*(edx_4 + 4)",
         "*(edx_4 + 8)",
         "*(edx_4 + 0xc)",
+        "text_wave_enabled",
         "data_4b7236",
         "data_7544e8",
         "data_753ce8",
@@ -9640,10 +9681,12 @@
         "if ( g_render_queue_active && g_font_queue_count != 1024 )",
         "g_font_queue[v11].flags",
         "g_font_queue[v11].text",
-        "g_font_queue[v11].color"
+        "g_font_queue[v11].color",
+        "g_font_queue[v11].shadow_enabled = shadow_enabled"
       ],
       "forbidden_substrings": [
         "sub_44A790",
+        "text_wave_enabled",
         "unk_7544E8",
         "unk_753CE8",
         "__asm",
@@ -9742,12 +9785,14 @@
       "artifact": "analysis/decompile/binja/functions/0044abe0-layout_and_queue_wrapped_font_text.c",
       "required_substrings": [
         "queue_font_text_instance(",
+        "shadow_enabled)",
         "g_font_sheets[font_id].height_scale",
         "g_font_sheets[font_id].spacing_scale",
         "g_font_sheets[font_id].line_marker_y"
       ],
       "forbidden_substrings": [
         "data_7772f8",
+        "text_wave_enabled",
         "arg1",
         "__asm",
         "_ET1"
@@ -9758,6 +9803,7 @@
       "artifact": "analysis/decompile/ida/functions/0044abe0-layout_and_queue_wrapped_font_text.c",
       "required_substrings": [
         "float *__cdecl layout_and_queue_wrapped_font_text(",
+        "uint8_t shadow_enabled",
         "queue_font_text_instance(",
         "g_font_sheets[font_id].height_scale",
         "g_font_sheets[font_id].spacing_scale",
@@ -9765,6 +9811,7 @@
       ],
       "forbidden_substrings": [
         "sub_44ABE0",
+        "text_wave_enabled",
         "unk_7772F8",
         "__asm",
         "_ET1"

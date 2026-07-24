@@ -9,12 +9,12 @@ typedef enum RuntimeRenderFlag {
     RUNTIME_RENDER_STAR_FIELD = 0x00000004,
     RUNTIME_RENDER_PARTICLE_EFFECTS = 0x00000010,
     RUNTIME_RENDER_TRACK_FRINGE = 0x00000020,
-    RUNTIME_RENDER_FONT_WAVE = 0x00000100,
+    RUNTIME_RENDER_FONT_SHADOW = 0x00000100,
     RUNTIME_RENDER_32_BIT_COLOR = 0x00000400,
 } RuntimeRenderFlag;
 
 typedef enum RuntimeRenderFlagBit {
-    RUNTIME_RENDER_FONT_WAVE_BIT = 8,
+    RUNTIME_RENDER_FONT_SHADOW_BIT = 8,
 } RuntimeRenderFlagBit;
 
 /* Exact persisted SnailMail.cfg owner at 0x4df918. */

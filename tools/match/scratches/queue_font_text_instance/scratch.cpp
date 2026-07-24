@@ -13,7 +13,7 @@ void queue_font_text_instance(
     unsigned int flags,
     tColour* color,
     float text_wave_amplitude,
-    char text_wave_enabled)
+    char shadow_enabled)
 {
     if (g_render_queue_active != 0) {
         int index = g_font_queue_count;
@@ -30,7 +30,7 @@ void queue_font_text_instance(
             ((cFontPrintBuffer*)((char*)g_font_queue + offset))->text = cursor;
             ((cFontPrintBuffer*)((char*)g_font_queue + offset))->color = *color;
             ((cFontPrintBuffer*)((char*)g_font_queue + offset))->text_wave_amplitude = text_wave_amplitude;
-            ((cFontPrintBuffer*)((char*)g_font_queue + offset))->text_wave_enabled = text_wave_enabled;
+            ((cFontPrintBuffer*)((char*)g_font_queue + offset))->shadow_enabled = shadow_enabled;
 
             register char* source = text;
             while (*source != '\0') {

@@ -86,7 +86,7 @@ typedef struct FontSheet {
     float spacing_scale;
     float width_scale;
     float height_scale;
-    int32_t font_kind;
+    int32_t shadow_offset_pixels;
 } FontSheet;
 
 /*
@@ -122,7 +122,7 @@ typedef struct cFontPrintBuffer {
     float y3;
     int32_t unknown_30;
     float text_wave_amplitude;
-    uint8_t text_wave_enabled;
+    uint8_t shadow_enabled;
     char pad_39[3];
     int32_t font_id;
     float text_scale;
@@ -150,7 +150,7 @@ int32_t __cdecl sample_tga_pixel_rgb(
     TgaImageView* image, int32_t x, int32_t y);
 int32_t __cdecl register_font_texture_sheet(
     char* texture_path,
-    int32_t font_kind,
+    int32_t shadow_offset_pixels,
     float width_scale,
     float height_scale);
 void __cdecl draw_font_text_instance(cFontPrintBuffer* entry);
@@ -167,7 +167,7 @@ void __cdecl queue_font_text_instance(
     uint32_t flags,
     tColour* color,
     float text_wave_amplitude,
-    uint8_t text_wave_enabled);
+    uint8_t shadow_enabled);
 int32_t __cdecl queue_axis_aligned_textured_quad(
     int32_t texture_id,
     float x,
@@ -222,7 +222,7 @@ float* __cdecl layout_and_queue_wrapped_font_text(
     float* out_width,
     float* out_height,
     float text_wave_amplitude,
-    uint8_t text_wave_enabled,
+    uint8_t shadow_enabled,
     int32_t horizontal_align,
     float anchor_x,
     uint32_t flags,

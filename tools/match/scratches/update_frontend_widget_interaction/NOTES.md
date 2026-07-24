@@ -265,3 +265,22 @@ the high-byte forms as `INPUT_BUTTON_PRIMARY >> 8` and
 without inventing meanings for the other controller bits. Focused output
 remains the honest 68.32%, 644/647-instruction partial with all 93 masked
 operands clean.
+
+## 2026-07-24 font-shadow flag recovery
+
+Binary Ninja disassembly shows this member loading the full config flag word,
+shifting it right by eight, masking the low bit, and preserving that byte
+across the authored-rectangle branch before the wrapped-text call. A fresh
+IDA 9.3 export independently renders the value as
+`BYTE1(g_runtime_config.render_flags) & 1`. The previous scratch instead read
+low bit zero, which was a real source error hidden by the larger register
+schedule residual.
+
+`draw_font_text_instance` closes the behavior: the byte gates only a second
+black glyph draw at the positive font offset, while wave displacement always
+uses `text_wave_amplitude`. The config bit is therefore
+`RUNTIME_RENDER_FONT_SHADOW` and the queue byte is `shadow_enabled`.
+Preserving the native byte in a local before the rectangle branch restores the
+exact 647-instruction topology. Focused Wibo improves from 68.32% to 75.73%,
+and the operand audit improves from 93 to 95 clean operands with no unresolved
+or mismatched masks.

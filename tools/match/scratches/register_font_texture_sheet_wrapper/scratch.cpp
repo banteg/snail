@@ -4,9 +4,10 @@
 
 int register_font_texture_sheet_wrapper(
     char* texture_path,
-    int font_kind,
+    int shadow_offset_pixels,
     float width_scale,
     float height_scale)
 {
-    return register_font_texture_sheet(texture_path, font_kind, width_scale, height_scale);
+    return register_font_texture_sheet(
+        texture_path, shadow_offset_pixels, width_scale, height_scale);
 }

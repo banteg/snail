@@ -8,3 +8,8 @@ The shared callee signature now keeps both scale arguments as floats. The atlas
 registrar's direct `FontSheet::width_scale` store is codegen-identical to the
 old raw-bit workaround, and this wrapper remains exact while consuming the
 shared declaration from `font_system.h`.
+
+The integer argument is now `shadow_offset_pixels`: the only caller supplies
+2, the registrar stores it at `FontSheet +0x824`, and the renderer adds that
+value to both coordinates of the offset black glyph pass. The forwarding
+wrapper remains exact.

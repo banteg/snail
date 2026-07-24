@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**626/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **101081/317040** bytes (**31.88%**) are proof-grade, and overall fuzzy is **76.25%**.
+**626/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **101081/317040** bytes (**31.88%**) are proof-grade, and overall fuzzy is **76.31%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -742,7 +742,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | draw_frontend_widget | 0x401130 | 2353 | 694/712 | 67.28% | 3/712 | 61 ok |  |
-| 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 644/647 | 68.32% | 1/647 | 93 ok |  |
+| 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 647/647 | 75.73% | 1/647 | 95 ok |  |
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 442/446 | 64.64% | 2/446 | 8 ok |  |
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 70.33% | 4/46 | - |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC |

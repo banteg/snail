@@ -14,7 +14,7 @@ void __cdecl queue_font_text_instance(
         uint32_t flags,
         tColour *color,
         float text_wave_amplitude,
-        uint8_t text_wave_enabled)
+        uint8_t shadow_enabled)
 {
   int32_t v11; // eax
   char *v12; // ecx
@@ -34,7 +34,7 @@ void __cdecl queue_font_text_instance(
     g_font_queue[v11].text = g_font_text_cursor;
     g_font_queue[v11].color = *color;
     g_font_queue[v11].text_wave_amplitude = text_wave_amplitude;
-    g_font_queue[v11].text_wave_enabled = text_wave_enabled;
+    g_font_queue[v11].shadow_enabled = shadow_enabled;
     v13 = text;
     if ( *text )
     {

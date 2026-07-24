@@ -23,7 +23,7 @@
 0044a82b        entry_color->b = color->b
 0044a832        entry_color->a = color->a
 0044a839        g_font_queue[font_queue_count_1].text_wave_amplitude = text_wave_amplitude
-0044a843        g_font_queue[font_queue_count_1].text_wave_enabled = text_wave_enabled
+0044a843        g_font_queue[font_queue_count_1].shadow_enabled = shadow_enabled
 0044a849        char* text_1 = text
 0044a851        while (*text_1 != 0)
 0044a861        if (font_text_cursor_1 - &g_font_text_buffer s> 0x7fe)

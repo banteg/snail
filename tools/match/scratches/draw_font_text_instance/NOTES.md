@@ -10,8 +10,8 @@ Recovered relationships:
   320.0f`, with value `2` centering by half the measured width.
 - Each glyph maps through `font_slot_index_for_char`, uses `FontSheet` atlas
   UVs/texture-page lanes, then calls `draw_textured_quad_immediate`.
-- `FontSheet::font_kind` is the positive shadow offset used only when
-  `text_wave_enabled` is set; it is not a font-family enum.
+- `FontSheet::shadow_offset_pixels` is the positive shadow offset used only when
+  `shadow_enabled` is set; it is not a font-family enum.
 - Slot `0x35` advances the cursor without drawing.
 
 Initial match: 32.66%, 224 candidate instructions versus 272 target
@@ -107,3 +107,19 @@ registered `FontSheet`; neither draw call owns or releases a texture.
 Matcher code only follows the corrected field vocabulary. Focused output is
 expected to remain the honest 35.70%, 221/272-instruction frontier with all 19
 operands clean; no register-shaped source or dummy dependency is introduced.
+
+## 2026-07-24 font-shadow ownership
+
+The wave and shadow controls are independent. Both Windows decompilers show
+that `text_wave_amplitude +0x34` always scales the per-character sine/cosine
+offsets, while byte `+0x38` gates only the optional second glyph draw. That
+second draw uses black at 0.8 alpha, blend mode 2, and the positive
+`FontSheet::shadow_offset_pixels` before the normal colored glyph draw. The queue
+record field is therefore `shadow_enabled`, not `text_wave_enabled`.
+
+A fresh IDA 9.3 export from a temporary database copy independently reproduces
+the same nested gate and two draw calls. Android retains the `+0x38` queue
+byte but its port-specific renderer submits only the colored glyph pass, so no
+mobile-only behavior was transplanted into Windows. The vocabulary correction
+is codegen-neutral here: focused Wibo remains the honest 35.70%, 221/272
+instructions, with all 19 masked operands clean.

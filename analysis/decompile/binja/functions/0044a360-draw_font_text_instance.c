@@ -41,9 +41,9 @@
 0044a4d8        eax_7, x87control_3 = ftol(x87control_2, x87_r7_20 + fconvert.t(entry->y0))
 0044a4e8        float draw_y = fconvert.s(float.t(eax_7))
 0044a4ec        if (glyph_slot != 0x35)
-0044a4f7        if (entry->text_wave_enabled != 0 && g_font_sheets[entry->font_id].font_kind s> 0)
+0044a4f7        if (entry->shadow_enabled != 0 && g_font_sheets[entry->font_id].shadow_offset_pixels s> 0)
 0044a519        int32_t font_id_1 = entry->font_id
-0044a54c        float shadow_offset = fconvert.s(float.t(g_font_sheets[font_id_1].font_kind))
+0044a54c        float shadow_offset = fconvert.s(float.t(g_font_sheets[font_id_1].shadow_offset_pixels))
 0044a550        int32_t ebx_1 = font_id_1 * 0x20a
 0044a552        struct tColour color
 0044a552        struct tColour* shadow_color = set_color_rgba(&color, 0f, 0f, 0f, 0.800000012f)

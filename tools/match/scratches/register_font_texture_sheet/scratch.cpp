@@ -9,7 +9,7 @@ int sample_tga_pixel_rgb(TgaImageView* image, int x, int y);
 
 int register_font_texture_sheet(
     char* texture_path,
-    int font_kind,
+    int shadow_offset_pixels,
     float width_scale,
     float height_scale)
 {
@@ -120,7 +120,8 @@ int register_font_texture_sheet(
         g_font_sheets[g_registered_font_count].line_marker_y
             / (float)(image->height - 1);
     g_font_sheets[g_registered_font_count].slot_count = slot;
-    g_font_sheets[g_registered_font_count].font_kind = font_kind;
+    g_font_sheets[g_registered_font_count].shadow_offset_pixels =
+        shadow_offset_pixels;
 
     if (image->width == 0x800) {
         TextureRef* texture_0 = g_texture_refs.get_or_create_texture_ref(texture_path_0, 0, 0);

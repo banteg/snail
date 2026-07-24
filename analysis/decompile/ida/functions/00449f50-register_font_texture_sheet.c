@@ -5,7 +5,7 @@
 // Loads one FONT-MENU-HOVER atlas, scans row-0 white delimiters into resettable glyph runs and the column-0 height marker, registers single- or split-page texture refs with their source-retention policy, and stores per-font UV, page, and scale metadata.
 int32_t __cdecl register_font_texture_sheet(
         char *texture_path,
-        int32_t font_kind,
+        int32_t shadow_offset_pixels,
         float width_scale,
         float height_scale)
 {
@@ -135,7 +135,7 @@ LABEL_23:
   *(float *)(v16 + 7830280) = 3.0 / (double)(file_bytes->height - 1);
   *(float *)(v16 + 7830284) = *(float *)(v16 + 7830276) / (double)(file_bytes->height - 1);
   g_font_sheets[v16 / 0x828u].slot_count = v26;
-  g_font_sheets[v16 / 0x828u].font_kind = font_kind;
+  g_font_sheets[v16 / 0x828u].shadow_offset_pixels = shadow_offset_pixels;
   if ( file_bytes->width == 2048 )
   {
     texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_patha, nullptr, 0);

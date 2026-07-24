@@ -8280,9 +8280,10 @@ def test_runtime_config_ownership_stays_aligned() -> None:
         assert "RUNTIME_RENDER_STAR_FIELD = 0x00000004" in header
         assert "RUNTIME_RENDER_PARTICLE_EFFECTS = 0x00000010" in header
         assert "RUNTIME_RENDER_TRACK_FRINGE = 0x00000020" in header
-        assert "RUNTIME_RENDER_FONT_WAVE = 0x00000100" in header
+        assert "RUNTIME_RENDER_FONT_SHADOW = 0x00000100" in header
         assert "RUNTIME_RENDER_32_BIT_COLOR = 0x00000400" in header
-        assert "RUNTIME_RENDER_FONT_WAVE_BIT = 8" in header
+        assert "RUNTIME_RENDER_FONT_SHADOW_BIT = 8" in header
+        assert "RUNTIME_RENDER_FONT_WAVE" not in header
         assert "last_entered_player_name[0x40]" in header
         assert "highest_galaxy_route_index" in header
         assert "new_game_tutorial_started" in header
@@ -8316,7 +8317,8 @@ def test_runtime_config_ownership_stays_aligned() -> None:
         "open_star_field": "RUNTIME_RENDER_STAR_FIELD",
         "emit_ring_star_shower": "RUNTIME_RENDER_PARTICLE_EFFECTS",
         "build_track_fringe_objects": "RUNTIME_RENDER_TRACK_FRINGE",
-        "layout_frontend_widget": "RUNTIME_RENDER_FONT_WAVE_BIT",
+        "layout_frontend_widget": "RUNTIME_RENDER_FONT_SHADOW_BIT",
+        "update_frontend_widget_interaction": "RUNTIME_RENDER_FONT_SHADOW_BIT",
     }
     for function_name, constant in consumers.items():
         scratch = (
@@ -8350,9 +8352,12 @@ def test_font_system_ownership_stays_aligned() -> None:
         assert "float glyph_v1" in header
         assert "float width_scale" in header
         assert "float height_scale" in header
+        assert "shadow_offset_pixels" in header
+        assert "font_kind" not in header
         assert "struct cFontPrintBuffer {" in header
         assert "text_wave_amplitude" in header
-        assert "text_wave_enabled" in header
+        assert "shadow_enabled" in header
+        assert "text_wave_enabled" not in header
         assert "tColour color" in header
         assert "int32_t blend_mode" in header or "int blend_mode" in header
         assert "float rotation" in header
@@ -8377,6 +8382,10 @@ def test_font_system_ownership_stays_aligned() -> None:
         assert "queue_textured_quad_corners" in source
         assert "layout_and_queue_wrapped_font_text" in source
         assert "initialize_font3d_objects" in source
+        assert "shadow_offset_pixels" in source
+        assert "shadow_enabled" in source
+        assert "font_kind" not in source
+        assert "text_wave_enabled" not in source
 
     assert '("0x7544e8", "cFontPrintBuffer[0x400]")' in binja_sync
     assert '("0x7754e8", "BodBase[0x80]")' in binja_sync

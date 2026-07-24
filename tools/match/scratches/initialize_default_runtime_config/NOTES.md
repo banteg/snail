@@ -51,7 +51,7 @@ independent consumers rather than scratch-local magic masks:
 - `0x004` owns the complete `cRStarManager` open/update lifecycle;
 - `0x010` gates fireworks, pickup bursts, ring showers, and Golb impacts;
 - `0x020` owns runtime row attachments and generated track-fringe meshes;
-- `0x100` enables the front-end font-wave path; and
+- `0x100` enables the offset black front-end font-shadow pass; and
 - `0x400` selects 32-bit rather than 16-bit Direct3D display setup.
 
 The remaining bits keep their numeric spelling because current Windows

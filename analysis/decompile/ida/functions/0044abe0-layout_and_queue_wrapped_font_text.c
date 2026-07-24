@@ -14,7 +14,7 @@ float *__cdecl layout_and_queue_wrapped_font_text(
         float *out_width,
         float *out_height,
         float text_wave_amplitude,
-        uint8_t text_wave_enabled,
+        uint8_t shadow_enabled,
         int32_t horizontal_align,
         float anchor_x,
         uint32_t flags,
@@ -66,7 +66,7 @@ float *__cdecl layout_and_queue_wrapped_font_text(
             flags,
             &self,
             text_wave_amplitude,
-            text_wave_enabled);
+            shadow_enabled);
         }
       }
       v17 = v26;

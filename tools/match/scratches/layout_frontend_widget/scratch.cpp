@@ -15,7 +15,7 @@ float* layout_and_queue_wrapped_font_text(
     float* out_width,
     float* out_height,
     float text_wave_amplitude,
-    char text_wave_enabled,
+    char shadow_enabled,
     int horizontal_align,
     float anchor_x,
     unsigned int flags,
@@ -29,8 +29,8 @@ void FrontendWidget::layout_frontend_widget()
     int result;
 
     while (true) {
-        char text_wave_enabled = (char)(
-            (g_runtime_config.render_flags >> RUNTIME_RENDER_FONT_WAVE_BIT) & 1);
+        char shadow_enabled = (char)(
+            (g_runtime_config.render_flags >> RUNTIME_RENDER_FONT_SHADOW_BIT) & 1);
         result = widget->widget_flags;
 
         float* layout_left_ptr;
@@ -67,7 +67,7 @@ void FrontendWidget::layout_frontend_widget()
                 &widget->layout_width,
                 &widget->layout_height,
                 widget->text_effect_current,
-                text_wave_enabled,
+                shadow_enabled,
                 widget->layout_mode,
                 widget->layout_center_x,
                 0x1000000,

@@ -72,7 +72,7 @@ TRUSTED_FUNCTION_DECLARATIONS = (
     ),
     (
         "register_font_texture_sheet",
-        "int32_t __cdecl register_font_texture_sheet(char *texture_path, int32_t font_kind, float width_scale, float height_scale);",
+        "int32_t __cdecl register_font_texture_sheet(char *texture_path, int32_t shadow_offset_pixels, float width_scale, float height_scale);",
     ),
     (
         "draw_font_text_instance",
@@ -88,7 +88,7 @@ TRUSTED_FUNCTION_DECLARATIONS = (
     ),
     (
         "queue_font_text_instance",
-        "void __cdecl queue_font_text_instance(char *text, int32_t font_id, float text_scale, float x, float y, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour *color, float text_wave_amplitude, uint8_t text_wave_enabled);",
+        "void __cdecl queue_font_text_instance(char *text, int32_t font_id, float text_scale, float x, float y, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour *color, float text_wave_amplitude, uint8_t shadow_enabled);",
     ),
     (
         "queue_axis_aligned_textured_quad",
@@ -104,7 +104,7 @@ TRUSTED_FUNCTION_DECLARATIONS = (
     ),
     (
         "layout_and_queue_wrapped_font_text",
-        "float *__cdecl layout_and_queue_wrapped_font_text(char *text, int32_t font_id, float text_scale, float x, float y, float *out_x, float *out_y, float *out_width, float *out_height, float text_wave_amplitude, uint8_t text_wave_enabled, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour *color, uint8_t measure_only, uint8_t pulse_alpha);",
+        "float *__cdecl layout_and_queue_wrapped_font_text(char *text, int32_t font_id, float text_scale, float x, float y, float *out_x, float *out_y, float *out_width, float *out_height, float text_wave_amplitude, uint8_t shadow_enabled, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour *color, uint8_t measure_only, uint8_t pulse_alpha);",
     ),
     (
         "initialize_font3d_objects",

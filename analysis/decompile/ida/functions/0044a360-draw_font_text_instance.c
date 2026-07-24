@@ -26,7 +26,7 @@ void __cdecl draw_font_text_instance(cFontPrintBuffer *entry)
   float v20; // [esp+40h] [ebp-4Ch]
   float v21; // [esp+40h] [ebp-4Ch]
   float v22; // [esp+54h] [ebp-38h]
-  float font_kind; // [esp+58h] [ebp-34h]
+  float shadow_offset_pixels; // [esp+58h] [ebp-34h]
   float v1; // [esp+5Ch] [ebp-30h]
   float u1; // [esp+60h] [ebp-2Ch]
   float v0; // [esp+64h] [ebp-28h]
@@ -82,19 +82,19 @@ void __cdecl draw_font_text_instance(cFontPrintBuffer *entry)
     v28 = (float)(int)(__int64)(cosine(v21) * entry->text_wave_amplitude * 4.0 + entry->y0);
     if ( v5 != 53 )
     {
-      if ( entry->text_wave_enabled )
+      if ( entry->shadow_enabled )
       {
-        if ( g_font_sheets[entry->font_id].font_kind > 0 )
+        if ( g_font_sheets[entry->font_id].shadow_offset_pixels > 0 )
         {
           v9 = entry->font_id;
           v10 = 2088 * v9;
-          font_kind = (float)g_font_sheets[v9].font_kind;
+          shadow_offset_pixels = (float)g_font_sheets[v9].shadow_offset_pixels;
           v11 = v9;
           v12 = set_color_rgba((tColour *)&color, 0.0, 0.0, 0.0, 0.80000001);
           height = *(float *)(v10 + 7830276) * entry->text_scale * *(float *)(v10 + 7830288);
           width = g_font_sheets[v11].glyph_width[v5] * entry->text_scale * *(float *)(v10 + 7830288);
-          y0 = font_kind + v28;
-          x0 = font_kind + v30;
+          y0 = shadow_offset_pixels + v28;
+          x0 = shadow_offset_pixels + v30;
           draw_textured_quad_immediate(
             *(&g_font_sheets[0].texture_ref_a + v31 + v11 * 522),
             x0,

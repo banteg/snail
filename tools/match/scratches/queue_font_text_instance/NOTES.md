@@ -15,7 +15,7 @@ Recovered relationships:
 - Appends a text entry (`flags | 1`) into the shared `cFontPrintBuffer` array.
 - Stores font id (`+0x3c`), scale (`+0x40`), x/y (`+0x04/+0x08`), horizontal
   alignment (`+0x48`), anchor x (`+0x4c`), text-wave amplitude (`+0x34`), and
-  text-wave enable byte (`+0x38`).
+  shadow-enable byte (`+0x38`).
 - Copies the input text into `g_font_text_buffer` through `g_font_text_cursor`,
   capped at `0x7fe` bytes before forcing a terminator and advancing the cursor.
 
@@ -62,3 +62,11 @@ aggregate `g_font_queue[v11].color = *color` ownership.
 
 No matcher source changed. Focused Wibo remains proof-grade at 100.00%, 73/73
 instructions, a 73/73 prefix, and 24 clean masked operands.
+
+## 2026-07-24 shadow flag ownership
+
+The sole Windows consumer of queue byte `+0x38` is the optional offset black
+glyph pass in `draw_font_text_instance`; the sine/cosine wave path instead
+uses float `+0x34` unconditionally. The producer parameter and record field
+are now named `shadow_enabled`. This ownership-only rename preserves the exact
+73/73 instruction stream, full prefix, and 24 clean operands.

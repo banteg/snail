@@ -24,7 +24,7 @@ float* layout_and_queue_wrapped_font_text(
     float* out_width,
     float* out_height,
     float text_wave_amplitude,
-    char text_wave_enabled,
+    char shadow_enabled,
     int horizontal_align,
     float anchor_x,
     unsigned int flags,
@@ -224,6 +224,9 @@ update_after_input:
         }
 
         if ((widget_flags & FRONTEND_WIDGET_FLAG_SPRITE_MODE) == 0) {
+            char shadow_enabled = (char)(
+                (g_runtime_config.render_flags
+                    >> RUNTIME_RENDER_FONT_SHADOW_BIT) & 1);
             if ((widget_flags & FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT) != 0) {
                 layout_x = frame_x;
                 layout_y = frame_y;
@@ -241,7 +244,7 @@ update_after_input:
                     &layout_width,
                     &layout_height,
                     text_effect_current,
-                    g_runtime_config.render_flags & 1,
+                    shadow_enabled,
                     text_alignment,
                     anchor_x,
                     0x1000000,

@@ -3,7 +3,7 @@
 - Scratch-local `FrontendWidget` names only the fields touched by this layout
   pass. Shared `frontend_widget.h` has overlapping but not yet exact layout
   names for all of these offsets.
-- The render flag passed into `layout_and_queue_wrapped_font_text` is
+- The shadow flag passed into `layout_and_queue_wrapped_font_text` is
   `(g_render_flags >> 8) & 1`, matching the native load from `data_4df934`.
 - 2026-06-20 layout-tail pass: focused Wibo improves from 78.06% to 86.44%,
   with 177/177 instructions and the same 20 clean masked operands. Moving the
@@ -98,3 +98,11 @@ lanes; Android high-score rows supply the latter while placing widgets at
 `y = -273.0f`. These closed producer/consumer roles are now
 `USE_AUTHORED_RECT` and `ALLOW_OFFSCREEN`. The focused source remains
 codegen-equivalent; no still-unknown style bit was named.
+
+## 2026-07-24 font-shadow flag vocabulary
+
+The forwarded config bit is `RUNTIME_RENDER_FONT_SHADOW`, not a wave enable.
+This member invokes the wrapper in measure-only mode, so the byte is not
+queued here; the per-frame interaction member supplies the same bit on the
+actual queueing path. The vocabulary change preserves the honest 84.18%,
+177/177-instruction result and all 20 clean operands.

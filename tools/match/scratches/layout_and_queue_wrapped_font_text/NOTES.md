@@ -51,3 +51,10 @@ Both decompilers now expose the typed `FontSheet` line-step expression through
 to the recovered void `queue_font_text_instance` owner. The focused matcher is
 unchanged at `94.19%` (`155/155`, 12 clean operands); its residual is still the
 documented local/cursor scheduling shape, not missing ownership or behavior.
+
+## 2026-07-24 shadow forwarding
+
+The byte forwarded beside `text_wave_amplitude` is now `shadow_enabled`.
+Windows consumes it only in the offset black glyph pass; it does not gate the
+wave displacement. The wrapper remains 94.19% with exact 155/155 instruction
+count and 12 clean operands.

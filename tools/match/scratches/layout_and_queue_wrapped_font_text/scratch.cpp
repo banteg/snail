@@ -13,7 +13,7 @@ float* layout_and_queue_wrapped_font_text(
     float* out_width,
     float* out_height,
     float text_wave_amplitude,
-    char text_wave_enabled,
+    char shadow_enabled,
     int horizontal_align,
     float anchor_x,
     unsigned int flags,
@@ -57,7 +57,7 @@ float* layout_and_queue_wrapped_font_text(
                         flags,
                         &color,
                         text_wave_amplitude,
-                        text_wave_enabled);
+                        shadow_enabled);
                 }
             }
 

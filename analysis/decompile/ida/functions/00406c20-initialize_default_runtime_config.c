@@ -6,7 +6,7 @@
 void __cdecl initialize_default_runtime_config()
 {
   g_runtime_config.fullscreen_enabled = 1;
-  g_runtime_config.render_flags = RUNTIME_RENDER_32_BIT_COLOR|RUNTIME_RENDER_FONT_WAVE|RUNTIME_RENDER_TRACK_FRINGE|RUNTIME_RENDER_PARTICLE_EFFECTS|RUNTIME_RENDER_STAR_FIELD|0xCA;
+  g_runtime_config.render_flags = RUNTIME_RENDER_32_BIT_COLOR|RUNTIME_RENDER_FONT_SHADOW|RUNTIME_RENDER_TRACK_FRINGE|RUNTIME_RENDER_PARTICLE_EFFECTS|RUNTIME_RENDER_STAR_FIELD|0xCA;
   g_runtime_config.load_valid_flag = 1;
   g_runtime_config.validation_tail[0] = 0;
   g_runtime_config.display_mode_index = 1;

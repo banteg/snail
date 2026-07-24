@@ -53,7 +53,7 @@ FONT_SHEET_FIELD_UPDATES = (
     ("0x818", "spacing_scale", "float"),
     ("0x81c", "width_scale", "float"),
     ("0x820", "height_scale", "float"),
-    ("0x824", "font_kind", "int32_t"),
+    ("0x824", "shadow_offset_pixels", "int32_t"),
 )
 
 FONT_GLYPH_ATLAS_CURSOR_FIELD_UPDATES = (
@@ -80,7 +80,7 @@ FONT_PRINT_BUFFER_FIELD_UPDATES = (
     ("0x2c", "y3", "float"),
     ("0x30", "unknown_30", "int32_t"),
     ("0x34", "text_wave_amplitude", "float"),
-    ("0x38", "text_wave_enabled", "uint8_t"),
+    ("0x38", "shadow_enabled", "uint8_t"),
     ("0x39", "pad_39", "char[0x3]"),
     ("0x3c", "font_id", "int32_t"),
     ("0x40", "text_scale", "float"),
@@ -177,7 +177,7 @@ PROTO_UPDATES = (
     ),
     (
         "register_font_texture_sheet",
-        "int32_t __cdecl register_font_texture_sheet(char* texture_path, int32_t font_kind, float width_scale, float height_scale)",
+        "int32_t __cdecl register_font_texture_sheet(char* texture_path, int32_t shadow_offset_pixels, float width_scale, float height_scale)",
     ),
     (
         "draw_font_text_instance",
@@ -193,7 +193,7 @@ PROTO_UPDATES = (
     ),
     (
         "queue_font_text_instance",
-        "void __cdecl queue_font_text_instance(char* text, int32_t font_id, float text_scale, float x, float y, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour* color, float text_wave_amplitude, uint8_t text_wave_enabled)",
+        "void __cdecl queue_font_text_instance(char* text, int32_t font_id, float text_scale, float x, float y, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour* color, float text_wave_amplitude, uint8_t shadow_enabled)",
     ),
     (
         "queue_axis_aligned_textured_quad",
@@ -209,7 +209,7 @@ PROTO_UPDATES = (
     ),
     (
         "layout_and_queue_wrapped_font_text",
-        "float* __cdecl layout_and_queue_wrapped_font_text(char* text, int32_t font_id, float text_scale, float x, float y, float* out_x, float* out_y, float* out_width, float* out_height, float text_wave_amplitude, uint8_t text_wave_enabled, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour* color, uint8_t measure_only, uint8_t pulse_alpha)",
+        "float* __cdecl layout_and_queue_wrapped_font_text(char* text, int32_t font_id, float text_scale, float x, float y, float* out_x, float* out_y, float* out_width, float* out_height, float text_wave_amplitude, uint8_t shadow_enabled, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour* color, uint8_t measure_only, uint8_t pulse_alpha)",
     ),
     (
         "initialize_font3d_objects",

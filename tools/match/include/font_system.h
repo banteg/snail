@@ -25,7 +25,7 @@ struct FontSheet {
     float spacing_scale;        // +0x818
     float width_scale;          // +0x81c
     float height_scale;         // +0x820
-    int font_kind;              // +0x824
+    int shadow_offset_pixels;   // +0x824
 };
 
 typedef char FontSheet_must_be_0x828[
@@ -46,7 +46,7 @@ struct cFontPrintBuffer {
     float y3;               // +0x2c
     int unknown_30;         // +0x30
     float text_wave_amplitude; // +0x34
-    unsigned char text_wave_enabled; // +0x38
+    unsigned char shadow_enabled; // +0x38
     char pad_39[0x3c - 0x39];
     int font_id;            // +0x3c
     float text_scale;       // +0x40
@@ -83,7 +83,7 @@ void initialize_font_wave_state(); // @ 0x449c70
 void update_font_wave_state(); // @ 0x449ca0
 int font_slot_index_for_char(char value); // @ 0x449d20
 float measure_font_text_width(char* text, int font_id, float scale); // @ 0x449e90
-int register_font_texture_sheet(char* texture_path, int font_kind,
+int register_font_texture_sheet(char* texture_path, int shadow_offset_pixels,
     float width_scale, float height_scale); // @ 0x449f50
 void initialize_font3d_objects(short font_id); // @ 0x44ae10
 float sine(float angle); // @ 0x44c9d0
@@ -137,7 +137,7 @@ void queue_font_text_instance(
     unsigned int flags,
     tColour* color,
     float text_wave_amplitude,
-    char text_wave_enabled); // @ 0x44a790
+    char shadow_enabled); // @ 0x44a790
 int queue_textured_quad_corners(
     int texture_id,
     float x0, float y0,

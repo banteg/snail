@@ -96,7 +96,7 @@
 0044a220        edx_2.w = image->height
 0044a23a        g_font_sheets[registered_font_count_2].glyph_v1 = fconvert.s(fconvert.t(g_font_sheets[registered_font_count_2].line_marker_y) / float.t(edx_2 - 1))
 0044a240        (&g_font_sheets)[registered_font_count_2][0].slot_count = glyph_slot
-0044a246        g_font_sheets[registered_font_count_2].font_kind = font_kind
+0044a246        g_font_sheets[registered_font_count_2].shadow_offset_pixels = shadow_offset_pixels
 0044a252        struct TextureRef* flagged_texture_ref
 0044a252        enum TextureRefFlags flags
 0044a252        if (image->width != 0x800)
