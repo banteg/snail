@@ -2205,6 +2205,20 @@ typedef struct GolbShotFlightStrideCursor {
     uint8_t _stride_tail[0x238];
 } GolbShotFlightStrideCursor;
 
+/*
+ * Analytical field-stride view rooted at
+ * GolbShot::vapour.body.bod.object. The world asset initializer advances that
+ * borrowed Object* field by one full GolbShot while also reaching the
+ * separate tertiary_body at field-relative +0x74. Player::golb_shots remains
+ * the sole owner of both nested records.
+ */
+typedef struct GolbShotVapourObjectStrideCursor {
+    Object* vapour_object;
+    uint8_t _pad_04[0x70];
+    RenderableBod tertiary_body;
+    uint8_t _stride_tail[0x1f4];
+} GolbShotVapourObjectStrideCursor;
+
 typedef struct Player {
     RenderableBod body;
     int32_t resurrect_final_loss;

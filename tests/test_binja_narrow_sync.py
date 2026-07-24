@@ -358,6 +358,9 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
+    health_checks = (
+        Path(__file__).parents[1] / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
 
     prototypes = (
         "void __thiscall health_collect_particles(Player* player, SubHealth* pickup)",
@@ -392,6 +395,7 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
             ('"SubHover"', "0x214"),
             ('"GolbShot"', "0x2E8"),
             ('"GolbShotFlightStrideCursor"', "0x2E8"),
+            ('"GolbShotVapourObjectStrideCursor"', "0x2E8"),
             ('"Weapon"', "0x3DC"),
             ('"Invincible"', "0xA4"),
             ('"Snail"', "0x19B4"),
@@ -425,17 +429,46 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
     assert '"runtime_config_types.h"' in ida_sync
     assert "typedef struct GolbShotFlightStrideCursor {" in analysis_header
     assert "uint8_t _stride_tail[0x238];" in analysis_header
+    assert "typedef struct GolbShotVapourObjectStrideCursor {" in analysis_header
+    assert "Object* vapour_object;" in analysis_header
+    assert "uint8_t _pad_04[0x70];" in analysis_header
+    assert "RenderableBod tertiary_body;" in analysis_header
+    assert "uint8_t _stride_tail[0x1f4];" in analysis_header
     assert '"RegisterVariableSourceType",\n        1171,\n        73,' in binja_sync
     assert '"GolbShotFlightStrideCursor*"' in binja_sync
+    assert '"RegisterVariableSourceType",\n        20215,\n        72,' in binja_sync
+    assert (
+        '"golb_shot_vapour_object_cursor",\n'
+        '        "GolbShotVapourObjectStrideCursor*"'
+    ) in binja_sync
+    assert (
+        'operation.get("op") == "user_var_batch" for operation in user_var_results'
+        in binja_sync
+    )
     assert '"RegisterVariableSourceType",\n        49,\n        73,' in binja_sync
     assert '"golb_shot_cursor",\n        "GolbShot*"' in binja_sync
     assert "0x43AE54" in ida_sync
     assert "GolbShotFlightStrideCursor *golb_shot_flight_cursor;" in ida_sync
+    assert "GOLB_SHOT_ASSET_CURSOR_LVAR" in ida_sync
+    assert "0x40FBE8" in ida_sync
+    assert (
+        "GolbShotVapourObjectStrideCursor *golb_shot_vapour_object_cursor;"
+        in ida_sync
+    )
     assert "INITIALIZE_SUBGOLDY_USER_VAR_UPDATES" in broad_binja_sync
     assert "MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES" in broad_binja_sync
+    assert (
+        "WORLD_INITIALIZER_GOLB_ASSET_CURSOR_USER_VAR_UPDATES"
+        in broad_binja_sync
+    )
+    assert "verify_golb_shot_asset_cursor_sizes" in broad_binja_sync
     assert "INITIALIZE_SUBGOLDY_LVAR_SPECS" in broad_ida_sync
+    assert "WORLD_INITIALIZER_GOLB_ASSET_LVAR_SPECS" in broad_ida_sync
+    assert "GOLB_SHOT_ASSET_CURSOR_EXPECTED_SIZE = 0x2E8" in broad_ida_sync
     assert "0x43AF60,  # begin_post_follow_carryover" in broad_ida_sync
     assert "0x445840,  # kill_subgoldy" in broad_ida_sync
+    assert '"name": "bn_world_assets_golb_nested_owners"' in health_checks
+    assert '"name": "ida_world_assets_golb_nested_owners"' in health_checks
     assert (
         'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"'
         in ida_runner

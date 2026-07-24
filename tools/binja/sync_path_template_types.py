@@ -83,6 +83,11 @@ PRESENTATION_ANIMATION_CURSOR_SIZES = {
     "PresentationAnimationObjectStrideCursor": 0x80,
 }
 
+GOLB_SHOT_ASSET_CURSOR_SIZES = {
+    "GolbShot": 0x2E8,
+    "GolbShotVapourObjectStrideCursor": 0x2E8,
+}
+
 TIP_FUNCTION_SYMBOL_UPDATES = (
     ("0x4489e0", "kill_tip_widgets"),
     ("0x448a40", "initialize_tip"),
@@ -474,6 +479,7 @@ REQUIRED_HEADER_STRUCTS = (
     "AnimManager",
     "Weapon",
     "GolbShot",
+    "GolbShotVapourObjectStrideCursor",
     "Player",
     "JetParticleSlot",
     "SubHoverState",
@@ -494,6 +500,7 @@ def ensure_path_analysis_views(
         "TimeTrial",
         "PresentationWobbleController",
         "PresentationAnimationObjectStrideCursor",
+        "GolbShotVapourObjectStrideCursor",
         "RuntimeCellStrideAnchor",
         "TrackRowCellSameLaneCursorView",
         "AuthoredSegmentRowPositionCursorView",
@@ -661,6 +668,28 @@ def verify_presentation_animation_cursor_sizes(*, target: str) -> dict[str, obje
         "op": "owner_size_verify",
         "status": "verified",
         "owner_group": "presentation_animation_cursor",
+        "owner_sizes": observed,
+    }
+
+
+def verify_golb_shot_asset_cursor_sizes(*, target: str) -> dict[str, object]:
+    """Fail closed before replaying the GolbShot vapour-object cursor."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=GOLB_SHOT_ASSET_CURSOR_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in GOLB_SHOT_ASSET_CURSOR_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"GolbShot asset cursor size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "golb_shot_asset_cursor",
         "owner_sizes": observed,
     }
 
@@ -931,6 +960,21 @@ PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES = (
         -300,
         "top_weapon_animation_object_cursor",
         "PresentationAnimationObjectStrideCursor*",
+    ),
+)
+
+# The twelve-shot asset loop carries the borrowed
+# GolbShot::vapour.body.bod.object field in ESI and advances it by the exact
+# 0x2e8 GolbShot stride. The cursor also reaches tertiary_body at +0x74; it
+# does not replace Player::golb_shots as the owning array.
+WORLD_INITIALIZER_GOLB_ASSET_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "RegisterVariableSourceType",
+        20215,
+        72,
+        "golb_shot_vapour_object_cursor",
+        "GolbShotVapourObjectStrideCursor*",
     ),
 )
 
@@ -4151,6 +4195,10 @@ def main() -> int:
             )
         )
         operations.append(verify_authored_row_cursor_sizes(target=args.target))
+        operations.append(
+            verify_presentation_animation_cursor_sizes(target=args.target)
+        )
+        operations.append(verify_golb_shot_asset_cursor_sizes(target=args.target))
         operations.extend(
             apply_symbol_updates(
                 REPO_ROOT,
@@ -4318,6 +4366,7 @@ def main() -> int:
                 *UPDATE_BANNER_USER_VAR_UPDATES,
                 *BANNER_INITIALIZER_USER_VAR_UPDATES,
                 *PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES,
+                *WORLD_INITIALIZER_GOLB_ASSET_CURSOR_USER_VAR_UPDATES,
                 *NUKE_USER_VAR_UPDATES,
                 *TIP_MANAGER_USER_VAR_UPDATES,
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,

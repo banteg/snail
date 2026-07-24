@@ -281,7 +281,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   Object *v275; // ecx
   Object *v276; // eax
   Object *v277; // eax
-  char *v278; // esi
+  GolbShotVapourObjectStrideCursor *golb_shot_vapour_object_cursor; // esi
   Object *v279; // eax
   TextureRef *v280; // eax
   TextureRefFlags v281; // ecx
@@ -2984,18 +2984,23 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   v277 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4302E3 + 1), v277);
   load_x_mesh(&game->directx_loader, aRocketBase000X, *(Object **)((char *)&game->vtable + (_DWORD)&loc_430306 + 2), 1);
-  v278 = (char *)game + (_DWORD)&loc_43026E + 2;
+  golb_shot_vapour_object_cursor = (GolbShotVapourObjectStrideCursor *)((char *)game + (_DWORD)&loc_43026E + 2);
   edge_selectori = 12;
   do
   {
     v279 = add_object_to_list(&g_object_list);
-    set_bod_object((BodBase *)(v278 - 36), v279);
-    *(_DWORD *)(*(_DWORD *)v278 + 16) |= 0x100004u;
-    *(_DWORD *)(*(_DWORD *)v278 + 20) = 9;
-    load_object_definition(aObjectsVapourl, *(Object **)v278);
-    initialize_vapour((Vapour *)(v278 - 36), *(Object **)v278, 0.16);
-    set_bod_object((BodBase *)(v278 + 116), *(Object **)((char *)&game->vtable + (_DWORD)&loc_430306 + 2));
-    v278 += 744;
+    set_bod_object((BodBase *)&golb_shot_vapour_object_cursor[-1]._stride_tail[464], v279);
+    golb_shot_vapour_object_cursor->vapour_object->flags |= 0x100004u;
+    golb_shot_vapour_object_cursor->vapour_object->blend_mode = 9;
+    load_object_definition(aObjectsVapourl, golb_shot_vapour_object_cursor->vapour_object);
+    initialize_vapour(
+      (Vapour *)&golb_shot_vapour_object_cursor[-1]._stride_tail[464],
+      golb_shot_vapour_object_cursor->vapour_object,
+      0.16);
+    set_bod_object(
+      &golb_shot_vapour_object_cursor->tertiary_body.bod,
+      *(Object **)((char *)&game->vtable + (_DWORD)&loc_430306 + 2));
+    ++golb_shot_vapour_object_cursor;
     --edge_selectori;
   }
   while ( edge_selectori );

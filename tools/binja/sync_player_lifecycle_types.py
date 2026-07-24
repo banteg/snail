@@ -13,6 +13,7 @@ from _narrow_sync import (
     apply_user_var_updates,
     current_type_widths,
     emit_summary,
+    reanalyze_functions,
     types_declare_if_missing,
 )
 
@@ -34,6 +35,7 @@ EXPECTED_OWNER_SIZES = {
     "SubHover": 0x214,
     "GolbShot": 0x2E8,
     "GolbShotFlightStrideCursor": 0x2E8,
+    "GolbShotVapourObjectStrideCursor": 0x2E8,
     "Weapon": 0x3DC,
     "Invincible": 0xA4,
     "Snail": 0x19B4,
@@ -112,6 +114,14 @@ USER_VAR_UPDATES = (
         "golb_shot_flight_cursor",
         "GolbShotFlightStrideCursor*",
     ),
+    (
+        "initialize_game_assets_and_world",
+        "RegisterVariableSourceType",
+        20215,
+        72,
+        "golb_shot_vapour_object_cursor",
+        "GolbShotVapourObjectStrideCursor*",
+    ),
 )
 
 
@@ -175,12 +185,23 @@ def main() -> int:
             target=args.target,
             updates=PROTO_UPDATES,
         ),
-        *apply_user_var_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=USER_VAR_UPDATES,
-        ),
     ]
+    user_var_results = apply_user_var_updates(
+        REPO_ROOT,
+        target=args.target,
+        updates=USER_VAR_UPDATES,
+    )
+    operations.extend(user_var_results)
+    if any(
+        operation.get("op") == "user_var_batch" for operation in user_var_results
+    ):
+        operations.extend(
+            reanalyze_functions(
+                REPO_ROOT,
+                target=args.target,
+                identifiers=("initialize_game_assets_and_world",),
+            )
+        )
 
     observed_sizes = current_type_widths(
         REPO_ROOT,

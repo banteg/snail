@@ -93,8 +93,12 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct SubHover {",
     "typedef struct GolbShot {",
     "typedef struct GolbShotFlightStrideCursor {",
+    "typedef struct GolbShotVapourObjectStrideCursor {",
     "TransformMatrix flight_transform;",
     "uint8_t _stride_tail[0x238];",
+    "Object* vapour_object;",
+    "RenderableBod tertiary_body;",
+    "uint8_t _stride_tail[0x1f4];",
     "typedef struct Player {",
     "GolbShot golb_shots[0xc];",
     "SubHover sub_hover;",
@@ -115,6 +119,7 @@ EXPECTED_OWNER_SIZES = {
     "SubHover": 0x214,
     "GolbShot": 0x2E8,
     "GolbShotFlightStrideCursor": 0x2E8,
+    "GolbShotVapourObjectStrideCursor": 0x2E8,
     "Weapon": 0x3DC,
     "Invincible": 0xA4,
     "Snail": 0x19B4,
@@ -127,6 +132,18 @@ GOLB_SHOT_CURSOR_LVAR = (
     "GolbShotFlightStrideCursor *golb_shot_flight_cursor;",
     0x43AE54,
 )
+
+GOLB_SHOT_ASSET_CURSOR_LVAR = {
+    "selector": "initialize_game_assets_and_world",
+    "expected_name": "golb_shot_vapour_object_cursor",
+    "declaration": (
+        "GolbShotVapourObjectStrideCursor *golb_shot_vapour_object_cursor;"
+    ),
+    "definition_address": 0x40FBE8,
+    "accepted_names": {"v278", "golb_shot_vapour_object_cursor"},
+    "accepted_types": {"char *", "GolbShotVapourObjectStrideCursor *"},
+    "is_stack": False,
+}
 
 
 def _normalize_type_text(value: str | None) -> str | None:
@@ -260,6 +277,122 @@ def _sync_golb_shot_cursor_lvar() -> dict[str, object]:
         "name": verified[0].name,
         "type": str(verified[0].type()),
         "definition_address": hex(verified[0].defea),
+    }
+
+
+def _sync_golb_shot_asset_cursor_lvar() -> dict[str, object]:
+    """Persist the exact field-first cursor used by the twelve-shot asset loop."""
+    selector = str(GOLB_SHOT_ASSET_CURSOR_LVAR["selector"])
+    expected_name = str(GOLB_SHOT_ASSET_CURSOR_LVAR["expected_name"])
+    declaration = str(GOLB_SHOT_ASSET_CURSOR_LVAR["declaration"])
+    definition_address = int(GOLB_SHOT_ASSET_CURSOR_LVAR["definition_address"])
+    accepted_names = set(GOLB_SHOT_ASSET_CURSOR_LVAR["accepted_names"])
+    accepted_types = {
+        _normalize_type_text(value)
+        for value in GOLB_SHOT_ASSET_CURSOR_LVAR["accepted_types"]
+    }
+    is_stack = bool(GOLB_SHOT_ASSET_CURSOR_LVAR["is_stack"])
+
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        return {"status": "failed", "selector": selector, "reason": "missing_function"}
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and bool(lvar.is_stk_var()) == is_stack
+        and lvar.defea == definition_address
+        and lvar.name in accepted_names
+        and _normalize_type_text(str(lvar.type())) in accepted_types
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "unexpected_asset_cursor_lvar_candidates",
+            "definition_address": hex(definition_address),
+            "candidate_count": len(candidates),
+            "is_stack": is_stack,
+        }
+
+    cursor_type = ida_typeinf.tinfo_t()
+    if not ida_typeinf.parse_decl(
+        cursor_type,
+        None,
+        declaration,
+        ida_typeinf.PT_SIL,
+    ):
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "parse_asset_cursor_lvar_type_failed",
+            "declaration": declaration,
+        }
+
+    lvar = candidates[0]
+    expected_type = _normalize_type_text(str(cursor_type))
+    observed_type = _normalize_type_text(str(lvar.type()))
+    if lvar.name == expected_name and observed_type == expected_type:
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "definition_address": hex(lvar.defea),
+            "is_stack": bool(lvar.is_stk_var()),
+        }
+
+    before_name = lvar.name
+    before_type = str(lvar.type())
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = expected_name
+    info.type = cursor_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "modify_asset_cursor_lvar_failed",
+            "definition_address": hex(definition_address),
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and bool(candidate.is_stk_var()) == is_stack
+        and candidate.defea == definition_address
+        and candidate.name == expected_name
+        and _normalize_type_text(str(candidate.type())) == expected_type
+    ]
+    if len(verified) != 1:
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "asset_cursor_lvar_readback_failed",
+            "definition_address": hex(definition_address),
+            "candidate_count": len(verified),
+            "is_stack": is_stack,
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "before_name": before_name,
+        "before_type": before_type,
+        "name": verified[0].name,
+        "type": str(verified[0].type()),
+        "definition_address": hex(verified[0].defea),
+        "is_stack": bool(verified[0].is_stk_var()),
     }
 
 
@@ -398,6 +531,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    golb_shot_asset_cursor_lvar = _sync_golb_shot_asset_cursor_lvar()
+    if golb_shot_asset_cursor_lvar.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "initialize_game_assets_and_world",
+                "asset_cursor_lvar": golb_shot_asset_cursor_lvar,
+            }
+        )
+
     print(
         json.dumps(
             {
@@ -407,6 +549,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parse_errors": parse_errors,
                 "owner_sizes": owner_sizes,
                 "golb_shot_cursor_lvar": golb_shot_cursor_lvar,
+                "golb_shot_asset_cursor_lvar": golb_shot_asset_cursor_lvar,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

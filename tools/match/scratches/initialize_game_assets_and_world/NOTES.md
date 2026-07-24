@@ -1133,6 +1133,35 @@ This is analysis ownership only. No matcher source changed, and the honest
 world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
 existing 36 broad-alignment mismatches.
 
+## 2026-07-24 Golb vapour-object field-stride ownership
+
+The twelve-shot asset loop carries the exact address of
+`GolbShot::vapour.body.bod.object`, at shot-relative `+0xa4`, rather than a
+whole `GolbShot*`. Its positive accesses reach that borrowed `Object*` and the
+separate `tertiary_body` at field-relative `+0x74`; each induction step is
+exactly `0x2e8`, matching `sizeof(GolbShot)`.
+
+The analysis-only `GolbShotVapourObjectStrideCursor` records that physical
+field-first lifetime without becoming another owner. `Player::golb_shots`
+remains the sole array owner, each shot still owns its complete `Vapour`, and
+the enclosing vapour calls remain visibly offset-based at `-0x24`. Binary
+Ninja binds the exact register variable at index 20215/storage 72 and renders
+the borrowed object, tertiary body, and full-shot increment by name. IDA
+independently binds the non-stack local defined at `0x40fbe8` and recovers the
+same accesses and 744-byte increment. Both replay lanes fail closed on the
+cursor's exact `0x2e8` extent and exact variable identity.
+
+The focused Binary Ninja replay now forces the expensive world-initializer
+reanalysis only when a user-variable batch actually changes. A fully
+idempotent replay therefore verifies the same types and exact identities in
+about 2.4 seconds instead of repeating the multi-minute analysis pass.
+
+Binary Ninja and IDA agree on the owner graph, so a Ghidra replay was
+unnecessary. This is analysis-only: no matcher source changed, and the honest
+world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
+existing 36 broad-alignment mismatches. No pointer arithmetic or padding was
+added to the matcher.
+
 ## 2026-07-24 track-slice triplet stride ownership
 
 The eight-pass backdrop loop carries `game + slice_index * 0x38`, matching one

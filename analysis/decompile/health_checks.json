@@ -9132,10 +9132,39 @@
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
         "game->subgame.player.golb_shots[0].tertiary_body.bod.object",
-        "game->subgame.player.golb_shots[0].vapour.body.bod.object",
-        "initialize_vapour(&esi_2[-9]"
+        "struct GolbShotVapourObjectStrideCursor* golb_shot_vapour_object_cursor = &game->subgame.player.golb_shots[0].vapour.body.bod.object",
+        "golb_shot_vapour_object_cursor->vapour_object->blend_mode = 9",
+        "load_object_definition(\"Objects/VapourLazer\", golb_shot_vapour_object_cursor->vapour_object)",
+        "initialize_vapour(golb_shot_vapour_object_cursor - 0x24, golb_shot_vapour_object_cursor->vapour_object",
+        "&golb_shot_vapour_object_cursor->tertiary_body.bod",
+        "golb_shot_vapour_object_cursor = &golb_shot_vapour_object_cursor[1]"
       ],
       "forbidden_substrings": [
+        "struct Object** esi_2 = &game->subgame.player.golb_shots[0].vapour.body.bod.object",
+        "initialize_vapour(&esi_2[-9]",
+        "&esi_2[0x1d]",
+        "esi_2 = &esi_2[0xba]",
+        "secondary_body",
+        ".live_matrix"
+      ]
+    },
+    {
+      "name": "ida_world_assets_golb_nested_owners",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "GolbShotVapourObjectStrideCursor *golb_shot_vapour_object_cursor;",
+        "golb_shot_vapour_object_cursor = (GolbShotVapourObjectStrideCursor *)",
+        "golb_shot_vapour_object_cursor->vapour_object->flags |= 0x100004u;",
+        "load_object_definition(aObjectsVapourl, golb_shot_vapour_object_cursor->vapour_object);",
+        "(Vapour *)&golb_shot_vapour_object_cursor[-1]._stride_tail[464],",
+        "&golb_shot_vapour_object_cursor->tertiary_body.bod,",
+        "++golb_shot_vapour_object_cursor;"
+      ],
+      "forbidden_substrings": [
+        "char *v278;",
+        "v278 += 744",
+        "*(Object **)v278",
+        "(BodBase *)(v278 - 36)",
         "secondary_body",
         ".live_matrix"
       ]

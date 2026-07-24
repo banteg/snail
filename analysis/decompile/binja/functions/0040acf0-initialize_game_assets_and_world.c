@@ -309,10 +309,10 @@
 0040bdd9        texture_ref_2->flags = flags_1
 0040bde4        (edi_13 - 0x3cb13c)->subgame.sub_lazers.slots[0].owner_game = &game->subgame
 0040bde7        store_color4f(&edi_13[1], 1f, 1f, 1f, 0.699999988f)
-0040bdec        struct Object* object_13 = (edi_13 - 0x3cb13c)->subgame.sub_lazers.slots[0].body.bod.object
+0040bdec        struct Object* object_12 = (edi_13 - 0x3cb13c)->subgame.sub_lazers.slots[0].body.bod.object
 0040bdf2        edi_13 = &edi_13[0x2c]
 0040bdf8        cond:1_1 = var_128_2 != 1
-0040bdf9        object_13->blend_mode = 9
+0040bdf9        object_12->blend_mode = 9
 0040be00        var_128_2 -= 1
 0040be04        do while (cond:1_1)
 0040be17        set_bod_object(&game->root_bod_catalog.salt_model.vtable, add_object_to_list(&g_object_list))
@@ -1650,10 +1650,10 @@
 0040f4fb        struct Object* object = cutscene_animation_object_cursor->object
 0040f503        object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
 0040f508        apply_object_toon(cutscene_animation_object_cursor->object, 0)
-0040f511        struct Object* object_14 = cutscene_animation_object_cursor->object
+0040f511        struct Object* object_13 = cutscene_animation_object_cursor->object
 0040f513        void* __offset(PresentationAnimationObjectStrideCursor, 0x80) cutscene_animation_object_cursor_1 = &cutscene_animation_object_cursor[1]
 0040f518        cutscene_animation_object_cursor = cutscene_animation_object_cursor_1
-0040f51c        object_14->distort.z_wave = 0
+0040f51c        object_13->distort.z_wave = 0
 0040f525        *((cutscene_animation_object_cursor_1 - 0x80)->object + 0x84) = 0
 0040f532        cond:5_1 = var_128_4 != 1
 0040f533        *((cutscene_animation_object_cursor_1 - 0x80)->object + 0x88) = 0
@@ -1677,10 +1677,10 @@
 0040f60c        struct Object* object_2 = jetpack_animation_object_cursor->object
 0040f614        object_2->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
 0040f619        apply_object_toon(jetpack_animation_object_cursor->object, 0)
-0040f622        struct Object* object_17 = jetpack_animation_object_cursor->object
+0040f622        struct Object* object_16 = jetpack_animation_object_cursor->object
 0040f624        void* __offset(PresentationAnimationObjectStrideCursor, 0x80) jetpack_animation_object_cursor_1 = &jetpack_animation_object_cursor[1]
 0040f629        jetpack_animation_object_cursor = jetpack_animation_object_cursor_1
-0040f62d        object_17->distort.z_wave = 0
+0040f62d        object_16->distort.z_wave = 0
 0040f636        *((jetpack_animation_object_cursor_1 - 0x80)->object + 0x84) = 0
 0040f643        cond:6_1 = var_128_5 != 1
 0040f644        *((jetpack_animation_object_cursor_1 - 0x80)->object + 0x88) = 0
@@ -1710,10 +1710,10 @@
 0040f79c        struct Object* object_4 = left_weapon_animation_object_cursor->object
 0040f7a4        object_4->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
 0040f7a9        apply_object_toon(left_weapon_animation_object_cursor->object, 0)
-0040f7b2        struct Object* object_15 = left_weapon_animation_object_cursor->object
+0040f7b2        struct Object* object_14 = left_weapon_animation_object_cursor->object
 0040f7b4        void* __offset(PresentationAnimationObjectStrideCursor, 0x80) left_weapon_animation_object_cursor_1 = &left_weapon_animation_object_cursor[1]
 0040f7b9        left_weapon_animation_object_cursor = left_weapon_animation_object_cursor_1
-0040f7bd        object_15->distort.z_wave = 0
+0040f7bd        object_14->distort.z_wave = 0
 0040f7c6        *((left_weapon_animation_object_cursor_1 - 0x80)->object + 0x84) = 0
 0040f7d3        cond:7_1 = var_128_6 != 1
 0040f7d4        *((left_weapon_animation_object_cursor_1 - 0x80)->object + 0x88) = 0
@@ -1743,10 +1743,10 @@
 0040f92c        struct Object* object_6 = right_weapon_animation_object_cursor->object
 0040f934        object_6->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
 0040f939        apply_object_toon(right_weapon_animation_object_cursor->object, 0)
-0040f942        struct Object* object_18 = right_weapon_animation_object_cursor->object
+0040f942        struct Object* object_17 = right_weapon_animation_object_cursor->object
 0040f944        void* __offset(PresentationAnimationObjectStrideCursor, 0x80) right_weapon_animation_object_cursor_1 = &right_weapon_animation_object_cursor[1]
 0040f949        right_weapon_animation_object_cursor = right_weapon_animation_object_cursor_1
-0040f94d        object_18->distort.z_wave = 0
+0040f94d        object_17->distort.z_wave = 0
 0040f956        *((right_weapon_animation_object_cursor_1 - 0x80)->object + 0x84) = 0
 0040f963        cond:8_1 = var_128_7 != 1
 0040f964        *((right_weapon_animation_object_cursor_1 - 0x80)->object + 0x88) = 0
@@ -1776,10 +1776,10 @@
 0040fabc        struct Object* object_8 = top_weapon_animation_object_cursor->object
 0040fac4        object_8->flags |= OBJECT_FLAG_DYNAMIC_VERTICES
 0040fac9        apply_object_toon(top_weapon_animation_object_cursor->object, 0)
-0040fad2        struct Object* object_16 = top_weapon_animation_object_cursor->object
+0040fad2        struct Object* object_15 = top_weapon_animation_object_cursor->object
 0040fad4        void* __offset(PresentationAnimationObjectStrideCursor, 0x80) top_weapon_animation_object_cursor_1 = &top_weapon_animation_object_cursor[1]
 0040fad9        top_weapon_animation_object_cursor = top_weapon_animation_object_cursor_1
-0040fadd        object_16->distort.z_wave = 0
+0040fadd        object_15->distort.z_wave = 0
 0040fae6        *((top_weapon_animation_object_cursor_1 - 0x80)->object + 0x84) = 0
 0040faf3        cond:9_1 = var_128_8 != 1
 0040faf4        *((top_weapon_animation_object_cursor_1 - 0x80)->object + 0x88) = 0
@@ -1800,17 +1800,17 @@
 0040fbba        object_10->flags &= ~OBJECT_FLAG_DISABLE_CULLING
 0040fbcd        set_bod_object(&game->subgame.player.golb_shots[0].tertiary_body.bod, add_object_to_list(&g_object_list))
 0040fbe2        load_x_mesh(&game->directx_loader, "rocket-base-000.x", game->subgame.player.golb_shots[0].tertiary_body.bod.object, 1)
-0040fbe7        struct Object** esi_2 = &game->subgame.player.golb_shots[0].vapour.body.bod.object
+0040fbe7        struct GolbShotVapourObjectStrideCursor* golb_shot_vapour_object_cursor = &game->subgame.player.golb_shots[0].vapour.body.bod.object
 0040fbed        int32_t var_128_9 = 0xc
 0040fc5d        bool cond:10_1
-0040fc03        set_bod_object(&esi_2[-9], add_object_to_list(&g_object_list))
-0040fc08        struct Object* object_11 = (esi_2 - 0x430270)->subgame.player.golb_shots[0].vapour.body.bod.object
-0040fc13        object_11->flags |= OBJECT_FLAG_DYNAMIC_VERTICES | OBJECT_FLAG_DISABLE_CULLING
-0040fc18        (esi_2 - 0x430270)->subgame.player.golb_shots[0].vapour.body.bod.object->blend_mode = 9
-0040fc27        load_object_definition("Objects/VapourLazer", (esi_2 - 0x430270)->subgame.player.golb_shots[0].vapour.body.bod.object)
-0040fc3a        initialize_vapour(&esi_2[-9], (esi_2 - 0x430270)->subgame.player.golb_shots[0].vapour.body.bod.object, 0.159999996f)
-0040fc49        set_bod_object(&esi_2[0x1d], game->subgame.player.golb_shots[0].tertiary_body.bod.object)
-0040fc52        esi_2 = &esi_2[0xba]
+0040fc03        set_bod_object(golb_shot_vapour_object_cursor - 0x24, add_object_to_list(&g_object_list))
+0040fc08        struct Object* vapour_object = golb_shot_vapour_object_cursor->vapour_object
+0040fc13        vapour_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES | OBJECT_FLAG_DISABLE_CULLING
+0040fc18        golb_shot_vapour_object_cursor->vapour_object->blend_mode = 9
+0040fc27        load_object_definition("Objects/VapourLazer", golb_shot_vapour_object_cursor->vapour_object)
+0040fc3a        initialize_vapour(golb_shot_vapour_object_cursor - 0x24, golb_shot_vapour_object_cursor->vapour_object, 0.159999996f)
+0040fc49        set_bod_object(&golb_shot_vapour_object_cursor->tertiary_body.bod, game->subgame.player.golb_shots[0].tertiary_body.bod.object)
+0040fc52        golb_shot_vapour_object_cursor = &golb_shot_vapour_object_cursor[1]
 0040fc58        cond:10_1 = var_128_9 != 1
 0040fc59        var_128_9 -= 1
 0040fc5d        do while (cond:10_1)
@@ -1875,20 +1875,20 @@
 0040ffe5        int32_t orientation = 0
 00410058        bool cond:13_1
 0040ffe9        int32_t var_12c = 0
-0040ffed        struct Object** esi_3 = eax_344
+0040ffed        struct Object** esi_2 = eax_344
 00410048        bool cond:12_1
 0040ffef        int32_t i_1 = 0
 0041003a        while (i_1 s< 3)
-0040ffff        set_bod_object(&esi_3[-9], add_object_to_list(&g_object_list))
-00410022        initialize_backdrop_tile_quad((esi_3 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object, edge_selector, orientation, var_12c - 1, i_1 - 1, "Objects/Universe/Fringe.tga")
-00410027        struct Object* object_12 = (esi_3 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object
+0040ffff        set_bod_object(&esi_2[-9], add_object_to_list(&g_object_list))
+00410022        initialize_backdrop_tile_quad((esi_2 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object, edge_selector, orientation, var_12c - 1, i_1 - 1, "Objects/Universe/Fringe.tga")
+00410027        struct Object* object_11 = (esi_2 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object
 0041002c        i_1 += 1
-0041002d        esi_3 = &esi_3[0xe]
-00410033        object_12->blend_mode = 5
+0041002d        esi_2 = &esi_2[0xe]
+00410033        object_11->blend_mode = 5
 00410041        cond:12_1 = var_12c + 1 s< 3
 00410044        var_12c += 1
 00410048        do while (cond:12_1)
-0041004e        eax_344 = esi_3
+0041004e        eax_344 = esi_2
 00410051        cond:13_1 = orientation + 1 s< 4
 00410054        orientation += 1
 00410058        do while (cond:13_1)
