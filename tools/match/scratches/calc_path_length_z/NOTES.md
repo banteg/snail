@@ -1,5 +1,25 @@
 # calc_path_length_z
 
+## 2026-07-24 paired IDA copy-owner closure
+
+Live Binary Ninja and IDA both confirm the recovered
+`GolbPathFollowState*` receiver and `Vec3*` output ABI. The checked-in IDA
+artifact had lagged behind that database state and still rendered the native
+direction-to-velocity copy as writes through a rebased `GolbShot*`, falsely
+placing the stores in `primary_body`.
+
+The native Hex-Rays lifetime identifies `EDI` at `0x421d22` as the
+`Vec3*` source for `shot->direction`; the following `EAX` rebase at
+`0x421d27` lands exactly on `GolbShot::velocity` at `+0x24c`. Replaying the
+source pointer type lets Hex-Rays fold the three 32-bit stores into the honest
+aggregate owner copy
+`state->shot->velocity = state->shot->direction`, with no fabricated nested
+body. The path-template replay now verifies both the saved register override
+and the folded owner expression, and the strict decompile-health manifest
+guards the IDA function signature, path/state owners, and absence of the
+former false interior owner. This is analysis-only: focused matching remains
+71.82% (416/425 instructions, 7 clean masked operands).
+
 ## 2026-07-14 Traverse vector-expression recovery
 
 The independent Android `cRPathFollowGolb::Traverse(float, tVector*,

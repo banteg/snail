@@ -349,6 +349,8 @@ GOLB_SHOT_HEADER_MARKERS = (
     "RenderableBod tertiary_body;",
 )
 
+GOLB_PATH_FOLLOW_DIRECTION_LVAR_DEFINITION = 0x421D22
+
 POPULATE_RUNTIME_LVAR_SPECS = (
     ("segment_cursor", "int32_t segment_cursor;", 0x435EB0, 72),
     ("trampoline_counter", "int32_t trampoline_counter;", 0x4360D6, 76),
@@ -2787,6 +2789,163 @@ def _sync_populate_runtime_lvars() -> dict[str, object]:
     )
 
 
+def _sync_golb_path_follow_copy_ownership() -> dict[str, object]:
+    selector = "calc_path_length_z"
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    declaration = "Vec3 *direction_source;"
+    local_type = ida_typeinf.tinfo_t()
+    if not ida_typeinf.parse_decl(
+        local_type,
+        None,
+        declaration,
+        ida_typeinf.PT_SIL,
+    ):
+        return {
+            "status": "failed",
+            "reason": "parse_direction_source_type_failed",
+            "selector": selector,
+            "declaration": declaration,
+        }
+
+    expected_type = _normalize_type_text(str(local_type))
+    cfunc = ida_hexrays.decompile(address)
+    settings = ida_hexrays.lvar_uservec_t()
+    ida_hexrays.restore_user_lvar_settings(settings, address)
+    matching_saved = []
+    conflicting_saved = []
+    for index in range(settings.lvvec.size()):
+        saved = settings.lvvec.at(index)
+        if (
+            saved.ll.defea != GOLB_PATH_FOLLOW_DIRECTION_LVAR_DEFINITION
+            or not saved.ll.is_reg1()
+            or ida_hexrays.get_mreg_name(saved.ll.get_reg1(), 4) != "edi"
+        ):
+            continue
+        if (
+            saved.name == "direction_source"
+            and _normalize_type_text(str(saved.type)) == expected_type
+        ):
+            matching_saved.append(saved)
+        else:
+            conflicting_saved.append(saved)
+
+    folded_copy = "state->shot->velocity = state->shot->direction;" in str(cfunc)
+    false_interior_owner = "shot->primary_body" in str(cfunc)
+    if len(matching_saved) == 1 and not conflicting_saved:
+        if not folded_copy or false_interior_owner:
+            return {
+                "status": "failed",
+                "reason": "golb_copy_ownership_readback_failed",
+                "selector": selector,
+                "folded_copy": folded_copy,
+                "false_interior_owner": false_interior_owner,
+            }
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "direction_source": {
+                "name": matching_saved[0].name,
+                "type": str(matching_saved[0].type),
+                "definition_address": hex(matching_saved[0].ll.defea),
+                "register": "edi",
+            },
+            "folded_copy": True,
+        }
+    if matching_saved or conflicting_saved:
+        return {
+            "status": "failed",
+            "reason": "unexpected_direction_source_overrides",
+            "selector": selector,
+            "matching_count": len(matching_saved),
+            "conflicting_count": len(conflicting_saved),
+        }
+
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and not lvar.is_stk_var()
+        and lvar.defea == GOLB_PATH_FOLLOW_DIRECTION_LVAR_DEFINITION
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_direction_source_candidates",
+            "selector": selector,
+            "candidate_count": len(candidates),
+        }
+
+    source = candidates[0]
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(source.location, source.defea)
+    info.name = "direction_source"
+    info.type = local_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_direction_source_lvar_failed",
+            "selector": selector,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified_settings = ida_hexrays.lvar_uservec_t()
+    if not ida_hexrays.restore_user_lvar_settings(verified_settings, address):
+        return {
+            "status": "failed",
+            "reason": "restore_direction_source_override_failed",
+            "selector": selector,
+        }
+    verified_saved = [
+        verified_settings.lvvec.at(index)
+        for index in range(verified_settings.lvvec.size())
+        if verified_settings.lvvec.at(index).name == "direction_source"
+        and _normalize_type_text(str(verified_settings.lvvec.at(index).type))
+        == expected_type
+        and verified_settings.lvvec.at(index).ll.defea
+        == GOLB_PATH_FOLLOW_DIRECTION_LVAR_DEFINITION
+        and verified_settings.lvvec.at(index).ll.is_reg1()
+        and ida_hexrays.get_mreg_name(
+            verified_settings.lvvec.at(index).ll.get_reg1(),
+            4,
+        )
+        == "edi"
+    ]
+    verified_text = str(verified_cfunc)
+    folded_copy = "state->shot->velocity = state->shot->direction;" in verified_text
+    false_interior_owner = "shot->primary_body" in verified_text
+    if len(verified_saved) != 1 or not folded_copy or false_interior_owner:
+        return {
+            "status": "failed",
+            "reason": "golb_copy_ownership_readback_failed",
+            "selector": selector,
+            "saved_override_count": len(verified_saved),
+            "folded_copy": folded_copy,
+            "false_interior_owner": false_interior_owner,
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "before_name": source.name,
+        "before_type": str(source.type()),
+        "direction_source": {
+            "name": verified_saved[0].name,
+            "type": str(verified_saved[0].type),
+            "definition_address": hex(verified_saved[0].ll.defea),
+            "register": "edi",
+        },
+        "folded_copy": True,
+    }
+
+
 def _sync_place_parcels_runtime_lvars() -> dict[str, object]:
     rejected_stack_overrides = [
         _clear_exact_lvar_override(
@@ -3772,6 +3931,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "runtime_lvars": populate_runtime_lvars,
             }
         )
+    golb_path_follow_copy_ownership = _sync_golb_path_follow_copy_ownership()
+    if golb_path_follow_copy_ownership.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "calc_path_length_z",
+                "copy_ownership": golb_path_follow_copy_ownership,
+            }
+        )
     place_parcels_runtime_lvars = _sync_place_parcels_runtime_lvars()
     if place_parcels_runtime_lvars.get("status") == "failed":
         failed.append(
@@ -3982,6 +4149,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
                 "get_track_skirt_color_lvars": get_track_skirt_color_lvars,
                 "populate_runtime_lvars": populate_runtime_lvars,
+                "golb_path_follow_copy_ownership": golb_path_follow_copy_ownership,
                 "place_parcels_runtime_lvars": place_parcels_runtime_lvars,
                 "challenge_parcels_runtime_lvars": challenge_parcels_runtime_lvars,
                 "project_attachment_lvars": project_attachment_lvars,

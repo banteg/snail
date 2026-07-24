@@ -2334,6 +2334,35 @@ def test_path_sync_owns_golb_follow_abis() -> None:
     for address in ("0x414820", "0x421770", "0x4217B0"):
         assert address in ida_source
 
+    assert "GOLB_PATH_FOLLOW_DIRECTION_LVAR_DEFINITION = 0x421D22" in ida_source
+    assert "_sync_golb_path_follow_copy_ownership" in ida_source
+    assert '"Vec3 *direction_source;"' in ida_source
+    assert "ida_hexrays.restore_user_lvar_settings" in ida_source
+    assert '"state->shot->velocity = state->shot->direction;"' in ida_source
+    assert '"shot->primary_body"' in ida_source
+    assert '"golb_path_follow_copy_ownership"' in ida_source
+
+    health = json.loads(
+        (
+            Path(__file__).parents[1]
+            / "analysis/decompile/health_checks.json"
+        ).read_text(encoding="utf-8")
+    )
+    ida_check = next(
+        check
+        for check in health["checks"]
+        if check["name"] == "ida_golb_path_follow_owner_graph"
+    )
+    assert (
+        ida_check["artifact"]
+        == "analysis/decompile/ida/functions/004217b0-calc_path_length_z.c"
+    )
+    assert (
+        "state->shot->velocity = state->shot->direction;"
+        in ida_check["required_substrings"]
+    )
+    assert "shot->primary_body" in ida_check["forbidden_substrings"]
+
 
 def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     source = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")

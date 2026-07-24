@@ -15753,6 +15753,28 @@
       ]
     },
     {
+      "name": "ida_golb_path_follow_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/004217b0-calc_path_length_z.c",
+      "required_substrings": [
+        "int32_t __thiscall calc_path_length_z(GolbPathFollowState *state, float path_factor, Vec3 *position, Vec3 *velocity)",
+        "template_record = state->template_record;",
+        "secondary_samples = template_record->secondary_samples;",
+        "state->source_cell->anchor_position.z",
+        "state->output_position.x",
+        "state->shot->flight_transform.position",
+        "state->shot->velocity = state->shot->direction;",
+        "state->template_record->side_exit_mode == 0"
+      ],
+      "forbidden_substrings": [
+        "sub_4217B0",
+        "char *this",
+        "p_direction",
+        "shot->primary_body",
+        "(char *)shot + 588",
+        "*((_DWORD *)state"
+      ]
+    },
+    {
       "name": "bn_path_position_owner_abi",
       "artifact": "analysis/decompile/binja/functions/0042b9c0-get_path_position_at_node.c",
       "required_substrings": [
