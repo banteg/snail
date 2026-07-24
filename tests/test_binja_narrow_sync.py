@@ -5460,6 +5460,38 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
 
     assert "POPULATE_RUNTIME_LVAR_SPECS" in ida_path_sync
     assert '("visited_cursor", "uint8_t *visited_cursor;", 0x4361AE, None)' in ida_path_sync
+    for definition_address in (
+        "0x436073",
+        "0x4360EA",
+        "0x4360EE",
+        "0x4360F4",
+        "0x4360FE",
+        "0x43612A",
+        "0x43612D",
+        "0x43614E",
+        "0x436162",
+        "0x436166",
+        "0x43616B",
+    ):
+        assert definition_address in ida_path_sync
+    for name, declaration in (
+        ("segment_row_count_cursor", "int32_t *segment_row_count_cursor;"),
+        ("row_fringe_front_cursor", "Fringe **row_fringe_front_cursor;"),
+        ("row_projection_y_cursor", "int32_t *row_projection_y_cursor;"),
+        ("rows_remaining", "int32_t rows_remaining;"),
+        ("cell_lanes_remaining", "int32_t cell_lanes_remaining;"),
+        ("lane_and_flags_cursor", "uint32_t *lane_and_flags_cursor;"),
+        ("cell_lane_and_flags", "uint32_t cell_lane_and_flags;"),
+        ("cell_list_flags", "uint32_t cell_list_flags;"),
+        (
+            "next_row_fringe_front_cursor",
+            "Fringe **next_row_fringe_front_cursor;",
+        ),
+        ("remaining_cell_lanes", "int32_t remaining_cell_lanes;"),
+        ("cell_fringe_front_cursor", "Fringe **cell_fringe_front_cursor;"),
+    ):
+        assert f'"{name}"' in ida_path_sync
+        assert f'"{declaration}"' in ida_path_sync
     assert "0x4362E6" in ida_path_sync
     assert "0x436404" in ida_path_sync
     assert "0x436459" in ida_path_sync
@@ -5550,6 +5582,22 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "FRINGE_RUNTIME_ROW_OFFSET_OPERANDS" in ida_path_sync
     assert "(0x434C0C, 1, 0x5CCAC8)" in ida_path_sync
     assert "fringe_runtime_row_offset_operands = _normalize_root_offset_operands(" in ida_path_sync
+    assert "POPULATE_RUNTIME_ROW_OFFSET_OPERANDS" in ida_path_sync
+    for operand_spec in (
+        "(0x4360ED, 1, 0x5CCB5C)",
+        "(0x43645C, 0, 0x5CCBB4)",
+        "(0x4364D5, 1, 0x5CCB3C)",
+        "(0x436565, 1, 0x5CCB58)",
+        "(0x436D84, 1, 0x5CCB78)",
+        "(0x436E30, 1, 0x5CCB58)",
+        "(0x436FE2, 1, 0x5CCB9C)",
+    ):
+        assert operand_spec in ida_path_sync
+    assert (
+        "populate_runtime_row_offset_operands = _normalize_root_offset_operands("
+        in ida_path_sync
+    )
+    assert '"populate_runtime_row_offset_operands"' in ida_path_sync
     assert "UPDATE_SUBGAME_RUNTIME_LVAR_SPECS" in ida_path_sync
     for definition_address in ("0x439035", "0x439038", "0x4390F9", "0x4398CB"):
         assert definition_address in ida_path_sync

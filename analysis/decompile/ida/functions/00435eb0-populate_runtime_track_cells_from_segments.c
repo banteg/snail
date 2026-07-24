@@ -14,15 +14,15 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int v8; // ecx
   int32_t v9; // esi
   int32_t v10; // eax
-  int32_t *p_row_count; // ecx
-  _DWORD *v12; // edi
-  int v13; // ebp
-  _DWORD *v14; // esi
-  int v15; // ecx
-  int v16; // edx
-  Fringe **v17; // eax
-  int v18; // ecx
-  Fringe **v19; // esi
+  int32_t *segment_row_count_cursor; // ecx
+  int32_t *row_projection_y_cursor; // edi
+  int32_t cell_lanes_remaining; // ebp
+  uint32_t *lane_and_flags_cursor; // esi
+  uint32_t cell_lane_and_flags; // ecx
+  uint32_t cell_list_flags; // edx
+  Fringe **next_row_fringe_front_cursor; // eax
+  int32_t remaining_cell_lanes; // ecx
+  Fringe **cell_fringe_front_cursor; // esi
   int32_t v20; // eax
   uint8_t *visited_cursor; // ecx
   int32_t v22; // edi
@@ -40,15 +40,15 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int32_t runtime_row_count; // ecx
   int v35; // eax
   SubSegmentRowStrideAnchor *segment_row_anchor; // esi
-  char *v37; // eax
-  int v38; // ecx
-  char *v39; // eax
-  int v40; // ecx
+  SubRow *v37; // eax
+  uint32_t flags; // ecx
+  SubRow *v39; // eax
+  uint32_t v40; // ecx
   RuntimeRowStrideAnchor *runtime_row_anchor; // ebx
-  int v42; // eax
-  int v43; // eax
-  int v44; // eax
-  int v45; // eax
+  uint32_t v42; // eax
+  uint32_t v43; // eax
+  uint32_t v44; // eax
+  uint32_t v45; // eax
   int32_t v46; // ebp
   RuntimeCellStrideAnchor *runtime_cell_anchor; // esi
   uint32_t lane_and_flags; // eax
@@ -84,12 +84,12 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   uint32_t v78; // eax
   uint32_t v79; // eax
   uint32_t v80; // eax
-  int v81; // ecx
+  int32_t attachment_template_index; // ecx
   PathPair *p_secondary; // ecx
   signed int v83; // edx
   SubRow *stamped_row; // ecx
-  uint32_t flags; // eax
-  int v86; // ecx
+  uint32_t v85; // eax
+  uint32_t v86; // ecx
   uint32_t v87; // eax
   uint32_t v88; // eax
   Vec3 *p_anchor_position; // edi
@@ -98,7 +98,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   double v92; // st7
   double v93; // st7
   tColour *track_skirt_color; // eax
-  int v95; // eax
+  uint32_t v95; // eax
   SubLocTileId v96; // al
   Fringe **fringe_slot; // ecx
   int32_t remaining_fringe_slots; // edx
@@ -111,10 +111,10 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int32_t build_row; // [esp+1Ch] [ebp-40h]
   SubSegment *active_segment; // [esp+20h] [ebp-3Ch]
   int32_t segment_row_index; // [esp+28h] [ebp-34h]
-  int v109; // [esp+2Ch] [ebp-30h]
+  int32_t rows_remaining; // [esp+2Ch] [ebp-30h]
   int32_t lane; // [esp+2Ch] [ebp-30h]
   int32_t row_event_owner; // [esp+30h] [ebp-2Ch]
-  Fringe **p_fringe_front; // [esp+34h] [ebp-28h]
+  Fringe **row_fringe_front_cursor; // [esp+34h] [ebp-28h]
   float v113; // [esp+34h] [ebp-28h]
   int32_t segment_cursor; // [esp+38h] [ebp-24h]
   int32_t trampoline_counter; // [esp+3Ch] [ebp-20h]
@@ -203,12 +203,12 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                               + game->level_definition.last_segment.row_count;
       if ( game->level_definition.segment_count > 0 )
       {
-        p_row_count = &game->level_definition.segment_slots[0].row_count;
+        segment_row_count_cursor = &game->level_definition.segment_slots[0].row_count;
         do
         {
           ++v10;
-          game->runtime_row_count += *p_row_count;
-          p_row_count += 4232;
+          game->runtime_row_count += *segment_row_count_cursor;
+          segment_row_count_cursor += 4232;
         }
         while ( v10 < game->level_definition.segment_count );
       }
@@ -241,59 +241,59 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   first_or_last_row = 0;
   row_event_owner = 0;
   game->player.follow_state.flag_3c = 0;
-  p_fringe_front = &game->runtime_cells[0][0].fringe_front;
-  v12 = (_DWORD *)((char *)&unk_5CCB5C + (_DWORD)game);
-  v109 = 3200;
+  row_fringe_front_cursor = &game->runtime_cells[0][0].fringe_front;
+  row_projection_y_cursor = (int32_t *)&game->runtime_rows[0].projection_payload.y;
+  rows_remaining = 3200;
   do
   {
-    v13 = 8;
-    *(v12 - 37) = 0;
-    v12[6] = 0;
-    v12[3] = 0;
-    v12[21] = 0;
-    v12[4] = 0;
-    v12[1] = 0;
-    *v12 = 0;
-    *(v12 - 1) = 0;
-    v12[2] = 0;
-    v12[22] = 0;
-    v12[23] = 0;
-    v14 = p_fringe_front - 1;
+    cell_lanes_remaining = 8;
+    *(row_projection_y_cursor - 37) = 0;
+    row_projection_y_cursor[6] = 0;
+    row_projection_y_cursor[3] = 0;
+    row_projection_y_cursor[21] = 0;
+    row_projection_y_cursor[4] = 0;
+    row_projection_y_cursor[1] = 0;
+    *row_projection_y_cursor = 0;
+    *(row_projection_y_cursor - 1) = 0;
+    row_projection_y_cursor[2] = 0;
+    row_projection_y_cursor[22] = 0;
+    row_projection_y_cursor[23] = 0;
+    lane_and_flags_cursor = (uint32_t *)(row_fringe_front_cursor - 1);
     do
     {
-      v15 = *v14;
-      BYTE1(v15) = BYTE1(*v14) & 0x5F;
-      *v14 = v15;
-      *((_BYTE *)v14 - 3) = 0;
-      *(_WORD *)v14 = 0;
-      *v14 &= 0xFFFFAFA7;
-      *(_WORD *)v14 = 0;
-      v16 = *(v14 - 15);
-      LOBYTE(v16) = v16 & 0x7F;
-      *(v14 - 15) = v16;
-      set_color_white((tColour *)(v14 - 6));
-      v14 += 21;
-      --v13;
+      cell_lane_and_flags = *lane_and_flags_cursor;
+      BYTE1(cell_lane_and_flags) = BYTE1(*lane_and_flags_cursor) & 0x5F;
+      *lane_and_flags_cursor = cell_lane_and_flags;
+      *((_BYTE *)lane_and_flags_cursor - 3) = 0;
+      *(_WORD *)lane_and_flags_cursor = 0;
+      *lane_and_flags_cursor &= 0xFFFFAFA7;
+      *(_WORD *)lane_and_flags_cursor = 0;
+      cell_list_flags = *(lane_and_flags_cursor - 15);
+      LOBYTE(cell_list_flags) = cell_list_flags & 0x7F;
+      *(lane_and_flags_cursor - 15) = cell_list_flags;
+      set_color_white((tColour *)(lane_and_flags_cursor - 6));
+      lane_and_flags_cursor += 21;
+      --cell_lanes_remaining;
     }
-    while ( v13 );
-    v17 = p_fringe_front;
-    v18 = 8;
+    while ( cell_lanes_remaining );
+    next_row_fringe_front_cursor = row_fringe_front_cursor;
+    remaining_cell_lanes = 8;
     do
     {
-      v19 = v17;
-      v17 += 21;
-      --v18;
-      *v19 = nullptr;
-      v19[1] = nullptr;
-      v19[2] = nullptr;
-      v19[3] = nullptr;
+      cell_fringe_front_cursor = next_row_fringe_front_cursor;
+      next_row_fringe_front_cursor += 21;
+      --remaining_cell_lanes;
+      *cell_fringe_front_cursor = nullptr;
+      cell_fringe_front_cursor[1] = nullptr;
+      cell_fringe_front_cursor[2] = nullptr;
+      cell_fringe_front_cursor[3] = nullptr;
     }
-    while ( v18 );
-    p_fringe_front = v17;
-    v12 += 61;
-    --v109;
+    while ( remaining_cell_lanes );
+    row_fringe_front_cursor = next_row_fringe_front_cursor;
+    row_projection_y_cursor += 61;
+    --rows_remaining;
   }
-  while ( v109 );
+  while ( rows_remaining );
   if ( game->level_definition.random_enabled == 1 )
   {
     v20 = 0;
@@ -416,81 +416,81 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
             }
           }
           if ( v23->track_mirror_enabled )
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)v23 + 244 * v22] |= 0x20u;
+            v23->runtime_rows[v22].flags |= 0x20u;
           segment_row_anchor = (SubSegmentRowStrideAnchor *)((char *)v31 + 56 * segment_row_index);
           if ( (segment_row_anchor->row.flags & 0x100) != 0 )
           {
-            v37 = &byte_5CCAC8[(_DWORD)v23 + 244 * v22];
-            v38 = *(_DWORD *)v37;
-            BYTE1(v38) = BYTE1(*(_DWORD *)v37) | 1;
-            *(_DWORD *)v37 = v38;
+            v37 = &v23->runtime_rows[v22];
+            flags = v37->flags;
+            BYTE1(flags) = BYTE1(v37->flags) | 1;
+            v37->flags = flags;
           }
           if ( (BYTE1(segment_row_anchor->row.flags) & 0x80u) != 0 )
           {
-            v39 = &byte_5CCAC8[(_DWORD)v23 + 244 * v22];
-            v40 = *(_DWORD *)v39;
-            BYTE1(v40) = BYTE1(*(_DWORD *)v39) | 0x80;
-            *(_DWORD *)v39 = v40;
+            v39 = &v23->runtime_rows[v22];
+            v40 = v39->flags;
+            BYTE1(v40) = BYTE1(v39->flags) | 0x80;
+            v39->flags = v40;
           }
           runtime_row_anchor = (RuntimeRowStrideAnchor *)((char *)v23 + 244 * v22);
-          *(_DWORD *)((char *)&unk_5CCBB4 + (_DWORD)runtime_row_anchor) = v31;
-          *(int *)((char *)unk_5CCBB8 + (_DWORD)runtime_row_anchor) = row_event_owner;
+          runtime_row_anchor->row.source_segment = v31;
+          runtime_row_anchor->row.row_event_id = row_event_owner;
           if ( (segment_row_anchor->row.flags & 2) != 0 )
           {
-            v42 = *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
+            v42 = runtime_row_anchor->row.flags;
             LOBYTE(v42) = v42 | 2;
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] = v42;
+            runtime_row_anchor->row.flags = v42;
             set_bod_object(
-              (BodBase *)((char *)&unk_5CCACC + (_DWORD)runtime_row_anchor),
+              &runtime_row_anchor->row.row_model.body.bod,
               g_game_base->directx_loader.cached_x_mesh_slots[segment_row_anchor->row.object_id].object);
-            set_matrix_identity((TransformMatrix *)((char *)&unk_5CCB04 + (_DWORD)runtime_row_anchor));
-            *(Vec3 *)((char *)&unk_5CCB34 + (_DWORD)runtime_row_anchor) = segment_row_anchor->row.object_position;
+            set_matrix_identity(&runtime_row_anchor->row.row_model.body.transform);
+            runtime_row_anchor->row.row_model.body.transform.position = segment_row_anchor->row.object_position;
             runtime_row_anchor->row.row_model.body.transform.position.z = (double)build_row
                                                                         + runtime_row_anchor->row.row_model.body.transform.position.z;
             if ( (segment_row_anchor->row.flags & 8) != 0 )
             {
-              v43 = *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
+              v43 = runtime_row_anchor->row.flags;
               LOBYTE(v43) = v43 | 8;
-              *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] = v43;
-              *(Vec3 *)((char *)&unk_5CCB4C + (_DWORD)runtime_row_anchor) = segment_row_anchor->row.object_velocity;
+              runtime_row_anchor->row.flags = v43;
+              runtime_row_anchor->row.row_model.velocity = segment_row_anchor->row.object_velocity;
             }
             else
             {
-              *(_DWORD *)((char *)&unk_5CCB54 + (_DWORD)runtime_row_anchor) = 0;
-              *(_DWORD *)((char *)&unk_5CCB50 + (_DWORD)runtime_row_anchor) = 0;
-              *(_DWORD *)((char *)&unk_5CCB4C + (_DWORD)runtime_row_anchor) = 0;
+              runtime_row_anchor->row.row_model.velocity.z = 0.0;
+              runtime_row_anchor->row.row_model.velocity.y = 0.0;
+              runtime_row_anchor->row.row_model.velocity.x = 0.0;
             }
             v31 = active_segment;
           }
           if ( (segment_row_anchor->row.flags & 1) != 0 )
           {
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x4001u;
-            *(_DWORD *)((char *)&unk_5CCB64 + (_DWORD)runtime_row_anchor) = v31->rows[segment_row_index].parcel_set_id;
-            *(Vec3 *)((char *)&unk_5CCB58 + (_DWORD)runtime_row_anchor) = segment_row_anchor->row.local_position;
+            runtime_row_anchor->row.flags |= 0x4001u;
+            runtime_row_anchor->row.parcel_set_id = v31->rows[segment_row_index].parcel_set_id;
+            runtime_row_anchor->row.projection_payload = segment_row_anchor->row.local_position;
           }
           if ( (segment_row_anchor->row.flags & 8) != 0 )
           {
-            v44 = *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
+            v44 = runtime_row_anchor->row.flags;
             LOBYTE(v44) = v44 | 8;
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] = v44;
-            *(_DWORD *)((char *)&unk_5CCB68 + (_DWORD)runtime_row_anchor) = segment_row_anchor->row.path_template_index;
+            runtime_row_anchor->row.flags = v44;
+            runtime_row_anchor->row.attachment_template_index = segment_row_anchor->row.path_template_index;
           }
           if ( (segment_row_anchor->row.flags & 4) != 0 )
           {
-            v45 = *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
+            v45 = runtime_row_anchor->row.flags;
             LOBYTE(v45) = v45 | 4;
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] = v45;
+            runtime_row_anchor->row.flags = v45;
           }
           if ( (segment_row_anchor->row.flags & 0x200) != 0 )
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x200u;
+            runtime_row_anchor->row.flags |= 0x200u;
           if ( (segment_row_anchor->row.flags & 0x400) != 0 )
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x400u;
+            runtime_row_anchor->row.flags |= 0x400u;
           if ( (segment_row_anchor->row.flags & 0x2000) != 0 )
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x2000u;
+            runtime_row_anchor->row.flags |= 0x2000u;
           if ( (segment_row_anchor->row.flags & 0x800) != 0 )
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x800u;
+            runtime_row_anchor->row.flags |= 0x800u;
           if ( (segment_row_anchor->row.flags & 0x1000) != 0 )
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x1000u;
+            runtime_row_anchor->row.flags |= 0x1000u;
           attachment_entry_installed = 0;
           lane = 0;
           *((_DWORD *)&v23->runtime_rows[0].ring_speed + 60 * v22 + v22) = segment_row_anchor->row.ring_speed.bits;
@@ -614,12 +614,12 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               case '0':
                 if ( game->level_mode == 1 )
                 {
-                  v86 = *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
+                  v86 = runtime_row_anchor->row.flags;
                   BYTE1(v86) &= ~0x40u;
-                  *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] = v86 | 1;
-                  *(_DWORD *)((char *)&unk_5CCB64 + (_DWORD)runtime_row_anchor) = 0;
+                  runtime_row_anchor->row.flags = v86 | 1;
+                  runtime_row_anchor->row.parcel_set_id = 0;
                   runtime_row_anchor->row.projection_payload.x = (double)lane - 4.0 + 0.5;
-                  *(float *)((char *)&unk_5CCB5C + (_DWORD)runtime_row_anchor) = runtime_cell_anchor->cell.anchor_position.y;
+                  runtime_row_anchor->row.projection_payload.y = runtime_cell_anchor->cell.anchor_position.y;
                   runtime_row_anchor->row.projection_payload.z = (double)build_row + 0.5;
                   if ( game->track_mirror_enabled )
                     runtime_row_anchor->row.projection_payload.x = runtime_row_anchor->row.projection_payload.x * -1.0;
@@ -635,7 +635,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               case '8':
               case '9':
 LABEL_173:
-                if ( (byte_5CCAC8[(_DWORD)runtime_row_anchor] & 0xC0) == 0 )
+                if ( (runtime_row_anchor->row.flags & 0xC0) == 0 )
                   goto LABEL_174;
                 v88 = runtime_cell_anchor->cell.bod.list_flags;
                 LOBYTE(v88) = v88 & 0xDF;
@@ -741,11 +741,11 @@ LABEL_173:
                 {
                   runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_PATH_ENTRY_LOWERCASE;
                 }
-                v81 = *(_DWORD *)((char *)&unk_5CCB68 + (_DWORD)runtime_row_anchor);
+                attachment_template_index = runtime_row_anchor->row.attachment_template_index;
                 if ( game->track_mirror_enabled )
-                  p_secondary = (PathPair *)&game->path_pairs[v81].secondary;
+                  p_secondary = (PathPair *)&game->path_pairs[attachment_template_index].secondary;
                 else
-                  p_secondary = &game->path_pairs[v81];
+                  p_secondary = &game->path_pairs[attachment_template_index];
                 runtime_cell_anchor->cell.attachment_template_record = &p_secondary->primary;
                 runtime_cell_anchor->cell.bod.list_flags &= ~0x20u;
                 if ( !attachment_entry_installed )
@@ -756,27 +756,27 @@ LABEL_173:
                     runtime_cell_anchor->cell.attachment_template_record->bod.object);
                   runtime_cell_anchor->cell.bod.list_flags |= 0x20u;
                   set_bod_object(
-                    (BodBase *)((char *)&unk_5CCB78 + (_DWORD)runtime_row_anchor),
+                    &runtime_row_anchor->row.attachment_body,
                     runtime_cell_anchor->cell.attachment_template_record->fringe_mesh_bod.object);
-                  *(_DWORD *)((char *)&unk_5CCB7C + (_DWORD)runtime_row_anchor) |= 0x20u;
-                  *(_DWORD *)((char *)&unk_5CCB74 + (_DWORD)runtime_row_anchor) = active_segment->angle_radians.bits;
+                  runtime_row_anchor->row.attachment_body.bod.list_flags |= 0x20u;
+                  LODWORD(runtime_row_anchor->row.installed_heading_delta) = active_segment->angle_radians.bits;
                   v83 = 0;
                   if ( (int)runtime_cell_anchor->cell.attachment_template_record->row_span_count > 0 )
                   {
-                    stamped_row = (SubRow *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
+                    stamped_row = &runtime_row_anchor->row;
                     do
                     {
-                      flags = stamped_row->flags;
+                      v85 = stamped_row->flags;
                       if ( (stamped_row->flags & 0x40) != 0 )
                       {
-                        LOBYTE(flags) = flags | 0x80;
-                        stamped_row->flags = flags;
+                        LOBYTE(v85) = v85 | 0x80;
+                        stamped_row->flags = v85;
                         stamped_row->secondary_attachment_cell = p_cell;
                       }
                       else
                       {
-                        LOBYTE(flags) = flags | 0x40;
-                        stamped_row->flags = flags;
+                        LOBYTE(v85) = v85 | 0x40;
+                        stamped_row->flags = v85;
                         stamped_row->primary_attachment_cell = p_cell;
                       }
                       ++v83;
@@ -894,9 +894,9 @@ LABEL_174:
             runtime_cell_anchor->cell.anchor_position.z = 0.0;
             runtime_cell_anchor->cell.anchor_position.y = 0.0;
             runtime_cell_anchor->cell.anchor_position.x = 0.0;
-            *(_DWORD *)((char *)&unk_5CCB90 + (_DWORD)runtime_row_anchor) = 0;
-            *(_DWORD *)((char *)&unk_5CCB8C + (_DWORD)runtime_row_anchor) = 0;
-            *(_DWORD *)((char *)&unk_5CCB88 + (_DWORD)runtime_row_anchor) = 0;
+            runtime_row_anchor->row.attachment_body.position.z = 0.0;
+            runtime_row_anchor->row.attachment_body.position.y = 0.0;
+            runtime_row_anchor->row.attachment_body.position.x = 0.0;
             tile_id = runtime_cell_anchor->cell.tile_id;
             if ( tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE )
             {
@@ -907,17 +907,17 @@ LABEL_174:
               runtime_cell_anchor->cell.anchor_position.z = v93;
               if ( (g_runtime_config.render_flags & 0x20) != 0 )
               {
-                *(_DWORD *)((char *)&unk_5CCB88 + (_DWORD)runtime_row_anchor) = 0;
+                runtime_row_anchor->row.attachment_body.position.x = 0.0;
                 runtime_row_anchor->row.attachment_body.position.z = v93;
                 track_skirt_color = get_track_skirt_color(&g_game_base->subgame, &out);
-                *(tColour *)((char *)&unk_5CCBA0 + (_DWORD)runtime_row_anchor) = *track_skirt_color;
-                set_object_color(*(Object **)((char *)&unk_5CCB9C + (_DWORD)runtime_row_anchor), *track_skirt_color);
+                runtime_row_anchor->row.attachment_body.color = *track_skirt_color;
+                set_object_color(runtime_row_anchor->row.attachment_body.object, *track_skirt_color);
               }
               else
               {
-                v95 = *(_DWORD *)((char *)&unk_5CCB7C + (_DWORD)runtime_row_anchor);
+                v95 = runtime_row_anchor->row.attachment_body.bod.list_flags;
                 LOBYTE(v95) = v95 & 0xDF;
-                *(_DWORD *)((char *)&unk_5CCB7C + (_DWORD)runtime_row_anchor) = v95;
+                runtime_row_anchor->row.attachment_body.bod.list_flags = v95;
               }
             }
             else

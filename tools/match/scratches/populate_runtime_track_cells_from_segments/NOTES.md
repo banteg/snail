@@ -763,3 +763,29 @@ ownership only: no branch, table, dummy dependency, or masked operand was
 changed to improve the score. The focused matcher remains at the honest
 29.67%, 1,229/1,245-instruction frontier with 66 clean operands and the same
 two documented jump-table/call-alignment mismatches.
+
+## 2026-07-24 IDA runtime-row materialization ownership
+
+IDA now preserves the same borrowed `SubRow` owner that Binary Ninja already
+recovered for the authored-row copy. The physical `RuntimeRowStrideAnchor*`
+still points into `SubgameRuntime::runtime_rows`; exact numeric-operand
+normalization only prevents the large `+0x5ccac8..+0x5ccba0` displacements
+from colliding with IDA's auto-created `byte_5CCAC8` / `unk_5CCBxx` symbols.
+The refreshed pseudocode therefore resolves `source_segment`, `row_event_id`,
+row flags, `row_model`, projection/parcel payload, attachment template and
+heading fields, and the embedded `attachment_body` through the borrowed row
+instead of inventing process-global owners.
+
+The clear loop is likewise pinned to its physical field cursors:
+`segment_row_count_cursor`, `row_projection_y_cursor`,
+`lane_and_flags_cursor`, and the current/next fringe-link cursors. These are
+borrowed interior addresses with exact `0x4220`, `0xf4`, and `0x54` strides;
+none was promoted to a complete-record owner. IDA's x87 instructions expose
+implicit `st0` as operand zero, so their row displacements are guarded at
+operand one and verified by readback.
+
+The replay is idempotent, the strengthened cross-decompiler health suite passes
+all 930 checks, and matcher source and operands remain untouched at the honest
+29.67%, 1,229/1,245-instruction frontier with 66 clean operands and the same
+two documented mismatches. No score-shaped source, register coercion, dummy
+dependency, or masked-operand fakematch was added.

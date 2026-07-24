@@ -352,6 +352,57 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ("trampoline_counter", "int32_t trampoline_counter;", 0x4360D6, 76),
     ("first_or_last_row", "char first_or_last_row;", 0x4360DA, 42),
     ("row_event_owner", "int32_t row_event_owner;", 0x4360DF, 64),
+    (
+        "segment_row_count_cursor",
+        "int32_t *segment_row_count_cursor;",
+        0x436073,
+        None,
+    ),
+    (
+        "row_fringe_front_cursor",
+        "Fringe **row_fringe_front_cursor;",
+        0x4360EA,
+        68,
+    ),
+    (
+        "row_projection_y_cursor",
+        "int32_t *row_projection_y_cursor;",
+        0x4360EE,
+        None,
+    ),
+    ("rows_remaining", "int32_t rows_remaining;", 0x4360F4, 60),
+    ("cell_lanes_remaining", "int32_t cell_lanes_remaining;", 0x4360FE, None),
+    (
+        "lane_and_flags_cursor",
+        "uint32_t *lane_and_flags_cursor;",
+        0x43612A,
+        None,
+    ),
+    (
+        "cell_lane_and_flags",
+        "uint32_t cell_lane_and_flags;",
+        0x43612D,
+        None,
+    ),
+    ("cell_list_flags", "uint32_t cell_list_flags;", 0x43614E, None),
+    (
+        "next_row_fringe_front_cursor",
+        "Fringe **next_row_fringe_front_cursor;",
+        0x436162,
+        None,
+    ),
+    (
+        "remaining_cell_lanes",
+        "int32_t remaining_cell_lanes;",
+        0x436166,
+        None,
+    ),
+    (
+        "cell_fringe_front_cursor",
+        "Fringe **cell_fringe_front_cursor;",
+        0x43616B,
+        None,
+    ),
     ("visited_cursor", "uint8_t *visited_cursor;", 0x4361AE, None),
     ("build_row", "int32_t build_row;", 0x4361CB, 44),
     ("active_segment", "SubSegment *active_segment;", 0x4361F2, 48),
@@ -929,6 +980,76 @@ RUNTIME_POOL_ROW_OFFSET_OPERANDS = (
 # only its proven LEA operand and preserve the surrounding typed owner graph.
 FRINGE_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x434C0C, 1, 0x5CCAC8),
+)
+
+# BuildLevel carries the owning SubgameRuntime base while advancing one
+# 0xf4-byte SubRow lane. IDA otherwise interprets the large structure
+# displacements as addresses of byte_5CCAC8/unk_5CCBxx globals, even after the
+# exact RuntimeRowStrideAnchor local is typed. Normalize every proven row-field
+# operand, plus the clear loop's projection-payload cursor, so Hex-Rays can
+# render the same borrowed SubRow ownership already preserved by Binary Ninja.
+POPULATE_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x4360ED, 1, 0x5CCB5C),  # clear cursor at runtime_rows[0].projection_payload.y
+    (0x4363D9, 1, 0x5CCAC8),  # mirrored row flags pointer
+    (0x4363E0, 1, 0x5CCAC8),  # mirrored row flags load
+    (0x436411, 1, 0x5CCAC8),  # no-fall row flags pointer
+    (0x436418, 1, 0x5CCAC8),  # no-fall row flags load
+    (0x436438, 1, 0x5CCAC8),  # jetpack-off row flags pointer
+    (0x43643F, 1, 0x5CCAC8),  # jetpack-off row flags load
+    (0x43645C, 0, 0x5CCBB4),  # source_segment
+    (0x436462, 0, 0x5CCBB8),  # row_event_id
+    (0x436475, 1, 0x5CCAC8),  # row flags load
+    (0x43647D, 0, 0x5CCAC8),  # row flags store
+    (0x43649E, 1, 0x5CCACC),  # row_model body
+    (0x4364AA, 1, 0x5CCB04),  # row_model transform
+    (0x4364BB, 1, 0x5CCB34),  # row_model position
+    (0x4364D5, 1, 0x5CCB3C),  # row_model position.z load; x87 st0 is operand 0
+    (0x4364DB, 1, 0x5CCB3C),  # row_model position.z store; x87 st0 is operand 0
+    (0x4364EA, 1, 0x5CCAC8),  # velocity-present row flags load
+    (0x4364F8, 0, 0x5CCAC8),  # velocity-present row flags store
+    (0x436500, 1, 0x5CCB4C),  # row_model velocity pointer
+    (0x436506, 0, 0x5CCB4C),  # row_model velocity.x
+    (0x43651C, 0, 0x5CCB54),  # row_model velocity.z clear
+    (0x436522, 0, 0x5CCB50),  # row_model velocity.y clear
+    (0x436528, 0, 0x5CCB4C),  # row_model velocity.x clear
+    (0x43653B, 1, 0x5CCAC8),  # parcel row flags load
+    (0x436546, 0, 0x5CCAC8),  # parcel row flags store
+    (0x436565, 1, 0x5CCB58),  # projection_payload
+    (0x43656B, 0, 0x5CCB64),  # parcel_set_id
+    (0x43658A, 1, 0x5CCAC8),  # path row flags load
+    (0x436592, 0, 0x5CCAC8),  # path row flags store
+    (0x43659E, 0, 0x5CCB68),  # attachment_template_index
+    (0x4365AD, 1, 0x5CCAC8),  # star-marker row flags load
+    (0x4365B5, 0, 0x5CCAC8),  # star-marker row flags store
+    (0x4365CA, 0, 0x5CCAC8),  # ring-none row flag
+    (0x4365DF, 0, 0x5CCAC8),  # ring-normal row flag
+    (0x4365F4, 0, 0x5CCAC8),  # ring-power-up row flag
+    (0x436609, 0, 0x5CCAC8),  # ring-explode row flag
+    (0x43661E, 0, 0x5CCAC8),  # ring-slow row flag
+    (0x436CFA, 1, 0x5CCB68),  # attachment_template_index load
+    (0x436D84, 1, 0x5CCB78),  # attachment_body
+    (0x436D90, 1, 0x5CCB7C),  # attachment_body list flags load
+    (0x436D9C, 0, 0x5CCB7C),  # attachment_body list flags store
+    (0x436DA8, 0, 0x5CCB74),  # installed_heading_delta
+    (0x436DC1, 1, 0x5CCAC8),  # stamped-row cursor
+    (0x436E08, 1, 0x5CCAC8),  # digit-zero row flags load
+    (0x436E1A, 0, 0x5CCAC8),  # digit-zero row flags store
+    (0x436E20, 0, 0x5CCB64),  # digit-zero parcel_set_id
+    (0x436E30, 1, 0x5CCB58),  # digit-zero projection x; x87 st0 is operand 0
+    (0x436E40, 0, 0x5CCB5C),  # digit-zero projection y
+    (0x436E4C, 1, 0x5CCB60),  # digit-zero projection z; x87 st0 is operand 0
+    (0x436E59, 1, 0x5CCB58),  # mirrored projection x load; x87 st0 is operand 0
+    (0x436E65, 1, 0x5CCB58),  # mirrored projection x store; x87 st0 is operand 0
+    (0x436E6B, 0, 0x5CCAC8),  # attachment-row flags test
+    (0x436EF2, 0, 0x5CCB90),  # attachment_body position.z clear
+    (0x436EF8, 0, 0x5CCB8C),  # attachment_body position.y clear
+    (0x436EFE, 0, 0x5CCB88),  # attachment_body position.x clear
+    (0x436F88, 0, 0x5CCB88),  # attachment_body position.x
+    (0x436F92, 1, 0x5CCB90),  # attachment_body position.z; x87 st0 is operand 0
+    (0x436FAB, 1, 0x5CCBA0),  # attachment_body color
+    (0x436FE2, 1, 0x5CCB9C),  # attachment_body object
+    (0x436FF3, 1, 0x5CCB7C),  # attachment_body list flags load
+    (0x436FFD, 0, 0x5CCB7C),  # attachment_body list flags store
 )
 
 # Both parcel-claim loops retain a containing SubgameRuntime base and access a
@@ -3315,6 +3436,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    populate_runtime_row_offset_operands = _normalize_root_offset_operands(
+        POPULATE_RUNTIME_ROW_OFFSET_OPERANDS
+    )
+    for result in populate_runtime_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "populate_runtime_track_cells_from_segments",
+                    "root_offset_operand": result,
+                }
+            )
     place_parcels_runtime_row_offset_operands = _normalize_root_offset_operands(
         PLACE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS
     )
@@ -3596,6 +3728,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "harmonize_root_offset_operands": harmonize_root_offset_operands,
                 "runtime_pool_row_offset_operands": runtime_pool_row_offset_operands,
                 "fringe_runtime_row_offset_operands": fringe_runtime_row_offset_operands,
+                "populate_runtime_row_offset_operands": populate_runtime_row_offset_operands,
                 "place_parcels_runtime_row_offset_operands": place_parcels_runtime_row_offset_operands,
                 "challenge_parcels_runtime_row_offset_operands": challenge_parcels_runtime_row_offset_operands,
                 "update_subgame_runtime_row_offset_operands": update_subgame_runtime_row_offset_operands,
