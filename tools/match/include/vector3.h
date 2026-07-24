@@ -10,6 +10,9 @@ struct Vector3 {
 
     Vector3() {}
     Vector3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
+    // Android retains this authored tVector(float*) constructor; Windows
+    // inlines the same three-lane copy where it is used.
+    Vector3(float* values) : x(values[0]), y(values[1]), z(values[2]) {}
 
     Vector3 operator*(float scale) const
     {

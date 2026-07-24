@@ -60,3 +60,24 @@ Direct-return, declaration-scope, comparison, and scalar-copy source probes
 were codegen-neutral or worse. The honest matcher source therefore remains at
 `95.81%`, `167/167` instructions, prefix `16`, with six clean operands; no
 scheduling-only construct was kept.
+
+## 2026-07-24 native `tVector(float*)` constructor
+
+The Android binary independently retains both constructor aliases for
+`tVector::tVector(float*)` at `0x172e4` and `0x17300`. Each body performs the
+same authored three-lane copy: load and store offsets `0`, `4`, and `8`, then
+return. This supplies the missing source-level owner for the Windows loop's
+local position rather than merely suggesting a different scalar assignment
+schedule.
+
+Constructing `local_position` from the borrowed position's first float inside
+the face loop reproduces the complete native copy and first vertex-call setup.
+The focused result rises from `95.81%`, prefix `16`, to **`98.80%`, prefix
+`155`**, while remaining `167/167` instructions with all six masked operands
+clean.
+
+The sole residual is the terminal capacity check: target and candidate load
+the same `max_indices` and `*index_count` values but choose `edx` versus `ecx`
+for the limit. Direct return, a retained result, a retained limit, reversed
+comparison spelling, and a conditional expression all compile to the same or
+worse schedule. None is retained as a register-directed workaround.

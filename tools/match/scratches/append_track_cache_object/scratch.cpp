@@ -18,12 +18,11 @@ int SegmentCache::append_track_cache_object(
     unsigned int color,
     unsigned char project_uv)
 {
-    Vector3 local_position;
     int face_index = 0;
 
     if (source->facequad_count > 0) {
         do {
-            local_position = *position;
+            Vector3 local_position(&position->x);
 
             indices[*index_count] = (unsigned short)add_track_cache_vertex(
                 source, &local_position, source->facequads[face_index].vertex_0,
@@ -59,8 +58,7 @@ int SegmentCache::append_track_cache_object(
         } while (face_index < source->facequad_count);
     }
 
-    int result = *index_count;
-    if (result > max_indices)
+    if (*index_count > max_indices)
         return report_errorf("Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX");
-    return result;
+    return *index_count;
 }

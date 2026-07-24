@@ -52,9 +52,10 @@ is two adjacent native thiscall functions, not part of the public builder:
 
 They now have manifest entries and independent scratches. With the public
 extent ending at `0x433830`, `build_track_render_caches` is 99.79% at 475/475
-instructions with 20 clean operands. `add_track_cache_vertex` is 99.03% at
-103/103; direct `Object::facequads[face_index]` indexing and the native local
-position lifetime raise `append_track_cache_object` to 95.81% at 167/167.
+instructions with 20 clean operands. `add_track_cache_vertex` is exact at
+103/103; direct `Object::facequads[face_index]` indexing plus the native
+`tVector(float*)` local constructor raise `append_track_cache_object` to
+98.80% at 167/167, with a 155-instruction prefix.
 
 ## Matcher-sensitive source shape retained
 

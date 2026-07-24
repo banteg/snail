@@ -82,10 +82,10 @@ scratches instead of counting adjacent functions as unmatched builder bytes.
 
 ## Helper results
 
-- `add_track_cache_vertex`: 99.03%, 103/103 instructions, prefix 74/103,
-  seven clean operands. The only residual is one equivalent scheduling window
-  around the final z/u/v/diffuse stores.
-- `append_track_cache_object`: 95.81%, 167/167 instructions, prefix 16/167,
+- `add_track_cache_vertex`: exact, 103/103 instructions, prefix 103/103,
+  seven clean operands.
+- `append_track_cache_object`: 98.80%, 167/167 instructions, prefix 155/167,
   six clean operands. Direct `Object::facequads[face_index]` access recovers
-  native `esi` source ownership and `ebp += 0x30` strength reduction. The two
-  remaining regions are position-copy and final-compare scheduling only.
+  native `esi` source ownership and `ebp += 0x30` strength reduction, while
+  the cross-port `tVector(float*)` constructor recovers the local position
+  copy. Only the final equivalent compare-register schedule remains.
