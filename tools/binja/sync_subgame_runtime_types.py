@@ -11,11 +11,13 @@ from _narrow_sync import (
     apply_data_var_updates,
     apply_symbol_updates,
     apply_struct_and_proto_updates,
+    current_header_type_equivalence,
     current_struct_size,
     emit_summary,
     reanalyze_functions,
     struct_exists,
     types_declare_if_missing,
+    types_declare_missing_only,
 )
 
 
@@ -419,6 +421,37 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def ensure_time_trial_owner_types(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    """Replay the recovered inline course records when either owner is stale."""
+    type_names = ("TimeTrialCourseRecord", "TimeTrial")
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    stale_types = tuple(
+        type_name for type_name in type_names if not equivalence.get(type_name, False)
+    )
+    if not stale_types:
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "TimeTrial owner types already match the header",
+            "header": str(header_path),
+            "replace_types": (),
+            "include_types": type_names,
+        }
+    return types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=stale_types,
+        include_types=type_names,
+    )
+
+
 def main() -> int:
     args = parse_args()
     header_path = args.header.resolve()
@@ -452,6 +485,7 @@ def main() -> int:
             required_structs=(
                 "SubgameRuntime",
                 "SubPause",
+                "TimeTrialCourseRecord",
                 "TimeTrial",
                 "GUI",
                 "Help",
@@ -476,6 +510,12 @@ def main() -> int:
             ),
         ),
     ]
+    operations.append(
+        ensure_time_trial_owner_types(
+            target=args.target,
+            header_path=header_path,
+        )
+    )
     parcel_sizes = {
         name: current_struct_size(REPO_ROOT, target=args.target, struct_name=name)
         for name in PARCEL_EXPECTED_SIZES

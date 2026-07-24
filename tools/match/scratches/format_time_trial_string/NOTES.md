@@ -55,3 +55,18 @@ promotable local duplicate.
 - Binary Ninja preview verifies all boundaries and keeps
   `SubgameRuntime == 0x1272838`, then reverts. The formatter remains exact at
   36/36 instructions with all twelve operands clean.
+
+2026-07-24 course-record ownership:
+
+- Android preserves `cRTimeTrial::Init()` at `0x7df5c` and
+  `gTimeTrialCourseNames` at `0x95bf8` with size `0xcc`. The initializer copies
+  one source pointer every four bytes while advancing its destination by
+  sixteen bytes, stopping after all 204 source bytes: 51 inline 0x10-byte
+  records, exactly filling the independently proven 0x330-byte Windows owner.
+- The copied word is now named `TimeTrialCourseRecord::course_name`; the other
+  twelve bytes of each record remain opaque because no named cross-port routine
+  establishes their meaning.
+- The first six Android source pointers name `Basic`, `Crazy`, `Match`,
+  `Skill`, `Memory`, and `Mile`; the remaining 45 table entries are null in
+  that build. This is initialization evidence, not a claim that the Windows
+  build runs the same initializer.

@@ -414,6 +414,15 @@ TRUSTED_DATA_DECLARATIONS = [
     ),
 ]
 
+TIME_TRIAL_COURSE_RECORD_EXPECTED_SIZE = 0x10
+TIME_TRIAL_COURSE_RECORD_EXPECTED_MEMBERS = (
+    (0x00, 4, "course_name", "char *"),
+)
+TIME_TRIAL_EXPECTED_SIZE = 0x330
+TIME_TRIAL_EXPECTED_MEMBERS = (
+    (0x00, 0x330, "course_records", "TimeTrialCourseRecord[51]"),
+)
+
 
 REQUIRED_CANONICAL_OWNER_MARKERS = (
     "SegmentCache segment_cache;",
@@ -422,6 +431,7 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "TrackRowCell runtime_cells[3200][8];",
     "SubRow runtime_rows[3200];",
     "SubSolution* selected_level_record;",
+    "TimeTrialCourseRecord course_records[TIME_TRIAL_COURSE_RECORD_COUNT];",
     "Parcel_must_be_0x8c",
     "Parcel slots[50];",
     "ParcelManager_must_be_0x1b58",
@@ -472,6 +482,7 @@ REANALYSIS_FUNCTIONS = (
     0x4431D0,  # update_track_parcel
     0x443730,  # spawn_track_parcel
     0x444CF0,  # handle_subgoldy_collisions
+    0x448960,  # format_time_trial_string
 )
 
 
@@ -537,6 +548,92 @@ def _named_struct_members(name: str) -> list[dict[str, object]] | None:
         }
         for member in members
     ]
+
+
+def _time_trial_owner_readback() -> dict[str, object]:
+    course_record_members = _named_struct_members("TimeTrialCourseRecord")
+    selected_course_record_members = (
+        []
+        if course_record_members is None
+        else [
+            member
+            for member in course_record_members
+            if int(member["offset"])
+            in {
+                expected[0]
+                for expected in TIME_TRIAL_COURSE_RECORD_EXPECTED_MEMBERS
+            }
+        ]
+    )
+    observed_course_record_members = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected_course_record_members
+    )
+
+    owner_members = _named_struct_members("TimeTrial")
+    selected_owner_members = (
+        []
+        if owner_members is None
+        else [
+            member
+            for member in owner_members
+            if int(member["offset"])
+            in {expected[0] for expected in TIME_TRIAL_EXPECTED_MEMBERS}
+        ]
+    )
+    observed_owner_members = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected_owner_members
+    )
+    course_record_size = _named_struct_size("TimeTrialCourseRecord")
+    owner_size = _named_struct_size("TimeTrial")
+    return {
+        "status": (
+            "verified"
+            if course_record_size == TIME_TRIAL_COURSE_RECORD_EXPECTED_SIZE
+            and observed_course_record_members
+            == TIME_TRIAL_COURSE_RECORD_EXPECTED_MEMBERS
+            and owner_size == TIME_TRIAL_EXPECTED_SIZE
+            and observed_owner_members == TIME_TRIAL_EXPECTED_MEMBERS
+            else "failed"
+        ),
+        "course_record_size": course_record_size,
+        "course_record_members": selected_course_record_members,
+        "owner_size": owner_size,
+        "owner_members": selected_owner_members,
+        "expected_course_record_size": TIME_TRIAL_COURSE_RECORD_EXPECTED_SIZE,
+        "expected_course_record_members": [
+            {
+                "offset": offset,
+                "size": member_size,
+                "name": member_name,
+                "type": member_type,
+            }
+            for offset, member_size, member_name, member_type
+            in TIME_TRIAL_COURSE_RECORD_EXPECTED_MEMBERS
+        ],
+        "expected_owner_size": TIME_TRIAL_EXPECTED_SIZE,
+        "expected_owner_members": [
+            {
+                "offset": offset,
+                "size": member_size,
+                "name": member_name,
+                "type": member_type,
+            }
+            for offset, member_size, member_name, member_type
+            in TIME_TRIAL_EXPECTED_MEMBERS
+        ],
+    }
 
 
 def _salt_owner_readback() -> dict[str, object]:
@@ -1265,6 +1362,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {"selector": "GameRoot", "owner_graph": game_root_owner_graph}
         )
 
+    time_trial_owner_readback = _time_trial_owner_readback()
+    if time_trial_owner_readback["status"] != "verified":
+        failed.append(
+            {
+                "selector": "TimeTrial",
+                "owner_readback": time_trial_owner_readback,
+            }
+        )
+
     salt_owner_readback = _salt_owner_readback()
     if salt_owner_readback["status"] != "verified":
         failed.append({"selector": "Salt", "owner_readback": salt_owner_readback})
@@ -1313,12 +1419,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "contact_header": str(contact_header_path),
                 "parcel_owner_sizes": parcel_owner_sizes,
+                "time_trial_owner_readback": time_trial_owner_readback,
                 "salt_owner_readback": salt_owner_readback,
                 "sub_lazer_owner_readback": sub_lazer_owner_readback,
                 "sub_garbage_owner_readback": sub_garbage_owner_readback,
                 "slug_owner_readback": slug_owner_readback,
                 "type_sizes": {
                     "SubgameRuntime": _named_struct_size("SubgameRuntime"),
+                    "TimeTrialCourseRecord": _named_struct_size(
+                        "TimeTrialCourseRecord"
+                    ),
+                    "TimeTrial": _named_struct_size("TimeTrial"),
                     "SubRingStar": _named_struct_size("SubRingStar"),
                     "SubRing": _named_struct_size("SubRing"),
                     "SubRingPool": _named_struct_size("SubRingPool"),

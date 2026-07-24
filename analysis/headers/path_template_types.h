@@ -1083,10 +1083,26 @@ typedef char FringeManager_must_be_0x5fb44[
     (sizeof(FringeManager) == 0x5fb44) ? 1 : -1
 ];
 
+enum {
+    TIME_TRIAL_COURSE_RECORD_COUNT = 51,
+};
+
+/* Android cRTimeTrial::Init writes one course-name pointer every 0x10 bytes. */
+typedef struct TimeTrialCourseRecord {
+    char* course_name;
+    uint8_t unknown_04[0x10 - 0x04];
+} TimeTrialCourseRecord;
+typedef char TimeTrialCourseRecord_must_be_0x10[
+    (sizeof(TimeTrialCourseRecord) == 0x10) ? 1 : -1
+];
+
 /* Exact 0x330-byte authored cRTimeTrial owner. */
 typedef struct TimeTrial {
-    uint8_t _storage[0x330];
+    TimeTrialCourseRecord course_records[TIME_TRIAL_COURSE_RECORD_COUNT];
 } TimeTrial;
+typedef char TimeTrial_must_be_0x330[
+    (sizeof(TimeTrial) == 0x330) ? 1 : -1
+];
 
 /* Exact 0x3c-byte authored cRBarrier tutorial actor. */
 typedef struct BarrierActor {

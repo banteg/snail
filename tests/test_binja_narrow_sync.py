@@ -15262,3 +15262,53 @@ def test_create_golb_replay_splits_real_pointer_owners() -> None:
     for text in (analysis_header, match_header, catalog_replay):
         assert "render_body_owner" not in text
         assert "render_sprite" in text
+
+
+def test_time_trial_replays_inline_course_record_ownership() -> None:
+    repo_root = Path(__file__).parents[1]
+    match_header = (
+        repo_root / "tools/match/include/time_trial.h"
+    ).read_text(encoding="utf-8")
+    analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in (
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+            "path_template_types.h",
+        )
+    ]
+
+    for header in (match_header, *analysis_headers):
+        assert "TIME_TRIAL_COURSE_RECORD_COUNT = 51" in header
+        assert "TimeTrialCourseRecord" in header
+        assert "char* course_name;" in header
+        assert "unknown_04[0x10 - 0x04]" in header
+        assert "TimeTrialCourseRecord_must_be_0x10" in header
+        assert "TimeTrial_must_be_0x330" in header
+
+    for header in analysis_headers:
+        assert (
+            "TimeTrialCourseRecord course_records["
+            "TIME_TRIAL_COURSE_RECORD_COUNT];"
+        ) in header
+
+    runtime_sync = (
+        BINJA_DIR / "sync_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    assert "ensure_time_trial_owner_types" in runtime_sync
+    assert 'type_names = ("TimeTrialCourseRecord", "TimeTrial")' in runtime_sync
+    assert "current_header_type_equivalence" in runtime_sync
+    assert "types_declare_missing_only" in runtime_sync
+
+    path_sync = (
+        BINJA_DIR / "sync_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    assert '"TimeTrialCourseRecord",' in path_sync
+    assert '"TimeTrial",' in path_sync
+
+    ida_sync = (
+        IDA_DIR / "apply_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    assert "TIME_TRIAL_COURSE_RECORD_EXPECTED_SIZE = 0x10" in ida_sync
+    assert "TIME_TRIAL_EXPECTED_SIZE = 0x330" in ida_sync
+    assert "_time_trial_owner_readback" in ida_sync

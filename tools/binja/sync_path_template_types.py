@@ -474,8 +474,10 @@ REQUIRED_HEADER_STRUCTS = (
 def ensure_path_analysis_views(
     *, target: str, header_path: Path
 ) -> dict[str, object]:
-    """Replace mutable analysis views whenever their parsed shape changes."""
+    """Replace mutable views and recovered inline owners when their shape changes."""
     type_names = (
+        "TimeTrialCourseRecord",
+        "TimeTrial",
         "PresentationWobbleController",
         "RuntimeCellStrideAnchor",
         "TrackRowCellSameLaneCursorView",

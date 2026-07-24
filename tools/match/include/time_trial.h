@@ -6,14 +6,28 @@
 
 #include "game_time.h"
 
+enum {
+    TIME_TRIAL_COURSE_RECORD_COUNT = 51,
+};
+
+// Android cRTimeTrial::Init copies gTimeTrialCourseNames into the first word
+// of 51 consecutive 0x10-byte records. The remaining record lanes are not yet
+// referenced by a named routine and stay deliberately opaque.
+struct TimeTrialCourseRecord {
+    char* course_name;
+    char unknown_04[0x10 - 0x04];
+};
+
+typedef char TimeTrialCourseRecord_must_be_0x10[
+    (sizeof(TimeTrialCourseRecord) == 0x10) ? 1 : -1];
+
 class TimeTrial {
 public:
     char* format_time_trial_string(
         Time* timer); // @ 0x448960, cRTimeTrial::TimeString(cRTime&)
 
-    // TimeString does not read receiver fields. The owner extent and placement
-    // are independently fixed by the adjacent PathManager and size ledger.
-    char unknown_000[0x330];
+    TimeTrialCourseRecord course_records[
+        TIME_TRIAL_COURSE_RECORD_COUNT];
 };
 
 typedef char TimeTrial_must_be_0x330[

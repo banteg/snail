@@ -309,9 +309,24 @@ typedef struct SubHighScore {
     SubSolution survival_pending_record;
 } SubHighScore;
 
+enum {
+    TIME_TRIAL_COURSE_RECORD_COUNT = 51,
+};
+
+typedef struct TimeTrialCourseRecord {
+    char* course_name;
+    uint8_t unknown_04[0x10 - 0x04];
+} TimeTrialCourseRecord;
+typedef char TimeTrialCourseRecord_must_be_0x10[
+    (sizeof(TimeTrialCourseRecord) == 0x10) ? 1 : -1
+];
+
 typedef struct TimeTrial {
-    uint8_t unknown_000[0x330];
+    TimeTrialCourseRecord course_records[TIME_TRIAL_COURSE_RECORD_COUNT];
 } TimeTrial;
+typedef char TimeTrial_must_be_0x330[
+    (sizeof(TimeTrial) == 0x330) ? 1 : -1
+];
 
 typedef struct GUI {
     SubgameRuntime* game;

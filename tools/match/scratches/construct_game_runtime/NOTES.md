@@ -354,6 +354,12 @@ use the same start address as their receiver. Constructor metrics remain
 unchanged at 88.89%, with 119 clean operands and only the compiler-local EH
 relocation unresolved.
 
+Android later resolves the formerly opaque extent: `cRTimeTrial::Init()` copies
+the 0xcc-byte `gTimeTrialCourseNames` pointer table into 51 destination records
+at a 0x10-byte stride. The resulting `TimeTrialCourseRecord[51]` layout is
+exactly 0x330 bytes, so it strengthens the Windows size-ledger boundary without
+changing constructor code generation.
+
 ## 2026-07-13 final SubgameRuntime owner-band closure
 
 The consolidated Binary Ninja/IDA analysis layouts now replace the anonymous
