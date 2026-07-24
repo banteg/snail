@@ -85,6 +85,23 @@ regions are:
 3. residual HUD and handoff register scheduling;
 4. residual jump-table target identities driven by the remaining block layout.
 
+## 2026-07-24 runtime-row active-list borrow
+
+The state-2 row activation path now keeps its two ownership layers distinct.
+`runtime_row_anchor->row.row_model` is the complete embedded `RowModel` owner,
+while `GameRoot::active_bod_list.first`, its reload, and the newly installed
+head are borrowed `BodNode*` values. Native instructions
+`0x43905d..0x43909c` confirm that the root list stores only the zero-offset
+inherited node and never takes ownership of the containing row.
+
+Binary Ninja had promoted the two list-head reloads back into `RowModel*`,
+producing false `body.bod.bod` traversals through the root list. The focused
+`--update-subgame-only` replay pins the exact five MLIL lifetimes behind the
+shared Bod and row-layout guards. IDA independently already renders the same
+sequence as `BodNode **p_first`, `BodNode *first`, and `BodNode *list_prev`,
+so no Ghidra tie-break is needed. This is analysis-only ownership recovery;
+the matching source and its honest result are unchanged.
+
 Rejected continuation trials:
 
 - moving the selected-level handoff to a tail `goto` label still emitted the same measured layout;

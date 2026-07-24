@@ -761,6 +761,8 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert '"sample_segment_view"' in bn_path_sync
     assert '"SubSegmentEventBiasView*"' in bn_path_sync
     assert "--update-subgoldy-only" in bn_path_sync
+    assert "--update-subgame-only" in bn_path_sync
+    assert "if args.update_subgame_only:" in bn_path_sync
     assert "--build-subgame-only" in bn_path_sync
     assert "if args.build_subgame_only:" in bn_path_sync
     assert "*UPDATE_SUBGOLDY_USER_VAR_UPDATES" in bn_path_sync
@@ -6349,6 +6351,26 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         in ida_path_sync
     )
     assert "*BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
+
+    assert "--update-subgame-only" in binja_source
+    assert "if args.update_subgame_only:" in binja_source
+    for identity in (
+        '"RegisterVariableSourceType",\n        1203,\n        67,',
+        '"RegisterVariableSourceType",\n        1235,\n        66,',
+        '"RegisterVariableSourceType",\n        1241,\n        68,',
+        '"RegisterVariableSourceType",\n        1266,\n        68,',
+        '"RegisterVariableSourceType",\n        1278,\n        68,',
+    ):
+        assert identity in binja_source
+    for name, type_name in (
+        ("row_model", "RowModel*"),
+        ("active_first_ref_row", "BodNode**"),
+        ("active_first_row", "BodNode*"),
+        ("active_first_row_reload", "BodNode*"),
+        ("active_new_first_row", "BodNode*"),
+    ):
+        assert f'"{name}"' in binja_source
+        assert f'"{type_name}"' in binja_source
 
     assert "CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
     for identity in (

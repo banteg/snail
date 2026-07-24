@@ -1619,6 +1619,46 @@ UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES = (
     (
         "update_subgame",
         "RegisterVariableSourceType",
+        1203,
+        67,
+        "row_model",
+        "RowModel*",
+    ),
+    (
+        "update_subgame",
+        "RegisterVariableSourceType",
+        1235,
+        66,
+        "active_first_ref_row",
+        "BodNode**",
+    ),
+    (
+        "update_subgame",
+        "RegisterVariableSourceType",
+        1241,
+        68,
+        "active_first_row",
+        "BodNode*",
+    ),
+    (
+        "update_subgame",
+        "RegisterVariableSourceType",
+        1266,
+        68,
+        "active_first_row_reload",
+        "BodNode*",
+    ),
+    (
+        "update_subgame",
+        "RegisterVariableSourceType",
+        1278,
+        68,
+        "active_new_first_row",
+        "BodNode*",
+    ),
+    (
+        "update_subgame",
+        "RegisterVariableSourceType",
         1188,
         73,
         "runtime_row_anchor",
@@ -3954,6 +3994,14 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     focused_group.add_argument(
+        "--update-subgame-only",
+        action="store_true",
+        help=(
+            "Replay only update_subgame's runtime row/cell cursors, active-list "
+            "row borrow, and time-trial route cursor."
+        ),
+    )
+    focused_group.add_argument(
         "--build-subgame-only",
         action="store_true",
         help=(
@@ -4182,6 +4230,40 @@ def main() -> int:
                 REPO_ROOT,
                 target=args.target,
                 updates=BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
+    if args.update_subgame_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=(
+                    *BOD_CORE_OWNER_SIZES,
+                    "GameRoot",
+                    "RowModel",
+                    "SubRow",
+                    "RuntimeRowStrideAnchor",
+                    "RuntimeCellStrideAnchor",
+                    "TimeTrialRouteRecordCursor",
+                    "SubgameRuntime",
+                ),
+            )
+        )
+        operations.append(verify_bod_core_owner_sizes(target=args.target))
+        operations.append(verify_authored_row_cursor_sizes(target=args.target))
+        operations.extend(
+            apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES,
             )
         )
         return emit_summary(

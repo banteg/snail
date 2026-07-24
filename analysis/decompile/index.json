@@ -4,21 +4,21 @@
   "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 729,
-  "ida_exported": 1,
+  "bn_exported": 1,
+  "ida_exported": 717,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
-  "binja_refreshed": false,
-  "ida_refreshed": true,
+  "binja_refreshed": true,
+  "ida_refreshed": false,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "build_subgame_level",
-      "address": "0x437eb0"
+      "name": "update_subgame",
+      "address": "0x438b90"
     }
   ],
   "health_check_count": 975,
