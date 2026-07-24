@@ -3,5 +3,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: reset_landscape_manager @ 0x4182e0 */
 
-004182e0        *(arg1 + 0x5a0) = 0
+004182e0        manager->script_count = 0
 004182ea        return

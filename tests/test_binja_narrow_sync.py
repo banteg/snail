@@ -4339,6 +4339,7 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
         "void __thiscall initialize_click_start(ClickStart* click_start, Player* player)",
         "void __thiscall update_click_start(ClickStart* click_start)",
         "ActiveLandscapeEntry* __thiscall initialize_active_landscape_entry(ActiveLandscapeEntry* active_entry)",
+        "void __thiscall reset_landscape_manager(LandscapeManager* manager)",
         "void __thiscall activate_landscape_entry(LandscapeManager* manager, int32_t script_index)",
         "void __thiscall clear_active_landscape_entries(LandscapeManager* manager)",
         "void __thiscall update_active_landscape_entry(ActiveLandscapeEntry* active_entry)",
@@ -4353,6 +4354,7 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
         "initialize_click_start",
         "update_click_start",
         "initialize_active_landscape_entry",
+        "reset_landscape_manager",
         "activate_landscape_entry",
         "clear_active_landscape_entries",
         "update_active_landscape_entry",
@@ -4367,6 +4369,7 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
     for address in (
         "0x408670",
         "0x408820",
+        "0x4182E0",
         "0x4182F0",
         "0x418870",
         "0x418A30",

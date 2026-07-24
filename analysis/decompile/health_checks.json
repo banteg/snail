@@ -13735,6 +13735,30 @@
       ]
     },
     {
+      "name": "ida_landscape_reset_owner",
+      "artifact": "analysis/decompile/ida/functions/004182e0-reset_landscape_manager.c",
+      "required_substrings": [
+        "void __thiscall reset_landscape_manager(LandscapeManager *manager)",
+        "manager->script_count = 0"
+      ],
+      "forbidden_substrings": [
+        "sub_4182E0",
+        "_DWORD *this",
+        "this + 360"
+      ]
+    },
+    {
+      "name": "bn_landscape_reset_owner",
+      "artifact": "analysis/decompile/binja/functions/004182e0-reset_landscape_manager.c",
+      "required_substrings": [
+        "manager->script_count = 0"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "+ 0x5a0"
+      ]
+    },
+    {
       "name": "ida_landscape_loader_directx_owner",
       "artifact": "analysis/decompile/ida/functions/004182f0-load_landscape_script_by_name.c",
       "required_substrings": [

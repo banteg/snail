@@ -119,6 +119,7 @@ SYMBOL_UPDATES = (
     ("0x442540", "reset_vapour"),
     ("0x442560", "add_vapour_point"),
     ("0x4425f0", "update_vapour"),
+    ("0x4182e0", "reset_landscape_manager"),
     ("0x4182f0", "load_landscape_script_by_name"),
     ("0x433fd0", "initialize_thanks_for_playing_screen"),
     ("0x4340c0", "uninit_thanks_screen"),
@@ -2607,7 +2608,11 @@ ROW_MODEL_PROTO_UPDATES = (
     ),
 )
 
-LANDSCAPE_LOADER_PROTO_UPDATES = (
+LANDSCAPE_MANAGER_PROTO_UPDATES = (
+    (
+        "reset_landscape_manager",
+        "void __thiscall reset_landscape_manager(LandscapeManager* manager)",
+    ),
     (
         "load_landscape_script_by_name",
         "int32_t __thiscall load_landscape_script_by_name(LandscapeManager* manager, char* script_name)",
@@ -2705,7 +2710,7 @@ TRACK_NORMALIZATION_VOID_PROTO_UPDATES = (
 PROTO_UPDATES = (
     *GOLB_PROTO_UPDATES,
     *ROW_MODEL_PROTO_UPDATES,
-    *LANDSCAPE_LOADER_PROTO_UPDATES,
+    *LANDSCAPE_MANAGER_PROTO_UPDATES,
     *SLUG_VOICE_MANAGER_PROTO_UPDATES,
     *THANKS_SCREEN_PROTO_UPDATES,
     *NUKE_PROTO_UPDATES,
@@ -3583,7 +3588,7 @@ def parse_args() -> argparse.Namespace:
     focused_group.add_argument(
         "--landscape-loader-only",
         action="store_true",
-        help="Replay only the LandscapeManager cache-loader method ABI.",
+        help="Replay only the LandscapeManager reset and cache-loader method ABIs.",
     )
     focused_group.add_argument(
         "--update-subgoldy-only",
@@ -3718,14 +3723,17 @@ def main() -> int:
             apply_symbol_updates(
                 REPO_ROOT,
                 target=args.target,
-                updates=(("0x4182f0", "load_landscape_script_by_name"),),
+                updates=(
+                    ("0x4182e0", "reset_landscape_manager"),
+                    ("0x4182f0", "load_landscape_script_by_name"),
+                ),
             )
         )
         operations.extend(
             apply_proto_updates(
                 REPO_ROOT,
                 target=args.target,
-                updates=LANDSCAPE_LOADER_PROTO_UPDATES,
+                updates=LANDSCAPE_MANAGER_PROTO_UPDATES,
             )
         )
         return emit_summary(

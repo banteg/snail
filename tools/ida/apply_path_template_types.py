@@ -39,6 +39,7 @@ TRUSTED_NAMES = [
     (0x43A010, "health_collect_particles"),
     (0x43A300, "update_movement_flag_emitters"),
     (0x43A370, "end_jetpack_hover"),
+    (0x4182E0, "reset_landscape_manager"),
     (0x4182F0, "load_landscape_script_by_name"),
     (0x421770, "initialize_path_follow_golb"),
     (0x4217B0, "calc_path_length_z"),
@@ -235,6 +236,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x414670,  # kill_golb
     0x414820,  # update_golb_ai
     0x415280,  # create_golb
+    0x4182E0,  # reset_landscape_manager
     0x4182F0,  # load_landscape_script_by_name
     0x418870,  # activate_landscape_entry
     0x418A30,  # clear_active_landscape_entries
@@ -1334,6 +1336,10 @@ TRUSTED_DECLARATIONS = [
     (
         "update_row_model",
         "void __thiscall update_row_model(RowModel* row_model);",
+    ),
+    (
+        "reset_landscape_manager",
+        "void __thiscall reset_landscape_manager(LandscapeManager* manager);",
     ),
     (
         "load_landscape_script_by_name",

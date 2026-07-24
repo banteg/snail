@@ -1139,7 +1139,8 @@
     },
     {
       "address": "0x4182e0",
-      "name": "reset_landscape_manager"
+      "name": "reset_landscape_manager",
+      "description": "Exact void `LandscapeManager` reset: clears the parsed `script_count` between the ten active landscape entries and the 128-record script bank. Startup invokes it on the root-owned manager before loading the shipped Starmap, Splash, and Help landscape scripts."
     },
     {
       "address": "0x4182f0",

@@ -2548,6 +2548,7 @@ void __thiscall update_click_start(ClickStart* click_start);
 ActiveLandscapeEntry* __thiscall initialize_active_landscape_entry(
     ActiveLandscapeEntry* active_entry
 );
+void __thiscall reset_landscape_manager(LandscapeManager* manager);
 void __thiscall activate_landscape_entry(
     LandscapeManager* manager,
     int32_t script_index

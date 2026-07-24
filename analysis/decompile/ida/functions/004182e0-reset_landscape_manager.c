@@ -2,8 +2,7 @@
 /* function: reset_landscape_manager @ 0x4182e0 */
 /* selector: reset_landscape_manager */
 
-void __thiscall sub_4182E0(_DWORD *this)
+void __thiscall reset_landscape_manager(LandscapeManager *manager)
 {
-  *(this + 360) = 0;
+  manager->script_count = 0;
 }
-

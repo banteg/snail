@@ -15,3 +15,18 @@ The 2026-07-13 owner-boundary pass now embeds this manager directly at
 `SmtrackHeightfieldAnimator +0x10013a4`; a previewed Binary Ninja declaration
 confirmed that boundary without changing the live database. This ownership
 promotion is codegen-neutral at the exact focused baseline.
+
+## 2026-07-24 durable reset ownership
+
+The exact scratch and the adjacent loader already proved the reset contract,
+but both tracked decompilers still rendered the native function as an
+untyped fastcall over `receiver +0x5a0`. The shared landscape replay now
+applies the missing `void __thiscall` `LandscapeManager*` ABI in Binary Ninja
+and IDA, so the only store reads back as `manager->script_count = 0`.
+
+The function manifest now records why this is the parsed-script count rather
+than a generic manager flag: the ten-entry active bank ends exactly at
+`+0x5a0`, the 128-record script bank begins at `+0x5a4`, and
+`load_landscape_script_by_name` is the sole non-reset writer. Focused matching
+remains exact at 2/2 instructions; this slice closes ownership without changing
+source shape.
