@@ -146,3 +146,16 @@ were introduced to conceal that residual.
   `sync_object_loader_lifetimes.py` verifies the `Object`/`ObjectFaceQuad`/`Vec3`
   layouts and replays only these six proven frame owners. A second lifetime
   replay skips every mutation as already current.
+
+## 2026-07-24 paired IDA loader replay
+
+The IDA object-render replay now includes this exact 316/316 loader in its
+trusted name and explicit reanalysis set. It also durably replays the same six
+proven frame owners as Binary Ninja: the consuming `cursor`, borrowed
+`line_cursor`, `byte_count`, `texture_name[0x80]`, `texture_path[0x80]`, and
+`object_file_path[0x100]`.
+
+The refreshed IDA artifact now exposes the authored void cdecl ABI, installs
+vertices and facequads through the canonical borrowed `Object*`, and resolves
+textures through the shared registry. This replaces the stale `char*`/`int*`
+parameters and incidental return without changing the exact matcher source.

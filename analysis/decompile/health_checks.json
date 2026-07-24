@@ -18655,6 +18655,40 @@
         "sub_48b32c",
         "unimplemented"
       ]
+    },
+    {
+      "name": "ida_object_loader_owners",
+      "artifact": "analysis/decompile/ida/functions/0044c420-load_object_definition.c",
+      "required_substrings": [
+        "void __cdecl load_object_definition(char *path, Object *object)",
+        "char *line_cursor",
+        "char *cursor",
+        "int32_t byte_count",
+        "char texture_name[128]",
+        "char texture_path[128]",
+        "char object_file_path[256]",
+        "sprintf(object_file_path, \"%s/_Object.txt\", path)",
+        "load_file_bytes_from_archive_or_fs(object_file_path, archive_data_base, &byte_count)",
+        "parse_next_space_delimited_token(&line_cursor, texture_name)",
+        "request_object_vertices(object",
+        "request_object_facequads(object",
+        "object->vertices",
+        "object->facequads",
+        "get_or_create_texture_ref("
+      ],
+      "forbidden_substrings": [
+        "sub_44C420",
+        "char *a1",
+        "int *a2",
+        "char *result",
+        "return result",
+        "out_size",
+        "char out[",
+        "Buffer",
+        "v15",
+        "PathTemplateStripMesh",
+        "unimplemented"
+      ]
     }
   ]
 }

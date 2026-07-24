@@ -2,27 +2,28 @@
 /* function: load_object_definition @ 0x44c420 */
 /* selector: load_object_definition */
 
-char *__cdecl sub_44C420(char *a1, int *a2)
+// Implements the staticized void `cRObject::Load(char*)` path: parses one authored object definition into the caller-owned Object slot, installs its owned vertex and facequad arrays, and borrows texture refs from the shared manager.
+void __cdecl load_object_definition(char *path, Object *object)
 {
-  char *v2; // esi
-  int v3; // ebx
-  char *result; // eax
+  char *archive_data_base; // esi
+  int32_t v3; // ebx
+  char *v4; // eax
   char v5; // cl
-  int v6; // ebp
-  int v7; // esi
-  int v8; // eax
-  int v9; // esi
-  __int16 v10; // bp
-  __int16 v11; // bx
+  int32_t v6; // ebp
+  int32_t v7; // esi
+  int32_t v8; // eax
+  int32_t v9; // esi
+  uint16_t v10; // bp
+  uint16_t v11; // bx
   double v12; // st7
-  __int16 v13; // dx
-  char *v14; // [esp+Ch] [ebp-23Ch] BYREF
-  char *v15; // [esp+10h] [ebp-238h] BYREF
+  uint16_t v13; // dx
+  char *line_cursor; // [esp+Ch] [ebp-23Ch] BYREF
+  char *cursor; // [esp+10h] [ebp-238h] BYREF
   float v16; // [esp+14h] [ebp-234h]
   float v17; // [esp+18h] [ebp-230h]
   float v18; // [esp+1Ch] [ebp-22Ch]
-  int v19; // [esp+20h] [ebp-228h]
-  int v20; // [esp+24h] [ebp-224h]
+  int32_t v19; // [esp+20h] [ebp-228h]
+  int32_t v20; // [esp+24h] [ebp-224h]
   float v21; // [esp+28h] [ebp-220h]
   float v22; // [esp+2Ch] [ebp-21Ch]
   float v23; // [esp+30h] [ebp-218h]
@@ -30,20 +31,20 @@ char *__cdecl sub_44C420(char *a1, int *a2)
   float v25; // [esp+38h] [ebp-210h]
   float v26; // [esp+3Ch] [ebp-20Ch]
   float v27; // [esp+40h] [ebp-208h]
-  int v28; // [esp+44h] [ebp-204h] BYREF
-  _BYTE v29[128]; // [esp+48h] [ebp-200h] BYREF
-  char v30[128]; // [esp+C8h] [ebp-180h] BYREF
-  char Buffer[256]; // [esp+148h] [ebp-100h] BYREF
+  int32_t byte_count; // [esp+44h] [ebp-204h] BYREF
+  char texture_name[128]; // [esp+48h] [ebp-200h] BYREF
+  char texture_path[128]; // [esp+C8h] [ebp-180h] BYREF
+  char object_file_path[256]; // [esp+148h] [ebp-100h] BYREF
 
-  v2 = (char *)get_archive_data_base();
-  sprintf(Buffer, "%s/_Object.txt", a1);
-  load_file_bytes_from_archive_or_fs(Buffer, v2, (#83 *)&v28);
+  archive_data_base = (char *)get_archive_data_base();
+  sprintf(object_file_path, "%s/_Object.txt", path);
+  load_file_bytes_from_archive_or_fs(object_file_path, archive_data_base, &byte_count);
   v3 = 0;
-  result = v2;
-  v2[v28 - 2] = 0;
-  v29[0] = 0;
-  v15 = v2;
-  v5 = *v2;
+  v4 = archive_data_base;
+  archive_data_base[byte_count - 2] = 0;
+  texture_name[0] = 0;
+  cursor = archive_data_base;
+  v5 = *archive_data_base;
   v6 = 0;
   v20 = 0;
   v19 = 0;
@@ -51,116 +52,118 @@ char *__cdecl sub_44C420(char *a1, int *a2)
   {
     while ( 1 )
     {
-      if ( *result == 42 )
+      if ( *v4 == 42 )
       {
         do
-          v15 = ++result;
-        while ( *result != 10 );
-        v15 = ++result;
+          cursor = ++v4;
+        while ( *v4 != 10 );
+        cursor = ++v4;
         goto LABEL_20;
       }
-      if ( *result != 91 )
+      if ( *v4 != 91 )
         goto LABEL_18;
-      if ( strings_equal_case_insensitive(result, aVertexStart) )
+      if ( strings_equal_case_insensitive(v4, aVertexStart) )
         break;
-      if ( strings_equal_case_insensitive(v15, aFacequadStart) )
+      if ( strings_equal_case_insensitive(cursor, aFacequadStart) )
       {
-        skip_to_next_line(&v15);
-        v14 = v15;
-        if ( !strings_equal_case_insensitive(v15, aFacequadEnd) )
+        skip_to_next_line(&cursor);
+        line_cursor = cursor;
+        if ( !strings_equal_case_insensitive(cursor, aFacequadEnd) )
         {
           do
           {
             ++v3;
-            skip_to_next_line(&v14);
+            skip_to_next_line(&line_cursor);
           }
-          while ( !strings_equal_case_insensitive(v14, aFacequadEnd) );
+          while ( !strings_equal_case_insensitive(line_cursor, aFacequadEnd) );
           v20 = v3;
         }
-        request_object_facequads(a2, v3);
-        if ( !strings_equal_case_insensitive(v15, aFacequadEnd) )
+        request_object_facequads(object, v3);
+        if ( !strings_equal_case_insensitive(cursor, aFacequadEnd) )
         {
           do
           {
-            v14 = v15;
-            v9 = parse_next_int32(&v14);
-            v10 = parse_next_int32(&v14);
-            v11 = parse_next_int32(&v14);
-            v16 = COERCE_FLOAT(parse_next_int32(&v14));
-            v18 = COERCE_FLOAT(parse_next_int32(&v14));
-            v17 = parse_next_float32(&v14);
-            v21 = parse_next_float32(&v14);
-            v24 = parse_next_float32(&v14);
-            v27 = parse_next_float32(&v14);
-            v26 = parse_next_float32(&v14);
-            v22 = parse_next_float32(&v14);
-            v23 = parse_next_float32(&v14);
-            v25 = parse_next_float32(&v14);
-            parse_next_space_delimited_token(&v14, v29);
-            append_c_string(v29, aTga_0);
-            copy_c_string(v30, a1);
-            append_c_string(v30, asc_4ACCE0);
-            append_c_string(v30, v29);
+            line_cursor = cursor;
+            v9 = parse_next_int32(&line_cursor);
+            v10 = parse_next_int32(&line_cursor);
+            v11 = parse_next_int32(&line_cursor);
+            v16 = COERCE_FLOAT(parse_next_int32(&line_cursor));
+            v18 = COERCE_FLOAT(parse_next_int32(&line_cursor));
+            v17 = parse_next_float32(&line_cursor);
+            v21 = parse_next_float32(&line_cursor);
+            v24 = parse_next_float32(&line_cursor);
+            v27 = parse_next_float32(&line_cursor);
+            v26 = parse_next_float32(&line_cursor);
+            v22 = parse_next_float32(&line_cursor);
+            v23 = parse_next_float32(&line_cursor);
+            v25 = parse_next_float32(&line_cursor);
+            parse_next_space_delimited_token(&line_cursor, texture_name);
+            append_c_string(texture_name, aTga_0);
+            copy_c_string(texture_path, path);
+            append_c_string(texture_path, asc_4ACCE0);
+            append_c_string(texture_path, texture_name);
             v9 *= 48;
-            *(_DWORD *)(a2[23] + v9 + 12) = get_or_create_texture_ref(&texture_list, v30, 0, 0);
-            skip_to_next_line(&v15);
+            *(_DWORD *)&object->facequads->_pad_0a[v9 + 2] = get_or_create_texture_ref(
+                                                               &g_texture_refs,
+                                                               texture_path,
+                                                               nullptr,
+                                                               0);
+            skip_to_next_line(&cursor);
             v12 = v17;
-            *(_WORD *)(a2[23] + v9) = 0;
-            *(_WORD *)(a2[23] + v9 + 2) = v10;
+            *(uint16_t *)((char *)&object->facequads->header_word + v9) = 0;
+            *(uint16_t *)((char *)&object->facequads->vertex_0 + v9) = v10;
             v13 = LOWORD(v16);
-            *(_WORD *)(a2[23] + v9 + 4) = v11;
-            *(_WORD *)(a2[23] + v9 + 6) = v13;
-            *(_WORD *)(a2[23] + v9 + 8) = LOWORD(v18);
-            *(float *)(a2[23] + v9 + 16) = v12;
-            *(float *)(a2[23] + v9 + 20) = v21;
-            *(float *)(a2[23] + v9 + 24) = v24;
-            *(float *)(a2[23] + v9 + 28) = v27;
-            *(float *)(a2[23] + v9 + 32) = v26;
-            *(float *)(a2[23] + v9 + 36) = v22;
-            *(float *)(a2[23] + v9 + 40) = v23;
-            *(float *)(a2[23] + v9 + 44) = v25;
+            *(uint16_t *)((char *)&object->facequads->vertex_1 + v9) = v11;
+            *(uint16_t *)((char *)&object->facequads->vertex_2 + v9) = v13;
+            *(uint16_t *)((char *)&object->facequads->vertex_3 + v9) = LOWORD(v18);
+            *(float *)((char *)&object->facequads->uv[0].u + v9) = v12;
+            *(float *)((char *)&object->facequads->uv[0].v + v9) = v21;
+            *(float *)((char *)&object->facequads->uv[1].u + v9) = v24;
+            *(float *)((char *)&object->facequads->uv[1].v + v9) = v27;
+            *(float *)((char *)&object->facequads->uv[2].u + v9) = v26;
+            *(float *)((char *)&object->facequads->uv[2].v + v9) = v22;
+            *(float *)((char *)&object->facequads->uv[3].u + v9) = v23;
+            *(float *)((char *)&object->facequads->uv[3].v + v9) = v25;
           }
-          while ( !strings_equal_case_insensitive(v15, aFacequadEnd) );
+          while ( !strings_equal_case_insensitive(cursor, aFacequadEnd) );
           v3 = v20;
           v6 = v19;
         }
         goto LABEL_18;
       }
 LABEL_19:
-      result = v15;
+      v4 = cursor;
 LABEL_20:
-      if ( !*result )
-        return result;
+      if ( !*v4 )
+        return;
     }
-    skip_to_next_line(&v15);
-    v14 = v15;
-    if ( !strings_equal_case_insensitive(v15, aVertexEnd) )
+    skip_to_next_line(&cursor);
+    line_cursor = cursor;
+    if ( !strings_equal_case_insensitive(cursor, aVertexEnd) )
     {
       do
       {
         ++v6;
-        skip_to_next_line(&v14);
+        skip_to_next_line(&line_cursor);
       }
-      while ( !strings_equal_case_insensitive(v14, aVertexEnd) );
+      while ( !strings_equal_case_insensitive(line_cursor, aVertexEnd) );
       v19 = v6;
     }
-    request_object_vertices(a2, v6);
-    for ( ; !strings_equal_case_insensitive(v15, aVertexEnd); *(float *)(a2[14] + v8 + 8) = v16 )
+    request_object_vertices(object, v6);
+    for ( ; !strings_equal_case_insensitive(cursor, aVertexEnd); object->vertices[v8].z = v16 )
     {
-      v14 = v15;
-      v7 = parse_next_int32(&v14);
-      v17 = parse_next_float32(&v14);
-      v18 = parse_next_float32(&v14);
-      v16 = parse_next_float32(&v14);
-      skip_to_next_line(&v15);
-      v8 = 12 * v7;
-      *(float *)(a2[14] + v8) = v17;
-      *(float *)(a2[14] + v8 + 4) = v18;
+      line_cursor = cursor;
+      v7 = parse_next_int32(&line_cursor);
+      v17 = parse_next_float32(&line_cursor);
+      v18 = parse_next_float32(&line_cursor);
+      v16 = parse_next_float32(&line_cursor);
+      skip_to_next_line(&cursor);
+      v8 = v7;
+      object->vertices[v8].x = v17;
+      object->vertices[v8].y = v18;
     }
 LABEL_18:
-    skip_to_next_line(&v15);
+    skip_to_next_line(&cursor);
     goto LABEL_19;
   }
-  return result;
 }
-

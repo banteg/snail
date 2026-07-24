@@ -354,6 +354,7 @@ TRUSTED_NAMES = [
     (0x4308B0, "calc_object_edges"),
     (0x430A30, "rotate_object_facequad_uv_pairs"),
     (0x430D90, "replace_object_list_texture_refs"),
+    (0x44C420, "load_object_definition"),
     (0x450314, "build_perspective_projection_matrix"),
     (0x451AD9, "build_camera_view_matrix"),
     (0x4A3C40, "g_backdrop_raise_first_vertex_index"),
@@ -471,6 +472,7 @@ REQUIRED_OWNER_MARKERS = (
     "void __thiscall calc_object_texture_groups(Object* object);",
     "void __thiscall request_object_texture_groups(Object* object, int32_t group_count);",
     "void __thiscall request_object_edges(Object* object, int32_t edge_count);",
+    "void __cdecl load_object_definition(char* path, Object* object);",
     "void __cdecl sort_object_faces_by_texture_group(Object* object);",
     "int32_t __cdecl get_or_append_object_texture_group_vertex(",
     "void __thiscall add_object_edge(",
@@ -548,6 +550,7 @@ REANALYSIS_FUNCTIONS = (
     0x430D90,  # replace_object_list_texture_refs
     0x433060,  # initialize_track_render_cache_manager
     0x44AE10,  # initialize_font3d_objects
+    0x44C420,  # load_object_definition
 )
 
 # The stale 11-argument usercall left two compensating stack points around
@@ -562,6 +565,30 @@ RENDER_CAMERA_STACK_POINT_SPECS = (
 BUFFER_FACTORY_LVAR_SPECS = (
     ("create_vertex_buffer", 0x4115A8, "next_count", "int32_t next_count;"),
     ("create_index_buffer", 0x4115F9, "next_count", "int32_t next_count;"),
+)
+
+OBJECT_LOADER_LVAR_SPECS = (
+    ("load_object_definition", 0x44C4D0, "line_cursor", "char *line_cursor;"),
+    ("load_object_definition", 0x44C472, "cursor", "char *cursor;"),
+    ("load_object_definition", 0x44C468, "byte_count", "int32_t byte_count;"),
+    (
+        "load_object_definition",
+        0x44C46E,
+        "texture_name",
+        "char texture_name[0x80];",
+    ),
+    (
+        "load_object_definition",
+        0x44C76F,
+        "texture_path",
+        "char texture_path[0x80];",
+    ),
+    (
+        "load_object_definition",
+        0x44C445,
+        "object_file_path",
+        "char object_file_path[0x100];",
+    ),
 )
 
 TOPOLOGY_LVAR_SPECS = (
@@ -945,6 +972,25 @@ def _sync_buffer_factory_lvars() -> dict[str, object]:
     }
 
 
+def _sync_object_loader_lvars() -> dict[str, object]:
+    results = [
+        _sync_owned_lvar(selector, definition_address, expected_name, declaration)
+        for selector, definition_address, expected_name, declaration in OBJECT_LOADER_LVAR_SPECS
+    ]
+    failures = [result for result in results if result.get("status") == "failed"]
+    return {
+        "status": (
+            "failed"
+            if failures
+            else "applied"
+            if any(result.get("status") == "applied" for result in results)
+            else "unchanged"
+        ),
+        "locals": results,
+        "failures": failures,
+    }
+
+
 def _sync_render_camera_stack_points() -> dict[str, object]:
     results = []
     for address, stale_delta, target_delta, call_name in (
@@ -1218,6 +1264,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    object_loader_lvars = _sync_object_loader_lvars()
+    if object_loader_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "load_object_definition",
+                "object_loader_lvars": object_loader_lvars,
+            }
+        )
+
     ida_auto.auto_wait()
     reanalysis_functions = []
     for address in REANALYSIS_FUNCTIONS:
@@ -1246,6 +1301,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "refresh_vertex_lvars": refresh_vertex_lvars,
                 "topology_lvars": topology_lvars,
                 "buffer_factory_lvars": buffer_factory_lvars,
+                "object_loader_lvars": object_loader_lvars,
                 "reanalysis_functions": reanalysis_functions,
                 "missing": missing,
                 "failed": failed,

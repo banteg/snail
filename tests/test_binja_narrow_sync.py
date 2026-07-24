@@ -1021,27 +1021,53 @@ def test_object_loader_replay_keeps_authored_abi_and_exact_frame_owners() -> Non
     owner_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
         encoding="utf-8"
     )
+    ida_owner_sync = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
     replay = (BINJA_DIR / "sync_object_loader_lifetimes.py").read_text(
         encoding="utf-8"
     )
-    header = (HEADER_DIR / "bn_object_render_types.h").read_text(
-        encoding="utf-8"
-    )
+    headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_object_render_types.h", "object_render_types.h")
+    ]
 
     prototype = "void __cdecl load_object_definition(char* path, Object* object)"
     assert prototype in owner_sync
+    assert f'"{prototype};"' in ida_owner_sync
     assert prototype in replay
-    assert prototype + ";" in header
+    for header in headers:
+        assert prototype + ";" in header
+    assert '(0x44C420, "load_object_definition")' in ida_owner_sync
+    assert "0x44C420,  # load_object_definition" in ida_owner_sync
     assert "apply_direct_proto_update(" in replay
     assert "apply_user_var_updates(" in replay
     assert "verify_object_loader_owner_layouts" in replay
-    for storage, name, variable_type in (
-        (-572, "line_cursor", "char*"),
-        (-568, "cursor", "char*"),
-        (-516, "byte_count", "int32_t"),
-        (-512, "texture_name", "char[0x80]"),
-        (-384, "texture_path", "char[0x80]"),
-        (-256, "object_file_path", "char[0x100]"),
+    for storage, definition_address, name, variable_type, ida_declaration in (
+        (-572, "0x44C4D0", "line_cursor", "char*", "char *line_cursor;"),
+        (-568, "0x44C472", "cursor", "char*", "char *cursor;"),
+        (-516, "0x44C468", "byte_count", "int32_t", "int32_t byte_count;"),
+        (
+            -512,
+            "0x44C46E",
+            "texture_name",
+            "char[0x80]",
+            "char texture_name[0x80];",
+        ),
+        (
+            -384,
+            "0x44C76F",
+            "texture_path",
+            "char[0x80]",
+            "char texture_path[0x80];",
+        ),
+        (
+            -256,
+            "0x44C445",
+            "object_file_path",
+            "char[0x100]",
+            "char object_file_path[0x100];",
+        ),
     ):
         marker = (
             '        "StackVariableSourceType",\n'
@@ -1051,6 +1077,10 @@ def test_object_loader_replay_keeps_authored_abi_and_exact_frame_owners() -> Non
             f'        "{variable_type}",'
         )
         assert marker in replay
+        assert definition_address in ida_owner_sync
+        assert f'"{name}"' in ida_owner_sync
+        assert f'"{ida_declaration}"' in ida_owner_sync
+    assert "_sync_object_loader_lvars()" in ida_owner_sync
 
 
 def test_x_mesh_loader_replay_keeps_cache_and_parser_lifetimes() -> None:
