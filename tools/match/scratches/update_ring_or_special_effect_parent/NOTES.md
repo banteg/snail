@@ -219,3 +219,12 @@ without inventing a partial object around the interior radius cursor. A second
 guarded replay was fully idempotent. No matcher source change was justified:
 focused Wibo remains honestly at 98.21% (336/336 instructions, prefix 193/336,
 37 clean masked operands), with the two documented scheduling regions intact.
+
+## 2026-07-24 mobile array-extent correction
+
+The iOS and Android `cRSubRing::AI()` bodies update eight inline stars, not ten.
+Their parent stride is `0x1ac`; Windows updates ten stars in a `0x1f8` parent.
+The `0x4c` stride difference is exactly two `0x20` children plus the already
+proved `0x0c` renderable-prefix difference. This independently preserves the
+parent/child ownership graph while proving that `SUB_RING_PARTICLE_COUNT` is a
+Windows extent, not a cross-platform constant.

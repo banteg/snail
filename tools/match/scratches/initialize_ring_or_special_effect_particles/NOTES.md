@@ -136,3 +136,17 @@ paired refresh also adopts the canonical `allocate_sprite(&g_sprite_manager,
 ...)` receiver already proved by the sprite owner graph. Focused matching is
 unchanged and exact at 153/153 instructions with all ten operands clean; no
 source or fakematch change was made.
+
+## 2026-07-24 cross-port capacity boundary
+
+Android and iOS retain the same `cRSubRing::Init(int)` owner and the same
+`0x20`-byte `cRSubRingStar` stride, but both mobile bodies stop after eight
+children. Their `cRSubGame::AddRing` pool scan advances parents by `0x1ac`;
+after accounting for mobile's `0x0c` smaller renderable prefix and two fewer
+children, this agrees exactly with the Windows `0x1f8` parent stride. Both
+layouts retain the same eight-byte tail after the star-sprite id.
+
+The shared matcher constant therefore remains the proved Windows capacity of
+ten. Cross-port symbols establish class and method identity, not a universal
+array extent. The former crosswalk wording that claimed ten children on both
+ports has been corrected.

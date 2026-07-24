@@ -72,7 +72,7 @@ public:
     float transition_progress; // +0x1d4
     float transition_step; // +0x1d8
     unsigned char oscillate_x; // +0x1dc
-    char unknown_1dd[0x1e0 - 0x1dd];
+    // +0x1dd..+0x1df is the compiler's natural float-alignment padding.
     float active_phase; // +0x1e0
     float active_phase_step; // +0x1e4
     int star_shower_counter; // +0x1e8
