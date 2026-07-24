@@ -22,6 +22,7 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 TRUSTED_NAMES = (
     (0x408860, "initialize_track_parcel_runtime"),
     (0x435DF0, "set_subgame_features"),
+    (0x437B10, "reset_subgame"),
     (0x440600, "uninit_pause_menu"),
     (0x440660, "initialize_pause_menu"),
     (0x4407A0, "update_pause_menu"),
@@ -338,6 +339,10 @@ TRUSTED_DECLARATIONS = [
     (
         "calc_subgame_rate",
         "void __thiscall calc_subgame_rate(SubgameRuntime* game);",
+    ),
+    (
+        "reset_subgame",
+        "void __thiscall reset_subgame(SubgameRuntime* game);",
     ),
     (
         "complete_subgame",

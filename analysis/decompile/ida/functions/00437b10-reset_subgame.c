@@ -2,87 +2,87 @@
 /* function: reset_subgame @ 0x437b10 */
 /* selector: reset_subgame */
 
-void __thiscall reset_subgame(_DWORD *this)
+void __thiscall reset_subgame(SubgameRuntime *game)
 {
   int v2; // ecx
-  _DWORD *v3; // eax
-  _DWORD *v4; // eax
+  SubgameRuntime **p_owner_game; // eax
+  SubgameRuntime **v4; // eax
   int v5; // ecx
-  _DWORD *v6; // eax
+  SubgameRuntime **v6; // eax
   int v7; // ecx
-  _DWORD *v8; // eax
+  SubgameRuntime **p_rate_source; // eax
   int v9; // ecx
-  int v10; // edx
-  int v11; // eax
+  int32_t score_tail; // edx
+  int32_t source_tail; // eax
 
   v2 = 8;
-  v3 = this + 874513;
+  p_owner_game = &game->health_pickups[0].owner_game;
   do
   {
-    *(v3 - 3) = 0;
-    *v3 = this;
-    v3 += 29;
+    *(p_owner_game - 3) = nullptr;
+    *p_owner_game = game;
+    p_owner_game += 29;
     --v2;
   }
   while ( v2 );
-  *(this + 874380) = 0;
-  *(this + 874383) = this;
-  *(this + 874407) = 0;
-  *(this + 874410) = this;
-  v4 = this + 877684;
+  game->speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
+  game->speedup_pickup.owner_game = game;
+  game->jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
+  game->jetpack_pickup.owner_game = game;
+  v4 = &game->garbage_hazards.slots[0].owner_game;
   v5 = 50;
   do
   {
-    *(v4 - 2) = 0;
-    *v4 = this;
-    *(v4 - 3) = 0;
+    *(v4 - 2) = nullptr;
+    *v4 = game;
+    *(v4 - 3) = nullptr;
     v4 += 49;
     --v5;
   }
   while ( v5 );
-  v6 = this + 874762;
+  v6 = &game->slug_hazards.slots[0].owner_game;
   v7 = 8;
   do
   {
-    *(v6 - 2) = 0;
-    *v6 = this;
+    *(v6 - 2) = nullptr;
+    *v6 = game;
     v6 += 59;
     --v7;
   }
   while ( v7 );
-  v8 = this + 880215;
+  p_rate_source = &game->ring_effects.slots[0].rate_source;
   v9 = 2;
   do
   {
-    *(v8 - 84) = 0;
-    *v8 = this;
-    v8 += 126;
+    *(p_rate_source - 84) = nullptr;
+    *p_rate_source = game;
+    p_rate_source += 126;
     --v9;
   }
   while ( v9 );
-  if ( *((_BYTE *)this + 16721360) == 1 && *(this + 16) == *(this + 4147919) )
+  if ( game->selected_level_record_active == 1 && game->level_mode == game->current_high_score_record.replay_mode_id )
   {
-    v10 = *(this + 4147916);
-    v11 = *(this + 4147917);
-    *(this + 978578) = *(this + 4147909);
-    *(this + 978585) = v10;
-    qmemcpy(this + 978579, this + 4147910, 0x18u);
-    *(this + 978586) = v11;
+    score_tail = game->current_high_score_record.score_tail;
+    source_tail = game->current_high_score_record.source_tail;
+    game->player.total_score = game->current_high_score_record.score;
+    game->player.score_tail = score_tail;
+    qmemcpy(&game->player.stopwatch, &game->current_high_score_record.score_or_time, sizeof(game->player.stopwatch));
+    game->player.startup_track_index = source_tail;
   }
   else
   {
-    if ( *(this + 4834290) == 2 )
+    if ( game->subgame_rebuild_selector == 2 )
     {
-      *(this + 978578) = 0;
-      clear_subgoldy_score_buckets((Player *)(this + 978393));
+      game->player.total_score = 0;
+      clear_subgoldy_score_buckets(&game->player);
     }
-    zero_timer_counters((Time *)(this + 978579));
-    *(this + 978585) = 0;
-    *(this + 978586) = 0;
+    zero_timer_counters(&game->player.stopwatch);
+    game->player.score_tail = 0;
+    game->player.startup_track_index = 0;
   }
-  *(this + 978616) = 0;
-  *(_BYTE *)this = 1;
-  *((_BYTE *)this + 1) = 1;
-  *((_BYTE *)this + 16721360) = 0;
-  *(this + 877648) = 0;
+  game->player.last_ring_spawn_z = 0.0;
+  game->scan_reset = 1;
+  game->camera_snap_requested = 1;
+  game->selected_level_record_active = 0;
+  game->garbage_hazards.active_head = nullptr;
 }

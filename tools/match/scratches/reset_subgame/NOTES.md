@@ -134,3 +134,17 @@ operands.
 Reset now clears the owned `cRSubSpeedUp` and `cRJetPack` singletons plus all
 eight inline `cRSubHealth` slots through `TRACK_PICKUP_STATE_INACTIVE`. The
 scratch remains exact at 75/75 instructions with two clean operands.
+
+## 2026-07-24 paired decompiler ownership
+
+Binary Ninja already carried the exact `void __thiscall(SubgameRuntime*)`
+receiver, but the tracked IDA lane still rendered all pool and replay state as
+large `_DWORD*` indices. The dedicated IDA subgame replay now applies the same
+ABI and guards the function's trusted address before re-decompilation.
+
+The refreshed readback exposes every inline pool backlink, the owned
+`current_high_score_record` snapshot, the embedded Player timer/score state,
+and the final scan, camera, replay, and active-garbage latches through the
+containing `SubgameRuntime`. All five callsites independently load that same
+receiver in `initialize_subgame`. The matcher remains naturally exact at
+75/75 instructions; no source or compiler scheduling was changed.

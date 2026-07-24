@@ -6396,8 +6396,14 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
     )
     assert '(0x435DF0, "set_subgame_features")' in ida_runtime_sync
     assert "0x435DF0,  # set_subgame_features" in ida_runtime_sync
+    assert '(0x437B10, "reset_subgame")' in ida_runtime_sync
+    assert "0x437B10,  # reset_subgame" in ida_runtime_sync
     assert (
         "int32_t __thiscall set_subgame_features(SubgameRuntime* runtime);"
+        in ida_runtime_sync
+    )
+    assert (
+        "void __thiscall reset_subgame(SubgameRuntime* game);"
         in ida_runtime_sync
     )
 

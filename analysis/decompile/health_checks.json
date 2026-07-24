@@ -7564,6 +7564,30 @@
       ]
     },
     {
+      "name": "ida_subgame_reset_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00437b10-reset_subgame.c",
+      "required_substrings": [
+        "void __thiscall reset_subgame(SubgameRuntime *game)",
+        "game->health_pickups",
+        "game->speedup_pickup",
+        "game->jetpack_pickup",
+        "game->garbage_hazards",
+        "game->slug_hazards",
+        "game->ring_effects",
+        "game->current_high_score_record",
+        "game->player.stopwatch",
+        "game->scan_reset = 1",
+        "game->camera_snap_requested = 1"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *this",
+        "this + 874",
+        "this + 978",
+        "this + 414",
+        "this + 483"
+      ]
+    },
+    {
       "name": "bn_subring_rate_owner",
       "artifact": "analysis/decompile/binja/functions/0043e830-update_ring_or_special_effect_parent.c",
       "required_substrings": [

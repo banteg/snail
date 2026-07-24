@@ -2222,7 +2222,8 @@
     },
     {
       "address": "0x437b10",
-      "name": "reset_subgame"
+      "name": "reset_subgame",
+      "description": "Exact void `cRSubGame` reset: rebinds the inline pickup, garbage, slug, and ring pools to their containing `SubgameRuntime`, restores or clears the replay score/timer snapshot, rearms the scan and camera latches, and empties the active garbage chain. All five native callsites pass the same active subgame receiver from `initialize_subgame`."
     },
     {
       "address": "0x437c40",
