@@ -27,6 +27,7 @@ EXPECTED_OWNER_SIZES = {
     "RootTrackFringeBodCatalog": 0x3F00,
     "RootBodCatalog": 0x4D00,
     "RootTrackSliceTripletStrideView": 0x44B48,
+    "RootFringeCatalogObjectStrideCursor": 0x38,
 }
 
 TRUSTED_DECLARATIONS = (
@@ -45,6 +46,39 @@ TRACK_SLICE_TRIPLET_LVAR = {
     "target_struct_name": "RootTrackSliceTripletStrideView",
     "is_stack": False,
 }
+
+FRINGE_CATALOG_CURSOR_LVARS = (
+    {
+        "selector": "initialize_game_assets_and_world",
+        "definition_address": 0x40FFE0,
+        "accepted_names": {
+            "p_object",
+            "fringe_orientation_object_cursor",
+        },
+        "accepted_types": {
+            "Object **",
+            "RootFringeCatalogObjectStrideCursor *",
+        },
+        "target_name": "fringe_orientation_object_cursor",
+        "target_struct_name": "RootFringeCatalogObjectStrideCursor",
+        "is_stack": False,
+    },
+    {
+        "selector": "initialize_game_assets_and_world",
+        "definition_address": 0x40FFEE,
+        "accepted_names": {
+            "v296",
+            "fringe_entry_object_cursor",
+        },
+        "accepted_types": {
+            "Object **",
+            "RootFringeCatalogObjectStrideCursor *",
+        },
+        "target_name": "fringe_entry_object_cursor",
+        "target_struct_name": "RootFringeCatalogObjectStrideCursor",
+        "is_stack": False,
+    },
+)
 
 
 def _normalize_type_text(value: str | None) -> str | None:
@@ -76,18 +110,20 @@ def _normalize_struct_pointer_type(value: str | None) -> str:
     return re.sub(r"\s+", "", normalized)
 
 
-def _sync_track_slice_triplet_lvar() -> dict[str, object]:
-    """Persist the exact register-backed root-relative catalog lifetime."""
-    selector = str(TRACK_SLICE_TRIPLET_LVAR["selector"])
-    definition_address = int(TRACK_SLICE_TRIPLET_LVAR["definition_address"])
-    accepted_names = set(TRACK_SLICE_TRIPLET_LVAR["accepted_names"])
+def _sync_exact_struct_pointer_lvar(
+    spec: dict[str, object],
+) -> dict[str, object]:
+    """Persist one exact Hex-Rays local without broad candidate matching."""
+    selector = str(spec["selector"])
+    definition_address = int(spec["definition_address"])
+    accepted_names = set(spec["accepted_names"])
     accepted_types = {
         _normalize_struct_pointer_type(value)
-        for value in TRACK_SLICE_TRIPLET_LVAR["accepted_types"]
+        for value in spec["accepted_types"]
     }
-    target_name = str(TRACK_SLICE_TRIPLET_LVAR["target_name"])
-    target_struct_name = str(TRACK_SLICE_TRIPLET_LVAR["target_struct_name"])
-    is_stack = bool(TRACK_SLICE_TRIPLET_LVAR["is_stack"])
+    target_name = str(spec["target_name"])
+    target_struct_name = str(spec["target_struct_name"])
+    is_stack = bool(spec["is_stack"])
 
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR or ida_funcs.get_func(address) is None:
@@ -107,7 +143,7 @@ def _sync_track_slice_triplet_lvar() -> dict[str, object]:
     if len(candidates) != 1:
         return {
             "status": "failed",
-            "reason": "unexpected_track_slice_triplet_lvar_candidates",
+            "reason": f"unexpected_{target_name}_candidates",
             "selector": selector,
             "candidate_count": len(candidates),
             "definition_address": hex(definition_address),
@@ -137,7 +173,7 @@ def _sync_track_slice_triplet_lvar() -> dict[str, object]:
     ):
         return {
             "status": "failed",
-            "reason": "missing_track_slice_triplet_target_type",
+            "reason": f"missing_{target_name}_target_type",
             "selector": selector,
             "target_struct_name": target_struct_name,
         }
@@ -145,11 +181,13 @@ def _sync_track_slice_triplet_lvar() -> dict[str, object]:
     if not pointer_type.create_ptr(target_type):
         return {
             "status": "failed",
-            "reason": "create_track_slice_triplet_pointer_type_failed",
+            "reason": f"create_{target_name}_pointer_type_failed",
             "selector": selector,
             "target_struct_name": target_struct_name,
         }
 
+    before_name = lvar.name
+    before_type = str(lvar.type())
     info = ida_hexrays.lvar_saved_info_t()
     info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
     info.name = target_name
@@ -161,7 +199,7 @@ def _sync_track_slice_triplet_lvar() -> dict[str, object]:
     ):
         return {
             "status": "failed",
-            "reason": "modify_track_slice_triplet_lvar_failed",
+            "reason": f"modify_{target_name}_failed",
             "selector": selector,
             "target_name": target_name,
         }
@@ -184,7 +222,7 @@ def _sync_track_slice_triplet_lvar() -> dict[str, object]:
     if len(verified) != 1 or verified_type != target_pointer_type:
         return {
             "status": "failed",
-            "reason": "track_slice_triplet_lvar_readback_failed",
+            "reason": f"{target_name}_readback_failed",
             "selector": selector,
             "candidate_count": len(verified),
             "observed_type": verified_type,
@@ -195,13 +233,26 @@ def _sync_track_slice_triplet_lvar() -> dict[str, object]:
     return {
         "status": "applied",
         "selector": selector,
-        "before_name": lvar.name,
-        "before_type": str(lvar.type()),
+        "before_name": before_name,
+        "before_type": before_type,
         "name": verified[0].name,
         "type": str(verified[0].type()),
         "definition_address": hex(verified[0].defea),
         "is_stack": bool(verified[0].is_stk_var()),
     }
+
+
+def _sync_track_slice_triplet_lvar() -> dict[str, object]:
+    """Persist the exact register-backed root-relative catalog lifetime."""
+    return _sync_exact_struct_pointer_lvar(TRACK_SLICE_TRIPLET_LVAR)
+
+
+def _sync_fringe_catalog_cursor_lvars() -> list[dict[str, object]]:
+    """Persist the exact outer and inner field-stride cursor identities."""
+    return [
+        _sync_exact_struct_pointer_lvar(spec)
+        for spec in FRINGE_CATALOG_CURSOR_LVARS
+    ]
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
@@ -260,6 +311,29 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 }
             )
 
+    fringe_catalog_cursor_lvars = [
+        {
+            "status": "skipped",
+            "reason": "owner_or_prototype_preflight_failed",
+            "target_name": str(spec["target_name"]),
+        }
+        for spec in FRINGE_CATALOG_CURSOR_LVARS
+    ]
+    if not parse_errors and not failed:
+        fringe_catalog_cursor_lvars = _sync_fringe_catalog_cursor_lvars()
+        for spec, lvar_replay in zip(
+            FRINGE_CATALOG_CURSOR_LVARS,
+            fringe_catalog_cursor_lvars,
+            strict=True,
+        ):
+            if lvar_replay.get("status") == "failed":
+                failed.append(
+                    {
+                        "selector": str(spec["target_name"]),
+                        "lvar_replay": lvar_replay,
+                    }
+                )
+
     game_root_owner_graph = sync_game_root_owner_graph(require=False)
     if game_root_owner_graph.get("status") == "failed":
         failed.append({"selector": "GameRoot", "owner_graph": game_root_owner_graph})
@@ -274,6 +348,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "applied": applied,
                 "unchanged": unchanged,
                 "track_slice_triplet_lvar": track_slice_triplet_lvar,
+                "fringe_catalog_cursor_lvars": fringe_catalog_cursor_lvars,
                 "game_root_owner_graph": game_root_owner_graph,
                 "missing": missing,
                 "failed": failed,

@@ -4126,7 +4126,6 @@
       "name": "bn_game_initializer_track_slice_triplet_stride_ownership",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
-        "struct RootTrackSliceTripletStrideView* track_slice_triplet_stride_view = game + eax_14 * 0x38",
         "&track_slice_triplet_stride_view->floor_slice.vtable",
         "track_slice_triplet_stride_view->floor_slice.object",
         "&track_slice_triplet_stride_view->warning_slice.vtable",
@@ -4134,14 +4133,19 @@
         "&track_slice_triplet_stride_view->slide_slice.vtable",
         "track_slice_triplet_stride_view->slide_slice.object"
       ],
+      "required_regexes": [
+        "struct RootTrackSliceTripletStrideView\\* track_slice_triplet_stride_view = game \\+ eax_[0-9]+ \\* 0x38"
+      ],
       "forbidden_substrings": [
-        "void* edi_5 = game + eax_14 * 0x38",
         "edi_5 + 0x44790",
         "*(edi_5 + 0x447b4)",
         "edi_5 + 0x44950",
         "*(edi_5 + 0x44974)",
         "edi_5 + 0x44b10",
         "*(edi_5 + 0x44b34)"
+      ],
+      "forbidden_regexes": [
+        "void\\* edi_[0-9]+ = game \\+ eax_[0-9]+ \\* 0x38"
       ]
     },
     {
@@ -4166,6 +4170,47 @@
         "*((Object **)v18 + 70237)",
         "v18 + 281360",
         "*((Object **)v18 + 70349)"
+      ]
+    },
+    {
+      "name": "bn_game_initializer_fringe_catalog_cursor_ownership",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "struct RootFringeCatalogObjectStrideCursor* fringe_orientation_object_cursor = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object",
+        "struct RootFringeCatalogObjectStrideCursor* fringe_entry_object_cursor = fringe_orientation_object_cursor",
+        "set_bod_object(fringe_entry_object_cursor - 0x24, add_object_to_list(&g_object_list))",
+        "initialize_backdrop_tile_quad(fringe_entry_object_cursor->object",
+        "fringe_entry_object_cursor = &fringe_entry_object_cursor[1]",
+        "fringe_orientation_object_cursor = fringe_entry_object_cursor"
+      ],
+      "forbidden_substrings": [
+        "struct Object** eax_344 = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object",
+        "struct Object** esi_2 = eax_344",
+        "set_bod_object(&esi_2[-9]",
+        "(esi_2 - 0x44dd4)->root_bod_catalog.fringe_catalog",
+        "esi_2 = &esi_2[0xe]"
+      ]
+    },
+    {
+      "name": "ida_game_initializer_fringe_catalog_cursor_ownership",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "struct RootFringeCatalogObjectStrideCursor *fringe_orientation_object_cursor; // eax",
+        "struct RootFringeCatalogObjectStrideCursor *fringe_entry_object_cursor; // esi",
+        "fringe_orientation_object_cursor = (struct RootFringeCatalogObjectStrideCursor *)&game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object;",
+        "fringe_entry_object_cursor = fringe_orientation_object_cursor;",
+        "set_bod_object((BodBase *)fringe_entry_object_cursor[-1]._stride_tail",
+        "fringe_entry_object_cursor->object",
+        "++fringe_entry_object_cursor;",
+        "fringe_orientation_object_cursor = fringe_entry_object_cursor;"
+      ],
+      "forbidden_substrings": [
+        "Object **p_object; // eax",
+        "Object **v296; // esi",
+        "set_bod_object((BodBase *)(v296 - 9)",
+        "initialize_backdrop_tile_quad(*v296",
+        "v296 += 14;",
+        "p_object = v296;"
       ]
     },
     {

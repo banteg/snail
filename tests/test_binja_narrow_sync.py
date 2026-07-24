@@ -937,19 +937,118 @@ def test_root_track_slice_triplet_stride_view_is_borrowed_and_fail_closed() -> N
         "ida_game_initializer_track_slice_triplet_stride_ownership"
     ]
     assert (
-        "struct RootTrackSliceTripletStrideView* "
-        "track_slice_triplet_stride_view = game + eax_14 * 0x38"
-        in bn_check["required_substrings"]
+        r"struct RootTrackSliceTripletStrideView\* "
+        r"track_slice_triplet_stride_view = game \+ eax_[0-9]+ \* 0x38"
+        in bn_check["required_regexes"]
     )
-    assert "void* edi_5 = game + eax_14 * 0x38" in bn_check[
-        "forbidden_substrings"
-    ]
+    assert (
+        r"void\* edi_[0-9]+ = game \+ eax_[0-9]+ \* 0x38"
+        in bn_check["forbidden_regexes"]
+    )
     assert (
         "struct RootTrackSliceTripletStrideView "
         "*track_slice_triplet_stride_view;"
         in ida_check["required_substrings"]
     )
     assert "char *v18;" in ida_check["forbidden_substrings"]
+
+
+def test_root_fringe_catalog_object_cursors_are_borrowed_and_fail_closed() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_catalog_header = (
+        repo_root / "tools/match/include/root_bod_catalog.h"
+    ).read_text(encoding="utf-8")
+    matcher_fringe_header = (
+        repo_root / "tools/match/include/track_fringe_bod_catalog.h"
+    ).read_text(encoding="utf-8")
+    catalog_header = (HEADER_DIR / "bn_root_bod_catalog_types.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (
+        BINJA_DIR / "sync_root_bod_catalog_types.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (IDA_DIR / "apply_root_bod_catalog_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "RootFringeCatalogObjectStrideCursor" not in matcher_catalog_header
+    assert "TrackFringeBodCatalog fringe_catalog;" in matcher_catalog_header
+    assert "BodBase entries" in matcher_fringe_header
+    for dimension in (
+        "TRACK_FRINGE_FAMILY_COUNT",
+        "TRACK_FRINGE_DIRECTION_COUNT",
+        "TRACK_FRINGE_EDGE_VARIANT_COUNT",
+    ):
+        assert dimension in matcher_fringe_header
+
+    assert (
+        "typedef struct RootFringeCatalogObjectStrideCursor {"
+        in catalog_header
+    )
+    assert "Object* object;" in catalog_header
+    assert "RootBodCatalogColor4f color;" in catalog_header
+    assert "uint8_t _stride_tail[0x24];" in catalog_header
+    assert "288-entry fringe constructor" in catalog_header
+    assert "it owns" in catalog_header
+    assert "neither the catalog entry nor the referenced Object" in catalog_header
+
+    assert '"RootFringeCatalogObjectStrideCursor": 0x38' in binja_sync
+    for identity in (
+        (
+            "21231",
+            "66",
+            "fringe_orientation_object_cursor",
+        ),
+        (
+            "21245",
+            "72",
+            "fringe_entry_object_cursor",
+        ),
+    ):
+        index, storage, name = identity
+        assert (
+            '"RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            '        "RootFringeCatalogObjectStrideCursor*",'
+        ) in binja_sync
+    assert 'operation.get("op") == "user_var_batch"' in binja_sync
+
+    assert '"RootFringeCatalogObjectStrideCursor": 0x38' in ida_sync
+    assert "FRINGE_CATALOG_CURSOR_LVARS" in ida_sync
+    for definition_address, target_name in (
+        ("0x40FFE0", "fringe_orientation_object_cursor"),
+        ("0x40FFEE", "fringe_entry_object_cursor"),
+    ):
+        assert f'"definition_address": {definition_address}' in ida_sync
+        assert f'"target_name": "{target_name}"' in ida_sync
+    assert '"Object **"' in ida_sync
+    assert "_sync_exact_struct_pointer_lvar(spec)" in ida_sync
+    assert "bool(lvar.is_stk_var()) == is_stack" in ida_sync
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    bn_check = checks[
+        "bn_game_initializer_fringe_catalog_cursor_ownership"
+    ]
+    ida_check = checks[
+        "ida_game_initializer_fringe_catalog_cursor_ownership"
+    ]
+    assert (
+        "fringe_entry_object_cursor = &fringe_entry_object_cursor[1]"
+        in bn_check["required_substrings"]
+    )
+    assert "esi_2 = &esi_2[0xe]" in bn_check["forbidden_substrings"]
+    assert (
+        "++fringe_entry_object_cursor;"
+        in ida_check["required_substrings"]
+    )
+    assert "v296 += 14;" in ida_check["forbidden_substrings"]
 
 
 def test_parse_struct_layout_size() -> None:

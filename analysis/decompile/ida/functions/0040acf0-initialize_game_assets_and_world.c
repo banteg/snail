@@ -298,8 +298,8 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   TextureRef *v292; // eax
   TextureRef *v293; // eax
   Object *v294; // eax
-  Object **p_object; // eax
-  Object **v296; // esi
+  struct RootFringeCatalogObjectStrideCursor *fringe_orientation_object_cursor; // eax
+  struct RootFringeCatalogObjectStrideCursor *fringe_entry_object_cursor; // esi
   int j; // edi
   Object *v298; // eax
   Object *v299; // eax
@@ -3063,28 +3063,34 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.barrier.bod.object->blend_mode = 7;
   initialize_track_render_cache_manager(&game->subgame.segment_cache);
   edge_selectorj = 0;
-  p_object = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object;
+  fringe_orientation_object_cursor = (struct RootFringeCatalogObjectStrideCursor *)&game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object;
   do
   {
     for ( orientation = 0; orientation < 4; ++orientation )
     {
       x_offseta = 0;
-      v296 = p_object;
+      fringe_entry_object_cursor = fringe_orientation_object_cursor;
       do
       {
         for ( j = 0; j < 3; ++j )
         {
           v298 = add_object_to_list(&g_object_list);
-          set_bod_object((BodBase *)(v296 - 9), v298);
-          initialize_backdrop_tile_quad(*v296, edge_selectorj, orientation, x_offseta - 1, j - 1, aObjectsUnivers_1);
-          v299 = *v296;
-          v296 += 14;
+          set_bod_object((BodBase *)fringe_entry_object_cursor[-1]._stride_tail, v298);
+          initialize_backdrop_tile_quad(
+            fringe_entry_object_cursor->object,
+            edge_selectorj,
+            orientation,
+            x_offseta - 1,
+            j - 1,
+            aObjectsUnivers_1);
+          v299 = fringe_entry_object_cursor->object;
+          ++fringe_entry_object_cursor;
           v299->blend_mode = 5;
         }
         ++x_offseta;
       }
       while ( x_offseta < 3 );
-      p_object = v296;
+      fringe_orientation_object_cursor = fringe_entry_object_cursor;
     }
     ++edge_selectorj;
   }

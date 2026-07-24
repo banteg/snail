@@ -1247,3 +1247,44 @@ This is analysis-only: no matcher source changed, and the honest
 world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
 existing 36 broad-alignment mismatches. No pointer arithmetic or padding was
 added to the matcher.
+
+## 2026-07-24 root fringe-catalog field-stride ownership
+
+The startup fringe constructor is an exact `8 * 4 * 3 * 3 = 288` entry walk.
+Its loop order is family, direction, first edge selector, then second edge
+selector, matching `RootTrackFringeBodCatalog::entries[8][4][3][3]` and the
+authored catalog order used by `build_track_fringe_objects`. Those are root
+BOD records 58 through 345, beginning at `GameRoot +0x44db0` and occupying
+exactly `0x3f00` bytes.
+
+Native does not carry whole `RootBodCatalogEntry*` values. Both induction
+variables begin at the borrowed `RootBodCatalogEntry::object` field at entry
+offset `+0x24`. The inner cursor advances by the exact `0x38` entry stride;
+after nine entries the outer cursor adopts it as the next direction's start.
+The enclosing BOD write therefore remains visibly offset-based at `-0x24`.
+
+The analysis-only `RootFringeCatalogObjectStrideCursor` records that
+field-first lifetime without becoming another owner.
+`RootTrackFringeBodCatalog::entries` remains the sole owner of all 288 BOD
+records. Each record only retains the `Object*` returned by
+`add_object_to_list(&g_object_list)`; the cursor owns neither the record nor
+the referenced object.
+
+Binary Ninja binds the outer EAX lifetime at exact variable index
+21231/storage 66 and the inner ESI lifetime at index 21245/storage 72. IDA
+independently binds the same non-stack locals at `0x40ffe0` and `0x40ffee`.
+Both decompilers now show named outer and inner cursors, `->object`, a
+one-entry increment, and the same negative enclosing-BOD offset. Both replay
+lanes fail closed on the exact `0x38` cursor extent and exact local
+identities.
+
+The root-catalog Binary Ninja replay now schedules the expensive world
+initializer reanalysis only when its user-variable batch actually changes.
+The existing track-slice health guard was also made insensitive to transient
+Binary Ninja SSA-number suffixes while retaining its semantic ownership
+checks. Binary Ninja and IDA agree, so a Ghidra replay was unnecessary.
+
+This is analysis-only: no matcher source changed, and the honest
+world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
+existing 36 broad-alignment mismatches. No pointer arithmetic or padding was
+added to the matcher.

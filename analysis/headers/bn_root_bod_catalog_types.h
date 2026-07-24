@@ -52,6 +52,19 @@ typedef struct RootTrackFringeBodCatalog {
     RootBodCatalogEntry entries[8][4][3][3];
 } RootTrackFringeBodCatalog;
 
+/*
+ * Analysis-only field-first view for the 288-entry fringe constructor in
+ * initialize_game_assets_and_world. The physical cursors begin at
+ * RootBodCatalogEntry::object and advance by one exact 0x38-byte entry. The
+ * tail crosses the current entry's color and the next entry's prefix; it owns
+ * neither the catalog entry nor the referenced Object.
+ */
+typedef struct RootFringeCatalogObjectStrideCursor {
+    Object* object;
+    RootBodCatalogColor4f color;
+    uint8_t _stride_tail[0x24];
+} RootFringeCatalogObjectStrideCursor;
+
 typedef struct RootBodCatalog {
     RootBodCatalogEntry universe_hole;
     RootBodCatalogEntry unknown_01_04[4];

@@ -26,9 +26,15 @@ REQUIRED_STRUCTS = (
     "RootTrackFringeBodCatalog",
     "RootBodCatalog",
     "RootTrackSliceTripletStrideView",
+    "RootFringeCatalogObjectStrideCursor",
 )
 ROOT_BOD_CATALOG_ENTRY_FIELD_UPDATES = (
     ("0x24", "object", "Object*"),
+)
+ROOT_FRINGE_CATALOG_OBJECT_STRIDE_CURSOR_FIELD_UPDATES = (
+    ("0x00", "object", "Object*"),
+    ("0x04", "color", "RootBodCatalogColor4f"),
+    ("0x14", "_stride_tail", "uint8_t[0x24]"),
 )
 ROOT_TRACK_SLICE_TRIPLET_STRIDE_VIEW_FIELD_UPDATES = (
     ("0x00", "root_to_floor_slice", "uint8_t[0x44790]"),
@@ -55,6 +61,22 @@ WORLD_INITIALIZER_USER_VAR_UPDATES = (
         "track_slice_triplet_stride_view",
         "RootTrackSliceTripletStrideView*",
     ),
+    (
+        "initialize_game_assets_and_world",
+        "RegisterVariableSourceType",
+        21231,
+        66,
+        "fringe_orientation_object_cursor",
+        "RootFringeCatalogObjectStrideCursor*",
+    ),
+    (
+        "initialize_game_assets_and_world",
+        "RegisterVariableSourceType",
+        21245,
+        72,
+        "fringe_entry_object_cursor",
+        "RootFringeCatalogObjectStrideCursor*",
+    ),
 )
 
 
@@ -77,6 +99,7 @@ def require_catalog_extents(*, target: str) -> None:
         "RootTrackFringeBodCatalog": 0x3F00,
         "RootBodCatalog": 0x4D00,
         "RootTrackSliceTripletStrideView": 0x44B48,
+        "RootFringeCatalogObjectStrideCursor": 0x38,
     }
     observed_sizes = {
         name: current_struct_size(REPO_ROOT, target=target, struct_name=name)
@@ -139,25 +162,31 @@ def main() -> int:
                     "RootTrackSliceTripletStrideView",
                     ROOT_TRACK_SLICE_TRIPLET_STRIDE_VIEW_FIELD_UPDATES,
                 ),
+                (
+                    "RootFringeCatalogObjectStrideCursor",
+                    ROOT_FRINGE_CATALOG_OBJECT_STRIDE_CURSOR_FIELD_UPDATES,
+                ),
                 ("GameRoot", GAME_ROOT_FIELD_UPDATES),
             ),
             proto_updates=PROTO_UPDATES,
         )
     )
-    operations.extend(
-        apply_user_var_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=WORLD_INITIALIZER_USER_VAR_UPDATES,
-        )
+    user_var_results = apply_user_var_updates(
+        REPO_ROOT,
+        target=args.target,
+        updates=WORLD_INITIALIZER_USER_VAR_UPDATES,
     )
-    operations.extend(
-        reanalyze_functions(
-            REPO_ROOT,
-            target=args.target,
-            identifiers=("initialize_game_assets_and_world",),
+    operations.extend(user_var_results)
+    if any(
+        operation.get("op") == "user_var_batch" for operation in user_var_results
+    ):
+        operations.extend(
+            reanalyze_functions(
+                REPO_ROOT,
+                target=args.target,
+                identifiers=("initialize_game_assets_and_world",),
+            )
         )
-    )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,
