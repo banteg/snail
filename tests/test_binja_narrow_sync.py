@@ -84,6 +84,22 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert "GalaxyPoint g_galaxy_group_points[10];" in ida_runtime_sync
     assert "GalaxyPoint g_galaxy_route_points[101];" in ida_runtime_sync
     assert "TRUSTED_DATA_DECLARATIONS" in ida_runtime_sync
+    assert "GALAXY_ROUTE_POINT_OWNER_ADDRESS = 0x4A1D14" in ida_runtime_sync
+    assert "GALAXY_ROUTE_POINT_OWNER_SIZE = 0x328" in ida_runtime_sync
+    assert "GALAXY_ROUTE_POINT_NEXT_OWNER_ADDRESS = 0x4A203C" in ida_runtime_sync
+    for stale_address, stale_name in (
+        ("0x4A1D18", "g_galaxy_initial_map_y_bits"),
+        ("0x4A1D1C", "g_galaxy_missing_level_map_x_table"),
+        ("0x4A1D20", "g_galaxy_missing_level_map_y_table"),
+    ):
+        assert f'({stale_address}, "{stale_name}")' in ida_runtime_sync
+    assert "_sync_galaxy_route_point_owner()" in ida_runtime_sync
+    assert "_is_auto_data_name(interior_address, name)" in ida_runtime_sync
+    assert "ida_name.del_global_name(" in ida_runtime_sync
+    assert "ida_bytes.del_items(address, ida_bytes.DELIT_SIMPLE, size)" in (
+        ida_runtime_sync
+    )
+    assert "0x4088E0,  # load_galaxy_layout" in ida_runtime_sync
 
     for header in analysis_headers:
         assert "typedef struct GalaxyPoint" in header

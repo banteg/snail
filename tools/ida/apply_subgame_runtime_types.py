@@ -3,6 +3,7 @@ import pathlib
 import re
 import sys
 
+import ida_bytes
 import ida_funcs
 import ida_hexrays
 import ida_kernwin
@@ -414,6 +415,20 @@ TRUSTED_DATA_DECLARATIONS = [
     ),
 ]
 
+GALAXY_ROUTE_POINT_OWNER_ADDRESS = 0x4A1D14
+GALAXY_ROUTE_POINT_OWNER_SIZE = 0x328
+GALAXY_ROUTE_POINT_NEXT_OWNER_ADDRESS = 0x4A203C
+GALAXY_ROUTE_POINT_OWNER_NAME = "g_galaxy_route_points"
+GALAXY_ROUTE_POINT_OWNER_TYPE = "GalaxyPoint[101]"
+GALAXY_ROUTE_POINT_OWNER_DECLARATION = (
+    "GalaxyPoint g_galaxy_route_points[101];"
+)
+GALAXY_ROUTE_POINT_INTERIOR_ALIASES = (
+    (0x4A1D18, "g_galaxy_initial_map_y_bits"),
+    (0x4A1D1C, "g_galaxy_missing_level_map_x_table"),
+    (0x4A1D20, "g_galaxy_missing_level_map_y_table"),
+)
+
 TIME_TRIAL_COURSE_RECORD_EXPECTED_SIZE = 0x10
 TIME_TRIAL_COURSE_RECORD_EXPECTED_MEMBERS = (
     (0x00, 4, "course_name", "char *"),
@@ -446,6 +461,7 @@ EXPECTED_PARCEL_OWNER_SIZES = {
 REANALYSIS_FUNCTIONS = (
     0x404CF0,  # update_row_event_display
     0x408060,  # initialize_runtime_pools_and_path_template_bank
+    0x4088E0,  # load_galaxy_layout
     0x408550,  # initialize_garbage_hazard
     0x408530,  # initialize_slug_hazard_runtime
     0x414820,  # update_golb_ai
@@ -518,6 +534,205 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
 def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\b", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
+
+
+def _is_auto_data_name(address: int, name: str) -> bool:
+    match = re.fullmatch(r"(?:byte|word|dword|qword|unk)_([0-9A-Fa-f]+)", name)
+    return match is not None and int(match.group(1), 16) == address
+
+
+def _sync_galaxy_route_point_owner() -> dict[str, object]:
+    address = GALAXY_ROUTE_POINT_OWNER_ADDRESS
+    size = GALAXY_ROUTE_POINT_OWNER_SIZE
+    next_owner = GALAXY_ROUTE_POINT_NEXT_OWNER_ADDRESS
+    expected_type = _normalize_type_text(GALAXY_ROUTE_POINT_OWNER_TYPE)
+    item_head = ida_bytes.get_item_head(address)
+    item_size = ida_bytes.get_item_size(item_head)
+    owner_name = idc.get_name(address)
+    owner_type = _normalize_type_text(idc.get_type(address))
+    next_owner_head = ida_bytes.get_item_head(next_owner)
+
+    if next_owner - address != size:
+        return {
+            "status": "failed",
+            "reason": "invalid_checked_in_galaxy_route_point_boundary",
+            "address": hex(address),
+            "size": size,
+            "next_owner": hex(next_owner),
+        }
+    if next_owner_head < next_owner:
+        return {
+            "status": "failed",
+            "reason": "overlapping_next_galaxy_route_point_owner",
+            "address": hex(address),
+            "next_owner": hex(next_owner),
+            "next_owner_head": hex(next_owner_head),
+        }
+    if owner_name != GALAXY_ROUTE_POINT_OWNER_NAME or owner_type != expected_type:
+        return {
+            "status": "failed",
+            "reason": "unexpected_galaxy_route_point_owner",
+            "address": hex(address),
+            "expected_name": GALAXY_ROUTE_POINT_OWNER_NAME,
+            "expected_type": expected_type,
+            "observed_name": owner_name,
+            "observed_type": owner_type,
+            "item_head": hex(item_head),
+            "item_size": item_size,
+        }
+
+    allowed_aliases = dict(GALAXY_ROUTE_POINT_INTERIOR_ALIASES)
+    interior_names = {
+        interior_address: idc.get_name(interior_address)
+        for interior_address in range(address + 1, next_owner)
+        if idc.get_name(interior_address)
+    }
+    unexpected_names = {
+        hex(interior_address): name
+        for interior_address, name in interior_names.items()
+        if (
+            interior_address not in allowed_aliases
+            or (
+                allowed_aliases[interior_address] != name
+                and not _is_auto_data_name(interior_address, name)
+            )
+        )
+    }
+    if unexpected_names:
+        return {
+            "status": "failed",
+            "reason": "unexpected_galaxy_route_point_interior_names",
+            "address": hex(address),
+            "interior_names": unexpected_names,
+        }
+
+    if item_head == address and item_size == size and not interior_names:
+        return {
+            "status": "unchanged",
+            "address": hex(address),
+            "name": owner_name,
+            "type": owner_type,
+            "item_size": item_size,
+            "next_owner": hex(next_owner),
+        }
+    if item_head != address or item_size not in (1, 4):
+        return {
+            "status": "failed",
+            "reason": "unexpected_galaxy_route_point_extent_head",
+            "address": hex(address),
+            "observed_head": hex(item_head),
+            "observed_size": item_size,
+            "expected_size": size,
+        }
+
+    removed_aliases = []
+    generated_aliases = []
+    for interior_address, expected_name in GALAXY_ROUTE_POINT_INTERIOR_ALIASES:
+        observed_name = idc.get_name(interior_address)
+        if not observed_name:
+            continue
+        if _is_auto_data_name(interior_address, observed_name):
+            generated_aliases.append(
+                {"address": hex(interior_address), "name": observed_name}
+            )
+            continue
+        if observed_name != expected_name or not ida_name.del_global_name(
+            interior_address
+        ):
+            return {
+                "status": "failed",
+                "reason": "galaxy_route_point_interior_name_delete_failed",
+                "address": hex(interior_address),
+                "expected": expected_name,
+                "observed": observed_name,
+            }
+        replacement_name = idc.get_name(interior_address)
+        if replacement_name and not _is_auto_data_name(
+            interior_address, replacement_name
+        ):
+            return {
+                "status": "failed",
+                "reason": "galaxy_route_point_interior_name_delete_readback_failed",
+                "address": hex(interior_address),
+                "expected": expected_name,
+                "observed": replacement_name,
+            }
+        removed_aliases.append(
+            {"address": hex(interior_address), "name": observed_name}
+        )
+        if replacement_name:
+            generated_aliases.append(
+                {"address": hex(interior_address), "name": replacement_name}
+            )
+
+    if not ida_bytes.del_items(address, ida_bytes.DELIT_SIMPLE, size):
+        return {
+            "status": "failed",
+            "reason": "delete_fragmented_galaxy_route_point_owner_failed",
+            "address": hex(address),
+            "size": size,
+        }
+    if not ida_bytes.create_byte(address, size, True):
+        return {
+            "status": "failed",
+            "reason": "create_galaxy_route_point_owner_extent_failed",
+            "address": hex(address),
+            "size": size,
+        }
+    if idc.get_name(address) != GALAXY_ROUTE_POINT_OWNER_NAME and not idc.set_name(
+        address,
+        GALAXY_ROUTE_POINT_OWNER_NAME,
+        ida_name.SN_NOWARN | ida_name.SN_FORCE,
+    ):
+        return {
+            "status": "failed",
+            "reason": "restore_galaxy_route_point_owner_name_failed",
+            "address": hex(address),
+        }
+    if not idc.SetType(address, GALAXY_ROUTE_POINT_OWNER_DECLARATION):
+        return {
+            "status": "failed",
+            "reason": "restore_galaxy_route_point_owner_type_failed",
+            "address": hex(address),
+        }
+
+    verified_head = ida_bytes.get_item_head(address)
+    verified_size = ida_bytes.get_item_size(verified_head)
+    verified_name = idc.get_name(address)
+    verified_type = _normalize_type_text(idc.get_type(address))
+    remaining_names = {
+        hex(interior_address): idc.get_name(interior_address)
+        for interior_address, _expected_name in GALAXY_ROUTE_POINT_INTERIOR_ALIASES
+        if idc.get_name(interior_address)
+    }
+    if (
+        verified_head != address
+        or verified_size != size
+        or verified_name != GALAXY_ROUTE_POINT_OWNER_NAME
+        or verified_type != expected_type
+        or remaining_names
+    ):
+        return {
+            "status": "failed",
+            "reason": "galaxy_route_point_owner_readback_failed",
+            "address": hex(address),
+            "expected_size": size,
+            "observed_head": hex(verified_head),
+            "observed_size": verified_size,
+            "observed_name": verified_name,
+            "observed_type": verified_type,
+            "remaining_interior_names": remaining_names,
+        }
+    return {
+        "status": "applied",
+        "address": hex(address),
+        "name": verified_name,
+        "type": verified_type,
+        "item_size": verified_size,
+        "removed_aliases": removed_aliases,
+        "cleared_generated_aliases": generated_aliases,
+        "next_owner": hex(next_owner),
+    }
 
 
 def _named_struct_size(name: str) -> int | None:
@@ -1263,6 +1478,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
         applied += 1
 
+    galaxy_route_point_owner = _sync_galaxy_route_point_owner()
+    if galaxy_route_point_owner["status"] == "failed":
+        failed.append(
+            {
+                "selector": GALAXY_ROUTE_POINT_OWNER_NAME,
+                "owner_readback": galaxy_route_point_owner,
+            }
+        )
+
     garbage_allocator_lvars = {}
     for (
         result_name,
@@ -1465,6 +1689,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "reanalyzed": reanalyzed,
+                "galaxy_route_point_owner": galaxy_route_point_owner,
                 "game_root_owner_graph": game_root_owner_graph,
                 "garbage_allocator_lvars": garbage_allocator_lvars,
                 "slug_allocator_lvars": slug_allocator_lvars,

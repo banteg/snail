@@ -12606,7 +12606,9 @@
       "required_substrings": [
         "void __thiscall load_galaxy_layout(Galaxy *galaxy)",
         "g_galaxy_group_points[0].y_bits",
-        "g_galaxy_route_points[0].x_bits",
+        "&g_galaxy_route_points[0].y_bits",
+        "g_galaxy_route_points[v19",
+        "*(GalaxyPoint *)&galaxy->route_slots[0].record.map_x = g_galaxy_route_points[0]",
         "galaxy->level_progress_base",
         "galaxy->route_names[0].color",
         "galaxy->route_slots[galaxy->record_count].record.route_name_index"
@@ -12615,6 +12617,12 @@
         "sub_4088E0",
         "_DWORD *this",
         "unk_4A1C50",
+        "g_galaxy_initial_map_y_bits",
+        "g_galaxy_missing_level_map_x_table",
+        "g_galaxy_missing_level_map_y_table",
+        "dword_4A1D18",
+        "dword_4A1D1C",
+        "dword_4A1D20",
         "unimplemented"
       ]
     },

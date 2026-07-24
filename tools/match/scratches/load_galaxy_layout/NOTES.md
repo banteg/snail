@@ -150,3 +150,22 @@ open/close, and bounds helper. Focused paired exports now retain `Galaxy*`,
 integer receivers. Matching remains honestly unchanged at 88.27%, 236/233
 instructions, prefix 62, with 39 clean operands; this is a durable ownership
 replay correction, not a source-shape claim.
+
+## 2026-07-24 IDA route-point extent ownership
+
+Binary Ninja's live xrefs and the matcher's audited relocations agree that
+`0x4a1d14..0x4a203c` is one 101-entry `GalaxyPoint` bank. IDA already carried
+that declaration at the base, but three stale interior data items at
+`+0x04/+0x08/+0x0c` split the physical extent and surfaced false
+`g_galaxy_initial_map_y_bits` and `g_galaxy_missing_level_map_*_table`
+owners in pseudocode.
+
+The subgame-runtime replay now validates the exact `0x328` boundary and the
+three known aliases, refuses any unexpected interior name or overlap with the
+string owner at `0x4a203c`, folds the fragments into one typed data item, and
+reanalyzes this loader. Real-database readback reports one 808-byte
+`GalaxyPoint[101]` item, no interior names, and an unchanged next owner; a
+second replay is idempotent. The paired export now keeps the initial y-field
+cursor, indexed missing-level coordinates, and final entry-zero copy under
+`g_galaxy_route_points`. Focused matching remains the honest 88.27%,
+236/233 instructions, prefix 62, with all 39 masked operands clean.
