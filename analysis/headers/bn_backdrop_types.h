@@ -40,7 +40,12 @@ typedef struct LandscapeScriptRecord {
 } LandscapeScriptRecord;
 
 typedef struct Backdrop {
-    uint8_t bod_base[0x38];
+    /*
+     * Borrow the complete canonical BodBase already present in the analysis
+     * database. The narrow replay verifies its exact 0x38-byte extent before
+     * parsing this dependent owner.
+     */
+    BodBase bod;
     uint8_t active_split_backdrop_pair;
     uint8_t pending_split_backdrop_pair;
     uint8_t _pad_03a[0x3c - 0x3a];
@@ -72,6 +77,8 @@ typedef struct Backdrop {
     int32_t unknown_6c4;
     float zoom;
 } Backdrop;
+
+typedef char Backdrop_must_be_0x6cc[(sizeof(Backdrop) == 0x6cc) ? 1 : -1];
 
 void __thiscall set_backdrop_progress_fraction(Backdrop* backdrop, float zoom);
 void __thiscall set_backdrop_distort(Backdrop* backdrop, float distort);

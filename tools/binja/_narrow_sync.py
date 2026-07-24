@@ -1010,7 +1010,7 @@ parsed, errors = binaryninja.TypeParser.default.parse_types_from_source(
     header,
     header_path,
     bv.platform,
-    None,
+    bv.type_container,
 )
 parse_errors = [str(error) for error in (errors or ())]
 if parsed is None and not parse_errors:

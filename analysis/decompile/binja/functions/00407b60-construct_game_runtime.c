@@ -65,10 +65,7 @@
 00407eae        do while (i_3 != 1)
 00407ec6        initialize_array_with_constructor(&game->directx_loader.cached_x_mesh_slots, 0xbc, 0x80, initialize_cached_x_mesh_slot)
 00407ed3        initialize_bod_base(&game->backdrop)
-00407eee        game->backdrop.bod_base[0] = 0xe4
-00407eee        game->backdrop.bod_base[1] = 0x72
-00407eee        game->backdrop.bod_base[2] = 0x49
-00407eee        game->backdrop.bod_base[3] = 0
+00407eee        game->backdrop.bod.bod.vtable = &g_backdrop_callback_table
 00407efc        initialize_bod_base(&game->star_manager)
 00407f07        game->star_manager.bod.bod.vtable = &g_star_field_callback_table
 00407f0d        initialize_bod_base(&game->root_bod_4f3c8)

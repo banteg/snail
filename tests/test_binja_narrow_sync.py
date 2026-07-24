@@ -749,6 +749,8 @@ def test_ida_frontend_owner_lanes_replay_the_shared_root_graph() -> None:
     assert '"Options": 0x24' in menu_apply
     assert '"Exit": 0x1C' in menu_apply
     assert 'analysis/headers/bn_frontend_menu_types.h' in menu_sync
+    assert "EXPECTED_BOD_BASE_SIZE = 0x38" in backdrop_apply
+    assert '"reason": "dependency_size_mismatch"' in backdrop_apply
     assert "EXPECTED_BACKDROP_SIZE = 0x6CC" in backdrop_apply
     assert "void __thiscall render_backdrop(Backdrop* backdrop);" in backdrop_apply
     assert "int32_t __thiscall update_backdrop(Backdrop* backdrop);" in backdrop_apply
@@ -764,6 +766,12 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
     assert "report_deferred_prototypes" not in source
     assert "proto_owner_deferred" not in source
     assert "typedef struct LandscapeScriptRecord {" in header
+    assert "BodBase bod;" in header
+    assert "uint8_t bod_base[0x38];" not in header
+    assert "Backdrop_must_be_0x6cc" in header
+    assert "require_bod_base_dependency" in source
+    assert 'struct_name="BodBase"' in source
+    assert "size != 0x38" in source
     assert "int32_t backdrop_texture_id;" in header
     assert "uint8_t split_backdrop_texture_pair;" in header
     assert "float distort;" in header
@@ -2215,6 +2223,7 @@ def test_current_header_type_equivalence_uses_exact_parsed_type_comparison(
         calls.append(args)
         assert args[:2] == ("py", "exec")
         assert "current == parsed_type.type" in args[-1]
+        assert "bv.type_container" in args[-1]
         return {
             "result": {
                 "errors": [],

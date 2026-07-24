@@ -110,10 +110,10 @@ int construct_game_runtime()
     }
     while ( v9 );
     initialize_array_with_constructor(game->directx_loader.cached_x_mesh_slots, 188, 128, initialize_cached_x_mesh_slot);
-    initialize_bod_base((BodBase *)&game->backdrop);
+    initialize_bod_base(&game->backdrop.bod);
     noop_this_constructor(&game->backdrop.primary_world_blend);
     noop_this_constructor(&game->backdrop.secondary_world_blend);
-    *(_DWORD *)game->backdrop.bod_base = &g_backdrop_callback_table;
+    game->backdrop.bod.bod.vtable = &g_backdrop_callback_table;
     initialize_bod_base(&game->star_manager.bod);
     game->star_manager.bod.bod.vtable = &g_star_field_callback_table;
     initialize_bod_base(&game->root_bod_4f3c8);

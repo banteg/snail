@@ -18,6 +18,7 @@ if str(SCRIPT_ROOT) not in sys.path:
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 
+EXPECTED_BOD_BASE_SIZE = 0x38
 EXPECTED_BACKDROP_SIZE = 0x6CC
 
 TRUSTED_DECLARATIONS = (
@@ -81,12 +82,26 @@ def _named_struct_size(name: str) -> int | None:
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
-    parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
-    backdrop_size = _named_struct_size("Backdrop")
     failed = []
     missing = []
     applied = 0
     unchanged = 0
+    bod_base_size = _named_struct_size("BodBase")
+
+    if bod_base_size != EXPECTED_BOD_BASE_SIZE:
+        failed.append(
+            {
+                "selector": "BodBase",
+                "reason": "dependency_size_mismatch",
+                "expected": EXPECTED_BOD_BASE_SIZE,
+                "observed": bod_base_size,
+            }
+        )
+
+    parse_errors = (
+        0 if failed else idc.parse_decls(str(header_path), idc.PT_FILE)
+    )
+    backdrop_size = _named_struct_size("Backdrop")
 
     if backdrop_size != EXPECTED_BACKDROP_SIZE:
         failed.append(
@@ -133,6 +148,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "bod_base_size": bod_base_size,
                 "backdrop_size": backdrop_size,
                 "applied": applied,
                 "unchanged": unchanged,

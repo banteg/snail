@@ -16575,6 +16575,7 @@
         "struct Viewport* viewport_cursor = &game->viewports",
         "struct BodBase* root_bod_cursor = &game->root_bod_catalog",
         "initialize_array_with_constructor(&game->directx_loader.cached_x_mesh_slots",
+        "game->backdrop.bod.bod.vtable = &g_backdrop_callback_table",
         "initialize_runtime_pools_and_path_template_bank(&game->subgame)",
         "g_game_base = game"
       ],
@@ -16584,6 +16585,7 @@
         "operator++",
         "void*** esi",
         "sub_48ba3f",
+        "backdrop.bod_base",
         "&esi["
       ]
     },
@@ -16601,6 +16603,8 @@
         "player_cursor = game->players;",
         "viewport_cursor = game->viewports;",
         "root_bod_cursor = (struct BodBase *)&game->root_bod_catalog;",
+        "initialize_bod_base(&game->backdrop.bod);",
+        "game->backdrop.bod.bod.vtable = &g_backdrop_callback_table;",
         "initialize_runtime_pools_and_path_template_bank(&game->subgame);",
         "g_game_base = game;"
       ],
@@ -16610,6 +16614,7 @@
         "operator new",
         "CompletionResultScreen Size",
         "MEMORY[0x4DF904]",
+        "backdrop.bod_base",
         "sub_407B60"
       ]
     },

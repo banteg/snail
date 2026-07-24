@@ -134,6 +134,13 @@ only exact physical local-variable lifetimes. The lvar query records a clean
 `decompile_failed` result when Hex-Rays returns no cfunc, so this diagnostic
 path remains machine-readable.
 
+Narrow Binary Ninja headers may borrow a complete canonical database type
+instead of duplicating its declaration. Parse those headers against
+`bv.type_container`, and make the sync script verify the dependency's exact
+size before parsing. Do not replace a complete owner with a forward declaration
+inside a replay header: the importer deliberately rejects that ownership
+erasure before mutating the database.
+
 The collision-state replay is deliberately bounded: it verifies the canonical
 parcel, pickup, slug, and ring enums, then touches only the six exact physical
 register lifetimes in `handle_subgoldy_collisions`. Use it for collision-local

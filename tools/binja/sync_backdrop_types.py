@@ -10,7 +10,9 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_proto_updates,
     apply_struct_field_updates,
+    current_struct_size,
     emit_summary,
+    reanalyze_functions,
     types_declare_if_changed,
 )
 
@@ -62,6 +64,19 @@ PROTO_UPDATES = (
 )
 
 
+def require_bod_base_dependency(*, target: str) -> None:
+    size = current_struct_size(
+        REPO_ROOT,
+        target=target,
+        struct_name="BodBase",
+    )
+    if size != 0x38:
+        raise RuntimeError(
+            "BodBase must be exactly 0x38 bytes before Backdrop replay; "
+            f"observed {size!r}"
+        )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Apply the narrow cRBackdrop ownership slice to Binary Ninja."
@@ -82,12 +97,11 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    operations: list[dict[str, object]] = []
-    operations.append(
-        types_declare_if_changed(
-            REPO_ROOT, target=args.target, header_path=header_path
-        )
+    require_bod_base_dependency(target=args.target)
+    type_replay = types_declare_if_changed(
+        REPO_ROOT, target=args.target, header_path=header_path
     )
+    operations: list[dict[str, object]] = [type_replay]
     operations.extend(
         apply_struct_field_updates(
             REPO_ROOT,
@@ -99,6 +113,14 @@ def main() -> int:
     operations.extend(
         apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES)
     )
+    if type_replay.get("status") != "skipped":
+        operations.extend(
+            reanalyze_functions(
+                REPO_ROOT,
+                target=args.target,
+                identifiers=("construct_game_runtime",),
+            )
+        )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,

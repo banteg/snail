@@ -569,3 +569,34 @@ No matching source was changed. Focused matching remains the honest 88.89%
 (`299/268` candidate/target instructions, prefix `2/268`, 120 clean operands,
 zero unresolved or mismatched operands); the residual EH and debug-call
 cleanup shape is unchanged.
+
+## 2026-07-24 Backdrop BodBase ownership
+
+The Windows constructor independently establishes the first `0x38` bytes of
+the embedded `Backdrop` as a `BodBase`: it passes `GameRoot + 0x4ec10` to
+`initialize_bod_base`, then replaces that base object's callback table with
+`g_backdrop_callback_table`. The matching owner already models
+`class Backdrop : public BodBase`, so this is an analysis ownership recovery,
+not a source-shape guess.
+
+The first narrow-header experiment tried to repeat `BodBase` while only
+forward-declaring its `Object` dependency. The Binary Ninja importer refused
+the replay before mutation because that would erase a complete 0xdc-byte
+owner. The corrected replay instead parses against the database type container
+and first requires the canonical `BodBase` to be exactly `0x38` bytes. IDA
+performs the same dependency-size check before parsing the shared header.
+
+Both decompilers now expose the same base-class write:
+`game->backdrop.bod.bod.vtable = &g_backdrop_callback_table`. IDA additionally
+renders the constructor edge as `initialize_bod_base(&game->backdrop.bod)`;
+Binary Ninja preserves the equivalent same-address
+`initialize_bod_base(&game->backdrop)` expression. Replaying both databases a
+second time is idempotent.
+
+The distortion-grid loops remain deliberately raw. Their physical registers
+are pre-biased before the grid-member offset and therefore are not honest
+`BackdropDistortCell*` values.
+
+No matching source changed. Focused matching remains the honest 88.89%
+(`299/268` candidate/target instructions, prefix `2/268`, 120 clean operands,
+zero unresolved or mismatched operands).
