@@ -47,9 +47,11 @@ EXPECTED_STRUCT_FIELDS = {
 # advance it by the exact 0x20 embedded-child stride. Binary Ninja otherwise
 # promotes &ring->particles to a pointer to the complete ten-element array,
 # forcing child update and Sprite-manager cleanup through false parent-relative
-# subtraction. The two transition paths also carry a direct Vec3* borrow into
-# each child's base_position. Keep these exact physical cursors separate from
-# the broad type/prototype replay.
+# subtraction. The two transition paths also carry a direct float* cursor
+# rooted at each child's radius and a direct Vec3* borrow into its
+# base_position. Keep these exact physical cursors separate from the broad
+# type/prototype replay: the radius cursor is intentionally not retyped as a
+# SubRingStar* because its native value points at the interior +0x1c field.
 RING_PARTICLE_USER_VAR_UPDATES = (
     (
         "initialize_ring_or_special_effect_particles",
@@ -94,6 +96,14 @@ RING_PARTICLE_USER_VAR_UPDATES = (
     (
         "update_ring_or_special_effect_parent",
         "RegisterVariableSourceType",
+        695,
+        67,
+        "collect_radius_cursor",
+        "float*",
+    ),
+    (
+        "update_ring_or_special_effect_parent",
+        "RegisterVariableSourceType",
         797,
         72,
         "collect_base_position",
@@ -118,6 +128,14 @@ RING_PARTICLE_USER_VAR_UPDATES = (
     (
         "update_ring_or_special_effect_parent",
         "RegisterVariableSourceType",
+        1072,
+        66,
+        "expand_radius_cursor",
+        "float*",
+    ),
+    (
+        "update_ring_or_special_effect_parent",
+        "RegisterVariableSourceType",
         1093,
         72,
         "expand_base_position",
@@ -129,8 +147,8 @@ RING_PARTICLE_USER_VAR_UPDATES = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the carried SubRingStar and child-position cursors in "
-            "the ring particle initializer and parent AI."
+            "Replay the carried SubRingStar, child-radius, and child-position "
+            "cursors in the ring particle initializer and parent AI."
         )
     )
     parser.add_argument(

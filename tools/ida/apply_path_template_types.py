@@ -292,6 +292,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x43D3D0,  # set_subgoldy_ghost_z
     0x43D480,  # get_track_runtime_cell_at_world_z
     0x43DF10,  # spawn_track_ring_or_special_effect
+    0x43E830,  # update_ring_or_special_effect_parent
     0x43ECC0,  # update_track_health_pickup
     0x43EE50,  # update_track_speedup
     0x43EFB0,  # update_track_jetpack_pickup
@@ -746,6 +747,21 @@ SPAWN_TRACK_RING_LVAR_SPECS = (
     ("active_head", "BodNode **active_head;", 0x43E400, None),
     ("active_first", "BodNode *active_first;", 0x43E405, None),
     ("promoted_head", "BodNode *promoted_head;", 0x43E424, None),
+)
+
+RING_PARENT_RADIUS_LVAR_SPECS = (
+    (
+        "collect_radius_cursor",
+        "float *collect_radius_cursor;",
+        0x43EAE8,
+        None,
+    ),
+    (
+        "expand_radius_cursor",
+        "float *expand_radius_cursor;",
+        0x43EC61,
+        None,
+    ),
 )
 
 SPAWN_TRACK_HEALTH_LVAR_SPECS = (
@@ -2857,6 +2873,13 @@ def _sync_spawn_track_ring_lvars() -> dict[str, object]:
     )
 
 
+def _sync_ring_parent_radius_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "update_ring_or_special_effect_parent",
+        RING_PARENT_RADIUS_LVAR_SPECS,
+    )
+
+
 def _sync_spawn_track_health_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "spawn_track_health_pickup",
@@ -3813,6 +3836,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "ownership_lvars": spawn_track_ring_lvars,
             }
         )
+    ring_parent_radius_lvars = _sync_ring_parent_radius_lvars()
+    if ring_parent_radius_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "update_ring_or_special_effect_parent",
+                "radius_lvars": ring_parent_radius_lvars,
+            }
+        )
     spawn_track_health_lvars = _sync_spawn_track_health_lvars()
     if spawn_track_health_lvars.get("status") == "failed":
         failed.append(
@@ -3959,6 +3990,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "initialize_subgoldy_lvars": initialize_subgoldy_lvars,
                 "remove_subgame_bods_cursor_lvars": remove_subgame_bods_cursor_lvars,
                 "spawn_track_ring_lvars": spawn_track_ring_lvars,
+                "ring_parent_radius_lvars": ring_parent_radius_lvars,
                 "spawn_track_health_lvars": spawn_track_health_lvars,
                 "spawn_track_jetpack_lvars": spawn_track_jetpack_lvars,
                 "spawn_salt_hazard_lvars": spawn_salt_hazard_lvars,

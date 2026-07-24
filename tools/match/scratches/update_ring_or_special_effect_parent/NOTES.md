@@ -228,3 +228,27 @@ The `0x4c` stride difference is exactly two `0x20` children plus the already
 proved `0x0c` renderable-prefix difference. This independently preserves the
 parent/child ownership graph while proving that `SUB_RING_PARTICLE_COUNT` is a
 Windows extent, not a cross-platform constant.
+
+## 2026-07-24 radius-field cursor replay
+
+Binary Ninja and Hex-Rays independently recover both transition loops as
+physical `float*` cursors rooted at `SubRingStar::radius` (`parent +0xac`) and
+advanced eight floats (`0x20`) per child. The exact collect definitions are
+BN MLIL variable `(695, ECX)` at `0x43eae7` and Hex-Rays lvar `0x43eae8`; the
+expand definitions are `(1072, EAX)` at `0x43ec60` and lvar `0x43ec61`.
+
+The durable replay keeps those values as `float*` and names them
+`collect_radius_cursor` / `expand_radius_cursor`. It deliberately does not
+retype an interior `+0x1c` pointer as `SubRingStar*`. Binary Ninja now renders
+the loads and stores through the radius cursor itself, eliminating the false
+`(cursor - 0xac)->particles[0].radius` and
+`(cursor - 0xac)->owner_lives_snapshot` parent owners while retaining the
+separate `Vec3*` borrows into each child's `base_position`.
+
+Refreshing the previously omitted parent updater after the IDA type import
+also carries the already proved `SubRingStar*` owner through all three cleanup
+loops, replacing stale `int*`/`kill_sprite(*cursor)` output with
+`kill_sprite(cursor->sprite)`. Focused matching is intentionally unchanged at
+98.21% (`336/336`, prefix `193/336`, 37 clean operands); the remaining two
+regions are the documented FPU/local schedule and one active-list register
+choice, not ownership gaps.

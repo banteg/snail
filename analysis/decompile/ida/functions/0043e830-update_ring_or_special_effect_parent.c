@@ -18,7 +18,7 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
   struct BodNode *list_next; // eax
   struct BodNode *list_prev; // eax
   uint32_t v15; // eax
-  int *v16; // esi
+  SubRingStar *v16; // esi
   int v17; // edi
   int v18; // ebp
   SubRingStar *v19; // edi
@@ -28,11 +28,11 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
   struct BodNode *v23; // eax
   struct BodNode *v24; // eax
   uint32_t v25; // eax
-  int *v26; // esi
+  SubRingStar *v26; // esi
   int v27; // edi
   int v28; // edx
-  Vec4 *p_position; // eax
-  float *p_radius; // ecx
+  Vec3 *p_position; // eax
+  float *collect_radius_cursor; // ecx
   double v31; // st7
   float *v32; // esi
   int v33; // ebp
@@ -43,10 +43,10 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
   struct BodNode *v38; // eax
   struct BodNode *v39; // eax
   uint32_t v40; // eax
-  int *v41; // esi
+  SubRingStar *v41; // esi
   int v42; // edi
-  Vec4 *v43; // edx
-  float *v44; // eax
+  Vec3 *v43; // edx
+  float *expand_radius_cursor; // eax
   int v45; // ecx
   double v46; // st7
   float *v47; // esi
@@ -127,12 +127,12 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
           {
             report_errorf(aListRemove);
           }
-          v16 = (int *)ring->particles;
+          v16 = ring->particles;
           v17 = 10;
           do
           {
-            kill_sprite(*v16);
-            v16 += 8;
+            kill_sprite(v16->sprite);
+            ++v16;
             --v17;
           }
           while ( v17 );
@@ -159,7 +159,7 @@ LABEL_30:
         {
           v28 = 10;
           p_position = &ring->body.transform.position;
-          p_radius = &ring->particles[0].radius;
+          collect_radius_cursor = &ring->particles[0].radius;
           v49 = ring->owner_player->cached_camera_target_world.z + 0.2;
           v51 = ring->owner_player->cached_camera_target_world.y - ring->body.transform.position.y;
           v52 = v49 - ring->body.transform.position.z;
@@ -173,11 +173,11 @@ LABEL_30:
           ring->body.transform.position.z = v50 + ring->body.transform.position.z;
           do
           {
-            v31 = *p_radius * 0.94;
-            v32 = p_radius - 5;
-            p_radius += 8;
+            v31 = *collect_radius_cursor * 0.94;
+            v32 = collect_radius_cursor - 5;
+            collect_radius_cursor += 8;
             --v28;
-            *(p_radius - 8) = v31;
+            *(collect_radius_cursor - 8) = v31;
             *v32 = p_position->x;
             v32[1] = p_position->y;
             v32[2] = p_position->z;
@@ -216,12 +216,12 @@ LABEL_30:
           {
             report_errorf(aListRemove);
           }
-          v26 = (int *)ring->particles;
+          v26 = ring->particles;
           v27 = 10;
           do
           {
-            kill_sprite(*v26);
-            v26 += 8;
+            kill_sprite(v26->sprite);
+            ++v26;
             --v27;
           }
           while ( v27 );
@@ -247,15 +247,15 @@ LABEL_50:
         if ( v35 <= 1.0 )
         {
           v43 = &ring->body.transform.position;
-          v44 = &ring->particles[0].radius;
+          expand_radius_cursor = &ring->particles[0].radius;
           v45 = 10;
           do
           {
-            v46 = *v44 * 1.1;
-            v47 = v44 - 5;
-            v44 += 8;
+            v46 = *expand_radius_cursor * 1.1;
+            v47 = expand_radius_cursor - 5;
+            expand_radius_cursor += 8;
             --v45;
-            *(v44 - 8) = v46;
+            *(expand_radius_cursor - 8) = v46;
             *v47 = v43->x;
             v47[1] = v43->y;
             v47[2] = v43->z;
@@ -294,12 +294,12 @@ LABEL_50:
           {
             report_errorf(aListRemove);
           }
-          v41 = (int *)ring->particles;
+          v41 = ring->particles;
           v42 = 10;
           do
           {
-            kill_sprite(*v41);
-            v41 += 8;
+            kill_sprite(v41->sprite);
+            ++v41;
             --v42;
           }
           while ( v42 );

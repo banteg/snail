@@ -90,17 +90,17 @@
 0043ea2c        if ((((x87_r7_12 < temp5 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp5) ? 1 : 0) << 0xa | (x87_r7_12 == temp5 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
 0043eac8        int32_t i_9 = 0xa
 0043eacd        struct Vec3* eax_10 = &ring->owner_player->cached_camera_target_world
-0043eae7        float* ecx_13 = &ring->particles[0].radius
+0043eae7        float* collect_radius_cursor = &ring->particles[0].radius
 0043eb2d        ring->world_position.x = fconvert.s((fconvert.t(eax_10->x) - fconvert.t(ring->world_position.x)) * fconvert.t(0.939999998f) + fconvert.t(ring->world_position.x))
 0043eb36        ring->world_position.y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_10->y) - fconvert.t(ring->world_position.y))) * fconvert.t(0.939999998f))) + fconvert.t(ring->world_position.y))
 0043eb40        ring->world_position.z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_10->z) + fconvert.t(0.200000003f))) - fconvert.t(ring->world_position.z))) * fconvert.t(0.939999998f))) + fconvert.t(ring->world_position.z))
 0043eb67        int32_t i_3
-0043eb45        long double x87_r7_22 = fconvert.t((ecx_13 - 0xac)->particles[0].radius) * fconvert.t(0.939999998f)
-0043eb4d        struct Vec3* collect_base_position = &ecx_13[-5]
-0043eb50        ecx_13 = &ecx_13[8]
+0043eb45        long double x87_r7_22 = fconvert.t(*collect_radius_cursor) * fconvert.t(0.939999998f)
+0043eb4d        struct Vec3* collect_base_position = &collect_radius_cursor[-5]
+0043eb50        collect_radius_cursor = &collect_radius_cursor[8]
 0043eb53        i_3 = i_9
 0043eb53        i_9 -= 1
-0043eb54        (ecx_13 - 0xac)->owner_lives_snapshot = fconvert.s(x87_r7_22)
+0043eb54        *&collect_radius_cursor[-8] = fconvert.s(x87_r7_22)
 0043eb59        collect_base_position->x = ring->world_position.x
 0043eb5e        collect_base_position->y = ring->world_position.y
 0043eb64        collect_base_position->z = ring->world_position.z
@@ -155,7 +155,7 @@
 0043ebc7        if ((((x87_r7_26 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_26, temp6_1) ? 1 : 0) << 0xa | (x87_r7_26 == temp6_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 0043ebcd        uint16_t list_flags_4 = (ring->bod.list_flags).w
 0043ebd0        ring->state = SUB_RING_STATE_INACTIVE
-0043ebe3        struct BodList* ecx_15 = &g_game_base->active_bod_list
+0043ebe3        struct BodList* ecx_14 = &g_game_base->active_bod_list
 0043ebe9        if ((list_flags_4:1.b & 2) == 0)
 0043ebf0        report_errorf("List remove")
 0043ebfc        if ((list_flags_4.b & 0x40) == 0)
@@ -164,10 +164,10 @@
 0043ec17        list_next_2->list_prev = ring->bod.list_prev
 0043ec1a        struct BodNode* list_prev_2 = ring->bod.list_prev
 0043ec1f        if (list_prev_2 == 0)
-0043ec2c        ecx_15->first = ring->bod.list_next
+0043ec2c        ecx_14->first = ring->bod.list_next
 0043ec24        list_prev_2->list_next = ring->bod.list_next
-0043ec32        ring->bod.list_next = ecx_15->free_top
-0043ec35        ecx_15->free_top = ring
+0043ec32        ring->bod.list_next = ecx_14->free_top
+0043ec35        ecx_14->free_top = ring
 0043ec38        uint32_t list_flags_5 = ring->bod.list_flags
 0043ec3b        list_flags_5:1.b &= 0xfd
 0043ec3e        ring->bod.list_flags = list_flags_5
@@ -181,15 +181,15 @@
 0043ec52        i_15 -= 1
 0043ec53        do while (i_6 != 1)
 0043ec5c        return
-0043ec60        float* eax_15 = &ring->particles[0].radius
+0043ec60        float* expand_radius_cursor = &ring->particles[0].radius
 0043ec66        int32_t i_8 = 0xa
 0043ec8f        int32_t i_7
-0043ec6d        long double x87_r7_28 = fconvert.t((eax_15 - 0xac)->particles[0].radius) * fconvert.t(1.10000002f)
-0043ec75        struct Vec3* expand_base_position = &eax_15[-5]
-0043ec78        eax_15 = &eax_15[8]
+0043ec6d        long double x87_r7_28 = fconvert.t(*expand_radius_cursor) * fconvert.t(1.10000002f)
+0043ec75        struct Vec3* expand_base_position = &expand_radius_cursor[-5]
+0043ec78        expand_radius_cursor = &expand_radius_cursor[8]
 0043ec7b        i_7 = i_8
 0043ec7b        i_8 -= 1
-0043ec7c        (eax_15 - 0xac)->owner_lives_snapshot = fconvert.s(x87_r7_28)
+0043ec7c        *&expand_radius_cursor[-8] = fconvert.s(x87_r7_28)
 0043ec81        expand_base_position->x = ring->world_position.x
 0043ec86        expand_base_position->y = ring->world_position.y
 0043ec8c        expand_base_position->z = ring->world_position.z

@@ -132,6 +132,10 @@ register lifetimes in `handle_subgoldy_collisions`. Use it for collision-local
 iteration instead of replaying the complete path-template or subgame-runtime
 history.
 
+The ring-particle replay also preserves the two physical `float*` cursors
+rooted at `SubRingStar::radius`. They advance by the child stride, but remain
+interior-field pointers rather than being falsely promoted to `SubRingStar*`.
+
 The pickup-list replay is similarly bounded. It verifies the canonical
 `GameRoot -> BodList -> BodNode` owner chain, then preserves only the list-head
 address and reload lifetimes in the health and jetpack allocators. Use it when
