@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**626/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **101081/317040** bytes (**31.88%**) are proof-grade, and overall fuzzy is **76.31%**.
+**627/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **101948/317040** bytes (**32.16%**) are proof-grade, and overall fuzzy is **76.48%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
-## Proof Grade (626)
+## Proof Grade (627)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -522,6 +522,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_font_wave_state | 0x449ca0 | 121 | 25/25 | 100.00% | 25/25 | 17 ok |  |
 | ✅ | font_slot_index_for_char | 0x449d20 | 358 | 145/145 | 100.00% | 145/145 | - |  |
 | ✅ | measure_font_text_width | 0x449e90 | 182 | 60/60 | 100.00% | 60/60 | 9 ok |  |
+| ✅ | draw_font_text_instance | 0x44a360 | 867 | 272/272 | 100.00% | 272/272 | 41 ok |  |
 | ✅ | draw_queued_font_quad_instance | 0x44a6d0 | 95 | 41/41 | 100.00% | 41/41 | 2 ok |  |
 | ✅ | draw_font_text_queue | 0x44a730 | 83 | 31/31 | 100.00% | 31/31 | 4 ok |  |
 | ✅ | queue_font_text_instance | 0x44a790 | 277 | 73/73 | 100.00% | 73/73 | 24 ok |  |
@@ -786,7 +787,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 1 mismatch, 88 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
 
-## Early Progress (>0-49.99%) (22)
+## Early Progress (>0-49.99%) (21)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -811,7 +812,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 529/579 | 40.79% | 0/579 | 36 ok |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1229/1245 | 29.67% | 2/1245 | 2 mismatch, 66 ok |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 633/639 | 33.81% | 0/639 | 2 mismatch, 40 ok |  |
-| 🚧 | draw_font_text_instance | 0x44a360 | 867 | 221/272 | 35.70% | 1/272 | 19 ok |  |
 
 ## Reference Only (third-party) (3)
 

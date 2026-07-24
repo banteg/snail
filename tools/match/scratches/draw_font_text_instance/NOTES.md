@@ -123,3 +123,30 @@ byte but its port-specific renderer submits only the colored glyph pass, so no
 mobile-only behavior was transplanted into Windows. The vocabulary correction
 is codegen-neutral here: focused Wibo remains the honest 35.70%, 221/272
 instructions, with all 19 masked operands clean.
+
+## 2026-07-24 proof-grade render-pass ownership
+
+The exact VC6 source shape does not retain one `FontSheet*`, resolved texture,
+or width/height pair across the two render passes. Each pass independently
+reborrows the texture ref selected by the saved integer texture page and
+re-evaluates its glyph width, line marker, text scale, and sheet spacing. The
+same direct sheet ownership is used again for the integer cursor advance.
+
+The shadow block supplies two further source-level proofs:
+
+- `shadow_offset_pixels` remains an integer field for the positive gate. Its
+  float casts are written directly in the x/y arguments; VC6 common-subexpression
+  elimination emits the one converted temporary seen by both decompilers.
+- `tColour::set_color_rgba(0, 0, 0, 0.8)` is the color argument to
+  `draw_textured_quad_immediate`, not a separate setter statement. VC6 therefore
+  evaluates it after pushing the outer call's rotation and blend arguments,
+  exactly as the native instruction stream does.
+
+Removing the cross-pass aliases and retaining those direct argument expressions
+raises the focused result from the honest 35.70% frontier to 100.00%:
+272/272 instructions, a 272-instruction prefix, and all 41 masked operands
+resolved with no mismatches. Binary Ninja reproduces the borrowed queue entry,
+saved texture page, two sheet-backed passes, and integer advance. A fresh IDA
+9.3 export from a temporary database copy is byte-for-byte identical to the
+tracked export apart from the database-path banner. No register hints,
+volatile spills, dummy relocations, or other fakematching are present.

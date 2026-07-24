@@ -20,57 +20,61 @@ void draw_font_text_instance(cFontPrintBuffer* entry)
 
     char* cursor = entry->text;
     float wave_index = 0.0f;
-    while (*cursor != 0) {
+    for (; *cursor != 0; ++cursor) {
         int slot = font_slot_index_for_char(*cursor);
         int font_id = entry->font_id;
-        FontSheet* sheet = &g_font_sheets[font_id];
 
         float u0 = g_font_sheets[font_id].glyph_u0[slot];
         float u1 = g_font_sheets[font_id].glyph_u1[slot];
-        int texture_page = g_font_sheets[font_id].texture_page[slot];
         float v0 = g_font_sheets[font_id].glyph_v0;
         float v1 = g_font_sheets[font_id].glyph_v1;
+        int texture_page = g_font_sheets[font_id].texture_page[slot];
 
-        float wave_x = sine(g_font_wave_phase_a + wave_index) * entry->text_wave_amplitude * 2.0f;
-        float wave_y = cosine(wave_index * 3.0f + g_font_wave_phase_a) * entry->text_wave_amplitude * 4.0f;
+        float wave_x = sine(g_font_wave_phase_a + wave_index)
+            * entry->text_wave_amplitude * 2.0f;
+        float wave_y = cosine(wave_index * 3.0f + g_font_wave_phase_a)
+            * entry->text_wave_amplitude * 4.0f;
         wave_index = wave_index + 1.0f;
 
         float draw_x = (float)(int)(wave_x + cursor_x);
         float draw_y = (float)(int)(wave_y + entry->y0);
 
         if (slot != 0x35) {
-            TextureRef** textures = &sheet->texture_ref_a;
-            TextureRef* texture = textures[texture_page];
-            float glyph_width = sheet->glyph_width[slot] * entry->text_scale * sheet->spacing_scale;
-            float glyph_height = sheet->line_marker_y * entry->text_scale * sheet->spacing_scale;
-
-            if (entry->shadow_enabled != 0 && sheet->shadow_offset_pixels > 0) {
+            if (entry->shadow_enabled != 0
+                && g_font_sheets[entry->font_id].shadow_offset_pixels > 0) {
                 tColour shadow_color;
-                shadow_color.set_color_rgba(0.0f, 0.0f, 0.0f, 0.800000012f);
-                float shadow_offset = (float)sheet->shadow_offset_pixels;
                 draw_textured_quad_immediate(
-                    texture,
-                    draw_x + shadow_offset,
-                    draw_y + shadow_offset,
+                    (&g_font_sheets[entry->font_id].texture_ref_a)[texture_page],
+                    draw_x
+                        + (float)g_font_sheets[entry->font_id]
+                            .shadow_offset_pixels,
+                    draw_y
+                        + (float)g_font_sheets[entry->font_id]
+                            .shadow_offset_pixels,
                     0.0f,
                     0.0f,
                     0.0f,
                     0.0f,
                     0.0f,
                     0.0f,
-                    glyph_width,
-                    glyph_height,
+                    g_font_sheets[entry->font_id].glyph_width[slot]
+                        * entry->text_scale
+                        * g_font_sheets[entry->font_id].spacing_scale,
+                    g_font_sheets[entry->font_id].line_marker_y
+                        * entry->text_scale
+                        * g_font_sheets[entry->font_id].spacing_scale,
                     u0,
                     v0,
                     u1,
                     v1,
-                    &shadow_color,
+                    shadow_color.set_color_rgba(
+                        0.0f, 0.0f, 0.0f, 0.800000012f),
                     2,
                     0);
             }
 
             draw_textured_quad_immediate(
-                texture,
+                (&g_font_sheets[entry->font_id].texture_ref_a)[texture_page],
                 draw_x,
                 draw_y,
                 0.0f,
@@ -79,8 +83,12 @@ void draw_font_text_instance(cFontPrintBuffer* entry)
                 0.0f,
                 0.0f,
                 0.0f,
-                glyph_width,
-                glyph_height,
+                g_font_sheets[entry->font_id].glyph_width[slot]
+                    * entry->text_scale
+                    * g_font_sheets[entry->font_id].spacing_scale,
+                g_font_sheets[entry->font_id].line_marker_y
+                    * entry->text_scale
+                    * g_font_sheets[entry->font_id].spacing_scale,
                 u0,
                 v0,
                 u1,
@@ -90,10 +98,13 @@ void draw_font_text_instance(cFontPrintBuffer* entry)
                 0);
         }
 
-        int advance = (int)sheet->glyph_width[slot];
-        ++cursor;
-        cursor_x = (float)advance * sheet->width_scale * sheet->spacing_scale
-            * entry->text_scale + cursor_x;
+        int advance =
+            (int)g_font_sheets[entry->font_id].glyph_width[slot];
+        cursor_x = (float)advance
+            * g_font_sheets[entry->font_id].width_scale
+            * g_font_sheets[entry->font_id].spacing_scale
+            * entry->text_scale
+            + cursor_x;
     }
 
 }

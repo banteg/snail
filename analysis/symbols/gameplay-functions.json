@@ -3290,7 +3290,7 @@
     {
       "address": "0x44a360",
       "name": "draw_font_text_instance",
-      "description": "Void FontPrintReal counterpart over one cFontPrintBuffer: preserves the borrowed queue-entry owner in ESI, reuses its incoming stack slot as the horizontal glyph cursor, maps each byte to the FontSheet glyph_u0/glyph_u1/glyph_v0/glyph_v1 atlas quartet and texture page, borrows the selected texture ref for shadow and primary draws, and advances by the integer glyph width. The queue drain discards EAX on every path."
+      "description": "Exact void FontPrintReal counterpart over one cFontPrintBuffer: preserves the borrowed queue-entry owner in ESI, reuses its incoming stack slot as the horizontal glyph cursor, maps each byte to the FontSheet glyph_u0/glyph_u1/glyph_v0/glyph_v1 atlas quartet and saved texture page, independently reborrows the selected texture and sheet dimensions for the shadow and primary draws, then advances by the integer glyph width. The optional shadow pass casts the positive sheet offset directly into both coordinates and supplies its black color setter as the draw argument; the queue drain discards EAX on every path."
     },
     {
       "address": "0x44a6d0",
