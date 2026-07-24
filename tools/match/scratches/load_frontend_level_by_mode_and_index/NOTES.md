@@ -66,3 +66,18 @@ shell. Its default arm still falls through to the final load with the native
 uninitialized filename behavior; no safety guard or score-shaped branch was
 invented. Focused matching remains honestly unchanged at 81.36% with the one
 known jump-table relocation mismatch.
+
+## 2026-07-24 gameplay-mode table identity
+
+The 32 bytes at `0x44370c` are the loader's eight-entry switch table, not the
+accidental short string `"m6D"` inferred from its first pointer bytes. Binary
+Ninja reads the entries as cases `0`, `1`, shared `2/3`, `4`, shared default
+`5/6`, and `7`; IDA independently reconstructs the same switch. The reference
+manifest now bounds and names the table and associates it with VC6's
+candidate-local `$L777` symbol.
+
+Focused similarity remains the honest 81.36% (`61/57` instructions). The sole
+masked operand also correctly remains a mismatch: jump-table references are
+content-audited, and the candidate's residual unshared formatting tail gives
+its case labels different function-relative offsets. Treating the alias alone
+as proof would hide that real layout difference.

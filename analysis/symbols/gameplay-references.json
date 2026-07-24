@@ -1279,6 +1279,16 @@
       "description": "Compiler-emitted eight-entry state switch jump table used by update_track_parcel."
     },
     {
+      "address": "0x44370c",
+      "name": "load_frontend_level_mode_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L777"
+      ],
+      "size": "0x20",
+      "description": "Compiler-emitted eight-entry gameplay-mode switch table used by SubTracks::Load; modes 5 and 6 share the default arm."
+    },
+    {
       "address": "0x444ce0",
       "name": "update_invincible_shell_jump_table",
       "kind": "jump_table",

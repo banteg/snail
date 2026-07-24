@@ -246,3 +246,20 @@ addresses; no contiguous struct is invented. Focused output stays at the honest
   opposite long-lived constant/register ledger (`EBX = 1`, `EDI = 0`,
   `EBP = quit`) versus native (`EBX = 0`, `EDI = quit`, `EBP = timeGetTime`);
   no synthetic register coercion is retained.
+
+## 2026-07-24 masked-reference rejection
+
+The three remaining masked mismatches do not contradict the recovered global
+owners. Raw Binary Ninja disassembly proves the native sequence writes
+`g_game_initialization_pending = 1` followed by
+`g_window_deactivated = EBX` at `0x406e7e..0x406e85`, reads
+`g_runtime_config.fullscreen_enabled` at `0x407132` after separately testing
+`g_window_deactivated` at `0x407123`, and finishes with
+`g_game_initialization_pending = 1` followed by
+`g_main_loop_exit_requested = EBX` at `0x4072c6..0x4072cd`.
+
+The candidate performs the same accesses and values, but its opposite
+zero/one register ledger and fixed-update block layout cause the sequence
+aligner to pair different stores and loads. Changing any owner to satisfy
+those pairs would be fakematching, so all three remain explicit alignment
+debt.
