@@ -63,9 +63,9 @@ recovers native's member reload and keeps the entire immediate path exact.
 The plain queued assignment remains an honest three-instruction register-owner
 swap, so focused Wibo is 94.55%, 55/55, prefix 48, with three clean masks.
 Every native caller ignores the result, and a `void` declaration is codegen-
-neutral in both helpers and representative callers. Return ownership therefore
-remains unproven; the existing `int` ABI is retained conservatively rather than
-being inferred away from incidental callsite use.
+neutral in both helpers and representative callers. At this point return
+ownership remained unproven, so the existing `int` ABI was retained
+conservatively rather than being inferred away from incidental callsite use.
 
 2026-07-12 object/slot ownership: the Snail constructor independently builds
 the ten complete `RenderableBod` slots at `+0x14c`. The immediate path now
@@ -83,7 +83,21 @@ separate role: the exact manager updater consumes it by hiding the target model.
 `Snail*` receiver, ten owned `RenderableBod` animation slots, nested
 `Object::animation`, root `AnimManager`, and borrowed target model. This retires
 the stale `PlayerPresentationController`, `active_keyframe`, `self_ref`, and
-`initial_frame` analysis vocabulary without changing the conservative `int32_t`
-return contract. Focused matching remains honestly at 94.55%; the remaining
-three-instruction queue-tail register swap is still visible and is not
-fakematched.
+`initial_frame` analysis vocabulary without changing the then-conservative
+`int32_t` return contract. Focused matching remains honestly at 94.55%; the
+remaining three-instruction queue-tail register swap is still visible and is
+not fakematched.
+
+## 2026-07-24 authored void ABI
+
+Android independently resolves the result contract for both paired authored
+members. `cRSnail::SetAnimation(int, bool, int)` and
+`cRWeapon::SetAnimation(int, bool, int)` each return directly from two paths:
+the immediate path leaves the owner `this` pointer in R0, while the queued path
+advances R0 into the embedded queued-animation array before its final store.
+Those incompatible pointer residues cannot be one semantic return value.
+
+The Windows `dispatch_cutscene_animation` transcription therefore now joins
+the already-void Weapon method as an authored `void` mutator. This removes the
+old conservative integer ABI without changing the honest 94.55%, 55/55
+instruction frontier, 48-instruction prefix, or three clean masked operands.

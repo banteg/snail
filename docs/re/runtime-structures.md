@@ -481,7 +481,7 @@ High-confidence current read:
 
 The paired queue/start helpers operate at two different ownership levels:
 
-- `dispatch_cutscene_animation` (`0x444600`) is
+- void `dispatch_cutscene_animation` (`0x444600`) is
   `cRSnail::SetAnimation(int, bool, int)` over the Snail root, its root
   `AnimManager`, and ten owned animation slots
 - `set_weapon_animation` (`0x4446e0`) is

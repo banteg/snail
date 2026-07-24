@@ -2792,7 +2792,7 @@
     {
       "address": "0x444600",
       "name": "dispatch_cutscene_animation",
-      "description": "Stable Windows name for `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root AnimManager and one of ten owned 0x80-byte RenderableBod slots, following the slot Object link to Object::animation."
+      "description": "Stable Windows name for the authored void `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root AnimManager and one of ten owned 0x80-byte RenderableBod slots, following the slot Object link to Object::animation. Android independently proves the void contract: its immediate exit leaves `this` in R0 while its queued exit leaves an interior queued-array address."
     },
     {
       "address": "0x4446e0",

@@ -14389,13 +14389,14 @@
       "name": "ida_snail_animation_dispatch_owner",
       "artifact": "analysis/decompile/ida/functions/00444600-dispatch_cutscene_animation.c",
       "required_substrings": [
-        "int32_t __thiscall dispatch_cutscene_animation(",
+        "void __thiscall dispatch_cutscene_animation(",
         "Snail *snail,",
         "snail->anim_manager.queued_animations",
         "snail->cutscene_animation_slots[animation_id].body.bod.object->animation",
         "snail->body.bod.object = object;"
       ],
       "forbidden_substrings": [
+        "int32_t __thiscall dispatch_cutscene_animation",
         "PlayerPresentationController",
         "presentation->",
         "initial_frame",

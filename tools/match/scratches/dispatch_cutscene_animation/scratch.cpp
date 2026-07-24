@@ -4,7 +4,7 @@
 #include "object_render_types.h"
 #include "player.h"
 
-int Snail::dispatch_cutscene_animation(
+void Snail::dispatch_cutscene_animation(
     int animation_id,
     unsigned char immediate,
     int mode_flags)
@@ -44,9 +44,9 @@ int Snail::dispatch_cutscene_animation(
         int flags = anim_manager.target_model->list_flags;
         flags |= 0x20;
         anim_manager.target_model->list_flags = flags;
-        return flags;
+        return;
     }
 
     anim_manager.queued_animations[anim_manager.queue_count] = animation_id;
-    return ++anim_manager.queue_count;
+    ++anim_manager.queue_count;
 }

@@ -5,9 +5,8 @@
 
 00444606        if (immediate == 0)
 004446c6        snail->anim_manager.queued_animations[snail->anim_manager.queue_count] = animation_id
-004446d3        int32_t eax_7 = snail->anim_manager.queue_count + 1
-004446d4        snail->anim_manager.queue_count = eax_7
-004446da        return eax_7
+004446d4        snail->anim_manager.queue_count += 1
+004446da        return
 00444622        int16_t* animation = snail->cutscene_animation_slots[animation_id].body.bod.object->animation
 0044462f        snail->anim_manager.active_animation = animation
 00444635        if (mode_flags != 0xffffffff)
@@ -38,4 +37,4 @@
 004446b1        uint32_t list_flags = target_model->bod.bod.list_flags
 004446b4        list_flags.b |= 0x20
 004446b6        target_model->bod.bod.list_flags = list_flags
-004446b9        return list_flags
+004446b9        return

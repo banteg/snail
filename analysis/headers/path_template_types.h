@@ -2635,7 +2635,7 @@ void __thiscall initialize_subgoldy_death(Player* player);
 void __thiscall set_snail_weapon(Snail* snail, int32_t movement_flags);
 void __thiscall set_snail_jetpack(Snail* snail, int32_t state);
 void __thiscall initialize_cutscene(Snail* snail);
-int32_t __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t mode_flags);
+void __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t mode_flags);
 void __thiscall initialize_cutscene_ai(CutScene* cutscene);
 void __thiscall update_cutscene(CutScene* cutscene);
 void __thiscall update_progress_bar(ProgressBar* progress_bar);

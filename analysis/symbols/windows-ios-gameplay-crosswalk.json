@@ -1797,7 +1797,7 @@
       "android_symbol": "cRSnail::SetAnimation(int, bool, int)",
       "source_object": null,
       "confidence": "high",
-      "notes": "The immediate and queued paths operate on cRSnail's root AnimManager and ten owned cRBod animation slots; each slot lends its cRObject and nested ObjectAnimation. The Windows harness name remains stable."
+      "notes": "The immediate and queued paths operate on cRSnail's root AnimManager and ten owned cRBod animation slots; each slot lends its cRObject and nested ObjectAnimation. Android proves the authored member is void: the immediate exit leaves the cRSnail `this` pointer in R0, while the queued exit advances R0 into the queued-animation array before returning. Those incompatible pointer residues cannot form one result contract. The Windows harness name remains stable."
     },
     {
       "address": "0x445860",

@@ -2,12 +2,8 @@
 /* function: dispatch_cutscene_animation @ 0x444600 */
 /* selector: dispatch_cutscene_animation */
 
-// Stable Windows name for `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root AnimManager and one of ten owned 0x80-byte RenderableBod slots, following the slot Object link to Object::animation.
-int32_t __thiscall dispatch_cutscene_animation(
-        Snail *snail,
-        int32_t animation_id,
-        uint8_t immediate,
-        int32_t mode_flags)
+// Stable Windows name for the authored void `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root AnimManager and one of ten owned 0x80-byte RenderableBod slots, following the slot Object link to Object::animation. Android independently proves the void contract: its immediate exit leaves `this` in R0 while its queued exit leaves an interior queued-array address.
+void __thiscall dispatch_cutscene_animation(Snail *snail, int32_t animation_id, uint8_t immediate, int32_t mode_flags)
 {
   ObjectAnimation *animation; // eax
   ObjectAnimation *active_animation; // edx
@@ -19,7 +15,7 @@ int32_t __thiscall dispatch_cutscene_animation(
   char v13; // c0
   Object *object; // eax
   RenderableBod *target_model; // ecx
-  int32_t result; // eax
+  uint32_t list_flags; // eax
 
   if ( immediate )
   {
@@ -50,15 +46,12 @@ int32_t __thiscall dispatch_cutscene_animation(
     snail->anim_manager.queue_count = 0;
     snail->body.bod.object = object;
     target_model = snail->anim_manager.target_model;
-    result = target_model->bod.bod.list_flags;
-    LOBYTE(result) = result | 0x20;
-    target_model->bod.bod.list_flags = result;
+    list_flags = target_model->bod.bod.list_flags;
+    LOBYTE(list_flags) = list_flags | 0x20;
+    target_model->bod.bod.list_flags = list_flags;
   }
   else
   {
-    snail->anim_manager.queued_animations[snail->anim_manager.queue_count] = animation_id;
-    result = snail->anim_manager.queue_count + 1;
-    snail->anim_manager.queue_count = result;
+    snail->anim_manager.queued_animations[snail->anim_manager.queue_count++] = animation_id;
   }
-  return result;
 }

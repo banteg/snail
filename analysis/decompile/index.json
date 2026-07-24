@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "merge_track_tile_runs",
-      "address": "0x435180"
+      "name": "dispatch_cutscene_animation",
+      "address": "0x444600"
     }
   ],
   "health_check_count": 926,
