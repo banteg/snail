@@ -126,6 +126,14 @@ name, type, or definition address and omits the otherwise noisy
 stack-pointer-change list. Run it before adding a narrow replay rule for a local
 whose inferred ownership regressed.
 
+If Hex-Rays reports call-analysis failure, inspect the callee declaration
+before forcing caller locals. One malformed by-value parameter can make a
+valid scalar call impossible to decompile. Restore the shared callee ABI from
+decorated symbols and multiple callsites, invalidate the caller, then replay
+only exact physical local-variable lifetimes. The lvar query records a clean
+`decompile_failed` result when Hex-Rays returns no cfunc, so this diagnostic
+path remains machine-readable.
+
 The collision-state replay is deliberately bounded: it verifies the canonical
 parcel, pickup, slug, and ring enums, then touches only the six exact physical
 register lifetimes in `handle_subgoldy_collisions`. Use it for collision-local

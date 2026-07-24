@@ -16569,14 +16569,48 @@
       "name": "bn_construct_game_runtime_named_constructor_edges",
       "artifact": "analysis/decompile/binja/functions/00407b60-construct_game_runtime.c",
       "required_substrings": [
-        "initialize_game_player(player)",
-        "initialize_noop_renderable_bod",
-        "initialize_runtime_pools_and_path_template_bank"
+        "struct GameRoot* game = operator_new(0x12e6ff4)",
+        "struct GameInput* game_input_cursor = &game->game_inputs",
+        "struct GamePlayer* player_cursor = &game->players",
+        "struct Viewport* viewport_cursor = &game->viewports",
+        "struct BodBase* root_bod_cursor = &game->root_bod_catalog",
+        "initialize_array_with_constructor(&game->directx_loader.cached_x_mesh_slots",
+        "initialize_runtime_pools_and_path_template_bank(&game->subgame)",
+        "g_game_base = game"
       ],
       "forbidden_substrings": [
         "SingleWaitBlock",
         "_Vector_iterator",
-        "operator++"
+        "operator++",
+        "void*** esi",
+        "sub_48ba3f",
+        "&esi["
+      ]
+    },
+    {
+      "name": "ida_construct_game_runtime_root_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00407b60-construct_game_runtime.c",
+      "required_substrings": [
+        "struct GameRoot *game; // esi",
+        "struct GameInput *game_input_cursor; // edi",
+        "struct GamePlayer *player_cursor; // edi",
+        "struct Viewport *viewport_cursor; // edi",
+        "struct BodBase *root_bod_cursor; // edi",
+        "v0 = (struct GameRoot *)operator_new(0x12E6FF4u);",
+        "game_input_cursor = game->game_inputs;",
+        "player_cursor = game->players;",
+        "viewport_cursor = game->viewports;",
+        "root_bod_cursor = (struct BodBase *)&game->root_bod_catalog;",
+        "initialize_runtime_pools_and_path_template_bank(&game->subgame);",
+        "g_game_base = game;"
+      ],
+      "forbidden_substrings": [
+        "char *v1",
+        "_DWORD *v2",
+        "operator new",
+        "CompletionResultScreen Size",
+        "MEMORY[0x4DF904]",
+        "sub_407B60"
       ]
     },
     {

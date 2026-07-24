@@ -608,6 +608,15 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert 'struct_name="RenderableBod"' in bn_frame_sync
     assert 'struct_name="Sprite"' in bn_frame_sync
     assert "RENDER_USER_VAR_UPDATES" in bn_frame_sync
+    assert "ROOT_CONSTRUCTOR_USER_VAR_UPDATES" in bn_frame_sync
+    assert (
+        '"construct_game_runtime",\n        "RegisterVariableSourceType",\n        534,\n        72,'
+        in bn_frame_sync
+    )
+    assert '"game",\n        "GameRoot*",' in bn_frame_sync
+    assert '824,\n        73,\n        "root_bod_cursor",\n        "BodBase*",' in bn_frame_sync
+    assert '("0x48ba3f", "operator_new")' in bn_frame_sync
+    assert '"void* __cdecl operator_new(uint32_t size)"' in bn_frame_sync
     assert '"render_game_frame",\n        "RegisterVariableSourceType",\n        445,\n        72,' in bn_frame_sync
     assert '"bod",\n        "RenderableBod*",' in bn_frame_sync
     assert '912,\n        67,\n        "bucket_node",\n        "SpriteDepthNode*",' in bn_frame_sync
@@ -654,7 +663,12 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         "render_game_frame",
     ):
         assert f'"{selector}",' in frame_sync
-    assert "def _sync_render_pointer_lvar" in frame_sync
+    assert "def _sync_pointer_lvar" in frame_sync
+    assert "ROOT_CONSTRUCTOR_POINTER_LVAR_SPECS" in frame_sync
+    assert '(0x48BA3F, "operator_new")' in frame_sync
+    assert '"void *__cdecl operator_new(uint32_t size);"' in frame_sync
+    assert 'selector="construct_game_runtime"' in frame_sync
+    assert '"root_constructor_pointer_lvars"' in frame_sync
     assert '"depth_bucket_cursor",\n        0x40A8C0,' in frame_sync
     assert '"depth_bucket_sprite",\n        0x40A8CB,' in frame_sync
     assert '"post_cursor",\n        0x40A991,' in frame_sync
@@ -3932,6 +3946,8 @@ def test_ida_lvar_inspector_reports_stable_local_identity() -> None:
         'str(entry["name"])',
         'str(entry["type"])',
         'str(entry["definition_address"])',
+        '"reason": "decompile_failed"',
+        '"error": "Hex-Rays returned no cfunc"',
     ):
         assert marker in inspector
     assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/inspect_function_lvars.py"' in wrapper

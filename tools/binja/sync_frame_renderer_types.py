@@ -79,6 +79,7 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x44e410", "update_sprite_facing_angle"),
     ("0x44e900", "attach_render_camera_source"),
     ("0x44e920", "initialize_render_camera_slot"),
+    ("0x48ba3f", "operator_new"),
 )
 
 DATA_VAR_UPDATES = (
@@ -91,6 +92,10 @@ DATA_VAR_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "operator_new",
+        "void* __cdecl operator_new(uint32_t size)",
+    ),
     (
         "initialize_game_window_and_input_wrapper",
         "int32_t __cdecl initialize_game_window_and_input_wrapper(char* window_name)",
@@ -215,6 +220,55 @@ SPRITE_DEPTH_NODE_FIELD_UPDATES = (
     ("0x04", "position", "FrameVec3"),
     ("0x10", "depth_key", "float"),
     ("0x14", "sprite", "Sprite*"),
+)
+
+# The native root constructor allocates one exact 0x12e6ff4-byte GameRoot and
+# keeps that owner in ESI through publication to g_game_base. Once the root is
+# typed, Binary Ninja initially promotes &array to pointer-to-array values for
+# the three fixed constructor loops. Preserve their physical element cursors,
+# plus the zero-offset BodBase walk through RootBodCatalog, as distinct exact
+# lifetimes instead of accepting false parent-relative expressions.
+ROOT_CONSTRUCTOR_USER_VAR_UPDATES = (
+    (
+        "construct_game_runtime",
+        "RegisterVariableSourceType",
+        534,
+        72,
+        "game",
+        "GameRoot*",
+    ),
+    (
+        "construct_game_runtime",
+        "RegisterVariableSourceType",
+        569,
+        73,
+        "game_input_cursor",
+        "GameInput*",
+    ),
+    (
+        "construct_game_runtime",
+        "RegisterVariableSourceType",
+        596,
+        73,
+        "player_cursor",
+        "GamePlayer*",
+    ),
+    (
+        "construct_game_runtime",
+        "RegisterVariableSourceType",
+        634,
+        73,
+        "viewport_cursor",
+        "Viewport*",
+    ),
+    (
+        "construct_game_runtime",
+        "RegisterVariableSourceType",
+        824,
+        73,
+        "root_bod_cursor",
+        "BodBase*",
+    ),
 )
 
 # The root list intentionally retains its generic BodNode* contract. Render()
@@ -641,7 +695,10 @@ def main() -> int:
         apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=RENDER_USER_VAR_UPDATES,
+            updates=(
+                *ROOT_CONSTRUCTOR_USER_VAR_UPDATES,
+                *RENDER_USER_VAR_UPDATES,
+            ),
         )
     )
     operations.extend(

@@ -66,6 +66,7 @@ DEPENDENCY_HEADER_NAMES = (
 
 
 TRUSTED_NAMES = [
+    (0x48BA3F, "operator_new"),
     (0x408000, "initialize_game_player"),
     (0x4107D0, "update_frontend_state_machine"),
     (0x4137F0, "draw_sprite_quad"),
@@ -85,6 +86,10 @@ TRUSTED_NAMES = [
 ]
 
 TRUSTED_FUNCTION_DECLARATIONS = [
+    (
+        "operator_new",
+        "void *__cdecl operator_new(uint32_t size);",
+    ),
     (
         "initialize_game_window_and_input_wrapper",
         "int __cdecl initialize_game_window_and_input_wrapper(char *window_name);",
@@ -470,8 +475,9 @@ def _invalidate_cfunc(selector: str) -> dict[str, object]:
     return {"status": "invalidated", "selector": selector, "address": hex(address)}
 
 
-def _sync_render_pointer_lvar(
+def _sync_pointer_lvar(
     *,
+    selector: str = "render_game_frame",
     definition_address: int,
     accepted_names: set[str],
     accepted_types: set[str],
@@ -479,8 +485,7 @@ def _sync_render_pointer_lvar(
     target_struct_name: str,
     pointer_depth: int,
 ) -> dict[str, object]:
-    """Persist one evidence-backed pointer relationship in Render()."""
-    selector = "render_game_frame"
+    """Persist one evidence-backed pointer relationship in an owned function."""
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR:
         return {"status": "failed", "reason": "missing_function", "selector": selector}
@@ -637,6 +642,54 @@ RENDER_POINTER_LVAR_SPECS = (
         "post_cursor",
         "RenderableBod",
         2,
+    ),
+)
+
+ROOT_CONSTRUCTOR_POINTER_LVAR_SPECS = (
+    (
+        "game",
+        0x407D77,
+        {"v1", "game"},
+        {"char *", "GameRoot *"},
+        "game",
+        "GameRoot",
+        1,
+    ),
+    (
+        "game_input_cursor",
+        0x407D9A,
+        {"v2", "game_inputs", "game_input_cursor"},
+        {"BodBase *", "GameInput *"},
+        "game_input_cursor",
+        "GameInput",
+        1,
+    ),
+    (
+        "player_cursor",
+        0x407DB5,
+        {"v4", "players", "player_cursor"},
+        {"GamePlayer *"},
+        "player_cursor",
+        "GamePlayer",
+        1,
+    ),
+    (
+        "viewport_cursor",
+        0x407DDB,
+        {"v6", "viewports", "viewport_cursor"},
+        {"Viewport *"},
+        "viewport_cursor",
+        "Viewport",
+        1,
+    ),
+    (
+        "root_bod_cursor",
+        0x407E99,
+        {"v8", "p_root_bod_catalog", "root_bod_cursor"},
+        {"BodBase *"},
+        "root_bod_cursor",
+        "BodBase",
+        1,
     ),
 )
 
@@ -825,6 +878,35 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    root_constructor_pointer_lvars = {}
+    for (
+        result_name,
+        definition_address,
+        accepted_names,
+        accepted_types,
+        target_name,
+        target_struct_name,
+        pointer_depth,
+    ) in ROOT_CONSTRUCTOR_POINTER_LVAR_SPECS:
+        result = _sync_pointer_lvar(
+            selector="construct_game_runtime",
+            definition_address=definition_address,
+            accepted_names=accepted_names,
+            accepted_types=accepted_types,
+            target_name=target_name,
+            target_struct_name=target_struct_name,
+            pointer_depth=pointer_depth,
+        )
+        root_constructor_pointer_lvars[result_name] = result
+        if result.get("status") == "failed":
+            failed.append(
+                {
+                    "selector": "construct_game_runtime",
+                    "lvar": result_name,
+                    "result": result,
+                }
+            )
+
     render_pointer_lvars = {}
     for (
         result_name,
@@ -835,7 +917,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         target_struct_name,
         pointer_depth,
     ) in RENDER_POINTER_LVAR_SPECS:
-        result = _sync_render_pointer_lvar(
+        result = _sync_pointer_lvar(
             definition_address=definition_address,
             accepted_names=accepted_names,
             accepted_types=accepted_types,
@@ -865,6 +947,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "game_root_owner_graph": game_root_owner_graph,
                 "invalidated_cfuncs": invalidated_cfuncs,
                 "draw_sprite_vertex_lvar": draw_sprite_vertex_lvar,
+                "root_constructor_pointer_lvars": root_constructor_pointer_lvars,
                 "render_pointer_lvars": render_pointer_lvars,
                 "interior_owner_views": interior_owner_views,
                 "missing": missing,

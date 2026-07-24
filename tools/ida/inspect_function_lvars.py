@@ -87,6 +87,16 @@ def main() -> None:
                 }
             )
             continue
+        if cfunc is None:
+            failed.append(
+                {
+                    "selector": selector,
+                    "address": hex(address),
+                    "reason": "decompile_failed",
+                    "error": "Hex-Rays returned no cfunc",
+                }
+            )
+            continue
 
         lvars = []
         for lvar in cfunc.get_lvars():

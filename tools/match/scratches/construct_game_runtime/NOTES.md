@@ -528,3 +528,44 @@ owners. Android and iOS retain `cRViewport::cRViewport()` and
 stride at `0x28`, returns the constructor receiver, and later borrows the two
 embedded player cameras. The type/name clarification is codegen-neutral at
 the established 88.89% constructor frontier.
+
+## 2026-07-24 root allocation and cursor replay
+
+The native allocation result at `0x407d76` remains in ESI until it is either
+cleared at `0x407f6d` or published to `g_game_base` at `0x407f7c`. Binary
+Ninja identifies that exact lifetime as register source 534/storage 72. It is
+now replayed as `GameRoot* game`, which exposes the constructor's embedded
+owner graph instead of a `void***` root.
+
+Typing the root also made Binary Ninja infer pointers to whole arrays for the
+fixed constructor loops. The physical EDI lifetimes are therefore preserved
+separately as element cursors:
+
+- source 569/storage 73 at `0x407d99`: `GameInput*`
+- source 596/storage 73 at `0x407db4`: `GamePlayer*`
+- source 634/storage 73 at `0x407dda`: `Viewport*`
+- source 824/storage 73 at `0x407e98`: `BodBase*`
+
+IDA independently recovers the same five values at definition addresses
+`0x407d77`, `0x407d9a`, `0x407db5`, `0x407ddb`, and `0x407e99`. A second
+headless replay reads all five back unchanged, so the local identities are
+stable rather than products of one decompiler's expression rewriting.
+
+The initial IDA pass also exposed a shared ABI defect: `operator_new` at
+`0x48ba3f` had inherited a by-value `CompletionResultScreen` parameter, which
+made Hex-Rays reject the constructor's single scalar size push. The decorated
+alias `??2@YAPAXI@Z`, the native `push 0x12e6ff4`, and scalar byte counts at
+many independent callsites prove `void* __cdecl operator_new(uint32_t size)`.
+Persisting that declaration in both databases restores constructor
+decompilation without a caller-specific workaround.
+
+The checked-in Binary Ninja and IDA exports now agree on the allocation owner,
+the four element cursors, the embedded managers and pools, and the final global
+publication. `Backdrop::bod_base` still decompiles as an anonymous byte range
+in Binary Ninja; that separate base-class ownership gap is intentionally left
+for its own evidence pass.
+
+No matching source was changed. Focused matching remains the honest 88.89%
+(`299/268` candidate/target instructions, prefix `2/268`, 120 clean operands,
+zero unresolved or mismatched operands); the residual EH and debug-call
+cleanup shape is unchanged.
