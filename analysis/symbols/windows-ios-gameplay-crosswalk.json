@@ -2789,12 +2789,21 @@
     },
     {
       "address": "0x44d1a0",
-      "windows_name": "multiply_matrix_in_place",
+      "windows_name": "multiply_matrix_assign",
+      "ios_symbol": "tMatrix::operator*=(tMatrix const&)",
+      "android_symbol": "tMatrix::operator*=(tMatrix const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 18/18 Windows member snapshots its receiver and delegates to the two-reference multiply core. Android's adjacent one-argument Multiply symbol is a direct branch to operator*=, reproducing the same body/forwarder split as Windows. The Windows body does not restore its receiver in EAX after the core call, so the authored operator is void rather than reference-returning."
+    },
+    {
+      "address": "0x44d1d0",
+      "windows_name": "multiply_matrix",
       "ios_symbol": "tMatrix::Multiply(tMatrix const&)",
       "android_symbol": "tMatrix::Multiply(tMatrix const&)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "The exact 18/18 Windows member snapshots its receiver and delegates to the two-reference multiply core, matching the mobile one-argument Multiply method. It returns void: native only inherits the core's incidental rhs register, and every direct caller discards it."
+      "notes": "The exact 4/4 Windows member forwards its rhs reference to multiply_matrix_assign. Android implements the same authored Multiply entry as a direct branch to operator*=, while both Android and iOS BuildLoopBow call Multiply at the two corresponding composition sites."
     },
     {
       "address": "0x44d210",

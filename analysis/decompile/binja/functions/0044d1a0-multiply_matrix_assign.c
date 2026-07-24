@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: multiply_matrix_in_place @ 0x44d1a0 */
+/* function: multiply_matrix_assign @ 0x44d1a0 */
 
 0044d1b6        struct TransformMatrix lhs
 0044d1b6        __builtin_memcpy(&lhs, matrix, 0x40)

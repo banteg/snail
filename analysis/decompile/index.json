@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,8 +17,28 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "spawn_slug_hazard",
-      "address": "0x43dc80"
+      "name": "initialize_loopbow_path_template_pair",
+      "address": "0x42ba80"
+    },
+    {
+      "name": "initialize_cutscene",
+      "address": "0x4428d0"
+    },
+    {
+      "name": "update_cameraman",
+      "address": "0x4461d0"
+    },
+    {
+      "name": "multiply_matrix_assign",
+      "address": "0x44d1a0"
+    },
+    {
+      "name": "multiply_matrix",
+      "address": "0x44d1d0"
+    },
+    {
+      "name": "linear_interpolate_matrix",
+      "address": "0x44da90"
     }
   ],
   "health_check_count": 926,

@@ -19,8 +19,15 @@
   "analysis_refreshed": true,
   "timed_out_function_reanalysis": {
     "interior_aliases": [],
-    "reanalyzed": [],
-    "snapshot_saved": false,
+    "reanalyzed": [
+      {
+        "address": "0x4461d0",
+        "name": "update_cameraman",
+        "reason": "AnalysisSkipReason.ExceedFunctionAnalysisTimeSkipReason",
+        "verified": true
+      }
+    ],
+    "snapshot_saved": true,
     "unresolved": []
   },
   "removed_stale_artifacts": [],
@@ -3390,14 +3397,13 @@
     },
     {
       "address": "0x44d1a0",
-      "name": "multiply_matrix_in_place",
-      "artifact": "analysis/decompile/binja/functions/0044d1a0-multiply_matrix_in_place.c",
-      "database_name": "multiply_matrix"
+      "name": "multiply_matrix_assign",
+      "artifact": "analysis/decompile/binja/functions/0044d1a0-multiply_matrix_assign.c"
     },
     {
       "address": "0x44d1d0",
-      "name": "multiply_matrix_in_place_forward_thunk",
-      "artifact": "analysis/decompile/binja/functions/0044d1d0-multiply_matrix_in_place_forward_thunk.c"
+      "name": "multiply_matrix",
+      "artifact": "analysis/decompile/binja/functions/0044d1d0-multiply_matrix.c"
     },
     {
       "address": "0x44d1e0",

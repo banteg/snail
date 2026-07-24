@@ -2421,11 +2421,11 @@ void __thiscall multiply_matrices(
     const TransformMatrix* lhs,
     const TransformMatrix* rhs
 );
-void __thiscall multiply_matrix(
+void __thiscall multiply_matrix_assign(
     TransformMatrix* matrix,
     const TransformMatrix* rhs
 );
-void __thiscall multiply_matrix_in_place_forward_thunk(
+void __thiscall multiply_matrix(
     TransformMatrix* matrix,
     const TransformMatrix* rhs
 );

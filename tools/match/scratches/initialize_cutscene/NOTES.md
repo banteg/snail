@@ -97,9 +97,9 @@ belongs to the complete `snail_hotspot_source_body` renderable initialized at
 with all 44 operands clean.
 
 2026-07-14 matrix-multiply owner pass: all three composition calls now use the
-void const-reference `TransformMatrix::multiply_matrix` member retained by the
-mobile builds as `tMatrix::Multiply(const tMatrix&)`. The complete cutscene
-initializer remains 339/339 exact with all 44 operands clean.
+void const-reference matrix member then believed to be
+`TransformMatrix::multiply_matrix`. The complete cutscene initializer remains
+339/339 exact with all 44 operands clean.
 
 2026-07-14 canonical process-root gate: the pause early-out now reads
 `g_game->subgame.subgame_pause_gate` directly. The complete initializer remains
@@ -114,3 +114,12 @@ authored class. Shrinking Binary Ninja's historical padded view from 0x48 to
 0x10 also exposes the adjacent `snail_hotspot_source_body` owner and refreshes
 the full Snail/Player matrix graph in both decompilers. Focused matching stays
 exact at 339/339 instructions with all 44 operands clean.
+
+## 2026-07-24 multiply-assignment ownership correction
+
+All three native composition calls target the 18-instruction body at
+`0x44d1a0`. Android proves that body is `tMatrix::operator*=`, while its
+adjacent `tMatrix::Multiply` symbol branches to the operator just as Windows'
+four-instruction `0x44d1d0` member does. The exact source now spells the three
+calls as multiply assignments. This preserves the full 339/339 instruction
+match and all 44 clean operands while assigning the calls to their real member.

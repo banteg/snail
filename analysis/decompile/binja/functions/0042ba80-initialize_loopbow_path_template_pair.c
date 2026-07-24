@@ -128,8 +128,8 @@
 0042bfd4        *(&primary_samples_7->transform.position.z + ebx) = fconvert.s(fconvert.t(*(&primary_samples_7->transform.position.z + ebx)) - fconvert.t(7f))
 0042bfd6        struct PathTemplateSample* secondary_samples_1 = self->secondary_samples
 0042bfe7        *(&secondary_samples_1->transform.position.z + ebx) = fconvert.s(fconvert.t(*(&secondary_samples_1->transform.position.z + ebx)) - fconvert.t(7f))
-0042bfec        multiply_matrix_in_place_forward_thunk(ebx + self->primary_samples, &var_40)
-0042bffd        multiply_matrix_in_place_forward_thunk(ebx + self->secondary_samples, &var_40)
+0042bfec        multiply_matrix(ebx + self->primary_samples, &var_40)
+0042bffd        multiply_matrix(ebx + self->secondary_samples, &var_40)
 0042c002        struct PathTemplateSample* primary_samples_1 = self->primary_samples
 0042c017        *(&primary_samples_1->transform.position.z + ebx) = fconvert.s(fconvert.t(*(&primary_samples_1->transform.position.z + ebx)) + fconvert.t(7f))
 0042c019        struct PathTemplateSample* secondary_samples_2 = self->secondary_samples

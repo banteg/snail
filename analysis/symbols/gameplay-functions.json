@@ -3611,16 +3611,19 @@
     },
     {
       "address": "0x44d1a0",
-      "name": "multiply_matrix_in_place",
+      "name": "multiply_matrix_assign",
       "aliases": [
-        "multiply_matrix"
+        "multiply_matrix_in_place"
       ],
-      "description": "Stable Windows harness identity for the exact void `TransformMatrix::multiply_matrix(const TransformMatrix&)` member retained by iOS and Android as `tMatrix::Multiply(const tMatrix&)`. It snapshots its receiver and delegates to the two-reference multiply core."
+      "description": "Exact void `TransformMatrix::operator*=(const TransformMatrix&)` member: it snapshots its receiver and delegates to the two-reference multiply core. Android retains the full body as `tMatrix::operator*=`, while its `tMatrix::Multiply(const tMatrix&)` entry is a forwarding branch to this operator; the Windows pair has the same ownership split."
     },
     {
       "address": "0x44d1d0",
-      "name": "multiply_matrix_in_place_forward_thunk",
-      "description": "Exact void thiscall forwarder that passes one const-reference rhs matrix to the owned `TransformMatrix::multiply_matrix` member. Its source-level operator identity remains deliberately unresolved."
+      "name": "multiply_matrix",
+      "aliases": [
+        "multiply_matrix_in_place_forward_thunk"
+      ],
+      "description": "Exact void `TransformMatrix::multiply_matrix(const TransformMatrix&)` member retained by iOS and Android as `tMatrix::Multiply(const tMatrix&)`. The Windows body forwards its rhs reference to the owned multiply-assignment operator, matching Android's direct branch from `Multiply` to `operator*=`."
     },
     {
       "address": "0x44d1e0",

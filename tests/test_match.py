@@ -579,7 +579,7 @@ def test_masked_operand_audit_aligns_alias_equivalent_call_sequence() -> None:
         plain(6, "lea eax, dword [esp+0x14]"),
         plain(7, "mov ecx, ebx"),
         plain(8, "push eax"),
-        call(9, "multiply_matrix_in_place", "image", "multiply_matrix"),
+        call(9, "multiply_matrix", "image", "multiply_matrix_in_place_forward_thunk"),
         plain(10, "mov ecx, dword [ebp+0xc0]"),
         plain(11, "mov edx, dword [ecx+0x3a0]"),
         plain(12, "mov ecx, ebx"),

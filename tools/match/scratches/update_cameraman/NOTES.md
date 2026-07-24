@@ -178,3 +178,11 @@ outer `update_subgame_camera` consumer had already proved
 `force_camera_update`. The guarded path replay now reapplies that exact byte
 field after type import. This is ownership-only; the honest 92.55% instruction
 score and 73 clean operands remain unchanged.
+
+## 2026-07-24 multiply-assignment ownership correction
+
+The follow-state composition calls Windows `0x44d1a0`. Android's adjacent
+symbols prove that this full body is `tMatrix::operator*=`, while authored
+`tMatrix::Multiply` is the forwarder represented by Windows `0x44d1d0`.
+Spelling this site as `desired_matrix *= transform` preserves the honest
+92.55%, 322/322 result and all 73 clean operands.

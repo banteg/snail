@@ -71,7 +71,8 @@ The shared matrix helper family is now typed around `TransformMatrix`:
 - `rotate_matrix_world_z`
 - `look_at_point`
 - `invert_matrix_from_source`
-- `multiply_matrix_in_place`
+- `multiply_matrix_assign`
+- `multiply_matrix`
 - `premultiply_matrix_in_place`
 - `interpolate_matrix_rotation`
 - `linear_interpolate_matrix`

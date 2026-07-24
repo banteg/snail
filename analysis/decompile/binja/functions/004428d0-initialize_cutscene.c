@@ -79,11 +79,11 @@
 00442b4e        rotate_matrix_local_z(&var_c0, fconvert.s(sine(fconvert.s(fconvert.t(snail->wobble.roll_phase) * fconvert.t(6.28318548f))) * fconvert.t(0.0174499992f)))
 00442b5b        struct TransformMatrix var_80
 00442b5b        invert_matrix_from_source(&var_80, &snail->body.transform)
-00442b6a        multiply_matrix(&snail->body.transform, &var_80)
+00442b6a        multiply_matrix_assign(&snail->body.transform, &var_80)
 00442b82        snail->body.transform.position.y = fconvert.s(fconvert.t(snail->body.transform.position.y) + fconvert.t(1.29999995f))
-00442b85        multiply_matrix(&snail->body.transform, &var_c0)
+00442b85        multiply_matrix_assign(&snail->body.transform, &var_c0)
 00442b9d        snail->body.transform.position.y = fconvert.s(fconvert.t(snail->body.transform.position.y) - fconvert.t(1.29999995f))
-00442ba0        multiply_matrix(&snail->body.transform, &rhs)
+00442ba0        multiply_matrix_assign(&snail->body.transform, &rhs)
 00442bb1        struct TransformMatrix* var_170_12 = &snail->body.transform
 00442bb5        long double st0_2 = sine(fconvert.s(fconvert.t(snail->wobble.lift_phase) * fconvert.t(6.28318548f)))
 00442c08        snail->body.transform.position.x = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(st0_2 * fconvert.t(snail->body.transform.basis_up.x))) * fconvert.t(0.0299999993f))) + fconvert.t(snail->body.transform.position.x))

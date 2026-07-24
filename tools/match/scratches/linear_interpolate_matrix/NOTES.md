@@ -33,3 +33,9 @@ partial callers retain their prior scores and operand state.
 now carry the full typed `TransformMatrix` -> `Quaternion` -> `AxisAngle` ->
 `Quaternion` -> `TransformMatrix` ownership chain. The exact 61/61 source and
 its explicit translation temporaries remain unchanged.
+
+2026-07-24 multiply-assignment ownership correction: the exact call at
+`0x44daa9` targets Windows `0x44d1a0`, now independently proved by Android's
+body/forwarder pair as `tMatrix::operator*=` rather than `tMatrix::Multiply`.
+The source-shaped `*this *= to` spelling remains exact at 61/61 instructions
+with all six operands clean.

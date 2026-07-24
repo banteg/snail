@@ -1387,13 +1387,25 @@
       "description": "Compiler-generated static-destruction stub registered by cross_vectors for its function-local static result."
     },
     {
-      "address": "0x44d1d0",
-      "name": "multiply_matrix_in_place_forward_thunk",
+      "address": "0x44d1a0",
+      "name": "multiply_matrix_assign",
       "kind": "function",
       "aliases": [
+        "??XTransformMatrix@@QAEXABU0@@Z",
+        "multiply_matrix_in_place",
+        "sub_44d1a0"
+      ],
+      "description": "Authored void `tMatrix::operator*=(const tMatrix&)` member. It snapshots the receiver and delegates to the two-reference multiply core; the adjacent Multiply member forwards here."
+    },
+    {
+      "address": "0x44d1d0",
+      "name": "multiply_matrix",
+      "kind": "function",
+      "aliases": [
+        "multiply_matrix_in_place_forward_thunk",
         "sub_44d1d0"
       ],
-      "description": "Small thiscall forwarder that pushes the rhs matrix argument and calls multiply_matrix_in_place at 0x44d1a0."
+      "description": "Authored `tMatrix::Multiply(const tMatrix&)` member: a small thiscall forwarder that pushes the rhs matrix argument and calls the multiply-assignment operator at 0x44d1a0."
     },
     {
       "address": "0x44d530",

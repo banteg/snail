@@ -4,7 +4,7 @@
 /* function: linear_interpolate_matrix @ 0x44da90 */
 
 0044da9d        invert_matrix_from_source(out, from)
-0044daa9        multiply_matrix(out, to)
+0044daa9        multiply_matrix_assign(out, to)
 0044dab5        interpolate_matrix_rotation(out, alpha)
 0044dabd        premultiply_matrix_in_place(out, from)
 0044dac4        orthogonalize_matrix(out)

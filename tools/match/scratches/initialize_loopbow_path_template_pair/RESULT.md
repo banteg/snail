@@ -17,21 +17,22 @@ the target's full local-frame size and six-argument epilogue.
 ## Masked operand audit
 
 ```text
-60 ok, 0 unresolved, 2 mismatch
+62 ok, 0 unresolved, 0 mismatch
 ```
 
-Both mismatched operands are calls where native dispatches through the small
-`multiply_matrix_in_place_forward_thunk` at `0x44d1d0`, while the candidate
-calls the scratch symbol `multiply_matrix_in_place` directly. They align exactly
-with the target calls:
+The two matrix-composition calls now resolve cleanly to the authored
+`TransformMatrix::multiply_matrix(const TransformMatrix&)` member at
+`0x44d1d0`. Android implements the same `tMatrix::Multiply` entry as a direct
+branch to `tMatrix::operator*=`, reproducing Windows' forwarder/body split, and
+iOS LoopBow calls `Multiply` at both corresponding sites:
 
 ```text
 target/candidate instruction 348, relative offset +0x56c
 target/candidate instruction 354, relative offset +0x57d
 ```
 
-The target address for both is `0x44d1d0`. No masked operand remains
-unresolved.
+The target address for both is `0x44d1d0`. No masked operand remains unresolved
+or mismatched.
 
 ## Accepted source-shape changes
 

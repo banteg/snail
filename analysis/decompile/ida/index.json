@@ -4639,18 +4639,17 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "multiply_matrix_in_place",
+      "selector": "multiply_matrix_assign",
       "address": "0x44d1a0",
-      "name": "multiply_matrix_in_place",
-      "database_name": "multiply_matrix",
-      "artifact": "analysis/decompile/ida/functions/0044d1a0-multiply_matrix_in_place.c",
+      "name": "multiply_matrix_assign",
+      "artifact": "analysis/decompile/ida/functions/0044d1a0-multiply_matrix_assign.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "multiply_matrix_in_place_forward_thunk",
+      "selector": "multiply_matrix",
       "address": "0x44d1d0",
-      "name": "multiply_matrix_in_place_forward_thunk",
-      "artifact": "analysis/decompile/ida/functions/0044d1d0-multiply_matrix_in_place_forward_thunk.c",
+      "name": "multiply_matrix",
+      "artifact": "analysis/decompile/ida/functions/0044d1d0-multiply_matrix.c",
       "removed_stale_artifacts": []
     },
     {

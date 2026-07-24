@@ -8,7 +8,7 @@ void TransformMatrix::linear_interpolate_matrix(
     const TransformMatrix& from, const TransformMatrix& to, float alpha)
 {
     invert_matrix_from_source(from);
-    multiply_matrix(to);
+    *this *= to;
     interpolate_matrix_rotation(alpha);
     premultiply_matrix_in_place(from);
     orthogonalize_matrix();

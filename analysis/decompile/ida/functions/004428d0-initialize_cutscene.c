@@ -83,9 +83,7 @@ void __thiscall initialize_cutscene(Snail *snail)
     qmemcpy(&transform, &snail->body.transform, sizeof(transform));
     linear_interpolate_matrix(&snail->body.transform, &transform, &snail->cached_cutscene_matrix, 0.69999999);
     y = snail->body.transform.basis_up.y;
-    snail->body.transform.position.x = transform.position.x;
-    snail->body.transform.position.y = transform.position.y;
-    snail->body.transform.position.z = transform.position.z;
+    snail->body.transform.position = transform.position;
     if ( y > 0.0 )
     {
       v24 = (snail->body.transform.position.x - snail->cached_cutscene_matrix.position.x) * 0.80000001;
@@ -105,11 +103,11 @@ void __thiscall initialize_cutscene(Snail *snail)
     v26 = sine(v25) * 0.017449999;
     rotate_matrix_local_z(&rhs, v26);
     invert_matrix_from_source(&out, &snail->body.transform);
-    multiply_matrix(&snail->body.transform, &out);
+    multiply_matrix_assign(&snail->body.transform, &out);
     snail->body.transform.position.y = snail->body.transform.position.y + 1.3;
-    multiply_matrix(&snail->body.transform, &rhs);
+    multiply_matrix_assign(&snail->body.transform, &rhs);
     snail->body.transform.position.y = snail->body.transform.position.y - 1.3;
-    multiply_matrix(&snail->body.transform, &v38);
+    multiply_matrix_assign(&snail->body.transform, &v38);
     v27 = snail->wobble.lift_phase * 6.2831855;
     v18 = sine(v27);
     v30 = v18 * snail->body.transform.basis_up.x;

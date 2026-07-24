@@ -109,8 +109,8 @@ TRUSTED_NAMES = [
     (0x44CF50, "rotate_matrix_local_z"),
     (0x44CFE0, "initialize_matrix_from_values"),
     (0x44D060, "multiply_matrices"),
-    (0x44D1A0, "multiply_matrix"),
-    (0x44D1D0, "multiply_matrix_in_place_forward_thunk"),
+    (0x44D1A0, "multiply_matrix_assign"),
+    (0x44D1D0, "multiply_matrix"),
     (0x44D1E0, "premultiply_matrix_in_place"),
     (0x44D530, "initialize_quaternion_from_axis"),
     (0x44D580, "initialize_axis_from_quaternion"),
@@ -1397,12 +1397,12 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall multiply_matrices(TransformMatrix* out, const TransformMatrix* lhs, const TransformMatrix* rhs);",
     ),
     (
-        "multiply_matrix",
-        "void __thiscall multiply_matrix(TransformMatrix* matrix, const TransformMatrix* rhs);",
+        "multiply_matrix_assign",
+        "void __thiscall multiply_matrix_assign(TransformMatrix* matrix, const TransformMatrix* rhs);",
     ),
     (
-        "multiply_matrix_in_place_forward_thunk",
-        "void __thiscall multiply_matrix_in_place_forward_thunk(TransformMatrix* matrix, const TransformMatrix* rhs);",
+        "multiply_matrix",
+        "void __thiscall multiply_matrix(TransformMatrix* matrix, const TransformMatrix* rhs);",
     ),
     (
         "premultiply_matrix_in_place",

@@ -141,8 +141,8 @@ SYMBOL_UPDATES = (
     ("0x44cf50", "rotate_matrix_local_z"),
     ("0x44cfe0", "initialize_matrix_from_values"),
     ("0x44d060", "multiply_matrices"),
-    ("0x44d1a0", "multiply_matrix"),
-    ("0x44d1d0", "multiply_matrix_in_place_forward_thunk"),
+    ("0x44d1a0", "multiply_matrix_assign"),
+    ("0x44d1d0", "multiply_matrix"),
     ("0x44d1e0", "premultiply_matrix_in_place"),
     ("0x44d530", "initialize_quaternion_from_axis"),
     ("0x44d580", "initialize_axis_from_quaternion"),
@@ -2873,12 +2873,12 @@ PROTO_UPDATES = (
         "void __thiscall multiply_matrices(TransformMatrix* out, const TransformMatrix* lhs, const TransformMatrix* rhs)",
     ),
     (
-        "multiply_matrix",
-        "void __thiscall multiply_matrix(TransformMatrix* matrix, const TransformMatrix* rhs)",
+        "multiply_matrix_assign",
+        "void __thiscall multiply_matrix_assign(TransformMatrix* matrix, const TransformMatrix* rhs)",
     ),
     (
-        "multiply_matrix_in_place_forward_thunk",
-        "void __thiscall multiply_matrix_in_place_forward_thunk(TransformMatrix* matrix, const TransformMatrix* rhs)",
+        "multiply_matrix",
+        "void __thiscall multiply_matrix(TransformMatrix* matrix, const TransformMatrix* rhs)",
     ),
     (
         "premultiply_matrix_in_place",

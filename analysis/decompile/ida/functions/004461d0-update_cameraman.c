@@ -171,7 +171,7 @@ void __thiscall update_cameraman(Cameraman *cameraman)
   {
     set_matrix_identity(&transform);
     rotate_matrix_local_z(&transform, cameraman->player->follow_state.orientation_a);
-    multiply_matrix(&cameraman->desired_matrix, &transform);
+    multiply_matrix_assign(&cameraman->desired_matrix, &transform);
     rotate_matrix_local_z(&cameraman->desired_matrix, cameraman->player->follow_state.orientation_b);
   }
   v19 = cameraman->player;

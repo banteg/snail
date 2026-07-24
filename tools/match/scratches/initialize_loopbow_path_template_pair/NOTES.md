@@ -69,10 +69,9 @@ The accepted body follows the native phases in order:
    of `0.125f`, parity branch, and the two texture arguments.
 7. Call `finalize_path_template(this)`.
 
-2026-06-20 thunk audit: `0x44d1d0` is now named
-`multiply_matrix_in_place_forward_thunk`.  The two aligned calls at `+0x56c`
-and `+0x57d` now audit as direct-call-vs-forwarder mismatches (`60 ok / 0
-unresolved / 2 mismatch`), not unresolved symbol identity debt.
+2026-06-20 thunk audit: `0x44d1d0` was initially bounded as an anonymous
+matrix forwarder. The two aligned calls at `+0x56c` and `+0x57d` were therefore
+kept as honest symbolic mismatches until its authored identity could be proved.
 
 ## Source-shape decisions
 
@@ -155,8 +154,16 @@ tools/match/match.sh \
 pass the temporary matrix through the recovered const-reference
 `TransformMatrix::multiply_matrix` member, eliminating the old casts. The
 honest partial remains byte-identical at 67.54%, 800/796 candidate/target
-instructions, prefix 10/796, with its existing two mismatches and 60 clean
-operands.
+instructions and prefix 10/796.
+
+2026-07-24 authored matrix-member closure: Android's adjacent
+`tMatrix::Multiply(const tMatrix&)` symbol branches directly to
+`tMatrix::operator*=(const tMatrix&)`, proving that Windows' four-instruction
+entry at `0x44d1d0` is the authored `Multiply` member and the 18-instruction
+body at `0x44d1a0` is the multiply-assignment operator. iOS exports both names
+and calls `Multiply` at these same two LoopBow sites. The candidate instructions
+are unchanged, while the masked audit closes from 60 clean / 2 mismatched to
+62 clean / 0 mismatched operands.
 
 ## 2026-07-17 constructor ABI closure
 
@@ -171,7 +178,8 @@ ABI. The shared declaration and scratch also stop returning the finalizer's
 incidental EAX state: both are honestly `void`, matching the native caller and
 callee contracts. That source correction is byte-identical at 67.54%
 (800/796), with the existing 60 clean operands and two multiply-thunk symbol
-mismatches.
+mismatches at that stage. The later authored matrix-member closure removes both
+without changing source behavior or instruction bytes.
 
 ## 2026-07-20 staged basis and mesh lifetimes
 

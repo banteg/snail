@@ -92,7 +92,7 @@
 0044656a        if (cameraman->player->follow_state.active == 1)
 00446570        set_matrix_identity(&var_40)
 00446586        rotate_matrix_local_z(&var_40, cameraman->player->follow_state.orientation_a)
-00446592        multiply_matrix(&cameraman->desired_matrix, &var_40)
+00446592        multiply_matrix_assign(&cameraman->desired_matrix, &var_40)
 004465a6        rotate_matrix_local_z(&cameraman->desired_matrix, cameraman->player->follow_state.orientation_b)
 004465ab        struct Player* player_1 = cameraman->player
 004465b9        if (player_1->attachment_exit_pending != 0)
