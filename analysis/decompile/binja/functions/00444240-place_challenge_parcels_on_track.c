@@ -44,11 +44,11 @@
 00444320        int32_t ecx = selected_runtime_row_index * 0x3d
 0044432d        struct RuntimeRowStrideAnchor* challenge_runtime_row_anchor = game + (ecx << 2)
 00444331        challenge_runtime_row_anchor->row.flags = *(&game->runtime_rows + (ecx << 2)) | 0x11
-00444343        challenge_runtime_row_anchor->row.projection_payload.y = fconvert.s(fconvert.t(challenge_runtime_row_anchor->row.projection_payload.y) + fconvert.t(1f))
+00444343        challenge_runtime_row_anchor->row.parcel_spawn_position.y = fconvert.s(fconvert.t(challenge_runtime_row_anchor->row.parcel_spawn_position.y) + fconvert.t(1f))
 00444350        if ((challenge_runtime_row_anchor->row.flags.b & 0x20) != 0)
-0044435e        challenge_runtime_row_anchor->row.projection_payload.x = fconvert.s(fconvert.t(challenge_runtime_row_anchor->row.projection_payload.x) * fconvert.t(-1f))
+0044435e        challenge_runtime_row_anchor->row.parcel_spawn_position.x = fconvert.s(fconvert.t(challenge_runtime_row_anchor->row.parcel_spawn_position.x) * fconvert.t(-1f))
 0044436d        if (((challenge_runtime_row_anchor->row.flags).w:1.b & 0x40) != 0)
-0044437f        challenge_runtime_row_anchor->row.projection_payload.z = fconvert.s(float.t(out_angle) + fconvert.t(challenge_runtime_row_anchor->row.projection_payload.z) + fconvert.t(0.5f))
+0044437f        challenge_runtime_row_anchor->row.parcel_spawn_position.z = fconvert.s(float.t(out_angle) + fconvert.t(challenge_runtime_row_anchor->row.parcel_spawn_position.z) + fconvert.t(0.5f))
 00444387        if (picked_index s< last_candidate_index)
 0044438b        runtime_row_count = last_candidate_index - picked_index
 00444396        int32_t j
@@ -72,7 +72,7 @@
 004443e9        if ((flags & 1) != 0 && (flags & 0x40) != 0)
 004443f5        int32_t eax_5 = get_track_cell_row_index(projection_row->primary_attachment_cell)
 00444402        int32_t eax_6
-00444402        eax_6, x87control_1 = ftol(x87control_1, fconvert.t(projection_row->projection_payload.z))
+00444402        eax_6, x87control_1 = ftol(x87control_1, fconvert.t(projection_row->parcel_spawn_position.z))
 00444409        int32_t node = eax_6 - eax_5
 0044440b        if (eax_6 - eax_5 s< 0)
 0044440d        node = 0
@@ -80,11 +80,11 @@
 00444415        struct Path* attachment_template_record = primary_attachment_cell->attachment_template_record
 0044441c        if (attachment_template_record->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
 00444471        int32_t row_index = get_track_cell_row_index(primary_attachment_cell)
-00444482        get_path_position_at_node(projection_row->primary_attachment_cell->attachment_template_record, &projection_row->projection_payload, node, row_index, &projection_row->projection_payload)
+00444482        get_path_position_at_node(projection_row->primary_attachment_cell->attachment_template_record, &projection_row->parcel_spawn_position, node, row_index, &projection_row->parcel_spawn_position)
 0044444f        struct TransformMatrix transform
-0044444f        x87control_1 = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], projection_row->projection_payload.x, projection_row->projection_payload.y, &transform, &out_angle)
-0044445c        projection_row->projection_payload.x = transform.position.x
-00444462        projection_row->projection_payload.y = transform.position.y
+0044444f        x87control_1 = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], projection_row->parcel_spawn_position.x, projection_row->parcel_spawn_position.y, &transform, &out_angle)
+0044445c        projection_row->parcel_spawn_position.x = transform.position.x
+00444462        projection_row->parcel_spawn_position.y = transform.position.y
 0044448f        projection_row = &projection_row[1]
 00444495        cond:1_1 = projection_scan_index + 1 s< game->runtime_row_count
 00444497        projection_scan_index += 1

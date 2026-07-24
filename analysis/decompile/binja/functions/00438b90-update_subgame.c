@@ -175,7 +175,7 @@
 0043909c        runtime_row_anchor->row.row_model.body.bod.bod.list_flags = list_flags
 00439053        report_errorf("List ADD")
 004390af        if ((runtime_row_anchor->row.flags.b & 0x10) != 0 && (game->runtime_flags & &data_800000) != 0)
-004390c1        spawn_track_parcel(game, &runtime_row_anchor->row.projection_payload, &game->player)
+004390c1        spawn_track_parcel(game, &runtime_row_anchor->row.parcel_spawn_position, &game->player)
 004390c6        float var_3c_1 = 0f
 00439863        bool cond:5_1
 004390d5        if (runtime_row_scan_begin s>= 0 && runtime_row_scan_begin s< game->runtime_row_count)

@@ -56,7 +56,7 @@ EXPECTED_STRUCT_FIELDS = {
     },
     "SubRow": {
         0x00: ("flags", "uint32_t"),
-        0x90: ("projection_payload", "Vec3"),
+        0x90: ("parcel_spawn_position", "Vec3"),
         0x9C: ("parcel_set_id", "int32_t"),
         0xA0: ("attachment_template_index", "int32_t"),
         0xA4: ("primary_attachment_cell", "TrackRowCell*"),
@@ -75,7 +75,7 @@ EXPECTED_STRUCT_FIELDS = {
 # The first loop borrows SubSegment::row_count from each authored segment slot.
 # The second uses two exact field cursors: one based at
 # TrackRowCell::fringe_front/lane_and_flags and one based at
-# SubRow::projection_payload.y. Preserve those physical cursor shapes instead
+# SubRow::parcel_spawn_position.y. Preserve those physical cursor shapes instead
 # of inventing negatively biased whole-record pointers.
 RUNTIME_GRID_CLEAR_USER_VAR_UPDATES = (
     (
@@ -115,7 +115,7 @@ RUNTIME_GRID_CLEAR_USER_VAR_UPDATES = (
         "RegisterVariableSourceType",
         573,
         73,
-        "row_projection_y_cursor",
+        "parcel_spawn_y_cursor",
         "int32_t*",
     ),
     (

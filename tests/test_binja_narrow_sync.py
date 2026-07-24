@@ -5561,7 +5561,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     for name, declaration in (
         ("segment_row_count_cursor", "int32_t *segment_row_count_cursor;"),
         ("row_fringe_front_cursor", "Fringe **row_fringe_front_cursor;"),
-        ("row_projection_y_cursor", "int32_t *row_projection_y_cursor;"),
+        ("parcel_spawn_y_cursor", "int32_t *parcel_spawn_y_cursor;"),
         ("rows_remaining", "int32_t rows_remaining;"),
         ("cell_lanes_remaining", "int32_t cell_lanes_remaining;"),
         ("lane_and_flags_cursor", "uint32_t *lane_and_flags_cursor;"),
@@ -6190,6 +6190,52 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "SUBROW_FLAG_SUPPRESS_TRACK_RENDER" in build_track_fringe_objects
     assert "SUBROW_FLAG_NO_FALL" in update_subgoldy
     assert "SUBROW_FLAG_PARCEL_Z_IS_LOCAL" in place_challenge
+
+
+def test_parcel_spawn_position_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    binja_path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    binja_clear_sync = (
+        BINJA_DIR / "sync_runtime_grid_clear_lifetimes.py"
+    ).read_text(encoding="utf-8")
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    populate_rows = (
+        repo_root
+        / "tools/match/scratches/populate_runtime_track_cells_from_segments/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    place_parcels = (
+        repo_root / "tools/match/scratches/place_parcels_on_track/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    place_challenge = (
+        repo_root
+        / "tools/match/scratches/place_challenge_parcels_on_track/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    update_subgame = (
+        repo_root / "tools/match/scratches/update_subgame/scratch.cpp"
+    ).read_text(encoding="utf-8")
+
+    for header in (matcher_header, analysis_header):
+        assert "parcel_spawn_position" in header
+        assert "projection_payload" not in header
+
+    assert '("0x90", "parcel_spawn_position", "Vec3")' in binja_path_sync
+    assert '0x90: ("parcel_spawn_position", "Vec3")' in binja_clear_sync
+    assert "runtime_rows[0].parcel_spawn_position.y" in ida_path_sync
+    assert "offsetof(SubRow, parcel_spawn_position)" in populate_rows
+    assert ".parcel_spawn_position" in place_parcels
+    assert ".parcel_spawn_position" in place_challenge
+    assert "&runtime_rows[cell_index].parcel_spawn_position" in update_subgame
+    assert "spawn_track_parcel(" in update_subgame
 
 
 def test_subgame_runtime_flag_ownership_stays_aligned_across_replay_lanes() -> None:
@@ -12691,7 +12737,7 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
         ("TrackRowCell", "0x3D", "open_edge_mask", "uint8_t"),
         ("TrackRowCell", "0x40", "lane_and_flags", "uint32_t"),
         ("TrackRowCell", "0x44", "fringe_front", "Fringe*"),
-        ("SubRow", "0x90", "projection_payload", "Vec3"),
+        ("SubRow", "0x90", "parcel_spawn_position", "Vec3"),
         ("SubRow", "0xA4", "primary_attachment_cell", "TrackRowCell*"),
         ("SubRow", "0xEC", "source_segment", "SubSegment*"),
         ("SubgameRuntime", "0xA874", "level_definition", "SubTracks"),
@@ -12738,7 +12784,7 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
             "RegisterVariableSourceType",
             573,
             73,
-            "row_projection_y_cursor",
+            "parcel_spawn_y_cursor",
             "int32_t*",
         ),
         ("StackVariableSourceType", 579, -48, "rows_remaining", "int32_t"),

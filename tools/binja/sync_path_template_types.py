@@ -2295,7 +2295,7 @@ THANKS_SCREEN_FIELD_UPDATES = (
 SUB_ROW_FIELD_UPDATES = (
     ("0x00", "flags", "uint32_t"),
     ("0x04", "row_model", "RowModel"),
-    ("0x90", "projection_payload", "Vec3"),
+    ("0x90", "parcel_spawn_position", "Vec3"),
     ("0x9c", "parcel_set_id", "int32_t"),
     ("0xa0", "attachment_template_index", "int32_t"),
     ("0xa4", "primary_attachment_cell", "TrackRowCell*"),

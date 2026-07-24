@@ -1405,7 +1405,7 @@ typedef struct RowModel {
 typedef struct SubRow {
     uint32_t flags;
     RowModel row_model;
-    Vec3 projection_payload;
+    Vec3 parcel_spawn_position;
     int32_t parcel_set_id;
     int32_t attachment_template_index;
     TrackRowCell* primary_attachment_cell;

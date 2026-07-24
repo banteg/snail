@@ -220,3 +220,20 @@ claim that the field cursor owns a whole row. No matcher source changed;
 focused Wibo remains honestly at 81.40% (171 target versus 173 candidate
 instructions), with all 33 masked operands clean and the same documented
 residual.
+
+## 2026-07-24 parcel spawn-position lifecycle
+
+The row-owned vector at `SubRow +0x90` is now
+`parcel_spawn_position`, closing the lifecycle that the weaker
+`projection_payload` name left open. The runtime-grid builder is its only
+non-placement writer and copies authored parcel-local x/y/z into it. Both
+parcel placers then mirror x, add the one-unit spawn-height offset to y, add
+the absolute row center to local z, and project the vector through the active
+attachment. `update_subgame` is the downstream consumer and passes this exact
+field to `spawn_track_parcel` as a world position.
+
+Binary Ninja's complete `SubRow +0x90` field-xref set contains only the
+builder and two placement helpers; IDA independently renders the same writes
+and the final spawn handoff. The field therefore belongs to parcel spawning,
+not a generic row-projection subsystem. This semantic rename is codegen-neutral:
+focused Wibo remains 81.40%, 173/171 instructions, with all 33 operands clean.

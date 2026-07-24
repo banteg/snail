@@ -74,15 +74,15 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
       ++placed_count;
       challenge_runtime_row_anchor = (RuntimeRowStrideAnchor *)((char *)game + 244 * out_angle);
       challenge_runtime_row_anchor->row.flags |= 0x11u;
-      challenge_runtime_row_anchor->row.projection_payload.y = challenge_runtime_row_anchor->row.projection_payload.y
-                                                             + 1.0;
+      challenge_runtime_row_anchor->row.parcel_spawn_position.y = challenge_runtime_row_anchor->row.parcel_spawn_position.y
+                                                                + 1.0;
       if ( (challenge_runtime_row_anchor->row.flags & 0x20) != 0 )
-        challenge_runtime_row_anchor->row.projection_payload.x = challenge_runtime_row_anchor->row.projection_payload.x
-                                                               * -1.0;
+        challenge_runtime_row_anchor->row.parcel_spawn_position.x = challenge_runtime_row_anchor->row.parcel_spawn_position.x
+                                                                  * -1.0;
       if ( (challenge_runtime_row_anchor->row.flags & 0x4000) != 0 )
-        challenge_runtime_row_anchor->row.projection_payload.z = (double)out_angle
-                                                               + challenge_runtime_row_anchor->row.projection_payload.z
-                                                               + 0.5;
+        challenge_runtime_row_anchor->row.parcel_spawn_position.z = (double)out_angle
+                                                                  + challenge_runtime_row_anchor->row.parcel_spawn_position.z
+                                                                  + 0.5;
       if ( (int)v10 < last_candidate_index )
       {
         entries_to_shift = last_candidate_index - v10;
@@ -111,7 +111,7 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
     {
       if ( (projection_row->flags & 1) != 0 && (projection_row->flags & 0x40) != 0 )
       {
-        path_node = (__int64)projection_row->projection_payload.z
+        path_node = (__int64)projection_row->parcel_spawn_position.z
                   - get_track_cell_row_index(projection_row->primary_attachment_cell);
         if ( path_node < 0 )
           path_node = 0;
@@ -121,23 +121,23 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
           compute_kind42_attachment_transform(
             primary_attachment_cell->attachment_template_record,
             primary_attachment_cell->attachment_template_record->primary_samples[path_node].special_scalar,
-            projection_row->projection_payload.x,
-            projection_row->projection_payload.y,
+            projection_row->parcel_spawn_position.x,
+            projection_row->parcel_spawn_position.y,
             &transform,
             (float *)&out_angle);
           y = transform.position.y;
-          projection_row->projection_payload.x = transform.position.x;
-          projection_row->projection_payload.y = y;
+          projection_row->parcel_spawn_position.x = transform.position.x;
+          projection_row->parcel_spawn_position.y = y;
         }
         else
         {
           track_cell_row_index = get_track_cell_row_index(primary_attachment_cell);
           get_path_position_at_node(
             projection_row->primary_attachment_cell->attachment_template_record,
-            &projection_row->projection_payload,
+            &projection_row->parcel_spawn_position,
             path_node,
             track_cell_row_index,
-            &projection_row->projection_payload);
+            &projection_row->parcel_spawn_position);
         }
       }
       ++projection_row;

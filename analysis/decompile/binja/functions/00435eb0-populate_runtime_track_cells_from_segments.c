@@ -83,16 +83,16 @@
 004360de        int32_t row_event_owner = 0
 004360e2        game->player.follow_state.flag_3c = 0
 004360e9        struct Fringe** row_fringe_front_cursor = &game->runtime_cells[0][0].fringe_front
-004360ed        int32_t* row_projection_y_cursor = &game->runtime_rows[0].projection_payload.y
+004360ed        int32_t* parcel_spawn_y_cursor = &game->runtime_rows[0].parcel_spawn_position.y
 004360f3        int32_t rows_remaining = 0xc80
 00436192        bool cond:3_1
 004360fd        int32_t cell_lanes_remaining = 8
-00436102        row_projection_y_cursor[-0x25] = 0
-00436108        row_projection_y_cursor[6] = 0
-0043610e        __builtin_memset(&row_projection_y_cursor[0x15], 0, 0xc)
-00436114        __builtin_memset(&row_projection_y_cursor[1], 0, 0x10)
-00436117        *row_projection_y_cursor = 0
-00436119        row_projection_y_cursor[-1] = 0
+00436102        parcel_spawn_y_cursor[-0x25] = 0
+00436108        parcel_spawn_y_cursor[6] = 0
+0043610e        __builtin_memset(&parcel_spawn_y_cursor[0x15], 0, 0xc)
+00436114        __builtin_memset(&parcel_spawn_y_cursor[1], 0, 0x10)
+00436117        *parcel_spawn_y_cursor = 0
+00436119        parcel_spawn_y_cursor[-1] = 0
 00436129        uint32_t* lane_and_flags_cursor = &row_fringe_front_cursor[-1]
 0043615f        int32_t i_1
 0043612c        uint32_t cell_lane_and_flags = *lane_and_flags_cursor
@@ -123,7 +123,7 @@
 0043617a        cell_fringe_front_cursor[3] = 0
 0043617d        do while (i_2 != 1)
 0043617f        row_fringe_front_cursor = next_row_fringe_front_cursor
-00436187        row_projection_y_cursor = &row_projection_y_cursor[0x3d]
+00436187        parcel_spawn_y_cursor = &parcel_spawn_y_cursor[0x3d]
 0043618d        cond:3_1 = rows_remaining != 1
 0043618e        rows_remaining -= 1
 00436192        do while (cond:3_1)
@@ -260,14 +260,14 @@
 00436546        runtime_row_anchor->row.flags |= 0x4001
 0043656b        runtime_row_anchor->row.parcel_set_id = *(active_segment_1 + (segment_row_index + 0x25) * 0x38)
 00436571        float x = segment_row_anchor->row.local_position.x
-00436573        runtime_row_anchor->row.projection_payload.x.b = x.b
-00436573        *(&runtime_row_anchor->row.projection_payload.x + 1) = x:1.b
-00436573        *(&runtime_row_anchor->row.projection_payload.x + 2) = x:2.b
-00436573        *(&runtime_row_anchor->row.projection_payload.x + 3) = x:3.b
-00436578        runtime_row_anchor->row.projection_payload.y = segment_row_anchor->row.local_position.y
+00436573        runtime_row_anchor->row.parcel_spawn_position.x.b = x.b
+00436573        *(&runtime_row_anchor->row.parcel_spawn_position.x + 1) = x:1.b
+00436573        *(&runtime_row_anchor->row.parcel_spawn_position.x + 2) = x:2.b
+00436573        *(&runtime_row_anchor->row.parcel_spawn_position.x + 3) = x:3.b
+00436578        runtime_row_anchor->row.parcel_spawn_position.y = segment_row_anchor->row.local_position.y
 0043657b        int16_t z = (segment_row_anchor->row.local_position.z).w
-0043657e        runtime_row_anchor->row.projection_payload.z.b = z.b
-0043657e        *(&runtime_row_anchor->row.projection_payload.z + 1) = z:1.b
+0043657e        runtime_row_anchor->row.parcel_spawn_position.z.b = z.b
+0043657e        *(&runtime_row_anchor->row.parcel_spawn_position.z + 1) = z:1.b
 00436588        if ((segment_row_anchor->row.flags.b & 8) != 0)
 0043658a        uint32_t flags_2 = runtime_row_anchor->row.flags
 00436590        flags_2.b |= 8
@@ -408,11 +408,11 @@
 00436e0e        flags_4:1.b &= 0xbf
 00436e1a        runtime_row_anchor->row.flags = flags_4 | 1
 00436e20        runtime_row_anchor->row.parcel_set_id = 0
-00436e30        runtime_row_anchor->row.projection_payload.x = fconvert.s(float.t(lane) - fconvert.t(4f) + fconvert.t(0.5f))
-00436e40        runtime_row_anchor->row.projection_payload.y = runtime_cell_anchor->cell.anchor_position.y
-00436e4c        runtime_row_anchor->row.projection_payload.z = fconvert.s(float.t(build_row) + fconvert.t(0.5f))
+00436e30        runtime_row_anchor->row.parcel_spawn_position.x = fconvert.s(float.t(lane) - fconvert.t(4f) + fconvert.t(0.5f))
+00436e40        runtime_row_anchor->row.parcel_spawn_position.y = runtime_cell_anchor->cell.anchor_position.y
+00436e4c        runtime_row_anchor->row.parcel_spawn_position.z = fconvert.s(float.t(build_row) + fconvert.t(0.5f))
 00436e57        if (game->track_mirror_enabled != 0)
-00436e65        runtime_row_anchor->row.projection_payload.x = fconvert.s(fconvert.t(runtime_row_anchor->row.projection_payload.x) * fconvert.t(-1f))
+00436e65        runtime_row_anchor->row.parcel_spawn_position.x = fconvert.s(fconvert.t(runtime_row_anchor->row.parcel_spawn_position.x) * fconvert.t(-1f))
 00436e02        goto label_436e6b
 00436e6b        case 0xa
 00436e6b        label_436e6b:

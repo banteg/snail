@@ -170,13 +170,13 @@
 00443dc1        if ((parcel_set_runtime_row_anchor->row.flags.b & 0x10) != 0)
 00443dd3        report_errorf("Duplicate Parcel Request in %s.", &game->level_definition.level_display_name)
 00443df0        parcel_set_runtime_row_anchor->row.flags |= 0x11
-00443dfc        parcel_set_runtime_row_anchor->row.projection_payload.x = *ebx_27
-00443e01        parcel_set_runtime_row_anchor->row.projection_payload.y = ebx_27[1]
-00443e07        parcel_set_runtime_row_anchor->row.projection_payload.z = ebx_27[2]
-00443e16        parcel_set_runtime_row_anchor->row.projection_payload.z = fconvert.s(float.t(out_angle) + fconvert.t(parcel_set_runtime_row_anchor->row.projection_payload.z) + fconvert.t(0.5f))
-00443e28        parcel_set_runtime_row_anchor->row.projection_payload.y = fconvert.s(fconvert.t(parcel_set_runtime_row_anchor->row.projection_payload.y) + fconvert.t(1f))
+00443dfc        parcel_set_runtime_row_anchor->row.parcel_spawn_position.x = *ebx_27
+00443e01        parcel_set_runtime_row_anchor->row.parcel_spawn_position.y = ebx_27[1]
+00443e07        parcel_set_runtime_row_anchor->row.parcel_spawn_position.z = ebx_27[2]
+00443e16        parcel_set_runtime_row_anchor->row.parcel_spawn_position.z = fconvert.s(float.t(out_angle) + fconvert.t(parcel_set_runtime_row_anchor->row.parcel_spawn_position.z) + fconvert.t(0.5f))
+00443e28        parcel_set_runtime_row_anchor->row.parcel_spawn_position.y = fconvert.s(fconvert.t(parcel_set_runtime_row_anchor->row.parcel_spawn_position.y) + fconvert.t(1f))
 00443e35        if ((parcel_set_runtime_row_anchor->row.flags.b & 0x20) != 0)
-00443e43        parcel_set_runtime_row_anchor->row.projection_payload.x = fconvert.s(fconvert.t(parcel_set_runtime_row_anchor->row.projection_payload.x) * fconvert.t(-1f))
+00443e43        parcel_set_runtime_row_anchor->row.parcel_spawn_position.x = fconvert.s(fconvert.t(parcel_set_runtime_row_anchor->row.parcel_spawn_position.x) * fconvert.t(-1f))
 00443e50        ebx_27 = &ebx_27[4]
 00443e53        cond:14_1 = var_214_1 + 1 s< (&g_parcel_set_buckets)[eax_29].candidate_count
 00443e55        var_214_1 += 1
@@ -267,16 +267,16 @@
 00444043        esi_9:1.b = zero_candidate_position->x:1.b
 00444043        esi_9:2.b = zero_candidate_position->x:2.b
 00444043        esi_9:3.b = zero_candidate_position->x:3.b
-00444047        zero_runtime_row_anchor->row.projection_payload.x = esi_9
-0044404c        zero_runtime_row_anchor->row.projection_payload.y = zero_candidate_position->y
+00444047        zero_runtime_row_anchor->row.parcel_spawn_position.x = esi_9
+0044404c        zero_runtime_row_anchor->row.parcel_spawn_position.y = zero_candidate_position->y
 0044404f        int32_t ecx_35
 0044404f        ecx_35.b = zero_candidate_position->z.b
 0044404f        ecx_35:1.b = zero_candidate_position->z:1.b
-00444052        zero_runtime_row_anchor->row.projection_payload.z = ecx_35
-00444061        zero_runtime_row_anchor->row.projection_payload.z = fconvert.s(float.t(eax_42) + fconvert.t(zero_runtime_row_anchor->row.projection_payload.z) + fconvert.t(0.5f))
-00444073        zero_runtime_row_anchor->row.projection_payload.y = fconvert.s(fconvert.t(zero_runtime_row_anchor->row.projection_payload.y) + fconvert.t(1f))
+00444052        zero_runtime_row_anchor->row.parcel_spawn_position.z = ecx_35
+00444061        zero_runtime_row_anchor->row.parcel_spawn_position.z = fconvert.s(float.t(eax_42) + fconvert.t(zero_runtime_row_anchor->row.parcel_spawn_position.z) + fconvert.t(0.5f))
+00444073        zero_runtime_row_anchor->row.parcel_spawn_position.y = fconvert.s(fconvert.t(zero_runtime_row_anchor->row.parcel_spawn_position.y) + fconvert.t(1f))
 00444080        if ((zero_runtime_row_anchor->row.flags.b & 0x20) != 0)
-0044408a        zero_runtime_row_anchor->row.projection_payload.x = fconvert.s(fconvert.t(zero_runtime_row_anchor->row.projection_payload.x) * fconvert.t(-1f))
+0044408a        zero_runtime_row_anchor->row.parcel_spawn_position.x = fconvert.s(fconvert.t(zero_runtime_row_anchor->row.parcel_spawn_position.x) * fconvert.t(-1f))
 00444092        if (eax_39 s< parcel_count_4)
 00444094        struct ParcelBucket* zero_destination_bucket = out_angle
 00444098        int32_t j_2 = parcel_count_4 - eax_39
@@ -314,7 +314,7 @@
 00444173        if ((flags & 1) != 0 && (flags & 0x40) != 0)
 0044417f        int32_t eax_53 = get_track_cell_row_index(projection_row->primary_attachment_cell)
 0044418c        int32_t eax_54
-0044418c        eax_54, x87control = ftol(x87control, fconvert.t(projection_row->projection_payload.z))
+0044418c        eax_54, x87control = ftol(x87control, fconvert.t(projection_row->parcel_spawn_position.z))
 00444193        int32_t node = eax_54 - eax_53
 00444195        if (eax_54 - eax_53 s< 0)
 00444197        node = 0
@@ -322,11 +322,11 @@
 0044419f        struct Path* attachment_template_record = primary_attachment_cell->attachment_template_record
 004441a6        if (attachment_template_record->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
 00444201        int32_t row_index = get_track_cell_row_index(primary_attachment_cell)
-00444212        get_path_position_at_node(projection_row->primary_attachment_cell->attachment_template_record, &projection_row->projection_payload, node, row_index, &projection_row->projection_payload)
+00444212        get_path_position_at_node(projection_row->primary_attachment_cell->attachment_template_record, &projection_row->parcel_spawn_position, node, row_index, &projection_row->parcel_spawn_position)
 004441d9        struct TransformMatrix transform
-004441d9        x87control = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], projection_row->projection_payload.x, projection_row->projection_payload.y, &transform, &out_angle)
-004441ec        projection_row->projection_payload.x = transform.position.x
-004441f2        projection_row->projection_payload.y = transform.position.y
+004441d9        x87control = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], projection_row->parcel_spawn_position.x, projection_row->parcel_spawn_position.y, &transform, &out_angle)
+004441ec        projection_row->parcel_spawn_position.x = transform.position.x
+004441f2        projection_row->parcel_spawn_position.y = transform.position.y
 0044421f        projection_row = &projection_row[1]
 00444225        cond:12_1 = var_214_4 + 1 s< game->runtime_row_count
 00444227        var_214_4 += 1

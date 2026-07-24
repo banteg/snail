@@ -276,7 +276,7 @@ LABEL_65:
           }
         }
         if ( (runtime_row_anchor->row.flags & 0x10) != 0 && (game->runtime_flags & 0x800000) != 0 )
-          spawn_track_parcel(game, &runtime_row_anchor->row.projection_payload, &game->player);
+          spawn_track_parcel(game, &runtime_row_anchor->row.parcel_spawn_position, &game->player);
         v52 = 0;
         while ( 1 )
         {

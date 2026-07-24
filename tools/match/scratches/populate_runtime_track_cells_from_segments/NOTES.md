@@ -777,7 +777,7 @@ heading fields, and the embedded `attachment_body` through the borrowed row
 instead of inventing process-global owners.
 
 The clear loop is likewise pinned to its physical field cursors:
-`segment_row_count_cursor`, `row_projection_y_cursor`,
+`segment_row_count_cursor`, `parcel_spawn_y_cursor`,
 `lane_and_flags_cursor`, and the current/next fringe-link cursors. These are
 borrowed interior addresses with exact `0x4220`, `0xf4`, and `0x54` strides;
 none was promoted to a complete-record owner. IDA's x87 instructions expose
@@ -803,3 +803,16 @@ supports the semantic name; it is not inferred from punctuation alone.
 This ownership-only rename leaves focused matching unchanged at 29.67%,
 1,229/1,245 instructions, with 66 clean operands and the same two documented
 jump-table/call-alignment mismatches.
+
+## 2026-07-24 parcel spawn-position producer
+
+The parcel-row path now names `SubRow +0x90` as
+`parcel_spawn_position`. It copies the authored row's local x/y/z only when
+the parcel-candidate bit is present. The two parcel placers subsequently
+convert that same vector to world space, and `update_subgame` hands it directly
+to `spawn_track_parcel`. This complete lifecycle proves a parcel-owned spawn
+position rather than a generic projection payload.
+
+The field rename preserves its exact 0x90 offset, the physical y-lane reset
+cursor, and all codegen. Focused matching remains 29.67%, 1,229/1,245
+instructions, with 66 clean operands and the same two documented mismatches.

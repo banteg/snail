@@ -369,8 +369,8 @@ POPULATE_RUNTIME_LVAR_SPECS = (
         68,
     ),
     (
-        "row_projection_y_cursor",
-        "int32_t *row_projection_y_cursor;",
+        "parcel_spawn_y_cursor",
+        "int32_t *parcel_spawn_y_cursor;",
         0x4360EE,
         None,
     ),
@@ -1119,7 +1119,7 @@ MERGE_RUNTIME_ROW_OFFSET_OPERANDS = (
 # operand, plus the clear loop's projection-payload cursor, so Hex-Rays can
 # render the same borrowed SubRow ownership already preserved by Binary Ninja.
 POPULATE_RUNTIME_ROW_OFFSET_OPERANDS = (
-    (0x4360ED, 1, 0x5CCB5C),  # clear cursor at runtime_rows[0].projection_payload.y
+    (0x4360ED, 1, 0x5CCB5C),  # clear cursor at runtime_rows[0].parcel_spawn_position.y
     (0x4363D9, 1, 0x5CCAC8),  # mirrored row flags pointer
     (0x4363E0, 1, 0x5CCAC8),  # mirrored row flags load
     (0x436411, 1, 0x5CCAC8),  # no-fall row flags pointer
@@ -1144,7 +1144,7 @@ POPULATE_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x436528, 0, 0x5CCB4C),  # row_model velocity.x clear
     (0x43653B, 1, 0x5CCAC8),  # parcel row flags load
     (0x436546, 0, 0x5CCAC8),  # parcel row flags store
-    (0x436565, 1, 0x5CCB58),  # projection_payload
+    (0x436565, 1, 0x5CCB58),  # parcel_spawn_position
     (0x43656B, 0, 0x5CCB64),  # parcel_set_id
     (0x43658A, 1, 0x5CCAC8),  # path row flags load
     (0x436592, 0, 0x5CCAC8),  # path row flags store

@@ -359,3 +359,18 @@ recoveries. Focused Wibo remains 33.81% (633/639 instructions), with 40 clean
 masked operands and the same two known candidate-bank address-shape
 mismatches. The focused BN/IDA export and all 934 strict decompile-health checks
 pass.
+
+## 2026-07-24 parcel spawn-position ownership
+
+The former `projection_payload` at `SubRow +0x90` is now
+`parcel_spawn_position`. Its producer/transform/consumer chain is complete:
+the runtime-grid builder copies authored parcel-local coordinates, this helper
+claims a row and applies mirror/height/absolute-row adjustments before
+attachment projection, and `update_subgame` passes the finished vector to
+`spawn_track_parcel` as world position. The one-unit y increment is therefore
+a spawn-height adjustment, not a count lane.
+
+Both decompiler lanes agree on the same 12-byte field and no other native
+consumer gives it a competing meaning. The rename changes no layout or
+generated code; focused Wibo remains 33.81% (633/639 instructions), with 40
+clean operands and the same two documented address-shape mismatches.

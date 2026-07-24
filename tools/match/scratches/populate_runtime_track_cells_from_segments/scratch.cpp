@@ -234,11 +234,11 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             offsetof(SubRow, row_model) + offsetof(RowModel, velocity)
             + offsetof(Vector3, z),
         ROW_PROJECTION_X =
-            offsetof(SubRow, projection_payload) + offsetof(Vector3, x),
+            offsetof(SubRow, parcel_spawn_position) + offsetof(Vector3, x),
         ROW_PROJECTION_Y =
-            offsetof(SubRow, projection_payload) + offsetof(Vector3, y),
+            offsetof(SubRow, parcel_spawn_position) + offsetof(Vector3, y),
         ROW_PROJECTION_Z =
-            offsetof(SubRow, projection_payload) + offsetof(Vector3, z),
+            offsetof(SubRow, parcel_spawn_position) + offsetof(Vector3, z),
         ROW_ATTACHMENT_LIST_FLAGS =
             offsetof(SubRow, attachment_body)
             + offsetof(ContactTargetObject, list_flags),
@@ -254,15 +254,15 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         ROW_ATTACHMENT_COLOR =
             offsetof(SubRow, attachment_body) + offsetof(BodBase, color),
         ROW_CURSOR_BASE =
-            offsetof(SubRow, projection_payload) + offsetof(Vector3, y),
+            offsetof(SubRow, parcel_spawn_position) + offsetof(Vector3, y),
         ROW_CURSOR_TO_FLAGS =
             ((int)offsetof(SubRow, flags) - ROW_CURSOR_BASE) / sizeof(int),
         ROW_CURSOR_TO_PROJECTION_X =
-            ((int)offsetof(SubRow, projection_payload)
+            ((int)offsetof(SubRow, parcel_spawn_position)
              + (int)offsetof(Vector3, x) - ROW_CURSOR_BASE) / sizeof(int),
         ROW_CURSOR_TO_PROJECTION_Y = 0,
         ROW_CURSOR_TO_PROJECTION_Z =
-            ((int)offsetof(SubRow, projection_payload)
+            ((int)offsetof(SubRow, parcel_spawn_position)
              + (int)offsetof(Vector3, z) - ROW_CURSOR_BASE) / sizeof(int),
         ROW_CURSOR_TO_PARCEL_SET_ID =
             ((int)offsetof(SubRow, parcel_set_id) - ROW_CURSOR_BASE) / sizeof(int),
@@ -298,7 +298,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             + offsetof(TransformMatrix, position) + offsetof(Vector3, y),
     };
     char* cell_payload_cursor = (char*)&runtime_cells[0][0].fringes[0];
-    int* row_cursor = (int*)&runtime_rows[0].projection_payload.y;
+    int* row_cursor = (int*)&runtime_rows[0].parcel_spawn_position.y;
     for (int row = 0;
          row < (int)(sizeof(runtime_rows) / sizeof(runtime_rows[0]));
          ++row) {

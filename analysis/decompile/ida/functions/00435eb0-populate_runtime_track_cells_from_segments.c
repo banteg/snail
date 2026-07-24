@@ -15,7 +15,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int32_t v9; // esi
   int32_t v10; // eax
   int32_t *segment_row_count_cursor; // ecx
-  int32_t *row_projection_y_cursor; // edi
+  int32_t *parcel_spawn_y_cursor; // edi
   int32_t cell_lanes_remaining; // ebp
   uint32_t *lane_and_flags_cursor; // esi
   uint32_t cell_lane_and_flags; // ecx
@@ -242,22 +242,22 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   row_event_owner = 0;
   game->player.follow_state.flag_3c = 0;
   row_fringe_front_cursor = &game->runtime_cells[0][0].fringe_front;
-  row_projection_y_cursor = (int32_t *)&game->runtime_rows[0].projection_payload.y;
+  parcel_spawn_y_cursor = (int32_t *)&game->runtime_rows[0].parcel_spawn_position.y;
   rows_remaining = 3200;
   do
   {
     cell_lanes_remaining = 8;
-    *(row_projection_y_cursor - 37) = 0;
-    row_projection_y_cursor[6] = 0;
-    row_projection_y_cursor[3] = 0;
-    row_projection_y_cursor[21] = 0;
-    row_projection_y_cursor[4] = 0;
-    row_projection_y_cursor[1] = 0;
-    *row_projection_y_cursor = 0;
-    *(row_projection_y_cursor - 1) = 0;
-    row_projection_y_cursor[2] = 0;
-    row_projection_y_cursor[22] = 0;
-    row_projection_y_cursor[23] = 0;
+    *(parcel_spawn_y_cursor - 37) = 0;
+    parcel_spawn_y_cursor[6] = 0;
+    parcel_spawn_y_cursor[3] = 0;
+    parcel_spawn_y_cursor[21] = 0;
+    parcel_spawn_y_cursor[4] = 0;
+    parcel_spawn_y_cursor[1] = 0;
+    *parcel_spawn_y_cursor = 0;
+    *(parcel_spawn_y_cursor - 1) = 0;
+    parcel_spawn_y_cursor[2] = 0;
+    parcel_spawn_y_cursor[22] = 0;
+    parcel_spawn_y_cursor[23] = 0;
     lane_and_flags_cursor = (uint32_t *)(row_fringe_front_cursor - 1);
     do
     {
@@ -290,7 +290,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
     }
     while ( remaining_cell_lanes );
     row_fringe_front_cursor = next_row_fringe_front_cursor;
-    row_projection_y_cursor += 61;
+    parcel_spawn_y_cursor += 61;
     --rows_remaining;
   }
   while ( rows_remaining );
@@ -466,7 +466,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
           {
             runtime_row_anchor->row.flags |= 0x4001u;
             runtime_row_anchor->row.parcel_set_id = v31->rows[segment_row_index].parcel_set_id;
-            runtime_row_anchor->row.projection_payload = segment_row_anchor->row.local_position;
+            runtime_row_anchor->row.parcel_spawn_position = segment_row_anchor->row.local_position;
           }
           if ( (segment_row_anchor->row.flags & 8) != 0 )
           {
@@ -618,11 +618,12 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                   BYTE1(v86) &= ~0x40u;
                   runtime_row_anchor->row.flags = v86 | 1;
                   runtime_row_anchor->row.parcel_set_id = 0;
-                  runtime_row_anchor->row.projection_payload.x = (double)lane - 4.0 + 0.5;
-                  runtime_row_anchor->row.projection_payload.y = runtime_cell_anchor->cell.anchor_position.y;
-                  runtime_row_anchor->row.projection_payload.z = (double)build_row + 0.5;
+                  runtime_row_anchor->row.parcel_spawn_position.x = (double)lane - 4.0 + 0.5;
+                  runtime_row_anchor->row.parcel_spawn_position.y = runtime_cell_anchor->cell.anchor_position.y;
+                  runtime_row_anchor->row.parcel_spawn_position.z = (double)build_row + 0.5;
                   if ( game->track_mirror_enabled )
-                    runtime_row_anchor->row.projection_payload.x = runtime_row_anchor->row.projection_payload.x * -1.0;
+                    runtime_row_anchor->row.parcel_spawn_position.x = runtime_row_anchor->row.parcel_spawn_position.x
+                                                                    * -1.0;
                 }
                 goto LABEL_173;
               case '1':

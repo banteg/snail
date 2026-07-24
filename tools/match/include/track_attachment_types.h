@@ -384,11 +384,11 @@ struct SubRow {                          // stride 0xf4
 
     unsigned int flags;                  // +0x00, SubRowFlag bits
     RowModel row_model;                   // +0x04, ends at +0x90
-    // place_parcels_on_track uses this as an overloaded parcel projection
-    // payload: x is lateral/local x, y is incremented as a claim/count lane,
-    // and z accumulates absolute row + 0.5 before the attachment projection
-    // tail consumes the same vector-shaped storage.
-    Vector3 projection_payload;          // +0x90, x/y/z = local/count/row-center during parcel placement
+    // Authored parcel-local coordinates become the final world-space spawn
+    // position in place_parcels_on_track: x mirrors with the row, y gains the
+    // one-unit spawn-height offset, and z gains the absolute row center before
+    // the attachment projection rewrites x/y (or the complete vector).
+    Vector3 parcel_spawn_position;       // +0x90, parcel-local then world-space
     int parcel_set_id;                   // +0x9c, authored parcel set/payload id
     int attachment_template_index;       // +0xa0, P/p template bank index
     SubLoc* primary_attachment_cell; // +0xa4, first P/p entry spanning this row

@@ -278,7 +278,7 @@ void SubgameRuntime::update_subgame()
                 != zero
                 && (runtime_flags & SUBGAME_RUNTIME_FLAG_PARCEL_SPAWNS) != zero)
                 spawn_track_parcel(
-                    &runtime_rows[cell_index].projection_payload,
+                    &runtime_rows[cell_index].parcel_spawn_position,
                     &player);
 
             attachment_count = zero;

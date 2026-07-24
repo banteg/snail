@@ -143,15 +143,16 @@ void SubgameRuntime::place_parcels_on_track()
                 runtime_rows[absolute_row].flags |=
                     SUBROW_FLAG_PARCEL_CANDIDATE
                     | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
-                runtime_rows[absolute_row].projection_payload = entry->candidates[spot].position;
-                runtime_rows[absolute_row].projection_payload.z =
+                runtime_rows[absolute_row].parcel_spawn_position =
+                    entry->candidates[spot].position;
+                runtime_rows[absolute_row].parcel_spawn_position.z =
                     (float)((double)absolute_row
-                            + runtime_rows[absolute_row].projection_payload.z + 0.5);
-                runtime_rows[absolute_row].projection_payload.y =
-                    runtime_rows[absolute_row].projection_payload.y + 1.0f;
+                            + runtime_rows[absolute_row].parcel_spawn_position.z + 0.5);
+                runtime_rows[absolute_row].parcel_spawn_position.y =
+                    runtime_rows[absolute_row].parcel_spawn_position.y + 1.0f;
                 if (runtime_rows[absolute_row].flags & SUBROW_FLAG_MIRRORED)
-                    runtime_rows[absolute_row].projection_payload.x =
-                        runtime_rows[absolute_row].projection_payload.x * -1.0f;
+                    runtime_rows[absolute_row].parcel_spawn_position.x =
+                        runtime_rows[absolute_row].parcel_spawn_position.x * -1.0f;
             }
             int placed_segment = entry->segment_index;
             for (int scan = 0; scan < set_entry_count; ++scan) {
@@ -189,15 +190,16 @@ void SubgameRuntime::place_parcels_on_track()
             runtime_rows[absolute_row].flags |=
                 SUBROW_FLAG_PARCEL_CANDIDATE
                 | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
-            runtime_rows[absolute_row].projection_payload = entry->candidates[0].position;
-            runtime_rows[absolute_row].projection_payload.z =
+            runtime_rows[absolute_row].parcel_spawn_position =
+                entry->candidates[0].position;
+            runtime_rows[absolute_row].parcel_spawn_position.z =
                 (float)((double)absolute_row
-                        + runtime_rows[absolute_row].projection_payload.z + 0.5);
-            runtime_rows[absolute_row].projection_payload.y =
-                runtime_rows[absolute_row].projection_payload.y + 1.0f;
+                        + runtime_rows[absolute_row].parcel_spawn_position.z + 0.5);
+            runtime_rows[absolute_row].parcel_spawn_position.y =
+                runtime_rows[absolute_row].parcel_spawn_position.y + 1.0f;
             if (runtime_rows[absolute_row].flags & SUBROW_FLAG_MIRRORED)
-                runtime_rows[absolute_row].projection_payload.x =
-                    runtime_rows[absolute_row].projection_payload.x * -1.0f;
+                runtime_rows[absolute_row].parcel_spawn_position.x =
+                    runtime_rows[absolute_row].parcel_spawn_position.x * -1.0f;
             for (int move = picked; move < zero_entry_count - 1; ++move) {
                 ParcelBucket* destination = &g_zero_parcel_buckets[move];
                 ParcelBucket* source = &g_zero_parcel_buckets[move + 1];
@@ -230,7 +232,8 @@ void SubgameRuntime::place_parcels_on_track()
             && (row_record->flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {
             TrackRowCell* cell = row_record->primary_attachment_cell;
             int node =
-                (int)row_record->projection_payload.z - cell->get_track_cell_row_index();
+                (int)row_record->parcel_spawn_position.z
+                - cell->get_track_cell_row_index();
             if (node < 0)
                 node = 0;
             TrackRowCell* live_cell = row_record->primary_attachment_cell;
@@ -238,17 +241,17 @@ void SubgameRuntime::place_parcels_on_track()
             if (template_record->kind == 42) {
                 template_record->compute_kind42_attachment_transform(
                     template_record->primary_samples[node].special_scalar,
-                    row_record->projection_payload.x,
-                    row_record->projection_payload.y,
+                    row_record->parcel_spawn_position.x,
+                    row_record->parcel_spawn_position.y,
                     &transform,
                     &out_angle);
-                row_record->projection_payload.x = transform.position.x;
-                row_record->projection_payload.y = transform.position.y;
+                row_record->parcel_spawn_position.x = transform.position.x;
+                row_record->parcel_spawn_position.y = transform.position.y;
             } else {
                 int row_index = live_cell->get_track_cell_row_index();
                 live_cell->attachment_template_record->get_path_position_at_node(
-                    row_record->projection_payload, node, row_index,
-                    row_record->projection_payload);
+                    row_record->parcel_spawn_position, node, row_index,
+                    row_record->parcel_spawn_position);
             }
         }
     }

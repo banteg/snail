@@ -299,7 +299,7 @@ operands, and the same two honest jump-table mismatches.
 
 - The scratch-local `ActiveRuntimeRow` shell is retired. All row accesses now
   use `runtime_rows[cell_index]` and the canonical `SubRow` children:
-  `row_model`, `projection_payload`, `attachment_body`, and `ring_speed`.
+  `row_model`, `parcel_spawn_position`, `attachment_body`, and `ring_speed`.
 - The formerly raw root offsets are established `GameRoot` ownership:
   `render_skip_count`, `active_bod_list`, `star_manager`, `fade.state`,
   `intro.hide_for_replay_latch`, `intro.attract_reset_progress`, and player
@@ -456,3 +456,18 @@ record bank or a new allocation. The matching source already expresses that
 primary owner, so no source edit is justified and the honest baseline remains
 79.75%, 1036/1033 instructions, prefix 9/1033, 117 clean masked operands, and
 the same two jump-table target-identity mismatches.
+
+## 2026-07-24 parcel spawn-position consumer
+
+The parcel activation path now consumes
+`runtime_rows[cell_index].parcel_spawn_position`. The runtime-grid builder
+initializes this row-owned vector from authored parcel-local coordinates, and
+the normal/challenge placers convert it to world space before setting
+`SUBROW_FLAG_PARCEL_SPAWN_REQUESTED`. This helper then passes the same address
+to `spawn_track_parcel`, whose parameter is independently recovered as
+`Vector3* world_position`.
+
+That final handoff closes the `SubRow +0x90` field's ownership and rules out a
+generic projection payload. The rename is layout- and codegen-neutral:
+focused Wibo remains 79.75%, 1036/1033 instructions, with 117 clean operands
+and the same two jump-table identity mismatches.

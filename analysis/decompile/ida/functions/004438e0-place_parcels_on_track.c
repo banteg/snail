@@ -75,7 +75,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
   float v68; // [esp+1Ch] [ebp-210h]
   int32_t v69; // [esp+1Ch] [ebp-210h]
   Vec3 *out_angle; // [esp+20h] [ebp-20Ch] BYREF
-  Vec3 *p_projection_payload; // [esp+24h] [ebp-208h]
+  Vec3 *p_parcel_spawn_position; // [esp+24h] [ebp-208h]
   int v72; // [esp+28h] [ebp-204h]
   int32_t v73; // [esp+2Ch] [ebp-200h]
   SubgameRuntime *v74; // [esp+30h] [ebp-1FCh]
@@ -121,7 +121,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
         do
         {
           v7 = 0;
-          p_projection_payload = nullptr;
+          p_parcel_spawn_position = nullptr;
           v73 = 0;
           *v76 = 10000;
           v8 = v75;
@@ -232,8 +232,8 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
               v22 = &v86[segment_index];
               if ( candidate_count < v21 )
                 *v22 = candidate_count;
-              if ( candidate_count > (int)p_projection_payload )
-                p_projection_payload = (Vec3 *)candidate_count;
+              if ( candidate_count > (int)p_parcel_spawn_position )
+                p_parcel_spawn_position = (Vec3 *)candidate_count;
               ++v8;
               ++v75;
             }
@@ -251,7 +251,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
       }
       parcel_count = v74->level_definition.parcel_count;
       v25 = v74->level_definition.segment_count;
-      v26 = 80 * parcel_count / 100 - (_DWORD)p_projection_payload;
+      v26 = 80 * parcel_count / 100 - (_DWORD)p_parcel_spawn_position;
       v73 = v26;
       out_angle = (Vec3 *)LODWORD(v68);
       if ( v25 <= 0 )
@@ -307,17 +307,17 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
               v35 = (double)(int)out_angle;
               parcel_set_runtime_row_anchor->row.flags |= 0x11u;
               x = v33->x;
-              p_projection_payload = &parcel_set_runtime_row_anchor->row.projection_payload;
-              parcel_set_runtime_row_anchor->row.projection_payload.x = x;
-              parcel_set_runtime_row_anchor->row.projection_payload.y = v33->y;
-              parcel_set_runtime_row_anchor->row.projection_payload.z = v33->z;
-              parcel_set_runtime_row_anchor->row.projection_payload.z = v35
-                                                                      + parcel_set_runtime_row_anchor->row.projection_payload.z
-                                                                      + 0.5;
-              parcel_set_runtime_row_anchor->row.projection_payload.y = parcel_set_runtime_row_anchor->row.projection_payload.y
-                                                                      + 1.0;
+              p_parcel_spawn_position = &parcel_set_runtime_row_anchor->row.parcel_spawn_position;
+              parcel_set_runtime_row_anchor->row.parcel_spawn_position.x = x;
+              parcel_set_runtime_row_anchor->row.parcel_spawn_position.y = v33->y;
+              parcel_set_runtime_row_anchor->row.parcel_spawn_position.z = v33->z;
+              parcel_set_runtime_row_anchor->row.parcel_spawn_position.z = v35
+                                                                         + parcel_set_runtime_row_anchor->row.parcel_spawn_position.z
+                                                                         + 0.5;
+              parcel_set_runtime_row_anchor->row.parcel_spawn_position.y = parcel_set_runtime_row_anchor->row.parcel_spawn_position.y
+                                                                         + 1.0;
               if ( (parcel_set_runtime_row_anchor->row.flags & 0x20) != 0 )
-                p_projection_payload->x = p_projection_payload->x * -1.0;
+                p_parcel_spawn_position->x = p_parcel_spawn_position->x * -1.0;
               v33 = (Vec3 *)((char *)v33 + 16);
               ++v64;
             }
@@ -326,7 +326,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
           v37 = nullptr;
           v78 = (char *)g_parcel_set_buckets[v31].segment_index;
           v30 = v75;
-          p_projection_payload = nullptr;
+          p_parcel_spawn_position = nullptr;
           if ( v75 > 0 )
           {
             v38 = (Vec3 *)(v75 - 1);
@@ -361,7 +361,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
                         v45[3] = v44[3];
                       }
                       while ( v42 < *v41 );
-                      v37 = p_projection_payload;
+                      v37 = p_parcel_spawn_position;
                     }
                     *(v41 - 131) = *v41;
                     *(v41 - 129) = v41[2];
@@ -385,7 +385,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
               v37 = (Vec3 *)((char *)v37 + 1);
               p_segment_index += 131;
               p_candidate_count += 131;
-              p_projection_payload = v37;
+              p_parcel_spawn_position = v37;
               v76 = p_segment_index;
               v77 = p_candidate_count;
             }
@@ -397,7 +397,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
       }
       if ( v29 < v74->level_definition.parcel_count )
       {
-        p_projection_payload = (Vec3 *)(v5 - 1);
+        p_parcel_spawn_position = (Vec3 *)(v5 - 1);
         do
         {
           if ( v5 <= 0 )
@@ -412,17 +412,19 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
           if ( (zero_runtime_row_anchor->row.flags & 0x10) != 0 )
             report_errorf("Duplicate Parcel Request in %s.", v74->level_definition.level_display_name);
           zero_runtime_row_anchor->row.flags |= 0x11u;
-          zero_runtime_row_anchor->row.projection_payload = g_zero_parcel_buckets[v46].candidates[0].position;
-          zero_runtime_row_anchor->row.projection_payload.z = (double)v66
-                                                            + zero_runtime_row_anchor->row.projection_payload.z
-                                                            + 0.5;
-          zero_runtime_row_anchor->row.projection_payload.y = zero_runtime_row_anchor->row.projection_payload.y + 1.0;
+          zero_runtime_row_anchor->row.parcel_spawn_position = g_zero_parcel_buckets[v46].candidates[0].position;
+          zero_runtime_row_anchor->row.parcel_spawn_position.z = (double)v66
+                                                               + zero_runtime_row_anchor->row.parcel_spawn_position.z
+                                                               + 0.5;
+          zero_runtime_row_anchor->row.parcel_spawn_position.y = zero_runtime_row_anchor->row.parcel_spawn_position.y
+                                                               + 1.0;
           if ( (zero_runtime_row_anchor->row.flags & 0x20) != 0 )
-            zero_runtime_row_anchor->row.projection_payload.x = zero_runtime_row_anchor->row.projection_payload.x * -1.0;
-          if ( v46 < (int)p_projection_payload )
+            zero_runtime_row_anchor->row.parcel_spawn_position.x = zero_runtime_row_anchor->row.parcel_spawn_position.x
+                                                                 * -1.0;
+          if ( v46 < (int)p_parcel_spawn_position )
           {
             v49 = *(float *)&out_angle;
-            v50 = (char *)p_projection_payload - v46;
+            v50 = (char *)p_parcel_spawn_position - v46;
             do
             {
               --v50;
@@ -439,7 +441,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
           }
           --v5;
           v51 = v74->level_definition.parcel_count;
-          p_projection_payload = (Vec3 *)((char *)p_projection_payload - 1);
+          p_parcel_spawn_position = (Vec3 *)((char *)p_parcel_spawn_position - 1);
           v72 = v5;
         }
         while ( v69 < v51 );
@@ -462,7 +464,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
         {
           if ( (projection_row->flags & 1) != 0 && (projection_row->flags & 0x40) != 0 )
           {
-            v56 = (__int64)projection_row->projection_payload.z
+            v56 = (__int64)projection_row->parcel_spawn_position.z
                 - get_track_cell_row_index(projection_row->primary_attachment_cell);
             if ( v56 < 0 )
               v56 = 0;
@@ -472,23 +474,23 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
               compute_kind42_attachment_transform(
                 primary_attachment_cell->attachment_template_record,
                 primary_attachment_cell->attachment_template_record->primary_samples[v56].special_scalar,
-                projection_row->projection_payload.x,
-                projection_row->projection_payload.y,
+                projection_row->parcel_spawn_position.x,
+                projection_row->parcel_spawn_position.y,
                 &transform,
                 (float *)&out_angle);
               y = transform.position.y;
-              projection_row->projection_payload.x = transform.position.x;
-              projection_row->projection_payload.y = y;
+              projection_row->parcel_spawn_position.x = transform.position.x;
+              projection_row->parcel_spawn_position.y = y;
             }
             else
             {
               track_cell_row_index = get_track_cell_row_index(primary_attachment_cell);
               get_path_position_at_node(
                 projection_row->primary_attachment_cell->attachment_template_record,
-                &projection_row->projection_payload,
+                &projection_row->parcel_spawn_position,
                 v56,
                 track_cell_row_index,
-                &projection_row->projection_payload);
+                &projection_row->parcel_spawn_position);
             }
           }
           ++projection_row;
