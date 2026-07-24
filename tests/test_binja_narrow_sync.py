@@ -5281,7 +5281,10 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         matcher_segment_header,
     ):
         assert "AUTHORED_SEGMENT_ROW_FLAG_PARCEL = 0x0001" in header
-        assert "AUTHORED_SEGMENT_ROW_FLAG_STAR_MARKER = 0x0004" in header
+        assert (
+            "AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER = 0x0004"
+            in header
+        )
         assert (
             "AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY = 0x0008" in header
         )
@@ -6158,6 +6161,17 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     load_segment = (
         repo_root / "tools/match/scratches/load_segment_definitions/scratch.cpp"
     ).read_text(encoding="utf-8")
+    populate_runtime_rows = (
+        repo_root
+        / "tools/match/scratches/populate_runtime_track_cells_from_segments/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    merge_track_tile_runs = (
+        repo_root / "tools/match/scratches/merge_track_tile_runs/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    build_track_fringe_objects = (
+        repo_root
+        / "tools/match/scratches/build_track_fringe_objects/scratch.cpp"
+    ).read_text(encoding="utf-8")
     update_subgoldy = (
         repo_root / "tools/match/scratches/update_subgoldy/scratch.cpp"
     ).read_text(encoding="utf-8")
@@ -6166,6 +6180,14 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         / "tools/match/scratches/place_challenge_parcels_on_track/scratch.cpp"
     ).read_text(encoding="utf-8")
     assert "AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY" in load_segment
+    assert "AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER" in load_segment
+    assert (
+        "AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER"
+        in populate_runtime_rows
+    )
+    assert "SUBROW_FLAG_SUPPRESS_TRACK_RENDER" in populate_runtime_rows
+    assert "SUBROW_FLAG_SUPPRESS_TRACK_RENDER" in merge_track_tile_runs
+    assert "SUBROW_FLAG_SUPPRESS_TRACK_RENDER" in build_track_fringe_objects
     assert "SUBROW_FLAG_NO_FALL" in update_subgoldy
     assert "SUBROW_FLAG_PARCEL_Z_IS_LOCAL" in place_challenge
 

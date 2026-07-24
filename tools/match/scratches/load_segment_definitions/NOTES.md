@@ -141,12 +141,11 @@ Residuals:
 
 The parser's packed metadata now belongs to `AuthoredSegmentRowFlag`. Its
 names come directly from the accepted text (`Parcel`, `3DModel`, `NoFall`, the
-five `Ring=` values, and `JetPack=Off`), while the literal post-row `*` remains
-named as syntax rather than assigned a speculative parser meaning. `Path=` and
-model `Velocity=` deliberately share `0x08`; the enum preserves that overload
-instead of fakematching two independent bits. Focused output is byte-identical
-at 62.24%, 573/571 instructions, prefix 5/571, 80 clean operands, and the same
-five shifted call/string mismatches.
+five `Ring=` values, and `JetPack=Off`). `Path=` and model `Velocity=`
+deliberately share `0x08`; the enum preserves that overload instead of
+fakematching two independent bits. Focused output is byte-identical at 62.24%,
+573/571 instructions, prefix 5/571, 80 clean operands, and the same five
+shifted call/string mismatches.
 
 ## 2026-07-15 durable DirectX loader owner
 
@@ -180,3 +179,17 @@ honest mismatches.
   prototype. Focused matching remains honestly unchanged at 62.24%, 571 target
   versus 573 candidate instructions, prefix 5, with 88 clean masked operands
   and one shifted call mismatch. No source-shape or operand fakematch was made.
+
+## 2026-07-24 authored render-suppression ownership
+
+The literal post-row `*` syntax now owns
+`AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER` rather than an intentionally
+weak marker-only name. `populate_runtime_track_cells_from_segments` copies
+that bit one-for-one into `SUBROW_FLAG_SUPPRESS_TRACK_RENDER`; the independently
+recovered `merge_track_tile_runs` and `build_track_fringe_objects` consumers
+then clear row body/list and directional-fringe render ownership. This closes
+the parser-to-runtime-to-render chain without guessing from the text syntax.
+
+The enum rename is codegen-neutral: focused matching remains 62.24%, 573/571
+instructions, prefix 5/571, with 88 clean masked operands and the one existing
+shifted call mismatch.

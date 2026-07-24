@@ -130,7 +130,7 @@ void SMTracks::load_segment_definitions()
             ++entry->row_count;
 
             if (*option_cursor == '*')
-                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_STAR_MARKER;
+                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER;
 
             char* option_out = option_text;
             char option_char = *option_cursor;

@@ -789,3 +789,17 @@ all 930 checks, and matcher source and operands remain untouched at the honest
 29.67%, 1,229/1,245-instruction frontier with 66 clean operands and the same
 two documented mismatches. No score-shaped source, register coercion, dummy
 dependency, or masked-operand fakematch was added.
+
+## 2026-07-24 authored render-suppression handoff
+
+The builder now names authored bit `0x04` by its proved downstream contract:
+`AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER` is copied directly to
+`SUBROW_FLAG_SUPPRESS_TRACK_RENDER`. The parser supplies it from the post-row
+`*` syntax, while `merge_track_tile_runs` and `build_track_fringe_objects`
+independently consume the runtime bit to remove row-owned body/list and
+directional-fringe rendering. The complete producer/handoff/consumer chain
+supports the semantic name; it is not inferred from punctuation alone.
+
+This ownership-only rename leaves focused matching unchanged at 29.67%,
+1,229/1,245 instructions, with 66 clean operands and the same two documented
+jump-table/call-alignment mismatches.

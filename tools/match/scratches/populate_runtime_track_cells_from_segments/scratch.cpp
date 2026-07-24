@@ -502,7 +502,9 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             ((SubRow*)row_record)->attachment_template_index =
                 *(int*)(authored_row + AUTHORED_ROW_PATH_TEMPLATE_INDEX);
         }
-        if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_STAR_MARKER) != 0)
+        if ((authored_flags
+                & AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER)
+            != 0)
             *(int*)row_record |= SUBROW_FLAG_SUPPRESS_TRACK_RENDER;
         if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_RING_NONE) != 0)
             *(int*)row_record |= SUBROW_FLAG_RING_NONE;

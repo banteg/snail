@@ -26,10 +26,12 @@ typedef union AuthoredFloatBits {
  * referenced global begins at 0x751478, and no interior address is referenced. */
 typedef char LevelFileTextBuffer[0x2800];
 
+/* The authored post-row '*' marker is copied directly into the runtime
+ * SubRow render-suppression bit. */
 typedef enum AuthoredSegmentRowFlag {
     AUTHORED_SEGMENT_ROW_FLAG_PARCEL = 0x0001,
     AUTHORED_SEGMENT_ROW_FLAG_3D_MODEL = 0x0002,
-    AUTHORED_SEGMENT_ROW_FLAG_STAR_MARKER = 0x0004,
+    AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER = 0x0004,
     AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY = 0x0008,
     AUTHORED_SEGMENT_ROW_FLAG_NO_FALL = 0x0100,
     AUTHORED_SEGMENT_ROW_FLAG_RING_NONE = 0x0200,
