@@ -66,7 +66,7 @@ void __thiscall merge_track_tile_runs(SubgameRuntime *game)
   v35 = 0;
   if ( v1->runtime_row_count > 0 )
   {
-    row_attachment_flags = (uint32_t *)((char *)&unk_5CCB7C + (_DWORD)v1);
+    row_attachment_flags = &v1->runtime_rows[0].attachment_body.bod.list_flags;
     cell_lane_flags = &v1->runtime_cells[0][0].lane_and_flags;
     do
     {

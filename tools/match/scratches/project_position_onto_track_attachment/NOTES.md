@@ -122,3 +122,19 @@ signature, this closes the Windows ABI as
 The guarded Binary Ninja repair records and replaces only the observed stale
 `char* (int32_t, int32_t*, float*)` identity; the shared header and BN/IDA
 replay catalogs now preserve the recovered owner and argument types.
+
+## 2026-07-24 row, cell, path, and sample ownership
+
+IDA's live prototype already preserved the recovered void `SubgameRuntime`
+method, but its runtime-row LEA still rendered as the unrelated
+`byte_5CCAC8` global. Normalizing only operand `0x4444d4:1` exposes the direct
+`game->runtime_rows[row]` borrow. Exact lvar readback then preserves the
+successive `SubRow*`, `TrackRowCell*`, `Path*`, and `PathTemplateSample*`
+owners.
+
+The sample pointer advances by the native 0xa8-byte `PathTemplateSample`
+stride and lands at its zero-offset transform, so the recovered type renders
+`special_scalar`, `center_x`, the right/up bases, and the sample position
+directly. Binary Ninja independently confirms the same row-to-cell-to-path
+chain. No matcher source changed; the focused transcription remains exact at
+106/106 instructions with all five masked operands clean.

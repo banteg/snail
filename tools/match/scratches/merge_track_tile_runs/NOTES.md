@@ -169,3 +169,14 @@ independently proven real banks.
 No matching source changed. The retained result remains the honest 67.50%,
 284/276-instruction frontier with all 12 masked operands clean; the catalog
 presentation residual is documented instead of fakematched.
+
+## 2026-07-24 row attachment-body ownership
+
+The per-row suppression cursor now begins at
+`runtime_rows[0].attachment_body.bod.list_flags`. Live IDA inspection proves
+operand `0x4351cb:1` carries the numeric `0x5ccb7c` displacement from the
+typed `SubgameRuntime*`; exact normalization removes the false
+`unk_5CCB7C` global while retaining the native borrowed `uint32_t*` cursor.
+
+No matcher source changed. The focused result remains honestly at 67.50%,
+284/276 instructions, with all 12 masked operands clean.

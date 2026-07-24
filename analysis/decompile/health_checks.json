@@ -3728,13 +3728,15 @@
       "required_substrings": [
         "SubRow *__thiscall get_track_runtime_cell_at_world_z(SubgameRuntime *game, Vec3 *position)",
         "position->z",
-        "244 * z"
+        "game->runtime_rows",
+        "return &game->runtime_rows[z]"
       ],
       "forbidden_substrings": [
         "TrackAttachmentRuntimeRow",
         "Game *game",
         "int this",
         "this +",
+        "byte_5CCAC8",
         "__asm",
         "_ET1"
       ]
@@ -3771,14 +3773,16 @@
         "uint8_t *wall_tile_cursor;",
         "uint32_t *wall_cleanup_lane_flags;",
         "uint32_t *row_attachment_flags;",
-        "cell = CONTAINING_RECORD(cell_lane_flags, TrackRowCell, lane_and_flags);"
+        "cell = CONTAINING_RECORD(cell_lane_flags, TrackRowCell, lane_and_flags);",
+        "runtime_rows[0].attachment_body.bod.list_flags"
       ],
       "forbidden_substrings": [
         "int *v7;",
         "int *v9;",
         "_DWORD *v12;",
         "_DWORD *v39;",
-        "p_lane_and_flags"
+        "p_lane_and_flags",
+        "unk_5CCB7C"
       ]
     },
     {
@@ -6803,6 +6807,7 @@
         "game->player.body.bod.bod.list_flags",
         "TrackRowCell *runtime_cell_cursor",
         "BodNode **row_list_next_cursor",
+        "&game->runtime_rows[0].row_model.body.bod.bod.list_next",
         "BodNode **health_list_next_cursor",
         "BodNode **garbage_list_next_cursor",
         "BodNode **slug_list_next_cursor",
@@ -6816,6 +6821,7 @@
         "char *v2",
         "struct BodNode **v25",
         "GolbShot *golb_shots",
+        "unk_5CCAD8",
         "__asm",
         "_ET1"
       ]
@@ -9176,6 +9182,8 @@
         "game->level_definition.parcel_count",
         "g_zero_parcel_bucket_count_lane_end",
         "g_parcel_group_survival_0",
+        "int32_t *parcel_set_id_cursor",
+        "&game->runtime_rows[0].parcel_set_id",
         "RuntimeRowStrideAnchor *challenge_runtime_row_anchor",
         "challenge_runtime_row_anchor->row.projection_payload.x",
         "SubRow *projection_row",
@@ -9188,6 +9196,7 @@
         "place_challenge_parcels_on_track(void *arg1)",
         "game->_pad_20[8]",
         "byte_5CCAC8",
+        "unk_5CCB64",
         "1520342",
         "1520343",
         "1520344",
@@ -15542,6 +15551,36 @@
         "struct PathTemplate*",
         "int32_t eax_8 = compute_kind42_attachment_transform",
         "return eax_8"
+      ]
+    },
+    {
+      "name": "ida_track_projection_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/004444b0-project_position_onto_track_attachment.c",
+      "required_substrings": [
+        "void __thiscall project_position_onto_track_attachment(SubgameRuntime *game, Vec3 *position, float *out_angle)",
+        "SubRow *runtime_row;",
+        "TrackRowCell *primary_attachment_cell;",
+        "Path *attachment_template_record;",
+        "PathTemplateSample *sample;",
+        "Vec3 projected_position;",
+        "runtime_row = &game->runtime_rows",
+        "primary_attachment_cell = runtime_row->primary_attachment_cell",
+        "attachment_template_record = primary_attachment_cell->attachment_template_record",
+        "sample = &attachment_template_record->primary_samples",
+        "sample->special_scalar",
+        "sample->transform.basis_right.x",
+        "sample->transform.basis_up.z",
+        "*position = projected_position"
+      ],
+      "forbidden_substrings": [
+        "char *__thiscall",
+        "sub_4444B0",
+        "void *this",
+        "float *a2",
+        "float *a3",
+        "byte_5CCAC8",
+        "struct PathTemplate*",
+        "return result;"
       ]
     },
     {

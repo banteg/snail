@@ -71,7 +71,7 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
   int v64; // edi
 
   runtime_cell_cursor = game->runtime_cells[0];
-  row_list_next_cursor = (BodNode **)((char *)&unk_5CCAD8 + (_DWORD)game);
+  row_list_next_cursor = &game->runtime_rows[0].row_model.body.bod.bod.list_next;
   v3 = 3200;
   do
   {

@@ -56,6 +56,18 @@ catalog.
 No matcher source changed. The accessor remains exact at 23/23 instructions
 with all three operands clean.
 
+## 2026-07-24 runtime-row consumer replay
+
+IDA's two return-path LEAs used the typed `SubgameRuntime*` receiver but still
+printed their `0x5ccac8` displacements as the unrelated `byte_5CCAC8` symbol.
+The replay now normalizes only operands `0x43d49e:1` and `0x43d4be:1`, whose
+numeric values were read back independently from the live database. Hex-Rays
+therefore exposes the same direct `game->runtime_rows` and indexed
+`&game->runtime_rows[z]` borrows already recovered in Binary Ninja.
+
+No matcher source changed. The accessor remains exact at 23/23 instructions
+with all three masked operands clean.
+
 ## 2026-07-14 analysis SubRow canonicalization
 
 The analysis header and both live databases now use the authored `SubRow`

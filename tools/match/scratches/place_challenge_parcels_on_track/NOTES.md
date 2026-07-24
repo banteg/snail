@@ -205,3 +205,18 @@ This is analysis-only ownership recovery. The scratch source is unchanged and
 focused Wibo remains honestly at 81.40% (171 target versus 173 candidate
 instructions), with all 33 masked operands clean and the same documented
 frame/source-cell residual.
+
+## 2026-07-24 parcel-set field cursor origin
+
+The initial filter now roots its native field cursor at
+`&game->runtime_rows[0].parcel_set_id`. Live operand inspection proves that
+`0x4442a0:1` is the numeric `0x5ccb64` displacement from the typed receiver.
+After that exact normalization, Hex-Rays naturally exposes a distinct lvar at
+definition `0x4442a1`; the replay names it `parcel_set_id_cursor` and retains
+its native 61-dword step, exactly one 0xf4-byte `SubRow`.
+
+This does not revive the previously rejected synthetic ECX split and does not
+claim that the field cursor owns a whole row. No matcher source changed;
+focused Wibo remains honestly at 81.40% (171 target versus 173 candidate
+instructions), with all 33 masked operands clean and the same documented
+residual.

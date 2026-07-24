@@ -290,6 +290,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x43B120,  # update_subgoldy
     0x43D230,  # initialize_subgoldy_ghost
     0x43D3D0,  # set_subgoldy_ghost_z
+    0x43D480,  # get_track_runtime_cell_at_world_z
     0x43DF10,  # spawn_track_ring_or_special_effect
     0x43ECC0,  # update_track_health_pickup
     0x43EE50,  # update_track_speedup
@@ -519,6 +520,12 @@ CHALLENGE_PARCELS_RUNTIME_LVAR_SPECS = (
         None,
     ),
     (
+        "parcel_set_id_cursor",
+        "int32_t *parcel_set_id_cursor;",
+        0x4442A1,
+        None,
+    ),
+    (
         "remaining_candidate_count",
         "int32_t remaining_candidate_count;",
         0x444294,
@@ -557,6 +564,24 @@ CHALLENGE_PARCELS_RUNTIME_LVAR_SPECS = (
         36,
     ),
     ("path_node", "int32_t path_node;", 0x44440A, None),
+)
+
+PROJECT_ATTACHMENT_LVAR_SPECS = (
+    ("runtime_row", "SubRow *runtime_row;", 0x4444D5, None),
+    (
+        "primary_attachment_cell",
+        "TrackRowCell *primary_attachment_cell;",
+        0x4444EB,
+        None,
+    ),
+    (
+        "attachment_template_record",
+        "Path *attachment_template_record;",
+        0x4444F4,
+        None,
+    ),
+    ("sample", "PathTemplateSample *sample;", 0x44451E, None),
+    ("projected_position", "Vec3 projected_position;", 0x4445C9, None),
 )
 
 UPDATE_SUBGAME_RUNTIME_LVAR_SPECS = (
@@ -982,6 +1007,27 @@ FRINGE_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x434C0C, 1, 0x5CCAC8),
 )
 
+# Four small consumers retain a typed SubgameRuntime base while taking a
+# borrowed pointer into runtime_rows. Their proven displacements numerically
+# collide with IDA auto-symbol addresses, so normalize only these exact
+# operands and let the receiver type recover the shared SubRow owner.
+RUNTIME_ROW_LOOKUP_OFFSET_OPERANDS = (
+    (0x43D49E, 1, 0x5CCAC8),
+    (0x43D4BE, 1, 0x5CCAC8),
+)
+
+PROJECT_ATTACHMENT_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x4444D4, 1, 0x5CCAC8),
+)
+
+REMOVE_SUBGAME_BODS_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x44091F, 1, 0x5CCAD8),  # runtime_rows[0].row_model list_next
+)
+
+MERGE_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x4351CB, 1, 0x5CCB7C),  # runtime_rows[0].attachment_body list_flags
+)
+
 # BuildLevel carries the owning SubgameRuntime base while advancing one
 # 0xf4-byte SubRow lane. IDA otherwise interprets the large structure
 # displacements as addresses of byte_5CCAC8/unk_5CCBxx globals, even after the
@@ -1075,9 +1121,11 @@ PLACE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS = (
 # Challenge placement has the same containing-anchor and direct-row cursor
 # ownership as normal placement. Normalize only the selected-row field
 # operands and final runtime_rows LEA whose numeric displacements collide with
-# IDA auto-symbol addresses; the earlier parcel_set_id scan intentionally
-# remains a native field cursor rather than a fabricated container-of owner.
+# IDA auto-symbol addresses. The earlier parcel_set_id scan remains a native
+# field cursor rather than a fabricated container-of owner, but its exact
+# displacement is normalized so the typed receiver exposes its real origin.
 CHALLENGE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x4442A0, 1, 0x5CCB64),  # runtime_rows[0].parcel_set_id field cursor
     (0x444323, 1, 0x5CCAC8),  # selected row flags load before anchor LEA
     (0x444331, 0, 0x5CCAC8),  # selected row flags store
     (0x444337, 1, 0x5CCB5C),  # selected row projection y load
@@ -2683,6 +2731,13 @@ def _sync_challenge_parcels_runtime_lvars() -> dict[str, object]:
     )
 
 
+def _sync_project_attachment_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "project_position_onto_track_attachment",
+        PROJECT_ATTACHMENT_LVAR_SPECS,
+    )
+
+
 def _sync_update_subgame_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "update_subgame",
@@ -3436,6 +3491,54 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    runtime_row_lookup_offset_operands = _normalize_root_offset_operands(
+        RUNTIME_ROW_LOOKUP_OFFSET_OPERANDS
+    )
+    for result in runtime_row_lookup_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "get_track_runtime_cell_at_world_z",
+                    "root_offset_operand": result,
+                }
+            )
+    project_attachment_runtime_row_offset_operands = (
+        _normalize_root_offset_operands(
+            PROJECT_ATTACHMENT_RUNTIME_ROW_OFFSET_OPERANDS
+        )
+    )
+    for result in project_attachment_runtime_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "project_position_onto_track_attachment",
+                    "root_offset_operand": result,
+                }
+            )
+    remove_subgame_bods_runtime_row_offset_operands = (
+        _normalize_root_offset_operands(
+            REMOVE_SUBGAME_BODS_RUNTIME_ROW_OFFSET_OPERANDS
+        )
+    )
+    for result in remove_subgame_bods_runtime_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "remove_subgame_bods",
+                    "root_offset_operand": result,
+                }
+            )
+    merge_runtime_row_offset_operands = _normalize_root_offset_operands(
+        MERGE_RUNTIME_ROW_OFFSET_OPERANDS
+    )
+    for result in merge_runtime_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "merge_track_tile_runs",
+                    "root_offset_operand": result,
+                }
+            )
     populate_runtime_row_offset_operands = _normalize_root_offset_operands(
         POPULATE_RUNTIME_ROW_OFFSET_OPERANDS
     )
@@ -3565,6 +3668,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "selector": "place_challenge_parcels_on_track",
                 "runtime_lvars": challenge_parcels_runtime_lvars,
+            }
+        )
+    project_attachment_lvars = _sync_project_attachment_lvars()
+    if project_attachment_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "project_position_onto_track_attachment",
+                "ownership_lvars": project_attachment_lvars,
             }
         )
     update_subgame_runtime_lvars = _sync_update_subgame_runtime_lvars()
@@ -3728,6 +3839,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "harmonize_root_offset_operands": harmonize_root_offset_operands,
                 "runtime_pool_row_offset_operands": runtime_pool_row_offset_operands,
                 "fringe_runtime_row_offset_operands": fringe_runtime_row_offset_operands,
+                "runtime_row_lookup_offset_operands": runtime_row_lookup_offset_operands,
+                "project_attachment_runtime_row_offset_operands": project_attachment_runtime_row_offset_operands,
+                "remove_subgame_bods_runtime_row_offset_operands": remove_subgame_bods_runtime_row_offset_operands,
+                "merge_runtime_row_offset_operands": merge_runtime_row_offset_operands,
                 "populate_runtime_row_offset_operands": populate_runtime_row_offset_operands,
                 "place_parcels_runtime_row_offset_operands": place_parcels_runtime_row_offset_operands,
                 "challenge_parcels_runtime_row_offset_operands": challenge_parcels_runtime_row_offset_operands,
@@ -3742,6 +3857,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "populate_runtime_lvars": populate_runtime_lvars,
                 "place_parcels_runtime_lvars": place_parcels_runtime_lvars,
                 "challenge_parcels_runtime_lvars": challenge_parcels_runtime_lvars,
+                "project_attachment_lvars": project_attachment_lvars,
                 "update_subgame_runtime_lvars": update_subgame_runtime_lvars,
                 "update_subgoldy_lvars": update_subgoldy_lvars,
                 "initialize_subgoldy_lvars": initialize_subgoldy_lvars,

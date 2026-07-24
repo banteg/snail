@@ -300,3 +300,16 @@ its 24 annotations. Partial-register rendering is retained where the analyzer
 still emits it. No matcher source changed, and focused output remains 67.67%,
 495/501 instructions, prefix 6, with 64 clean operands and the same one
 string-order mismatch.
+
+## 2026-07-24 runtime-row teardown root
+
+The row teardown cursor is now rooted explicitly at
+`game->runtime_rows[0].row_model.body.bod.bod.list_next`. Live IDA operand
+inspection proves that `0x44091f:1` is the numeric `0x5ccad8` displacement
+from the typed receiver; normalizing only that instruction removes the false
+`unk_5CCAD8` global without changing the borrowed `BodNode**` cursor or
+claiming ownership for the intrusive-list membership.
+
+No matcher source changed. Focused output remains the honest 67.67%,
+495/501-instruction frontier with 64 clean operands and the existing
+string-order mismatch.

@@ -9,8 +9,8 @@ SubRow *__thiscall get_track_runtime_cell_at_world_z(SubgameRuntime *game, Vec3 
 
   z = (__int64)position->z;
   if ( (int)z < 0 )
-    return (SubRow *)&byte_5CCAC8[(_DWORD)game];
+    return game->runtime_rows;
   if ( (int)z > 3199 )
     LODWORD(z) = 3199;
-  return (SubRow *)&byte_5CCAC8[(_DWORD)((_DWORD)game + 244 * z)];
+  return &game->runtime_rows[z];
 }

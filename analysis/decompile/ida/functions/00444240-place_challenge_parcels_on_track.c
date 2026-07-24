@@ -10,7 +10,7 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
   int32_t candidate_count; // esi
   int32_t runtime_row_index; // eax
   int32_t *survival_row_index_write; // edx
-  _DWORD *v7; // ecx
+  int32_t *parcel_set_id_cursor; // ecx
   int32_t placed_count; // edi
   int32_t last_candidate_index; // ebx
   __int64 v10; // rax
@@ -46,17 +46,17 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
   if ( game->runtime_row_count > 0 )
   {
     survival_row_index_write = g_parcel_group_survival_0;
-    v7 = (_DWORD *)((char *)&unk_5CCB64 + (_DWORD)game);
+    parcel_set_id_cursor = &game->runtime_rows[0].parcel_set_id;
     do
     {
-      if ( (*(_BYTE *)(v7 - 39) & 1) != 0 && !*v7 )
+      if ( (*(_BYTE *)(parcel_set_id_cursor - 39) & 1) != 0 && !*parcel_set_id_cursor )
       {
         *survival_row_index_write = runtime_row_index;
         ++candidate_count;
         ++survival_row_index_write;
       }
       ++runtime_row_index;
-      v7 += 61;
+      parcel_set_id_cursor += 61;
     }
     while ( runtime_row_index < game->runtime_row_count );
     remaining_candidate_count = candidate_count;

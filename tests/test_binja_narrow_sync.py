@@ -3934,6 +3934,25 @@ def test_ida_lvar_inspector_reports_stable_local_identity() -> None:
     assert "script_args=list(args.selectors)" in wrapper
 
 
+def test_ida_operand_inspector_reports_numeric_operand_identity() -> None:
+    inspector = (IDA_DIR / "inspect_function_operands.py").read_text(
+        encoding="utf-8"
+    )
+    wrapper = (IDA_DIR / "query_function_operands.py").read_text(encoding="utf-8")
+
+    for marker in (
+        "idautils.FuncItems(function.start_ea)",
+        "idc.get_operand_type(address, operand_index)",
+        "idc.get_operand_value(address, operand_index)",
+        "idc.print_operand(address, operand_index)",
+        '"disassembly"',
+        '"operands"',
+    ):
+        assert marker in inspector
+    assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/inspect_function_operands.py"' in wrapper
+    assert 'script_args=[*args.selectors, "--", args.match]' in wrapper
+
+
 def test_ida_type_inspectors_report_function_and_data_ownership() -> None:
     function_inspector = (IDA_DIR / "inspect_function_types.py").read_text(
         encoding="utf-8"
@@ -5857,6 +5876,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         "0x444292",
         "0x444294",
         "0x44429C",
+        "0x4442A1",
         "0x4442D3",
         "0x4442DD",
         "0x44430F",
@@ -5875,6 +5895,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
             "survival_row_index_write",
             "int32_t *survival_row_index_write;",
         ),
+        ("parcel_set_id_cursor", "int32_t *parcel_set_id_cursor;"),
         (
             "remaining_candidate_count",
             "int32_t remaining_candidate_count;",
@@ -5899,6 +5920,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "_sync_challenge_parcels_runtime_lvars" in ida_path_sync
     assert "CHALLENGE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS" in ida_path_sync
     for operand_spec in (
+        "(0x4442A0, 1, 0x5CCB64)",
         "(0x444323, 1, 0x5CCAC8)",
         "(0x444343, 1, 0x5CCB5C)",
         "(0x44435E, 1, 0x5CCB58)",
@@ -5910,6 +5932,54 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         "challenge_parcels_runtime_row_offset_operands = "
         "_normalize_root_offset_operands(" in ida_path_sync
     )
+    for group_name, operand_spec in (
+        ("RUNTIME_ROW_LOOKUP_OFFSET_OPERANDS", "(0x43D49E, 1, 0x5CCAC8)"),
+        (
+            "PROJECT_ATTACHMENT_RUNTIME_ROW_OFFSET_OPERANDS",
+            "(0x4444D4, 1, 0x5CCAC8)",
+        ),
+        (
+            "REMOVE_SUBGAME_BODS_RUNTIME_ROW_OFFSET_OPERANDS",
+            "(0x44091F, 1, 0x5CCAD8)",
+        ),
+        ("MERGE_RUNTIME_ROW_OFFSET_OPERANDS", "(0x4351CB, 1, 0x5CCB7C)"),
+    ):
+        assert group_name in ida_path_sync
+        assert operand_spec in ida_path_sync
+    for result_name in (
+        "runtime_row_lookup_offset_operands",
+        "project_attachment_runtime_row_offset_operands",
+        "remove_subgame_bods_runtime_row_offset_operands",
+        "merge_runtime_row_offset_operands",
+    ):
+        assert result_name in ida_path_sync
+        assert f'"{result_name}": {result_name}' in ida_path_sync
+    assert "PROJECT_ATTACHMENT_LVAR_SPECS" in ida_path_sync
+    for definition_address in (
+        "0x4444D5",
+        "0x4444EB",
+        "0x4444F4",
+        "0x44451E",
+        "0x4445C9",
+    ):
+        assert definition_address in ida_path_sync
+    for name, declaration in (
+        ("runtime_row", "SubRow *runtime_row;"),
+        (
+            "primary_attachment_cell",
+            "TrackRowCell *primary_attachment_cell;",
+        ),
+        (
+            "attachment_template_record",
+            "Path *attachment_template_record;",
+        ),
+        ("sample", "PathTemplateSample *sample;"),
+        ("projected_position", "Vec3 projected_position;"),
+    ):
+        assert f'"{name}"' in ida_path_sync
+        assert f'"{declaration}"' in ida_path_sync
+    assert "_sync_project_attachment_lvars" in ida_path_sync
+    assert '"project_attachment_lvars": project_attachment_lvars' in ida_path_sync
 
     assert "BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS" in ida_path_sync
     for definition_address in (
