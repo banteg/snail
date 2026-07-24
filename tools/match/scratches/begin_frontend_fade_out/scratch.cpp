@@ -2,10 +2,9 @@
 
 #include "frontend_fade.h"
 
-int FrontendFade::begin_frontend_fade_out(int hold_state_)
+void FrontendFade::begin_frontend_fade_out(FrontendFadeCallback completion_callback_)
 {
     state = 2;
     alpha_bits = 0;
-    hold_state = hold_state_;
-    return hold_state_;
+    completion_callback = completion_callback_;
 }

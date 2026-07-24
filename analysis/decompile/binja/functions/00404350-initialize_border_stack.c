@@ -1,8 +1,8 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: begin_frontend_fade_in @ 0x40abe0 */
+/* function: initialize_border_stack @ 0x404350 */
 
-0040abe0        fade->state = 1
-0040abe6        fade->alpha = 1f
-0040abed        return
+00404350        stack->generation = 0
+00404356        stack->entry_count = 0
+0040435d        return

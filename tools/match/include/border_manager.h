@@ -49,7 +49,7 @@ public:
     void hide_all_borders(); // @ 0x4033f0, iOS cRBorderManager::HideBorders()
     void unhide_all_borders(); // @ 0x403400, iOS cRBorderManager::UnHideBorders()
     int kill_border(FrontendWidget* border);
-    char queue_frontend_widget_flag_after_delay(
+    void queue_frontend_widget_flag_after_delay(
         FrontendWidget* widget, int queued_flags); // @ 0x403f60
     void update_border_manager(); // @ 0x403fc0
     void set_border_justify_centre(

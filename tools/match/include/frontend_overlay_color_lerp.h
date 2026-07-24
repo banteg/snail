@@ -1,5 +1,4 @@
-// Front-end full-screen overlay color lerp, shared by initialization and the
-// per-frame draw/update root.
+// Windows projection of the authored cRFlash full-screen color interpolator.
 #ifndef FRONTEND_OVERLAY_COLOR_LERP_H
 #define FRONTEND_OVERLAY_COLOR_LERP_H
 

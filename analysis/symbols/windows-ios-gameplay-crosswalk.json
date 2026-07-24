@@ -177,6 +177,15 @@
       "notes": "The exact Windows record and Android member share the 0x30-byte twinkle layout. Android cRTwinkleManager::Init(cRBorder*) stores the borrowed border pointer at +0x2c; Windows consumes the corresponding FrontendWidget flags and layout rectangle through that link."
     },
     {
+      "address": "0x404350",
+      "windows_name": "initialize_border_stack",
+      "ios_symbol": "cRBorderStack::Init()",
+      "android_symbol": "cRBorderStack::Init()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Windows linker-folds cRBorderStack::Init with the root-owned cRFade::Init projection at the same two-zero-store body. Android independently retains both functions and proves that the alias resets cRFade state and alpha."
+    },
+    {
       "address": "0x404540",
       "windows_name": "border_sprite_extend",
       "android_symbol": "cRBorder::SpriteExtend(int, int, int, bool)",
@@ -395,6 +404,48 @@
       "source_object": "Game.o",
       "confidence": "high",
       "notes": "Both methods sample one controller slot into the same button-edge, axis, pointer, and authored-coordinate lanes before clearing the current button word. Windows owns two consecutive 0x70-byte cRGameInput records at GameRoot +0x44; each inherits the 0x38-byte cRBod-compatible base and installs the one-entry update_game_input table at 0x4972f0."
+    },
+    {
+      "address": "0x40ab00",
+      "windows_name": "initialize_frontend_overlay_color_lerp",
+      "android_symbol": "cRFlash::Init(int)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the exact 0x24-byte state plus target/current tColour layout and the same white, zero-alpha initialization. Windows callers discard EAX, and the natural void member remains exact at 18/18 instructions."
+    },
+    {
+      "address": "0x40ab40",
+      "windows_name": "draw_frontend_overlay_color_lerp",
+      "android_symbol": "cRFlash::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the same four 0.145 channel lerps, alpha threshold, render-scene mask, current-color draw, and cRFlash owner. The natural void Windows member remains exact at 38/38 instructions."
+    },
+    {
+      "address": "0x40abc0",
+      "windows_name": "begin_frontend_fade_out",
+      "ios_symbol": "cRFade::Start(void (*)())",
+      "android_symbol": "cRFade::Start(void (*)())",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "All ports enter state 2, clear alpha, and store the completion callback at owner +0x10. Every Windows call passes null and discards EAX; replacing the synthetic integer result and hold-state name with the authored void callback contract remains exact at 5/5 instructions."
+    },
+    {
+      "address": "0x40abe0",
+      "windows_name": "begin_frontend_fade_in",
+      "ios_symbol": "cRFade::StartOn()",
+      "android_symbol": "cRFade::StartOn()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "All ports seed alpha to one and enter the state-1 clear-bound transition. The Windows method is exact at 3/3 instructions."
+    },
+    {
+      "address": "0x40abf0",
+      "windows_name": "update_frontend_transition_overlay",
+      "android_symbol": "cRFade::AI()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "Android independently preserves the cRFade owner, float alpha at +0x04, state-1/state-2 step of roughly 1/18, and full-screen black draw. Windows adds its own three-tick opaque hold and externally polled state-4 handoff."
     },
     {
       "address": "0x4107d0",

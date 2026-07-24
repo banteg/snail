@@ -19,3 +19,9 @@ exact at 22/22 instructions with two clean operands.
 `BorderManager*` receiver, borrowed `FrontendWidget*`, all five delayed-lane
 fields, and root-owned fade. The source remains exact at 22/22 with two clean
 operands.
+
+2026-07-24 return-contract cleanup: all three Windows callers discard EAX.
+The old scratch only consumed the incidental zero left by the nested fade
+start. Once iOS and Android identified that callee as void
+`cRFade::Start(void (*)())`, the delayed-action helper also compiled exactly
+as a natural void member: 22/22 instructions with the same two clean operands.

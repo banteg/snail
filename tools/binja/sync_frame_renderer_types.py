@@ -24,6 +24,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frame_renderer_types.h"
 OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 SPRITE_HEADER_PATH = REPO_ROOT / "analysis/headers/star_manager_types.h"
 OBJECT_REQUIRED_STRUCTS = (
+    "tColour",
     "Vec3",
     "TransformMatrix",
     "RenderableBod",
@@ -33,6 +34,7 @@ SPRITE_REQUIRED_STRUCTS = (
 )
 REQUIRED_STRUCTS = (
     "SpriteDepthNode",
+    "FrontendFadeCallback",
     "FrontendFade",
     "InputState",
     "GameInputBodBase",
@@ -68,7 +70,13 @@ SYMBOL_UPDATES = (
 )
 
 FUNCTION_SYMBOL_UPDATES = (
+    ("0x404350", "initialize_border_stack"),
     ("0x408000", "initialize_game_player"),
+    ("0x40ab00", "initialize_frontend_overlay_color_lerp"),
+    ("0x40ab40", "draw_frontend_overlay_color_lerp"),
+    ("0x40abc0", "begin_frontend_fade_out"),
+    ("0x40abe0", "begin_frontend_fade_in"),
+    ("0x40abf0", "update_frontend_transition_overlay"),
     ("0x4107d0", "update_frontend_state_machine"),
     ("0x4119c0", "initialize_game_window_and_input_wrapper"),
     ("0x4119d0", "initialize_game_window_and_input"),
@@ -107,6 +115,33 @@ PROTO_UPDATES = (
     (
         "initialize_game_player",
         "GamePlayer* __thiscall initialize_game_player(GamePlayer* player)",
+    ),
+    (
+        "initialize_border_stack",
+        "void __thiscall initialize_border_stack(BorderStack* stack)",
+    ),
+    (
+        "initialize_frontend_overlay_color_lerp",
+        "void __thiscall initialize_frontend_overlay_color_lerp("
+        "FrontendOverlayColorLerp* overlay, int32_t state)",
+    ),
+    (
+        "draw_frontend_overlay_color_lerp",
+        "void __thiscall draw_frontend_overlay_color_lerp("
+        "FrontendOverlayColorLerp* overlay)",
+    ),
+    (
+        "begin_frontend_fade_out",
+        "void __thiscall begin_frontend_fade_out("
+        "FrontendFade* fade, FrontendFadeCallback completion_callback)",
+    ),
+    (
+        "begin_frontend_fade_in",
+        "void __thiscall begin_frontend_fade_in(FrontendFade* fade)",
+    ),
+    (
+        "update_frontend_transition_overlay",
+        "void __thiscall update_frontend_transition_overlay(FrontendFade* fade)",
     ),
     (
         "update_frontend_state_machine",
@@ -161,7 +196,9 @@ PROTO_UPDATES = (
 )
 
 BORDER_KILL_REANALYSIS_FUNCTIONS = (
+    "initialize_border_stack",
     "kill_border",
+    "queue_frontend_widget_flag_after_delay",
     "border_input_text",
     "reset_tooltip",
     "update_tooltip",
@@ -188,10 +225,18 @@ MOUSE_CURSOR_FIELD_UPDATES = (
     ("0x14", "suppress_next_draw", "uint8_t"),
 )
 
+FRONTEND_FADE_FIELD_UPDATES = (
+    ("0x00", "state", "int32_t"),
+    ("0x04", "alpha", "float"),
+    ("0x08", "hold_progress", "float"),
+    ("0x0c", "hold_progress_step", "float"),
+    ("0x10", "completion_callback", "FrontendFadeCallback"),
+)
+
 FRONTEND_OVERLAY_FIELD_UPDATES = (
     ("0x00", "state", "int32_t"),
-    ("0x04", "target", "FrameColor4f"),
-    ("0x14", "current", "FrameColor4f"),
+    ("0x04", "target", "tColour"),
+    ("0x14", "current", "tColour"),
 )
 
 FRAME_RENDER_CAMERA_FIELD_UPDATES = (
@@ -397,16 +442,16 @@ BORDER_RECORD_FIELD_UPDATES = (
     ("0x1c", "render_arg_1c", "float"),
     ("0x20", "render_arg_20", "float"),
     ("0x24", "object", "void*"),
-    ("0x28", "color", "FrameColor4f"),
-    ("0x6c", "color_06c", "FrameColor4f"),
+    ("0x28", "color", "tColour"),
+    ("0x6c", "color_06c", "tColour"),
     ("0x19c", "created_time", "int32_t"),
     ("0x1a0", "flags", "int32_t"),
-    ("0x1ac", "color_1ac", "FrameColor4f"),
-    ("0x1bc", "color_1bc", "FrameColor4f"),
-    ("0x1cc", "color_1cc", "FrameColor4f"),
-    ("0x1dc", "color_1dc", "FrameColor4f"),
-    ("0x1ec", "color_1ec", "FrameColor4f"),
-    ("0x1fc", "color_1fc", "FrameColor4f"),
+    ("0x1ac", "color_1ac", "tColour"),
+    ("0x1bc", "color_1bc", "tColour"),
+    ("0x1cc", "color_1cc", "tColour"),
+    ("0x1dc", "color_1dc", "tColour"),
+    ("0x1ec", "color_1ec", "tColour"),
+    ("0x1fc", "color_1fc", "tColour"),
     ("0x20c", "hover_blend_target", "float"),
     ("0x210", "hover_blend_current", "float"),
     ("0x214", "idle_padding", "float"),
@@ -424,7 +469,7 @@ BORDER_MANAGER_FIELD_UPDATES = (
     ("0x1c", "render_arg_1c", "float"),
     ("0x20", "render_arg_20", "float"),
     ("0x24", "object", "void*"),
-    ("0x28", "color", "FrameColor4f"),
+    ("0x28", "color", "tColour"),
     ("0x38", "border_stack", "BorderStack"),
     ("0x684", "borders", "BorderRecord[150]"),
     ("0x4359c", "delayed_widget_flags", "int32_t"),
@@ -441,7 +486,7 @@ GAME_ROOT_FIELD_UPDATES = (
     ("0x08", "fog_start", "float"),
     ("0x0c", "fog_end", "float"),
     ("0x10", "fog_density", "float"),
-    ("0x14", "fog_color", "FrameColor4f"),
+    ("0x14", "fog_color", "tColour"),
     ("0x24", "fade", "FrontendFade"),
     ("0x38", "frontend_quit_requested", "int32_t"),
     ("0x3c", "fixed_update_count", "int32_t"),
@@ -580,7 +625,7 @@ def resolved_proto_updates(*, target: str) -> tuple[tuple[str, str], ...]:
         ),
         (
             "queue_frontend_widget_flag_after_delay",
-            "char __thiscall queue_frontend_widget_flag_after_delay("
+            "void __thiscall queue_frontend_widget_flag_after_delay("
             f"{border_manager_type}* manager, FrontendWidget* widget, "
             "int32_t queued_flags)",
         ),
@@ -658,6 +703,7 @@ def main() -> int:
             struct_updates=(
                 ("GameInput", GAME_INPUT_FIELD_UPDATES),
                 ("MouseCursorState", MOUSE_CURSOR_FIELD_UPDATES),
+                ("FrontendFade", FRONTEND_FADE_FIELD_UPDATES),
                 ("FrontendOverlayColorLerp", FRONTEND_OVERLAY_FIELD_UPDATES),
                 ("FrameRenderCamera", FRAME_RENDER_CAMERA_FIELD_UPDATES),
                 ("Viewport", VIEWPORT_FIELD_UPDATES),
@@ -708,6 +754,12 @@ def main() -> int:
             identifiers=(
                 "construct_game_runtime",
                 "initialize_game_assets_and_world",
+                "initialize_frontend_overlay_color_lerp",
+                "draw_frontend_overlay_color_lerp",
+                "begin_frontend_fade_out",
+                "begin_frontend_fade_in",
+                "update_frontend_transition_overlay",
+                "activate_landscape_entry",
                 "render_game_frame",
                 "attach_render_camera_source",
                 "initialize_render_camera_slot",

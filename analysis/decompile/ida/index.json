@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 716,
-  "function_count": 716,
+  "selected_count": 717,
+  "function_count": 717,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -214,6 +214,13 @@
       "address": "0x404080",
       "name": "update_twinkle",
       "artifact": "analysis/decompile/ida/functions/00404080-update_twinkle.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_border_stack",
+      "address": "0x404350",
+      "name": "initialize_border_stack",
+      "artifact": "analysis/decompile/ida/functions/00404350-initialize_border_stack.c",
       "removed_stale_artifacts": []
     },
     {

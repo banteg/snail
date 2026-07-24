@@ -600,7 +600,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
             "float fog_start;",
             "float fog_end;",
             "float fog_density;",
-            "FrameColor4f fog_color;",
+            "tColour fog_color;",
             "uint8_t frontend_link_latch;",
             "FrameRenderableBod root_noop_renderable;",
         ):
@@ -612,7 +612,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     )
     for update in (
         '("0x04", "fog_enabled", "uint8_t")',
-        '("0x14", "fog_color", "FrameColor4f")',
+        '("0x14", "fog_color", "tColour")',
         '("0x568", "frontend_link_latch", "uint8_t")',
         '("0x5a8", "active_bod_list", "BodList")',
         '("0xa60", "root_noop_renderable", "FrameRenderableBod")',
@@ -3799,6 +3799,136 @@ def test_frame_replays_preserve_window_bootstrap_abi() -> None:
     assert '"star_manager_types.h"' in ida_source
     assert '"update_sprite_facing_angle",' in ida_source
     assert 're.sub(r"\\b(?:struct|union|enum)\\s+", "", normalized)' in ida_source
+
+
+def test_frontend_fade_and_color_overlay_owners_are_replayed_cross_decompiler() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_source = (BINJA_DIR / "sync_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_frame_renderer_types.h", "frame_renderer_types.h")
+    )
+    fade_header = (
+        repo_root / "tools/match/include/frontend_fade.h"
+    ).read_text(encoding="utf-8")
+    begin_fade_source = (
+        repo_root
+        / "tools/match/scratches/begin_frontend_fade_out/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    delayed_action_source = (
+        repo_root
+        / "tools/match/scratches/queue_frontend_widget_flag_after_delay/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    binja_joined_literals = binja_source.replace('"\n        "', "")
+    ida_joined_literals = ida_source.replace('"\n        "', "")
+
+    functions = (
+        ("0x404350", "0x404350", "initialize_border_stack"),
+        ("0x40ab00", "0x40AB00", "initialize_frontend_overlay_color_lerp"),
+        ("0x40ab40", "0x40AB40", "draw_frontend_overlay_color_lerp"),
+        ("0x40abc0", "0x40ABC0", "begin_frontend_fade_out"),
+        ("0x40abe0", "0x40ABE0", "begin_frontend_fade_in"),
+        ("0x40abf0", "0x40ABF0", "update_frontend_transition_overlay"),
+    )
+    for binja_address, ida_address, name in functions:
+        assert f'("{binja_address}", "{name}")' in binja_source
+        assert f'({ida_address}, "{name}")' in ida_source
+        assert f'"{name}",' in binja_source
+        assert f'"{name}",' in ida_source
+
+    for binja_prototype, ida_prototype in (
+        (
+            "void __thiscall initialize_border_stack(BorderStack* stack)",
+            "void __thiscall initialize_border_stack(BorderStack *stack);",
+        ),
+        (
+            "void __thiscall initialize_frontend_overlay_color_lerp("
+            "FrontendOverlayColorLerp* overlay, int32_t state)",
+            "void __thiscall initialize_frontend_overlay_color_lerp("
+            "FrontendOverlayColorLerp *overlay, int32_t state);",
+        ),
+        (
+            "void __thiscall draw_frontend_overlay_color_lerp("
+            "FrontendOverlayColorLerp* overlay)",
+            "void __thiscall draw_frontend_overlay_color_lerp("
+            "FrontendOverlayColorLerp *overlay);",
+        ),
+        (
+            "void __thiscall begin_frontend_fade_out("
+            "FrontendFade* fade, FrontendFadeCallback completion_callback)",
+            "void __thiscall begin_frontend_fade_out("
+            "FrontendFade *fade, FrontendFadeCallback completion_callback);",
+        ),
+        (
+            "void __thiscall begin_frontend_fade_in(FrontendFade* fade)",
+            "void __thiscall begin_frontend_fade_in(FrontendFade *fade);",
+        ),
+        (
+            "void __thiscall update_frontend_transition_overlay(FrontendFade* fade)",
+            "void __thiscall update_frontend_transition_overlay(FrontendFade *fade);",
+        ),
+    ):
+        assert binja_prototype in binja_joined_literals
+        assert ida_prototype in ida_joined_literals
+
+    assert '"FrontendOverlayColorLerp": 0x24' in ida_source
+    assert '"FrontendFadeCallback"' in binja_source
+    assert '("FrontendFade", FRONTEND_FADE_FIELD_UPDATES)' in binja_source
+    assert '"activate_landscape_entry",' in binja_source
+    assert '"activate_landscape_entry",' in ida_source
+    assert '("0x04", "alpha", "float")' in binja_source
+    assert (
+        '("0x10", "completion_callback", "FrontendFadeCallback")'
+        in binja_source
+    )
+    for header in headers:
+        assert "typedef void (__cdecl *FrontendFadeCallback)(void);" in header
+        assert "typedef struct FrontendFade {" in header
+        assert "float alpha;" in header
+        assert "float hold_progress_step;" in header
+        assert "FrontendFadeCallback completion_callback;" in header
+        assert "typedef struct FrontendOverlayColorLerp {" in header
+        assert "tColour target;" in header
+        assert "tColour current;" in header
+        assert "FrameColor4f" not in header
+
+    assert "typedef void (*FrontendFadeCallback)();" in fade_header
+    assert (
+        "void begin_frontend_fade_out("
+        "FrontendFadeCallback completion_callback);"
+    ) in fade_header
+    assert (
+        "void FrontendFade::begin_frontend_fade_out("
+        "FrontendFadeCallback completion_callback_)"
+    ) in begin_fade_source
+    assert "completion_callback = completion_callback_;" in begin_fade_source
+    assert "hold_state" not in begin_fade_source
+    assert "return completion_callback_" not in begin_fade_source
+
+    assert (
+        '"void __thiscall queue_frontend_widget_flag_after_delay("'
+        in binja_source
+    )
+    assert (
+        'f"{border_manager_type}* manager, FrontendWidget* widget, "'
+        in binja_source
+    )
+    assert '"int32_t queued_flags)"' in binja_source
+    assert (
+        "void __thiscall queue_frontend_widget_flag_after_delay("
+        "BorderManager *manager, FrontendWidget *widget, int32_t queued_flags);"
+    ) in ida_joined_literals
+    assert (
+        "void BorderManager::queue_frontend_widget_flag_after_delay("
+        in delayed_action_source
+    )
+    assert "result = g_game->fade.begin_frontend_fade_out" not in delayed_action_source
+    assert "return result;" not in delayed_action_source
 
 
 def test_viewport_owner_and_borrowed_camera_are_replayed_cross_decompiler() -> None:
@@ -8685,7 +8815,7 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
         assert "typedef struct BorderStackEntry" in header
         assert "BorderStackEntry entries[200];" in header
         assert "typedef struct BorderRecord" in header
-        assert "FrameColor4f color_06c;" in header
+        assert "tColour color_06c;" in header
         assert "int32_t created_time;" in header
         assert "struct BorderManager" in header
         assert "BorderStack border_stack;" in header

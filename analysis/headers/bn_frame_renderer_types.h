@@ -4,17 +4,17 @@
 /*
  * Narrow Binary Ninja ownership slice for the root frame updater/renderer.
  *
- * Frame-local projections keep this header self-contained. SpriteDepthNode
- * borrows the complete Sprite owner maintained by the sprite lane through a
- * forward declaration; this slice never redeclares or replaces that layout.
+ * Uses the canonical tColour name and layout shared with the object lane.
+ * SpriteDepthNode borrows the complete Sprite owner maintained by the sprite
+ * lane; this slice never redeclares that layout.
  */
 
-typedef struct FrameColor4f {
+typedef struct tColour {
     float r;
     float g;
     float b;
     float a;
-} FrameColor4f;
+} tColour;
 
 typedef struct FrameVec3 {
     float x;
@@ -36,12 +36,14 @@ typedef struct FrameTransformMatrix {
     FrameVec4 position;
 } FrameTransformMatrix;
 
+typedef void (__cdecl *FrontendFadeCallback)(void);
+
 typedef struct FrontendFade {
     int32_t state;
-    int32_t alpha_bits;
+    float alpha;
     float hold_progress;
     float hold_progress_step;
-    int32_t hold_state;
+    FrontendFadeCallback completion_callback;
 } FrontendFade;
 
 typedef enum InputButtonFlag {
@@ -96,8 +98,8 @@ typedef struct MouseCursorState {
 
 typedef struct FrontendOverlayColorLerp {
     int32_t state;
-    FrameColor4f target;
-    FrameColor4f current;
+    tColour target;
+    tColour current;
 } FrontendOverlayColorLerp;
 
 typedef struct FrameBodBase FrameBodBase;
@@ -135,7 +137,7 @@ struct FrameBodBase {
     float render_arg_1c;
     float render_arg_20;
     void* object;
-    FrameColor4f color;
+    tColour color;
 };
 
 typedef struct FrameRenderableBod {
@@ -234,19 +236,19 @@ typedef struct BorderRecord {
     float render_arg_1c;
     float render_arg_20;
     void* object;
-    FrameColor4f color;
+    tColour color;
     uint8_t unknown_038[0x6c - 0x38];
-    FrameColor4f color_06c;
+    tColour color_06c;
     uint8_t unknown_07c[0x19c - 0x7c];
     int32_t created_time;
     int32_t flags;
     uint8_t unknown_1a4[0x1ac - 0x1a4];
-    FrameColor4f color_1ac;
-    FrameColor4f color_1bc;
-    FrameColor4f color_1cc;
-    FrameColor4f color_1dc;
-    FrameColor4f color_1ec;
-    FrameColor4f color_1fc;
+    tColour color_1ac;
+    tColour color_1bc;
+    tColour color_1cc;
+    tColour color_1dc;
+    tColour color_1ec;
+    tColour color_1fc;
     float hover_blend_target;
     float hover_blend_current;
     float idle_padding;
@@ -265,7 +267,7 @@ struct BorderManager {
     float render_arg_1c;
     float render_arg_20;
     void* object;
-    FrameColor4f color;
+    tColour color;
     BorderStack border_stack;
     BorderRecord borders[150];
     int32_t delayed_widget_flags;
@@ -284,7 +286,7 @@ void __thiscall kill_all_borders(BorderManager* manager);
 void __thiscall kill_border(BorderManager* manager, FrontendWidget* widget);
 void __thiscall hide_all_borders(BorderManager* manager);
 void __thiscall unhide_all_borders(BorderManager* manager);
-char __thiscall queue_frontend_widget_flag_after_delay(
+void __thiscall queue_frontend_widget_flag_after_delay(
     BorderManager* manager, FrontendWidget* widget, int32_t queued_flags);
 void __thiscall update_border_manager(BorderManager* manager);
 void __thiscall set_border_justify_centre(
@@ -321,7 +323,7 @@ typedef struct GameRoot {
     float fog_start;
     float fog_end;
     float fog_density;
-    FrameColor4f fog_color;
+    tColour fog_color;
     FrontendFade fade;
     int32_t frontend_quit_requested;
     int32_t fixed_update_count;

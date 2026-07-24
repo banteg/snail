@@ -131,7 +131,7 @@
     {
       "address": "0x403f60",
       "name": "queue_frontend_widget_flag_after_delay",
-      "description": "Arms the shared border-manager delay lane for one front-end widget: stores the destination widget pointer and flag mask, starts the fixed `0.1` step timer, and optionally begins the global front-end fade when the widget requests it."
+      "description": "Exact void BorderManager delayed-action helper: stores the destination widget and flag mask, starts the fixed `1/12` step timer, and optionally calls the root-owned cRFade::Start-compatible lane. All three Windows callers discard EAX; removing the synthetic result dependency leaves the natural void source exact at 22/22 instructions."
     },
     {
       "address": "0x403fc0",
@@ -158,7 +158,7 @@
       "aliases": [
         "initialize_frontend_fade"
       ],
-      "description": "Exact Windows cRBorderStack::Init(): resets the generation and borrowed-entry count of the BorderManager-owned visibility transition stack. Windows folds the same two-zero-store body with FrontendFade::initialize."
+      "description": "Exact Windows cRBorderStack::Init(): resets the generation and borrowed-entry count of the BorderManager-owned visibility transition stack. Windows folds the same two-zero-store body with the root-owned cRFade::Init() projection; Android independently preserves both authored owners and their identical initializer bodies."
     },
     {
       "address": "0x404360",
@@ -672,27 +672,27 @@
     {
       "address": "0x40ab00",
       "name": "initialize_frontend_overlay_color_lerp",
-      "description": "Seeds the secondary full-screen RGBA overlay interpolator stored at `data_4df904 + 0x2a8`."
+      "description": "Exact void Windows projection of Android cRFlash::Init(int): stores the render-scene mask and seeds the owned target/current tColour pair to white with zero alpha inside player zero at GameRoot +0x2a8."
     },
     {
       "address": "0x40ab40",
       "name": "draw_frontend_overlay_color_lerp",
-      "description": "Advances and draws the secondary full-screen RGBA overlay interpolator stored at `data_4df904 + 0x2a8`."
+      "description": "Exact void Windows cRFlash::AI() projection: moves each current tColour channel 14.5% toward its target and draws the player-owned full-screen overlay while alpha exceeds 0.01. Android preserves the same 0x24-byte owner and body."
     },
     {
       "address": "0x40abc0",
       "name": "begin_frontend_fade_out",
-      "description": "Requests the shared front-end black transition overlay to fade from clear to full black and hold before a screen handoff."
+      "description": "Exact void Windows cRFade::Start(void (*)()) projection: enters opaque-bound state 2, clears alpha, and stores the completion callback at +0x10. Every Windows caller passes null and discards EAX; the natural callback-shaped void source remains exact at 5/5 instructions."
     },
     {
       "address": "0x40abe0",
       "name": "begin_frontend_fade_in",
-      "description": "Seeds the shared front-end black transition overlay at full black so the next screen fades in over 18 updates."
+      "description": "Exact void Windows cRFade::StartOn() projection: seeds alpha to one and state 1 so cRFade::AI fades the black overlay away over 18 updates. Both iOS and Android retain the authored StartOn name."
     },
     {
       "address": "0x40abf0",
       "name": "update_frontend_transition_overlay",
-      "description": "Updates and draws the shared full-screen black front-end transition overlay, including fade-in, fade-out, three-tick black hold, and the handoff sentinel state."
+      "description": "Exact void Windows cRFade::AI() projection: updates the owned alpha, three-tick opaque hold, externally polled state-4 handoff, and full-screen black draw. Android independently preserves the cRFade owner, alpha lane, state-1/state-2 step, and draw while using port-specific handoff gates."
     },
     {
       "address": "0x40acf0",

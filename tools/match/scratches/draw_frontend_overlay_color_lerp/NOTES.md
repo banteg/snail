@@ -14,3 +14,8 @@ Small front-end overlay fade update/draw helper.
 
 The shared name is codegen-neutral and ties this producer to the same scene
 selection used by camera slots, BODs, sprites, and queued font entries.
+
+Android `cRFlash::AI()` preserves the complete 0x24-byte owner, all four
+14.5% channel lerps, the alpha threshold, scene mask, and current-color draw.
+That body independently proves this helper is a void `cRFlash` member and that
+both color fields use the shared `tColour` type.

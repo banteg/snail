@@ -2,12 +2,10 @@
 /* function: begin_frontend_fade_out @ 0x40abc0 */
 /* selector: begin_frontend_fade_out */
 
-// Requests the shared front-end black transition overlay to fade from clear to full black and hold before a screen handoff.
-int __thiscall sub_40ABC0(_DWORD *this, int a2)
+// Exact void Windows cRFade::Start(void (*)()) projection: enters opaque-bound state 2, clears alpha, and stores the completion callback at +0x10. Every Windows caller passes null and discards EAX; the natural callback-shaped void source remains exact at 5/5 instructions.
+void __thiscall begin_frontend_fade_out(FrontendFade *fade, FrontendFadeCallback completion_callback)
 {
-  *this = 2;
-  *(this + 1) = 0;
-  *(this + 4) = a2;
-  return a2;
+  fade->state = 2;
+  fade->alpha = 0.0;
+  fade->completion_callback = completion_callback;
 }
-

@@ -50,7 +50,7 @@
 004189c7        do while (i s< 0xa)
 004189e5        change_backdrop(&g_game_base->backdrop, &selected_script_anchor->script, flip)
 004189f8        set_border_justify_centre(&g_game_base->border_manager, 0f)
-00418a08        struct FrameColor4f* eax_9 = &g_game_base->fog_color
+00418a08        struct tColour* eax_9 = &g_game_base->fog_color
 00418a0d        eax_9->r = selected_script_anchor->script.fog_color.r
 00418a12        eax_9->g = selected_script_anchor->script.fog_color.g
 00418a18        eax_9->b = selected_script_anchor->script.fog_color.b

@@ -31,8 +31,8 @@ EXPECTED_OWNER_SIZES = {
     "TransformMatrix": 0x40,
     "ObjectRenderVertex": 0x18,
     "SpriteDepthNode": 0x18,
-    "FrameColor4f": 0x10,
     "FrontendFade": 0x14,
+    "FrontendOverlayColorLerp": 0x24,
     "GameInput": 0x70,
     "GamePlayer": 0x1F8,
     "FrameBodBase": 0x38,
@@ -67,7 +67,13 @@ DEPENDENCY_HEADER_NAMES = (
 
 TRUSTED_NAMES = [
     (0x48BA3F, "operator_new"),
+    (0x404350, "initialize_border_stack"),
     (0x408000, "initialize_game_player"),
+    (0x40AB00, "initialize_frontend_overlay_color_lerp"),
+    (0x40AB40, "draw_frontend_overlay_color_lerp"),
+    (0x40ABC0, "begin_frontend_fade_out"),
+    (0x40ABE0, "begin_frontend_fade_in"),
+    (0x40ABF0, "update_frontend_transition_overlay"),
     (0x4107D0, "update_frontend_state_machine"),
     (0x4137F0, "draw_sprite_quad"),
     (0x413670, "configure_sprite_render_state"),
@@ -97,6 +103,10 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     (
         "initialize_game_window_and_input",
         "int __cdecl initialize_game_window_and_input(char *window_name);",
+    ),
+    (
+        "initialize_border_stack",
+        "void __thiscall initialize_border_stack(BorderStack *stack);",
     ),
     (
         "kill_all_borders",
@@ -130,7 +140,7 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     ),
     (
         "queue_frontend_widget_flag_after_delay",
-        "char __thiscall queue_frontend_widget_flag_after_delay("
+        "void __thiscall queue_frontend_widget_flag_after_delay("
         "BorderManager *manager, FrontendWidget *widget, int32_t queued_flags);",
     ),
     (
@@ -144,6 +154,29 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     (
         "initialize_game_player",
         "GamePlayer *__thiscall initialize_game_player(GamePlayer *player);",
+    ),
+    (
+        "initialize_frontend_overlay_color_lerp",
+        "void __thiscall initialize_frontend_overlay_color_lerp("
+        "FrontendOverlayColorLerp *overlay, int32_t state);",
+    ),
+    (
+        "draw_frontend_overlay_color_lerp",
+        "void __thiscall draw_frontend_overlay_color_lerp("
+        "FrontendOverlayColorLerp *overlay);",
+    ),
+    (
+        "begin_frontend_fade_out",
+        "void __thiscall begin_frontend_fade_out("
+        "FrontendFade *fade, FrontendFadeCallback completion_callback);",
+    ),
+    (
+        "begin_frontend_fade_in",
+        "void __thiscall begin_frontend_fade_in(FrontendFade *fade);",
+    ),
+    (
+        "update_frontend_transition_overlay",
+        "void __thiscall update_frontend_transition_overlay(FrontendFade *fade);",
     ),
     (
         "update_frontend_state_machine",
@@ -202,7 +235,9 @@ TRUSTED_FUNCTION_DECLARATIONS = [
 ]
 
 BORDER_KILL_REANALYSIS_FUNCTIONS = (
+    "initialize_border_stack",
     "kill_border",
+    "queue_frontend_widget_flag_after_delay",
     "border_input_text",
     "reset_tooltip",
     "update_tooltip",
@@ -856,6 +891,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for selector in (
             "construct_game_runtime",
             "initialize_game_assets_and_world",
+            "initialize_frontend_overlay_color_lerp",
+            "draw_frontend_overlay_color_lerp",
+            "begin_frontend_fade_out",
+            "begin_frontend_fade_in",
+            "update_frontend_transition_overlay",
+            "activate_landscape_entry",
             "configure_sprite_render_state",
             "draw_sprite_quad",
             "update_sprite_facing_angle",

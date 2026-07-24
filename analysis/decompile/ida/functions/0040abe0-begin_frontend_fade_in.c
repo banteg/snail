@@ -2,10 +2,9 @@
 /* function: begin_frontend_fade_in @ 0x40abe0 */
 /* selector: begin_frontend_fade_in */
 
-// Seeds the shared front-end black transition overlay at full black so the next screen fades in over 18 updates.
-void __thiscall sub_40ABE0(_DWORD *this)
+// Exact void Windows cRFade::StartOn() projection: seeds alpha to one and state 1 so cRFade::AI fades the black overlay away over 18 updates. Both iOS and Android retain the authored StartOn name.
+void __thiscall begin_frontend_fade_in(FrontendFade *fade)
 {
-  *this = 1;
-  *(this + 1) = 1065353216;
+  fade->state = 1;
+  fade->alpha = 1.0;
 }
-

@@ -7,3 +7,7 @@ returns the matching `current` store.
 
 Exact match: 100.00%, 18/18 instructions, with both store_color4f call operands
 resolved.
+
+Android independently names the same 0x24-byte owner and identical body
+`cRFlash::Init(int)`. That provenance closes `target` and `current` as the
+canonical `tColour` owner rather than a frame-local lookalike.

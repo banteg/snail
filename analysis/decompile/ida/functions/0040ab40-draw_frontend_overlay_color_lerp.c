@@ -2,17 +2,16 @@
 /* function: draw_frontend_overlay_color_lerp @ 0x40ab40 */
 /* selector: draw_frontend_overlay_color_lerp */
 
-// Advances and draws the secondary full-screen RGBA overlay interpolator stored at `data_4df904 + 0x2a8`.
-void __thiscall sub_40AB40(void *this)
+// Exact void Windows cRFlash::AI() projection: moves each current tColour channel 14.5% toward its target and draws the player-owned full-screen overlay while alpha exceeds 0.01. Android preserves the same 0x24-byte owner and body.
+void __thiscall draw_frontend_overlay_color_lerp(FrontendOverlayColorLerp *overlay)
 {
   double v1; // st7
 
-  *((float *)this + 5) = (*((float *)this + 1) - *((float *)this + 5)) * 0.145 + *((float *)this + 5);
-  *((float *)this + 6) = (*((float *)this + 2) - *((float *)this + 6)) * 0.145 + *((float *)this + 6);
-  *((float *)this + 7) = (*((float *)this + 3) - *((float *)this + 7)) * 0.145 + *((float *)this + 7);
-  v1 = (*((float *)this + 4) - *((float *)this + 8)) * 0.145 + *((float *)this + 8);
-  *((float *)this + 8) = v1;
+  overlay->current.r = (overlay->target.r - overlay->current.r) * 0.145 + overlay->current.r;
+  overlay->current.g = (overlay->target.g - overlay->current.g) * 0.145 + overlay->current.g;
+  overlay->current.b = (overlay->target.b - overlay->current.b) * 0.145 + overlay->current.b;
+  v1 = (overlay->target.a - overlay->current.a) * 0.145 + overlay->current.a;
+  overlay->current.a = v1;
   if ( v1 > 0.0099999998 )
-    queue_axis_aligned_textured_quad(2, 0, 0, 1142947840, 1139802112, *(_DWORD *)this & 0xFF000000, (int *)this + 5, 5);
+    queue_axis_aligned_textured_quad(2, 0.0, 0.0, 640.0, 480.0, overlay->state & 0xFF000000, &overlay->current, 5);
 }
-

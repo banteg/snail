@@ -13367,6 +13367,7 @@
       "artifact": "analysis/decompile/binja/functions/00403f60-queue_frontend_widget_flag_after_delay.c",
       "required_substrings": [
         "manager->delayed_widget_active",
+        "begin_frontend_fade_out(&g_game_base->fade, nullptr)",
         "manager->delayed_widget = widget",
         "manager->delayed_widget_progress_step",
         "manager->delayed_widget_flags = queued_flags",
@@ -13376,6 +13377,8 @@
         "arg1 +",
         "arg2 +",
         "data_4df904 +",
+        "delayed_widget_active = begin_frontend_fade_out",
+        "return delayed_widget_active",
         "unimplemented"
       ]
     },
@@ -13383,19 +13386,205 @@
       "name": "ida_border_manager_delay_queue_owner",
       "artifact": "analysis/decompile/ida/functions/00403f60-queue_frontend_widget_flag_after_delay.c",
       "required_substrings": [
+        "void __thiscall queue_frontend_widget_flag_after_delay(",
         "BorderManager *manager",
         "FrontendWidget *widget",
         "int32_t queued_flags",
+        "begin_frontend_fade_out(&g_game_base->fade, nullptr)",
         "manager->delayed_widget = widget",
         "manager->delayed_widget_progress_step",
-        "manager->delayed_widget_flags = queued_flags",
-        "&g_game_base->fade.state"
+        "manager->delayed_widget_flags = queued_flags"
       ],
       "forbidden_substrings": [
         "sub_403F60",
         "FrameBorderManager",
+        "char __thiscall queue_frontend_widget_flag_after_delay",
+        "return result",
         "this +",
         "manager->unknown_"
+      ]
+    },
+    {
+      "name": "bn_border_stack_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/00404350-initialize_border_stack.c",
+      "required_substrings": [
+        "stack->generation = 0",
+        "stack->entry_count = 0",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "??_FMemBlock",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_border_stack_initializer_owner",
+      "artifact": "analysis/decompile/ida/functions/00404350-initialize_border_stack.c",
+      "required_substrings": [
+        "void __thiscall initialize_border_stack(BorderStack *stack)",
+        "stack->generation = 0",
+        "stack->entry_count = 0"
+      ],
+      "forbidden_substrings": [
+        "sub_404350",
+        "??_FMemBlock",
+        "int __thiscall initialize_border_stack",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_frontend_flash_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/0040ab00-initialize_frontend_overlay_color_lerp.c",
+      "required_substrings": [
+        "= state",
+        "store_color4f(&",
+        "1f, 1f, 1f, 0f",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_frontend_flash_initializer_owner",
+      "artifact": "analysis/decompile/ida/functions/0040ab00-initialize_frontend_overlay_color_lerp.c",
+      "required_substrings": [
+        "void __thiscall initialize_frontend_overlay_color_lerp(FrontendOverlayColorLerp *overlay, int32_t state)",
+        "overlay->state = state",
+        "store_color4f(&overlay->target",
+        "store_color4f(&overlay->current"
+      ],
+      "forbidden_substrings": [
+        "sub_40AB00",
+        "int *a1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_frontend_flash_draw_owner",
+      "artifact": "analysis/decompile/binja/functions/0040ab40-draw_frontend_overlay_color_lerp.c",
+      "required_substrings": [
+        "overlay->current.r",
+        "overlay->target.r",
+        "overlay->current.a",
+        "overlay->state & 0xff000000",
+        "&overlay->current"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_frontend_flash_draw_owner",
+      "artifact": "analysis/decompile/ida/functions/0040ab40-draw_frontend_overlay_color_lerp.c",
+      "required_substrings": [
+        "void __thiscall draw_frontend_overlay_color_lerp(FrontendOverlayColorLerp *overlay)",
+        "overlay->current.r",
+        "overlay->target.r",
+        "overlay->current.a",
+        "overlay->state & 0xFF000000",
+        "&overlay->current"
+      ],
+      "forbidden_substrings": [
+        "sub_40AB40",
+        "float *a1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_frontend_fade_out_callback_owner",
+      "artifact": "analysis/decompile/binja/functions/0040abc0-begin_frontend_fade_out.c",
+      "required_substrings": [
+        "fade->state = 2",
+        "fade->alpha = 0f",
+        "fade->completion_callback = completion_callback",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "int32_t result",
+        "return result",
+        "arg1",
+        "arg2",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_frontend_fade_out_callback_owner",
+      "artifact": "analysis/decompile/ida/functions/0040abc0-begin_frontend_fade_out.c",
+      "required_substrings": [
+        "void __thiscall begin_frontend_fade_out(FrontendFade *fade, FrontendFadeCallback completion_callback)",
+        "fade->state = 2",
+        "fade->alpha = 0.0",
+        "fade->completion_callback = completion_callback"
+      ],
+      "forbidden_substrings": [
+        "sub_40ABC0",
+        "int __thiscall begin_frontend_fade_out",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_frontend_fade_in_owner",
+      "artifact": "analysis/decompile/binja/functions/0040abe0-begin_frontend_fade_in.c",
+      "required_substrings": [
+        "fade->state = 1",
+        "fade->alpha = 1f",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_frontend_fade_in_owner",
+      "artifact": "analysis/decompile/ida/functions/0040abe0-begin_frontend_fade_in.c",
+      "required_substrings": [
+        "void __thiscall begin_frontend_fade_in(FrontendFade *fade)",
+        "fade->state = 1",
+        "fade->alpha = 1.0"
+      ],
+      "forbidden_substrings": [
+        "sub_40ABE0",
+        "int __thiscall begin_frontend_fade_in",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_frontend_fade_update_owner",
+      "artifact": "analysis/decompile/binja/functions/0040abf0-update_frontend_transition_overlay.c",
+      "required_substrings": [
+        "fade->state",
+        "fade->alpha",
+        "fade->hold_progress",
+        "fade->hold_progress_step",
+        "queue_axis_aligned_textured_quad"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_frontend_fade_update_owner",
+      "artifact": "analysis/decompile/ida/functions/0040abf0-update_frontend_transition_overlay.c",
+      "required_substrings": [
+        "void __thiscall update_frontend_transition_overlay(FrontendFade *fade)",
+        "fade->state",
+        "fade->alpha",
+        "fade->hold_progress",
+        "fade->hold_progress_step",
+        "queue_axis_aligned_textured_quad"
+      ],
+      "forbidden_substrings": [
+        "sub_40ABF0",
+        "int __thiscall update_frontend_transition_overlay",
+        "unimplemented"
       ]
     },
     {
@@ -13980,10 +14169,10 @@
         "void __thiscall activate_landscape_entry(LandscapeManager *manager, int32_t script_index)",
         "&manager->active_entries[0].bod.bod.bod.list_flags",
         "g_game_base->directx_loader.cached_x_mesh_slots",
-        "g_game_base->fog_color ="
+        "g_game_base->fog_color = *(tColour *)"
       ],
       "forbidden_substrings": [
-        "FrameColor4f *__thiscall activate_landscape_entry",
+        "FrameColor4f",
         "void *arg1",
         "g_game_base->unknown_000000",
         "g_game_base->unknown_044100",
@@ -14001,6 +14190,7 @@
         "&manager->active_entries[0].bod.bod.bod.list_flags",
         "active_entries[0].repeat_z_span",
         "active_entries[0].reference_bod",
+        "struct tColour*",
         "&g_game_base->fog_color",
         "set_border_justify_centre(&g_game_base->border_manager"
       ],
@@ -14009,6 +14199,7 @@
         "arg2",
         "g_game_base->unknown_000000",
         "data_4df904 + 0x14",
+        "FrameColor4f",
         "FrameBorderManager",
         "void* edi",
         "*(edi +",

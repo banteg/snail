@@ -78,5 +78,5 @@ void __thiscall activate_landscape_entry(LandscapeManager *manager, int32_t scri
   while ( v4 < 10 );
   change_backdrop(&g_game_base->backdrop, (LandscapeScriptRecord *)(v5 + 1444), flip);
   set_border_justify_centre(&g_game_base->border_manager, 0.0);
-  g_game_base->fog_color = *(FrameColor4f *)(v5 + 1716);
+  g_game_base->fog_color = *(tColour *)(v5 + 1716);
 }
