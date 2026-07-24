@@ -48,6 +48,7 @@ EXPECTED_OWNER_SIZES = {
     "BorderStackEntry": 0x8,
     "BorderStack": 0x64C,
     "BorderRecord": 0x724,
+    "BorderRecordFlagsStrideCursor": 0x724,
     "BorderManager": 0x435B4,
     "GameRoot": 0x12E6FF4,
 }
@@ -740,6 +741,17 @@ WORLD_INITIALIZER_POINTER_LVAR_SPECS = (
         "player_initializer_stride_view",
         "GamePlayerInitStrideView",
         1,
+        True,
+    ),
+    (
+        "border_flags_cursor",
+        0x410295,
+        {"p_flags", "border_flags_cursor"},
+        {"int32_t *", "BorderRecordFlagsStrideCursor *"},
+        "border_flags_cursor",
+        "BorderRecordFlagsStrideCursor",
+        1,
+        False,
     ),
 )
 
@@ -972,6 +984,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         target_name,
         target_struct_name,
         pointer_depth,
+        is_stack,
     ) in WORLD_INITIALIZER_POINTER_LVAR_SPECS:
         result = _sync_pointer_lvar(
             selector="initialize_game_assets_and_world",
@@ -981,7 +994,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
             target_name=target_name,
             target_struct_name=target_struct_name,
             pointer_depth=pointer_depth,
-            is_stack=True,
+            is_stack=is_stack,
         )
         world_initializer_pointer_lvars[result_name] = result
         if result.get("status") == "failed":

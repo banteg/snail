@@ -58,6 +58,7 @@ REQUIRED_STRUCTS = (
     "BorderStackEntry",
     "BorderStack",
     "BorderRecord",
+    "BorderRecordFlagsStrideCursor",
     "BorderManager",
     "GameRoot",
 )
@@ -217,6 +218,21 @@ BORDER_KILL_REANALYSIS_FUNCTIONS = (
     "kill_tip_widgets",
 )
 
+FRAME_RENDERER_REANALYSIS_FUNCTIONS = (
+    "construct_game_runtime",
+    "initialize_game_assets_and_world",
+    "initialize_frontend_overlay_color_lerp",
+    "draw_frontend_overlay_color_lerp",
+    "begin_frontend_fade_out",
+    "begin_frontend_fade_in",
+    "update_frontend_transition_overlay",
+    "activate_landscape_entry",
+    "render_game_frame",
+    "attach_render_camera_source",
+    "initialize_render_camera_slot",
+    *BORDER_KILL_REANALYSIS_FUNCTIONS,
+)
+
 MOUSE_CURSOR_FIELD_UPDATES = (
     ("0x00", "captured", "uint8_t"),
     ("0x04", "live_x", "float"),
@@ -328,6 +344,20 @@ WORLD_INITIALIZER_USER_VAR_UPDATES = (
         72,
         "player_initializer_stride_view",
         "GamePlayerInitStrideView*",
+    ),
+)
+
+# The border startup loop carries BorderRecord::flags in EAX and advances by
+# one exact 0x724-byte backing slot. Preserve that field-first borrow without
+# replacing BorderManager::borders as the owning array.
+WORLD_INITIALIZER_BORDER_FLAGS_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "RegisterVariableSourceType",
+        21924,
+        66,
+        "border_flags_cursor",
+        "BorderRecordFlagsStrideCursor*",
     ),
 )
 
@@ -478,6 +508,10 @@ BORDER_RECORD_FIELD_UPDATES = (
     ("0x218", "hot_padding", "float"),
     ("0x21c", "target_padding", "float"),
     ("0x220", "active_padding", "float"),
+)
+
+BORDER_RECORD_FLAGS_STRIDE_CURSOR_FIELD_UPDATES = (
+    ("0x00", "flags", "int32_t"),
 )
 
 BORDER_MANAGER_FIELD_UPDATES = (
@@ -643,6 +677,68 @@ def verify_game_player_initializer_stride_view(*, target: str) -> dict[str, obje
         "owner_sizes": observed_sizes,
     }
 
+def verify_border_record_flags_stride_cursor(*, target: str) -> dict[str, object]:
+    """Fail closed unless the flags cursor advances by one exact backing slot."""
+    observed_sizes = {
+        "BorderRecord": current_struct_size(
+            REPO_ROOT, target=target, struct_name="BorderRecord"
+        ),
+        "BorderRecordFlagsStrideCursor": current_struct_size(
+            REPO_ROOT,
+            target=target,
+            struct_name="BorderRecordFlagsStrideCursor",
+        ),
+    }
+    expected_sizes = {
+        "BorderRecord": 0x724,
+        "BorderRecordFlagsStrideCursor": 0x724,
+    }
+    mismatches = {
+        name: {"expected": expected_sizes[name], "observed": observed}
+        for name, observed in observed_sizes.items()
+        if observed != expected_sizes[name]
+    }
+    if mismatches:
+        raise RuntimeError(
+            "refusing border flags stride replay with size mismatches: "
+            f"{mismatches!r}"
+        )
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "border_flags_stride_cursor",
+        "owner_sizes": observed_sizes,
+    }
+
+def _has_verified_mutation(results: list[dict[str, object]]) -> bool:
+    """Report whether a narrow replay changed an owner, prototype, or global."""
+    return any(result.get("status") == "verified" for result in results)
+
+
+def _changed_user_var_functions(
+    results: list[dict[str, object]],
+) -> tuple[str, ...]:
+    """Recover exact changed functions from a fail-closed user-var batch."""
+    identifiers: list[str] = []
+    for batch in results:
+        result = batch.get("result")
+        if not isinstance(result, dict):
+            continue
+        payload = result.get("result")
+        if not isinstance(payload, dict):
+            continue
+        entries = payload.get("results")
+        if not isinstance(entries, list):
+            continue
+        for entry in entries:
+            if (
+                isinstance(entry, dict)
+                and entry.get("op") == "user_var_set"
+                and entry.get("changed") is True
+            ):
+                identifiers.append(str(entry["identifier"]))
+    return tuple(dict.fromkeys(identifiers))
+
 
 def resolved_proto_updates(*, target: str) -> tuple[tuple[str, str], ...]:
     """Keep the border lifecycle receiver on the best available exact owner."""
@@ -742,6 +838,9 @@ def main() -> int:
     operations.append(
         verify_game_player_initializer_stride_view(target=args.target)
     )
+    operations.append(
+        verify_border_record_flags_stride_cursor(target=args.target)
+    )
     operations.extend(
         apply_symbol_updates(
             REPO_ROOT,
@@ -750,82 +849,81 @@ def main() -> int:
             kind="function",
         )
     )
-    operations.extend(
-        apply_struct_and_proto_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_updates=(
-                ("GameInput", GAME_INPUT_FIELD_UPDATES),
-                ("MouseCursorState", MOUSE_CURSOR_FIELD_UPDATES),
-                ("FrontendFade", FRONTEND_FADE_FIELD_UPDATES),
-                ("FrontendOverlayColorLerp", FRONTEND_OVERLAY_FIELD_UPDATES),
-                ("FrameRenderCamera", FRAME_RENDER_CAMERA_FIELD_UPDATES),
-                ("Viewport", VIEWPORT_FIELD_UPDATES),
-                ("SpriteDepthNode", SPRITE_DEPTH_NODE_FIELD_UPDATES),
-                ("GamePlayer", GAME_PLAYER_FIELD_UPDATES),
-                (
-                    "GamePlayerInitStrideView",
-                    GAME_PLAYER_INIT_STRIDE_VIEW_FIELD_UPDATES,
-                ),
-                ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
-                ("BorderStackEntry", BORDER_STACK_ENTRY_FIELD_UPDATES),
-                ("BorderStack", BORDER_STACK_FIELD_UPDATES),
-                ("BorderRecord", BORDER_RECORD_FIELD_UPDATES),
-                (
-                    resolved_border_manager_struct_name(target=args.target),
-                    BORDER_MANAGER_FIELD_UPDATES,
-                ),
-                ("GameRoot", resolved_game_root_field_updates(target=args.target)),
+    owner_results = apply_struct_and_proto_updates(
+        REPO_ROOT,
+        target=args.target,
+        struct_updates=(
+            ("GameInput", GAME_INPUT_FIELD_UPDATES),
+            ("MouseCursorState", MOUSE_CURSOR_FIELD_UPDATES),
+            ("FrontendFade", FRONTEND_FADE_FIELD_UPDATES),
+            ("FrontendOverlayColorLerp", FRONTEND_OVERLAY_FIELD_UPDATES),
+            ("FrameRenderCamera", FRAME_RENDER_CAMERA_FIELD_UPDATES),
+            ("Viewport", VIEWPORT_FIELD_UPDATES),
+            ("SpriteDepthNode", SPRITE_DEPTH_NODE_FIELD_UPDATES),
+            ("GamePlayer", GAME_PLAYER_FIELD_UPDATES),
+            (
+                "GamePlayerInitStrideView",
+                GAME_PLAYER_INIT_STRIDE_VIEW_FIELD_UPDATES,
             ),
-            proto_updates=resolved_proto_updates(target=args.target),
-        )
-    )
-    operations.extend(
-        apply_symbol_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=SYMBOL_UPDATES,
-            kind="data",
-        )
-    )
-    operations.extend(
-        apply_data_var_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=DATA_VAR_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_user_var_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=(
-                *ROOT_CONSTRUCTOR_USER_VAR_UPDATES,
-                *WORLD_INITIALIZER_USER_VAR_UPDATES,
-                *RENDER_USER_VAR_UPDATES,
+            ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
+            ("BorderStackEntry", BORDER_STACK_ENTRY_FIELD_UPDATES),
+            ("BorderStack", BORDER_STACK_FIELD_UPDATES),
+            ("BorderRecord", BORDER_RECORD_FIELD_UPDATES),
+            (
+                "BorderRecordFlagsStrideCursor",
+                BORDER_RECORD_FLAGS_STRIDE_CURSOR_FIELD_UPDATES,
             ),
-        )
-    )
-    operations.extend(
-        reanalyze_functions(
-            REPO_ROOT,
-            target=args.target,
-            identifiers=(
-                "construct_game_runtime",
-                "initialize_game_assets_and_world",
-                "initialize_frontend_overlay_color_lerp",
-                "draw_frontend_overlay_color_lerp",
-                "begin_frontend_fade_out",
-                "begin_frontend_fade_in",
-                "update_frontend_transition_overlay",
-                "activate_landscape_entry",
-                "render_game_frame",
-                "attach_render_camera_source",
-                "initialize_render_camera_slot",
-                *BORDER_KILL_REANALYSIS_FUNCTIONS,
+            (
+                resolved_border_manager_struct_name(target=args.target),
+                BORDER_MANAGER_FIELD_UPDATES,
             ),
-        )
+            ("GameRoot", resolved_game_root_field_updates(target=args.target)),
+        ),
+        proto_updates=resolved_proto_updates(target=args.target),
     )
+    operations.extend(owner_results)
+    symbol_results = apply_symbol_updates(
+        REPO_ROOT,
+        target=args.target,
+        updates=SYMBOL_UPDATES,
+        kind="data",
+    )
+    operations.extend(symbol_results)
+    data_var_results = apply_data_var_updates(
+        REPO_ROOT,
+        target=args.target,
+        updates=DATA_VAR_UPDATES,
+    )
+    operations.extend(data_var_results)
+    user_var_results = apply_user_var_updates(
+        REPO_ROOT,
+        target=args.target,
+        updates=(
+            *ROOT_CONSTRUCTOR_USER_VAR_UPDATES,
+            *WORLD_INITIALIZER_USER_VAR_UPDATES,
+            *WORLD_INITIALIZER_BORDER_FLAGS_CURSOR_USER_VAR_UPDATES,
+            *RENDER_USER_VAR_UPDATES,
+        ),
+    )
+    operations.extend(user_var_results)
+
+    broad_owner_change = any(
+        _has_verified_mutation(results)
+        for results in (owner_results, symbol_results, data_var_results)
+    )
+    reanalysis_identifiers = (
+        FRAME_RENDERER_REANALYSIS_FUNCTIONS
+        if broad_owner_change
+        else _changed_user_var_functions(user_var_results)
+    )
+    if reanalysis_identifiers:
+        operations.extend(
+            reanalyze_functions(
+                REPO_ROOT,
+                target=args.target,
+                identifiers=reanalysis_identifiers,
+            )
+        )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,

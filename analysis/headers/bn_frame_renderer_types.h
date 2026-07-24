@@ -270,6 +270,17 @@ typedef struct BorderRecord {
     uint8_t unknown_224[0x724 - 0x224];
 } BorderRecord;
 
+/*
+ * Analysis-only field-first view for the startup flags-clear loop. The
+ * physical pointer begins at BorderRecord::flags and advances by one exact
+ * 0x724-byte backing slot. BorderManager::borders remains the sole owner; the
+ * tail only aliases the current record remainder and next record prefix.
+ */
+typedef struct BorderRecordFlagsStrideCursor {
+    int32_t flags;
+    uint8_t _stride_tail[0x720];
+} BorderRecordFlagsStrideCursor;
+
 struct BorderManager {
     void* vtable;
     uint32_t list_flags;

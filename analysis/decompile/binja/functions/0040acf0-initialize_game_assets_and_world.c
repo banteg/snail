@@ -1948,11 +1948,11 @@
 0041027c        game->border_manager.border_stack.owner = &game->border_manager.vtable
 00410289        game->border_manager.delayed_widget_active = 0
 0041028f        set_border_justify_centre(&game->border_manager.vtable, 25f)
-00410294        int32_t* eax_361 = &game->border_manager.borders[0].flags
+00410294        struct BorderRecordFlagsStrideCursor* border_flags_cursor = &game->border_manager.borders[0].flags
 0041029a        int32_t i_4 = 0x96
 004102a7        int32_t i_3
-0041029f        (eax_361 - 0x1370)->border_manager.borders[0].flags = 0
-004102a1        eax_361 = &eax_361[0x1c9]
+0041029f        border_flags_cursor->flags = 0
+004102a1        border_flags_cursor = &border_flags_cursor[1]
 004102a6        i_3 = i_4
 004102a6        i_4 -= 1
 004102a7        do while (i_3 != 1)
@@ -2056,6 +2056,6 @@
 004106de        set_input_controller_pointer_authored_xy(0, 320f, 240f)
 004106ef        set_input_controller_pointer_authored_xy(1, 320f, 240f)
 004106f7        game->subgame.subgame_rebuild_selector = 2
-00410704        void* eax_403
-00410704        eax_403.b = 1
+00410704        void* eax_402
+00410704        eax_402.b = 1
 0041070d        return 1

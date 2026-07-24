@@ -1162,6 +1162,38 @@ world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
 existing 36 broad-alignment mismatches. No pointer arithmetic or padding was
 added to the matcher.
 
+## 2026-07-24 border-record flags field-stride ownership
+
+The final manager bootstrap loop clears exactly 150
+`BorderManager::borders` entries. Native carries the address of
+`BorderRecord::flags` at record-relative `+0x1a0`, writes zero there, and
+advances EAX by `0x724`. That stride matches the independently recovered
+`BorderRecord` backing size used by allocation, activation, visibility, and
+teardown consumers.
+
+The analysis-only `BorderRecordFlagsStrideCursor` records this physical
+field-first lifetime without becoming another owner.
+`BorderManager::borders[150]` remains the sole storage owner; the cursor tail
+only aliases the remainder of the current record and the next record prefix.
+Both the backing record and cursor must measure exactly `0x724` before replay.
+
+Binary Ninja binds the exact EAX variable at index 21924/storage 66 and now
+renders `border_flags_cursor->flags = 0` followed by a one-element increment.
+IDA independently identifies the non-stack EAX local at `0x410295` and
+renders the same field and stride. Both tools retain the same
+`&game->border_manager.borders[0].flags` base, so Ghidra was unnecessary.
+
+The frame-owner Binary Ninja replay now limits explicit reanalysis to the
+functions whose user variables actually changed. It retains the established
+broad consumer refresh whenever a struct field, prototype, symbol, or data
+type changes. This removes the observed 29-function idempotent replay cost
+without weakening owner propagation.
+
+This is analysis-only: no matcher source changed, and the honest
+world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
+existing 36 broad-alignment mismatches. No pointer arithmetic or padding was
+added to the matcher.
+
 ## 2026-07-24 track-slice triplet stride ownership
 
 The eight-pass backdrop loop carries `game + slice_index * 0x38`, matching one

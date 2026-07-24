@@ -8501,6 +8501,72 @@ def test_salt_asset_cursor_is_field_first_borrowed_and_fail_closed() -> None:
     assert "p_owner_game += 38;" in ida_check["forbidden_substrings"]
 
 
+def test_border_flags_stride_cursor_is_borrowed_and_fail_closed() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (
+        repo_root / "tools/match/include/border_manager.h"
+    ).read_text(encoding="utf-8")
+    headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_frame_renderer_types.h", "frame_renderer_types.h")
+    )
+    bn_sync = (BINJA_DIR / "sync_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "BorderRecordFlagsStrideCursor" not in matcher_header
+    assert "BorderRecord borders[BORDER_RECORD_COUNT];" in matcher_header
+    assert "int flags; // +0x1a0" in matcher_header
+    for header in headers:
+        assert "typedef struct BorderRecordFlagsStrideCursor {" in header
+        assert "int32_t flags;" in header
+        assert "uint8_t _stride_tail[0x720];" in header
+        assert "BorderManager::borders remains the sole owner" in header
+
+    assert "WORLD_INITIALIZER_BORDER_FLAGS_CURSOR_USER_VAR_UPDATES" in bn_sync
+    assert (
+        '"RegisterVariableSourceType",\n'
+        "        21924,\n"
+        "        66,\n"
+        '        "border_flags_cursor",\n'
+        '        "BorderRecordFlagsStrideCursor*",'
+    ) in bn_sync
+    assert '"BorderRecordFlagsStrideCursor": 0x724' in bn_sync
+    assert "verify_border_record_flags_stride_cursor" in bn_sync
+    assert "FRAME_RENDERER_REANALYSIS_FUNCTIONS" in bn_sync
+    assert "_changed_user_var_functions(user_var_results)" in bn_sync
+
+    assert '"BorderRecordFlagsStrideCursor": 0x724' in ida_sync
+    assert '"border_flags_cursor",\n        0x410295,' in ida_sync
+    assert '{"p_flags", "border_flags_cursor"}' in ida_sync
+    assert '{"int32_t *", "BorderRecordFlagsStrideCursor *"}' in ida_sync
+    assert '"BorderRecordFlagsStrideCursor",\n        1,\n        False,' in ida_sync
+    assert "is_stack=is_stack" in ida_sync
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    bn_check = checks["bn_world_assets_border_flags_stride_owner"]
+    ida_check = checks["ida_world_assets_border_flags_stride_owner"]
+    assert (
+        "border_flags_cursor->flags = 0"
+        in bn_check["required_substrings"]
+    )
+    assert (
+        "border_flags_cursor = &border_flags_cursor[1]"
+        in bn_check["required_substrings"]
+    )
+    assert "eax_361 = &eax_361[0x1c9]" in bn_check["forbidden_substrings"]
+    assert "++border_flags_cursor;" in ida_check["required_substrings"]
+    assert "p_flags += 457;" in ida_check["forbidden_substrings"]
+
+
 def test_game_player_initializer_stride_view_is_borrowed_and_fail_closed() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (repo_root / "tools/match/include/game_root.h").read_text(
@@ -8547,7 +8613,8 @@ def test_game_player_initializer_stride_view_is_borrowed_and_fail_closed() -> No
     assert '{"edge_selectork", "player_initializer_stride_view"}' in ida_sync
     assert "bool(lvar.is_stk_var()) == is_stack" in ida_sync
     assert 'selector="initialize_game_assets_and_world"' in ida_sync
-    assert "is_stack=True" in ida_sync
+    assert '"GamePlayerInitStrideView",\n        1,\n        True,' in ida_sync
+    assert "is_stack=is_stack" in ida_sync
 
     health = json.loads(
         (repo_root / "analysis/decompile/health_checks.json").read_text(

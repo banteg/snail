@@ -307,7 +307,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   TextureRefFlags v301; // ecx
   InputState *p_input; // esi
   int v303; // edi
-  int32_t *p_flags; // eax
+  struct BorderRecordFlagsStrideCursor *border_flags_cursor; // eax
   int v305; // ecx
   float x_offset; // [esp+10h] [ebp-12Ch]
   struct PresentationAnimationObjectStrideCursor *cutscene_animation_object_cursor; // [esp+10h] [ebp-12Ch]
@@ -3173,12 +3173,12 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->border_manager.border_stack.owner = &game->border_manager;
   game->border_manager.delayed_widget_active = 0;
   set_border_justify_centre(&game->border_manager, 25.0);
-  p_flags = &game->border_manager.borders[0].flags;
+  border_flags_cursor = (struct BorderRecordFlagsStrideCursor *)&game->border_manager.borders[0].flags;
   v305 = 150;
   do
   {
-    *p_flags = 0;
-    p_flags += 457;
+    border_flags_cursor->flags = 0;
+    ++border_flags_cursor;
     --v305;
   }
   while ( v305 );
