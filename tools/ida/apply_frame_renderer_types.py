@@ -35,6 +35,7 @@ EXPECTED_OWNER_SIZES = {
     "FrontendOverlayColorLerp": 0x24,
     "GameInput": 0x70,
     "GamePlayer": 0x1F8,
+    "GamePlayerInitStrideView": 0x31C,
     "FrameBodBase": 0x38,
     "FrameBodList": 0xC,
     "BodNode": 0x10,
@@ -519,6 +520,7 @@ def _sync_pointer_lvar(
     target_name: str,
     target_struct_name: str,
     pointer_depth: int,
+    is_stack: bool = False,
 ) -> dict[str, object]:
     """Persist one evidence-backed pointer relationship in an owned function."""
     address = idc.get_name_ea_simple(selector)
@@ -536,7 +538,7 @@ def _sync_pointer_lvar(
         lvar
         for lvar in cfunc.get_lvars()
         if not lvar.is_arg_var
-        and not lvar.is_stk_var()
+        and bool(lvar.is_stk_var()) == is_stack
         and lvar.defea == definition_address
         and lvar.name in accepted_names
         and _normalize_struct_pointer_type(str(lvar.type()))
@@ -611,6 +613,7 @@ def _sync_pointer_lvar(
         candidate
         for candidate in verified_cfunc.get_lvars()
         if not candidate.is_arg_var
+        and bool(candidate.is_stk_var()) == is_stack
         and candidate.defea == definition_address
         and candidate.name == target_name
     ]
@@ -724,6 +727,18 @@ ROOT_CONSTRUCTOR_POINTER_LVAR_SPECS = (
         {"BodBase *"},
         "root_bod_cursor",
         "BodBase",
+        1,
+    ),
+)
+
+WORLD_INITIALIZER_POINTER_LVAR_SPECS = (
+    (
+        "player_initializer_stride_view",
+        0x4100C9,
+        {"edge_selectork", "player_initializer_stride_view"},
+        {"char *", "GamePlayerInitStrideView *"},
+        "player_initializer_stride_view",
+        "GamePlayerInitStrideView",
         1,
     ),
 )
@@ -948,6 +963,36 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 }
             )
 
+    world_initializer_pointer_lvars = {}
+    for (
+        result_name,
+        definition_address,
+        accepted_names,
+        accepted_types,
+        target_name,
+        target_struct_name,
+        pointer_depth,
+    ) in WORLD_INITIALIZER_POINTER_LVAR_SPECS:
+        result = _sync_pointer_lvar(
+            selector="initialize_game_assets_and_world",
+            definition_address=definition_address,
+            accepted_names=accepted_names,
+            accepted_types=accepted_types,
+            target_name=target_name,
+            target_struct_name=target_struct_name,
+            pointer_depth=pointer_depth,
+            is_stack=True,
+        )
+        world_initializer_pointer_lvars[result_name] = result
+        if result.get("status") == "failed":
+            failed.append(
+                {
+                    "selector": "initialize_game_assets_and_world",
+                    "lvar": result_name,
+                    "result": result,
+                }
+            )
+
     render_pointer_lvars = {}
     for (
         result_name,
@@ -989,6 +1034,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "invalidated_cfuncs": invalidated_cfuncs,
                 "draw_sprite_vertex_lvar": draw_sprite_vertex_lvar,
                 "root_constructor_pointer_lvars": root_constructor_pointer_lvars,
+                "world_initializer_pointer_lvars": world_initializer_pointer_lvars,
                 "render_pointer_lvars": render_pointer_lvars,
                 "interior_owner_views": interior_owner_views,
                 "missing": missing,

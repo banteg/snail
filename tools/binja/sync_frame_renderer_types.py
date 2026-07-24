@@ -42,6 +42,7 @@ REQUIRED_STRUCTS = (
     "MouseCursorState",
     "FrontendOverlayColorLerp",
     "GamePlayer",
+    "GamePlayerInitStrideView",
     "FrameBodNode",
     "FrameBodList",
     "BodNode",
@@ -316,6 +317,20 @@ ROOT_CONSTRUCTOR_USER_VAR_UPDATES = (
     ),
 )
 
+# The world initializer computes `game + player_index * 0x1f8`, then reaches
+# GameRoot::players through the fixed +0x124 bias. Preserve that shifted
+# borrowed view instead of falsely retyping the carried address as GamePlayer*.
+WORLD_INITIALIZER_USER_VAR_UPDATES = (
+    (
+        "initialize_game_assets_and_world",
+        "RegisterVariableSourceType",
+        21460,
+        72,
+        "player_initializer_stride_view",
+        "GamePlayerInitStrideView*",
+    ),
+)
+
 # The root list intentionally retains its generic BodNode* contract. Render()
 # performs the source-level zero-offset downcast before consuming the complete
 # RenderableBod prefix. Its reverse replay cursor borrows the same owner from
@@ -401,6 +416,11 @@ GAME_PLAYER_FIELD_UPDATES = (
     ("0x1e9", "high_score_entry_pending", "uint8_t"),
     ("0x1ec", "selected_high_score_rank", "int32_t"),
     ("0x1f0", "selected_high_score_mode", "int32_t"),
+)
+
+GAME_PLAYER_INIT_STRIDE_VIEW_FIELD_UPDATES = (
+    ("0x00", "root_to_player", "uint8_t[0x124]"),
+    ("0x124", "player", "GamePlayer"),
 )
 
 GAME_INPUT_FIELD_UPDATES = (
@@ -593,6 +613,37 @@ def resolved_renderable_bod_struct_name(*, target: str) -> str:
     return "RenderableBod"
 
 
+def verify_game_player_initializer_stride_view(*, target: str) -> dict[str, object]:
+    """Fail closed unless the shifted player borrow lands on one exact owner."""
+    observed_sizes = {
+        "GamePlayer": current_struct_size(
+            REPO_ROOT, target=target, struct_name="GamePlayer"
+        ),
+        "GamePlayerInitStrideView": current_struct_size(
+            REPO_ROOT, target=target, struct_name="GamePlayerInitStrideView"
+        ),
+    }
+    expected_sizes = {
+        "GamePlayer": 0x1F8,
+        "GamePlayerInitStrideView": 0x31C,
+    }
+    mismatches = {
+        name: {"expected": expected_sizes[name], "observed": observed}
+        for name, observed in observed_sizes.items()
+        if observed != expected_sizes[name]
+    }
+    if mismatches:
+        raise RuntimeError(
+            "refusing player-initializer stride replay with size mismatches: "
+            f"{mismatches!r}"
+        )
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_sizes": observed_sizes,
+    }
+
+
 def resolved_proto_updates(*, target: str) -> tuple[tuple[str, str], ...]:
     """Keep the border lifecycle receiver on the best available exact owner."""
     border_manager_type = resolved_border_manager_struct_name(target=target)
@@ -688,6 +739,9 @@ def main() -> int:
 
     resolved_sprite_struct_name(target=args.target)
     resolved_renderable_bod_struct_name(target=args.target)
+    operations.append(
+        verify_game_player_initializer_stride_view(target=args.target)
+    )
     operations.extend(
         apply_symbol_updates(
             REPO_ROOT,
@@ -709,6 +763,10 @@ def main() -> int:
                 ("Viewport", VIEWPORT_FIELD_UPDATES),
                 ("SpriteDepthNode", SPRITE_DEPTH_NODE_FIELD_UPDATES),
                 ("GamePlayer", GAME_PLAYER_FIELD_UPDATES),
+                (
+                    "GamePlayerInitStrideView",
+                    GAME_PLAYER_INIT_STRIDE_VIEW_FIELD_UPDATES,
+                ),
                 ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("BorderStackEntry", BORDER_STACK_ENTRY_FIELD_UPDATES),
                 ("BorderStack", BORDER_STACK_FIELD_UPDATES),
@@ -743,6 +801,7 @@ def main() -> int:
             target=args.target,
             updates=(
                 *ROOT_CONSTRUCTOR_USER_VAR_UPDATES,
+                *WORLD_INITIALIZER_USER_VAR_UPDATES,
                 *RENDER_USER_VAR_UPDATES,
             ),
         )

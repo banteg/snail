@@ -1910,21 +1910,22 @@
 004100ad        int32_t var_12c_1 = 0
 004100b3        if (game->player_count s> 0)
 004101c5        bool cond:15_1
-004100c4        void* esi_4 = game + var_12c_1 * 0x1f8
-004100d4        set_matrix_identity(esi_4 + 0x15c)
-004100df        set_matrix_identity(esi_4 + 0x1fc)
-00410133        *(esi_4 + 0x284) = 0x42dc0000
-00410149        *(esi_4 + 0x28c) = &game->game_inputs[var_12c_1]
-0041015b        struct TransformMatrix transform
-0041015b        __builtin_memcpy(esi_4 + 0x15c, initialize_matrix_from_values(&transform, 0.0733430013f, 0f, -0.997310996f, 0f, 0.152129993f, 0.988296986f, 0.0111880004f, 0f, 0.985638976f, -0.152539998f, 0.0724840015f, 0f, -8.62666702f, 3.11352801f, 4.47740698f, 1f), 0x40)
-0041016c        initialize_frontend_overlay_color_lerp(esi_4 + 0x2a8, 0x1000000)
-00410177        release_mouse_cursor(esi_4 + 0x290)
-00410180        *(esi_4 + 0x2a4) = 0
+004100c4        struct GamePlayerInitStrideView* player_initializer_stride_view = game + var_12c_1 * 0x1f8
+004100d4        set_matrix_identity(&player_initializer_stride_view->player.body.transform)
+004100df        set_matrix_identity(&player_initializer_stride_view->player.camera.body.transform)
+00410133        player_initializer_stride_view->player.camera.fov_degrees = 110f
+00410149        player_initializer_stride_view->player.game_input = &game->game_inputs[var_12c_1]
+0041014f        struct TransformMatrix transform
+0041014f        struct TransformMatrix* eax_354 = initialize_matrix_from_values(&transform, 0.0733430013f, 0f, -0.997310996f, 0f, 0.152129993f, 0.988296986f, 0.0111880004f, 0f, 0.985638976f, -0.152539998f, 0.0724840015f, 0f, -8.62666702f, 3.11352801f, 4.47740698f, 1f)
+0041015b        __builtin_memcpy(&player_initializer_stride_view->player.body.transform, eax_354, 0x40)
+0041016c        initialize_frontend_overlay_color_lerp(&player_initializer_stride_view->player.frontend_overlay, 0x1000000)
+00410177        release_mouse_cursor(&player_initializer_stride_view->player.mouse_cursor)
+00410180        player_initializer_stride_view->player.mouse_cursor.suppress_next_draw = 0
 00410188        if (var_12c_1 == 0)
 0041018a        game->players[0].frontend_state = 0xc
-0041019d        *(esi_4 + 0x30d) = 0
-004101a3        *(esi_4 + 0x310) = 0
-004101af        rstrcpy_checked_ascii(esi_4 + 0x1a4, &g_runtime_config.last_entered_player_name)
+0041019d        player_initializer_stride_view->player.high_score_entry_pending = 0
+004101a3        player_initializer_stride_view->player.selected_high_score_rank = 0
+004101af        rstrcpy_checked_ascii(&player_initializer_stride_view->player.player_name, &g_runtime_config.last_entered_player_name)
 004101bf        cond:15_1 = var_12c_1 + 1 s< game->player_count
 004101c1        var_12c_1 += 1
 004101c5        do while (cond:15_1)

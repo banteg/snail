@@ -181,6 +181,18 @@ typedef struct GamePlayer {
     uint8_t unknown_1f4[0x04];
 } GamePlayer;
 
+/*
+ * Analysis-only root-relative view for the player startup loop in
+ * initialize_game_assets_and_world. Native carries
+ * `game + player_index * sizeof(GamePlayer)` and applies the fixed GameRoot
+ * players-array bias at each access. The shifted view borrows the resulting
+ * GamePlayer; GameRoot::players remains the sole owner.
+ */
+typedef struct GamePlayerInitStrideView {
+    uint8_t root_to_player[0x124];
+    GamePlayer player;
+} GamePlayerInitStrideView;
+
 // Mobile symbols retain the original cRViewport owner name. Windows embeds
 // five 0x28-byte records and borrows each camera pointer at +0x20.
 typedef struct Viewport {

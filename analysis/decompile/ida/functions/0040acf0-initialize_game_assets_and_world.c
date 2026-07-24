@@ -329,7 +329,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   int32_t edge_selectorh; // [esp+14h] [ebp-128h]
   int32_t edge_selectori; // [esp+14h] [ebp-128h]
   int edge_selectorj; // [esp+14h] [ebp-128h]
-  char *edge_selectork; // [esp+14h] [ebp-128h]
+  struct GamePlayerInitStrideView *player_initializer_stride_view; // [esp+14h] [ebp-128h]
   Color4f color; // [esp+18h] [ebp-124h] BYREF
   int32_t orientation; // [esp+28h] [ebp-114h]
   TransformMatrix transform; // [esp+2Ch] [ebp-110h] BYREF
@@ -3099,13 +3099,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   while ( v303 < 2 );
   for ( x_offsetb = 0; x_offsetb < game->player_count; ++x_offsetb )
   {
-    edge_selectork = (char *)game + 504 * x_offsetb;
-    set_matrix_identity((TransformMatrix *)(edge_selectork + 348));
-    set_matrix_identity((TransformMatrix *)(edge_selectork + 508));
-    *((_DWORD *)edge_selectork + 161) = 1121714176;
-    *((_DWORD *)edge_selectork + 163) = &game->game_inputs[x_offsetb];
+    player_initializer_stride_view = (struct GamePlayerInitStrideView *)((char *)game + 504 * x_offsetb);
+    set_matrix_identity((TransformMatrix *)&player_initializer_stride_view->player.body.transform);
+    set_matrix_identity((TransformMatrix *)&player_initializer_stride_view->player.camera.body.transform);
+    player_initializer_stride_view->player.camera.fov_degrees = 110.0;
+    player_initializer_stride_view->player.game_input = &game->game_inputs[x_offsetb];
     qmemcpy(
-      edge_selectork + 348,
+      &player_initializer_stride_view->player.body.transform,
       initialize_matrix_from_values(
         &v333,
         0.073343001,
@@ -3124,15 +3124,15 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
         3.113528,
         4.477407,
         1.0),
-      0x40u);
-    initialize_frontend_overlay_color_lerp((FrontendOverlayColorLerp *)(edge_selectork + 680), 0x1000000);
-    release_mouse_cursor((MouseCursorState *)(edge_selectork + 656));
-    edge_selectork[676] = 0;
+      sizeof(player_initializer_stride_view->player.body.transform));
+    initialize_frontend_overlay_color_lerp(&player_initializer_stride_view->player.frontend_overlay, 0x1000000);
+    release_mouse_cursor(&player_initializer_stride_view->player.mouse_cursor);
+    player_initializer_stride_view->player.mouse_cursor.suppress_next_draw = 0;
     if ( !x_offsetb )
       game->players[0].frontend_state = 12;
-    edge_selectork[781] = 0;
-    *((_DWORD *)edge_selectork + 196) = 0;
-    rstrcpy_checked_ascii(edge_selectork + 420, g_runtime_config.last_entered_player_name);
+    player_initializer_stride_view->player.high_score_entry_pending = 0;
+    player_initializer_stride_view->player.selected_high_score_rank = 0;
+    rstrcpy_checked_ascii(player_initializer_stride_view->player.player_name, g_runtime_config.last_entered_player_name);
   }
   initialize_high_score_tables((SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position
                                               + (_DWORD)game));

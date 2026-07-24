@@ -1132,3 +1132,29 @@ structural verification.
 This is analysis ownership only. No matcher source changed, and the honest
 world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
 existing 36 broad-alignment mismatches.
+
+## 2026-07-24 player initializer shifted ownership
+
+The per-player startup loop carries `game + player_index * 0x1f8`, not a
+direct `GamePlayer*`. Every access then applies the fixed `GameRoot::players`
+bias at `+0x124`: the first transform is therefore at carried `+0x15c`,
+camera transform at `+0x1fc`, FOV at `+0x284`, input backlink at `+0x28c`,
+overlay at `+0x2a8`, mouse state at `+0x290`, and the score/name tail through
+`+0x310`. Those displacements subtract cleanly to the already
+constructor-proven `GamePlayer` fields, whose exact size is `0x1f8`.
+
+The analysis-only `GamePlayerInitStrideView` records the `0x124` root bias and
+borrows one embedded `GamePlayer`; `GameRoot::players[2]` remains the sole
+owner. Binary Ninja applies it to the exact register variable at index 21460
+and now renders every loop access through the named
+`player_initializer_stride_view->player` chain. IDA independently identifies
+the same value as a stack-backed
+Hex-Rays local defined at `0x4100c9` and renders the same owner chain. The IDA
+replay helper now requires each target's expected storage class, closing the
+tooling gap without broadening candidate selection. Exact `0x1f8`/`0x31c`
+size checks and paired decompile-health checks fail closed on drift. Agreement
+between Binary Ninja and IDA made a Ghidra replay unnecessary.
+
+This is analysis ownership only. No matcher source changed, and the honest
+world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
+existing 36 broad-alignment mismatches.

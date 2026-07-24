@@ -4123,6 +4123,36 @@
       ]
     },
     {
+      "name": "bn_game_initializer_player_stride_ownership",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "struct GamePlayerInitStrideView* player_initializer_stride_view = game + var_12c_1 * 0x1f8",
+        "&player_initializer_stride_view->player.body.transform",
+        "&player_initializer_stride_view->player.camera.body.transform",
+        "player_initializer_stride_view->player.camera.fov_degrees = 110f",
+        "player_initializer_stride_view->player.game_input = &game->game_inputs[var_12c_1]",
+        "&player_initializer_stride_view->player.frontend_overlay",
+        "&player_initializer_stride_view->player.mouse_cursor",
+        "player_initializer_stride_view->player.mouse_cursor.suppress_next_draw = 0",
+        "player_initializer_stride_view->player.high_score_entry_pending = 0",
+        "player_initializer_stride_view->player.selected_high_score_rank = 0",
+        "&player_initializer_stride_view->player.player_name"
+      ],
+      "forbidden_substrings": [
+        "void* esi_4 = game + var_12c_1 * 0x1f8",
+        "set_matrix_identity(esi_4 + 0x15c)",
+        "set_matrix_identity(esi_4 + 0x1fc)",
+        "*(esi_4 + 0x284)",
+        "*(esi_4 + 0x28c)",
+        "esi_4 + 0x2a8",
+        "esi_4 + 0x290",
+        "*(esi_4 + 0x2a4)",
+        "*(esi_4 + 0x30d)",
+        "*(esi_4 + 0x310)",
+        "esi_4 + 0x1a4"
+      ]
+    },
+    {
       "name": "bn_banner_borrowed_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00441d40-update_banner.c",
       "required_substrings": [
@@ -14041,6 +14071,35 @@
         "Object **x_offsete;",
         "(*x_offsete)->flags",
         "x_offsete += 32"
+      ]
+    },
+    {
+      "name": "ida_game_initializer_player_stride_ownership",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "struct GamePlayerInitStrideView *player_initializer_stride_view;",
+        "player_initializer_stride_view = (struct GamePlayerInitStrideView *)((char *)game + 504 * x_offsetb);",
+        "&player_initializer_stride_view->player.body.transform",
+        "&player_initializer_stride_view->player.camera.body.transform",
+        "player_initializer_stride_view->player.camera.fov_degrees = 110.0;",
+        "player_initializer_stride_view->player.game_input = &game->game_inputs[x_offsetb];",
+        "&player_initializer_stride_view->player.frontend_overlay",
+        "&player_initializer_stride_view->player.mouse_cursor",
+        "player_initializer_stride_view->player.mouse_cursor.suppress_next_draw = 0;",
+        "player_initializer_stride_view->player.high_score_entry_pending = 0;",
+        "player_initializer_stride_view->player.selected_high_score_rank = 0;",
+        "player_initializer_stride_view->player.player_name"
+      ],
+      "forbidden_substrings": [
+        "char *edge_selectork;",
+        "edge_selectork = (char *)game + 504 * x_offsetb;",
+        "edge_selectork + 348",
+        "edge_selectork + 508",
+        "edge_selectork + 680",
+        "edge_selectork + 656",
+        "edge_selectork[676]",
+        "edge_selectork[781]",
+        "edge_selectork + 420"
       ]
     },
     {

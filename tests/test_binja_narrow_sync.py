@@ -8106,6 +8106,74 @@ def test_presentation_animation_object_cursor_survives_every_replay_lane() -> No
     assert "x_offseta += 32" in ida_check["forbidden_substrings"]
 
 
+def test_game_player_initializer_stride_view_is_borrowed_and_fail_closed() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (repo_root / "tools/match/include/game_root.h").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_frame_renderer_types.h", "frame_renderer_types.h")
+    )
+    bn_sync = (BINJA_DIR / "sync_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "GamePlayerInitStrideView" not in matcher_header
+    assert (
+        "GamePlayer players[GAME_ROOT_PLAYER_SLOT_COUNT]; // +0x124"
+        in matcher_header
+    )
+    for header in headers:
+        assert "typedef struct GamePlayerInitStrideView {" in header
+        assert "uint8_t root_to_player[0x124];" in header
+        assert "GamePlayer player;" in header
+        assert "GameRoot::players remains the sole owner" in header
+
+    assert "WORLD_INITIALIZER_USER_VAR_UPDATES" in bn_sync
+    assert (
+        '"RegisterVariableSourceType",\n'
+        "        21460,\n"
+        "        72,\n"
+        '        "player_initializer_stride_view",\n'
+        '        "GamePlayerInitStrideView*",'
+    ) in bn_sync
+    assert '"GamePlayer": 0x1F8' in bn_sync
+    assert '"GamePlayerInitStrideView": 0x31C' in bn_sync
+    assert "verify_game_player_initializer_stride_view" in bn_sync
+
+    assert '"GamePlayer": 0x1F8' in ida_sync
+    assert '"GamePlayerInitStrideView": 0x31C' in ida_sync
+    assert "WORLD_INITIALIZER_POINTER_LVAR_SPECS" in ida_sync
+    assert "0x4100C9" in ida_sync
+    assert '{"edge_selectork", "player_initializer_stride_view"}' in ida_sync
+    assert "bool(lvar.is_stk_var()) == is_stack" in ida_sync
+    assert 'selector="initialize_game_assets_and_world"' in ida_sync
+    assert "is_stack=True" in ida_sync
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    bn_check = checks["bn_game_initializer_player_stride_ownership"]
+    ida_check = checks["ida_game_initializer_player_stride_ownership"]
+    assert (
+        "struct GamePlayerInitStrideView* player_initializer_stride_view"
+        in bn_check["required_substrings"][0]
+    )
+    assert "void* esi_4" in bn_check["forbidden_substrings"][0]
+    assert (
+        "struct GamePlayerInitStrideView *player_initializer_stride_view;"
+        in ida_check["required_substrings"]
+    )
+    assert "char *edge_selectork;" in ida_check["forbidden_substrings"]
+
+
 def test_cameraman_force_update_owner_survives_path_replay() -> None:
     repo_root = Path(__file__).parents[1]
     matcher = (repo_root / "tools/match/include/cameraman.h").read_text(
