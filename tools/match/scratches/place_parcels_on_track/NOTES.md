@@ -322,13 +322,30 @@ Binary Ninja can keep the two subordinate cursor lifetimes explicit:
 `glyph_row_cursor` advances one byte per authored row while
 `glyph_lane_cursor` advances 0x100 bytes across the eight lane-major glyph
 planes. The parallel EDI borrow starts at `rows[0].local_position` and advances
-one 0x38-byte `AuthoredSegmentRow` per row. IDA independently proves the same
-geometry and safely retains the two register-backed anchor/position views. Its
-three stack locals were deliberately rejected for replay because Hex-Rays
-reuses those slots in the later scratch-bank compaction; naming them as glyph
-cursors leaked false ownership into unrelated code. Android also separates the
-active segment, glyph-grid, and authored-row pointers while using its
-port-specific pointer-backed segment layout.
+one 0x38-byte `AuthoredSegmentRow` per row. The BN-only
+`AuthoredSegmentRowPositionCursorView` records that EDI is an offset pointer at
+`AuthoredSegmentRow::local_position` (+0x08), so the two native reads behind
+the pointer now render as `authored_parcel_row->flags` and
+`authored_parcel_row->parcel_set_id` rather than false `Vec3` offsets. The view
+mirrors the complete 0x38-byte row, inherits the live `Vec3` at +0x08, and is
+guarded against either owner changing width.
+
+IDA independently proves the same geometry and safely retains the two
+register-backed anchor/position views. Hex-Rays has no equivalent pointer-offset
+type, so its honest `Vec3 *authored_parcel_position` continues to expose the
+preceding words as `[-1].y`/`[-1].z` and the row step as `+56`. Its three stack
+locals were deliberately rejected for replay because Hex-Rays reuses those
+slots in the later scratch-bank compaction; naming them as glyph cursors leaked
+false ownership into unrelated code. Android also separates the active
+segment, glyph-grid, and authored-row pointers while using its port-specific
+pointer-backed segment layout.
+
+Adding the second BN pointer-offset view also exposed a replay-tooling gap:
+parsing this self-contained header against the live type container can make
+Binary Ninja report false forward-declaration redefinitions. The exact-type
+audit now retries in an isolated parser container only when the live-container
+parse fails; partial headers that genuinely depend on live declarations still
+fail closed if that retry cannot resolve them.
 
 The digit-0 compactor also now proves its source/destination relationship.
 Windows sets ESI to `destination + sizeof(ParcelBucket)` before copying the
@@ -340,4 +357,5 @@ destination base after ESI has been reused; no synthetic pair owner was added.
 No scratch source change is justified by these analysis-only ownership
 recoveries. Focused Wibo remains 33.81% (633/639 instructions), with 40 clean
 masked operands and the same two known candidate-bank address-shape
-mismatches.
+mismatches. The focused BN/IDA export and all 934 strict decompile-health checks
+pass.

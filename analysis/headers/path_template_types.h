@@ -236,6 +236,27 @@ typedef struct AuthoredSegmentRow {
     AuthoredFloatBits ring_speed;
 } AuthoredSegmentRow;
 
+/*
+ * Analysis-only field-first view for PlaceParcels' EDI induction. The native
+ * pointer names AuthoredSegmentRow::local_position at +0x08, reads flags and
+ * parcel_set_id behind that address, then advances by one complete 0x38-byte
+ * authored row. The inherited row remains owned by SubSegment::rows.
+ */
+typedef struct __ptr_offset(0x08)
+    __base(Vec3, 0x08) AuthoredSegmentRowPositionCursorView {
+    int32_t flags;
+    int32_t parcel_set_id;
+    __inherited Vec3 local_position;
+    int32_t object_id;
+    Vec3 object_position;
+    Vec3 object_velocity;
+    int32_t path_template_index;
+    AuthoredFloatBits ring_speed;
+} AuthoredSegmentRowPositionCursorView;
+typedef char AuthoredSegmentRowPositionCursorView_must_be_0x38[
+    (sizeof(AuthoredSegmentRowPositionCursorView) == 0x38) ? 1 : -1
+];
+
 /* Exact 0x4220-byte authored cRSubSegment value. */
 struct SubSegment {
     int32_t row_base;

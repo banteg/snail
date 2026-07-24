@@ -17,11 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_subgoldy",
-      "address": "0x43b120"
+      "name": "place_parcels_on_track",
+      "address": "0x4438e0"
     }
   ],
-  "health_check_count": 932,
+  "health_check_count": 934,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

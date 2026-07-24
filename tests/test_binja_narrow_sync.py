@@ -2224,6 +2224,8 @@ def test_current_header_type_equivalence_uses_exact_parsed_type_comparison(
         assert args[:2] == ("py", "exec")
         assert "current == parsed_type.type" in args[-1]
         assert "bv.type_container" in args[-1]
+        assert "isolated_parsed, isolated_errors" in args[-1]
+        assert "bv.platform,\n            None," in args[-1]
         return {
             "result": {
                 "errors": [],
@@ -5895,11 +5897,27 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         ("saved_segment_row_count_anchor", "SubSegmentParcelScanAnchor*"),
         ("glyph_row_cursor", "char*"),
         ("glyph_lane_cursor", "char*"),
-        ("authored_parcel_position", "Vec3*"),
+        (
+            "authored_parcel_row",
+            "AuthoredSegmentRowPositionCursorView*",
+        ),
     ):
         assert f'"{name}"' in binja_source
         assert f'"{type_name}"' in binja_source
     assert "*PLACE_PARCELS_SCAN_USER_VAR_UPDATES" in binja_source
+    assert "AUTHORED_ROW_CURSOR_SIZES" in binja_source
+    assert "verify_authored_row_cursor_sizes" in binja_source
+    assert '"AuthoredSegmentRowPositionCursorView": 0x38' in binja_source
+    assert "typedef struct __ptr_offset(0x08)" in analysis_path_header
+    assert (
+        "__base(Vec3, 0x08) AuthoredSegmentRowPositionCursorView"
+        in analysis_path_header
+    )
+    assert "__inherited Vec3 local_position;" in analysis_path_header
+    assert (
+        "AuthoredSegmentRowPositionCursorView_must_be_0x38"
+        in analysis_path_header
+    )
     for identity in (
         '"RegisterVariableSourceType",\n        1239,\n        72,',
         '"RegisterVariableSourceType",\n        1832,\n        73,',

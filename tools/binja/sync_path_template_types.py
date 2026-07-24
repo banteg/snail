@@ -73,6 +73,11 @@ TIP_OWNER_SIZES = {
     "TipManager": 0x98,
 }
 
+AUTHORED_ROW_CURSOR_SIZES = {
+    "AuthoredSegmentRow": 0x38,
+    "AuthoredSegmentRowPositionCursorView": 0x38,
+}
+
 TIP_FUNCTION_SYMBOL_UPDATES = (
     ("0x4489e0", "kill_tip_widgets"),
     ("0x448a40", "initialize_tip"),
@@ -419,6 +424,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SMTracks",
     "SmtrackHeightfieldAnimator",
     "AuthoredSegmentRowFlag",
+    "AuthoredSegmentRowPositionCursorView",
     "SubSegment",
     "SubSegmentParcelScanAnchor",
     "SubSegmentRowStrideAnchor",
@@ -481,6 +487,7 @@ def ensure_path_analysis_views(
         "PresentationWobbleController",
         "RuntimeCellStrideAnchor",
         "TrackRowCellSameLaneCursorView",
+        "AuthoredSegmentRowPositionCursorView",
         "SubSegmentParcelScanAnchor",
         "SubSegmentEventBiasView",
         "SubLocTileId",
@@ -603,6 +610,29 @@ def verify_tip_owner_sizes(*, target: str) -> dict[str, object]:
         "owner_group": "tip",
         "owner_sizes": observed,
     }
+
+
+def verify_authored_row_cursor_sizes(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the field-first authored-row cursor."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=AUTHORED_ROW_CURSOR_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in AUTHORED_ROW_CURSOR_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"authored row cursor size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "authored_row_cursor",
+        "owner_sizes": observed,
+    }
+
 
 SUB_PAUSE_FIELD_UPDATES = (
     ("0x00", "options_widget", "FrontendWidget*"),
@@ -1194,7 +1224,9 @@ PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES = (
 # segment stride, while the two stack cursors walk the current row across the
 # lane-major glyph grid and the EDI cursor borrows that row's local_position.
 # The anchor's trailing word overlaps the next segment's row_base solely to
-# preserve the native stride; SubTracks remains the owner of every segment.
+# preserve the native stride. The EDI type is a +0x08 pointer-offset view of
+# the complete authored row, so its negative flag/set-id reads retain the real
+# row owner without claiming independent storage.
 PLACE_PARCELS_SCAN_USER_VAR_UPDATES = (
     (
         "place_parcels_on_track",
@@ -1233,8 +1265,8 @@ PLACE_PARCELS_SCAN_USER_VAR_UPDATES = (
         "RegisterVariableSourceType",
         190,
         73,
-        "authored_parcel_position",
-        "Vec3*",
+        "authored_parcel_row",
+        "AuthoredSegmentRowPositionCursorView*",
     ),
 )
 
@@ -3722,6 +3754,7 @@ def main() -> int:
                 header_path=header_path,
             )
         )
+        operations.append(verify_authored_row_cursor_sizes(target=args.target))
         operations.extend(
             apply_split_user_var_update(
                 REPO_ROOT,
@@ -4016,6 +4049,7 @@ def main() -> int:
                 header_path=header_path,
             )
         )
+        operations.append(verify_authored_row_cursor_sizes(target=args.target))
         operations.extend(
             apply_symbol_updates(
                 REPO_ROOT,

@@ -1012,6 +1012,23 @@ parsed, errors = binaryninja.TypeParser.default.parse_types_from_source(
     bv.platform,
     bv.type_container,
 )
+# Binary Ninja's pointer-offset/base extensions can make a complete,
+# self-contained header report false "redefinition" errors when the live type
+# container already holds its forward declarations. Retry in an isolated
+# parser container before treating that as a malformed header. Partial headers
+# that rely on live declarations still retain the first parse result when the
+# isolated retry cannot resolve them.
+if parsed is None or errors:
+    isolated_parsed, isolated_errors = (
+        binaryninja.TypeParser.default.parse_types_from_source(
+            header,
+            header_path,
+            bv.platform,
+            None,
+        )
+    )
+    if isolated_parsed is not None and not isolated_errors:
+        parsed, errors = isolated_parsed, isolated_errors
 parse_errors = [str(error) for error in (errors or ())]
 if parsed is None and not parse_errors:
     parse_errors.append("type parser returned no result")

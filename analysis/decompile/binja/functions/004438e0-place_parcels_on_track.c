@@ -38,26 +38,26 @@
 0044398d        int32_t edx_4 = 0
 00443991        if (segment_row_count_anchor->row_count s> 0)
 0044399a        char* glyph_row_cursor = &segment_row_count_anchor->glyph_rows
-0044399e        struct Vec3* authored_parcel_position = &segment_row_count_anchor->rows[0].local_position
-004439a4        out_angle = authored_parcel_position
+0044399e        struct AuthoredSegmentRowPositionCursorView* authored_parcel_row = &segment_row_count_anchor->rows[0].local_position
+004439a4        out_angle = authored_parcel_row
 004439bb        while (true)
-004439bb        if ((authored_parcel_position->__offset(0xfffffffffffffff8).b & 1) != 0 && authored_parcel_position->x:-4.d == eax_1)
+004439bb        if ((authored_parcel_row->flags.b & 1) != 0 && authored_parcel_row->parcel_set_id == eax_1)
 004439c3        if (eax_1 != 0)
 00443a34        *(ecx_3 + &g_parcel_set_buckets.segment_index) = i_1
 00443a43        *((*(ecx_3 + &g_parcel_set_buckets.candidate_count) << 4) + ecx_3 + &g_parcel_set_buckets) = edx_4
 00443a55        int32_t* eax_13 = (*(ecx_3 + &g_parcel_set_buckets.candidate_count) << 4) + ecx_3 + &(*g_parcel_set_buckets.candidates)[0].position
-00443a5c        *eax_13 = authored_parcel_position->x
-00443a61        eax_13[1] = authored_parcel_position->y
-00443a67        eax_13[2] = authored_parcel_position->z
+00443a5c        *eax_13 = authored_parcel_row->x
+00443a61        eax_13[1] = authored_parcel_row->y
+00443a67        eax_13[2] = authored_parcel_row->z
 00443a6e        *(ecx_3 + &g_parcel_set_buckets.set_id) = var_200_1
 00443a7b        *(ecx_3 + &g_parcel_set_buckets.candidate_count) += 1
 004439d0        int32_t eax_6 = i_3 * 0x20c
 004439d3        (&g_zero_parcel_buckets)[i_3].segment_index = i_1
 004439e2        *(((&g_zero_parcel_buckets)[i_3].candidate_count << 4) + eax_6 + &g_zero_parcel_buckets) = edx_4
-004439f4        float* ebx_5 = ((&g_zero_parcel_buckets)[i_3].candidate_count << 4) + eax_6 + &(*g_zero_parcel_buckets.candidates)[0].position
-004439fb        *ebx_5 = authored_parcel_position->x
-00443a00        ebx_5[1] = authored_parcel_position->y
-00443a0a        ebx_5[2] = authored_parcel_position->z
+004439f4        int32_t* ebx_5 = ((&g_zero_parcel_buckets)[i_3].candidate_count << 4) + eax_6 + &(*g_zero_parcel_buckets.candidates)[0].position
+004439fb        *ebx_5 = authored_parcel_row->x
+00443a00        ebx_5[1] = authored_parcel_row->y
+00443a0a        ebx_5[2] = authored_parcel_row->z
 00443a0d        (&g_zero_parcel_buckets)[i_3].set_id = 0
 00443a1e        i_3 = i_4 + 1
 00443a1f        (&g_zero_parcel_buckets)[i_3].candidate_count += 1
@@ -97,11 +97,11 @@
 00443bd2        glyph_lane_cursor = &glyph_lane_cursor[0x100]
 00443bd6        do while (cond:8_1)
 00443be4        edx_4 += 1
-00443be5        authored_parcel_position = out_angle i+ 0x38
+00443be5        authored_parcel_row = out_angle i+ 0x38
 00443be9        i_4 = i_3
 00443bed        glyph_row_cursor = &glyph_row_cursor[1]
 00443bf1        segment_row_count_anchor = saved_segment_row_count_anchor
-00443bf5        out_angle = authored_parcel_position
+00443bf5        out_angle = authored_parcel_row
 00443bfb        if (edx_4 s>= segment_row_count_anchor->row_count)
 00443bfb        break
 004439aa        eax_1 = var_200_1
