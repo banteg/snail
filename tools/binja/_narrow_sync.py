@@ -2183,20 +2183,27 @@ def apply_user_var_updates(
         not isinstance(entry.get("changed"), bool) for entry in current_results
     ):
         raise RuntimeError("Binary Ninja user-variable preflight does not match updates")
-    if all(entry["changed"] is False for entry in current_results):
-        return [
-            {
-                **operation,
-                "status": "skipped",
-                "reason": "already current",
-            }
-            for operation in operations
-        ]
+    pending_operations = [
+        operation
+        for operation, current in zip(operations, current_results, strict=True)
+        if current["changed"] is True
+    ]
+    skipped_operations = [
+        {
+            **operation,
+            "status": "skipped",
+            "reason": "already current",
+        }
+        for operation, current in zip(operations, current_results, strict=True)
+        if current["changed"] is False
+    ]
+    if not pending_operations:
+        return skipped_operations
 
     preview = run_bn_batch(
         repo_root,
         target=target,
-        operations=operations,
+        operations=pending_operations,
         preview=True,
     )
     preview_results = preview.get("results")
@@ -2207,25 +2214,29 @@ def apply_user_var_updates(
         for entry in preview_results
     ):
         return [
-            {
-                **operation,
-                "status": "skipped",
-                "reason": "already current",
-            }
-            for operation in operations
+            *skipped_operations,
+            *[
+                {
+                    **operation,
+                    "status": "skipped",
+                    "reason": "already current",
+                }
+                for operation in pending_operations
+            ],
         ]
 
     applied = run_bn_batch(
         repo_root,
         target=target,
-        operations=operations,
+        operations=pending_operations,
         preview=False,
     )
     return [
+        *skipped_operations,
         {
             "op": "user_var_batch",
-            "operation_count": len(operations),
-            "operations": operations,
+            "operation_count": len(pending_operations),
+            "operations": pending_operations,
             "preview": {
                 "success": preview.get("success"),
                 "message": preview.get("message"),

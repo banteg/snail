@@ -10684,6 +10684,79 @@ def test_user_variable_replay_previews_before_apply(monkeypatch) -> None:
     assert result[0]["operation_count"] == 1
 
 
+def test_user_variable_replay_batches_only_changed_updates(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn_batch(_repo_root, *, target, operations, preview):
+        calls.append((target, operations, preview))
+        return {
+            "success": True,
+            "preview": preview,
+            "committed": not preview,
+            "message": "ok",
+            "affected_functions": ["build_subgame_level"],
+            "results": [{"changed": True}],
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn_batch", fake_run_bn_batch)
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_user_var_states",
+        lambda *_args, **_kwargs: [
+            {"changed": False},
+            {"changed": True},
+            {"changed": False},
+        ],
+    )
+    updates = (
+        (
+            "build_subgame_level",
+            "RegisterVariableSourceType",
+            1272,
+            66,
+            "jetpack_channel",
+            "Weapon*",
+        ),
+        (
+            "build_subgame_level",
+            "RegisterVariableSourceType",
+            1367,
+            67,
+            "weapon_channel_0",
+            "Weapon*",
+        ),
+        (
+            "build_subgame_level",
+            "RegisterVariableSourceType",
+            1455,
+            67,
+            "weapon_channel_1",
+            "Weapon*",
+        ),
+    )
+
+    result = _narrow_sync.apply_user_var_updates(
+        Path("."),
+        target="snail-mail.exe",
+        updates=updates,
+    )
+
+    expected_pending = [_narrow_sync.user_var_operations(updates)[1]]
+    assert calls == [
+        ("snail-mail.exe", expected_pending, True),
+        ("snail-mail.exe", expected_pending, False),
+    ]
+    assert [entry["op"] for entry in result] == [
+        "user_var_set",
+        "user_var_set",
+        "user_var_batch",
+    ]
+    assert result[0]["status"] == "skipped"
+    assert result[1]["status"] == "skipped"
+    assert result[2]["operation_count"] == 1
+    assert result[2]["operations"] == expected_pending
+
+
 def test_split_user_variable_replay_previews_before_saved_apply(monkeypatch) -> None:
     calls = []
 
