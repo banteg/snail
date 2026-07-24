@@ -45,3 +45,18 @@ the borrowed `SubgameRuntime*` at +0x00 and eight `FrontendWidget*` slots
 through +0x24. Live readback kept `Init` as `void __thiscall(GUI*)`. The IDA
 replay corrected its stale result-bearing prototype to the same void contract,
 and a strict three-method export completed with zero BN or IDA mismatches.
+
+## 2026-07-24 one-case mode dispatch
+
+The initializer now uses the same authored mode-switch family as
+`cRGUI::AI()` and exact-matched `cRGUI::UnInit()`, retaining only challenge
+mode `1` in this Windows body. That source shape naturally emits the native
+`load level_mode; dec; branch` sequence while preserving the independently
+proved `void` ABI. Binary Ninja and a fresh IDA 9.3 decompile agree that the
+only live body is gated by `GUI::game->level_mode == 1`; Android retains the
+same mode-1 gate, and the sibling GUI methods establish the shared switch
+ownership.
+
+Focused matching improves from 96.41% to 100.00%, 167/167 instructions, with
+all 37 relocatable operands clean. No synthetic return, volatile barrier, or
+dummy state was introduced.

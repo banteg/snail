@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**627/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **101948/317040** bytes (**32.16%**) are proof-grade, and overall fuzzy is **76.50%**.
+**628/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **102610/317040** bytes (**32.37%**) are proof-grade, and overall fuzzy is **76.50%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
-## Proof Grade (627)
+## Proof Grade (628)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -187,6 +187,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | 63/63 | 3 ok |  |
 | ✅ | append_subgame_contact_target | 0x415ef0 | 88 | 34/34 | 100.00% | 34/34 | - |  |
+| ✅ | initialize_challenge_setup_screen | 0x415f50 | 662 | 167/167 | 100.00% | 167/167 | 37 ok |  |
 | ✅ | destroy_challenge_setup_screen | 0x4161f0 | 370 | 96/96 | 100.00% | 96/96 | 32 ok |  |
 | ✅ | update_challenge_setup_screen | 0x416370 | 1166 | 355/355 | 100.00% | 355/355 | 38 ok |  |
 | ✅ | initialize_help_screen | 0x416800 | 181 | 47/47 | 100.00% | 47/47 | 15 ok |  |
@@ -638,14 +639,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (29)
+## Near Match (95-99.99%) (28)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 429/429 | 99.30% | 55/429 | 1 mismatch, 49 ok |  |
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  |
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1156 | 331/332 | 98.34% | 111/332 | 26 ok |  |
-| 🚧 | initialize_challenge_setup_screen | 0x415f50 | 662 | 167/167 | 96.41% | 14/167 | 36 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 600/600 | 98.00% | 80/600 | 137 ok |  |
 | 🚧 | activate_landscape_entry | 0x418870 | 442 | 123/123 | 99.19% | 65/123 | 20 ok |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 197/197 | 95.43% | 58/197 | 26 ok |  |

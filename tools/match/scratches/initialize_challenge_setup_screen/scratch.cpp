@@ -18,10 +18,12 @@ void GUI::initialize_challenge_setup_screen()
         game->level_mode,
         game->level_mode_arg);
 
-    int mode = game->level_mode;
-    --mode;
-    if (mode != 0)
+    switch (game->level_mode) {
+    case 1:
+        break;
+    default:
         return;
+    }
 
     tColour difficulty_color;
     tColour speed_color;
