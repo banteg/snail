@@ -17,7 +17,7 @@
 #include "new_game_menu.h"
 #include "overlay.h"
 #include "options.h"
-#include "render_camera_slot.h"
+#include "viewport.h"
 #include "root_bod_catalog.h"
 #include "sprite.h"
 #include "star_manager.h"
@@ -33,7 +33,7 @@ enum {
 
 // Windows cRPlayer owns the front-end state machine and an embedded cRCamera.
 // GameRoot constructs two consecutive 0x1f8-byte players at +0x124; viewport
-// slots only borrow their camera subobjects at player +0xa0.
+// viewports only borrow their camera subobjects at player +0xa0.
 class GamePlayer : public RenderableBod {
 public:
     GamePlayer* initialize_game_player(); // @ 0x408000, cRPlayer constructor helper
@@ -98,10 +98,10 @@ public:
     };
     BodBase inactive_bod_sentinel; // +0x570, constructed root free-list sentinel
     BodList active_bod_list; // +0x5a8, root-owned active/free intrusive BOD anchor
-    RenderCameraSlot render_camera_slots[5]; // +0x5b4, owned fixed viewport array
-    Overlay overlay_0; // +0x67c, lends camera at +0x6fc to viewport slot 0
-    Overlay overlay_1; // +0x7c8, lends camera at +0x848 to viewport slot 2
-    Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport slot 3
+    Viewport viewports[5]; // +0x5b4, owned fixed cRViewport array
+    Overlay overlay_0; // +0x67c, lends camera at +0x6fc to viewport 0
+    Overlay overlay_1; // +0x7c8, lends camera at +0x848 to viewport 2
+    Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport 3
     RenderableBod root_noop_renderable; // +0xa60, callback has an empty AI slot
     char unknown_000ae0[0xb24 - 0xae0];
     Track track; // +0xb24, exact cRTrack owner with four track/slide pairs

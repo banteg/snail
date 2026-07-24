@@ -112,14 +112,14 @@ char GameRoot::initialize_game_assets_and_world()
     unknown_000b48 = 0;
     memset(g_sprite_depth_buckets, 0, sizeof(g_sprite_depth_buckets));
 
-    render_camera_slots[0].sort_key = 0;
-    render_camera_slots[0].flags = RENDER_SCENE_OVERLAY_0 | 3;
-    render_camera_slots[0].source = &overlay_0.camera;
-    render_camera_slots[0].viewport_x = 0.0f;
-    render_camera_slots[0].viewport_y = 0.0f;
-    render_camera_slots[0].viewport_width = 1.0f;
-    render_camera_slots[0].viewport_height = 1.0f;
-    render_camera_slots[2].draw_world = 0;
+    viewports[0].sort_key = 0;
+    viewports[0].flags = RENDER_SCENE_OVERLAY_0 | 3;
+    viewports[0].camera = &overlay_0.camera;
+    viewports[0].viewport_x = 0.0f;
+    viewports[0].viewport_y = 0.0f;
+    viewports[0].viewport_width = 1.0f;
+    viewports[0].viewport_height = 1.0f;
+    viewports[2].draw_world = 0;
     initialize_overlay_slot(&overlay_0);
 
     memset(g_directx_loader_scratch, 0, 0x15c);
@@ -148,32 +148,32 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.level_definition_scratch.load_builtin_segment_definitions(
         g_builtin_segment_definitions);
 
-    render_camera_slots[1].sort_key = 1;
-    render_camera_slots[1].flags = RENDER_SCENE_PLAYER_0 | 1;
-    render_camera_slots[1].attach_render_camera_source(&players[0].camera);
+    viewports[1].sort_key = 1;
+    viewports[1].flags = RENDER_SCENE_PLAYER_0 | 1;
+    viewports[1].attach_render_camera_source(&players[0].camera);
     players[0].camera.render_mask = RENDER_SCENE_PLAYER_0;
 
-    render_camera_slots[4].sort_key = 1;
-    render_camera_slots[4].flags = RENDER_SCENE_PLAYER_1 | 3;
-    render_camera_slots[4].attach_render_camera_source(&players[1].camera);
+    viewports[4].sort_key = 1;
+    viewports[4].flags = RENDER_SCENE_PLAYER_1 | 3;
+    viewports[4].attach_render_camera_source(&players[1].camera);
     players[1].camera.render_mask = RENDER_SCENE_PLAYER_1;
 
-    render_camera_slots[3].sort_key = 3;
-    render_camera_slots[3].flags = RENDER_SCENE_OVERLAY_2 | 3;
-    render_camera_slots[3].source = &overlay_2.camera;
-    render_camera_slots[3].viewport_x = 0.0f;
-    render_camera_slots[3].viewport_y = 0.0f;
-    render_camera_slots[3].viewport_width = 1.0f;
-    render_camera_slots[3].viewport_height = 1.0f;
+    viewports[3].sort_key = 3;
+    viewports[3].flags = RENDER_SCENE_OVERLAY_2 | 3;
+    viewports[3].camera = &overlay_2.camera;
+    viewports[3].viewport_x = 0.0f;
+    viewports[3].viewport_y = 0.0f;
+    viewports[3].viewport_width = 1.0f;
+    viewports[3].viewport_height = 1.0f;
     initialize_overlay_slot(&overlay_2);
 
-    render_camera_slots[2].sort_key = 2;
-    render_camera_slots[2].flags = RENDER_SCENE_OVERLAY_1 | 3;
-    render_camera_slots[2].source = &overlay_1.camera;
-    render_camera_slots[2].viewport_x = 0.0f;
-    render_camera_slots[2].viewport_y = 0.0f;
-    render_camera_slots[2].viewport_width = 1.0f;
-    render_camera_slots[2].viewport_height = 1.0f;
+    viewports[2].sort_key = 2;
+    viewports[2].flags = RENDER_SCENE_OVERLAY_1 | 3;
+    viewports[2].camera = &overlay_1.camera;
+    viewports[2].viewport_x = 0.0f;
+    viewports[2].viewport_y = 0.0f;
+    viewports[2].viewport_width = 1.0f;
+    viewports[2].viewport_height = 1.0f;
     initialize_overlay_slot(&overlay_1);
 
     register_font_texture_sheet_wrapper((char*)"Objects/Font/Font-menu-hover.tga", 2, 0.75f, 1.0f);

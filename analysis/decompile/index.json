@@ -1,48 +1,36 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 6,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 6,
-  "ida_exported": 6,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "ida_refreshed": true,
-  "health_check_ran": true,
+  "health_check_ran": false,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_loopbow_path_template_pair",
-      "address": "0x42ba80"
+      "name": "render_game_frame",
+      "address": "0x40a490"
     },
     {
-      "name": "initialize_cutscene",
-      "address": "0x4428d0"
+      "name": "initialize_game_assets_and_world",
+      "address": "0x40acf0"
     },
     {
-      "name": "update_cameraman",
-      "address": "0x4461d0"
+      "name": "attach_render_camera_source",
+      "address": "0x44e900"
     },
     {
-      "name": "multiply_matrix_assign",
-      "address": "0x44d1a0"
-    },
-    {
-      "name": "multiply_matrix",
-      "address": "0x44d1d0"
-    },
-    {
-      "name": "linear_interpolate_matrix",
-      "address": "0x44da90"
+      "name": "initialize_render_camera_slot",
+      "address": "0x44e920"
     }
-  ],
-  "health_check_count": 926,
-  "health_failing_check_count": 0,
-  "health_passed": true,
-  "health_config": "analysis/decompile/health_checks.json"
+  ]
 }

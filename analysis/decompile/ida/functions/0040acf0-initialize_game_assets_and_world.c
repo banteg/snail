@@ -363,14 +363,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->active_bod_list.first = nullptr;
   game->unknown_000b48 = 0;
   memset(g_sprite_depth_buckets, 0, sizeof(g_sprite_depth_buckets));
-  game->render_camera_slots[0].sort_key = 0;
-  game->render_camera_slots[0].flags = 16777219;
-  game->render_camera_slots[0].source = &game->overlay_0.camera;
-  game->render_camera_slots[0].viewport_x = 0.0;
-  game->render_camera_slots[0].viewport_y = 0.0;
-  game->render_camera_slots[0].viewport_width = 1.0;
-  game->render_camera_slots[0].viewport_height = 1.0;
-  game->render_camera_slots[2].draw_world = 0;
+  game->viewports[0].sort_key = 0;
+  game->viewports[0].flags = 16777219;
+  game->viewports[0].camera = &game->overlay_0.camera;
+  game->viewports[0].viewport_x = 0.0;
+  game->viewports[0].viewport_y = 0.0;
+  game->viewports[0].viewport_width = 1.0;
+  game->viewports[0].viewport_height = 1.0;
+  game->viewports[2].draw_world = 0;
   p_overlay_0 = &game->overlay_0;
   p_list_flags = &game->overlay_0.bod.bod.bod.list_flags;
   if ( (game->overlay_0.bod.bod.bod.list_flags & 0x200) != 0 )
@@ -421,21 +421,21 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   load_builtin_segment_definitions(
     &game->subgame.level_definition_scratch,
     (SubSegmentRaw **)&g_builtin_segment_definitions);
-  game->render_camera_slots[1].sort_key = 1;
-  game->render_camera_slots[1].flags = 33554433;
-  attach_render_camera_source(&game->render_camera_slots[1].unknown_00, (int)&game->players[0].camera);
+  game->viewports[1].sort_key = 1;
+  game->viewports[1].flags = 33554433;
+  attach_render_camera_source(&game->viewports[1], &game->players[0].camera);
   game->players[0].camera.render_mask = 0x2000000;
-  game->render_camera_slots[4].sort_key = 1;
-  game->render_camera_slots[4].flags = 268435459;
-  attach_render_camera_source(&game->render_camera_slots[4].unknown_00, (int)&game->players[1].camera);
+  game->viewports[4].sort_key = 1;
+  game->viewports[4].flags = 268435459;
+  attach_render_camera_source(&game->viewports[4], &game->players[1].camera);
   game->players[1].camera.render_mask = 0x10000000;
-  game->render_camera_slots[3].sort_key = 3;
-  game->render_camera_slots[3].flags = 134217731;
-  game->render_camera_slots[3].source = &game->overlay_2.camera;
-  game->render_camera_slots[3].viewport_x = 0.0;
-  game->render_camera_slots[3].viewport_y = 0.0;
-  game->render_camera_slots[3].viewport_width = 1.0;
-  game->render_camera_slots[3].viewport_height = 1.0;
+  game->viewports[3].sort_key = 3;
+  game->viewports[3].flags = 134217731;
+  game->viewports[3].camera = &game->overlay_2.camera;
+  game->viewports[3].viewport_x = 0.0;
+  game->viewports[3].viewport_y = 0.0;
+  game->viewports[3].viewport_width = 1.0;
+  game->viewports[3].viewport_height = 1.0;
   p_overlay_2 = &game->overlay_2;
   edge_selector = &game->overlay_2.bod.bod.bod.list_flags;
   if ( (game->overlay_2.bod.bod.bod.list_flags & 0x200) != 0 )
@@ -465,14 +465,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     *edge_selector = v12;
   }
   initialize_overlay((int)&game->overlay_2);
-  game->render_camera_slots[2].sort_key = 2;
-  game->render_camera_slots[2].flags = 67108867;
-  game->render_camera_slots[2].source = &game->overlay_1.camera;
-  game->render_camera_slots[2].viewport_x = 0.0;
-  game->render_camera_slots[2].viewport_y = 0.0;
+  game->viewports[2].sort_key = 2;
+  game->viewports[2].flags = 67108867;
+  game->viewports[2].camera = &game->overlay_1.camera;
+  game->viewports[2].viewport_x = 0.0;
+  game->viewports[2].viewport_y = 0.0;
   p_overlay_1 = &game->overlay_1;
-  game->render_camera_slots[2].viewport_width = 1.0;
-  game->render_camera_slots[2].viewport_height = 1.0;
+  game->viewports[2].viewport_width = 1.0;
+  game->viewports[2].viewport_height = 1.0;
   edge_selectora = &game->overlay_1.bod.bod.bod.list_flags;
   if ( (game->overlay_1.bod.bod.bod.list_flags & 0x200) != 0 )
   {
@@ -3083,7 +3083,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   v300->flags = v301;
   do
   {
-    add_bod_to_front(&game->active_bod_list.unknown_00, (int)&p_input[-1]);
+    add_bod_to_front(&game->active_bod_list, (BodNode *)&p_input[-1]);
     p_input->controller_slot = v303;
     initialize_input(p_input);
     ++v303;
@@ -3141,14 +3141,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.selected_level_record_persistent = 0;
   game->subgame.selected_level_record_active = 0;
   initialize_tip_manager(&game->tip_manager);
-  add_bod_to_front(&game->active_bod_list.unknown_00, (int)&game->tip_manager);
-  add_bod_to_front(&g_game_base->active_bod_list.unknown_00, (int)&game->star_manager);
+  add_bod_to_front(&game->active_bod_list, &game->tip_manager.bod.bod);
+  add_bod_to_front(&g_game_base->active_bod_list, &game->star_manager.bod.bod);
   open_star_field(&game->star_manager, 36);
   game->subgame.bottom_score_widget = nullptr;
   game->subgame.top_score_widget = nullptr;
-  add_bod_to_front(&game->active_bod_list.unknown_00, (int)&game->backdrop);
+  add_bod_to_front(&game->active_bod_list, (BodNode *)&game->backdrop);
   game->backdrop.backdrop_render_enabled = 0;
-  append_bod_to_end(&game->active_bod_list.unknown_00, &game->border_manager.vtable);
+  append_bod_to_end(&game->active_bod_list, (BodNode *)&game->border_manager);
   initialize_border_stack(&game->border_manager.border_stack.generation);
   game->border_manager.border_stack.owner = &game->border_manager;
   game->border_manager.delayed_widget_active = 0;

@@ -2,7 +2,7 @@
 #ifndef OVERLAY_H
 #define OVERLAY_H
 
-#include "render_camera_slot.h"
+#include "viewport.h"
 
 class Overlay : public RenderableBod {
 public:

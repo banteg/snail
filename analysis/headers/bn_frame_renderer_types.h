@@ -177,7 +177,9 @@ typedef struct GamePlayer {
     uint8_t unknown_1f4[0x04];
 } GamePlayer;
 
-typedef struct FrameRenderCameraSlot {
+// Mobile symbols retain the original cRViewport owner name. Windows embeds
+// five 0x28-byte records and borrows each camera pointer at +0x20.
+typedef struct Viewport {
     int32_t unknown_00;
     int32_t sort_key;
     uint32_t flags;
@@ -186,10 +188,10 @@ typedef struct FrameRenderCameraSlot {
     float viewport_width;
     float viewport_height;
     float unknown_1c;
-    FrameRenderCamera* source;
+    FrameRenderCamera* camera;
     uint8_t draw_world;
     uint8_t unknown_25[0x3];
-} FrameRenderCameraSlot;
+} Viewport;
 
 typedef struct FrameContactTargetRegistry {
     int32_t count;
@@ -336,7 +338,7 @@ typedef struct GameRoot {
     int32_t render_skip_count;
     FrameBodBase inactive_bod_sentinel;
     BodList active_bod_list;
-    FrameRenderCameraSlot render_camera_slots[5];
+    Viewport viewports[5];
     FrameOverlay overlay_0;
     FrameOverlay overlay_1;
     FrameOverlay overlay_2;

@@ -42,7 +42,7 @@ EXPECTED_OWNER_SIZES = {
     "FrameRenderableBod": 0x80,
     "FrameRenderCamera": 0xC8,
     "FrameOverlay": 0x14C,
-    "FrameRenderCameraSlot": 0x28,
+    "Viewport": 0x28,
     "Track": 0x24,
     "BorderStackEntry": 0x8,
     "BorderStack": 0x64C,
@@ -50,6 +50,13 @@ EXPECTED_OWNER_SIZES = {
     "BorderManager": 0x435B4,
     "GameRoot": 0x12E6FF4,
 }
+
+VIEWPORT_EXPECTED_MEMBERS = (
+    (0x20, 4, "camera", "FrameRenderCamera *"),
+)
+GAME_ROOT_VIEWPORT_EXPECTED_MEMBERS = (
+    (0x5B4, 0xC8, "viewports", "Viewport[5]"),
+)
 
 DEPENDENCY_HEADER_NAMES = (
     "object_render_types.h",
@@ -69,6 +76,8 @@ TRUSTED_NAMES = [
     (0x44C3B0, "is_mouse_captured"),
     (0x44C3C0, "capture_mouse_cursor"),
     (0x44C400, "release_mouse_cursor"),
+    (0x44E900, "attach_render_camera_source"),
+    (0x44E920, "initialize_render_camera_slot"),
     (0x4972F4, "g_game_player_callback_table"),
     (0x4DFB10, "g_post_sprite_bods"),
     (0x4E5510, "g_sprite_depth_nodes"),
@@ -146,6 +155,15 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     (
         "release_mouse_cursor",
         "void __thiscall release_mouse_cursor(MouseCursorState *mouse);",
+    ),
+    (
+        "attach_render_camera_source",
+        "int32_t __thiscall attach_render_camera_source("
+        "Viewport *viewport, FrameRenderCamera *camera);",
+    ),
+    (
+        "initialize_render_camera_slot",
+        "Viewport *__thiscall initialize_render_camera_slot(Viewport *viewport);",
     ),
     (
         "initialize_game_assets_and_world",
@@ -264,6 +282,66 @@ def _named_struct_size(name: str) -> int | None:
     if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
         return None
     return value.get_size()
+
+
+def _named_struct_members(name: str) -> list[dict[str, object]] | None:
+    owner = ida_typeinf.tinfo_t()
+    if not owner.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
+        return None
+    members = ida_typeinf.udt_type_data_t()
+    if not owner.get_udt_details(members):
+        return None
+    return [
+        {
+            "offset": int(member.offset) // 8,
+            "size": int(member.size) // 8,
+            "name": member.name,
+            "type": _normalize_type_text(member.type.dstr()),
+        }
+        for member in members
+    ]
+
+
+def _selected_member_readback(
+    owner_name: str,
+    expected: tuple[tuple[int, int, str, str], ...],
+) -> tuple[tuple[int, int, str, str], ...]:
+    members = _named_struct_members(owner_name)
+    if members is None:
+        return ()
+    expected_offsets = {member[0] for member in expected}
+    return tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in members
+        if int(member["offset"]) in expected_offsets
+    )
+
+
+def _viewport_owner_readback() -> dict[str, object]:
+    viewport_members = _selected_member_readback(
+        "Viewport", VIEWPORT_EXPECTED_MEMBERS
+    )
+    root_members = _selected_member_readback(
+        "GameRoot", GAME_ROOT_VIEWPORT_EXPECTED_MEMBERS
+    )
+    verified = (
+        _named_struct_size("Viewport") == 0x28
+        and viewport_members == VIEWPORT_EXPECTED_MEMBERS
+        and root_members == GAME_ROOT_VIEWPORT_EXPECTED_MEMBERS
+    )
+    return {
+        "status": "verified" if verified else "failed",
+        "viewport_size": _named_struct_size("Viewport"),
+        "viewport_members": viewport_members,
+        "expected_viewport_members": VIEWPORT_EXPECTED_MEMBERS,
+        "game_root_members": root_members,
+        "expected_game_root_members": GAME_ROOT_VIEWPORT_EXPECTED_MEMBERS,
+    }
 
 
 def _sync_draw_sprite_vertex_lvar() -> dict[str, object]:
@@ -613,6 +691,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in dependency_parse_results
         if result["parse_errors"] != 0
     )
+    viewport_owner_readback = _viewport_owner_readback()
+    if viewport_owner_readback["status"] != "verified":
+        failed.append(
+            {
+                "selector": "Viewport",
+                "reason": "owner_readback_failed",
+                "readback": viewport_owner_readback,
+            }
+        )
 
     for address, name in TRUSTED_NAMES:
         if idc.get_name(address) == name:
@@ -714,10 +801,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
     invalidated_cfuncs = {
         selector: _invalidate_cfunc(selector)
         for selector in (
+            "construct_game_runtime",
+            "initialize_game_assets_and_world",
             "configure_sprite_render_state",
             "draw_sprite_quad",
             "update_sprite_facing_angle",
             "render_game_frame",
+            "attach_render_camera_source",
+            "initialize_render_camera_slot",
             *BORDER_KILL_REANALYSIS_FUNCTIONS,
         )
     }
@@ -766,6 +857,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "dependency_headers": dependency_parse_results,
                 "parse_errors": parse_errors,
                 "owner_sizes": owner_sizes,
+                "viewport_owner_readback": viewport_owner_readback,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

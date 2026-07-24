@@ -2,8 +2,8 @@
 
 Relationship-first scratch for the frame renderer at `0x40a490`.
 
-Current Wibo result after the frame-ledger and viewport-cursor source-shape
-slice: 56.22%, 429 candidate instructions versus 439 target instructions, with
+Current Wibo result after the original viewport-owner replay:
+56.16%, 430 candidate instructions versus 439 target instructions, with
 a 6-instruction exact prefix, 26 masked operands ok, 0 unresolved, and 0
 mismatch. The helper calls at `0x414650`, `0x413540`, `0x413650`, `0x411e10`,
 and `0x411de0` resolve to standalone exact scratches.
@@ -17,17 +17,17 @@ Recovered relationships:
 
 - `Game +0x56c` is a render-skip countdown; positive values decrement and
   return before any render state is touched.
-- Five `RenderCameraSlot` entries live at `Game +0x5b4`, are filtered by
+- Five `Viewport` entries live at `Game +0x5b4`, are filtered by
   `flags & 1`, and each active slot controls a render-camera pass. The native
   fixed-five ordering loop is not a conventional insertion sort: the first
   active slot seeds the list, later slots are inserted only when their
   `sort_key` exceeds an occupied entry, and the shift always starts at slot 4.
-- The borrowed `RenderCamera*` at `RenderCameraSlot +0x20` inherits
+- The borrowed `RenderCamera*` at `Viewport +0x20` inherits
   `RenderableBod`, so its world camera matrix is the inherited transform at
   `+0x38`; an 8-byte gap is followed by its view matrix at `+0x80`, float FOV
   in degrees at `+0xc0`, and render mask at `+0xc4`.
 - `Game +0x5e4` is not a standalone renderer flag: it is
-  `render_camera_slots[1].flags`, whose high render-mask byte is forced to
+  `viewports[1].flags`, whose high render-mask byte is forced to
   `0x02` before the passes.
 - `Game +0x5ac` is the active BOD/render object list walked before sprites
   unless the slot has `flags & 2`.
@@ -143,7 +143,7 @@ clean.
 ## 2026-07-14 camera-slot extent derivation
 
 The two viewport scans, local order buffer, and insertion-sort tail now derive
-their capacity and final index from `GameRoot::render_camera_slots`. The
+their capacity and final index from `GameRoot::viewports`. The
 manual five-store buffer initialization remains intact because it is part of
 the accepted VC6 source shape; only duplicated extent literals are removed.
 The normalized candidate listing remains byte-identical
@@ -211,7 +211,7 @@ owner with a renderer-local projection.
 The camera-pass register remains intentionally raw. Native code keeps
 `game + camera_index * 0x28`, a pre-biased containing-root cursor, then reaches
 the slot at `+0x5b4`. Treating that register as either `GameRoot*` or
-`FrameRenderCameraSlot*` would require an overlapping anchor with false base
+`Viewport*` would require an overlapping anchor with false base
 semantics. The replay therefore persists the real slot layout but does not
 fakematch the compiler cursor.
 
@@ -244,9 +244,9 @@ Before reverse replay, the staged count clears and the snapshot is added to the
 total ledger. This is the native control flow at `0x40a989..0x40a99f`, not a
 synthetic alias introduced for code generation.
 
-Removing the persistent local `RenderCameraSlot*` and `RenderCamera*` views was
+Removing the persistent local `Viewport*` and `RenderCamera*` views was
 the complementary ownership correction. The authored expression indexes the
-root-owned `render_camera_slots` array at each use; VC6 consequently selects
+root-owned `viewports` array at each use; VC6 consequently selects
 the native camera index in `EBX` and keeps `EBP` as the pre-biased containing-
 root cursor (`game + camera_index * 0x28`). The real ledgers then fit in the
 native `0x80` frame without overlap tricks. The two fixed-five scans use
@@ -269,3 +269,13 @@ The IDA replay now loads its rich Object and canonical BOD dependencies before
 the narrow frame header and invalidates only the owned renderer caches, so the
 tracked `Object::animation` relationship cannot remain hidden behind stale
 pseudocode.
+
+## 2026-07-24 cRViewport owner naming
+
+The root array and renderer expressions now use `viewports`, matching the
+retained Android/iOS `cRViewport` class rather than the provisional
+render-camera-slot label. Each viewport owns its ordering, render flags,
+normalized rectangle, and draw-world state while borrowing one
+`RenderCamera*` at `+0x20`. This relationship-only source change preserves the
+current 56.16% renderer match and does not guess the constructor-only
+`unknown_1c` lane.

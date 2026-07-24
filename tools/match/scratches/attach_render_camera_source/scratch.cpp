@@ -1,10 +1,10 @@
 // attach_render_camera_source @ 0x44e900 (thiscall, ret 0x4)
 
-#include "render_camera_slot.h"
+#include "viewport.h"
 
-int RenderCameraSlot::attach_render_camera_source(RenderCamera* source_)
+int Viewport::attach_render_camera_source(RenderCamera* camera_)
 {
-    source = source_;
+    camera = camera_;
     int result = flags;
     result |= 1;
     flags = result;

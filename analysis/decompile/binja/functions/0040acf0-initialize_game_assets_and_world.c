@@ -28,14 +28,14 @@
 0040adc1        game->active_bod_list.first = nullptr
 0040add3        game->unknown_000b48 = 0
 0040add9        __builtin_memset(&g_sprite_depth_buckets, 0, 0x400)
-0040addb        game->render_camera_slots[0].sort_key = 0
-0040ade7        game->render_camera_slots[0].flags = 0x1000003
-0040adf1        game->render_camera_slots[0].source = &game->overlay_0.camera
-0040adf7        game->render_camera_slots[0].viewport_x = 0f
-0040adfd        game->render_camera_slots[0].viewport_y = 0f
-0040ae03        game->render_camera_slots[0].viewport_width = 1f
-0040ae09        game->render_camera_slots[0].viewport_height = 1f
-0040ae15        game->render_camera_slots[2].draw_world = 0
+0040addb        game->viewports[0].sort_key = 0
+0040ade7        game->viewports[0].flags = 0x1000003
+0040adf1        game->viewports[0].camera = &game->overlay_0.camera
+0040adf7        game->viewports[0].viewport_x = 0f
+0040adfd        game->viewports[0].viewport_y = 0f
+0040ae03        game->viewports[0].viewport_width = 1f
+0040ae09        game->viewports[0].viewport_height = 1f
+0040ae15        game->viewports[2].draw_world = 0
 0040ae26        if (((game->overlay_0.bod.bod.bod.list_flags).w:1.b & 2) == 0)
 0040ae3d        struct BodNode** ecx_7 = &g_game_base->active_bod_list.first
 0040ae43        struct BodNode* first_5 = (ecx_7 - 0x5ac)->active_bod_list.first
@@ -73,21 +73,21 @@
 0040af3c        load_level_definitions(&game->subgame.sm_tracks)
 0040af52        load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "Menubg.txt")
 0040af62        load_builtin_segment_definitions(&game->subgame.level_definition_scratch, &data_4a63d0)
-0040af72        game->render_camera_slots[1].sort_key = 1
-0040af7f        game->render_camera_slots[1].flags = 0x2000001
-0040af89        attach_render_camera_source(&game->render_camera_slots[1], &game->players[0].camera)
+0040af72        game->viewports[1].sort_key = 1
+0040af7f        game->viewports[1].flags = 0x2000001
+0040af89        attach_render_camera_source(&game->viewports[1], &game->players[0].camera)
 0040af94        game->players[0].camera.render_mask = 0x2000000
-0040af9f        game->render_camera_slots[4].sort_key = 1
-0040afab        game->render_camera_slots[4].flags = 0x10000003
-0040afb5        attach_render_camera_source(&game->render_camera_slots[4], &game->players[1].camera)
+0040af9f        game->viewports[4].sort_key = 1
+0040afab        game->viewports[4].flags = 0x10000003
+0040afb5        attach_render_camera_source(&game->viewports[4], &game->players[1].camera)
 0040afba        game->players[1].camera.render_mask = 0x10000000
-0040afc4        game->render_camera_slots[3].sort_key = 3
-0040afd4        game->render_camera_slots[3].flags = 0x8000003
-0040afde        game->render_camera_slots[3].source = &game->overlay_2.camera
-0040afe4        game->render_camera_slots[3].viewport_x = 0f
-0040afef        game->render_camera_slots[3].viewport_y = 0f
-0040aff5        game->render_camera_slots[3].viewport_width = 1f
-0040b001        game->render_camera_slots[3].viewport_height = 1f
+0040afc4        game->viewports[3].sort_key = 3
+0040afd4        game->viewports[3].flags = 0x8000003
+0040afde        game->viewports[3].camera = &game->overlay_2.camera
+0040afe4        game->viewports[3].viewport_x = 0f
+0040afef        game->viewports[3].viewport_y = 0f
+0040aff5        game->viewports[3].viewport_width = 1f
+0040b001        game->viewports[3].viewport_height = 1f
 0040b016        if (((game->overlay_2.bod.bod.bod.list_flags).w:1.b & 2) == 0)
 0040b02d        struct Overlay** ecx_30 = &g_game_base->active_bod_list.first
 0040b033        struct Overlay* edx_4 = *ecx_30
@@ -106,13 +106,13 @@
 0040b063        (&game->overlay_2 - 0x914)->overlay_2.bod.bod.bod.list_flags = list_flags_10
 0040b01d        report_errorf("List ADD")
 0040b067        initialize_overlay(&game->overlay_2)
-0040b06c        game->render_camera_slots[2].sort_key = 2
-0040b07c        game->render_camera_slots[2].flags = 0x4000003
-0040b086        game->render_camera_slots[2].source = &game->overlay_1.camera
-0040b092        game->render_camera_slots[2].viewport_x = 0f
-0040b09d        game->render_camera_slots[2].viewport_y = 0f
-0040b0a5        game->render_camera_slots[2].viewport_width = 1f
-0040b0ab        game->render_camera_slots[2].viewport_height = 1f
+0040b06c        game->viewports[2].sort_key = 2
+0040b07c        game->viewports[2].flags = 0x4000003
+0040b086        game->viewports[2].camera = &game->overlay_1.camera
+0040b092        game->viewports[2].viewport_x = 0f
+0040b09d        game->viewports[2].viewport_y = 0f
+0040b0a5        game->viewports[2].viewport_width = 1f
+0040b0ab        game->viewports[2].viewport_height = 1f
 0040b0be        if (((game->overlay_1.bod.bod.bod.list_flags).w:1.b & 2) == 0)
 0040b0cf        struct GameRoot* game_base_1 = g_game_base
 0040b0db        struct BodNode* first_4 = game_base_1->active_bod_list.first
@@ -361,16 +361,16 @@
 0040bf85        list_flags_1:1.b |= 2
 0040bf88        game->subgame.track_body_list_head.bod.list_flags = list_flags_1
 0040bf47        report_errorf("List ADD")
-0040bf9a        if (((game->subgame.barrier_sub_lazer_list_head.bod.list_flags).w:1.b & 2) == 0)
-0040bfab        game->subgame.barrier_sub_lazer_list_head.bod.list_prev = &game->subgame.track_body_list_head
-0040bfb1        game->subgame.barrier_sub_lazer_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next
-0040bfb4        game->subgame.track_body_list_head.bod.list_next = &game->subgame.barrier_sub_lazer_list_head
-0040bfb7        struct BodNode* list_next_7 = game->subgame.barrier_sub_lazer_list_head.bod.list_next
+0040bf9a        if (((game->subgame.sub_lazer_list_head.bod.list_flags).w:1.b & 2) == 0)
+0040bfab        game->subgame.sub_lazer_list_head.bod.list_prev = &game->subgame.track_body_list_head
+0040bfb1        game->subgame.sub_lazer_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next
+0040bfb4        game->subgame.track_body_list_head.bod.list_next = &game->subgame.sub_lazer_list_head
+0040bfb7        struct BodNode* list_next_7 = game->subgame.sub_lazer_list_head.bod.list_next
 0040bfbc        if (list_next_7 != 0)
-0040bfbe        list_next_7->list_prev = &game->subgame.barrier_sub_lazer_list_head
-0040bfc1        uint32_t list_flags_2 = (&game->subgame.barrier_sub_lazer_list_head - 0x3ca1ec)->subgame.barrier_sub_lazer_list_head.bod.list_flags
+0040bfbe        list_next_7->list_prev = &game->subgame.sub_lazer_list_head
+0040bfc1        uint32_t list_flags_2 = (&game->subgame.sub_lazer_list_head - 0x3ca1ec)->subgame.sub_lazer_list_head.bod.list_flags
 0040bfc3        list_flags_2:1.b |= 2
-0040bfc6        (&game->subgame.barrier_sub_lazer_list_head - 0x3ca1ec)->subgame.barrier_sub_lazer_list_head.bod.list_flags = list_flags_2
+0040bfc6        (&game->subgame.sub_lazer_list_head - 0x3ca1ec)->subgame.sub_lazer_list_head.bod.list_flags = list_flags_2
 0040bfa1        report_errorf("List ADDafter")
 0040bfd7        if (((game->subgame.salt_hazard_list_head.bod.list_flags).w:1.b & 2) == 0)
 0040bfe8        game->subgame.salt_hazard_list_head.bod.list_prev = &game->subgame.track_body_list_head
@@ -1901,7 +1901,7 @@
 00410082        flags_4:1.b |= 4
 00410085        int32_t i_2 = 0
 00410087        eax_355->flags = flags_4
-00410093        sub_4113b0(&game->active_bod_list, state - 0x38)
+00410093        add_bod_to_front(&game->active_bod_list, state - 0x38)
 0041009a        state->controller_slot = i_2
 0041009c        initialize_input(state)
 004100a1        i_2 += 1
@@ -1935,18 +1935,18 @@
 00410202        game->subgame.selected_level_record_persistent = 0
 0041020a        game->subgame.selected_level_record_active = 0
 00410210        initialize_tip_manager(&game->tip_manager)
-0041021e        sub_4113b0(&game->active_bod_list, &game->tip_manager)
-00410235        sub_4113b0(&g_game_base->active_bod_list, &game->star_manager)
+0041021e        add_bod_to_front(&game->active_bod_list, &game->tip_manager)
+00410235        add_bod_to_front(&g_game_base->active_bod_list, &game->star_manager)
 0041023e        open_star_field(&game->star_manager, 0x24)
 00410249        game->subgame.bottom_score_widget = nullptr
 00410252        game->subgame.top_score_widget = nullptr
-00410258        sub_4113b0(&game->active_bod_list, &game->backdrop)
+00410258        add_bod_to_front(&game->active_bod_list, &game->backdrop)
 00410266        game->backdrop.backdrop_render_enabled = 0
-0041026c        sub_411420(&game->active_bod_list, &game->border_manager)
+0041026c        append_bod_to_end(&game->active_bod_list, &game->border_manager.vtable)
 00410277        MemBlock::`default constructor closure'(&game->border_manager.border_stack)
-0041027c        game->border_manager.border_stack.owner = &game->border_manager
+0041027c        game->border_manager.border_stack.owner = &game->border_manager.vtable
 00410289        game->border_manager.delayed_widget_active = 0
-0041028f        set_border_justify_centre(&game->border_manager, 25f)
+0041028f        set_border_justify_centre(&game->border_manager.vtable, 25f)
 00410294        int32_t* eax_366 = &game->border_manager.borders[0].flags
 0041029a        int32_t i_4 = 0x96
 004102a7        int32_t i_3

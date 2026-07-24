@@ -152,7 +152,10 @@ intentional.
     lifecycle/render receiver contracts into IDA as well as Binary Ninja.
 - `bn_frame_renderer_types.h`
 - `uv run python tools/binja/sync_frame_renderer_types.py`
-  - Promotes the complete `BorderManager` owner when available, including its
+  - Replays the original cross-port `Viewport` owner for the five root camera
+    passes, including the borrowed camera field and exact constructor/setter
+    ABIs, while leaving constructor-only fields conservative. It also promotes
+    the complete `BorderManager` owner when available, including its
     final `float justify_centre` field and the exact void
     `SetJustifyCentre(float)` ABI. It also preserves the cross-port-authored
     `Track` (`cRTrack`) root subobject and the void `Change(int)` receiver ABI.

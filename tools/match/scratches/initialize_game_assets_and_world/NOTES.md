@@ -1070,3 +1070,13 @@ Windows `0x10` extent ending at the independently named
 `g_animation_directory`. The checked-in matcher already used the canonical
 owner; its lifecycle ABI is now void without changing the initializer's
 80.50%, 5,392/5,411 instruction receipt or 1,639 clean operands.
+
+## 2026-07-24 original viewport and camera loans
+
+The five root records at `+0x5b4` now use their cross-port `Viewport`
+(`cRViewport`) owner, and the member at `+0x20` is the borrowed `camera`
+installed by `cRViewport::SetCamera(cRCamera*)`. Binary Ninja already recovered
+the whole-record callsites; the strict IDA replay now proves the same
+`Viewport[5]` root member and helper prototypes instead of rendering the calls
+through `unknown_00`. No meaning is assigned to that untouched first dword.
+The matcher remains honestly at 80.50%, 5,392/5,411 instructions.

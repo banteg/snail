@@ -3701,6 +3701,48 @@ def test_frame_replays_preserve_window_bootstrap_abi() -> None:
     assert 're.sub(r"\\b(?:struct|union|enum)\\s+", "", normalized)' in ida_source
 
 
+def test_viewport_owner_and_borrowed_camera_are_replayed_cross_decompiler() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (repo_root / "tools/match/include/viewport.h").read_text(
+        encoding="utf-8"
+    )
+    game_root_header = (repo_root / "tools/match/include/game_root.h").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_frame_renderer_types.h", "frame_renderer_types.h")
+    )
+    binja_sync = (BINJA_DIR / "sync_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class Viewport" in matcher_header
+    assert "RenderCamera* camera;" in matcher_header
+    assert "int unknown_00;" in matcher_header
+    assert "float unknown_1c;" in matcher_header
+    assert "Viewport viewports[5];" in game_root_header
+
+    for header in analysis_headers:
+        assert "typedef struct Viewport {" in header
+        assert "FrameRenderCamera* camera;" in header
+        assert "Viewport viewports[5];" in header
+        assert "FrameRenderCameraSlot" not in header
+
+    for source in (binja_sync, ida_sync):
+        assert "attach_render_camera_source" in source
+        assert "initialize_render_camera_slot" in source
+        assert "Viewport" in source
+    assert '("0x5b4", "viewports", "Viewport[5]")' in binja_sync
+    assert '("0x20", "camera", "FrameRenderCamera*")' in binja_sync
+    assert "VIEWPORT_EXPECTED_MEMBERS" in ida_sync
+    assert "GAME_ROOT_VIEWPORT_EXPECTED_MEMBERS" in ida_sync
+    assert '"viewport_owner_readback": viewport_owner_readback' in ida_sync
+
+
 def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownership() -> None:
     repo_root = Path(__file__).parents[1]
     binja_source = (BINJA_DIR / "sync_input_state_types.py").read_text(

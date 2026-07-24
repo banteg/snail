@@ -3,7 +3,7 @@
 #include "bod_types.h"
 #include "border_manager.h"
 #include "game_root.h"
-#include "render_camera_slot.h"
+#include "viewport.h"
 #include "runtime_slot.h"
 #include "sprite.h"
 
@@ -93,14 +93,14 @@ __forceinline GameRootAllocation::GameRootAllocation()
 
         root->inactive_bod_sentinel.initialize_bod_base();
 
-        RenderCameraSlot* camera = &root->render_camera_slots[0];
-        int camera_count =
-            sizeof(root->render_camera_slots) / sizeof(root->render_camera_slots[0]);
+        Viewport* viewport = &root->viewports[0];
+        int viewport_count =
+            sizeof(root->viewports) / sizeof(root->viewports[0]);
         do {
-            camera->initialize_render_camera_slot();
-            ++camera;
-            --camera_count;
-        } while (camera_count);
+            viewport->initialize_render_camera_slot();
+            ++viewport;
+            --viewport_count;
+        } while (viewport_count);
 
         Overlay* overlay = &root->overlay_0;
         overlay->initialize_renderable_bod();

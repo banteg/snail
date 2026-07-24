@@ -48,7 +48,7 @@ REQUIRED_STRUCTS = (
     "FrameRenderableBod",
     "FrameRenderCamera",
     "FrameOverlay",
-    "FrameRenderCameraSlot",
+    "Viewport",
     "FrameContactTargetRegistry",
     "FrameSubgameRuntime",
     "Track",
@@ -77,6 +77,8 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x44c3c0", "capture_mouse_cursor"),
     ("0x44c400", "release_mouse_cursor"),
     ("0x44e410", "update_sprite_facing_angle"),
+    ("0x44e900", "attach_render_camera_source"),
+    ("0x44e920", "initialize_render_camera_slot"),
 )
 
 DATA_VAR_UPDATES = (
@@ -116,6 +118,15 @@ PROTO_UPDATES = (
     (
         "release_mouse_cursor",
         "void __thiscall release_mouse_cursor(MouseCursorState* mouse)",
+    ),
+    (
+        "attach_render_camera_source",
+        "int32_t __thiscall attach_render_camera_source("
+        "Viewport* viewport, FrameRenderCamera* camera)",
+    ),
+    (
+        "initialize_render_camera_slot",
+        "Viewport* __thiscall initialize_render_camera_slot(Viewport* viewport)",
     ),
     (
         "run_frame_update",
@@ -185,7 +196,7 @@ FRAME_RENDER_CAMERA_FIELD_UPDATES = (
     ("0xc4", "render_mask", "uint32_t"),
 )
 
-FRAME_RENDER_CAMERA_SLOT_FIELD_UPDATES = (
+VIEWPORT_FIELD_UPDATES = (
     ("0x00", "unknown_00", "int32_t"),
     ("0x04", "sort_key", "int32_t"),
     ("0x08", "flags", "uint32_t"),
@@ -194,7 +205,7 @@ FRAME_RENDER_CAMERA_SLOT_FIELD_UPDATES = (
     ("0x14", "viewport_width", "float"),
     ("0x18", "viewport_height", "float"),
     ("0x1c", "unknown_1c", "float"),
-    ("0x20", "source", "FrameRenderCamera*"),
+    ("0x20", "camera", "FrameRenderCamera*"),
     ("0x24", "draw_world", "uint8_t"),
     ("0x25", "unknown_25", "uint8_t[3]"),
 )
@@ -391,7 +402,7 @@ GAME_ROOT_FIELD_UPDATES = (
     ("0x56c", "render_skip_count", "int32_t"),
     ("0x570", "inactive_bod_sentinel", "FrameBodBase"),
     ("0x5a8", "active_bod_list", "BodList"),
-    ("0x5b4", "render_camera_slots", "FrameRenderCameraSlot[5]"),
+    ("0x5b4", "viewports", "Viewport[5]"),
     ("0x67c", "overlay_0", "FrameOverlay"),
     ("0x7c8", "overlay_1", "FrameOverlay"),
     ("0x914", "overlay_2", "FrameOverlay"),
@@ -595,7 +606,7 @@ def main() -> int:
                 ("MouseCursorState", MOUSE_CURSOR_FIELD_UPDATES),
                 ("FrontendOverlayColorLerp", FRONTEND_OVERLAY_FIELD_UPDATES),
                 ("FrameRenderCamera", FRAME_RENDER_CAMERA_FIELD_UPDATES),
-                ("FrameRenderCameraSlot", FRAME_RENDER_CAMERA_SLOT_FIELD_UPDATES),
+                ("Viewport", VIEWPORT_FIELD_UPDATES),
                 ("SpriteDepthNode", SPRITE_DEPTH_NODE_FIELD_UPDATES),
                 ("GamePlayer", GAME_PLAYER_FIELD_UPDATES),
                 ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
@@ -637,7 +648,14 @@ def main() -> int:
         reanalyze_functions(
             REPO_ROOT,
             target=args.target,
-            identifiers=BORDER_KILL_REANALYSIS_FUNCTIONS,
+            identifiers=(
+                "construct_game_runtime",
+                "initialize_game_assets_and_world",
+                "render_game_frame",
+                "attach_render_camera_source",
+                "initialize_render_camera_slot",
+                *BORDER_KILL_REANALYSIS_FUNCTIONS,
+            ),
         )
     )
     return emit_summary(

@@ -3991,11 +3991,11 @@
       "name": "bn_game_initializer_root_ownership",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
-        "game->render_camera_slots[0].source = &game->overlay_0.camera",
+        "game->viewports[0].camera = &game->overlay_0.camera",
         "initialize_overlay(&game->overlay_0)",
-        "game->render_camera_slots[3].source = &game->overlay_2.camera",
+        "game->viewports[3].camera = &game->overlay_2.camera",
         "initialize_overlay(&game->overlay_2)",
-        "game->render_camera_slots[2].source = &game->overlay_1.camera",
+        "game->viewports[2].camera = &game->overlay_1.camera",
         "initialize_overlay(&game->overlay_1)",
         "initialize_directx_loader(&game->directx_loader)",
         "game->directx_loader.animation_bytes",
@@ -4008,7 +4008,7 @@
         "game->intro.hide_for_replay_latch = 0",
         "apply_audio_config_volumes(&game->options)",
         "open_logo(&game->logo)",
-        "sub_4113b0(&g_game_base->active_bod_list, &game->star_manager)",
+        "add_bod_to_front(&g_game_base->active_bod_list, &game->star_manager)",
         "open_star_field(&game->star_manager, 0x24)",
         "store_color4f(&game->fog_color",
         "game->fog_density = 1f",
@@ -4038,6 +4038,8 @@
         "game->__offset(0x4f33c)",
         "game->__offset(0x4f388)",
         "game->__offset(0x4f400)",
+        "render_camera_slots",
+        "FrameRenderCameraSlot",
         ".object + 0x14",
         ".object + 0x5c",
         "game->texture_set_selector",
@@ -4844,7 +4846,7 @@
         "rendered_bod_count += ebx_2",
         "camera_order_cursor = &camera_order_cursor[1]",
         "remaining_camera_count -= 1",
-        "render_object(esi_5->bod.object"
+        "render_object(bod_1->bod.object"
       ],
       "forbidden_substrings": [
         "return eax - 1",
@@ -4871,27 +4873,27 @@
         "void __thiscall render_game_frame(GameRoot *game)",
         "struct RenderableBod *bod;",
         "bod = (struct RenderableBod *)v1->active_bod_list.first;",
-        "v29 = &g_post_sprite_bods;",
+        "v28 = &g_post_sprite_bods;",
         "bod->bod.object->animation->progress = bod->render_animation_manager->progress;",
-        "Sprite *v40;",
-        "v40 = g_sprite_manager.active_heads[v17];",
-        "flags = v40->flags;",
-        "vector = v40->position;",
-        "v40->depth_bias",
-        "SpriteDepthNode *v77",
-        "v77 = g_sprite_depth_nodes",
-        "g_sprite_depth_buckets[v46]",
-        "v48->sprite = v40;",
-        "v40->render_bucket_index = v46;",
+        "Sprite *v39;",
+        "v39 = g_sprite_manager.active_heads[v17];",
+        "flags = v39->flags;",
+        "vector = v39->position;",
+        "v39->depth_bias",
+        "SpriteDepthNode *v73;",
+        "v73 = g_sprite_depth_nodes;",
+        "g_sprite_depth_buckets[v45]",
+        "v47->sprite = v39;",
+        "v39->render_bucket_index = v45;",
         "struct SpriteDepthNode **depth_bucket_cursor;",
         "depth_bucket_cursor = &g_sprite_depth_buckets[255];",
         "struct Sprite *sprite;",
-        "sprite = v53->sprite;",
+        "sprite = v52->sprite;",
         "sprite->flags",
-        "draw_sprite_quad((Vec3 *)&v53->position, v53->sprite);",
+        "draw_sprite_quad((Vec3 *)&v52->position, v52->sprite);",
         "struct RenderableBod **post_cursor;",
-        "v59 = *--post_cursor;",
-        "v60->bod.object,"
+        "v57 = (BodBase *)*--post_cursor;",
+        "v58->bod.object,"
       ],
       "forbidden_substrings": [
         "int __thiscall render_game_frame",
@@ -13435,6 +13437,8 @@
         "game->track.slide_textures[3]",
         "game->track.current_texture_set = 0",
         "game->subgame.banners.slots[i].owner_game = &game->subgame",
+        "attach_render_camera_source(&game->viewports[1], &game->players[0].camera)",
+        "attach_render_camera_source(&game->viewports[4], &game->players[1].camera)",
         "->mip_levels = 2"
       ],
       "forbidden_substrings": [
@@ -13444,11 +13448,69 @@
         "FrameBorderManager",
         "char __thiscall initialize_game_assets_and_world(int this)",
         "banners.slots[i]._pad_3c[12]",
+        "viewports[1].unknown_00",
+        "render_camera_slots",
+        "FrameRenderCameraSlot",
         "game->texture_set_selector",
         "->unknown_a0 = 2",
         "this + 19820376",
         "this + 324412",
         "byte_6FFAE0[this]"
+      ]
+    },
+    {
+      "name": "bn_viewport_camera_borrowed_owner",
+      "artifact": "analysis/decompile/binja/functions/0044e900-attach_render_camera_source.c",
+      "required_substrings": [
+        "viewport->camera = camera",
+        "viewport->flags"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "unknown_00",
+        "RenderCameraSlot"
+      ]
+    },
+    {
+      "name": "ida_viewport_camera_borrowed_owner",
+      "artifact": "analysis/decompile/ida/functions/0044e900-attach_render_camera_source.c",
+      "required_substrings": [
+        "int32_t __thiscall attach_render_camera_source(Viewport *viewport, FrameRenderCamera *camera)",
+        "viewport->camera = camera",
+        "viewport->flags"
+      ],
+      "forbidden_substrings": [
+        "void *arg1",
+        "unknown_00",
+        "RenderCameraSlot"
+      ]
+    },
+    {
+      "name": "bn_viewport_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/0044e920-initialize_render_camera_slot.c",
+      "required_substrings": [
+        "viewport->draw_world = 1",
+        "viewport->viewport_width = 1f",
+        "return viewport"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "RenderCameraSlot"
+      ]
+    },
+    {
+      "name": "ida_viewport_constructor_owner",
+      "artifact": "analysis/decompile/ida/functions/0044e920-initialize_render_camera_slot.c",
+      "required_substrings": [
+        "Viewport *__thiscall initialize_render_camera_slot(Viewport *viewport)",
+        "viewport->draw_world = 1",
+        "viewport->unknown_1c = 0.87249994",
+        "return viewport"
+      ],
+      "forbidden_substrings": [
+        "void *arg1",
+        "RenderCameraSlot"
       ]
     },
     {

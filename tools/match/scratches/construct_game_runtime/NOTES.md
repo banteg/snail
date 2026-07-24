@@ -448,7 +448,7 @@ verified structurally rather than whitelisted.
 ## 2026-07-14 root constructor pool extents
 
 - The `GameRoot` owner now supplies the two `GameInput`, two `GamePlayer`, and
-  five `RenderCameraSlot` constructor-loop extents from its fixed arrays. The
+  five `Viewport` constructor-loop extents from its fixed arrays. The
   camera cursor advances by its recovered type instead of a raw `0x28` stride.
 - The `BorderManager` owner likewise supplies its exact `BorderRecord` stride
   and 150-record capacity to the array constructor instead of duplicating
@@ -519,3 +519,12 @@ pulling the full aggregate into that translation unit would create a false
 transitive dependency. The separate `char* g_game_base` analysis overlay
 continues to name the same address only where a decompiler has not recovered
 the typed root.
+
+## 2026-07-24 cRViewport constructor ownership
+
+The five-record `GameRoot +0x5b4` constructor loop now walks `Viewport*`
+owners. Android and iOS retain `cRViewport::cRViewport()` and
+`cRViewport::SetCamera(cRCamera*)`; Windows independently fixes the record
+stride at `0x28`, returns the constructor receiver, and later borrows the two
+embedded player cameras. The type/name clarification is codegen-neutral at
+the established 88.89% constructor frontier.

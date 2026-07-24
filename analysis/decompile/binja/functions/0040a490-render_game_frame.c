@@ -18,7 +18,7 @@
 0040a4d5        int32_t i_5
 0040a4d5        __builtin_memset(&i_5, 0xff, 0x14)
 0040a4d9        int32_t var_74 = 0
-0040a4e1        uint32_t* eax_1 = &game_1->render_camera_slots[0].flags
+0040a4e1        uint32_t* eax_1 = &game_1->viewports[0].flags
 0040a4f3        int32_t i_6 = 5
 0040a502        int32_t i
 0040a4fb        if (((eax_1 - 0x5bc)->:0x5bc.b & 1) != 0)
@@ -27,19 +27,19 @@
 0040a501        i = i_6
 0040a501        i_6 -= 1
 0040a502        do while (i != 1)
-0040a50a        int32_t* eax_2 = &game_1->render_camera_slots[0].sort_key
+0040a50a        int32_t* eax_2 = &game_1->viewports[0].sort_key
 0040a516        int32_t remaining_camera_count_2 = remaining_camera_count_1
 0040a520        int32_t i_1 = 0
-0040a522        game_1->render_camera_slots[1].flags = (game_1->render_camera_slots[1].flags & 0xffffff) | 0x2000000
+0040a522        game_1->viewports[1].flags = (game_1->viewports[1].flags & 0xffffff) | 0x2000000
 0040a528        int32_t i_4 = 0
 0040a52c        int32_t* var_80 = eax_2
 0040a534        if (((eax_2 - 0x5b8)->:0x5bc.b & 1) != 0)
 0040a538        if (esi != 0)
 0040a545        int32_t edx_3 = 0
 0040a549        if (esi s> 0)
-0040a54b        int32_t sort_key = (eax_2 - 0x5b8)->render_camera_slots[0].sort_key
+0040a54b        int32_t sort_key = (eax_2 - 0x5b8)->viewports[0].sort_key
 0040a54d        int32_t eax_3 = 0
-0040a561        if (sort_key s> game_1->render_camera_slots[*(&i_5 + eax_3)].sort_key)
+0040a561        if (sort_key s> game_1->viewports[*(&i_5 + eax_3)].sort_key)
 0040a566        if (eax_3 s<= 0xc)
 0040a56d        int32_t var_44
 0040a56d        int32_t* eax_4 = &var_44
@@ -79,7 +79,7 @@
 0040a5d9        int32_t ebx_1 = *camera_order_cursor_1
 0040a5db        int32_t eax_6 = ebx_1 * 5
 0040a5de        void* ebp_1 = game_1 + (eax_6 << 3)
-0040a5ea        if (((&game_1->render_camera_slots[0].flags)[eax_6 * 2].b & 1) != 0)
+0040a5ea        if (((&game_1->viewports[0].flags)[eax_6 * 2].b & 1) != 0)
 0040a5f0        void* eax_8 = *(ebp_1 + 0x5d4)
 0040a5f6        camera_order_cursor_1.b = *(ebp_1 + 0x5d8)
 0040a609        int32_t* esi_1 = game_1 + ((ebx_1 * 5 + 0xb9) << 3)
@@ -101,8 +101,8 @@
 0040a6d4        bod->bod.object->animation->progress = bod->render_animation_manager->progress
 0040a6dd        float render_arg_1c
 0040a6dd        float render_arg_20
-0040a6dd        struct Color4f* color
-0040a6dd        char after_sprites
+0040a6dd        struct tColour* color
+0040a6dd        bool after_sprites
 0040a6dd        struct TransformMatrix* matrix_2
 0040a6dd        if (((bod->bod.bod.list_flags).w:1.b & 4) == 0)
 0040a6fe        transform.position.x = bod->bod.position.x
@@ -215,31 +215,31 @@
 0040a997        post_sprite_count = 0
 0040a99f        rendered_bod_count += ebx_2
 0040aa14        int32_t i_3
-0040a9a3        struct RenderableBod* eax_38 = post_cursor[-1]
+0040a9a3        struct RenderableBod* bod_2 = post_cursor[-1]
 0040a9a6        post_cursor -= 4
 0040a9af        float render_arg_1c_1
 0040a9af        float render_arg_20_1
 0040a9af        struct tColour* color_1
-0040a9af        char after_sprites_1
+0040a9af        bool after_sprites_1
 0040a9af        struct TransformMatrix* matrix_1
-0040a9af        struct RenderableBod* esi_5
-0040a9af        if (((eax_38->bod.bod.list_flags).w:1.b & 4) == 0)
-0040a9cf        esi_5 = *post_cursor
-0040a9d3        transform.position.x = eax_38->bod.position.x
-0040a9dd        transform.position.y = eax_38->bod.position.y
-0040a9e9        transform.position.z = eax_38->bod.position.z
-0040a9fb        after_sprites_1 = is_bod_after_sprites(esi_5)
-0040a9ff        color_1 = &esi_5->bod.color
-0040aa00        render_arg_20_1 = esi_5->bod.render_arg_20
-0040aa01        render_arg_1c_1 = esi_5->bod.render_arg_1c
+0040a9af        struct RenderableBod* bod_1
+0040a9af        if (((bod_2->bod.bod.list_flags).w:1.b & 4) == 0)
+0040a9cf        bod_1 = *post_cursor
+0040a9d3        transform.position.x = bod_2->bod.position.x
+0040a9dd        transform.position.y = bod_2->bod.position.y
+0040a9e9        transform.position.z = bod_2->bod.position.z
+0040a9fb        after_sprites_1 = is_bod_after_sprites(bod_1)
+0040a9ff        color_1 = &bod_1->bod.color
+0040aa00        render_arg_20_1 = bod_1->bod.render_arg_20
+0040aa01        render_arg_1c_1 = bod_1->bod.render_arg_1c
 0040aa02        matrix_1 = &transform
-0040a9b1        esi_5 = eax_38
-0040a9c0        after_sprites_1 = is_bod_after_sprites(esi_5)
-0040a9c4        color_1 = &esi_5->bod.color
-0040a9c5        render_arg_20_1 = esi_5->bod.render_arg_20
-0040a9c6        render_arg_1c_1 = esi_5->bod.render_arg_1c
-0040a9c7        matrix_1 = &esi_5->transform
-0040aa0b        render_object(esi_5->bod.object, matrix_1, render_arg_1c_1, render_arg_20_1, color_1, after_sprites_1)
+0040a9b1        bod_1 = bod_2
+0040a9c0        after_sprites_1 = is_bod_after_sprites(bod_1)
+0040a9c4        color_1 = &bod_1->bod.color
+0040a9c5        render_arg_20_1 = bod_1->bod.render_arg_20
+0040a9c6        render_arg_1c_1 = bod_1->bod.render_arg_1c
+0040a9c7        matrix_1 = &bod_1->transform
+0040aa0b        render_object(bod_1->bod.object, matrix_1, render_arg_1c_1, render_arg_20_1, color_1, after_sprites_1)
 0040aa13        i_3 = ebx_2
 0040aa13        ebx_2 -= 1
 0040aa14        do while (i_3 != 1)

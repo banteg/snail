@@ -5,29 +5,22 @@
     "basename": "SnailMail_unwrapped.exe.bndb",
     "filename": "/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb",
     "selector": "SnailMail_unwrapped.exe.bndb",
-    "session_id": "15451580136278948641",
-    "target_id": "63138:1:15451580136278948641",
-    "view_id": "1",
+    "session_id": "2906103240597706938",
+    "target_id": "63138:4:2906103240597706938",
+    "view_id": "4",
     "view_name": "PE"
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 726,
-  "function_count": 726,
+  "selected_count": 728,
+  "function_count": 728,
   "mismatch_count": 0,
   "mismatches": [],
   "analysis_refreshed": true,
   "timed_out_function_reanalysis": {
     "interior_aliases": [],
-    "reanalyzed": [
-      {
-        "address": "0x4461d0",
-        "name": "update_cameraman",
-        "reason": "AnalysisSkipReason.ExceedFunctionAnalysisTimeSkipReason",
-        "verified": true
-      }
-    ],
-    "snapshot_saved": true,
+    "reanalyzed": [],
+    "snapshot_saved": false,
     "unresolved": []
   },
   "removed_stale_artifacts": [],
@@ -3649,6 +3642,16 @@
       "address": "0x44e810",
       "name": "get_or_create_texture_ref",
       "artifact": "analysis/decompile/binja/functions/0044e810-get_or_create_texture_ref.c"
+    },
+    {
+      "address": "0x44e900",
+      "name": "attach_render_camera_source",
+      "artifact": "analysis/decompile/binja/functions/0044e900-attach_render_camera_source.c"
+    },
+    {
+      "address": "0x44e920",
+      "name": "initialize_render_camera_slot",
+      "artifact": "analysis/decompile/binja/functions/0044e920-initialize_render_camera_slot.c"
     },
     {
       "address": "0x44fd90",

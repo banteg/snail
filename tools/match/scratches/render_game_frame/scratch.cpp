@@ -5,7 +5,7 @@
 #include "game_root.h"
 #include "object_animation_types.h"
 #include "object_render_types.h"
-#include "render_camera_slot.h"
+#include "viewport.h"
 #include "sprite.h"
 #include "transform_matrix.h"
 
@@ -25,7 +25,7 @@ void GameRoot::render_game_frame()
 {
     enum {
         CAMERA_SLOT_COUNT =
-            sizeof(render_camera_slots) / sizeof(render_camera_slots[0]),
+            sizeof(viewports) / sizeof(viewports[0]),
         CAMERA_LAST_INDEX = CAMERA_SLOT_COUNT - 1,
     };
 
@@ -50,7 +50,7 @@ void GameRoot::render_game_frame()
     camera_order[3] = -1;
     camera_order[CAMERA_LAST_INDEX] = -1;
 
-    RenderCameraSlot* slots = render_camera_slots;
+    Viewport* slots = viewports;
     {
         for (int active_index = 0;
              active_index < CAMERA_SLOT_COUNT;
@@ -104,20 +104,20 @@ void GameRoot::render_game_frame()
         do {
             int camera_index = *camera_cursor;
 
-        if ((render_camera_slots[camera_index].flags & 1) != 0) {
+        if ((viewports[camera_index].flags & 1) != 0) {
             render_camera(
-                render_camera_slots[camera_index].viewport_x,
-                render_camera_slots[camera_index].viewport_y,
-                render_camera_slots[camera_index].viewport_width,
-                render_camera_slots[camera_index].viewport_height,
-                render_camera_slots[camera_index].source->fov_degrees,
-                &render_camera_slots[camera_index].source->transform,
-                &render_camera_slots[camera_index].source->view_matrix,
-                render_camera_slots[camera_index].draw_world,
+                viewports[camera_index].viewport_x,
+                viewports[camera_index].viewport_y,
+                viewports[camera_index].viewport_width,
+                viewports[camera_index].viewport_height,
+                viewports[camera_index].camera->fov_degrees,
+                &viewports[camera_index].camera->transform,
+                &viewports[camera_index].camera->view_matrix,
+                viewports[camera_index].draw_world,
                 0);
 
             post_sprite_count = 0;
-            if ((render_camera_slots[camera_index].flags & 2) == 0) {
+            if ((viewports[camera_index].flags & 2) == 0) {
                 RenderableBod* bod =
                     (RenderableBod*)active_bod_list.first;
                 RenderableBod** post_cursor = g_post_sprite_bods;
@@ -128,7 +128,7 @@ void GameRoot::render_game_frame()
 
                     if ((bod->list_flags & BOD_FLAG_HAS_OBJECT) != 0 &&
                         (bod->list_flags & BOD_FLAG_RENDER_ENABLED) != 0 &&
-                        (render_camera_slots[camera_index].flags &
+                        (viewports[camera_index].flags &
                          bod->list_flags & RENDER_SCENE_MASK) != 0) {
                         if ((bod->list_flags & BOD_FLAG_AFTER_SPRITES) != 0) {
                             *post_cursor = bod;
@@ -174,14 +174,14 @@ void GameRoot::render_game_frame()
             while (sprite != 0) {
                 ++rendered_sprite_count;
                 unsigned int sprite_flags = sprite->flags;
-                if ((render_camera_slots[camera_index].flags &
+                if ((viewports[camera_index].flags &
                      sprite_flags & RENDER_SCENE_MASK) != 0) {
                     if ((sprite_flags & SPRITE_FLAG_ACTIVE) != 0 &&
                         (sprite_flags & SPRITE_FLAG_RENDER_ENABLED) != 0 &&
                         (sprite_flags & SPRITE_FLAG_DELAYED_RENDER) == 0) {
                         Vector3 projected = sprite->position;
                         TransformMatrix camera_matrix =
-                            render_camera_slots[camera_index].source->view_matrix;
+                            viewports[camera_index].camera->view_matrix;
                         projected *= camera_matrix;
                         projected.x = -projected.x;
                         projected.z = -projected.z;
@@ -237,7 +237,7 @@ void GameRoot::render_game_frame()
                 while (node != 0) {
                     if ((node->sprite->flags & SPRITE_FLAG_ORIENT_TO_MOTION) != 0) {
                         node->sprite->update_sprite_facing_angle(
-                            &render_camera_slots[camera_index].source->view_matrix);
+                            &viewports[camera_index].camera->view_matrix);
                     }
                     draw_sprite_quad(&node->position, node->sprite);
                     node = node->next;
@@ -247,20 +247,20 @@ void GameRoot::render_game_frame()
 
             end_sprite_depth_render_state();
             begin_overlay_render_state();
-            draw_font_text_queue(render_camera_slots[camera_index].flags);
+            draw_font_text_queue(viewports[camera_index].flags);
             end_overlay_render_state();
 
-            if ((render_camera_slots[camera_index].flags & 2) == 0 &&
+            if ((viewports[camera_index].flags & 2) == 0 &&
                 post_sprite_count != 0) {
                 render_camera(
-                    render_camera_slots[camera_index].viewport_x,
-                    render_camera_slots[camera_index].viewport_y,
-                    render_camera_slots[camera_index].viewport_width,
-                    render_camera_slots[camera_index].viewport_height,
-                    render_camera_slots[camera_index].source->fov_degrees,
-                    &render_camera_slots[camera_index].source->transform,
-                    &render_camera_slots[camera_index].source->view_matrix,
-                    render_camera_slots[camera_index].draw_world,
+                    viewports[camera_index].viewport_x,
+                    viewports[camera_index].viewport_y,
+                    viewports[camera_index].viewport_width,
+                    viewports[camera_index].viewport_height,
+                    viewports[camera_index].camera->fov_degrees,
+                    &viewports[camera_index].camera->transform,
+                    &viewports[camera_index].camera->view_matrix,
+                    viewports[camera_index].draw_world,
                     1);
 
                 int replay_count = post_sprite_count;
