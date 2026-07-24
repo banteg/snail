@@ -611,11 +611,34 @@
       "name": "ida_update_subgoldy_row_event_sample_owner",
       "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
       "required_substrings": [
+        "SubRow *runtime_row",
+        "runtime_row = &row_event_game->runtime_rows[row_event_row_index]",
+        "row_event_id = row_event_game->runtime_rows[row_event_row_index].row_event_id",
+        "runtime_row->row_event_id",
         "SubSegmentEventBiasView *sample_segment_view",
         "sample_segment_view->segment_slots_one_based[v30].message_sample_id"
       ],
       "forbidden_substrings": [
-        "*(&v31->level_definition.segment_count + 4232 * v30)"
+        "*(&v31->level_definition.segment_count + 4232 * v30)",
+        "byte_5CCAC8",
+        "unk_5CCBB8"
+      ]
+    },
+    {
+      "name": "ida_update_subgoldy_runtime_row_attachment_owner",
+      "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "TrackRowCell *current_cell",
+        "SubgameRuntime *attachment_game",
+        "primary_attachment_cell = player->game->runtime_rows",
+        "secondary_attachment_cell = player->game->runtime_rows",
+        "runtime_rows[primary_row_index].primary_attachment_cell->attachment_template_record",
+        "runtime_rows[secondary_row_index].secondary_attachment_cell->attachment_template_record"
+      ],
+      "forbidden_substrings": [
+        "byte_5CCAC8",
+        "unk_5CCB6C",
+        "unk_5CCB70"
       ]
     },
     {

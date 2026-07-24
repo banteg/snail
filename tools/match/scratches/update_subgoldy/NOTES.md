@@ -711,3 +711,33 @@ authored `.message_duration.value`. No matching source changed. A fresh
 focused receipt remains 74.43%, 2,070/2,087 normalized instructions, prefix
 12/2,087, with 290 clean operands and the same single bounded jump-table
 mismatch.
+
+## 2026-07-24 player runtime-row ownership replay
+
+The player tick now shares the same concrete `SubRow` slab ownership already
+proved in the runtime-row producer and other consumers. IDA's numeric operand
+inspection independently identifies nine native displacements:
+
+- `0x43b709 -> 0x5ccac8` and `0x43b710 -> 0x5ccbb8` form the selected
+  `SubRow` and read its `row_event_id`;
+- `0x43bcf3`, `0x43bd44`, and `0x43be19 -> 0x5ccac8` read the current row
+  flags;
+- `0x43bd98` and `0x43bde6 -> 0x5ccb6c` read
+  `primary_attachment_cell`;
+- `0x43be6d` and `0x43bebb -> 0x5ccb70` read
+  `secondary_attachment_cell`.
+
+Those offsets are exactly `SubgameRuntime::runtime_rows + {0x0,0xa4,0xa8,0xf0}`
+with `sizeof(SubRow) == 0xf4`. The guarded replay normalizes only those
+operands, types the borrowed row lifetime at `0x43b70a` as `SubRow *`, and
+names the independent row-event and primary/secondary attachment cell/index
+lifetimes. The tracked IDA decompile consequently exposes
+`runtime_row->row_event_id`, both attachment-cell owners, and each cell's
+`attachment_template_record` without the false `byte_5CCAC8`,
+`unk_5CCBB8`, `unk_5CCB6C`, or `unk_5CCB70` globals. Binary Ninja already
+rendered the same ownership graph and required no semantic correction.
+
+This is analysis-only ownership recovery. The scratch and masks are unchanged;
+a fresh focused receipt remains 74.43%, 2,070/2,087 normalized instructions,
+prefix 12/2,087, with 290 clean audited operands and the same one bounded
+`update_subgoldy_follow_jump_table` mismatch.

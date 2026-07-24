@@ -3928,10 +3928,16 @@ def test_ida_lvar_inspector_reports_stable_local_identity() -> None:
         '"location"',
         '"stack_offset"',
         "lvar.get_stkoff()",
+        "re.compile(pattern, re.IGNORECASE)",
+        'str(entry["name"])',
+        'str(entry["type"])',
+        'str(entry["definition_address"])',
     ):
         assert marker in inspector
     assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/inspect_function_lvars.py"' in wrapper
-    assert "script_args=list(args.selectors)" in wrapper
+    assert 'parser.add_argument(\n        "--match",' in wrapper
+    assert 'script_args=[*args.selectors, "--", args.match]' in wrapper
+    assert "if matcher is not None" in inspector
 
 
 def test_ida_operand_inspector_reports_numeric_operand_identity() -> None:
@@ -5657,6 +5663,24 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         "update_subgame_runtime_flag_operands = _normalize_root_offset_operands("
         in ida_path_sync
     )
+    assert "UPDATE_SUBGOLDY_RUNTIME_ROW_OFFSET_OPERANDS" in ida_path_sync
+    for operand_spec in (
+        "(0x43B709, 1, 0x5CCAC8)",
+        "(0x43B710, 1, 0x5CCBB8)",
+        "(0x43BCF3, 1, 0x5CCAC8)",
+        "(0x43BD44, 0, 0x5CCAC8)",
+        "(0x43BD98, 1, 0x5CCB6C)",
+        "(0x43BDE6, 1, 0x5CCB6C)",
+        "(0x43BE19, 0, 0x5CCAC8)",
+        "(0x43BE6D, 1, 0x5CCB70)",
+        "(0x43BEBB, 1, 0x5CCB70)",
+    ):
+        assert operand_spec in ida_path_sync
+    assert (
+        "update_subgoldy_runtime_row_offset_operands = "
+        "_normalize_root_offset_operands(" in ida_path_sync
+    )
+    assert '"update_subgoldy_runtime_row_offset_operands"' in ida_path_sync
     assert "INITIALIZE_SUBGAME_RECORD_BANK_OFFSET_OPERANDS" in ida_path_sync
     for operand_spec in (
         "(0x43757E, 1, 0x68B4D0)",
@@ -5675,13 +5699,44 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "_sync_update_subgame_runtime_lvars" in ida_path_sync
     assert "UPDATE_SUBGOLDY_LVAR_SPECS" in ida_path_sync
     assert "_sync_update_subgoldy_lvars" in ida_path_sync
-    assert "0x43B823" in ida_path_sync
-    assert "0x43CD08" in ida_path_sync
+    for definition_address in (
+        "0x43B6EB",
+        "0x43B6F0",
+        "0x43B707",
+        "0x43B70A",
+        "0x43B711",
+        "0x43B823",
+        "0x43BCCE",
+        "0x43BCDE",
+        "0x43BDA4",
+        "0x43BDD3",
+        "0x43BE79",
+        "0x43BEA8",
+        "0x43CD08",
+    ):
+        assert definition_address in ida_path_sync
     for name, declaration in (
+        ("row_event_cell", "TrackRowCell *row_event_cell;"),
+        ("row_event_game", "SubgameRuntime *row_event_game;"),
+        ("row_event_row_index", "int32_t row_event_row_index;"),
+        ("runtime_row", "SubRow *runtime_row;"),
+        ("row_event_id", "int32_t row_event_id;"),
         (
             "sample_segment_view",
             "SubSegmentEventBiasView *sample_segment_view;",
         ),
+        ("current_cell", "TrackRowCell *current_cell;"),
+        ("attachment_game", "SubgameRuntime *attachment_game;"),
+        (
+            "primary_attachment_cell",
+            "TrackRowCell *primary_attachment_cell;",
+        ),
+        ("primary_row_index", "int32_t primary_row_index;"),
+        (
+            "secondary_attachment_cell",
+            "TrackRowCell *secondary_attachment_cell;",
+        ),
+        ("secondary_row_index", "int32_t secondary_row_index;"),
         (
             "time_trial_route_cursor",
             "TimeTrialRouteRecordCursor *time_trial_route_cursor;",

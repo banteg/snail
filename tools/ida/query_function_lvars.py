@@ -18,6 +18,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("selectors", nargs="+", help="Function names to inspect.")
     parser.add_argument(
+        "--match",
+        default="",
+        help="Only emit locals whose name, type, or definition address matches this regex.",
+    )
+    parser.add_argument(
         "--ida-bin",
         help="Path to the IDA headless binary (defaults to the first idat*/ida* on PATH).",
     )
@@ -43,7 +48,7 @@ def main() -> int:
         ida_bin=ida_bin,
         script_path=IDAPYTHON_SCRIPT_PATH,
         db_path=db_path,
-        script_args=list(args.selectors),
+        script_args=[*args.selectors, "--", args.match],
         log_stem="inspect-function-lvars",
     )
     sys.stdout.write(log_text)

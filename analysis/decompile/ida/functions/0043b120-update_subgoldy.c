@@ -27,26 +27,26 @@ void __thiscall update_subgoldy(Player *player)
   SubgameRuntime *v22; // eax
   PlayerControlSource *control_source; // eax
   SubgameRuntime *v24; // eax
-  TrackRowCell *track_grid_cell_at_world_position; // eax
-  SubgameRuntime *v26; // edi
-  int v27; // eax
-  char *v28; // esi
-  int32_t v29; // eax
-  int v30; // esi
+  TrackRowCell *row_event_cell; // eax
+  SubgameRuntime *row_event_game; // edi
+  int32_t row_event_row_index; // eax
+  SubRow *runtime_row; // esi
+  int row_event_id; // eax
+  int32_t v30; // esi
   SubSegmentEventBiasView *sample_segment_view; // edx
   SubLocTileId tile_id; // al
   double subgame_rate; // st7
   SubgameRuntime *v34; // ecx
   Vec3 *p_velocity; // esi
   double v36; // st7
-  TrackRowCell *v37; // eax
+  TrackRowCell *track_grid_cell_at_world_position; // eax
   double v38; // st6
   double v39; // st7
   double v40; // st7
-  TrackRowCell *v41; // esi
-  SubgameRuntime *v42; // edi
-  int32_t track_cell_row_index; // eax
-  int32_t v44; // eax
+  TrackRowCell *current_cell; // esi
+  SubgameRuntime *attachment_game; // edi
+  int32_t primary_row_index; // eax
+  int32_t secondary_row_index; // eax
   SubLocTileId v45; // al
   uint8_t open_edge_mask; // al
   double v47; // st7
@@ -117,11 +117,11 @@ void __thiscall update_subgoldy(Player *player)
   float z; // [esp-Ch] [ebp-64h]
   float v113; // [esp-Ch] [ebp-64h]
   float v114; // [esp+0h] [ebp-58h]
-  TrackRowCell *value; // [esp+4h] [ebp-54h]
-  TrackRowCell *valuea; // [esp+4h] [ebp-54h]
+  TrackRowCell *primary_attachment_cell; // [esp+4h] [ebp-54h]
+  TrackRowCell *secondary_attachment_cell; // [esp+4h] [ebp-54h]
+  float value; // [esp+4h] [ebp-54h]
+  float valuea; // [esp+4h] [ebp-54h]
   float valueb; // [esp+4h] [ebp-54h]
-  float valuec; // [esp+4h] [ebp-54h]
-  float valued; // [esp+4h] [ebp-54h]
   float source_celld; // [esp+18h] [ebp-40h]
   TrackRowCell *source_cell; // [esp+18h] [ebp-40h]
   float source_cella; // [esp+18h] [ebp-40h]
@@ -220,23 +220,26 @@ LABEL_60:
         }
         if ( LOBYTE(player->resurrect_active) )
           update_subgoldy_resurrect(player);
-        track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(player->game, p_position);
-        v26 = player->game;
-        source_cell = track_grid_cell_at_world_position;
-        v27 = 61 * get_track_cell_row_index(track_grid_cell_at_world_position);
-        v28 = &byte_5CCAC8[(_DWORD)v26 + 4 * v27];
-        v29 = *(int *)((char *)unk_5CCBB8 + (_DWORD)v26 + 4 * v27);
-        if ( v29 > 0 && v29 != player->row_event.id && v29 < v26->level_definition.segment_count + 1 )
+        row_event_cell = get_track_grid_cell_at_world_position(player->game, p_position);
+        row_event_game = player->game;
+        source_cell = row_event_cell;
+        row_event_row_index = get_track_cell_row_index(row_event_cell);
+        runtime_row = &row_event_game->runtime_rows[row_event_row_index];
+        row_event_id = row_event_game->runtime_rows[row_event_row_index].row_event_id;
+        if ( row_event_id > 0
+          && row_event_id != player->row_event.id
+          && row_event_id < row_event_game->level_definition.segment_count + 1 )
         {
-          player->row_event.id = v29;
-          if ( *((_BYTE *)&player->game->segment_cache.slots[141][2].bod.bod.list_prev + 16928 * *((_DWORD *)v28 + 60)) )
+          player->row_event.id = row_event_id;
+          if ( *((_BYTE *)&player->game->segment_cache.slots[141][2].bod.bod.list_prev
+               + 16928 * runtime_row->row_event_id) )
           {
             player->row_event.tip_definition.flags = 2;
             player->row_event.tip_definition.text = (char *)(&player->game->segment_cache.slots[141][2].bod.bod.list_prev
-                                                           + 4232 * *((_DWORD *)v28 + 60));
+                                                           + 4232 * runtime_row->row_event_id);
             player->row_event.tip_definition.layout_y = 0.0;
             player->row_event.tip_definition.text_scale = 30.0;
-            player->row_event.tip_definition.dismiss_seconds = *(float *)&player->game->tutorial._pad_10[16928 * *((_DWORD *)v28 + 60) + 8];
+            player->row_event.tip_definition.dismiss_seconds = *(float *)&player->game->tutorial._pad_10[16928 * runtime_row->row_event_id + 8];
             if ( !player->row_event_cutscene_started )
             {
               player->row_event_cutscene_started = 1;
@@ -246,7 +249,7 @@ LABEL_60:
                 dispatch_cutscene_animation(&player->presentation, 4, 1u, -1);
               dispatch_cutscene_animation(&player->presentation, 1, 0, -1);
             }
-            v30 = *((_DWORD *)v28 + 60);
+            v30 = runtime_row->row_event_id;
             sample_segment_view = (SubSegmentEventBiasView *)player->game;
             if ( sample_segment_view->segment_slots_one_based[v30].message_sample_id != -1 )
               play_voice_manager(
@@ -357,8 +360,8 @@ LABEL_101:
               || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_SLUG_HAZARD
               || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_SLIDE_F
               || player->damage_gauge.state == DAMAGE_GUAGE_STATE_DRAINING
-              && (v37 = get_track_grid_cell_at_world_position(player->game, p_position),
-                  (unsigned __int8)is_sub_loc_floor(v37)) )
+              && (track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(player->game, p_position),
+                  (unsigned __int8)is_sub_loc_floor(track_grid_cell_at_world_position)) )
             {
               v38 = player->game->subgame_rate * player->game->subgame_rate * 0.0040000002;
               player->velocity.z = v38 + v38 + player->velocity.z;
@@ -386,75 +389,71 @@ LABEL_101:
           }
           else
           {
-            v41 = get_track_grid_cell_at_world_position(player->game, p_position);
+            current_cell = get_track_grid_cell_at_world_position(player->game, p_position);
             if ( player->attachment_exit_pending )
             {
-              v42 = player->game;
-              if ( (*(_DWORD *)&byte_5CCAC8[(_DWORD)v42 + 244 * get_track_cell_row_index(v41)] & 0x100) == 0
+              attachment_game = player->game;
+              if ( (attachment_game->runtime_rows[get_track_cell_row_index(current_cell)].flags & 0x100) == 0
                 && player->sub_hover.state == SUB_HOVER_STATE_INACTIVE
                 && !player->control_override_active )
               {
-                player->velocity.z = (1.0 - v42->subgame_rate * 0.2) * player->velocity.z;
+                player->velocity.z = (1.0 - attachment_game->subgame_rate * 0.2) * player->velocity.z;
               }
-              if ( (byte_5CCAC8[(unsigned int)player->game + 244 * get_track_cell_row_index(v41)] & 0x40) != 0 )
+              if ( (player->game->runtime_rows[get_track_cell_row_index(current_cell)].flags & 0x40) != 0 )
               {
                 v126 = player->velocity.x * 1.05;
                 v129 = player->velocity.y * 1.05;
                 v132 = player->velocity.z * 1.05;
-                value = *(TrackRowCell **)((char *)unk_5CCB6C
-                                         + (unsigned int)player->game
-                                         + 244 * get_track_cell_row_index(v41));
+                primary_attachment_cell = player->game->runtime_rows[get_track_cell_row_index(current_cell)].primary_attachment_cell;
                 x = p_position->x;
                 y = p_position->y;
                 z = p_position->z;
-                track_cell_row_index = get_track_cell_row_index(v41);
+                primary_row_index = get_track_cell_row_index(current_cell);
                 try_enter_track_attachment_from_swept_motion(
-                  *(Path **)(*(int *)((char *)unk_5CCB6C + (unsigned int)player->game + 244 * track_cell_row_index) + 56),
+                  player->game->runtime_rows[primary_row_index].primary_attachment_cell->attachment_template_record,
                   x,
                   y,
                   z,
                   v126,
                   v129,
                   v132,
-                  value);
+                  primary_attachment_cell);
               }
               if ( player->attachment_exit_pending
-                && byte_5CCAC8[(unsigned int)player->game + 244 * get_track_cell_row_index(v41)] < 0 )
+                && SLOBYTE(player->game->runtime_rows[get_track_cell_row_index(current_cell)].flags) < 0 )
               {
                 v127 = player->velocity.x * 1.05;
                 v130 = player->velocity.y * 1.05;
                 v133 = player->velocity.z * 1.05;
-                valuea = *(TrackRowCell **)((char *)unk_5CCB70
-                                          + (unsigned int)player->game
-                                          + 244 * get_track_cell_row_index(v41));
+                secondary_attachment_cell = player->game->runtime_rows[get_track_cell_row_index(current_cell)].secondary_attachment_cell;
                 v109 = p_position->x;
                 v111 = p_position->y;
                 v113 = p_position->z;
-                v44 = get_track_cell_row_index(v41);
+                secondary_row_index = get_track_cell_row_index(current_cell);
                 try_enter_track_attachment_from_swept_motion(
-                  *(Path **)(*(int *)((char *)unk_5CCB70 + (unsigned int)player->game + 244 * v44) + 56),
+                  player->game->runtime_rows[secondary_row_index].secondary_attachment_cell->attachment_template_record,
                   v109,
                   v111,
                   v113,
                   v127,
                   v130,
                   v133,
-                  valuea);
+                  secondary_attachment_cell);
               }
             }
             if ( !player->follow_state.active )
             {
               if ( player->body.transform.position.y < 0.49000001
                 && player->body.transform.position.y > -0.16333334
-                && !(unsigned __int8)is_sub_loc_empty(v41)
-                && v41->tile_id != SUBLOC_TILE_TRAMPOLINE )
+                && !(unsigned __int8)is_sub_loc_empty(current_cell)
+                && current_cell->tile_id != SUBLOC_TILE_TRAMPOLINE )
               {
                 set_matrix_rotation_identity(&player->body.transform);
                 player->trampoline_bounce_active = 0;
                 if ( player->velocity.y < -0.029999999 )
                 {
-                  valueb = player->velocity.y - 0.029999999;
-                  start_squidge_y(&player->squidge, valueb);
+                  value = player->velocity.y - 0.029999999;
+                  start_squidge_y(&player->squidge, value);
                 }
                 if ( player->velocity.y <= 0.0 )
                 {
@@ -463,12 +462,12 @@ LABEL_101:
                 }
                 player->attachment_exit_pending = 0;
               }
-              v45 = v41->tile_id;
+              v45 = current_cell->tile_id;
               if ( (v45 == SUBLOC_TILE_EMPTY || v45 == SUBLOC_TILE_RING_MARKER)
                 && player->body.transform.position.y < 0.49000001
                 && player->velocity.y <= 0.0 )
               {
-                open_edge_mask = v41->open_edge_mask;
+                open_edge_mask = current_cell->open_edge_mask;
                 v47 = player->body.transform.position.z - (double)(int)(__int64)player->body.transform.position.z;
                 if ( (open_edge_mask & 2) != 0 )
                   v48 = 0.80000001;
@@ -662,8 +661,8 @@ LABEL_98:
           {
             if ( v59->level_mode == 4 )
             {
-              valuec = (1.0 - (player->body.transform.position.z - source_cellb) / player->velocity.z) * 0.016666668;
-              advance_timer_counters(&player->stopwatch, valuec);
+              valuea = (1.0 - (player->body.transform.position.z - source_cellb) / player->velocity.z) * 0.016666668;
+              advance_timer_counters(&player->stopwatch, valuea);
             }
             v60 = player->game;
             player->completion_handoff_timer = 0.0;
@@ -896,8 +895,8 @@ LABEL_287:
             }
           }
         }
-        valued = player->body.transform.position.z / (double)player->game->runtime_row_count;
-        set_backdrop_progress_fraction(&g_game_base->backdrop, valued);
+        valueb = player->body.transform.position.z / (double)player->game->runtime_row_count;
+        set_backdrop_progress_fraction(&g_game_base->backdrop, valueb);
         v94 = (double)player->game->completion_row_start - 30.0;
         source_cellc = player->body.transform.position.z - 8.0;
         if ( v94 >= source_cellc )

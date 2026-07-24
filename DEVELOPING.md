@@ -106,6 +106,7 @@ uv run snail match types --paths
 uv run python tools/ida/query_data_types.py <data-name-or-address> [<data-name-or-address> ...]
 uv run python tools/ida/query_function_types.py <function-or-address> [<function-or-address> ...]
 uv run python tools/ida/query_function_lvars.py <function> [<function> ...]
+uv run python tools/ida/query_function_lvars.py <function> --match '<name|type|0xaddress>'
 uv run python tools/binja/sync_collision_state_lifetimes.py --target SnailMail_unwrapped.exe.bndb
 uv run python tools/binja/sync_garbage_allocator_lifetimes.py --target SnailMail_unwrapped.exe.bndb
 uv run python tools/binja/sync_pickup_list_lifetimes.py --target SnailMail_unwrapped.exe.bndb
@@ -120,8 +121,10 @@ decompiling.
 
 The lvar query runs Hex-Rays headlessly and reports stable definition
 addresses, stack offsets, widths, current user types, and separately persisted
-user-lvar overrides. Use it before adding a narrow replay rule for a local whose
-inferred ownership regressed.
+user-lvar overrides. Use `--match` for large functions; it filters locals by
+name, type, or definition address and omits the otherwise noisy
+stack-pointer-change list. Run it before adding a narrow replay rule for a local
+whose inferred ownership regressed.
 
 The collision-state replay is deliberately bounded: it verifies the canonical
 parcel, pickup, slug, and ring enums, then touches only the six exact physical

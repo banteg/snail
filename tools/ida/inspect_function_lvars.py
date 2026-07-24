@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 
 import ida_hexrays
 import ida_pro
@@ -52,11 +53,19 @@ def _saved_lvar_overrides(address: int) -> list[dict[str, object]]:
 
 
 def main() -> None:
-    selectors = list(idc.ARGV[1:])
+    arguments = list(idc.ARGV[1:])
+    if "--" in arguments:
+        separator = arguments.index("--")
+        selectors = arguments[:separator]
+        pattern = arguments[separator + 1] if separator + 1 < len(arguments) else ""
+    else:
+        selectors = arguments
+        pattern = ""
     if not selectors:
         print(json.dumps({"error": "missing function selector"}, indent=2))
         ida_pro.qexit(2)
         return
+    matcher = re.compile(pattern, re.IGNORECASE) if pattern else None
 
     functions = []
     failed = []
@@ -92,6 +101,15 @@ def main() -> None:
             }
             if lvar.is_stk_var():
                 entry["stack_offset"] = lvar.get_stkoff()
+            searchable = " ".join(
+                (
+                    str(entry["name"]),
+                    str(entry["type"]),
+                    str(entry["definition_address"]),
+                )
+            )
+            if matcher is not None and matcher.search(searchable) is None:
+                continue
             lvars.append(entry)
 
         functions.append(
@@ -100,15 +118,19 @@ def main() -> None:
                 "address": hex(address),
                 "lvars": lvars,
                 "saved_lvar_overrides": _saved_lvar_overrides(address),
-                "stack_pointer_changes": [
-                    {
-                        "address": hex(item_address),
-                        "delta": idc.get_sp_delta(item_address),
-                        "cumulative_delta": idc.get_spd(item_address),
-                    }
-                    for item_address in idautils.FuncItems(address)
-                    if idc.get_sp_delta(item_address)
-                ],
+                "stack_pointer_changes": (
+                    []
+                    if matcher is not None
+                    else [
+                        {
+                            "address": hex(item_address),
+                            "delta": idc.get_sp_delta(item_address),
+                            "cumulative_delta": idc.get_spd(item_address),
+                        }
+                        for item_address in idautils.FuncItems(address)
+                        if idc.get_sp_delta(item_address)
+                    ]
+                ),
             }
         )
 
@@ -116,6 +138,7 @@ def main() -> None:
         json.dumps(
             {
                 "database": idc.get_idb_path(),
+                "pattern": pattern,
                 "functions": functions,
                 "failed": failed,
             },

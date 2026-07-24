@@ -613,9 +613,75 @@ UPDATE_SUBGAME_RUNTIME_LVAR_SPECS = (
 
 UPDATE_SUBGOLDY_LVAR_SPECS = (
     (
+        "row_event_cell",
+        "TrackRowCell *row_event_cell;",
+        0x43B6EB,
+        None,
+    ),
+    (
+        "row_event_game",
+        "SubgameRuntime *row_event_game;",
+        0x43B6F0,
+        None,
+    ),
+    (
+        "row_event_row_index",
+        "int32_t row_event_row_index;",
+        0x43B707,
+        None,
+    ),
+    (
+        "runtime_row",
+        "SubRow *runtime_row;",
+        0x43B70A,
+        None,
+    ),
+    (
+        "row_event_id",
+        "int32_t row_event_id;",
+        0x43B711,
+        None,
+    ),
+    (
         "sample_segment_view",
         "SubSegmentEventBiasView *sample_segment_view;",
         0x43B823,
+        None,
+    ),
+    (
+        "current_cell",
+        "TrackRowCell *current_cell;",
+        0x43BCCE,
+        None,
+    ),
+    (
+        "attachment_game",
+        "SubgameRuntime *attachment_game;",
+        0x43BCDE,
+        None,
+    ),
+    (
+        "primary_attachment_cell",
+        "TrackRowCell *primary_attachment_cell;",
+        0x43BDA4,
+        24,
+    ),
+    (
+        "primary_row_index",
+        "int32_t primary_row_index;",
+        0x43BDD3,
+        None,
+    ),
+    (
+        "secondary_attachment_cell",
+        "TrackRowCell *secondary_attachment_cell;",
+        0x43BE79,
+        24,
+    ),
+    (
+        "secondary_row_index",
+        "int32_t secondary_row_index;",
+        0x43BEA8,
         None,
     ),
     (
@@ -1162,6 +1228,24 @@ UPDATE_SUBGAME_RUNTIME_ROW_OFFSET_OPERANDS = (
 # decompiler cannot fabricate ownership for this bit test.
 UPDATE_SUBGAME_RUNTIME_FLAG_OPERANDS = (
     (0x4390A8, 1, 0x800000),
+)
+
+# The player tick first resolves a row-event cell, then revisits the current
+# runtime row for attachment entry. In both blocks Hex-Rays inherits false
+# globals because the exact SubRow slab displacements are also valid image
+# addresses. Normalize only those nine evidenced operands: the typed
+# SubgameRuntime receiver and TrackRowCell locals can then recover the borrowed
+# SubRow fields without installing an overlapping global or convenience view.
+UPDATE_SUBGOLDY_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x43B709, 1, 0x5CCAC8),  # row-event SubRow base / flags
+    (0x43B710, 1, 0x5CCBB8),  # row_event_id
+    (0x43BCF3, 1, 0x5CCAC8),  # current-row flags load
+    (0x43BD44, 0, 0x5CCAC8),  # primary attachment flag
+    (0x43BD98, 1, 0x5CCB6C),  # primary_attachment_cell
+    (0x43BDE6, 1, 0x5CCB6C),  # primary attachment source-cell reload
+    (0x43BE19, 0, 0x5CCAC8),  # secondary attachment flag
+    (0x43BE6D, 1, 0x5CCB70),  # secondary_attachment_cell
+    (0x43BEBB, 1, 0x5CCB70),  # secondary attachment source-cell reload
 )
 
 # initialize_subgame selects one of the three embedded SubHighScore record
@@ -3594,6 +3678,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "runtime_flag_operand": result,
                 }
             )
+    update_subgoldy_runtime_row_offset_operands = _normalize_root_offset_operands(
+        UPDATE_SUBGOLDY_RUNTIME_ROW_OFFSET_OPERANDS
+    )
+    for result in update_subgoldy_runtime_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "update_subgoldy",
+                    "root_offset_operand": result,
+                }
+            )
     initialize_subgame_record_bank_offset_operands = (
         _normalize_root_offset_operands(
             INITIALIZE_SUBGAME_RECORD_BANK_OFFSET_OPERANDS
@@ -3848,6 +3943,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "challenge_parcels_runtime_row_offset_operands": challenge_parcels_runtime_row_offset_operands,
                 "update_subgame_runtime_row_offset_operands": update_subgame_runtime_row_offset_operands,
                 "update_subgame_runtime_flag_operands": update_subgame_runtime_flag_operands,
+                "update_subgoldy_runtime_row_offset_operands": update_subgoldy_runtime_row_offset_operands,
                 "initialize_subgame_record_bank_offset_operands": initialize_subgame_record_bank_offset_operands,
                 "subhover_player_root_offset_operands": subhover_player_root_offset_operands,
                 "lvar_view": lvar_view,
