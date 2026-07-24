@@ -14962,6 +14962,7 @@ def test_golb_ai_replay_preserves_collision_owner_lifetimes() -> None:
     for type_name, width in (
         ("Vec3", "0x0C"),
         ("Sprite", "0xB4"),
+        ("TrackRowCellSameLaneCursorView", "0x2F4"),
         ("Slug", "0xEC"),
         ("SlugSlotCursor", "0x35648C"),
         ("SubGarbage", "0xC4"),
@@ -14971,6 +14972,13 @@ def test_golb_ai_replay_preserves_collision_owner_lifetimes() -> None:
         assert f'"{type_name}": {width}' in replay
 
     for source_type, index, storage, name, variable_type in (
+        (
+            "RegisterVariableSourceType",
+            770,
+            73,
+            "same_lane_cursor",
+            "TrackRowCellSameLaneCursorView*",
+        ),
         ("RegisterVariableSourceType", 1119, 67, "render_sprite", "Sprite*"),
         ("RegisterVariableSourceType", 1133, 67, "render_position", "Vec3*"),
         (
@@ -15027,14 +15035,42 @@ def test_golb_ai_replay_preserves_collision_owner_lifetimes() -> None:
         assert expected in replay
 
     assert "GOLB_AI_USER_VAR_UPDATES" in replay
+    assert "GOLB_AI_USER_VAR_REMOVALS" in replay
+    assert "ensure_path_cell_view" in replay
+    assert "current_header_type_equivalence" in replay
+    assert "types_declare_missing_only" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
+    assert "remove_user_var_updates" in replay
     assert '0x48: ("position", "Vec3")' in replay
+    assert '0x00: ("previous_row_same_lane", "TrackRowCell")' in replay
+    assert '0x54: ("intervening_cells", "TrackRowCell[7]")' in replay
     assert '0x3563A0: ("slug", "Slug")' in replay
     assert '0x80: ("next_active", "SubGarbage*")' in replay
-    for rejected_index in (765, 770):
-        assert f"\n        {rejected_index},\n" not in replay
+
+    analysis_header = (
+        HEADER_DIR / "path_template_types.h"
+    ).read_text(encoding="utf-8")
+    assert "typedef struct __ptr_offset(0x2a0)" in analysis_header
+    assert (
+        "__base(TrackRowCell, 0x2a0) TrackRowCellSameLaneCursorView"
+        in analysis_header
+    )
+    assert "TrackRowCell previous_row_same_lane;" in analysis_header
+    assert "TrackRowCell intervening_cells[7];" in analysis_header
+    assert "__inherited TrackRowCell current_cell;" in analysis_header
+    assert "TrackRowCellSameLaneCursorView_must_be_0x2f4" in analysis_header
+    assert '"TrackRowCellSameLaneCursorView",' in (
+        BINJA_DIR / "sync_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    assert (
+        '"RegisterVariableSourceType",\n'
+        "        765,\n"
+        "        66,\n"
+        '        "source_cell",\n'
+        '        "TrackRowCell*",'
+    ) in replay
 
 
 def test_sprite_effect_replay_preserves_shared_sprite_owners() -> None:

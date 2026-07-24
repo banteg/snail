@@ -12,12 +12,23 @@ schedule but roots each probe in the shared manager-relative
 named `SubGarbage*` lifetimes over the one `SubGarbagePool::active_head`
 chain, and the terminal wall effect is recovered as one stack `Vec3`.
 
-Typing the path-entry result as `TrackRowCell*` was previewed and rejected:
-the same lifetime checks `(cell - 8)->tile_id`, and Binary Ninja degraded that
-known row relationship into a negative `__offset`. The raw lifetime remains
-until it can be split without obscuring the evidence. These analysis-only
-changes leave focused Wibo honestly unchanged at 81.88%, `669/694`
-instructions, prefix `9/694`, with 66 clean masked operands.
+The earlier plain `TrackRowCell*` preview was correctly rejected because
+Binary Ninja degraded `(cell - 8)->tile_id` into a negative `__offset`. The
+recovered `TrackRowCellSameLaneCursorView` now uses Binary Ninja's real
+structure pointer-offset model instead: its pointer value names the inherited
+current `TrackRowCell` at `+0x2a0`, while `previous_row_same_lane` names the
+cell eight `0x54`-byte slots earlier. IDA independently renders the same
+geometry as `v19[-8].tile_id`. This is explicitly a borrowed analysis view,
+not a claimed source class or a new storage owner.
+
+The two tile tests now resolve as `same_lane_cursor->tile_id` and
+`same_lane_cursor->previous_row_same_lane.tile_id` without any synthetic
+`__offset`. The call-result EAX lifetime deliberately remains automatic:
+forcing it to `TrackRowCell*` made Binary Ninja regress the world-position
+argument from the complete `Vec3` to `&position.x`; the carried EDI lifetime
+alone is the offset-rooted cursor. These analysis-only changes leave focused
+Wibo honestly unchanged at 81.88%, `669/694` instructions, prefix `9/694`,
+with 66 clean masked operands.
 
 ## 2026-07-14 kind-0 sprite ownership
 

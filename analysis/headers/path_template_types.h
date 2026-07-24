@@ -1,6 +1,12 @@
 #ifndef PATH_TEMPLATE_TYPES_H
 #define PATH_TEMPLATE_TYPES_H
 
+#ifndef BN_TYPE_PARSER
+#define __base(name, offset)
+#define __inherited
+#define __ptr_offset(offset)
+#endif
+
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
@@ -1302,6 +1308,23 @@ typedef struct TrackRowCellTileByteView {
 } TrackRowCellTileByteView;
 typedef char TrackRowCellTileByteView_must_stride_0x54[
     (sizeof(TrackRowCellTileByteView) == 0x54) ? 1 : -1
+];
+
+/*
+ * Analysis-only offset-pointer view for a borrowed runtime cell whose
+ * same-lane predecessor is read one complete eight-cell row earlier. The
+ * pointer value names the inherited current TrackRowCell at +0x2a0; the seven
+ * intervening cells are real storage but span a lane-dependent row boundary
+ * and are never consumed through this view. This view owns none of the cells.
+ */
+typedef struct __ptr_offset(0x2a0)
+    __base(TrackRowCell, 0x2a0) TrackRowCellSameLaneCursorView {
+    TrackRowCell previous_row_same_lane;
+    TrackRowCell intervening_cells[7];
+    __inherited TrackRowCell current_cell;
+} TrackRowCellSameLaneCursorView;
+typedef char TrackRowCellSameLaneCursorView_must_be_0x2f4[
+    (sizeof(TrackRowCellSameLaneCursorView) == 0x2f4) ? 1 : -1
 ];
 
 typedef enum SubRowFlag {

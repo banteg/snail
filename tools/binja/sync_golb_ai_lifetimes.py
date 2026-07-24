@@ -8,9 +8,12 @@ import sys
 
 from _narrow_sync import (
     apply_user_var_updates,
+    current_header_type_equivalence,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
+    remove_user_var_updates,
+    types_declare_missing_only,
 )
 from _target import DEFAULT_TARGET
 
@@ -21,6 +24,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 EXPECTED_TYPE_WIDTHS = {
     "Vec3": 0x0C,
     "Sprite": 0xB4,
+    "TrackRowCellSameLaneCursorView": 0x2F4,
     "Slug": 0xEC,
     "SlugSlotCursor": 0x35648C,
     "SubGarbage": 0xC4,
@@ -36,6 +40,10 @@ EXPECTED_STRUCT_FIELDS = {
     },
     "Sprite": {
         0x48: ("position", "Vec3"),
+    },
+    "TrackRowCellSameLaneCursorView": {
+        0x00: ("previous_row_same_lane", "TrackRowCell"),
+        0x54: ("intervening_cells", "TrackRowCell[7]"),
     },
     "Slug": {
         0x00: ("body", "RenderableBod"),
@@ -66,15 +74,32 @@ EXPECTED_STRUCT_FIELDS = {
 # render owner is proved to be a Sprite by create_golb and kill_golb. The slug
 # scan retains its byte offset and parallel slot index for the native VC6
 # schedule, but the offset-rooted pointer is the shared manager-relative
-# SlugSlotCursor. The direct and kind-two splash garbage passes walk separate
-# lifetimes over one SubGarbagePool active chain. The final wall impact occupies
-# one complete Vec3 stack object.
-#
-# The tempting source-cell cast at register lifetimes 765/770 is intentionally
-# omitted. That register also reads `(cell - 8)->tile_id`; forcing a
-# TrackRowCell* makes Binary Ninja emit a negative __offset instead of exposing
-# the preceding-row relationship.
+# SlugSlotCursor. The path-entry probe keeps its real TrackRowCell return owner
+# while an analysis-only offset pointer exposes the current cell and its
+# same-lane predecessor eight cells earlier without a synthetic __offset. The
+# direct and kind-two splash garbage passes walk separate lifetimes over one
+# SubGarbagePool active chain. The final wall impact occupies one complete Vec3
+# stack object.
+GOLB_AI_USER_VAR_REMOVALS = (
+    (
+        "update_golb_ai",
+        "RegisterVariableSourceType",
+        765,
+        66,
+        "source_cell",
+        "TrackRowCell*",
+    ),
+)
+
 GOLB_AI_USER_VAR_UPDATES = (
+    (
+        "update_golb_ai",
+        "RegisterVariableSourceType",
+        770,
+        73,
+        "same_lane_cursor",
+        "TrackRowCellSameLaneCursorView*",
+    ),
     (
         "update_golb_ai",
         "RegisterVariableSourceType",
@@ -150,6 +175,33 @@ GOLB_AI_USER_VAR_UPDATES = (
 )
 
 
+def ensure_path_cell_view(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    type_name = "TrackRowCellSameLaneCursorView"
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    if equivalence.get(type_name, False):
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "Golb path-cell analysis view already matches the header",
+            "header": str(header_path),
+            "replace_types": (),
+            "include_types": (type_name,),
+        }
+    return types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=(type_name,),
+        include_types=(type_name,),
+    )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
@@ -218,7 +270,13 @@ def main() -> int:
         raise FileNotFoundError(f"Golb ownership header not found: {header_path}")
 
     operations = [
+        ensure_path_cell_view(target=args.target, header_path=header_path),
         verify_owner_layouts(args.target),
+        *remove_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            removals=GOLB_AI_USER_VAR_REMOVALS,
+        ),
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,

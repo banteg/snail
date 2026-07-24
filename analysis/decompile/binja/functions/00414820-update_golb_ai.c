@@ -89,16 +89,16 @@
 00414b09        long double temp10_1 = fconvert.t(0f)
 00414b09        x87_r7_36 - temp10_1
 00414b14        if ((((x87_r7_36 < temp10_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_36, temp10_1) ? 1 : 0) << 0xa | (x87_r7_36 == temp10_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-00414b1d        int32_t source_cell = get_track_grid_cell_at_world_position(shot->game, &shot->source_matrix.position)
-00414b29        if (*(source_cell + 0x3c) == 0x1e)
+00414b22        struct TrackRowCellSameLaneCursorView* same_lane_cursor = get_track_grid_cell_at_world_position(shot->game, &shot->source_matrix.position)
+00414b29        if (same_lane_cursor->tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE)
 00414b32        shot->path_entry_z_latch = shot->source_matrix.position.z
-00414b40        initialize_path_follow_golb(&shot->path_follow, source_cell, &shot->flight_transform.position, shot)
+00414b40        initialize_path_follow_golb(&shot->path_follow, same_lane_cursor, &shot->flight_transform.position, shot)
 00414b45        long double x87_r7_37 = fconvert.t(shot->velocity.z)
 00414b4b        long double temp16_1 = fconvert.t(1f)
 00414b4b        x87_r7_37 - temp16_1
-00414b5e        if ((((x87_r7_37 < temp16_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_37, temp16_1) ? 1 : 0) << 0xa | (x87_r7_37 == temp16_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 && *(source_cell - 0x264) == 0x1e)
+00414b5e        if ((((x87_r7_37 < temp16_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_37, temp16_1) ? 1 : 0) << 0xa | (x87_r7_37 == temp16_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 && same_lane_cursor->previous_row_same_lane.tile_id == 0x1e)
 00414b7b        shot->path_entry_z_latch = fconvert.s(fconvert.t(shot->source_matrix.position.z) + fconvert.t(1f))
-00414b81        initialize_path_follow_golb(&shot->path_follow, source_cell - 0x2a0, &shot->flight_transform.position, shot)
+00414b81        initialize_path_follow_golb(&shot->path_follow, same_lane_cursor - 0x2a0, &shot->flight_transform.position, shot)
 00414b86        label_414b86:
 00414b86        int32_t kind_1 = shot->kind
 00414b8f        if (kind_1 == 0)

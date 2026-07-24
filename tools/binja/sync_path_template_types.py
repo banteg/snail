@@ -426,6 +426,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SubLocTileId",
     "SubLocFlag",
     "TrackRowCell",
+    "TrackRowCellSameLaneCursorView",
     "SubRowFlag",
     "RowModel",
     "SubRow",
@@ -476,6 +477,7 @@ def ensure_path_analysis_views(
     type_names = (
         "PresentationWobbleController",
         "RuntimeCellStrideAnchor",
+        "TrackRowCellSameLaneCursorView",
         "SubSegmentParcelScanAnchor",
         "SubSegmentEventBiasView",
         "SubLocTileId",

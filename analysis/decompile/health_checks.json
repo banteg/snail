@@ -8795,6 +8795,9 @@
       "artifact": "analysis/decompile/binja/functions/00414820-update_golb_ai.c",
       "required_substrings": [
         "add_vapour_point(&shot->vapour, &shot->source_matrix)",
+        "struct TrackRowCellSameLaneCursorView* same_lane_cursor",
+        "same_lane_cursor->tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE",
+        "same_lane_cursor->previous_row_same_lane.tile_id == 0x1e",
         "struct Vec3* render_position = &shot->render_sprite->position",
         "struct SubGarbage* active_garbage = shot->game->garbage_hazards.active_head",
         "active_garbage->state == SUB_GARBAGE_STATE_ACTIVE",
@@ -8830,6 +8833,8 @@
       "artifact": "analysis/decompile/ida/functions/00414820-update_golb_ai.c",
       "required_substrings": [
         "void __thiscall update_golb_ai(GolbShot *shot)",
+        "track_grid_cell_at_world_position->tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE",
+        "v19[-8].tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE",
         "active_head->state == SUB_GARBAGE_STATE_ACTIVE",
         "active_head->state = SUB_GARBAGE_STATE_BURST_PENDING;",
         "SUB_GARBAGE_COLLISION_SIDE_RIGHT",
