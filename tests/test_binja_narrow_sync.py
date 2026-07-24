@@ -5321,6 +5321,8 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
 
     assert "typedef struct SubSegmentRowStrideAnchor" in analysis_path_header
     assert "uint8_t segment_prefix[0x814];" in analysis_path_header
+    assert "typedef struct SubSegmentParcelScanAnchor" in analysis_path_header
+    assert "int32_t next_segment_row_base;" in analysis_path_header
     assert "typedef struct RuntimeRowStrideAnchor" in analysis_path_header
     assert "uint8_t runtime_prefix[0x5ccac8];" in analysis_path_header
     assert "typedef struct RuntimeCellStrideAnchor" in analysis_path_header
@@ -5600,6 +5602,25 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "*CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
 
     assert "PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES" in binja_source
+    assert "PLACE_PARCELS_SCAN_USER_VAR_UPDATES" in binja_source
+    for identity in (
+        '"RegisterVariableSourceType",\n        114,\n        69,',
+        '"StackVariableSourceType",\n        124,\n        -532,',
+        '"StackVariableSourceType",\n        186,\n        -496,',
+        '"StackVariableSourceType",\n        436,\n        -492,',
+        '"RegisterVariableSourceType",\n        190,\n        73,',
+    ):
+        assert identity in binja_source
+    for name, type_name in (
+        ("segment_row_count_anchor", "SubSegmentParcelScanAnchor*"),
+        ("saved_segment_row_count_anchor", "SubSegmentParcelScanAnchor*"),
+        ("glyph_row_cursor", "char*"),
+        ("glyph_lane_cursor", "char*"),
+        ("authored_parcel_position", "Vec3*"),
+    ):
+        assert f'"{name}"' in binja_source
+        assert f'"{type_name}"' in binja_source
+    assert "*PLACE_PARCELS_SCAN_USER_VAR_UPDATES" in binja_source
     for identity in (
         '"RegisterVariableSourceType",\n        1239,\n        72,',
         '"RegisterVariableSourceType",\n        1832,\n        73,',
@@ -5617,12 +5638,19 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
 
     assert "PLACE_PARCELS_RUNTIME_LVAR_SPECS" in ida_path_sync
     for definition_address in (
+        "0x443953",
+        "0x44399F",
         "0x443DB8",
         "0x444009",
         "0x444162",
     ):
         assert definition_address in ida_path_sync
     for name, declaration in (
+        (
+            "segment_row_count_anchor",
+            "SubSegmentParcelScanAnchor *segment_row_count_anchor;",
+        ),
+        ("authored_parcel_position", "Vec3 *authored_parcel_position;"),
         (
             "parcel_set_runtime_row_anchor",
             "RuntimeRowStrideAnchor *parcel_set_runtime_row_anchor;",
@@ -5632,6 +5660,15 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     ):
         assert f'"{name}"' in ida_path_sync
         assert f'"{declaration}"' in ida_path_sync
+    assert "PLACE_PARCELS_REJECTED_STACK_LVAR_OVERRIDES" in ida_path_sync
+    for rejected_override in (
+        '("saved_segment_row_count_anchor", 0x44395D, 36)',
+        '("glyph_row_cursor", 0x44399B, 72)',
+        '("glyph_lane_cursor", 0x443A95, 76)',
+    ):
+        assert rejected_override in ida_path_sync
+    assert "_clear_exact_lvar_override" in ida_path_sync
+    assert '"rejected_stack_overrides"' in ida_path_sync
     assert "_sync_place_parcels_runtime_lvars" in ida_path_sync
     assert "PLACE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS" in ida_path_sync
     for operand_spec in (
@@ -6521,6 +6558,7 @@ def test_parcel_bucket_lifetime_replay_stays_guarded() -> None:
         (1506, 73, "destination_candidate_write", "ParcelCandidate*"),
         (1875, 67, "zero_candidate_position", "Vec3*"),
         (1972, 66, "zero_destination_bucket", "ParcelBucket*"),
+        (1986, 72, "zero_source_bucket", "ParcelBucket*"),
     ):
         expected = (
             '"place_parcels_on_track",\n'

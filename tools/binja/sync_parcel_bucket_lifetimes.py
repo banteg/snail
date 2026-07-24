@@ -87,6 +87,14 @@ PARCEL_BUCKET_USER_VAR_UPDATES = (
         "zero_destination_bucket",
         "ParcelBucket*",
     ),
+    (
+        "place_parcels_on_track",
+        "RegisterVariableSourceType",
+        1986,
+        72,
+        "zero_source_bucket",
+        "ParcelBucket*",
+    ),
 )
 
 def parse_args() -> argparse.Namespace:

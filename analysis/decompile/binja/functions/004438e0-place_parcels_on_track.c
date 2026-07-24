@@ -23,9 +23,9 @@
 00443945        int32_t var_208
 00443945        int32_t var_190[0x64]
 00443945        if (game->level_definition.segment_count s> 0)
-00443952        int32_t* ebx_1 = &game->level_definition.segment_slots[0].row_count
+00443952        struct SubSegmentParcelScanAnchor* segment_row_count_anchor = &game->level_definition.segment_slots[0].row_count
 00443958        int32_t (* var_1f4_1)[0x64] = &var_190
-0044395c        int32_t* var_214_1 = ebx_1
+0044395c        struct SubSegmentParcelScanAnchor* saved_segment_row_count_anchor = segment_row_count_anchor
 00443964        int32_t eax_1 = 0
 00443966        var_208 = 0
 0044396a        int32_t var_200_1 = 0
@@ -36,38 +36,38 @@
 00443982        int32_t ecx_3 = i_6 * 0x20c
 0044398d        while (true)
 0044398d        int32_t edx_4 = 0
-00443991        if ((ebx_1 - 0xa87c)->level_definition.segment_slots[0].row_count s> 0)
-0044399a        char (* var_1f0_1)[0x8][0x100] = &ebx_1[4]
-0044399e        struct Vec3* out_angle_4 = &ebx_1[0x206]
-004439a4        out_angle = out_angle_4
+00443991        if (segment_row_count_anchor->row_count s> 0)
+0044399a        char* glyph_row_cursor = &segment_row_count_anchor->glyph_rows
+0044399e        struct Vec3* authored_parcel_position = &segment_row_count_anchor->rows[0].local_position
+004439a4        out_angle = authored_parcel_position
 004439bb        while (true)
-004439bb        if (((out_angle_4 - 0xb094)->:0xb08c.b & 1) != 0 && (out_angle_4 - 0xb094)->level_definition.segment_slots[0].rows[0].parcel_set_id == eax_1)
+004439bb        if ((authored_parcel_position->__offset(0xfffffffffffffff8).b & 1) != 0 && authored_parcel_position->x:-4.d == eax_1)
 004439c3        if (eax_1 != 0)
 00443a34        *(ecx_3 + &g_parcel_set_buckets.segment_index) = i_1
 00443a43        *((*(ecx_3 + &g_parcel_set_buckets.candidate_count) << 4) + ecx_3 + &g_parcel_set_buckets) = edx_4
 00443a55        int32_t* eax_13 = (*(ecx_3 + &g_parcel_set_buckets.candidate_count) << 4) + ecx_3 + &(*g_parcel_set_buckets.candidates)[0].position
-00443a5c        *eax_13 = out_angle_4->x
-00443a61        eax_13[1] = out_angle_4->y
-00443a67        eax_13[2] = out_angle_4->z
+00443a5c        *eax_13 = authored_parcel_position->x
+00443a61        eax_13[1] = authored_parcel_position->y
+00443a67        eax_13[2] = authored_parcel_position->z
 00443a6e        *(ecx_3 + &g_parcel_set_buckets.set_id) = var_200_1
 00443a7b        *(ecx_3 + &g_parcel_set_buckets.candidate_count) += 1
 004439d0        int32_t eax_6 = i_3 * 0x20c
 004439d3        (&g_zero_parcel_buckets)[i_3].segment_index = i_1
 004439e2        *(((&g_zero_parcel_buckets)[i_3].candidate_count << 4) + eax_6 + &g_zero_parcel_buckets) = edx_4
-004439f4        int32_t* ebx_6 = ((&g_zero_parcel_buckets)[i_3].candidate_count << 4) + eax_6 + &(*g_zero_parcel_buckets.candidates)[0].position
-004439fb        *ebx_6 = out_angle_4->x
-00443a00        ebx_6[1] = out_angle_4->y
-00443a0a        ebx_6[2] = out_angle_4->z
+004439f4        float* ebx_5 = ((&g_zero_parcel_buckets)[i_3].candidate_count << 4) + eax_6 + &(*g_zero_parcel_buckets.candidates)[0].position
+004439fb        *ebx_5 = authored_parcel_position->x
+00443a00        ebx_5[1] = authored_parcel_position->y
+00443a0a        ebx_5[2] = authored_parcel_position->z
 00443a0d        (&g_zero_parcel_buckets)[i_3].set_id = 0
 00443a1e        i_3 = i_4 + 1
 00443a1f        (&g_zero_parcel_buckets)[i_3].candidate_count += 1
 00443a2a        int32_t i_5 = i_3
 00443a2e        out_angle_1 += 1
 00443a8c        int32_t var_204_1 = 0
-00443a94        char (* var_1ec_1)[0x8][0x100] = var_1f0_1
+00443a94        char* glyph_lane_cursor = glyph_row_cursor
 00443a9c        int32_t eax_21 = i_3 * 0x20c
 00443bd6        bool cond:8_1
-00443aaf        if (sx.d((var_1ec_1 - 0xa88c)->:0xa88c.b) == var_200_1 + 0x30)
+00443aaf        if (sx.d(*glyph_lane_cursor) == var_200_1 + 0x30)
 00443abb        if (var_200_1 != 0)
 00443b4b        *(ecx_3 + &g_parcel_set_buckets.segment_index) = i_1
 00443b60        *((*(ecx_3 + &g_parcel_set_buckets.candidate_count) << 4) + ecx_3 + &g_parcel_set_buckets) = edx_4
@@ -94,15 +94,15 @@
 00443b41        out_angle_1 += 1
 00443bcb        cond:8_1 = var_204_1 + 1 s< 8
 00443bce        var_204_1 += 1
-00443bd2        var_1ec_1 = &(*var_1ec_1)[1]
+00443bd2        glyph_lane_cursor = &glyph_lane_cursor[0x100]
 00443bd6        do while (cond:8_1)
 00443be4        edx_4 += 1
-00443be5        out_angle_4 = out_angle i+ 0x38
+00443be5        authored_parcel_position = out_angle i+ 0x38
 00443be9        i_4 = i_3
-00443bed        var_1f0_1 = &(*var_1f0_1)[0][1]
-00443bf1        ebx_1 = var_214_1
-00443bf5        out_angle = out_angle_4
-00443bfb        if (edx_4 s>= (ebx_1 - 0xa87c)->level_definition.segment_slots[0].row_count)
+00443bed        glyph_row_cursor = &glyph_row_cursor[1]
+00443bf1        segment_row_count_anchor = saved_segment_row_count_anchor
+00443bf5        out_angle = authored_parcel_position
+00443bfb        if (edx_4 s>= segment_row_count_anchor->row_count)
 00443bfb        break
 004439aa        eax_1 = var_200_1
 00443c01        int32_t eax_22 = *(ecx_3 + &g_parcel_set_buckets.candidate_count)
@@ -121,9 +121,9 @@
 00443c4a        break
 00443987        eax_1 = var_200_1
 00443c58        i_1 += 1
-00443c62        ebx_1 = &ebx_1[0x1088]
+00443c62        segment_row_count_anchor = &segment_row_count_anchor[1]
 00443c6a        var_1f4_1 = &(*var_1f4_1)[1]
-00443c6e        var_214_1 = ebx_1
+00443c6e        saved_segment_row_count_anchor = segment_row_count_anchor
 00443c72        do while (i_1 s< game->level_definition.segment_count)
 00443c81        int32_t parcel_count_2 = game->level_definition.parcel_count
 00443c94        int32_t segment_count = game->level_definition.segment_count
@@ -148,7 +148,7 @@
 00443d08        int32_t ecx_13 = game->level_definition.parcel_count - esi_1
 00443d0c        if (ecx_13 s> out_angle_1)
 00443d1a        ecx_13 = report_errorf("Parcel Allocation could fail in %s. Add more 0 parcels ", &game->level_definition.level_display_name)
-00443d22        int32_t ebx_26 = 0
+00443d22        int32_t ebx_25 = 0
 00443d26        int32_t var_210_1 = 0
 00443d2a        int16_t x87control
 00443d2a        if (esi_1 s> 0)
@@ -158,44 +158,44 @@
 00443d45        int32_t var_22c_1 = ecx_13
 00443d51        int32_t eax_29
 00443d51        eax_29, x87control = ftol(x87control, random_float_below(fconvert.s(float.t(i_6))))
-00443d58        int32_t var_214_2 = 0
+00443d58        int32_t var_214_1 = 0
 00443d6b        int32_t candidate_count = (&g_parcel_set_buckets)[eax_29].candidate_count
-00443d75        var_210_1 = ebx_26 + candidate_count
+00443d75        var_210_1 = ebx_25 + candidate_count
 00443d79        if (candidate_count s> 0)
-00443d7f        int32_t* ebx_28 = eax_29 * 0x20c + &(*g_parcel_set_buckets.candidates)[0].position
+00443d7f        int32_t* ebx_27 = eax_29 * 0x20c + &(*g_parcel_set_buckets.candidates)[0].position
 00443e59        bool cond:14_1
-00443da8        float out_angle_3 = game->level_definition.segment_slots[(&g_parcel_set_buckets)[eax_29].segment_index].row_base + ebx_28[-1]
+00443da8        float out_angle_3 = game->level_definition.segment_slots[(&g_parcel_set_buckets)[eax_29].segment_index].row_base + ebx_27[-1]
 00443daa        out_angle = out_angle_3
 00443db7        struct RuntimeRowStrideAnchor* parcel_set_runtime_row_anchor = game + out_angle_3 i* 0xf4
 00443dc1        if ((parcel_set_runtime_row_anchor->row.flags.b & 0x10) != 0)
 00443dd3        report_errorf("Duplicate Parcel Request in %s.", &game->level_definition.level_display_name)
 00443df0        parcel_set_runtime_row_anchor->row.flags |= 0x11
-00443dfc        parcel_set_runtime_row_anchor->row.projection_payload.x = *ebx_28
-00443e01        parcel_set_runtime_row_anchor->row.projection_payload.y = ebx_28[1]
-00443e07        parcel_set_runtime_row_anchor->row.projection_payload.z = ebx_28[2]
+00443dfc        parcel_set_runtime_row_anchor->row.projection_payload.x = *ebx_27
+00443e01        parcel_set_runtime_row_anchor->row.projection_payload.y = ebx_27[1]
+00443e07        parcel_set_runtime_row_anchor->row.projection_payload.z = ebx_27[2]
 00443e16        parcel_set_runtime_row_anchor->row.projection_payload.z = fconvert.s(float.t(out_angle) + fconvert.t(parcel_set_runtime_row_anchor->row.projection_payload.z) + fconvert.t(0.5f))
 00443e28        parcel_set_runtime_row_anchor->row.projection_payload.y = fconvert.s(fconvert.t(parcel_set_runtime_row_anchor->row.projection_payload.y) + fconvert.t(1f))
 00443e35        if ((parcel_set_runtime_row_anchor->row.flags.b & 0x20) != 0)
 00443e43        parcel_set_runtime_row_anchor->row.projection_payload.x = fconvert.s(fconvert.t(parcel_set_runtime_row_anchor->row.projection_payload.x) * fconvert.t(-1f))
-00443e50        ebx_28 = &ebx_28[4]
-00443e53        cond:14_1 = var_214_2 + 1 s< (&g_parcel_set_buckets)[eax_29].candidate_count
-00443e55        var_214_2 += 1
+00443e50        ebx_27 = &ebx_27[4]
+00443e53        cond:14_1 = var_214_1 + 1 s< (&g_parcel_set_buckets)[eax_29].candidate_count
+00443e55        var_214_1 += 1
 00443e59        do while (cond:14_1)
 00443e5f        int32_t segment_index = (&g_parcel_set_buckets)[eax_29].segment_index
 00443e65        int32_t ecx_29 = 0
 00443e6b        i_2 = i_6
 00443e71        int32_t var_208_2 = 0
 00443e75        if (i_2 s> 0)
-00443e7b        float out_angle_5 = i_2 - 1
+00443e7b        float out_angle_4 = i_2 - 1
 00443e7e        int32_t* edx_21 = &data_648bf4
 00443e83        int32_t* esi_3 = &g_parcel_set_buckets.segment_index
-00443e88        out_angle = out_angle_5
-00443e8c        int32_t* var_1f0_2 = &data_648bf4
+00443e88        out_angle = out_angle_4
+00443e8c        int32_t* var_1f0_1 = &data_648bf4
 00443e90        int32_t* var_1f4_2 = &g_parcel_set_buckets.segment_index
 00443e9a        if ((esi_3 - 0x208)->segment_index == segment_index)
-00443ea2        if (ecx_29 s< out_angle_5)
+00443ea2        if (ecx_29 s< out_angle_4)
 00443ea4        int32_t* eax_37 = edx_21
-00443eaa        int32_t var_214_3 = out_angle_5 i- ecx_29
+00443eaa        int32_t var_214_2 = out_angle_4 i- ecx_29
 00443f10        bool cond:16_1
 00443eb0        int32_t j = 0
 00443eb4        if (*eax_37 s> 0)
@@ -214,32 +214,32 @@
 00443ef3        eax_37[-0x81] = eax_37[2]
 00443efc        eax_37[-0x82] = eax_37[1]
 00443f06        eax_37 = &eax_37[0x83]
-00443f0b        cond:16_1 = var_214_3 != 1
-00443f0c        var_214_3 -= 1
+00443f0b        cond:16_1 = var_214_2 != 1
+00443f0c        var_214_2 -= 1
 00443f10        do while (cond:16_1)
-00443f12        out_angle_5 = out_angle
-00443f16        edx_21 = var_1f0_2
+00443f12        out_angle_4 = out_angle
+00443f16        edx_21 = var_1f0_1
 00443f1a        esi_3 = var_1f4_2
 00443f22        ecx_29 -= 1
 00443f23        esi_3 -= 0x20c
 00443f29        edx_21 -= 0x20c
 00443f2f        int32_t i_7 = i_6 - 1
-00443f30        out_angle_5 -= 1
+00443f30        out_angle_4 -= 1
 00443f31        i_6 = i_7
-00443f35        out_angle = out_angle_5
+00443f35        out_angle = out_angle_4
 00443f39        i_2 = i_7
 00443f3b        ecx_29 += 1
 00443f3c        esi_3 = &esi_3[0x83]
 00443f42        edx_21 = &edx_21[0x83]
 00443f4a        var_208_2 = ecx_29
 00443f4e        var_1f4_2 = esi_3
-00443f52        var_1f0_2 = edx_21
+00443f52        var_1f0_1 = edx_21
 00443f56        do while (ecx_29 s< i_2)
-00443f5c        ebx_26 = var_210_1
+00443f5c        ebx_25 = var_210_1
 00443f60        ecx_13 = esi_1
-00443f66        if (ebx_26 s>= ecx_13)
+00443f66        if (ebx_25 s>= ecx_13)
 00443f66        break
-00443f76        if (ebx_26 s< game->level_definition.parcel_count)
+00443f76        if (ebx_25 s< game->level_definition.parcel_count)
 00443f7c        int32_t parcel_count_1 = i_3 - 1
 00443f7f        int32_t parcel_count_4 = parcel_count_1
 00443f85        while (i_3 s> 0)
@@ -283,10 +283,10 @@
 004440df        int32_t j_1
 004440a4        j_1 = j_2
 004440a4        j_2 -= 1
-004440a7        zero_destination_bucket->candidates[0].row = zero_destination_bucket->__offset(0x20c).d
-004440ac        zero_destination_bucket->candidates[0].position.x = zero_destination_bucket->__offset(0x210).d
-004440b2        zero_destination_bucket->candidates[0].position.y = zero_destination_bucket->__offset(0x214).d
-004440b8        zero_destination_bucket->candidates[0].position.z = zero_destination_bucket->__offset(0x218).d
+004440a7        zero_destination_bucket->candidates[0].row = zero_destination_bucket[1].candidates[0].row
+004440ac        zero_destination_bucket->candidates[0].position.x = zero_destination_bucket[1].candidates[0].position.x
+004440b2        zero_destination_bucket->candidates[0].position.y = zero_destination_bucket[1].candidates[0].position.y
+004440b8        zero_destination_bucket->candidates[0].position.z = zero_destination_bucket[1].candidates[0].position.z
 004440c1        zero_destination_bucket->candidate_count = zero_destination_bucket->__offset(0x40c).d
 004440cd        zero_destination_bucket->segment_index = zero_destination_bucket->__offset(0x414).d
 004440d3        zero_destination_bucket->set_id = 0
@@ -305,7 +305,7 @@
 00444134        if (parcel_quota != 0)
 00444142        game->level_definition.parcel_quota = divs.dp.d(sx.q(game->level_definition.parcel_count * var_210_1), parcel_quota)
 00444148        game->level_definition.parcel_count = var_210_1
-00444153        int32_t var_214_5 = 0
+00444153        int32_t var_214_4 = 0
 0044415b        if (game->runtime_row_count s<= 0)
 0044415b        return
 00444161        struct SubRow* projection_row = &game->runtime_rows
@@ -328,7 +328,7 @@
 004441ec        projection_row->projection_payload.x = transform.position.x
 004441f2        projection_row->projection_payload.y = transform.position.y
 0044421f        projection_row = &projection_row[1]
-00444225        cond:12_1 = var_214_5 + 1 s< game->runtime_row_count
-00444227        var_214_5 += 1
+00444225        cond:12_1 = var_214_4 + 1 s< game->runtime_row_count
+00444227        var_214_4 += 1
 0044422b        do while (cond:12_1)
 0044423b        return

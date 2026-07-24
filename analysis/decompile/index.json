@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,16 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "register_font_texture_sheet",
-      "address": "0x449f50"
-    },
-    {
-      "name": "draw_font_text_instance",
-      "address": "0x44a360"
-    },
-    {
-      "name": "initialize_font3d_objects",
-      "address": "0x44ae10"
+      "name": "place_parcels_on_track",
+      "address": "0x4438e0"
     }
   ],
   "health_check_count": 924,

@@ -418,6 +418,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SMTracks",
     "SmtrackHeightfieldAnimator",
     "AuthoredSegmentRowFlag",
+    "SubSegmentParcelScanAnchor",
     "SubSegmentRowStrideAnchor",
     "SubLocOpenEdgeFlag",
     "SubLocTileId",
@@ -473,6 +474,7 @@ def ensure_path_analysis_views(
     type_names = (
         "PresentationWobbleController",
         "RuntimeCellStrideAnchor",
+        "SubSegmentParcelScanAnchor",
         "SubLocTileId",
         "SubSlugState",
         "SubSlugDeathTossDirection",
@@ -1153,6 +1155,55 @@ PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES = (
         72,
         "projection_row",
         "SubRow*",
+    ),
+)
+
+# The authored candidate scan begins at SubSegment::row_count, not at the
+# enclosing SubSegment base. Its EBX induction advances by the exact 0x4220
+# segment stride, while the two stack cursors walk the current row across the
+# lane-major glyph grid and the EDI cursor borrows that row's local_position.
+# The anchor's trailing word overlaps the next segment's row_base solely to
+# preserve the native stride; SubTracks remains the owner of every segment.
+PLACE_PARCELS_SCAN_USER_VAR_UPDATES = (
+    (
+        "place_parcels_on_track",
+        "RegisterVariableSourceType",
+        114,
+        69,
+        "segment_row_count_anchor",
+        "SubSegmentParcelScanAnchor*",
+    ),
+    (
+        "place_parcels_on_track",
+        "StackVariableSourceType",
+        124,
+        -532,
+        "saved_segment_row_count_anchor",
+        "SubSegmentParcelScanAnchor*",
+    ),
+    (
+        "place_parcels_on_track",
+        "StackVariableSourceType",
+        186,
+        -496,
+        "glyph_row_cursor",
+        "char*",
+    ),
+    (
+        "place_parcels_on_track",
+        "StackVariableSourceType",
+        436,
+        -492,
+        "glyph_lane_cursor",
+        "char*",
+    ),
+    (
+        "place_parcels_on_track",
+        "RegisterVariableSourceType",
+        190,
+        73,
+        "authored_parcel_position",
+        "Vec3*",
     ),
 )
 
@@ -4011,6 +4062,7 @@ def main() -> int:
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
                 *CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES,
                 *KILL_GOLB_OWNER_USER_VAR_UPDATES,
+                *PLACE_PARCELS_SCAN_USER_VAR_UPDATES,
                 *PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES,
                 *CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES,
                 *UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES,

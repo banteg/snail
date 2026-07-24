@@ -307,3 +307,37 @@ stack variable was restored, and the five stable register lifetimes were then
 replayed twice with identical results. No source-shape change was justified;
 focused Wibo remains honestly at 33.81% (633/639 instructions, 40 clean masked
 operands, two known candidate-bank address-shape mismatches).
+
+## Authored segment scan and zero-pool source ownership (2026-07-24)
+
+The first placement pass now exposes the unusual Windows induction without
+pretending that its EBX value is a direct `SubSegment*`. Native roots EBX at
+`SubSegment::row_count`, saves that same borrowed address across the inner
+loops, and advances it by the full 0x4220-byte segment stride. The
+`SubSegmentParcelScanAnchor` analysis view therefore starts at `row_count` and
+uses the next segment's `row_base` only as its final stride-overlap word;
+`SubTracks::segment_slots` remains the sole owner of the storage.
+
+Binary Ninja can keep the two subordinate cursor lifetimes explicit:
+`glyph_row_cursor` advances one byte per authored row while
+`glyph_lane_cursor` advances 0x100 bytes across the eight lane-major glyph
+planes. The parallel EDI borrow starts at `rows[0].local_position` and advances
+one 0x38-byte `AuthoredSegmentRow` per row. IDA independently proves the same
+geometry and safely retains the two register-backed anchor/position views. Its
+three stack locals were deliberately rejected for replay because Hex-Rays
+reuses those slots in the later scratch-bank compaction; naming them as glyph
+cursors leaked false ownership into unrelated code. Android also separates the
+active segment, glyph-grid, and authored-row pointers while using its
+port-specific pointer-backed segment layout.
+
+The digit-0 compactor also now proves its source/destination relationship.
+Windows sets ESI to `destination + sizeof(ParcelBucket)` before copying the
+first 16-byte candidate, so Binary Ninja renders those reads as
+`zero_destination_bucket[1].candidates[0]`. The two later metadata reads remain
+honest raw +0x40c/+0x414 expressions because native reloads them from the
+destination base after ESI has been reused; no synthetic pair owner was added.
+
+No scratch source change is justified by these analysis-only ownership
+recoveries. Focused Wibo remains 33.81% (633/639 instructions), with 40 clean
+masked operands and the same two known candidate-bank address-shape
+mismatches.

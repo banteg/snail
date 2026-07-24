@@ -246,6 +246,27 @@ struct SubSegment {
     int32_t message_sample_id;
 };
 
+/*
+ * PlaceParcels roots its outer induction at SubSegment::row_count rather than
+ * at the containing SubSegment. The cursor advances by the full 0x4220-byte
+ * segment stride, so the final word overlaps the next segment's row_base.
+ * This is a borrowed analysis view only; SubTracks remains the storage owner.
+ */
+typedef struct SubSegmentParcelScanAnchor {
+    int32_t row_count;
+    uint8_t visited;
+    uint8_t unknown_05[0x08 - 0x05];
+    int32_t path_index;
+    char* source_name;
+    char glyph_rows[8][0x100];
+    AuthoredSegmentRow rows[256];
+    AuthoredFloatBits angle_radians;
+    char message_text[0x4214 - 0x4014];
+    AuthoredFloatBits message_duration;
+    int32_t message_sample_id;
+    int32_t next_segment_row_base;
+} SubSegmentParcelScanAnchor;
+
 /* The runtime-cell builder advances an ESI cursor by one 0x38-byte authored
  * row while retaining the enclosing SubSegment base. Only row at +0x814 is
  * consumed through this overlapping analysis view. */

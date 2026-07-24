@@ -415,6 +415,18 @@ POPULATE_RUNTIME_LVAR_SPECS = (
 
 PLACE_PARCELS_RUNTIME_LVAR_SPECS = (
     (
+        "segment_row_count_anchor",
+        "SubSegmentParcelScanAnchor *segment_row_count_anchor;",
+        0x443953,
+        None,
+    ),
+    (
+        "authored_parcel_position",
+        "Vec3 *authored_parcel_position;",
+        0x44399F,
+        None,
+    ),
+    (
         "parcel_set_runtime_row_anchor",
         "RuntimeRowStrideAnchor *parcel_set_runtime_row_anchor;",
         0x443DB8,
@@ -432,6 +444,12 @@ PLACE_PARCELS_RUNTIME_LVAR_SPECS = (
         0x444162,
         None,
     ),
+)
+
+PLACE_PARCELS_REJECTED_STACK_LVAR_OVERRIDES = (
+    ("saved_segment_row_count_anchor", 0x44395D, 36),
+    ("glyph_row_cursor", 0x44399B, 72),
+    ("glyph_lane_cursor", 0x443A95, 76),
 )
 
 CHALLENGE_PARCELS_RUNTIME_LVAR_SPECS = (
@@ -2346,6 +2364,97 @@ def _sync_exact_lvars(
     }
 
 
+def _clear_exact_lvar_override(
+    selector: str,
+    expected_name: str,
+    definition_address: int,
+    stack_offset: int,
+) -> dict[str, object]:
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.name == expected_name
+        and lvar.defea == definition_address
+        and lvar.is_stk_var()
+        and lvar.get_stkoff() == stack_offset
+    ]
+    if not candidates:
+        return {
+            "status": "unchanged",
+            "name": expected_name,
+            "definition_address": hex(definition_address),
+            "stack_offset": stack_offset,
+        }
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_override_candidates",
+            "selector": selector,
+            "name": expected_name,
+            "candidate_count": len(candidates),
+        }
+
+    lvar = candidates[0]
+    locator = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    settings = ida_hexrays.lvar_uservec_t()
+    if not ida_hexrays.restore_user_lvar_settings(settings, address):
+        return {
+            "status": "failed",
+            "reason": "restore_user_lvar_settings_failed",
+            "selector": selector,
+            "name": expected_name,
+        }
+
+    saved_info = settings.find_info(locator)
+    if saved_info is None or saved_info.name != expected_name:
+        return {
+            "status": "failed",
+            "reason": "saved_lvar_override_mismatch",
+            "selector": selector,
+            "name": expected_name,
+        }
+    removed_type = str(saved_info.type)
+    if not settings.lvvec._del(saved_info):
+        return {
+            "status": "failed",
+            "reason": "delete_saved_lvar_override_failed",
+            "selector": selector,
+            "name": expected_name,
+        }
+
+    ida_hexrays.save_user_lvar_settings(address, settings)
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_settings = ida_hexrays.lvar_uservec_t()
+    if not ida_hexrays.restore_user_lvar_settings(verified_settings, address):
+        return {
+            "status": "failed",
+            "reason": "restore_verified_lvar_settings_failed",
+            "selector": selector,
+            "name": expected_name,
+        }
+    if verified_settings.find_info(locator) is not None:
+        return {
+            "status": "failed",
+            "reason": "lvar_override_readback_failed",
+            "selector": selector,
+            "name": expected_name,
+        }
+
+    return {
+        "status": "applied",
+        "name": expected_name,
+        "type": removed_type,
+        "definition_address": hex(definition_address),
+        "stack_offset": stack_offset,
+    }
+
+
 def _sync_populate_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "populate_runtime_track_cells_from_segments",
@@ -2354,10 +2463,40 @@ def _sync_populate_runtime_lvars() -> dict[str, object]:
 
 
 def _sync_place_parcels_runtime_lvars() -> dict[str, object]:
-    return _sync_exact_lvars(
+    rejected_stack_overrides = [
+        _clear_exact_lvar_override(
+            "place_parcels_on_track",
+            expected_name,
+            definition_address,
+            stack_offset,
+        )
+        for expected_name, definition_address, stack_offset in (
+            PLACE_PARCELS_REJECTED_STACK_LVAR_OVERRIDES
+        )
+    ]
+    failed = [
+        result
+        for result in rejected_stack_overrides
+        if result.get("status") == "failed"
+    ]
+    if failed:
+        return {
+            "status": "failed",
+            "selector": "place_parcels_on_track",
+            "rejected_stack_overrides": rejected_stack_overrides,
+        }
+
+    result = _sync_exact_lvars(
         "place_parcels_on_track",
         PLACE_PARCELS_RUNTIME_LVAR_SPECS,
     )
+    result["rejected_stack_overrides"] = rejected_stack_overrides
+    if any(
+        rejected.get("status") == "applied"
+        for rejected in rejected_stack_overrides
+    ):
+        result["status"] = "applied"
+    return result
 
 
 def _sync_challenge_parcels_runtime_lvars() -> dict[str, object]:
