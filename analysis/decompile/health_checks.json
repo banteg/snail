@@ -11478,6 +11478,25 @@
       ]
     },
     {
+      "name": "ida_object_vertex_allocation_owner",
+      "artifact": "analysis/decompile/ida/functions/0042f710-request_object_vertices.c",
+      "required_substrings": [
+        "void __thiscall request_object_vertices(Object *object, int32_t vertex_count)",
+        "free_tracked_memory(object->vertices)",
+        "object->vertex_count = vertex_count",
+        "object->vertices = (Vec3 *)allocate_tracked_memory(12 * vertex_count, aObjectVertexLi)",
+        "request_object_vertex_colours(object)"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "mesh->",
+        "(int)aObjectVertexLi",
+        "sub_42F710",
+        "*(object +",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_object_facequad_allocation_owner",
       "artifact": "analysis/decompile/binja/functions/0042f8c0-request_object_facequads.c",
       "required_substrings": [
@@ -11488,6 +11507,25 @@
       "forbidden_substrings": [
         "PathTemplateStripMesh",
         "mesh->",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_facequad_allocation_owner",
+      "artifact": "analysis/decompile/ida/functions/0042f8c0-request_object_facequads.c",
+      "required_substrings": [
+        "void __thiscall request_object_facequads(Object *object, int32_t facequad_count)",
+        "object->facequad_capacity",
+        "free_tracked_memory(object->facequads)",
+        "object->facequads = (ObjectFaceQuad *)allocate_tracked_memory(48 * facequad_count, aObjectFacequad)",
+        "object->facequad_count = facequad_count"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "mesh->",
+        "(int)aObjectFacequad",
+        "sub_42F8C0",
+        "*(object +",
         "unimplemented"
       ]
     },
@@ -11599,6 +11637,62 @@
       "forbidden_substrings": [
         "arg1",
         "*(object +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_normal_allocation_owner",
+      "artifact": "analysis/decompile/ida/functions/0042f800-request_object_facequad_normals.c",
+      "required_substrings": [
+        "Vec3 *__thiscall request_object_facequad_normals(Object *object)",
+        "object->vertex_normals = (Vec3 *)allocate_tracked_memory(12 * object->vertex_count, aObjectVertexNo)",
+        "result = object->facequad_normals",
+        "result = (Vec3 *)allocate_tracked_memory(24 * object->facequad_count, aObjectFacequad_0)",
+        "object->facequad_normals = result",
+        "return result"
+      ],
+      "forbidden_substrings": [
+        "sub_42F800",
+        "_DWORD *this",
+        "_BYTE *__thiscall",
+        "*(object +",
+        "(int)aObjectVertexNo",
+        "(int)aObjectFacequad_0",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_edge_allocation_owner",
+      "artifact": "analysis/decompile/binja/functions/00430570-request_object_edges.c",
+      "required_substrings": [
+        "if (object->edge_count == 0)",
+        "object->edge_count = edge_count",
+        "object->edges = allocate_tracked_memory(edge_count * 0x24, \"Object Edges\")"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return result",
+        "*(object +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_edge_allocation_owner",
+      "artifact": "analysis/decompile/ida/functions/00430570-request_object_edges.c",
+      "required_substrings": [
+        "void __thiscall request_object_edges(Object *object, int32_t edge_count)",
+        "if ( !object->edge_count )",
+        "object->edge_count = edge_count",
+        "object->edges = (ObjectToonEdge *)allocate_tracked_memory(36 * edge_count, aObjectEdges)"
+      ],
+      "forbidden_substrings": [
+        "sub_430570",
+        "_DWORD *this",
+        "_BYTE *__thiscall",
+        "return result",
+        "*(object +",
+        "(int)aObjectEdges",
         "unimplemented"
       ]
     },
@@ -12158,6 +12252,23 @@
       "forbidden_substrings": [
         "arg1",
         "return copy_object_vertices",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_object_vertex_copy_allocation_owner",
+      "artifact": "analysis/decompile/ida/functions/0042f7d0-request_object_vertices_copy.c",
+      "required_substrings": [
+        "void __thiscall request_object_vertices_copy(Object *object)",
+        "object->copied_vertices = (Vec3 *)allocate_tracked_memory(12 * object->vertex_count, aObjectVertexLi)",
+        "copy_object_vertices(object)"
+      ],
+      "forbidden_substrings": [
+        "sub_42F7D0",
+        "unsigned int *this",
+        "return copy_object_vertices",
+        "*(object +",
+        "(int)aObjectVertexLi",
         "unimplemented"
       ]
     },

@@ -14,3 +14,12 @@ instructions with both masked operands clean.
 2026-07-15 analysis replay: the checked-in Binary Ninja artifact now uses the
 canonical `Object*` receiver and names the retained `edge_count`/`edges`
 members; the stale generic-pointer result is gone.
+
+## 2026-07-24 paired IDA ownership replay
+
+IDA now shares the exact void Object member ABI and renders the one-time
+allocation as the Object-owned `ObjectToonEdge* edges` bank. This retires the
+raw `_DWORD*` receiver and fake allocation-pointer return. The manifest now
+also describes only the bank this helper actually owns; the temporary index
+selection workspace belongs to the downstream rendering path. Matching remains
+exact at 16/16.

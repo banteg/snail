@@ -19,3 +19,12 @@ operands clean.
 2026-07-15 Binary Ninja replay: the live prototype and tracked artifact now
 retain the canonical `Object* object` receiver instead of the obsolete
 path-strip prefix. Matching remains exact.
+
+## 2026-07-24 paired IDA ownership replay
+
+The object-render replay now applies the same
+`void __thiscall request_object_vertices(Object*, int32_t)` ABI to IDA. Its
+tracked artifact now shows the canonical Object-owned `Vec3* vertices` bank,
+the `vertex_count` capacity decision, and the linked colour-bank request. This
+retires IDA's stale `PathTemplateStripMesh` owner without changing the exact
+37/37 matcher.

@@ -140,12 +140,28 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall initialize_object(Object* object);",
     ),
     (
+        "request_object_vertices",
+        "void __thiscall request_object_vertices(Object* object, int32_t vertex_count);",
+    ),
+    (
         "copy_object_vertices",
         "void __thiscall copy_object_vertices(Object* object);",
     ),
     (
+        "request_object_vertices_copy",
+        "void __thiscall request_object_vertices_copy(Object* object);",
+    ),
+    (
+        "request_object_facequad_normals",
+        "Vec3* __thiscall request_object_facequad_normals(Object* object);",
+    ),
+    (
         "request_object_vertex_colours",
         "void __fastcall request_object_vertex_colours(Object* object);",
+    ),
+    (
+        "request_object_facequads",
+        "void __thiscall request_object_facequads(Object* object, int32_t facequad_count);",
     ),
     (
         "initialize_object_list",
@@ -206,6 +222,10 @@ TRUSTED_DECLARATIONS = [
     (
         "request_object_texture_groups",
         "void __thiscall request_object_texture_groups(Object* object, int group_count);",
+    ),
+    (
+        "request_object_edges",
+        "void __thiscall request_object_edges(Object* object, int32_t edge_count);",
     ),
     (
         "add_object_edge",
@@ -315,8 +335,12 @@ TRUSTED_NAMES = [
     (0x413BB0, "get_or_append_object_texture_group_vertex"),
     (0x413D50, "build_object_texture_group_buffers"),
     (0x419FD0, "sort_object_faces_by_texture_group"),
+    (0x42F710, "request_object_vertices"),
     (0x42F790, "copy_object_vertices"),
+    (0x42F7D0, "request_object_vertices_copy"),
+    (0x42F800, "request_object_facequad_normals"),
     (0x42F850, "request_object_vertex_colours"),
+    (0x42F8C0, "request_object_facequads"),
     (0x42F930, "request_object_texture_groups"),
     (0x42F990, "initialize_object_list"),
     (0x42F9E0, "build_all_objects"),
@@ -325,6 +349,7 @@ TRUSTED_NAMES = [
     (0x42FCB0, "calc_object_facequad_normals"),
     (0x430230, "calc_object_facequad_normals_simple"),
     (0x4303F0, "calc_object_texture_groups"),
+    (0x430570, "request_object_edges"),
     (0x4305A0, "add_object_edge"),
     (0x4308B0, "calc_object_edges"),
     (0x430A30, "rotate_object_facequad_uv_pairs"),
@@ -435,12 +460,17 @@ REQUIRED_OWNER_MARKERS = (
     "extern ObjectList g_object_list;",
     "typedef struct DirectXLoader {",
     "void __thiscall load_x_mesh(",
+    "void __thiscall request_object_vertices(Object* object, int32_t vertex_count);",
     "void __thiscall copy_object_vertices(Object* object);",
+    "void __thiscall request_object_vertices_copy(Object* object);",
+    "Vec3* __thiscall request_object_facequad_normals(Object* object);",
     "void __fastcall request_object_vertex_colours(Object* object);",
+    "void __thiscall request_object_facequads(Object* object, int32_t facequad_count);",
     "void __thiscall calc_object_bounding_box(Object* object);",
     "int32_t __thiscall calc_object_facequad_normals_simple(Object* object);",
     "void __thiscall calc_object_texture_groups(Object* object);",
     "void __thiscall request_object_texture_groups(Object* object, int32_t group_count);",
+    "void __thiscall request_object_edges(Object* object, int32_t edge_count);",
     "void __cdecl sort_object_faces_by_texture_group(Object* object);",
     "int32_t __cdecl get_or_append_object_texture_group_vertex(",
     "void __thiscall add_object_edge(",
@@ -497,8 +527,12 @@ REANALYSIS_FUNCTIONS = (
     0x41AA50,  # apply_distort_to_object
     0x4246A0,  # build_track_fringe_mesh
     0x424AD0,  # build_track_fringe_supertramp_mesh
+    0x42F710,  # request_object_vertices
     0x42F790,  # copy_object_vertices
+    0x42F7D0,  # request_object_vertices_copy
+    0x42F800,  # request_object_facequad_normals
     0x42F850,  # request_object_vertex_colours
+    0x42F8C0,  # request_object_facequads
     0x42F990,  # initialize_object_list
     0x42F9E0,  # build_all_objects
     0x42FAD0,  # add_object_to_list
@@ -507,6 +541,7 @@ REANALYSIS_FUNCTIONS = (
     0x42FCB0,  # calc_object_facequad_normals
     0x430230,  # calc_object_facequad_normals_simple
     0x4303F0,  # calc_object_texture_groups
+    0x430570,  # request_object_edges
     0x4305A0,  # add_object_edge
     0x4308B0,  # calc_object_edges
     0x430A70,  # request_object_animation

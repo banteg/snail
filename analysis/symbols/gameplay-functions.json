@@ -1668,7 +1668,7 @@
     {
       "address": "0x430570",
       "name": "request_object_edges",
-      "description": "Allocates the packed toon-edge records and companion selection buffer that `render_object_toon` consumes when it emits silhouette line segments."
+      "description": "Installs the requested edge count and allocates the Object-owned packed `ObjectToonEdge` bank when no edge bank is active; an existing bank is retained."
     },
     {
       "address": "0x4305a0",

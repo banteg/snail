@@ -2,30 +2,30 @@
 /* function: request_object_facequads @ 0x42f8c0 */
 /* selector: request_object_facequads */
 
-void __thiscall request_object_facequads(PathTemplateStripMesh *mesh, int32_t facequad_count)
+// Ensures one render object has the requested face-quad storage; iOS RObject.o names this `cRObject::RequestFaceQuads(int)`.
+void __thiscall request_object_facequads(Object *object, int32_t facequad_count)
 {
   int32_t facequad_capacity; // eax
 
   if ( facequad_count )
   {
-    facequad_capacity = mesh->facequad_capacity;
+    facequad_capacity = object->facequad_capacity;
     if ( facequad_capacity > 0 && facequad_capacity < facequad_count )
     {
       report_errorf(aReallocationOf_0);
-      free_tracked_memory((int)mesh->facequads);
-      mesh->facequad_count = 0;
+      free_tracked_memory(object->facequads);
+      object->facequad_count = 0;
     }
-    if ( !mesh->facequad_count )
+    if ( !object->facequad_count )
     {
-      mesh->facequads = (ObjectFaceQuad *)allocate_tracked_memory(48 * facequad_count, (int)aObjectFacequad);
-      if ( facequad_count > (signed int)mesh->facequad_capacity )
-        mesh->facequad_capacity = facequad_count;
+      object->facequads = (ObjectFaceQuad *)allocate_tracked_memory(48 * facequad_count, aObjectFacequad);
+      if ( facequad_count > object->facequad_capacity )
+        object->facequad_capacity = facequad_count;
     }
-    mesh->facequad_count = facequad_count;
+    object->facequad_count = facequad_count;
   }
   else
   {
-    mesh->facequad_count = 0;
+    object->facequad_count = 0;
   }
 }
-

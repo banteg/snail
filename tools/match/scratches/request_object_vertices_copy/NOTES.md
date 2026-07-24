@@ -12,3 +12,11 @@ shared and replayed into Binary Ninja. Its artifact shows the Object retaining
 the `vertex_count * sizeof(Vector3)` allocation in `copied_vertices` before
 calling the exact copy helper; the former incidental `void*` return is removed.
 Focused matching remains exact at 14/14 with all three operands clean.
+
+## 2026-07-24 paired IDA ownership replay
+
+The tracked IDA database now shares the exact void Object member ABI. Its
+artifact resolves the allocation as the Object-owned `Vec3* copied_vertices`
+bank and the tail call as `copy_object_vertices(object)`, retiring the raw
+`unsigned int* this` view and fake integer return. Matching remains unchanged
+at 14/14.

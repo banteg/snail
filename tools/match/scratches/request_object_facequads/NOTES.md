@@ -22,3 +22,11 @@ at 40/40 instructions with all five operands clean.
 2026-07-15 Binary Ninja replay: the live prototype and tracked artifact now
 retain the canonical `Object* object` receiver instead of the obsolete
 path-strip prefix. Matching remains exact.
+
+## 2026-07-24 paired IDA ownership replay
+
+The IDA replay now assigns the canonical Object member ABI and exposes the
+owned `ObjectFaceQuad* facequads` bank together with its distinct live count
+and retained capacity. This removes the obsolete `PathTemplateStripMesh`
+receiver while leaving the exact 40/40 source and its zero-count early return
+untouched.

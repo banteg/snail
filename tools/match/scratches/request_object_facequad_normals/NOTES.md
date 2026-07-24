@@ -23,3 +23,10 @@ with all four operands clean.
 discard that result and consume the same bank through `Object +0x60`; the
 signature correction remains exact at 26/26 instructions with four clean
 operands.
+
+## 2026-07-24 paired IDA ownership replay
+
+IDA now shares the exact `Vec3* __thiscall ... (Object*)` contract. The export
+distinguishes the Object-owned per-vertex `vertex_normals` bank from the paired
+per-face `facequad_normals` bank, retains the latter as the return value, and
+removes the raw `_DWORD*` receiver. The exact 26/26 matcher is unchanged.

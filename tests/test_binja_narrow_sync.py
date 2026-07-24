@@ -4488,7 +4488,10 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
             assert name in header
 
     for function_name in (
+        "request_object_vertices",
+        "request_object_vertices_copy",
         "request_object_facequad_normals",
+        "request_object_facequads",
         "request_object_texture_groups",
         "request_object_edges",
         "calc_object_bounding_box",
@@ -4499,6 +4502,36 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         "calc_object_edges",
     ):
         assert f'"{function_name}"' in sync_source
+
+    for address, name, declaration in (
+        (
+            "0x42F710",
+            "request_object_vertices",
+            "void __thiscall request_object_vertices(Object* object, int32_t vertex_count);",
+        ),
+        (
+            "0x42F7D0",
+            "request_object_vertices_copy",
+            "void __thiscall request_object_vertices_copy(Object* object);",
+        ),
+        (
+            "0x42F800",
+            "request_object_facequad_normals",
+            "Vec3* __thiscall request_object_facequad_normals(Object* object);",
+        ),
+        (
+            "0x42F8C0",
+            "request_object_facequads",
+            "void __thiscall request_object_facequads(Object* object, int32_t facequad_count);",
+        ),
+        (
+            "0x430570",
+            "request_object_edges",
+            "void __thiscall request_object_edges(Object* object, int32_t edge_count);",
+        ),
+    ):
+        assert f'({address}, "{name}")' in ida_sync_source
+        assert f'"{declaration}"' in ida_sync_source
 
     for address, name in (
         ("0x405640", "load_x_mesh"),
@@ -4544,11 +4577,16 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         "0x40ACF0",
         "0x412250",
         "0x41AA50",
+        "0x42F710",
+        "0x42F7D0",
+        "0x42F800",
+        "0x42F8C0",
         "0x42F9E0",
         "0x42FB10",
         "0x42FCB0",
         "0x430230",
         "0x4303F0",
+        "0x430570",
         "0x4305A0",
         "0x4308B0",
         "0x430A70",
@@ -4599,12 +4637,28 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
     )
     assert "Vector3* request_object_facequad_normals();" in matcher_header
     for header in analysis_headers:
+        assert (
+            "void __thiscall request_object_vertices("
+            "Object* object, int32_t vertex_count);"
+        ) in header
+        assert (
+            "void __thiscall request_object_vertices_copy(Object* object);"
+            in header
+        )
         assert "Vec3* __thiscall request_object_facequad_normals(Object* object);" in header
+        assert (
+            "void __thiscall request_object_facequads("
+            "Object* object, int32_t facequad_count);"
+        ) in header
         assert (
             "int32_t __thiscall calc_object_facequad_normals_simple(Object* object);"
             in header
         )
         assert "void __thiscall request_object_texture_groups(" in header
+        assert (
+            "void __thiscall request_object_edges("
+            "Object* object, int32_t edge_count);"
+        ) in header
 
 
 def test_backdrop_quad_helper_replay_keeps_object_owners_and_void_abis() -> None:
