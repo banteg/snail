@@ -111,7 +111,7 @@ int queue_axis_aligned_textured_quad(
     float height,
     unsigned int flags,
     tColour* color,
-    int blend_mode); // @ 0x44a8b0
+    int blend_mode); // @ 0x44a8b0; appended byte offset, incidental on skip
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,
     float x,
@@ -125,7 +125,7 @@ int queue_axis_aligned_textured_quad_uv(
     float u1,
     float v1,
     int blend_mode,
-    float rotation); // @ 0x44a9b0
+    float rotation); // @ 0x44a9b0; appended byte offset, incidental on skip
 void queue_font_text_instance(
     char* text,
     int font_id,
@@ -151,6 +151,6 @@ int queue_textured_quad_corners(
     float u0, float v0,
     float u1, float v1,
     int blend_mode,
-    float rotation); // @ 0x44aac0
+    float rotation); // @ 0x44aac0; appended byte offset, incidental on skip
 
 #endif

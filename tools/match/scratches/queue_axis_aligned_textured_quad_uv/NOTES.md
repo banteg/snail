@@ -74,3 +74,19 @@ The register previously rendered as `float* edx_4` is exactly
 `tColour* entry_color`, yielding all four RGBA fields and matching IDA's
 independent `p_color` view. No source-shape probe was retained: focused Wibo
 stays at 92.54% (`68/66`, prefix `2/66`, 19 clean operands).
+
+## 2026-07-24 partial return contract
+
+This producer shares the family's authored partial result: a successful append
+returns the byte offset, overflow returns the reporter result, and inactive or
+zero-size skips do not define `eax`. Its 35 live Binary Ninja callsites
+normally discard the result, while `draw_split_backdrop` forwards the final
+append result from its tail.
+
+A local C4715 suppression allows that native fallthrough under the unchanged
+VC6 `/O2 /G5 /W3` profile. Removing the scratch-only `return 0` raises the
+focused result from 92.54% (`68/66`) to 98.48% with exact `66/66` instruction
+parity, a 42-instruction prefix, and all 19 operands clean. Only the
+semantically independent `g_font_queue_count` store moves from the middle of
+the aggregate color copy to the completed-entry tail; natural allocation and
+post-copy placements regress and are not retained.

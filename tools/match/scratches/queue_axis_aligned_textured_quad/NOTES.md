@@ -63,3 +63,19 @@ The saved `esi` copy destination is the embedded
 tracks it as `tColour* entry_color`, agreeing with IDA's four named RGBA stores.
 This analysis-only replay leaves the candidate untouched at 89.39% (`67/65`,
 prefix `3/65`, 17 clean operands and no masked mismatches).
+
+## 2026-07-24 partial return contract
+
+The append path returns the queue entry's byte offset and the overflow path
+returns `report_errorf`, but the inactive and zero-size paths fall through with
+incidental register state. Live Binary Ninja callsites corroborate both sides:
+ordinary render callers discard the result, while the two frontend overlay
+tails forward the successful append result.
+
+Suppressing only VC6 diagnostic C4715 lets the scratch express that native
+fallthrough without changing the fixed `/O2 /G5 /W3` profile. Removing the
+invented `return 0` raises the focused result from 89.39% (`67/65`) to 95.38%
+with exact `65/65` instruction parity, a 43-instruction prefix, and all 17
+masked operands clean. The residual is the existing queue-count publication
+schedule plus independent default-UV zero stores; no forced return value or
+barrier is retained.

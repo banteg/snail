@@ -70,3 +70,17 @@ through its four float lanes. Binary Ninja now types that destination as
 `tColour* entry_color`, in agreement with IDA's named `p_color` RGBA stores.
 The matcher source remains untouched and focused Wibo stays honestly at 87.14%
 (`71/69`, prefix `3/69`, 20 clean operands and no masked mismatches).
+
+## 2026-07-24 partial return contract
+
+The corner producer likewise returns its appended byte offset or the overflow
+reporter result, while an inactive queue falls through with incidental
+register state. Binary Ninja's two callers prove both uses: `render_backdrop`
+discards the result and `draw_galaxy_line` forwards the successful tail value.
+
+Disabling only C4715 locally lets VC6 emit that native fallthrough without
+changing compiler flags. Removing the invented zero epilogue raises focused
+matching from 87.14% (`71/69`) to 89.86% with exact `69/69` instruction parity,
+a 33-instruction prefix, and all 20 operands clean. The remaining differences
+are queue-count and argument-load scheduling after the aggregate color copy,
+not missing queue fields or a forced skip result.

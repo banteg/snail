@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**627/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **101948/317040** bytes (**32.16%**) are proof-grade, and overall fuzzy is **76.48%**.
+**627/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **101948/317040** bytes (**32.16%**) are proof-grade, and overall fuzzy is **76.50%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -638,7 +638,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (27)
+## Near Match (95-99.99%) (29)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -667,10 +667,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 218/218 | 97.25% | 82/218 | 24 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 98.91% | 18/92 | - |  |
+| 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 65/65 | 95.38% | 43/65 | 17 ok |  |
+| 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 66/66 | 98.48% | 42/66 | 19 ok |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 19 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (63)
+## High Progress (80-94.99%) (61)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -731,9 +733,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_level_definition_file | 0x447480 | 3039 | 941/926 | 82.27% | 20/926 | 178 ok |  |
 | 🚧 | initialize_tip | 0x448a40 | 511 | 154/154 | 83.12% | 16/154 | 25 ok |  |
 | 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 270/269 | 88.68% | 99/269 | 62 ok |  |
-| 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 67/65 | 89.39% | 3/65 | 17 ok |  |
-| 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 68/66 | 92.54% | 2/66 | 19 ok |  |
-| 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 87.14% | 3/69 | 20 ok |  |
+| 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 69/69 | 89.86% | 33/69 | 20 ok |  |
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 155/155 | 94.19% | 22/155 | 12 ok |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |

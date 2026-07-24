@@ -2,6 +2,8 @@
 
 #include "font_system.h"
 
+#pragma warning(disable: 4715)
+
 int queue_textured_quad_corners(
     int texture_id,
     float x0,
@@ -55,5 +57,4 @@ int queue_textured_quad_corners(
         entry->rotation = rotation;
         return offset;
     }
-    return 0;
 }

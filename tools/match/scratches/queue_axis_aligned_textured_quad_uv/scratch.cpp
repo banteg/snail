@@ -2,6 +2,8 @@
 
 #include "font_system.h"
 
+#pragma warning(disable: 4715)
+
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,
     float x,
@@ -43,5 +45,4 @@ int queue_axis_aligned_textured_quad_uv(
             }
         }
     }
-    return 0;
 }
