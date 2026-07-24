@@ -28,7 +28,10 @@ EXPECTED_TYPE_WIDTHS = {
     "SubSegment": 0x4220,
     "SubTracks": 0x1A5978,
     "TrackRowCell": 0x54,
+    "TrackRowCellLaneAndFlagsStrideCursor": 0x54,
+    "TrackRowCellFringeFrontStrideCursor": 0x54,
     "SubRow": 0xF4,
+    "SubRowParcelSpawnYStrideCursor": 0xF4,
     "SubgameRuntime": 0x1272838,
 }
 
@@ -54,6 +57,19 @@ EXPECTED_STRUCT_FIELDS = {
         0x4C: ("fringe_left", "Fringe*"),
         0x50: ("fringe_back", "Fringe*"),
     },
+    "TrackRowCellLaneAndFlagsStrideCursor": {
+        0x00: ("lane_and_flags", "uint32_t"),
+        0x04: ("fringe_front", "Fringe*"),
+        0x08: ("fringe_right", "Fringe*"),
+        0x0C: ("fringe_left", "Fringe*"),
+        0x10: ("fringe_back", "Fringe*"),
+    },
+    "TrackRowCellFringeFrontStrideCursor": {
+        0x00: ("fringe_front", "Fringe*"),
+        0x04: ("fringe_right", "Fringe*"),
+        0x08: ("fringe_left", "Fringe*"),
+        0x0C: ("fringe_back", "Fringe*"),
+    },
     "SubRow": {
         0x00: ("flags", "uint32_t"),
         0x90: ("parcel_spawn_position", "Vec3"),
@@ -65,6 +81,19 @@ EXPECTED_STRUCT_FIELDS = {
         0xEC: ("source_segment", "SubSegment*"),
         0xF0: ("row_event_id", "int32_t"),
     },
+    "SubRowParcelSpawnYStrideCursor": {
+        0x00: ("parcel_spawn_y", "float"),
+        0x04: ("parcel_spawn_z", "float"),
+        0x08: ("parcel_set_id", "int32_t"),
+        0x0C: ("attachment_template_index", "int32_t"),
+        0x10: ("primary_attachment_cell", "TrackRowCell*"),
+        0x14: ("secondary_attachment_cell", "TrackRowCell*"),
+        0x18: ("installed_heading_delta", "float"),
+        0x1C: ("attachment_body", "BodBase"),
+        0x54: ("ring_speed", "float"),
+        0x58: ("source_segment", "SubSegment*"),
+        0x5C: ("row_event_id", "int32_t"),
+    },
     "SubgameRuntime": {
         0xA874: ("level_definition", "SubTracks"),
         0x3BFAC8: ("runtime_cells", "TrackRowCell[3200][8]"),
@@ -73,10 +102,12 @@ EXPECTED_STRUCT_FIELDS = {
 }
 
 # The first loop borrows SubSegment::row_count from each authored segment slot.
-# The second uses two exact field cursors: one based at
-# TrackRowCell::fringe_front/lane_and_flags and one based at
-# SubRow::parcel_spawn_position.y. Preserve those physical cursor shapes instead
-# of inventing negatively biased whole-record pointers.
+# The second uses three exact field-stride views: one based at
+# TrackRowCell::fringe_front, one based at TrackRowCell::lane_and_flags, and
+# one based at SubRow::parcel_spawn_position.y. Preserve those physical cursor
+# shapes instead of inventing negatively biased whole-record pointers. Each
+# view is the size of its owning record only so native induction remains exact;
+# none of the views owns the record it traverses.
 RUNTIME_GRID_CLEAR_USER_VAR_UPDATES = (
     (
         "populate_runtime_track_cells_from_segments",
@@ -108,7 +139,7 @@ RUNTIME_GRID_CLEAR_USER_VAR_UPDATES = (
         569,
         -40,
         "row_fringe_front_cursor",
-        "Fringe**",
+        "TrackRowCellFringeFrontStrideCursor*",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -116,7 +147,7 @@ RUNTIME_GRID_CLEAR_USER_VAR_UPDATES = (
         573,
         73,
         "parcel_spawn_y_cursor",
-        "int32_t*",
+        "SubRowParcelSpawnYStrideCursor*",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -140,7 +171,7 @@ RUNTIME_GRID_CLEAR_USER_VAR_UPDATES = (
         633,
         72,
         "lane_and_flags_cursor",
-        "uint32_t*",
+        "TrackRowCellLaneAndFlagsStrideCursor*",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -164,7 +195,7 @@ RUNTIME_GRID_CLEAR_USER_VAR_UPDATES = (
         689,
         66,
         "next_row_fringe_front_cursor",
-        "Fringe**",
+        "TrackRowCellFringeFrontStrideCursor*",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -172,7 +203,7 @@ RUNTIME_GRID_CLEAR_USER_VAR_UPDATES = (
         698,
         72,
         "cell_fringe_front_cursor",
-        "Fringe**",
+        "TrackRowCellFringeFrontStrideCursor*",
     ),
 )
 

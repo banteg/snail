@@ -6016,19 +6016,31 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert definition_address in ida_path_sync
     for name, declaration in (
         ("segment_row_count_cursor", "int32_t *segment_row_count_cursor;"),
-        ("row_fringe_front_cursor", "Fringe **row_fringe_front_cursor;"),
-        ("parcel_spawn_y_cursor", "int32_t *parcel_spawn_y_cursor;"),
+        (
+            "row_fringe_front_cursor",
+            "TrackRowCellFringeFrontStrideCursor *row_fringe_front_cursor;",
+        ),
+        (
+            "parcel_spawn_y_cursor",
+            "SubRowParcelSpawnYStrideCursor *parcel_spawn_y_cursor;",
+        ),
         ("rows_remaining", "int32_t rows_remaining;"),
         ("cell_lanes_remaining", "int32_t cell_lanes_remaining;"),
-        ("lane_and_flags_cursor", "uint32_t *lane_and_flags_cursor;"),
+        (
+            "lane_and_flags_cursor",
+            "TrackRowCellLaneAndFlagsStrideCursor *lane_and_flags_cursor;",
+        ),
         ("cell_lane_and_flags", "uint32_t cell_lane_and_flags;"),
         ("cell_list_flags", "uint32_t cell_list_flags;"),
         (
             "next_row_fringe_front_cursor",
-            "Fringe **next_row_fringe_front_cursor;",
+            "TrackRowCellFringeFrontStrideCursor *next_row_fringe_front_cursor;",
         ),
         ("remaining_cell_lanes", "int32_t remaining_cell_lanes;"),
-        ("cell_fringe_front_cursor", "Fringe **cell_fringe_front_cursor;"),
+        (
+            "cell_fringe_front_cursor",
+            "TrackRowCellFringeFrontStrideCursor *cell_fringe_front_cursor;",
+        ),
     ):
         assert f'"{name}"' in ida_path_sync
         assert f'"{declaration}"' in ida_path_sync
@@ -13579,10 +13591,13 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
         ("tColour", "0x10"),
         ("Fringe", "0x38"),
         ("SubSegment", "0x4220"),
-        ("SubTracks", "0x1A5978"),
-        ("TrackRowCell", "0x54"),
-        ("SubRow", "0xF4"),
-        ("SubgameRuntime", "0x1272838"),
+            ("SubTracks", "0x1A5978"),
+            ("TrackRowCell", "0x54"),
+            ("TrackRowCellLaneAndFlagsStrideCursor", "0x54"),
+            ("TrackRowCellFringeFrontStrideCursor", "0x54"),
+            ("SubRow", "0xF4"),
+            ("SubRowParcelSpawnYStrideCursor", "0xF4"),
+            ("SubgameRuntime", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -13591,11 +13606,47 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
         ("SubTracks", "0x04", "segment_slots", "SubSegment[100]"),
         ("TrackRowCell", "0x28", "color", "tColour"),
         ("TrackRowCell", "0x3D", "open_edge_mask", "uint8_t"),
-        ("TrackRowCell", "0x40", "lane_and_flags", "uint32_t"),
-        ("TrackRowCell", "0x44", "fringe_front", "Fringe*"),
-        ("SubRow", "0x90", "parcel_spawn_position", "Vec3"),
-        ("SubRow", "0xA4", "primary_attachment_cell", "TrackRowCell*"),
-        ("SubRow", "0xEC", "source_segment", "SubSegment*"),
+            ("TrackRowCell", "0x40", "lane_and_flags", "uint32_t"),
+            ("TrackRowCell", "0x44", "fringe_front", "Fringe*"),
+            (
+                "TrackRowCellLaneAndFlagsStrideCursor",
+                "0x00",
+                "lane_and_flags",
+                "uint32_t",
+            ),
+            (
+                "TrackRowCellLaneAndFlagsStrideCursor",
+                "0x04",
+                "fringe_front",
+                "Fringe*",
+            ),
+            (
+                "TrackRowCellFringeFrontStrideCursor",
+                "0x00",
+                "fringe_front",
+                "Fringe*",
+            ),
+            ("SubRow", "0x90", "parcel_spawn_position", "Vec3"),
+            ("SubRow", "0xA4", "primary_attachment_cell", "TrackRowCell*"),
+            ("SubRow", "0xEC", "source_segment", "SubSegment*"),
+            (
+                "SubRowParcelSpawnYStrideCursor",
+                "0x00",
+                "parcel_spawn_y",
+                "float",
+            ),
+            (
+                "SubRowParcelSpawnYStrideCursor",
+                "0x1C",
+                "attachment_body",
+                "BodBase",
+            ),
+            (
+                "SubRowParcelSpawnYStrideCursor",
+                "0x58",
+                "source_segment",
+                "SubSegment*",
+            ),
         ("SubgameRuntime", "0xA874", "level_definition", "SubTracks"),
         (
             "SubgameRuntime",
@@ -13631,17 +13682,17 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
         ),
         (
             "StackVariableSourceType",
-            569,
-            -40,
-            "row_fringe_front_cursor",
-            "Fringe**",
+                569,
+                -40,
+                "row_fringe_front_cursor",
+                "TrackRowCellFringeFrontStrideCursor*",
         ),
         (
             "RegisterVariableSourceType",
-            573,
-            73,
-            "parcel_spawn_y_cursor",
-            "int32_t*",
+                573,
+                73,
+                "parcel_spawn_y_cursor",
+                "SubRowParcelSpawnYStrideCursor*",
         ),
         ("StackVariableSourceType", 579, -48, "rows_remaining", "int32_t"),
         (
@@ -13653,10 +13704,10 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
         ),
         (
             "RegisterVariableSourceType",
-            633,
-            72,
-            "lane_and_flags_cursor",
-            "uint32_t*",
+                633,
+                72,
+                "lane_and_flags_cursor",
+                "TrackRowCellLaneAndFlagsStrideCursor*",
         ),
         (
             "RegisterVariableSourceType",
@@ -13677,14 +13728,14 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
             689,
             66,
             "next_row_fringe_front_cursor",
-            "Fringe**",
+            "TrackRowCellFringeFrontStrideCursor*",
         ),
         (
             "RegisterVariableSourceType",
             698,
             72,
             "cell_fringe_front_cursor",
-            "Fringe**",
+            "TrackRowCellFringeFrontStrideCursor*",
         ),
         (
             "StackVariableSourceType",
@@ -13778,6 +13829,167 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
     assert '"edge_row"' in replay
     assert '"glyph_segment"' in replay
     assert "remaining_cell_lanes" not in replay
+
+
+def test_runtime_grid_clear_field_cursors_are_borrowed_and_fail_closed() -> None:
+    repo_root = Path(__file__).parents[1]
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    canonical_binja = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    canonical_ida = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    health_checks = {
+        check["name"]: check
+        for check in json.loads(
+            (repo_root / "analysis/decompile/health_checks.json").read_text(
+                encoding="utf-8"
+            )
+        )["checks"]
+    }
+
+    for type_name, stride_tail, stride in (
+        ("TrackRowCellLaneAndFlagsStrideCursor", "0x40", "0x54"),
+        ("TrackRowCellFringeFrontStrideCursor", "0x44", "0x54"),
+        ("SubRowParcelSpawnYStrideCursor", "0x94", "0xF4"),
+    ):
+        assert f"typedef struct {type_name} {{" in analysis_header
+        assert f"uint8_t _stride_tail[{stride_tail}];" in analysis_header
+        assert "sole owner" in analysis_header
+        assert type_name not in matcher_header
+        assert f'"{type_name}": {stride}' in canonical_binja
+
+    for marker in (
+        "uint32_t lane_and_flags;",
+        "Fringe* fringe_front;",
+        "float parcel_spawn_y;",
+        "BodBase attachment_body;",
+        "SubSegment* source_segment;",
+    ):
+        assert marker in analysis_header
+
+    assert "POPULATE_RUNTIME_CLEAR_CURSOR_USER_VAR_UPDATES" in canonical_binja
+    for source_type, index, storage, name, type_name in (
+        (
+            "StackVariableSourceType",
+            569,
+            -40,
+            "row_fringe_front_cursor",
+            "TrackRowCellFringeFrontStrideCursor*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            573,
+            73,
+            "parcel_spawn_y_cursor",
+            "SubRowParcelSpawnYStrideCursor*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            633,
+            72,
+            "lane_and_flags_cursor",
+            "TrackRowCellLaneAndFlagsStrideCursor*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            689,
+            66,
+            "next_row_fringe_front_cursor",
+            "TrackRowCellFringeFrontStrideCursor*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            698,
+            72,
+            "cell_fringe_front_cursor",
+            "TrackRowCellFringeFrontStrideCursor*",
+        ),
+    ):
+        expected = (
+            '        "populate_runtime_track_cells_from_segments",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in canonical_binja
+
+    assert "RUNTIME_GRID_CLEAR_CURSOR_HEADER_MARKERS" in canonical_ida
+    for name, declaration, definition_address in (
+        (
+            "row_fringe_front_cursor",
+            "TrackRowCellFringeFrontStrideCursor *row_fringe_front_cursor;",
+            "0x4360EA",
+        ),
+        (
+            "parcel_spawn_y_cursor",
+            "SubRowParcelSpawnYStrideCursor *parcel_spawn_y_cursor;",
+            "0x4360EE",
+        ),
+        (
+            "lane_and_flags_cursor",
+            "TrackRowCellLaneAndFlagsStrideCursor *lane_and_flags_cursor;",
+            "0x43612A",
+        ),
+        (
+            "next_row_fringe_front_cursor",
+            "TrackRowCellFringeFrontStrideCursor *next_row_fringe_front_cursor;",
+            "0x436162",
+        ),
+        (
+            "cell_fringe_front_cursor",
+            "TrackRowCellFringeFrontStrideCursor *cell_fringe_front_cursor;",
+            "0x43616B",
+        ),
+    ):
+        assert f'"{name}"' in canonical_ida
+        assert f'"{declaration}"' in canonical_ida
+        assert definition_address in canonical_ida
+
+    bn_health = health_checks["bn_runtime_grid_clear_owner_graph"]
+    for marker in (
+        "struct TrackRowCellFringeFrontStrideCursor* row_fringe_front_cursor",
+        "struct SubRowParcelSpawnYStrideCursor* parcel_spawn_y_cursor",
+        "struct TrackRowCellLaneAndFlagsStrideCursor* lane_and_flags_cursor",
+        "lane_and_flags_cursor = &lane_and_flags_cursor[1]",
+        "cell_fringe_front_cursor->fringe_front = 0",
+        "parcel_spawn_y_cursor = &parcel_spawn_y_cursor[1]",
+    ):
+        assert any(marker in required for required in bn_health["required_substrings"])
+    for old_shape in (
+        "struct Fringe** row_fringe_front_cursor",
+        "int32_t* parcel_spawn_y_cursor",
+        "uint32_t* lane_and_flags_cursor",
+        "lane_and_flags_cursor = &lane_and_flags_cursor[0x15]",
+        "parcel_spawn_y_cursor = &parcel_spawn_y_cursor[0x3d]",
+    ):
+        assert old_shape in bn_health["forbidden_substrings"]
+
+    ida_health = health_checks["ida_runtime_cell_stride_owner_graph"]
+    for marker in (
+        "TrackRowCellFringeFrontStrideCursor *row_fringe_front_cursor;",
+        "SubRowParcelSpawnYStrideCursor *parcel_spawn_y_cursor;",
+        "TrackRowCellLaneAndFlagsStrideCursor *lane_and_flags_cursor;",
+        "cell_fringe_front_cursor->fringe_front = nullptr",
+        "++parcel_spawn_y_cursor",
+    ):
+        assert any(marker in required for required in ida_health["required_substrings"])
+    for old_shape in (
+        "Fringe **row_fringe_front_cursor;",
+        "int32_t *parcel_spawn_y_cursor;",
+        "uint32_t *lane_and_flags_cursor;",
+        "lane_and_flags_cursor += 21",
+        "parcel_spawn_y_cursor += 61",
+    ):
+        assert old_shape in ida_health["forbidden_substrings"]
 
 
 def test_subgame_level_activation_lifetime_replay_stays_guarded() -> None:

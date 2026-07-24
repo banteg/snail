@@ -1365,6 +1365,36 @@ typedef struct TrackRowCell {
 } TrackRowCell;
 
 /*
+ * Analysis-only field-first views for BuildLevel's runtime-cell clear pass.
+ * Native carries either TrackRowCell::lane_and_flags or
+ * TrackRowCell::fringe_front and advances by the complete 0x54-byte cell
+ * stride. The tails alias the following cell's prefix solely to preserve that
+ * induction; neither view owns a cell or any borrowed Fringe.
+ */
+typedef struct TrackRowCellLaneAndFlagsStrideCursor {
+    uint32_t lane_and_flags;
+    Fringe* fringe_front;
+    Fringe* fringe_right;
+    Fringe* fringe_left;
+    Fringe* fringe_back;
+    uint8_t _stride_tail[0x40];
+} TrackRowCellLaneAndFlagsStrideCursor;
+typedef char TrackRowCellLaneAndFlagsStrideCursor_must_be_0x54[
+    (sizeof(TrackRowCellLaneAndFlagsStrideCursor) == 0x54) ? 1 : -1
+];
+
+typedef struct TrackRowCellFringeFrontStrideCursor {
+    Fringe* fringe_front;
+    Fringe* fringe_right;
+    Fringe* fringe_left;
+    Fringe* fringe_back;
+    uint8_t _stride_tail[0x44];
+} TrackRowCellFringeFrontStrideCursor;
+typedef char TrackRowCellFringeFrontStrideCursor_must_be_0x54[
+    (sizeof(TrackRowCellFringeFrontStrideCursor) == 0x54) ? 1 : -1
+];
+
+/*
  * Analysis-only field-first view used while scanning TrackRowCell::object.
  * Native advances this borrowed pointer by the full 0x54 cell stride. The
  * tail aliases the next cell's prefix solely to preserve that induction; this
@@ -1454,6 +1484,31 @@ typedef struct SubRow {
     SubSegment* source_segment;
     int32_t row_event_id;
 } SubRow;
+
+/*
+ * Analysis-only field-first view for BuildLevel's runtime-row clear pass.
+ * Native carries SubRow::parcel_spawn_position.y and advances by the complete
+ * 0xf4-byte row stride while clearing fields on both sides of that address.
+ * SubgameRuntime::runtime_rows remains the sole owner; the tail aliases the
+ * next row's prefix and owns neither row.
+ */
+typedef struct SubRowParcelSpawnYStrideCursor {
+    float parcel_spawn_y;
+    float parcel_spawn_z;
+    int32_t parcel_set_id;
+    int32_t attachment_template_index;
+    TrackRowCell* primary_attachment_cell;
+    TrackRowCell* secondary_attachment_cell;
+    float installed_heading_delta;
+    BodBase attachment_body;
+    float ring_speed;
+    SubSegment* source_segment;
+    int32_t row_event_id;
+    uint8_t _stride_tail[0x94];
+} SubRowParcelSpawnYStrideCursor;
+typedef char SubRowParcelSpawnYStrideCursor_must_be_0xf4[
+    (sizeof(SubRowParcelSpawnYStrideCursor) == 0xf4) ? 1 : -1
+];
 
 /* Native retains the enclosing SubgameRuntime base while advancing one
  * 0xf4-byte runtime-row lane. Only row at +0x5ccac8 is consumed here. */

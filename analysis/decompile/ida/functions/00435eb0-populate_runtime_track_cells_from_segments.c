@@ -15,14 +15,14 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int32_t v9; // esi
   int32_t v10; // eax
   int32_t *segment_row_count_cursor; // ecx
-  int32_t *parcel_spawn_y_cursor; // edi
+  SubRowParcelSpawnYStrideCursor *parcel_spawn_y_cursor; // edi
   int32_t cell_lanes_remaining; // ebp
-  uint32_t *lane_and_flags_cursor; // esi
+  TrackRowCellLaneAndFlagsStrideCursor *lane_and_flags_cursor; // esi
   uint32_t cell_lane_and_flags; // ecx
   uint32_t cell_list_flags; // edx
-  Fringe **next_row_fringe_front_cursor; // eax
+  TrackRowCellFringeFrontStrideCursor *next_row_fringe_front_cursor; // eax
   int32_t remaining_cell_lanes; // ecx
-  Fringe **cell_fringe_front_cursor; // esi
+  TrackRowCellFringeFrontStrideCursor *cell_fringe_front_cursor; // esi
   int32_t v20; // eax
   uint8_t *visited_cursor; // ecx
   int32_t v22; // edi
@@ -114,7 +114,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int32_t rows_remaining; // [esp+2Ch] [ebp-30h]
   int32_t lane; // [esp+2Ch] [ebp-30h]
   int32_t row_event_owner; // [esp+30h] [ebp-2Ch]
-  Fringe **row_fringe_front_cursor; // [esp+34h] [ebp-28h]
+  TrackRowCellFringeFrontStrideCursor *row_fringe_front_cursor; // [esp+34h] [ebp-28h]
   float v113; // [esp+34h] [ebp-28h]
   int32_t segment_cursor; // [esp+38h] [ebp-24h]
   int32_t trampoline_counter; // [esp+3Ch] [ebp-20h]
@@ -241,38 +241,38 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   first_or_last_row = 0;
   row_event_owner = 0;
   game->player.follow_state.flag_3c = 0;
-  row_fringe_front_cursor = &game->runtime_cells[0][0].fringe_front;
-  parcel_spawn_y_cursor = (int32_t *)&game->runtime_rows[0].parcel_spawn_position.y;
+  row_fringe_front_cursor = (TrackRowCellFringeFrontStrideCursor *)&game->runtime_cells[0][0].fringe_front;
+  parcel_spawn_y_cursor = (SubRowParcelSpawnYStrideCursor *)&game->runtime_rows[0].parcel_spawn_position.y;
   rows_remaining = 3200;
   do
   {
     cell_lanes_remaining = 8;
-    *(parcel_spawn_y_cursor - 37) = 0;
-    parcel_spawn_y_cursor[6] = 0;
-    parcel_spawn_y_cursor[3] = 0;
-    parcel_spawn_y_cursor[21] = 0;
-    parcel_spawn_y_cursor[4] = 0;
-    parcel_spawn_y_cursor[1] = 0;
-    *parcel_spawn_y_cursor = 0;
-    *(parcel_spawn_y_cursor - 1) = 0;
-    parcel_spawn_y_cursor[2] = 0;
-    parcel_spawn_y_cursor[22] = 0;
-    parcel_spawn_y_cursor[23] = 0;
-    lane_and_flags_cursor = (uint32_t *)(row_fringe_front_cursor - 1);
+    *(_DWORD *)parcel_spawn_y_cursor[-1]._stride_tail = 0;
+    parcel_spawn_y_cursor->installed_heading_delta = 0.0;
+    parcel_spawn_y_cursor->attachment_template_index = 0;
+    parcel_spawn_y_cursor->ring_speed = 0.0;
+    parcel_spawn_y_cursor->primary_attachment_cell = nullptr;
+    parcel_spawn_y_cursor->parcel_spawn_z = 0.0;
+    parcel_spawn_y_cursor->parcel_spawn_y = 0.0;
+    *(_DWORD *)&parcel_spawn_y_cursor[-1]._stride_tail[144] = 0;
+    parcel_spawn_y_cursor->parcel_set_id = 0;
+    parcel_spawn_y_cursor->source_segment = nullptr;
+    parcel_spawn_y_cursor->row_event_id = 0;
+    lane_and_flags_cursor = (TrackRowCellLaneAndFlagsStrideCursor *)&row_fringe_front_cursor[-1]._stride_tail[64];
     do
     {
-      cell_lane_and_flags = *lane_and_flags_cursor;
-      BYTE1(cell_lane_and_flags) = BYTE1(*lane_and_flags_cursor) & 0x5F;
-      *lane_and_flags_cursor = cell_lane_and_flags;
-      *((_BYTE *)lane_and_flags_cursor - 3) = 0;
-      *(_WORD *)lane_and_flags_cursor = 0;
-      *lane_and_flags_cursor &= 0xFFFFAFA7;
-      *(_WORD *)lane_and_flags_cursor = 0;
-      cell_list_flags = *(lane_and_flags_cursor - 15);
+      cell_lane_and_flags = lane_and_flags_cursor->lane_and_flags;
+      BYTE1(cell_lane_and_flags) = BYTE1(lane_and_flags_cursor->lane_and_flags) & 0x5F;
+      lane_and_flags_cursor->lane_and_flags = cell_lane_and_flags;
+      lane_and_flags_cursor[-1]._stride_tail[61] = 0;
+      LOWORD(lane_and_flags_cursor->lane_and_flags) = 0;
+      lane_and_flags_cursor->lane_and_flags &= 0xFFFFAFA7;
+      LOWORD(lane_and_flags_cursor->lane_and_flags) = 0;
+      cell_list_flags = *(_DWORD *)&lane_and_flags_cursor[-1]._stride_tail[4];
       LOBYTE(cell_list_flags) = cell_list_flags & 0x7F;
-      *(lane_and_flags_cursor - 15) = cell_list_flags;
-      set_color_white((tColour *)(lane_and_flags_cursor - 6));
-      lane_and_flags_cursor += 21;
+      *(_DWORD *)&lane_and_flags_cursor[-1]._stride_tail[4] = cell_list_flags;
+      set_color_white((tColour *)&lane_and_flags_cursor[-1]._stride_tail[40]);
+      ++lane_and_flags_cursor;
       --cell_lanes_remaining;
     }
     while ( cell_lanes_remaining );
@@ -280,17 +280,16 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
     remaining_cell_lanes = 8;
     do
     {
-      cell_fringe_front_cursor = next_row_fringe_front_cursor;
-      next_row_fringe_front_cursor += 21;
+      cell_fringe_front_cursor = next_row_fringe_front_cursor++;
       --remaining_cell_lanes;
-      *cell_fringe_front_cursor = nullptr;
-      cell_fringe_front_cursor[1] = nullptr;
-      cell_fringe_front_cursor[2] = nullptr;
-      cell_fringe_front_cursor[3] = nullptr;
+      cell_fringe_front_cursor->fringe_front = nullptr;
+      cell_fringe_front_cursor->fringe_right = nullptr;
+      cell_fringe_front_cursor->fringe_left = nullptr;
+      cell_fringe_front_cursor->fringe_back = nullptr;
     }
     while ( remaining_cell_lanes );
     row_fringe_front_cursor = next_row_fringe_front_cursor;
-    parcel_spawn_y_cursor += 61;
+    ++parcel_spawn_y_cursor;
     --rows_remaining;
   }
   while ( rows_remaining );

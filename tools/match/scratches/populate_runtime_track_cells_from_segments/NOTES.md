@@ -816,3 +816,42 @@ position rather than a generic projection payload.
 The field rename preserves its exact 0x90 offset, the physical y-lane reset
 cursor, and all codegen. Focused matching remains 29.67%, 1,229/1,245
 instructions, with 66 clean operands and the same two documented mismatches.
+
+## 2026-07-24 runtime clear field-stride ownership
+
+The 3,200-row reset does not carry whole-record owners. It carries three
+borrowed interior addresses: `SubRow::parcel_spawn_position.y`, advancing by
+the complete `0xf4` row stride; `TrackRowCell::lane_and_flags`, advancing by
+the complete `0x54` cell stride; and `TrackRowCell::fringe_front`, likewise
+advancing by `0x54`. `SubgameRuntime::runtime_rows` and `runtime_cells` remain
+the sole owners. The analysis-only `SubRowParcelSpawnYStrideCursor`,
+`TrackRowCellLaneAndFlagsStrideCursor`, and
+`TrackRowCellFringeFrontStrideCursor` views are exactly those owner-record
+widths; their tails only model induction into the next record and own neither
+records nor fringe pointers.
+
+Binary Ninja pins the five physical lifetimes at
+`StackVariableSourceType(569, -40)` and
+`RegisterVariableSourceType(573, 73)`, `(633, 72)`, `(689, 66)`, and
+`(698, 72)`. Its refreshed HLIL exposes the positive row fields, the
+`lane_and_flags` word, all four fringe links, and unit cursor advances. The
+HLIL printer still spells two backward byte offsets with C-like pointer
+subtraction; MLIL confirms the actual arithmetic remains byte-exact at `-4`
+and `-0x18`, followed by `+0x54` cell and `+0xf4` row advances. These are
+display quirks, not scaled typed-pointer operations.
+
+IDA independently pins the same locals at `0x4360ea`, `0x4360ee`,
+`0x43612a`, `0x436162`, and `0x43616b`. Hex-Rays renders the backward accesses
+through the preceding view tail, the positive fields by name, and the advances
+as `++lane_and_flags_cursor`, `next_row_fringe_front_cursor++`, and
+`++parcel_spawn_y_cursor`. The canonical BN replay and focused replay verify
+all widths and identities, with the focused lane entirely already current;
+the second IDA replay likewise reports all five locals unchanged with no parse
+errors or failures. BN and IDA therefore agree, so no Ghidra tie-break was
+needed.
+
+Matcher source and operands remain untouched. Focused matching stays at the
+honest 29.67%, 1,229/1,245-instruction frontier with 66 clean operands and the
+same jump-table and call-alignment mismatches. This slice recovers durable
+borrowed-cursor ownership only; it adds no branch shaping, dummy dependency,
+register coercion, or masked-operand fakematch.

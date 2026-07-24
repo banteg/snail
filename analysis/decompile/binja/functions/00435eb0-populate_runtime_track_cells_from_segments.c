@@ -82,48 +82,53 @@
 004360d9        char first_or_last_row = 0
 004360de        int32_t row_event_owner = 0
 004360e2        game->player.follow_state.flag_3c = 0
-004360e9        struct Fringe** row_fringe_front_cursor = &game->runtime_cells[0][0].fringe_front
-004360ed        int32_t* parcel_spawn_y_cursor = &game->runtime_rows[0].parcel_spawn_position.y
+004360e9        struct TrackRowCellFringeFrontStrideCursor* row_fringe_front_cursor = &game->runtime_cells[0][0].fringe_front
+004360ed        struct SubRowParcelSpawnYStrideCursor* parcel_spawn_y_cursor = &game->runtime_rows[0].parcel_spawn_position.y
 004360f3        int32_t rows_remaining = 0xc80
 00436192        bool cond:3_1
 004360fd        int32_t cell_lanes_remaining = 8
-00436102        parcel_spawn_y_cursor[-0x25] = 0
-00436108        parcel_spawn_y_cursor[6] = 0
-0043610e        __builtin_memset(&parcel_spawn_y_cursor[0x15], 0, 0xc)
-00436114        __builtin_memset(&parcel_spawn_y_cursor[1], 0, 0x10)
-00436117        *parcel_spawn_y_cursor = 0
-00436119        parcel_spawn_y_cursor[-1] = 0
-00436129        uint32_t* lane_and_flags_cursor = &row_fringe_front_cursor[-1]
+00436102        parcel_spawn_y_cursor->__offset(0xffffffffffffff6c).d = 0
+00436108        parcel_spawn_y_cursor->installed_heading_delta = 0f
+0043610b        parcel_spawn_y_cursor->attachment_template_index = 0
+0043610e        parcel_spawn_y_cursor->ring_speed = 0f
+00436111        parcel_spawn_y_cursor->primary_attachment_cell = nullptr
+00436114        parcel_spawn_y_cursor->parcel_spawn_z = 0f
+00436117        parcel_spawn_y_cursor->parcel_spawn_y = 0
+00436119        parcel_spawn_y_cursor->parcel_spawn_y:-4.d = 0
+0043611c        parcel_spawn_y_cursor->parcel_set_id = 0
+0043611f        parcel_spawn_y_cursor->source_segment = nullptr
+00436122        parcel_spawn_y_cursor->row_event_id = 0
+00436129        struct TrackRowCellLaneAndFlagsStrideCursor* lane_and_flags_cursor = row_fringe_front_cursor - 4
 0043615f        int32_t i_1
-0043612c        uint32_t cell_lane_and_flags = *lane_and_flags_cursor
+0043612c        uint32_t cell_lane_and_flags = lane_and_flags_cursor->lane_and_flags
 0043612e        cell_lane_and_flags:1.b &= 0x5f
-00436131        *lane_and_flags_cursor = cell_lane_and_flags
-00436133        *(lane_and_flags_cursor - 3) = 0
-00436137        *lane_and_flags_cursor = 0
-00436146        *lane_and_flags_cursor &= 0xffffafa7
-00436148        *lane_and_flags_cursor = 0
-0043614d        uint32_t cell_list_flags = lane_and_flags_cursor[-0xf]
+00436131        lane_and_flags_cursor->lane_and_flags = cell_lane_and_flags
+00436133        lane_and_flags_cursor->__offset(0xfffffffffffffffd).b = 0
+00436137        lane_and_flags_cursor->lane_and_flags.w = 0
+00436146        lane_and_flags_cursor->lane_and_flags &= 0xffffafa7
+00436148        lane_and_flags_cursor->lane_and_flags.w = 0
+0043614d        uint32_t cell_list_flags = lane_and_flags_cursor->__offset(0xffffffffffffffc4).d
 00436150        cell_list_flags.b &= 0x7f
-00436153        lane_and_flags_cursor[-0xf] = cell_list_flags
-00436156        set_color_white(&lane_and_flags_cursor[-6])
-0043615b        lane_and_flags_cursor = &lane_and_flags_cursor[0x15]
+00436153        lane_and_flags_cursor->__offset(0xffffffffffffffc4).d = cell_list_flags
+00436156        set_color_white(lane_and_flags_cursor - 0x18)
+0043615b        lane_and_flags_cursor = &lane_and_flags_cursor[1]
 0043615e        i_1 = cell_lanes_remaining
 0043615e        cell_lanes_remaining -= 1
 0043615f        do while (i_1 != 1)
-00436161        struct Fringe** next_row_fringe_front_cursor = row_fringe_front_cursor
+00436161        struct TrackRowCellFringeFrontStrideCursor* next_row_fringe_front_cursor = row_fringe_front_cursor
 00436165        int32_t remaining_cell_lanes = 8
 0043617d        int32_t i_2
-0043616a        struct Fringe** cell_fringe_front_cursor = next_row_fringe_front_cursor
-0043616e        next_row_fringe_front_cursor = &next_row_fringe_front_cursor[0x15]
+0043616a        struct TrackRowCellFringeFrontStrideCursor* cell_fringe_front_cursor = next_row_fringe_front_cursor
+0043616e        next_row_fringe_front_cursor = &next_row_fringe_front_cursor[1]
 00436171        i_2 = remaining_cell_lanes
 00436171        remaining_cell_lanes -= 1
-00436172        *cell_fringe_front_cursor = nullptr
-00436174        cell_fringe_front_cursor[1] = 0
-00436177        cell_fringe_front_cursor[2] = 0
-0043617a        cell_fringe_front_cursor[3] = 0
+00436172        cell_fringe_front_cursor->fringe_front = 0
+00436174        cell_fringe_front_cursor->fringe_right = nullptr
+00436177        cell_fringe_front_cursor->fringe_left = nullptr
+0043617a        cell_fringe_front_cursor->fringe_back = nullptr
 0043617d        do while (i_2 != 1)
 0043617f        row_fringe_front_cursor = next_row_fringe_front_cursor
-00436187        parcel_spawn_y_cursor = &parcel_spawn_y_cursor[0x3d]
+00436187        parcel_spawn_y_cursor = &parcel_spawn_y_cursor[1]
 0043618d        cond:3_1 = rows_remaining != 1
 0043618e        rows_remaining -= 1
 00436192        do while (cond:3_1)

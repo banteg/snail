@@ -78,6 +78,14 @@ AUTHORED_ROW_CURSOR_SIZES = {
     "AuthoredSegmentRowPositionCursorView": 0x38,
 }
 
+RUNTIME_GRID_CLEAR_CURSOR_SIZES = {
+    "TrackRowCell": 0x54,
+    "TrackRowCellLaneAndFlagsStrideCursor": 0x54,
+    "TrackRowCellFringeFrontStrideCursor": 0x54,
+    "SubRow": 0xF4,
+    "SubRowParcelSpawnYStrideCursor": 0xF4,
+}
+
 PRESENTATION_ANIMATION_CURSOR_SIZES = {
     "PresentationAnimationSlot": 0x80,
     "PresentationAnimationObjectStrideCursor": 0x80,
@@ -455,10 +463,13 @@ REQUIRED_HEADER_STRUCTS = (
     "SubLocTileId",
     "SubLocFlag",
     "TrackRowCell",
+    "TrackRowCellLaneAndFlagsStrideCursor",
+    "TrackRowCellFringeFrontStrideCursor",
     "TrackRowCellSameLaneCursorView",
     "SubRowFlag",
     "RowModel",
     "SubRow",
+    "SubRowParcelSpawnYStrideCursor",
     "RuntimeRowStrideAnchor",
     "RuntimeCellStrideAnchor",
     "Path",
@@ -517,6 +528,9 @@ def ensure_path_analysis_views(
         "SaltOwnerGameStrideCursor",
         "RuntimeCellStrideAnchor",
         "TrackRowCellSameLaneCursorView",
+        "TrackRowCellLaneAndFlagsStrideCursor",
+        "TrackRowCellFringeFrontStrideCursor",
+        "SubRowParcelSpawnYStrideCursor",
         "AuthoredSegmentRowPositionCursorView",
         "SubSegmentParcelScanAnchor",
         "SubSegmentEventBiasView",
@@ -660,6 +674,28 @@ def verify_authored_row_cursor_sizes(*, target: str) -> dict[str, object]:
         "op": "owner_size_verify",
         "status": "verified",
         "owner_group": "authored_row_cursor",
+        "owner_sizes": observed,
+    }
+
+
+def verify_runtime_grid_clear_cursor_sizes(*, target: str) -> dict[str, object]:
+    """Fail closed before replaying the borrowed runtime-grid clear cursors."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=RUNTIME_GRID_CLEAR_CURSOR_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in RUNTIME_GRID_CLEAR_CURSOR_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"runtime-grid clear cursor size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "runtime_grid_clear_cursor",
         "owner_sizes": observed,
     }
 
@@ -1825,6 +1861,49 @@ SPAWN_SALT_HAZARD_USER_VAR_UPDATES = (
 # segment cursor, runtime-row/lane ordinals, trampoline counter, row-event
 # owner, and per-row first/last and attachment latches. Do not name the reused
 # random-length/edge-row slot, whose two lifetimes still overlap in HLIL.
+POPULATE_RUNTIME_CLEAR_CURSOR_USER_VAR_UPDATES = (
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        569,
+        -40,
+        "row_fringe_front_cursor",
+        "TrackRowCellFringeFrontStrideCursor*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        573,
+        73,
+        "parcel_spawn_y_cursor",
+        "SubRowParcelSpawnYStrideCursor*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        633,
+        72,
+        "lane_and_flags_cursor",
+        "TrackRowCellLaneAndFlagsStrideCursor*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        689,
+        66,
+        "next_row_fringe_front_cursor",
+        "TrackRowCellFringeFrontStrideCursor*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        698,
+        72,
+        "cell_fringe_front_cursor",
+        "TrackRowCellFringeFrontStrideCursor*",
+    ),
+)
+
 POPULATE_RUNTIME_SPLIT_USER_VAR_UPDATES = (
     (
         (
@@ -3984,6 +4063,9 @@ def main() -> int:
         )
         operations.append(verify_authored_row_cursor_sizes(target=args.target))
         operations.append(
+            verify_runtime_grid_clear_cursor_sizes(target=args.target)
+        )
+        operations.append(
             verify_presentation_animation_cursor_sizes(target=args.target)
         )
         operations.extend(
@@ -4282,6 +4364,9 @@ def main() -> int:
         )
         operations.append(verify_authored_row_cursor_sizes(target=args.target))
         operations.append(
+            verify_runtime_grid_clear_cursor_sizes(target=args.target)
+        )
+        operations.append(
             verify_presentation_animation_cursor_sizes(target=args.target)
         )
         operations.append(verify_golb_shot_asset_cursor_sizes(target=args.target))
@@ -4471,6 +4556,7 @@ def main() -> int:
                 *SPAWN_TRACK_PICKUP_CURSOR_USER_VAR_UPDATES,
                 *COLLISION_POOL_CURSOR_USER_VAR_UPDATES,
                 *SPAWN_SALT_HAZARD_USER_VAR_UPDATES,
+                *POPULATE_RUNTIME_CLEAR_CURSOR_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *FRINGE_RUNTIME_USER_VAR_UPDATES,

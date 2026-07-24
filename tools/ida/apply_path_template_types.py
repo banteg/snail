@@ -340,6 +340,9 @@ GOLB_SHOT_EXPECTED_SIZE = 0x2E8
 GOLB_SHOT_ASSET_CURSOR_EXPECTED_SIZE = 0x2E8
 SUB_LAZER_ASSET_CURSOR_EXPECTED_SIZE = 0xB0
 SALT_ASSET_CURSOR_EXPECTED_SIZE = 0x98
+TRACK_ROW_CELL_LANE_FLAGS_CURSOR_EXPECTED_SIZE = 0x54
+TRACK_ROW_CELL_FRINGE_CURSOR_EXPECTED_SIZE = 0x54
+SUB_ROW_PARCEL_SPAWN_Y_CURSOR_EXPECTED_SIZE = 0xF4
 GOLB_SHOT_PREFIX_END = 0x198
 GOLB_SHOT_PREFIX_MEMBERS = (
     (0x000, 0x080, "primary_body", "RenderableBod"),
@@ -371,6 +374,17 @@ SALT_ASSET_CURSOR_HEADER_MARKERS = (
     "uint8_t _stride_tail[0x94];",
 )
 
+RUNTIME_GRID_CLEAR_CURSOR_HEADER_MARKERS = (
+    "typedef struct TrackRowCellLaneAndFlagsStrideCursor {",
+    "uint32_t lane_and_flags;",
+    "typedef struct TrackRowCellFringeFrontStrideCursor {",
+    "Fringe* fringe_front;",
+    "typedef struct SubRowParcelSpawnYStrideCursor {",
+    "float parcel_spawn_y;",
+    "BodBase attachment_body;",
+    "uint8_t _stride_tail[0x94];",
+)
+
 GOLB_PATH_FOLLOW_DIRECTION_LVAR_DEFINITION = 0x421D22
 
 POPULATE_RUNTIME_LVAR_SPECS = (
@@ -386,13 +400,13 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ),
     (
         "row_fringe_front_cursor",
-        "Fringe **row_fringe_front_cursor;",
+        "TrackRowCellFringeFrontStrideCursor *row_fringe_front_cursor;",
         0x4360EA,
         68,
     ),
     (
         "parcel_spawn_y_cursor",
-        "int32_t *parcel_spawn_y_cursor;",
+        "SubRowParcelSpawnYStrideCursor *parcel_spawn_y_cursor;",
         0x4360EE,
         None,
     ),
@@ -400,7 +414,7 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ("cell_lanes_remaining", "int32_t cell_lanes_remaining;", 0x4360FE, None),
     (
         "lane_and_flags_cursor",
-        "uint32_t *lane_and_flags_cursor;",
+        "TrackRowCellLaneAndFlagsStrideCursor *lane_and_flags_cursor;",
         0x43612A,
         None,
     ),
@@ -413,7 +427,7 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ("cell_list_flags", "uint32_t cell_list_flags;", 0x43614E, None),
     (
         "next_row_fringe_front_cursor",
-        "Fringe **next_row_fringe_front_cursor;",
+        "TrackRowCellFringeFrontStrideCursor *next_row_fringe_front_cursor;",
         0x436162,
         None,
     ),
@@ -425,7 +439,7 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ),
     (
         "cell_fringe_front_cursor",
-        "Fringe **cell_fringe_front_cursor;",
+        "TrackRowCellFringeFrontStrideCursor *cell_fringe_front_cursor;",
         0x43616B,
         None,
     ),
@@ -3555,12 +3569,18 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in SALT_ASSET_CURSOR_HEADER_MARKERS
         if marker not in header_text
     ]
+    missing_runtime_grid_clear_cursor_markers = [
+        marker
+        for marker in RUNTIME_GRID_CLEAR_CURSOR_HEADER_MARKERS
+        if marker not in header_text
+    ]
     if (
         missing_bod_core_owner_markers
         or missing_fringe_owner_markers
         or missing_track_render_cache_owner_markers
         or missing_sub_lazer_asset_cursor_markers
         or missing_salt_asset_cursor_markers
+        or missing_runtime_grid_clear_cursor_markers
     ):
         marker_failures = []
         if missing_bod_core_owner_markers:
@@ -3579,6 +3599,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
             marker_failures.append(
                 {"reason": "noncanonical_salt_asset_cursor_header"}
             )
+        if missing_runtime_grid_clear_cursor_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_runtime_grid_clear_cursor_header"}
+            )
         print(
             json.dumps(
                 {
@@ -3594,6 +3618,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "missing_salt_asset_cursor_markers": (
                         missing_salt_asset_cursor_markers
+                    ),
+                    "missing_runtime_grid_clear_cursor_markers": (
+                        missing_runtime_grid_clear_cursor_markers
                     ),
                     "failed": marker_failures,
                 },
@@ -3623,6 +3650,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
     )
     salt_asset_cursor_size = _named_struct_size(
         "SaltOwnerGameStrideCursor"
+    )
+    track_row_cell_lane_flags_cursor_size = _named_struct_size(
+        "TrackRowCellLaneAndFlagsStrideCursor"
+    )
+    track_row_cell_fringe_cursor_size = _named_struct_size(
+        "TrackRowCellFringeFrontStrideCursor"
+    )
+    sub_row_parcel_spawn_y_cursor_size = _named_struct_size(
+        "SubRowParcelSpawnYStrideCursor"
     )
     track_row_cell_tile_owner = _named_struct_member_readback("TrackRowCell", 0x3C)
     expected_track_row_cell_tile_owner = {
@@ -3697,6 +3733,45 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "reason": "owner_size_mismatch",
                 "expected": SALT_ASSET_CURSOR_EXPECTED_SIZE,
                 "observed": salt_asset_cursor_size,
+            }
+        )
+    if (
+        track_row_cell_lane_flags_cursor_size
+        != TRACK_ROW_CELL_LANE_FLAGS_CURSOR_EXPECTED_SIZE
+    ):
+        owner_size_failures.append(
+            {
+                "selector": "TrackRowCellLaneAndFlagsStrideCursor",
+                "owner_group": "runtime_grid_clear_cursor",
+                "reason": "owner_size_mismatch",
+                "expected": TRACK_ROW_CELL_LANE_FLAGS_CURSOR_EXPECTED_SIZE,
+                "observed": track_row_cell_lane_flags_cursor_size,
+            }
+        )
+    if (
+        track_row_cell_fringe_cursor_size
+        != TRACK_ROW_CELL_FRINGE_CURSOR_EXPECTED_SIZE
+    ):
+        owner_size_failures.append(
+            {
+                "selector": "TrackRowCellFringeFrontStrideCursor",
+                "owner_group": "runtime_grid_clear_cursor",
+                "reason": "owner_size_mismatch",
+                "expected": TRACK_ROW_CELL_FRINGE_CURSOR_EXPECTED_SIZE,
+                "observed": track_row_cell_fringe_cursor_size,
+            }
+        )
+    if (
+        sub_row_parcel_spawn_y_cursor_size
+        != SUB_ROW_PARCEL_SPAWN_Y_CURSOR_EXPECTED_SIZE
+    ):
+        owner_size_failures.append(
+            {
+                "selector": "SubRowParcelSpawnYStrideCursor",
+                "owner_group": "runtime_grid_clear_cursor",
+                "reason": "owner_size_mismatch",
+                "expected": SUB_ROW_PARCEL_SPAWN_Y_CURSOR_EXPECTED_SIZE,
+                "observed": sub_row_parcel_spawn_y_cursor_size,
             }
         )
     if track_row_cell_tile_owner != expected_track_row_cell_tile_owner:
@@ -4303,6 +4378,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "golb_shot_asset_cursor_size": golb_shot_asset_cursor_size,
                 "sub_lazer_asset_cursor_size": sub_lazer_asset_cursor_size,
                 "salt_asset_cursor_size": salt_asset_cursor_size,
+                "track_row_cell_lane_flags_cursor_size": (
+                    track_row_cell_lane_flags_cursor_size
+                ),
+                "track_row_cell_fringe_cursor_size": (
+                    track_row_cell_fringe_cursor_size
+                ),
+                "sub_row_parcel_spawn_y_cursor_size": (
+                    sub_row_parcel_spawn_y_cursor_size
+                ),
                 "track_row_cell_tile_owner": track_row_cell_tile_owner,
                 "applied": applied,
                 "unchanged": unchanged,
