@@ -174,3 +174,34 @@ without a nested zero-offset vtable expression.
 No matcher source was changed. Focused Wibo remains 81.40%, 171 target versus
 173 candidate instructions, with all 33 operands clean; the honest frame and
 source-cell lifetime residual is unchanged.
+
+## Zero-bucket lane and survival-bank cursor ownership (2026-07-24)
+
+The reset pass now carries the same ownership geometry in both decompiler
+lanes. Windows roots EAX at
+`g_zero_parcel_buckets[0].candidate_count`, writes that one field, and advances
+by the complete 0x20c-byte `ParcelBucket` stride. Android independently roots
+its loop at `gGroup0`, writes word 128, and advances 131 words until
+`gParcelGroupSurvival0`. Binary Ninja therefore uses the analysis-only
+`ParcelBucketCountLane` view, while IDA keeps the equivalent honest
+`int32_t*` lane stepped by 131. In both cases the two global `ParcelBucket`
+arrays remain the storage owners; the lane is only a borrowed cursor.
+
+The filter and claim passes now distinguish the global
+`gParcelGroupSurvival0` write/compaction cursor from the runtime-row index,
+candidate count, placed count, selected runtime-row index, and final projection
+scan. IDA's independently recovered `entries_to_shift` and `path_node`
+lifetimes agree with the same in-place compaction and attachment projection
+seen on Android.
+
+Two tempting names remain deliberately rejected. ECX is one merged lifetime
+covering `runtime_row_count`, the native `parcel_set_id` field cursor, and the
+later compaction count; splitting its first scan definition still loses the
+loop-carried initialization. The stack word at `0x444315` first stores the
+selected row index and is later reused as the kind-42 output angle, so neither
+lane assigns it a false single owner.
+
+This is analysis-only ownership recovery. The scratch source is unchanged and
+focused Wibo remains honestly at 81.40% (171 target versus 173 candidate
+instructions), with all 33 masked operands clean and the same documented
+frame/source-cell residual.

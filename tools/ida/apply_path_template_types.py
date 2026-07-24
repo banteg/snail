@@ -454,17 +454,58 @@ PLACE_PARCELS_REJECTED_STACK_LVAR_OVERRIDES = (
 
 CHALLENGE_PARCELS_RUNTIME_LVAR_SPECS = (
     (
+        "zero_bucket_count_lane",
+        "int32_t *zero_bucket_count_lane;",
+        0x444276,
+        None,
+    ),
+    ("candidate_count", "int32_t candidate_count;", 0x444290, None),
+    ("runtime_row_index", "int32_t runtime_row_index;", 0x444292, None),
+    (
+        "survival_row_index_write",
+        "int32_t *survival_row_index_write;",
+        0x44429C,
+        None,
+    ),
+    (
+        "remaining_candidate_count",
+        "int32_t remaining_candidate_count;",
+        0x444294,
+        36,
+    ),
+    ("placed_count", "int32_t placed_count;", 0x4442D3, None),
+    (
+        "last_candidate_index",
+        "int32_t last_candidate_index;",
+        0x4442DD,
+        None,
+    ),
+    (
+        "selected_row_index_entry",
+        "int32_t *selected_row_index_entry;",
+        0x44430F,
+        None,
+    ),
+    (
         "challenge_runtime_row_anchor",
         "RuntimeRowStrideAnchor *challenge_runtime_row_anchor;",
         0x44432E,
         None,
     ),
+    ("entries_to_shift", "int32_t entries_to_shift;", 0x44438C, None),
     (
         "projection_row",
         "SubRow *projection_row;",
         0x4443D8,
         None,
     ),
+    (
+        "projection_scan_index",
+        "int32_t projection_scan_index;",
+        0x4443CA,
+        36,
+    ),
+    ("path_node", "int32_t path_node;", 0x44440A, None),
 )
 
 UPDATE_SUBGAME_RUNTIME_LVAR_SPECS = (

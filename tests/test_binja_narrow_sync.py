@@ -5700,14 +5700,48 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "*CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES" in binja_source
 
     assert "CHALLENGE_PARCELS_RUNTIME_LVAR_SPECS" in ida_path_sync
-    for definition_address in ("0x44432E", "0x4443D8"):
+    for definition_address in (
+        "0x444276",
+        "0x444290",
+        "0x444292",
+        "0x444294",
+        "0x44429C",
+        "0x4442D3",
+        "0x4442DD",
+        "0x44430F",
+        "0x44432E",
+        "0x44438C",
+        "0x4443CA",
+        "0x4443D8",
+        "0x44440A",
+    ):
         assert definition_address in ida_path_sync
     for name, declaration in (
+        ("zero_bucket_count_lane", "int32_t *zero_bucket_count_lane;"),
+        ("candidate_count", "int32_t candidate_count;"),
+        ("runtime_row_index", "int32_t runtime_row_index;"),
+        (
+            "survival_row_index_write",
+            "int32_t *survival_row_index_write;",
+        ),
+        (
+            "remaining_candidate_count",
+            "int32_t remaining_candidate_count;",
+        ),
+        ("placed_count", "int32_t placed_count;"),
+        ("last_candidate_index", "int32_t last_candidate_index;"),
+        (
+            "selected_row_index_entry",
+            "int32_t *selected_row_index_entry;",
+        ),
         (
             "challenge_runtime_row_anchor",
             "RuntimeRowStrideAnchor *challenge_runtime_row_anchor;",
         ),
+        ("entries_to_shift", "int32_t entries_to_shift;"),
         ("projection_row", "SubRow *projection_row;"),
+        ("projection_scan_index", "int32_t projection_scan_index;"),
+        ("path_node", "int32_t path_node;"),
     ):
         assert f'"{name}"' in ida_path_sync
         assert f'"{declaration}"' in ida_path_sync
@@ -6462,6 +6496,8 @@ def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
         "int32_t candidate_count;",
         "int32_t set_id;",
         "int32_t segment_index;",
+        "typedef struct ParcelBucketCountLane",
+        "char stride_overlap[0x208];",
     ):
         assert declaration in header
 
@@ -6485,6 +6521,7 @@ def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
     assert '("0x53d190", "ParcelBucket")' in binja_sync
     assert '("0x6487e8", "ParcelBucket")' in binja_sync
     assert '("0x6447e8", "int32_t[0x1000]")' in binja_sync
+    assert '"ParcelBucketCountLane": 0x20C' in binja_sync
     assert "apply_data_var_removals" in binja_sync
     assert "apply_data_var_updates" in binja_sync
     assert "g_zero_parcel_bucket_count_lane_end" not in binja_sync.split(
@@ -6538,6 +6575,7 @@ def test_parcel_bucket_lifetime_replay_stays_guarded() -> None:
         ("Vec3", "0x0C"),
         ("ParcelCandidate", "0x10"),
         ("ParcelBucket", "0x20C"),
+        ("ParcelBucketCountLane", "0x20C"),
     ):
         assert f'"{type_name}": {width}' in source
 
@@ -6548,6 +6586,8 @@ def test_parcel_bucket_lifetime_replay_stays_guarded() -> None:
         ("ParcelBucket", "0x200", "candidate_count", "int32_t"),
         ("ParcelBucket", "0x204", "set_id", "int32_t"),
         ("ParcelBucket", "0x208", "segment_index", "int32_t"),
+        ("ParcelBucketCountLane", "0x000", "candidate_count", "int32_t"),
+        ("ParcelBucketCountLane", "0x004", "stride_overlap", "char[520]"),
     ):
         assert f'"{owner}": {{' in source
         assert f'{offset}: ("{field}", "{field_type}")' in source
@@ -6563,6 +6603,71 @@ def test_parcel_bucket_lifetime_replay_stays_guarded() -> None:
         expected = (
             '"place_parcels_on_track",\n'
             '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{var_type}",'
+        )
+        assert expected in source
+
+    for source_type, index, storage, name, var_type in (
+        (
+            "RegisterVariableSourceType",
+            53,
+            66,
+            "zero_bucket_count_lane",
+            "ParcelBucketCountLane*",
+        ),
+        ("RegisterVariableSourceType", 79, 72, "candidate_count", "int32_t"),
+        ("RegisterVariableSourceType", 81, 66, "runtime_row_index", "int32_t"),
+        (
+            "RegisterVariableSourceType",
+            91,
+            68,
+            "survival_row_index_write",
+            "int32_t*",
+        ),
+        (
+            "StackVariableSourceType",
+            83,
+            -72,
+            "remaining_candidate_count",
+            "int32_t",
+        ),
+        ("RegisterVariableSourceType", 146, 73, "placed_count", "int32_t"),
+        (
+            "RegisterVariableSourceType",
+            156,
+            69,
+            "last_candidate_index",
+            "int32_t",
+        ),
+        ("RegisterVariableSourceType", 194, 66, "picked_index", "int32_t"),
+        (
+            "RegisterVariableSourceType",
+            199,
+            67,
+            "selected_runtime_row_index",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            206,
+            72,
+            "selected_row_index_entry",
+            "int32_t*",
+        ),
+        (
+            "StackVariableSourceType",
+            393,
+            -72,
+            "projection_scan_index",
+            "int32_t",
+        ),
+    ):
+        expected = (
+            '"place_challenge_parcels_on_track",\n'
+            f'        "{source_type}",\n'
             f"        {index},\n"
             f"        {storage},\n"
             f'        "{name}",\n'

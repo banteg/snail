@@ -31,6 +31,17 @@ typedef struct ParcelBucket {
     int32_t segment_index;
 } ParcelBucket;
 
+/*
+ * PlaceParcelsSurvival roots its reset cursor at candidate_count rather than
+ * at the containing ParcelBucket. Advancing this borrowed view by one preserves
+ * the native 0x20c-byte bucket stride. The overlap remains owned by the two
+ * ParcelBucket arrays; this type never denotes separate storage.
+ */
+typedef struct ParcelBucketCountLane {
+    int32_t candidate_count;
+    char stride_overlap[0x208];
+} ParcelBucketCountLane;
+
 /* Cross-port original gGroup0: the digit-0 fallback scratch bank. */
 extern ParcelBucket g_zero_parcel_buckets[PARCEL_BUCKET_CAPACITY];
 /*

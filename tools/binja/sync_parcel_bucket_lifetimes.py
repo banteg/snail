@@ -22,6 +22,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Vec3": 0x0C,
     "ParcelCandidate": 0x10,
     "ParcelBucket": 0x20C,
+    "ParcelBucketCountLane": 0x20C,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -39,6 +40,10 @@ EXPECTED_STRUCT_FIELDS = {
         0x200: ("candidate_count", "int32_t"),
         0x204: ("set_id", "int32_t"),
         0x208: ("segment_index", "int32_t"),
+    },
+    "ParcelBucketCountLane": {
+        0x000: ("candidate_count", "int32_t"),
+        0x004: ("stride_overlap", "char[520]"),
     },
 }
 
@@ -94,6 +99,99 @@ PARCEL_BUCKET_USER_VAR_UPDATES = (
         72,
         "zero_source_bucket",
         "ParcelBucket*",
+    ),
+    # The survival reset begins at the first zero bucket's candidate_count
+    # field, then advances by the full ParcelBucket stride. The following
+    # filter and claim variables are stable borrowed cursors or scalar counts;
+    # the reused ECX row/count lifetime and selected-row/output-angle stack
+    # slot intentionally remain untyped.
+    (
+        "place_challenge_parcels_on_track",
+        "RegisterVariableSourceType",
+        53,
+        66,
+        "zero_bucket_count_lane",
+        "ParcelBucketCountLane*",
+    ),
+    (
+        "place_challenge_parcels_on_track",
+        "RegisterVariableSourceType",
+        79,
+        72,
+        "candidate_count",
+        "int32_t",
+    ),
+    (
+        "place_challenge_parcels_on_track",
+        "RegisterVariableSourceType",
+        81,
+        66,
+        "runtime_row_index",
+        "int32_t",
+    ),
+    (
+        "place_challenge_parcels_on_track",
+        "RegisterVariableSourceType",
+        91,
+        68,
+        "survival_row_index_write",
+        "int32_t*",
+    ),
+    (
+        "place_challenge_parcels_on_track",
+        "StackVariableSourceType",
+        83,
+        -72,
+        "remaining_candidate_count",
+        "int32_t",
+    ),
+    (
+        "place_challenge_parcels_on_track",
+        "RegisterVariableSourceType",
+        146,
+        73,
+        "placed_count",
+        "int32_t",
+    ),
+    (
+        "place_challenge_parcels_on_track",
+        "RegisterVariableSourceType",
+        156,
+        69,
+        "last_candidate_index",
+        "int32_t",
+    ),
+    (
+        "place_challenge_parcels_on_track",
+        "RegisterVariableSourceType",
+        194,
+        66,
+        "picked_index",
+        "int32_t",
+    ),
+    (
+        "place_challenge_parcels_on_track",
+        "RegisterVariableSourceType",
+        199,
+        67,
+        "selected_runtime_row_index",
+        "int32_t",
+    ),
+    (
+        "place_challenge_parcels_on_track",
+        "RegisterVariableSourceType",
+        206,
+        72,
+        "selected_row_index_entry",
+        "int32_t*",
+    ),
+    (
+        "place_challenge_parcels_on_track",
+        "StackVariableSourceType",
+        393,
+        -72,
+        "projection_scan_index",
+        "int32_t",
     ),
 )
 
