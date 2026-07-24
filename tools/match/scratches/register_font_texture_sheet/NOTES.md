@@ -6,7 +6,8 @@ Initial relationship scratch for the font atlas registration helper at
 Recovered relationships:
 
 - The helper loads a TGA-like font atlas and scans row 0 for white marker pixels.
-  Those markers seed `FontSheet::glyph_width`, `u0`, `v0`, and `texture_page`.
+  Those markers seed `FontSheet::glyph_width`, `glyph_u0`, `glyph_u1`, and
+  `texture_page`.
 - `TgaImageView` is shared with `sample_tga_pixel_rgb` in
   `tools/match/include/tga_image_view.h`.
 - Width `0x800` is a two-page atlas. Native rewrites the source basename into
@@ -117,3 +118,17 @@ No matcher source changed. Focused Wibo therefore remains the honest 75.41%
 result (`275/274`, prefix `0/274`, 51 clean masked operands) with the existing
 `slot_count`/`font_kind` compiler-owner mismatch still documented rather than
 forced.
+
+## 2026-07-24 atlas-coordinate ownership correction
+
+The marker scan publishes centered horizontal run bounds, so the two
+per-glyph arrays are `glyph_u0` and `glyph_u1`, not `u0` and `v0`. The
+column marker then produces the two shared vertical bounds:
+`glyph_v0 = 3 / (height - 1)` and
+`glyph_v1 = line_marker_y / (height - 1)`. Both `draw_font_text_instance`
+and the vertically flipped Font3D materializer independently consume that
+exact U0/V0/U1/V1 contract.
+
+This is a shared-struct naming correction, not a source-shape probe. Focused
+Wibo remains honestly at 75.41% with 51 clean operands and the existing
+compiler-owner residual.

@@ -76,13 +76,13 @@ typedef struct FontSheet {
     int32_t slot_count;
     TextureRef* texture_ref_a;
     TextureRef* texture_ref_b;
-    float u0[0x80];
-    float v0[0x80];
+    float glyph_u0[0x80];
+    float glyph_u1[0x80];
     float glyph_width[0x80];
     int32_t texture_page[0x80];
     float line_marker_y;
-    float line_step;
-    float line_marker_fraction;
+    float glyph_v0;
+    float glyph_v1;
     float spacing_scale;
     float width_scale;
     float height_scale;
@@ -90,22 +90,22 @@ typedef struct FontSheet {
 } FontSheet;
 
 /*
- * Analysis-only overlapping cursor anchored at FontSheet::v0[glyph].
+ * Analysis-only overlapping cursor anchored at FontSheet::glyph_u1[glyph].
  * The two fixed +0x200 lanes alias glyph_width[glyph] and
  * texture_page[glyph]; advancing one glyph moves this view by four bytes,
- * not by sizeof(FontGlyphV0Cursor).
+ * not by sizeof(FontGlyphAtlasCursor).
  */
-typedef struct FontGlyphV0Cursor {
-    float v0;
-    float next_glyph_v0;
-    uint8_t _next_v0_to_glyph_width[0x1f8];
+typedef struct FontGlyphAtlasCursor {
+    float glyph_u1;
+    float next_glyph_u1;
+    uint8_t _next_u1_to_glyph_width[0x1f8];
     float glyph_width;
     uint8_t _glyph_width_to_texture_page[0x1fc];
     int32_t texture_page;
-} FontGlyphV0Cursor;
+} FontGlyphAtlasCursor;
 
-typedef char FontGlyphV0Cursor_must_be_0x404[
-    (sizeof(FontGlyphV0Cursor) == 0x404) ? 1 : -1];
+typedef char FontGlyphAtlasCursor_must_be_0x404[
+    (sizeof(FontGlyphAtlasCursor) == 0x404) ? 1 : -1];
 
 typedef struct cFontPrintBuffer {
     uint32_t flags;

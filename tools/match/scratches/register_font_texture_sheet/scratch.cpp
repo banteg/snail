@@ -66,26 +66,26 @@ int register_font_texture_sheet(
 
             float centered_left = (float)glyph_left + 0.5f;
             float centered_last = (float)last_x + 0.5f;
-            g_font_sheets[g_registered_font_count].u0[slot] =
+            g_font_sheets[g_registered_font_count].glyph_u0[slot] =
                 centered_left / (float)image->width;
-            g_font_sheets[g_registered_font_count].v0[slot] =
+            g_font_sheets[g_registered_font_count].glyph_u1[slot] =
                 centered_last / (float)image->width;
             g_font_sheets[g_registered_font_count].texture_page[slot] = 0;
 
             if (image->width == 0x800) {
                 if (glyph_left > split_x) {
-                    g_font_sheets[g_registered_font_count].u0[slot] =
+                    g_font_sheets[g_registered_font_count].glyph_u0[slot] =
                         ((float)(glyph_left - split_x) + 0.5f)
                             * 0.0009765625f;
-                    g_font_sheets[g_registered_font_count].v0[slot] =
+                    g_font_sheets[g_registered_font_count].glyph_u1[slot] =
                         ((float)(x - split_x) + 0.5f)
                             / (float)(image->width >> 1);
                     g_font_sheets[g_registered_font_count].texture_page[slot] =
                         1;
                 } else {
-                    g_font_sheets[g_registered_font_count].u0[slot] =
+                    g_font_sheets[g_registered_font_count].glyph_u0[slot] =
                         centered_left * 0.0009765625f;
-                    g_font_sheets[g_registered_font_count].v0[slot] =
+                    g_font_sheets[g_registered_font_count].glyph_u1[slot] =
                         centered_last
                         / (float)(image->width >> 1);
                     g_font_sheets[g_registered_font_count].texture_page[slot] =
@@ -114,9 +114,9 @@ int register_font_texture_sheet(
         }
     }
 
-    g_font_sheets[g_registered_font_count].line_step =
+    g_font_sheets[g_registered_font_count].glyph_v0 =
         3.0f / (float)(image->height - 1);
-    g_font_sheets[g_registered_font_count].line_marker_fraction =
+    g_font_sheets[g_registered_font_count].glyph_v1 =
         g_font_sheets[g_registered_font_count].line_marker_y
             / (float)(image->height - 1);
     g_font_sheets[g_registered_font_count].slot_count = slot;

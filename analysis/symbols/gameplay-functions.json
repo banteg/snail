@@ -3285,12 +3285,12 @@
     {
       "address": "0x449f50",
       "name": "register_font_texture_sheet",
-      "description": "Owns one loaded FONT-MENU-HOVER atlas buffer through its terminal release, derives stack-local page paths for split atlases, scans row-0 white delimiters into resettable glyph runs and the column-0 height marker, and stores registry-backed texture refs plus per-font UV, page, and scale metadata."
+      "description": "Owns one loaded FONT-MENU-HOVER atlas buffer through its terminal release, derives stack-local page paths for split atlases, scans row-0 white delimiters into resettable glyph runs and the column-0 height marker, and stores registry-backed texture refs plus per-glyph glyph_u0/glyph_u1, width/page, and sheet-wide glyph_v0/glyph_v1 metadata."
     },
     {
       "address": "0x44a360",
       "name": "draw_font_text_instance",
-      "description": "Void FontPrintReal counterpart over one cFontPrintBuffer: preserves the borrowed queue-entry owner in ESI, reuses its incoming stack slot as the horizontal glyph cursor, separates each current byte into its glyph slot and atlas UV/page tuple, and submits textured glyph quads before advancing by the integer glyph width. The queue drain discards EAX on every path."
+      "description": "Void FontPrintReal counterpart over one cFontPrintBuffer: preserves the borrowed queue-entry owner in ESI, reuses its incoming stack slot as the horizontal glyph cursor, maps each byte to the FontSheet glyph_u0/glyph_u1/glyph_v0/glyph_v1 atlas quartet and texture page, borrows the selected texture ref for shadow and primary draws, and advances by the integer glyph width. The queue drain discards EAX on every path."
     },
     {
       "address": "0x44a6d0",
@@ -3330,7 +3330,7 @@
     {
       "address": "0x44ae10",
       "name": "initialize_font3d_objects",
-      "description": "Void materializer for the registered font atlas: advances synchronized v0, glyph_width, and texture_page lanes, borrows one ObjectList slot per glyph into the fixed 128-entry g_font3d_bods array, applies the glyph UVs and x scale, and records the matching scale in g_font3d_scales."
+      "description": "Void materializer for the registered font atlas: advances a FontGlyphAtlasCursor anchored at glyph_u1 with synchronized +0x200 glyph_width and +0x400 texture_page lanes, borrows one ObjectList slot per glyph into the fixed 128-entry g_font3d_bods array, applies the horizontally paired and vertically flipped glyph UVs, and records the derived glyph_scale in g_font3d_scales."
     },
     {
       "address": "0x44afc0",

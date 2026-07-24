@@ -7727,8 +7727,12 @@ def test_font_system_ownership_stays_aligned() -> None:
 
     for header in (analysis_header, matcher_header):
         assert "typedef struct FontSheet {" in header or "struct FontSheet {" in header
+        assert "float glyph_u0[" in header
+        assert "float glyph_u1[" in header
         assert "float glyph_width[" in header
         assert "int32_t texture_page[0x80]" in header or "int texture_page[" in header
+        assert "float glyph_v0" in header
+        assert "float glyph_v1" in header
         assert "float width_scale" in header
         assert "float height_scale" in header
         assert "struct cFontPrintBuffer {" in header
@@ -7787,6 +7791,8 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert "ensure_function_analysis" in binja_sync
     assert "apply_split_user_var_update" in binja_sync
     assert "apply_user_var_updates" in binja_sync
+    assert "reanalyze_functions" in binja_sync
+    assert "FONT_OWNER_REANALYSIS_FUNCTIONS" in binja_sync
     assert '"register_font_texture_sheet"' in binja_sync
     assert '"draw_font_text_instance"' in binja_sync
     assert "FONT_DRAW_CURSOR_X_DEFINITIONS" in binja_sync
@@ -7825,6 +7831,11 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert '"draw_y"' in binja_sync
     assert '"shadow_offset"' in binja_sync
     assert '"shadow_color"' in binja_sync
+    assert '"wave_phase_x"' in binja_sync
+    assert '"wave_phase_y"' in binja_sync
+    assert '"wave_x"' in binja_sync
+    assert '"shadow_texture"' in binja_sync
+    assert '"glyph_texture"' in binja_sync
     assert '"image"' in binja_sync
     assert '"TgaImageView*"' in binja_sync
     assert "\n        45,\n        66," in binja_sync
@@ -7854,22 +7865,33 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert "\n        127,\n        72," in binja_sync
     assert "\n        124,\n        68," in binja_sync
     assert "\n        85,\n        72," in binja_sync
-    assert '"FontGlyphV0Cursor": 0x404' in binja_sync
+    assert "apply_type_renames" in binja_sync
+    assert '("FontGlyphV0Cursor", "FontGlyphAtlasCursor")' in binja_sync
+    assert '"FontGlyphAtlasCursor": 0x404' in binja_sync
     assert "FONT3D_GLYPH_CURSOR_USER_VAR_UPDATES" in binja_sync
-    assert '"glyph_v0_cursor"' in binja_sync
-    assert '"FontGlyphV0Cursor*"' in binja_sync
+    assert '"glyph_atlas_cursor"' in binja_sync
+    assert '"FontGlyphAtlasCursor*"' in binja_sync
     assert '"glyph_index"' in binja_sync
     assert '"scale_cursor"' in binja_sync
     assert '"bod_object_cursor"' in binja_sync
     assert '"font_sheet_dword_offset"' in binja_sync
+    assert "FONT3D_GLYPH_SCALE_DEFINITIONS" in binja_sync
+    assert '"0x44ae71", "mlil_ssa", "StackVariableSourceType", 97, 4' in binja_sync
+    assert "FONT3D_GLYPH_SCALE_VAR" in binja_sync
+    assert 'variable_name="glyph_scale"' in binja_sync
+    assert 'variable_type="float"' in binja_sync
     assert "\n        16,\n        -8," in binja_sync
     assert "\n        54,\n        71," in binja_sync
     assert "\n        62,\n        72," in binja_sync
     assert "\n        67,\n        66," in binja_sync
     assert "\n        73,\n        73," in binja_sync
-    assert "typedef struct FontGlyphV0Cursor {" in analysis_header
-    assert "float next_glyph_v0;" in analysis_header
-    assert "uint8_t _next_v0_to_glyph_width[0x1f8];" in analysis_header
+    assert "float glyph_u0[0x80];" in analysis_header
+    assert "float glyph_u1[0x80];" in analysis_header
+    assert "float glyph_v0;" in analysis_header
+    assert "float glyph_v1;" in analysis_header
+    assert "typedef struct FontGlyphAtlasCursor {" in analysis_header
+    assert "float next_glyph_u1;" in analysis_header
+    assert "uint8_t _next_u1_to_glyph_width[0x1f8];" in analysis_header
     assert "uint8_t _glyph_width_to_texture_page[0x1fc];" in analysis_header
 
     references = json.loads(
@@ -8649,6 +8671,61 @@ def test_previewed_batch_can_transactionally_undefine_an_exact_symbol() -> None:
     assert "refusing to undefine unexpected symbol" in code
     assert 'entry["verified"] = observed is None' in code
     assert "bv.revert_undo_actions(state)" in code
+
+
+def test_previewed_batch_can_transactionally_rename_a_type() -> None:
+    code = _narrow_sync._batch_python_code(
+        [
+            {
+                "op": "rename_type",
+                "old_name": "FontGlyphV0Cursor",
+                "new_name": "FontGlyphAtlasCursor",
+            }
+        ],
+        preview=True,
+    )
+
+    assert "bv.rename_type(old_name, new_name)" in code
+    assert "cannot rename missing type" in code
+    assert "target type" in code
+    assert "already exists" in code
+    assert 'observed_old = bv.get_type_by_name(entry["old_name"])' in code
+    assert "observed_old is None and observed_new is not None" in code
+    assert "bv.revert_undo_actions(state)" in code
+
+
+def test_type_rename_replay_skips_when_target_is_current(monkeypatch) -> None:
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_type_widths",
+        lambda *_args, **_kwargs: {
+            "FontGlyphV0Cursor": None,
+            "FontGlyphAtlasCursor": 0x404,
+        },
+    )
+    monkeypatch.setattr(
+        _narrow_sync,
+        "run_previewed_bn_batch",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("an idempotent type rename must not open a transaction")
+        ),
+    )
+
+    result = _narrow_sync.apply_type_renames(
+        Path("."),
+        target="snail-mail.exe",
+        renames=(("FontGlyphV0Cursor", "FontGlyphAtlasCursor"),),
+    )
+
+    assert result == [
+        {
+            "op": "rename_type",
+            "status": "skipped",
+            "reason": "already current",
+            "old_name": "FontGlyphV0Cursor",
+            "new_name": "FontGlyphAtlasCursor",
+        }
+    ]
 
 
 def test_previewed_batch_can_transactionally_set_a_user_variable() -> None:

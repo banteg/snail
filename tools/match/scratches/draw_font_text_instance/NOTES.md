@@ -88,3 +88,22 @@ color. These are value lifetimes over the existing `FontSheet` and
 No matcher source changed. Focused Wibo remains 35.70%, with 221 candidate
 instructions versus 272 target instructions, a 1/272 prefix, and all 19 masked
 operands clean.
+
+## 2026-07-24 atlas and texture-borrow ownership
+
+The shared `draw_textured_quad_immediate` prototype fixes the UV argument order
+as U0, V0, U1, V1. The registrar independently shows that its two per-glyph
+arrays contain centered horizontal bounds, while its two sheet-wide scalars
+contain the vertical bounds. `FontSheet` therefore now names these lanes
+`glyph_u0`, `glyph_u1`, `glyph_v0`, and `glyph_v1`; the former `v0`,
+`line_step`, and `line_marker_fraction` names mixed axes and producer syntax.
+
+The guarded Binary Ninja replay also retains the short-lived borrowed
+`shadow_texture` and `glyph_texture` handles plus the two wave phases and
+horizontal wave offset. IDA independently preserves the same texture-array
+loads and reused phase stack slot. These are values borrowed from the one
+registered `FontSheet`; neither draw call owns or releases a texture.
+
+Matcher code only follows the corrected field vocabulary. Focused output is
+expected to remain the honest 35.70%, 221/272-instruction frontier with all 19
+operands clean; no register-shaped source or dummy dependency is introduced.

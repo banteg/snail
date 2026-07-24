@@ -15,22 +15,22 @@ void __cdecl draw_font_text_instance(cFontPrintBuffer *entry)
   int32_t v9; // eax
   int v10; // edi
   int32_t v11; // ebx
-  Color4f *v12; // eax
+  tColour *v12; // eax
   int32_t v13; // eax
-  float v14; // [esp+0h] [ebp-8Ch]
-  float v15; // [esp+4h] [ebp-88h]
-  float v16; // [esp+20h] [ebp-6Ch]
-  float v17; // [esp+20h] [ebp-6Ch]
-  float v18; // [esp+24h] [ebp-68h]
-  float v19; // [esp+24h] [ebp-68h]
+  float x0; // [esp+0h] [ebp-8Ch]
+  float y0; // [esp+4h] [ebp-88h]
+  float width; // [esp+20h] [ebp-6Ch]
+  float widtha; // [esp+20h] [ebp-6Ch]
+  float height; // [esp+24h] [ebp-68h]
+  float heighta; // [esp+24h] [ebp-68h]
   float v20; // [esp+40h] [ebp-4Ch]
   float v21; // [esp+40h] [ebp-4Ch]
   float v22; // [esp+54h] [ebp-38h]
   float font_kind; // [esp+58h] [ebp-34h]
-  float line_marker_fraction; // [esp+5Ch] [ebp-30h]
-  float v25; // [esp+60h] [ebp-2Ch]
-  int line_step_low; // [esp+64h] [ebp-28h]
-  float v27; // [esp+68h] [ebp-24h]
+  float v1; // [esp+5Ch] [ebp-30h]
+  float u1; // [esp+60h] [ebp-2Ch]
+  float v0; // [esp+64h] [ebp-28h]
+  float u0; // [esp+68h] [ebp-24h]
   float v28; // [esp+6Ch] [ebp-20h]
   float v29; // [esp+70h] [ebp-1Ch]
   float v30; // [esp+70h] [ebp-1Ch]
@@ -67,13 +67,13 @@ void __cdecl draw_font_text_instance(cFontPrintBuffer *entry)
   {
     v5 = font_slot_index_for_char(i);
     v6 = v5 + 522 * entry->font_id;
-    v27 = g_font_sheets[0].u0[v6];
-    v25 = g_font_sheets[0].v0[v6];
+    u0 = g_font_sheets[0].glyph_u0[v6];
+    u1 = g_font_sheets[0].glyph_u1[v6];
     v20 = g_font_wave_phase_a + v22;
     v31 = g_font_sheets[0].texture_page[v6];
     font_id = entry->font_id;
-    line_step_low = LODWORD(g_font_sheets[font_id].line_step);
-    line_marker_fraction = g_font_sheets[font_id].line_marker_fraction;
+    v0 = g_font_sheets[font_id].glyph_v0;
+    v1 = g_font_sheets[font_id].glyph_v1;
     v8 = sine(v20);
     v29 = v8 * entry->text_wave_amplitude + v8 * entry->text_wave_amplitude;
     v21 = v22 * 3.0 + g_font_wave_phase_a;
@@ -90,27 +90,27 @@ void __cdecl draw_font_text_instance(cFontPrintBuffer *entry)
           v10 = 2088 * v9;
           font_kind = (float)g_font_sheets[v9].font_kind;
           v11 = v9;
-          v12 = (Color4f *)set_color_rgba((tColour *)&color, 0.0, 0.0, 0.0, 0.80000001);
-          v18 = *(float *)(v10 + 7830276) * entry->text_scale * *(float *)(v10 + 7830288);
-          v16 = g_font_sheets[v11].glyph_width[v5] * entry->text_scale * *(float *)(v10 + 7830288);
-          v15 = font_kind + v28;
-          v14 = font_kind + v30;
+          v12 = set_color_rgba((tColour *)&color, 0.0, 0.0, 0.0, 0.80000001);
+          height = *(float *)(v10 + 7830276) * entry->text_scale * *(float *)(v10 + 7830288);
+          width = g_font_sheets[v11].glyph_width[v5] * entry->text_scale * *(float *)(v10 + 7830288);
+          y0 = font_kind + v28;
+          x0 = font_kind + v30;
           draw_textured_quad_immediate(
-            *((_DWORD *)&g_font_sheets[0].texture_ref_a + v31 + v11 * 522),
-            v14,
-            v15,
+            *(&g_font_sheets[0].texture_ref_a + v31 + v11 * 522),
+            x0,
+            y0,
             0.0,
             0.0,
             0.0,
             0.0,
             0.0,
             0.0,
-            v16,
-            v18,
-            v27,
-            *(float *)&line_step_low,
-            v25,
-            line_marker_fraction,
+            width,
+            height,
+            u0,
+            v0,
+            u1,
+            v1,
             v12,
             2,
             0.0);
@@ -118,12 +118,12 @@ void __cdecl draw_font_text_instance(cFontPrintBuffer *entry)
         }
       }
       v13 = entry->font_id;
-      v19 = g_font_sheets[entry->font_id].line_marker_y
-          * entry->text_scale
-          * g_font_sheets[entry->font_id].spacing_scale;
-      v17 = g_font_sheets[v13].glyph_width[v5] * entry->text_scale * g_font_sheets[entry->font_id].spacing_scale;
+      heighta = g_font_sheets[entry->font_id].line_marker_y
+              * entry->text_scale
+              * g_font_sheets[entry->font_id].spacing_scale;
+      widtha = g_font_sheets[v13].glyph_width[v5] * entry->text_scale * g_font_sheets[entry->font_id].spacing_scale;
       draw_textured_quad_immediate(
-        *((_DWORD *)&g_font_sheets[0].texture_ref_a + v31 + v13 * 522),
+        *(&g_font_sheets[0].texture_ref_a + v31 + v13 * 522),
         v30,
         v28,
         0.0,
@@ -132,13 +132,13 @@ void __cdecl draw_font_text_instance(cFontPrintBuffer *entry)
         0.0,
         0.0,
         0.0,
-        v17,
-        v19,
-        v27,
-        *(float *)&line_step_low,
-        v25,
-        line_marker_fraction,
-        (Color4f *)&entry->color,
+        widtha,
+        heighta,
+        u0,
+        v0,
+        u1,
+        v1,
+        &entry->color,
         1,
         0.0);
     }

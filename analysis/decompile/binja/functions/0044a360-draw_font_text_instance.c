@@ -21,11 +21,11 @@
 0044a40c        while (current_char != 0)
 0044a415        int32_t glyph_slot = font_slot_index_for_char(current_char)
 0044a41c        int32_t font_id = entry->font_id
-0044a43a        float atlas_u0 = g_font_sheets[0].u0[glyph_slot + font_id * 0x20a]
-0044a444        float atlas_u1 = g_font_sheets[0].v0[glyph_slot + font_id * 0x20a]
+0044a43a        float atlas_u0 = g_font_sheets[0].glyph_u0[glyph_slot + font_id * 0x20a]
+0044a444        float atlas_u1 = g_font_sheets[0].glyph_u1[glyph_slot + font_id * 0x20a]
 0044a455        int32_t texture_page = g_font_sheets[0].texture_page[glyph_slot + font_id * 0x20a]
-0044a468        float atlas_v0 = g_font_sheets[font_id].line_step
-0044a46e        float atlas_v1 = g_font_sheets[font_id].line_marker_fraction
+0044a468        float atlas_v0 = g_font_sheets[font_id].glyph_v0
+0044a46e        float atlas_v1 = g_font_sheets[font_id].glyph_v1
 0044a481        long double x87_r7_13 = sine(fconvert.s(fconvert.t(g_font_wave_phase_a) + fconvert.t(wave_index))) * fconvert.t(entry->text_wave_amplitude)
 0044a49d        int16_t x87control_1
 0044a49d        long double st0_5
@@ -56,10 +56,10 @@
 0044a5cd        text_cursor = text_resume
 0044a5d4        int32_t font_id_2 = entry->font_id
 0044a5f7        int32_t ecx_20 = font_id_2 * 0x828
-0044a618        int32_t eax_15 = font_id_2 * 0x20a
+0044a618        int32_t eax_14 = font_id_2 * 0x20a
 0044a61b        int32_t var_68_2 = ecx_20
 0044a62c        int32_t var_6c_3 = ecx_20
-0044a65a        x87control_3 = draw_textured_quad_immediate((&g_font_sheets[0].texture_ref_a)[eax_15 + texture_page], draw_x, draw_y, 0f, 0f, 0f, 0f, 0f, 0f, fconvert.s(fconvert.t(g_font_sheets[0].glyph_width[eax_15 + glyph_slot]) * fconvert.t(entry->text_scale) * fconvert.t(g_font_sheets[font_id_2].spacing_scale)), fconvert.s(fconvert.t(g_font_sheets[font_id_2].line_marker_y) * fconvert.t(entry->text_scale) * fconvert.t(g_font_sheets[font_id_2].spacing_scale)), atlas_u0, atlas_v0, atlas_u1, atlas_v1, &entry->color, 1, 0f)
+0044a65a        x87control_3 = draw_textured_quad_immediate((&g_font_sheets[0].texture_ref_a)[eax_14 + texture_page], draw_x, draw_y, 0f, 0f, 0f, 0f, 0f, 0f, fconvert.s(fconvert.t(g_font_sheets[0].glyph_width[eax_14 + glyph_slot]) * fconvert.t(entry->text_scale) * fconvert.t(g_font_sheets[font_id_2].spacing_scale)), fconvert.s(fconvert.t(g_font_sheets[font_id_2].line_marker_y) * fconvert.t(entry->text_scale) * fconvert.t(g_font_sheets[font_id_2].spacing_scale)), atlas_u0, atlas_v0, atlas_u1, atlas_v1, &entry->color, 1, 0f)
 0044a662        int32_t font_id_3 = entry->font_id
 0044a687        int32_t glyph_advance = ftol(x87control_3, fconvert.t(g_font_sheets[0].glyph_width[glyph_slot + font_id_3 * 0x20a]))
 0044a690        current_char = text_cursor[1]

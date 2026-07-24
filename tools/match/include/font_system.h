@@ -15,13 +15,13 @@ struct FontSheet {
     int slot_count;             // +0x000
     TextureRef* texture_ref_a;  // +0x004
     TextureRef* texture_ref_b;  // +0x008
-    float u0[FONT_GLYPH_CAPACITY];          // +0x00c
-    float v0[FONT_GLYPH_CAPACITY];          // +0x20c
+    float glyph_u0[FONT_GLYPH_CAPACITY];    // +0x00c
+    float glyph_u1[FONT_GLYPH_CAPACITY];    // +0x20c
     float glyph_width[FONT_GLYPH_CAPACITY]; // +0x40c
     int texture_page[FONT_GLYPH_CAPACITY];  // +0x60c
     float line_marker_y;        // +0x80c
-    float line_step;            // +0x810
-    float line_marker_fraction; // +0x814
+    float glyph_v0;             // +0x810
+    float glyph_v1;             // +0x814
     float spacing_scale;        // +0x818
     float width_scale;          // +0x81c
     float height_scale;         // +0x820

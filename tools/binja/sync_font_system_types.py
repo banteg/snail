@@ -12,10 +12,12 @@ from _narrow_sync import (
     apply_split_user_var_update,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_struct_size,
     emit_summary,
     ensure_function_analysis,
+    reanalyze_functions,
     remove_user_var_updates,
     types_declare_missing_only,
 )
@@ -33,7 +35,7 @@ EXPECTED_PREREQUISITE_SIZES = {
 EXPECTED_STRUCT_SIZES = {
     "TgaImageView": 0x14,
     "FontSheet": 0x828,
-    "FontGlyphV0Cursor": 0x404,
+    "FontGlyphAtlasCursor": 0x404,
     "cFontPrintBuffer": 0x84,
 }
 
@@ -41,23 +43,23 @@ FONT_SHEET_FIELD_UPDATES = (
     ("0x000", "slot_count", "int32_t"),
     ("0x004", "texture_ref_a", "TextureRef*"),
     ("0x008", "texture_ref_b", "TextureRef*"),
-    ("0x00c", "u0", "float[0x80]"),
-    ("0x20c", "v0", "float[0x80]"),
+    ("0x00c", "glyph_u0", "float[0x80]"),
+    ("0x20c", "glyph_u1", "float[0x80]"),
     ("0x40c", "glyph_width", "float[0x80]"),
     ("0x60c", "texture_page", "int32_t[0x80]"),
     ("0x80c", "line_marker_y", "float"),
-    ("0x810", "line_step", "float"),
-    ("0x814", "line_marker_fraction", "float"),
+    ("0x810", "glyph_v0", "float"),
+    ("0x814", "glyph_v1", "float"),
     ("0x818", "spacing_scale", "float"),
     ("0x81c", "width_scale", "float"),
     ("0x820", "height_scale", "float"),
     ("0x824", "font_kind", "int32_t"),
 )
 
-FONT_GLYPH_V0_CURSOR_FIELD_UPDATES = (
-    ("0x000", "v0", "float"),
-    ("0x004", "next_glyph_v0", "float"),
-    ("0x008", "_next_v0_to_glyph_width", "uint8_t[0x1f8]"),
+FONT_GLYPH_ATLAS_CURSOR_FIELD_UPDATES = (
+    ("0x000", "glyph_u1", "float"),
+    ("0x004", "next_glyph_u1", "float"),
+    ("0x008", "_next_u1_to_glyph_width", "uint8_t[0x1f8]"),
     ("0x200", "glyph_width", "float"),
     ("0x204", "_glyph_width_to_texture_page", "uint8_t[0x1fc]"),
     ("0x400", "texture_page", "int32_t"),
@@ -220,6 +222,12 @@ ANALYSIS_GUARD_FUNCTIONS = (
     "draw_font_text_instance",
 )
 
+FONT_OWNER_REANALYSIS_FUNCTIONS = (
+    "register_font_texture_sheet",
+    "draw_font_text_instance",
+    "initialize_font3d_objects",
+)
+
 # VC6 copies the queue-entry pointer into ESI, then recycles the incoming
 # [esp+4] argument slot as the horizontal glyph cursor. The three alignment
 # branches and loop back-edge feed the same float lifetime through SSA joins.
@@ -370,6 +378,46 @@ FONT_DRAW_GLYPH_USER_VAR_UPDATES = (
         66,
         "shadow_color",
         "tColour*",
+    ),
+    (
+        "draw_font_text_instance",
+        "StackVariableSourceType",
+        251,
+        -76,
+        "wave_phase_x",
+        "float",
+    ),
+    (
+        "draw_font_text_instance",
+        "StackVariableSourceType",
+        314,
+        -76,
+        "wave_phase_y",
+        "float",
+    ),
+    (
+        "draw_font_text_instance",
+        "StackVariableSourceType",
+        294,
+        -28,
+        "wave_x",
+        "float",
+    ),
+    (
+        "draw_font_text_instance",
+        "RegisterVariableSourceType",
+        569,
+        66,
+        "shadow_texture",
+        "TextureRef*",
+    ),
+    (
+        "draw_font_text_instance",
+        "RegisterVariableSourceType",
+        754,
+        68,
+        "glyph_texture",
+        "TextureRef*",
     ),
 )
 
@@ -596,10 +644,25 @@ FONT3D_GLYPH_CURSOR_USER_VAR_UPDATES = (
         "RegisterVariableSourceType",
         73,
         73,
-        "glyph_v0_cursor",
-        "FontGlyphV0Cursor*",
+        "glyph_atlas_cursor",
+        "FontGlyphAtlasCursor*",
     ),
 )
+
+# VC6 preserves the incoming int16 font id in EAX, then recycles its
+# four-byte [esp+4] argument slot for the per-glyph float scale. Split the
+# full-width SSA definition so the parameter and derived scale retain their
+# independent ownership.
+FONT3D_GLYPH_SCALE_DEFINITIONS = (
+    ("0x44ae71", "mlil_ssa", "StackVariableSourceType", 97, 4),
+)
+
+FONT3D_GLYPH_SCALE_VAR = (
+    "StackVariableSourceType",
+    97,
+    4,
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -637,6 +700,12 @@ def main() -> int:
     if bad_prerequisites:
         raise RuntimeError(f"font-system prerequisite layouts changed: {bad_prerequisites}")
 
+    type_rename_operations = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=(("FontGlyphV0Cursor", "FontGlyphAtlasCursor"),),
+    )
+
     mismatched_types = tuple(
         name
         for name, expected_size in EXPECTED_STRUCT_SIZES.items()
@@ -665,6 +734,7 @@ def main() -> int:
         }
 
     operations: list[dict[str, object]] = [
+        *type_rename_operations,
         type_operation,
         *apply_symbol_updates(
             REPO_ROOT,
@@ -677,7 +747,10 @@ def main() -> int:
             target=args.target,
             struct_updates=(
                 ("FontSheet", FONT_SHEET_FIELD_UPDATES),
-                ("FontGlyphV0Cursor", FONT_GLYPH_V0_CURSOR_FIELD_UPDATES),
+                (
+                    "FontGlyphAtlasCursor",
+                    FONT_GLYPH_ATLAS_CURSOR_FIELD_UPDATES,
+                ),
                 ("cFontPrintBuffer", FONT_PRINT_BUFFER_FIELD_UPDATES),
             ),
             proto_updates=PROTO_UPDATES,
@@ -745,10 +818,24 @@ def main() -> int:
             target=args.target,
             updates=FONT_QUEUE_COLOR_USER_VAR_UPDATES,
         ),
+        *apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="initialize_font3d_objects",
+            definitions=FONT3D_GLYPH_SCALE_DEFINITIONS,
+            target_var=FONT3D_GLYPH_SCALE_VAR,
+            variable_name="glyph_scale",
+            variable_type="float",
+        ),
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
             updates=FONT3D_GLYPH_CURSOR_USER_VAR_UPDATES,
+        ),
+        *reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=FONT_OWNER_REANALYSIS_FUNCTIONS,
         ),
     ]
     return emit_summary(

@@ -48,19 +48,19 @@
 0044a067        ebp.w = image->width
 0044a073        int32_t ebp_1 = 0
 0044a07b        float centered_left = fconvert.s(float.t(glyph_left) + fconvert.t(0.5f))
-0044a087        g_font_sheets[0].u0[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s(fconvert.t(centered_left) / float.t(ebp))
+0044a087        g_font_sheets[0].glyph_u0[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s(fconvert.t(centered_left) / float.t(ebp))
 0044a091        ebp_1.w = image->width
 0044a099        run_width = 0
 0044a0a1        float centered_last = fconvert.s(float.t(last_x) + fconvert.t(0.5f))
-0044a0ad        g_font_sheets[0].v0[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s(fconvert.t(centered_last) / float.t(ebp_1))
+0044a0ad        g_font_sheets[0].glyph_u1[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s(fconvert.t(centered_last) / float.t(ebp_1))
 0044a0b3        g_font_sheets[0].texture_page[glyph_slot + registered_font_count_2 * 0x20a] = 0
 0044a0bf        if (image->width == 0x800)
 0044a0c7        if (glyph_left s<= split_x)
-0044a128        g_font_sheets[0].u0[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s(fconvert.t(centered_left) * fconvert.t(0.0009765625f))
-0044a147        g_font_sheets[0].v0[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s(fconvert.t(centered_last) / float.t(zx.d(image->width u>> 1)))
+0044a128        g_font_sheets[0].glyph_u0[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s(fconvert.t(centered_left) * fconvert.t(0.0009765625f))
+0044a147        g_font_sheets[0].glyph_u1[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s(fconvert.t(centered_last) / float.t(zx.d(image->width u>> 1)))
 0044a14d        g_font_sheets[0].texture_page[glyph_slot + registered_font_count_2 * 0x20a] = 0
-0044a0e7        g_font_sheets[0].u0[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s((float.t(glyph_left - split_x) + fconvert.t(0.5f)) * fconvert.t(0.0009765625f))
-0044a10c        g_font_sheets[0].v0[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s((float.t(x - split_x) + fconvert.t(0.5f)) / float.t(zx.d(image->width u>> 1)))
+0044a0e7        g_font_sheets[0].glyph_u0[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s((float.t(glyph_left - split_x) + fconvert.t(0.5f)) * fconvert.t(0.0009765625f))
+0044a10c        g_font_sheets[0].glyph_u1[glyph_slot + registered_font_count_2 * 0x20a] = fconvert.s((float.t(x - split_x) + fconvert.t(0.5f)) / float.t(zx.d(image->width u>> 1)))
 0044a112        g_font_sheets[0].texture_page[glyph_slot + registered_font_count_2 * 0x20a] = 1
 0044a158        bool cond:3_1 = glyph_slot != 0x7f
 0044a15d        glyph_slot += 1
@@ -92,9 +92,9 @@
 0044a1f0        int32_t ecx_12 = 0
 0044a1f2        ecx_12.w = image->height
 0044a202        int32_t edx_2 = 0
-0044a21a        g_font_sheets[registered_font_count_2].line_step = fconvert.s(fconvert.t(3f) / float.t(ecx_12 - 1))
+0044a21a        g_font_sheets[registered_font_count_2].glyph_v0 = fconvert.s(fconvert.t(3f) / float.t(ecx_12 - 1))
 0044a220        edx_2.w = image->height
-0044a23a        g_font_sheets[registered_font_count_2].line_marker_fraction = fconvert.s(fconvert.t(g_font_sheets[registered_font_count_2].line_marker_y) / float.t(edx_2 - 1))
+0044a23a        g_font_sheets[registered_font_count_2].glyph_v1 = fconvert.s(fconvert.t(g_font_sheets[registered_font_count_2].line_marker_y) / float.t(edx_2 - 1))
 0044a240        (&g_font_sheets)[registered_font_count_2][0].slot_count = glyph_slot
 0044a246        g_font_sheets[registered_font_count_2].font_kind = font_kind
 0044a252        struct TextureRef* flagged_texture_ref

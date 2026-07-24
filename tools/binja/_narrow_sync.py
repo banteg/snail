@@ -25,6 +25,7 @@ SplitVarDefinition = tuple[str, str, str, int, int]
 StructUpdateGroup = tuple[str, Iterable[FieldUpdate]]
 UserVarUpdate = tuple[str, str, int, int, str, str]
 UserVarRemoval = tuple[str, str, int, int, str, str]
+TypeRename = tuple[str, str]
 
 
 def _read_bn_spill(stdout: str, stderr: str) -> tuple[Path | None, object | None]:
@@ -55,6 +56,8 @@ def _summarize_bn_failure(payload: object) -> str:
         "identifier",
         "address",
         "struct_name",
+        "old_name",
+        "new_name",
         "offset",
         "field_name",
         "before_prototype",
@@ -224,6 +227,32 @@ analysis_skip_override_restorations = []
 try:
     for operation in operations:
         kind = operation["op"]
+        if kind == "rename_type":
+            old_name = str(operation["old_name"])
+            new_name = str(operation["new_name"])
+            old_type = bv.get_type_by_name(old_name)
+            new_type = bv.get_type_by_name(new_name)
+            if old_type is None:
+                raise RuntimeError(
+                    f"cannot rename missing type {old_name} to {new_name}"
+                )
+            if new_type is not None:
+                raise RuntimeError(
+                    f"refusing to rename {old_name}: target type {new_name} "
+                    "already exists"
+                )
+            analysis_changed = True
+            bv.rename_type(old_name, new_name)
+            results.append({
+                "op": kind,
+                "old_name": old_name,
+                "new_name": new_name,
+                "before": str(old_type),
+                "changed": True,
+            })
+            affected_types.extend((old_name, new_name))
+            continue
+
         if kind == "undefine_symbol":
             address = int(str(operation["address"]), 0)
             expected_name = str(operation["expected_name"])
@@ -469,7 +498,17 @@ try:
     if analysis_changed:
         bv.update_analysis_and_wait()
     for entry in results:
-        if entry["op"] == "undefine_symbol":
+        if entry["op"] == "rename_type":
+            observed_old = bv.get_type_by_name(entry["old_name"])
+            observed_new = bv.get_type_by_name(entry["new_name"])
+            entry["observed"] = {
+                "old_exists": observed_old is not None,
+                "new_exists": observed_new is not None,
+            }
+            entry["verified"] = (
+                observed_old is None and observed_new is not None
+            )
+        elif entry["op"] == "undefine_symbol":
             symbol = bv.get_symbol_at(int(entry["address"], 0))
             observed = str(symbol.name) if symbol is not None else None
             entry["observed"] = observed
@@ -625,9 +664,9 @@ def run_bn_batch(
     preview: bool,
 ) -> dict[str, object]:
     # `bn batch apply` was removed from the 0.14 CLI. Keep one transactional
-    # bridge round trip by replaying the two narrow mutation kinds used by the
-    # ownership sync scripts through `bn py exec` instead of regressing to one
-    # process and analysis pass per field.
+    # bridge round trip by replaying narrow ownership mutations through
+    # `bn py exec` instead of regressing to one process and analysis pass per
+    # field.
     result = run_bn(
         repo_root,
         "py",
@@ -680,6 +719,75 @@ def run_previewed_bn_batch(
         },
         "apply": applied,
     }
+
+
+def apply_type_renames(
+    repo_root: Path,
+    *,
+    target: str,
+    renames: Iterable[TypeRename],
+) -> list[dict[str, object]]:
+    rename_list = list(renames)
+    type_names = tuple(
+        dict.fromkeys(
+            name
+            for old_name, new_name in rename_list
+            for name in (old_name, new_name)
+        )
+    )
+    widths = current_type_widths(
+        repo_root,
+        target=target,
+        type_names=type_names,
+    )
+    skipped: list[dict[str, object]] = []
+    pending: list[dict[str, object]] = []
+    for old_name, new_name in rename_list:
+        old_exists = widths.get(old_name) is not None
+        new_exists = widths.get(new_name) is not None
+        if not old_exists:
+            skipped.append(
+                {
+                    "op": "rename_type",
+                    "status": "skipped",
+                    "reason": (
+                        "already current"
+                        if new_exists
+                        else "source type absent"
+                    ),
+                    "old_name": old_name,
+                    "new_name": new_name,
+                }
+            )
+            continue
+        if new_exists:
+            raise RuntimeError(
+                f"refusing ambiguous type rename {old_name} -> {new_name}: "
+                "both names already exist"
+            )
+        pending.append(
+            {
+                "op": "rename_type",
+                "old_name": old_name,
+                "new_name": new_name,
+            }
+        )
+
+    if not pending:
+        return skipped
+    return [
+        *skipped,
+        {
+            "op": "type_rename_batch",
+            "operation_count": len(pending),
+            "operations": pending,
+            "result": run_previewed_bn_batch(
+                repo_root,
+                target=target,
+                operations=pending,
+            ),
+        },
+    ]
 
 
 def reanalyze_functions(

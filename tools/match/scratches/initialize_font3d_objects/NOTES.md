@@ -14,8 +14,8 @@ Recovered relationships:
   vertex array.
 - The facequad texture pointer is selected from `texture_ref_a/texture_ref_b`
   through `FontSheet::texture_page[index]`.
-- The UV quad uses `u0[index]`, `v0[index]`, `1.0f - line_step`, and
-  `1.0f - line_marker_fraction`.
+- The UV quad uses `glyph_u0[index]`, `glyph_u1[index]`,
+  `1.0f - glyph_v0`, and `1.0f - glyph_v1`.
 
 Initial match: 40.00%, 94 candidate instructions versus 126 target
 instructions. The residual is mostly cursor/register ownership: native walks
@@ -75,7 +75,7 @@ rewrite regressed to 32.00%, so the register-ownership residual is left visible.
 - Native owns four independent loop cursors: `ebx` is the selected
   `FontSheet` byte offset, `ebp` walks `g_font3d_scales`, `esi` walks the
   `BodBase::object` lanes in `0x38`-byte steps, and `edi` walks the sheet's
-  `v0` lane. Repeating the borrowed `bod->object` access, instead of caching
+  `glyph_u1` lane. Repeating the borrowed `bod->object` access, instead of caching
   private object/quad/vertex views, lets the compiler recover that ownership
   naturally.
 - Correcting the void contract, keeping the scale cursor inside the non-empty
@@ -84,7 +84,7 @@ rewrite regressed to 32.00%, so the register-ownership residual is left visible.
   37/126, and 19 clean masked operands with no unresolved or mismatched names.
 - The remaining differences are two legal instruction-scheduling choices: an
   object reload and x87 constant load move across independent stores, and the
-  `v0`/BOD cursor increments swap order. They are left visible rather than
+  glyph-U1/BOD cursor increments swap order. They are left visible rather than
   forced with volatile aliases or dummy dependencies.
 
 2026-07-14 analysis ownership closure:
@@ -110,18 +110,38 @@ without changing the honest 96.83% scheduler residual.
 
 ## 2026-07-23 synchronized glyph lanes
 
-The native `edi` cursor is anchored at `FontSheet::v0[glyph]`, advances four
+The native `edi` cursor is anchored at `FontSheet::glyph_u1[glyph]`, advances four
 bytes per glyph, and reads the synchronized `glyph_width` and `texture_page`
 lanes at fixed `+0x200` and `+0x400` displacements. The new analysis-only
-`FontGlyphV0Cursor` records that overlapping SoA view explicitly; it does not
+`FontGlyphAtlasCursor` records that overlapping SoA view explicitly; it does not
 claim separately owned storage or replace the real `FontSheet` layout.
 
-Binary Ninja now exposes `glyph_v0_cursor->v0`, `glyph_width`, and
+Binary Ninja now exposes `glyph_atlas_cursor->glyph_u1`, `glyph_width`, and
 `texture_page`, plus the independent `glyph_index`, `scale_cursor`,
-`bod_object_cursor`, and `font_sheet_dword_offset` lifetimes. The two `u0`
-reads remain honest `-0x200` aliases because C structs cannot represent a
-negative member offset. IDA independently corroborates all three forward
-displacements and the four-byte cursor advance.
+`bod_object_cursor`, and `font_sheet_dword_offset` lifetimes. The two
+`glyph_u0` reads remain honest `-0x200` aliases because C structs cannot
+represent a negative member offset. IDA independently corroborates all three
+forward displacements and the four-byte cursor advance.
 
 No matcher source changed. Focused Wibo remains 96.83%, with identical
 126-instruction streams, a 37/126 prefix, and 19 clean masked operands.
+
+## 2026-07-24 atlas-coordinate ownership correction
+
+The registrar and both render consumers prove that the historical field names
+mixed horizontal and vertical axes. The two 128-entry lanes are per-glyph
+`glyph_u0` and `glyph_u1`; the two sheet-wide scalars are `glyph_v0` and
+`glyph_v1`. The immediate 2D renderer consumes them in exactly that argument
+order, while this 3D materializer applies the renderer's vertical flip as
+`1.0f - glyph_v0/v1`.
+
+The analysis-only stride type is consequently `FontGlyphAtlasCursor`, anchored
+at `glyph_u1`, rather than the misleading `FontGlyphV0Cursor`. The guarded
+Binary Ninja migration renames that type transactionally and keeps the
+synchronized width/page lanes at `+0x200/+0x400`. This semantic rename is
+codegen-neutral and does not alter the honest 96.83% matcher frontier.
+
+The same replay also splits the full-width `0x44ae71` SSA definition away from
+the incoming `int16_t font_id`. VC6 keeps the original id in EAX and reuses its
+four-byte stack argument slot for a derived float `glyph_scale`; treating that
+slot as one source variable produced the false `font_id.d` field access.
