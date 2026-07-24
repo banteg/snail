@@ -4,12 +4,11 @@ Live source map for the authored ring/special-effect spawner.
 
 Current match:
 
-- `93.10%`, `349/347` candidate/target instructions, prefix `20/347`, with
-  `74` masked operands ok, one explicit jump-table-label mismatch, and no
-  unresolved operands.
+- `99.14%`, `347/347` candidate/target instructions, prefix `173/347`, with
+  all `75` masked operands clean and no unresolved or mismatched operands.
 - All nine authored kind paths are present with their native RNG streams. The
-  remaining differences are a redundant bounded-scan proof check, two x87
-  store schedules, activation-store scheduling, and local branch labels.
+  only remaining differences are two x87 result/store schedules and one
+  activation-store schedule.
 - No compiler flag, volatile barrier, artificial return, or matcher-only state
   is retained.
 
@@ -328,3 +327,27 @@ is retained.
   tracked decompiles no longer expose the slot as `void*`/`char*` plus raw
   `0x35b...` displacements. Matcher output remains honestly `93.10%`; this is
   ownership recovery, not an instruction-shape claim.
+
+## 2026-07-24 inline free-slot lifecycle
+
+The pool scan now owns the complete first-inactive-slot lifecycle inside its
+two-record loop: active records continue the scan, the first inactive embedded
+`SubRing` is initialized and dispatched in place, and falling out of the loop
+is the pool-full return. This is the same behavior as the earlier
+break-plus-proof-check spelling, but it exposes the native control-flow owner:
+the inactive-slot branch enters the body while the exhausted scan falls
+directly into the shared epilogue.
+
+VC6 consequently removes the redundant found-path capacity check and produces
+the exact 347-instruction target extent. Focused matching rises from `93.10%`
+(`349/347`, prefix `20/347`, 74 clean operands plus one table-label mismatch)
+to `99.14%` (`347/347`, prefix `173/347`, all 75 operands clean). The native
+kind jump table now pairs without a label mismatch.
+
+Three ordinary schedules remain: two moving-effect tails exchange the
+independent `active_phase` x87 pop with the adjacent `active_phase_step` store,
+and activation exchanges the independent state and lives-snapshot stores.
+Staging phase and phase-step in explicit locals regressed to `78.52%` and
+expanded the candidate to 384 instructions by defeating native tail merging;
+an explicit lives local compiled identically. Both probes were removed rather
+than encoding artificial sequencing.
