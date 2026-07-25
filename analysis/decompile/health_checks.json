@@ -7291,14 +7291,23 @@
       "name": "bn_contact_target_search_owner",
       "artifact": "analysis/decompile/binja/functions/00415e30-search_path_for_golb.c",
       "required_substrings": [
-        "ContactTargetEntry",
-        "registry->entries[0].position.z",
+        "float* position_z_cursor = &manager->entries[0].position.z",
+        "struct ContactTargetEntry* nearest_entry",
+        "position_z_cursor[-2]",
+        "position_z_cursor[-1]",
+        "*position_z_cursor",
         "position->x",
-        "registry->count"
+        "nearest_entry = &position_z_cursor[-3]",
+        "position_z_cursor = &position_z_cursor[6]",
+        "i s< manager->count",
+        "return nearest_entry"
       ],
       "forbidden_substrings": [
         "GolbPathBank",
         "GolbPathSample",
+        "registry->",
+        "struct ContactTargetEntry (*",
+        "(position_z_cursor - 0x10)->entries",
         "__offset(",
         "__asm",
         "_ET1"

@@ -27,3 +27,19 @@ first-best-wins tie break, returns the entry base pointer or null.
 by `sizeof(ContactTargetEntry) / sizeof(float)` rather than the anonymous six
 lanes. Matching remains exact at 63/63 instructions with all three operands
 clean.
+
+2026-07-25 scan and return borrows: native ESI remains deliberately based at
+`ContactTargetEntry::position.z`, so the three delta components are
+`cursor[-2]`, `cursor[-1]`, and `cursor[0]`, followed by a six-float
+(`sizeof(ContactTargetEntry)`) advance. The best candidate stored at
+`[ebp-0x1c]` is one borrowed `ContactTargetEntry*`; it never owns or denotes
+the complete 256-entry registry.
+
+Binary Ninja's exact ESI lifetime (`RegisterVariableSourceType`, index `39`,
+storage `72`) now replays as `float* position_z_cursor`, and the stack result
+(`StackVariableSourceType`, index `11`, storage `-28`) replays as
+`ContactTargetEntry* nearest_entry`. IDA independently renders the same
+field-first float scan and single-entry result. The guarded replay verifies the
+complete `EnemyManager`, `ContactTargetEntry`, and `Vec3` layouts before
+applying either borrow. No matcher source changes: 63/63 instructions and all
+three operands remain clean.

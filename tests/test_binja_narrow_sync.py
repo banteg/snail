@@ -3588,6 +3588,66 @@ def test_snail_hotspot_replay_preserves_local_and_world_borrows() -> None:
         assert fragment in health_checks
 
 
+def test_contact_target_search_replay_preserves_entry_borrows() -> None:
+    repo_root = Path(__file__).parents[1]
+    source = (
+        BINJA_DIR / "sync_contact_target_search_lifetimes.py"
+    ).read_text(encoding="utf-8")
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    for expected in (
+        '"Vec3": 0x0C',
+        '"ContactTargetEntry": 0x18',
+        '"EnemyManager": 0x1804',
+        '0x04: ("position", "Vec3")',
+        '0x04: ("entries", "ContactTargetEntry[256]")',
+        "CONTACT_TARGET_SEARCH_USER_VAR_UPDATES",
+        "current_struct_fields_batch",
+        "apply_user_var_updates",
+        "verify_contact_target_search_owner_layout",
+    ):
+        assert expected in source
+    for source_type, index, storage, variable_name, variable_type in (
+        (
+            "RegisterVariableSourceType",
+            39,
+            72,
+            "position_z_cursor",
+            "float*",
+        ),
+        (
+            "StackVariableSourceType",
+            11,
+            -28,
+            "nearest_entry",
+            "ContactTargetEntry*",
+        ),
+    ):
+        update = (
+            '"search_path_for_golb",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{variable_name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert update in source
+    for fragment in (
+        "float* position_z_cursor = &manager->entries[0].position.z",
+        "struct ContactTargetEntry* nearest_entry",
+        "position_z_cursor[-2]",
+        "position_z_cursor[-1]",
+        "nearest_entry = &position_z_cursor[-3]",
+        "position_z_cursor = &position_z_cursor[6]",
+        "return nearest_entry",
+        '"struct ContactTargetEntry (*"',
+        '"(position_z_cursor - 0x10)->entries"',
+    ):
+        assert fragment in health_checks
+
+
 def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
     binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"
