@@ -474,6 +474,7 @@ typedef struct GUI {
 typedef struct Help {
     FrontendWidget* back_button;
 } Help;
+typedef char Help_must_be_0x04[(sizeof(Help) == 0x04) ? 1 : -1];
 
 /* Exact 0x24-byte authored cROptions front-end controller. */
 typedef struct Options {
@@ -3213,7 +3214,9 @@ int32_t __stdcall d3dx_create_texture_from_file(
     void** texture
 );
 
+void __thiscall initialize_help_screen(Help* help);
 void __thiscall destroy_help_screen(Help* help);
+void __thiscall update_help_screen(Help* help);
 
 void __thiscall initialize_loading_screen(LoadingBar* loading_bar);
 

@@ -19,3 +19,9 @@ four-byte owner lives at `SubgameRuntime +0x1260008`; the shared type is now
 widget allocation now use canonical `GameRoot` members, removing the
 screen-local `HelpBorderManager` pseudo-type. Output remains exact at 47/47
 with all 15 operands clean.
+
+2026-07-25 lifecycle replay closure: both decompiler lanes now persist the
+authored `void cRHelp::Init()` ABI and exact four-byte `Help` owner. The
+tracked output reaches `help->back_button` directly instead of treating the
+owner as a loose `FrontendWidget**`; the replay rejects any `Help` size other
+than `0x04`.

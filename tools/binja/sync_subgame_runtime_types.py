@@ -101,8 +101,13 @@ PAUSE_FUNCTION_SYMBOL_UPDATES = (
 )
 
 SUBGAME_FUNCTION_SYMBOL_UPDATES = (
+    ("0x416800", "initialize_help_screen"),
+    ("0x4168c0", "destroy_help_screen"),
+    ("0x4168d0", "update_help_screen"),
     ("0x435df0", "set_subgame_features"),
 )
+
+HELP_EXPECTED_SIZE = 0x04
 
 PARCEL_EXPECTED_SIZES = {
     "Parcel": 0x8C,
@@ -267,6 +272,12 @@ COMPLETION_REANALYSIS_FUNCTIONS = (
     "register_parcel_delivery",
 )
 
+HELP_REANALYSIS_FUNCTIONS = (
+    "initialize_help_screen",
+    "destroy_help_screen",
+    "update_help_screen",
+)
+
 GALAXY_DATA_SYMBOL_UPDATES = (
     ("0x4a1c4c", "g_galaxy_group_points"),
     ("0x4a1d14", "g_galaxy_route_points"),
@@ -359,6 +370,10 @@ GUI_FIELD_UPDATES = (
     ("0x1c", "speed_slider", "FrontendWidget*"),
     ("0x20", "difficulty_slider", "FrontendWidget*"),
     ("0x24", "replay_button", "FrontendWidget*"),
+)
+
+HELP_FIELD_UPDATES = (
+    ("0x00", "back_button", "FrontendWidget*"),
 )
 
 PROTO_UPDATES = (
@@ -544,8 +559,16 @@ PROTO_UPDATES = (
         "void __thiscall update_subgame_camera(SubgameRuntime* runtime)",
     ),
     (
+        "initialize_help_screen",
+        "void __thiscall initialize_help_screen(Help* help)",
+    ),
+    (
         "destroy_help_screen",
         "void __thiscall destroy_help_screen(Help* help)",
+    ),
+    (
+        "update_help_screen",
+        "void __thiscall update_help_screen(Help* help)",
     ),
 )
 
@@ -730,6 +753,23 @@ def main() -> int:
     operations.append(
         require_galaxy_route_cursor_dependencies(target=args.target)
     )
+    help_size = current_struct_size(
+        REPO_ROOT,
+        target=args.target,
+        struct_name="Help",
+    )
+    if help_size != HELP_EXPECTED_SIZE:
+        raise RuntimeError(
+            "refusing Help lifecycle replay with owner-size mismatch: "
+            f"expected {HELP_EXPECTED_SIZE:#x}, observed {help_size!r}"
+        )
+    operations.append(
+        {
+            "op": "owner_size_verify",
+            "status": "verified",
+            "owner_sizes": {"Help": help_size},
+        }
+    )
     parcel_sizes = {
         name: current_struct_size(REPO_ROOT, target=args.target, struct_name=name)
         for name in PARCEL_EXPECTED_SIZES
@@ -910,6 +950,7 @@ def main() -> int:
                 ("Parcel", PARCEL_FIELD_UPDATES),
                 ("TimesUp", TIMES_UP_FIELD_UPDATES),
                 ("GUI", GUI_FIELD_UPDATES),
+                ("Help", HELP_FIELD_UPDATES),
             ),
             # Several legacy analysis aliases are re-inferred during preview.
             # The batch helper applies prototypes through the same verified
@@ -944,7 +985,10 @@ def main() -> int:
             # apply_user_var_updates already performs and verifies the root
             # initializer's reanalysis. Repeating that large function here
             # adds several minutes to the replay without changing its state.
-            identifiers=COMPLETION_REANALYSIS_FUNCTIONS,
+            identifiers=(
+                *COMPLETION_REANALYSIS_FUNCTIONS,
+                *HELP_REANALYSIS_FUNCTIONS,
+            ),
         )
     )
     return emit_summary(

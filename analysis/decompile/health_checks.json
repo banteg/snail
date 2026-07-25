@@ -14836,9 +14836,12 @@
       "required_substrings": [
         "load_landscape_script_by_name(&g_game_base->subgame.landscape_manager",
         "subgame.landscape_manager.scripts[eax_1]",
-        "change_backdrop(&game_base_1->backdrop"
+        "change_backdrop(&game_base_1->backdrop",
+        "help->back_button = allocate_border(&g_game_base->border_manager)",
+        "initialize_frontend_widget(help->back_button"
       ],
       "forbidden_substrings": [
+        "*arg1 = allocate_border",
         "unknown_000000",
         "0x106c7bc",
         "unimplemented"
@@ -14848,12 +14851,16 @@
       "name": "ida_initialize_help_screen_landscape_owner",
       "artifact": "analysis/decompile/ida/functions/00416800-initialize_help_screen.c",
       "required_substrings": [
-        "void __thiscall initialize_help_screen(FrontendWidget **this)",
+        "void __thiscall initialize_help_screen(Help *help)",
         "&g_game_base->subgame.landscape_manager,",
         "subgame.landscape_manager.scripts[landscape_script_by_name]",
-        "change_backdrop(&g_game_base->backdrop"
+        "change_backdrop(&g_game_base->backdrop",
+        "help->back_button = allocate_border(&g_game_base->border_manager);",
+        "initialize_frontend_widget(help->back_button"
       ],
       "forbidden_substrings": [
+        "FrontendWidget **this",
+        "*this = allocate_border",
         "unknown_000000",
         "0x106c7bc",
         "unimplemented"
@@ -14882,6 +14889,41 @@
       "forbidden_substrings": [
         "int __thiscall destroy_help_screen",
         "return kill_all_borders",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_help_update_owner",
+      "artifact": "analysis/decompile/binja/functions/004168d0-update_help_screen.c",
+      "required_substrings": [
+        "struct FrontendWidget* back_button = help->back_button",
+        "back_button->widget_flags",
+        "destroy_help_screen(help)",
+        "g_game_base->players[0].frontend_state = 2",
+        "g_game_base->players[0].redispatch_requested = 1"
+      ],
+      "forbidden_substrings": [
+        "*arg1",
+        "data_4df904",
+        "*(result + 0x1b8)",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_help_update_owner",
+      "artifact": "analysis/decompile/ida/functions/004168d0-update_help_screen.c",
+      "required_substrings": [
+        "void __thiscall update_help_screen(Help *help)",
+        "help->back_button->widget_flags",
+        "destroy_help_screen(help);",
+        "g_game_base->players[0].frontend_state = 2;",
+        "g_game_base->players[0].redispatch_requested = 1;"
+      ],
+      "forbidden_substrings": [
+        "void *__thiscall sub_4168D0",
+        "*(_DWORD *)this",
+        "MEMORY[0x4DF904]",
+        "return result",
         "unimplemented"
       ]
     },

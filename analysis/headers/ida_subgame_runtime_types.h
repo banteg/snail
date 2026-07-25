@@ -344,6 +344,7 @@ typedef struct GUI {
 typedef struct Help {
     FrontendWidget* back_button;
 } Help;
+typedef char Help_must_be_0x04[(sizeof(Help) == 0x04) ? 1 : -1];
 
 typedef struct ThanksScreen {
     SubgameRuntime* game;

@@ -20,3 +20,9 @@ the root front-end transition relationship.
 `GameRoot::players[0]` from a typed process root, preserving both the frontend
 state and redispatch ownership while remaining exact at 12/12 instructions
 with all three operands clean.
+
+2026-07-25 lifecycle replay closure: Binary Ninja and IDA now both render the
+four-byte owner as `Help*`, borrow `help->back_button`, retain
+`destroy_help_screen(help)`, and route through typed
+`GameRoot::players[0]` fields. Strict tracked canaries reject the former
+`void*`/raw-root output in either lane.

@@ -19,8 +19,13 @@ if str(SCRIPT_ROOT) not in sys.path:
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 
+HELP_OWNER_EXPECTED_SIZE = 0x04
+
 TRUSTED_NAMES = (
     (0x408860, "initialize_track_parcel_runtime"),
+    (0x416800, "initialize_help_screen"),
+    (0x4168C0, "destroy_help_screen"),
+    (0x4168D0, "update_help_screen"),
     (0x435DF0, "set_subgame_features"),
     (0x437B10, "reset_subgame"),
     (0x440600, "uninit_pause_menu"),
@@ -532,6 +537,18 @@ TRUSTED_DECLARATIONS = [
         "char* __thiscall format_time_trial_string(TimeTrial* time_trial, Time* timer);",
     ),
     (
+        "initialize_help_screen",
+        "void __thiscall initialize_help_screen(Help* help);",
+    ),
+    (
+        "destroy_help_screen",
+        "void __thiscall destroy_help_screen(Help* help);",
+    ),
+    (
+        "update_help_screen",
+        "void __thiscall update_help_screen(Help* help);",
+    ),
+    (
         "bind_subgame_owner",
         "SubgameRuntime* __thiscall bind_subgame_owner(SubgameOwnerLink* owner);",
     ),
@@ -583,6 +600,7 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "SubRow runtime_rows[3200];",
     "SubSolution* selected_level_record;",
     "TimeTrialCourseRecord course_records[TIME_TRIAL_COURSE_RECORD_COUNT];",
+    "Help_must_be_0x04",
     "Parcel_must_be_0x8c",
     "Parcel slots[50];",
     "ParcelManager_must_be_0x1b58",
@@ -613,6 +631,9 @@ REANALYSIS_FUNCTIONS = (
     0x408550,  # initialize_garbage_hazard
     0x408530,  # initialize_slug_hazard_runtime
     0x414820,  # update_golb_ai
+    0x416800,  # initialize_help_screen
+    0x4168C0,  # destroy_help_screen
+    0x4168D0,  # update_help_screen
     0x408860,  # initialize_track_parcel_runtime
     0x435DF0,  # set_subgame_features
     0x437270,  # normalize_segment_glyph_for_track_flags
@@ -1680,6 +1701,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in EXPECTED_PARCEL_OWNER_SIZES.items()
         if parcel_owner_sizes[name] != expected_size
     ]
+    help_owner_size = _named_struct_size("Help")
+    if help_owner_size != HELP_OWNER_EXPECTED_SIZE:
+        size_failures.append(
+            {
+                "selector": "Help",
+                "reason": "owner_size_mismatch",
+                "expected": HELP_OWNER_EXPECTED_SIZE,
+                "observed": help_owner_size,
+            }
+        )
     size_failures.extend(
         {
             "selector": name,
@@ -1731,6 +1762,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "header": str(header_path),
                     "parse_errors": parse_errors,
                     "parcel_owner_sizes": parcel_owner_sizes,
+                    "help_owner_size": help_owner_size,
                     "banner_owner_sizes": banner_owner_sizes,
                     "presentation_animation_cursor_sizes": (
                         presentation_animation_cursor_sizes

@@ -15909,7 +15909,13 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     assert "BorderManager *manager, FrontendWidget *widget" in ida_frame_sync
     assert "BorderRecord* record" in frame_sync
     assert "BorderRecord *record" in ida_frame_sync
-    assert "void __thiscall destroy_help_screen(Help* help)" in runtime_sync
+    for prototype in (
+        "void __thiscall initialize_help_screen(Help* help)",
+        "void __thiscall destroy_help_screen(Help* help)",
+        "void __thiscall update_help_screen(Help* help)",
+    ):
+        assert prototype in runtime_sync
+        assert prototype + ";" in ida_path_sync
     assert "void __thiscall destroy_options_menu(Options* options)" in menu_sync
     assert "void __thiscall destroy_intro_screen(Logo* logo)" in logo_sync
     assert "void __thiscall destroy_intro_screen(Logo* logo);" in ida_logo_sync
@@ -18394,3 +18400,66 @@ def test_time_trial_replays_inline_course_record_ownership() -> None:
     assert "TIME_TRIAL_COURSE_RECORD_EXPECTED_SIZE = 0x10" in ida_sync
     assert "TIME_TRIAL_EXPECTED_SIZE = 0x330" in ida_sync
     assert "_time_trial_owner_readback" in ida_sync
+
+
+def test_help_lifecycle_owner_replays_cross_decompiler() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (
+        BINJA_DIR / "sync_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (
+        IDA_DIR / "apply_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    path_sync = (
+        IDA_DIR / "apply_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    path_header = (
+        HEADER_DIR / "path_template_types.h"
+    ).read_text(encoding="utf-8")
+
+    prototypes = (
+        "void __thiscall initialize_help_screen(Help* help)",
+        "void __thiscall destroy_help_screen(Help* help)",
+        "void __thiscall update_help_screen(Help* help)",
+    )
+    for prototype in prototypes:
+        assert prototype in binja_sync
+        assert prototype + ";" in ida_sync
+        assert prototype + ";" in path_sync
+        assert prototype + ";" in path_header
+
+    for address, selector in (
+        ("0x416800", "initialize_help_screen"),
+        ("0x4168c0", "destroy_help_screen"),
+        ("0x4168d0", "update_help_screen"),
+    ):
+        assert f'("{address}", "{selector}")' in binja_sync
+        assert selector in binja_sync.split("HELP_REANALYSIS_FUNCTIONS", 1)[1]
+        assert selector in ida_sync.split("REANALYSIS_FUNCTIONS", 1)[1]
+
+    assert '("Help", HELP_FIELD_UPDATES)' in binja_sync
+    assert '("0x00", "back_button", "FrontendWidget*")' in binja_sync
+    assert "HELP_EXPECTED_SIZE = 0x04" in binja_sync
+    assert "HELP_OWNER_EXPECTED_SIZE = 0x04" in ida_sync
+    assert "Help_must_be_0x04" in path_header
+    for header_name in (
+        "bn_subgame_runtime_types.h",
+        "ida_subgame_runtime_types.h",
+    ):
+        assert "Help_must_be_0x04" in (
+            HEADER_DIR / header_name
+        ).read_text(encoding="utf-8")
+
+    checks = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks_by_name = {check["name"]: check for check in checks["checks"]}
+    for name in (
+        "bn_initialize_help_screen_landscape_owner",
+        "ida_initialize_help_screen_landscape_owner",
+        "bn_help_update_owner",
+        "ida_help_update_owner",
+    ):
+        assert name in checks_by_name

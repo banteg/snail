@@ -19,3 +19,9 @@ four-byte `Help` owner.
 reloads the game root instead of consuming EAX. Together with the authored
 `UnInit` role and the void `KillBorders` tail target, this proves a void member
 contract. The corrected declaration remains exact at 3/3 instructions.
+
+2026-07-25 lifecycle replay closure: Init, UnInit, and AI now travel as one
+cross-decompiler `Help*` ABI set. The shared replay reanalyzes all three
+functions together and verifies the exact `0x04` owner before applying any
+prototype, preventing this unused-`this` tailcall from drifting back to a free
+helper.

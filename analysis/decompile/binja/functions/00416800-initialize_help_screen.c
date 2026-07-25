@@ -8,7 +8,8 @@
 00416837        struct GameRoot* game_base_1 = g_game_base
 0041684a        change_backdrop(&game_base_1->backdrop, &game_base_1->subgame.landscape_manager.scripts[eax_1], 0)
 0041685d        set_border_justify_centre(&g_game_base->border_manager, 0f)
-0041688e        *arg1 = allocate_border(&g_game_base->border_manager)
+0041688e        help->back_button = allocate_border(&g_game_base->border_manager)
 00416890        struct tColour color
 00416890        struct tColour* color_1 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-004168b4        return initialize_frontend_widget(*arg1, 0x40000014, "Back", 0x14, 0f, 420f, color_1, 2, 0f)
+004168ab        initialize_frontend_widget(help->back_button, 0x40000014, "Back", 0x14, 0f, 420f, color_1, 2, 0f)
+004168b4        return

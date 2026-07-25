@@ -1841,8 +1841,16 @@ TRUSTED_DECLARATIONS = [
         "int32_t __stdcall d3dx_create_texture_from_file(void* device, char* path, void** texture);",
     ),
     (
+        "initialize_help_screen",
+        "void __thiscall initialize_help_screen(Help* help);",
+    ),
+    (
         "destroy_help_screen",
         "void __thiscall destroy_help_screen(Help* help);",
+    ),
+    (
+        "update_help_screen",
+        "void __thiscall update_help_screen(Help* help);",
     ),
     (
         "initialize_loading_screen",

@@ -17,19 +17,19 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "border_mouse_test",
-      "address": "0x404580"
+      "name": "initialize_help_screen",
+      "address": "0x416800"
     },
     {
-      "name": "resolve_uncaptured_cursor_sensitivity_scale",
-      "address": "0x44bc20"
+      "name": "destroy_help_screen",
+      "address": "0x4168c0"
     },
     {
-      "name": "click_mouse_screen",
-      "address": "0x44c060"
+      "name": "update_help_screen",
+      "address": "0x4168d0"
     }
   ],
-  "health_check_count": 1023,
+  "health_check_count": 1025,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -3,20 +3,17 @@
 /* selector: update_help_screen */
 
 // Handles the Help-screen Back action, tears down the shell-font scene, and returns control to the New Game front-end flow via state `2`. Cross-port Android and iOS symbols match this helper to `cRHelp::AI()`.
-void *__thiscall sub_4168D0(void *this)
+void __thiscall update_help_screen(Help *help)
 {
-  void *result; // eax
+  FrontendWidgetFlag widget_flags; // eax
 
-  result = *(void **)(*(_DWORD *)this + 416);
-  if ( ((unsigned __int8)result & 0x20) != 0 )
+  widget_flags = help->back_button->widget_flags;
+  if ( (widget_flags & 0x20) != 0 )
   {
-    LOBYTE(result) = (unsigned __int8)result & 0xDF;
-    *(_DWORD *)(*(_DWORD *)this + 416) = result;
-    destroy_help_screen();
-    result = MEMORY[0x4DF904];
-    *((_DWORD *)MEMORY[0x4DF904] + 110) = 2;
-    *((_BYTE *)MEMORY[0x4DF904] + 780) = 1;
+    LOBYTE(widget_flags) = widget_flags & 0xDF;
+    help->back_button->widget_flags = widget_flags;
+    destroy_help_screen(help);
+    g_game_base->players[0].frontend_state = 2;
+    g_game_base->players[0].redispatch_requested = 1;
   }
-  return result;
 }
-
