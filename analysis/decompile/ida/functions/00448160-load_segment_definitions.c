@@ -6,39 +6,39 @@
 void __thiscall load_segment_definitions(SMTracks *tracks)
 {
   int32_t count; // eax
-  int32_t v3; // ebp
-  const char *v4; // edi
+  int32_t segment_index; // ebp
+  const char *segment_file_name; // edi
   char *case_insensitive_substring; // eax
   char v6; // cl
   char *v7; // eax
   int v8; // edx
-  int32_t *v9; // esi
+  char *entry_filename_cursor; // esi
   char *v10; // eax
   char *v11; // eax
   char v12; // cl
   char *v13; // eax
-  int v14; // esi
+  char *v14; // esi
   char *v15; // eax
   _BYTE *crlf_line; // eax
-  _BYTE *v17; // eax
-  _BYTE *v18; // edi
-  int v19; // ebp
-  SMTracks *v20; // ecx
-  char *v21; // edi
+  char *v17; // eax
+  char *data_line_cursor; // edi
+  int32_t flattened_row_index; // ebp
+  SMTracks *glyph_catalog; // ecx
+  char *glyph_cursor; // edi
   SegmentCatalogRowStrideAnchor *row_stride_anchor; // esi
-  int v23; // eax
-  char v24; // bl
+  int32_t lane_index; // eax
+  char glyph; // bl
   int v25; // edx
-  char *v26; // edi
+  char *option_cursor; // edi
   int32_t flags; // eax
-  char v28; // al
-  char *i; // ecx
+  char option_char; // al
+  char *option_out_cursor; // ecx
   char *v30; // eax
-  char *v31; // eax
-  char *v32; // ecx
-  char j; // dl
+  char *model_value_cursor; // eax
+  char *mesh_name_cursor; // ecx
+  char mesh_char; // dl
   int32_t v34; // eax
-  _BYTE *v35; // ecx
+  char *v35; // ecx
   GameRoot *v36; // edx
   char *v37; // eax
   char *v38; // eax
@@ -47,9 +47,9 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
   int32_t v41; // eax
   char *v42; // ecx
   char *v43; // eax
-  char *v44; // eax
-  char *v45; // edx
-  char k; // cl
+  char *path_value_cursor; // eax
+  char *path_name_cursor; // edx
+  char path_char; // cl
   PathManager *p_path_manager; // ecx
   int32_t segment_path_index_by_name; // eax
   int32_t v49; // eax
@@ -64,15 +64,15 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
   int32_t v58; // eax
   bool v59; // cc
   const char *v60; // eax
-  char *cursor; // [esp+10h] [ebp-114E0h] BYREF
-  int32_t *p_row_count; // [esp+14h] [ebp-114DCh]
+  char *parse_cursor; // [esp+10h] [ebp-114E0h] BYREF
+  int32_t *row_count_cursor; // [esp+14h] [ebp-114DCh]
   char *segment_file_name_cursor; // [esp+18h] [ebp-114D8h]
   SMTracks *tracks_after_stack_probe; // [esp+1Ch] [ebp-114D4h]
-  int32_t v65; // [esp+20h] [ebp-114D0h]
-  int v66; // [esp+24h] [ebp-114CCh]
-  int v67; // [esp+28h] [ebp-114C8h]
+  int32_t segment_index_spill; // [esp+20h] [ebp-114D0h]
+  int32_t glyph_row_base; // [esp+24h] [ebp-114CCh]
+  int32_t segment_row_base; // [esp+28h] [ebp-114C8h]
   int32_t row_index; // [esp+2Ch] [ebp-114C4h]
-  char name[64]; // [esp+30h] [ebp-114C0h] BYREF
+  char path_name[64]; // [esp+30h] [ebp-114C0h] BYREF
   char option_text[512]; // [esp+70h] [ebp-11480h] BYREF
   char mesh_name[128]; // [esp+270h] [ebp-11280h] BYREF
   char file_path[512]; // [esp+2F0h] [ebp-11200h] BYREF
@@ -85,18 +85,18 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
   count = tracks->count;
   if ( tracks->count < 150 )
   {
-    v3 = 0;
-    v65 = 0;
+    segment_index = 0;
+    segment_index_spill = 0;
     if ( count > 0 )
     {
-      v4 = segment_files[0];
-      v67 = 0;
-      v66 = 0;
+      segment_file_name = segment_files[0];
+      segment_row_base = 0;
+      glyph_row_base = 0;
       segment_file_name_cursor = segment_files[0];
-      p_row_count = &tracks->entries[0].row_count;
+      row_count_cursor = &tracks->entries[0].row_count;
       while ( 2 )
       {
-        sprintf(file_path, "Segments/%s", v4);
+        sprintf(file_path, "Segments/%s", segment_file_name);
         load_file_bytes_from_archive_or_fs(file_path, file_buffer, nullptr);
         case_insensitive_substring = find_case_insensitive_substring(aId, file_buffer);
         if ( case_insensitive_substring )
@@ -116,9 +116,9 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
             }
             while ( *v7 >= 48 );
           }
-          v9 = p_row_count - 17;
-          v9[16] = v8;
-          sprintf((char *const)v9, "%s", v4);
+          entry_filename_cursor = (char *)(row_count_cursor - 17);
+          *((_DWORD *)entry_filename_cursor + 16) = v8;
+          sprintf(entry_filename_cursor, "%s", segment_file_name);
           v10 = find_case_insensitive_substring(aName, file_buffer);
           if ( v10 )
           {
@@ -127,10 +127,10 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
             v13 = v11 + 1;
             if ( v12 != 39 )
             {
-              v14 = (char *)v9 - v13;
+              v14 = (char *)(entry_filename_cursor - v13);
               do
               {
-                v13[v14 - 64] = v12;
+                v13[(_DWORD)(v14 - 64)] = v12;
                 v12 = *++v13;
               }
               while ( v12 != 39 );
@@ -141,123 +141,124 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
               crlf_line = (_BYTE *)advance_to_next_crlf_line(v15);
               if ( crlf_line )
               {
-                v17 = (_BYTE *)advance_to_next_crlf_line(crlf_line);
-                v18 = v17;
+                v17 = (char *)advance_to_next_crlf_line(crlf_line);
+                data_line_cursor = v17;
                 if ( v17 )
                 {
                   if ( *v17 == 64 )
                   {
                     row_index = 0;
-                    *p_row_count = 0;
-                    while ( *v18 != 64 || v18[1] != 64 || v18[2] != 64 )
+                    *row_count_cursor = 0;
+                    while ( *data_line_cursor != 64 || data_line_cursor[1] != 64 || data_line_cursor[2] != 64 )
                     {
-                      v19 = (__int16)row_index + v67;
-                      v20 = tracks_after_stack_probe;
-                      v21 = v18 + 1;
-                      row_stride_anchor = (SegmentCatalogRowStrideAnchor *)((char *)tracks_after_stack_probe + 56 * v19);
-                      v23 = 0;
+                      flattened_row_index = (__int16)row_index + segment_row_base;
+                      glyph_catalog = tracks_after_stack_probe;
+                      glyph_cursor = data_line_cursor + 1;
+                      row_stride_anchor = (SegmentCatalogRowStrideAnchor *)((char *)tracks_after_stack_probe
+                                                                          + 56 * flattened_row_index);
+                      lane_index = 0;
                       row_stride_anchor->row.flags = 0;
                       do
                       {
-                        v24 = *v21++;
-                        v25 = v23 + 8 * (v66 + *p_row_count);
-                        ++v23;
-                        v20->entries[0].glyph_columns[0][v25] = v24;
+                        glyph = *glyph_cursor++;
+                        v25 = lane_index + 8 * (glyph_row_base + *row_count_cursor);
+                        ++lane_index;
+                        glyph_catalog->entries[0].glyph_columns[0][v25] = glyph;
                       }
-                      while ( v23 < 8 );
-                      if ( *v21 != 64 )
+                      while ( lane_index < 8 );
+                      if ( *glyph_cursor != 64 )
                       {
-                        report_errorf("Data line must end with '@' in Segment %s\n", segment_files[v65]);
+                        report_errorf("Data line must end with '@' in Segment %s\n", segment_files[segment_index_spill]);
                         return;
                       }
-                      v26 = v21 + 1;
-                      ++*p_row_count;
-                      if ( *v26 == 42 )
+                      option_cursor = glyph_cursor + 1;
+                      ++*row_count_cursor;
+                      if ( *option_cursor == 42 )
                       {
                         flags = row_stride_anchor->row.flags;
                         LOBYTE(flags) = flags | 4;
                         row_stride_anchor->row.flags = flags;
                       }
-                      v28 = *v26;
-                      for ( i = option_text; v28 != 13; ++v26 )
+                      option_char = *option_cursor;
+                      for ( option_out_cursor = option_text; option_char != 13; ++option_cursor )
                       {
-                        *i = v28;
-                        v28 = v26[1];
-                        ++i;
+                        *option_out_cursor = option_char;
+                        option_char = option_cursor[1];
+                        ++option_out_cursor;
                       }
-                      *i = 0;
+                      *option_out_cursor = 0;
                       v30 = find_case_insensitive_substring(a3dmodel, option_text);
-                      cursor = v30;
+                      parse_cursor = v30;
                       if ( v30 )
                       {
-                        v31 = find_case_insensitive_substring(asc_4A2094, v30) + 1;
-                        cursor = v31;
-                        v32 = mesh_name;
-                        for ( j = *v31; *v31 != 46; j = *v31 )
+                        model_value_cursor = find_case_insensitive_substring(asc_4A2094, v30) + 1;
+                        parse_cursor = model_value_cursor;
+                        mesh_name_cursor = mesh_name;
+                        for ( mesh_char = *model_value_cursor; *model_value_cursor != 46; mesh_char = *model_value_cursor )
                         {
-                          *v32++ = j;
-                          cursor = ++v31;
+                          *mesh_name_cursor++ = mesh_char;
+                          parse_cursor = ++model_value_cursor;
                         }
                         v34 = row_stride_anchor->row.flags;
-                        *v32 = 46;
-                        v35 = v32 + 1;
+                        *mesh_name_cursor = 46;
+                        v35 = mesh_name_cursor + 1;
                         LOBYTE(v34) = v34 | 2;
                         row_stride_anchor->row.flags = v34;
                         v36 = g_game_base;
                         *v35 = 120;
                         v35[1] = 0;
                         row_stride_anchor->row.object_id = load_or_reuse_cached_x_mesh(&v36->directx_loader, mesh_name);
-                        cursor = find_case_insensitive_substring(asc_4AC438, cursor);
-                        row_stride_anchor->row.object_position.x = parse_next_float32(&cursor);
-                        row_stride_anchor->row.object_position.y = parse_next_float32(&cursor);
-                        row_stride_anchor->row.object_position.z = parse_next_float32(&cursor);
+                        parse_cursor = find_case_insensitive_substring(asc_4AC438, parse_cursor);
+                        row_stride_anchor->row.object_position.x = parse_next_float32(&parse_cursor);
+                        row_stride_anchor->row.object_position.y = parse_next_float32(&parse_cursor);
+                        row_stride_anchor->row.object_position.z = parse_next_float32(&parse_cursor);
                         v37 = find_case_insensitive_substring(aVelocity, option_text);
-                        cursor = v37;
+                        parse_cursor = v37;
                         if ( v37 )
                         {
                           v38 = find_case_insensitive_substring(asc_4A2094, v37);
                           v39 = row_stride_anchor->row.flags | 8;
-                          cursor = v38 + 1;
+                          parse_cursor = v38 + 1;
                           row_stride_anchor->row.flags = v39;
-                          cursor = find_case_insensitive_substring(asc_4AC438, v38 + 1);
-                          row_stride_anchor->row.object_velocity.x = parse_next_float32(&cursor);
-                          row_stride_anchor->row.object_velocity.y = parse_next_float32(&cursor);
-                          row_stride_anchor->row.object_velocity.z = parse_next_float32(&cursor);
+                          parse_cursor = find_case_insensitive_substring(asc_4AC438, v38 + 1);
+                          row_stride_anchor->row.object_velocity.x = parse_next_float32(&parse_cursor);
+                          row_stride_anchor->row.object_velocity.y = parse_next_float32(&parse_cursor);
+                          row_stride_anchor->row.object_velocity.z = parse_next_float32(&parse_cursor);
                         }
                       }
                       v40 = find_case_insensitive_substring(aParcel, option_text);
-                      cursor = v40;
+                      parse_cursor = v40;
                       if ( v40 )
                       {
                         row_stride_anchor->row.flags |= 1u;
-                        cursor = find_case_insensitive_substring(asc_4A2094, v40) + 1;
-                        v41 = parse_next_signed_int(&cursor);
-                        v42 = cursor;
+                        parse_cursor = find_case_insensitive_substring(asc_4A2094, v40) + 1;
+                        v41 = parse_next_signed_int(&parse_cursor);
+                        v42 = parse_cursor;
                         row_stride_anchor->row.parcel_set_id = v41;
-                        cursor = find_case_insensitive_substring(asc_4AC438, v42) + 1;
-                        row_stride_anchor->row.local_position.x = parse_next_float32(&cursor);
-                        row_stride_anchor->row.local_position.y = parse_next_float32(&cursor);
-                        row_stride_anchor->row.local_position.z = parse_next_float32(&cursor);
+                        parse_cursor = find_case_insensitive_substring(asc_4AC438, v42) + 1;
+                        row_stride_anchor->row.local_position.x = parse_next_float32(&parse_cursor);
+                        row_stride_anchor->row.local_position.y = parse_next_float32(&parse_cursor);
+                        row_stride_anchor->row.local_position.z = parse_next_float32(&parse_cursor);
                       }
                       v43 = find_case_insensitive_substring(aPath, option_text);
-                      cursor = v43;
+                      parse_cursor = v43;
                       if ( v43 )
                       {
-                        v44 = find_case_insensitive_substring(asc_4A2094, v43) + 1;
-                        cursor = v44;
-                        v45 = name;
-                        for ( k = *v44; *v44 >= 32; k = *v44 )
+                        path_value_cursor = find_case_insensitive_substring(asc_4A2094, v43) + 1;
+                        parse_cursor = path_value_cursor;
+                        path_name_cursor = path_name;
+                        for ( path_char = *path_value_cursor; *path_value_cursor >= 32; path_char = *path_value_cursor )
                         {
-                          *v45++ = k;
-                          cursor = ++v44;
+                          *path_name_cursor++ = path_char;
+                          parse_cursor = ++path_value_cursor;
                         }
                         p_path_manager = &g_game_base->subgame.path_manager;
-                        *v45 = 0;
-                        segment_path_index_by_name = find_segment_path_index_by_name(p_path_manager, name);
+                        *path_name_cursor = 0;
+                        segment_path_index_by_name = find_segment_path_index_by_name(p_path_manager, path_name);
                         row_stride_anchor->row.path_template_index = segment_path_index_by_name;
                         if ( segment_path_index_by_name == -1 )
                         {
-                          report_errorf("Unknown path %s in %s", name, segment_file_name_cursor);
+                          report_errorf("Unknown path %s in %s", path_name, segment_file_name_cursor);
                         }
                         else
                         {
@@ -266,119 +267,119 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                           row_stride_anchor->row.flags = v49;
                         }
                       }
-                      cursor = find_case_insensitive_substring(aNofall, option_text);
-                      if ( cursor )
+                      parse_cursor = find_case_insensitive_substring(aNofall, option_text);
+                      if ( parse_cursor )
                       {
                         v50 = row_stride_anchor->row.flags;
                         BYTE1(v50) |= 1u;
                         row_stride_anchor->row.flags = v50;
                       }
-                      cursor = find_case_insensitive_substring(aRingNone, option_text);
-                      if ( cursor )
+                      parse_cursor = find_case_insensitive_substring(aRingNone, option_text);
+                      if ( parse_cursor )
                       {
                         v51 = row_stride_anchor->row.flags;
                         BYTE1(v51) |= 2u;
                         row_stride_anchor->row.flags = v51;
                       }
-                      cursor = find_case_insensitive_substring(aRingNormal, option_text);
-                      if ( cursor )
+                      parse_cursor = find_case_insensitive_substring(aRingNormal, option_text);
+                      if ( parse_cursor )
                       {
                         v52 = row_stride_anchor->row.flags;
                         BYTE1(v52) |= 4u;
                         row_stride_anchor->row.flags = v52;
                       }
-                      cursor = find_case_insensitive_substring(aRingPowerup, option_text);
-                      if ( cursor )
+                      parse_cursor = find_case_insensitive_substring(aRingPowerup, option_text);
+                      if ( parse_cursor )
                       {
                         v53 = row_stride_anchor->row.flags;
                         BYTE1(v53) |= 0x20u;
                         row_stride_anchor->row.flags = v53;
                       }
-                      cursor = find_case_insensitive_substring(aRingExplode, option_text);
-                      if ( cursor )
+                      parse_cursor = find_case_insensitive_substring(aRingExplode, option_text);
+                      if ( parse_cursor )
                       {
                         v54 = row_stride_anchor->row.flags;
                         BYTE1(v54) |= 8u;
                         row_stride_anchor->row.flags = v54;
                       }
-                      cursor = find_case_insensitive_substring(aRingSlow, option_text);
-                      if ( cursor )
+                      parse_cursor = find_case_insensitive_substring(aRingSlow, option_text);
+                      if ( parse_cursor )
                       {
                         v55 = row_stride_anchor->row.flags;
                         BYTE1(v55) |= 0x10u;
                         row_stride_anchor->row.flags = v55;
                       }
                       v56 = find_case_insensitive_substring(aRingspeed, option_text);
-                      cursor = v56;
+                      parse_cursor = v56;
                       if ( v56 )
                       {
-                        cursor = find_case_insensitive_substring(asc_4A2094, v56) + 1;
-                        v57 = parse_next_float32(&cursor);
-                        tracks_after_stack_probe->entries[0].rows[v19].ring_speed.value = v57;
+                        parse_cursor = find_case_insensitive_substring(asc_4A2094, v56) + 1;
+                        v57 = parse_next_float32(&parse_cursor);
+                        tracks_after_stack_probe->entries[0].rows[flattened_row_index].ring_speed.value = v57;
                       }
                       else
                       {
-                        tracks_after_stack_probe->entries[0].rows[v19].ring_speed.bits = 0;
+                        tracks_after_stack_probe->entries[0].rows[flattened_row_index].ring_speed.bits = 0;
                       }
-                      cursor = find_case_insensitive_substring(aJetpackOff, option_text);
-                      if ( cursor )
+                      parse_cursor = find_case_insensitive_substring(aJetpackOff, option_text);
+                      if ( parse_cursor )
                       {
                         v58 = row_stride_anchor->row.flags;
                         BYTE1(v58) |= 0x80u;
                         row_stride_anchor->row.flags = v58;
                       }
-                      v18 = (_BYTE *)advance_to_next_crlf_line(v26);
-                      if ( !v18 )
+                      data_line_cursor = (char *)advance_to_next_crlf_line(option_cursor);
+                      if ( !data_line_cursor )
                       {
-                        v60 = segment_files[v65];
+                        v60 = segment_files[segment_index_spill];
                         goto LABEL_71;
                       }
-                      v3 = v65;
+                      segment_index = segment_index_spill;
                       ++row_index;
                     }
-                    ++v3;
-                    v67 += 295;
-                    v59 = v3 < tracks_after_stack_probe->count;
-                    v65 = v3;
-                    v66 += 2065;
-                    p_row_count += 4130;
+                    ++segment_index;
+                    segment_row_base += 295;
+                    v59 = segment_index < tracks_after_stack_probe->count;
+                    segment_index_spill = segment_index;
+                    glyph_row_base += 2065;
+                    row_count_cursor += 4130;
                     segment_file_name_cursor += 128;
                     if ( v59 )
                     {
-                      v4 = segment_file_name_cursor;
+                      segment_file_name = segment_file_name_cursor;
                       continue;
                     }
                   }
                   else
                   {
-                    report_errorf("Data line must start with '@' in Segment %s\n", segment_files[v3]);
+                    report_errorf("Data line must start with '@' in Segment %s\n", segment_files[segment_index]);
                   }
                 }
                 else
                 {
-                  v60 = segment_files[v3];
+                  v60 = segment_files[segment_index];
 LABEL_71:
                   report_errorf("Unexpected end of file in Segment %s\n", v60);
                 }
               }
               else
               {
-                report_errorf("Unexpected end of file in Segment %s\n", segment_files[v3]);
+                report_errorf("Unexpected end of file in Segment %s\n", segment_files[segment_index]);
               }
             }
             else
             {
-              report_errorf("Cannot find Data: in Segment %s\n", segment_files[v3]);
+              report_errorf("Cannot find Data: in Segment %s\n", segment_files[segment_index]);
             }
           }
           else
           {
-            report_errorf("Cannot find Name: in Segment %s\n", segment_files[v3]);
+            report_errorf("Cannot find Name: in Segment %s\n", segment_files[segment_index]);
           }
         }
         else
         {
-          report_errorf("Cannot find ID: in Segment %s\n", segment_files[v3]);
+          report_errorf("Cannot find ID: in Segment %s\n", segment_files[segment_index]);
         }
         break;
       }

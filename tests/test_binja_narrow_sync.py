@@ -19405,3 +19405,126 @@ def test_runtime_segment_selection_owner_chain_replays_cross_decompiler() -> Non
             "source_segment",
         ):
             assert any(marker in item for item in required)
+
+
+def test_segment_import_cursor_lifetimes_replay_cross_decompiler() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (
+        BINJA_DIR / "sync_segment_catalog_types.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (
+        IDA_DIR / "apply_segment_catalog_types.py"
+    ).read_text(encoding="utf-8")
+
+    assert "SEGMENT_IMPORT_CURSOR_USER_VAR_UPDATES" in binja_sync
+    for storage, name, type_name in (
+        (0, "parse_cursor", "char*"),
+        (4, "row_count_cursor", "int32_t*"),
+        (8, "segment_file_name_saved", "EnumeratedEntryName*"),
+        (12, "ring_speed_catalog_owner", "SMTracks*"),
+        (16, "segment_index_spill", "int32_t"),
+        (20, "glyph_row_base", "int32_t"),
+        (24, "segment_row_base", "int32_t"),
+        (28, "row_index", "int32_t"),
+        (32, "path_name", "char[64]"),
+        (96, "option_text", "char[512]"),
+        (608, "mesh_name", "char[128]"),
+        (736, "file_path", "char[512]"),
+        (1248, "file_buffer", "char[4096]"),
+        (5344, "segment_files", "EnumeratedEntryName[512]"),
+    ):
+        expected = (
+            '        "StackVariableSourceType",\n'
+            "        0,\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}",'
+        )
+        assert expected in binja_sync
+
+    for index, storage, name, type_name in (
+        (84, 71, "segment_index", "int32_t"),
+        (98, 73, "segment_file_name_cursor", "EnumeratedEntryName*"),
+        (390, 73, "data_line_cursor", "char*"),
+        (452, 71, "flattened_row_index", "int32_t"),
+        (468, 73, "glyph_cursor", "char*"),
+        (472, 66, "lane_index", "int32_t"),
+        (527, 73, "option_cursor", "char*"),
+        (551, 67, "option_out_cursor", "char*"),
+        (623, 67, "mesh_name_cursor", "char*"),
+        (1089, 68, "path_name_cursor", "char*"),
+    ):
+        expected = (
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}",'
+        )
+        assert expected in binja_sync
+
+    assert "SEGMENT_IMPORT_LVAR_SPECS" in ida_sync
+    for definition_address, stack_offset, name, declaration in (
+        ("0x4483B3", 52, "parse_cursor", "char *parse_cursor;"),
+        ("0x4481DC", 56, "row_count_cursor", "int32_t *row_count_cursor;"),
+        ("0x4481B9", 68, "segment_index_spill", "int32_t segment_index_spill;"),
+        ("0x4481D4", 72, "glyph_row_base", "int32_t glyph_row_base;"),
+        ("0x4481D0", 76, "segment_row_base", "int32_t segment_row_base;"),
+    ):
+        expected = (
+            f"        {definition_address},\n"
+            f"        {stack_offset},\n"
+            f'        "{name}",\n'
+            f'        "{declaration}",'
+        )
+        assert expected in ida_sync
+
+    for definition_address, name, declaration in (
+        ("0x4482E7", "data_line_cursor", "char *data_line_cursor;"),
+        (
+            "0x448325",
+            "flattened_row_index",
+            "int32_t flattened_row_index;",
+        ),
+        ("0x448335", "glyph_cursor", "char *glyph_cursor;"),
+        ("0x448339", "lane_index", "int32_t lane_index;"),
+        ("0x448370", "option_cursor", "char *option_cursor;"),
+        ("0x448388", "option_out_cursor", "char *option_out_cursor;"),
+        ("0x4483D0", "mesh_name_cursor", "char *mesh_name_cursor;"),
+        ("0x4485A2", "path_name_cursor", "char *path_name_cursor;"),
+    ):
+        expected = (
+            f"        {definition_address},\n"
+            "        None,\n"
+            f'        "{name}",\n'
+            f'        "{declaration}",'
+        )
+        assert expected in ida_sync
+
+    health_checks = {
+        check["name"]: check
+        for check in json.loads(
+            (repo_root / "analysis/decompile/health_checks.json").read_text(
+                encoding="utf-8"
+            )
+        )["checks"]
+    }
+    for check_name in (
+        "bn_load_segment_definitions_catalog_owners",
+        "ida_load_segment_definitions_catalog_owners",
+    ):
+        required = health_checks[check_name]["required_substrings"]
+        for marker in (
+            "segment_index_spill",
+            "segment_row_base",
+            "glyph_row_base",
+            "data_line_cursor",
+            "flattened_row_index",
+            "glyph_cursor",
+            "lane_index",
+            "option_cursor",
+            "option_out_cursor",
+            "mesh_name_cursor",
+            "path_name_cursor",
+        ):
+            assert any(marker in item for item in required)

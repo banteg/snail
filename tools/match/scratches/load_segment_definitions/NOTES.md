@@ -216,3 +216,23 @@ local keeps that physical behavior visible.
 No matcher source changed. Focused matching remains honestly at 62.24%,
 573/571 instructions, prefix 5/571, with 88 clean operands and the existing
 shifted call mismatch.
+
+## 2026-07-25 importer frame and cursor closure
+
+The exact `0x114e0` stack frame now replays as physical parser storage rather
+than Binary Ninja's synthetic incoming arguments and return address. Its
+borrowed slots are the reusable parse cursor, row-count and filename cursors,
+the catalog receiver used by ring-speed writes, the segment-index spill, the
+`0x811` glyph-row base, the `0x127` authored-row base, and the row index,
+followed by the proven 64-, 512-, 128-, 512-, 4096-, and 65536-byte text
+buffers. The two bases are induction units inside the sole `SMTracks` owner:
+`0x127 == 0x4088 / 0x38` and `0x811 == 0x4088 / 8`.
+
+Exact register definitions now preserve the segment, row, glyph, option,
+model-name, and path-name cursors in both Binary Ninja and IDA. Both canonical
+replays read every new lifetime back unchanged, and the paired export health
+checks reject the former `arg_*`, `__return_addr`, `v19`, and anonymous cursor
+forms. This is analysis-only ownership recovery: no matcher source or operand
+shape changed, so the honest focused result remains 62.24%, 573/571
+instructions, prefix 5/571, with 88 clean operands and the one shifted call
+mismatch.
