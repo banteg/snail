@@ -25,3 +25,8 @@ base to `position`; the current source advances the base just before the
 multiply. Focused probes rejected raw float lanes, explicit velocity field
 stores, and aggregate velocity output pointers, so the retained source keeps the
 typed `Vector3 velocity` local and direct aggregate velocity assignment.
+
+The 2026-07-25 BN/IDA lifetime replay improves analysis ownership without
+changing this result: the reused argument slots are now split into their real
+color/velocity temporaries, and IDA presents the native `FireWork` receiver,
+`Sprite` fields, and final `Vec3` copy. No matcher source was changed.

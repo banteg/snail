@@ -932,6 +932,24 @@ SPAWN_TRACK_JETPACK_LVAR_SPECS = (
     ("sprite_position", "Vec3 *sprite_position;", 0x43DA1A, None),
 )
 
+FIREWORK_SHOOT_LVAR_SPECS = (
+    ("sprite", "Sprite *sprite;", 0x441E0F, None),
+    ("flags", "SpriteFlag flags;", 0x441E17, None),
+    ("duration_random", "double duration_random;", 0x441E37, None),
+    ("green", "float green;", 0x441E86, 8),
+    ("remaining", "int32_t remaining;", 0x441DFB, 32),
+    ("velocity_x", "float velocity_x;", 0x441F13, 36),
+    ("velocity_z", "float velocity_z;", 0x441EB6, 56),
+    ("velocity_y", "float velocity_y;", 0x441ED9, 60),
+    ("red", "float red;", 0x441E71, 64),
+    (
+        "velocity_x_random",
+        "int32_t velocity_x_random;",
+        0x441EE2,
+        64,
+    ),
+)
+
 SPAWN_SALT_HAZARD_LVAR_SPECS = (
     (
         "salt_state_cursor",
@@ -3538,6 +3556,13 @@ def _sync_spawn_track_jetpack_lvars() -> dict[str, object]:
     )
 
 
+def _sync_firework_shoot_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "firework_shoot",
+        FIREWORK_SHOOT_LVAR_SPECS,
+    )
+
+
 def _sync_spawn_salt_hazard_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "spawn_salt_hazard",
@@ -4821,6 +4846,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "ownership_lvars": spawn_track_jetpack_lvars,
             }
         )
+    firework_shoot_lvars = _sync_firework_shoot_lvars()
+    if firework_shoot_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "firework_shoot",
+                "particle_lvars": firework_shoot_lvars,
+            }
+        )
     loading_quad_lvars = _sync_loading_quad_lvars()
     if loading_quad_lvars.get("status") == "failed":
         failed.append(
@@ -5001,6 +5034,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "ring_parent_radius_lvars": ring_parent_radius_lvars,
                 "spawn_track_health_lvars": spawn_track_health_lvars,
                 "spawn_track_jetpack_lvars": spawn_track_jetpack_lvars,
+                "firework_shoot_lvars": firework_shoot_lvars,
                 "loading_quad_lvars": loading_quad_lvars,
                 "spawn_salt_hazard_lvars": spawn_salt_hazard_lvars,
                 "collision_pool_cursor_lvars": collision_pool_cursor_lvars,

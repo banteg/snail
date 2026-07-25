@@ -19178,6 +19178,7 @@ def test_sprite_effect_replay_preserves_shared_sprite_owners() -> None:
         ("Vec3", "0x0C"),
         ("tColour", "0x10"),
         ("Sprite", "0xB4"),
+        ("FireWork", "0x01"),
         ("GolbShot", "0x2E8"),
         ("Player", "0x4364"),
         ("SubGarbage", "0xC4"),
@@ -19210,10 +19211,23 @@ def test_sprite_effect_replay_preserves_shared_sprite_owners() -> None:
             "sprite_motion_cursor",
             "uint8_t*",
         ),
+        ("firework_shoot", 57, 66, "sprite", "Sprite*"),
+        ("firework_shoot", 32, 69, "saved_texture_id", "int32_t"),
+        ("firework_shoot", 37, 71, "saved_owner", "int32_t"),
+        ("firework_shoot", 42, -16, "remaining", "int32_t"),
+        ("firework_shoot", 181, -40, "green", "float"),
+        ("firework_shoot", 322, -12, "velocity_x", "float"),
+        ("firework_shoot", 342, 68, "source_position", "Vec3*"),
+        ("firework_shoot", 346, 72, "sprite_position", "Vec3*"),
     ):
+        source_type = (
+            "StackVariableSourceType"
+            if name in {"remaining", "green", "velocity_x"}
+            else "RegisterVariableSourceType"
+        )
         expected = (
             f'        "{function_name}",\n'
-            '        "RegisterVariableSourceType",\n'
+            f'        "{source_type}",\n'
             f"        {index},\n"
             f"        {storage},\n"
             f'        "{name}",\n'
@@ -19222,15 +19236,95 @@ def test_sprite_effect_replay_preserves_shared_sprite_owners() -> None:
         assert expected in replay
 
     assert "SPRITE_EFFECT_OWNER_USER_VAR_UPDATES" in replay
+    assert "SPRITE_EFFECT_OWNER_USER_VAR_REMOVALS" in replay
+    assert "remove_user_var_updates" in replay
+    assert (
+        '        "firework_shoot",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        293,\n"
+        "        66,\n"
+        '        "sprite_velocity",\n'
+        '        "Vec3*",'
+    ) in replay
+    for index, name in (
+        (107, "duration"),
+        (300, "velocity_x_centered"),
+    ):
+        assert (
+            '        "firework_shoot",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            "        4103,\n"
+            f'        "{name}",\n'
+            '        "double",'
+        ) in replay
+    assert "apply_split_user_var_update" in replay
+    assert "FIREWORK_RED_DEFINITIONS" in replay
+    assert '("0x441e70", "mlil", "StackVariableSourceType", 160, 16)' in replay
+    assert 'variable_name=variable_name' in replay
+    assert "FIREWORK_VELOCITY_Z_DEFINITIONS" in replay
+    assert '("0x441eb5", "mlil", "StackVariableSourceType", 229, 8)' in replay
+    assert "FIREWORK_VELOCITY_Y_DEFINITIONS" in replay
+    assert '("0x441ed8", "mlil", "StackVariableSourceType", 264, 12)' in replay
+    assert "FIREWORK_VELOCITY_X_RANDOM_DEFINITIONS" in replay
+    assert '("0x441ee1", "mlil", "StackVariableSourceType", 273, 16)' in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
+    assert '0x00: ("_empty", "uint8_t")' in replay
     assert '0x48: ("position", "Vec3")' in replay
     assert '0x54: ("velocity", "Vec3")' in replay
     assert '0x78: ("gravity_step", "float")' in replay
     assert '0x270: ("game", "SubgameRuntime*")' in replay
     assert '0x8C: ("owner_game", "SubgameRuntime*")' in replay
     assert "struct SpriteMotionTail" not in replay
+
+    ida_replay = (
+        IDA_DIR / "apply_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    assert "FIREWORK_SHOOT_LVAR_SPECS" in ida_replay
+    for name, declaration, definition_address, stack_offset in (
+        ("sprite", "Sprite *sprite;", "0x441E0F", "None"),
+        ("flags", "SpriteFlag flags;", "0x441E17", "None"),
+        ("duration_random", "double duration_random;", "0x441E37", "None"),
+        ("green", "float green;", "0x441E86", "8"),
+        ("remaining", "int32_t remaining;", "0x441DFB", "32"),
+        ("velocity_x", "float velocity_x;", "0x441F13", "36"),
+        ("velocity_z", "float velocity_z;", "0x441EB6", "56"),
+        ("velocity_y", "float velocity_y;", "0x441ED9", "60"),
+        ("red", "float red;", "0x441E71", "64"),
+    ):
+        assert (
+            f'("{name}", "{declaration}", {definition_address}, '
+            f"{stack_offset})"
+        ) in ida_replay
+    assert '"velocity_x_random"' in ida_replay
+    assert '"int32_t velocity_x_random;"' in ida_replay
+    assert "0x441EE2" in ida_replay
+    assert "def _sync_firework_shoot_lvars" in ida_replay
+    assert '"firework_shoot_lvars": firework_shoot_lvars' in ida_replay
+
+    health_checks = json.loads(
+        (
+            Path(__file__).parents[1]
+            / "analysis/decompile/health_checks.json"
+        ).read_text(encoding="utf-8")
+    )["checks"]
+    health_by_name = {check["name"]: check for check in health_checks}
+    assert (
+        health_by_name["bn_firework_sprite_and_stack_slot_owners"]["artifact"]
+        == "analysis/decompile/binja/functions/00441dd0-firework_shoot.c"
+    )
+    assert (
+        health_by_name["ida_firework_sprite_and_stack_slot_owners"]["artifact"]
+        == "analysis/decompile/ida/functions/00441dd0-firework_shoot.c"
+    )
+    assert "int32_t remaining = count" in health_by_name[
+        "bn_firework_sprite_and_stack_slot_owners"
+    ]["required_substrings"]
+    assert "sprite->position = *position;" in health_by_name[
+        "ida_firework_sprite_and_stack_slot_owners"
+    ]["required_substrings"]
 
 
 def test_create_golb_replay_splits_real_pointer_owners() -> None:

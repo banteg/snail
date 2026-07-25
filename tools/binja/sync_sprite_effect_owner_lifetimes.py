@@ -7,10 +7,12 @@ from pathlib import Path
 import sys
 
 from _narrow_sync import (
+    apply_split_user_var_update,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
+    remove_user_var_updates,
 )
 from _target import DEFAULT_TARGET
 
@@ -22,6 +24,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Vec3": 0x0C,
     "tColour": 0x10,
     "Sprite": 0xB4,
+    "FireWork": 0x01,
     "GolbShot": 0x2E8,
     "Player": 0x4364,
     "SubGarbage": 0xC4,
@@ -54,6 +57,9 @@ EXPECTED_STRUCT_FIELDS = {
         0x74: ("lifetime_step", "float"),
         0x78: ("gravity_step", "float"),
     },
+    "FireWork": {
+        0x00: ("_empty", "uint8_t"),
+    },
     "GolbShot": {
         0x24C: ("velocity", "Vec3"),
         0x270: ("game", "SubgameRuntime*"),
@@ -71,7 +77,7 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# These four helpers allocate and fill the same Sprite owner shape. The two
+# These five helpers allocate and fill the same Sprite owner shape. The two
 # smoke emitters advance a derived register to Sprite::position, then reuse that
 # cursor for both the position/velocity vectors and gravity_step at +0x30.
 # Binary Ninja infers the derived lifetime too narrowly as Vec3*. Keeping it as
@@ -130,14 +136,139 @@ SPRITE_EFFECT_OWNER_USER_VAR_UPDATES = (
         "sprite_motion_cursor",
         "uint8_t*",
     ),
+    (
+        "firework_shoot",
+        "RegisterVariableSourceType",
+        57,
+        66,
+        "sprite",
+        "Sprite*",
+    ),
+    (
+        "firework_shoot",
+        "RegisterVariableSourceType",
+        32,
+        69,
+        "saved_texture_id",
+        "int32_t",
+    ),
+    (
+        "firework_shoot",
+        "RegisterVariableSourceType",
+        37,
+        71,
+        "saved_owner",
+        "int32_t",
+    ),
+    (
+        "firework_shoot",
+        "StackVariableSourceType",
+        42,
+        -16,
+        "remaining",
+        "int32_t",
+    ),
+    (
+        "firework_shoot",
+        "StackVariableSourceType",
+        181,
+        -40,
+        "green",
+        "float",
+    ),
+    (
+        "firework_shoot",
+        "StackVariableSourceType",
+        322,
+        -12,
+        "velocity_x",
+        "float",
+    ),
+    (
+        "firework_shoot",
+        "RegisterVariableSourceType",
+        342,
+        68,
+        "source_position",
+        "Vec3*",
+    ),
+    (
+        "firework_shoot",
+        "RegisterVariableSourceType",
+        346,
+        72,
+        "sprite_position",
+        "Vec3*",
+    ),
+)
+
+# Let Binary Ninja infer the destination vector from Sprite::velocity. It
+# already derives this short-lived EAX cursor as Vec3*, so persisting the same
+# type and a name adds no ownership evidence or decompile improvement. Likewise
+# clear rejected cosmetic names for the two x87 lifetimes: BN's C parser
+# normalizes `long double` to `double`, which would narrow the automatic int80
+# temporaries merely to improve spelling.
+SPRITE_EFFECT_OWNER_USER_VAR_REMOVALS = (
+    (
+        "firework_shoot",
+        "RegisterVariableSourceType",
+        293,
+        66,
+        "sprite_velocity",
+        "Vec3*",
+    ),
+    (
+        "firework_shoot",
+        "RegisterVariableSourceType",
+        107,
+        4103,
+        "duration",
+        "double",
+    ),
+    (
+        "firework_shoot",
+        "RegisterVariableSourceType",
+        300,
+        4103,
+        "velocity_x_centered",
+        "double",
+    ),
+)
+
+# MSVC reuses the four incoming argument stack slots after their values have
+# been copied to registers. Split those later definitions so the authored
+# integer parameters remain intact while the particle color and velocity
+# temporaries recover their real types.
+FIREWORK_RED_DEFINITIONS = (
+    ("0x441e70", "mlil", "StackVariableSourceType", 160, 16),
+)
+FIREWORK_RED_VAR = ("StackVariableSourceType", 160, 16)
+
+FIREWORK_VELOCITY_Z_DEFINITIONS = (
+    ("0x441eb5", "mlil", "StackVariableSourceType", 229, 8),
+)
+FIREWORK_VELOCITY_Z_VAR = ("StackVariableSourceType", 229, 8)
+
+FIREWORK_VELOCITY_Y_DEFINITIONS = (
+    ("0x441ed8", "mlil", "StackVariableSourceType", 264, 12),
+)
+FIREWORK_VELOCITY_Y_VAR = ("StackVariableSourceType", 264, 12)
+
+FIREWORK_VELOCITY_X_RANDOM_DEFINITIONS = (
+    ("0x441ee1", "mlil", "StackVariableSourceType", 273, 16),
+)
+FIREWORK_VELOCITY_X_RANDOM_VAR = (
+    "StackVariableSourceType",
+    273,
+    16,
 )
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the proved Sprite owner and smoke-motion cursor lifetimes "
-            "across the Golb and garbage effect emitters."
+            "Replay the proved Sprite owner, firework stack-slot, and "
+            "smoke-motion cursor lifetimes across the effect emitters."
         )
     )
     parser.add_argument(
@@ -200,14 +331,58 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Sprite ownership header not found: {header_path}")
 
-    operations = [
-        verify_owner_layouts(args.target),
-        *apply_user_var_updates(
+    operations = [verify_owner_layouts(args.target)]
+    for definitions, target_var, variable_name, variable_type in (
+        (
+            FIREWORK_RED_DEFINITIONS,
+            FIREWORK_RED_VAR,
+            "red",
+            "float",
+        ),
+        (
+            FIREWORK_VELOCITY_Z_DEFINITIONS,
+            FIREWORK_VELOCITY_Z_VAR,
+            "velocity_z",
+            "float",
+        ),
+        (
+            FIREWORK_VELOCITY_Y_DEFINITIONS,
+            FIREWORK_VELOCITY_Y_VAR,
+            "velocity_y",
+            "float",
+        ),
+        (
+            FIREWORK_VELOCITY_X_RANDOM_DEFINITIONS,
+            FIREWORK_VELOCITY_X_RANDOM_VAR,
+            "velocity_x_random",
+            "int32_t",
+        ),
+    ):
+        operations.extend(
+            apply_split_user_var_update(
+                REPO_ROOT,
+                target=args.target,
+                identifier="firework_shoot",
+                definitions=definitions,
+                target_var=target_var,
+                variable_name=variable_name,
+                variable_type=variable_type,
+            )
+        )
+    operations.extend(
+        remove_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            removals=SPRITE_EFFECT_OWNER_USER_VAR_REMOVALS,
+        )
+    )
+    operations.extend(
+        apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
             updates=SPRITE_EFFECT_OWNER_USER_VAR_UPDATES,
-        ),
-    ]
+        )
+    )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,

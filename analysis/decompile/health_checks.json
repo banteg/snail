@@ -10283,6 +10283,63 @@
       ]
     },
     {
+      "name": "bn_firework_sprite_and_stack_slot_owners",
+      "artifact": "analysis/decompile/binja/functions/00441dd0-firework_shoot.c",
+      "required_substrings": [
+        "count s<= 0",
+        "int32_t remaining = count",
+        "struct Sprite* sprite = allocate_sprite",
+        "sprite->flags",
+        "float red =",
+        "float velocity_z =",
+        "float velocity_y =",
+        "sprite->velocity",
+        "sprite->position.x = position->x",
+        "remaining -= 1"
+      ],
+      "forbidden_substrings": [
+        "world_z =",
+        "world_x =",
+        "world_y =",
+        "eax_1->",
+        "sub_44dbd0",
+        "int32_t* game_1",
+        "int32_t* position_1"
+      ]
+    },
+    {
+      "name": "ida_firework_sprite_and_stack_slot_owners",
+      "artifact": "analysis/decompile/ida/functions/00441dd0-firework_shoot.c",
+      "required_substrings": [
+        "void __thiscall firework_shoot(FireWork *firework, Vec3 *position, int32_t owner, int32_t texture_id, int32_t count)",
+        "Sprite *sprite;",
+        "SpriteFlag flags;",
+        "double duration_random;",
+        "float green;",
+        "int32_t remaining;",
+        "float velocity_x;",
+        "float velocity_z;",
+        "float velocity_y;",
+        "float red;",
+        "int32_t velocity_x_random;",
+        "set_color_rgb(&sprite->color, red, green, 0.0);",
+        "sprite->velocity.x = velocity_x;",
+        "sprite->position = *position;",
+        "--remaining;"
+      ],
+      "forbidden_substrings": [
+        "char __stdcall sub_441DD0",
+        "float *v7",
+        "int v11",
+        "int v12",
+        "ownera",
+        "texture_ida",
+        "counta",
+        "countb",
+        "sub_44DBD0"
+      ]
+    },
+    {
       "name": "bn_world_assets_golb_nested_owners",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [

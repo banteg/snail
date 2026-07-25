@@ -94,3 +94,25 @@ iOS both expose `cRFireWork::Shoot(tVector, int, int, int)` from `SubGame.o`;
 Windows instead passes the position by pointer, as proven by its four explicit
 stack words and `ret 0x10`. The shared Windows prototype preserves that ABI
 rather than forcing the mobile by-value signature onto this binary.
+
+## 2026-07-25 cross-decompiler lifetime replay
+
+The Windows body reuses three incoming argument slots after copying their
+integer values to saved registers. Exact Binary Ninja MLIL splits now preserve
+the authored `owner`, `texture_id`, and `count` parameters while recovering the
+later `red`, `velocity_z`, `velocity_y`, and `velocity_x_random` lifetimes.
+Direct local ownership also records the allocated `Sprite`, loop counter, color
+and velocity temporaries, and the source/destination `Vec3` pointers.
+
+IDA now replays the same facts by exact definition address and stack locator.
+Its export has the native thiscall prototype, named Sprite/color/velocity
+locals, `sprite->velocity` fields, and the final
+`sprite->position = *position` copy instead of the old `sub_441DD0` scalar
+view. Binary Ninja still chooses an awkward aggregate rendering for the three
+velocity stores; a redundant forced `Vec3*` cursor did not improve that output,
+so the replay explicitly clears it and relies on the canonical `Sprite`
+layout.
+
+This is analysis-only ownership recovery. The focused scratch remains 94.17%
+(103/103 instructions, prefix 78/103, 21 clean masked operands), and no
+source-shape change was made to chase the known compiler scheduling residual.

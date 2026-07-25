@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
-  "ida_exported": 2,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,15 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "classify_archive_entry_extension",
-      "address": "0x4050c0"
-    },
-    {
-      "name": "rebuild_game_archive_if_needed",
-      "address": "0x405370"
+      "name": "firework_shoot",
+      "address": "0x441dd0"
     }
   ],
-  "health_check_count": 1053,
+  "health_check_count": 1055,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"
