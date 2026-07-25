@@ -21,8 +21,5 @@ void __thiscall begin_track_attachment_follow_state(
   v5 = world_position->y - 0.49000001;
   follow_state->player = player;
   follow_state->vertical_offset = v5;
-  follow_state->template_record->installed_heading_delta = *(float *)((char *)&g_row_heading_table
-                                                                    + (_DWORD)g_game_base
-                                                                    + 244 * get_track_cell_row_index(source_cell));
+  follow_state->template_record->installed_heading_delta = g_game_base->subgame.runtime_rows[get_track_cell_row_index(source_cell)].installed_heading_delta;
 }
-

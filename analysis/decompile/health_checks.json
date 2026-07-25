@@ -4264,6 +4264,44 @@
       ]
     },
     {
+      "name": "bn_attachment_follow_begin_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00420c40-begin_track_attachment_follow_state.c",
+      "required_substrings": [
+        "follow_state->active = 1",
+        "follow_state->template_record = attachment_template_record",
+        "follow_state->source_cell = source_cell",
+        "follow_state->player = player",
+        "follow_state->template_record->installed_heading_delta = (&g_game_base->subgame.runtime_rows[0].installed_heading_delta)[get_track_cell_row_index(source_cell) * 0x3d]"
+      ],
+      "forbidden_substrings": [
+        "*(g_game_base +",
+        "g_row_heading_table",
+        "0x64118c",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_attachment_follow_begin_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00420c40-begin_track_attachment_follow_state.c",
+      "required_substrings": [
+        "void __thiscall begin_track_attachment_follow_state(",
+        "FollowState *follow_state,",
+        "TrackRowCell *source_cell,",
+        "follow_state->template_record = attachment_template_record",
+        "follow_state->source_cell = source_cell",
+        "follow_state->player = player",
+        "follow_state->template_record->installed_heading_delta = g_game_base->subgame.runtime_rows[get_track_cell_row_index(source_cell)].installed_heading_delta"
+      ],
+      "forbidden_substrings": [
+        "g_row_heading_table",
+        "(_DWORD)g_game_base",
+        "0x64118c",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_attachment_follow_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00420cb0-update_track_attachment_follow_state.c",
       "required_substrings": [
@@ -4272,21 +4310,20 @@
         "primary_attachment_cell_transition_flags->bod.list_flags",
         "entry_transition_template->entry_transition_strip_mesh",
         "entry_base_template->entry_base_strip_mesh",
-        ")->color.a = 0.600000024f",
+        "(&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(follow_state->source_cell) * 0x3d]->color.a = 0.600000024f",
+        "(&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(follow_state->source_cell) * 0x3d]->color.a = 1f",
         "struct PathTemplateSample* secondary_sample",
         "secondary_sample->transform.position.x",
         "secondary_sample->delta_dir_to_next.y",
         "__builtin_memcpy(&from, secondary_sample, 0x40)",
-        "struct Vec3* player_right",
-        "player_right->z = var_164.basis_right.z",
+        "g_game_base->subgame.player.body.transform.basis_right = var_164.basis_right",
+        "g_game_base->subgame.player.body.transform.basis_up.x.12 = var_164.basis_up",
+        "struct Vec3* player_forward_reloaded",
+        "player_forward_reloaded->z = var_164.basis_forward.z",
+        "g_game_base->subgame.player.body.transform.basis_right.x.12 = struct Vec3 {",
         "struct Vec3* player_up",
         "player_up->z = var_164.basis_up.z",
-        "struct Vec3* player_forward",
-        "player_forward->z = var_164.basis_forward.z",
-        "struct TransformMatrix* player_transform",
-        "player_transform->basis_right.x",
-        "struct Vec3* player_up_reloaded",
-        "struct Vec3* player_forward_reloaded",
+        "g_game_base->subgame.player.body.transform.basis_forward.x.12 = var_164.basis_forward",
         "out_position_1->x = esi_7->x",
         "out_position_1->y = esi_7->y",
         "out_position_1->z = esi_7->z",
@@ -4304,6 +4341,8 @@
         "float* edx_26",
         "float* out_position_2",
         "play_voice_manager(0x751498",
+        "*(g_game_base +",
+        "0x641184",
         "__asm",
         "_ET1"
       ]

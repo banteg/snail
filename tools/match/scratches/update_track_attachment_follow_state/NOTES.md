@@ -358,3 +358,24 @@ three forward offsets. The terminal boundary intentionally reads the previous
 sample and introduced five negative offsets. Both remain byte views rather
 than being disguised as complete samples. Matcher source remains unchanged at
 72.89% (698/726 instructions, prefix 122/726, all 63 operands clean).
+
+## 2026-07-25 entry-mesh root lifetime split
+
+The two entry-mesh alpha stores were the last raw runtime-row roots in this
+function. MLIL proves that the definitions at `0x420dab` and `0x420e5e` both
+reload `g_game_base`, but Binary Ninja merged their physical EAX lifetime with
+nearby `Path*` template reloads. A reversible definition-scoped preview split
+only those two definitions, merged them as one `GameRoot*`, restored both
+`runtime_rows[row].primary_attachment_cell->color.a` owners, and rolled the
+database back exactly.
+
+The focused lifetime replay now applies that split transactionally before the
+existing sample, player-matrix, and output-vector annotations; a second replay
+is fully idempotent. Fresh analysis folds several matrix publications directly
+into the canonical Player transform instead of retaining intermediate pointer
+names, while preserving the complete owner graph and zero `__offset`
+expressions. Paired health checks now guard the two alpha writes and both
+matrix-publication branches by owner path rather than incidental local names.
+
+No matcher source changed. Focused matching remains 72.89% (698/726
+instructions, prefix 122/726, all 63 operands clean).

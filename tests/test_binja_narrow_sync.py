@@ -16442,6 +16442,7 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     assert follow_update_prototype + ";" in analysis_header
 
     for address in (
+        "0x420C40",
         "0x420CB0",
         "0x42B9C0",
         "0x42C600",
@@ -16463,6 +16464,7 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     ):
         assert address in ida_sync
     for address in (
+        "0x420C92",
         "0x4212A3",
         "0x4214DB",
         "0x420D6A",
@@ -16482,6 +16484,11 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
         "primary_attachment_cell_transition_alpha",
     ):
         assert variable_name in binja_sync
+    assert "ATTACHMENT_FOLLOW_ROOT_SPLIT_DEFINITIONS" in binja_sync
+    assert "ATTACHMENT_FOLLOW_ROOT_TARGET_VAR" in binja_sync
+    for address in ("0x420dab", "0x420e5e"):
+        assert f'"{address}"' in binja_sync
+    assert 'variable_name="attachment_game_base"' in binja_sync
     assert "idc.op_num(address, operand_index)" in ida_sync
     assert "for address in PATH_OWNERSHIP_DIRTY_FUNCTIONS:" in ida_sync
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_sync
@@ -18165,6 +18172,21 @@ def test_attachment_follow_replay_preserves_samples_and_player_matrix() -> None:
         assert f'"{type_name}": {width}' in replay
 
     assert '"update_track_attachment_follow_state"' in replay
+    assert "apply_split_user_var_update" in replay
+    for address, index in (
+        ("0x420dab", 251),
+        ("0x420e5e", 430),
+    ):
+        assert f'"{address}"' in replay
+        assert (
+            f'        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        66,"
+        ) in replay
+    assert "ATTACHMENT_FOLLOW_ROOT_SPLIT_DEFINITIONS" in replay
+    assert "ATTACHMENT_FOLLOW_ROOT_TARGET_VAR" in replay
+    assert 'variable_name="attachment_game_base"' in replay
+    assert 'variable_type="GameRoot*"' in replay
     for index, storage, name, variable_type in (
         (1406, 66, "current_secondary_sample", "PathTemplateSample*"),
         (1596, 72, "secondary_sample", "PathTemplateSample*"),

@@ -12,6 +12,5 @@
 00420c6e        long double x87_r7_3 = fconvert.t(world_position->y) - fconvert.t(0.49000001f)
 00420c74        follow_state->player = player
 00420c77        follow_state->vertical_offset = fconvert.s(x87_r7_3)
-00420c7a        int32_t eax_1 = get_track_cell_row_index(source_cell)
-00420c99        follow_state->template_record->installed_heading_delta = *(g_game_base + eax_1 * 0xf4 + 0x64118c)
+00420c99        follow_state->template_record->installed_heading_delta = (&g_game_base->subgame.runtime_rows[0].installed_heading_delta)[get_track_cell_row_index(source_cell) * 0x3d]
 00420c9f        return

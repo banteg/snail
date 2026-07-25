@@ -270,6 +270,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x418870,  # activate_landscape_entry
     0x418A30,  # clear_active_landscape_entries
     0x418AC0,  # update_active_landscape_entry
+    0x420C40,  # begin_track_attachment_follow_state
     0x420CB0,  # update_track_attachment_follow_state
     0x421770,  # initialize_path_follow_golb
     0x4217B0,  # calc_path_length_z
@@ -1386,9 +1387,11 @@ TUTORIAL_NUMERIC_OPERANDS = (
     (0x448DD5, 1, 0x12E6F58),  # GameRoot::tip_manager
 )
 
-# The follow updater has the same address-expression collision in two Player
-# basis-row publications and seven repeated runtime-row cell loads.
+# The attachment entry and follow updater have the same address-expression
+# collision in one installed-heading load, two Player basis-row publications,
+# and seven repeated runtime-row cell loads.
 ATTACHMENT_FOLLOW_ROOT_OFFSET_OPERANDS = (
+    (0x420C92, 1, 0x64118C),  # SubRow::installed_heading_delta
     (0x4212A3, 1, 0x42FDC4),  # Player::body.transform.basis_up
     (0x4214DB, 1, 0x42FDC4),  # Player::body.transform.basis_up
     (0x420D6A, 1, 0x641184),  # SubRow::primary_attachment_cell
@@ -4306,7 +4309,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if result["status"] == "failed":
             failed.append(
                 {
-                    "selector": "update_track_attachment_follow_state",
+                    "selector": "attachment follow lifecycle",
                     "root_offset_operand": result,
                 }
             )

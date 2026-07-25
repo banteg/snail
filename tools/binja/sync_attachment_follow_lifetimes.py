@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 from _narrow_sync import (
+    apply_split_user_var_update,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
@@ -80,6 +81,30 @@ ATTACHMENT_FOLLOW_USER_VAR_UPDATES = tuple(
     )
 )
 
+# The two entry-mesh alpha stores reload g_game_base into a physical register
+# lifetime that BN otherwise merges with nearby Path* template reloads.
+ATTACHMENT_FOLLOW_ROOT_SPLIT_DEFINITIONS = (
+    (
+        "0x420dab",
+        "mlil",
+        "RegisterVariableSourceType",
+        251,
+        66,
+    ),
+    (
+        "0x420e5e",
+        "mlil",
+        "RegisterVariableSourceType",
+        430,
+        66,
+    ),
+)
+ATTACHMENT_FOLLOW_ROOT_TARGET_VAR = (
+    "RegisterVariableSourceType",
+    251,
+    66,
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -148,14 +173,25 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"path ownership header not found: {header_path}")
 
-    operations = [
-        verify_owner_layouts(args.target),
-        *apply_user_var_updates(
+    operations = [verify_owner_layouts(args.target)]
+    operations.extend(
+        apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="update_track_attachment_follow_state",
+            definitions=ATTACHMENT_FOLLOW_ROOT_SPLIT_DEFINITIONS,
+            target_var=ATTACHMENT_FOLLOW_ROOT_TARGET_VAR,
+            variable_name="attachment_game_base",
+            variable_type="GameRoot*",
+        )
+    )
+    operations.extend(
+        apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
             updates=ATTACHMENT_FOLLOW_USER_VAR_UPDATES,
-        ),
-    ]
+        )
+    )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,

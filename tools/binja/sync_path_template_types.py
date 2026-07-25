@@ -2394,6 +2394,34 @@ PATH_SAMPLE_INVERSE_USER_VAR_UPDATES = (
     ),
 )
 
+# The two alpha publications reload g_game_base into a physical register
+# lifetime that BN otherwise merges with nearby Path* template reloads. Split
+# just those two definitions and merge them as the shared process root. A
+# transactional preview proves that this restores both complete
+# GameRoot::subgame.runtime_rows[..].primary_attachment_cell owners without
+# disturbing the surrounding Path lifetime.
+ATTACHMENT_FOLLOW_ROOT_SPLIT_DEFINITIONS = (
+    (
+        "0x420dab",
+        "mlil",
+        "RegisterVariableSourceType",
+        251,
+        66,
+    ),
+    (
+        "0x420e5e",
+        "mlil",
+        "RegisterVariableSourceType",
+        430,
+        66,
+    ),
+)
+ATTACHMENT_FOLLOW_ROOT_TARGET_VAR = (
+    "RegisterVariableSourceType",
+    251,
+    66,
+)
+
 # The entry-mesh milestone branches repeatedly reload
 # SubRow::primary_attachment_cell. BN's SSA split loses the TrackRowCell*/Path*
 # field types after the indexed 0xf4-byte row calculation even though the
@@ -4724,6 +4752,17 @@ def main() -> int:
             definitions=UPDATE_SUBGAME_FRONTEND_ROOT_SPLIT_DEFINITIONS,
             target_var=UPDATE_SUBGAME_FRONTEND_ROOT_TARGET_VAR,
             variable_name="frontend_game_base",
+            variable_type="GameRoot*",
+        )
+    )
+    operations.extend(
+        apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="update_track_attachment_follow_state",
+            definitions=ATTACHMENT_FOLLOW_ROOT_SPLIT_DEFINITIONS,
+            target_var=ATTACHMENT_FOLLOW_ROOT_TARGET_VAR,
+            variable_name="attachment_game_base",
             variable_type="GameRoot*",
         )
     )
