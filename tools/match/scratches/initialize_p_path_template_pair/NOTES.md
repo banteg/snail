@@ -145,3 +145,18 @@ its negative byte-relative address became less exact when typed. The preview
 introduces no `__offset` expressions. This is analysis-only: focused Wibo
 remains 44.05% (615/679), with 33 clean operands and no unresolved or
 mismatched operands.
+
+## 2026-07-25 mesh-vector ownership
+
+Raw native assembly at `0x4260ad..0x42618c` proves that the row-terminal test
+belongs inside the vertex column loop. Ordinary rows materialize one aggregate
+generated position. The terminal row separately owns a previous-sample
+lateral-offset vector and a generated position whose Z lane includes
+`+1.0f`.
+
+Retesting this exact source shape after the 2026-07-15 sample and delta
+ownership cascade supersedes the earlier generic branch probe. Focused matching
+now rises from 44.05% (615/679) to 46.46% (634/679), with 32 clean masked
+operands and no unresolved or mismatched masks. The candidate frame moves no
+farther than `0x34` against the native `0x40`; the remaining frame ownership
+includes the still-unrecovered two-face record loop.
