@@ -2,8 +2,7 @@
 /* function: initialize_game_last @ 0x410720 */
 /* selector: initialize_game_last */
 
-float *__thiscall sub_410720(void *this)
+void __thiscall initialize_game_last(GameRoot *game)
 {
-  return initialize_backdrop((int)this + 322576, 1);
+  initialize_backdrop(&game->backdrop, 1);
 }
-

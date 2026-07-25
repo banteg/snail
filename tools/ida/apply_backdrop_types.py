@@ -8,6 +8,7 @@ import sys
 import ida_funcs
 import ida_hexrays
 import ida_kernwin
+import ida_name
 import ida_pro
 import ida_typeinf
 import idc
@@ -23,7 +24,15 @@ EXPECTED_BOD_BASE_SIZE = 0x38
 EXPECTED_BACKDROP_DISTORT_CELL_SIZE = 0x18
 EXPECTED_BACKDROP_SIZE = 0x6CC
 
+TRUSTED_NAMES = (
+    (0x410720, "initialize_game_last"),
+)
+
 TRUSTED_DECLARATIONS = (
+    (
+        "initialize_game_last",
+        "void __thiscall initialize_game_last(GameRoot* game);",
+    ),
     (
         "set_backdrop_progress_fraction",
         "void __thiscall set_backdrop_progress_fraction(Backdrop* backdrop, float zoom);",
@@ -56,6 +65,11 @@ TRUSTED_DECLARATIONS = (
         "update_backdrop",
         "int32_t __thiscall update_backdrop(Backdrop* backdrop);",
     ),
+)
+
+ROOT_INITIALIZER_DIRTY_FUNCTIONS = (
+    0x406DC0,  # game_startup_and_main_loop
+    0x410720,  # initialize_game_last
 )
 
 DISTORT_CELL_LVARS = (
@@ -223,6 +237,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
     missing = []
     applied = 0
     unchanged = 0
+    renamed = 0
+    names_unchanged = 0
     bod_base_size = _named_struct_size("BodBase")
 
     if bod_base_size != EXPECTED_BOD_BASE_SIZE:
@@ -259,6 +275,26 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "observed": backdrop_size,
             }
         )
+
+    if not parse_errors and not failed:
+        for address, name in TRUSTED_NAMES:
+            if idc.get_name(address) == name:
+                names_unchanged += 1
+                continue
+            if not idc.set_name(
+                address,
+                name,
+                ida_name.SN_NOWARN | ida_name.SN_FORCE,
+            ):
+                failed.append(
+                    {
+                        "selector": name,
+                        "address": hex(address),
+                        "reason": "rename_failed",
+                    }
+                )
+                continue
+            renamed += 1
 
     if not parse_errors and not failed:
         for selector, declaration in TRUSTED_DECLARATIONS:
@@ -305,6 +341,20 @@ def _sync_types(header_path: pathlib.Path) -> int:
     if game_root_owner_graph.get("status") == "failed":
         failed.append({"selector": "GameRoot", "owner_graph": game_root_owner_graph})
 
+    dirty_functions = []
+    if not parse_errors and not failed:
+        for address in ROOT_INITIALIZER_DIRTY_FUNCTIONS:
+            if ida_funcs.get_func(address) is None:
+                failed.append(
+                    {
+                        "selector": hex(address),
+                        "reason": "missing_dirty_function",
+                    }
+                )
+                continue
+            ida_hexrays.mark_cfunc_dirty(address, True)
+            dirty_functions.append(hex(address))
+
     print(
         json.dumps(
             {
@@ -316,8 +366,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "backdrop_size": backdrop_size,
                 "applied": applied,
                 "unchanged": unchanged,
+                "renamed": renamed,
+                "names_unchanged": names_unchanged,
                 "distort_cell_lvars": distort_cell_lvars,
                 "game_root_owner_graph": game_root_owner_graph,
+                "dirty_functions": dirty_functions,
                 "missing": missing,
                 "failed": failed,
             },

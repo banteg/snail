@@ -706,7 +706,8 @@
     },
     {
       "address": "0x410720",
-      "name": "initialize_game_last"
+      "name": "initialize_game_last",
+      "description": "Exact void GameRoot member wrapper that completes root startup by initializing the embedded Backdrop at +0x4ec10 in last-mode 1."
     },
     {
       "address": "0x410730",

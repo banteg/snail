@@ -80,7 +80,7 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
       if ( !initialize_game_assets_and_world(g_game_base) )
         v6 = 1;
       load_registered_texture_refs();
-      initialize_game_last((char *)g_game_base);
+      initialize_game_last(g_game_base);
       g_game_initialization_pending = 0;
       g_frame_render_requested = 0;
       destroy_loading_screen(&g_loading_bar);

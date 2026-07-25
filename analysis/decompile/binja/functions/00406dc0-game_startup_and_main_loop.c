@@ -125,9 +125,9 @@
 00407156        int32_t esi_2 = 0
 0040715b        if (g_game_base->fixed_update_count s> 0)
 00407162        while (true)
-00407162        int32_t main_window_2 = g_main_window
+00407162        HWND main_window_2 = g_main_window
 00407163        update_keyboard_input()
-0040716e        int32_t main_window_1 = g_main_window
+0040716e        HWND main_window_1 = g_main_window
 0040716f        update_joystick_input()
 0040717b        update_mouse(g_main_window)
 00407183        update_font_wave_state()

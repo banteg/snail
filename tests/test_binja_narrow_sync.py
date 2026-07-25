@@ -959,6 +959,14 @@ def test_ida_frontend_owner_lanes_replay_the_shared_root_graph() -> None:
     assert "EXPECTED_BACKDROP_DISTORT_CELL_SIZE = 0x18" in backdrop_apply
     assert '"reason": "dependency_size_mismatch"' in backdrop_apply
     assert "EXPECTED_BACKDROP_SIZE = 0x6CC" in backdrop_apply
+    assert '(0x410720, "initialize_game_last")' in backdrop_apply
+    assert (
+        "void __thiscall initialize_game_last(GameRoot* game);"
+        in backdrop_apply
+    )
+    assert "ROOT_INITIALIZER_DIRTY_FUNCTIONS" in backdrop_apply
+    assert "0x406DC0" in backdrop_apply
+    assert "0x410720" in backdrop_apply
     assert '"target_name": "column_start"' in backdrop_apply
     assert '"target_name": "cell"' in backdrop_apply
     assert "DISTORT_CELL_LVARS" in backdrop_apply
@@ -984,6 +992,9 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
     assert 'struct_name="BodBase"' in source
     assert "size != 0x38" in source
     assert "BACKDROP_DISTORT_USER_VAR_UPDATES" in source
+    assert "ROOT_INITIALIZER_REANALYSIS_FUNCTIONS" in source
+    assert '"initialize_game_last"' in source
+    assert '"game_startup_and_main_loop"' in source
     assert '"column_start"' in source
     assert '"cell"' in source
     assert "--distort-cursors-only" in source
@@ -992,6 +1003,7 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
     assert "uint8_t split_backdrop_texture_pair;" in header
     assert "float distort;" in header
     for prototype in (
+        "void __thiscall initialize_game_last(GameRoot* game)",
         "void __thiscall set_backdrop_progress_fraction(Backdrop* backdrop, float zoom)",
         "void __thiscall set_backdrop_distort(Backdrop* backdrop, float distort)",
         "void __thiscall change_backdrop(Backdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip)",

@@ -1,31 +1,35 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
-  "ida_exported": 725,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "ida_refreshed": false,
+  "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "begin_track_attachment_follow_state",
-      "address": "0x420c40"
+      "name": "game_startup_and_main_loop",
+      "address": "0x406dc0"
     },
     {
-      "name": "update_track_attachment_follow_state",
-      "address": "0x420cb0"
+      "name": "initialize_game_last",
+      "address": "0x410720"
+    },
+    {
+      "name": "initialize_cutscene_ai",
+      "address": "0x446130"
     }
   ],
-  "health_check_count": 1033,
+  "health_check_count": 1036,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

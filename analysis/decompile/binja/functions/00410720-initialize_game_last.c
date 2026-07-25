@@ -3,4 +3,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_game_last @ 0x410720 */
 
-0041072d        return initialize_backdrop(arg1 + 0x4ec10, 1)
+00410728        initialize_backdrop(&game->backdrop, 1)
+0041072d        return

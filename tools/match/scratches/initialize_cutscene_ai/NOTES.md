@@ -35,3 +35,16 @@ presentation store uses root `+0x432700`, which closes as
 both `&g_game_base->subgame.player` and its owned `presentation`. This agrees
 with the cross-port constructor evidence and leaves the exact 8/8 source
 untouched.
+
+## 2026-07-25 paired owner canary
+
+Fresh Binary Ninja analysis now closes the same two constants through the
+imported `GameRoot -> SubgameRuntime -> Player` graph without a local-variable
+override: the first store borrows `Player::presentation`, and the final store
+borrows the enclosing `Player`. The tracked BN artifact had simply preceded
+that analysis state.
+
+The refreshed artifact and a paired health canary now reject the old
+`g_game_base[0x432700]` / `g_game_base[0x42fd7c]` byte-array rendering. No
+matcher source or database annotation changed; the exact 8/8 match remains the
+evidence boundary.

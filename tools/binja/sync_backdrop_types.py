@@ -27,6 +27,10 @@ GAME_ROOT_FIELD_UPDATES = (
 
 PROTO_UPDATES = (
     (
+        "initialize_game_last",
+        "void __thiscall initialize_game_last(GameRoot* game)",
+    ),
+    (
         "set_backdrop_progress_fraction",
         "void __thiscall set_backdrop_progress_fraction(Backdrop* backdrop, float zoom)",
     ),
@@ -62,6 +66,11 @@ PROTO_UPDATES = (
         "update_backdrop",
         "int32_t __thiscall update_backdrop(Backdrop* backdrop)",
     ),
+)
+
+ROOT_INITIALIZER_REANALYSIS_FUNCTIONS = (
+    "initialize_game_last",
+    "game_startup_and_main_loop",
 )
 
 # update_backdrop walks the row-major 8x8 distortion grid column-first.
@@ -191,6 +200,13 @@ def main() -> int:
     )
     operations.extend(
         apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES)
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=ROOT_INITIALIZER_REANALYSIS_FUNCTIONS,
+        )
     )
     operations.extend(
         apply_user_var_updates(
