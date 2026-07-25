@@ -169,3 +169,26 @@ second replay is idempotent. The paired export now keeps the initial y-field
 cursor, indexed missing-level coordinates, and final entry-zero copy under
 `g_galaxy_route_points`. Focused matching remains the honest 88.27%,
 236/233 instructions, prefix 62, with all 39 masked operands clean.
+
+## 2026-07-25 loader cursor lifetimes
+
+Binary Ninja now retains the three physical `float*` cursors native uses for
+the route-point rescale, group-point rescale, and group-map copy loops. These
+are interior borrows based at each `GalaxyPoint::y` lane; the adjacent
+`cursor[-1]` value remains the same point's `x`, and the two-float advance
+remains one complete `GalaxyPoint`.
+
+The same guarded replay narrows the generic archive result to the `char*`
+`file_text` view used by this parser and makes the EDX copy loop a byte cursor
+into one `GalaxyRouteNameRecord::name`. IDA independently renders the same
+three point cursors, text buffer, and character copy. The replay verifies the
+complete point, route-name, colour, and Galaxy layouts before applying these
+non-owning views.
+
+The live EDI value still points at `GalaxyRouteNameRecord::color`, not the
+record base. A proposed four-coordinate cursor wrapper improved some forward
+fields but degraded the preceding `star_count` and `name` accesses; even a
+name-only EDI override caused Binary Ninja to lose the enclosing
+`star_count` field. Both were removed rather than claiming a false owner. No
+matcher source changed: 88.27%, 236/233 instructions, prefix 62, and all 39
+operands remain honest.

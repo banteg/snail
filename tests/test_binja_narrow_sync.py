@@ -162,6 +162,61 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert "extern GalaxyPoint g_galaxy_route_points[101];" in matcher_header
 
 
+def test_galaxy_layout_lifetime_replay_preserves_borrowed_cursors() -> None:
+    repo_root = Path(__file__).parents[1]
+    source = (BINJA_DIR / "sync_galaxy_layout_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    for expected in (
+        '"tColour": 0x10',
+        '"GalaxyPoint": 0x08',
+        '"GalaxyRouteNameRecord": 0xA0',
+        '"Galaxy": 0x10FA8',
+        '0x00: ("name", "char[128]")',
+        '0x84: ("color", "tColour")',
+        '0x10930: ("route_names", "GalaxyRouteNameRecord[10]")',
+        "GALAXY_LAYOUT_USER_VAR_UPDATES",
+        "current_struct_fields_batch",
+        "apply_user_var_updates",
+        "verify_galaxy_layout_owners",
+    ):
+        assert expected in source
+
+    for index, storage, variable_name, variable_type in (
+        (6, 66, "route_point_y_cursor", "float*"),
+        (79, 66, "group_point_rescale_y_cursor", "float*"),
+        (171, 71, "current_group_point_y_cursor", "float*"),
+        (166, 66, "file_text", "char*"),
+        (280, 68, "route_name_character_cursor", "char*"),
+    ):
+        update = (
+            '"load_galaxy_layout",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{variable_name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert update in source
+
+    for fragment in (
+        "float* route_point_y_cursor = &g_galaxy_route_points[0].y",
+        "float* group_point_rescale_y_cursor = &g_galaxy_group_points[0].y",
+        "float* current_group_point_y_cursor",
+        "char* file_text = load_file_bytes_from_archive_or_fs",
+        "char* route_name_character_cursor",
+        "*route_name_character_cursor = j",
+        "route_name_character_cursor = &route_name_character_cursor[1]",
+        '"struct GalaxyRouteNameRecord (* edx_1)[0xa]"',
+        '"void* eax_3 = load_file_bytes_from_archive_or_fs"',
+    ):
+        assert fragment in health_checks
+
+
 def test_voice_manager_replay_keeps_exact_owners_and_void_mutator_abis() -> None:
     repo_root = Path(__file__).parents[1]
     binja_sync = (BINJA_DIR / "sync_voice_manager_types.py").read_text(

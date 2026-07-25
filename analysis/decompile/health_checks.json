@@ -13282,16 +13282,30 @@
       "name": "bn_galaxy_layout_point_bank_owner",
       "artifact": "analysis/decompile/binja/functions/004088e0-load_galaxy_layout.c",
       "required_substrings": [
-        "&g_galaxy_route_points[0].y",
-        "&g_galaxy_group_points[0].y",
+        "float* route_point_y_cursor = &g_galaxy_route_points[0].y",
+        "route_point_y_cursor = &route_point_y_cursor[2]",
+        "float* group_point_rescale_y_cursor = &g_galaxy_group_points[0].y",
+        "group_point_rescale_y_cursor = &group_point_rescale_y_cursor[2]",
+        "float* current_group_point_y_cursor = &g_galaxy_group_points[0].y",
+        "char* file_text = load_file_bytes_from_archive_or_fs",
         "galaxy->level_progress_base",
         "galaxy->route_names[0].color",
+        "char* route_name_character_cursor = edi - 0x84",
+        "*route_name_character_cursor = j",
+        "route_name_character_cursor = &route_name_character_cursor[1]",
+        "(edi - 0x109b4)->route_names[0].star_count",
         "galaxy->route_slots[galaxy->record_count].record.route_name_index"
       ],
       "forbidden_substrings": [
         "arg1",
         "data_4a1c50",
         "data_4a1d18",
+        "float* i = &g_galaxy_route_points",
+        "float* i_1 = &g_galaxy_group_points",
+        "void* eax_3 = load_file_bytes_from_archive_or_fs",
+        "struct GalaxyRouteNameRecord (* edx_1)[0xa]",
+        "(edx_1 - 0x10930)->",
+        "route_name_color_cursor->r:-4.d",
         "unimplemented"
       ]
     },

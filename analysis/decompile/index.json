@@ -5,20 +5,20 @@
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
   "bn_exported": 1,
-  "ida_exported": 717,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "ida_refreshed": false,
+  "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_ring_or_special_effect_particles",
-      "address": "0x43e470"
+      "name": "load_galaxy_layout",
+      "address": "0x4088e0"
     }
   ],
   "health_check_count": 978,
