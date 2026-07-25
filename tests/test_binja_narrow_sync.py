@@ -6931,6 +6931,152 @@ def test_sub_loc_runtime_row_owner_replay_stays_guarded() -> None:
     assert "unk_6411B8" in ida_update["forbidden_substrings"]
 
 
+def test_level_definition_parser_frame_ownership_stays_aligned() -> None:
+    binja_sync = (
+        BINJA_DIR / "sync_segment_catalog_types.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (IDA_DIR / "apply_segment_catalog_types.py").read_text(
+        encoding="utf-8"
+    )
+    health_checks = {
+        check["name"]: check
+        for check in json.loads(
+            (Path("analysis/decompile/health_checks.json")).read_text(
+                encoding="utf-8"
+            )
+        )["checks"]
+    }
+
+    assert "LEVEL_PARSER_USER_VAR_UPDATES" in binja_sync
+    for source_type, index, storage, name, variable_type in (
+        ("RegisterVariableSourceType", 182, 71, "level_display_name_begin", "char*"),
+        (
+            "RegisterVariableSourceType",
+            190,
+            68,
+            "level_display_name_cursor",
+            "char*",
+        ),
+        ("RegisterVariableSourceType", 877, 67, "script_name_cursor", "char*"),
+        ("RegisterVariableSourceType", 1867, 67, "segment_name_cursor", "char*"),
+        ("RegisterVariableSourceType", 1957, 68, "line_options_cursor", "char*"),
+        ("RegisterVariableSourceType", 2461, 68, "sample_name_cursor", "char*"),
+        (
+            "RegisterVariableSourceType",
+            2783,
+            67,
+            "first_segment_name_cursor",
+            "char*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            2958,
+            67,
+            "last_segment_name_cursor",
+            "char*",
+        ),
+        ("StackVariableSourceType", 0, -1804, "line_cursor", "char*"),
+        ("StackVariableSourceType", 0, -1800, "parsed_int", "int32_t"),
+        ("StackVariableSourceType", 1790, -1796, "segments_end", "char*"),
+        ("StackVariableSourceType", 0, -1792, "level_path", "char[512]"),
+        ("StackVariableSourceType", 0, -1280, "line_options", "char[128]"),
+        ("StackVariableSourceType", 0, -1152, "sample_name", "char[128]"),
+        ("StackVariableSourceType", 0, -1024, "segment_name", "char[512]"),
+        ("StackVariableSourceType", 0, -512, "script_name", "char[512]"),
+    ):
+        fragment = (
+            '        "load_level_definition_file",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert fragment in binja_sync
+
+    assert "LEVEL_PARSER_LVAR_SPECS" in ida_sync
+    for definition_address, stack_offset, name, declaration in (
+        ("0x44753F", "None", "level_display_name_cursor", "char *"),
+        ("0x4477EE", "None", "script_name_cursor", "char *"),
+        ("0x447BCC", "None", "segment_name_cursor", "char *"),
+        ("0x447C26", "None", "line_options_cursor", "char *"),
+        ("0x447E1E", "None", "sample_name_cursor", "char *"),
+        ("0x447F60", "None", "first_segment_name_cursor", "char *"),
+        ("0x44800F", "None", "last_segment_name_cursor", "char *"),
+        ("0x447C2D", "52", "line_cursor", "char *"),
+        ("0x4478A4", "56", "parsed_int", "int32_t"),
+        ("0x447B7F", "60", "segments_end", "char *"),
+        ("0x4474A4", "64", "level_path", "char level_path[512]"),
+        ("0x447C25", "576", "line_options", "char line_options[128]"),
+        ("0x447E1D", "704", "sample_name", "char sample_name[128]"),
+        ("0x447BCB", "832", "segment_name", "char segment_name[512]"),
+        ("0x4477ED", "1344", "script_name", "char script_name[512]"),
+    ):
+        assert definition_address in ida_sync
+        assert f"        {stack_offset}," in ida_sync
+        assert f'"{name}"' in ida_sync
+        assert declaration in ida_sync
+    assert '"level_parser_lvars": level_parser_lvars' in ida_sync
+    assert "level_parser_lvar_failures" in ida_sync
+
+    bn_check = health_checks["bn_load_level_definition_owner_graph"]
+    for marker in (
+        "char* level_display_name_cursor = &tracks->level_display_name",
+        "char* script_name_cursor = &script_name",
+        "char* segment_name_cursor = &segment_name",
+        "char* line_options_cursor = &line_options",
+        "char* sample_name_cursor = &sample_name",
+        "char* first_segment_name_cursor = &segment_name",
+        "char* last_segment_name_cursor = &segment_name",
+        "char level_path[0x200]",
+        "char line_options[0x80]",
+        "char sample_name[0x80]",
+    ):
+        assert marker in bn_check["required_substrings"]
+    for old_shape in (
+        "char var_700[0x200]",
+        "void var_500",
+        "(edx - 0x1a58dc)",
+        "char (* ecx_10)[0x200]",
+        "char (* ecx_16)[0x200]",
+        "char (* edx_15)[0x80]",
+        "char (* edx_34)[0x80]",
+        "char (* ecx_50)[0x200]",
+        "char (* ecx_55)[0x200]",
+    ):
+        assert old_shape in bn_check["forbidden_substrings"]
+
+    ida_check = health_checks["ida_load_level_definition_owner_graph"]
+    for marker in (
+        "char *level_display_name_cursor",
+        "char *script_name_cursor",
+        "char *segment_name_cursor",
+        "char *line_options_cursor",
+        "char *sample_name_cursor",
+        "char *first_segment_name_cursor",
+        "char *last_segment_name_cursor",
+        "char level_path[512]",
+        "char line_options[128]",
+        "char sample_name[128]",
+    ):
+        assert marker in ida_check["required_substrings"]
+    for old_shape in (
+        "char *v62;",
+        "int v63;",
+        "char *v64;",
+        "char *v21;",
+        "char *v38;",
+        "char *v48;",
+        "char *n;",
+        "char *k;",
+        "char *m;",
+        "char Buffer[512]",
+        "char v66[128]",
+        "char ArgList[128]",
+    ):
+        assert old_shape in ida_check["forbidden_substrings"]
+
+
 def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     repo_root = Path(__file__).parents[1]
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(

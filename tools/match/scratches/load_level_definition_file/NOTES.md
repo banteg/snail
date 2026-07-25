@@ -144,3 +144,36 @@ views. IDA refuses name/prototype/local mutations if any extent is wrong.
 Focused reanalysis also recovered the 512-byte `script_name` stack buffer and
 kept its landscape lookup on the embedded `SubgameRuntime::landscape_manager`.
 The scratch and its honest 82.27% matcher result are unchanged.
+
+## 2026-07-25 complete parser-frame ownership
+
+The native `0x710`-byte frame now has the same explicit ownership in both
+decompiler lanes as in the matcher: the shared parser cursor, reused
+`line_cursor`, parsed integer, and `Segments End:` borrow are followed by
+`level_path[512]`, `line_options[128]`, `sample_name[128]`,
+`segment_name[512]`, and `script_name[512]`. These are five adjacent buffers,
+not one anonymous aggregate. In particular, the line-options bank is no
+longer rendered as a zero-width `void` local in Binary Ninja.
+
+VC6 materializes `SubTracks::level_display_name` in EBP and hands the borrowed
+byte cursor to EDX for the copy loop. The two registers remain distinct
+lifetimes; typing both as `char*` removes BN's false
+`(edx - 0x1a58dc)->:0x1a58dc` subtraction without merging simultaneously live
+values. IDA independently carries the same byte cursor and now shows the
+direct `tracks->level_display_name` producer.
+
+The six other hand-written byte-copy loops now retain their borrowed
+`char*` cursors as well: background script, regular segment, line options,
+sample name, first segment, and last segment. BN had widened each cursor to a
+pointer-to-array solely because its producer was one of the owned stack
+buffers; the native code increments every cursor by one byte. IDA independently
+identifies the same six register lifetimes. The replay scripts and strict
+health checks preserve the byte-stride owners and reject the stale widened
+forms.
+
+The BN mutation was previewed and read back as one guarded batch. IDA applied
+the exact definition-address and stack-offset identities first to a temporary
+database, then to the tracked database. No matcher source, operands, control
+flow, or masks changed: focused matching remains honestly at 82.27%,
+941/926 instructions, prefix 20/926, with 178 clean operands and no unresolved
+or mismatched references.

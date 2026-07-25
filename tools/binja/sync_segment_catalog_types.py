@@ -78,6 +78,144 @@ SEGMENT_USER_VAR_UPDATES = (
     ),
 )
 
+# VC6 first materializes SubTracks::level_display_name in EBP, then hands the
+# borrowed byte cursor to EDX for the write loop. Those simultaneously live
+# registers remain distinct. The parser's native 0x710-byte frame then keeps
+# four scalar/cursor slots followed by five independently owned buffers. Pin
+# the complete storage extents instead of allowing HLIL to collapse the
+# 128-byte line-options bank to `void` or carry anonymous frame offsets through
+# every diagnostic path.
+LEVEL_PARSER_USER_VAR_UPDATES = (
+    (
+        "load_level_definition_file",
+        "RegisterVariableSourceType",
+        182,
+        71,
+        "level_display_name_begin",
+        "char*",
+    ),
+    (
+        "load_level_definition_file",
+        "RegisterVariableSourceType",
+        190,
+        68,
+        "level_display_name_cursor",
+        "char*",
+    ),
+    (
+        "load_level_definition_file",
+        "RegisterVariableSourceType",
+        877,
+        67,
+        "script_name_cursor",
+        "char*",
+    ),
+    (
+        "load_level_definition_file",
+        "RegisterVariableSourceType",
+        1867,
+        67,
+        "segment_name_cursor",
+        "char*",
+    ),
+    (
+        "load_level_definition_file",
+        "RegisterVariableSourceType",
+        1957,
+        68,
+        "line_options_cursor",
+        "char*",
+    ),
+    (
+        "load_level_definition_file",
+        "RegisterVariableSourceType",
+        2461,
+        68,
+        "sample_name_cursor",
+        "char*",
+    ),
+    (
+        "load_level_definition_file",
+        "RegisterVariableSourceType",
+        2783,
+        67,
+        "first_segment_name_cursor",
+        "char*",
+    ),
+    (
+        "load_level_definition_file",
+        "RegisterVariableSourceType",
+        2958,
+        67,
+        "last_segment_name_cursor",
+        "char*",
+    ),
+    (
+        "load_level_definition_file",
+        "StackVariableSourceType",
+        0,
+        -1804,
+        "line_cursor",
+        "char*",
+    ),
+    (
+        "load_level_definition_file",
+        "StackVariableSourceType",
+        0,
+        -1800,
+        "parsed_int",
+        "int32_t",
+    ),
+    (
+        "load_level_definition_file",
+        "StackVariableSourceType",
+        1790,
+        -1796,
+        "segments_end",
+        "char*",
+    ),
+    (
+        "load_level_definition_file",
+        "StackVariableSourceType",
+        0,
+        -1792,
+        "level_path",
+        "char[512]",
+    ),
+    (
+        "load_level_definition_file",
+        "StackVariableSourceType",
+        0,
+        -1280,
+        "line_options",
+        "char[128]",
+    ),
+    (
+        "load_level_definition_file",
+        "StackVariableSourceType",
+        0,
+        -1152,
+        "sample_name",
+        "char[128]",
+    ),
+    (
+        "load_level_definition_file",
+        "StackVariableSourceType",
+        0,
+        -1024,
+        "segment_name",
+        "char[512]",
+    ),
+    (
+        "load_level_definition_file",
+        "StackVariableSourceType",
+        0,
+        -512,
+        "script_name",
+        "char[512]",
+    ),
+)
+
 # VC6 copies raw_segments to EBX, then reuses the dead stack argument slot as
 # the 0x100-byte glyph-lane offset. Binary Ninja needs all three definition
 # sites split and merged before the slot can own its real integer lifetime.
@@ -181,7 +319,10 @@ def main() -> int:
             *apply_user_var_updates(
                 REPO_ROOT,
                 target=TARGET,
-                updates=SEGMENT_USER_VAR_UPDATES,
+                updates=(
+                    *SEGMENT_USER_VAR_UPDATES,
+                    *LEVEL_PARSER_USER_VAR_UPDATES,
+                ),
             ),
         ]
     )

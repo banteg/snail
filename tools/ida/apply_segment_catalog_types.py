@@ -108,6 +108,114 @@ SEGMENT_IMPORT_LVAR_SPECS = (
     ),
 )
 
+LEVEL_PARSER_LVAR_SPECS = (
+    (
+        "load_level_definition_file",
+        0x44753F,
+        None,
+        "level_display_name_cursor",
+        "char *level_display_name_cursor;",
+    ),
+    (
+        "load_level_definition_file",
+        0x4477EE,
+        None,
+        "script_name_cursor",
+        "char *script_name_cursor;",
+    ),
+    (
+        "load_level_definition_file",
+        0x447BCC,
+        None,
+        "segment_name_cursor",
+        "char *segment_name_cursor;",
+    ),
+    (
+        "load_level_definition_file",
+        0x447C26,
+        None,
+        "line_options_cursor",
+        "char *line_options_cursor;",
+    ),
+    (
+        "load_level_definition_file",
+        0x447E1E,
+        None,
+        "sample_name_cursor",
+        "char *sample_name_cursor;",
+    ),
+    (
+        "load_level_definition_file",
+        0x447F60,
+        None,
+        "first_segment_name_cursor",
+        "char *first_segment_name_cursor;",
+    ),
+    (
+        "load_level_definition_file",
+        0x44800F,
+        None,
+        "last_segment_name_cursor",
+        "char *last_segment_name_cursor;",
+    ),
+    (
+        "load_level_definition_file",
+        0x447C2D,
+        52,
+        "line_cursor",
+        "char *line_cursor;",
+    ),
+    (
+        "load_level_definition_file",
+        0x4478A4,
+        56,
+        "parsed_int",
+        "int32_t parsed_int;",
+    ),
+    (
+        "load_level_definition_file",
+        0x447B7F,
+        60,
+        "segments_end",
+        "char *segments_end;",
+    ),
+    (
+        "load_level_definition_file",
+        0x4474A4,
+        64,
+        "level_path",
+        "char level_path[512];",
+    ),
+    (
+        "load_level_definition_file",
+        0x447C25,
+        576,
+        "line_options",
+        "char line_options[128];",
+    ),
+    (
+        "load_level_definition_file",
+        0x447E1D,
+        704,
+        "sample_name",
+        "char sample_name[128];",
+    ),
+    (
+        "load_level_definition_file",
+        0x447BCB,
+        832,
+        "segment_name",
+        "char segment_name[512];",
+    ),
+    (
+        "load_level_definition_file",
+        0x4477ED,
+        1344,
+        "script_name",
+        "char script_name[512];",
+    ),
+)
+
 SEGMENT_OWNER_MARKERS = (
     "typedef struct AuthoredSegmentRow {",
     "typedef struct SegmentCatalogEntry {",
@@ -746,6 +854,33 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    level_parser_lvars = [
+        _sync_owned_lvar(
+            selector,
+            definition_address,
+            stack_offset,
+            expected_name,
+            declaration,
+        )
+        for (
+            selector,
+            definition_address,
+            stack_offset,
+            expected_name,
+            declaration,
+        ) in LEVEL_PARSER_LVAR_SPECS
+    ]
+    level_parser_lvar_failures = [
+        result for result in level_parser_lvars if result.get("status") == "failed"
+    ]
+    if level_parser_lvar_failures:
+        failed.append(
+            {
+                "selector": "load_level_definition_file",
+                "level_parser_lvars": level_parser_lvars,
+            }
+        )
+
     print(
         json.dumps(
             {
@@ -763,6 +898,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "segment_entry_lvar": segment_entry_lvar,
                 "grid_offset_lvar": grid_offset_lvar,
                 "segment_import_lvars": segment_import_lvars,
+                "level_parser_lvars": level_parser_lvars,
                 "missing": missing,
                 "failed": failed,
             },
