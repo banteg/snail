@@ -15160,16 +15160,20 @@
         "&g_loading_background_texture)",
         "&g_loading_bar_on_texture)",
         "g_loading_background_vertex_buffer->vertex_buffer",
-        "struct LoadingVertex* vertices",
+        "struct LoadingQuadVertexView* background_quad",
         "vertex_buffer->vtbl->Lock",
+        "background_quad->vertices[1].x",
+        "background_quad->vertices[3].v",
         "g_loading_bar_vertex_buffer->vertex_buffer",
-        "loading_bar->last_loading_budget = 0",
-        "loading_bar->previous_percent = 0",
-        "loading_bar->active = 1"
+        "*loading_bar = struct LoadingBar {",
+        ".last_loading_budget = 0",
+        ".previous_percent = 0",
+        ".active = 1"
       ],
       "forbidden_substrings": [
         "data_503284",
         "data_5032a4",
+        "__offset(0x14)",
         "int32_t result = begin_overlay_render_state()",
         "arg1",
         "unimplemented"
@@ -15186,6 +15190,9 @@
         "(void **)&g_loading_background_texture",
         "(void **)&g_loading_bar_on_texture",
         "g_loading_background_vertex_buffer->vertex_buffer->vtbl->Lock",
+        "LoadingQuadVertexView *background_quad",
+        "background_quad->vertices[1].x",
+        "background_quad->vertices[3].v",
         "g_loading_bar_vertex_buffer->vertex_buffer->vtbl->Unlock",
         "loading_bar->last_loading_budget = 0;",
         "loading_bar->active = 1;"
@@ -15193,6 +15200,7 @@
       "forbidden_substrings": [
         "g_loading_background_vertex_buffer + 8",
         "g_loading_bar_vertex_buffer + 8",
+        "*background_quad =",
         "int __thiscall initialize_loading_screen",
         "return result",
         "unimplemented"

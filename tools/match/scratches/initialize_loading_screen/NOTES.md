@@ -67,8 +67,21 @@ globals as `Direct3DTexture8*` and both vertex resources as
 `ObjectRenderBuffers*`; Binary Ninja additionally types the initializer's
 dedicated mapped storage as `LoadingVertex*`. This exposes the shared
 `vertex_buffer`, `Lock`, `Unlock`, and COM `Release` ownership through Init,
-AI, and UnInit. AI's overlapping stack slot remains untyped because the native
-function reuses it first as an integer percentage and later as a mapped
-pointer. The matcher source and its honest 83.00% register-scheduling residual
-are unchanged; `update_loading_screen` and `destroy_loading_screen` remain
-exact at 204/204 and 15/15 instructions.
+AI, and UnInit. At that point AI's overlapping stack slot remained untyped
+because the native function reuses it first as an integer percentage and later
+as a mapped pointer. The matcher source and its honest 83.00%
+register-scheduling residual are unchanged; `update_loading_screen` and
+`destroy_loading_screen` remain exact at 204/204 and 15/15 instructions.
+
+2026-07-25 mapped-quad lifetime closure: the initializer's
+`Lock(..., 0x50, ...)` result is now represented in both analysis databases as a borrowed
+`LoadingQuadVertexView` containing exactly four 0x14-byte `LoadingVertex`
+records. The initializer's former first-vertex pointer now exposes all
+`vertices[0..3].{x,y,z,u,v}` fields instead of 15 raw offsets. The updater
+reuses its percentage stack slot as an implicit COM out-parameter, but neither
+decompiler exposes a valid second local definition at the overwrite. Split
+probes either fail readback or contaminate the earlier percentage expression,
+so both updater views deliberately keep that physical slot untyped. The replay
+does not recreate the rejected IDA split override. This view does not own
+either Direct3D resource, and the matcher source remains the more plausible
+authored `LoadingVertex*` array form at the honest 83.00% baseline.

@@ -270,6 +270,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x418870,  # activate_landscape_entry
     0x418A30,  # clear_active_landscape_entries
     0x418AC0,  # update_active_landscape_entry
+    0x418B50,  # initialize_loading_screen
     0x420C40,  # begin_track_attachment_follow_state
     0x420CB0,  # update_track_attachment_follow_state
     0x421770,  # initialize_path_follow_golb
@@ -3072,6 +3073,20 @@ def _sync_exact_lvars(
     }
 
 
+def _sync_loading_quad_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "initialize_loading_screen",
+        (
+            (
+                "background_quad",
+                "LoadingQuadVertexView *background_quad;",
+                0x418D89,
+                140,
+            ),
+        ),
+    )
+
+
 def _clear_exact_lvar_override(
     selector: str,
     expected_name: str,
@@ -4680,6 +4695,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "ownership_lvars": spawn_track_jetpack_lvars,
             }
         )
+    loading_quad_lvars = _sync_loading_quad_lvars()
+    if loading_quad_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "loading_screen",
+                "quad_lvars": loading_quad_lvars,
+            }
+        )
     spawn_salt_hazard_lvars = _sync_spawn_salt_hazard_lvars()
     if spawn_salt_hazard_lvars.get("status") == "failed":
         failed.append(
@@ -4842,6 +4865,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "ring_parent_radius_lvars": ring_parent_radius_lvars,
                 "spawn_track_health_lvars": spawn_track_health_lvars,
                 "spawn_track_jetpack_lvars": spawn_track_jetpack_lvars,
+                "loading_quad_lvars": loading_quad_lvars,
                 "spawn_salt_hazard_lvars": spawn_salt_hazard_lvars,
                 "collision_pool_cursor_lvars": collision_pool_cursor_lvars,
                 "merge_runtime_lvars": merge_runtime_lvars,

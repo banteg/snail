@@ -42,32 +42,34 @@
 00418d5f        g_loading_background_vertex_buffer = create_vertex_buffer(&g_direct3d_renderer, 4, 0x102)
 00418d69        g_loading_bar_vertex_buffer = create_vertex_buffer(&g_direct3d_renderer, 4, 0x102)
 00418d78        struct ObjectVertexBuffer* vertex_buffer = g_loading_background_vertex_buffer->vertex_buffer
-00418d82        struct LoadingVertex* vertices
-00418d82        vertex_buffer->vtbl->Lock(vertex_buffer, 0, 0x50, &vertices, 0)
-00418d89        vertices->x = 0
-00418d8f        vertices->y = 0f
-00418d96        vertices->z = 0f
-00418d9d        vertices->u = 0f
-00418da4        vertices->v = 0f
-00418db0        vertices->__offset(0x14).d = 0x44200000
-00418db7        vertices->__offset(0x18).d = 0
-00418dc3        vertices->__offset(0x1c).d = 0
-00418dca        vertices->__offset(0x20).d = 0x3f800000
-00418dd1        vertices->__offset(0x24).d = 0
-00418dd8        vertices->__offset(0x28).d = 0x44200000
-00418de4        vertices->__offset(0x2c).d = 0x43f00000
-00418deb        vertices->__offset(0x30).d = 0
-00418df2        vertices->__offset(0x34).d = 0x3f800000
-00418df9        vertices->__offset(0x38).d = 0x3f800000
-00418e00        vertices->__offset(0x3c).d = 0
-00418e07        vertices->__offset(0x40).d = 0x43f00000
-00418e0e        vertices->__offset(0x44).d = 0
-00418e15        vertices->__offset(0x48).d = 0
-00418e1c        vertices->__offset(0x4c).d = 0x3f800000
+00418d82        struct LoadingQuadVertexView* background_quad
+00418d82        vertex_buffer->vtbl->Lock(vertex_buffer, 0, 0x50, &background_quad, 0)
+00418d89        background_quad->vertices[0].x = 0
+00418d8f        background_quad->vertices[0].y = 0f
+00418d96        background_quad->vertices[0].z = 0f
+00418d9d        background_quad->vertices[0].u = 0f
+00418da4        background_quad->vertices[0].v = 0f
+00418db0        background_quad->vertices[1].x = 0x44200000
+00418db7        background_quad->vertices[1].y = 0f
+00418dc3        background_quad->vertices[1].z = 0f
+00418dca        background_quad->vertices[1].u = 1f
+00418dd1        background_quad->vertices[1].v = 0f
+00418dd8        background_quad->vertices[2].x = 0x44200000
+00418de4        background_quad->vertices[2].y = 480f
+00418deb        background_quad->vertices[2].z = 0f
+00418df2        background_quad->vertices[2].u = 1f
+00418df9        background_quad->vertices[2].v = 1f
+00418e00        background_quad->vertices[3].x = 0
+00418e07        background_quad->vertices[3].y = 480f
+00418e0e        background_quad->vertices[3].z = 0f
+00418e15        background_quad->vertices[3].u = 0f
+00418e1c        background_quad->vertices[3].v = 1f
 00418e25        struct ObjectVertexBuffer* vertex_buffer_1 = g_loading_bar_vertex_buffer->vertex_buffer
 00418e2b        vertex_buffer_1->vtbl->Unlock(vertex_buffer_1)
 00418e2e        begin_overlay_render_state()
-00418e33        loading_bar->last_loading_budget = 0
-00418e36        loading_bar->previous_percent = 0
-00418e3a        loading_bar->active = 1
+00418e3a        *loading_bar = struct LoadingBar {
+    .last_loading_budget = 0
+    .previous_percent = 0
+    .active = 1
+}
 00418e45        return

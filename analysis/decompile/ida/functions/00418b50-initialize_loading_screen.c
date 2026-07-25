@@ -9,7 +9,7 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
   int32_t texture_from_file_in_memory; // eax
   void *v4; // edi
   int32_t texture_from_file; // eax
-  _DWORD *v6; // [esp+8Ch] [ebp-8h] BYREF
+  LoadingQuadVertexView *background_quad; // [esp+8Ch] [ebp-8h] BYREF
   int out_size; // [esp+90h] [ebp-4h] BYREF
 
   g_runtime_config.last_loading_budget = 1276;
@@ -121,28 +121,28 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
     g_loading_background_vertex_buffer->vertex_buffer,
     0,
     80,
-    (void **)&v6,
+    (void **)&background_quad,
     0);
-  *v6 = 0;
-  v6[1] = 0;
-  v6[2] = 0;
-  v6[3] = 0;
-  v6[4] = 0;
-  v6[5] = 1142947840;
-  v6[6] = 0;
-  v6[7] = 0;
-  v6[8] = 1065353216;
-  v6[9] = 0;
-  v6[10] = 1142947840;
-  v6[11] = 1139802112;
-  v6[12] = 0;
-  v6[13] = 1065353216;
-  v6[14] = 1065353216;
-  v6[15] = 0;
-  v6[16] = 1139802112;
-  v6[17] = 0;
-  v6[18] = 0;
-  v6[19] = 1065353216;
+  background_quad->vertices[0].x = 0.0;
+  background_quad->vertices[0].y = 0.0;
+  background_quad->vertices[0].z = 0.0;
+  background_quad->vertices[0].u = 0.0;
+  background_quad->vertices[0].v = 0.0;
+  background_quad->vertices[1].x = 640.0;
+  background_quad->vertices[1].y = 0.0;
+  background_quad->vertices[1].z = 0.0;
+  background_quad->vertices[1].u = 1.0;
+  background_quad->vertices[1].v = 0.0;
+  background_quad->vertices[2].x = 640.0;
+  background_quad->vertices[2].y = 480.0;
+  background_quad->vertices[2].z = 0.0;
+  background_quad->vertices[2].u = 1.0;
+  background_quad->vertices[2].v = 1.0;
+  background_quad->vertices[3].x = 0.0;
+  background_quad->vertices[3].y = 480.0;
+  background_quad->vertices[3].z = 0.0;
+  background_quad->vertices[3].u = 0.0;
+  background_quad->vertices[3].v = 1.0;
   g_loading_bar_vertex_buffer->vertex_buffer->vtbl->Unlock(g_loading_bar_vertex_buffer->vertex_buffer);
   begin_overlay_render_state();
   loading_bar->last_loading_budget = 0;

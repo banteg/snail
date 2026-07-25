@@ -25,6 +25,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_loading_bar_types.h"
 EXPECTED_TYPE_WIDTHS = {
     "LoadingBar": 0x0C,
     "LoadingVertex": 0x14,
+    "LoadingQuadVertexView": 0x50,
     "ObjectRenderBuffers": 0x0C,
     "ObjectVertexBuffer": 0x04,
     "ObjectVertexBufferVtbl": 0x34,
@@ -44,6 +45,9 @@ EXPECTED_STRUCT_FIELDS = {
         0x08: ("z", "float"),
         0x0C: ("u", "float"),
         0x10: ("v", "float"),
+    },
+    "LoadingQuadVertexView": {
+        0x00: ("vertices", "LoadingVertex[4]"),
     },
     "ObjectRenderBuffers": {
         0x00: ("fvf", "uint32_t"),
@@ -106,8 +110,8 @@ LOADING_SCREEN_USER_VAR_UPDATES = (
         "StackVariableSourceType",
         0,
         -8,
-        "vertices",
-        "LoadingVertex*",
+        "background_quad",
+        "LoadingQuadVertexView*",
     ),
 )
 

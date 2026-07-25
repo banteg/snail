@@ -19,4 +19,12 @@ typedef struct LoadingVertex {
     float v;
 } LoadingVertex;
 
+/*
+ * Analysis-only borrowed view over the exact 0x50-byte region returned by
+ * ObjectVertexBuffer::Lock for each four-vertex loading-screen quad.
+ */
+typedef struct LoadingQuadVertexView {
+    LoadingVertex vertices[4];
+} LoadingQuadVertexView;
+
 #endif
