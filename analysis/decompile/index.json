@@ -1,47 +1,35 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 6,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 6,
-  "ida_exported": 6,
+  "bn_exported": 737,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
-  "binja_refreshed": true,
+  "binja_refreshed": false,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "handle_game_window_activate",
-      "address": "0x4072f0"
+      "name": "update_damage_gauge",
+      "address": "0x440fd0"
     },
     {
-      "name": "show_and_focus_game_window",
-      "address": "0x4073b0"
+      "name": "apply_damage_gauge_delta",
+      "address": "0x4413f0"
     },
     {
-      "name": "game_window_proc",
-      "address": "0x4074b0"
-    },
-    {
-      "name": "read_left_mouse_button_state",
-      "address": "0x407810"
-    },
-    {
-      "name": "read_right_mouse_button_state",
-      "address": "0x407830"
-    },
-    {
-      "name": "update_mouse",
-      "address": "0x44bc50"
+      "name": "update_cutscene",
+      "address": "0x4466d0"
     }
   ],
-  "health_check_count": 1003,
+  "health_check_count": 1019,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

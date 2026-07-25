@@ -102,6 +102,16 @@ to a nonexistent CutScene tail.
   Chained completion-vector algebra regressed, while a named perfect-delivery
   boolean was codegen-neutral; neither probe was retained.
 
+## 2026-07-25 intro prompt owner replay
+
+The intro-return write at `GameRoot +0x42fec4` now folds in IDA to
+`GameRoot::subgame.player.click_start.hide_prompt`, matching Binary Ninja and
+the cross-port `cRClickStart` layout already recorded above. The former
+`g_player_intro_cutscene_latch_offset` rendering was an address-expression
+collision, not an independent global. Replaying the one exact operand on a
+copied IDA database is idempotent and also refreshes cleaner typed
+`Vec3`/`TransformMatrix` assignments in the surrounding pseudocode.
+
 2026-07-12 camera-temporary lifetime recovery:
 
 - Native reuses exactly two `TransformMatrix` locals across the three camera

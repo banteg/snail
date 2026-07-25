@@ -9807,7 +9807,7 @@ def test_ida_player_root_borrows_are_exact_and_fail_closed() -> None:
     )
     operand_block = ida_sync.split(
         "PLAYER_ROOT_BORROW_OFFSET_OPERANDS = (", 1
-    )[1].split("\n)\n\n# Tutorial", 1)[0]
+    )[1].split("\n)\n\n# These damage", 1)[0]
 
     assert operand_block.count("    (0x") == 10
     for operand_spec in (
@@ -9852,6 +9852,81 @@ def test_ida_player_root_borrows_are_exact_and_fail_closed() -> None:
     ):
         check = checks[check_name]
         assert "g_player_block" in check["forbidden_substrings"]
+
+
+def test_ida_player_state_gates_are_exact_and_fail_closed() -> None:
+    repo_root = Path(__file__).parents[1]
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    operand_block = ida_sync.split(
+        "PLAYER_STATE_GATE_OFFSET_OPERANDS = (", 1
+    )[1].split("\n)\n\n# Tutorial", 1)[0]
+
+    assert operand_block.count("    (0x") == 6
+    for operand_spec in (
+        "(0x441074, 1, 0x4301BC)",
+        "(0x441114, 1, 0x4301BC)",
+        "(0x441174, 1, 0x430199)",
+        "(0x44117E, 1, 0x4301BC)",
+        "(0x4413F9, 0, 0x4300B4)",
+        "(0x4467B1, 0, 0x42FEC4)",
+    ):
+        assert operand_spec in operand_block
+
+    assert (
+        "player_state_gate_offset_operands = _normalize_root_offset_operands(\n"
+        "        PLAYER_STATE_GATE_OFFSET_OPERANDS\n"
+        "    )"
+    ) in ida_sync
+    assert '"selector": "Player state gates"' in ida_sync
+    assert (
+        '"player_state_gate_offset_operands": '
+        "player_state_gate_offset_operands"
+    ) in ida_sync
+    for function_address in ("0x440FD0", "0x4413F0", "0x4466D0"):
+        assert function_address in ida_sync.split(
+            "PATH_OWNERSHIP_DIRTY_FUNCTIONS = (", 1
+        )[1].split("\n)", 1)[0]
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    damage_update = checks["ida_damage_guage_ai_owner"]
+    damage_take = checks["ida_damage_guage_take_bool_owner"]
+    cutscene = checks["ida_update_cutscene_state_owner"]
+
+    assert (
+        "g_game_base->subgame.player.completion_handoff_active"
+        in damage_update["required_substrings"]
+    )
+    assert (
+        "g_player_attachment_exit_pending_offset"
+        in damage_update["forbidden_substrings"]
+    )
+    assert (
+        "g_follow_force_drain_offset"
+        in damage_update["forbidden_substrings"]
+    )
+    assert (
+        "SLOBYTE(g_game_base->subgame.player.movement_flags) >= 0"
+        in damage_take["required_substrings"]
+    )
+    assert (
+        "g_invincible_damage_gate_flags_offset"
+        in damage_take["forbidden_substrings"]
+    )
+    assert (
+        "g_game_base->subgame.player.click_start.hide_prompt = 0"
+        in cutscene["required_substrings"]
+    )
+    assert (
+        "g_player_intro_cutscene_latch_offset"
+        in cutscene["forbidden_substrings"]
+    )
 
 
 def test_cameraman_force_update_owner_survives_path_replay() -> None:

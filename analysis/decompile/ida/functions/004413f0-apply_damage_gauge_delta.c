@@ -8,7 +8,7 @@ void __thiscall apply_damage_gauge_delta(DamageGuage *damage_guage, float delta,
   double v4; // st7
   char v6; // c0
 
-  if ( (*((char *)&g_invincible_damage_gate_flags_offset + (_DWORD)g_game_base) >= 0 || force)
+  if ( (SLOBYTE(g_game_base->subgame.player.movement_flags) >= 0 || force)
     && (damage_guage->state != DAMAGE_GUAGE_STATE_DRAINING
      || delta <= 0.0 && (delta >= 0.0 || g_game_base->subgame.player.trampoline_bounce_active != 1)) )
   {

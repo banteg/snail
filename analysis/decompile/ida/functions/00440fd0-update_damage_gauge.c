@@ -36,11 +36,8 @@ void __thiscall update_damage_gauge(DamageGuage *damage_guage)
     if ( LODWORD(damage_guage->fill) == 1065353216 )
     {
       v2 = g_game_base;
-      if ( *((_BYTE *)&g_player_attachment_exit_pending_offset + (_DWORD)g_game_base)
-        || *((_BYTE *)&g_follow_force_drain_offset + (_DWORD)g_game_base) )
-      {
+      if ( g_game_base->subgame.player.attachment_exit_pending || g_game_base->subgame.player.completion_handoff_active )
         goto LABEL_26;
-      }
       damage_guage->state = DAMAGE_GUAGE_STATE_WARNING_TRANSITION;
       damage_guage->warning_transition_progress = 0.0;
       damage_guage->warning_transition_step = 0.16666667;
@@ -50,7 +47,7 @@ void __thiscall update_damage_gauge(DamageGuage *damage_guage)
   }
   if ( damage_guage->state == DAMAGE_GUAGE_STATE_WARNING_TRANSITION )
   {
-    if ( *((_BYTE *)&g_follow_force_drain_offset + (_DWORD)g_game_base) )
+    if ( g_game_base->subgame.player.completion_handoff_active )
       damage_guage->warning_transition_progress = 1.0;
     v4 = damage_guage->warning_transition_step + damage_guage->warning_transition_progress;
     damage_guage->warning_transition_progress = v4;
@@ -74,7 +71,7 @@ LABEL_25:
   apply_damage_gauge_delta(damage_guage, -0.0016666667, 1);
   damage_guage->skin_hold_ticks = 5;
   v2 = g_game_base;
-  if ( *((_BYTE *)&g_follow_force_drain_offset + (_DWORD)g_game_base) )
+  if ( g_game_base->subgame.player.completion_handoff_active )
   {
     apply_damage_gauge_delta(damage_guage, -0.0066666668, 0);
     v2 = g_game_base;

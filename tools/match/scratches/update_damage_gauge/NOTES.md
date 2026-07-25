@@ -130,3 +130,14 @@ full `GameRoot -> SubgameRuntime -> Player` ownership graph. The neighboring
 it in `Init`; neither `AI` nor `Take` reads it. Focused output remains at
 94.03%, 268/268 instructions, prefix 122/268, with all 65 operands clean; the
 remaining delta is still the documented `height`/alpha stack-slot allocation.
+
+## 2026-07-25 Player state-gate replay
+
+IDA's three `g_follow_force_drain_offset` references and the adjacent
+`g_player_attachment_exit_pending_offset` reference were address-expression
+collisions, not standalone globals. Exact instruction-operand normalization
+now folds all four through `GameRoot::subgame.player`: the repeated byte at
+`Player +0x440` is `completion_handoff_active`, while `Player +0x41d` is
+`attachment_exit_pending`. Binary Ninja independently renders the same fields.
+The evidence symbols remain intact for other consumers, and a second replay
+against the copied IDA database is unchanged.

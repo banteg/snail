@@ -111,3 +111,13 @@ Focused matching is exact at 100.00%, 94/94 instructions, full prefix, with
 all 24 relocatable operands clean and no mismatches. The adjacent `+0x0c` byte
 remains unresolved: Windows and Android only clear it in `Init`, and neither
 live `AI` nor `Take` consumes it.
+
+## 2026-07-25 movement-gate owner replay
+
+The native byte test at `GameRoot +0x4300b4` is the low byte of the embedded
+`Player::movement_flags` word (`Player +0x338`), not a standalone
+`g_invincible_damage_gate_flags_offset` global. Exact operand normalization
+makes IDA render `SLOBYTE(g_game_base->subgame.player.movement_flags) >= 0`,
+agreeing with Binary Ninja's `(movement_flags & 0x80) == 0` interpretation.
+The signed-byte source shape therefore confirms bit `0x80` as the unforced
+damage gate without changing the already exact matching source.

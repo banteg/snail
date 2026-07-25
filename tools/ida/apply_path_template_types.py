@@ -332,6 +332,8 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x43F5C0,  # initialize_slug_voice_manager
     0x43F5E0,  # update_slug_voice_manager
     0x440910,  # remove_subgame_bods
+    0x440FD0,  # update_damage_gauge
+    0x4413F0,  # apply_damage_gauge_delta
     0x4417D0,  # update_sub_lazer_projectile
     0x442170,  # initialize_click_start
     0x442290,  # update_click_start
@@ -352,6 +354,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x445E20,  # update_times_up
     0x446130,  # initialize_cutscene_ai
     0x446160,  # initialize_cameraman
+    0x4466D0,  # update_cutscene
     0x447090,  # initialize_fringe_manager
     0x4470A0,  # allocate_fringe_object
     0x4470E0,  # uninit_nuke
@@ -1350,6 +1353,25 @@ PLAYER_ROOT_BORROW_OFFSET_OPERANDS = (
     (0x445E3A, 1, 0x42FD7C),
     (0x446142, 1, 0x42FD7C),
     (0x446168, 1, 0x42FD7C),
+)
+
+# These damage and cutscene gates are byte-sized fields inside the same embedded
+# Player. Their numeric GameRoot displacements collide with bounded evidence
+# symbols, so IDA renders false global-plus-root expressions instead of the
+# recovered owner path. Normalize only the six exact operands: three reads of
+# Player::completion_handoff_active, one Player::attachment_exit_pending read,
+# the low-byte Player::movement_flags sign-bit test, and the intro path's
+# Player::click_start.hide_prompt clear. The evidence symbols remain named for
+# every other consumer.
+PLAYER_STATE_GATE_OFFSET_OPERANDS = (
+    # update_damage_gauge.
+    (0x441074, 1, 0x4301BC),  # Player::completion_handoff_active
+    (0x441114, 1, 0x4301BC),  # Player::completion_handoff_active
+    (0x441174, 1, 0x430199),  # Player::attachment_exit_pending
+    (0x44117E, 1, 0x4301BC),  # Player::completion_handoff_active
+    # apply_damage_gauge_delta and update_cutscene.
+    (0x4413F9, 0, 0x4300B4),  # low byte of Player::movement_flags
+    (0x4467B1, 0, 0x42FEC4),  # Player::click_start.hide_prompt
 )
 
 # Tutorial::Init borrows the containing SubgameRuntime and ORs the authored
@@ -4258,6 +4280,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    player_state_gate_offset_operands = _normalize_root_offset_operands(
+        PLAYER_STATE_GATE_OFFSET_OPERANDS
+    )
+    for result in player_state_gate_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "Player state gates",
+                    "root_offset_operand": result,
+                }
+            )
     attachment_follow_root_offset_operands = _normalize_root_offset_operands(
         ATTACHMENT_FOLLOW_ROOT_OFFSET_OPERANDS
     )
@@ -4752,6 +4785,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "world_initializer_root_offset_operands": world_initializer_root_offset_operands,
                 "high_score_lifecycle_offset_operands": high_score_lifecycle_offset_operands,
                 "player_root_borrow_offset_operands": player_root_borrow_offset_operands,
+                "player_state_gate_offset_operands": player_state_gate_offset_operands,
                 "attachment_follow_root_offset_operands": attachment_follow_root_offset_operands,
                 "harmonize_root_offset_operands": harmonize_root_offset_operands,
                 "runtime_pool_row_offset_operands": runtime_pool_row_offset_operands,
