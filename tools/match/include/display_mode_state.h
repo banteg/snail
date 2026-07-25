@@ -19,7 +19,9 @@ struct DisplayModeState {
     int queued_view_sample_count; // +0x00
     int probe_count;              // +0x04
     DisplayModeRecord* current_mode; // +0x08
-    DisplayModeViewSample view_samples[1]; // +0x0c, variable-capacity tail
+    // Only the first sample is directly proven. The surviving code does not
+    // establish the capacity of the variable-capacity tail.
+    DisplayModeViewSample view_samples[1]; // +0x0c, minimum visible prefix
 
     void clear_display_mode_state(); // @ 0x407910
     void reset_display_mode_probe_count(); // @ 0x407920
@@ -39,5 +41,7 @@ typedef char DisplayModeRecord_must_be_0x10[
     (sizeof(DisplayModeRecord) == 0x10) ? 1 : -1];
 typedef char DisplayModeViewSample_must_be_0x10[
     (sizeof(DisplayModeViewSample) == 0x10) ? 1 : -1];
+typedef char DisplayModeState_minimum_prefix_must_be_0x1c[
+    (sizeof(DisplayModeState) == 0x1c) ? 1 : -1];
 
 #endif

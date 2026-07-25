@@ -12,11 +12,11 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 729,
-  "function_count": 729,
+  "selected_count": 737,
+  "function_count": 737,
   "mismatch_count": 0,
   "mismatches": [],
-  "analysis_refreshed": true,
+  "analysis_refreshed": false,
   "timed_out_function_reanalysis": {
     "interior_aliases": [],
     "reanalyzed": [],
@@ -336,6 +336,11 @@
       "artifact": "analysis/decompile/binja/functions/00406d30-log_startup_timestamp.c"
     },
     {
+      "address": "0x406d70",
+      "name": "initialize_main_loop_display_state",
+      "artifact": "analysis/decompile/binja/functions/00406d70-initialize_main_loop_display_state.c"
+    },
+    {
       "address": "0x406dc0",
       "name": "game_startup_and_main_loop",
       "artifact": "analysis/decompile/binja/functions/00406dc0-game_startup_and_main_loop.c"
@@ -394,6 +399,21 @@
       "address": "0x4078b0",
       "name": "read_current_display_resolution",
       "artifact": "analysis/decompile/binja/functions/004078b0-read_current_display_resolution.c"
+    },
+    {
+      "address": "0x407910",
+      "name": "clear_display_mode_state",
+      "artifact": "analysis/decompile/binja/functions/00407910-clear_display_mode_state.c"
+    },
+    {
+      "address": "0x407920",
+      "name": "reset_display_mode_probe_count",
+      "artifact": "analysis/decompile/binja/functions/00407920-reset_display_mode_probe_count.c"
+    },
+    {
+      "address": "0x407930",
+      "name": "read_next_display_mode_view_sample",
+      "artifact": "analysis/decompile/binja/functions/00407930-read_next_display_mode_view_sample.c"
     },
     {
       "address": "0x407a10",
@@ -821,6 +841,11 @@
       "artifact": "analysis/decompile/binja/functions/004126c0-render_object.c"
     },
     {
+      "address": "0x412940",
+      "name": "update_display_mode_view_state",
+      "artifact": "analysis/decompile/binja/functions/00412940-update_display_mode_view_state.c"
+    },
+    {
       "address": "0x4129c0",
       "name": "initialize_direct3d_renderer",
       "artifact": "analysis/decompile/binja/functions/004129c0-initialize_direct3d_renderer.c"
@@ -844,6 +869,11 @@
       "address": "0x413030",
       "name": "draw_textured_quad_immediate",
       "artifact": "analysis/decompile/binja/functions/00413030-draw_textured_quad_immediate.c"
+    },
+    {
+      "address": "0x4134c0",
+      "name": "render_game_frame_scene",
+      "artifact": "analysis/decompile/binja/functions/004134c0-render_game_frame_scene.c"
     },
     {
       "address": "0x413520",
@@ -1829,6 +1859,16 @@
       "address": "0x433010",
       "name": "xor_decode_buffer_with_index",
       "artifact": "analysis/decompile/binja/functions/00433010-xor_decode_buffer_with_index.c"
+    },
+    {
+      "address": "0x433030",
+      "name": "get_authored_view_width",
+      "artifact": "analysis/decompile/binja/functions/00433030-get_authored_view_width.c"
+    },
+    {
+      "address": "0x433040",
+      "name": "get_authored_view_height",
+      "artifact": "analysis/decompile/binja/functions/00433040-get_authored_view_height.c"
     },
     {
       "address": "0x433060",

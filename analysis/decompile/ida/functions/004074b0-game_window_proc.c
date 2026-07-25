@@ -76,7 +76,7 @@ LABEL_19:
             resume_audio_backend_if_paused(&g_audio_backend);
             g_window_deactivated = 0;
             g_previous_frame_timestamp_seconds = (double)(unsigned int)((int (*)(void))timeGetTime)() * 0.001;
-            reset_display_mode_probe_count(g_display_mode_state);
+            reset_display_mode_probe_count(&g_display_mode_state);
           }
           return 0;
         }

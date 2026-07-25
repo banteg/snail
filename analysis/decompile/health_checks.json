@@ -1533,6 +1533,154 @@
       ]
     },
     {
+      "name": "bn_display_mode_state_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/00406d70-initialize_main_loop_display_state.c",
+      "required_substrings": [
+        "clear_display_mode_state(&g_display_mode_state)",
+        "g_window_deactivated = 0",
+        "g_pending_window_deactivate = 0",
+        "set_matrix_identity(&g_object_texture_transform_matrix)",
+        "initialize_main_loop_timing_state()"
+      ],
+      "forbidden_substrings": [
+        "sub_407910",
+        "sub_406da0",
+        "0x4df9e0"
+      ]
+    },
+    {
+      "name": "ida_display_mode_state_initializer_owner",
+      "artifact": "analysis/decompile/ida/functions/00406d70-initialize_main_loop_display_state.c",
+      "required_substrings": [
+        "void __cdecl initialize_main_loop_display_state()",
+        "clear_display_mode_state(&g_display_mode_state);",
+        "g_window_deactivated = 0;",
+        "g_pending_window_deactivate = 0;",
+        "set_matrix_identity(&g_object_texture_transform_matrix);",
+        "initialize_main_loop_timing_state();"
+      ],
+      "forbidden_substrings": [
+        "sub_407910",
+        "sub_406DA0",
+        "MEMORY[0x4DF9E0]"
+      ]
+    },
+    {
+      "name": "bn_display_mode_probe_reset_owner",
+      "artifact": "analysis/decompile/binja/functions/00407920-reset_display_mode_probe_count.c",
+      "required_substrings": [
+        "state->probe_count = 0"
+      ],
+      "forbidden_substrings": [
+        "PortablePDB",
+        "pdb_internal",
+        "arg1",
+        "*(state + 4)"
+      ]
+    },
+    {
+      "name": "ida_display_mode_probe_reset_owner",
+      "artifact": "analysis/decompile/ida/functions/00407920-reset_display_mode_probe_count.c",
+      "required_substrings": [
+        "void __thiscall reset_display_mode_probe_count(DisplayModeState *state)",
+        "state->probe_count = 0;"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *this",
+        "this[1]",
+        "pdb_internal"
+      ]
+    },
+    {
+      "name": "bn_display_mode_sample_prefix_owner",
+      "artifact": "analysis/decompile/binja/functions/00407930-read_next_display_mode_view_sample.c",
+      "required_substrings": [
+        "state->probe_count",
+        "state->queued_view_sample_count",
+        "state->current_mode->width",
+        "state->current_mode->height",
+        "state->view_samples",
+        "*width",
+        "*height"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "sub_407930",
+        "PortablePDB"
+      ]
+    },
+    {
+      "name": "ida_display_mode_sample_prefix_owner",
+      "artifact": "analysis/decompile/ida/functions/00407930-read_next_display_mode_view_sample.c",
+      "required_substrings": [
+        "uint8_t __thiscall read_next_display_mode_view_sample(",
+        "DisplayModeState *state",
+        "state->probe_count",
+        "state->queued_view_sample_count",
+        "state->current_mode->width",
+        "state->current_mode->height",
+        "state->view_samples[v7].x",
+        "state->view_samples[state->queued_view_sample_count].height"
+      ],
+      "forbidden_substrings": [
+        "int *this",
+        "_DWORD *",
+        "this[2]",
+        "a2",
+        "a3"
+      ]
+    },
+    {
+      "name": "ida_display_mode_sample_stack_borrows",
+      "artifact": "analysis/decompile/ida/functions/00412940-update_display_mode_view_state.c",
+      "required_substrings": [
+        "uint8_t __thiscall update_display_mode_view_state(DisplayModeState *state)",
+        "float y;",
+        "float height;",
+        "float width;",
+        "float x;",
+        "read_next_display_mode_view_sample(state, &x, &y, &width, &height)",
+        "state->current_mode->height"
+      ],
+      "forbidden_substrings": [
+        "(float *)&",
+        "int v8",
+        "int *this",
+        "sub_407930"
+      ]
+    },
+    {
+      "name": "bn_display_mode_scene_owner",
+      "artifact": "analysis/decompile/binja/functions/004134c0-render_game_frame_scene.c",
+      "required_substrings": [
+        "g_render_successful_primitive_count = 0",
+        "update_display_mode_view_state(&g_display_mode_state)",
+        "render_game_frame(g_game_base)",
+        "device_1->vtbl->EndScene(device_1)"
+      ],
+      "forbidden_substrings": [
+        "sub_412940(0x4df9e0)",
+        "sub_4134c0"
+      ]
+    },
+    {
+      "name": "ida_display_mode_scene_owner",
+      "artifact": "analysis/decompile/ida/functions/004134c0-render_game_frame_scene.c",
+      "required_substrings": [
+        "void __cdecl render_game_frame_scene()",
+        "g_render_successful_primitive_count = 0;",
+        "update_display_mode_view_state(&g_display_mode_state);",
+        "render_game_frame(g_game_base);",
+        "EndScene(g_direct3d_renderer.device);"
+      ],
+      "forbidden_substrings": [
+        "sub_412940",
+        "MEMORY[0x4DF9E0]",
+        "int32_t __cdecl render_game_frame_scene"
+      ]
+    },
+    {
       "name": "bn_display_resolution_int_pointer_abi",
       "artifact": "analysis/decompile/binja/functions/004078b0-read_current_display_resolution.c",
       "required_substrings": [

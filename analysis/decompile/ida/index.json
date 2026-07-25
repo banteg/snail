@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 717,
-  "function_count": 717,
+  "selected_count": 725,
+  "function_count": 725,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -441,6 +441,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_main_loop_display_state",
+      "address": "0x406d70",
+      "name": "initialize_main_loop_display_state",
+      "artifact": "analysis/decompile/ida/functions/00406d70-initialize_main_loop_display_state.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "game_startup_and_main_loop",
       "address": "0x406dc0",
       "name": "game_startup_and_main_loop",
@@ -522,6 +529,27 @@
       "address": "0x4078b0",
       "name": "read_current_display_resolution",
       "artifact": "analysis/decompile/ida/functions/004078b0-read_current_display_resolution.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "clear_display_mode_state",
+      "address": "0x407910",
+      "name": "clear_display_mode_state",
+      "artifact": "analysis/decompile/ida/functions/00407910-clear_display_mode_state.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "reset_display_mode_probe_count",
+      "address": "0x407920",
+      "name": "reset_display_mode_probe_count",
+      "artifact": "analysis/decompile/ida/functions/00407920-reset_display_mode_probe_count.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "read_next_display_mode_view_sample",
+      "address": "0x407930",
+      "name": "read_next_display_mode_view_sample",
+      "artifact": "analysis/decompile/ida/functions/00407930-read_next_display_mode_view_sample.c",
       "removed_stale_artifacts": []
     },
     {
@@ -1080,6 +1108,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "update_display_mode_view_state",
+      "address": "0x412940",
+      "name": "update_display_mode_view_state",
+      "artifact": "analysis/decompile/ida/functions/00412940-update_display_mode_view_state.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_direct3d_renderer",
       "address": "0x4129c0",
       "name": "initialize_direct3d_renderer",
@@ -1105,6 +1140,13 @@
       "address": "0x413030",
       "name": "draw_textured_quad_immediate",
       "artifact": "analysis/decompile/ida/functions/00413030-draw_textured_quad_immediate.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "render_game_frame_scene",
+      "address": "0x4134c0",
+      "name": "render_game_frame_scene",
+      "artifact": "analysis/decompile/ida/functions/004134c0-render_game_frame_scene.c",
       "removed_stale_artifacts": []
     },
     {
@@ -2456,6 +2498,20 @@
       "address": "0x433010",
       "name": "xor_decode_buffer_with_index",
       "artifact": "analysis/decompile/ida/functions/00433010-xor_decode_buffer_with_index.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "get_authored_view_width",
+      "address": "0x433030",
+      "name": "get_authored_view_width",
+      "artifact": "analysis/decompile/ida/functions/00433030-get_authored_view_width.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "get_authored_view_height",
+      "address": "0x433040",
+      "name": "get_authored_view_height",
+      "artifact": "analysis/decompile/ida/functions/00433040-get_authored_view_height.c",
       "removed_stale_artifacts": []
     },
     {

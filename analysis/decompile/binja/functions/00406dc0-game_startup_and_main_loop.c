@@ -40,7 +40,7 @@
 00406eec        initialize_audio_subsystem()
 00406ef6        initialize_game_window_and_input_wrapper("SnailMail")
 00406f07        set_fullscreen_mode(g_runtime_config.fullscreen_enabled)
-00406f0f        sub_406d70()
+00406f0f        initialize_main_loop_display_state()
 00406f19        initialize_loading_screen(&g_loading_bar)
 00406f26        int32_t i_3 = mods.dp.d(sx.q(timeGetTime()), 0x3e8)
 00406f2a        if (i_3 s> 0)
@@ -64,7 +64,7 @@
 00406f98        begin_frontend_fade_in(&g_game_base->fade)
 00406f9d        show_and_focus_game_window()
 00406fa8        if (g_frame_render_requested != 0)
-00406faa        sub_4134c0()
+00406faa        render_game_frame_scene()
 00406fba        if (g_game_base->render_skip_count == 0)
 00406fbc        present_backbuffer()
 00406fc1        g_frame_render_requested = 0

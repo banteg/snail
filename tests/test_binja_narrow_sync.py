@@ -6147,6 +6147,84 @@ def test_main_loop_replay_recovers_process_scalar_boundaries() -> None:
     assert "ida_bytes.create_float" in ida_sync
 
 
+def test_display_mode_replay_recovers_only_the_proven_owner_prefix() -> None:
+    repo_root = Path(__file__).parents[1]
+    analysis_header = (
+        HEADER_DIR / "display_mode_types.h"
+    ).read_text(encoding="utf-8")
+    matcher_header = (
+        repo_root / "tools/match/include/display_mode_state.h"
+    ).read_text(encoding="utf-8")
+    binja_sync = (
+        BINJA_DIR / "sync_display_mode_types.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (
+        IDA_DIR / "apply_display_mode_types.py"
+    ).read_text(encoding="utf-8")
+    ida_runner = (
+        IDA_DIR / "sync_display_mode_types.py"
+    ).read_text(encoding="utf-8")
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+
+    for source in (analysis_header, matcher_header):
+        assert "DisplayModeRecord" in source
+        assert "DisplayModeViewSample" in source
+        assert "DisplayModeState" in source
+        assert "view_samples[1]" in source
+        assert "DisplayModeState_minimum_prefix_must_be_0x1c" in source
+        assert "view_samples[14]" not in source
+
+    for source in (binja_sync, ida_sync):
+        for function_name in (
+            "initialize_main_loop_display_state",
+            "clear_display_mode_state",
+            "reset_display_mode_probe_count",
+            "read_next_display_mode_view_sample",
+            "update_display_mode_view_state",
+            "render_game_frame_scene",
+            "get_authored_view_width",
+            "get_authored_view_height",
+        ):
+            assert function_name in source
+        normalized_source = source.replace(
+            "DisplayModeState *state",
+            "DisplayModeState* state",
+        )
+        assert "DisplayModeState* state" in normalized_source
+        assert "DisplayModeState" in source
+
+    assert '("0x4df9e0", "g_display_mode_state")' in binja_sync
+    assert '("0x4df9e0", "DisplayModeState")' in binja_sync
+    assert "DISPLAY_MODE_STATE_MINIMUM_SIZE = 0x1C" in ida_sync
+    assert "NEXT_KNOWN_OWNER_ADDRESS = 0x4DFAD0" in ida_sync
+    assert "display_mode_state_minimum_extent_conflict" in ida_sync
+    assert "unexpected_existing_display_mode_state_owner" in ida_sync
+    assert "unclaimed_tail_boundary_verification_failed" in ida_sync
+    assert '"_DWORD[60]"' in ida_sync
+    assert "unclaimed_tail_start" in ida_sync
+    assert "UPDATE_SAMPLE_LVAR_SPECS" in ida_sync
+    for stack_offset, sample_name in (
+        (24, "y"),
+        (28, "height"),
+        (32, "width"),
+        (36, "x"),
+    ):
+        assert f'"{sample_name}", "float {sample_name};", 0x41297C, {stack_offset}' in ida_sync
+    assert "unexpected_sample_lvar_candidates" in ida_sync
+    assert "sample_lvar_readback_failed" in ida_sync
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/display_mode_types.h"'
+        in ida_runner
+    )
+    assert "remaining tail capacity" in references
+    assert '"size": "0xf0"' not in references[
+        references.index('"address": "0x4df9e0"'):
+        references.index('"address": "0x4dfad0"')
+    ]
+
+
 def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"

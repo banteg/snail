@@ -30,7 +30,7 @@
 004075aa        g_window_deactivated = 0
 004075ba        int32_t var_4_1 = 0
 004075cd        g_previous_frame_timestamp_seconds = fconvert.s(float.t(timeGetTime().q) * fconvert.t(0.00100000005f))
-004075d3        pdb_internal::Array<struct PortablePDB::MethodInfo>::reset(0x4df9e0)
+004075d3        reset_display_mode_probe_count(&g_display_mode_state)
 004075de        return 0
 0040750c        case 2
 0040750c        uint32_t eax_3 = zx.d(arg3.w)
