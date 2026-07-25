@@ -865,7 +865,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x358", "lane_lean_progress", "float"),
     ("0x35c", "lane_lean_progress_step", "float"),
     ("0x360", "timer_360_state", "int32_t"),
-    ("0x364", "unknown_364", "int32_t"),
+    ("0x364", "timer_360_amplitude", "float"),
     ("0x368", "timer_360_progress", "float"),
     ("0x36c", "timer_360_step", "float"),
     ("0x370", "heading_roll", "float"),

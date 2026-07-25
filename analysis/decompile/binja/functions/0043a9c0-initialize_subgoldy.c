@@ -127,15 +127,19 @@
 0043ad9f        player->barrier_hold_step = 0.0166666675f
 0043ada9        player->damage_retrigger_timer = 0f
 0043adaf        player->surface_reaction_timer = 0f
-0043adb5        player->presentation.wobble.roll_phase = 0
-0043adbb        player->presentation.wobble.roll_phase_step = 0.00574712642f
-0043adc5        player->presentation.wobble.lift_phase = 0f
-0043adcb        player->presentation.wobble.lift_phase_step = 0.00677506765f
+0043adcb        player->presentation.wobble = struct PresentationWobbleController {
+    .roll_phase = 0
+    .roll_phase_step = 0.00574712642f
+    .lift_phase = 0f
+    .lift_phase_step = 0.00677506765f
+}
 0043add5        player->resurrect_active.b = 0
 0043addb        player->cached_camera_target_world.z = z
-0043adde        player->velocity.z = 0f
-0043ade4        player->velocity.y = 0f
-0043adea        player->velocity.x = 0
+0043adea        player->velocity = struct Vec3 {
+    .z = 0f
+    .y = 0f
+    .x = 0
+}
 0043adf9        struct GameRoot* game_base_1 = g_game_base
 0043adfe        struct InputState* eax_8
 0043adfe        if (player->player_slot != 1)

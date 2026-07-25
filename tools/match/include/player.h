@@ -203,7 +203,10 @@ public:
     float lane_lean_progress;              // +0x358
     float lane_lean_progress_step;         // +0x35c
     int timer_360_state;                     // +0x360
-    int unknown_364;
+    // Unused amplitude-shaped lane in the second camera envelope. Windows
+    // and Android both clear it between state and progress, mirroring the
+    // live lane_lean_state/amplitude/progress/step layout above.
+    float timer_360_amplitude;                // +0x364
     float timer_360_progress;                // +0x368
     float timer_360_step;                    // +0x36c
     float heading_roll;                     // +0x370

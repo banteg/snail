@@ -2429,7 +2429,7 @@ typedef struct Player {
     float lane_lean_progress;
     float lane_lean_progress_step;
     int32_t timer_360_state;
-    int32_t unknown_364;
+    float timer_360_amplitude;
     float timer_360_progress;
     float timer_360_step;
     float heading_roll;

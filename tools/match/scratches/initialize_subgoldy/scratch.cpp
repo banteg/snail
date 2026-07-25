@@ -243,7 +243,7 @@ void Player::initialize_subgoldy(int player_slot)
     this->lane_lean_progress = 0.0f;
     this->lane_lean_progress_step = 0.0f;
     this->timer_360_state = zero;
-    this->unknown_364 = zero;
+    this->timer_360_amplitude = 0.0f;
     this->timer_360_progress = 0.0f;
     this->timer_360_step = 0.0f;
     this->nuke_effect_progress = 0.0f;

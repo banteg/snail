@@ -309,3 +309,19 @@ and Hex-Rays local identities are replayed and read back; IDA now renders
 `flight_transform`, `state`, and `game` directly, while BN exposes the same
 stride and fields. No matcher source or masks changed: the initializer remains
 exact at 279/279 with all 27 audited operands clean.
+
+## 2026-07-25 secondary camera-envelope amplitude lane
+
+The formerly unresolved Player dword at `+0x364` is the float-shaped second
+lane of the adjacent `state / amplitude / progress / step` envelope. Windows
+initializes `+0x360/+0x364/+0x368/+0x36c` together, exactly parallel to the
+live lane-lean envelope at `+0x350..+0x35c`. The symbolized Android
+`cRSubGoldy::Init` independently clears the homologous quartet at
+`+0x350/+0x354/+0x358/+0x35c`, while its AI advances the same
+state/progress/step lanes.
+
+Neither shipped AI consumes the amplitude lane or arms the state, so the
+shared field is named `timer_360_amplitude` and typed `float` without claiming
+an active camera effect. This replaces an integer-shaped unknown with a
+cross-port-owned lane; the zero store remains ordinary source and does not
+coerce code generation.

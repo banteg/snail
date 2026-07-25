@@ -122,11 +122,13 @@
         "GolbShotFlightStrideCursor *golb_shot_flight_cursor",
         "golb_shot_flight_cursor->state = 0",
         "set_matrix_identity(&golb_shot_flight_cursor->flight_transform)",
-        "golb_shot_flight_cursor->game = player->game"
+        "golb_shot_flight_cursor->game = player->game",
+        "player->timer_360_amplitude"
       ],
       "forbidden_substrings": [
         "TransformMatrix *p_flight_transform",
         "p_flight_transform[2]",
+        "player->unknown_364",
         "void __thiscall sub_43A9C0",
         "int this"
       ]
@@ -2699,10 +2701,11 @@
       "name": "bn_snail_wobble_initializer_owner",
       "artifact": "analysis/decompile/binja/functions/0043a9c0-initialize_subgoldy.c",
       "required_substrings": [
-        "player->presentation.wobble.roll_phase = 0",
-        "player->presentation.wobble.roll_phase_step = 0.00574712642f",
-        "player->presentation.wobble.lift_phase = 0f",
-        "player->presentation.wobble.lift_phase_step = 0.00677506765f"
+        "player->presentation.wobble",
+        ".roll_phase = 0",
+        ".roll_phase_step = 0.00574712642f",
+        ".lift_phase = 0f",
+        ".lift_phase_step = 0.00677506765f"
       ],
       "forbidden_substrings": [
         "presentation.__offset(0x15bc)",

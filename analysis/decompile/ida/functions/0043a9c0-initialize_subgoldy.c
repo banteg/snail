@@ -37,7 +37,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   player->presentation.weapon_channels[2].selected_state = 0;
   player->cutscene_pitch_cycle = 0.0;
   player->cutscene_pitch_cycle_step = 0.0;
-  initialize_object_distort(&player->presentation.body.bod.object->distort.z_wave);
+  initialize_object_distort(&player->presentation.body.bod.object->distort);
   player->interaction_max_z = -19.0;
   player->movement_sound_variant_sample = 0;
   player->presentation.invincible_shell.cutscene_roll_progress = 0.0;
@@ -218,7 +218,7 @@ LABEL_24:
   player->lane_lean_progress = 0.0;
   player->lane_lean_progress_step = 0.0;
   player->timer_360_state = 0;
-  player->unknown_364 = 0;
+  player->timer_360_amplitude = 0.0;
   player->timer_360_progress = 0.0;
   player->timer_360_step = 0.0;
   player->nuke_effect_progress = 0.0;
