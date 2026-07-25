@@ -61,3 +61,24 @@ live vertex view, the owned copy buffer, bounds, and final normal rebuild.
 No matcher source changed. Focused Wibo remains `95.43%`, exactly `197/197`
 instructions with 26 clean masks; all residuals are still equivalent x86 SIB
 base/index encodings rather than ownership or behavior differences.
+
+## 2026-07-25 borrowed vertex-z cursor replay
+
+All three distortion passes carry the interior `Vec3::z` address while
+reading x/y/z and advancing by exactly `sizeof(Vec3) == 0x0c`. The
+analysis-only `ObjectVertexZCursorView` records that borrow;
+`Object::vertices` and `Object::copied_vertices` remain the only buffer owners.
+
+Binary Ninja has stable standalone locals for the Z-wave and XYZ-scale walks
+at register identities `(177, 69)` and `(562, 67)`, so the guarded replay names
+and types those two cursors. Its Y-squash ECX walk spans two split definitions;
+both merge orientations were tested under undo and degraded HLIL to an
+uninitialized `void*`. That lifetime deliberately remains automatic rather
+than checking in misleading analysis.
+
+Hex-Rays independently exposes all three locals. The IDA replay binds their
+actual definition addresses `0x41ab02`, `0x41abe0`, and `0x41ac83` as shifted
+borrowed pointers and verifies every name/type readback. The tracked artifact
+therefore distinguishes the Z-wave, Y-squash, and XYZ-scale source walks
+without changing the matcher. Focused Wibo remains honestly at `95.43%`,
+`197/197` instructions, with the same nine equivalent SIB encodings.

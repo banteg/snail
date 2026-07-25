@@ -169,6 +169,10 @@ intentional.
     inventing a capacity for the transient stack.
 - `bn_object_render_types.h`
 - `uv run python tools/binja/sync_object_render_types.py`
+  - Preserves `Object::vertices` and `Object::copied_vertices` as the real
+    buffer owners while typing the stable Z-wave and XYZ-scale interior
+    `Vec3::z` cursor lifetimes. The paired IDA replay binds all three distort
+    pass cursors by their exact Hex-Rays definition addresses.
 - `bn_input_state_types.h`
 - `uv run python tools/binja/sync_input_state_types.py`
 - `uv run python tools/binja/sync_input_pointer_region_types.py`

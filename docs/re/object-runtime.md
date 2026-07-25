@@ -80,6 +80,15 @@ inclusive column bound and row-aspect ratio, reads retained TGA bytes through
 the active frame's `TextureRef`, and writes only the y lane of the borrowed
 `Object::vertices` array.
 
+`apply_distort_to_object` also borrows vertex storage rather than owning a
+fourth buffer. Each active Z-wave, Y-squash, or XYZ-scale pass carries an
+interior pointer at `Vec3::z`, reads the surrounding x/y/z lanes at the
+0x0c-byte `Vec3` stride, and writes the result to
+`Object::copied_vertices`. Later passes borrow that copy; only the final live
+`Object::vertices` view is redirected. The analysis-only
+`ObjectVertexZCursorView` describes those interior walks without changing
+either buffer's ownership.
+
 ## Animation graph
 
 `XAnimationKeyframe` is exactly `0x80` bytes. Its `+0x24` pointer borrows an

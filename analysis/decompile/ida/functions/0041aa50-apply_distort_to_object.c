@@ -17,18 +17,18 @@ void __thiscall apply_distort_to_object(ObjectDistort *distort, Object *object)
   int32_t vertex_count; // eax
   int32_t v18; // ebp
   int v19; // edi
-  float *p_z; // ebx
+  float *__shifted(ObjectVertexZCursorView,8) z_wave_source_cursor; // ebx
   double v22; // st7
   char v23; // c0
   double v24; // st7
   int32_t v25; // edx
   int v26; // eax
-  float *v27; // ecx
+  float *__shifted(ObjectVertexZCursorView,8) y_squash_source_cursor; // ecx
   double v28; // st7
   double v29; // st7
   int32_t v30; // edx
   int v31; // eax
-  float *v32; // ecx
+  float *__shifted(ObjectVertexZCursorView,8) xyz_scale_source_cursor; // ecx
   double v33; // st7
   float v34; // [esp+0h] [ebp-1Ch]
   float v35; // [esp+0h] [ebp-1Ch]
@@ -73,19 +73,19 @@ LABEL_10:
   if ( vertex_count > 0 )
   {
     v19 = 0;
-    p_z = &vertices->z;
+    z_wave_source_cursor = &vertices->z;
     do
     {
-      object->copied_vertices[v19].x = *(p_z - 2);
+      object->copied_vertices[v19].x = ADJ(z_wave_source_cursor)->x;
       v22 = object->vertices[v19].z;
       if ( v23 )
         v22 = -v22;
       v34 = v22 * 1.5707964 / objecta + 4.712389;
       ++v18;
       ++v19;
-      p_z += 3;
-      object->copied_vertices[v19 - 1].y = (sine(v34) + 1.0) * v39->z_wave + *(p_z - 4);
-      object->copied_vertices[v19 - 1].z = *(p_z - 3);
+      z_wave_source_cursor += 3;
+      object->copied_vertices[v19 - 1].y = (sine(v34) + 1.0) * v39->z_wave + *(z_wave_source_cursor - 4);
+      object->copied_vertices[v19 - 1].z = *(z_wave_source_cursor - 3);
     }
     while ( v18 < object->vertex_count );
     distort = v39;
@@ -105,16 +105,16 @@ LABEL_18:
     if ( object->vertex_count > 0 )
     {
       v26 = 0;
-      v27 = &vertices->z;
+      y_squash_source_cursor = &vertices->z;
       do
       {
-        v28 = v40 * *(v27 - 2);
+        v28 = v40 * ADJ(y_squash_source_cursor)->x;
         ++v25;
         ++v26;
-        v27 += 3;
+        y_squash_source_cursor += 3;
         object->copied_vertices[v26 - 1].x = v28;
-        object->copied_vertices[v26 - 1].y = (*(v27 - 4) - objectb) * v41 + objectb;
-        object->copied_vertices[v26 - 1].z = *(v27 - 3);
+        object->copied_vertices[v26 - 1].y = (*(y_squash_source_cursor - 4) - objectb) * v41 + objectb;
+        object->copied_vertices[v26 - 1].z = *(y_squash_source_cursor - 3);
       }
       while ( v25 < object->vertex_count );
     }
@@ -137,16 +137,16 @@ LABEL_18:
     if ( object->vertex_count > 0 )
     {
       v31 = 0;
-      v32 = &vertices->z;
+      xyz_scale_source_cursor = &vertices->z;
       do
       {
-        v33 = objectc * *(v32 - 2);
+        v33 = objectc * ADJ(xyz_scale_source_cursor)->x;
         ++v30;
         ++v31;
-        v32 += 3;
+        xyz_scale_source_cursor += 3;
         object->copied_vertices[v31 - 1].x = v33;
-        object->copied_vertices[v31 - 1].y = objectc * *(v32 - 4);
-        object->copied_vertices[v31 - 1].z = v42 * *(v32 - 3);
+        object->copied_vertices[v31 - 1].y = objectc * *(xyz_scale_source_cursor - 4);
+        object->copied_vertices[v31 - 1].z = v42 * *(xyz_scale_source_cursor - 3);
       }
       while ( v30 < object->vertex_count );
     }

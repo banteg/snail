@@ -457,6 +457,8 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct ImmediateQuadVertexBlock {",
     "typedef struct __ptr_offset(0x08) BackdropTileVertexCursorView {",
     "BackdropTileVertexCursorView_must_be_0x0c",
+    "typedef struct __ptr_offset(0x08) ObjectVertexZCursorView {",
+    "ObjectVertexZCursorView_must_be_0x0c",
     "typedef struct ObjectToonEdge {",
     "typedef struct Object {",
     "typedef struct ObjectList {",
@@ -494,6 +496,7 @@ REQUIRED_OWNER_MARKERS = (
 EXPECTED_OWNER_SIZES = {
     "Vec3": 0xC,
     "BackdropTileVertexCursorView": 0xC,
+    "ObjectVertexZCursorView": 0xC,
     "TextureRef": 0xA4,
     "ObjectRenderBuffers": 0xC,
     "ObjectIndexBuffer": 0x4,
@@ -631,6 +634,36 @@ BACKDROP_TILE_VERTEX_LVAR_SPECS = (
         (
             "float *__shifted(BackdropTileVertexCursorView, 0x08) "
             "vertex_z_cursor;"
+        ),
+    ),
+)
+
+OBJECT_DISTORT_VERTEX_LVAR_SPECS = (
+    (
+        "apply_distort_to_object",
+        0x41AB02,
+        "z_wave_source_cursor",
+        (
+            "float *__shifted(ObjectVertexZCursorView, 0x08) "
+            "z_wave_source_cursor;"
+        ),
+    ),
+    (
+        "apply_distort_to_object",
+        0x41ABE0,
+        "y_squash_source_cursor",
+        (
+            "float *__shifted(ObjectVertexZCursorView, 0x08) "
+            "y_squash_source_cursor;"
+        ),
+    ),
+    (
+        "apply_distort_to_object",
+        0x41AC83,
+        "xyz_scale_source_cursor",
+        (
+            "float *__shifted(ObjectVertexZCursorView, 0x08) "
+            "xyz_scale_source_cursor;"
         ),
     ),
 )
@@ -1371,6 +1404,33 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    object_distort_vertex_lvars = [
+        _sync_owned_lvar(
+            selector,
+            definition_address,
+            expected_name,
+            declaration,
+        )
+        for (
+            selector,
+            definition_address,
+            expected_name,
+            declaration,
+        ) in OBJECT_DISTORT_VERTEX_LVAR_SPECS
+    ]
+    object_distort_vertex_failures = [
+        result
+        for result in object_distort_vertex_lvars
+        if result.get("status") == "failed"
+    ]
+    if object_distort_vertex_failures:
+        failed.append(
+            {
+                "selector": "apply_distort_to_object",
+                "object_distort_vertex_lvars": object_distort_vertex_lvars,
+            }
+        )
+
     ida_auto.auto_wait()
     reanalysis_functions = []
     for address in REANALYSIS_FUNCTIONS:
@@ -1402,6 +1462,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "object_loader_lvars": object_loader_lvars,
                 "immediate_quad_lvars": immediate_quad_lvars,
                 "backdrop_tile_vertex_lvars": backdrop_tile_vertex_lvars,
+                "object_distort_vertex_lvars": object_distort_vertex_lvars,
                 "reanalysis_functions": reanalysis_functions,
                 "missing": missing,
                 "failed": failed,

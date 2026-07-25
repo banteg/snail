@@ -13864,12 +13864,21 @@
         "distort_3->y_squash",
         "distort_3->xyz_scale",
         "object_1->copied_vertices",
+        "struct ObjectVertexZCursorView* z_wave_source_cursor = &ebx->z",
+        "z_wave_source_cursor->x",
+        "z_wave_source_cursor = &z_wave_source_cursor[1]",
+        "struct ObjectVertexZCursorView* xyz_scale_source_cursor = &ebx->z",
+        "xyz_scale_source_cursor->x",
+        "xyz_scale_source_cursor = &xyz_scale_source_cursor[1]",
         "object_1->vertices = object_1->copied_vertices",
         "calc_object_facequad_normals_simple(object_1)"
       ],
       "forbidden_substrings": [
         "float* edi = arg1",
         "struct Object* esi = arg2",
+        "float* ebx_1",
+        "float* ecx_2",
+        "void* ecx_2",
         "unimplemented"
       ]
     },
@@ -14045,6 +14054,12 @@
         "distort->y_squash",
         "distort->xyz_scale",
         "object->copied_vertices",
+        "float *__shifted(ObjectVertexZCursorView,8) z_wave_source_cursor",
+        "float *__shifted(ObjectVertexZCursorView,8) y_squash_source_cursor",
+        "float *__shifted(ObjectVertexZCursorView,8) xyz_scale_source_cursor",
+        "ADJ(z_wave_source_cursor)->x",
+        "ADJ(y_squash_source_cursor)->x",
+        "ADJ(xyz_scale_source_cursor)->x",
         "object->vertices = object->copied_vertices",
         "calc_object_facequad_normals_simple(object)"
       ],
@@ -14053,6 +14068,9 @@
         "float *this",
         "int a2",
         "a2 +",
+        "float *p_z",
+        "float *v27",
+        "float *v32",
         "unimplemented"
       ]
     },

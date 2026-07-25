@@ -41,8 +41,8 @@
 0041aaf5        int32_t i = 0
 0041aafd        if (object_1->vertex_count s> 0)
 0041aaff        int32_t edi = 0
-0041ab01        float* ebx_1 = &ebx->z
-0041ab0a        *(object_1->copied_vertices + edi) = (ebx_1 - 8)->x
+0041ab01        struct ObjectVertexZCursorView* z_wave_source_cursor = &ebx->z
+0041ab0a        *(object_1->copied_vertices + edi) = z_wave_source_cursor->x
 0041ab0d        struct Vec3* vertices = object_1->vertices
 0041ab10        long double x87_r7_8 = fconvert.t(*(&vertices->z + edi))
 0041ab18        long double temp8_1 = fconvert.t(0f)
@@ -55,9 +55,9 @@
 0041ab4c        distort = object_1->copied_vertices
 0041ab52        i += 1
 0041ab55        edi += 0xc
-0041ab58        ebx_1 = &ebx_1[3]
-0041ab5e        *(distort + edi - 8) = fconvert.s(x87_r7_14 * fconvert.t(distort_3->z_wave) + fconvert.t((ebx_1 - 8)->__offset(0xfffffffffffffff8).d))
-0041ab68        *(object_1->copied_vertices + edi - 4) = (ebx_1 - 8)->x:-4.d
+0041ab58        z_wave_source_cursor = &z_wave_source_cursor[1]
+0041ab5e        *(distort + edi - 8) = fconvert.s(x87_r7_14 * fconvert.t(distort_3->z_wave) + fconvert.t(z_wave_source_cursor->__offset(0xfffffffffffffff8).d))
+0041ab68        *(object_1->copied_vertices + edi - 4) = z_wave_source_cursor->x:-4.d
 0041ab71        do while (i s< object_1->vertex_count)
 0041ab77        ebx = object_1->copied_vertices
 0041ab7a        distort.b = 1
@@ -94,14 +94,14 @@
 0041ac76        int32_t i_2 = 0
 0041ac7e        if (object_1->vertex_count s> 0)
 0041ac80        int32_t eax_8 = 0
-0041ac82        float* ecx_2 = &ebx->z
-0041ac89        long double x87_r7_43 = fconvert.t(object) * fconvert.t((ecx_2 - 8)->x)
+0041ac82        struct ObjectVertexZCursorView* xyz_scale_source_cursor = &ebx->z
+0041ac89        long double x87_r7_43 = fconvert.t(object) * fconvert.t(xyz_scale_source_cursor->x)
 0041ac8f        i_2 += 1
 0041ac90        eax_8 += 0xc
-0041ac93        ecx_2 = &ecx_2[3]
+0041ac93        xyz_scale_source_cursor = &xyz_scale_source_cursor[1]
 0041ac96        *(object_1->copied_vertices + eax_8 - 0xc) = fconvert.s(x87_r7_43)
-0041aca4        *(object_1->copied_vertices + eax_8 - 8) = fconvert.s(fconvert.t(object) * fconvert.t((ecx_2 - 8)->__offset(0xfffffffffffffff8).d))
-0041acb2        *(object_1->copied_vertices + eax_8 - 4) = fconvert.s(fconvert.t(fconvert.s(x87_r7_41)) * fconvert.t((ecx_2 - 8)->x:-4.d))
+0041aca4        *(object_1->copied_vertices + eax_8 - 8) = fconvert.s(fconvert.t(object) * fconvert.t(xyz_scale_source_cursor->__offset(0xfffffffffffffff8).d))
+0041acb2        *(object_1->copied_vertices + eax_8 - 4) = fconvert.s(fconvert.t(fconvert.s(x87_r7_41)) * fconvert.t(xyz_scale_source_cursor->x:-4.d))
 0041acb9        do while (i_2 s< object_1->vertex_count)
 0041acc6        object_1->vertices = object_1->copied_vertices
 0041acc9        calc_object_facequad_normals_simple(object_1)

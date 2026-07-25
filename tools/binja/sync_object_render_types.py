@@ -35,6 +35,25 @@ BACKDROP_TILE_VERTEX_CURSOR_USER_VAR_UPDATES = (
     ),
 )
 
+OBJECT_DISTORT_VERTEX_CURSOR_USER_VAR_UPDATES = (
+    (
+        "apply_distort_to_object",
+        "RegisterVariableSourceType",
+        177,
+        69,
+        "z_wave_source_cursor",
+        "ObjectVertexZCursorView*",
+    ),
+    (
+        "apply_distort_to_object",
+        "RegisterVariableSourceType",
+        562,
+        67,
+        "xyz_scale_source_cursor",
+        "ObjectVertexZCursorView*",
+    ),
+)
+
 GAME_ROOT_FIELDS = (
     ("0x48e00", "directx_loader", "DirectXLoader"),
 )
@@ -559,6 +578,62 @@ def verify_backdrop_tile_vertex_cursor(*, target: str) -> dict[str, object]:
     }
 
 
+def verify_object_distort_vertex_cursors(*, target: str) -> dict[str, object]:
+    expected_widths = {
+        "Vec3": 0x0C,
+        "ObjectVertexZCursorView": 0x0C,
+        "Object": 0xDC,
+    }
+    expected_fields = {
+        "ObjectVertexZCursorView": {
+            0x00: ("x", "float"),
+            0x04: ("y", "float"),
+            0x08: ("z", "float"),
+        },
+        "Object": {
+            0x38: ("vertices", "Vec3*"),
+            0x3C: ("copied_vertices", "Vec3*"),
+        },
+    }
+    widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=expected_widths,
+    )
+    fields = current_struct_fields_batch(
+        REPO_ROOT,
+        target=target,
+        struct_names=expected_fields,
+    )
+    failures: list[str] = []
+    for type_name, expected_width in expected_widths.items():
+        observed_width = widths.get(type_name)
+        if observed_width != expected_width:
+            failures.append(
+                f"{type_name}: expected width {expected_width:#x}, "
+                f"observed {observed_width!r}"
+            )
+    for struct_name, expected_members in expected_fields.items():
+        observed_members = fields.get(struct_name, {})
+        for offset, expected_member in expected_members.items():
+            observed_member = observed_members.get(offset)
+            if observed_member != expected_member:
+                failures.append(
+                    f"{struct_name}+{offset:#x}: expected {expected_member!r}, "
+                    f"observed {observed_member!r}"
+                )
+    if failures:
+        raise RuntimeError(
+            "object distort vertex cursor ownership is not current:\n"
+            + "\n".join(failures)
+        )
+    return {
+        "op": "verify_object_distort_vertex_cursors",
+        "status": "verified",
+        "widths": widths,
+    }
+
+
 def main() -> int:
     args = parse_args()
     header_path = args.header.resolve()
@@ -581,6 +656,16 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=BACKDROP_TILE_VERTEX_CURSOR_USER_VAR_UPDATES,
+        )
+    )
+    operations.append(
+        verify_object_distort_vertex_cursors(target=args.target)
+    )
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=OBJECT_DISTORT_VERTEX_CURSOR_USER_VAR_UPDATES,
         )
     )
     operations.append(

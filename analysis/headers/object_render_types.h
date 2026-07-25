@@ -28,6 +28,21 @@ typedef char BackdropTileVertexCursorView_must_be_0x0c[
     (sizeof(BackdropTileVertexCursorView) == 0x0c) ? 1 : -1
 ];
 
+/*
+ * Analysis-only offset-pointer view for apply_distort_to_object's three
+ * borrowed source walks. Native carries Vec3::z at +0x08 while reading x/y/z,
+ * then advances by one complete Vec3. Object::vertices and
+ * Object::copied_vertices remain the storage owners.
+ */
+typedef struct __ptr_offset(0x08) ObjectVertexZCursorView {
+    float x;
+    float y;
+    float z;
+} ObjectVertexZCursorView;
+typedef char ObjectVertexZCursorView_must_be_0x0c[
+    (sizeof(ObjectVertexZCursorView) == 0x0c) ? 1 : -1
+];
+
 typedef struct tColour {
     float r;
     float g;

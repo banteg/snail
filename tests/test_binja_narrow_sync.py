@@ -6348,6 +6348,70 @@ def test_backdrop_tile_vertex_cursor_stays_borrowed_and_guarded() -> None:
     )
 
 
+def test_object_distort_vertex_cursors_stay_borrowed_and_guarded() -> None:
+    repo_root = Path(__file__).parents[1]
+    headers = [
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_object_render_types.h", "object_render_types.h")
+    ]
+    binja_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    matcher_source = (
+        repo_root
+        / "tools/match/scratches/apply_distort_to_object/scratch.cpp"
+    ).read_text(encoding="utf-8")
+
+    for header in headers:
+        for marker in (
+            "typedef struct __ptr_offset(0x08) ObjectVertexZCursorView {",
+            "ObjectVertexZCursorView_must_be_0x0c",
+            "Object::vertices and",
+            "Object::copied_vertices remain the storage owners.",
+        ):
+            assert marker in header
+
+    assert "ObjectVertexZCursorView" not in matcher_source
+    assert "OBJECT_DISTORT_VERTEX_CURSOR_USER_VAR_UPDATES" in binja_sync
+    for index, storage, name in (
+        (177, 69, "z_wave_source_cursor"),
+        (562, 67, "xyz_scale_source_cursor"),
+    ):
+        expected_binja_lvar = (
+            '        "apply_distort_to_object",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            '        "ObjectVertexZCursorView*"'
+        )
+        assert expected_binja_lvar in binja_sync
+    assert "verify_object_distort_vertex_cursors" in binja_sync
+    assert "y_squash_source_cursor" not in binja_sync
+
+    assert '"ObjectVertexZCursorView": 0xC' in ida_sync
+    assert "OBJECT_DISTORT_VERTEX_LVAR_SPECS" in ida_sync
+    for definition_address, name in (
+        ("0x41AB02", "z_wave_source_cursor"),
+        ("0x41ABE0", "y_squash_source_cursor"),
+        ("0x41AC83", "xyz_scale_source_cursor"),
+    ):
+        assert definition_address in ida_sync
+        assert f'"{name}"' in ida_sync
+        assert (
+            '"float *__shifted(ObjectVertexZCursorView, 0x08) "'
+            in ida_sync
+        )
+        assert f'"{name};"' in ida_sync
+    assert (
+        '"object_distort_vertex_lvars": object_distort_vertex_lvars'
+        in ida_sync
+    )
+
+
 def test_vertex_buffer_factory_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_vertex_buffer_factory_lifetimes.py"
