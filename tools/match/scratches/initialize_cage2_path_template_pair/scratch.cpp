@@ -53,8 +53,9 @@ void Path::initialize_cage2_path_template_pair(
     secondary_samples[21].transform.position.y = 0.49000001f;
     secondary_samples[21].transform.position.z = 21.0f;
 
-    for (int i = 1; i < 21; ++i) {
-        float sample_index_f = (float)width_cells_;
+    for (int sample_index = width_cells_; sample_index < 20; ++sample_index) {
+        int i = sample_index + 1;
+        float sample_index_f = (float)sample_index;
         float curve_angle = sample_index_f * 0.31415927f;
         float angle = sample_index_f * 0.47123891f;
         primary_samples[i].center_x = cosine(angle) * primary_samples[0].center_x;
@@ -64,9 +65,8 @@ void Path::initialize_cage2_path_template_pair(
         primary_samples[i].lateral_scale = 1.0f;
         set_matrix_identity(&primary_samples[i].transform);
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        ++width_cells_;
         primary_samples[i].transform.position.y = 0.0f;
-        primary_samples[i].transform.position.z = (float)width_cells_;
+        primary_samples[i].transform.position.z = (float)i;
 
         set_matrix_identity(&secondary_samples[i].transform);
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;

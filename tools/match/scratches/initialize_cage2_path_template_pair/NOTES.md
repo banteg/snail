@@ -94,6 +94,7 @@ the last row uses the corrected function boundary:
 | Terminal-row lateral vector | **43.55%** | **629** |
 | Promoted following-function boundary | **56.54%** | **629** |
 | Primary-owned secondary Z copy | **57.95%** | **629** |
+| Zero-based interior induction | **58.10%** | **629** |
 
 ## Resolved target boundary
 
@@ -132,14 +133,9 @@ The 371-instruction PNG helper is independently exact in its own scratch.
 
 ## Remaining work
 
-The next high-value region is the interior-sample loop preheader and induction
-shape. The target keeps an integer counter in the reused argument slot and emits
-`fild` each iteration; the current candidate strength-reduces that conversion
-into a floating induction value. Recovering that source shape should also help
-align the identity/derived-rotation call sites and remove the one masked call
-mismatch.
-
-After that, the terminal vertex row is the best stack-frame target. The native
+The interior loop now retains the target's zero-based integer induction and
+emits `fild` at both conversion points. The terminal vertex row is the next
+stack-frame target. The native
 branch keeps additional scalar spills at post-save stack offsets `+0x5c` and
 `+0x60`, while the candidate still compiles with a `0x48` frame instead of
 `0x54`. This should be pursued through real vector/scalar lifetimes, not padding.
@@ -215,5 +211,21 @@ is code-generation neutral.
 The focused score rises from 56.54% to **57.95%** with the instruction counts
 unchanged at 629/648. The masked audit improves from 39 to **40** accepted
 operands, with no unresolved operands and the same one call-symbol mismatch.
-The compiler still carries the converted loop index into the next iteration, so
-the integer-induction recovery remains open.
+At this intermediate stage the compiler still carried the converted loop index
+into the next iteration, so integer-induction recovery remained open.
+
+## 2026-07-25 zero-based interior induction
+
+The interior loop is now authored with one zero-based counter seeded from the
+reused width parameter and a derived `i = sample_index + 1` for the sample
+slots. Curve angles consume the zero-based value, while published Z consumes
+the derived one. VC6 consequently keeps the integer counter in its stack slot
+and emits `fild` at loop entry and again after incrementing it, matching the
+native induction instead of carrying a floating conversion across the
+backedge.
+
+Focused matching rises from 57.95% to **58.10%** at the same 629/648
+instruction counts. The masked audit is now completely clean: **41 accepted,
+0 unresolved, 0 mismatched**. Retesting the derived-basis-first branch order
+after this recovery still regressed to 37.59%, so the accepted source retains
+the identity-first spelling and leaves that ordinary layout residual visible.

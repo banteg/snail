@@ -4,19 +4,16 @@
 
 | Metric | Before | After |
 |---|---:|---:|
-| Match | 0.19% on coarse range | **57.95%** focused |
+| Match | 0.19% on coarse range | **58.10%** focused |
 | Target instructions | 1029 coarse | **648** |
 | Candidate instructions | 2 | **629** |
 | Common prefix | 0 / 1029 | 0 / 648 |
-| Masked operands | none | **40 ok, 0 unresolved, 1 mismatch** |
+| Masked operands | none | **41 ok, 0 unresolved, 0 mismatched** |
 
-The current focused score is **57.95%**. The first mismatch is the native
+The current focused score is **58.10%**. The first mismatch is the native
 `sub esp, 0x54` versus the candidate's `sub esp, 0x48`.
 
-The single masked mismatch is at the curve-loop call alignment: target
-instruction 127 resolves to `set_matrix_identity`, while candidate instruction
-148 resolves to `set_matrix_rotation_identity`. There are no unresolved masked
-symbols or constants.
+There are no unresolved or mismatched masked symbols or constants.
 
 ## Accepted source-shape changes
 
@@ -38,6 +35,9 @@ symbols or constants.
 - Made the secondary interior sample copy Z from the primary sample's published
   field. This recovers the native ownership and reload shape, raising the
   focused score from `56.54%` to `57.95%` without changing instruction count.
+- Recovered the interior loop as a zero-based integer induction with a derived
+  one-based sample slot. This emits the native two `fild` conversions, removes
+  the final masked-call mismatch, and reaches `58.10%`.
 
 ## Rejected trials
 
@@ -74,9 +74,9 @@ revisit the terminal vertex-row scalar lifetimes that account for the remaining
 ## Final audit
 
 - Toolchain: `msvc6.5 /O2 /G5 /W3`.
-- Final score: `57.95%`.
+- Final score: `58.10%`.
 - Target/candidate: `648 / 629` instructions.
 - Prefix: `0 / 648`.
-- Masks: `40 ok, 0 unresolved, 1 mismatch`.
+- Masks: `41 ok, 0 unresolved, 0 mismatched`.
 - No inline assembly, naked functions, volatile padding, fake globals, dummy
   externs, artificial stack padding, or matcher/normalizer gaming.

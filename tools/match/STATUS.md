@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **76.64%**.
+**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **76.65%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -768,7 +768,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 616/680 | 51.70% | 0/680 | 43 ok |  |
 | 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 545/608 | 55.68% | 0/608 | 35 ok |  |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 800/796 | 67.54% | 10/796 | 62 ok |  |
-| 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 629/648 | 57.95% | 0/648 | 1 mismatch, 40 ok |  |
+| 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 629/648 | 58.10% | 0/648 | 41 ok |  |
 | 🚧 | add_object_edge | 0x4305a0 | 772 | 231/227 | 73.36% | 1/227 | 29 ok |  |
 | 🚧 | calc_object_edges | 0x4308b0 | 382 | 142/141 | 75.62% | 0/141 | 14 ok |  |
 | 🚧 | replace_object_list_texture_refs | 0x430d90 | 129 | 54/53 | 74.77% | 14/53 | 1 ok |  |
