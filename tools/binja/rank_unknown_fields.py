@@ -86,10 +86,7 @@ for type_name, type_obj in bv.types.items():
         except Exception:
             continue
 
-        functions = {}
-        function_accesses = {}
-        reference_rows = []
-        seen_references = set()
+        candidate_references = {}
         for reference in references:
             function = getattr(reference, "func", None)
             if function is None:
@@ -98,22 +95,43 @@ for type_name, type_obj in bv.types.items():
             function_name = str(function.name)
             reference_address = int(reference.address)
             reference_key = (function_start, reference_address)
-            if reference_key in seen_references:
-                continue
-            seen_references.add(reference_key)
-
-            access = classify_access(function, reference_address)
-            functions[function_start] = function_name
-            function_accesses.setdefault(function_start, set()).add(access)
-            reference_rows.append(
-                {
+            reference_type_obj = getattr(reference, "incomingType", None)
+            reference_type = (
+                str(reference_type_obj) if reference_type_obj is not None else None
+            )
+            previous = candidate_references.get(reference_key)
+            if (
+                previous is None
+                or previous["reference_type"] is None
+                and reference_type is not None
+            ):
+                candidate_references[reference_key] = {
                     "address": reference_address,
+                    "function": function,
                     "function_address": function_start,
                     "function_name": function_name,
                     "size": int(reference.size),
-                    "access": access,
+                    "reference_type": reference_type,
                 }
-            )
+
+        functions = {}
+        function_accesses = {}
+        reference_rows = []
+        for reference_row in candidate_references.values():
+            # Binary Ninja may return an untyped parent/descendant collision in
+            # addition to the exact field reference. Only a concrete reference
+            # type proves that this instruction touches the selected member.
+            if reference_row["reference_type"] is None:
+                continue
+            function = reference_row.pop("function")
+            function_start = reference_row["function_address"]
+            function_name = reference_row["function_name"]
+            reference_address = reference_row["address"]
+            access = classify_access(function, reference_address)
+            functions[function_start] = function_name
+            function_accesses.setdefault(function_start, set()).add(access)
+            reference_row["access"] = access
+            reference_rows.append(reference_row)
 
         if len(functions) < minimum_function_count:
             continue

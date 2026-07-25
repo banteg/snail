@@ -74,3 +74,11 @@ or rewrite HLIL after `split_var`. The BN artifact therefore retains the honest
 stack-slot reuse instead of widening the position argument or inventing a
 union. The IDA split, the unchanged BN ABI, and both Sprite field views are now
 covered by strict decompile-health checks.
+
+Ghidra 12.1.2 independently recovers the same lifetime split from an untyped
+headless import: the incoming world-position pointer remains `param_1`, while
+the `Lock` output becomes a separate `float *local_1c` used for the complete
+0x60-byte vertex payload. Its 0x18-float stride and four-record extent agree
+with the typed IDA `ObjectRenderVertex *vertices` view. This confirms that the
+remaining BN `position->__offset(...)` expressions are presentation debt, not
+evidence for a wider argument owner.
