@@ -124,3 +124,34 @@ schedule is not being reshaped for score.
   instructions, prefix 74/125, and five clean masked operands. The remaining
   metadata-copy differences are register scheduling, so no source was
   contorted to improve the score.
+
+## 2026-07-25 borrowed row-copy cursors
+
+The metadata loop does not carry either `AuthoredSegmentRow*` at its base.
+Native carries the `object_id` field at `+0x14`, copies fields on both sides of
+that interior address, and advances the two registers by the exact `0x38` row
+stride. Treating those registers as ordinary `int32_t*` hid the surrounding
+row owners; rebasing them to `AuthoredSegmentRow*` would be four fields early
+and therefore false.
+
+The analysis header now gives that borrow an offset-pointer view while
+retaining `SegmentCatalogEntry::rows` and `SubSegment::rows` as the sole
+owners. IDA's shifted source and destination cursors consequently expose
+flags, object id, object position and velocity, parcel set, and local position
+as named fields. The native early cursor increment leaves the final
+path-template and ring-speed words as two explicit backward scalar accesses;
+a broader pointee probe was rejected because it falsely relabeled those words.
+
+The same replay also separates the dead `segment_name` argument slot from its
+later `glyph_lane_remaining` lifetime and names the source/destination glyph
+cursors. No matcher source, masks, or control flow changed: focused matching
+remains honestly at 85.60%, 125/125 instructions, prefix 74/125, with all five
+masked operands clean.
+
+Binary Ninja independently recovers the stack-slot reuse from the native
+initialization, loop phi, and decrement definitions at `0x447364`, `0x44737d`,
+and `0x4473aa`. Its two `object_id`-relative register cursors expose the same
+surrounding metadata fields as IDA while retaining the final two post-increment
+copies as explicit negative offsets. Both guarded replays are idempotent, and
+the paired focused export passes all 1039 strict decompile-health checks with
+no selector mismatch.

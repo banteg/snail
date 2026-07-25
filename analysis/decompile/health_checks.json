@@ -16051,13 +16051,32 @@
       "required_substrings": [
         "&g_game_base->subgame.sm_tracks",
         "g_current_level_definition_name",
+        "struct SMTracks* catalog",
+        "int32_t catalog_index",
+        "char* catalog_filename_cursor",
+        "struct SubSegment* destination_segment",
+        "int32_t glyph_lane_remaining = 8",
+        "char* destination_glyph_row_cursor",
+        "char* source_glyph_lane_cursor",
+        "int32_t glyph_column_index",
+        "char* source_glyph_column_cursor",
+        "int32_t metadata_row_index",
         "SegmentCatalogEntryAnchor* selected_entry_anchor",
         "selected_entry_anchor->entry.row_count",
         "selected_entry_anchor->entry.filename",
         "selected_entry_anchor->entry.id",
         "selected_entry_anchor->entry.rows[0].object_id",
-        "segment_1->row_count",
-        "segment_1->message_sample_id"
+        "AuthoredSegmentRowObjectIdCursorView* destination_metadata_cursor",
+        "AuthoredSegmentRowObjectIdCursorView* source_metadata_cursor",
+        "destination_metadata_cursor->flags = source_metadata_cursor->flags",
+        "destination_metadata_cursor->object_id = source_metadata_cursor->object_id",
+        "destination_metadata_cursor->object_position.x",
+        "destination_metadata_cursor->object_velocity.x",
+        "destination_metadata_cursor->parcel_set_id",
+        "Vec3* source_local_position",
+        "Vec3* destination_local_position",
+        "destination_segment->row_count",
+        "destination_segment->message_sample_id"
       ],
       "forbidden_substrings": [
         "data_74ec74",
@@ -16066,7 +16085,14 @@
         "void* edx_5",
         "*(edx_5 +",
         "selected_entry_anchor->row_count",
-        "selected_entry_anchor->glyph_columns"
+        "selected_entry_anchor->glyph_columns",
+        "segment_1->",
+        "char (*)[0x8][0x100]",
+        "char (*)[0x100][0x8]",
+        "ecx_3 - 0x828",
+        "eax_7 - 0x8a0",
+        "entry.glyph_columns[0xff]",
+        "glyph_rows[7][0xf8]"
       ]
     },
     {
@@ -16170,7 +16196,20 @@
       "artifact": "analysis/decompile/ida/functions/00447300-copy_segment_definition_to_level_slot.c",
       "required_substrings": [
         "void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks",
-        "SMTracks *p_sm_tracks",
+        "SMTracks *catalog",
+        "int32_t catalog_index",
+        "char *catalog_filename_cursor",
+        "SubSegment *destination_segment",
+        "int32_t glyph_lane_remaining",
+        "char *destination_glyph_row_cursor",
+        "char *source_glyph_lane_cursor",
+        "int32_t glyph_column_index",
+        "char *source_glyph_column_cursor",
+        "int32_t metadata_row_index",
+        "int32_t *__shifted(AuthoredSegmentRowObjectIdCursorView,0x14) destination_metadata_cursor",
+        "int32_t *__shifted(AuthoredSegmentRowObjectIdCursorView,0x14) source_metadata_cursor",
+        "Vec3 *source_local_position",
+        "Vec3 *destination_local_position",
         "&g_game_base->subgame.sm_tracks",
         "g_current_level_definition_name",
         "SegmentCatalogEntryAnchor *selected_entry_anchor",
@@ -16180,6 +16219,13 @@
         "&selected_entry_anchor->entry.rows[0].object_id",
         "segment->glyph_rows[0]",
         "segment->row_count",
+        "ADJ(destination_metadata_cursor)->flags = ADJ(source_metadata_cursor)->flags",
+        "ADJ(destination_metadata_cursor)->object_id = ADJ(source_metadata_cursor)->object_id",
+        "ADJ(destination_metadata_cursor)->object_position.x",
+        "ADJ(destination_metadata_cursor)->object_velocity.x",
+        "ADJ(destination_metadata_cursor)->parcel_set_id",
+        "source_local_position = &ADJ(source_metadata_cursor)->local_position",
+        "destination_local_position = &ADJ(destination_metadata_cursor)->local_position",
         "message_sample_id = -1"
       ],
       "forbidden_substrings": [
@@ -16190,7 +16236,13 @@
         "MEMORY[0x4DF904]",
         "selected_entry_anchor->row_count",
         "selected_entry_anchor->glyph_columns",
-        "return (_DWORD *)report_errorf"
+        "return (_DWORD *)report_errorf",
+        "SMTracks *p_sm_tracks",
+        "int ArgList;",
+        "int32_t *p_object_id",
+        "int32_t *v15",
+        "int32_t *v16",
+        "int32_t *v17"
       ]
     },
     {

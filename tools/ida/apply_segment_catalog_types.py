@@ -49,6 +49,120 @@ DIRTY_FUNCTIONS = (
 
 SEGMENT_COPY_ENTRY_ANCHOR_DEFEA = 0x447372
 
+SEGMENT_COPY_LVAR_SPECS = (
+    (
+        "copy_segment_definition_to_level_slot",
+        0x44730E,
+        None,
+        "catalog",
+        "SMTracks *catalog;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x447314,
+        None,
+        "catalog_index",
+        "int32_t catalog_index;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x44731B,
+        None,
+        "catalog_filename_cursor",
+        "char *catalog_filename_cursor;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x44735C,
+        None,
+        "destination_segment",
+        "SubSegment *destination_segment;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x447365,
+        32,
+        "glyph_lane_remaining",
+        "int32_t glyph_lane_remaining;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x447375,
+        None,
+        "destination_glyph_row_cursor",
+        "char *destination_glyph_row_cursor;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x447378,
+        None,
+        "source_glyph_lane_cursor",
+        "char *source_glyph_lane_cursor;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x447384,
+        None,
+        "glyph_column_index",
+        "int32_t glyph_column_index;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x44738A,
+        None,
+        "source_glyph_column_cursor",
+        "char *source_glyph_column_cursor;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x44738C,
+        None,
+        "glyph",
+        "char glyph;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x4473BA,
+        None,
+        "metadata_row_index",
+        "int32_t metadata_row_index;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x4473DB,
+        None,
+        "destination_metadata_cursor",
+        (
+            "int32_t *__shifted(AuthoredSegmentRowObjectIdCursorView, 0x14) "
+            "destination_metadata_cursor;"
+        ),
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x4473E1,
+        None,
+        "source_metadata_cursor",
+        (
+            "int32_t *__shifted(AuthoredSegmentRowObjectIdCursorView, 0x14) "
+            "source_metadata_cursor;"
+        ),
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x447424,
+        None,
+        "source_local_position",
+        "Vec3 *source_local_position;",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        0x447427,
+        None,
+        "destination_local_position",
+        "Vec3 *destination_local_position;",
+    ),
+)
+
 SEGMENT_IMPORT_LVAR_SPECS = (
     (
         "load_segment_definitions",
@@ -218,6 +332,7 @@ LEVEL_PARSER_LVAR_SPECS = (
 
 SEGMENT_OWNER_MARKERS = (
     "typedef struct AuthoredSegmentRow {",
+    "typedef struct __ptr_offset(0x14) AuthoredSegmentRowObjectIdCursorView {",
     "typedef struct SegmentCatalogEntry {",
     "typedef struct SegmentCatalogEntryAnchor {",
     "typedef struct SegmentCatalogRowStrideAnchor {",
@@ -232,6 +347,7 @@ SEGMENT_OWNER_MARKERS = (
 
 EXPECTED_OWNER_SIZES = {
     "AuthoredSegmentRow": 0x38,
+    "AuthoredSegmentRowObjectIdCursorView": 0x38,
     "SegmentCatalogEntry": 0x4088,
     "SegmentCatalogEntryAnchor": 0x408C,
     "SegmentCatalogRowStrideAnchor": 0x8C4,
@@ -816,6 +932,33 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    segment_copy_lvars = [
+        _sync_owned_lvar(
+            selector,
+            definition_address,
+            stack_offset,
+            expected_name,
+            declaration,
+        )
+        for (
+            selector,
+            definition_address,
+            stack_offset,
+            expected_name,
+            declaration,
+        ) in SEGMENT_COPY_LVAR_SPECS
+    ]
+    segment_copy_lvar_failures = [
+        result for result in segment_copy_lvars if result.get("status") == "failed"
+    ]
+    if segment_copy_lvar_failures:
+        failed.append(
+            {
+                "selector": "copy_segment_definition_to_level_slot",
+                "segment_copy_lvars": segment_copy_lvars,
+            }
+        )
+
     grid_offset_lvar = _sync_builtin_grid_offset_lvar()
     if grid_offset_lvar.get("status") == "failed":
         failed.append(
@@ -896,6 +1039,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "data_unchanged": data_unchanged,
                 "dirty_functions": dirty_functions,
                 "segment_entry_lvar": segment_entry_lvar,
+                "segment_copy_lvars": segment_copy_lvars,
                 "grid_offset_lvar": grid_offset_lvar,
                 "segment_import_lvars": segment_import_lvars,
                 "level_parser_lvars": level_parser_lvars,

@@ -24,6 +24,7 @@ TARGET = DEFAULT_TARGET
 
 EXPECTED_OWNER_SIZES = {
     "AuthoredSegmentRow": 0x38,
+    "AuthoredSegmentRowObjectIdCursorView": 0x38,
     "SegmentCatalogEntry": 0x4088,
     "SegmentCatalogEntryAnchor": 0x408C,
     "SegmentCatalogRowStrideAnchor": 0x8C4,
@@ -76,6 +77,140 @@ SEGMENT_USER_VAR_UPDATES = (
         "row_stride_anchor",
         "SegmentCatalogRowStrideAnchor*",
     ),
+)
+
+# The catalog-to-runtime copy walks three independent borrowed regions:
+# catalog filenames, the eight glyph lanes, and each row's object_id-relative
+# metadata cursor. Keep those register lifetimes explicit so neither glyph
+# arrays nor the +0x14 metadata cursors become false owners in HLIL.
+SEGMENT_COPY_USER_VAR_UPDATES = (
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        13,
+        73,
+        "catalog",
+        "SMTracks*",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        19,
+        72,
+        "catalog_index",
+        "int32_t",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        26,
+        71,
+        "catalog_filename_cursor",
+        "char*",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        91,
+        71,
+        "destination_segment",
+        "SubSegment*",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        116,
+        73,
+        "destination_glyph_row_cursor",
+        "char*",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        119,
+        67,
+        "source_glyph_lane_cursor",
+        "char*",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        131,
+        66,
+        "glyph_column_index",
+        "int32_t",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        137,
+        72,
+        "source_glyph_column_cursor",
+        "char*",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        139,
+        69,
+        "glyph",
+        "char",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        185,
+        72,
+        "metadata_row_index",
+        "int32_t",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        218,
+        67,
+        "destination_metadata_cursor",
+        "AuthoredSegmentRowObjectIdCursorView*",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        224,
+        66,
+        "source_metadata_cursor",
+        "AuthoredSegmentRowObjectIdCursorView*",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        291,
+        73,
+        "source_local_position",
+        "Vec3*",
+    ),
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        294,
+        69,
+        "destination_local_position",
+        "Vec3*",
+    ),
+)
+
+# The original segment-name argument is dead once lookup succeeds. VC6 reuses
+# its stack slot for the eight-lane countdown, whose initialization, loop phi,
+# and decrement definitions must be split and merged as one integer lifetime.
+SEGMENT_COPY_GLYPH_LANE_SPLIT_DEFINITIONS = (
+    ("0x447364", "mlil", "StackVariableSourceType", 100, 4),
+    ("0x44737d", "mlil_ssa", "StackVariableSourceType", 125, 4),
+    ("0x4473aa", "mlil", "StackVariableSourceType", 170, 4),
+)
+
+SEGMENT_COPY_GLYPH_LANE_TARGET_VAR = (
+    "StackVariableSourceType",
+    100,
+    4,
 )
 
 # VC6 first materializes SubTracks::level_display_name in EBP, then hands the
@@ -316,11 +451,21 @@ def main() -> int:
                 variable_name="grid_offset",
                 variable_type="int32_t",
             ),
+            *apply_split_user_var_update(
+                REPO_ROOT,
+                target=TARGET,
+                identifier="copy_segment_definition_to_level_slot",
+                definitions=SEGMENT_COPY_GLYPH_LANE_SPLIT_DEFINITIONS,
+                target_var=SEGMENT_COPY_GLYPH_LANE_TARGET_VAR,
+                variable_name="glyph_lane_remaining",
+                variable_type="int32_t",
+            ),
             *apply_user_var_updates(
                 REPO_ROOT,
                 target=TARGET,
                 updates=(
                     *SEGMENT_USER_VAR_UPDATES,
+                    *SEGMENT_COPY_USER_VAR_UPDATES,
                     *LEVEL_PARSER_USER_VAR_UPDATES,
                 ),
             ),

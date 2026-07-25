@@ -1,6 +1,10 @@
 #ifndef SEGMENT_CATALOG_TYPES_H
 #define SEGMENT_CATALOG_TYPES_H
 
+#ifndef BN_TYPE_PARSER
+#define __ptr_offset(offset)
+#endif
+
 typedef unsigned char uint8_t;
 typedef int int32_t;
 
@@ -52,6 +56,26 @@ typedef struct AuthoredSegmentRow {
     int32_t path_template_index;
     AuthoredFloatBits ring_speed;
 } AuthoredSegmentRow;
+
+/*
+ * Analysis-only offset-pointer view for the catalog-to-runtime metadata copy.
+ * Native carries each row's object_id field at +0x14, reads the surrounding
+ * AuthoredSegmentRow fields, then advances by the complete 0x38-byte row.
+ * SegmentCatalogEntry::rows and SubSegment::rows remain the sole owners.
+ */
+typedef struct __ptr_offset(0x14) AuthoredSegmentRowObjectIdCursorView {
+    int32_t flags;
+    int32_t parcel_set_id;
+    Vec3 local_position;
+    int32_t object_id;
+    Vec3 object_position;
+    Vec3 object_velocity;
+    int32_t path_template_index;
+    AuthoredFloatBits ring_speed;
+} AuthoredSegmentRowObjectIdCursorView;
+typedef char AuthoredSegmentRowObjectIdCursorView_must_be_0x38[
+    (sizeof(AuthoredSegmentRowObjectIdCursorView) == 0x38) ? 1 : -1
+];
 
 typedef struct SegmentCatalogEntry {
     char display_name[0x40];

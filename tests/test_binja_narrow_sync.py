@@ -7077,6 +7077,218 @@ def test_level_definition_parser_frame_ownership_stays_aligned() -> None:
         assert old_shape in ida_check["forbidden_substrings"]
 
 
+def test_segment_copy_borrowed_row_cursors_stay_replayable() -> None:
+    repo_root = Path(__file__).parents[1]
+    analysis_header = (HEADER_DIR / "segment_catalog_types.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (
+        BINJA_DIR / "sync_segment_catalog_types.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (IDA_DIR / "apply_segment_catalog_types.py").read_text(
+        encoding="utf-8"
+    )
+    health_checks = {
+        check["name"]: check
+        for check in json.loads(
+            (repo_root / "analysis/decompile/health_checks.json").read_text(
+                encoding="utf-8"
+            )
+        )["checks"]
+    }
+
+    for marker in (
+        "#define __ptr_offset(offset)",
+        (
+            "typedef struct __ptr_offset(0x14) "
+            "AuthoredSegmentRowObjectIdCursorView {"
+        ),
+        "AuthoredSegmentRowObjectIdCursorView_must_be_0x38",
+        "SegmentCatalogEntry::rows and SubSegment::rows remain the sole owners.",
+    ):
+        assert marker in analysis_header
+    assert (
+        '"AuthoredSegmentRowObjectIdCursorView": 0x38'
+        in binja_sync
+    )
+    assert (
+        '"AuthoredSegmentRowObjectIdCursorView": 0x38'
+        in ida_sync
+    )
+
+    assert "SEGMENT_COPY_USER_VAR_UPDATES" in binja_sync
+    for index, storage, name, declaration in (
+        ("13", "73", "catalog", "SMTracks*"),
+        ("19", "72", "catalog_index", "int32_t"),
+        ("26", "71", "catalog_filename_cursor", "char*"),
+        ("91", "71", "destination_segment", "SubSegment*"),
+        ("116", "73", "destination_glyph_row_cursor", "char*"),
+        ("119", "67", "source_glyph_lane_cursor", "char*"),
+        ("131", "66", "glyph_column_index", "int32_t"),
+        ("137", "72", "source_glyph_column_cursor", "char*"),
+        ("139", "69", "glyph", "char"),
+        ("185", "72", "metadata_row_index", "int32_t"),
+        (
+            "218",
+            "67",
+            "destination_metadata_cursor",
+            "AuthoredSegmentRowObjectIdCursorView*",
+        ),
+        (
+            "224",
+            "66",
+            "source_metadata_cursor",
+            "AuthoredSegmentRowObjectIdCursorView*",
+        ),
+        ("291", "73", "source_local_position", "Vec3*"),
+        ("294", "69", "destination_local_position", "Vec3*"),
+    ):
+        assert f"        {index}," in binja_sync
+        assert f"        {storage}," in binja_sync
+        assert f'        "{name}",' in binja_sync
+        assert f'        "{declaration}",' in binja_sync
+    for definition in (
+        '("0x447364", "mlil", "StackVariableSourceType", 100, 4)',
+        '("0x44737d", "mlil_ssa", "StackVariableSourceType", 125, 4)',
+        '("0x4473aa", "mlil", "StackVariableSourceType", 170, 4)',
+    ):
+        assert definition in binja_sync
+    assert "SEGMENT_COPY_GLYPH_LANE_TARGET_VAR" in binja_sync
+    assert 'variable_name="glyph_lane_remaining"' in binja_sync
+
+    assert "SEGMENT_COPY_LVAR_SPECS" in ida_sync
+    for definition_address, stack_offset, name, declaration in (
+        ("0x44730E", "None", "catalog", "SMTracks *catalog;"),
+        ("0x447314", "None", "catalog_index", "int32_t catalog_index;"),
+        (
+            "0x44731B",
+            "None",
+            "catalog_filename_cursor",
+            "char *catalog_filename_cursor;",
+        ),
+        (
+            "0x44735C",
+            "None",
+            "destination_segment",
+            "SubSegment *destination_segment;",
+        ),
+        (
+            "0x447365",
+            "32",
+            "glyph_lane_remaining",
+            "int32_t glyph_lane_remaining;",
+        ),
+        (
+            "0x447375",
+            "None",
+            "destination_glyph_row_cursor",
+            "char *destination_glyph_row_cursor;",
+        ),
+        (
+            "0x447378",
+            "None",
+            "source_glyph_lane_cursor",
+            "char *source_glyph_lane_cursor;",
+        ),
+        (
+            "0x44738A",
+            "None",
+            "source_glyph_column_cursor",
+            "char *source_glyph_column_cursor;",
+        ),
+        (
+            "0x4473DB",
+            "None",
+            "destination_metadata_cursor",
+            "int32_t *__shifted(AuthoredSegmentRowObjectIdCursorView, 0x14)",
+        ),
+        (
+            "0x4473E1",
+            "None",
+            "source_metadata_cursor",
+            "int32_t *__shifted(AuthoredSegmentRowObjectIdCursorView, 0x14)",
+        ),
+        (
+            "0x447424",
+            "None",
+            "source_local_position",
+            "Vec3 *source_local_position;",
+        ),
+        (
+            "0x447427",
+            "None",
+            "destination_local_position",
+            "Vec3 *destination_local_position;",
+        ),
+    ):
+        assert definition_address in ida_sync
+        assert f"        {stack_offset}," in ida_sync
+        assert f'"{name}"' in ida_sync
+        assert declaration in ida_sync
+    assert '"segment_copy_lvars": segment_copy_lvars' in ida_sync
+    assert "segment_copy_lvar_failures" in ida_sync
+
+    binja_check = health_checks["bn_copy_segment_definition_parser_context"]
+    for marker in (
+        "struct SMTracks* catalog",
+        "int32_t glyph_lane_remaining = 8",
+        "char* destination_glyph_row_cursor",
+        "char* source_glyph_column_cursor",
+        "AuthoredSegmentRowObjectIdCursorView* destination_metadata_cursor",
+        "AuthoredSegmentRowObjectIdCursorView* source_metadata_cursor",
+        "destination_metadata_cursor->flags = source_metadata_cursor->flags",
+        "destination_metadata_cursor->object_position.x",
+        "destination_metadata_cursor->object_velocity.x",
+        "destination_metadata_cursor->parcel_set_id",
+        "destination_segment->row_count",
+        "destination_segment->message_sample_id",
+    ):
+        assert marker in binja_check["required_substrings"]
+    for old_shape in (
+        "segment_1->",
+        "char (*)[0x8][0x100]",
+        "char (*)[0x100][0x8]",
+        "ecx_3 - 0x828",
+        "eax_7 - 0x8a0",
+        "entry.glyph_columns[0xff]",
+        "glyph_rows[7][0xf8]",
+    ):
+        assert old_shape in binja_check["forbidden_substrings"]
+
+    ida_check = health_checks["ida_copy_segment_definition_owner"]
+    for marker in (
+        "SMTracks *catalog",
+        "int32_t glyph_lane_remaining",
+        "char *destination_glyph_row_cursor",
+        "char *source_glyph_column_cursor",
+        (
+            "int32_t *__shifted(AuthoredSegmentRowObjectIdCursorView,0x14) "
+            "destination_metadata_cursor"
+        ),
+        (
+            "int32_t *__shifted(AuthoredSegmentRowObjectIdCursorView,0x14) "
+            "source_metadata_cursor"
+        ),
+        "ADJ(destination_metadata_cursor)->flags",
+        "ADJ(destination_metadata_cursor)->object_position.x",
+        "ADJ(destination_metadata_cursor)->object_velocity.x",
+        "ADJ(destination_metadata_cursor)->parcel_set_id",
+    ):
+        assert any(
+            marker in required
+            for required in ida_check["required_substrings"]
+        )
+    for old_shape in (
+        "SMTracks *p_sm_tracks",
+        "int ArgList;",
+        "int32_t *p_object_id",
+        "int32_t *v15",
+        "int32_t *v16",
+        "int32_t *v17",
+    ):
+        assert old_shape in ida_check["forbidden_substrings"]
+
+
 def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     repo_root = Path(__file__).parents[1]
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
