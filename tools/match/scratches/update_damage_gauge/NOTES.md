@@ -24,7 +24,7 @@ when cluster-5 routes.
 
 ## Scratch status
 
-Promoted to a matcher scratch on 2026-06-13. Current result: 65.92%,
+Promoted to a matcher scratch on 2026-06-13. Initial result: 65.92%,
 266/268 instructions. The first scratch is structure-first and covers:
 
 - pause gate `Game::pause_gate` at +0x74621
@@ -140,4 +140,6 @@ now folds all four through `GameRoot::subgame.player`: the repeated byte at
 `Player +0x440` is `completion_handoff_active`, while `Player +0x41d` is
 `attachment_exit_pending`. Binary Ninja independently renders the same fields.
 The evidence symbols remain intact for other consumers, and a second replay
-against the copied IDA database is unchanged.
+against the copied IDA database is unchanged. The gameplay manifest now records
+these typed owners instead of the obsolete raw `Game+offset` list and no longer
+claims their writers are unresolved.
