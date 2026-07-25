@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_backdrop @ 0x410e20 */
 
-00410e28        backdrop->unknown_65c = 1
+00410e28        backdrop->corner_index_buffer_handle = 1
 00410e32        backdrop->unknown_660 = 0
 00410e38        backdrop->active_primary_texture_id = 0xffffffff
 00410e3f        backdrop->backdrop_change_queued = 0

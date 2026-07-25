@@ -64,7 +64,9 @@ public:
     // Persistent 0/1 draw gate. update_backdrop decrements only a local copy
     // to test the authored `== 1` state; this field is not a countdown.
     int backdrop_render_enabled; // +0x658
-    int unknown_65c; // +0x65c
+    // Android's corresponding +0x84 member is passed to glGenBuffers as the
+    // element-buffer handle for the four grid-corner indices.
+    unsigned int corner_index_buffer_handle; // +0x65c
     // cRClickStart::AI state 2 is the sole Windows reference and raises this
     // byte to one. The exact Backdrop owner is proven; no reader yet proves a
     // stronger semantic name.

@@ -32,7 +32,7 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
   int v26; // edi
 
   debug_report_stub();
-  g_game_base->backdrop.unknown_65c = 1;
+  g_game_base->backdrop.corner_index_buffer_handle = 1;
   if ( game->level_mode == 7 )
     uninit_tutorial(&game->tutorial);
   uninit_warning(&game->player.warning);

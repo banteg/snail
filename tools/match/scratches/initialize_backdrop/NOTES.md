@@ -8,7 +8,7 @@ Recovered layout:
 
 - `BackdropDistortCell` is a six-float record: `phase`, `phase_step`, source
   x/y amplitude, and per-frame current x/y offsets.
-- `+0x65c..+0x678` and `+0x6bc..+0x6c4` are now typed in
+- `+0x660..+0x678` and `+0x6bc..+0x6c4` are now typed in
   `Backdrop` because initialization writes them, but they deliberately remain
   `unknown_<offset>` until another user proves semantics.
 - `+0x67c..+0x69b` and `+0x69c..+0x6bb` are two owned
@@ -33,3 +33,20 @@ slot, and installs the argument as both current worlds. The identical repeated
 layout proves the two 0x20-byte Windows records rather than merely suggesting
 names from adjacency. Both Windows callers discard EAX, and changing the
 Windows method to `void` remains exact at 14/14 instructions.
+
+## 2026-07-25 corner index-buffer ownership
+
+Android preserves the complete post-grid `cRBackdrop` tail with a constant
+`Windows offset = Android offset + 0x5d8` displacement. The correspondence
+holds from the render gate (`+0x658` / `+0x80`) through both world-blend
+records (`+0x67c` / `+0xa4` and `+0x69c` / `+0xc4`), so the intervening
+members are source-equivalent rather than coincidentally adjacent.
+
+Android `cRBackdrop::MakeVBO()` passes the corresponding `+0x84` member to
+`G0BackdropVBO()`. That helper calls `glGenBuffers` on the member, binds it as
+`GL_ELEMENT_ARRAY_BUFFER`, and uploads exactly four indices: the corners of
+the backdrop grid. This proves Windows `+0x65c` as the shared
+`corner_index_buffer_handle`; its Windows build initializes the otherwise
+unused backend slot to one. The adjacent `unknown_660` remains unnamed:
+Android confirms the same click-start write at its corresponding `+0x88`, but
+neither port exposes a reader that proves the latch's role.

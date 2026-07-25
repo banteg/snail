@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: destroy_subgame @ 0x438850 */
 
-0043886b        g_game_base->backdrop.unknown_65c = 1
+0043886b        g_game_base->backdrop.corner_index_buffer_handle = 1
 00438877        if (game->level_mode == 7)
 0043887f        uninit_tutorial(&game->tutorial)
 0043888b        uninit_warning(&game->player.warning)

@@ -7219,6 +7219,7 @@
       "name": "bn_destroy_subgame_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00438850-destroy_subgame.c",
       "required_substrings": [
+        "g_game_base->backdrop.corner_index_buffer_handle = 1",
         "uninit_warning(&game->player.warning)",
         "clear_active_landscape_entries(&game->landscape_manager)",
         "flush_row_event_display(&game->completion)",
@@ -7228,6 +7229,7 @@
         "life_stock_widget_cursor = &life_stock_widget_cursor[1]"
       ],
       "forbidden_substrings": [
+        "backdrop.unknown_65c",
         "struct Game*",
         "__offset(Game",
         "arg1->",
@@ -7244,6 +7246,7 @@
       "name": "ida_destroy_subgame_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00438850-destroy_subgame.c",
       "required_substrings": [
+        "g_game_base->backdrop.corner_index_buffer_handle = 1;",
         "void __thiscall destroy_subgame(SubgameRuntime *game)",
         "uninit_warning(&game->player.warning)",
         "clear_active_landscape_entries(&game->landscape_manager)",
@@ -7253,6 +7256,7 @@
         "kill_border(&g_game_base->border_manager, *life_stock_widgets++);"
       ],
       "forbidden_substrings": [
+        "backdrop.unknown_65c",
         "sub_438850(int this)",
         "FrontendWidget *(*",
         "FrontendWidget ***",
@@ -16173,6 +16177,7 @@
       "name": "bn_initialize_backdrop_void_owner",
       "artifact": "analysis/decompile/binja/functions/00410e20-initialize_backdrop.c",
       "required_substrings": [
+        "backdrop->corner_index_buffer_handle = 1",
         "set_backdrop_texture_target(backdrop, 5)",
         "if (last_mode == 0)",
         "backdrop->primary_world_blend.current_world",
@@ -16181,9 +16186,24 @@
         "00410f34        return"
       ],
       "forbidden_substrings": [
+        "backdrop->unknown_65c",
         "arg1",
         "arg2",
         "return set_backdrop_distort"
+      ]
+    },
+    {
+      "name": "ida_initialize_backdrop_corner_buffer_owner",
+      "artifact": "analysis/decompile/ida/functions/00410e20-initialize_backdrop.c",
+      "required_substrings": [
+        "void __thiscall initialize_backdrop(Backdrop *backdrop, int32_t last_mode)",
+        "backdrop->corner_index_buffer_handle = 1;",
+        "set_backdrop_texture_target(backdrop, 5);",
+        "set_backdrop_distort(backdrop, 0.0);"
+      ],
+      "forbidden_substrings": [
+        "backdrop->unknown_65c",
+        "sub_410E20"
       ]
     },
     {

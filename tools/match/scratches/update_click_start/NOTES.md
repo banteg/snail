@@ -27,8 +27,9 @@ Previously resolved residual:
 - before the final layout correction, the candidate jump table remained a
   local compiler symbol whose shifted case destinations could not be proved;
 - `GameRoot::backdrop.unknown_660` is the exact owner of the byte raised on
-  waiting-state entry, but this is its sole Windows reference, so its role
-  remains deliberately unnamed.
+  waiting-state entry. Android repeats the same write at the corresponding
+  post-grid `cRBackdrop +0x88` member, but this is still the sole non-init
+  reference in both ports, so its role remains deliberately unnamed.
 
 2026-07-11 pause-owner closure: the prompt-hide gate now reads
 `GameRoot::subgame.subgame_pause_gate`; removing the synthetic `GamePauseView`

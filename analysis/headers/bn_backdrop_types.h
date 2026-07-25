@@ -2,6 +2,7 @@
 #define BN_BACKDROP_TYPES_H
 
 typedef unsigned char uint8_t;
+typedef unsigned int uint32_t;
 typedef int int32_t;
 
 typedef struct tColour {
@@ -61,7 +62,7 @@ typedef struct Backdrop {
     uint8_t _pad_056[0x58 - 0x56];
     BackdropDistortCell distort_grid[8][8];
     int32_t backdrop_render_enabled;
-    int32_t unknown_65c;
+    uint32_t corner_index_buffer_handle;
     uint8_t unknown_660;
     uint8_t _pad_661[0x664 - 0x661];
     float unknown_664;

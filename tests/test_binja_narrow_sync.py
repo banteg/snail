@@ -988,6 +988,8 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
     assert "BodBase bod;" in header
     assert "uint8_t bod_base[0x38];" not in header
     assert "Backdrop_must_be_0x6cc" in header
+    assert "uint32_t corner_index_buffer_handle;" in header
+    assert "int32_t unknown_65c;" not in header
     assert "require_bod_base_dependency" in source
     assert 'struct_name="BodBase"' in source
     assert "size != 0x38" in source

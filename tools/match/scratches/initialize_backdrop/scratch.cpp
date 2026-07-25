@@ -6,7 +6,7 @@
 
 void Backdrop::initialize_backdrop(int last_mode)
 {
-    unknown_65c = 1;
+    corner_index_buffer_handle = 1;
     unknown_660 = 0;
     active_primary_texture_id = -1;
     backdrop_change_queued = 0;
