@@ -18,6 +18,8 @@ TRUSTED_NAMES = (
     (0x449C20, "initialize_global_font3d_bods"),
     (0x449C40, "initialize_global_font_queue_colors_thunk"),
     (0x449C50, "initialize_global_font_queue_colors"),
+    (0x449C70, "initialize_font_wave_state"),
+    (0x449CA0, "update_font_wave_state"),
     (0x449E90, "measure_font_text_width"),
     (0x449F50, "register_font_texture_sheet"),
     (0x44E780, "sample_tga_pixel_rgb"),
@@ -61,6 +63,14 @@ TRUSTED_FUNCTION_DECLARATIONS = (
     (
         "initialize_global_font_queue_colors",
         "void __cdecl initialize_global_font_queue_colors();",
+    ),
+    (
+        "initialize_font_wave_state",
+        "void __cdecl initialize_font_wave_state();",
+    ),
+    (
+        "update_font_wave_state",
+        "void __cdecl update_font_wave_state();",
     ),
     (
         "measure_font_text_width",
@@ -129,6 +139,8 @@ TRUSTED_DATA_DECLARATIONS = (
 )
 
 DIRTY_FUNCTIONS = (
+    0x449C70,
+    0x449CA0,
     0x449E90,
     0x449F50,
     0x44E780,
@@ -195,7 +207,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
     for selector, declaration in TRUSTED_FUNCTION_DECLARATIONS:
         address = idc.get_name_ea_simple(selector)
-        if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        if address == idc.BADADDR or ida_funcs.get_func_start(address) == idc.BADADDR:
             missing.append({"selector": selector, "reason": "missing_function"})
             continue
 

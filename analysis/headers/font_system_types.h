@@ -145,6 +145,8 @@ void __cdecl initialize_global_font3d_bods_thunk(void);
 void __cdecl initialize_global_font3d_bods(void);
 void __cdecl initialize_global_font_queue_colors_thunk(void);
 void __cdecl initialize_global_font_queue_colors(void);
+void __cdecl initialize_font_wave_state(void);
+void __cdecl update_font_wave_state(void);
 float __cdecl measure_font_text_width(char* text, int32_t font_id, float scale);
 int32_t __cdecl sample_tga_pixel_rgb(
     TgaImageView* image, int32_t x, int32_t y);

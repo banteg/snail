@@ -11640,6 +11640,8 @@ def test_font_system_ownership_stays_aligned() -> None:
         assert "g_font3d_scales" in source
         assert "g_font_sheets" in source
         assert "g_registered_font_count" in source
+        assert "initialize_font_wave_state" in source
+        assert "update_font_wave_state" in source
         assert "measure_font_text_width" in source
         assert "register_font_texture_sheet" in source
         assert "sample_tga_pixel_rgb" in source
@@ -11671,6 +11673,8 @@ def test_font_system_ownership_stays_aligned() -> None:
     ) in binja_sync
     assert "float width_scale, float height_scale" in binja_sync
     assert "void __cdecl initialize_font3d_objects(int16_t font_id)" in binja_sync
+    assert "void __cdecl initialize_font_wave_state()" in binja_sync
+    assert "void __cdecl update_font_wave_state()" in binja_sync
     assert "void __cdecl draw_font_text_queue(uint32_t render_mask)" in binja_sync
     assert "void __cdecl queue_font_text_instance" in binja_sync
     assert "int32_t __cdecl queue_axis_aligned_textured_quad" in binja_sync
@@ -11678,6 +11682,8 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert "float* __cdecl layout_and_queue_wrapped_font_text" in binja_sync
     assert "cFontPrintBuffer g_font_queue[0x400];" in ida_sync
     assert "FontSheet g_font_sheets[1];" in ida_sync
+    assert "void __cdecl initialize_font_wave_state();" in ida_sync
+    assert "void __cdecl update_font_wave_state();" in ida_sync
     assert "TgaImageView *image, int32_t x, int32_t y" in ida_sync
     assert "typedef struct TgaImageView {" in analysis_header
     assert "uint8_t pixels[1];" in analysis_header
@@ -11787,6 +11793,8 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert "float next_glyph_u1;" in analysis_header
     assert "uint8_t _next_u1_to_glyph_width[0x1f8];" in analysis_header
     assert "uint8_t _glyph_width_to_texture_page[0x1fc];" in analysis_header
+    assert "void __cdecl initialize_font_wave_state(void);" in analysis_header
+    assert "void __cdecl update_font_wave_state(void);" in analysis_header
 
     references = json.loads(
         (repo_root / "analysis/symbols/gameplay-references.json").read_text(

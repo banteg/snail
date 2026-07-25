@@ -26,3 +26,12 @@ hash `5585d19e0efdb2d1ee1b0fa481c8dae4e5928fa1d6183b6a1b2c387939065365`
 (`25/25`, 17 clean operands), and `initialize_font_wave_state` retains hash
 `3a31a5797a1d96d8af76b1af64c46364afee7e5de4c6f690a3502cc17f5215e4`
 (`5/5`, four clean operands).
+
+# 2026-07-25 cross-tool state replay
+
+The narrow font-system replay now includes both font-wave lifecycle helpers,
+not just their data symbols. Binary Ninja and IDA therefore persist the exact
+`void __cdecl` contracts and reanalyze the initializer/updater after naming the
+two phase/step pairs, transient text cursor, registered-font count, and queued
+entry count. This closes the stale IDA `unk_*` presentation without grouping
+the non-contiguous globals into a synthetic owner.

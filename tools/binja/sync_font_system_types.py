@@ -104,6 +104,8 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x449c20", "initialize_global_font3d_bods"),
     ("0x449c40", "initialize_global_font_queue_colors_thunk"),
     ("0x449c50", "initialize_global_font_queue_colors"),
+    ("0x449c70", "initialize_font_wave_state"),
+    ("0x449ca0", "update_font_wave_state"),
     ("0x449e90", "measure_font_text_width"),
     ("0x449f50", "register_font_texture_sheet"),
     ("0x44e780", "sample_tga_pixel_rgb"),
@@ -168,6 +170,14 @@ PROTO_UPDATES = (
         "void __cdecl initialize_global_font_queue_colors()",
     ),
     (
+        "initialize_font_wave_state",
+        "void __cdecl initialize_font_wave_state()",
+    ),
+    (
+        "update_font_wave_state",
+        "void __cdecl update_font_wave_state()",
+    ),
+    (
         "measure_font_text_width",
         "float __cdecl measure_font_text_width(char* text, int32_t font_id, float scale)",
     ),
@@ -223,6 +233,8 @@ ANALYSIS_GUARD_FUNCTIONS = (
 )
 
 FONT_OWNER_REANALYSIS_FUNCTIONS = (
+    "initialize_font_wave_state",
+    "update_font_wave_state",
     "register_font_texture_sheet",
     "draw_font_text_instance",
     "initialize_font3d_objects",
