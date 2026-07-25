@@ -7876,12 +7876,24 @@
         "sub_lazer->state = SUB_LAZER_STATE_RECYCLE_PENDING;",
         "sub_lazer->state == SUB_LAZER_STATE_RECYCLE_PENDING",
         "sub_lazer->state = SUB_LAZER_STATE_INACTIVE;",
+        "Vec3 *position; // edi",
+        "Vec3 primary_swept_motion;",
+        "Vec3 secondary_probe;",
+        "Vec3 primary_probe;",
+        "Vec3 secondary_swept_motion;",
         "sub_lazer->body.transform.position",
         "sub_lazer->body.bod.bod.list_flags",
-        "track_runtime_cell_at_world_z->primary_attachment_cell->attachment_template_record,",
-        "track_runtime_cell_at_world_z->secondary_attachment_cell->attachment_template_record,",
+        "runtime_row->primary_attachment_cell->attachment_template_record,",
+        "primary_probe,",
+        "primary_swept_motion,",
+        "runtime_row->secondary_attachment_cell->attachment_template_record,",
+        "secondary_probe,",
+        "secondary_swept_motion,",
+        "debug_report_stub(g_lazer_path_kill_format);",
+        "debug_report_stub(g_lazer_path2_kill_format);",
         "deactivate_sub_lazer_projectile(sub_lazer)",
-        "&g_game_base->active_bod_list"
+        "active_bod_list = &g_game_base->active_bod_list;",
+        "updated_list_flags = sub_lazer->body.bod.bod.list_flags;"
       ],
       "forbidden_substrings": [
         "SubLazerSlot",
@@ -7893,8 +7905,27 @@
         "_DWORD *this",
         "sub_lazer->bod.",
         "attachment_template_record->bod.bod.vtable",
+        "Vec4 *p_position",
+        "Vec3 v11",
+        "Vec3 v12",
+        "Vec3 v13",
+        "Vec3 v14",
+        "debug_report_stub();",
         "__asm",
         "_ET1"
+      ]
+    },
+    {
+      "name": "ida_debug_report_variadic_abi",
+      "artifact": "analysis/decompile/ida/functions/00449c00-debug_report_stub.c",
+      "required_substrings": [
+        "int32_t debug_report_stub(char *format, ...)",
+        "return 0;"
+      ],
+      "forbidden_substrings": [
+        "int debug_report_stub()",
+        "int32_t debug_report_stub()",
+        "void debug_report_stub"
       ]
     },
     {

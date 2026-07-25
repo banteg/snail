@@ -207,3 +207,21 @@ the exact matcher sources. Both decompilers name the active dispatch and the
 inactive/recycle-pending stores through the authored actor instead of treating
 the lane as a raw integer. The honest matcher result remains 97.25%; no source
 nudge is taken for the three commutative x87 pairs.
+
+## 2026-07-25 swept-vector and debug ABI replay
+
+IDA's recovered `Vec3` aggregates now carry their exact authored lifetimes:
+`primary_probe`/`primary_swept_motion` and
+`secondary_probe`/`secondary_swept_motion`. The same replay names the borrowed
+position, grid cell, runtime row, root active-BOD list, next bob phase, and
+post-remove list flags. Exact definition addresses and accepted types make the
+updates fail closed rather than renaming whichever compiler temporary happens
+to be nearby.
+
+The release stub at `0x449c00` is also persisted as the proved variadic
+`debug_report_stub(char*, ...)` ABI. This restores both distinct native marker
+arguments in IDA instead of collapsing the merged call to
+`debug_report_stub()`. Binary Ninja already carried that ABI. The focused
+matcher declaration is aligned with it and remains byte-stable at **97.25%**,
+218/218 instructions, prefix 82/218, with all 24 references clean; the only
+residuals remain the three documented commutative x87 add orderings.

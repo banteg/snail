@@ -10,7 +10,7 @@
 
 extern char g_lazer_path2_kill_format[]; // data_4a4f40
 extern char g_lazer_path_kill_format[]; // data_4a4f54
-int debug_report_stub(void* arg); // @ 0x449c00, stripped to xor eax/ret in release
+int debug_report_stub(char* format, ...); // @ 0x449c00, stripped to xor eax/ret in release
 int report_errorf(char* format, ...);
 
 void SubLazer::update_sub_lazer_projectile()

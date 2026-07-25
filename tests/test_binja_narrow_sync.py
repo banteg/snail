@@ -9910,6 +9910,26 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         "sub_lazer_owner_readback = _sub_lazer_owner_readback()"
         in ida_runtime_sync
     )
+    assert (
+        "int32_t debug_report_stub(char* format, ...);"
+        in ida_runtime_sync
+    )
+    assert "UPDATE_SUB_LAZER_NAMED_LVAR_SPECS" in ida_runtime_sync
+    for definition_address, target_name in (
+        ("0x441808", "active_bod_list"),
+        ("0x441880", "updated_list_flags"),
+        ("0x4418A1", "next_bob_phase"),
+        ("0x4418D5", "position"),
+        ("0x441939", "grid_cell"),
+        ("0x441946", "runtime_row"),
+        ("0x441982", "primary_swept_motion"),
+        ("0x4419C9", "primary_probe"),
+        ("0x441A30", "secondary_swept_motion"),
+        ("0x441A77", "secondary_probe"),
+    ):
+        assert definition_address in ida_runtime_sync
+        assert f'"{target_name}"' in ida_runtime_sync
+    assert '"sub_lazer_named_lvars": sub_lazer_named_lvars' in ida_runtime_sync
     assert '"SubLazer": _named_struct_size("SubLazer")' in ida_runtime_sync
     assert (
         '"SubLazerManager": _named_struct_size("SubLazerManager")'
@@ -9943,6 +9963,10 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     )
     assert "SubLazerState* state" in (
         repo_root / "tools/match/scratches/initialize_sub_lazer_pool/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "int debug_report_stub(char* format, ...);" in (
+        repo_root
+        / "tools/match/scratches/update_sub_lazer_projectile/scratch.cpp"
     ).read_text(encoding="utf-8")
     assert "SALT_STATE_ACTIVE" in salt_scratches["spawn_salt_hazard"]
     assert (

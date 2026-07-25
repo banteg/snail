@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 2,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 2,
+  "ida_exported": 2,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,11 +17,15 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "firework_shoot",
-      "address": "0x441dd0"
+      "name": "update_sub_lazer_projectile",
+      "address": "0x4417d0"
+    },
+    {
+      "name": "debug_report_stub",
+      "address": "0x449c00"
     }
   ],
-  "health_check_count": 1055,
+  "health_check_count": 1056,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

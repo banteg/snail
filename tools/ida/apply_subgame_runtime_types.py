@@ -231,6 +231,10 @@ SALT_STARTUP_CURSOR_LVAR = {
 
 TRUSTED_DECLARATIONS = [
     (
+        "debug_report_stub",
+        "int32_t debug_report_stub(char* format, ...);",
+    ),
+    (
         "uninit_pause_menu",
         "void __thiscall uninit_pause_menu(SubPause* pause);",
     ),
@@ -669,6 +673,7 @@ REANALYSIS_FUNCTIONS = (
     0x443730,  # spawn_track_parcel
     0x444CF0,  # handle_subgoldy_collisions
     0x448960,  # format_time_trial_string
+    0x449C00,  # debug_report_stub
 )
 
 
@@ -1414,6 +1419,98 @@ def _sync_allocator_lvar(
     }
 
 
+def _sync_named_lvar(
+    *,
+    selector: str,
+    definition_address: int,
+    accepted_names: set[str],
+    accepted_types: set[str],
+    target_name: str,
+) -> dict[str, object]:
+    """Persist one exact authored lifetime without changing its recovered type."""
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    normalized_accepted_types = {
+        _normalize_type_text(value) or "" for value in accepted_types
+    }
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.defea == definition_address
+        and lvar.name in accepted_names
+        and (_normalize_type_text(str(lvar.type())) or "")
+        in normalized_accepted_types
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_named_lvar_candidates",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+            "target_name": target_name,
+            "candidate_count": len(candidates),
+        }
+
+    lvar = candidates[0]
+    if lvar.name == target_name:
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "definition_address": hex(lvar.defea),
+        }
+
+    before_name = lvar.name
+    before_type = str(lvar.type())
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = target_name
+    if not ida_hexrays.modify_user_lvar_info(address, ida_hexrays.MLI_NAME, info):
+        return {
+            "status": "failed",
+            "reason": "modify_named_lvar_info_failed",
+            "selector": selector,
+            "target_name": target_name,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and candidate.defea == definition_address
+        and candidate.name == target_name
+        and (_normalize_type_text(str(candidate.type())) or "")
+        in normalized_accepted_types
+    ]
+    if len(verified) != 1:
+        return {
+            "status": "failed",
+            "reason": "named_lvar_readback_failed",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+            "target_name": target_name,
+            "candidate_count": len(verified),
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "before_name": before_name,
+        "before_type": before_type,
+        "name": verified[0].name,
+        "type": str(verified[0].type()),
+        "definition_address": hex(verified[0].defea),
+    }
+
+
 def _sync_world_initializer_stack_pointer_lvars() -> dict[str, object]:
     """Batch exact field-stride views in the giant world initializer."""
     specs = (BANNER_INITIALIZER_LVAR, *PRESENTATION_ANIMATION_CURSOR_LVARS)
@@ -1641,6 +1738,79 @@ SPAWN_GARBAGE_HAZARD_LVAR_SPECS = (
         {"char *", "void *", "SubGarbageSlotCursor *"},
         "garbage_slot_cursor",
         "SubGarbageSlotCursor",
+    ),
+)
+
+UPDATE_SUB_LAZER_NAMED_LVAR_SPECS = (
+    (
+        "active_bod_list",
+        0x441808,
+        {"p_active_bod_list", "active_bod_list"},
+        {"BodList *"},
+        "active_bod_list",
+    ),
+    (
+        "updated_list_flags",
+        0x441880,
+        {"v6", "updated_list_flags"},
+        {"uint32_t"},
+        "updated_list_flags",
+    ),
+    (
+        "next_bob_phase",
+        0x4418A1,
+        {"v7", "next_bob_phase"},
+        {"double"},
+        "next_bob_phase",
+    ),
+    (
+        "position",
+        0x4418D5,
+        {"p_position", "position"},
+        {"Vec3 *"},
+        "position",
+    ),
+    (
+        "grid_cell",
+        0x441939,
+        {"track_grid_cell_at_world_position", "grid_cell"},
+        {"TrackRowCell *"},
+        "grid_cell",
+    ),
+    (
+        "runtime_row",
+        0x441946,
+        {"track_runtime_cell_at_world_z", "runtime_row"},
+        {"SubRow *"},
+        "runtime_row",
+    ),
+    (
+        "primary_swept_motion",
+        0x441982,
+        {"v11", "primary_swept_motion"},
+        {"Vec3"},
+        "primary_swept_motion",
+    ),
+    (
+        "primary_probe",
+        0x4419C9,
+        {"v13", "primary_probe"},
+        {"Vec3"},
+        "primary_probe",
+    ),
+    (
+        "secondary_swept_motion",
+        0x441A30,
+        {"v14", "secondary_swept_motion"},
+        {"Vec3"},
+        "secondary_swept_motion",
+    ),
+    (
+        "secondary_probe",
+        0x441A77,
+        {"v12", "secondary_probe"},
+        {"Vec3"},
+        "secondary_probe",
     ),
 )
 
@@ -2074,6 +2244,35 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 }
             )
 
+    sub_lazer_named_lvars = {}
+    for (
+        result_name,
+        definition_address,
+        accepted_names,
+        accepted_types,
+        target_name,
+    ) in UPDATE_SUB_LAZER_NAMED_LVAR_SPECS:
+        result = _sync_named_lvar(
+            selector="update_sub_lazer_projectile",
+            definition_address=definition_address,
+            accepted_names=accepted_names,
+            accepted_types=accepted_types,
+            target_name=target_name,
+        )
+        sub_lazer_named_lvars[result_name] = result
+        if result.get("status") == "applied":
+            applied += 1
+        elif result.get("status") == "unchanged":
+            unchanged += 1
+        else:
+            failed.append(
+                {
+                    "selector": "update_sub_lazer_projectile",
+                    "lvar": result_name,
+                    "result": result,
+                }
+            )
+
     game_root_owner_graph = sync_game_root_owner_graph(require=True)
     if game_root_owner_graph.get("status") == "failed":
         failed.append(
@@ -2210,6 +2409,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "garbage_allocator_lvars": garbage_allocator_lvars,
                 "slug_allocator_lvars": slug_allocator_lvars,
                 "salt_allocator_lvars": salt_allocator_lvars,
+                "sub_lazer_named_lvars": sub_lazer_named_lvars,
                 "banner_initializer_lvar": banner_initializer_lvar,
                 "presentation_animation_cursor_lvars": (
                     presentation_animation_cursor_lvars
