@@ -356,6 +356,7 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
             ('"Object"', "0xDC"),
             ('"Sprite"', "0xB4"),
             ('"RenderableBod"', "0x80"),
+            ('"PresentationAnimationSlot"', "0x80"),
             ('"AnimManager"', "0x48"),
             ('"SubHover"', "0x214"),
             ('"Weapon"', "0x3DC"),
@@ -389,6 +390,51 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
         'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"'
         in ida_runner
     )
+
+
+def test_snail_presentation_replay_preserves_slot_element_cursors() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_snail_presentation_types.py").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    assert "SLOT_CURSOR_EXPECTED_SIZES" in binja_sync
+    for owner, size in (
+        ('"PresentationAnimationSlot"', "0x80"),
+        ('"Weapon"', "0x3DC"),
+        ('"Snail"', "0x19B4"),
+    ):
+        assert f"{owner}: {size}" in binja_sync
+    assert "PRESENTATION_SLOT_CURSOR_USER_VAR_UPDATES" in binja_sync
+    for index, storage, cursor_name in (
+        (11, 73, "cutscene_slot_cursor"),
+        (235, 69, "jetpack_slot_cursor"),
+    ):
+        update = (
+            '"initialize_player_presentation_controller",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{cursor_name}",\n'
+            '        "PresentationAnimationSlot*",'
+        )
+        assert update in binja_sync
+    assert "--slot-cursor-only" in binja_sync
+    assert "require_slot_cursor_dependencies" in binja_sync
+    assert "apply_user_var_updates" in binja_sync
+    for fragment in (
+        "struct PresentationAnimationSlot* cutscene_slot_cursor",
+        "initialize_renderable_bod(cutscene_slot_cursor)",
+        "cutscene_slot_cursor = &cutscene_slot_cursor[1]",
+        "struct PresentationAnimationSlot* jetpack_slot_cursor",
+        "initialize_renderable_bod(jetpack_slot_cursor)",
+        "jetpack_slot_cursor = &jetpack_slot_cursor[1]",
+        '"struct PresentationAnimationSlot (*"',
+    ):
+        assert fragment in health_checks
 
 
 def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
@@ -10472,6 +10518,10 @@ def test_previewed_batch_can_transactionally_set_a_user_variable() -> None:
     )
 
     assert "function.create_user_var(variable, expected_type, expected_name)" in code
+    assert "variable_sources = [function.vars]" in code
+    assert 'getattr(function, "hlil", None)' in code
+    assert 'getattr(function, "mlil", None)' in code
+    assert "for variable in function_variables(function)" in code
     assert "parsed_type_cache = {}" in code
     assert "expected_type, _ = parse_type_once(operation[\"variable_type\"])" in code
     assert '"user_defined": bool(function.is_var_user_defined(variable))' in code
@@ -10835,6 +10885,10 @@ def test_user_var_readback_skips_type_parsing(monkeypatch) -> None:
         calls.append(args)
         code = args[args.index("--code") + 1]
         assert "parse_type_string" not in code
+        assert "variable_sources = [function.vars]" in code
+        assert 'getattr(function, "hlil", None)' in code
+        assert 'getattr(function, "mlil", None)' in code
+        assert "for variable in function_variables(function)" in code
         return {
             "result": {
                 "user_vars": [

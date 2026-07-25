@@ -99,3 +99,25 @@ Those symbols close the four 0x3dc-byte Windows children as authored `Weapon`
 objects rather than generic presentation channels. The callback at `0x49735c`
 is consequently named `g_weapon_noop_vtable`; exact construction remains
 byte-identical.
+
+## 2026-07-25 animation-slot cursor ownership
+
+The two explicit constructor loops borrow one `PresentationAnimationSlot` at a
+time from the Snail-owned ten-slot cutscene bank and the jetpack Weapon-owned
+five-slot bank. Native forms the starts at `Snail +0x14c` and
+`jetpack_channel +0x150`, then advances each cursor by exactly `0x80`, the
+proven `sizeof(PresentationAnimationSlot)`.
+
+Binary Ninja had promoted both values to pointers to the complete embedded
+arrays. The exact HLIL variable identities now replay as element cursors:
+`RegisterVariableSourceType` index `11`, storage `73`, for
+`cutscene_slot_cursor`, and index `235`, storage `69`, for
+`jetpack_slot_cursor`. The tracked decompile consequently passes each current
+slot directly to `initialize_renderable_bod` and advances by one element. IDA
+independently renders the same two lifetimes as
+`PresentationAnimationSlot*` post-increment loops.
+
+The focused replay fails closed unless `PresentationAnimationSlot == 0x80`,
+`Weapon == 0x3dc`, and `Snail == 0x19b4`. This only clarifies borrows from the
+already-proven owners; it adds no new owner and leaves the exact matcher source
+unchanged at 79/79 instructions with all 27 masked operands clean.

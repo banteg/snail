@@ -186,13 +186,33 @@ def find_member(type_obj, offset):
     return None
 
 
+def function_variables(function):
+    by_identity = {}
+    variable_sources = [function.vars]
+    for il in (
+        getattr(function, "hlil", None),
+        getattr(function, "mlil", None),
+    ):
+        if il is not None:
+            variable_sources.append(il.vars)
+    for variables in variable_sources:
+        for variable in variables:
+            identity = (
+                str(variable.source_type).split(".")[-1],
+                int(variable.index),
+                int(variable.storage),
+            )
+            by_identity.setdefault(identity, variable)
+    return list(by_identity.values())
+
+
 def find_variable(function, operation):
     expected_source = str(operation["source_type"]).split(".")[-1]
     expected_index = int(operation["index"])
     expected_storage = int(operation["storage"])
     candidates = [
         variable
-        for variable in function.vars
+        for variable in function_variables(function)
         if str(variable.source_type).split(".")[-1] == expected_source
         and int(variable.index) == expected_index
         and int(variable.storage) == expected_storage
@@ -2262,13 +2282,33 @@ def find_function(identifier):
     return function
 
 
+def function_variables(function):
+    by_identity = {}
+    variable_sources = [function.vars]
+    for il in (
+        getattr(function, "hlil", None),
+        getattr(function, "mlil", None),
+    ):
+        if il is not None:
+            variable_sources.append(il.vars)
+    for variables in variable_sources:
+        for variable in variables:
+            identity = (
+                str(variable.source_type).split(".")[-1],
+                int(variable.index),
+                int(variable.storage),
+            )
+            by_identity.setdefault(identity, variable)
+    return list(by_identity.values())
+
+
 def find_variable(function, operation):
     expected_source = str(operation["source_type"]).split(".")[-1]
     expected_index = int(operation["index"])
     expected_storage = int(operation["storage"])
     candidates = [
         variable
-        for variable in function.vars
+        for variable in function_variables(function)
         if str(variable.source_type).split(".")[-1] == expected_source
         and int(variable.index) == expected_index
         and int(variable.storage) == expected_storage

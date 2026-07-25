@@ -4,11 +4,11 @@
 /* function: initialize_player_presentation_controller @ 0x4086d0 */
 
 004086d6        initialize_renderable_bod(snail)
-004086db        struct PresentationAnimationSlot (* edi)[0xa] = &snail->cutscene_animation_slots
+004086db        struct PresentationAnimationSlot* cutscene_slot_cursor = &snail->cutscene_animation_slots
 004086e1        int32_t i_2 = 0xa
 004086f4        int32_t i
-004086e8        initialize_renderable_bod(edi)
-004086ed        edi = &(*edi)[1]
+004086e8        initialize_renderable_bod(cutscene_slot_cursor)
+004086ed        cutscene_slot_cursor = &cutscene_slot_cursor[1]
 004086f3        i = i_2
 004086f3        i_2 -= 1
 004086f4        do while (i != 1)
@@ -22,11 +22,11 @@
 0040878d        initialize_array_with_constructor(&snail->weapon_channels[2].animation_slots, 0x80, 5, initialize_renderable_bod)
 00408792        snail->weapon_channels[2].body.bod.bod.vtable = &g_weapon_noop_vtable
 004087a0        initialize_renderable_bod(&snail->jetpack_channel)
-004087bb        struct PresentationAnimationSlot (* ebx)[0x5] = &snail->jetpack_channel.animation_slots
+004087bb        struct PresentationAnimationSlot* jetpack_slot_cursor = &snail->jetpack_channel.animation_slots
 004087c1        int32_t i_3 = 5
 004087d4        int32_t i_1
-004087c8        initialize_renderable_bod(ebx)
-004087cd        ebx = &(*ebx)[1]
+004087c8        initialize_renderable_bod(jetpack_slot_cursor)
+004087cd        jetpack_slot_cursor = &jetpack_slot_cursor[1]
 004087d3        i_1 = i_3
 004087d3        i_3 -= 1
 004087d4        do while (i_1 != 1)

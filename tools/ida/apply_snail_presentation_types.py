@@ -145,6 +145,7 @@ EXPECTED_OWNER_SIZES = {
     "Object": 0xDC,
     "Sprite": 0xB4,
     "RenderableBod": 0x80,
+    "PresentationAnimationSlot": 0x80,
     "AnimManager": 0x48,
     "SubHover": 0x214,
     "Weapon": 0x3DC,

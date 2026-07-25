@@ -10,6 +10,7 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_proto_updates,
     apply_symbol_updates,
+    apply_user_var_updates,
     current_type_widths,
     emit_summary,
     types_declare_if_missing,
@@ -26,6 +27,7 @@ EXPECTED_OWNER_SIZES = {
     "Object": 0xDC,
     "Sprite": 0xB4,
     "RenderableBod": 0x80,
+    "PresentationAnimationSlot": 0x80,
     "AnimManager": 0x48,
     "SubHover": 0x214,
     "Weapon": 0x3DC,
@@ -34,6 +36,31 @@ EXPECTED_OWNER_SIZES = {
     "Snail": 0x19B4,
     "Player": 0x4364,
 }
+
+SLOT_CURSOR_EXPECTED_SIZES = {
+    "PresentationAnimationSlot": 0x80,
+    "Weapon": 0x3DC,
+    "Snail": 0x19B4,
+}
+
+PRESENTATION_SLOT_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_player_presentation_controller",
+        "RegisterVariableSourceType",
+        11,
+        73,
+        "cutscene_slot_cursor",
+        "PresentationAnimationSlot*",
+    ),
+    (
+        "initialize_player_presentation_controller",
+        "RegisterVariableSourceType",
+        235,
+        69,
+        "jetpack_slot_cursor",
+        "PresentationAnimationSlot*",
+    ),
+)
 
 SYMBOL_UPDATES = (
     ("0x43a390", "update_jetpack_gauge"),
@@ -145,7 +172,42 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_HEADER_PATH,
         help="Canonical owner type header.",
     )
+    parser.add_argument(
+        "--slot-cursor-only",
+        action="store_true",
+        help=(
+            "Replay only the two PresentationAnimationSlot element cursors in "
+            "the exact Snail presentation initializer after verifying their "
+            "enclosing owner sizes."
+        ),
+    )
     return parser.parse_args()
+
+
+def require_slot_cursor_dependencies(*, target: str) -> dict[str, object]:
+    observed_sizes = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=SLOT_CURSOR_EXPECTED_SIZES,
+    )
+    mismatches = {
+        name: {
+            "expected": expected,
+            "observed": observed_sizes.get(name),
+        }
+        for name, expected in SLOT_CURSOR_EXPECTED_SIZES.items()
+        if observed_sizes.get(name) != expected
+    }
+    if mismatches:
+        raise RuntimeError(
+            "refusing presentation slot cursor replay with size mismatches: "
+            f"{mismatches!r}"
+        )
+    return {
+        "op": "verify_presentation_slot_cursor_dependencies",
+        "status": "verified",
+        "owner_sizes": observed_sizes,
+    }
 
 
 def main() -> int:
@@ -153,6 +215,22 @@ def main() -> int:
     header_path = args.header.resolve()
     if not header_path.is_file():
         raise FileNotFoundError(f"Owner type header not found: {header_path}")
+
+    if args.slot_cursor_only:
+        operations = [
+            require_slot_cursor_dependencies(target=args.target),
+            *apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=PRESENTATION_SLOT_CURSOR_USER_VAR_UPDATES,
+            ),
+        ]
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
 
     operations: list[dict[str, object]] = [
         types_declare_if_missing(
@@ -183,6 +261,11 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=PROTO_UPDATES,
+        ),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=PRESENTATION_SLOT_CURSOR_USER_VAR_UPDATES,
         ),
     ]
 

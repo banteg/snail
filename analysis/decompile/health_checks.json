@@ -7212,6 +7212,12 @@
       "artifact": "analysis/decompile/binja/functions/004086d0-initialize_player_presentation_controller.c",
       "required_substrings": [
         "initialize_player_presentation_controller",
+        "struct PresentationAnimationSlot* cutscene_slot_cursor = &snail->cutscene_animation_slots",
+        "initialize_renderable_bod(cutscene_slot_cursor)",
+        "cutscene_slot_cursor = &cutscene_slot_cursor[1]",
+        "struct PresentationAnimationSlot* jetpack_slot_cursor = &snail->jetpack_channel.animation_slots",
+        "initialize_renderable_bod(jetpack_slot_cursor)",
+        "jetpack_slot_cursor = &jetpack_slot_cursor[1]",
         "snail->weapon_channels[0].body.bod.bod.vtable",
         "snail->jetpack_channel.body.bod.bod.vtable",
         "snail->invincible_shell.body.bod.bod.vtable",
@@ -7221,6 +7227,9 @@
       "forbidden_substrings": [
         "initialize_enemy_manager_runtime",
         "g_enemy_manager_vtable",
+        "struct PresentationAnimationSlot (*",
+        "&(*edi)",
+        "&(*ebx)",
         "__asm",
         "_ET1"
       ]
@@ -7230,6 +7239,12 @@
       "artifact": "analysis/decompile/ida/functions/004086d0-initialize_player_presentation_controller.c",
       "required_substrings": [
         "initialize_player_presentation_controller",
+        "PresentationAnimationSlot *cutscene_animation_slots;",
+        "cutscene_animation_slots = snail->cutscene_animation_slots;",
+        "initialize_renderable_bod(cutscene_animation_slots++);",
+        "PresentationAnimationSlot *animation_slots;",
+        "animation_slots = snail->jetpack_channel.animation_slots;",
+        "initialize_renderable_bod(animation_slots++);",
         "snail->weapon_channels[0].body.bod.bod.vtable",
         "snail->jetpack_channel.body.bod.bod.vtable",
         "snail->invincible_shell.body.bod.bod.vtable",
@@ -7240,6 +7255,8 @@
         "initialize_enemy_manager_runtime",
         "g_enemy_manager_vtable",
         "sub_4086D0",
+        "PresentationAnimationSlot (*",
+        "PresentationAnimationSlot **",
         "__asm",
         "_ET1"
       ]
