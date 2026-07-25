@@ -1398,6 +1398,15 @@
       "notes": "All ports initialize the same owned Goldy actor and its embedded cRSubHover child. Windows and Android also bind the animated cRSnail/cRWeapon BODs to their self-owned cRAnimManager and donor-slot banks consumed by cRGame::Render. The Windows caller discards the incidental register value; the recovered source contract is void."
     },
     {
+      "address": "0x43afd0",
+      "windows_name": "play_movement_state_sound",
+      "ios_symbol": "cRSubGoldy::PlayShootSfx()",
+      "android_symbol": "cRSubGoldy::PlayShootSfx()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "All ports preserve the same three flag buckets, random SFX ranges 17..24, cached variant, and distance-attenuated playback. Android's common POP epilogue sees the receiver on the no-sound path but incidental cRSound::Play or PlayVolume residue on playback paths, proving the authored member is void."
+    },
+    {
       "address": "0x43b120",
       "windows_name": "update_subgoldy",
       "ios_symbol": "cRSubGoldy::AI()",

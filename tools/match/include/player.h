@@ -133,7 +133,7 @@ public:
     void begin_post_follow_carryover();   // @ 0x43af60
     void SetShootFlags();                  // @ 0x43a1a0, cRSubGoldy::SetShootFlags()
     void update_movement_flag_emitters(Player* player); // @ 0x43a300
-    void play_movement_state_sound();      // @ 0x43afd0
+    void PlayShootSfx();                   // @ 0x43afd0, cRSubGoldy::PlayShootSfx()
     void add_subgoldy_score(int score_kind, int bonus_score); // @ 0x4402c0
     void clear_subgoldy_score_buckets();   // @ 0x4403a0
     void display_score_stats();            // @ 0x4403c0
@@ -165,7 +165,7 @@ public:
     unsigned char row_event_cutscene_started; // +0x14c
     char unknown_14d[0x150 - 0x14d];
     Nuke nuke;                            // +0x150, authored cRNuke owner
-    int movement_sound_variant_sample;      // +0x1cc
+    int shoot_sfx_variant_sample;           // +0x1cc, cached PlayShootSfx variant
     FireWork firework;                      // +0x1d0, empty authored cRFireWork child
     char unknown_1d1[0x1d4 - 0x1d1];
     float damage_retrigger_timer;           // +0x1d4

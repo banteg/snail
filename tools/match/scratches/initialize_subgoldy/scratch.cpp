@@ -45,7 +45,7 @@ void Player::initialize_subgoldy(int player_slot)
 
     this->presentation.object->distort.initialize_object_distort();
     this->interaction_max_z = -19.0f;
-    this->movement_sound_variant_sample = zero;
+    this->shoot_sfx_variant_sample = zero;
     this->presentation.invincible_shell.cutscene_roll_progress = 0.0f;
     this->presentation.invincible_shell.cutscene_roll_step = 0.0166666675f;
     this->slow_commentary_timer = 0.0f;

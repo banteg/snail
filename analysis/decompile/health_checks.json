@@ -167,7 +167,7 @@
       "artifact": "analysis/decompile/binja/functions/0043afd0-play_movement_state_sound.c",
       "required_substrings": [
         "player->movement_flags",
-        "player->movement_sound_variant_sample",
+        "player->shoot_sfx_variant_sample",
         "player->attachment_exit_pending",
         "player->body.transform.position",
         "play_sound_effect_scaled"
@@ -183,7 +183,7 @@
       "required_substrings": [
         "void __thiscall play_movement_state_sound(Player *player)",
         "player->movement_flags",
-        "player->movement_sound_variant_sample",
+        "player->shoot_sfx_variant_sample",
         "player->attachment_exit_pending",
         "g_game_base->players[0].body.transform.position"
       ],

@@ -1,4 +1,4 @@
-// play_movement_state_sound @ 0x43afd0 (thiscall, ret)
+// play_movement_state_sound @ 0x43afd0, authored cRSubGoldy::PlayShootSfx()
 
 #include "audio_system.h"
 #include "game_root.h"
@@ -8,24 +8,24 @@
 int next_math_random_value();
 double __fastcall normalize_vector(Vector3* vector);
 
-void Player::play_movement_state_sound()
+void Player::PlayShootSfx()
 {
     unsigned int flags = movement_flags;
     int sound_id;
 
     if ((flags & 7) != 0) {
         int variant = (int)((float)next_math_random_value() * 0.000061035156f);
-        movement_sound_variant_sample = variant;
+        shoot_sfx_variant_sample = variant;
         sound_id = variant + 17;
     } else if ((flags & 0x18) != 0) {
         int variant = (int)((float)next_math_random_value() * 0.000091552734f);
-        movement_sound_variant_sample = variant;
+        shoot_sfx_variant_sample = variant;
         sound_id = variant + 19;
     } else {
         if ((flags & 0x60) == 0)
             return;
         int variant = (int)((float)next_math_random_value() * 0.000091552734f);
-        movement_sound_variant_sample = variant;
+        shoot_sfx_variant_sample = variant;
         sound_id = variant + 22;
     }
 

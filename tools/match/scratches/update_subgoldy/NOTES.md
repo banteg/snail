@@ -742,3 +742,13 @@ This is analysis-only ownership recovery. The scratch and masks are unchanged;
 a fresh focused receipt remains 74.43%, 2,070/2,087 normalized instructions,
 prefix 12/2,087, with 290 clean audited operands and the same one bounded
 `update_subgoldy_follow_jump_table` mismatch.
+
+## 2026-07-25 authored shoot-SFX call ownership
+
+The four firing-edge calls now use the cross-port authored member
+`cRSubGoldy::PlayShootSfx()`. Android and iOS retain that exact symbol, and the
+Android body independently matches the Windows flag buckets, SFX 17..24
+families, cached variant, and attachment-exit attenuation. The stable
+`play_movement_state_sound` manifest entry carries `PlayShootSfx` as an alias,
+so the source clarification does not hide or relax any call relocation. The
+focused match remains honestly unchanged.

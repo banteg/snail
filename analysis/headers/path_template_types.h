@@ -2425,7 +2425,7 @@ typedef struct Player {
     uint8_t row_event_cutscene_started;
     uint8_t _pad_14d[0x3];
     Nuke nuke;
-    int32_t movement_sound_variant_sample;
+    int32_t shoot_sfx_variant_sample;
     FireWork firework;
     uint8_t _pad_1d1[0x3];
     float damage_retrigger_timer;

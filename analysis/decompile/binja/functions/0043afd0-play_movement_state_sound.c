@@ -10,27 +10,28 @@
 0043afdf        if ((movement_flags & 7) == 0)
 0043b006        if ((movement_flags & 0x18) != 0)
 0043b01b        eax_1 = ftol(x87control, float.t(next_math_random_value()) * fconvert.t(9.15527344e-05f))
-0043b020        player->movement_sound_variant_sample = eax_1
+0043b020        player->shoot_sfx_variant_sample = eax_1
 0043b026        sound_id = eax_1 + 0x13
 0043b029        goto label_43b054
 0043b02d        if ((movement_flags & 0x60) != 0)
 0043b046        eax_1 = ftol(x87control, float.t(next_math_random_value()) * fconvert.t(9.15527344e-05f))
-0043b04b        player->movement_sound_variant_sample = eax_1
+0043b04b        player->shoot_sfx_variant_sample = eax_1
 0043b051        sound_id = eax_1 + 0x16
 0043b051        goto label_43b054
 0043b02d        return
 0043aff4        eax_1 = ftol(x87control, float.t(next_math_random_value()) * fconvert.t(6.10351562e-05f))
-0043aff9        player->movement_sound_variant_sample = eax_1
+0043aff9        player->shoot_sfx_variant_sample = eax_1
 0043afff        sound_id = eax_1 + 0x11
 0043b054        label_43b054:
 0043b057        if (sound_id == 0xffffffff)
 0043b057        return
 0043b065        if (player->attachment_exit_pending != 0)
 0043b06b        struct GameRoot* game_base_1 = g_game_base
-0043b09b        struct Vec3 vector
-0043b09b        vector.y = fconvert.s(fconvert.t(game_base_1->players[0].body.transform.position.y) - fconvert.t(player->body.transform.position.y))
-0043b0a3        vector.x = fconvert.s(fconvert.t(game_base_1->players[0].body.transform.position.x) - fconvert.t(player->body.transform.position.x))
-0043b0af        vector.z = fconvert.s(fconvert.t(game_base_1->players[0].body.transform.position.z) - fconvert.t(player->body.transform.position.z))
+0043b0af        struct Vec3 vector = struct Vec3 {
+    .y = fconvert.s(fconvert.t(game_base_1->players[0].body.transform.position.y) - fconvert.t(player->body.transform.position.y))
+    .x = fconvert.s(fconvert.t(game_base_1->players[0].body.transform.position.x) - fconvert.t(player->body.transform.position.x))
+    .z = fconvert.s(fconvert.t(game_base_1->players[0].body.transform.position.z) - fconvert.t(player->body.transform.position.z))
+}
 0043b0be        long double x87_r7_15 = fconvert.t(1f) - normalize_vector(&vector) * fconvert.t(0.0166666675f)
 0043b0c4        float gain = fconvert.s(x87_r7_15)
 0043b0c8        long double temp0 = fconvert.t(0f)

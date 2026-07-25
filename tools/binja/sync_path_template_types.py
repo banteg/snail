@@ -839,7 +839,7 @@ PLAYER_FIELD_UPDATES = (
     ("0xa0", "click_start", "ClickStart"),
     ("0x14c", "row_event_cutscene_started", "uint8_t"),
     ("0x150", "nuke", "Nuke"),
-    ("0x1cc", "movement_sound_variant_sample", "int32_t"),
+    ("0x1cc", "shoot_sfx_variant_sample", "int32_t"),
     ("0x1d0", "firework", "FireWork"),
     ("0x1d4", "damage_retrigger_timer", "float"),
     ("0x1d8", "damage_retrigger_step", "float"),

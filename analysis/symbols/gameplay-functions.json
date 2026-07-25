@@ -2369,7 +2369,10 @@
     {
       "address": "0x43afd0",
       "name": "play_movement_state_sound",
-      "description": "Void `Player` member that chooses one of three movement sound families from `movement_flags` and attenuates playback while attachment-exit handling is active. Both direct `update_subgoldy` callsites discard EAX, and its two returns expose only incidental sound-manager call results."
+      "aliases": [
+        "PlayShootSfx"
+      ],
+      "description": "Void Windows `cRSubGoldy::PlayShootSfx()`: chooses one of the authored shoot-SFX families 17..18, 19..21, or 22..24 from `movement_flags`, caches the sampled variant at Player +0x1cc, and attenuates playback while attachment-exit handling is active. Android and iOS preserve the authored symbol. Android's shared epilogue receives incompatible R0 residues from the no-sound, direct-play, and scaled-play paths, independently proving there is no result contract."
     },
     {
       "address": "0x43b120",

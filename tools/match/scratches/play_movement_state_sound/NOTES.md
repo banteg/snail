@@ -57,3 +57,26 @@ the reference position comes from the root-owned presentation player. This is
 an analysis-only improvement. The honest matcher baseline remains 89.13%,
 96/88 instructions, prefix 26/88, with all 19 masks clean; the unresolved
 lower-clamp tail is not fakematched.
+
+## 2026-07-25 authored PlayShootSfx ownership
+
+Android and iOS preserve this exact member as
+`cRSubGoldy::PlayShootSfx()`. The Android body repeats the Windows three
+shoot-flag buckets, random SFX ranges 17..18 / 19..21 / 22..24, cached
+variant, Goldy-to-presentation-player distance attenuation, and direct versus
+scaled sound calls. This closes the stable Windows helper as shoot-SFX
+ownership rather than a generic movement-state sound.
+
+IDA 9.4 shows every Android path joining one
+`POP {R4-R8,R10,PC}` epilogue. The no-SFX path leaves the original receiver in
+R0; direct and attenuated playback leave unrelated `cRSound::Play` or
+`PlayVolume` residue. Ghidra 12.1.2 independently demangles the same body as
+`void cRSubGoldy::PlayShootSfx()`. The shared Windows ABI remains the proven
+void mutator.
+
+`Player +0x1cc` is consequently narrowed from a generic movement-sound sample
+to `shoot_sfx_variant_sample`, the cached 0..1 or 0..2 family variant. The
+stable manifest name remains `play_movement_state_sound`, with
+`PlayShootSfx` as its authored matcher alias. This is ownership-only: the
+honest 89.13%, 96/88 result and the unresolved VC6 lower-clamp tail remain
+unchanged.

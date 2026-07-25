@@ -13,7 +13,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   float z; // ecx
   PlayerControlSource *p_input; // eax
   GolbShotFlightStrideCursor *golb_shot_flight_cursor; // edi
-  int v11; // ebp
+  int i; // ebp
   int32_t v12; // [esp-4h] [ebp-14h]
 
   player->player_slot = player_slot;
@@ -39,7 +39,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   player->cutscene_pitch_cycle_step = 0.0;
   initialize_object_distort(&player->presentation.body.bod.object->distort);
   player->interaction_max_z = -19.0;
-  player->movement_sound_variant_sample = 0;
+  player->shoot_sfx_variant_sample = 0;
   player->presentation.invincible_shell.cutscene_roll_progress = 0.0;
   player->presentation.invincible_shell.cutscene_roll_step = 0.016666668;
   player->slow_commentary_timer = 0.0;
@@ -142,7 +142,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   }
   initialize_snail_skin(&player->presentation.snail_skin);
   initialize_cutscene_ai(&player->presentation.cutscene);
-  if ( !player->game->selected_level_record_active )
+  if ( player->game->selected_level_record_active == 0 )
     player->presentation.cutscene.state = CUT_SCENE_STATE_INTRO_PENDING;
   player->presentation.owner_player = player;
   set_matrix_identity(&player->presentation.body.transform);
@@ -197,16 +197,13 @@ LABEL_24:
   noop_runtime_ai();
   player->follow_state.active = 0;
   golb_shot_flight_cursor = (GolbShotFlightStrideCursor *)&player->golb_shots[0].flight_transform;
-  v11 = 12;
-  do
+  for ( i = 12; i != 0; --i )
   {
     golb_shot_flight_cursor->state = 0;
     set_matrix_identity(&golb_shot_flight_cursor->flight_transform);
     golb_shot_flight_cursor->game = player->game;
     ++golb_shot_flight_cursor;
-    --v11;
   }
-  while ( v11 );
   v12 = player->player_slot;
   player->body.bod.bod.list_flags |= 0x20u;
   player->completion_handoff_cycle_progress = 0.0;

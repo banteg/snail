@@ -1027,7 +1027,7 @@ steering_stored:
                         ->run_records[emitter_game->replay_update_cursor]
                         .flags
                     & 1) {
-                    play_movement_state_sound();
+                    PlayShootSfx();
                     update_movement_flag_emitters(this);
                     movement_fire_progress = movement_fire_progress_step + 0.30000001f;
                 } else if (emitter_game
@@ -1036,16 +1036,16 @@ steering_stored:
                                .flags
                            & 2) {
                     movement_fire_progress = movement_fire_progress_step;
-                    play_movement_state_sound();
+                    PlayShootSfx();
                     update_movement_flag_emitters(this);
                 }
             } else if (control_source->control_flags_a & INPUT_BUTTON_PRIMARY) {
-                play_movement_state_sound();
+                PlayShootSfx();
                 update_movement_flag_emitters(this);
                 movement_fire_progress = movement_fire_progress_step + 0.30000001f;
             } else if (control_source->control_flags_b & INPUT_BUTTON_PRIMARY) {
                 movement_fire_progress = movement_fire_progress_step;
-                play_movement_state_sound();
+                PlayShootSfx();
                 update_movement_flag_emitters(this);
             }
         }

@@ -30,7 +30,9 @@ The current high-confidence `Player` fields are:
 - `+0x14c`: `row_event_cutscene_started`
 - `+0x150`: `nuke`
   - exact 0x7c-byte authored `cRNuke` collision-ring owner
-- `+0x1cc`: `movement_sound_variant_sample`
+- `+0x1cc`: `shoot_sfx_variant_sample`
+  - cached random variant selected by the authored
+    `cRSubGoldy::PlayShootSfx()` member
 - `+0x1d0`: exact empty one-byte `firework` child (`cRFireWork`)
   - `firework_shoot` does not read instance state, but Windows callers still pass this embedded receiver through `ecx`
 - `+0x1d4`: `damage_retrigger_timer`
@@ -277,8 +279,10 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `initialize_subgoldy` clears it on run start
   - `update_subgoldy` flips it the first time the row-event tip path dispatches the one-shot cutscene animation
 - `player + 0x1cc..+0x1e0` is a non-row-event movement and reaction slice
-  - `+0x00`: `movement_sound_variant_sample`
-    - `play_movement_state_sound` stores the sampled movement-sound variant here before deriving the emitted sound id
+  - `+0x00`: `shoot_sfx_variant_sample`
+    - Windows `play_movement_state_sound`, authored as
+      `cRSubGoldy::PlayShootSfx()`, stores the sampled variant here before
+      deriving SFX 17..24
   - `+0x08`: `damage_retrigger_timer`
   - `+0x0c`: `damage_retrigger_step`
     - `handle_subgoldy_collisions` seeds the timer from the step, and `update_subgoldy` advances and clears it past the terminal threshold

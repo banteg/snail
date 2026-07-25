@@ -26,7 +26,7 @@
 0043aa5a        player->cutscene_pitch_cycle_step = 0f
 0043aa6c        initialize_object_distort(&player->presentation.body.bod.object->distort)
 0043aa71        player->interaction_max_z = -19f
-0043aa7b        player->movement_sound_variant_sample = 0
+0043aa7b        player->shoot_sfx_variant_sample = 0
 0043aa86        player->presentation.invincible_shell.cutscene_roll_progress = 0f
 0043aa8c        player->presentation.invincible_shell.cutscene_roll_step = 0.0166666675f
 0043aa92        player->slow_commentary_timer = 0f
