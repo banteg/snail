@@ -68,6 +68,28 @@
       ]
     },
     {
+      "name": "bn_player_shoot_cooldown_step_owner",
+      "artifact": "analysis/decompile/binja/functions/0043a1a0-update_player_movement_flags.c",
+      "required_substrings": [
+        "player->shoot_cooldown_step"
+      ],
+      "forbidden_substrings": [
+        "movement_fire_progress",
+        "player + 0x2734"
+      ]
+    },
+    {
+      "name": "ida_player_shoot_cooldown_step_owner",
+      "artifact": "analysis/decompile/ida/functions/0043a1a0-update_player_movement_flags.c",
+      "required_substrings": [
+        "player->shoot_cooldown_step"
+      ],
+      "forbidden_substrings": [
+        "movement_fire_progress",
+        "player + 10036"
+      ]
+    },
+    {
       "name": "bn_subhover_end_owner",
       "artifact": "analysis/decompile/binja/functions/0043a370-end_jetpack_hover.c",
       "required_substrings": [
@@ -104,11 +126,13 @@
         "struct GolbShotFlightStrideCursor* golb_shot_flight_cursor",
         "golb_shot_flight_cursor->state",
         "golb_shot_flight_cursor->game = player->game",
-        "initialize_jetpack_gauge(&player->sub_hover"
+        "initialize_jetpack_gauge(&player->sub_hover",
+        "player->shoot_cooldown_progress"
       ],
       "forbidden_substrings": [
         "TransformMatrix* transform = &player->golb_shots",
         "transform->__offset",
+        "movement_fire_progress",
         "arg1",
         "arg2"
       ]
@@ -123,12 +147,14 @@
         "golb_shot_flight_cursor->state = 0",
         "set_matrix_identity(&golb_shot_flight_cursor->flight_transform)",
         "golb_shot_flight_cursor->game = player->game",
-        "player->timer_360_amplitude"
+        "player->timer_360_amplitude",
+        "player->shoot_cooldown_progress"
       ],
       "forbidden_substrings": [
         "TransformMatrix *p_flight_transform",
         "p_flight_transform[2]",
         "player->unknown_364",
+        "movement_fire_progress",
         "void __thiscall sub_43A9C0",
         "int this"
       ]
@@ -582,12 +608,15 @@
         "selected_level_record",
         "replay_sample_count",
         "run_records",
-        "control_override_active"
+        "control_override_active",
+        "player->shoot_cooldown_progress",
+        "player->shoot_cooldown_step"
       ],
       "forbidden_substrings": [
         "__asm",
         "_ET1",
         "struct Game*",
+        "movement_fire_progress",
         "player->game->segment_cache.slots[0x8d][2]",
         "player->game->tutorial._pad_10[8]"
       ],
@@ -618,6 +647,8 @@
         "attachment_exit_pending",
         "body.transform.position",
         "track_state_latch",
+        "player->shoot_cooldown_progress",
+        "player->shoot_cooldown_step",
         "begin_post_follow_carryover(player);"
       ],
       "forbidden_substrings": [
@@ -625,6 +656,7 @@
         "_ET1",
         "unimplemented",
         "__offset(",
+        "movement_fire_progress",
         "begin_post_follow_carryover((int)player)"
       ]
     },

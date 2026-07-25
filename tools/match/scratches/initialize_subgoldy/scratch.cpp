@@ -207,7 +207,7 @@ void Player::initialize_subgoldy(int player_slot)
             control_source = 0;
     }
     this->control_source = control_source;
-    this->movement_fire_progress = 0.0f;
+    this->shoot_cooldown_progress = 0.0f;
     this->completion_handoff_active = (unsigned char)zero;
     this->slide_extension_threshold_z = 0.0f;
     this->damage_gauge.initialize_damage_gauge();

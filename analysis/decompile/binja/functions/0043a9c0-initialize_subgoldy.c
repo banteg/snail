@@ -150,7 +150,7 @@
 0043ae1d        eax_8 = nullptr
 0043ae07        eax_8 = &game_base_1->game_inputs[0].input
 0043ae25        player->control_source = eax_8
-0043ae2b        player->movement_fire_progress = 0f
+0043ae2b        player->shoot_cooldown_progress = 0f
 0043ae31        player->completion_handoff_active = 0
 0043ae37        player->slide_extension_threshold_z = 0f
 0043ae3d        initialize_damage_gauge(&player->damage_gauge)

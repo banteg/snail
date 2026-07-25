@@ -1005,7 +1005,7 @@ steering_stored:
     presentation.initialize_cutscene();
     SetShootFlags();
     if (g_game->subgame.replay_update_cursor < 10)
-        movement_fire_progress = movement_fire_progress_step;
+        shoot_cooldown_progress = shoot_cooldown_step;
 
     SubgameRuntime* emitter_game = game;
     if ((emitter_game->runtime_flags
@@ -1015,11 +1015,11 @@ steering_stored:
         && !control_override_active
         && (click_start.state == CLICK_START_STATE_INACTIVE
             || click_start.state == CLICK_START_STATE_TEARDOWN)) {
-        if (movement_fire_progress > 0.0f) {
-            float advanced = movement_fire_progress_step + movement_fire_progress;
-            movement_fire_progress = advanced;
+        if (shoot_cooldown_progress > 0.0f) {
+            float advanced = shoot_cooldown_step + shoot_cooldown_progress;
+            shoot_cooldown_progress = advanced;
             if (advanced > 1.0f)
-                movement_fire_progress = 0.0f;
+                shoot_cooldown_progress = 0.0f;
         } else if (emitter_game->track_state_latch) {
             if (emitter_game->selected_level_record_active) {
                 if (emitter_game
@@ -1029,22 +1029,22 @@ steering_stored:
                     & 1) {
                     PlayShootSfx();
                     Shoot(this);
-                    movement_fire_progress = movement_fire_progress_step + 0.30000001f;
+                    shoot_cooldown_progress = shoot_cooldown_step + 0.30000001f;
                 } else if (emitter_game
                                ->selected_level_record
                                ->run_records[emitter_game->replay_update_cursor]
                                .flags
                            & 2) {
-                    movement_fire_progress = movement_fire_progress_step;
+                    shoot_cooldown_progress = shoot_cooldown_step;
                     PlayShootSfx();
                     Shoot(this);
                 }
             } else if (control_source->control_flags_a & INPUT_BUTTON_PRIMARY) {
                 PlayShootSfx();
                 Shoot(this);
-                movement_fire_progress = movement_fire_progress_step + 0.30000001f;
+                shoot_cooldown_progress = shoot_cooldown_step + 0.30000001f;
             } else if (control_source->control_flags_b & INPUT_BUTTON_PRIMARY) {
-                movement_fire_progress = movement_fire_progress_step;
+                shoot_cooldown_progress = shoot_cooldown_step;
                 PlayShootSfx();
                 Shoot(this);
             }

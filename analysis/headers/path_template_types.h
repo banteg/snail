@@ -2495,8 +2495,8 @@ typedef struct Player {
     uint8_t completion_handoff_voice_gate;
     uint8_t _pad_44f[0x1];
     GolbShot golb_shots[0xc];
-    float movement_fire_progress;
-    float movement_fire_progress_step;
+    float shoot_cooldown_progress;
+    float shoot_cooldown_step;
     float slide_extension_threshold_z;
     float track_z_offset;
     float track_z_anchor;

@@ -972,7 +972,7 @@ LABEL_287:
         initialize_cutscene(&player->presentation);
         update_player_movement_flags((int *)player);
         if ( g_game_base->subgame.replay_update_cursor < 10 )
-          player->movement_fire_progress = player->movement_fire_progress_step;
+          player->shoot_cooldown_progress = player->shoot_cooldown_step;
         v104 = player->game;
         if ( (v104->runtime_flags & 0x400000) == 0 )
           goto LABEL_365;
@@ -986,12 +986,12 @@ LABEL_287:
           if ( v105 != CLICK_START_STATE_TEARDOWN )
             goto LABEL_365;
         }
-        if ( player->movement_fire_progress > 0.0 )
+        if ( player->shoot_cooldown_progress > 0.0 )
         {
-          v106 = player->movement_fire_progress_step + player->movement_fire_progress;
-          player->movement_fire_progress = v106;
+          v106 = player->shoot_cooldown_step + player->shoot_cooldown_progress;
+          player->shoot_cooldown_progress = v106;
           if ( v106 > 1.0 )
-            player->movement_fire_progress = 0.0;
+            player->shoot_cooldown_progress = 0.0;
           goto LABEL_365;
         }
         if ( v104->track_state_latch )
@@ -1011,13 +1011,13 @@ LABEL_287:
 LABEL_359:
             play_movement_state_sound(player);
             update_movement_flag_emitters(player, player);
-            player->movement_fire_progress = player->movement_fire_progress_step + 0.30000001;
+            player->shoot_cooldown_progress = player->shoot_cooldown_step + 0.30000001;
             goto LABEL_365;
           }
           if ( (player->control_source->control_flags_b & 0x4000) != 0 )
           {
 LABEL_364:
-            player->movement_fire_progress = player->movement_fire_progress_step;
+            player->shoot_cooldown_progress = player->shoot_cooldown_step;
             play_movement_state_sound(player);
             update_movement_flag_emitters(player, player);
           }

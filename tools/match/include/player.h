@@ -254,8 +254,8 @@ public:
     unsigned char completion_handoff_voice_gate; // +0x44e
     char unknown_44f[0x450 - 0x44f];
     GolbShot golb_shots[12];               // +0x450, owned projectile bank through +0x2730
-    float movement_fire_progress;           // +0x2730
-    float movement_fire_progress_step;      // +0x2734
+    float shoot_cooldown_progress;          // +0x2730
+    float shoot_cooldown_step;              // +0x2734
     float slide_extension_threshold_z;      // +0x2738
     float track_z_offset;                   // +0x273c
     float track_z_anchor;                   // +0x2740

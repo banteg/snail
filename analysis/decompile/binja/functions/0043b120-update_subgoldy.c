@@ -1565,7 +1565,7 @@
 0043d057        initialize_cutscene(&player->presentation)
 0043d05e        update_player_movement_flags(player)
 0043d06f        if (g_game_base->subgame.replay_update_cursor s< 0xa)
-0043d077        player->movement_fire_progress = player->movement_fire_progress_step
+0043d077        player->shoot_cooldown_progress = player->shoot_cooldown_step
 0043d07d        struct SubgameRuntime* game_17 = player->game
 0043d0a6        if ((game_17->runtime_flags & &__dos_header) != 0 && player->completion_handoff_active == 0 && player->control_override_active == 0)
 0043d0ac        enum ClickStartState state_2 = player->click_start.state
@@ -1597,21 +1597,21 @@
 0043d14b        update_movement_flag_emitters(player, player)
 0043d150        unimplemented  {fld st0, dword [ebp+0x2734]}
 0043d156        unimplemented  {fadd dword [0x4973d8]}
-0043d15c        player->movement_fire_progress = fconvert.s(unimplemented  {fstp dword [ebp+0x2730], st0})
+0043d15c        player->shoot_cooldown_progress = fconvert.s(unimplemented  {fstp dword [ebp+0x2730], st0})
 0043d15c        unimplemented  {fstp dword [ebp+0x2730], st0}
 0043d130        if (selected_level_record_active == 0)
 0043d130        goto label_43d138
 0043d168        label_43d168:
 0043d17c        if ((game_17->selected_level_record->run_records[game_17->replay_update_cursor].flags.b & 2) != 0)
 0043d198        label_43d198:
-0043d198        player->movement_fire_progress = player->movement_fire_progress_step
+0043d198        player->shoot_cooldown_progress = player->shoot_cooldown_step
 0043d19e        play_movement_state_sound(player)
 0043d1a6        update_movement_flag_emitters(player, player)
 0043d180        if (selected_level_record_active == 0)
 0043d180        goto label_43d18b
 0043d0d2        unimplemented  {fld st0, dword [ebp+0x2734]}
 0043d0d8        unimplemented  {fadd dword [ebp+0x2730]}
-0043d0de        player->movement_fire_progress = fconvert.s(unimplemented  {fst dword [ebp+0x2730], st0})
+0043d0de        player->shoot_cooldown_progress = fconvert.s(unimplemented  {fst dword [ebp+0x2730], st0})
 0043d0e4        long double temp71_1 = fconvert.t(1f)
 0043d0e4        unimplemented  {fcomp st0, dword [0x497220]} f- temp71_1
 0043d0e4        bool c0_74 = unimplemented  {fcomp st0, dword [0x497220]} f< temp71_1
@@ -1619,7 +1619,7 @@
 0043d0e4        bool c3_74 = unimplemented  {fcomp st0, dword [0x497220]} f== temp71_1
 0043d0e4        unimplemented  {fcomp st0, dword [0x497220]}
 0043d0ef        if ((((c0_74 ? 1 : 0) << 8 | (c2_74 ? 1 : 0) << 0xa | (c3_74 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb):1.b & 0x41) == 0)
-0043d0f5        player->movement_fire_progress = 0f
+0043d0f5        player->shoot_cooldown_progress = 0f
 0043d1b7        update_row_event_display(&player->game->completion)
 0043d1bc        struct SubgameRuntime* game_7 = player->game
 0043d1c9        game_7->current_high_score_record.replay_sample_count += 1

@@ -393,6 +393,20 @@ GOLB_SHOT_PREFIX_MEMBERS = (
     (0x114, 0x004, "vapour_owner_shot", "GolbShot *"),
     (0x118, 0x080, "tertiary_body", "RenderableBod"),
 )
+PLAYER_SHOOT_COOLDOWN_EXPECTED_MEMBERS = {
+    0x2730: {
+        "offset": "0x2730",
+        "size": 4,
+        "name": "shoot_cooldown_progress",
+        "type": "float",
+    },
+    0x2734: {
+        "offset": "0x2734",
+        "size": 4,
+        "name": "shoot_cooldown_step",
+        "type": "float",
+    },
+}
 GOLB_SHOT_HEADER_MARKERS = (
     "RenderableBod primary_body;",
     "Vapour vapour;",
@@ -4163,6 +4177,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         "name": "tile_id",
         "type": "SubLocTileId",
     }
+    player_shoot_cooldown_members = {
+        hex(offset): _named_struct_member_readback("Player", offset)
+        for offset in PLAYER_SHOOT_COOLDOWN_EXPECTED_MEMBERS
+    }
     bod_core_owner_size_failures = [
         {
             "selector": name,
@@ -4300,6 +4318,18 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "observed": track_row_cell_tile_owner,
             }
         )
+    for offset, expected in PLAYER_SHOOT_COOLDOWN_EXPECTED_MEMBERS.items():
+        observed = player_shoot_cooldown_members[hex(offset)]
+        if observed != expected:
+            owner_size_failures.append(
+                {
+                    "selector": f"Player.{expected['name']}",
+                    "owner_group": "player_shoot_cooldown",
+                    "reason": "member_mismatch",
+                    "expected": expected,
+                    "observed": observed,
+                }
+            )
     if parse_errors or owner_size_failures:
         print(
             json.dumps(
@@ -4318,6 +4348,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "fringe_face_pair_cursor_size": fringe_face_pair_cursor_size,
                     "track_row_cell_tile_owner": track_row_cell_tile_owner,
+                    "player_shoot_cooldown_members": (
+                        player_shoot_cooldown_members
+                    ),
                     "failed": owner_size_failures,
                 },
                 indent=2,
@@ -5018,6 +5051,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "fringe_vertex_row_cursor_size": fringe_vertex_row_cursor_size,
                 "fringe_face_pair_cursor_size": fringe_face_pair_cursor_size,
                 "track_row_cell_tile_owner": track_row_cell_tile_owner,
+                "player_shoot_cooldown_members": player_shoot_cooldown_members,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

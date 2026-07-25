@@ -41,7 +41,7 @@ Residual:
   93.75%, 46/50 candidate/target instructions, with 2 masked operands OK. The
   IDA artifact was updated from raw `this+206/207/2509` indexing to
   `Player::movement_flags`, `previous_movement_flags`,
-  `movement_fire_progress_step`, and `presentation`.
+  `shoot_cooldown_step`, and `presentation`.
 - 2026-06-19 equal-tail audit: decompiler-shaped `if (equal) { store; } else
   { set_snail_weapon; store; }`, explicit equal early-return, an
   `unchanged_flags` local, a typed `previous_flags` pointer, source label layout
@@ -93,6 +93,11 @@ Ghidra 12.1.2 independently imports the Android ELF at image base zero,
 demangles the function as `cRSubGoldy::SetShootFlags()`, assigns it a void
 contract, and reconstructs the same nine-case table and conditional
 `cRSnail::SetWeapon` call.
+
+The completed `SetShootFlags -> PlayShootSfx -> Shoot` chain also narrows
+Player `+0x2734` from a generic movement-fire rate to
+`shoot_cooldown_step`: this method selects the step per weapon family, and the
+authored `cRSubGoldy::AI()` firing gate is its only consumer.
 
 The void source shape remains honestly at 93.75%, 46/50 instructions, prefix
 38/50, with two clean operands. VC6 still tail-merges the clean equal path;

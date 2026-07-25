@@ -190,7 +190,7 @@ LABEL_23:
   p_input = (PlayerControlSource *)&g_game_base->game_inputs[0].input;
 LABEL_24:
   player->control_source = p_input;
-  player->movement_fire_progress = 0.0;
+  player->shoot_cooldown_progress = 0.0;
   player->completion_handoff_active = 0;
   player->slide_extension_threshold_z = 0.0;
   initialize_damage_gauge(&player->damage_gauge);

@@ -5412,6 +5412,21 @@ def test_ida_94_function_presence_checks_avoid_deprecated_get_func() -> None:
     assert "ida_funcs.get_func(" not in path_replay
 
 
+def test_ida_path_replay_verifies_player_shoot_cooldown_members() -> None:
+    path_replay = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for marker in (
+        "PLAYER_SHOOT_COOLDOWN_EXPECTED_MEMBERS",
+        '"name": "shoot_cooldown_progress"',
+        '"name": "shoot_cooldown_step"',
+        '"owner_group": "player_shoot_cooldown"',
+        '"player_shoot_cooldown_members": player_shoot_cooldown_members',
+    ):
+        assert marker in path_replay
+
+
 def test_ida_type_inspectors_report_function_and_data_ownership() -> None:
     function_inspector = (IDA_DIR / "inspect_function_types.py").read_text(
         encoding="utf-8"
@@ -5423,6 +5438,12 @@ def test_ida_type_inspectors_report_function_and_data_ownership() -> None:
         encoding="utf-8"
     )
     data_wrapper = (IDA_DIR / "query_data_types.py").read_text(encoding="utf-8")
+    struct_inspector = (IDA_DIR / "inspect_named_structs.py").read_text(
+        encoding="utf-8"
+    )
+    struct_wrapper = (IDA_DIR / "query_named_structs.py").read_text(
+        encoding="utf-8"
+    )
 
     for marker in (
         "ida_funcs.get_func_start(address)",
@@ -5447,6 +5468,15 @@ def test_ida_type_inspectors_report_function_and_data_ownership() -> None:
         assert marker in data_inspector
     assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/inspect_data_types.py"' in data_wrapper
     assert "script_args=list(args.selectors)" in data_wrapper
+    for marker in (
+        "owner.get_named_type(None, selector, ida_typeinf.BTF_STRUCT)",
+        "owner.get_udt_details(members)",
+        '"offset": hex(int(member.offset) // 8)',
+        '"type": member.type.dstr()',
+    ):
+        assert marker in struct_inspector
+    assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/inspect_named_structs.py"' in struct_wrapper
+    assert "script_args=list(args.selectors)" in struct_wrapper
 
 
 def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:

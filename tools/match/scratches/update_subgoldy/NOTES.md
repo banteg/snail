@@ -762,3 +762,17 @@ the Windows flag-to-projectile-budget classifier plus the receiver-owned
 carries `Shoot` as an alias, so every call relocation remains audited. This is
 an ownership clarification only; the focused match remains honestly
 unchanged.
+
+## 2026-07-25 shoot cooldown field ownership
+
+The completed authored shooting chain closes Player `+0x2730/+0x2734` as
+`shoot_cooldown_progress` and `shoot_cooldown_step`. `SetShootFlags` selects
+the step from the active weapon family. `cRSubGoldy::AI()` blocks another shot
+while progress is positive, advances it by that step to the terminal
+threshold, and seeds it again on every `PlayShootSfx`/`Shoot` firing edge.
+No non-shooting consumer exists in the recovered Windows or Android bodies.
+
+The older `movement_fire_progress` names remain only as stable Frida trace
+schema keys; the C++ and analysis struct now carry the narrower ownership.
+Field spelling does not affect code generation, so the focused match remains
+honestly unchanged.
