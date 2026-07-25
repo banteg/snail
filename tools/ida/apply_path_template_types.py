@@ -1168,6 +1168,135 @@ ATTACHMENT_ENTRY_ROOT_OFFSET_OPERANDS = (
     (0x42CA7B, 1, 0x430100),  # Player::follow_state
 )
 
+# The world initializer keeps GameRoot in EBP while constructing the complete
+# Player-owned presentation graph. Every displacement below is a proven
+# GameRoot-relative field, but each numeric value also lands inside .text.
+# IDA consequently promotes the displacement to a loc_* address and prevents
+# Hex-Rays from following the already measured
+# GameRoot -> SubgameRuntime -> Player -> Snail ownership chain. Normalize only
+# these exact memory operands; the code symbols at the colliding addresses stay
+# intact.
+WORLD_INITIALIZER_ROOT_OFFSET_OPERANDS = (
+    # Player::cameraman.
+    (0x40AEFC, 1, 0x42FF7C),
+    # Snail body, ten owned cutscene-animation slots, and hotspot body.
+    (0x40F28F, 1, 0x43284C),
+    (0x40F2FB, 1, 0x432870),
+    (0x40F313, 1, 0x432700),
+    (0x40F326, 1, 0x432724),
+    (0x40F344, 1, 0x4328CC),
+    (0x40F34F, 1, 0x4328F0),
+    (0x40F36D, 1, 0x43294C),
+    (0x40F378, 1, 0x432970),
+    (0x40F396, 1, 0x4329CC),
+    (0x40F3A1, 1, 0x4329F0),
+    (0x40F3BF, 1, 0x432A4C),
+    (0x40F3CA, 1, 0x432A70),
+    (0x40F3E8, 1, 0x432ACC),
+    (0x40F3F3, 1, 0x432AF0),
+    (0x40F411, 1, 0x432B4C),
+    (0x40F41C, 1, 0x432B70),
+    (0x40F43A, 1, 0x432BCC),
+    (0x40F445, 1, 0x432BF0),
+    (0x40F463, 1, 0x432C4C),
+    (0x40F46E, 1, 0x432C70),
+    (0x40F48C, 1, 0x432CCC),
+    (0x40F497, 1, 0x432CF0),
+    (0x40F4B5, 1, 0x433D4C),
+    (0x40F4C0, 1, 0x433D70),
+    (0x40F4D9, 1, 0x432700),
+    (0x40F4E4, 1, 0x432870),
+    (0x40F53F, 1, 0x432724),
+    (0x40F54F, 1, 0x432724),
+    (0x40F55A, 1, 0x432724),
+    (0x40F566, 1, 0x432724),
+    (0x40F572, 1, 0x432724),
+    # Jetpack presentation channel and its two active animation slots.
+    (0x40F589, 1, 0x4338E0),
+    (0x40F594, 1, 0x433904),
+    (0x40F5B2, 1, 0x433A30),
+    (0x40F5BD, 1, 0x433A54),
+    (0x40F5DB, 1, 0x433AB0),
+    (0x40F5E6, 1, 0x433AD4),
+    (0x40F5F9, 1, 0x433A54),
+    (0x40F650, 1, 0x433904),
+    (0x40F660, 1, 0x433904),
+    (0x40F66B, 1, 0x433904),
+    (0x40F677, 1, 0x433904),
+    (0x40F683, 1, 0x433904),
+    # Left weapon channel and its five inline animation slots.
+    (0x40F69A, 1, 0x432D4C),
+    (0x40F6A5, 1, 0x432D70),
+    (0x40F6C3, 1, 0x432E9C),
+    (0x40F6CE, 1, 0x432EC0),
+    (0x40F6EC, 1, 0x432F1C),
+    (0x40F6F7, 1, 0x432F40),
+    (0x40F715, 1, 0x432F9C),
+    (0x40F720, 1, 0x432FC0),
+    (0x40F73E, 1, 0x43301C),
+    (0x40F749, 1, 0x433040),
+    (0x40F767, 1, 0x43309C),
+    (0x40F772, 1, 0x4330C0),
+    (0x40F785, 1, 0x432EC0),
+    (0x40F7E0, 1, 0x432D70),
+    (0x40F7F0, 1, 0x432D70),
+    (0x40F7FB, 1, 0x432D70),
+    (0x40F807, 1, 0x432D70),
+    (0x40F813, 1, 0x432D70),
+    # Right weapon channel and its five inline animation slots.
+    (0x40F82A, 1, 0x433128),
+    (0x40F835, 1, 0x43314C),
+    (0x40F853, 1, 0x433278),
+    (0x40F85E, 1, 0x43329C),
+    (0x40F87C, 1, 0x4332F8),
+    (0x40F887, 1, 0x43331C),
+    (0x40F8A5, 1, 0x433378),
+    (0x40F8B0, 1, 0x43339C),
+    (0x40F8CE, 1, 0x4333F8),
+    (0x40F8D9, 1, 0x43341C),
+    (0x40F8F7, 1, 0x433478),
+    (0x40F902, 1, 0x43349C),
+    (0x40F915, 1, 0x43329C),
+    (0x40F970, 1, 0x43314C),
+    (0x40F980, 1, 0x43314C),
+    (0x40F98B, 1, 0x43314C),
+    (0x40F997, 1, 0x43314C),
+    (0x40F9A3, 1, 0x43314C),
+    # Top weapon channel and its five inline animation slots.
+    (0x40F9BA, 1, 0x433504),
+    (0x40F9C5, 1, 0x433528),
+    (0x40F9E3, 1, 0x433654),
+    (0x40F9EE, 1, 0x433678),
+    (0x40FA0C, 1, 0x4336D4),
+    (0x40FA17, 1, 0x4336F8),
+    (0x40FA35, 1, 0x433754),
+    (0x40FA40, 1, 0x433778),
+    (0x40FA5E, 1, 0x4337D4),
+    (0x40FA69, 1, 0x4337F8),
+    (0x40FA87, 1, 0x433854),
+    (0x40FA92, 1, 0x433878),
+    (0x40FAA5, 1, 0x433678),
+    (0x40FB00, 1, 0x433528),
+    (0x40FB10, 1, 0x433528),
+    (0x40FB1B, 1, 0x433528),
+    (0x40FB2E, 1, 0x433528),
+    (0x40FB3A, 1, 0x433528),
+    # SnailSkin's three borrowed material refs and invincibility body.
+    (0x40FB5C, 0, 0x43403C),
+    (0x40FB73, 0, 0x434040),
+    (0x40FB83, 0, 0x434044),
+    (0x40FB8F, 1, 0x433F94),
+    (0x40FB9A, 1, 0x433FB8),
+    (0x40FBAF, 1, 0x433FB8),
+    # Player-owned Golb shot body, vapour-object cursor, and shared rocket body.
+    (0x40FBC7, 1, 0x4302E4),
+    (0x40FBD2, 1, 0x430308),
+    (0x40FBE7, 1, 0x430270),
+    (0x40FC3F, 1, 0x430308),
+    # Subgame-owned high-score tracker used by the initializer tail.
+    (0x4101CB, 1, 0x6FFAE0),
+)
+
 # Tutorial::Init borrows the containing SubgameRuntime and ORs the authored
 # tutorial feature mask into runtime_flags. IDA can promote both immediate
 # operands to address expressions because their values also land inside the
@@ -4041,6 +4170,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    world_initializer_root_offset_operands = _normalize_root_offset_operands(
+        WORLD_INITIALIZER_ROOT_OFFSET_OPERANDS
+    )
+    for result in world_initializer_root_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "initialize_game_assets_and_world",
+                    "root_offset_operand": result,
+                }
+            )
     attachment_follow_root_offset_operands = _normalize_root_offset_operands(
         ATTACHMENT_FOLLOW_ROOT_OFFSET_OPERANDS
     )
@@ -4532,6 +4672,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "game_root_owner_graph": game_root_owner_graph,
                 "tutorial_numeric_operands": tutorial_numeric_operands,
                 "attachment_entry_root_offset_operands": attachment_entry_root_offset_operands,
+                "world_initializer_root_offset_operands": world_initializer_root_offset_operands,
                 "attachment_follow_root_offset_operands": attachment_follow_root_offset_operands,
                 "harmonize_root_offset_operands": harmonize_root_offset_operands,
                 "runtime_pool_row_offset_operands": runtime_pool_row_offset_operands,

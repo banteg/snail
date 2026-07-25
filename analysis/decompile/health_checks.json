@@ -14996,6 +14996,32 @@
       ]
     },
     {
+      "name": "ida_game_initializer_player_presentation_root_ownership",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "initialize_cameraman(&game->subgame.player.cameraman);",
+        "game->subgame.player.presentation.cutscene_animation_slots[9].body.bod.object",
+        "game->subgame.player.presentation.weapon_channels[0].body.bod",
+        "game->subgame.player.presentation.weapon_channels[0].animation_slots[2].body.bod.object",
+        "game->subgame.player.presentation.weapon_channels[0].animation_slots[3].body.bod.object",
+        "game->subgame.player.presentation.weapon_channels[2].animation_slots[4].body.bod.object",
+        "game->subgame.player.presentation.snail_skin.material_overrides[2]",
+        "game->subgame.player.presentation.invincible_shell.body.bod.object",
+        "game->subgame.player.golb_shots[0].vapour.body.bod.object",
+        "initialize_high_score_tables(&game->subgame.sub_high_score);"
+      ],
+      "forbidden_substrings": [
+        "loc_430",
+        "loc_432",
+        "loc_433",
+        "loc_434",
+        "byte_432D4C",
+        "(char *)find_registered_sound_sample_id_by_name + (_DWORD)game",
+        "(char *)get_authored_view_height + (_DWORD)game",
+        "g_parcel_set_buckets[1431]"
+      ]
+    },
+    {
       "name": "ida_game_initializer_animation_object_cursor_ownership",
       "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [

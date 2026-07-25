@@ -411,7 +411,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   bind_subgame_owner((SubgameOwnerLink *)&game->subgame.gui);
   bind_subgame_owner((SubgameOwnerLink *)&game->subgame.thanks_screen);
   load_galaxy_layout(&game->subgame.galaxy);
-  initialize_cameraman((Cameraman *)((char *)&loc_42FF7C + (_DWORD)game));
+  initialize_cameraman(&game->subgame.player.cameraman);
   open_logo(&game->logo);
   initialize_sound_bank(&g_sound_effect_manager, g_sound_bank_entries);
   initialize_voice_manager(&g_voice_manager);
@@ -2663,7 +2663,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[26].secondary.entry_base_strip_mesh = game->subgame.path_pairs[26].secondary.bod.object;
   debug_report_stub();
   v231 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_43284A + 2), v231);
+  set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[0].body.bod, v231);
   case_insensitive_substring = find_case_insensitive_substring(aTest, game->directx_loader.animation_bytes);
   if ( case_insensitive_substring )
   {
@@ -2690,65 +2690,77 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   {
     rstrcpy_checked_ascii(ArgList, aTurboBase000X);
   }
-  load_x_animation_clip(&game->directx_loader, ArgList, *(Object **)((char *)&loc_432870 + (_DWORD)game));
+  load_x_animation_clip(
+    &game->directx_loader,
+    ArgList,
+    game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object);
   v239 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4326FF + 1), v239);
-  load_x_animation_clip(&game->directx_loader, ArgList, *(Object **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4));
+  set_bod_object(&game->subgame.player.presentation.body.bod, v239);
+  load_x_animation_clip(&game->directx_loader, ArgList, game->subgame.player.presentation.body.bod.object);
   v240 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4328C8 + 4), v240);
-  load_x_animation_clip(&game->directx_loader, mesh_name, *(Object **)((char *)&loc_4328F0 + (_DWORD)game));
+  set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[1].body.bod, v240);
+  load_x_animation_clip(
+    &game->directx_loader,
+    mesh_name,
+    game->subgame.player.presentation.cutscene_animation_slots[1].body.bod.object);
   v241 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_43294C + (_DWORD)game), v241);
-  load_x_animation_clip(&game->directx_loader, aTurboBobalong0, *(Object **)((char *)&loc_432970 + (_DWORD)game));
+  set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[2].body.bod, v241);
+  load_x_animation_clip(
+    &game->directx_loader,
+    aTurboBobalong0,
+    game->subgame.player.presentation.cutscene_animation_slots[2].body.bod.object);
   v242 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_4329CC + (_DWORD)game), v242);
+  set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[3].body.bod, v242);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboLookbackl,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_4329EE + 2));
+    game->subgame.player.presentation.cutscene_animation_slots[3].body.bod.object);
   v243 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432A4A + 2), v243);
+  set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[4].body.bod, v243);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboLookbackr,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432A6D + 3));
+    game->subgame.player.presentation.cutscene_animation_slots[4].body.bod.object);
   v244 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432ACB + 1), v244);
+  set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[5].body.bod, v244);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboFall000X,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432AEF + 1));
+    game->subgame.player.presentation.cutscene_animation_slots[5].body.bod.object);
   v245 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432B49 + 3), v245);
+  set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[6].body.bod, v245);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboDamaged00,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432B6E + 2));
+    game->subgame.player.presentation.cutscene_animation_slots[6].body.bod.object);
   v246 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432BCA + 2), v246);
+  set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[7].body.bod, v246);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboIntoshell,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432BEF + 1));
+    game->subgame.player.presentation.cutscene_animation_slots[7].body.bod.object);
   v247 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432C48 + 4), v247);
+  set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[8].body.bod, v247);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboSkidstop0,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432C6D + 3));
+    game->subgame.player.presentation.cutscene_animation_slots[8].body.bod.object);
   v248 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432CCA + 2), v248);
+  set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[9].body.bod, v248);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboTalk000X,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432CE9 + 7));
+    game->subgame.player.presentation.cutscene_animation_slots[9].body.bod.object);
   v249 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433D46 + 6), v249);
-  load_x_mesh(&game->directx_loader, aTurbohotspotsX, *(Object **)((char *)&game->vtable + (_DWORD)&loc_433D6F + 1), 2);
-  build_snail_hotspots((Snail *)((char *)game + (_DWORD)&loc_4326FF + 1));
+  set_bod_object(&game->subgame.player.presentation.snail_hotspot_body.bod, v249);
+  load_x_mesh(
+    &game->directx_loader,
+    aTurbohotspotsX,
+    game->subgame.player.presentation.snail_hotspot_body.bod.object,
+    2);
+  build_snail_hotspots(&game->subgame.player.presentation);
   edge_selectord = 10;
-  cutscene_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)((char *)&loc_432870
-                                                                                      + (_DWORD)game);
+  cutscene_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)&game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object;
   do
   {
     cutscene_animation_object_cursor->object->flags |= 4u;
@@ -2762,25 +2774,31 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     --edge_selectord;
   }
   while ( !v56 );
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4))[4] |= 4u;
-  apply_object_toon(*(Object **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4), 0);
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4))[32] = 0;
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4))[33] = 0;
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4))[34] = 0;
+  game->subgame.player.presentation.body.bod.object->flags |= 4u;
+  apply_object_toon(game->subgame.player.presentation.body.bod.object, 0);
+  game->subgame.player.presentation.body.bod.object->distort.z_wave = 0.0;
+  game->subgame.player.presentation.body.bod.object->distort.y_squash = 0.0;
+  game->subgame.player.presentation.body.bod.object->distort.xyz_scale = 0.0;
   v251 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4338DE + 2), v251);
+  set_bod_object(&game->subgame.player.presentation.jetpack_channel.body.bod, v251);
   load_x_animation_clip(
     &game->directx_loader,
     aJetpackBase000,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2));
+    game->subgame.player.presentation.jetpack_channel.body.bod.object);
   v252 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433A2C + 4), v252);
-  load_x_animation_clip(&game->directx_loader, aJetpackBase000, *(Object **)((char *)&loc_433A54 + (_DWORD)game));
+  set_bod_object(&game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod, v252);
+  load_x_animation_clip(
+    &game->directx_loader,
+    aJetpackBase000,
+    game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object);
   v253 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433AB0 + (_DWORD)game), v253);
-  load_x_animation_clip(&game->directx_loader, aJetpackDraw000, *(Object **)((char *)&loc_433AD4 + (_DWORD)game));
+  set_bod_object(&game->subgame.player.presentation.jetpack_channel.animation_slots[1].body.bod, v253);
+  load_x_animation_clip(
+    &game->directx_loader,
+    aJetpackDraw000,
+    game->subgame.player.presentation.jetpack_channel.animation_slots[1].body.bod.object);
   edge_selectore = 2;
-  jetpack_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)((char *)&loc_433A54 + (_DWORD)game);
+  jetpack_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)&game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object;
   do
   {
     jetpack_animation_object_cursor->object->flags |= 4u;
@@ -2794,48 +2812,49 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     --edge_selectore;
   }
   while ( !v56 );
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2))[4] |= 4u;
-  apply_object_toon(*(Object **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2), 0);
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2))[32] = 0;
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2))[33] = 0;
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2))[34] = 0;
+  game->subgame.player.presentation.jetpack_channel.body.bod.object->flags |= 4u;
+  apply_object_toon(game->subgame.player.presentation.jetpack_channel.body.bod.object, 0);
+  game->subgame.player.presentation.jetpack_channel.body.bod.object->distort.z_wave = 0.0;
+  game->subgame.player.presentation.jetpack_channel.body.bod.object->distort.y_squash = 0.0;
+  game->subgame.player.presentation.jetpack_channel.body.bod.object->distort.xyz_scale = 0.0;
   v255 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&byte_432D4C[(_DWORD)game], v255);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[0].body.bod, v255);
   load_x_animation_clip(
     &game->directx_loader,
     aBlasterleftBas,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3));
+    game->subgame.player.presentation.weapon_channels[0].body.bod.object);
   v256 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432E9A + 2), v256);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod, v256);
   load_x_animation_clip(
     &game->directx_loader,
     aBlasterleftBas,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432EBF + 1));
+    game->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object);
   v257 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432F1A + 2), v257);
-  load_x_animation_clip(&game->directx_loader, aBlasterleftDra, *(Object **)((char *)&loc_432F40 + (_DWORD)game));
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots[1].body.bod, v257);
+  load_x_animation_clip(
+    &game->directx_loader,
+    aBlasterleftDra,
+    game->subgame.player.presentation.weapon_channels[0].animation_slots[1].body.bod.object);
   v258 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432F9B + 1), v258);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots[2].body.bod, v258);
   load_x_animation_clip(
     &game->directx_loader,
     aBlasterleftFir,
-    *(Object **)((char *)find_registered_sound_sample_id_by_name + (_DWORD)game));
+    game->subgame.player.presentation.weapon_channels[0].animation_slots[2].body.bod.object);
   v259 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_43301C + (_DWORD)game), v259);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots[3].body.bod, v259);
   load_x_animation_clip(
     &game->directx_loader,
     aLaserleftBase0,
-    *(Object **)((char *)get_authored_view_height + (_DWORD)game));
+    game->subgame.player.presentation.weapon_channels[0].animation_slots[3].body.bod.object);
   v260 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_43309C + (_DWORD)game), v260);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots[4].body.bod, v260);
   load_x_animation_clip(
     &game->directx_loader,
     aLaserleftDraw0,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_4330BF + 1));
+    game->subgame.player.presentation.weapon_channels[0].animation_slots[4].body.bod.object);
   edge_selectorf = 5;
-  left_weapon_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)((char *)game
-                                                                                         + (_DWORD)&loc_432EBF
-                                                                                         + 1);
+  left_weapon_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)&game->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object;
   do
   {
     left_weapon_animation_object_cursor->object->flags |= 4u;
@@ -2849,45 +2868,49 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     --edge_selectorf;
   }
   while ( !v56 );
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3))[4] |= 4u;
-  apply_object_toon(*(Object **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3), 0);
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3))[32] = 0;
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3))[33] = 0;
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3))[34] = 0;
+  game->subgame.player.presentation.weapon_channels[0].body.bod.object->flags |= 4u;
+  apply_object_toon(game->subgame.player.presentation.weapon_channels[0].body.bod.object, 0);
+  game->subgame.player.presentation.weapon_channels[0].body.bod.object->distort.z_wave = 0.0;
+  game->subgame.player.presentation.weapon_channels[0].body.bod.object->distort.y_squash = 0.0;
+  game->subgame.player.presentation.weapon_channels[0].body.bod.object->distort.xyz_scale = 0.0;
   v262 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433127 + 1), v262);
-  load_x_animation_clip(&game->directx_loader, aBlasterrightBa, *(Object **)((char *)&loc_43314C + (_DWORD)game));
-  v263 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433275 + 3), v263);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[1].body.bod, v262);
   load_x_animation_clip(
     &game->directx_loader,
     aBlasterrightBa,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_43329B + 1));
+    game->subgame.player.presentation.weapon_channels[1].body.bod.object);
+  v263 = add_object_to_list(&g_object_list);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod, v263);
+  load_x_animation_clip(
+    &game->directx_loader,
+    aBlasterrightBa,
+    game->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object);
   v264 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4332F7 + 1), v264);
-  load_x_animation_clip(&game->directx_loader, aBlasterrightDr, *(Object **)((char *)&loc_43331C + (_DWORD)game));
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots[1].body.bod, v264);
+  load_x_animation_clip(
+    &game->directx_loader,
+    aBlasterrightDr,
+    game->subgame.player.presentation.weapon_channels[1].animation_slots[1].body.bod.object);
   v265 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433378 + (_DWORD)game), v265);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots[2].body.bod, v265);
   load_x_animation_clip(
     &game->directx_loader,
     aBlasterrightFi,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_43339A + 2));
+    game->subgame.player.presentation.weapon_channels[1].animation_slots[2].body.bod.object);
   v266 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_4333F8 + (_DWORD)game), v266);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots[3].body.bod, v266);
   load_x_animation_clip(
     &game->directx_loader,
     aLaserrightBase,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433417 + 5));
+    game->subgame.player.presentation.weapon_channels[1].animation_slots[3].body.bod.object);
   v267 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433475 + 3), v267);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots[4].body.bod, v267);
   load_x_animation_clip(
     &game->directx_loader,
     aLaserrightDraw,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433499 + 3));
+    game->subgame.player.presentation.weapon_channels[1].animation_slots[4].body.bod.object);
   edge_selectorg = 5;
-  right_weapon_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)((char *)game
-                                                                                          + (_DWORD)&loc_43329B
-                                                                                          + 1);
+  right_weapon_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)&game->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object;
   do
   {
     right_weapon_animation_object_cursor->object->flags |= 4u;
@@ -2901,51 +2924,49 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     --edge_selectorg;
   }
   while ( !v56 );
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + (_DWORD)game) + 16) |= 4u;
-  apply_object_toon(*(Object **)((char *)&loc_43314C + (_DWORD)game), 0);
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + (_DWORD)game) + 128) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + (_DWORD)game) + 132) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + (_DWORD)game) + 136) = 0;
+  game->subgame.player.presentation.weapon_channels[1].body.bod.object->flags |= 4u;
+  apply_object_toon(game->subgame.player.presentation.weapon_channels[1].body.bod.object, 0);
+  game->subgame.player.presentation.weapon_channels[1].body.bod.object->distort.z_wave = 0.0;
+  game->subgame.player.presentation.weapon_channels[1].body.bod.object->distort.y_squash = 0.0;
+  game->subgame.player.presentation.weapon_channels[1].body.bod.object->distort.xyz_scale = 0.0;
   v269 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433504 + (_DWORD)game), v269);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[2].body.bod, v269);
   load_x_animation_clip(
     &game->directx_loader,
     aBlastertopBase,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5));
+    game->subgame.player.presentation.weapon_channels[2].body.bod.object);
   v270 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433654 + (_DWORD)game), v270);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod, v270);
   load_x_animation_clip(
     &game->directx_loader,
     aBlastertopBase,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433677 + 1));
+    game->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object);
   v271 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4336D0 + 4), v271);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots[1].body.bod, v271);
   load_x_animation_clip(
     &game->directx_loader,
     aBlastertopDraw,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_4336F6 + 2));
+    game->subgame.player.presentation.weapon_channels[2].animation_slots[1].body.bod.object);
   v272 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433751 + 3), v272);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots[2].body.bod, v272);
   load_x_animation_clip(
     &game->directx_loader,
     aBlastertopFire,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433777 + 1));
+    game->subgame.player.presentation.weapon_channels[2].animation_slots[2].body.bod.object);
   v273 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4337D3 + 1), v273);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots[3].body.bod, v273);
   load_x_animation_clip(
     &game->directx_loader,
     aRocketlauncher,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_4337F6 + 2));
+    game->subgame.player.presentation.weapon_channels[2].animation_slots[3].body.bod.object);
   v274 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433853 + 1), v274);
+  set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots[4].body.bod, v274);
   load_x_animation_clip(
     &game->directx_loader,
     aRocketlauncher_0,
-    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433877 + 1));
+    game->subgame.player.presentation.weapon_channels[2].animation_slots[4].body.bod.object);
   edge_selectorh = 5;
-  top_weapon_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)((char *)game
-                                                                                        + (_DWORD)&loc_433677
-                                                                                        + 1);
+  top_weapon_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)&game->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object;
   do
   {
     top_weapon_animation_object_cursor->object->flags |= 4u;
@@ -2959,34 +2980,38 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     --edge_selectorh;
   }
   while ( !v56 );
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5))[4] |= 4u;
-  apply_object_toon(*(Object **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5), 0);
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5))[32] = 0;
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5))[33] = 0;
-  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5))[34] = 0;
-  *(void **)((char *)&game->vtable + (_DWORD)&loc_434037 + 5) = get_or_create_texture_ref(
-                                                                  &g_texture_refs,
-                                                                  aXSnailTurboTga_0,
-                                                                  nullptr,
-                                                                  0);
-  *(void **)((char *)&game->vtable + (_DWORD)&loc_43403D + 3) = get_or_create_texture_ref(
-                                                                  &g_texture_refs,
-                                                                  aXSnailTurboDam,
-                                                                  nullptr,
-                                                                  0);
-  *(void **)((char *)&game->vtable + (_DWORD)&loc_434042 + 2) = get_or_create_texture_ref(
-                                                                  &g_texture_refs,
-                                                                  aXSnailTurboInv,
-                                                                  nullptr,
-                                                                  0);
+  game->subgame.player.presentation.weapon_channels[2].body.bod.object->flags |= 4u;
+  apply_object_toon(game->subgame.player.presentation.weapon_channels[2].body.bod.object, 0);
+  game->subgame.player.presentation.weapon_channels[2].body.bod.object->distort.z_wave = 0.0;
+  game->subgame.player.presentation.weapon_channels[2].body.bod.object->distort.y_squash = 0.0;
+  game->subgame.player.presentation.weapon_channels[2].body.bod.object->distort.xyz_scale = 0.0;
+  game->subgame.player.presentation.snail_skin.material_overrides[0] = get_or_create_texture_ref(
+                                                                         &g_texture_refs,
+                                                                         aXSnailTurboTga_0,
+                                                                         nullptr,
+                                                                         0);
+  game->subgame.player.presentation.snail_skin.material_overrides[1] = get_or_create_texture_ref(
+                                                                         &g_texture_refs,
+                                                                         aXSnailTurboDam,
+                                                                         nullptr,
+                                                                         0);
+  game->subgame.player.presentation.snail_skin.material_overrides[2] = get_or_create_texture_ref(
+                                                                         &g_texture_refs,
+                                                                         aXSnailTurboInv,
+                                                                         nullptr,
+                                                                         0);
   v276 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433F94 + (_DWORD)game), v276);
-  load_x_mesh(&game->directx_loader, aInvincibleBase, *(Object **)((char *)&loc_433FB8 + (_DWORD)game), 1);
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_433FB8 + (_DWORD)game) + 16) &= ~0x100000u;
+  set_bod_object(&game->subgame.player.presentation.invincible_shell.body.bod, v276);
+  load_x_mesh(
+    &game->directx_loader,
+    aInvincibleBase,
+    game->subgame.player.presentation.invincible_shell.body.bod.object,
+    1);
+  game->subgame.player.presentation.invincible_shell.body.bod.object->flags &= ~0x100000u;
   v277 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4302E3 + 1), v277);
-  load_x_mesh(&game->directx_loader, aRocketBase000X, *(Object **)((char *)&game->vtable + (_DWORD)&loc_430306 + 2), 1);
-  golb_shot_vapour_object_cursor = (GolbShotVapourObjectStrideCursor *)((char *)game + (_DWORD)&loc_43026E + 2);
+  set_bod_object(&game->subgame.player.golb_shots[0].tertiary_body.bod, v277);
+  load_x_mesh(&game->directx_loader, aRocketBase000X, game->subgame.player.golb_shots[0].tertiary_body.bod.object, 1);
+  golb_shot_vapour_object_cursor = (GolbShotVapourObjectStrideCursor *)&game->subgame.player.golb_shots[0].vapour.body.bod.object;
   edge_selectori = 12;
   do
   {
@@ -3001,7 +3026,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
       0.16);
     set_bod_object(
       &golb_shot_vapour_object_cursor->tertiary_body.bod,
-      *(Object **)((char *)&game->vtable + (_DWORD)&loc_430306 + 2));
+      game->subgame.player.golb_shots[0].tertiary_body.bod.object);
     ++golb_shot_vapour_object_cursor;
     --edge_selectori;
   }
@@ -3147,17 +3172,10 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     player_initializer_stride_view->player.selected_high_score_rank = 0;
     rstrcpy_checked_ascii(player_initializer_stride_view->player.player_name, g_runtime_config.last_entered_player_name);
   }
-  initialize_high_score_tables((SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position
-                                              + (_DWORD)game));
-  load_high_scores_from_file(
-    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)game),
-    file_name);
-  load_high_scores_from_file(
-    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)game),
-    aScorebDat);
-  load_high_scores_from_file(
-    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)game),
-    aScorecDat);
+  initialize_high_score_tables(&game->subgame.sub_high_score);
+  load_high_scores_from_file(&game->subgame.sub_high_score, file_name);
+  load_high_scores_from_file(&game->subgame.sub_high_score, aScorebDat);
+  load_high_scores_from_file(&game->subgame.sub_high_score, aScorecDat);
   game->subgame.selected_level_record_persistent = 0;
   game->subgame.selected_level_record_active = 0;
   initialize_tip_manager(&game->tip_manager);

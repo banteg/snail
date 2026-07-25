@@ -9680,6 +9680,62 @@ def test_game_player_initializer_stride_view_is_borrowed_and_fail_closed() -> No
     assert "char *edge_selectork;" in ida_check["forbidden_substrings"]
 
 
+def test_ida_world_initializer_root_offsets_are_exact_and_fail_closed() -> None:
+    repo_root = Path(__file__).parents[1]
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    operand_block = ida_sync.split(
+        "WORLD_INITIALIZER_ROOT_OFFSET_OPERANDS = (", 1
+    )[1].split("\n)\n\n# Tutorial", 1)[0]
+
+    assert operand_block.count("    (0x") == 109
+    for operand_spec in (
+        "(0x40AEFC, 1, 0x42FF7C)",
+        "(0x40F28F, 1, 0x43284C)",
+        "(0x40F69A, 1, 0x432D4C)",
+        "(0x40F720, 1, 0x432FC0)",
+        "(0x40F749, 1, 0x433040)",
+        "(0x40FB5C, 0, 0x43403C)",
+        "(0x40FBC7, 1, 0x4302E4)",
+        "(0x4101CB, 1, 0x6FFAE0)",
+    ):
+        assert operand_spec in operand_block
+
+    assert (
+        "world_initializer_root_offset_operands = _normalize_root_offset_operands(\n"
+        "        WORLD_INITIALIZER_ROOT_OFFSET_OPERANDS\n"
+        "    )"
+    ) in ida_sync
+    assert '"selector": "initialize_game_assets_and_world"' in ida_sync
+    assert (
+        '"world_initializer_root_offset_operands": '
+        "world_initializer_root_offset_operands"
+    ) in ida_sync
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    ida_check = checks["ida_game_initializer_player_presentation_root_ownership"]
+    assert (
+        "initialize_cameraman(&game->subgame.player.cameraman);"
+        in ida_check["required_substrings"]
+    )
+    assert (
+        "game->subgame.player.presentation.weapon_channels[0].animation_slots[2].body.bod.object"
+        in ida_check["required_substrings"]
+    )
+    assert (
+        "initialize_high_score_tables(&game->subgame.sub_high_score);"
+        in ida_check["required_substrings"]
+    )
+    assert "loc_432" in ida_check["forbidden_substrings"]
+    assert "g_parcel_set_buckets[1431]" in ida_check["forbidden_substrings"]
+
+
 def test_cameraman_force_update_owner_survives_path_replay() -> None:
     repo_root = Path(__file__).parents[1]
     matcher = (repo_root / "tools/match/include/cameraman.h").read_text(

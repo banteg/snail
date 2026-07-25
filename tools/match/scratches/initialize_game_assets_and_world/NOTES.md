@@ -1352,3 +1352,34 @@ unnecessary. This is analysis-only: no matcher source changed, and the honest
 world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
 existing 36 broad-alignment mismatches. No pointer arithmetic or padding was
 added to the matcher.
+
+## 2026-07-25 world presentation root-offset ownership
+
+The world initializer keeps its `GameRoot*` in EBP while constructing the
+embedded player's cameraman, snail presentation, equipment animation banks,
+skin materials, invincibility body, Golb-shot assets, and the subgame
+high-score tracker. IDA had promoted 109 exact GameRoot displacements to code
+or data symbols because their numeric offsets also land inside the image.
+That left otherwise typed accesses rendered as `loc_43... + game`,
+`byte_432D4C[game]`, or unrelated function/global symbols plus `game`.
+
+The path-template replay now normalizes only those 109 proven instruction
+operands to numeric displacements. It does not rename or remove any colliding
+symbol, and it fails closed on the exact address, operand index, and observed
+offset. An idempotent second replay reports all 109 operands unchanged with no
+missing or failed entries.
+
+Hex-Rays now follows the measured
+`GameRoot -> SubgameRuntime -> Player -> Snail` chain through all ten cutscene
+animation slots, the jetpack channel, three weapon channels and their inline
+animation slots, `SnailSkin::material_overrides`, the invincibility body, and
+the first Golb-shot vapour object. The initializer tail also folds root
+`+0x6ffae0` to `SubgameRuntime::sub_high_score`, consistent with the
+independently recovered subgame offset `+0x68b4c8`. Binary Ninja already
+rendered the same owners, so the two decompilers agree and a Ghidra replay was
+unnecessary.
+
+This is analysis-only: no matcher source changed, and the honest
+world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
+existing 36 broad-alignment mismatches. No pointer arithmetic, padding, or
+score-only scaffolding was added.
