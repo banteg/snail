@@ -33,3 +33,7 @@ its real owner: the selected bank lives in `RuntimeConfig`, border teardown
 uses `GameRoot::border_manager`, and the two clears belong to
 `GamePlayer::high_score_entry_pending` and `selected_high_score_rank`.
 No matching source changed; the helper remains exact at 11/11 instructions.
+
+Binary Ninja now explicitly reanalyzes the lifecycle trio after its narrow
+high-score sync as well. The paired tracked artifact and health canary preserve
+the same root graph without changing this exact matcher.

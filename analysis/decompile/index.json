@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,11 +17,23 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_star_positions",
-      "address": "0x434800"
+      "name": "destroy_high_score_screen",
+      "address": "0x417220"
+    },
+    {
+      "name": "update_high_score_screen",
+      "address": "0x417260"
+    },
+    {
+      "name": "exit_high_score_screen",
+      "address": "0x417b50"
+    },
+    {
+      "name": "bind_subgame_owner",
+      "address": "0x433fc0"
     }
   ],
-  "health_check_count": 1026,
+  "health_check_count": 1031,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

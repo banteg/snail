@@ -10,6 +10,7 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
     emit_summary,
+    reanalyze_functions,
     types_declare,
 )
 
@@ -30,6 +31,10 @@ PROTO_UPDATES = (
         "bind_subgame_owner",
         "SubgameRuntime* __thiscall bind_subgame_owner(SubgameOwnerLink* owner)",
     ),
+)
+
+OVERLAY_REANALYSIS_FUNCTIONS = (
+    "bind_subgame_owner",
 )
 
 
@@ -55,6 +60,11 @@ def main() -> int:
             target=args.target,
             struct_updates=(("GameRoot", GAME_ROOT_FIELD_UPDATES),),
             proto_updates=PROTO_UPDATES,
+        ),
+        *reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=OVERLAY_REANALYSIS_FUNCTIONS,
         ),
     ]
     return emit_summary(

@@ -3861,8 +3861,11 @@ def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
         assert expected in ida_source
 
 
-def test_ida_high_score_lifecycle_replays_complete_owner_graph() -> None:
+def test_high_score_lifecycle_replays_complete_owner_graph() -> None:
     repo_root = Path(__file__).parents[1]
+    binja_source = (
+        BINJA_DIR / "sync_high_score_screen_types.py"
+    ).read_text(encoding="utf-8")
     ida_source = (IDA_DIR / "apply_frontend_replay_types.py").read_text(
         encoding="utf-8"
     )
@@ -3887,7 +3890,15 @@ def test_ida_high_score_lifecycle_replays_complete_owner_graph() -> None:
         ("exit_high_score_screen", "0x417B50"),
     ):
         assert f'"{selector}": {address}' in ida_source
+        assert selector in binja_source.split(
+            "HIGH_SCORE_LIFECYCLE_REANALYSIS_FUNCTIONS", 1
+        )[1]
 
+    assert "reanalyze_functions" in binja_source
+    assert (
+        "identifiers=HIGH_SCORE_LIFECYCLE_REANALYSIS_FUNCTIONS"
+        in binja_source
+    )
     for owner in (
         "g_game_base->subgame.sub_high_score.active_record_bank",
         "g_game_base->subgame.sub_high_score.active_record_count",
@@ -3917,10 +3928,28 @@ def test_ida_high_score_lifecycle_replays_complete_owner_graph() -> None:
         )
     )
     checks = {check["name"]: check for check in health["checks"]}
+    bn_destroy = checks["bn_high_score_destroy_root_owners"]
+    bn_update = checks["bn_high_score_update_root_owners"]
+    bn_exit_screen = checks["bn_high_score_exit_root_owners"]
     destroy = checks["ida_high_score_destroy_root_owners"]
     update = checks["ida_high_score_update_void_owner"]
     exit_screen = checks["ida_high_score_exit_root_owners"]
 
+    assert (
+        "kill_all_borders(&g_game_base->border_manager)"
+        in bn_destroy["required_substrings"]
+    )
+    assert "g_game_base[" in bn_destroy["forbidden_substrings"]
+    assert (
+        "g_game_base->subgame.selected_level_record_cursor"
+        in bn_update["required_substrings"]
+    )
+    assert "game_base_3 + 0x" in bn_update["forbidden_substrings"]
+    assert (
+        "g_game_base->subgame.subgame_rebuild_selector"
+        in bn_exit_screen["required_substrings"]
+    )
+    assert "char* game_base_1" in bn_exit_screen["forbidden_substrings"]
     assert (
         "g_runtime_config.high_score_selected_bank = high_score->selected_bank"
         in destroy["required_substrings"]
@@ -3935,6 +3964,43 @@ def test_ida_high_score_lifecycle_replays_complete_owner_graph() -> None:
         in exit_screen["required_substrings"]
     )
     assert "_DWORD *v1" in exit_screen["forbidden_substrings"]
+
+
+def test_bind_subgame_owner_reanalysis_is_paired() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_source = (BINJA_DIR / "sync_overlay_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "OVERLAY_REANALYSIS_FUNCTIONS" in binja_source
+    assert '"bind_subgame_owner",' in binja_source.split(
+        "OVERLAY_REANALYSIS_FUNCTIONS", 1
+    )[1]
+    assert "reanalyze_functions" in binja_source
+    assert "identifiers=OVERLAY_REANALYSIS_FUNCTIONS" in binja_source
+    assert "0x433FC0,  # bind_subgame_owner" in ida_source
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    bn_check = checks["bn_bind_subgame_owner_root_borrow"]
+    ida_check = checks["ida_bind_subgame_owner_root_borrow"]
+    assert (
+        "struct SubgameRuntime* result = &g_game_base->subgame"
+        in bn_check["required_substrings"]
+    )
+    assert "g_game_base + 0x74618" in bn_check["forbidden_substrings"]
+    assert (
+        "owner->game = &g_game_base->subgame;"
+        in ida_check["required_substrings"]
+    )
+    assert "476696" in ida_check["forbidden_substrings"]
 
 
 def test_time_trial_high_score_replays_preserve_route_record_cursor_owner() -> None:

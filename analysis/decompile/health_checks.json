@@ -4058,6 +4058,95 @@
       ]
     },
     {
+      "name": "bn_bind_subgame_owner_root_borrow",
+      "artifact": "analysis/decompile/binja/functions/00433fc0-bind_subgame_owner.c",
+      "required_substrings": [
+        "struct SubgameRuntime* result = &g_game_base->subgame",
+        "owner->game = result",
+        "return result"
+      ],
+      "forbidden_substrings": [
+        "struct SubgameOwnerLink result",
+        "g_game_base + 0x74618",
+        "g_game_base[0x74618]",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_bind_subgame_owner_root_borrow",
+      "artifact": "analysis/decompile/ida/functions/00433fc0-bind_subgame_owner.c",
+      "required_substrings": [
+        "SubgameRuntime *__thiscall bind_subgame_owner(SubgameOwnerLink *owner)",
+        "result = &g_game_base->subgame;",
+        "owner->game = &g_game_base->subgame;",
+        "return result;"
+      ],
+      "forbidden_substrings": [
+        "476696",
+        "(char *)g_game_base",
+        "SubgameOwnerLink *result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_high_score_destroy_root_owners",
+      "artifact": "analysis/decompile/binja/functions/00417220-destroy_high_score_screen.c",
+      "required_substrings": [
+        "g_runtime_config.high_score_selected_bank = high_score->selected_bank",
+        "kill_all_borders(&g_game_base->border_manager)",
+        "g_game_base->players[0].high_score_entry_pending = 0",
+        "g_game_base->players[0].selected_high_score_rank = 0"
+      ],
+      "forbidden_substrings": [
+        "g_high_score_selected_bank",
+        "g_game_base[",
+        "g_game_base +"
+      ]
+    },
+    {
+      "name": "bn_high_score_update_root_owners",
+      "artifact": "analysis/decompile/binja/functions/00417260-update_high_score_screen.c",
+      "required_substrings": [
+        "g_game_base->subgame.sub_high_score.active_record_bank",
+        "game_base_3->subgame.sub_high_score.active_record_count",
+        "g_game_base->players[0].player_name",
+        "g_game_base->players[0].frontend_state",
+        "g_game_base->players[0].redispatch_requested",
+        "g_game_base->subgame.selected_level_record",
+        "g_game_base->subgame.selected_level_record_active",
+        "g_game_base->subgame.selected_level_record_persistent",
+        "g_game_base->subgame.selected_level_record_cursor",
+        "game_base_2->subgame.selected_level_record->replay_mode_id"
+      ],
+      "forbidden_substrings": [
+        "g_high_score_selected_bank",
+        "data_4df978",
+        "g_parcel_set_buckets",
+        "g_game_base[0x",
+        "g_game_base + 0x",
+        "game_base_1 + 0x",
+        "game_base_2 + 0x",
+        "game_base_3 + 0x"
+      ]
+    },
+    {
+      "name": "bn_high_score_exit_root_owners",
+      "artifact": "analysis/decompile/binja/functions/00417b50-exit_high_score_screen.c",
+      "required_substrings": [
+        "struct GameRoot* game_base_1 = g_game_base",
+        "game_base_1->subgame.level_mode",
+        "game_base_1->players[0].frontend_state",
+        "g_game_base->subgame.subgame_rebuild_selector",
+        "g_game_base->players[0].redispatch_requested"
+      ],
+      "forbidden_substrings": [
+        "char* game_base_1",
+        "g_game_base[0x",
+        "g_game_base + 0x",
+        "game_base_1 + 0x"
+      ]
+    },
+    {
       "name": "ida_high_score_destroy_root_owners",
       "artifact": "analysis/decompile/ida/functions/00417220-destroy_high_score_screen.c",
       "required_substrings": [

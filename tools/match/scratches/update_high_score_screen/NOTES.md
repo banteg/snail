@@ -105,3 +105,8 @@ names `GamePlayer::player_name`, `frontend_state`, and
 `redispatch_requested`. Binary Ninja and the exact matching source already
 independently carried the same graph. A second copied-database replay is
 unchanged; the matcher remains exact at 205/205 instructions.
+
+Binary Ninja's narrow high-score sync now explicitly reanalyzes this lifecycle
+method and its paired health canary rejects a return to raw root offsets. The
+tracked BN artifact therefore carries the same owner graph durably; matching
+source remains unchanged.

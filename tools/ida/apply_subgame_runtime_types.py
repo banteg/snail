@@ -634,6 +634,7 @@ REANALYSIS_FUNCTIONS = (
     0x416800,  # initialize_help_screen
     0x4168C0,  # destroy_help_screen
     0x4168D0,  # update_help_screen
+    0x433FC0,  # bind_subgame_owner
     0x408860,  # initialize_track_parcel_runtime
     0x435DF0,  # set_subgame_features
     0x437270,  # normalize_segment_glyph_for_track_flags

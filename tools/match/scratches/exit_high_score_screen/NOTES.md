@@ -29,3 +29,7 @@ Refreshing the typed root view makes IDA agree with the exact source:
 `SubgameRuntime::subgame_rebuild_selector`, and
 `GamePlayer::redispatch_requested` schedules the transition. This is an
 ownership-only replay; the helper remains exact at 23/23 instructions.
+
+Binary Ninja now explicitly reanalyzes the lifecycle trio after the narrow
+high-score sync. Its paired tracked artifact and health canary keep the same
+typed root borrows durable without touching the exact matcher.

@@ -10,6 +10,7 @@ from _narrow_sync import (
     apply_proto_updates,
     apply_struct_field_updates,
     emit_summary,
+    reanalyze_functions,
     types_declare,
     types_declare_if_missing,
 )
@@ -43,6 +44,12 @@ PROTO_UPDATES = (
     ),
 )
 
+HIGH_SCORE_LIFECYCLE_REANALYSIS_FUNCTIONS = (
+    "destroy_high_score_screen",
+    "update_high_score_screen",
+    "exit_high_score_screen",
+)
+
 
 def main() -> int:
     operations = [
@@ -60,6 +67,11 @@ def main() -> int:
             updates=GAME_ROOT_FIELD_UPDATES,
         ),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
+        *reanalyze_functions(
+            REPO_ROOT,
+            target=TARGET,
+            identifiers=HIGH_SCORE_LIFECYCLE_REANALYSIS_FUNCTIONS,
+        ),
     ]
     return emit_summary(
         repo_root=REPO_ROOT,

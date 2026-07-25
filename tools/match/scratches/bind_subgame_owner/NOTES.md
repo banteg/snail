@@ -17,3 +17,8 @@ linker folded the byte-identical ThanksScreen owner bind into the same address.
 
 2026-07-14 root-owner closure: the folded helper now borrows
 `&g_game->subgame` directly. It remains exact at 4/4 with its one operand clean.
+
+2026-07-25 paired replay: Binary Ninja and IDA now explicitly reanalyze this
+folded helper after their narrow owner/type syncs. Both tracked decompiles
+retain the canonical `&g_game_base->subgame` borrow; paired health checks reject
+the old raw `+0x74618`/`476696` forms. Matching source remains unchanged.
