@@ -2,34 +2,33 @@
 /* function: classify_archive_entry_extension @ 0x4050c0 */
 /* selector: classify_archive_entry_extension */
 
-// Copies one archive entry's filename stem before the first dot into the caller buffer and returns the rebuild classifier id: `1` for `TGA`, `2` for `WAV`, `3` for `MP3`, otherwise `0`.
-int __cdecl classify_archive_entry_extension(char *a1, char *a2)
+// Copies one archive entry's filename stem before the first dot into the caller buffer and returns the shared ArchiveEntryExtensionClass: TGA, WAV, MP3, or UNKNOWN.
+ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(unsigned __int8 *path, unsigned __int8 *stem_out)
 {
-  char *v2; // eax
-  char i; // cl
-  char v5; // cl
-  char *v6; // eax
+  unsigned __int8 *path_cursor; // eax
+  unsigned __int8 current_char; // cl
+  unsigned __int8 extension_first_char; // cl
+  unsigned __int8 *extension_cursor; // eax
 
-  v2 = a1;
-  for ( i = *a1; *v2; i = *v2 )
+  path_cursor = path;
+  for ( current_char = *path; *path_cursor; current_char = *path_cursor )
   {
-    if ( i == 46 )
+    if ( current_char == 46 )
       break;
-    ++v2;
-    *a2++ = i;
+    ++path_cursor;
+    *stem_out++ = current_char;
   }
-  *a2 = 0;
-  if ( !*v2 )
-    return 0;
-  v5 = v2[1];
-  v6 = v2 + 1;
-  if ( v5 == 84 && v6[1] == 71 && v6[2] == 65 )
-    return 1;
-  if ( v5 == 87 && v6[1] == 65 && v6[2] == 86 )
-    return 2;
-  if ( v5 == 77 && v6[1] == 80 && v6[2] == 51 )
-    return 3;
+  *stem_out = 0;
+  if ( !*path_cursor )
+    return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;
+  extension_first_char = path_cursor[1];
+  extension_cursor = path_cursor + 1;
+  if ( extension_first_char == 84 && extension_cursor[1] == 71 && extension_cursor[2] == 65 )
+    return ARCHIVE_ENTRY_EXTENSION_TGA;
+  if ( extension_first_char == 87 && extension_cursor[1] == 65 && extension_cursor[2] == 86 )
+    return ARCHIVE_ENTRY_EXTENSION_WAV;
+  if ( extension_first_char == 77 && extension_cursor[1] == 80 && extension_cursor[2] == 51 )
+    return ARCHIVE_ENTRY_EXTENSION_MP3;
   else
-    return 0;
+    return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;
 }
-

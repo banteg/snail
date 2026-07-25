@@ -141,6 +141,14 @@ TRUSTED_DECLARATIONS = [
         "void* __cdecl malloc(unsigned int size);",
     ),
     (
+        "printf",
+        "int __cdecl printf(char* format, ...);",
+    ),
+    (
+        "free",
+        "void __cdecl free(void* pointer);",
+    ),
+    (
         "findfirst",
         "int __cdecl findfirst(char* pattern, FileSearchData* find_data);",
     ),
@@ -221,6 +229,38 @@ TRUSTED_DECLARATIONS = [
         "unsigned char __cdecl archive_or_file_exists(char* path, unsigned char force_filesystem);",
     ),
     (
+        "classify_archive_entry_extension",
+        "ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(unsigned char* path, unsigned char* stem_out);",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "void __cdecl rebuild_game_archive_if_needed(void);",
+    ),
+    (
+        "load_png_image",
+        "int __cdecl load_png_image(char* png_path, unsigned char** out_pixels, int* out_width, int* out_height, int* out_channels, unsigned char* background_rgb, int file_offset);",
+    ),
+    (
+        "file_exists",
+        "unsigned char __cdecl file_exists(char* path);",
+    ),
+    (
+        "load_file_bytes_allocating",
+        "void* __cdecl load_file_bytes_allocating(char* path, int* out_size);",
+    ),
+    (
+        "save_file_bytes_with_optional_archive_scramble",
+        "int __cdecl save_file_bytes_with_optional_archive_scramble(char* path, void* bytes, int byte_count, unsigned char should_scramble);",
+    ),
+    (
+        "delete_file_path",
+        "int __cdecl delete_file_path(char* path);",
+    ),
+    (
+        "toggle_archive_high_bit_in_place",
+        "char* __cdecl toggle_archive_high_bit_in_place(char* bytes, int byte_count);",
+    ),
+    (
         "find_archive_entry",
         "ArchiveEntry* __cdecl find_archive_entry(char* path);",
     ),
@@ -279,7 +319,15 @@ TRUSTED_DECLARATIONS = [
 ]
 
 TRUSTED_NAMES = [
+    (0x4050C0, "classify_archive_entry_extension"),
+    (0x405140, "file_exists"),
+    (0x4051B0, "load_file_bytes_allocating"),
+    (0x4052A0, "save_file_bytes_with_optional_archive_scramble"),
+    (0x405340, "delete_file_path"),
+    (0x405350, "toggle_archive_high_bit_in_place"),
+    (0x405370, "rebuild_game_archive_if_needed"),
     (0x407B00, "shutdown_bass_audio_window"),
+    (0x42F0A0, "load_png_image"),
     (0x432D40, "reset_registered_sound_sample_count"),
     (0x432D50, "cache_music_file"),
     (0x432DD0, "play_registered_warning_sample"),
@@ -313,9 +361,11 @@ TRUSTED_NAMES = [
     (0x48B41D, "fopen"),
     (0x48B430, "fseek"),
     (0x48B4BC, "ftell"),
+    (0x48B614, "printf"),
     (0x48B645, "fread"),
     (0x48B72D, "malloc"),
     (0x48B7A1, "fwrite"),
+    (0x48B8D5, "free"),
     (0x48C18B, "chdir"),
     (0x48C211, "findfirst"),
     (0x48C2DB, "findnext"),
@@ -545,6 +595,209 @@ STALE_DATA_ITEM_SPECS = [
 ]
 
 ARCHIVE_SHELL_LVAR_SPECS = [
+    (
+        "classify_archive_entry_extension",
+        "path_cursor",
+        "unsigned char* path_cursor;",
+        None,
+        0x4050C1,
+    ),
+    (
+        "classify_archive_entry_extension",
+        "current_char",
+        "unsigned char current_char;",
+        None,
+        0x4050C9,
+    ),
+    (
+        "classify_archive_entry_extension",
+        "extension_first_char",
+        "unsigned char extension_first_char;",
+        None,
+        0x4050E7,
+    ),
+    (
+        "classify_archive_entry_extension",
+        "extension_cursor",
+        "unsigned char* extension_cursor;",
+        None,
+        0x4050EA,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "rebuilt_index",
+        "SerializedArchiveIndex* rebuilt_index;",
+        None,
+        0x4053AF,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "initial_payload_offset",
+        "int initial_payload_offset;",
+        None,
+        0x4053F4,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "payload_cursor",
+        "char* payload_cursor;",
+        None,
+        0x405400,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "source_byte_count_cursor",
+        "int* source_byte_count_cursor;",
+        None,
+        0x405419,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "rebuilt_base",
+        "char* rebuilt_base;",
+        None,
+        0x405425,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "entry_path_for_log",
+        "const char* entry_path_for_log;",
+        None,
+        0x40542D,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "payload_end_address",
+        "int payload_end_address;",
+        None,
+        0x40546F,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "y",
+        "int y;",
+        None,
+        0x405531,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "source_pixel_offset",
+        "int source_pixel_offset;",
+        None,
+        0x405542,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "destination_pixel_offset",
+        "int destination_pixel_offset;",
+        None,
+        0x405553,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "converted_size",
+        "int converted_size;",
+        None,
+        0x4055B6,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "png_channels",
+        "int png_channels;",
+        60,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "png_pixels",
+        "unsigned char* png_pixels;",
+        64,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "rebuilt_data_offset_cursor",
+        "int* rebuilt_data_offset_cursor;",
+        68,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "rebuilt_index_saved",
+        "SerializedArchiveIndex* rebuilt_index_saved;",
+        72,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "png_width",
+        "int png_width;",
+        76,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "source_index",
+        "SerializedArchiveIndex* source_index;",
+        80,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "png_height",
+        "int png_height;",
+        84,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "x",
+        "int x;",
+        88,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "source_to_rebuilt_delta",
+        "int source_to_rebuilt_delta;",
+        92,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "entry_index",
+        "int entry_index;",
+        96,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "dam_size",
+        "int dam_size;",
+        100,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "entry_path",
+        "char* entry_path;",
+        104,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "png_background_rgb",
+        "unsigned int png_background_rgb;",
+        108,
+        None,
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "entry_stem",
+        "unsigned char entry_stem[512];",
+        112,
+        None,
+    ),
     (
         "initialize_game_data_archive",
         "archive_ready",
@@ -1033,6 +1286,7 @@ def _normalize_type_text(value: str | None) -> str | None:
     normalized = re.sub(r"\bint32_t\b", "int", normalized)
     normalized = re.sub(r"\buint32_t\b", "unsigned int", normalized)
     normalized = normalized.replace("unsigned __int8", "unsigned char")
+    normalized = re.sub(r"\b__cdecl\b\s*", "", normalized)
     normalized = re.sub(r"\s+", " ", normalized)
     normalized = re.sub(r"\s*\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)\s*", ")", normalized)

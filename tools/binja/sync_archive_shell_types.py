@@ -69,7 +69,13 @@ DATA_SYMBOL_UPDATES = (
 )
 
 FUNCTION_SYMBOL_UPDATES = (
+    ("0x405140", "file_exists"),
+    ("0x4051b0", "load_file_bytes_allocating"),
+    ("0x4052a0", "save_file_bytes_with_optional_archive_scramble"),
+    ("0x405340", "delete_file_path"),
+    ("0x405350", "toggle_archive_high_bit_in_place"),
     ("0x407b00", "shutdown_bass_audio_window"),
+    ("0x42f0a0", "load_png_image"),
     ("0x432d40", "reset_registered_sound_sample_count"),
     ("0x432d50", "cache_music_file"),
     ("0x432dd0", "play_registered_warning_sample"),
@@ -103,9 +109,11 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x48b41d", "fopen"),
     ("0x48b430", "fseek"),
     ("0x48b4bc", "ftell"),
+    ("0x48b614", "printf"),
     ("0x48b645", "fread"),
     ("0x48b72d", "malloc"),
     ("0x48b7a1", "fwrite"),
+    ("0x48b8d5", "free"),
     ("0x48c18b", "chdir"),
     ("0x48c211", "findfirst"),
     ("0x48c2db", "findnext"),
@@ -302,6 +310,14 @@ PROTO_UPDATES = (
         "void* __cdecl malloc(uint32_t size)",
     ),
     (
+        "printf",
+        "int32_t __cdecl printf(char* format, ...)",
+    ),
+    (
+        "free",
+        "void __cdecl free(void* pointer)",
+    ),
+    (
         "fopen",
         "File* __cdecl fopen(char* path, char* mode)",
     ),
@@ -376,6 +392,38 @@ PROTO_UPDATES = (
     (
         "archive_or_file_exists",
         "uint8_t __cdecl archive_or_file_exists(char* path, uint8_t force_filesystem)",
+    ),
+    (
+        "classify_archive_entry_extension",
+        "ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(uint8_t* path, uint8_t* stem_out)",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "void __cdecl rebuild_game_archive_if_needed()",
+    ),
+    (
+        "load_png_image",
+        "int32_t __cdecl load_png_image(char* png_path, uint8_t** out_pixels, int32_t* out_width, int32_t* out_height, int32_t* out_channels, uint8_t* background_rgb, int32_t file_offset)",
+    ),
+    (
+        "file_exists",
+        "uint8_t __cdecl file_exists(char* path)",
+    ),
+    (
+        "load_file_bytes_allocating",
+        "void* __cdecl load_file_bytes_allocating(char* path, int32_t* out_size)",
+    ),
+    (
+        "save_file_bytes_with_optional_archive_scramble",
+        "int32_t __cdecl save_file_bytes_with_optional_archive_scramble(char* path, void* bytes, int32_t byte_count, uint8_t should_scramble)",
+    ),
+    (
+        "delete_file_path",
+        "int32_t __cdecl delete_file_path(char* path)",
+    ),
+    (
+        "toggle_archive_high_bit_in_place",
+        "char* __cdecl toggle_archive_high_bit_in_place(char* bytes, int32_t byte_count)",
     ),
     (
         "find_archive_entry",
@@ -1063,6 +1111,256 @@ ARCHIVE_SERVICE_USER_VAR_UPDATES = (
     ),
 )
 
+
+# Exact archive-rebuild lifetimes after correcting load_png_image to the
+# seven-stack-argument cdecl proven by its sole callsite and callee body. The
+# serialized source allocation remains distinct from the rebuilt output owner;
+# field cursors intentionally stay scalar pointers where the native loop walks
+# one word inside each 12-byte record.
+ARCHIVE_REBUILD_USER_VAR_UPDATES = (
+    (
+        "classify_archive_entry_extension",
+        "RegisterVariableSourceType",
+        17,
+        66,
+        "path_cursor",
+        "uint8_t*",
+    ),
+    (
+        "classify_archive_entry_extension",
+        "RegisterVariableSourceType",
+        4,
+        68,
+        "stem_cursor",
+        "uint8_t*",
+    ),
+    (
+        "classify_archive_entry_extension",
+        "RegisterVariableSourceType",
+        8,
+        67,
+        "current_char",
+        "uint8_t",
+    ),
+    (
+        "classify_archive_entry_extension",
+        "RegisterVariableSourceType",
+        41,
+        66,
+        "extension_cursor",
+        "uint8_t*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        62,
+        69,
+        "rebuilt_index",
+        "SerializedArchiveIndex*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        78,
+        66,
+        "source_index",
+        "SerializedArchiveIndex*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        131,
+        71,
+        "initial_payload_offset",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        143,
+        71,
+        "payload_cursor",
+        "char*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        168,
+        69,
+        "source_byte_count_cursor",
+        "int32_t*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        171,
+        67,
+        "source_to_rebuilt_delta",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        188,
+        73,
+        "entry_path",
+        "char*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        454,
+        73,
+        "y",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        465,
+        67,
+        "source_pixel_offset",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        482,
+        66,
+        "destination_pixel_offset",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        584,
+        71,
+        "payload_end",
+        "char*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "RegisterVariableSourceType",
+        591,
+        67,
+        "alignment_remainder",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        157,
+        -556,
+        "rebuilt_data_offset_cursor",
+        "int32_t*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        74,
+        -552,
+        "rebuilt_index_saved",
+        "SerializedArchiveIndex*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        91,
+        -544,
+        "source_index_saved",
+        "SerializedArchiveIndex*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        436,
+        -536,
+        "x",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        173,
+        -532,
+        "source_to_rebuilt_delta_saved",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        147,
+        -528,
+        "entry_index",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        0,
+        -524,
+        "dam_size",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        192,
+        -520,
+        "entry_path_saved",
+        "char*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        0,
+        -516,
+        "png_background_rgb",
+        "uint32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        0,
+        -512,
+        "entry_stem",
+        "uint8_t[512]",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        0,
+        -560,
+        "png_pixels",
+        "uint8_t*",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        0,
+        -548,
+        "png_width",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        0,
+        -540,
+        "png_height",
+        "int32_t",
+    ),
+    (
+        "rebuild_game_archive_if_needed",
+        "StackVariableSourceType",
+        0,
+        -564,
+        "png_channels",
+        "int32_t",
+    ),
+)
+
+
 ARCHIVE_SERVICE_INT_DISPLAY_UPDATES = (
     (
         "initialize_game_data_archive",
@@ -1179,6 +1477,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=ARCHIVE_SERVICE_USER_VAR_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=ARCHIVE_REBUILD_USER_VAR_UPDATES,
         )
     )
     return emit_summary(

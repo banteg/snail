@@ -4220,6 +4220,9 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     ida_sync_source = (IDA_DIR / "sync_archive_shell_types.py").read_text(
         encoding="utf-8"
     )
+    ida_lvar_inspector = (
+        IDA_DIR / "inspect_function_lvar_uses.py"
+    ).read_text(encoding="utf-8")
     headers = tuple(
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in ("bn_archive_shell_types.h", "archive_shell_types.h")
@@ -4294,6 +4297,10 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "SerializedArchiveEntry entries[10];",
         "typedef struct Win32Rect",
         "int32_t bottom;",
+        "typedef struct TgaImageView",
+        "uint8_t pixels[1];",
+        "typedef enum ArchiveEntryExtensionClass",
+        "ARCHIVE_ENTRY_EXTENSION_MP3 = 3",
         "extern int32_t g_enumerated_entry_count;",
         "extern int32_t g_tracked_allocation_total_bytes;",
         "extern TrackedAllocationStack g_tracked_allocation_stack;",
@@ -4317,8 +4324,31 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     assert "apply_split_user_var_update" in binja_source
     assert "ARCHIVE_CURSOR_USER_VAR_UPDATES" in binja_source
     assert "ARCHIVE_SERVICE_USER_VAR_UPDATES" in binja_source
+    assert "ARCHIVE_REBUILD_USER_VAR_UPDATES" in binja_source
     assert "ARCHIVE_SERVICE_INT_DISPLAY_UPDATES" in binja_source
     assert 'allocate_tracked_memory(0x400000, "Scratch Pad")' in binja_source
+    assert '("0x42f0a0", "load_png_image")' in binja_source
+    assert '("0x48b614", "printf")' in binja_source
+    assert '("0x48b8d5", "free")' in binja_source
+    assert "ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension" in binja_source
+    assert "void __cdecl rebuild_game_archive_if_needed()" in binja_source
+    assert "int32_t __cdecl load_png_image(char* png_path" in binja_source
+    assert "void* __cdecl load_file_bytes_allocating(char* path" in binja_source
+    assert "int32_t __cdecl save_file_bytes_with_optional_archive_scramble" in binja_source
+    assert "char* __cdecl toggle_archive_high_bit_in_place" in binja_source
+    assert "int32_t __cdecl printf(char* format, ...)" in binja_source
+    assert "void __cdecl free(void* pointer)" in binja_source
+    assert '(0x42F0A0, "load_png_image")' in ida_apply_source
+    assert '(0x48B614, "printf")' in ida_apply_source
+    assert '(0x48B8D5, "free")' in ida_apply_source
+    assert "ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension" in ida_apply_source
+    assert "void __cdecl rebuild_game_archive_if_needed(void);" in ida_apply_source
+    assert "int __cdecl load_png_image(char* png_path" in ida_apply_source
+    assert "void* __cdecl load_file_bytes_allocating(char* path" in ida_apply_source
+    assert "int __cdecl save_file_bytes_with_optional_archive_scramble" in ida_apply_source
+    assert "char* __cdecl toggle_archive_high_bit_in_place" in ida_apply_source
+    assert "int __cdecl printf(char* format, ...);" in ida_apply_source
+    assert "void __cdecl free(void* pointer);" in ida_apply_source
     assert "apply_user_var_updates" in binja_source
     for owner_name in (
         '"serialized_header"',
@@ -4334,6 +4364,13 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         '"filesystem_file"',
         '"filesystem_stream"',
         '"filesystem_output_buffer"',
+        '"rebuilt_index"',
+        '"source_index"',
+        '"source_byte_count_cursor"',
+        '"rebuilt_data_offset_cursor"',
+        '"png_pixels"',
+        '"entry_path"',
+        '"entry_stem"',
     ):
         assert owner_name in binja_source or owner_name in ida_apply_source
 
@@ -4343,6 +4380,15 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     assert 'SYNC_FAILURE_SENTINEL = "ARCHIVE_SHELL_SYNC_FAILED"' in ida_sync_source
     assert "if SYNC_FAILURE_SENTINEL in log_text:" in ida_sync_source
     assert "return exit_code or 1" in ida_sync_source
+    for locator_field in (
+        '"index": index',
+        '"definition_address": _format_address(lvar.defea)',
+        '"is_argument": lvar.is_arg_var',
+        '"is_stack": lvar.is_stk_var()',
+        '"stack_offset": lvar.get_stkoff() if lvar.is_stk_var() else None',
+        '"locals": lvars',
+    ):
+        assert locator_field in ida_lvar_inspector
 
 
 def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:

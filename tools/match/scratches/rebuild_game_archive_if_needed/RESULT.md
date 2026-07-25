@@ -45,6 +45,10 @@ native keeps and advances that output cursor as an independent local at
 - Curated `load_png_image @ 0x42f0a0` as the ordinary seven-argument `cdecl`
   proven by its body, rejecting Binary Ninja's spurious register parameters;
   its final lanes are an optional `bKGD` RGB output and an integer file offset.
+- Replayed the source/rebuilt index owners, serialized record cursors,
+  source-to-rebuilt delta, TGA row offsets, and PNG allocation/dimensions into
+  both Binary Ninja and IDA. IDA locates stack owners by observed definition
+  address and stack offset rather than inferred variable numbering.
 
 ## Rejected trials
 

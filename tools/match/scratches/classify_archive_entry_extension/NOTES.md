@@ -78,3 +78,16 @@ until a form preserves `eax`/`cl` and also emits the bottom zero test.
 - the retained 45/46 object is missing only native's bottom `test cl, cl`; adding
   a fake spill or branch dependency to force that instruction would not recover
   new behavior or ownership.
+
+## 2026-07-25 decompiler cursor ownership
+
+Binary Ninja and IDA now replay the same four source roles at `0x4050c0`:
+`path_cursor`, `stem_cursor`, `current_char`, and `extension_cursor`. The
+exported decompiles preserve `ArchiveEntryExtensionClass` returns instead of
+collapsing the result back to magic integers.
+
+This analysis-only improvement is intentionally codegen-neutral: the retained
+scratch remains 70.33%, 45/46 instructions, with a four-instruction prefix and
+no masked operands. A label/bottom-tested spelling was retried against the
+native loop but regressed to the known `ecx`/`al` allocation family, so it was
+rejected rather than forcing the missing test with a fake dependency.

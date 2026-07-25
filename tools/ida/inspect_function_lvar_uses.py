@@ -14,6 +14,18 @@ def _format_address(address: int) -> str | None:
     return hex(address)
 
 
+def _describe_lvar(index: int, lvar: ida_hexrays.lvar_t) -> dict[str, object]:
+    return {
+        "index": index,
+        "name": lvar.name,
+        "type": str(lvar.type()),
+        "definition_address": _format_address(lvar.defea),
+        "is_argument": lvar.is_arg_var,
+        "is_stack": lvar.is_stk_var(),
+        "stack_offset": lvar.get_stkoff() if lvar.is_stk_var() else None,
+    }
+
+
 class LvarUseVisitor(ida_hexrays.ctree_visitor_t):
     def __init__(
         self,
@@ -97,11 +109,17 @@ def main() -> None:
 
         visitor = LvarUseVisitor(cfunc, selected_names)
         visitor.apply_to(cfunc.body, None)
+        lvars = [
+            _describe_lvar(index, lvar)
+            for index, lvar in enumerate(cfunc.get_lvars())
+            if not selected_names or lvar.name in selected_names
+        ]
         functions.append(
             {
                 "selector": selector,
                 "address": hex(address),
                 "selected_names": sorted(selected_names),
+                "locals": lvars,
                 "uses": visitor.uses,
             }
         )

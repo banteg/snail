@@ -99,6 +99,28 @@ typedef struct Win32Rect {
     int32_t bottom;
 } Win32Rect;
 
+/* 18-byte TGA header followed by inline pixels; 32-bit alignment makes 0x14. */
+typedef struct TgaImageView {
+    uint8_t id_length;
+    uint8_t color_map_type;
+    uint8_t image_type;
+    uint8_t color_map_spec[5];
+    uint16_t x_origin;
+    uint16_t y_origin;
+    uint16_t width;
+    uint16_t height;
+    uint8_t bits_per_pixel;
+    uint8_t descriptor;
+    uint8_t pixels[1];
+} TgaImageView;
+
+typedef enum ArchiveEntryExtensionClass {
+    ARCHIVE_ENTRY_EXTENSION_UNKNOWN = 0,
+    ARCHIVE_ENTRY_EXTENSION_TGA = 1,
+    ARCHIVE_ENTRY_EXTENSION_WAV = 2,
+    ARCHIVE_ENTRY_EXTENSION_MP3 = 3,
+} ArchiveEntryExtensionClass;
+
 typedef char EnumeratedEntryName[128];
 
 typedef enum RegisteredSoundLimits {
@@ -270,6 +292,26 @@ uint8_t __cdecl initialize_game_data_archive(void);
 int32_t __cdecl uninitialize_game_data_archive(void);
 uint8_t __cdecl archive_or_file_exists(char* path, uint8_t force_filesystem);
 ArchiveEntry* __cdecl find_archive_entry(char* path);
+ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(
+    uint8_t* path, uint8_t* stem_out);
+void __cdecl rebuild_game_archive_if_needed(void);
+uint8_t __cdecl file_exists(char* path);
+void* __cdecl load_file_bytes_allocating(char* path, int32_t* out_size);
+int32_t __cdecl save_file_bytes_with_optional_archive_scramble(
+    char* path, void* bytes, int32_t byte_count, uint8_t should_scramble);
+int32_t __cdecl delete_file_path(char* path);
+char* __cdecl toggle_archive_high_bit_in_place(
+    char* bytes, int32_t byte_count);
+int32_t __cdecl load_png_image(
+    char* png_path,
+    uint8_t** out_pixels,
+    int32_t* out_width,
+    int32_t* out_height,
+    int32_t* out_channels,
+    uint8_t* background_rgb,
+    int32_t file_offset);
+int32_t __cdecl printf(char* format, ...);
+void __cdecl free(void* pointer);
 void* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
     char* path, void* buffer, int32_t byte_count);
 void* __cdecl load_file_bytes_from_archive_or_fs(

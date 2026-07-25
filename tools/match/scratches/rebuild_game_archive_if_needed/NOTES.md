@@ -59,3 +59,24 @@ first word is a `char* path`. The DAM rebuild never performs that rebase, so it
 now uses the separate `SerializedArchiveIndex`/`SerializedArchiveEntry` owner.
 This removes a false pointer interpretation without changing the proven native
 byte-count cursor or generated code.
+
+## 2026-07-25 replayed rebuild lifetimes
+
+Both decompilers now carry the decoded source and rebuilt destination as
+distinct `SerializedArchiveIndex*` owners, with durable names for the record
+cursors, source-to-destination byte delta, entry path/stem, TGA row offsets,
+PNG allocation, dimensions, and channel count. The adjacent `printf` and
+`free` calls are curated too, so the exported function no longer hides those
+ownership endpoints behind raw subroutine names.
+
+The sole callsite and direct callee disassembly also correct
+`load_png_image @ 0x42f0a0` to an ordinary seven-argument `cdecl`.
+Binary Ninja's former synthetic `esi`/`edi` arguments came from analysis around
+the callee's `setjmp`; they are not arguments passed by this function. IDA
+local inspection now reports definition addresses and exact stack offsets, so
+the replay keys these owners to observed lifetimes instead of guessed slots.
+
+The focused object remains honestly codegen-neutral at 66.38%, 232/232
+instructions, a five-instruction prefix, and 22 clean masked operands. The
+remaining output-cursor register allocation was not coerced with spills,
+aliases, or other fakematching.

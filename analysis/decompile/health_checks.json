@@ -21254,6 +21254,96 @@
         "char v6",
         "char v7"
       ]
+    },
+    {
+      "name": "bn_archive_extension_classifier_cursors",
+      "artifact": "analysis/decompile/binja/functions/004050c0-classify_archive_entry_extension.c",
+      "required_substrings": [
+        "uint8_t* path_cursor = path",
+        "uint8_t* stem_cursor = stem_out",
+        "uint8_t current_char = *path_cursor",
+        "return 1",
+        "return 2",
+        "return 3"
+      ],
+      "forbidden_substrings": [
+        "path_1",
+        "stem_out_1",
+        "uint8_t i",
+        "int32_t result"
+      ]
+    },
+    {
+      "name": "ida_archive_extension_classifier_cursors",
+      "artifact": "analysis/decompile/ida/functions/004050c0-classify_archive_entry_extension.c",
+      "required_substrings": [
+        "ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension",
+        "unsigned __int8 *path_cursor",
+        "unsigned __int8 current_char",
+        "unsigned __int8 extension_first_char",
+        "unsigned __int8 *extension_cursor",
+        "return ARCHIVE_ENTRY_EXTENSION_TGA",
+        "return ARCHIVE_ENTRY_EXTENSION_WAV",
+        "return ARCHIVE_ENTRY_EXTENSION_MP3"
+      ],
+      "forbidden_substrings": [
+        "unsigned __int8 *v2",
+        "unsigned __int8 v5",
+        "unsigned __int8 *v6",
+        "int __cdecl classify_archive_entry_extension"
+      ]
+    },
+    {
+      "name": "bn_archive_rebuild_serialized_owners",
+      "artifact": "analysis/decompile/binja/functions/00405370-rebuild_game_archive_if_needed.c",
+      "required_substrings": [
+        "struct SerializedArchiveIndex* rebuilt_index = malloc",
+        "struct SerializedArchiveIndex* source_index = load_file_bytes_allocating",
+        "source_index->count",
+        "int32_t* rebuilt_data_offset_cursor",
+        "int32_t* source_byte_count_cursor",
+        "uint8_t* png_pixels",
+        "uint8_t entry_stem[0x200]",
+        "int32_t source_pixel_offset",
+        "int32_t destination_pixel_offset",
+        "load_png_image(\"0.png\", &png_pixels, &png_width, &png_height, &png_channels, &png_background_rgb, 0)",
+        "printf(\"extracting %s\\n\", entry_path)",
+        "free(rebuilt_index)"
+      ],
+      "forbidden_substrings": [
+        "sub_42f0a0",
+        "sub_48b614",
+        "sub_48b8d5",
+        "FrontendWidget",
+        "CompletionResultScreen"
+      ]
+    },
+    {
+      "name": "ida_archive_rebuild_serialized_owners",
+      "artifact": "analysis/decompile/ida/functions/00405370-rebuild_game_archive_if_needed.c",
+      "required_substrings": [
+        "SerializedArchiveIndex *rebuilt_index",
+        "SerializedArchiveIndex *source_index",
+        "int *rebuilt_data_offset_cursor",
+        "int *source_byte_count_cursor",
+        "unsigned __int8 *png_pixels",
+        "unsigned __int8 entry_stem[512]",
+        "int source_pixel_offset",
+        "int destination_pixel_offset",
+        "&png_pixels",
+        "(unsigned __int8 *)&png_background_rgb",
+        "source_index->count",
+        "printf(\"extracting %s\\n\", entry_path_for_log)",
+        "free(rebuilt_index)"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *v0",
+        "char *v21",
+        "int v17",
+        "sub_42F0A0",
+        "FrontendWidget",
+        "CompletionResultScreen"
+      ]
     }
   ]
 }
