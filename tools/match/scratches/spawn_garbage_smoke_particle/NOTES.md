@@ -1,4 +1,4 @@
-# spawn_garbage_smoke_particle
+# Exact match — garbage smoke velocity ownership
 
 `spawn_garbage_smoke_particle` @ 0x43d5a0 is the smoke-effect producer called
 from the pinned `update_garbage_hazard` burst state.
@@ -12,17 +12,17 @@ Behavior:
 - Seeds white color, scale `(0.30000001, 1.3)`, velocity scaled by `0.2`, and
   position copied from the garbage hazard.
 
-Match status: 85.14% (72 candidate instructions vs 76 target, 5/76 exact
-prefix). This is source-shaped and useful as a garbage-smoke semantic anchor,
-but not exact.
+Match status: **100.00%** (76/76 candidate and target instructions, complete
+exact prefix, nine clean masked operands).
 
-Residual:
+Former residual:
 
 - The accepted raw float-lane tail keeps the color copy and scale stores at
-  native `sprite + 0x2c`, `+0x60`, and `+0x64`. The remaining residual is the
+  native `sprite + 0x2c`, `+0x60`, and `+0x64`. Its residual was the
   native `lea velocity; add position-base` setup and stack-staged scaled
   velocity reloads; the candidate still stores the tail through direct
-  `sprite + offset` lanes.
+  `sprite + offset` lanes. The 2026-07-25 recovery below replaces that
+  provisional view with the authored scaled `Vector3`.
 - The helper is modeled as `void`: `update_garbage_hazard` ignores the result,
   and native simply leaves the success path's copied `position.z` dword in
   `eax`. Modeling a byte return was an invalid assumption that added a final
@@ -153,3 +153,23 @@ falsely bounded `Vec3*`. The enclosing owner now exposes color, size, velocity,
 gravity, and position directly, with no synthetic tail struct or `__offset`.
 The replay is analysis-only, so focused matching remains 85.14%, 72/76
 instructions, with all nine masked operands clean.
+
+## 2026-07-25 shared scaled-velocity recovery
+
+The now-exact `spawn_golb_smoke` sibling identifies the native stack value as
+a scaled `Vector3`, not reused color channels. Ghidra 12.1.2 independently
+decompiles Android's symbol-preserving
+`cRSubGarbage::Smoke(tVector&, tVector&, cRSubGoldy*)` and confirms the
+borrowed position and velocity inputs, owning garbage receiver, player slot,
+subgame-rate backlink, and allocated Sprite motion lanes.
+
+Spelling `Vector3 smoke_velocity = *velocity * 0.2f` followed by the aggregate
+Sprite assignment recovers the complete Windows velocity and position tail.
+Limiting the preceding temporary color to its real source scope lets VC6 reuse
+the same 0x10-byte stack slot, so no padding or register-directed construct is
+needed.
+
+Focused matching rises from 85.14% (72/76 instructions, prefix 5) to
+**100.00%** (76/76 instructions and prefix), with all nine masked operands
+clean. This is the same semantic owner pattern as the independently exact Golb
+smoke emitter rather than a copied instruction schedule.
