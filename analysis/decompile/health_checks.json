@@ -14106,7 +14106,8 @@
         "renderer->device_initialized",
         "eax_1.b = enabled == 0",
         "renderer->present.windowed",
-        "renderer->present.back_buffer_format = renderer->display_format",
+        "uint32_t display_format = renderer->display_format",
+        "renderer->present.back_buffer_format = display_format",
         "device->vtbl->Reset(device, &renderer->present)",
         "restore_texture_ref_stage_states(renderer)",
         "reset_direct3d_render_state(renderer)"
@@ -20031,6 +20032,83 @@
         "v15",
         "PathTemplateStripMesh",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_game_window_initializer_owners",
+      "artifact": "analysis/decompile/binja/functions/004119d0-initialize_game_window_and_input.c",
+      "required_substrings": [
+        "g_runtime_config.display_mode_index",
+        "HINSTANCE game_window_instance_1 = g_game_window_instance",
+        "WNDCLASSA var_c4",
+        "DEVMODEA var_9c",
+        "RECT var_d4",
+        "g_main_window_dc = eax_10",
+        "enumerate_input_controllers(g_main_window, &g_controller_count_view)"
+      ],
+      "forbidden_substrings": [
+        "data_50327c",
+        "data_4dfaec",
+        "data_4b776c",
+        "data_4df94c"
+      ]
+    },
+    {
+      "name": "ida_game_window_initializer_owners",
+      "artifact": "analysis/decompile/ida/functions/004119d0-initialize_game_window_and_input.c",
+      "required_substrings": [
+        "int __cdecl initialize_game_window_and_input(char *window_name)",
+        "struct Rect window_rect",
+        "struct WndClassA window_class",
+        "struct DevModeA display_mode",
+        "g_runtime_config.display_mode_index",
+        "g_game_window_instance",
+        "g_main_window_dc",
+        "enumerate_input_controllers(g_main_window, &g_controller_count_view)"
+      ],
+      "forbidden_substrings": [
+        "AnimationDispatchState",
+        "unk_4DFAFC[36320]",
+        "MEMORY[0x4DFAF0]",
+        "_DWORD WndClass",
+        "_DWORD DevMode"
+      ]
+    },
+    {
+      "name": "bn_saved_window_rect_owner",
+      "artifact": "analysis/decompile/binja/functions/00414270-direct3d_renderer_set_fullscreen_mode.c",
+      "required_substrings": [
+        "GetWindowRect(g_main_window, &g_saved_window_rect)",
+        "g_saved_window_rect_valid = 1",
+        "LONG top = g_saved_window_rect.top",
+        "LONG left = g_saved_window_rect.left",
+        "g_saved_window_rect.right - left",
+        "g_saved_window_rect.bottom - top"
+      ],
+      "forbidden_substrings": [
+        "data_503268",
+        "data_50326c",
+        "data_503270",
+        "data_503274",
+        "data_503278"
+      ]
+    },
+    {
+      "name": "ida_saved_window_rect_owner",
+      "artifact": "analysis/decompile/ida/functions/00414270-direct3d_renderer_set_fullscreen_mode.c",
+      "required_substrings": [
+        "GetWindowRect)(g_main_window, &g_saved_window_rect)",
+        "g_saved_window_rect_valid = 1",
+        "g_saved_window_rect.left",
+        "g_saved_window_rect.top",
+        "g_saved_window_rect.right - g_saved_window_rect.left",
+        "g_saved_window_rect.bottom - g_saved_window_rect.top"
+      ],
+      "forbidden_substrings": [
+        "AnimationDispatchState",
+        "unk_50326C",
+        "unk_503270",
+        "unk_503274"
       ]
     }
   ]

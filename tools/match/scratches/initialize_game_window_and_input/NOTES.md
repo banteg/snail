@@ -81,3 +81,19 @@ extent.
   its honest next-function boundary. The compiler-owned resolution table remains
   separately curated and content-audited rather than being modeled as source
   instructions.
+
+2026-07-25 Win32 window-state analysis replay:
+
+- Binary Ninja and IDA independently confirm the exact process owners used by
+  this initializer: `g_game_window_instance` and `g_main_window_dc` are
+  four-byte handles, `g_controller_count_view` is the four-byte `int*` output
+  passed to `enumerate_input_controllers`, and `g_fullscreen_active` remains a
+  one-byte flag with the following three bytes deliberately unclaimed.
+- IDA's prior one-byte fragments hid those extents and incorrectly rendered the
+  module handle through a distant float array. The fail-closed replay now
+  preserves `Rect`, `WndClassA`, and `DevModeA` as the three exact, contiguous
+  stack records at `0x10`, `0x28`, and `0x9c` bytes.
+- Focused matching remains honestly at 92.48%, 266/266 instructions, with 56
+  clean masked operands and the one known resolution jump-table destination
+  mismatch. No source was changed to imitate the remaining constant-hoist or
+  switch-layout differences.

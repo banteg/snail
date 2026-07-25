@@ -6168,6 +6168,71 @@ def test_main_loop_replay_recovers_process_scalar_boundaries() -> None:
     assert "ida_bytes.create_float" in ida_sync
 
 
+def test_win32_window_state_replay_recovers_exact_owners_and_stack_records() -> None:
+    header = (
+        HEADER_DIR / "win32_window_state_types.h"
+    ).read_text(encoding="utf-8")
+    binja_sync = (
+        BINJA_DIR / "sync_win32_window_state_types.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (
+        IDA_DIR / "apply_win32_window_state_types.py"
+    ).read_text(encoding="utf-8")
+    ida_runner = (
+        IDA_DIR / "sync_win32_window_state_types.py"
+    ).read_text(encoding="utf-8")
+
+    for owner, extent in (
+        ("Rect", "0x10"),
+        ("WndClassA", "0x28"),
+        ("DevModeA", "0x9c"),
+    ):
+        assert f"{owner}_must_be_{extent}" in header
+        assert owner in ida_sync
+
+    data_owners = (
+        ("0x4b776c", "g_controller_count_view", "int32_t"),
+        ("0x4dfaec", "g_main_window_dc", "HDC"),
+        ("0x4dfaf0", "g_main_window", "HWND"),
+        ("0x4dfaf4", "g_fullscreen_active", "uint8_t"),
+        ("0x4dfaf8", "g_bass_window", "HWND"),
+        ("0x503268", "g_saved_window_rect", "RECT"),
+        ("0x503278", "g_saved_window_rect_valid", "uint8_t"),
+        ("0x50327c", "g_game_window_instance", "HINSTANCE"),
+    )
+    for address, name, data_type in data_owners:
+        assert f'("{address}", "{name}")' in binja_sync
+        assert f'("{address}", "{data_type}")' in binja_sync
+        assert f"0x{int(address, 0):X}" in ida_sync
+        assert name in header
+        assert name in ida_sync
+
+    for definition_address, stack_offset, target_name, target_type in (
+        ("0x411B62", 80, "window_rect", "Rect"),
+        ("0x411A7F", 96, "window_class", "WndClassA"),
+        ("0x411B21", 136, "display_mode", "DevModeA"),
+    ):
+        assert definition_address in ida_sync
+        assert f'"stack_offset": {stack_offset}' in ida_sync
+        assert target_name in ida_sync
+        assert target_type in ida_sync
+
+    assert "(0x4DFAF5, 0x4DFAF8)" in ida_sync
+    assert "(0x503279, 0x50327C)" in ida_sync
+    assert "unexpected_window_owner_boundary" in ida_sync
+    assert "window_owner_crosses_checked_extent" in ida_sync
+    assert "unexpected_window_owner_interior_names" in ida_sync
+    assert "_sync_data_item(spec, apply=False)" in ida_sync
+    assert "_sync_data_item(spec, apply=True)" in ida_sync
+    assert "data_item_preflight" in ida_sync
+    assert "AnimationDispatchState" in ida_sync
+    assert "DEPENDENT_FUNCTIONS = (" in binja_sync
+    assert binja_sync.count('"direct3d_renderer_set_fullscreen_mode"') == 1
+    assert binja_sync.count('"initialize_game_window_and_input"') >= 2
+    assert "game_startup_and_main_loop" not in binja_sync
+    assert "apply_win32_window_state_types.py" in ida_runner
+
+
 def test_display_mode_replay_recovers_only_the_proven_owner_prefix() -> None:
     repo_root = Path(__file__).parents[1]
     analysis_header = (

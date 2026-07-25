@@ -38,3 +38,13 @@ argument into `BL` and tests that byte throughout the transition. The startup
 caller independently forwards only the runtime config byte in `DL`, proving
 the fullscreen flag is byte-valued rather than the earlier `int32_t`. The
 corrected `char` matcher signature remains exact at 84/84 instructions.
+
+2026-07-25 saved-window ownership replay:
+
+- Both decompilers now preserve the exact `Rect` owner at `0x503268` and its
+  independent one-byte valid flag at `0x503278`; the three bytes before the
+  cached game-window instance remain unclaimed.
+- This corrects IDA's stale `AnimationDispatchState` type and Binary Ninja's
+  four unrelated scalar spellings. The restore path now exposes `left`, `top`,
+  `right`, and `bottom` directly while retaining the existing exact 84/84
+  instruction match with all 29 masked operands clean.

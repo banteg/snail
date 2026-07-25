@@ -9,11 +9,12 @@
 0041428a        eax_1.b = enabled == 0
 0041428f        renderer->present.windowed = eax_1
 00414295        if (enabled == 0)
+004142d0        uint32_t display_format = renderer->display_format
 004142d8        renderer->present.fullscreen_refresh_rate_hz = 0
 004142de        renderer->present.fullscreen_presentation_interval = 0
-004142e4        renderer->present.back_buffer_format = renderer->display_format
-004142a3        GetWindowRect(g_main_window, &data_503268)
-004142a9        data_503278 = 1
+004142e4        renderer->present.back_buffer_format = display_format
+004142a3        GetWindowRect(g_main_window, &g_saved_window_rect)
+004142a9        g_saved_window_rect_valid = 1
 004142b0        renderer->present.fullscreen_refresh_rate_hz = 0
 004142ba        renderer->present.fullscreen_presentation_interval = 1
 004142c4        renderer->present.back_buffer_format = 0x16
@@ -21,17 +22,17 @@
 00414307        device->vtbl->Reset(device, &renderer->present)
 0041430c        restore_texture_ref_stage_states(renderer)
 00414313        reset_direct3d_render_state(renderer)
-00414324        if (enabled != 0 || data_503278 != 1)
+00414324        if (enabled != 0 || g_saved_window_rect_valid != 1)
 00414359        ShowCursor(0)
-0041432c        int32_t Y = data_50326c
-0041433c        int32_t X = data_503268
-0041434f        SetWindowPos(g_main_window, nullptr, X, Y, data_503270 - X, data_503274 - Y, SWP_SHOWWINDOW)
+0041432c        LONG top = g_saved_window_rect.top
+0041433c        LONG left = g_saved_window_rect.left
+0041434f        SetWindowPos(g_main_window, nullptr, left, top, g_saved_window_rect.right - left, g_saved_window_rect.bottom - top, SWP_SHOWWINDOW)
 00414368        ShowWindow(g_main_window, SW_SHOW)
 00414375        SetForegroundWindow(g_main_window)
 00414381        SetFocus(g_main_window)
-00414393        int32_t Y_1
+00414393        int32_t Y
 00414393        int16_t x87control
 00414393        int16_t x87control_1
-00414393        Y_1, x87control_1 = ftol(x87control, fconvert.t(data_4b7760) * fconvert.t(0.5f))
-004143ab        SetCursorPos(ftol(x87control_1, fconvert.t(data_4df85c) * fconvert.t(0.5f)), Y_1)
+00414393        Y, x87control_1 = ftol(x87control, fconvert.t(g_authored_view_height) * fconvert.t(0.5f))
+004143ab        SetCursorPos(ftol(x87control_1, fconvert.t(g_authored_view_width) * fconvert.t(0.5f)), Y)
 004143b2        return

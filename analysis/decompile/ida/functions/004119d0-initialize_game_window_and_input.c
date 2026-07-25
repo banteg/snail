@@ -3,28 +3,26 @@
 /* selector: initialize_game_window_and_input */
 
 // Registers the SnailMail window class, applies the recovered 4:3 resolution presets, falls back to a 640x480 windowed client, and initializes keyboard, controller, and mouse input.
-int __cdecl initialize_game_window_and_input(int lpWindowName)
+int __cdecl initialize_game_window_and_input(char *window_name)
 {
-  int v1; // esi
+  unsigned int v1; // esi
   int v2; // ebp
   int v3; // ebx
-  float v4; // eax
+  int v4; // eax
   int v5; // edi
   unsigned int v6; // esi
-  int v7; // eax
-  float v9; // [esp+0h] [ebp-FCh]
-  float v10; // [esp+4h] [ebp-F8h]
+  HWND v7; // eax
+  float authored_width; // [esp+0h] [ebp-FCh]
+  float authored_height; // [esp+4h] [ebp-F8h]
   int v11; // [esp+1Ch] [ebp-E0h]
   int X; // [esp+20h] [ebp-DCh]
   int Y; // [esp+24h] [ebp-D8h]
-  __int64 Rect; // [esp+28h] [ebp-D4h] BYREF
-  int Rect_8; // [esp+30h] [ebp-CCh]
-  int Rect_12; // [esp+34h] [ebp-C8h]
-  _DWORD WndClass[10]; // [esp+38h] [ebp-C4h] BYREF
-  _DWORD DevMode[39]; // [esp+60h] [ebp-9Ch] BYREF
+  struct Rect window_rect; // [esp+28h] [ebp-D4h] BYREF
+  struct WndClassA window_class; // [esp+38h] [ebp-C4h] BYREF
+  struct DevModeA display_mode; // [esp+60h] [ebp-9Ch] BYREF
 
-  v1 = (byte_4DF934 & 0x400) != 0 ? 32 : 16;
-  switch ( unk_4DF94C )
+  v1 = (g_runtime_config.render_flags & 0x400) != 0 ? 32 : 16;
+  switch ( g_runtime_config.display_mode_index )
   {
     case 0:
       v2 = 320;
@@ -49,41 +47,41 @@ int __cdecl initialize_game_window_and_input(int lpWindowName)
       v11 = 1600;
       break;
     default:
-      unk_4DF94C = 1;
+      g_runtime_config.display_mode_index = 1;
 LABEL_7:
       v2 = 640;
       v3 = 480;
       v11 = 640;
       break;
   }
-  v4 = unk_4DFAFC[36320];
-  unk_4DFAF4 = 0;
-  if ( !LODWORD(unk_4DFAFC[36320]) )
+  v4 = g_game_window_instance;
+  g_fullscreen_active = 0;
+  if ( !g_game_window_instance )
   {
-    v4 = COERCE_FLOAT(((int (__stdcall *)(_DWORD))GetModuleHandleA)(0));
-    unk_4DFAFC[36320] = v4;
+    v4 = ((int (__stdcall *)(_DWORD))GetModuleHandleA)(0);
+    g_game_window_instance = v4;
   }
-  WndClass[0] = 3;
-  WndClass[1] = game_window_proc;
-  WndClass[2] = 0;
-  WndClass[3] = 0;
-  *(float *)&WndClass[4] = v4;
-  WndClass[5] = ((int (__stdcall *)(_DWORD, int))LoadIconA)(LODWORD(v4), 103);
-  memset(&WndClass[6], 0, 12);
-  WndClass[9] = szClass;
-  if ( !(unsigned __int16)((int (__stdcall *)(_DWORD *))RegisterClassA)(WndClass) )
+  window_class.style = 3;
+  window_class.wnd_proc = game_window_proc;
+  window_class.cls_extra = 0;
+  window_class.wnd_extra = 0;
+  window_class.instance = v4;
+  window_class.icon = ((int (__stdcall *)(int, int))LoadIconA)(v4, 103);
+  memset(&window_class.cursor, 0, 12);
+  window_class.class_name = (char *)szClass;
+  if ( !(unsigned __int16)((int (__stdcall *)(struct WndClassA *))RegisterClassA)(&window_class) )
     abort_startup_with_3d_error();
-  if ( !unk_4DFAF4 )
+  if ( !g_fullscreen_active )
     goto LABEL_15;
-  memset(DevMode, 0, sizeof(DevMode));
-  LOWORD(DevMode[9]) = 156;
-  DevMode[27] = v2;
-  DevMode[28] = v3;
-  DevMode[26] = v1;
-  DevMode[10] = 1835008;
-  if ( ((int (__stdcall *)(_DWORD *, int))ChangeDisplaySettingsA)(DevMode, 4) )
+  memset(&display_mode, 0, sizeof(display_mode));
+  display_mode.size = 156;
+  display_mode.pels_width = v2;
+  display_mode.pels_height = v3;
+  display_mode.bits_per_pel = v1;
+  display_mode.fields = 1835008;
+  if ( ((int (__stdcall *)(struct DevModeA *, int))ChangeDisplaySettingsA)(&display_mode, 4) )
   {
-    unk_4DFAF4 = 0;
+    g_fullscreen_active = 0;
 LABEL_15:
     v5 = 262400;
     v6 = 281673728;
@@ -93,61 +91,61 @@ LABEL_15:
     v3 = 480;
     goto LABEL_16;
   }
-  if ( !unk_4DFAF4 )
+  if ( !g_fullscreen_active )
     goto LABEL_15;
   v5 = 0x40000;
   v6 = 0x80000000;
-  ((void (__stdcall *)(_DWORD))ShowCursor)(0);
+  ShowCursor(0);
   X = 0;
   Y = 0;
-  v10 = (float)v3;
-  v9 = (float)v11;
-  update_mouse_authored_scale(v9, v10);
+  authored_height = (float)v3;
+  authored_width = (float)v11;
+  update_mouse_authored_scale(authored_width, authored_height);
 LABEL_16:
-  Rect = 0;
-  Rect_8 = v2;
-  Rect_12 = v3;
-  ((void (__stdcall *)(__int64 *, unsigned int, _DWORD, int))AdjustWindowRectEx)(&Rect, v6, 0, v5);
-  v7 = ((int (__stdcall *)(int, char *, int, unsigned int, int, int, _DWORD, int, _DWORD, _DWORD, _DWORD, _DWORD))CreateWindowExA)(
+  *(_QWORD *)&window_rect.left = 0;
+  window_rect.right = v2;
+  window_rect.bottom = v3;
+  ((void (__stdcall *)(struct Rect *, unsigned int, _DWORD, int))AdjustWindowRectEx)(&window_rect, v6, 0, v5);
+  v7 = ((int (__stdcall *)(int, ObjectFaceQuad *, char *, unsigned int, int, int, int, int, _DWORD, _DWORD, HINSTANCE, _DWORD))CreateWindowExA)(
          v5,
          szClass,
-         lpWindowName,
+         window_name,
          v6 | 0x6000000,
          X,
          Y,
-         Rect_8 - Rect,
-         Rect_12 - HIDWORD(Rect),
+         window_rect.right - window_rect.left,
+         window_rect.bottom - window_rect.top,
          0,
          0,
-         LODWORD(unk_4DFAFC[36320]),
+         g_game_window_instance,
          0);
-  MEMORY[0x4DFAF0] = v7;
+  g_main_window = v7;
   if ( !v7 )
   {
     release_global_direct3d_renderer_resources();
     abort_startup_with_3d_error();
   }
-  unk_4DFAEC = ((int (__stdcall *)(int))GetDC)(v7);
-  if ( !unk_4DFAEC )
+  g_main_window_dc = GetDC(v7);
+  if ( !g_main_window_dc )
   {
     release_global_direct3d_renderer_resources();
     abort_startup_with_3d_error();
   }
-  ((void (__stdcall *)(_DWORD, int))ShowWindow)(MEMORY[0x4DFAF0], 5);
-  ((void (__stdcall *)(_DWORD))SetForegroundWindow)(MEMORY[0x4DFAF0]);
-  ((void (__stdcall *)(_DWORD))SetFocus)(MEMORY[0x4DFAF0]);
+  ShowWindow(g_main_window, 5);
+  SetForegroundWindow(g_main_window);
+  SetFocus(g_main_window);
   if ( !initialize_direct3d_renderer() )
   {
     release_global_direct3d_renderer_resources();
     abort_startup_with_3d_error();
   }
-  if ( (int)initialize_keyboard_input(MEMORY[0x4DFAF0]) < 0 )
+  if ( initialize_keyboard_input(g_main_window) < 0 )
     abort_startup_with_3d_error();
-  if ( (int)enumerate_input_controllers(MEMORY[0x4DFAF0], &unk_4B776C) < 0 )
+  if ( enumerate_input_controllers(g_main_window, &g_controller_count_view) < 0 )
     abort_startup_with_3d_error();
-  if ( (int)initialize_mouse_input(MEMORY[0x4DFAF0]) < 0 )
+  if ( initialize_mouse_input(g_main_window) < 0 )
     abort_startup_with_3d_error();
-  ((void (__stdcall *)(_DWORD))SetFocus)(MEMORY[0x4DFAF0]);
+  SetFocus(g_main_window);
   set_cull_mode(1);
   return 1;
 }
