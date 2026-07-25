@@ -207,6 +207,78 @@ RUNTIME_GRID_CLEAR_USER_VAR_UPDATES = (
     ),
 )
 
+# The builder borrows complete SubSegment records from its embedded SubTracks
+# owner. ESI is the freshly selected record, the existing stack slot is the
+# active record carried across rows, and EDX is the possibly completion-
+# overridden source consumed by the authored-row copy. The register updates
+# below keep those lifetimes separate without claiming ownership of the bank.
+RUNTIME_SEGMENT_SELECTION_USER_VAR_UPDATES = (
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        759,
+        66,
+        "visited_segment_index",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        810,
+        73,
+        "runtime_row_index",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        814,
+        71,
+        "build_runtime_owner",
+        "SubgameRuntime*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        822,
+        72,
+        "selected_segment",
+        "SubSegment*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        971,
+        66,
+        "random_segment_index",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        1012,
+        66,
+        "sequential_segment_index",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        1052,
+        66,
+        "selected_segment_row_count",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        1147,
+        68,
+        "source_segment",
+        "SubSegment*",
+    ),
+)
+
 # The lane loop always writes the runtime-grid lane to EDX, while the glyph
 # lookup uses either that lane or its mirrored 7-lane value in EBP. Binary
 # Ninja presents each branch definition as a distinct split variable; merge
@@ -431,6 +503,7 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=(
+                *RUNTIME_SEGMENT_SELECTION_USER_VAR_UPDATES,
                 *RUNTIME_GRID_CLEAR_USER_VAR_UPDATES,
                 *RUNTIME_GRID_GLYPH_USER_VAR_UPDATES,
             ),

@@ -2081,6 +2081,79 @@ POPULATE_RUNTIME_SPLIT_USER_VAR_UPDATES = (
     ),
 )
 
+# The outer BuildLevel loop has three distinct borrowed SubSegment stages.
+# ESI selects a complete segment owned by level_definition, the stack slot
+# carries that active segment across row iterations, and EDX carries the
+# possibly overridden completion-row source into the authored-row copy.
+# Preserve those complete-record borrows and the exact row/slot ordinals;
+# none of these cursors owns segment storage.
+POPULATE_SEGMENT_SELECTION_USER_VAR_UPDATES = (
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        759,
+        66,
+        "visited_segment_index",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        810,
+        73,
+        "runtime_row_index",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        814,
+        71,
+        "build_runtime_owner",
+        "SubgameRuntime*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        822,
+        72,
+        "selected_segment",
+        "SubSegment*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        971,
+        66,
+        "random_segment_index",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        1012,
+        66,
+        "sequential_segment_index",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        1052,
+        66,
+        "selected_segment_row_count",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        1147,
+        68,
+        "source_segment",
+        "SubSegment*",
+    ),
+)
+
 POPULATE_RUNTIME_USER_VAR_UPDATES = (
     (
         "populate_runtime_track_cells_from_segments",
@@ -4842,6 +4915,7 @@ def main() -> int:
                 *SPAWN_TRACK_PICKUP_CURSOR_USER_VAR_UPDATES,
                 *COLLISION_POOL_CURSOR_USER_VAR_UPDATES,
                 *SPAWN_SALT_HAZARD_USER_VAR_UPDATES,
+                *POPULATE_SEGMENT_SELECTION_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_CLEAR_CURSOR_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,

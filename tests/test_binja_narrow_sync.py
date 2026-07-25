@@ -19274,3 +19274,134 @@ def test_help_lifecycle_owner_replays_cross_decompiler() -> None:
         "ida_help_update_owner",
     ):
         assert name in checks_by_name
+
+
+def test_runtime_segment_selection_owner_chain_replays_cross_decompiler() -> None:
+    repo_root = Path(__file__).parents[1]
+    canonical_binja = (
+        BINJA_DIR / "sync_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    focused_binja = (
+        BINJA_DIR / "sync_runtime_grid_clear_lifetimes.py"
+    ).read_text(encoding="utf-8")
+    canonical_ida = (
+        IDA_DIR / "apply_path_template_types.py"
+    ).read_text(encoding="utf-8")
+
+    assert "POPULATE_SEGMENT_SELECTION_USER_VAR_UPDATES" in canonical_binja
+    assert "RUNTIME_SEGMENT_SELECTION_USER_VAR_UPDATES" in focused_binja
+    for source_type, index, storage, name, type_name in (
+        (
+            "RegisterVariableSourceType",
+            759,
+            66,
+            "visited_segment_index",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            810,
+            73,
+            "runtime_row_index",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            814,
+            71,
+            "build_runtime_owner",
+            "SubgameRuntime*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            822,
+            72,
+            "selected_segment",
+            "SubSegment*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            971,
+            66,
+            "random_segment_index",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1012,
+            66,
+            "sequential_segment_index",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1052,
+            66,
+            "selected_segment_row_count",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            1147,
+            68,
+            "source_segment",
+            "SubSegment*",
+        ),
+    ):
+        expected = (
+            '        "populate_runtime_track_cells_from_segments",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in canonical_binja
+        assert expected in focused_binja
+
+    for name, declaration, definition_address in (
+        (
+            "visited_segment_index",
+            "int32_t visited_segment_index;",
+            "0x4361A8",
+        ),
+        ("runtime_row_index", "int32_t runtime_row_index;", "0x4361DB"),
+        (
+            "build_runtime_owner",
+            "SubgameRuntime *build_runtime_owner;",
+            "0x4361DF",
+        ),
+        ("selected_segment", "SubSegment *selected_segment;", "0x4361E7"),
+        (
+            "selected_segment_row_count",
+            "int32_t selected_segment_row_count;",
+            "0x4362CD",
+        ),
+        ("source_segment", "SubSegment *source_segment;", "0x43632C"),
+    ):
+        assert f'"{name}"' in canonical_ida
+        assert f'"{declaration}"' in canonical_ida
+        assert definition_address in canonical_ida
+
+    health_checks = {
+        check["name"]: check
+        for check in json.loads(
+            (repo_root / "analysis/decompile/health_checks.json").read_text(
+                encoding="utf-8"
+            )
+        )["checks"]
+    }
+    for name in (
+        "bn_runtime_cell_stride_owner_graph",
+        "ida_runtime_cell_stride_owner_graph",
+    ):
+        required = health_checks[name]["required_substrings"]
+        for marker in (
+            "visited_segment_index",
+            "runtime_row_index",
+            "build_runtime_owner",
+            "selected_segment",
+            "selected_segment_row_count",
+            "source_segment",
+        ):
+            assert any(marker in item for item in required)

@@ -855,3 +855,31 @@ honest 29.67%, 1,229/1,245-instruction frontier with 66 clean operands and the
 same jump-table and call-alignment mismatches. This slice recovers durable
 borrowed-cursor ownership only; it adds no branch shaping, dummy dependency,
 register coercion, or masked-operand fakematch.
+
+## 2026-07-25 runtime segment-selection owner chain
+
+The row builder now exposes the complete segment-selection ownership chain.
+`SubTracks` remains the sole owner of its embedded `SubSegment` records.
+`selected_segment` borrows the chosen first, last, random, or sequential
+record; the active-segment stack slot carries that same borrowed pointer; and
+`source_segment` may replace it with the last segment or the mode-3 scratch
+segment before authored rows are copied into the runtime slab. Each resulting
+runtime row retains the final borrowed provenance pointer in
+`row.source_segment`.
+
+Binary Ninja pins the eight physical identities at user-variable indices 759,
+810, 814, 822, 971, 1012, 1052, and 1147: the visited-segment index, runtime
+row index, build-runtime owner, selected segment, random and sequential
+segment indices, selected row count, and final source segment. IDA independently
+pins the corresponding six recoverable Hex-Rays locals at `0x4361a8`,
+`0x4361db`, `0x4361df`, `0x4361e7`, `0x4362cd`, and `0x43632c`. Its two
+compiler-copy indices remain unnamed because neither alone owns the sequential
+selection lifetime.
+
+Both focused replay lanes are idempotent, and the paired export agrees with
+zero mismatches while all 1,039 strict cross-decompiler health checks pass.
+Binary Ninja and IDA agree, so no Ghidra tie-break was needed. Matcher source
+and operands remain untouched at the honest 29.67%, 1,229/1,245-instruction
+frontier with 66 clean operands and the same two documented mismatches. No
+score-shaped source, register coercion, dummy dependency, masked operand, or
+other fakematch was added.
