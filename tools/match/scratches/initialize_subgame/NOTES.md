@@ -546,3 +546,24 @@ No matching source changed. Focused results remain 47/47 for Help, 600/600 at
 98.00% for High Score (the twelve honest colour-temporary stack permutations),
 182/182 for New Game, 172/172 for Main Menu, and 396/396 for Subgame, with no
 unresolved or mismatched masked operands in any of the five functions.
+
+## 2026-07-25 selected high-score record borrow
+
+The mode switch borrows the first `SubSolution` from one of the three
+`SubHighScore`-owned arrays, publishes that same element pointer through
+`active_record_bank`, and copies its score/time into the subgame display
+snapshot. Binary Ninja had joined the three branch values as
+`SubSolution (*)[51]`, which produced array-owner subtraction for the score
+and treated the timer copy as bytes after a whole-array pointer.
+
+The exact joined SSA identity (`RegisterVariableSourceType`, index `175`,
+storage `66`) now replays as a neutral `SubSolution* selected_record`. The
+tracked decompile directly assigns each embedded array start to that borrow,
+stores it in `active_record_bank`, reads `selected_record->score`, and copies
+`selected_record->score_or_time`. IDA independently recovered the same
+element-pointer lifetime, although its automatic local name remains biased
+toward the postal branch.
+
+This shares the guarded high-score replay and does not introduce another bank
+or record owner. Matcher source is unchanged; `initialize_subgame` remains
+exact at 396/396 instructions with all 85 operands clean.

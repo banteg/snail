@@ -30,3 +30,22 @@ operands.
 - Binary Ninja declaration preview verifies both `SubHighScore == 0x947648`
   and the enclosing `SubgameRuntime == 0x1272838`, then reverts. Focused Wibo
   remains exact at 58/58 with all four operands clean.
+
+## 2026-07-25 embedded record cursor ownership
+
+The three initializer loops borrow one `SubSolution` element at a time from
+the `SubHighScore`-owned postal, survival, and time-trial arrays. Native keeps
+each current record in EDI and advances it by exactly `0x1fac0`, the proven
+`sizeof(SubSolution)`. Binary Ninja had instead promoted those values to
+pointers to the complete 11- or 51-element arrays.
+
+The exact SSA identities now replay as `SubSolution*` element cursors:
+`RegisterVariableSourceType` indices `7`, `45`, and `86`, all in storage `73`.
+The tracked decompile exposes direct calls on each current record and
+one-element cursor increments. IDA independently renders the same three
+borrows as `SubSolution*` post-increment loops.
+
+The focused replay fails closed unless `SubSolution == 0x1fac0`,
+`SubHighScore == 0x947648`, and the enclosing `SubgameRuntime == 0x1272838`.
+This is analysis-only ownership recovery; the exact matcher source and all
+58/58 instructions remain unchanged.

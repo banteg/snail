@@ -8,9 +8,11 @@ import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
+    apply_int_display_updates,
     apply_proto_updates,
     apply_symbol_updates,
     apply_user_var_updates,
+    current_struct_size,
     emit_summary,
     types_declare,
 )
@@ -18,6 +20,25 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_high_score_bank_types.h"
+
+RECORD_CURSOR_EXPECTED_SIZES = {
+    "SubSolution": 0x1FAC0,
+    "SubHighScore": 0x947648,
+    "SubgameRuntime": 0x1272838,
+}
+
+SCALAR_SIZE_DISPLAY_UPDATES = (
+    (
+        "save_high_scores_and_config",
+        "0x41794c",
+        "68 40 4b 4c 00",
+        0x4C4B40,
+        0xFFFFFFFF,
+        "UnsignedHexadecimalDisplayType",
+        'allocate_tracked_memory(0x4c4b40, "High Score Table")',
+        "allocate_tracked_memory(&(*(*g_texture_refs.entries)",
+    ),
+)
 
 PROTO_UPDATES = (
     (
@@ -279,6 +300,65 @@ PERSISTENCE_USER_VAR_UPDATES = (
     ),
 )
 
+EMBEDDED_RECORD_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_high_score_tables",
+        "RegisterVariableSourceType",
+        7,
+        73,
+        "postal_record_cursor",
+        "SubSolution*",
+    ),
+    (
+        "initialize_high_score_tables",
+        "RegisterVariableSourceType",
+        45,
+        73,
+        "survival_record_cursor",
+        "SubSolution*",
+    ),
+    (
+        "initialize_high_score_tables",
+        "RegisterVariableSourceType",
+        86,
+        73,
+        "time_trial_record_cursor",
+        "SubSolution*",
+    ),
+    (
+        "save_high_scores_and_config",
+        "RegisterVariableSourceType",
+        39,
+        73,
+        "postal_record_cursor",
+        "SubSolution*",
+    ),
+    (
+        "save_high_scores_and_config",
+        "RegisterVariableSourceType",
+        118,
+        73,
+        "survival_record_cursor",
+        "SubSolution*",
+    ),
+    (
+        "save_high_scores_and_config",
+        "RegisterVariableSourceType",
+        196,
+        73,
+        "time_trial_record_cursor",
+        "SubSolution*",
+    ),
+    (
+        "initialize_subgame",
+        "RegisterVariableSourceType",
+        175,
+        66,
+        "selected_record",
+        "SubSolution*",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -295,7 +375,42 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_HEADER_PATH,
         help="Path to the narrow Binary Ninja type-import header.",
     )
+    parser.add_argument(
+        "--record-cursor-only",
+        action="store_true",
+        help=(
+            "Replay only the SubSolution element borrows used by high-score "
+            "initialization, persistence, and subgame bank selection after "
+            "verifying their existing owner layouts, plus the guarded scalar "
+            "display for the persistence buffer size."
+        ),
+    )
     return parser.parse_args()
+
+
+def require_record_cursor_dependencies(*, target: str) -> dict[str, object]:
+    observed_sizes = {
+        name: current_struct_size(REPO_ROOT, target=target, struct_name=name)
+        for name in RECORD_CURSOR_EXPECTED_SIZES
+    }
+    mismatches = {
+        name: {
+            "expected": expected,
+            "observed": observed_sizes[name],
+        }
+        for name, expected in RECORD_CURSOR_EXPECTED_SIZES.items()
+        if observed_sizes[name] != expected
+    }
+    if mismatches:
+        raise RuntimeError(
+            "refusing high-score record cursor replay with size mismatches: "
+            f"{mismatches!r}"
+        )
+    return {
+        "op": "verify_high_score_record_cursor_dependencies",
+        "status": "verified",
+        "owner_sizes": observed_sizes,
+    }
 
 
 def main() -> int:
@@ -304,14 +419,46 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    if args.record_cursor_only:
+        operations = [
+            require_record_cursor_dependencies(target=args.target),
+            *apply_int_display_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=SCALAR_SIZE_DISPLAY_UPDATES,
+            ),
+            *apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=EMBEDDED_RECORD_CURSOR_USER_VAR_UPDATES,
+            ),
+        ]
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     operations: list[dict[str, object]] = [types_declare(REPO_ROOT, target=args.target, header_path=header_path)]
+    operations.append(require_record_cursor_dependencies(target=args.target))
     operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=SYMBOL_UPDATES))
     operations.extend(apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES))
+    operations.extend(
+        apply_int_display_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SCALAR_SIZE_DISPLAY_UPDATES,
+        )
+    )
     operations.extend(
         apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=PERSISTENCE_USER_VAR_UPDATES,
+            updates=(
+                *PERSISTENCE_USER_VAR_UPDATES,
+                *EMBEDDED_RECORD_CURSOR_USER_VAR_UPDATES,
+            ),
         )
     )
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)

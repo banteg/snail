@@ -3285,6 +3285,71 @@ def test_ranked_high_score_replays_preserve_owned_record_cursors() -> None:
     assert 'expected_owner = "g_game_base->subgame.sub_high_score.active_record_bank"' in ida_source
 
 
+def test_high_score_replay_preserves_embedded_record_element_borrows() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    assert "RECORD_CURSOR_EXPECTED_SIZES" in binja_source
+    for expected_size in (
+        '"SubSolution": 0x1FAC0',
+        '"SubHighScore": 0x947648',
+        '"SubgameRuntime": 0x1272838',
+    ):
+        assert expected_size in binja_source
+    assert "SCALAR_SIZE_DISPLAY_UPDATES" in binja_source
+    for scalar_display_fragment in (
+        '"0x41794c"',
+        '"68 40 4b 4c 00"',
+        "0x4C4B40",
+        "0xFFFFFFFF",
+        '"UnsignedHexadecimalDisplayType"',
+        'allocate_tracked_memory(0x4c4b40, "High Score Table")',
+        '"allocate_tracked_memory(&(*(*g_texture_refs.entries)"',
+        "apply_int_display_updates",
+    ):
+        assert scalar_display_fragment in binja_source
+    assert "EMBEDDED_RECORD_CURSOR_USER_VAR_UPDATES" in binja_source
+    for function_name, index, storage, cursor_name in (
+        ("initialize_high_score_tables", 7, 73, "postal_record_cursor"),
+        ("initialize_high_score_tables", 45, 73, "survival_record_cursor"),
+        ("initialize_high_score_tables", 86, 73, "time_trial_record_cursor"),
+        ("save_high_scores_and_config", 39, 73, "postal_record_cursor"),
+        ("save_high_scores_and_config", 118, 73, "survival_record_cursor"),
+        ("save_high_scores_and_config", 196, 73, "time_trial_record_cursor"),
+        ("initialize_subgame", 175, 66, "selected_record"),
+    ):
+        update = (
+            f'"{function_name}",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{cursor_name}",\n'
+            '        "SubSolution*",'
+        )
+        assert update in binja_source
+
+    assert "--record-cursor-only" in binja_source
+    assert "if args.record_cursor_only:" in binja_source
+    assert "require_record_cursor_dependencies" in binja_source
+    for decompile_fragment in (
+        "struct SubSolution* postal_record_cursor = &bank->postal_records",
+        "struct SubSolution* survival_record_cursor = &bank->survival_records",
+        "struct SubSolution* time_trial_record_cursor = "
+        "&bank->time_trial_route_records",
+        "struct SubSolution* selected_record",
+        "game->sub_high_score.active_record_bank = selected_record",
+        "allocate_tracked_memory(0x4c4b40",
+        '"g_texture_refs"',
+    ):
+        assert decompile_fragment in health_checks
+    assert '"struct SubSolution (*"' in health_checks
+
+
 def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
     binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"
@@ -10468,6 +10533,46 @@ def test_previewed_batch_guards_analysis_for_current_user_variables() -> None:
         "snapshot_saved = bv.file.save_auto_snapshot() if analysis_changed else False"
         in code
     )
+    assert "if analysis_changed and snapshot_saved is not True:" in code
+    assert "database snapshot; close duplicate views of the same .bndb " in code
+    assert '"before retrying"' in code
+
+
+def test_integer_display_batches_guard_instruction_bytes_and_hlil() -> None:
+    code = _narrow_sync._batch_python_code(
+        [
+            {
+                "op": "int_display_set",
+                "identifier": "save_high_scores_and_config",
+                "address": "0x41794c",
+                "expected_bytes": "68 40 4b 4c 00",
+                "value": 0x4C4B40,
+                "operand": 0xFFFFFFFF,
+                "display_type": "UnsignedHexadecimalDisplayType",
+                "required_hlil": (
+                    'allocate_tracked_memory(0x4c4b40, "High Score Table")'
+                ),
+                "forbidden_hlil": (
+                    "allocate_tracked_memory(&(*(*g_texture_refs.entries)"
+                ),
+            }
+        ],
+        preview=True,
+    )
+
+    for expected in (
+        'if kind == "int_display_set":',
+        "if function not in bv.get_functions_containing(address):",
+        "observed_bytes = bytes(bv.read(address, len(expected_bytes)))",
+        "if observed_bytes != expected_bytes:",
+        "expected_display_type = IntegerDisplayType[display_type_name]",
+        "function.get_int_display_type(address, value, operand)",
+        "function.set_int_display_type(",
+        "required_hlil not in before_hlil",
+        "forbidden_hlil in before_hlil",
+        "+ int_display_reanalysis_identifiers",
+    ):
+        assert expected in code
 
 
 def test_current_user_variable_preview_does_not_reanalyze() -> None:

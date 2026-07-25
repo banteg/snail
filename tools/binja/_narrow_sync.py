@@ -20,6 +20,7 @@ SymbolUpdate = tuple[str, str]
 SymbolRemoval = tuple[str, str]
 DataVarUpdate = tuple[str, str]
 DataVarRemoval = tuple[str, str]
+IntDisplayUpdate = tuple[str, str, str, int, int, str, str, str]
 SplitVarSpec = tuple[str, int, int]
 SplitVarDefinition = tuple[str, str, str, int, int]
 StructUpdateGroup = tuple[str, Iterable[FieldUpdate]]
@@ -221,6 +222,7 @@ affected_functions = []
 affected_types = []
 prototype_reanalysis_identifiers = []
 user_var_reanalysis_identifiers = []
+int_display_reanalysis_identifiers = []
 snapshot_saved = False
 analysis_changed = False
 analysis_skip_override_restorations = []
@@ -458,6 +460,73 @@ try:
             affected_functions.append(str(function.name))
             continue
 
+        if kind == "int_display_set":
+            from binaryninja import IntegerDisplayType
+
+            function = find_function(operation["identifier"])
+            address = int(str(operation["address"]), 0)
+            if function not in bv.get_functions_containing(address):
+                raise RuntimeError(
+                    f"refusing integer display override outside "
+                    f"{function.name}: {address:#x}"
+                )
+            expected_bytes = bytes.fromhex(str(operation["expected_bytes"]))
+            observed_bytes = bytes(bv.read(address, len(expected_bytes)))
+            if observed_bytes != expected_bytes:
+                raise RuntimeError(
+                    f"refusing integer display override at {address:#x}: "
+                    f"expected {expected_bytes.hex(' ')}, found "
+                    f"{observed_bytes.hex(' ')}"
+                )
+            value = int(operation["value"])
+            operand = int(operation["operand"])
+            display_type_name = str(operation["display_type"])
+            try:
+                expected_display_type = IntegerDisplayType[display_type_name]
+            except KeyError as exc:
+                raise RuntimeError(
+                    f"unsupported integer display type: {display_type_name}"
+                ) from exc
+            required_hlil = str(operation["required_hlil"])
+            forbidden_hlil = str(operation["forbidden_hlil"])
+            before = function.get_int_display_type(address, value, operand)
+            before_hlil = str(function.hlil) if function.hlil is not None else ""
+            render_stale = (
+                required_hlil not in before_hlil
+                or forbidden_hlil in before_hlil
+            )
+            changed = before != expected_display_type or render_stale
+            if changed:
+                analysis_changed = True
+                function.set_int_display_type(
+                    address,
+                    value,
+                    operand,
+                    expected_display_type,
+                )
+                function.reanalyze()
+                int_display_reanalysis_identifiers.append(
+                    str(operation["identifier"])
+                )
+            results.append({
+                "op": kind,
+                "identifier": str(operation["identifier"]),
+                "function": str(function.name),
+                "address": hex(address),
+                "expected_bytes": expected_bytes.hex(" "),
+                "value": value,
+                "operand": operand,
+                "display_type": display_type_name,
+                "expected_display": str(expected_display_type),
+                "required_hlil": required_hlil,
+                "forbidden_hlil": forbidden_hlil,
+                "before": str(before),
+                "render_stale": render_stale,
+                "changed": changed,
+            })
+            affected_functions.append(str(function.name))
+            continue
+
         if kind == "struct_field_set":
             struct_name = str(operation["struct_name"])
             type_obj = bv.get_type_by_name(struct_name)
@@ -563,6 +632,24 @@ try:
                 and observed["analysis_skip_override"]
                 == entry["expected_override"]
             )
+        elif entry["op"] == "int_display_set":
+            function = find_function(entry["identifier"])
+            observed_display = function.get_int_display_type(
+                int(entry["address"], 0),
+                int(entry["value"]),
+                int(entry["operand"]),
+            )
+            hlil = str(function.hlil) if function.hlil is not None else ""
+            entry["observed"] = {
+                "display": str(observed_display),
+                "required_hlil_present": entry["required_hlil"] in hlil,
+                "forbidden_hlil_absent": entry["forbidden_hlil"] not in hlil,
+            }
+            entry["verified"] = entry["observed"] == {
+                "display": entry["expected_display"],
+                "required_hlil_present": True,
+                "forbidden_hlil_absent": True,
+            }
         else:
             type_obj = bv.get_type_by_name(entry["struct_name"])
             member = (
@@ -586,6 +673,7 @@ try:
         if entry["op"] in {
             "undefine_symbol",
             "ensure_function_analysis",
+            "int_display_set",
             "user_var_set",
             "user_var_delete",
         } and not entry["changed"]:
@@ -597,9 +685,9 @@ try:
                     "analysis already pinned with HLIL"
                     if entry["op"] == "ensure_function_analysis"
                     else (
-                    "already automatic"
-                    if entry["op"] == "user_var_delete"
-                    else "already current"
+                        "already automatic"
+                        if entry["op"] == "user_var_delete"
+                        else "already current"
                     )
                 )
             )
@@ -617,6 +705,7 @@ try:
             for identifier in dict.fromkeys(
                 prototype_reanalysis_identifiers
                 + user_var_reanalysis_identifiers
+                + int_display_reanalysis_identifiers
             ):
                 find_function(identifier).reanalyze()
             bv.update_analysis_and_wait()
@@ -626,6 +715,12 @@ try:
         bv.commit_undo_actions(state)
         undo_closed = True
         snapshot_saved = bv.file.save_auto_snapshot() if analysis_changed else False
+        if analysis_changed and snapshot_saved is not True:
+            raise RuntimeError(
+                "Binary Ninja committed the live batch but failed to save its "
+                "database snapshot; close duplicate views of the same .bndb "
+                "before retrying"
+            )
 except Exception:
     if not undo_closed:
         bv.revert_undo_actions(state)
@@ -633,6 +728,7 @@ except Exception:
             for identifier in dict.fromkeys(
                 prototype_reanalysis_identifiers
                 + user_var_reanalysis_identifiers
+                + int_display_reanalysis_identifiers
             ):
                 find_function(identifier).reanalyze()
             bv.update_analysis_and_wait()
@@ -1996,6 +2092,96 @@ def apply_struct_and_proto_updates(
             },
             "applied": applied,
         },
+    ]
+
+
+def int_display_operations(
+    updates: Iterable[IntDisplayUpdate],
+) -> list[dict[str, object]]:
+    return [
+        {
+            "op": "int_display_set",
+            "identifier": identifier,
+            "address": address,
+            "expected_bytes": expected_bytes,
+            "value": value,
+            "operand": operand,
+            "display_type": display_type,
+            "required_hlil": required_hlil,
+            "forbidden_hlil": forbidden_hlil,
+        }
+        for (
+            identifier,
+            address,
+            expected_bytes,
+            value,
+            operand,
+            display_type,
+            required_hlil,
+            forbidden_hlil,
+        ) in updates
+    ]
+
+
+def apply_int_display_updates(
+    repo_root: Path,
+    *,
+    target: str,
+    updates: Iterable[IntDisplayUpdate],
+) -> list[dict[str, object]]:
+    operations = int_display_operations(updates)
+    if not operations:
+        return []
+
+    preview = run_bn_batch(
+        repo_root,
+        target=target,
+        operations=operations,
+        preview=True,
+    )
+    preview_results = preview.get("results")
+    if (
+        not isinstance(preview_results, list)
+        or len(preview_results) != len(operations)
+        or any(
+            not isinstance(entry, dict)
+            or not isinstance(entry.get("changed"), bool)
+            for entry in preview_results
+        )
+    ):
+        raise RuntimeError(
+            f"Binary Ninja integer-display preview is malformed: {preview!r}"
+        )
+    if all(entry["changed"] is False for entry in preview_results):
+        return [
+            {
+                **operation,
+                "status": "skipped",
+                "reason": "already current",
+            }
+            for operation in operations
+        ]
+
+    applied = run_bn_batch(
+        repo_root,
+        target=target,
+        operations=operations,
+        preview=False,
+    )
+    return [
+        {
+            "op": "int_display_batch",
+            "operation_count": len(operations),
+            "operations": operations,
+            "preview": {
+                "success": preview.get("success"),
+                "message": preview.get("message"),
+                "affected_function_count": len(
+                    preview.get("affected_functions", ())
+                ),
+            },
+            "result": applied,
+        }
     ]
 
 

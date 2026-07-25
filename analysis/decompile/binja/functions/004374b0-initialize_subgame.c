@@ -28,20 +28,20 @@
 00437535        change_backdrop(&game_base_1->backdrop, &game_base_1->subgame.landscape_manager.scripts[eax_2], 0)
 0043754b        set_border_justify_centre(&g_game_base->border_manager, 25f)
 00437550        int32_t level_mode = game->level_mode
-00437555        struct SubSolution (* eax_6)[0x33]
+00437555        struct SubSolution* selected_record
 00437555        if (level_mode == 0)
-0043757e        eax_6 = &game->sub_high_score.postal_records
+0043757e        selected_record = &game->sub_high_score.postal_records
 00437584        label_437584:
-00437584        game->sub_high_score.active_record_bank = eax_6
-0043758d        game->active_level_score = (eax_6 - 0x944150)->sub_high_score.time_trial_route_records[0].score
-004375a1        __builtin_memcpy(&game->active_level_timer, eax_6 + 8, 0x18)
+00437584        game->sub_high_score.active_record_bank = selected_record
+0043758d        game->active_level_score = selected_record->score
+004375a1        __builtin_memcpy(&game->active_level_timer, &selected_record->score_or_time, 0x18)
 00437558        if (level_mode == 1)
-00437567        eax_6 = &game->sub_high_score.survival_records
-0043756d        game->sub_high_score.active_record_bank = eax_6
-00437576        game->active_level_score = (eax_6 - 0x944150)->sub_high_score.time_trial_route_records[0].score
-004375a1        __builtin_memcpy(&game->active_level_timer, eax_6 + 8, 0x18)
+00437567        selected_record = &game->sub_high_score.survival_records
+0043756d        game->sub_high_score.active_record_bank = selected_record
+00437576        game->active_level_score = selected_record->score
+004375a1        __builtin_memcpy(&game->active_level_timer, &selected_record->score_or_time, 0x18)
 0043755d        if (level_mode == 4)
-0043755f        eax_6 = &game->sub_high_score.time_trial_route_records
+0043755f        selected_record = &game->sub_high_score.time_trial_route_records
 00437565        goto label_437584
 004375a9        if (game->selected_level_record_persistent != 0)
 004375b4        game->rate_or_level_arg.base_rate = game->selected_level_record->replay_speed_scalar.bits
@@ -125,13 +125,13 @@
 00437991        set_matrix_identity(&game->player.body.transform)
 004379a2        game->player.movement_mode_selector = 0
 004379a8        game->player.game = game
-004379ae        int32_t eax_23
-004379ae        eax_23.b = game->player.body.transform.position.x.b
-004379ae        eax_23:1.b = game->player.body.transform.position.x:1.b
-004379ae        eax_23:2.b = game->player.body.transform.position.x:2.b
-004379ae        eax_23:3.b = game->player.body.transform.position.x:3.b
+004379ae        int32_t eax_22
+004379ae        eax_22.b = game->player.body.transform.position.x.b
+004379ae        eax_22:1.b = game->player.body.transform.position.x:1.b
+004379ae        eax_22:2.b = game->player.body.transform.position.x:2.b
+004379ae        eax_22:3.b = game->player.body.transform.position.x:3.b
 004379b0        game->player.attachment_exit_pending = 0
-004379b6        game->player.cached_camera_target_world.x = eax_23
+004379b6        game->player.cached_camera_target_world.x = eax_22
 004379b8        game->player.boost_one_tick = 0
 004379c1        game->player.lives = 0
 004379c7        game->player.cached_camera_target_world.y = game->player.body.transform.position.y

@@ -1027,19 +1027,73 @@
       ]
     },
     {
+      "name": "bn_initialize_high_score_record_element_borrows",
+      "artifact": "analysis/decompile/binja/functions/00417540-initialize_high_score_tables.c",
+      "required_substrings": [
+        "struct SubSolution* postal_record_cursor = &bank->postal_records",
+        "initialize_high_score_entry(postal_record_cursor",
+        "postal_record_cursor = &postal_record_cursor[1]",
+        "struct SubSolution* survival_record_cursor = &bank->survival_records",
+        "initialize_high_score_entry(survival_record_cursor",
+        "survival_record_cursor = &survival_record_cursor[1]",
+        "struct SubSolution* time_trial_record_cursor = &bank->time_trial_route_records",
+        "initialize_high_score_entry(time_trial_record_cursor",
+        "time_trial_record_cursor = &time_trial_record_cursor[1]"
+      ],
+      "forbidden_substrings": [
+        "struct SubSolution (*",
+        "&(*record)",
+        "&(*record_1)",
+        "&(*record_2)"
+      ]
+    },
+    {
+      "name": "ida_initialize_high_score_record_element_borrows",
+      "artifact": "analysis/decompile/ida/functions/00417540-initialize_high_score_tables.c",
+      "required_substrings": [
+        "SubSolution *postal_records;",
+        "postal_records = bank->postal_records;",
+        "initialize_high_score_entry(postal_records++",
+        "SubSolution *survival_records;",
+        "survival_records = bank->survival_records;",
+        "initialize_high_score_entry(survival_records++",
+        "SubSolution *time_trial_route_records;",
+        "time_trial_route_records = bank->time_trial_route_records;",
+        "initialize_high_score_entry(time_trial_route_records++"
+      ],
+      "forbidden_substrings": [
+        "SubSolution (*",
+        "SubSolution **postal_records",
+        "SubSolution **survival_records",
+        "SubSolution **time_trial_route_records"
+      ]
+    },
+    {
       "name": "bn_save_high_scores_void_owner",
       "artifact": "analysis/decompile/binja/functions/00417940-save_high_scores_and_config.c",
       "required_substrings": [
         "struct SubHighScore* bank_1 = bank",
         "struct CompactHighScoreRecord* compact_3",
-        "&bank->postal_records",
-        "&bank->survival_records",
-        "&bank->time_trial_route_records",
+        "allocate_tracked_memory(0x4c4b40, \"High Score Table\")",
+        "struct SubSolution* postal_record_cursor = &bank->postal_records",
+        "postal_record_cursor->active",
+        "postal_record_cursor = &postal_record_cursor[1]",
+        "struct SubSolution* survival_record_cursor = &bank->survival_records",
+        "survival_record_cursor->active",
+        "survival_record_cursor = &survival_record_cursor[1]",
+        "struct SubSolution* time_trial_record_cursor = &bank->time_trial_route_records",
+        "time_trial_record_cursor->active",
+        "time_trial_record_cursor = &time_trial_record_cursor[1]",
         "write_file_bytes(\"ScoreA.dat\", compact_3, byte_count)",
         "save_config_file(\"SnailMail.cfg\", &g_runtime_config, 0xc4)"
       ],
       "forbidden_substrings": [
         "return save_config_file",
+        "struct SubSolution (*",
+        "record - 8",
+        "record_1 - 0x15c648",
+        "record_2 - 0x2b8c88",
+        "g_texture_refs",
         "struct HighScoreBank",
         "CompletionResultScreen",
         "FrontendWidget",
@@ -1053,15 +1107,22 @@
         "void __thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8 save_mask)",
         "char *tracked_memory",
         "CompactHighScoreRecord *v4",
+        "SubSolution *postal_records;",
         "bank->postal_records",
+        "++postal_records;",
+        "SubSolution *survival_records;",
         "bank->survival_records",
+        "++survival_records;",
+        "SubSolution *time_trial_route_records;",
         "bank->time_trial_route_records",
+        "++time_trial_route_records;",
         "write_file_bytes(aScoreaDat, tracked_memory, v5)",
         "save_config_file(aSnailmailCfg, &g_runtime_config, 196)"
       ],
       "forbidden_substrings": [
         "char *__thiscall save_high_scores_and_config",
         "return save_config_file",
+        "SubSolution (*",
         "HighScoreBank",
         "CompletionResultScreen",
         "FrontendWidget"
@@ -8309,7 +8370,14 @@
         "&game->runtime_cells[0][0].fringe_front",
         "load_landscape_script_by_name(&g_game_base->subgame.landscape_manager",
         "subgame.landscape_manager.scripts[eax_2]",
+        "struct SubSolution* selected_record",
+        "selected_record = &game->sub_high_score.postal_records",
+        "selected_record = &game->sub_high_score.survival_records",
+        "selected_record = &game->sub_high_score.time_trial_route_records",
         "game->sub_high_score.active_record_bank",
+        "game->sub_high_score.active_record_bank = selected_record",
+        "game->active_level_score = selected_record->score",
+        "&selected_record->score_or_time",
         "game->top_score_widget",
         "game->player.game = game",
         "struct tColour color",
@@ -8325,6 +8393,7 @@
         "unknown_000000",
         "0x106c7bc",
         "Color4f",
+        "struct SubSolution (*",
         "__asm",
         "_ET1"
       ],
