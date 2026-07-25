@@ -4561,6 +4561,8 @@
         "widget->texture_hit_width",
         "widget->texture_hit_height",
         "widget->target_padding",
+        "players[0].mouse_cursor.saved_x",
+        "players[0].mouse_cursor.saved_y",
         "struct TgaImageView* mask",
         "get_sprite_texture_ref(&g_sprite_manager",
         "mask->width",
@@ -4572,6 +4574,8 @@
         "void* eax_2",
         "*(eax_2 + 0xc)",
         "*(eax_2 + 0xe)",
+        "g_game_base[0x29c]",
+        "g_game_base[0x2a0]",
         "__asm",
         "_ET1"
       ]
@@ -4587,12 +4591,22 @@
         "widget->texture_hit_y",
         "widget->texture_hit_width",
         "widget->texture_hit_height",
-        "widget->target_padding"
+        "widget->target_padding",
+        "g_game_base->players[0].mouse_cursor.saved_x",
+        "g_game_base->players[0].mouse_cursor.saved_y",
+        "TgaImageView *",
+        "get_sprite_texture_ref(&g_sprite_manager",
+        "->width",
+        "->height"
       ],
       "forbidden_substrings": [
         "this + 92",
         "this + 576",
         "sub_404580",
+        "*((float *)g_game_base",
+        "*(unsigned __int16 *)",
+        "sprite_texture_ref + 12",
+        "sprite_texture_ref + 14",
         "__asm",
         "_ET1"
       ]
@@ -5364,17 +5378,50 @@
       ]
     },
     {
+      "name": "bn_cursor_sensitivity_owner",
+      "artifact": "analysis/decompile/binja/functions/0044bc20-resolve_uncaptured_cursor_sensitivity_scale.c",
+      "required_substrings": [
+        "is_mouse_captured(&g_game_base->players[0].mouse_cursor)"
+      ],
+      "forbidden_substrings": [
+        "&g_game_base[0x290]",
+        "g_game_base + 0x290",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_cursor_sensitivity_owner",
+      "artifact": "analysis/decompile/ida/functions/0044bc20-resolve_uncaptured_cursor_sensitivity_scale.c",
+      "required_substrings": [
+        "is_mouse_captured(&g_game_base->players[0].mouse_cursor)"
+      ],
+      "forbidden_substrings": [
+        "(char *)g_game_base + 656",
+        "&g_game_base[0x290]",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_mouse_coordinate_globals",
       "artifact": "analysis/decompile/binja/functions/0044c060-click_mouse_screen.c",
       "required_substrings": [
         "g_mouse_screen_x[slot]",
         "g_mouse_screen_y[slot]",
         "g_mouse_live_x[slot]",
-        "g_mouse_live_y[slot]"
+        "g_mouse_live_y[slot]",
+        "is_mouse_captured(&g_game_base->players[0].mouse_cursor)",
+        "->players[0].game_input->input.authored_x",
+        "->players[0].game_input->input.authored_y"
       ],
       "forbidden_substrings": [
         "g_joystick_count",
         "data_777d",
+        "&g_game_base[0x290]",
+        "+ 0x28c)",
+        "+ 0x60)",
+        "+ 0x64)",
         "__asm",
         "_ET1"
       ]
@@ -5386,11 +5433,19 @@
         "g_mouse_screen_x[slot]",
         "g_mouse_screen_y[slot]",
         "g_mouse_live_x[slot]",
-        "g_mouse_live_y[slot]"
+        "g_mouse_live_y[slot]",
+        "is_mouse_captured(&g_game_base->players[0].mouse_cursor)",
+        "->players[0].game_input->input.authored_x",
+        "->players[0].game_input->input.authored_y"
       ],
       "forbidden_substrings": [
         "g_joystick_count",
         "dword_777B2C",
+        "(char *)g_game_base + 656",
+        "v4[163]",
+        "*((_DWORD *)g_game_base + 163)",
+        "+ 96)",
+        "+ 100)",
         "__asm",
         "_ET1"
       ]

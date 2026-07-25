@@ -33,6 +33,7 @@ EXPECTED_OWNER_SIZES = {
     "SpriteDepthNode": 0x18,
     "FrontendFade": 0x14,
     "FrontendOverlayColorLerp": 0x24,
+    "TgaImageView": 0x14,
     "GameInput": 0x70,
     "GamePlayer": 0x1F8,
     "GamePlayerInitStrideView": 0x31C,
@@ -70,6 +71,7 @@ DEPENDENCY_HEADER_NAMES = (
 TRUSTED_NAMES = [
     (0x48BA3F, "operator_new"),
     (0x404350, "initialize_border_stack"),
+    (0x404580, "border_mouse_test"),
     (0x408000, "initialize_game_player"),
     (0x40AB00, "initialize_frontend_overlay_color_lerp"),
     (0x40AB40, "draw_frontend_overlay_color_lerp"),
@@ -82,9 +84,12 @@ TRUSTED_NAMES = [
     (0x44E410, "update_sprite_facing_angle"),
     (0x4119C0, "initialize_game_window_and_input_wrapper"),
     (0x4119D0, "initialize_game_window_and_input"),
+    (0x44BC20, "resolve_uncaptured_cursor_sensitivity_scale"),
+    (0x44C060, "click_mouse_screen"),
     (0x44C3B0, "is_mouse_captured"),
     (0x44C3C0, "capture_mouse_cursor"),
     (0x44C400, "release_mouse_cursor"),
+    (0x44E580, "get_sprite_texture_ref"),
     (0x44E900, "attach_render_camera_source"),
     (0x44E920, "initialize_render_camera_slot"),
     (0x4972F4, "g_game_player_callback_table"),
@@ -109,6 +114,10 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     (
         "initialize_border_stack",
         "void __thiscall initialize_border_stack(BorderStack *stack);",
+    ),
+    (
+        "border_mouse_test",
+        "uint8_t __thiscall border_mouse_test(FrontendWidget *widget);",
     ),
     (
         "kill_all_borders",
@@ -185,6 +194,14 @@ TRUSTED_FUNCTION_DECLARATIONS = [
         "void __thiscall update_frontend_state_machine(GamePlayer *player);",
     ),
     (
+        "resolve_uncaptured_cursor_sensitivity_scale",
+        "float __cdecl resolve_uncaptured_cursor_sensitivity_scale(float scale);",
+    ),
+    (
+        "click_mouse_screen",
+        "void *__cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y);",
+    ),
+    (
         "is_mouse_captured",
         "uint8_t __thiscall is_mouse_captured(MouseCursorState *mouse);",
     ),
@@ -195,6 +212,11 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     (
         "release_mouse_cursor",
         "void __thiscall release_mouse_cursor(MouseCursorState *mouse);",
+    ),
+    (
+        "get_sprite_texture_ref",
+        "TgaImageView *__thiscall get_sprite_texture_ref("
+        "SpriteManager *manager, int32_t texture_id);",
     ),
     (
         "attach_render_camera_source",
@@ -256,6 +278,16 @@ BORDER_KILL_REANALYSIS_FUNCTIONS = (
     "uninit_warning",
     "kill_tip_widgets",
 )
+
+# These three functions share one cross-function owner graph: player zero owns
+# MouseCursorState inline and borrows the corresponding root-owned GameInput.
+# Re-decompile them after every GameRoot rebind so later header imports cannot
+# leave raw +0x290/+0x28c arithmetic cached in the database.
+MOUSE_INPUT_OWNER_FUNCTIONS = {
+    "border_mouse_test": 0x404580,
+    "resolve_uncaptured_cursor_sensitivity_scale": 0x44BC20,
+    "click_mouse_screen": 0x44C060,
+}
 
 TRUSTED_DATA_DECLARATIONS = [
     (
@@ -510,6 +542,110 @@ def _invalidate_cfunc(selector: str) -> dict[str, object]:
 
     ida_hexrays.mark_cfunc_dirty(address, True)
     return {"status": "invalidated", "selector": selector, "address": hex(address)}
+
+
+def _verify_mouse_input_owner_graph() -> dict[str, object]:
+    """Fail closed if the shared cursor/input graph falls back to raw offsets."""
+    pseudocode = {}
+    for selector, expected_address in MOUSE_INPUT_OWNER_FUNCTIONS.items():
+        address = idc.get_name_ea_simple(selector)
+        if address != expected_address or ida_funcs.get_func(address) is None:
+            return {
+                "status": "failed",
+                "reason": "mouse_input_owner_function_mismatch",
+                "selector": selector,
+                "expected_address": hex(expected_address),
+                "observed_address": (
+                    None if address == idc.BADADDR else hex(address)
+                ),
+            }
+        try:
+            pseudocode[selector] = str(ida_hexrays.decompile(address))
+        except Exception as exc:
+            return {
+                "status": "failed",
+                "reason": "mouse_input_owner_decompile_failed",
+                "selector": selector,
+                "address": hex(address),
+                "error": str(exc),
+            }
+
+    required_owners = {
+        "border_mouse_test": (
+            "g_game_base->players[0].mouse_cursor.saved_x",
+            "g_game_base->players[0].mouse_cursor.saved_y",
+            "TgaImageView *",
+            "get_sprite_texture_ref(&g_sprite_manager",
+            "->width",
+            "->height",
+        ),
+        "resolve_uncaptured_cursor_sensitivity_scale": (
+            "is_mouse_captured(&g_game_base->players[0].mouse_cursor)",
+        ),
+        "click_mouse_screen": (
+            "is_mouse_captured(&g_game_base->players[0].mouse_cursor)",
+            "->players[0].game_input->input.authored_x",
+            "->players[0].game_input->input.authored_y",
+        ),
+    }
+    forbidden_renderings = {
+        "border_mouse_test": (
+            "*((float *)g_game_base",
+            "*(unsigned __int16 *)",
+            "sprite_texture_ref + 12",
+            "sprite_texture_ref + 14",
+        ),
+        "resolve_uncaptured_cursor_sensitivity_scale": (
+            "(char *)g_game_base + 656",
+            "&g_game_base[0x290]",
+        ),
+        "click_mouse_screen": (
+            "(char *)g_game_base + 656",
+            "&g_game_base[0x290]",
+            "v4[163]",
+            "*((_DWORD *)g_game_base + 163)",
+            "+ 96)",
+            "+ 100)",
+        ),
+    }
+    missing_owners = {
+        selector: [
+            owner for owner in owners if owner not in pseudocode[selector]
+        ]
+        for selector, owners in required_owners.items()
+    }
+    stale_renderings = {
+        selector: [
+            rendering
+            for rendering in renderings
+            if rendering in pseudocode[selector]
+        ]
+        for selector, renderings in forbidden_renderings.items()
+    }
+    missing_owners = {
+        selector: missing
+        for selector, missing in missing_owners.items()
+        if missing
+    }
+    stale_renderings = {
+        selector: stale
+        for selector, stale in stale_renderings.items()
+        if stale
+    }
+    if missing_owners or stale_renderings:
+        return {
+            "status": "failed",
+            "reason": "mouse_input_owner_readback_failed",
+            "missing_owners": missing_owners,
+            "stale_renderings": stale_renderings,
+        }
+    return {
+        "status": "verified",
+        "functions": {
+            selector: hex(address)
+            for selector, address in MOUSE_INPUT_OWNER_FUNCTIONS.items()
+        },
+    }
 
 
 def _sync_pointer_lvar(
@@ -930,12 +1066,22 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "render_game_frame",
             "attach_render_camera_source",
             "initialize_render_camera_slot",
+            *MOUSE_INPUT_OWNER_FUNCTIONS,
             *BORDER_KILL_REANALYSIS_FUNCTIONS,
         )
     }
     for selector, result in invalidated_cfuncs.items():
         if result.get("status") == "failed":
             failed.append({"selector": selector, "invalidation": result})
+
+    mouse_input_owner_graph = _verify_mouse_input_owner_graph()
+    if mouse_input_owner_graph.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "mouse/input owner graph",
+                "owner_graph": mouse_input_owner_graph,
+            }
+        )
 
     draw_sprite_vertex_lvar = _sync_draw_sprite_vertex_lvar()
     if draw_sprite_vertex_lvar.get("status") == "failed":
@@ -1045,6 +1191,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "names_unchanged": names_unchanged,
                 "game_root_owner_graph": game_root_owner_graph,
                 "invalidated_cfuncs": invalidated_cfuncs,
+                "mouse_input_owner_graph": mouse_input_owner_graph,
                 "draw_sprite_vertex_lvar": draw_sprite_vertex_lvar,
                 "root_constructor_pointer_lvars": root_constructor_pointer_lvars,
                 "world_initializer_pointer_lvars": world_initializer_pointer_lvars,

@@ -4,9 +4,9 @@
     "active": true,
     "basename": "SnailMail_unwrapped.exe.bndb",
     "filename": "/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb",
-    "selector": "63138:1:15758395569724809508",
-    "session_id": "15758395569724809508",
-    "target_id": "63138:1:15758395569724809508",
+    "selector": "SnailMail_unwrapped.exe.bndb",
+    "session_id": "13293967879814200966",
+    "target_id": "3023:1:13293967879814200966",
     "view_id": "1",
     "view_name": "PE"
   },

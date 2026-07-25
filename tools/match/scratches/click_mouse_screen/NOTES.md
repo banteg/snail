@@ -17,3 +17,13 @@ owner at `+0x60/+0x64`. The typed source preserves the exact 43/43 result with
 parallel two-slot arrays in the canonical process mouse state. Their manifest
 extents and the slot-indexed producer agree, replacing four unsized local
 declarations while preserving the exact 43/43 result and 13 clean operands.
+
+## 2026-07-25 borrowed input-owner replay
+
+The paired root constructor and world initializer establish the complete path:
+player zero owns `mouse_cursor` inline and its `game_input` pointer borrows
+`GameRoot::game_inputs[0]`. Both decompilers now retain the capture query and
+the final `InputState::authored_x/y` stores through those owners instead of
+raw root `+0x290`, pointer `+0x28c`, and child `+0x60/+0x64` arithmetic.
+Fail-closed sync and health checks preserve the graph without changing the
+exact 43/43 source.

@@ -31,6 +31,8 @@ OBJECT_REQUIRED_STRUCTS = (
 )
 SPRITE_REQUIRED_STRUCTS = (
     "Sprite",
+    "SpriteManager",
+    "TgaImageView",
 )
 REQUIRED_STRUCTS = (
     "SpriteDepthNode",
@@ -73,6 +75,7 @@ SYMBOL_UPDATES = (
 
 FUNCTION_SYMBOL_UPDATES = (
     ("0x404350", "initialize_border_stack"),
+    ("0x404580", "border_mouse_test"),
     ("0x408000", "initialize_game_player"),
     ("0x40ab00", "initialize_frontend_overlay_color_lerp"),
     ("0x40ab40", "draw_frontend_overlay_color_lerp"),
@@ -83,10 +86,13 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x4119c0", "initialize_game_window_and_input_wrapper"),
     ("0x4119d0", "initialize_game_window_and_input"),
     ("0x413670", "configure_sprite_render_state"),
+    ("0x44bc20", "resolve_uncaptured_cursor_sensitivity_scale"),
+    ("0x44c060", "click_mouse_screen"),
     ("0x44c3b0", "is_mouse_captured"),
     ("0x44c3c0", "capture_mouse_cursor"),
     ("0x44c400", "release_mouse_cursor"),
     ("0x44e410", "update_sprite_facing_angle"),
+    ("0x44e580", "get_sprite_texture_ref"),
     ("0x44e900", "attach_render_camera_source"),
     ("0x44e920", "initialize_render_camera_slot"),
     ("0x48ba3f", "operator_new"),
@@ -123,6 +129,10 @@ PROTO_UPDATES = (
         "void __thiscall initialize_border_stack(BorderStack* stack)",
     ),
     (
+        "border_mouse_test",
+        "uint8_t __thiscall border_mouse_test(FrontendWidget* widget)",
+    ),
+    (
         "initialize_frontend_overlay_color_lerp",
         "void __thiscall initialize_frontend_overlay_color_lerp("
         "FrontendOverlayColorLerp* overlay, int32_t state)",
@@ -150,6 +160,14 @@ PROTO_UPDATES = (
         "void __thiscall update_frontend_state_machine(GamePlayer* player)",
     ),
     (
+        "resolve_uncaptured_cursor_sensitivity_scale",
+        "float __cdecl resolve_uncaptured_cursor_sensitivity_scale(float scale)",
+    ),
+    (
+        "click_mouse_screen",
+        "void* __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)",
+    ),
+    (
         "is_mouse_captured",
         "uint8_t __thiscall is_mouse_captured(MouseCursorState* mouse)",
     ),
@@ -160,6 +178,11 @@ PROTO_UPDATES = (
     (
         "release_mouse_cursor",
         "void __thiscall release_mouse_cursor(MouseCursorState* mouse)",
+    ),
+    (
+        "get_sprite_texture_ref",
+        "TgaImageView* __thiscall get_sprite_texture_ref("
+        "SpriteManager* manager, int32_t texture_id)",
     ),
     (
         "attach_render_camera_source",
@@ -218,6 +241,12 @@ BORDER_KILL_REANALYSIS_FUNCTIONS = (
     "kill_tip_widgets",
 )
 
+MOUSE_INPUT_OWNER_REANALYSIS_FUNCTIONS = (
+    "border_mouse_test",
+    "resolve_uncaptured_cursor_sensitivity_scale",
+    "click_mouse_screen",
+)
+
 FRAME_RENDERER_REANALYSIS_FUNCTIONS = (
     "construct_game_runtime",
     "initialize_game_assets_and_world",
@@ -230,6 +259,7 @@ FRAME_RENDERER_REANALYSIS_FUNCTIONS = (
     "render_game_frame",
     "attach_render_camera_source",
     "initialize_render_camera_slot",
+    *MOUSE_INPUT_OWNER_REANALYSIS_FUNCTIONS,
     *BORDER_KILL_REANALYSIS_FUNCTIONS,
 )
 
@@ -914,7 +944,10 @@ def main() -> int:
     reanalysis_identifiers = (
         FRAME_RENDERER_REANALYSIS_FUNCTIONS
         if broad_owner_change
-        else _changed_user_var_functions(user_var_results)
+        else (
+            *MOUSE_INPUT_OWNER_REANALYSIS_FUNCTIONS,
+            *_changed_user_var_functions(user_var_results),
+        )
     )
     if reanalysis_identifiers:
         operations.extend(

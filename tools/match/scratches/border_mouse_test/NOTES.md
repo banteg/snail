@@ -86,3 +86,13 @@ The Windows getter has only this caller. Replaying its cross-port-proved
 native factored `(row + x + 6) * 3` expression over the inline payload; forcing
 that arithmetic into a prettier field access would invent source shape and is
 intentionally rejected.
+
+## 2026-07-25 cursor-owner replay
+
+The root constructor and world initializer prove that player zero owns its
+`MouseCursorState` inline at player `+0x16c`. Binary Ninja and IDA now both
+retain `players[0].mouse_cursor.saved_x/saved_y` throughout this hit test while
+borrowing the cross-port-proved `TgaImageView` from `g_sprite_manager`.
+Fail-closed replay checks reject the old root-float and raw TGA-header
+renderings. This is an analysis-only ownership clarification; the honest
+98.29%, 117/117 scratch is unchanged.

@@ -4802,6 +4802,80 @@ def test_viewport_owner_and_borrowed_camera_are_replayed_cross_decompiler() -> N
     assert '"viewport_owner_readback": viewport_owner_readback' in ida_sync
 
 
+def test_mouse_cursor_and_borrowed_input_owner_graph_is_replayed_cross_decompiler() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_root = (repo_root / "tools/match/include/game_root.h").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_frame_renderer_types.h", "frame_renderer_types.h")
+    )
+    binja_sync = (BINJA_DIR / "sync_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+
+    assert "GameInput* game_input; // +0x168" in matcher_root
+    assert "MouseCursorState mouse_cursor; // +0x16c" in matcher_root
+    for header in analysis_headers:
+        assert "GameInput* game_input;" in header
+        assert "MouseCursorState mouse_cursor;" in header
+
+    for source in (binja_sync, ida_sync):
+        for function in (
+            "border_mouse_test",
+            "resolve_uncaptured_cursor_sensitivity_scale",
+            "click_mouse_screen",
+            "get_sprite_texture_ref",
+        ):
+            assert function in source
+    assert "MOUSE_INPUT_OWNER_REANALYSIS_FUNCTIONS" in binja_sync
+    assert "*MOUSE_INPUT_OWNER_REANALYSIS_FUNCTIONS" in binja_sync
+    assert "MOUSE_INPUT_OWNER_FUNCTIONS" in ida_sync
+    assert "_verify_mouse_input_owner_graph" in ida_sync
+    assert '"mouse_input_owner_graph": mouse_input_owner_graph' in ida_sync
+    for owner in (
+        "g_game_base->players[0].mouse_cursor.saved_x",
+        "g_game_base->players[0].mouse_cursor.saved_y",
+        "->players[0].game_input->input.authored_x",
+        "->players[0].game_input->input.authored_y",
+    ):
+        assert owner in ida_sync
+
+    for name in (
+        "bn_border_mouse_test_owner",
+        "ida_border_mouse_test_owner",
+        "bn_cursor_sensitivity_owner",
+        "ida_cursor_sensitivity_owner",
+        "bn_mouse_coordinate_globals",
+        "ida_mouse_coordinate_globals",
+    ):
+        assert name in checks
+    for name in ("bn_cursor_sensitivity_owner", "ida_cursor_sensitivity_owner"):
+        assert (
+            "is_mouse_captured(&g_game_base->players[0].mouse_cursor)"
+            in checks[name]["required_substrings"]
+        )
+    for name in ("bn_mouse_coordinate_globals", "ida_mouse_coordinate_globals"):
+        assert (
+            "->players[0].game_input->input.authored_x"
+            in checks[name]["required_substrings"]
+        )
+        assert (
+            "->players[0].game_input->input.authored_y"
+            in checks[name]["required_substrings"]
+        )
+
+
 def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownership() -> None:
     repo_root = Path(__file__).parents[1]
     binja_source = (BINJA_DIR / "sync_input_state_types.py").read_text(

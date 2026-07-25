@@ -2,34 +2,35 @@
 /* function: border_mouse_test @ 0x404580 */
 /* selector: border_mouse_test */
 
+// Runs cRBorder::MouseTest() on one FrontendWidget: tests the player-zero saved cursor position against either the padded layout rectangle or a normalized per-pixel RGB hit mask selected by the widget's texture-hit sprite.
 uint8_t __thiscall border_mouse_test(FrontendWidget *widget)
 {
-  int sprite_texture_ref; // ebp
-  int v2; // esi
+  TgaImageView *sprite_texture_ref; // ebp
+  int width; // esi
   int v3; // edi
-  int v4; // ebx
+  int height; // ebx
   __int64 v5; // rax
   float v7; // [esp+4h] [ebp-8h]
   float v8; // [esp+8h] [ebp-4h]
 
   if ( widget->texture_hit_test_enabled )
   {
-    if ( *((float *)g_game_base + 167) >= (double)widget->texture_hit_x
-      && widget->texture_hit_width + widget->texture_hit_x > *((float *)g_game_base + 167)
-      && *((float *)g_game_base + 168) >= (double)widget->texture_hit_y
-      && widget->texture_hit_height + widget->texture_hit_y > *((float *)g_game_base + 168) )
+    if ( g_game_base->players[0].mouse_cursor.saved_x >= (double)widget->texture_hit_x
+      && widget->texture_hit_width + widget->texture_hit_x > g_game_base->players[0].mouse_cursor.saved_x
+      && g_game_base->players[0].mouse_cursor.saved_y >= (double)widget->texture_hit_y
+      && widget->texture_hit_height + widget->texture_hit_y > g_game_base->players[0].mouse_cursor.saved_y )
     {
-      v7 = (*((float *)g_game_base + 167) - widget->texture_hit_x) / widget->texture_hit_width;
-      v8 = (*((float *)g_game_base + 168) - widget->texture_hit_y) / widget->texture_hit_height;
-      sprite_texture_ref = get_sprite_texture_ref(widget->texture_hit_test_sprite);
-      v2 = *(unsigned __int16 *)(sprite_texture_ref + 12);
-      v3 = (__int64)((double)(unsigned __int16)v2 * v7);
-      v4 = *(unsigned __int16 *)(sprite_texture_ref + 14);
-      v5 = (__int64)((double)(unsigned __int16)v4 * v8);
+      v7 = (g_game_base->players[0].mouse_cursor.saved_x - widget->texture_hit_x) / widget->texture_hit_width;
+      v8 = (g_game_base->players[0].mouse_cursor.saved_y - widget->texture_hit_y) / widget->texture_hit_height;
+      sprite_texture_ref = get_sprite_texture_ref(&g_sprite_manager, widget->texture_hit_test_sprite);
+      width = sprite_texture_ref->width;
+      v3 = (__int64)((double)(unsigned __int16)width * v7);
+      height = sprite_texture_ref->height;
+      v5 = (__int64)((double)(unsigned __int16)height * v8);
       if ( v3 >= 0 )
       {
-        if ( v3 > v2 - 1 )
-          v3 = v2 - 1;
+        if ( v3 > width - 1 )
+          v3 = width - 1;
       }
       else
       {
@@ -37,24 +38,23 @@ uint8_t __thiscall border_mouse_test(FrontendWidget *widget)
       }
       if ( (int)v5 >= 0 )
       {
-        if ( (int)v5 > v4 - 1 )
-          LODWORD(v5) = v4 - 1;
+        if ( (int)v5 > height - 1 )
+          LODWORD(v5) = height - 1;
       }
       else
       {
         LODWORD(v5) = 0;
       }
-      if ( !*(_BYTE *)(v5 * v2 + v3 + 6 + sprite_texture_ref + 2 * (v5 * v2 + v3 + 6)) )
+      if ( !sprite_texture_ref->pixels[2 * v5 * width + 2 * v3 + v5 * width + v3] )
         return 1;
     }
   }
-  else if ( widget->layout_left - widget->target_padding < *((float *)g_game_base + 167)
-         && widget->layout_width + widget->target_padding + widget->layout_left > *((float *)g_game_base + 167)
-         && widget->layout_top - widget->target_padding < *((float *)g_game_base + 168)
-         && widget->layout_height + widget->layout_top + widget->target_padding > *((float *)g_game_base + 168) )
+  else if ( widget->layout_left - widget->target_padding < g_game_base->players[0].mouse_cursor.saved_x
+         && widget->layout_width + widget->target_padding + widget->layout_left > g_game_base->players[0].mouse_cursor.saved_x
+         && widget->layout_top - widget->target_padding < g_game_base->players[0].mouse_cursor.saved_y
+         && widget->layout_height + widget->layout_top + widget->target_padding > g_game_base->players[0].mouse_cursor.saved_y )
   {
     return 1;
   }
   return 0;
 }
-

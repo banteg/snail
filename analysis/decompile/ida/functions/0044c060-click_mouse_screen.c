@@ -2,19 +2,19 @@
 /* function: click_mouse_screen @ 0x44c060 */
 /* selector: click_mouse_screen */
 
-// Optionally forwards a cursor position to SetCursorPos when the window is active and captured, then stores raw and authored mouse coordinates for the selected mouse slot.
-void *__cdecl click_mouse_screen(int slot, int x, int y)
+// Optionally forwards a cursor position to SetCursorPos when the window is active and captured, then stores raw/live mouse coordinates for the selected slot and publishes authored x/y through player zero's borrowed cRGameInput owner.
+void *__cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)
 {
   double v3; // st7
-  _DWORD *v4; // ecx
+  GameRoot *v4; // ecx
   void *result; // eax
   float X; // [esp+14h] [ebp+8h]
 
   if ( !g_fullscreen_active
-    && is_mouse_captured((MouseCursorState *)((char *)g_game_base + 656)) == 1
+    && is_mouse_captured(&g_game_base->players[0].mouse_cursor) == 1
     && !slot
     && !g_window_deactivated
-    && ((int (*)(void))GetActiveWindow)() == g_main_window )
+    && GetActiveWindow() == g_main_window )
   {
     SetCursorPos(x, y);
   }
@@ -25,8 +25,8 @@ void *__cdecl click_mouse_screen(int slot, int x, int y)
   g_mouse_live_x[slot] = v3;
   X = (float)y;
   g_mouse_live_y[slot] = X;
-  *(float *)(v4[163] + 96) = v3;
+  v4->players[0].game_input->input.authored_x = v3;
   result = g_game_base;
-  *(float *)(*((_DWORD *)g_game_base + 163) + 100) = X;
+  g_game_base->players[0].game_input->input.authored_y = X;
   return result;
 }
