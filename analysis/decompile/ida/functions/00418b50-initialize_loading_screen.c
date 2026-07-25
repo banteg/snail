@@ -32,7 +32,7 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
                                     0xFF00FF00,
                                     nullptr,
                                     nullptr,
-                                    &g_loading_background_texture);
+                                    (void **)&g_loading_background_texture);
   }
   else
   {
@@ -50,17 +50,17 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
                                     0xFF00FF00,
                                     nullptr,
                                     nullptr,
-                                    &g_loading_background_texture);
+                                    (void **)&g_loading_background_texture);
   }
   if ( texture_from_file_in_memory < 0 )
   {
     report_errorf(aFailedToCreate_0);
-    d3dx_create_texture_from_file(g_direct3d_renderer.device, (char *)aSpritesDebugTg, &g_loading_background_texture);
+    d3dx_create_texture_from_file(
+      g_direct3d_renderer.device,
+      (char *)aSpritesDebugTg,
+      (void **)&g_loading_background_texture);
   }
-  g_direct3d_renderer.device->vtbl->SetTexture(
-    g_direct3d_renderer.device,
-    0,
-    (Direct3DTexture8 *)g_loading_background_texture);
+  g_direct3d_renderer.device->vtbl->SetTexture(g_direct3d_renderer.device, 0, g_loading_background_texture);
   g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 16, 3);
   g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 17, 3);
   g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 13, 3);
@@ -84,7 +84,7 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
                           0xFF00FF00,
                           nullptr,
                           nullptr,
-                          &g_loading_bar_on_texture);
+                          (void **)&g_loading_bar_on_texture);
   }
   else
   {
@@ -102,27 +102,26 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
                           0xFF00FF00,
                           nullptr,
                           nullptr,
-                          &g_loading_bar_on_texture);
+                          (void **)&g_loading_bar_on_texture);
   }
   if ( texture_from_file < 0 )
   {
     report_errorf(aFailedToCreate_1);
-    d3dx_create_texture_from_file(g_direct3d_renderer.device, (char *)aSpritesDebugTg, &g_loading_bar_on_texture);
+    d3dx_create_texture_from_file(
+      g_direct3d_renderer.device,
+      (char *)aSpritesDebugTg,
+      (void **)&g_loading_bar_on_texture);
   }
-  g_direct3d_renderer.device->vtbl->SetTexture(
-    g_direct3d_renderer.device,
-    0,
-    (Direct3DTexture8 *)g_loading_bar_on_texture);
+  g_direct3d_renderer.device->vtbl->SetTexture(g_direct3d_renderer.device, 0, g_loading_bar_on_texture);
   g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 16, 3);
   g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 17, 3);
   g_loading_background_vertex_buffer = create_vertex_buffer(&g_direct3d_renderer.vertex_buffer_factory, 4, 258);
   g_loading_bar_vertex_buffer = create_vertex_buffer(&g_direct3d_renderer.vertex_buffer_factory, 4, 258);
-  (*(void (__stdcall **)(_DWORD, _DWORD, int, _DWORD **, _DWORD))(**(_DWORD **)(g_loading_background_vertex_buffer + 8)
-                                                                + 44))(
-    *(_DWORD *)(g_loading_background_vertex_buffer + 8),
+  g_loading_background_vertex_buffer->vertex_buffer->vtbl->Lock(
+    g_loading_background_vertex_buffer->vertex_buffer,
     0,
     80,
-    &v6,
+    (void **)&v6,
     0);
   *v6 = 0;
   v6[1] = 0;
@@ -144,8 +143,7 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
   v6[17] = 0;
   v6[18] = 0;
   v6[19] = 1065353216;
-  (*(void (__stdcall **)(_DWORD))(**(_DWORD **)(g_loading_bar_vertex_buffer + 8) + 48))(*(_DWORD *)(g_loading_bar_vertex_buffer
-                                                                                                  + 8));
+  g_loading_bar_vertex_buffer->vertex_buffer->vtbl->Unlock(g_loading_bar_vertex_buffer->vertex_buffer);
   begin_overlay_render_state();
   loading_bar->last_loading_budget = 0;
   loading_bar->previous_percent = 0;

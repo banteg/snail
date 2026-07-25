@@ -10,4 +10,13 @@ typedef struct LoadingBar {
     int32_t last_loading_budget;
 } LoadingBar;
 
+/* Exact mapped screen-space vertex used by both loading-screen quads. */
+typedef struct LoadingVertex {
+    float x;
+    float y;
+    float z;
+    float u;
+    float v;
+} LoadingVertex;
+
 #endif

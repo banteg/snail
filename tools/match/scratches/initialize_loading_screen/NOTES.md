@@ -3,8 +3,10 @@
 Initializes the loading-screen renderer state:
 
 - sets `RuntimeConfig::last_loading_budget` to `1276`;
-- loads `Sprites/Loading.tga` into `data_503288`, the background texture;
-- loads `Sprites/LoadingBarOn.tga` into `data_503280`, the progress-fill
+- loads `Sprites/Loading.tga` into `g_loading_background_texture` at
+  `0x503288`;
+- loads `Sprites/LoadingBarOn.tga` into `g_loading_bar_on_texture` at `0x503280`,
+  the progress-fill
   texture;
 - creates the background and progress-bar vertex-buffer resources with FVF
   `0x102`;
@@ -12,9 +14,10 @@ Initializes the loading-screen renderer state:
   `0,0` to `640,480`;
 - enters overlay render state and resets the three-field `LoadingBar`.
 
-The native code locks `data_503284` for the background quad writes but calls the
-`Unlock` vtable slot through `data_5032a4` after those writes. The scratch keeps
-that observed call shape instead of normalizing it to the likely intended
+The native code locks `g_loading_background_vertex_buffer` at `0x503284` for
+the background quad writes but calls the `Unlock` vtable slot through
+`g_loading_bar_vertex_buffer` at `0x5032a4` after those writes. The scratch
+keeps that observed call shape instead of normalizing it to the likely intended
 resource.
 
 `sub_4533c4`, `sub_453404`, and `sub_453467` are D3DX texture creation wrappers:
@@ -55,3 +58,17 @@ use `__stdcall` cleanup: `sub_4533C4` returns with `0x3c`, `sub_453404` with
 `0x38`, and `sub_453467` with `0x0c`. Persisting that exact arity prevents a
 stale inferred callee type from breaking Hex-Rays call analysis when the caller
 prototype is refreshed.
+
+2026-07-24 resource-ownership closure: the native `Sprites/Loading.tga` and
+`Sprites/LoadingBarOn.tga` arguments prove that Binary Ninja's inherited names
+at `0x503280` and `0x503288` were reversed. IDA independently retained the
+correct address-to-name mapping. Both database replays now type the texture
+globals as `Direct3DTexture8*` and both vertex resources as
+`ObjectRenderBuffers*`; Binary Ninja additionally types the initializer's
+dedicated mapped storage as `LoadingVertex*`. This exposes the shared
+`vertex_buffer`, `Lock`, `Unlock`, and COM `Release` ownership through Init,
+AI, and UnInit. AI's overlapping stack slot remains untyped because the native
+function reuses it first as an integer percentage and later as a mapped
+pointer. The matcher source and its honest 83.00% register-scheduling residual
+are unchanged; `update_loading_screen` and `destroy_loading_screen` remain
+exact at 204/204 and 15/15 instructions.

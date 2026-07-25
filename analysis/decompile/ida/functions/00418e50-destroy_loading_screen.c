@@ -6,7 +6,7 @@
 void __thiscall destroy_loading_screen(LoadingBar *loading_bar)
 {
   g_runtime_config.last_loading_budget = loading_bar->last_loading_budget;
-  (*(void (__stdcall **)(int))(*(_DWORD *)g_loading_background_texture + 8))(g_loading_background_texture);
-  (*(void (__stdcall **)(int))(*(_DWORD *)g_loading_bar_on_texture + 8))(g_loading_bar_on_texture);
+  g_loading_background_texture->vtbl->Release(g_loading_background_texture);
+  g_loading_bar_on_texture->vtbl->Release(g_loading_bar_on_texture);
   loading_bar->active = 0;
 }

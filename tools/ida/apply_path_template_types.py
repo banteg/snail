@@ -136,7 +136,11 @@ TRUSTED_NAMES = [
     (0x497358, "g_invincible_shell_update_vtable"),
     (0x49735C, "g_weapon_noop_vtable"),
     (0x50331C, "g_bod_base_init_count"),
+    (0x503280, "g_loading_bar_on_texture"),
+    (0x503284, "g_loading_background_vertex_buffer"),
+    (0x503288, "g_loading_background_texture"),
     (0x503290, "g_loading_bar"),
+    (0x5032A4, "g_loading_bar_vertex_buffer"),
     (0x643190, "g_subgoldy_ghost_z"),
     (0x643194, "g_replay_accum_z"),
 ]
@@ -157,7 +161,27 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x497500, "g_renderable_bod_vtable", "void *g_renderable_bod_vtable;"),
     (0x50331C, "g_bod_base_init_count", "int32_t g_bod_base_init_count;"),
     (0x4AC5C8, "g_default_tip_message", "TipData g_default_tip_message;"),
+    (
+        0x503280,
+        "g_loading_bar_on_texture",
+        "Direct3DTexture8 *g_loading_bar_on_texture;",
+    ),
+    (
+        0x503284,
+        "g_loading_background_vertex_buffer",
+        "ObjectRenderBuffers *g_loading_background_vertex_buffer;",
+    ),
+    (
+        0x503288,
+        "g_loading_background_texture",
+        "Direct3DTexture8 *g_loading_background_texture;",
+    ),
     (0x503290, "g_loading_bar", "LoadingBar g_loading_bar;"),
+    (
+        0x5032A4,
+        "g_loading_bar_vertex_buffer",
+        "ObjectRenderBuffers *g_loading_bar_vertex_buffer;",
+    ),
     (0x643190, "g_subgoldy_ghost_z", "float g_subgoldy_ghost_z;"),
     (0x643194, "g_replay_accum_z", "float g_replay_accum_z;"),
 ]

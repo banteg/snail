@@ -15211,14 +15211,42 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
         assert prototype + ";" in ida_path_sync
 
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_loading_bar_types.h"' in loading_sync
-    assert 'struct_name="LoadingBar"' in loading_sync
-    assert 'replace_types=("LoadingBar",)' in loading_sync
+    assert "types_declare_if_changed" in loading_sync
+    assert '"LoadingVertex": 0x14' in loading_sync
+    assert '"ObjectRenderBuffers": 0x0C' in loading_sync
+    assert '"Direct3DTexture8Vtbl": 0x0C' in loading_sync
+    assert '("0x503280", "g_loading_bar_on_texture")' in loading_sync
+    assert '("0x503284", "g_loading_background_vertex_buffer")' in loading_sync
+    assert '("0x503288", "g_loading_background_texture")' in loading_sync
     assert '("0x503290", "g_loading_bar")' in loading_sync
+    assert '("0x5032a4", "g_loading_bar_vertex_buffer")' in loading_sync
+    assert '("0x503280", "Direct3DTexture8*")' in loading_sync
+    assert '("0x503284", "ObjectRenderBuffers*")' in loading_sync
+    assert '("0x503288", "Direct3DTexture8*")' in loading_sync
     assert '("0x503290", "LoadingBar")' in loading_sync
+    assert '("0x5032a4", "ObjectRenderBuffers*")' in loading_sync
+    assert '"vertices"' in loading_sync
+    assert '"LoadingVertex*"' in loading_sync
     assert "typedef struct LoadingBar" in loading_header
+    assert "typedef struct LoadingVertex" in loading_header
     assert "typedef struct LoadingBar" in path_header
+    assert "typedef struct LoadingVertex" in path_header
     assert "typedef struct Options" in path_header
     assert "LoadingBar g_loading_bar;" in ida_path_sync
+    for resource_declaration in (
+        "Direct3DTexture8 *g_loading_bar_on_texture;",
+        "ObjectRenderBuffers *g_loading_background_vertex_buffer;",
+        "Direct3DTexture8 *g_loading_background_texture;",
+        "ObjectRenderBuffers *g_loading_bar_vertex_buffer;",
+    ):
+        assert resource_declaration in ida_path_sync
+    for address, resource_name in (
+        ("0x503280", "g_loading_bar_on_texture"),
+        ("0x503284", "g_loading_background_vertex_buffer"),
+        ("0x503288", "g_loading_background_texture"),
+        ("0x5032A4", "g_loading_bar_vertex_buffer"),
+    ):
+        assert f'({address}, "{resource_name}")' in ida_path_sync
     loading_notes = (
         repo_root / "tools/match/scratches/initialize_loading_screen/NOTES.md"
     ).read_text(encoding="utf-8")

@@ -15,6 +15,8 @@ typedef int int32_t;
 
 typedef struct Object Object;
 typedef struct ObjectFaceQuad ObjectFaceQuad;
+typedef struct ObjectRenderBuffers ObjectRenderBuffers;
+typedef struct Direct3DTexture8 Direct3DTexture8;
 
 /* Empty C++ cRPathManager occupies one byte in the Windows root layout. */
 typedef struct PathManager {
@@ -491,6 +493,15 @@ typedef struct LoadingBar {
     int32_t previous_percent;
     int32_t last_loading_budget;
 } LoadingBar;
+
+/* Exact mapped screen-space vertex used by both loading-screen quads. */
+typedef struct LoadingVertex {
+    float x;
+    float y;
+    float z;
+    float u;
+    float v;
+} LoadingVertex;
 
 /* Exact 0x14-byte thanks-for-playing controller. */
 typedef struct ThanksScreen {

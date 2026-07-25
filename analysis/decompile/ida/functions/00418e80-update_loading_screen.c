@@ -51,24 +51,21 @@ LABEL_9:
       1065353216,
       0);
     g_direct3d_renderer.device->vtbl->BeginScene(g_direct3d_renderer.device);
-    g_direct3d_renderer.device->vtbl->SetTexture(
-      g_direct3d_renderer.device,
-      0,
-      (Direct3DTexture8 *)g_loading_background_texture);
+    g_direct3d_renderer.device->vtbl->SetTexture(g_direct3d_renderer.device, 0, g_loading_background_texture);
     g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 13, 3);
     g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 14, 3);
     g_direct3d_renderer.device->vtbl->SetStreamSource(
       g_direct3d_renderer.device,
       0,
-      *(ObjectVertexBuffer **)(g_loading_background_vertex_buffer + 8),
+      g_loading_background_vertex_buffer->vertex_buffer,
       20);
     g_direct3d_renderer.device->vtbl->SetVertexShader(g_direct3d_renderer.device, 258);
     g_direct3d_renderer.device->vtbl->DrawPrimitive(g_direct3d_renderer.device, 6, 0, 2);
-    (*(void (__stdcall **)(_DWORD, _DWORD, int, int *, _DWORD))(**(_DWORD **)(g_loading_bar_vertex_buffer + 8) + 44))(
-      *(_DWORD *)(g_loading_bar_vertex_buffer + 8),
+    g_loading_bar_vertex_buffer->vertex_buffer->vtbl->Lock(
+      g_loading_bar_vertex_buffer->vertex_buffer,
       0,
       80,
-      &v8,
+      (void **)&v8,
       0);
     v4 = v9;
     *(_DWORD *)v8 = 1128267776;
@@ -95,15 +92,12 @@ LABEL_9:
     *(_DWORD *)(v8 + 68) = 0;
     *(_DWORD *)(v8 + 72) = 0;
     *(_DWORD *)(v8 + 76) = 1065353216;
-    (*(void (__stdcall **)(_DWORD))(**(_DWORD **)(g_loading_bar_vertex_buffer + 8) + 48))(*(_DWORD *)(g_loading_bar_vertex_buffer + 8));
-    g_direct3d_renderer.device->vtbl->SetTexture(
-      g_direct3d_renderer.device,
-      0,
-      (Direct3DTexture8 *)g_loading_bar_on_texture);
+    g_loading_bar_vertex_buffer->vertex_buffer->vtbl->Unlock(g_loading_bar_vertex_buffer->vertex_buffer);
+    g_direct3d_renderer.device->vtbl->SetTexture(g_direct3d_renderer.device, 0, g_loading_bar_on_texture);
     g_direct3d_renderer.device->vtbl->SetStreamSource(
       g_direct3d_renderer.device,
       0,
-      *(ObjectVertexBuffer **)(g_loading_bar_vertex_buffer + 8),
+      g_loading_bar_vertex_buffer->vertex_buffer,
       20);
     g_direct3d_renderer.device->vtbl->SetVertexShader(g_direct3d_renderer.device, 258);
     g_direct3d_renderer.device->vtbl->DrawPrimitive(g_direct3d_renderer.device, 6, 0, 2);

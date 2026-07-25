@@ -14181,11 +14181,19 @@
       "artifact": "analysis/decompile/binja/functions/00418b50-initialize_loading_screen.c",
       "required_substrings": [
         "begin_overlay_render_state()",
+        "&g_loading_background_texture)",
+        "&g_loading_bar_on_texture)",
+        "g_loading_background_vertex_buffer->vertex_buffer",
+        "struct LoadingVertex* vertices",
+        "vertex_buffer->vtbl->Lock",
+        "g_loading_bar_vertex_buffer->vertex_buffer",
         "loading_bar->last_loading_budget = 0",
         "loading_bar->previous_percent = 0",
         "loading_bar->active = 1"
       ],
       "forbidden_substrings": [
+        "data_503284",
+        "data_5032a4",
         "int32_t result = begin_overlay_render_state()",
         "arg1",
         "unimplemented"
@@ -14199,10 +14207,16 @@
         "d3dx_create_texture_from_file_in_memory_ex",
         "d3dx_create_texture_from_file_ex",
         "d3dx_create_texture_from_file(",
+        "(void **)&g_loading_background_texture",
+        "(void **)&g_loading_bar_on_texture",
+        "g_loading_background_vertex_buffer->vertex_buffer->vtbl->Lock",
+        "g_loading_bar_vertex_buffer->vertex_buffer->vtbl->Unlock",
         "loading_bar->last_loading_budget = 0;",
         "loading_bar->active = 1;"
       ],
       "forbidden_substrings": [
+        "g_loading_background_vertex_buffer + 8",
+        "g_loading_bar_vertex_buffer + 8",
         "int __thiscall initialize_loading_screen",
         "return result",
         "unimplemented"
@@ -14213,10 +14227,14 @@
       "artifact": "analysis/decompile/binja/functions/00418e50-destroy_loading_screen.c",
       "required_substrings": [
         "g_runtime_config.last_loading_budget = loading_bar->last_loading_budget",
+        "loading_background_texture_1->vtbl->Release",
+        "loading_bar_on_texture_1->vtbl->Release",
         "loading_bar->active = 0",
         "return"
       ],
       "forbidden_substrings": [
+        "*(*loading_background_texture_1 + 8)",
+        "*(*loading_bar_on_texture_1 + 8)",
         "int32_t result",
         "arg1",
         "unimplemented"
@@ -14228,9 +14246,13 @@
       "required_substrings": [
         "void __thiscall destroy_loading_screen(LoadingBar *loading_bar)",
         "g_runtime_config.last_loading_budget = loading_bar->last_loading_budget;",
+        "g_loading_background_texture->vtbl->Release(g_loading_background_texture);",
+        "g_loading_bar_on_texture->vtbl->Release(g_loading_bar_on_texture);",
         "loading_bar->active = 0;"
       ],
       "forbidden_substrings": [
+        "(*(_DWORD *)g_loading_background_texture + 8)",
+        "(*(_DWORD *)g_loading_bar_on_texture + 8)",
         "int __thiscall destroy_loading_screen",
         "return result",
         "unimplemented"
@@ -14242,9 +14264,15 @@
       "required_substrings": [
         "if (loading_bar->active == 0)",
         "loading_bar->last_loading_budget += 1",
-        "loading_bar->previous_percent = edi_1"
+        "g_loading_background_vertex_buffer->vertex_buffer",
+        "g_loading_bar_vertex_buffer->vertex_buffer",
+        "vertex_buffer->vtbl->Lock",
+        "vertex_buffer_1->vtbl->Unlock",
+        "loading_bar->previous_percent = data_1"
       ],
       "forbidden_substrings": [
+        "data_503284",
+        "data_5032a4",
         "int32_t result = *arg1",
         "arg1",
         "unimplemented"
@@ -14257,9 +14285,14 @@
         "void __thiscall update_loading_screen(LoadingBar *loading_bar)",
         "if ( !loading_bar->active )",
         "++loading_bar->last_loading_budget;",
+        "g_loading_background_vertex_buffer->vertex_buffer",
+        "g_loading_bar_vertex_buffer->vertex_buffer->vtbl->Lock",
+        "g_loading_bar_vertex_buffer->vertex_buffer->vtbl->Unlock",
         "loading_bar->previous_percent = v3;"
       ],
       "forbidden_substrings": [
+        "g_loading_background_vertex_buffer + 8",
+        "g_loading_bar_vertex_buffer + 8",
         "int __thiscall update_loading_screen",
         "return result",
         "unimplemented"
