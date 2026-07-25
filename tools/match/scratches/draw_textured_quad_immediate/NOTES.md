@@ -116,3 +116,11 @@ a GUI restart. Its narrow replay now persists the per-function
 `NeverSkipFunctionAnalysis` override, rejects non-timeout skip reasons, verifies
 HLIL before applying the stack lifetime, and restores the prior override during
 preview. A second replay performs no type, analysis, or variable mutation.
+
+2026-07-25 cross-tool staging replay: `ImmediateQuadVertexBlock` is now also
+available to IDA, where the exact stack output at `0x41308c` is replayed as the
+borrowed `quad` pointer. The tracked decompile exposes all four
+`ObjectRenderVertex` records and the renderer-owned vertex-buffer/device chain
+instead of an integer lock result and 0x60 bytes of pointer arithmetic.
+Matcher source remains unchanged at the honest 98.34%, 331/332 result with all
+26 operands clean.

@@ -5855,11 +5855,36 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
         "0x4115D0",
         "0x411630",
         "0x4116F0",
+        "0x411700",
+        "0x411730",
+        "0x4118B0",
+        "0x411960",
+        "0x411D70",
         "0x4129C0",
+        "0x4129F0",
+        "0x412D00",
+        "0x412E50",
+        "0x413030",
+        "0x413520",
+        "0x414260",
+        "0x414270",
+        "0x4143C0",
+        "0x414500",
+        "0x414600",
+        "0x414650",
         "0x418B50",
         "0x433060",
     ):
         assert address in ida_sync
+
+    assert '"ObjectRenderVertex": 0x18' in ida_sync
+    assert '"ImmediateQuadVertexBlock": 0x60' in ida_sync
+    assert "IMMEDIATE_QUAD_LVAR_SPECS" in ida_sync
+    assert '"draw_textured_quad_immediate"' in ida_sync
+    assert "0x41308C" in ida_sync
+    assert '"quad"' in ida_sync
+    assert '"ImmediateQuadVertexBlock *quad;"' in ida_sync
+    assert '"immediate_quad_lvars": immediate_quad_lvars' in ida_sync
 
     for function_name in (
         "create_vertex_buffer",
@@ -5883,6 +5908,8 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
 
     for header in analysis_headers:
         assert "typedef struct Direct3DRenderer" in header
+        assert "typedef struct ImmediateQuadVertexBlock" in header
+        assert "ObjectRenderVertex vertices[4];" in header
         assert "VertexBufferFactory vertex_buffer_factory;" in header
         assert "IndexBufferFactory index_buffer_factory;" in header
         assert "Direct3DDevice8* device;" in header

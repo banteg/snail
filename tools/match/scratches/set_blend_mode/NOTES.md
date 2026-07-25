@@ -70,3 +70,9 @@ BN and IDA lanes, and the refreshed BN artifact resolves all render-state calls
 through `g_direct3d_renderer.device`. Fresh `break`/`return` and shared-suffix
 probes were byte-neutral, so the 92.39% result and honest jump-table mismatch
 remain rather than forcing compiler layout.
+
+2026-07-25 IDA replay closure: IDA was carrying the correct void prototype and
+renderer struct but a stale cached pseudocode body. Adding the blend helper to
+the bounded object-render invalidation set now resolves every render-state call
+through `g_direct3d_renderer.device`. No matcher source changed; the honest
+92.39% result and jump-table mismatch remain.

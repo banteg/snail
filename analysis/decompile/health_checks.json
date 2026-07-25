@@ -13902,6 +13902,25 @@
       ]
     },
     {
+      "name": "ida_direct3d_device_initialization_owner",
+      "artifact": "analysis/decompile/ida/functions/00411730-initialize_d3d8_device.c",
+      "required_substrings": [
+        "void __thiscall initialize_d3d8_device(Direct3DRenderer *renderer, uint8_t use_present_interval_one)",
+        "renderer->d3d",
+        "memset(&renderer->present, 0, sizeof(renderer->present))",
+        "renderer->present.device_window",
+        "&renderer->present, &renderer->device",
+        "renderer->device_initialized = 1"
+      ],
+      "forbidden_substrings": [
+        "int this",
+        "this + 480",
+        "MEMORY[0x4DFAF0]",
+        "sub_411730",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_direct3d_device_teardown_owner",
       "artifact": "analysis/decompile/binja/functions/00411960-release_direct3d_device_interfaces.c",
       "required_substrings": [
@@ -14026,6 +14045,20 @@
       ]
     },
     {
+      "name": "ida_direct3d_cull_wrapper_owner",
+      "artifact": "analysis/decompile/ida/functions/004129f0-set_cull_mode.c",
+      "required_substrings": [
+        "int32_t __cdecl set_cull_mode(int32_t cull_front)",
+        "direct3d_renderer_set_cull_mode(&g_direct3d_renderer, cull_front)"
+      ],
+      "forbidden_substrings": [
+        "MEMORY[0x4F7458]",
+        "sub_411700",
+        "sub_4129F0",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_direct3d_blend_mode_owner",
       "artifact": "analysis/decompile/binja/functions/00412d00-set_blend_mode.c",
       "required_substrings": [
@@ -14036,6 +14069,19 @@
       "forbidden_substrings": [
         "data_502fec",
         "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_direct3d_blend_mode_owner",
+      "artifact": "analysis/decompile/ida/functions/00412d00-set_blend_mode.c",
+      "required_substrings": [
+        "void __cdecl set_blend_mode(int32_t blend_mode)",
+        "g_direct3d_renderer.device->vtbl->SetRenderState"
+      ],
+      "forbidden_substrings": [
+        "MEMORY[0x502FEC]",
+        "sub_412D00",
         "unimplemented"
       ]
     },
@@ -14083,6 +14129,29 @@
         "data_502fe0",
         "data_502fec",
         "arg16",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_direct3d_immediate_quad_owner",
+      "artifact": "analysis/decompile/ida/functions/00413030-draw_textured_quad_immediate.c",
+      "required_substrings": [
+        "void __cdecl draw_textured_quad_immediate(",
+        "TextureRef *texture",
+        "ImmediateQuadVertexBlock *quad",
+        "(void **)&quad",
+        "quad->vertices[0].x",
+        "quad->vertices[1].u",
+        "quad->vertices[2].diffuse",
+        "quad->vertices[3].v",
+        "g_direct3d_renderer.renderer_state->vertex_buffer",
+        "g_direct3d_renderer.device->vtbl->DrawPrimitive"
+      ],
+      "forbidden_substrings": [
+        "MEMORY[0x502FEC]",
+        "int v29",
+        "*(float *)v29",
+        "sub_413030",
         "unimplemented"
       ]
     },
@@ -14177,6 +14246,24 @@
         "data_502fec",
         "data_503174",
         "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_direct3d_texture_bind_owner",
+      "artifact": "analysis/decompile/ida/functions/00414500-bind_texture_ref.c",
+      "required_substrings": [
+        "void __cdecl bind_texture_ref(TextureRef *texture)",
+        "texture != g_current_texture_ref",
+        "g_d3d_texture_slots[texture->slot_index]",
+        "++g_texture_bind_call_count",
+        "texture->flags",
+        "g_direct3d_renderer.device"
+      ],
+      "forbidden_substrings": [
+        "MEMORY[0x502FEC]",
+        "MEMORY[0x503174]",
+        "sub_414500",
         "unimplemented"
       ]
     },

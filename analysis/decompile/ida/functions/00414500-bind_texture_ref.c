@@ -3,48 +3,36 @@
 /* selector: bind_texture_ref */
 
 // Binds one texture ref, skips redundant binds through the cached current-texture lane, and applies the texture-stage wrap-vs-clamp state from the ref flags. Cross-port Android symbols match this helper to `G0BindTexture(int)`.
-int __cdecl sub_414500(int a1)
+void __cdecl bind_texture_ref(TextureRef *texture)
 {
-  int result; // eax
-  int v2; // eax
-  int v3; // ecx
+  int32_t v1; // eax
+  Direct3DDevice8Vtbl *vtbl; // ecx
 
-  result = MEMORY[0x503174];
-  if ( a1 != MEMORY[0x503174] )
+  if ( texture != g_current_texture_ref )
   {
-    MEMORY[0x503174] = a1;
-    v2 = (*(int (__stdcall **)(int, _DWORD, _DWORD))(*(_DWORD *)MEMORY[0x502FEC] + 244))(
-           MEMORY[0x502FEC],
+    g_current_texture_ref = texture;
+    v1 = g_direct3d_renderer.device->vtbl->SetTexture(
+           g_direct3d_renderer.device,
            0,
-           *(_DWORD *)(MEMORY[0x5031C8] + 4 * *(_DWORD *)(a1 + 140)));
-    ++MEMORY[0x5031C0];
-    if ( v2 )
+           g_d3d_texture_slots[texture->slot_index]);
+    ++g_texture_bind_call_count;
+    if ( v1 )
     {
-      return report_errorf("SetTexture Failed %s", (const char *)(a1 + 12));
+      report_errorf("SetTexture Failed %s", texture->name);
     }
     else
     {
-      v3 = *(_DWORD *)MEMORY[0x502FEC];
-      if ( (*(_DWORD *)a1 & 0x1000) != 0 )
+      vtbl = g_direct3d_renderer.device->vtbl;
+      if ( (texture->flags & 0x1000) != 0 )
       {
-        (*(void (__stdcall **)(int, _DWORD, int, int))(v3 + 252))(MEMORY[0x502FEC], 0, 13, 1);
-        return (*(int (__stdcall **)(int, _DWORD, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 252))(
-                 MEMORY[0x502FEC],
-                 0,
-                 14,
-                 1);
+        vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 13, 1);
+        g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 14, 1);
       }
       else
       {
-        (*(void (__stdcall **)(int, _DWORD, int, int))(v3 + 252))(MEMORY[0x502FEC], 0, 13, 3);
-        return (*(int (__stdcall **)(int, _DWORD, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 252))(
-                 MEMORY[0x502FEC],
-                 0,
-                 14,
-                 3);
+        vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 13, 3);
+        g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 14, 3);
       }
     }
   }
-  return result;
 }
-

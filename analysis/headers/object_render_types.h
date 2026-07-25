@@ -87,6 +87,15 @@ typedef struct ObjectRenderVertex {
     float v;
 } ObjectRenderVertex;
 
+/*
+ * Analysis-only view of the borrowed 0x60-byte immediate-mode lock. The
+ * renderer owns the backing vertex buffer; this wrapper preserves the four
+ * consecutive ObjectRenderVertex records during decompilation.
+ */
+typedef struct ImmediateQuadVertexBlock {
+    ObjectRenderVertex vertices[4];
+} ImmediateQuadVertexBlock;
+
 typedef struct TransformMatrix {
     Vec3 basis_right;
     float basis_right_w;

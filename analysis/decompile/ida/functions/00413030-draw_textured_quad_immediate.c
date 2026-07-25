@@ -2,26 +2,26 @@
 /* function: draw_textured_quad_immediate @ 0x413030 */
 /* selector: draw_textured_quad_immediate */
 
-// Builds one immediate 2D textured quad in the transient UI vertex buffer, supporting explicit corner coordinates, axis-aligned size, or centered rotation before submitting the quad as a six-index primitive.
-int __cdecl sub_413030(
-        int a1,
-        float a2,
-        float a3,
-        float a4,
-        float a5,
-        float a6,
-        float a7,
-        float a8,
-        float a9,
-        float a10,
-        float a11,
-        float a12,
-        float a13,
-        float a14,
-        float a15,
-        float *a16,
-        int a17,
-        float a18)
+// Void G0RenderFont counterpart: builds one immediate 2D textured quad in the transient UI vertex buffer, supporting explicit corner coordinates, axis-aligned size, or centered rotation before submitting the quad as a six-index primitive. All three Windows callers discard EAX.
+void __cdecl draw_textured_quad_immediate(
+        TextureRef *texture,
+        float x0,
+        float y0,
+        float x1,
+        float y1,
+        float x2,
+        float y2,
+        float x3,
+        float y3,
+        float width,
+        float height,
+        float u0,
+        float v0,
+        float u1,
+        float v1,
+        tColour *color,
+        int32_t blend_mode,
+        float rotation)
 {
   char v19; // c3
   char v21; // c3
@@ -30,126 +30,125 @@ int __cdecl sub_413030(
   double v24; // st7
   double v25; // st6
   double v26; // st7
-  int result; // eax
+  int32_t v27; // eax
   float v28; // [esp+20h] [ebp-14h]
-  int v29; // [esp+2Ch] [ebp-8h] BYREF
-  float v30; // [esp+30h] [ebp-4h] BYREF
-  float v31; // [esp+3Ch] [ebp+8h]
-  float v32; // [esp+40h] [ebp+Ch]
-  float v33; // [esp+5Ch] [ebp+28h]
-  float v34; // [esp+5Ch] [ebp+28h]
-  float v35; // [esp+60h] [ebp+2Ch]
+  ImmediateQuadVertexBlock *quad; // [esp+2Ch] [ebp-8h] BYREF
+  ColorBGRA8 out; // [esp+30h] [ebp-4h] BYREF
+  float x0a; // [esp+3Ch] [ebp+8h]
+  float y0a; // [esp+40h] [ebp+Ch]
+  float widtha; // [esp+5Ch] [ebp+28h]
+  float widthb; // [esp+5Ch] [ebp+28h]
+  float heighta; // [esp+60h] [ebp+2Ch]
 
-  (*(void (__stdcall **)(int, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 200))(MEMORY[0x502FEC], 22, 1);
-  bind_texture_ref(a1);
-  sub_412E50(a17);
-  Iostream_init::Iostream_init((#93 *)&v30);
-  pack_color_rgba_u8(&v30, a16);
-  (*(void (__stdcall **)(_DWORD, _DWORD, int, int *, _DWORD))(**(_DWORD **)(MEMORY[0x502FE0] + 8) + 44))(
-    *(_DWORD *)(MEMORY[0x502FE0] + 8),
+  g_direct3d_renderer.device->vtbl->SetRenderState(g_direct3d_renderer.device, 22, 1);
+  bind_texture_ref(texture);
+  set_immediate_blend_mode(blend_mode);
+  noop_this_constructor(&out);
+  pack_color_rgba_u8((tColourSmall *)&out, color);
+  g_direct3d_renderer.renderer_state->vertex_buffer->vtbl->Lock(
+    g_direct3d_renderer.renderer_state->vertex_buffer,
     0,
     96,
-    &v29,
+    (void **)&quad,
     0);
   if ( v19 )
   {
-    *(float *)v29 = a2;
-    *(float *)(v29 + 4) = a3;
-    *(_DWORD *)(v29 + 8) = 0;
-    *(float *)(v29 + 16) = a12;
-    *(float *)(v29 + 20) = a13;
+    quad->vertices[0].x = x0;
+    quad->vertices[0].y = y0;
+    quad->vertices[0].z = 0.0;
+    quad->vertices[0].u = u0;
+    quad->vertices[0].v = v0;
     if ( v21 )
     {
-      *(float *)(v29 + 12) = v30;
-      *(float *)(v29 + 24) = a4;
-      *(float *)(v29 + 28) = a5;
-      *(_DWORD *)(v29 + 32) = 0;
-      *(float *)(v29 + 40) = a14;
-      *(float *)(v29 + 44) = a13;
-      *(float *)(v29 + 36) = v30;
-      *(float *)(v29 + 48) = a6;
-      *(float *)(v29 + 52) = a7;
-      *(_DWORD *)(v29 + 56) = 0;
-      *(float *)(v29 + 64) = a14;
-      *(float *)(v29 + 68) = a15;
-      *(float *)(v29 + 60) = v30;
-      *(float *)(v29 + 72) = a8;
-      *(float *)(v29 + 76) = a9;
+      quad->vertices[0].diffuse = (uint32_t)out;
+      quad->vertices[1].x = x1;
+      quad->vertices[1].y = y1;
+      quad->vertices[1].z = 0.0;
+      quad->vertices[1].u = u1;
+      quad->vertices[1].v = v0;
+      quad->vertices[1].diffuse = (uint32_t)out;
+      quad->vertices[2].x = x2;
+      quad->vertices[2].y = y2;
+      quad->vertices[2].z = 0.0;
+      quad->vertices[2].u = u1;
+      quad->vertices[2].v = v1;
+      quad->vertices[2].diffuse = (uint32_t)out;
+      quad->vertices[3].x = x3;
+      quad->vertices[3].y = y3;
     }
     else
     {
-      v22 = a2 + a10;
-      *(float *)(v29 + 12) = v30;
-      *(float *)(v29 + 24) = v22;
-      *(float *)(v29 + 28) = a3;
-      *(_DWORD *)(v29 + 32) = 0;
-      *(float *)(v29 + 40) = a14;
-      *(float *)(v29 + 44) = a13;
-      *(float *)(v29 + 36) = v30;
-      *(float *)(v29 + 48) = v22;
-      v23 = a3 + a11;
-      *(float *)(v29 + 52) = v23;
-      *(_DWORD *)(v29 + 56) = 0;
-      *(float *)(v29 + 64) = a14;
-      *(float *)(v29 + 68) = a15;
-      *(float *)(v29 + 60) = v30;
-      *(float *)(v29 + 72) = a2;
-      *(float *)(v29 + 76) = v23;
+      v22 = x0 + width;
+      quad->vertices[0].diffuse = (uint32_t)out;
+      quad->vertices[1].x = v22;
+      quad->vertices[1].y = y0;
+      quad->vertices[1].z = 0.0;
+      quad->vertices[1].u = u1;
+      quad->vertices[1].v = v0;
+      quad->vertices[1].diffuse = (uint32_t)out;
+      quad->vertices[2].x = v22;
+      v23 = y0 + height;
+      quad->vertices[2].y = v23;
+      quad->vertices[2].z = 0.0;
+      quad->vertices[2].u = u1;
+      quad->vertices[2].v = v1;
+      quad->vertices[2].diffuse = (uint32_t)out;
+      quad->vertices[3].x = x0;
+      quad->vertices[3].y = v23;
     }
-    *(_DWORD *)(v29 + 80) = 0;
-    *(float *)(v29 + 88) = a12;
-    *(float *)(v29 + 92) = a15;
-    *(float *)(v29 + 84) = v30;
+    quad->vertices[3].z = 0.0;
+    quad->vertices[3].u = u0;
+    quad->vertices[3].v = v1;
+    quad->vertices[3].diffuse = (uint32_t)out;
   }
   else
   {
-    v24 = a10 * 0.5;
-    v31 = v24 + a2;
-    v25 = a11 * 0.5;
-    v33 = v25;
-    v32 = v25 + a3;
-    v28 = v33 * v33 + v24 * v24;
-    v35 = square_root(v28) * 1.414;
-    v34 = sine(a18) * v35;
-    v26 = cosine(a18) * v35;
-    *(float *)v29 = v34 + v31;
-    *(float *)(v29 + 4) = v26 + v32;
-    *(_DWORD *)(v29 + 8) = 0;
-    *(float *)(v29 + 16) = a12;
-    *(float *)(v29 + 20) = a13;
-    *(float *)(v29 + 12) = v30;
-    *(float *)(v29 + 24) = v31 - v26;
-    *(float *)(v29 + 28) = v34 + v32;
-    *(_DWORD *)(v29 + 32) = 0;
-    *(float *)(v29 + 40) = a14;
-    *(float *)(v29 + 44) = a13;
-    *(float *)(v29 + 36) = v30;
-    *(float *)(v29 + 48) = v31 - v34;
-    *(float *)(v29 + 52) = v32 - v26;
-    *(_DWORD *)(v29 + 56) = 0;
-    *(float *)(v29 + 64) = a14;
-    *(float *)(v29 + 68) = a15;
-    *(float *)(v29 + 60) = v30;
-    *(float *)(v29 + 72) = v26 + v31;
-    *(float *)(v29 + 76) = v32 - v34;
-    *(_DWORD *)(v29 + 80) = 0;
-    *(float *)(v29 + 88) = a12;
-    *(float *)(v29 + 92) = a15;
-    *(float *)(v29 + 84) = v30;
+    v24 = width * 0.5;
+    x0a = v24 + x0;
+    v25 = height * 0.5;
+    widtha = v25;
+    y0a = v25 + y0;
+    v28 = widtha * widtha + v24 * v24;
+    heighta = square_root(v28) * 1.414;
+    widthb = sine(rotation) * heighta;
+    v26 = cosine(rotation) * heighta;
+    quad->vertices[0].x = widthb + x0a;
+    quad->vertices[0].y = v26 + y0a;
+    quad->vertices[0].z = 0.0;
+    quad->vertices[0].u = u0;
+    quad->vertices[0].v = v0;
+    quad->vertices[0].diffuse = (uint32_t)out;
+    quad->vertices[1].x = x0a - v26;
+    quad->vertices[1].y = widthb + y0a;
+    quad->vertices[1].z = 0.0;
+    quad->vertices[1].u = u1;
+    quad->vertices[1].v = v0;
+    quad->vertices[1].diffuse = (uint32_t)out;
+    quad->vertices[2].x = x0a - widthb;
+    quad->vertices[2].y = y0a - v26;
+    quad->vertices[2].z = 0.0;
+    quad->vertices[2].u = u1;
+    quad->vertices[2].v = v1;
+    quad->vertices[2].diffuse = (uint32_t)out;
+    quad->vertices[3].x = v26 + x0a;
+    quad->vertices[3].y = y0a - widthb;
+    quad->vertices[3].z = 0.0;
+    quad->vertices[3].u = u0;
+    quad->vertices[3].v = v1;
+    quad->vertices[3].diffuse = (uint32_t)out;
   }
-  (*(void (__stdcall **)(_DWORD))(**(_DWORD **)(MEMORY[0x502FE0] + 8) + 48))(*(_DWORD *)(MEMORY[0x502FE0] + 8));
-  (*(void (__stdcall **)(int, _DWORD, _DWORD, int))(*(_DWORD *)MEMORY[0x502FEC] + 332))(
-    MEMORY[0x502FEC],
+  g_direct3d_renderer.renderer_state->vertex_buffer->vtbl->Unlock(g_direct3d_renderer.renderer_state->vertex_buffer);
+  g_direct3d_renderer.device->vtbl->SetStreamSource(
+    g_direct3d_renderer.device,
     0,
-    *(_DWORD *)(MEMORY[0x502FE0] + 8),
+    g_direct3d_renderer.renderer_state->vertex_buffer,
     24);
-  (*(void (__stdcall **)(int, int))(*(_DWORD *)MEMORY[0x502FEC] + 304))(MEMORY[0x502FEC], 322);
-  result = (*(int (__stdcall **)(int, int, _DWORD, int))(*(_DWORD *)MEMORY[0x502FEC] + 280))(MEMORY[0x502FEC], 6, 0, 2);
-  MEMORY[0x4F7450] += 2;
-  ++MEMORY[0x503170];
-  if ( result )
-    return report_errorf(aDrawPrimitiveF);
-  ++MEMORY[0x4F7454];
-  return result;
+  g_direct3d_renderer.device->vtbl->SetVertexShader(g_direct3d_renderer.device, 322);
+  v27 = g_direct3d_renderer.device->vtbl->DrawPrimitive(g_direct3d_renderer.device, 6, 0, 2);
+  g_render_triangle_count += 2;
+  ++g_draw_primitive_call_count;
+  if ( v27 )
+    report_errorf(aDrawPrimitiveF);
+  else
+    ++g_render_successful_primitive_count;
 }
-

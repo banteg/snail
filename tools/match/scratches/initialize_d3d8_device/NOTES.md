@@ -89,3 +89,10 @@ scratch source.
 `g_d3d_device`; the shared device header alone records that relocation as an
 alias of `g_direct3d_renderer.device` at `+0xbb94`. Initialization remains exact
 at 106/106 instructions with all 12 operands clean.
+
+2026-07-25 IDA replay closure: the object-render replay now invalidates this
+device bootstrap after installing the complete renderer owner. The refreshed
+IDA decompile exposes `Direct3DRenderer*`, its `d3d`, `present`, `device`, and
+device-configuration fields, and both `CreateDevice` attempts through the real
+owner instead of `this + 480xx` arithmetic. Matcher source remains unchanged
+and exact at 106/106 instructions with all 12 operands clean.

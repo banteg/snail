@@ -454,6 +454,7 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct Direct3DRenderer {",
     "typedef struct ObjectDistort {",
     "typedef struct ObjectGroupedVertex {",
+    "typedef struct ImmediateQuadVertexBlock {",
     "typedef struct ObjectToonEdge {",
     "typedef struct Object {",
     "typedef struct ObjectList {",
@@ -498,6 +499,8 @@ EXPECTED_OWNER_SIZES = {
     "Direct3DRenderer": 0xBCC0,
     "ObjectFaceQuad": 0x30,
     "ObjectGroupedVertex": 0x1C,
+    "ObjectRenderVertex": 0x18,
+    "ImmediateQuadVertexBlock": 0x60,
     "ObjectToonEdge": 0x24,
     "ObjectDistort": 0x14,
     "Object": 0xDC,
@@ -517,11 +520,27 @@ REANALYSIS_FUNCTIONS = (
     0x4115D0,  # create_index_buffer
     0x411630,  # initialize_direct3d_renderer_defaults
     0x4116F0,  # release_direct3d_renderer_resources
+    0x411700,  # direct3d_renderer_set_cull_mode
+    0x411730,  # initialize_d3d8_device
+    0x4118B0,  # reset_direct3d_render_state
+    0x411960,  # release_direct3d_device_interfaces
+    0x411D70,  # release_global_direct3d_renderer_resources
     0x411FA0,  # render_camera
     0x412250,  # refresh_object_vertex_buffer
     0x4129C0,  # initialize_direct3d_renderer
+    0x4129F0,  # set_cull_mode
+    0x412D00,  # set_blend_mode
+    0x412E50,  # set_immediate_blend_mode
+    0x413030,  # draw_textured_quad_immediate
+    0x413520,  # present_backbuffer
     0x413BB0,  # get_or_append_object_texture_group_vertex
     0x413D50,  # build_object_texture_group_buffers
+    0x414260,  # set_fullscreen_mode
+    0x414270,  # direct3d_renderer_set_fullscreen_mode
+    0x4143C0,  # restore_texture_ref_stage_states
+    0x414500,  # bind_texture_ref
+    0x414600,  # query_direct3d_device_caps
+    0x414650,  # reset_render_counters
     0x418B50,  # initialize_loading_screen
     0x419110,  # open_logo
     0x419FD0,  # sort_object_faces_by_texture_group
@@ -588,6 +607,15 @@ OBJECT_LOADER_LVAR_SPECS = (
         0x44C445,
         "object_file_path",
         "char object_file_path[0x100];",
+    ),
+)
+
+IMMEDIATE_QUAD_LVAR_SPECS = (
+    (
+        "draw_textured_quad_immediate",
+        0x41308C,
+        "quad",
+        "ImmediateQuadVertexBlock *quad;",
     ),
 )
 
@@ -1273,6 +1301,33 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    immediate_quad_lvars = [
+        _sync_owned_lvar(
+            selector,
+            definition_address,
+            expected_name,
+            declaration,
+        )
+        for (
+            selector,
+            definition_address,
+            expected_name,
+            declaration,
+        ) in IMMEDIATE_QUAD_LVAR_SPECS
+    ]
+    immediate_quad_failures = [
+        result
+        for result in immediate_quad_lvars
+        if result.get("status") == "failed"
+    ]
+    if immediate_quad_failures:
+        failed.append(
+            {
+                "selector": "draw_textured_quad_immediate",
+                "immediate_quad_lvars": immediate_quad_lvars,
+            }
+        )
+
     ida_auto.auto_wait()
     reanalysis_functions = []
     for address in REANALYSIS_FUNCTIONS:
@@ -1302,6 +1357,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "topology_lvars": topology_lvars,
                 "buffer_factory_lvars": buffer_factory_lvars,
                 "object_loader_lvars": object_loader_lvars,
+                "immediate_quad_lvars": immediate_quad_lvars,
                 "reanalysis_functions": reanalysis_functions,
                 "missing": missing,
                 "failed": failed,

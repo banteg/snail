@@ -20,3 +20,9 @@ bind-count globals, recovers `slot_index` and `flags`, and resolves every device
 load through `g_direct3d_renderer.device`. The matcher may retain its linker
 alias for exact operand comparison, while the analysis database deliberately
 keeps `0x502fec` parent-owned.
+
+2026-07-25 IDA replay closure: bounded invalidation now refreshes the texture
+binding helper after installing the shared renderer and texture owners. IDA
+therefore exposes `TextureRef::slot_index`, `TextureRef::flags`, the current
+texture and slot-bank globals, the bind counter, and every device call through
+`g_direct3d_renderer.device`. The exact 62/62 scratch is unchanged.

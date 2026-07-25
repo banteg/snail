@@ -2,77 +2,57 @@
 /* function: initialize_d3d8_device @ 0x411730 */
 /* selector: initialize_d3d8_device */
 
-int __thiscall initialize_d3d8_device(int this, char a2)
+void __thiscall initialize_d3d8_device(Direct3DRenderer *renderer, uint8_t use_present_interval_one)
 {
-  int v3; // eax
-  int v4; // edx
-  int v5; // ecx
-  int v6; // ecx
-  int v7; // edx
-  int v8; // ecx
-  int v9; // eax
-  int v10; // eax
-  int result; // eax
-  _DWORD v12[3]; // [esp+8h] [ebp-10h] BYREF
-  int v13; // [esp+14h] [ebp-4h]
+  Direct3D8 *v3; // eax
+  uint32_t v4; // edx
+  uint32_t depth_stencil_format; // ecx
+  HWND v6; // ecx
+  uint32_t multisample_type; // edx
+  uint32_t requested_height; // ecx
+  Direct3D8 *d3d; // eax
+  Direct3D8 *v10; // eax
+  _DWORD v11[3]; // [esp+8h] [ebp-10h] BYREF
+  uint32_t v12; // [esp+14h] [ebp-4h]
 
-  v3 = Direct3DCreate8(220);
-  *(_DWORD *)(this + 48016) = v3;
+  v3 = (Direct3D8 *)Direct3DCreate8(220);
+  renderer->d3d = v3;
   if ( !v3 )
     abort_startup_with_3d_error();
-  if ( (*(int (__stdcall **)(_DWORD, _DWORD, _DWORD *))(**(_DWORD **)(this + 48016) + 32))(
-         *(_DWORD *)(this + 48016),
-         0,
-         v12) < 0 )
+  if ( renderer->d3d->vtbl->GetAdapterDisplayMode(renderer->d3d, 0, (D3DDisplayMode *)v11) < 0 )
     abort_startup_with_3d_error();
-  v4 = v13;
-  *(_DWORD *)(this + 48288) = v13;
-  memset((void *)(this + 48024), 0, 0x34u);
-  v5 = *(_DWORD *)(this + 48312);
-  *(_DWORD *)(this + 48052) = 1;
-  *(_DWORD *)(this + 48044) = 4;
-  *(_DWORD *)(this + 48056) = 1;
-  *(_DWORD *)(this + 48060) = v5;
-  v6 = MEMORY[0x4DFAF0];
-  *(_DWORD *)(this + 48032) = v4;
-  *(_DWORD *)(this + 48048) = v6;
-  v7 = *(_DWORD *)(this + 48316);
-  *(_DWORD *)(this + 48024) = *(_DWORD *)(this + 48292);
-  v8 = *(_DWORD *)(this + 48296);
-  *(_DWORD *)(this + 48040) = v7;
-  *(_DWORD *)(this + 48028) = v8;
-  *(_DWORD *)(this + 48068) = 0;
-  if ( a2 )
-    *(_DWORD *)(this + 48072) = 1;
+  v4 = v12;
+  renderer->display_format = v12;
+  memset(&renderer->present, 0, sizeof(renderer->present));
+  depth_stencil_format = renderer->depth_stencil_format;
+  renderer->present.windowed = 1;
+  renderer->present.swap_effect = 4;
+  renderer->present.enable_auto_depth_stencil = 1;
+  renderer->present.auto_depth_stencil_format = depth_stencil_format;
+  v6 = g_main_window;
+  renderer->present.back_buffer_format = v4;
+  renderer->present.device_window = v6;
+  multisample_type = renderer->multisample_type;
+  renderer->present.back_buffer_width = renderer->requested_width;
+  requested_height = renderer->requested_height;
+  renderer->present.multisample_type = multisample_type;
+  renderer->present.back_buffer_height = requested_height;
+  renderer->present.fullscreen_refresh_rate_hz = 0;
+  if ( use_present_interval_one )
+    renderer->present.fullscreen_presentation_interval = 1;
   else
-    *(_DWORD *)(this + 48072) = 0;
-  v9 = *(_DWORD *)(this + 48016);
-  *(_DWORD *)(this + 48300) = 64;
-  if ( (*(int (__stdcall **)(int, _DWORD, int, _DWORD, int, int, int))(*(_DWORD *)v9 + 60))(
-         v9,
-         0,
-         1,
-         MEMORY[0x4DFAF0],
-         64,
-         this + 48024,
-         this + 48020) < 0 )
+    renderer->present.fullscreen_presentation_interval = 0;
+  d3d = renderer->d3d;
+  renderer->create_device_flags = 64;
+  if ( d3d->vtbl->CreateDevice(d3d, 0, 1, g_main_window, 64, &renderer->present, &renderer->device) < 0 )
   {
-    v10 = *(_DWORD *)(this + 48016);
-    *(_DWORD *)(this + 48300) = 32;
-    if ( (*(int (__stdcall **)(int, _DWORD, int, _DWORD, int, int, int))(*(_DWORD *)v10 + 60))(
-           v10,
-           0,
-           1,
-           MEMORY[0x4DFAF0],
-           32,
-           this + 48024,
-           this + 48020) < 0 )
+    v10 = renderer->d3d;
+    renderer->create_device_flags = 32;
+    if ( v10->vtbl->CreateDevice(v10, 0, 1, g_main_window, 32, &renderer->present, &renderer->device) < 0 )
       abort_startup_with_3d_error();
   }
-  sub_449C00();
-  reset_direct3d_render_state((_DWORD **)this);
-  result = query_direct3d_device_caps((_DWORD **)this);
-  *(_BYTE *)(this + 48012) = 1;
-  return result;
+  debug_report_stub();
+  reset_direct3d_render_state(renderer);
+  query_direct3d_device_caps(renderer);
+  renderer->device_initialized = 1;
 }
-
