@@ -6102,6 +6102,8 @@ def test_main_loop_replay_recovers_process_scalar_boundaries() -> None:
     )
 
     scalar_globals = (
+        ("0x4b7230", "g_right_mouse_button_latch", "uint8_t[2]"),
+        ("0x4b7234", "g_left_mouse_button_state", "uint8_t[2]"),
         ("0x4b7236", "g_render_queue_active", "uint8_t"),
         ("0x4b7638", "g_mean_update_steps_per_frame", "float"),
         ("0x4b763c", "g_current_frame_update_steps", "float"),
@@ -6112,6 +6114,7 @@ def test_main_loop_replay_recovers_process_scalar_boundaries() -> None:
         ("0x4b7759", "g_frame_render_requested", "uint8_t"),
         ("0x4b775c", "g_current_display_height", "int32_t"),
         ("0x4b7760", "g_authored_view_height", "float"),
+        ("0x4b7764", "g_left_mouse_button_latch", "uint8_t[2]"),
         ("0x4b7768", "g_main_loop_frame_count", "float"),
         ("0x4df858", "g_current_display_width", "int32_t"),
         ("0x4df85c", "g_authored_view_width", "float"),
@@ -6136,9 +6139,27 @@ def test_main_loop_replay_recovers_process_scalar_boundaries() -> None:
     )
     assert "int *__cdecl read_current_display_resolution(" in ida_sync
 
+    for side in ("left", "right"):
+        function_name = f"read_{side}_mouse_button_state"
+        assert (
+            f"unsigned char __cdecl {function_name}(int slot);"
+            in main_header
+        )
+        assert (
+            f"uint8_t __cdecl {function_name}(int32_t slot)"
+            in binja_sync
+        )
+        assert (
+            f"unsigned char __cdecl {function_name}(int slot);"
+            in ida_sync
+        )
+
     assert "CURRENT_FRAME_UPDATE_SPLIT_ITEMS" in ida_sync
     assert '"float[3]"' in ida_sync
     assert "unexpected_current_frame_update_boundary" in ida_sync
+    assert "MOUSE_BUTTON_DATA_ITEMS" in ida_sync
+    assert "unexpected_mouse_button_boundary" in ida_sync
+    assert "mouse_button_array_verification_failed" in ida_sync
     assert '"uint8_t g_right_mouse_button_state[2];"' in ida_sync
     assert '"int g_estimated_texture_vram_bytes;"' in ida_sync
     assert "WIDENED_SCALAR_DATA_ITEMS" in ida_sync

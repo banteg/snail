@@ -16,9 +16,9 @@ int show_and_focus_game_window()
   g_left_mouse_button_state[0] = 0;
   g_right_mouse_button_latch[0] = 0;
   g_right_mouse_button_state[0] = 0;
-  unk_4B7765 = 0;
-  unk_4B7235 = 0;
-  unk_4B7231 = 0;
+  g_left_mouse_button_latch[1] = 0;
+  g_left_mouse_button_state[1] = 0;
+  g_right_mouse_button_latch[1] = 0;
   g_right_mouse_button_state[1] = 0;
   return result;
 }

@@ -1712,25 +1712,183 @@
       ]
     },
     {
-      "name": "bn_window_proc_right_mouse_state_owner",
+      "name": "bn_window_activate_mouse_button_banks",
+      "artifact": "analysis/decompile/binja/functions/004072f0-handle_game_window_activate.c",
+      "required_substrings": [
+        "__builtin_memset(&g_left_mouse_button_latch, 0, 2)",
+        "__builtin_memset(&g_left_mouse_button_state, 0, 2)",
+        "__builtin_memset(&g_right_mouse_button_latch, 0, 2)",
+        "__builtin_memset(&g_right_mouse_button_state, 0, 2)"
+      ],
+      "forbidden_substrings": [
+        "data_4b7230",
+        "data_4b7231",
+        "data_4b7234",
+        "data_4b7235",
+        "data_4b7764",
+        "data_4b7765"
+      ]
+    },
+    {
+      "name": "ida_window_activate_mouse_button_banks",
+      "artifact": "analysis/decompile/ida/functions/004072f0-handle_game_window_activate.c",
+      "required_substrings": [
+        "g_left_mouse_button_latch[1] = 0;",
+        "g_left_mouse_button_state[1] = 0;",
+        "g_right_mouse_button_latch[1] = 0;",
+        "g_right_mouse_button_state[1] = 0;"
+      ],
+      "forbidden_substrings": [
+        "unk_4B7231",
+        "unk_4B7235",
+        "unk_4B7765"
+      ]
+    },
+    {
+      "name": "bn_window_focus_mouse_button_banks",
+      "artifact": "analysis/decompile/binja/functions/004073b0-show_and_focus_game_window.c",
+      "required_substrings": [
+        "__builtin_memset(&g_left_mouse_button_latch, 0, 2)",
+        "__builtin_memset(&g_left_mouse_button_state, 0, 2)",
+        "__builtin_memset(&g_right_mouse_button_latch, 0, 2)",
+        "__builtin_memset(&g_right_mouse_button_state, 0, 2)"
+      ],
+      "forbidden_substrings": [
+        "data_4b7230",
+        "data_4b7231",
+        "data_4b7234",
+        "data_4b7235",
+        "data_4b7764",
+        "data_4b7765"
+      ]
+    },
+    {
+      "name": "ida_window_focus_mouse_button_banks",
+      "artifact": "analysis/decompile/ida/functions/004073b0-show_and_focus_game_window.c",
+      "required_substrings": [
+        "g_left_mouse_button_latch[1] = 0;",
+        "g_left_mouse_button_state[1] = 0;",
+        "g_right_mouse_button_latch[1] = 0;",
+        "g_right_mouse_button_state[1] = 0;"
+      ],
+      "forbidden_substrings": [
+        "unk_4B7231",
+        "unk_4B7235",
+        "unk_4B7765"
+      ]
+    },
+    {
+      "name": "bn_left_mouse_button_reader_owner",
+      "artifact": "analysis/decompile/binja/functions/00407810-read_left_mouse_button_state.c",
+      "required_substrings": [
+        "g_left_mouse_button_latch[slot] = 0",
+        "g_left_mouse_button_state[slot]"
+      ],
+      "forbidden_substrings": [
+        "data_4b7764",
+        "data_4b7234",
+        "(&g_left_mouse_button"
+      ]
+    },
+    {
+      "name": "ida_left_mouse_button_reader_owner",
+      "artifact": "analysis/decompile/ida/functions/00407810-read_left_mouse_button_state.c",
+      "required_substrings": [
+        "unsigned __int8 __cdecl read_left_mouse_button_state(int slot)",
+        "g_left_mouse_button_latch[slot] = 0;",
+        "return g_left_mouse_button_state[slot];"
+      ],
+      "forbidden_substrings": [
+        "char __cdecl read_left_mouse_button_state",
+        "unk_4B7765",
+        "unk_4B7235"
+      ]
+    },
+    {
+      "name": "bn_right_mouse_button_reader_owner",
+      "artifact": "analysis/decompile/binja/functions/00407830-read_right_mouse_button_state.c",
+      "required_substrings": [
+        "g_right_mouse_button_latch[slot] = 0",
+        "g_right_mouse_button_state[slot]"
+      ],
+      "forbidden_substrings": [
+        "data_4b7230",
+        "(&g_right_mouse_button"
+      ]
+    },
+    {
+      "name": "ida_right_mouse_button_reader_owner",
+      "artifact": "analysis/decompile/ida/functions/00407830-read_right_mouse_button_state.c",
+      "required_substrings": [
+        "unsigned __int8 __cdecl read_right_mouse_button_state(int slot)",
+        "g_right_mouse_button_latch[slot] = 0;",
+        "return g_right_mouse_button_state[slot];"
+      ],
+      "forbidden_substrings": [
+        "char __cdecl read_right_mouse_button_state",
+        "unk_4B7231"
+      ]
+    },
+    {
+      "name": "bn_update_mouse_button_and_player_owners",
+      "artifact": "analysis/decompile/binja/functions/0044bc50-update_mouse.c",
+      "required_substrings": [
+        "&g_game_base->players[0].mouse_cursor",
+        "button_b = read_right_mouse_button_state(0)",
+        "button_a = read_left_mouse_button_state(0)",
+        "pointer_value, button_a, button_b"
+      ],
+      "forbidden_substrings": [
+        "&g_game_base[0x290]",
+        "var_60 = read_right_mouse_button_state",
+        "var_64 = read_left_mouse_button_state"
+      ]
+    },
+    {
+      "name": "ida_update_mouse_button_and_player_owners",
+      "artifact": "analysis/decompile/ida/functions/0044bc50-update_mouse.c",
+      "required_substrings": [
+        "&g_game_base->players[0].mouse_cursor",
+        "right_mouse_button_state = read_right_mouse_button_state(0);",
+        "left_mouse_button_state = read_left_mouse_button_state(0);"
+      ],
+      "forbidden_substrings": [
+        "(MouseCursorState *)((char *)g_game_base + 656)",
+        "MEMORY[0x4DF904]"
+      ]
+    },
+    {
+      "name": "bn_window_proc_mouse_button_owners",
       "artifact": "analysis/decompile/binja/functions/004074b0-game_window_proc.c",
       "required_substrings": [
+        "g_left_mouse_button_latch[0] = 1",
+        "g_left_mouse_button_state[0] = 1",
+        "g_right_mouse_button_latch[0] = 1",
         "g_right_mouse_button_state[0] = 1",
         "g_right_mouse_button_state[0] = 0"
       ],
       "forbidden_substrings": [
+        "data_4b7230",
+        "data_4b7234",
         "data_4b7640",
+        "data_4b7764",
         "g_current_frame_update_steps[1]"
       ]
     },
     {
-      "name": "ida_window_proc_right_mouse_state_owner",
+      "name": "ida_window_proc_mouse_button_owners",
       "artifact": "analysis/decompile/ida/functions/004074b0-game_window_proc.c",
       "required_substrings": [
+        "g_left_mouse_button_latch[0] = 1;",
+        "g_left_mouse_button_state[0] = 1;",
+        "g_right_mouse_button_latch[0] = 1;",
         "g_right_mouse_button_state[0] = 1;",
         "g_right_mouse_button_state[0] = 0;"
       ],
       "forbidden_substrings": [
+        "byte_4B7230",
+        "byte_4B7234",
+        "byte_4B7764",
         "LOBYTE(g_current_frame_update_steps[1])",
         "flt_4B763C[1]"
       ]

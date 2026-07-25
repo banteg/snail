@@ -15,11 +15,8 @@
 00407356        ShowWindow(main_window_1, SW_SHOWNORMAL)
 00407363        SetForegroundWindow(g_main_window)
 00407370        HWND result = SetFocus(g_main_window)
-00407376        data_4b7764 = 0
-0040737c        data_4b7234 = 0
-00407382        data_4b7230 = 0
+00407376        __builtin_memset(&g_left_mouse_button_latch, 0, 2)
+0040737c        __builtin_memset(&g_left_mouse_button_state, 0, 2)
+00407382        __builtin_memset(&g_right_mouse_button_latch, 0, 2)
 00407388        __builtin_memset(&g_right_mouse_button_state, 0, 2)
-0040738e        data_4b7765 = 0
-00407394        data_4b7235 = 0
-0040739a        data_4b7231 = 0
 004073aa        return result

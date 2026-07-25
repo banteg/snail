@@ -23,7 +23,7 @@
 0044bcce        if (eax_2 == 0)
 0044bcd4        __builtin_memset(&rect, 0, 0x10)
 0044bce6        if (g_fullscreen_active == 0)
-0044bcf4        eax_2 = is_mouse_captured(&g_game_base[0x290])
+0044bcf4        eax_2 = is_mouse_captured(&g_game_base->players[0].mouse_cursor)
 0044bcfb        int16_t x87control
 0044bcfb        if (g_fullscreen_active != 0 || eax_2.b == 0)
 0044bd1f        g_mouse_live_x[0] = fconvert.s(float.t(var_14) + fconvert.t(g_mouse_live_x[0]))
@@ -52,23 +52,23 @@
 0044bd08        x87control = convert_mouse_screen_xy(0, &g_mouse_live_x, &g_mouse_live_y)
 0044bdb3        uint8_t eax_4
 0044bdb3        if (g_fullscreen_active == 0)
-0044bdc5        eax_4 = is_mouse_captured(&g_game_base[0x290])
-0044bdcc        int32_t var_74
-0044bdcc        int32_t var_70
-0044bdcc        int32_t var_6c
-0044bdcc        int32_t var_68
-0044bdcc        char var_64
-0044bdcc        char var_60
-0044bdcc        uint8_t var_58_2
-0044bdcc        uint8_t fullscreen_active_1
+0044bdc5        eax_4 = is_mouse_captured(&g_game_base->players[0].mouse_cursor)
+0044bdcc        int32_t bottom
+0044bdcc        int32_t x
+0044bdcc        int32_t y
+0044bdcc        int32_t pointer_value
+0044bdcc        char button_a
+0044bdcc        char button_b
+0044bdcc        uint8_t capture_when_outside
+0044bdcc        char fullscreen_active_1
 0044bdcc        RECT rect_2
-0044bdcc        int32_t eax_18
+0044bdcc        int32_t eax_16
 0044bdcc        int32_t top
 0044bdcc        int32_t edx_12
 0044bdcc        int32_t right
 0044bdcc        if (g_fullscreen_active == 0 && eax_4 != 0)
 0044bde4        RECT* lpRect
-0044bde4        if (is_mouse_captured(&g_game_base[0x290]) != 0)
+0044bde4        if (is_mouse_captured(&g_game_base->players[0].mouse_cursor) != 0)
 0044be45        lpRect = nullptr
 0044be0a        rect_2.left = rect_1.left - data_4b7780 + rect.left
 0044be28        rect_2.right = rect_1.right - data_4b7788 + rect.right
@@ -77,71 +77,71 @@
 0044be42        lpRect = &rect_2
 0044be46        ClipCursor(lpRect)
 0044be57        fullscreen_active_1 = g_fullscreen_active
-0044be63        var_58_2 = is_mouse_captured(&g_game_base[0x290])
+0044be63        capture_when_outside = is_mouse_captured(&g_game_base->players[0].mouse_cursor)
 0044be64        int32_t var_5c = 0
-0044be6e        var_60 = read_right_mouse_button_state(0)
-0044be78        var_64 = read_left_mouse_button_state(0)
-0044be88        var_68 = consume_mouse_wheel_delta(0)
-0044be89        int32_t eax_16
+0044be6e        button_b = read_right_mouse_button_state(0)
+0044be78        button_a = read_left_mouse_button_state(0)
+0044be88        pointer_value = consume_mouse_wheel_delta(0)
+0044be89        int32_t y_1
 0044be89        int16_t x87control_1
-0044be89        eax_16, x87control_1 = ftol(x87control, fconvert.t(g_mouse_live_y[0]))
-0044be94        var_6c = eax_16
-0044be95        int32_t eax_17 = ftol(x87control_1, fconvert.t(g_mouse_live_x[0]))
+0044be89        y_1, x87control_1 = ftol(x87control, fconvert.t(g_mouse_live_y[0]))
+0044be94        y = y_1
+0044be95        int32_t x_1 = ftol(x87control_1, fconvert.t(g_mouse_live_x[0]))
 0044be9e        top = rect.top
-0044bea2        var_70 = eax_17
-0044bea3        eax_18 = data_4b7784
+0044bea2        x = x_1
+0044bea3        eax_16 = data_4b7784
 0044bea8        right = rect_1.right
-0044beb0        var_74 = rect_1.bottom - eax_18 + top
+0044beb0        bottom = rect_1.bottom - eax_16 + top
 0044beb1        edx_12 = data_4b7780
 0044beb7        goto label_44c007
 0044bec3        ClipCursor(nullptr)
-0044bed8        int32_t var_80
-0044bed8        int32_t var_7c
-0044bed8        int32_t var_78
-0044bed8        if (is_mouse_captured(&g_game_base[0x290]) != 0)
+0044bed8        int32_t left_1
+0044bed8        int32_t top_1
+0044bed8        int32_t right_1
+0044bed8        if (is_mouse_captured(&g_game_base->players[0].mouse_cursor) != 0)
 0044bfa7        fullscreen_active_1 = g_fullscreen_active
-0044bfb3        var_58_2 = is_mouse_captured(&g_game_base[0x290])
+0044bfb3        capture_when_outside = is_mouse_captured(&g_game_base->players[0].mouse_cursor)
 0044bfb4        int32_t var_5c_2 = 0
-0044bfbe        var_60 = read_right_mouse_button_state(0)
-0044bfc8        var_64 = read_left_mouse_button_state(0)
-0044bfd8        var_68 = consume_mouse_wheel_delta(0)
-0044bfd9        int32_t eax_35
+0044bfbe        button_b = read_right_mouse_button_state(0)
+0044bfc8        button_a = read_left_mouse_button_state(0)
+0044bfd8        pointer_value = consume_mouse_wheel_delta(0)
+0044bfd9        int32_t y_3
 0044bfd9        int16_t x87control_3
-0044bfd9        eax_35, x87control_3 = ftol(x87control, fconvert.t(g_mouse_live_y[0]))
-0044bfe4        var_6c = eax_35
-0044bfe5        int32_t eax_36 = ftol(x87control_3, fconvert.t(g_mouse_live_x[0]))
+0044bfd9        y_3, x87control_3 = ftol(x87control, fconvert.t(g_mouse_live_y[0]))
+0044bfe4        y = y_3
+0044bfe5        int32_t x_2 = ftol(x87control_3, fconvert.t(g_mouse_live_x[0]))
 0044bfee        top = rect.top
-0044bff2        var_70 = eax_36
-0044bff3        eax_18 = data_4b7774
+0044bff2        x = x_2
+0044bff3        eax_16 = data_4b7774
 0044bff8        right = rect_1.right
-0044c000        var_74 = rect_1.bottom - eax_18 + top
+0044c000        bottom = rect_1.bottom - eax_16 + top
 0044c001        edx_12 = data_4b7770
 0044c007        label_44c007:
 0044c007        int32_t left = rect.left
-0044c00f        var_78 = right - edx_12 + left
-0044c020        var_7c = rect_1.top - eax_18 + top
-0044c021        var_80 = rect_1.left - edx_12 + left
+0044c00f        right_1 = right - edx_12 + left
+0044c020        top_1 = rect_1.top - eax_16 + top
+0044c021        left_1 = rect_1.left - edx_12 + left
 0044befd        rect_2.left = rect_1.left - data_4b7780 + rect.left
 0044bf19        rect_2.right = rect_1.right - data_4b7788 + rect.right
 0044bf31        rect_2.top = rect_1.top - data_4b7784 + rect.top
 0044bf35        rect_2.bottom = rect_1.bottom - data_4b778c + rect.bottom
 0044bf39        ClipCursor(&rect_2)
 0044bf47        fullscreen_active_1 = g_fullscreen_active
-0044bf53        var_58_2 = is_mouse_captured(&g_game_base[0x290])
+0044bf53        capture_when_outside = is_mouse_captured(&g_game_base->players[0].mouse_cursor)
 0044bf54        int32_t var_5c_1 = 0
-0044bf5e        var_60 = read_right_mouse_button_state(0)
-0044bf68        var_64 = read_left_mouse_button_state(0)
-0044bf78        var_68 = consume_mouse_wheel_delta(0)
-0044bf79        int32_t eax_29
+0044bf5e        button_b = read_right_mouse_button_state(0)
+0044bf68        button_a = read_left_mouse_button_state(0)
+0044bf78        pointer_value = consume_mouse_wheel_delta(0)
+0044bf79        int32_t y_2
 0044bf79        int16_t x87control_2
-0044bf79        eax_29, x87control_2 = ftol(x87control, fconvert.t(g_mouse_live_y[0]))
-0044bf84        var_6c = eax_29
-0044bf8a        var_70 = ftol(x87control_2, fconvert.t(g_mouse_live_x[0]))
-0044bf8b        var_74 = 0x1e0
-0044bf90        var_78 = 0x280
-0044bf95        var_7c = 0
-0044bf96        var_80 = 0
-0044c023        update_input_controller_pointer_region(0, var_80, var_7c, var_78, var_74, var_70, var_6c, var_68, var_64, var_60, 0, var_58_2, fullscreen_active_1)
+0044bf79        y_2, x87control_2 = ftol(x87control, fconvert.t(g_mouse_live_y[0]))
+0044bf84        y = y_2
+0044bf8a        x = ftol(x87control_2, fconvert.t(g_mouse_live_x[0]))
+0044bf8b        bottom = 0x1e0
+0044bf90        right_1 = 0x280
+0044bf95        top_1 = 0
+0044bf96        left_1 = 0
+0044c023        update_input_controller_pointer_region(0, left_1, top_1, right_1, bottom, x, y, pointer_value, button_a, button_b, 0, capture_when_outside, fullscreen_active_1)
 0044c034        if (g_hide_system_cursor_flag != 0)
 0044c037        SetCursor(nullptr)
 0044c043        return 0

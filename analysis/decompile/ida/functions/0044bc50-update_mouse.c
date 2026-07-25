@@ -2,6 +2,7 @@
 /* function: update_mouse @ 0x44bc50 */
 /* selector: update_mouse */
 
+// Polls the DirectInput mouse through a 20-byte DIMOUSESTATE2-compatible owner, accumulates and clamps live pointer coordinates, selects captured or uncaptured Win32 clip rectangles, and forwards wheel/button state into InputControllerSlot 0.
 int __cdecl update_mouse(int window_handle)
 {
   int v1; // ecx
@@ -56,7 +57,7 @@ int __cdecl update_mouse(int window_handle)
     Rect = 0;
     Rect_8 = 0;
   }
-  if ( g_fullscreen_active || !is_mouse_captured((MouseCursorState *)((char *)g_game_base + 656)) )
+  if ( g_fullscreen_active || !is_mouse_captured(&g_game_base->players[0].mouse_cursor) )
   {
     g_mouse_live_x[0] = (double)v29 + g_mouse_live_x[0];
     g_mouse_live_y[0] = (double)v30 + g_mouse_live_y[0];
@@ -83,18 +84,18 @@ int __cdecl update_mouse(int window_handle)
   {
     convert_mouse_screen_xy(0, g_mouse_live_x, g_mouse_live_y);
   }
-  if ( g_fullscreen_active || !is_mouse_captured((MouseCursorState *)((char *)g_game_base + 656)) )
+  if ( g_fullscreen_active || !is_mouse_captured(&g_game_base->players[0].mouse_cursor) )
   {
     ClipCursor(nullptr);
-    if ( !is_mouse_captured((MouseCursorState *)((char *)g_game_base + 656)) )
+    if ( !is_mouse_captured(&g_game_base->players[0].mouse_cursor) )
     {
-      v25 = Rect + v21 - g_mouse_uncaptured_clip_left;
+      v25 = Rect + v21 - g_mouse_uncaptured_clip_rect;
       v27 = Rect_8 + v23 - g_mouse_uncaptured_clip_right;
       v26 = HIDWORD(Rect) + v22 - g_mouse_uncaptured_clip_top;
       v28 = HIDWORD(Rect_8) + v24 - g_mouse_uncaptured_clip_bottom;
       ClipCursor((const RECT *)&v25);
       v18 = g_fullscreen_active;
-      v16 = is_mouse_captured((MouseCursorState *)((char *)g_game_base + 656));
+      v16 = is_mouse_captured(&g_game_base->players[0].mouse_cursor);
       right_mouse_button_state = read_right_mouse_button_state(0);
       left_mouse_button_state = read_left_mouse_button_state(0);
       v10 = consume_mouse_wheel_delta(0);
@@ -115,7 +116,7 @@ int __cdecl update_mouse(int window_handle)
       goto LABEL_29;
     }
     v17 = g_fullscreen_active;
-    v15 = is_mouse_captured((MouseCursorState *)((char *)g_game_base + 656));
+    v15 = is_mouse_captured(&g_game_base->players[0].mouse_cursor);
     v13 = read_right_mouse_button_state(0);
     v11 = read_left_mouse_button_state(0);
     v9 = consume_mouse_wheel_delta(0);
@@ -125,24 +126,24 @@ int __cdecl update_mouse(int window_handle)
     v2 = g_mouse_captured_client_top;
     v3 = v23;
     v6 = HIDWORD(Rect) + v24 - g_mouse_captured_client_top;
-    v4 = g_mouse_captured_client_left;
+    v4 = g_mouse_captured_client_rect;
   }
   else
   {
-    if ( is_mouse_captured((MouseCursorState *)((char *)g_game_base + 656)) )
+    if ( is_mouse_captured(&g_game_base->players[0].mouse_cursor) )
     {
       ClipCursor(nullptr);
     }
     else
     {
-      v25 = Rect + v21 - g_mouse_uncaptured_clip_left;
+      v25 = Rect + v21 - g_mouse_uncaptured_clip_rect;
       v27 = Rect_8 + v23 - g_mouse_uncaptured_clip_right;
       v26 = HIDWORD(Rect) + v22 - g_mouse_uncaptured_clip_top;
       v28 = HIDWORD(Rect_8) + v24 - g_mouse_uncaptured_clip_bottom;
       ClipCursor((const RECT *)&v25);
     }
     v17 = g_fullscreen_active;
-    v15 = is_mouse_captured((MouseCursorState *)((char *)g_game_base + 656));
+    v15 = is_mouse_captured(&g_game_base->players[0].mouse_cursor);
     v13 = read_right_mouse_button_state(0);
     v11 = read_left_mouse_button_state(0);
     v9 = consume_mouse_wheel_delta(0);
@@ -152,7 +153,7 @@ int __cdecl update_mouse(int window_handle)
     v2 = g_mouse_uncaptured_clip_top;
     v3 = v23;
     v6 = HIDWORD(Rect) + v24 - g_mouse_uncaptured_clip_top;
-    v4 = g_mouse_uncaptured_clip_left;
+    v4 = g_mouse_uncaptured_clip_rect;
   }
   update_input_controller_pointer_region(
     0,
@@ -173,4 +174,3 @@ LABEL_29:
     ((void (__stdcall *)(_DWORD))SetCursor)(0);
   return 0;
 }
-

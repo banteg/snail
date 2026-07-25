@@ -23,6 +23,14 @@ TRUSTED_DECLARATIONS = (
         "int *__cdecl read_current_display_resolution("
         "int *out_width, int *out_height);",
     ),
+    (
+        "read_left_mouse_button_state",
+        "unsigned char __cdecl read_left_mouse_button_state(int slot);",
+    ),
+    (
+        "read_right_mouse_button_state",
+        "unsigned char __cdecl read_right_mouse_button_state(int slot);",
+    ),
 )
 
 MOUSE_WHEEL_DELTA_ADDRESS = 0x4DFAD0
@@ -71,6 +79,37 @@ CURRENT_FRAME_UPDATE_SPLIT_ITEMS = (
         "int g_estimated_texture_vram_bytes;",
         "int",
         "dword",
+    ),
+)
+
+MOUSE_BUTTON_DATA_ITEMS = (
+    (
+        0x4B7230,
+        0x2,
+        "g_right_mouse_button_latch",
+        "uint8_t g_right_mouse_button_latch[2];",
+        "uint8_t[2]",
+    ),
+    (
+        0x4B7234,
+        0x2,
+        "g_left_mouse_button_state",
+        "uint8_t g_left_mouse_button_state[2];",
+        "uint8_t[2]",
+    ),
+    (
+        0x4B7640,
+        0x2,
+        "g_right_mouse_button_state",
+        "uint8_t g_right_mouse_button_state[2];",
+        "uint8_t[2]",
+    ),
+    (
+        0x4B7764,
+        0x2,
+        "g_left_mouse_button_latch",
+        "uint8_t g_left_mouse_button_latch[2];",
+        "uint8_t[2]",
     ),
 )
 
@@ -206,6 +245,7 @@ DEPENDENT_DECOMPILE_FUNCTIONS = (
     "convert_mouse_screen_xy",
     "initialize_mouse_input",
     "initialize_direct3d_renderer_defaults",
+    "update_mouse",
 )
 
 
@@ -213,6 +253,7 @@ def _normalize_type_text(value: str | None) -> str | None:
     if value is None:
         return None
     normalized = value.strip().removesuffix(";")
+    normalized = normalized.replace("unsigned __int8", "unsigned char")
     normalized = re.sub(r"\s+", " ", normalized)
     normalized = re.sub(r"\s*\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
@@ -454,6 +495,164 @@ def _sync_current_frame_update_boundary() -> dict[str, object]:
         "status": "applied",
         "removed_extent": "0x4b763c..0x4b7648",
         "boundaries": observed_boundaries,
+    }
+
+
+def _sync_mouse_button_data_items() -> dict[str, object]:
+    changed = False
+    results = []
+    failed = []
+
+    for address, size, name, declaration, expected_type in (
+        MOUSE_BUTTON_DATA_ITEMS
+    ):
+        observed_head = ida_bytes.get_item_head(address)
+        observed_size = ida_bytes.get_item_size(observed_head)
+        already_bounded = observed_head == address and observed_size == size
+
+        if not already_bounded:
+            tail_address = address + 1
+            tail_head = ida_bytes.get_item_head(tail_address)
+            tail_size = ida_bytes.get_item_size(tail_head)
+            tail_name = idc.get_name(tail_address)
+            tail_type = _normalize_type_text(idc.get_type(tail_address))
+            next_address = address + size
+            next_head = ida_bytes.get_item_head(next_address)
+            stale_shape = (
+                observed_head == address
+                and observed_size == 1
+                and idc.get_name(address) == name
+                and _normalize_type_text(idc.get_type(address)) == "char[]"
+                and tail_head == tail_address
+                and tail_size == 1
+                and tail_name in ("", f"unk_{tail_address:X}")
+                and tail_type is None
+                and next_head == next_address
+            )
+            if not stale_shape:
+                failure = {
+                    "status": "failed",
+                    "reason": "unexpected_mouse_button_boundary",
+                    "address": hex(address),
+                    "expected_size": size,
+                    "observed_head": hex(observed_head),
+                    "observed_size": observed_size,
+                    "observed_name": idc.get_name(address),
+                    "observed_type": _normalize_type_text(idc.get_type(address)),
+                    "tail_head": hex(tail_head),
+                    "tail_size": tail_size,
+                    "tail_name": tail_name,
+                    "tail_type": tail_type,
+                    "next_head": hex(next_head),
+                }
+                results.append(failure)
+                failed.append(failure)
+                continue
+
+            if not ida_bytes.del_items(
+                address,
+                ida_bytes.DELIT_SIMPLE,
+                size,
+            ):
+                failure = {
+                    "status": "failed",
+                    "reason": "delete_stale_mouse_button_items_failed",
+                    "address": hex(address),
+                    "size": size,
+                }
+                results.append(failure)
+                failed.append(failure)
+                continue
+            if not ida_bytes.create_byte(address, size, True):
+                failure = {
+                    "status": "failed",
+                    "reason": "create_mouse_button_array_failed",
+                    "address": hex(address),
+                    "size": size,
+                }
+                results.append(failure)
+                failed.append(failure)
+                continue
+            changed = True
+
+        item_changed = False
+        if idc.get_name(address) != name:
+            if not idc.set_name(
+                address,
+                name,
+                ida_name.SN_NOWARN | ida_name.SN_FORCE,
+            ):
+                failure = {
+                    "status": "failed",
+                    "reason": "rename_mouse_button_array_failed",
+                    "address": hex(address),
+                    "name": name,
+                }
+                results.append(failure)
+                failed.append(failure)
+                continue
+            item_changed = True
+        if _normalize_type_text(idc.get_type(address)) != expected_type:
+            if not idc.SetType(address, declaration):
+                failure = {
+                    "status": "failed",
+                    "reason": "set_mouse_button_array_type_failed",
+                    "address": hex(address),
+                    "declaration": declaration,
+                }
+                results.append(failure)
+                failed.append(failure)
+                continue
+            item_changed = True
+
+        observed_head = ida_bytes.get_item_head(address)
+        observed_size = ida_bytes.get_item_size(observed_head)
+        observed_name = idc.get_name(address)
+        observed_type = _normalize_type_text(idc.get_type(address))
+        next_head = ida_bytes.get_item_head(address + size)
+        if (
+            observed_head != address
+            or observed_size != size
+            or not _data_kind_matches(address, "byte")
+            or observed_name != name
+            or observed_type != expected_type
+            or next_head != address + size
+        ):
+            failure = {
+                "status": "failed",
+                "reason": "mouse_button_array_verification_failed",
+                "address": hex(address),
+                "expected_size": size,
+                "expected_name": name,
+                "expected_type": expected_type,
+                "observed_head": hex(observed_head),
+                "observed_size": observed_size,
+                "observed_name": observed_name,
+                "observed_type": observed_type,
+                "next_head": hex(next_head),
+            }
+            results.append(failure)
+            failed.append(failure)
+            continue
+
+        changed = changed or item_changed
+        results.append(
+            {
+                "status": (
+                    "applied"
+                    if item_changed or not already_bounded
+                    else "unchanged"
+                ),
+                "address": hex(address),
+                "size": observed_size,
+                "name": observed_name,
+                "type": observed_type,
+            }
+        )
+
+    return {
+        "status": "failed" if failed else "applied" if changed else "unchanged",
+        "results": results,
     }
 
 
@@ -722,6 +921,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
     current_frame_boundary = _sync_current_frame_update_boundary()
     if current_frame_boundary.get("status") == "failed":
         failed.append({"current_frame_boundary": current_frame_boundary})
+    mouse_button_data_items = _sync_mouse_button_data_items()
+    if mouse_button_data_items.get("status") == "failed":
+        failed.append({"mouse_button_data_items": mouse_button_data_items})
     widened_scalar_boundaries = _sync_widened_scalar_boundaries()
     if widened_scalar_boundaries.get("status") == "failed":
         failed.append(
@@ -777,6 +979,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parse_errors": parse_errors,
                 "data_boundary": data_boundary,
                 "current_frame_boundary": current_frame_boundary,
+                "mouse_button_data_items": mouse_button_data_items,
                 "widened_scalar_boundaries": widened_scalar_boundaries,
                 "scalar_data_items": scalar_data_items,
                 "applied": applied,

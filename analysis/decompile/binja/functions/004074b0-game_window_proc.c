@@ -55,21 +55,21 @@
 004076a9        return DefWindowProcA(arg1, arg2, arg3, arg4)
 004075f0        switch (arg2)
 00407634        case 0x201
-00407634        data_4b7764 = 1
-0040763a        data_4b7234 = 1
+00407634        g_left_mouse_button_latch[0] = 1
+0040763a        g_left_mouse_button_state[0] = 1
 00407644        return 0
 0040764b        case 0x202
-0040764b        data_4b7764 = 0
-00407651        data_4b7234 = 0
+0040764b        g_left_mouse_button_latch[0] = 0
+00407651        g_left_mouse_button_state[0] = 0
 0040765b        return 0
 004076a9        case 0x203, 0x206, 0x207, 0x208, 0x209
 004076a9        return DefWindowProcA(arg1, arg2, arg3, arg4)
 00407665        case 0x204
-00407665        data_4b7230 = 1
+00407665        g_right_mouse_button_latch[0] = 1
 0040766b        g_right_mouse_button_state[0] = 1
 00407675        return 0
 0040767c        case 0x205
-0040767c        data_4b7230 = 0
+0040767c        g_right_mouse_button_latch[0] = 0
 00407682        g_right_mouse_button_state[0] = 0
 0040768c        return 0
 004075f0        case 0x20a

@@ -3,9 +3,8 @@
 /* selector: read_right_mouse_button_state */
 
 // Clears the companion right-button latch byte for the requested slot and returns the current right mouse button state byte.
-char __cdecl sub_407830(int a1)
+unsigned __int8 __cdecl read_right_mouse_button_state(int slot)
 {
-  unk_4B7230[a1] = 0;
-  return MEMORY[0x4B7640][a1];
+  g_right_mouse_button_latch[slot] = 0;
+  return g_right_mouse_button_state[slot];
 }
-

@@ -30,9 +30,19 @@ PROTO_UPDATES = (
         "int32_t* __cdecl read_current_display_resolution("
         "int32_t* out_width, int32_t* out_height)",
     ),
+    (
+        "read_left_mouse_button_state",
+        "uint8_t __cdecl read_left_mouse_button_state(int32_t slot)",
+    ),
+    (
+        "read_right_mouse_button_state",
+        "uint8_t __cdecl read_right_mouse_button_state(int32_t slot)",
+    ),
 )
 
 SYMBOL_UPDATES = (
+    ("0x4b7230", "g_right_mouse_button_latch"),
+    ("0x4b7234", "g_left_mouse_button_state"),
     ("0x4b7236", "g_render_queue_active"),
     ("0x4b7638", "g_mean_update_steps_per_frame"),
     ("0x4b763c", "g_current_frame_update_steps"),
@@ -43,6 +53,7 @@ SYMBOL_UPDATES = (
     ("0x4b7759", "g_frame_render_requested"),
     ("0x4b775c", "g_current_display_height"),
     ("0x4b7760", "g_authored_view_height"),
+    ("0x4b7764", "g_left_mouse_button_latch"),
     ("0x4b7768", "g_main_loop_frame_count"),
     ("0x4df858", "g_current_display_width"),
     ("0x4df85c", "g_authored_view_width"),
@@ -57,6 +68,8 @@ SYMBOL_UPDATES = (
 )
 
 DATA_VAR_UPDATES = (
+    ("0x4b7230", "uint8_t[2]"),
+    ("0x4b7234", "uint8_t[2]"),
     ("0x4b7236", "uint8_t"),
     ("0x4b7638", "float"),
     ("0x4b763c", "float"),
@@ -67,6 +80,7 @@ DATA_VAR_UPDATES = (
     ("0x4b7759", "uint8_t"),
     ("0x4b775c", "int32_t"),
     ("0x4b7760", "float"),
+    ("0x4b7764", "uint8_t[2]"),
     ("0x4b7768", "float"),
     ("0x4df858", "int32_t"),
     ("0x4df85c", "float"),

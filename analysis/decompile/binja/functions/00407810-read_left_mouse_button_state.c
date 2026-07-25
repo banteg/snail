@@ -3,7 +3,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: read_left_mouse_button_state @ 0x407810 */
 
-00407814        (&data_4b7764)[arg1] = 0
-0040781b        int32_t result
-0040781b        result.b = (&data_4b7234)[arg1]
-00407821        return result
+00407814        g_left_mouse_button_latch[slot] = 0
+00407821        return g_left_mouse_button_state[slot]
