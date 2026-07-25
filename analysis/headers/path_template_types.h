@@ -1077,6 +1077,24 @@ struct SubRing {
     uint8_t _pad_1f0[0x1f8 - 0x1f0];
 };
 
+/*
+ * Analysis-only view for update_ring_or_special_effect_particle's carried EAX
+ * lifetime. The cursor initially aliases a SubRing base and reads inherited
+ * transform.position.x at +0x68. Native code then advances the same register
+ * by 0x68 before reading the remaining y/z lanes at +0x04/+0x08. This is a
+ * borrow into SubRing::body.transform.position, not separately owned storage.
+ */
+typedef struct SubRingPositionAdvanceCursor {
+    uint8_t _before_position_y[0x04];
+    float position_y_after_advance;
+    float position_z_after_advance;
+    uint8_t _before_position_x[0x68 - 0x0c];
+    float position_x_before_advance;
+} SubRingPositionAdvanceCursor;
+typedef char SubRingPositionAdvanceCursor_must_be_0x6c[
+    (sizeof(SubRingPositionAdvanceCursor) == 0x6c) ? 1 : -1
+];
+
 typedef SubRingStar RingOrSpecialEffectParticle;
 typedef SubRing RingOrSpecialEffectParent;
 

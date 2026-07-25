@@ -11,6 +11,7 @@ from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_user_var_updates,
     current_enum_members,
+    current_struct_fields_batch,
     current_type_widths,
     emit_summary,
     types_declare_missing_only,
@@ -70,9 +71,17 @@ TYPE_REPLACEMENTS = (
     "RingOrSpecialEffectPool",
 )
 
+SUB_RING_OWNER_TYPE_REPLACEMENTS = (
+    "SubRing",
+)
+
 SLUG_ALLOCATOR_CURSOR_TYPES = (
     "SlugStateStrideCursor",
     "SlugSlotCursor",
+)
+
+RING_PARTICLE_CURSOR_TYPES = (
+    "SubRingStarPositionCursor",
 )
 
 SUBGAME_FIELD_UPDATES = (
@@ -127,6 +136,7 @@ SLUG_STATE_CURSOR_FIELD_UPDATES = (
 )
 
 SUB_RING_FIELD_UPDATES = (
+    ("0x00", "body", "RenderableBod"),
     ("0x80", "state", "SubRingState"),
     ("0x88", "kind", "SubRingKind"),
 )
@@ -282,6 +292,7 @@ def main() -> int:
             *REQUIRED_POOL_TYPES,
             *SLUG_ENUM_TYPE_REPLACEMENTS,
             *SLUG_ALLOCATOR_CURSOR_TYPES,
+            *RING_PARTICLE_CURSOR_TYPES,
             "FrameSubgameRuntime",
         ),
     )
@@ -292,23 +303,38 @@ def main() -> int:
     pool_types_present = all(
         type_widths.get(type_name) == 4 for type_name in REQUIRED_POOL_TYPES
     )
-    type_operation = (
-        {
-            "op": "types_declare_missing_only",
-            "status": "skipped",
-            "reason": "canonical subgame pool structs already present",
-            "header": str(header_path),
-            "required_structs": REQUIRED_HEADER_STRUCTS,
-            "required_types": REQUIRED_POOL_TYPES,
-        }
-        if types_present and pool_types_present
-        else types_declare_missing_only(
+    subring_fields = current_struct_fields_batch(
+        REPO_ROOT,
+        target=args.target,
+        struct_names=("SubRing",),
+    ).get("SubRing", {})
+    canonical_subring_owner_present = (
+        subring_fields.get(0x00) == ("body", "RenderableBod")
+    )
+    if not types_present or not pool_types_present:
+        type_operation = types_declare_missing_only(
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
             replace_types=TYPE_REPLACEMENTS,
         )
-    )
+    elif not canonical_subring_owner_present:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            replace_types=SUB_RING_OWNER_TYPE_REPLACEMENTS,
+            include_types=SUB_RING_OWNER_TYPE_REPLACEMENTS,
+        )
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "canonical subgame pool structs and nested SubRing owner already present",
+            "header": str(header_path),
+            "required_structs": REQUIRED_HEADER_STRUCTS,
+            "required_types": REQUIRED_POOL_TYPES,
+        }
     cursor_types_present = all(
         (type_widths.get(struct_name) or 0) > 0
         for struct_name in SLUG_ALLOCATOR_CURSOR_TYPES
@@ -328,6 +354,27 @@ def main() -> int:
             header_path=header_path,
             replace_types=SLUG_ALLOCATOR_CURSOR_TYPES,
             include_types=SLUG_ALLOCATOR_CURSOR_TYPES,
+        )
+    )
+    ring_particle_cursor_types_present = all(
+        (type_widths.get(struct_name) or 0) > 0
+        for struct_name in RING_PARTICLE_CURSOR_TYPES
+    )
+    ring_particle_cursor_type_operation = (
+        {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "ring particle interior cursor views already present",
+            "header": str(header_path),
+            "required_structs": RING_PARTICLE_CURSOR_TYPES,
+        }
+        if ring_particle_cursor_types_present
+        else types_declare_missing_only(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            replace_types=RING_PARTICLE_CURSOR_TYPES,
+            include_types=RING_PARTICLE_CURSOR_TYPES,
         )
     )
     current_slug_enums = current_enum_members(
@@ -373,6 +420,7 @@ def main() -> int:
     operations: list[dict[str, object]] = [
         type_operation,
         cursor_type_operation,
+        ring_particle_cursor_type_operation,
         slug_enum_operation,
         *apply_struct_and_proto_updates(
             REPO_ROOT,

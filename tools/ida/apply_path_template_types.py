@@ -908,6 +908,15 @@ RING_PARENT_RADIUS_LVAR_SPECS = (
     ),
 )
 
+RING_PARTICLE_POSITION_CURSOR_LVAR_SPECS = (
+    (
+        "parent_position_cursor",
+        "SubRingPositionAdvanceCursor *parent_position_cursor;",
+        0x43E7D1,
+        None,
+    ),
+)
+
 SPAWN_TRACK_HEALTH_LVAR_SPECS = (
     (
         "health_cursor",
@@ -3542,6 +3551,13 @@ def _sync_ring_parent_radius_lvars() -> dict[str, object]:
     )
 
 
+def _sync_ring_particle_parent_position_lvar() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "update_ring_or_special_effect_particle",
+        RING_PARTICLE_POSITION_CURSOR_LVAR_SPECS,
+    )
+
+
 def _sync_spawn_track_health_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "spawn_track_health_pickup",
@@ -4830,6 +4846,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "radius_lvars": ring_parent_radius_lvars,
             }
         )
+    ring_particle_parent_position_lvar = (
+        _sync_ring_particle_parent_position_lvar()
+    )
+    if ring_particle_parent_position_lvar.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "update_ring_or_special_effect_particle",
+                "parent_position_lvar": ring_particle_parent_position_lvar,
+            }
+        )
     spawn_track_health_lvars = _sync_spawn_track_health_lvars()
     if spawn_track_health_lvars.get("status") == "failed":
         failed.append(
@@ -5032,6 +5058,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "remove_subgame_bods_cursor_lvars": remove_subgame_bods_cursor_lvars,
                 "spawn_track_ring_lvars": spawn_track_ring_lvars,
                 "ring_parent_radius_lvars": ring_parent_radius_lvars,
+                "ring_particle_parent_position_lvar": (
+                    ring_particle_parent_position_lvar
+                ),
                 "spawn_track_health_lvars": spawn_track_health_lvars,
                 "spawn_track_jetpack_lvars": spawn_track_jetpack_lvars,
                 "firework_shoot_lvars": firework_shoot_lvars,

@@ -8801,7 +8801,7 @@
       "artifact": "analysis/decompile/binja/functions/00408570-initialize_track_ring_or_special_effect_runtime.c",
       "required_substrings": [
         "initialize_renderable_bod(ring)",
-        "ring->bod.vtable",
+        "ring->body.bod.bod.vtable",
         "return ring"
       ],
       "forbidden_substrings": [
@@ -9031,29 +9031,31 @@
       ]
     },
     {
-      "name": "bn_subring_sprite_fields_intact",
+      "name": "bn_subring_initializer_borrows_intact",
       "artifact": "analysis/decompile/binja/functions/0043e470-initialize_ring_or_special_effect_particles.c",
       "required_substrings": [
         "struct SubRingStar* particle = &ring->particles",
-        "particle->parent = ring",
+        "particle->base_position.x.12.x:-4.d = ring",
+        "particle->base_position.x:0xc.d",
+        "particle->base_position.x:0x10.d",
+        "particle->base_position.x:0x14.d",
         "particle->sprite = allocate_sprite(&g_sprite_manager",
         "sprite->draw_mode",
         "sprite->color",
         "sprite->progress",
         "sprite->size_start",
         "sprite->position",
-        "particle->phase",
-        "particle->phase_step",
         "struct Vec3* sprite_position = &particle->sprite->position",
-        "sprite_position->x = ring->world_position.x",
-        "sprite_position->y = ring->world_position.y",
-        "sprite_position->z = ring->world_position.z",
+        "sprite_position->x = ring->body.transform.position.x",
+        "sprite_position->y = ring->body.transform.position.y",
+        "sprite_position->z = ring->body.transform.position.z",
         "particle = &particle[1]"
       ],
       "forbidden_substrings": [
         "struct SubRingStar (* particle)[0xa]",
         "(particle - 0x90)",
         "(particle + 8)->",
+        "particle->world_position",
         "int32_t* edx_10",
         "*edx_10 =",
         "edx_10[1]",
@@ -9090,6 +9092,8 @@
         "struct SubRingSlotCursor* slot_cursor",
         "float default_phase_step",
         "int32_t effective_kind = requested_kind",
+        "set_matrix_identity(&slot_cursor->ring.body.transform)",
+        "slot_cursor->ring.body.transform.position",
         "slot_cursor->ring.owner_player = player",
         "struct BodNode** active_head",
         "initialize_ring_or_special_effect_particles(&slot_cursor->ring, player->lives)"
@@ -9111,6 +9115,7 @@
       "artifact": "analysis/decompile/ida/functions/00408570-initialize_track_ring_or_special_effect_runtime.c",
       "required_substrings": [
         "SubRing *__thiscall initialize_track_ring_or_special_effect_runtime(SubRing *ring)",
+        "initialize_renderable_bod(&ring->body)",
         "ring->body.bod.bod.vtable",
         "return ring"
       ],
@@ -9186,16 +9191,42 @@
       ]
     },
     {
+      "name": "bn_subring_particle_update_inherited_position_owner",
+      "artifact": "analysis/decompile/binja/functions/0043e780-update_ring_or_special_effect_particle.c",
+      "required_substrings": [
+        "struct SubRing* parent = particle->parent",
+        "parent->body.transform.position.x",
+        "parent->body.transform.position.y",
+        "parent->body.transform.position.z",
+        "struct SubRing* result_parent = particle->parent",
+        "emit_ring_star_shower(particle, result_parent->owner_player)"
+      ],
+      "forbidden_substrings": [
+        "parent->world_position",
+        "parent->bod_position",
+        "RingOrSpecialEffectParent",
+        "RingOrSpecialEffectParticle",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "ida_subring_particle_update_owner",
       "artifact": "analysis/decompile/ida/functions/0043e780-update_ring_or_special_effect_particle.c",
       "required_substrings": [
         "void __thiscall update_ring_or_special_effect_particle(SubRingStar *particle)",
-        "SubRing *parent",
+        "SubRingPositionAdvanceCursor *parent_position_cursor",
         "particle->parent->kind",
+        "parent_position_cursor = (SubRingPositionAdvanceCursor *)particle->parent",
+        "parent_position_cursor->position_x_before_advance",
+        "parent_position_cursor->position_y_after_advance",
+        "parent_position_cursor->position_z_after_advance",
         "&particle->sprite->position",
         "emit_ring_star_shower(particle"
       ],
       "forbidden_substrings": [
+        "parent->body.bod.bod.list_flags",
+        "parent->body.bod.bod.list_prev",
         "RingOrSpecialEffectParent",
         "RingOrSpecialEffectParticle",
         "sub_43E780",
@@ -9212,7 +9243,7 @@
         "kill_sprite(active_cleanup_particle->sprite)",
         "struct SubRingStar* collect_particle_cursor = &ring->particles",
         "kill_sprite(collect_cleanup_particle->sprite)",
-        "collect_base_position->x = ring->world_position.x",
+        "collect_base_position->x = ring->body.transform.position.x",
         "float* collect_radius_cursor = &ring->particles[0].radius",
         "fconvert.t(*collect_radius_cursor)",
         "*&collect_radius_cursor[-8] =",
@@ -9221,7 +9252,7 @@
         "float* expand_radius_cursor = &ring->particles[0].radius",
         "fconvert.t(*expand_radius_cursor)",
         "*&expand_radius_cursor[-8] =",
-        "expand_base_position->x = ring->world_position.x"
+        "expand_base_position->x = ring->body.transform.position.x"
       ],
       "forbidden_substrings": [
         "struct SubRingStar (*",

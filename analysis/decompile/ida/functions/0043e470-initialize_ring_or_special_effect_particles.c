@@ -5,7 +5,7 @@
 // Windows `cRSubRing::Init(int)`: arms one SubRing and initializes its ten inline 0x20-byte SubRingStar children, mapping authored effect kinds onto the ParticleRing, ParticleExplode, and ParticleSlow sprite families. The function is exact at 153 instructions.
 int32_t __thiscall initialize_ring_or_special_effect_particles(SubRing *ring, int32_t unused_lives_snapshot)
 {
-  Vec4 *p_position; // ebp
+  Vec3 *p_position; // ebp
   SubRingStar *particles; // esi
   SubRingKind kind; // eax
   SpriteFlag flags; // ecx

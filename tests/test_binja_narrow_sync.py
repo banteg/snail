@@ -8759,6 +8759,9 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     ida_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
         encoding="utf-8"
     )
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
     ida_runner = (IDA_DIR / "sync_subgame_runtime_types.py").read_text(
         encoding="utf-8"
     )
@@ -8775,6 +8778,7 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
 
     assert '"SubRingState",' in pool_sync
     assert '"SubRingKind",' in pool_sync
+    assert '("0x00", "body", "RenderableBod")' in pool_sync
     assert '("0x80", "state", "SubRingState")' in pool_sync
     assert '("0x88", "kind", "SubRingKind")' in pool_sync
     assert "int32_t requested_kind" in pool_sync
@@ -8782,12 +8786,42 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     assert "current_struct_fields_batch" in particle_lifetime_sync
     assert "RING_PARTICLE_USER_VAR_UPDATES" in particle_lifetime_sync
     assert '"Vec3": 0x0C' in particle_lifetime_sync
+    assert '"TransformMatrix": 0x40' in particle_lifetime_sync
+    assert '"RenderableBod": 0x80' in particle_lifetime_sync
     assert '"Sprite": 0xB4' in particle_lifetime_sync
     assert '0x48: ("position", "Vec3")' in particle_lifetime_sync
+    assert '0x38: ("transform", "TransformMatrix")' in particle_lifetime_sync
     assert '"SubRingStar": 0x20' in particle_lifetime_sync
+    assert '"SubRingStarPositionCursor": 0x18' in particle_lifetime_sync
+    assert '0x0C: ("phase", "float")' in particle_lifetime_sync
+    assert '0x10: ("phase_step", "float")' in particle_lifetime_sync
+    assert '0x14: ("radius", "float")' in particle_lifetime_sync
     assert '"SubRing": 0x1F8' in particle_lifetime_sync
     assert '"SubRingPool": 0x3F0' in particle_lifetime_sync
     assert '0x90: ("particles", "SubRingStar[10]")' in particle_lifetime_sync
+    for index, storage, name, type_name in (
+        (91, 66, "parent_position", "Vec3*"),
+        (94, 67, "sprite_position", "Vec3*"),
+        (142, 66, "result_parent", "SubRing*"),
+    ):
+        expected = (
+            '"update_ring_or_special_effect_particle",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in particle_lifetime_sync
+    assert (
+        '"initialize_ring_or_special_effect_particles",\n'
+        '        "RegisterVariableSourceType",\n'
+        '        44,\n'
+        '        69,\n'
+        '        "particle_position_cursor",\n'
+        '        "SubRingStarPositionCursor*"'
+        in particle_lifetime_sync
+    )
     assert (
         '"initialize_ring_or_special_effect_particles",\n'
         '        "RegisterVariableSourceType",\n'
@@ -8844,9 +8878,13 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
 
     for fragment in (
         "struct Vec3* sprite_position = &particle->sprite->position",
-        "sprite_position->x = ring->world_position.x",
-        "sprite_position->y = ring->world_position.y",
-        "sprite_position->z = ring->world_position.z",
+        "sprite_position->x = ring->body.transform.position.x",
+        "sprite_position->y = ring->body.transform.position.y",
+        "sprite_position->z = ring->body.transform.position.z",
+        "SubRingPositionAdvanceCursor *parent_position_cursor",
+        "parent_position_cursor->position_x_before_advance",
+        "parent_position_cursor->position_y_after_advance",
+        "parent_position_cursor->position_z_after_advance",
         '"int32_t* edx_10"',
         '"edx_10[1]"',
         '"edx_10[2]"',
@@ -8873,6 +8911,11 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
         assert "RingEffectRateSource" not in header
 
     path_header = analysis_headers[1]
+    for header in analysis_headers:
+        assert "RenderableBod body;" in header
+    assert "SubRingPositionAdvanceCursor" in path_header
+    assert "RING_PARTICLE_POSITION_CURSOR_LVAR_SPECS" in ida_path_sync
+    assert "parent_position_cursor" in ida_path_sync
     assert "SubRingPool ring_effects;" in path_header
     for header in analysis_headers:
         assert "int32_t requested_kind" in header

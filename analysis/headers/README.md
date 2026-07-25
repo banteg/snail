@@ -283,14 +283,22 @@ The adjacent subgame-pool lane owns the canonical `SubRing` / `SubRingStar` /
 `SubRingPool` family. It records two inline `0x1f8` parents, ten inline `0x20`
 children per parent, and the borrowed backlink from each parent to its enclosing
 `SubgameRuntime`. The replay selectively replaces only the obsolete generic
-ring shells, preserves complete shared owners, and batches the verified root
-field and prototype changes. The paired IDA subgame-runtime replay consumes the
-same canonical header, so both databases retain identical parent, child, pool,
-and borrowed-runtime ownership after regeneration.
+ring shells, preserves the inherited `RenderableBod body` at parent `+0x00`,
+and batches the verified root field and prototype changes. The paired IDA
+subgame-runtime replay consumes the same canonical header, so both databases
+retain identical parent, child, pool, transform-position, and borrowed-runtime
+ownership after regeneration. IDA additionally uses the analysis-only
+`SubRingPositionAdvanceCursor` for the child AI's reused EAX lifetime: the
+register reads inherited position X before advancing by `0x68`, then reads Y/Z
+from the advanced borrow without pretending those lanes are Bod list fields.
 
 After those canonical ring types exist, replay the exact carried child cursor
 with `uv run python tools/binja/sync_ring_particle_lifetimes.py --target
-SnailMail_unwrapped.exe.bndb`.
+SnailMail_unwrapped.exe.bndb`. This preserves the initializer's analysis-only
+`SubRingStarPositionCursor` borrow from child `+0x08` through its scalar tail,
+and also pins the child updater's direct `parent_position`, `sprite_position`,
+and `result_parent` borrows. Binary Ninja's MLIL keeps that interior cursor
+explicit; optimized HLIL may fold it back into the enclosing `SubRingStar`.
 
 After the canonical landscape manager and script records exist, replay the
 manager-relative selected-script anchor and keep the active-entry interior

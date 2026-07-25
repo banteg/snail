@@ -153,3 +153,27 @@ The paired replay now fixes this callback on `SubRingStar*` with a borrowed
 export reports no database/export mismatches and removes the stale generic ring
 shells from IDA. Matching remains 96.36%, 55/55 instructions, prefix 28/55,
 with all five operands clean; the residual is still instruction scheduling.
+
+## 2026-07-25 inherited-position ownership replay
+
+Binary Ninja's remaining flattened `SubRing` prefix is retired. The narrow pool
+header and replay now preserve the actual `RenderableBod body` at parent
+`+0x00`, so the child updater, initializer, spawner, and parent AI all resolve
+`body.transform.position` at `+0x68` instead of a duplicate synthetic
+`world_position` field. The child updater also pins its derived
+`parent_position`, `sprite_position`, and final `result_parent` borrows.
+
+Hex-Rays keeps the native EAX value as one local across the in-place
+`add eax, 0x68`, so a false `SubRing*` interpretation previously turned the
+post-advance Y/Z reads into `BodNode::list_flags` and `list_prev`. A guarded
+analysis-only `SubRingPositionAdvanceCursor` now documents that physical
+lifetime explicitly: it aliases a borrowed `SubRing`, reads inherited X before
+the advance, then reads Y/Z after the advance. It is not a new storage owner.
+Binary Ninja's initializer replay similarly records EBX as an analysis-only
+`SubRingStarPositionCursor*` after the native `child + 0x08` advance. MLIL now
+names the carried `base_position`, `phase`, `phase_step`, and `radius` lanes;
+optimized HLIL still folds the borrow into its enclosing `SubRingStar`, so the
+tracked guard accepts that honest folded rendering instead of asserting false
+direct-field recovery.
+The matcher source and bytes remain untouched at the honest 96.36%; the sole
+residual is still the documented VC6 address-materialization schedule.

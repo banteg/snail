@@ -4,5 +4,5 @@
 /* function: initialize_track_ring_or_special_effect_runtime @ 0x408570 */
 
 00408573        initialize_renderable_bod(ring)
-00408578        ring->bod.vtable = &data_49732c
+00408578        ring->body.bod.bod.vtable = &data_49732c
 00408581        return ring

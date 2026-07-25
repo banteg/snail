@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
-  "ida_exported": 2,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,15 +17,31 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_sub_lazer_projectile",
-      "address": "0x4417d0"
+      "name": "initialize_track_ring_or_special_effect_runtime",
+      "address": "0x408570"
     },
     {
-      "name": "debug_report_stub",
-      "address": "0x449c00"
+      "name": "spawn_track_ring_or_special_effect",
+      "address": "0x43df10"
+    },
+    {
+      "name": "initialize_ring_or_special_effect_particles",
+      "address": "0x43e470"
+    },
+    {
+      "name": "emit_ring_star_shower",
+      "address": "0x43e690"
+    },
+    {
+      "name": "update_ring_or_special_effect_particle",
+      "address": "0x43e780"
+    },
+    {
+      "name": "update_ring_or_special_effect_parent",
+      "address": "0x43e830"
     }
   ],
-  "health_check_count": 1056,
+  "health_check_count": 1057,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -8,13 +8,13 @@
 0043e489        ring->star_shower_counter = 0
 0043e492        struct SubRingStar* particle = &ring->particles
 0043e677        int32_t i
-0043e4a9        particle->base_position.__offset(0xc).d = fconvert.s(float.t(i_1) * fconvert.t(0.628318548f))
-0043e4bb        particle->base_position.__offset(0x10).d = fconvert.s(fconvert.t(ring->rate_source->subgame_rate) * fconvert.t(0.104719758f))
-0043e4be        particle->parent = ring
-0043e4c3        particle->base_position.x = ring->world_position.x
-0043e4c8        particle->base_position.y = ring->world_position.y
-0043e4ce        particle->base_position.z = ring->world_position.z
-0043e4d1        particle->base_position.__offset(0x14).d = 1.20000005f
+0043e4a9        particle->base_position.x:0xc.d = fconvert.s(float.t(i_1) * fconvert.t(0.628318548f))
+0043e4bb        particle->base_position.x:0x10.d = fconvert.s(fconvert.t(ring->rate_source->subgame_rate) * fconvert.t(0.104719758f))
+0043e4be        particle->base_position.x.12.x:-4.d = ring
+0043e4c3        particle->base_position.x = ring->body.transform.position.x
+0043e4c8        particle->base_position.y = ring->body.transform.position.y
+0043e4ce        particle->base_position.z = ring->body.transform.position.z
+0043e4d1        particle->base_position.x:0x14.d = 1.20000005f
 0043e4d8        enum SubRingKind kind = ring->kind
 0043e4f3        if (kind == SUB_RING_KIND_NORMAL_DEFAULT || kind == SUB_RING_KIND_NORMAL_AUTHORED || kind == SUB_RING_KIND_POWER_UP_AUTHORED)
 0043e59f        particle->sprite = allocate_sprite(&g_sprite_manager, ring->owner_player->player_slot, 0x87, 0xffffffff, 0xffffffff)
@@ -45,19 +45,19 @@
 0043e60f        particle->sprite->size_start = 0.720000029f
 0043e614        particle->sprite->size_end = 0.720000029f
 0043e61b        struct Vec3* sprite_position = &particle->sprite->position
-0043e620        sprite_position->x = ring->world_position.x
-0043e625        sprite_position->y = ring->world_position.y
-0043e62b        sprite_position->z = ring->world_position.z
+0043e620        sprite_position->x = ring->body.transform.position.x
+0043e625        sprite_position->y = ring->body.transform.position.y
+0043e62b        sprite_position->z = ring->body.transform.position.z
 0043e62e        struct Sprite* sprite_1 = particle->sprite
-0043e630        float phase = particle->phase
-0043e633        sprite_1->facing_angle.b = phase.b
-0043e633        sprite_1->facing_angle:1.b = phase:1.b
-0043e633        sprite_1->facing_angle:2.b = phase:2.b
-0043e633        sprite_1->facing_angle:3.b = phase:3.b
+0043e630        float edx_10 = particle->base_position.x:0xc.d
+0043e633        sprite_1->facing_angle.b = edx_10.b
+0043e633        sprite_1->facing_angle:1.b = edx_10:1.b
+0043e633        sprite_1->facing_angle:2.b = edx_10:2.b
+0043e633        sprite_1->facing_angle:3.b = edx_10:3.b
 0043e636        enum SubRingKind kind_1 = ring->kind
 0043e644        if (kind_1 == SUB_RING_KIND_SLOW_DEFAULT || kind_1 == SUB_RING_KIND_EXPLODE_AUTHORED)
 0043e657        particle->sprite->facing_angle_step = 0f
-0043e64d        particle->sprite->facing_angle_step = fconvert.s(fneg(fconvert.t(particle->phase_step)))
+0043e64d        particle->sprite->facing_angle_step = fconvert.s(fneg(fconvert.t(particle->base_position.x:0x10.d)))
 0043e663        update_ring_or_special_effect_particle(particle)
 0043e66c        particle = &particle[1]
 0043e66f        i = i_1 + 1

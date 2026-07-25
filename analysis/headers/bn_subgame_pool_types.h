@@ -39,18 +39,15 @@ struct BodNode {
     BodNode* list_next;
 };
 
-typedef struct Vec4 {
-    float x;
-    float y;
-    float z;
-    float w;
-} Vec4;
-
 struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
+    Vec3 basis_right;
+    float basis_right_w;
+    Vec3 basis_up;
+    float basis_up_w;
+    Vec3 basis_forward;
+    float basis_forward_w;
+    Vec3 position;
+    float position_w;
 };
 
 typedef struct BodBase {
@@ -246,25 +243,22 @@ typedef struct SubRingStar {
     float radius;
 } SubRingStar;
 
+/*
+ * Analysis-only interior borrow used while the particle initializer carries
+ * EBX from SubRingStar::base_position through the remaining scalar tail.
+ * This aliases one SubRingStar at +0x08; it is not separately owned storage.
+ */
+typedef struct SubRingStarPositionCursor {
+    Vec3 base_position;
+    float phase;
+    float phase_step;
+    float radius;
+} SubRingStarPositionCursor;
+
 typedef SubRingStar RingOrSpecialEffectParticle;
 
 struct SubRing {
-    BodNode bod;
-    Vec3 bod_position;
-    float render_arg_1c;
-    float render_arg_20;
-    void* object;
-    tColour color;
-    Vec3 basis_right;
-    float basis_right_w;
-    Vec3 basis_up;
-    float basis_up_w;
-    Vec3 basis_forward;
-    float basis_forward_w;
-    Vec3 world_position;
-    float world_position_w;
-    void* render_animation_manager;
-    uint8_t unknown_7c[0x04];
+    RenderableBod body;
     SubRingState state;
     Player* owner_player;
     SubRingKind kind;

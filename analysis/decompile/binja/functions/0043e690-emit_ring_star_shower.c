@@ -16,11 +16,11 @@
 0043e6e6        eax_2->flags = flags
 0043e6e9        eax_2->size_start = 0.400000006f
 0043e6f0        eax_2->size_end = 0.200000003f
-0043e70b        float var_c_1 = fconvert.s(sine(fconvert.s(fconvert.t(particle->phase) + fconvert.t(1.04719758f))) * fconvert.t(particle->radius))
-0043e73b        long double x87_r7_9 = cosine(fconvert.s(fconvert.t(particle->phase) + fconvert.t(1.04719758f))) * fconvert.t(particle->radius) * fconvert.t(0.300000012f)
-0043e741        eax_2->velocity.x = fconvert.s(fconvert.t(var_c_1) * fconvert.t(0.300000012f))
-0043e74f        eax_2->velocity.y = fconvert.s(x87_r7_9)
-0043e752        eax_2->velocity.z = 0f
+0043e752        eax_2->velocity.x.12 = struct Vec3 {
+    .x = fconvert.s(fconvert.t(fconvert.s(sine(fconvert.s(fconvert.t(particle->phase) + fconvert.t(1.04719758f))) * fconvert.t(particle->radius))) * fconvert.t(0.300000012f))
+    .y = fconvert.s(cosine(fconvert.s(fconvert.t(particle->phase) + fconvert.t(1.04719758f))) * fconvert.t(particle->radius) * fconvert.t(0.300000012f))
+    .z = 0f
+}
 0043e757        struct Vec3* eax_5 = &particle->sprite->position
 0043e75f        eax_2->position.x = eax_5->x
 0043e764        eax_2->position.y = eax_5->y

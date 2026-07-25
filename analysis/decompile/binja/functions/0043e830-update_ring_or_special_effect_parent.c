@@ -26,7 +26,7 @@
 0043e8c2        if ((((x87_r7_2 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp4_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp4_1 ? 1 : 0) << 0xe | 0x3800):1.b & 1) != 0)
 0043e8ca        ring->active_phase = fconvert.s(x87_r7_2 + fconvert.t(6.28318548f))
 0043e8af        ring->active_phase = fconvert.s(x87_r7_2 - fconvert.t(6.28318548f))
-0043e8e9        ring->world_position.x = fconvert.s(sine(ring->active_phase) * fconvert.t(3f))
+0043e8e9        ring->body.transform.position.x = fconvert.s(sine(ring->active_phase) * fconvert.t(3f))
 0043e8f2        int32_t i_10 = 0xa
 0043e8f7        struct SubRingStar* active_particle_cursor = &ring->particles
 0043e904        int32_t i
@@ -36,28 +36,28 @@
 0043e903        i_10 -= 1
 0043e904        do while (i != 1)
 0043e906        struct Player* owner_player = ring->owner_player
-0043e90c        long double x87_r7_8 = fconvert.t(ring->world_position.z)
+0043e90c        long double x87_r7_8 = fconvert.t(ring->body.transform.position.z)
 0043e90f        long double temp7_1 = fconvert.t(owner_player->interaction_max_z)
 0043e90f        x87_r7_8 - temp7_1
 0043e91a        if ((((x87_r7_8 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_8, temp7_1) ? 1 : 0) << 0xa | (x87_r7_8 == temp7_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-0043e920        uint16_t list_flags = (ring->bod.list_flags).w
+0043e920        uint16_t list_flags = (ring->body.bod.bod.list_flags).w
 0043e923        ring->state = SUB_RING_STATE_INACTIVE
 0043e933        struct BodList* ecx_5 = &g_game_base->active_bod_list
 0043e93c        if ((list_flags:1.b & 2) == 0)
 0043e943        report_errorf("List remove")
 0043e94f        if ((list_flags.b & 0x40) == 0)
-0043e960        struct BodNode* list_next = ring->bod.list_next
+0043e960        struct BodNode* list_next = ring->body.bod.bod.list_next
 0043e965        if (list_next != 0)
-0043e96a        list_next->list_prev = ring->bod.list_prev
-0043e96d        struct BodNode* list_prev = ring->bod.list_prev
+0043e96a        list_next->list_prev = ring->body.bod.bod.list_prev
+0043e96d        struct BodNode* list_prev = ring->body.bod.bod.list_prev
 0043e972        if (list_prev == 0)
-0043e97f        ecx_5->first = ring->bod.list_next
-0043e977        list_prev->list_next = ring->bod.list_next
-0043e985        ring->bod.list_next = ecx_5->free_top
+0043e97f        ecx_5->first = ring->body.bod.bod.list_next
+0043e977        list_prev->list_next = ring->body.bod.bod.list_next
+0043e985        ring->body.bod.bod.list_next = ecx_5->free_top
 0043e988        ecx_5->free_top = ring
-0043e98b        uint32_t list_flags_1 = ring->bod.list_flags
+0043e98b        uint32_t list_flags_1 = ring->body.bod.bod.list_flags
 0043e98e        list_flags_1:1.b &= 0xfd
-0043e991        ring->bod.list_flags = list_flags_1
+0043e991        ring->body.bod.bod.list_flags = list_flags_1
 0043e956        report_errorf("List remove NEXTBOD")
 0043e994        struct SubRingStar* active_cleanup_particle = &ring->particles
 0043e996        int32_t i_13 = 0xa
@@ -91,9 +91,11 @@
 0043eac8        int32_t i_9 = 0xa
 0043eacd        struct Vec3* eax_10 = &ring->owner_player->cached_camera_target_world
 0043eae7        float* collect_radius_cursor = &ring->particles[0].radius
-0043eb2d        ring->world_position.x = fconvert.s((fconvert.t(eax_10->x) - fconvert.t(ring->world_position.x)) * fconvert.t(0.939999998f) + fconvert.t(ring->world_position.x))
-0043eb36        ring->world_position.y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_10->y) - fconvert.t(ring->world_position.y))) * fconvert.t(0.939999998f))) + fconvert.t(ring->world_position.y))
-0043eb40        ring->world_position.z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_10->z) + fconvert.t(0.200000003f))) - fconvert.t(ring->world_position.z))) * fconvert.t(0.939999998f))) + fconvert.t(ring->world_position.z))
+0043eb19        float var_14_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_10->y) - fconvert.t(ring->body.transform.position.y))) * fconvert.t(0.939999998f))
+0043eb27        float var_10_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_10->z) + fconvert.t(0.200000003f))) - fconvert.t(ring->body.transform.position.z))) * fconvert.t(0.939999998f))
+0043eb2d        ring->body.transform.position.x = fconvert.s((fconvert.t(eax_10->x) - fconvert.t(ring->body.transform.position.x)) * fconvert.t(0.939999998f) + fconvert.t(ring->body.transform.position.x))
+0043eb36        ring->body.transform.position.y = fconvert.s(fconvert.t(var_14_1) + fconvert.t(ring->body.transform.position.y))
+0043eb40        ring->body.transform.position.z = fconvert.s(fconvert.t(var_10_1) + fconvert.t(ring->body.transform.position.z))
 0043eb67        int32_t i_3
 0043eb45        long double x87_r7_22 = fconvert.t(*collect_radius_cursor) * fconvert.t(0.939999998f)
 0043eb4d        struct Vec3* collect_base_position = &collect_radius_cursor[-5]
@@ -101,29 +103,29 @@
 0043eb53        i_3 = i_9
 0043eb53        i_9 -= 1
 0043eb54        *&collect_radius_cursor[-8] = fconvert.s(x87_r7_22)
-0043eb59        collect_base_position->x = ring->world_position.x
-0043eb5e        collect_base_position->y = ring->world_position.y
-0043eb64        collect_base_position->z = ring->world_position.z
+0043eb59        collect_base_position->x = ring->body.transform.position.x
+0043eb5e        collect_base_position->y = ring->body.transform.position.y
+0043eb64        collect_base_position->z = ring->body.transform.position.z
 0043eb67        do while (i_3 != 1)
 0043eb70        return
-0043ea32        uint16_t list_flags_2 = (ring->bod.list_flags).w
+0043ea32        uint16_t list_flags_2 = (ring->body.bod.bod.list_flags).w
 0043ea35        ring->state = SUB_RING_STATE_INACTIVE
 0043ea45        struct BodList* ecx_10 = &g_game_base->active_bod_list
 0043ea4e        if ((list_flags_2:1.b & 2) == 0)
 0043ea55        report_errorf("List remove")
 0043ea61        if ((list_flags_2.b & 0x40) == 0)
-0043ea72        struct BodNode* list_next_1 = ring->bod.list_next
+0043ea72        struct BodNode* list_next_1 = ring->body.bod.bod.list_next
 0043ea77        if (list_next_1 != 0)
-0043ea7c        list_next_1->list_prev = ring->bod.list_prev
-0043ea7f        struct BodNode* list_prev_1 = ring->bod.list_prev
+0043ea7c        list_next_1->list_prev = ring->body.bod.bod.list_prev
+0043ea7f        struct BodNode* list_prev_1 = ring->body.bod.bod.list_prev
 0043ea84        if (list_prev_1 == 0)
-0043ea91        ecx_10->first = ring->bod.list_next
-0043ea89        list_prev_1->list_next = ring->bod.list_next
-0043ea97        ring->bod.list_next = ecx_10->free_top
+0043ea91        ecx_10->first = ring->body.bod.bod.list_next
+0043ea89        list_prev_1->list_next = ring->body.bod.bod.list_next
+0043ea97        ring->body.bod.bod.list_next = ecx_10->free_top
 0043ea9a        ecx_10->free_top = ring
-0043ea9d        uint32_t list_flags_3 = ring->bod.list_flags
+0043ea9d        uint32_t list_flags_3 = ring->body.bod.bod.list_flags
 0043eaa0        list_flags_3:1.b &= 0xfd
-0043eaa3        ring->bod.list_flags = list_flags_3
+0043eaa3        ring->body.bod.bod.list_flags = list_flags_3
 0043ea68        report_errorf("List remove NEXTBOD")
 0043eaa6        struct SubRingStar* collect_cleanup_particle = &ring->particles
 0043eaa8        int32_t i_14 = 0xa
@@ -153,24 +155,24 @@
 0043ebbc        long double temp6_1 = fconvert.t(1f)
 0043ebbc        x87_r7_26 - temp6_1
 0043ebc7        if ((((x87_r7_26 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_26, temp6_1) ? 1 : 0) << 0xa | (x87_r7_26 == temp6_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-0043ebcd        uint16_t list_flags_4 = (ring->bod.list_flags).w
+0043ebcd        uint16_t list_flags_4 = (ring->body.bod.bod.list_flags).w
 0043ebd0        ring->state = SUB_RING_STATE_INACTIVE
 0043ebe3        struct BodList* ecx_14 = &g_game_base->active_bod_list
 0043ebe9        if ((list_flags_4:1.b & 2) == 0)
 0043ebf0        report_errorf("List remove")
 0043ebfc        if ((list_flags_4.b & 0x40) == 0)
-0043ec0d        struct BodNode* list_next_2 = ring->bod.list_next
+0043ec0d        struct BodNode* list_next_2 = ring->body.bod.bod.list_next
 0043ec12        if (list_next_2 != 0)
-0043ec17        list_next_2->list_prev = ring->bod.list_prev
-0043ec1a        struct BodNode* list_prev_2 = ring->bod.list_prev
+0043ec17        list_next_2->list_prev = ring->body.bod.bod.list_prev
+0043ec1a        struct BodNode* list_prev_2 = ring->body.bod.bod.list_prev
 0043ec1f        if (list_prev_2 == 0)
-0043ec2c        ecx_14->first = ring->bod.list_next
-0043ec24        list_prev_2->list_next = ring->bod.list_next
-0043ec32        ring->bod.list_next = ecx_14->free_top
+0043ec2c        ecx_14->first = ring->body.bod.bod.list_next
+0043ec24        list_prev_2->list_next = ring->body.bod.bod.list_next
+0043ec32        ring->body.bod.bod.list_next = ecx_14->free_top
 0043ec35        ecx_14->free_top = ring
-0043ec38        uint32_t list_flags_5 = ring->bod.list_flags
+0043ec38        uint32_t list_flags_5 = ring->body.bod.bod.list_flags
 0043ec3b        list_flags_5:1.b &= 0xfd
-0043ec3e        ring->bod.list_flags = list_flags_5
+0043ec3e        ring->body.bod.bod.list_flags = list_flags_5
 0043ec03        report_errorf("List remove NEXTBOD")
 0043ec41        struct SubRingStar* expand_cleanup_particle = &ring->particles
 0043ec43        int32_t i_15 = 0xa
@@ -190,9 +192,9 @@
 0043ec7b        i_7 = i_8
 0043ec7b        i_8 -= 1
 0043ec7c        *&expand_radius_cursor[-8] = fconvert.s(x87_r7_28)
-0043ec81        expand_base_position->x = ring->world_position.x
-0043ec86        expand_base_position->y = ring->world_position.y
-0043ec8c        expand_base_position->z = ring->world_position.z
+0043ec81        expand_base_position->x = ring->body.transform.position.x
+0043ec86        expand_base_position->y = ring->body.transform.position.y
+0043ec8c        expand_base_position->z = ring->body.transform.position.z
 0043ec8f        do while (i_7 != 1)
 0043e879        case SUB_RING_STATE_EXPANDING
 0043e879        goto label_43eb96

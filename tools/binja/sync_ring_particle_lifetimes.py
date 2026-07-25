@@ -20,8 +20,11 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_pool_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
     "Vec3": 0x0C,
+    "TransformMatrix": 0x40,
+    "RenderableBod": 0x80,
     "Sprite": 0xB4,
     "SubRingStar": 0x20,
+    "SubRingStarPositionCursor": 0x18,
     "SubRing": 0x1F8,
     "SubRingPool": 0x3F0,
 }
@@ -35,6 +38,12 @@ EXPECTED_STRUCT_FIELDS = {
     "Sprite": {
         0x48: ("position", "Vec3"),
     },
+    "TransformMatrix": {
+        0x30: ("position", "Vec3"),
+    },
+    "RenderableBod": {
+        0x38: ("transform", "TransformMatrix"),
+    },
     "SubRingStar": {
         0x00: ("sprite", "Sprite*"),
         0x04: ("parent", "SubRing*"),
@@ -43,7 +52,14 @@ EXPECTED_STRUCT_FIELDS = {
         0x18: ("phase_step", "float"),
         0x1C: ("radius", "float"),
     },
+    "SubRingStarPositionCursor": {
+        0x00: ("base_position", "Vec3"),
+        0x0C: ("phase", "float"),
+        0x10: ("phase_step", "float"),
+        0x14: ("radius", "float"),
+    },
     "SubRing": {
+        0x00: ("body", "RenderableBod"),
         0x80: ("state", "SubRingState"),
         0x88: ("kind", "SubRingKind"),
         0x90: ("particles", "SubRingStar[10]"),
@@ -53,7 +69,12 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# Init and the three parent-AI state paths each carry one SubRingStar* and
+# The child AI materializes direct Vec3* borrows for the inherited parent
+# position and the separately allocated child Sprite position, then reloads
+# the borrowed SubRing parent for the shower cadence check. Init also carries
+# EBX from child +0x08 across base_position and the scalar tail; preserve that
+# physical lifetime as a non-owning SubRingStarPositionCursor*. The three
+# parent-AI state paths each carry one SubRingStar* and
 # advance it by the exact 0x20 embedded-child stride. Binary Ninja otherwise
 # promotes &ring->particles to a pointer to the complete ten-element array,
 # forcing child update and Sprite-manager cleanup through false parent-relative
@@ -63,6 +84,38 @@ EXPECTED_STRUCT_FIELDS = {
 # type/prototype replay: the radius cursor is intentionally not retyped as a
 # SubRingStar* because its native value points at the interior +0x1c field.
 RING_PARTICLE_USER_VAR_UPDATES = (
+    (
+        "update_ring_or_special_effect_particle",
+        "RegisterVariableSourceType",
+        91,
+        66,
+        "parent_position",
+        "Vec3*",
+    ),
+    (
+        "update_ring_or_special_effect_particle",
+        "RegisterVariableSourceType",
+        94,
+        67,
+        "sprite_position",
+        "Vec3*",
+    ),
+    (
+        "update_ring_or_special_effect_particle",
+        "RegisterVariableSourceType",
+        142,
+        66,
+        "result_parent",
+        "SubRing*",
+    ),
+    (
+        "initialize_ring_or_special_effect_particles",
+        "RegisterVariableSourceType",
+        44,
+        69,
+        "particle_position_cursor",
+        "SubRingStarPositionCursor*",
+    ),
     (
         "initialize_ring_or_special_effect_particles",
         "RegisterVariableSourceType",
@@ -165,8 +218,9 @@ RING_PARTICLE_USER_VAR_UPDATES = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the carried SubRingStar, child-radius, and child-position "
-            "cursors in the ring particle initializer and parent AI."
+            "Replay the child updater's parent/sprite position borrows plus "
+            "the carried SubRingStar, child-radius, and child-position cursors "
+            "in the ring particle initializer and parent AI."
         )
     )
     parser.add_argument(
