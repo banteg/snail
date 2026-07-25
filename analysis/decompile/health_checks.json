@@ -15562,16 +15562,25 @@
       "artifact": "analysis/decompile/binja/functions/00445cd0-update_snail_skin.c",
       "required_substrings": [
         "struct Snail* snail_1 = snail",
-        "&snail->snail_hotspots_world",
+        "struct Vec3* hotspot_world_cursor = &snail->snail_hotspots_world",
+        "(hotspot_world_cursor - 0xe4)->x",
         "&snail->snail_hotspot_body.transform",
         "&snail->snail_hotspot_source_body.transform",
-        "multiply_vector_by_matrix(&vector, matrix)"
+        "multiply_vector_by_matrix(&vector, matrix)",
+        "struct Vec3* hotspot_world_slot = hotspot_world_cursor",
+        "hotspot_world_cursor = &hotspot_world_cursor[1]",
+        "hotspot_world_slot->x = vector.x",
+        "hotspot_world_slot->y = y",
+        "hotspot_world_slot->z = z"
       ],
       "forbidden_substrings": [
         "PlayerPresentationController",
         "presentation->",
         "snail_hotspot_source_matrix_a",
-        "snail_hotspot_source_matrix_b"
+        "snail_hotspot_source_matrix_b",
+        "struct Vec3 (*",
+        "__offset(0x16cc)",
+        "(hotspot_world_slot - 0x17b0)"
       ]
     },
     {

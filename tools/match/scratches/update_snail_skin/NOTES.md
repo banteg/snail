@@ -47,3 +47,19 @@ also recovers the by-value `TransformMatrix` and `Vec3` temporaries. The focused
 replay imports the complete `Object` dependency explicitly and verifies the
 nine transitive owner sizes before applying presentation ABIs. Matching remains
 exact at 100.00%, 44/44, with no source or code-shape change.
+
+2026-07-25 hotspot element borrows: native EBP walks the 19-entry world bank
+at `Snail +0x17b0` in `sizeof(Vec3) == 0xc` steps. EAX borrows the
+corresponding local slot exactly `0xe4` bytes (19 `Vec3` records) behind it,
+and ECX retains the pre-increment world destination for the three component
+writes. IDA independently renders this as `world[-19]`, `world++`, and writes
+through the saved `Vec3*`.
+
+Binary Ninja's exact register lifetimes now replay as `Vec3*` for EBP
+(`RegisterVariableSourceType`, index `13`, storage `71`), EAX (index `25`,
+storage `66`), and ECX (index `97`, storage `67`). HLIL folds the local EAX
+borrow into the raw native `0xe4` bias, but no longer widens any
+cursor to `Vec3 (*)[19]` or subtracts back to the enclosing `Snail` for world
+writes. The replay guards both complete source bodies, both hotspot banks, and
+all relevant type widths. No matcher source changes: 44/44 instructions and
+the one masked operand remain clean.

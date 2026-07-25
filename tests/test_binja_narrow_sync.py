@@ -3537,6 +3537,57 @@ def test_blink_random_replay_preserves_sample_borrow() -> None:
         assert fragment in health_checks
 
 
+def test_snail_hotspot_replay_preserves_local_and_world_borrows() -> None:
+    repo_root = Path(__file__).parents[1]
+    source = (BINJA_DIR / "sync_snail_hotspot_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    for expected in (
+        '"Vec3": 0x0C',
+        '"TransformMatrix": 0x40',
+        '"RenderableBod": 0x80',
+        '"Snail": 0x19B4',
+        '0x15CC: ("snail_hotspot_source_body", "RenderableBod")',
+        '0x164C: ("snail_hotspot_body", "RenderableBod")',
+        '0x16CC: ("snail_hotspots_local", "Vec3[19]")',
+        '0x17B0: ("snail_hotspots_world", "Vec3[19]")',
+        "SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES",
+        "current_struct_fields_batch",
+        "apply_user_var_updates",
+        "verify_snail_hotspot_owner_layout",
+    ):
+        assert expected in source
+    for index, storage, variable_name in (
+        (13, 71, "hotspot_world_cursor"),
+        (25, 66, "hotspot_local_slot"),
+        (97, 67, "hotspot_world_slot"),
+    ):
+        update = (
+            '"update_snail_skin",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{variable_name}",\n'
+            '        "Vec3*",'
+        )
+        assert update in source
+    for fragment in (
+        "struct Vec3* hotspot_world_cursor = &snail->snail_hotspots_world",
+        "(hotspot_world_cursor - 0xe4)->x",
+        "struct Vec3* hotspot_world_slot = hotspot_world_cursor",
+        "hotspot_world_cursor = &hotspot_world_cursor[1]",
+        "hotspot_world_slot->x = vector.x",
+        '"struct Vec3 (*"',
+        '"__offset(0x16cc)"',
+        '"(hotspot_world_slot - 0x17b0)"',
+    ):
+        assert fragment in health_checks
+
+
 def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
     binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"
