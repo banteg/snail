@@ -6951,6 +6951,9 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     ida_segment_sync = (IDA_DIR / "apply_segment_catalog_types.py").read_text(
         encoding="utf-8"
     )
+    ida_segment_runner = (IDA_DIR / "sync_segment_catalog_types.py").read_text(
+        encoding="utf-8"
+    )
     ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -7905,8 +7908,43 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "_sync_builtin_grid_offset_lvar" in ida_segment_sync
     assert '"int32_t grid_offset;"' in ida_segment_sync
     assert 'info.name = "grid_offset"' in ida_segment_sync
+    assert "SEGMENT_IMPORT_LVAR_SPECS" in ida_segment_sync
+    for definition_address, stack_offset, name, declaration in (
+        ("0x448186", "64", "tracks_after_stack_probe", "SMTracks *"),
+        ("0x4481D8", "60", "segment_file_name_cursor", "char *"),
+        ("0x448301", "80", "row_index", "int32_t"),
+        ("0x448387", "148", "option_text", "char option_text[512]"),
+        ("0x4481FB", "788", "file_path", "char file_path[512]"),
+        ("0x448223", "1300", "file_buffer", "char file_buffer[4096]"),
+        (
+            "0x44818B",
+            "5396",
+            "segment_files",
+            "char segment_files[512][128]",
+        ),
+        (
+            "0x448336",
+            "None",
+            "row_stride_anchor",
+            "SegmentCatalogRowStrideAnchor *",
+        ),
+    ):
+        assert definition_address in ida_segment_sync
+        assert f"        {stack_offset}," in ida_segment_sync
+        assert f'"{name}"' in ida_segment_sync
+        assert declaration in ida_segment_sync
+    assert "_sync_owned_lvar" in ida_segment_sync
+    assert '"segment_import_lvars": segment_import_lvars' in ida_segment_sync
+    assert "segment_import_lvar_failures" in ida_segment_sync
     assert "DIRTY_FUNCTIONS" in ida_segment_sync
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_segment_sync
+    for marker in (
+        "TemporaryDirectory",
+        "shutil.copy2",
+        "preview-segment-catalog-types",
+        "if preview_exit_code:",
+    ):
+        assert marker in ida_segment_runner
 
     for header in (analysis_path_header, matcher_row_header):
         assert "SUBROW_FLAG_PARCEL_CANDIDATE = 0x0001" in header

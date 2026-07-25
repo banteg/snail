@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_backdrop_tile_quad",
-      "address": "0x41a4d0"
+      "name": "load_segment_definitions",
+      "address": "0x448160"
     }
   ],
   "health_check_count": 1039,

@@ -49,6 +49,65 @@ DIRTY_FUNCTIONS = (
 
 SEGMENT_COPY_ENTRY_ANCHOR_DEFEA = 0x447372
 
+SEGMENT_IMPORT_LVAR_SPECS = (
+    (
+        "load_segment_definitions",
+        0x448186,
+        64,
+        "tracks_after_stack_probe",
+        "SMTracks *tracks_after_stack_probe;",
+    ),
+    (
+        "load_segment_definitions",
+        0x4481D8,
+        60,
+        "segment_file_name_cursor",
+        "char *segment_file_name_cursor;",
+    ),
+    (
+        "load_segment_definitions",
+        0x448301,
+        80,
+        "row_index",
+        "int32_t row_index;",
+    ),
+    (
+        "load_segment_definitions",
+        0x448387,
+        148,
+        "option_text",
+        "char option_text[512];",
+    ),
+    (
+        "load_segment_definitions",
+        0x4481FB,
+        788,
+        "file_path",
+        "char file_path[512];",
+    ),
+    (
+        "load_segment_definitions",
+        0x448223,
+        1300,
+        "file_buffer",
+        "char file_buffer[4096];",
+    ),
+    (
+        "load_segment_definitions",
+        0x44818B,
+        5396,
+        "segment_files",
+        "char segment_files[512][128];",
+    ),
+    (
+        "load_segment_definitions",
+        0x448336,
+        None,
+        "row_stride_anchor",
+        "SegmentCatalogRowStrideAnchor *row_stride_anchor;",
+    ),
+)
+
 SEGMENT_OWNER_MARKERS = (
     "typedef struct AuthoredSegmentRow {",
     "typedef struct SegmentCatalogEntry {",
@@ -141,6 +200,133 @@ def _named_struct_size(name: str) -> int | None:
     if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
         return None
     return value.get_size()
+
+
+def _sync_owned_lvar(
+    selector: str,
+    definition_address: int,
+    stack_offset: int | None,
+    expected_name: str,
+    declaration: str,
+) -> dict[str, object]:
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        return {
+            "status": "failed",
+            "reason": "missing_function",
+            "selector": selector,
+        }
+
+    local_type = ida_typeinf.tinfo_t()
+    if not ida_typeinf.parse_decl(
+        local_type,
+        None,
+        declaration,
+        ida_typeinf.PT_SIL,
+    ):
+        return {
+            "status": "failed",
+            "reason": "parse_owned_lvar_type_failed",
+            "selector": selector,
+            "declaration": declaration,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.defea == definition_address
+        and (
+            (stack_offset is None and not lvar.is_stk_var())
+            or (
+                stack_offset is not None
+                and lvar.is_stk_var()
+                and lvar.get_stkoff() == stack_offset
+            )
+        )
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_owned_lvar_candidates",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+            "stack_offset": stack_offset,
+            "candidate_count": len(candidates),
+        }
+
+    lvar = candidates[0]
+    expected_type = _normalize_type_text(str(local_type))
+    observed_type = _normalize_type_text(str(lvar.type()))
+    if lvar.name == expected_name and observed_type == expected_type:
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": expected_name,
+            "type": str(local_type),
+            "definition_address": hex(definition_address),
+            "stack_offset": stack_offset,
+        }
+
+    before_name = lvar.name
+    before_type = str(lvar.type())
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = expected_name
+    info.type = local_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_owned_lvar_failed",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+            "stack_offset": stack_offset,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and candidate.defea == definition_address
+        and candidate.name == expected_name
+        and _normalize_type_text(str(candidate.type())) == expected_type
+        and (
+            (stack_offset is None and not candidate.is_stk_var())
+            or (
+                stack_offset is not None
+                and candidate.is_stk_var()
+                and candidate.get_stkoff() == stack_offset
+            )
+        )
+    ]
+    if len(verified) != 1:
+        return {
+            "status": "failed",
+            "reason": "owned_lvar_readback_failed",
+            "selector": selector,
+            "definition_address": hex(definition_address),
+            "stack_offset": stack_offset,
+            "candidate_count": len(verified),
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "before_name": before_name,
+        "before_type": before_type,
+        "name": expected_name,
+        "type": str(local_type),
+        "definition_address": hex(definition_address),
+        "stack_offset": stack_offset,
+    }
 
 
 def _sync_builtin_grid_offset_lvar() -> dict[str, object]:
@@ -531,6 +717,35 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    segment_import_lvars = [
+        _sync_owned_lvar(
+            selector,
+            definition_address,
+            stack_offset,
+            expected_name,
+            declaration,
+        )
+        for (
+            selector,
+            definition_address,
+            stack_offset,
+            expected_name,
+            declaration,
+        ) in SEGMENT_IMPORT_LVAR_SPECS
+    ]
+    segment_import_lvar_failures = [
+        result
+        for result in segment_import_lvars
+        if result.get("status") == "failed"
+    ]
+    if segment_import_lvar_failures:
+        failed.append(
+            {
+                "selector": "load_segment_definitions",
+                "segment_import_lvars": segment_import_lvars,
+            }
+        )
+
     print(
         json.dumps(
             {
@@ -547,6 +762,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "dirty_functions": dirty_functions,
                 "segment_entry_lvar": segment_entry_lvar,
                 "grid_offset_lvar": grid_offset_lvar,
+                "segment_import_lvars": segment_import_lvars,
                 "missing": missing,
                 "failed": failed,
             },

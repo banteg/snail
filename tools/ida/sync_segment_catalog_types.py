@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import shutil
 import sys
+import tempfile
 
 from runner import DEFAULT_IDA_DB_PATH, REPO_ROOT, find_ida_binary, run_ida_script
 
@@ -15,7 +17,10 @@ IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_segment_catalog_types.py"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the recovered segment catalog structs and prototypes to an IDA database."
+        description=(
+            "Preview on a temporary database, then replay recovered segment-catalog "
+            "ownership to IDA."
+        )
     )
     parser.add_argument(
         "--ida-bin",
@@ -48,6 +53,22 @@ def main() -> int:
         raise FileNotFoundError(f"segment catalog type header not found: {header_path}")
     if not IDAPYTHON_SCRIPT_PATH.is_file():
         raise FileNotFoundError(f"IDAPython sync script not found: {IDAPYTHON_SCRIPT_PATH}")
+
+    with tempfile.TemporaryDirectory(
+        prefix="snail-ida-segment-catalog-preview-"
+    ) as temp_dir:
+        preview_db_path = Path(temp_dir) / db_path.name
+        shutil.copy2(db_path, preview_db_path)
+        preview_exit_code, preview_log_text = run_ida_script(
+            ida_bin=ida_bin,
+            script_path=IDAPYTHON_SCRIPT_PATH,
+            db_path=preview_db_path,
+            script_args=[str(header_path)],
+            log_stem="preview-segment-catalog-types",
+        )
+        sys.stdout.write(preview_log_text)
+        if preview_exit_code:
+            return preview_exit_code
 
     exit_code, log_text = run_ida_script(
         ida_bin=ida_bin,

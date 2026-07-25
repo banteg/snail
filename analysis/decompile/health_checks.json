@@ -16033,17 +16033,38 @@
       ]
     },
     {
-      "name": "ida_load_segment_definitions_directx_owner",
+      "name": "ida_load_segment_definitions_catalog_owners",
       "artifact": "analysis/decompile/ida/functions/00448160-load_segment_definitions.c",
       "required_substrings": [
-        "char buffer[4096]",
-        "char names[65536]",
-        "enumerate_matching_archive_or_fs_entries(aSegments, (char *)aTxt, &tracks->count, (EnumeratedEntryName *)names)",
+        "SegmentCatalogRowStrideAnchor *row_stride_anchor",
+        "char *segment_file_name_cursor",
+        "SMTracks *tracks_after_stack_probe",
+        "int32_t row_index",
+        "char option_text[512]",
+        "char file_path[512]",
+        "char file_buffer[4096]",
+        "char segment_files[512][128]",
+        "enumerate_matching_archive_or_fs_entries(aSegments, (char *)aTxt, &tracks->count, segment_files)",
+        "row_stride_anchor->row.flags",
+        "row_stride_anchor->row.parcel_set_id",
+        "row_stride_anchor->row.local_position.x",
+        "row_stride_anchor->row.object_id",
+        "row_stride_anchor->row.object_position.x",
+        "row_stride_anchor->row.object_velocity.x",
+        "row_stride_anchor->row.path_template_index",
+        "tracks_after_stack_probe->entries[0].rows[v19].ring_speed.value",
         "load_or_reuse_cached_x_mesh(&v36->directx_loader"
       ],
       "forbidden_substrings": [
+        "char *v22",
+        "*((_DWORD *)v22",
+        "*((float *)v22",
+        "char buffer[4096]",
+        "char names[65536]",
         "char v73[4096]",
         "char v74[65536]",
+        "__int16 row_index",
+        "*(_DWORD *)&row_index",
         "v36 + 298496",
         "unknown_044100"
       ]

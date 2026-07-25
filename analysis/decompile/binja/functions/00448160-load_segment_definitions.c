@@ -157,8 +157,10 @@
 004484fc        if (__return_addr_4 != 0)
 0044850d        row_stride_anchor->row.flags |= 1
 00448519        __return_addr = &find_case_insensitive_substring("=", __return_addr_4)[1]
-0044852b        row_stride_anchor->row.parcel_set_id = parse_next_signed_int(&__return_addr)
-00448542        __return_addr = &find_case_insensitive_substring("(", __return_addr)[1]
+00448522        int32_t eax_21 = parse_next_signed_int(&__return_addr)
+00448527        void* const __return_addr_15 = __return_addr
+0044852b        row_stride_anchor->row.parcel_set_id = eax_21
+00448542        __return_addr = &find_case_insensitive_substring("(", __return_addr_15)[1]
 0044854b        row_stride_anchor->row.local_position.x = fconvert.s(parse_next_float32(&__return_addr))
 0044855b        row_stride_anchor->row.local_position.y = fconvert.s(parse_next_float32(&__return_addr))
 0044856b        row_stride_anchor->row.local_position.z = fconvert.s(parse_next_float32(&__return_addr))

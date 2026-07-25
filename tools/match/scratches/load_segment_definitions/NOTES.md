@@ -193,3 +193,26 @@ the parser-to-runtime-to-render chain without guessing from the text syntax.
 The enum rename is codegen-neutral: focused matching remains 62.24%, 573/571
 instructions, prefix 5/571, with 88 clean masked operands and the one existing
 shifted call mismatch.
+
+## 2026-07-25 IDA importer lifetime closure
+
+The tracked Hex-Rays lane now preserves the same importer owners already proved
+by the matcher and Binary Ninja. Exact stack identities retain the post-probe
+`SMTracks*`, the advancing filename cursor, the row index, `option_text[512]`,
+`file_path[512]`, `file_buffer[4096]`, and the 512-by-128 enumerated filename
+bank. The non-stack ESI lifetime defined at `0x448336` is the overlapping
+`SegmentCatalogRowStrideAnchor*`; all authored metadata from `flags` through
+`path_template_index` consequently resolves through its borrowed `row` member
+instead of `_DWORD*` arithmetic.
+
+The IDA wrapper now previews the complete replay on a temporary database before
+touching the tracked database. Both the preview and a second replay read every
+local back unchanged. A source-level `short` annotation for the row index was
+explicitly rejected: native zeroes and increments its four-byte stack slot,
+then sign-extends the low word for row addressing, so the narrow Hex-Rays type
+rendered false `*(_DWORD *)&row_index` aliasing. The retained `int32_t` analysis
+local keeps that physical behavior visible.
+
+No matcher source changed. Focused matching remains honestly at 62.24%,
+573/571 instructions, prefix 5/571, with 88 clean operands and the existing
+shifted call mismatch.
