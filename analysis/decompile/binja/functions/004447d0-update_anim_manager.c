@@ -11,22 +11,22 @@
 004447dc        return
 004447e3        if (state == 1)
 004447f0        long double x87_r7_1 = fconvert.t(g_game_base->subgame.rate_or_level_arg.base_rate)
-0044480a        manager_1 = fconvert.s((x87_r7_1 + x87_r7_1 - fconvert.t(0.200000003f) + fconvert.t(1f)) * fconvert.t(manager->progress_step) + fconvert.t(manager->progress))
-0044480e        long double x87_r7_7 = fconvert.t(manager_1)
+0044480a        float next_progress = fconvert.s((x87_r7_1 + x87_r7_1 - fconvert.t(0.200000003f) + fconvert.t(1f)) * fconvert.t(manager->progress_step) + fconvert.t(manager->progress))
+0044480e        long double x87_r7_7 = fconvert.t(next_progress)
 00444812        long double temp2_1 = fconvert.t(1f)
 00444812        x87_r7_7 - temp2_1
-0044481c        manager->progress = manager_1
+0044481c        manager->progress = next_progress
 00444823        if ((1 & ((x87_r7_7 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_7, temp2_1) ? 1 : 0) << 0xa | (x87_r7_7 == temp2_1 ? 1 : 0) << 0xe):1.b) == 0)
 00444828        uint8_t flags = (manager->active_animation->flags).b
 0044482d        if ((1 & flags) != 0)
 00444839        manager->completed = 1
-0044483c        manager->progress = fconvert.s(fconvert.t(manager_1) - fconvert.t(1f))
+0044483c        manager->progress = fconvert.s(fconvert.t(next_progress) - fconvert.t(1f))
 00444843        if ((flags & 4) != 0)
 00444845        manager->progress = 0.999000013f
 0044484c        manager->progress_step = 0f
 0044484f        manager->completed = 1
 00444856        if ((flags & 2) != 0)
-00444862        manager->progress = fconvert.s(fconvert.t(2f) - fconvert.t(manager_1))
+00444862        manager->progress = fconvert.s(fconvert.t(2f) - fconvert.t(next_progress))
 0044486e        manager->progress_step = fconvert.s(fconvert.t(manager->progress_step) * fconvert.t(-1f))
 00444871        long double x87_r7_14 = fconvert.t(manager->progress)
 00444874        long double temp3_1 = fconvert.t(0f)
@@ -57,16 +57,16 @@
 004448e1        manager->progress = fconvert.s(x87_r7_20)
 004448ec        if (manager->completed == 0 || manager->queue_count s<= 0)
 004448ec        return
-004448f1        int32_t (* eax_7)[0xa] = &manager->queued_animations
+004448f1        int32_t* queue_cursor = &manager->queued_animations
 004448f8        if (manager->queued_animations[0] != 0xffffffff)
 00444909        struct RenderableBod* target_model_1 = manager->target_model
 00444912        target_model_1->bod.bod.list_flags |= 0x20
-0044491d        int32_t* esi_4 = &manager->animation_slots[(eax_7 - 0x14)->queued_animations[0]].body.bod.object
-00444923        struct ObjectAnimation* edi_3 = *(*esi_4 + 0xbc)
+0044491d        struct Object** slot_object = &manager->animation_slots[*queue_cursor].body.bod.object
+00444923        struct ObjectAnimation* animation = (*slot_object)->animation
 00444929        manager->progress = 0f
-0044492c        manager->active_animation = edi_3
-00444932        manager->progress_step = edi_3->progress_step
-0044493a        manager->target_model->bod.object = *esi_4
+0044492c        manager->active_animation = animation
+00444932        manager->progress_step = animation->progress_step
+0044493a        manager->target_model->bod.object = *slot_object
 004448fa        struct RenderableBod* target_model = manager->target_model
 004448fd        manager->progress = 0f
 00444900        manager->progress_step = 0f
@@ -76,7 +76,7 @@
 00444949        if (ebx_4 s<= 0)
 00444949        return
 0044494e        i += 1
-0044494f        (eax_7 - 0x14)->queued_animations[0] = (eax_7 - 0x14)->queued_animations[1]
-00444954        eax_7 = &(*eax_7)[1]
+0044494f        *queue_cursor = queue_cursor[1]
+00444954        queue_cursor = &queue_cursor[1]
 00444959        do while (i s< manager->queue_count)
 0044495e        return

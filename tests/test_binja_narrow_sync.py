@@ -3648,6 +3648,67 @@ def test_contact_target_search_replay_preserves_entry_borrows() -> None:
         assert fragment in health_checks
 
 
+def test_anim_manager_replay_preserves_queue_and_slot_borrows() -> None:
+    repo_root = Path(__file__).parents[1]
+    source = (
+        BINJA_DIR / "sync_anim_manager_queue_lifetimes.py"
+    ).read_text(encoding="utf-8")
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    for expected in (
+        '"ObjectAnimation": 0x14',
+        '"Object": 0xDC',
+        '"RenderableBod": 0x80',
+        '"PresentationAnimationSlot": 0x80',
+        '"AnimManager": 0x48',
+        '0xBC: ("animation", "ObjectAnimation*")',
+        '0x14: ("queued_animations", "int32_t[10]")',
+        '0x40: ("target_model", "RenderableBod*")',
+        '0x44: ("animation_slots", "PresentationAnimationSlot*")',
+        "SAVED_MANAGER_DEFINITIONS",
+        "NEXT_PROGRESS_VAR",
+        "ANIM_MANAGER_QUEUE_USER_VAR_UPDATES",
+        "current_struct_fields_batch",
+        "apply_split_away_user_var_update",
+        "apply_user_var_updates",
+        "verify_anim_manager_queue_owner_layout",
+        '("0x4447d0", "mlil", "StackVariableSourceType", 524288, -4)',
+        '"StackVariableSourceType",\n    58,\n    -4,',
+        'variable_name="next_progress"',
+        'variable_type="float"',
+    ):
+        assert expected in source
+    for index, storage, variable_name, variable_type in (
+        (289, 66, "queue_cursor", "int32_t*"),
+        (333, 72, "slot_object", "Object**"),
+    ):
+        update = (
+            '"update_anim_manager",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{variable_name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert update in source
+    for fragment in (
+        "float next_progress =",
+        "int32_t* queue_cursor = &manager->queued_animations",
+        "struct Object** slot_object = &manager->animation_slots[*queue_cursor]",
+        "struct ObjectAnimation* animation = (*slot_object)->animation",
+        "manager->target_model->bod.object = *slot_object",
+        "*queue_cursor = queue_cursor[1]",
+        "queue_cursor = &queue_cursor[1]",
+        '"manager_1 = fconvert.s"',
+        '"int32_t (*"',
+        '"int32_t* esi_4"',
+        '"(queue_cursor - 0x14)->queued_animations"',
+    ):
+        assert fragment in health_checks
+
+
 def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
     binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"

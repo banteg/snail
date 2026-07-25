@@ -92,3 +92,17 @@ code shape and all 13 clean operands are unchanged.
   `ObjectAnimationModeOverride`. The member remains a two-byte unsigned-short
   alias, and this exact updater reads it through that owner even where native
   needs only its low byte.
+
+## 2026-07-24 narrow lifetime replay
+
+- Binary Ninja had merged the dead prologue `AnimManager*` spill at `[ebp-4]`
+  with the later floating-point progress result. Splitting only the saved
+  receiver definition leaves the real residual lifetime as
+  `float next_progress`; IDA independently reports the same local as `float`.
+- The queue-compaction register is an element cursor into the owned
+  `int32_t[10]`, not a pointer to the complete array. The replay now exposes
+  `int32_t* queue_cursor`, including the native one-element copy and advance.
+- The selected inline presentation slot lends its `Object*` field by address,
+  so the second register is an `Object** slot_object`. This makes the retained
+  `Object::animation` read and the target-model backlink explicit without
+  changing the already exact 134/134 machine-code match.

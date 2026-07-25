@@ -15406,15 +15406,27 @@
       "name": "bn_animation_manager_queue_owner",
       "artifact": "analysis/decompile/binja/functions/004447d0-update_anim_manager.c",
       "required_substrings": [
+        "float next_progress =",
         "manager->active_animation",
         "manager->queued_animations",
         "manager->animation_slots",
         "manager->target_model",
-        "g_game_base->subgame.rate_or_level_arg.base_rate"
+        "g_game_base->subgame.rate_or_level_arg.base_rate",
+        "int32_t* queue_cursor = &manager->queued_animations",
+        "struct Object** slot_object = &manager->animation_slots[*queue_cursor].body.bod.object",
+        "struct ObjectAnimation* animation = (*slot_object)->animation",
+        "manager->target_model->bod.object = *slot_object",
+        "*queue_cursor = queue_cursor[1]",
+        "queue_cursor = &queue_cursor[1]"
       ],
       "forbidden_substrings": [
         "arg1[",
         "data_4df904 + 0x74648",
+        "manager_1 = fconvert.s",
+        "int32_t (*",
+        "int32_t* esi_4",
+        "(queue_cursor - 0x14)->queued_animations",
+        "*(*slot_object + 0xbc)",
         "return result"
       ]
     },
