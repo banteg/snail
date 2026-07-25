@@ -6,8 +6,8 @@
 0041163b        int32_t eax
 0041163b        int16_t x87control
 0041163b        int16_t x87control_1
-0041163b        eax, x87control_1 = ftol(x87control, fconvert.t(data_4b7760))
-00411640        long double x87_r7 = fconvert.t(data_4df85c)
+0041163b        eax, x87control_1 = ftol(x87control, fconvert.t(g_authored_view_height))
+00411640        long double x87_r7 = fconvert.t(g_authored_view_width)
 0041164a        data_4b778c = eax
 00411650        data_4b7784 = 0
 00411656        data_4b7780 = 0

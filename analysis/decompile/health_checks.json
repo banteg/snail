@@ -1487,6 +1487,107 @@
       ]
     },
     {
+      "name": "bn_game_main_loop_scalar_owners",
+      "artifact": "analysis/decompile/binja/functions/00406dc0-game_startup_and_main_loop.c",
+      "required_substrings": [
+        "read_current_display_resolution(&g_current_display_width, &g_current_display_height)",
+        "g_authored_view_width = 640f",
+        "g_game_initialization_pending = 1",
+        "g_current_frame_update_steps = 0f",
+        "g_mean_update_steps_per_frame = fconvert.s(",
+        "g_main_loop_exit_requested"
+      ],
+      "forbidden_substrings": [
+        "read_current_display_resolution(0x4df858",
+        "data_4df85c",
+        "data_4b7760",
+        "data_4df90c",
+        "data_4b7759",
+        "data_4dfb04",
+        "data_4dfafc",
+        "data_4dfb00",
+        "data_4b7758",
+        "data_4b763c",
+        "data_4b7768",
+        "data_4b7638",
+        "data_4df864"
+      ]
+    },
+    {
+      "name": "ida_game_main_loop_scalar_owners",
+      "artifact": "analysis/decompile/ida/functions/00406dc0-game_startup_and_main_loop.c",
+      "required_substrings": [
+        "g_authored_view_width = 640.0;",
+        "g_authored_view_height = 480.0;",
+        "g_current_frame_update_steps = 0.0;",
+        "g_current_frame_update_steps = g_current_frame_update_steps + 1.0;",
+        "g_main_loop_frame_count * g_mean_update_steps_per_frame + g_current_frame_update_steps",
+        "g_mean_update_steps_per_frame = v18 / g_main_loop_frame_count;"
+      ],
+      "forbidden_substrings": [
+        "g_current_frame_update_steps[0]",
+        "*(float *)&g_main_loop_frame_count",
+        "*(float *)&g_mean_update_steps_per_frame",
+        "1142947840",
+        "1139802112"
+      ]
+    },
+    {
+      "name": "bn_display_resolution_int_pointer_abi",
+      "artifact": "analysis/decompile/binja/functions/004078b0-read_current_display_resolution.c",
+      "required_substrings": [
+        "*out_width = 0x280",
+        "*out_height = 0x1e0",
+        "*out_width = devMode.dmPelsWidth",
+        "*out_height = devMode.dmPelsHeight",
+        "return out_height"
+      ],
+      "forbidden_substrings": [
+        "*arg1",
+        "*arg2"
+      ]
+    },
+    {
+      "name": "ida_display_resolution_int_pointer_abi",
+      "artifact": "analysis/decompile/ida/functions/004078b0-read_current_display_resolution.c",
+      "required_substrings": [
+        "int *__cdecl read_current_display_resolution(int *out_width, int *out_height)",
+        "*out_width = DevMode[27];",
+        "*out_height = DevMode[28];",
+        "*out_width = 640;",
+        "*out_height = 480;"
+      ],
+      "forbidden_substrings": [
+        "uint8_t *__cdecl read_current_display_resolution",
+        "*(_DWORD *)out_width",
+        "*(_DWORD *)out_height"
+      ]
+    },
+    {
+      "name": "bn_window_proc_right_mouse_state_owner",
+      "artifact": "analysis/decompile/binja/functions/004074b0-game_window_proc.c",
+      "required_substrings": [
+        "g_right_mouse_button_state[0] = 1",
+        "g_right_mouse_button_state[0] = 0"
+      ],
+      "forbidden_substrings": [
+        "data_4b7640",
+        "g_current_frame_update_steps[1]"
+      ]
+    },
+    {
+      "name": "ida_window_proc_right_mouse_state_owner",
+      "artifact": "analysis/decompile/ida/functions/004074b0-game_window_proc.c",
+      "required_substrings": [
+        "g_right_mouse_button_state[0] = 1;",
+        "g_right_mouse_button_state[0] = 0;"
+      ],
+      "forbidden_substrings": [
+        "LOBYTE(g_current_frame_update_steps[1])",
+        "flt_4B763C[1]"
+      ]
+    },
+    {
       "name": "bn_application_instance_audio_init_owner",
       "artifact": "analysis/decompile/binja/functions/00407a10-initialize_audio_subsystem.c",
       "required_substrings": [

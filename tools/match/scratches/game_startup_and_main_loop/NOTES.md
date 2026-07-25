@@ -258,6 +258,36 @@ owners. Raw Binary Ninja disassembly proves the native sequence writes
 `g_game_initialization_pending = 1` followed by
 `g_main_loop_exit_requested = EBX` at `0x4072c6..0x4072cd`.
 
+## 2026-07-24 process scalar ownership replay
+
+- Promoted the process-owned display, authored-view, fixed-step, timing, and
+  loop-control globals from matcher-only declarations into the Binary Ninja and
+  IDA replay lanes. Binary Ninja now renders the native x87 loads/stores through
+  the named float owners instead of raw `data_4xxxxxx` symbols.
+- IDA exposed a real boundary defect rather than just stale names:
+  `g_current_frame_update_steps` occupied a false 12-byte `float[3]` item that
+  swallowed the two-byte `g_right_mouse_button_state` owner and the four-byte
+  `g_estimated_texture_vram_bytes` owner. The replay accepts only that exact
+  stale shape, splits it into proven `4 + 2 + 4` items, and verifies every
+  boundary before applying names and types.
+- The display and authored-view globals were separate one-byte heads followed
+  by three undefined bytes. The IDA replay widens only those exact unowned
+  tails to their proven four-byte `int`/`float` extents and refuses any
+  overlapping or named tail.
+- The exact `read_current_display_resolution` owner closes the shared ABI as
+  `int* (int* out_width, int* out_height)`. Both decompilers now show direct
+  `640x480` fallback stores and startup passes the two process globals by
+  address.
+- The adjacent mouse-state split is visible independently in
+  `game_window_proc`, `handle_game_window_activate`, and
+  `show_and_focus_game_window`; no access is attributed to a fabricated second
+  frame-step element.
+- Focused matching is intentionally unchanged: the display-resolution helper
+  remains exact at `22/22`, the timing reset remains exact at `4/4`,
+  `game_window_proc` remains at its honest 94.33%, and this main loop remains
+  70.86% (`327/325`, 136 clean masked operands, three rejected alignment
+  mismatches). No register coercion or masked-reference substitution was added.
+
 The candidate performs the same accesses and values, but its opposite
 zero/one register ledger and fixed-update block layout cause the sequence
 aligner to pair different stores and loads. Changing any owner to satisfy

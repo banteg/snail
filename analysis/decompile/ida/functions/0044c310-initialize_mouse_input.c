@@ -34,4 +34,3 @@ int __cdecl initialize_mouse_input(int window_handle)
   }
   return result;
 }
-

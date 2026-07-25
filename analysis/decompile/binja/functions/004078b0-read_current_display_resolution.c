@@ -4,11 +4,10 @@
 /* function: read_current_display_resolution @ 0x4078b0 */
 
 004078c7        DEVMODEA devMode
-004078c7        if (EnumDisplaySettingsA(nullptr, ENUM_CURRENT_SETTINGS, &devMode) != 0)
-004078db        *arg1 = devMode.dmPelsWidth
-004078e1        *arg2 = devMode.dmPelsHeight
-004078e9        return arg2
-004078f1        int32_t* eax_2 = arg2
-004078f8        *arg1 = 0x280
-004078fe        *eax_2 = 0x1e0
-0040790a        return eax_2
+004078c7        if (EnumDisplaySettingsA(nullptr, ENUM_CURRENT_SETTINGS, &devMode) == 0)
+004078f8        *out_width = 0x280
+004078fe        *out_height = 0x1e0
+0040790a        return out_height
+004078db        *out_width = devMode.dmPelsWidth
+004078e1        *out_height = devMode.dmPelsHeight
+004078e9        return out_height

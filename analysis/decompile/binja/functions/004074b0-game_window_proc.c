@@ -8,10 +8,10 @@
 004075fd        label_4075fd:
 004075fd        uint16_t eax_11 = (arg3 u>> 0x10).w
 00407603        if (eax_11 s> 0)
-00407605        data_4dfad0 = 1
+00407605        g_mouse_wheel_delta[0] = 1
 00407615        return 0
 00407618        if (eax_11 s< 0)
-0040761a        data_4dfad0 = 0xffffffff
+0040761a        g_mouse_wheel_delta[0] = 0xffffffff
 0040762a        return 0
 004074d2        if (arg2 - 2 u<= 0xfe)
 004074d8        int32_t edx_1 = 0
@@ -29,7 +29,7 @@
 004075a5        resume_audio_backend_if_paused(&g_audio_backend)
 004075aa        g_window_deactivated = 0
 004075ba        int32_t var_4_1 = 0
-004075cd        data_4dfb00 = fconvert.s(float.t(timeGetTime().q) * fconvert.t(0.00100000005f))
+004075cd        g_previous_frame_timestamp_seconds = fconvert.s(float.t(timeGetTime().q) * fconvert.t(0.00100000005f))
 004075d3        pdb_internal::Array<struct PortablePDB::MethodInfo>::reset(0x4df9e0)
 004075de        return 0
 0040750c        case 2
@@ -66,11 +66,11 @@
 004076a9        return DefWindowProcA(arg1, arg2, arg3, arg4)
 00407665        case 0x204
 00407665        data_4b7230 = 1
-0040766b        data_4b7640 = 1
+0040766b        g_right_mouse_button_state[0] = 1
 00407675        return 0
 0040767c        case 0x205
 0040767c        data_4b7230 = 0
-00407682        data_4b7640 = 0
+00407682        g_right_mouse_button_state[0] = 0
 0040768c        return 0
 004075f0        case 0x20a
 004075f0        goto label_4075fd

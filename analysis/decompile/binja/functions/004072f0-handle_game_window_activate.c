@@ -11,16 +11,15 @@
 0040733a        int32_t var_4 = 0
 0040733e        long double x87_r7 = float.t(timeGetTime().q)
 00407342        HWND main_window_1 = g_main_window
-00407350        data_4dfb00 = fconvert.s(x87_r7 * fconvert.t(0.00100000005f))
+00407350        g_previous_frame_timestamp_seconds = fconvert.s(x87_r7 * fconvert.t(0.00100000005f))
 00407356        ShowWindow(main_window_1, SW_SHOWNORMAL)
 00407363        SetForegroundWindow(g_main_window)
 00407370        HWND result = SetFocus(g_main_window)
 00407376        data_4b7764 = 0
 0040737c        data_4b7234 = 0
 00407382        data_4b7230 = 0
-00407388        data_4b7640 = 0
+00407388        __builtin_memset(&g_right_mouse_button_state, 0, 2)
 0040738e        data_4b7765 = 0
 00407394        data_4b7235 = 0
 0040739a        data_4b7231 = 0
-004073a0        data_4b7641 = 0
 004073aa        return result

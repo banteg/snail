@@ -25,16 +25,59 @@ PROTO_UPDATES = (
         "HINSTANCE hInstance, HINSTANCE hPrevInstance, "
         "LPSTR lpCmdLine, int32_t nShowCmd)",
     ),
+    (
+        "read_current_display_resolution",
+        "int32_t* __cdecl read_current_display_resolution("
+        "int32_t* out_width, int32_t* out_height)",
+    ),
 )
 
 SYMBOL_UPDATES = (
+    ("0x4b7236", "g_render_queue_active"),
+    ("0x4b7638", "g_mean_update_steps_per_frame"),
+    ("0x4b763c", "g_current_frame_update_steps"),
+    ("0x4b7640", "g_right_mouse_button_state"),
+    ("0x4b7644", "g_estimated_texture_vram_bytes"),
+    ("0x4b7654", "g_window_deactivated"),
+    ("0x4b7758", "g_fixed_update_abort_requested"),
+    ("0x4b7759", "g_frame_render_requested"),
+    ("0x4b775c", "g_current_display_height"),
+    ("0x4b7760", "g_authored_view_height"),
+    ("0x4b7768", "g_main_loop_frame_count"),
+    ("0x4df858", "g_current_display_width"),
+    ("0x4df85c", "g_authored_view_width"),
+    ("0x4df860", "g_pending_window_deactivate"),
+    ("0x4df864", "g_main_loop_exit_requested"),
+    ("0x4df90c", "g_game_initialization_pending"),
     ("0x4dfad0", "g_mouse_wheel_delta"),
     ("0x4dfad8", "g_application_instance"),
+    ("0x4dfafc", "g_frame_time_accumulator"),
+    ("0x4dfb00", "g_previous_frame_timestamp_seconds"),
+    ("0x4dfb04", "g_current_frame_timestamp_seconds"),
 )
 
 DATA_VAR_UPDATES = (
+    ("0x4b7236", "uint8_t"),
+    ("0x4b7638", "float"),
+    ("0x4b763c", "float"),
+    ("0x4b7640", "uint8_t[2]"),
+    ("0x4b7644", "int32_t"),
+    ("0x4b7654", "uint8_t"),
+    ("0x4b7758", "uint8_t"),
+    ("0x4b7759", "uint8_t"),
+    ("0x4b775c", "int32_t"),
+    ("0x4b7760", "float"),
+    ("0x4b7768", "float"),
+    ("0x4df858", "int32_t"),
+    ("0x4df85c", "float"),
+    ("0x4df860", "int32_t"),
+    ("0x4df864", "uint8_t"),
+    ("0x4df90c", "uint8_t"),
     ("0x4dfad0", "int32_t[2]"),
     ("0x4dfad8", "void*"),
+    ("0x4dfafc", "float"),
+    ("0x4dfb00", "float"),
+    ("0x4dfb04", "float"),
 )
 
 

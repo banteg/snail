@@ -23,12 +23,12 @@ int __stdcall game_window_proc(int hWnd, unsigned int Msg, int wParam, int lPara
         break;
       case 0x204u:
         g_right_mouse_button_latch[0] = 1;
-        LOBYTE(g_current_frame_update_steps[1]) = 1;
+        g_right_mouse_button_state[0] = 1;
         result = 0;
         break;
       case 0x205u:
         g_right_mouse_button_latch[0] = 0;
-        LOBYTE(g_current_frame_update_steps[1]) = 0;
+        g_right_mouse_button_state[0] = 0;
         result = 0;
         break;
       case 0x20Au:
@@ -64,7 +64,7 @@ LABEL_19:
         if ( wParam == 1 )
         {
           debug_report_stub();
-          pause_audio_backend_if_running((AudioBackend *)g_audio_backend);
+          pause_audio_backend_if_running(&g_audio_backend);
           g_window_deactivated = 1;
           restore_desktop_display_mode();
           return 0;
@@ -73,7 +73,7 @@ LABEL_19:
         {
           if ( !wParam )
           {
-            resume_audio_backend_if_paused((AudioBackend *)g_audio_backend);
+            resume_audio_backend_if_paused(&g_audio_backend);
             g_window_deactivated = 0;
             g_previous_frame_timestamp_seconds = (double)(unsigned int)((int (*)(void))timeGetTime)() * 0.001;
             reset_display_mode_probe_count(g_display_mode_state);
@@ -85,7 +85,7 @@ LABEL_19:
         {
           if ( (unsigned __int16)wParam == 1 )
           {
-            resume_audio_backend_if_paused((AudioBackend *)g_audio_backend);
+            resume_audio_backend_if_paused(&g_audio_backend);
             debug_report_stub();
             handle_game_window_activate();
           }
@@ -93,7 +93,7 @@ LABEL_19:
         }
         else
         {
-          pause_audio_backend_if_running((AudioBackend *)g_audio_backend);
+          pause_audio_backend_if_running(&g_audio_backend);
           debug_report_stub();
           handle_game_window_deactivate();
           return 0;

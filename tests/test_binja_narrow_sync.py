@@ -6092,6 +6092,61 @@ def test_main_loop_replay_keeps_winmain_and_byte_fullscreen_abis() -> None:
     )
 
 
+def test_main_loop_replay_recovers_process_scalar_boundaries() -> None:
+    main_header = (HEADER_DIR / "main_loop_types.h").read_text(encoding="utf-8")
+    binja_sync = (BINJA_DIR / "sync_main_loop_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_main_loop_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    scalar_globals = (
+        ("0x4b7236", "g_render_queue_active", "uint8_t"),
+        ("0x4b7638", "g_mean_update_steps_per_frame", "float"),
+        ("0x4b763c", "g_current_frame_update_steps", "float"),
+        ("0x4b7640", "g_right_mouse_button_state", "uint8_t[2]"),
+        ("0x4b7644", "g_estimated_texture_vram_bytes", "int32_t"),
+        ("0x4b7654", "g_window_deactivated", "uint8_t"),
+        ("0x4b7758", "g_fixed_update_abort_requested", "uint8_t"),
+        ("0x4b7759", "g_frame_render_requested", "uint8_t"),
+        ("0x4b775c", "g_current_display_height", "int32_t"),
+        ("0x4b7760", "g_authored_view_height", "float"),
+        ("0x4b7768", "g_main_loop_frame_count", "float"),
+        ("0x4df858", "g_current_display_width", "int32_t"),
+        ("0x4df85c", "g_authored_view_width", "float"),
+        ("0x4df860", "g_pending_window_deactivate", "int32_t"),
+        ("0x4df864", "g_main_loop_exit_requested", "uint8_t"),
+        ("0x4df90c", "g_game_initialization_pending", "uint8_t"),
+        ("0x4dfafc", "g_frame_time_accumulator", "float"),
+        ("0x4dfb00", "g_previous_frame_timestamp_seconds", "float"),
+        ("0x4dfb04", "g_current_frame_timestamp_seconds", "float"),
+    )
+    for address, name, data_type in scalar_globals:
+        assert f'("{address}", "{name}")' in binja_sync
+        assert f'("{address}", "{data_type}")' in binja_sync
+        assert name in main_header
+        assert name in ida_sync
+        assert f"0x{int(address, 0):X}" in ida_sync
+
+    assert "int* __cdecl read_current_display_resolution(" in main_header
+    assert (
+        "int32_t* __cdecl read_current_display_resolution("
+        in binja_sync
+    )
+    assert "int *__cdecl read_current_display_resolution(" in ida_sync
+
+    assert "CURRENT_FRAME_UPDATE_SPLIT_ITEMS" in ida_sync
+    assert '"float[3]"' in ida_sync
+    assert "unexpected_current_frame_update_boundary" in ida_sync
+    assert '"uint8_t g_right_mouse_button_state[2];"' in ida_sync
+    assert '"int g_estimated_texture_vram_bytes;"' in ida_sync
+    assert "WIDENED_SCALAR_DATA_ITEMS" in ida_sync
+    assert "unexpected_widened_scalar_boundary" in ida_sync
+    assert "ida_bytes.is_unknown" in ida_sync
+    assert "ida_bytes.create_float" in ida_sync
+
+
 def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"

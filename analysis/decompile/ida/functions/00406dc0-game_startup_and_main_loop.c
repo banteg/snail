@@ -36,8 +36,8 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
   initialize_mouse_authored_scale_from_clip_rect();
   probe_display_mode_count();
   read_current_display_resolution(&g_current_display_width, &g_current_display_height);
-  g_authored_view_width = 1142947840;
-  g_authored_view_height = 1139802112;
+  g_authored_view_width = 640.0;
+  g_authored_view_height = 480.0;
   g_game_initialization_pending = 1;
   g_window_deactivated = 0;
   log_startup_timestamp();
@@ -84,7 +84,7 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
       g_game_initialization_pending = 0;
       g_frame_render_requested = 0;
       destroy_loading_screen(&g_loading_bar);
-      begin_frontend_fade_in(&g_game_base->fade.state);
+      begin_frontend_fade_in(&g_game_base->fade);
       show_and_focus_game_window();
     }
     if ( g_frame_render_requested )
@@ -103,12 +103,12 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
     if ( g_frame_time_accumulator > 0.41666666 )
       g_frame_time_accumulator = 0.41666666;
     g_fixed_update_abort_requested = 0;
-    g_current_frame_update_steps[0] = 0.0;
+    g_current_frame_update_steps = 0.0;
     while ( g_frame_time_accumulator > 0.0 )
     {
       if ( g_fixed_update_abort_requested || v6 )
         break;
-      g_current_frame_update_steps[0] = g_current_frame_update_steps[0] + 1.0;
+      g_current_frame_update_steps = g_current_frame_update_steps + 1.0;
       g_frame_time_accumulator = g_frame_time_accumulator - 0.016666668;
       v13 = g_frame_time_accumulator;
       if ( v14 )
@@ -164,10 +164,9 @@ LABEL_49:
       ;
     }
     g_fixed_update_abort_requested = 0;
-    v18 = *(float *)&g_main_loop_frame_count * *(float *)&g_mean_update_steps_per_frame
-        + g_current_frame_update_steps[0];
-    *(float *)&g_main_loop_frame_count = *(float *)&g_main_loop_frame_count + 1.0;
-    *(float *)&g_mean_update_steps_per_frame = v18 / *(float *)&g_main_loop_frame_count;
+    v18 = g_main_loop_frame_count * g_mean_update_steps_per_frame + g_current_frame_update_steps;
+    g_main_loop_frame_count = g_main_loop_frame_count + 1.0;
+    g_mean_update_steps_per_frame = v18 / g_main_loop_frame_count;
     noop_runtime_ai();
   }
   while ( !g_main_loop_exit_requested && !v6 );

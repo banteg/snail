@@ -3,8 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_mouse_input @ 0x44c310 */
 
-0044c32d        g_mouse_live_x[0] = fconvert.s(fconvert.t(data_4df85c) * fconvert.t(0.5f))
-0044c339        long double x87_r7_2 = fconvert.t(data_4b7760) * fconvert.t(0.5f)
+0044c32d        g_mouse_live_x[0] = fconvert.s(fconvert.t(g_authored_view_width) * fconvert.t(0.5f))
+0044c339        long double x87_r7_2 = fconvert.t(g_authored_view_height) * fconvert.t(0.5f)
 0044c341        g_hide_system_cursor_flag = 1
 0044c348        g_mouse_live_y[0] = fconvert.s(x87_r7_2)
 0044c355        HRESULT result = DirectInput8Create(GetModuleHandleA(nullptr), 0x800, &g_directinput8_iid, &g_mouse_input, 0)

@@ -12,7 +12,7 @@ char handle_game_window_deactivate()
   {
     if ( g_runtime_config.fullscreen_enabled )
     {
-      pause_audio_backend_if_running((AudioBackend *)g_audio_backend);
+      pause_audio_backend_if_running(&g_audio_backend);
       g_window_deactivated = 1;
       ((void (__stdcall *)(int, int))ShowWindow)(g_main_window, 6);
     }
