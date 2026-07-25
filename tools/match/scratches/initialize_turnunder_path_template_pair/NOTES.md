@@ -113,3 +113,17 @@ expressions. Unlike its turnover siblings, this constructor already expresses
 the curved-body sample through typed base arithmetic and needs no additional
 cursor view. Focused matching remains 48.06% (628/687) with 41 clean masked
 operands.
+
+## 2026-07-25 mesh-vector ownership
+
+Raw native assembly at `0x428650..0x42872d` proves the same branch-local mesh
+owners recovered in the Invert and SBend constructors. The row-terminal test
+belongs inside the column loop. Ordinary rows materialize one generated
+position, while the terminal row owns a previous-sample lateral-offset vector
+and a second generated position whose Z lane includes `+1.0f`.
+
+Recovering that source shape raises focused matching from 48.06% (628/687) to
+48.15% (663/687), bringing the candidate instruction count substantially
+closer to the target. All 41 masked operands remain clean, with no unresolved
+or mismatched masks. The remaining candidate `0x3c` versus native `0x54` stack
+frame gap belongs to other constructor lifetimes.
