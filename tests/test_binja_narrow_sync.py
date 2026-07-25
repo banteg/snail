@@ -519,7 +519,7 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
 
     prototypes = (
         "void __thiscall health_collect_particles(Player* player, SubHealth* pickup)",
-        "void __thiscall update_movement_flag_emitters(Player* owner, Player* movement_source)",
+        "void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source)",
         "void __thiscall end_jetpack_hover(SubHover* sub_hover)",
         "void __thiscall initialize_subgoldy(Player* player, int32_t player_slot)",
         "void __thiscall show_subgoldy_lives(Player* player)",
@@ -3157,7 +3157,7 @@ def test_golb_replays_preserve_real_lifecycle_and_emitter_abis() -> None:
         "void __thiscall kill_golb(GolbShot* shot)",
         "void __thiscall update_golb_ai(GolbShot* shot)",
         "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index)",
-        "void __thiscall update_movement_flag_emitters(Player* owner, Player* movement_source)",
+        "void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source)",
         "Sprite* __thiscall spawn_golb_trail_sprite(GolbShot* shot, Vec3* position)",
         "void __thiscall spawn_golb_smoke(GolbShot* shot, Vec3* position)",
         "void __thiscall spawn_golb_impact_sprite(GolbShot* shot, Vec3* position)",
@@ -5412,19 +5412,77 @@ def test_ida_94_function_presence_checks_avoid_deprecated_get_func() -> None:
     assert "ida_funcs.get_func(" not in path_replay
 
 
-def test_ida_path_replay_verifies_player_shoot_cooldown_members() -> None:
+def test_ida_path_replay_verifies_player_shoot_members() -> None:
+    repo_root = Path(__file__).parents[1]
     path_replay = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
+    binja_replay = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
 
     for marker in (
-        "PLAYER_SHOOT_COOLDOWN_EXPECTED_MEMBERS",
+        "PLAYER_SHOOT_EXPECTED_MEMBERS",
+        '"name": "shooting_tier"',
+        '"name": "shoot_flags"',
+        '"name": "previous_shoot_flags"',
         '"name": "shoot_cooldown_progress"',
         '"name": "shoot_cooldown_step"',
-        '"owner_group": "player_shoot_cooldown"',
-        '"player_shoot_cooldown_members": player_shoot_cooldown_members',
+        '"owner_group": "player_shoot_state"',
+        '"player_shoot_members": player_shoot_members',
     ):
         assert marker in path_replay
+
+    for field in (
+        '("0x308", "shooting_tier", "int32_t")',
+        '("0x338", "shoot_flags", "uint32_t")',
+        '("0x33c", "previous_shoot_flags", "uint32_t")',
+    ):
+        assert field in binja_replay
+    for declaration in (
+        "int32_t shooting_tier;",
+        "uint32_t shoot_flags;",
+        "uint32_t previous_shoot_flags;",
+    ):
+        assert declaration in header
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    for check_name in (
+        "bn_player_shoot_cooldown_step_owner",
+        "ida_player_shoot_cooldown_step_owner",
+    ):
+        check = checks[check_name]
+        for field in (
+            "player->shooting_tier",
+            "player->shoot_flags",
+            "player->previous_shoot_flags",
+        ):
+            assert field in check["required_substrings"]
+        assert "player->movement_flags" in check["forbidden_substrings"]
+
+
+def test_ghidra_symbol_probe_is_versioned_name_based_and_profile_isolated() -> None:
+    repo_root = Path(__file__).parents[1]
+    wrapper = (repo_root / "tools/ghidra/decompile_symbol.py").read_text(
+        encoding="utf-8"
+    )
+    script = (repo_root / "tools/ghidra/DecompileSymbol.java").read_text(
+        encoding="utf-8"
+    )
+
+    assert 'Path("/Applications/ghidra_12.1.2_PUBLIC")' in wrapper
+    assert "-Duser.home=" in wrapper
+    assert '"DecompileSymbol.java"' in wrapper
+    assert "symbol_fragment" in wrapper
+    assert "function.getName(true)" in script
+    assert "ambiguous function fragment" in script
+    assert 'println("GHIDRA_VERSION="' in script
 
 
 def test_ida_type_inspectors_report_function_and_data_ownership() -> None:
@@ -11028,7 +11086,7 @@ def test_ida_player_state_gates_are_exact_and_fail_closed() -> None:
         in damage_update["forbidden_substrings"]
     )
     assert (
-        "SLOBYTE(g_game_base->subgame.player.movement_flags) >= 0"
+        "SLOBYTE(g_game_base->subgame.player.shoot_flags) >= 0"
         in damage_take["required_substrings"]
     )
     assert (

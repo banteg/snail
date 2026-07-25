@@ -188,7 +188,7 @@ arithmetic here is source-shape preservation, not an unresolved owner.
   `HighScoreEntry` lookalike was not a separate owner.
 - The setup reset now names `replay_update_cursor` and the embedded `Player`
   fields it actually mutates: `total_score`, `stopwatch`, `score_tail`,
-  `movement_flag_selector`, and `visible_life_stock`. The score-bucket reset is
+  `shooting_tier`, and `visible_life_stock`. The score-bucket reset is
   likewise invoked on that same `Player` owner.
 - The high-score argument at runtime `+0x30` is the `level_arg_tail` view of
   the base-rate union, and the initial mirror reset now uses

@@ -30,8 +30,8 @@ void Player::initialize_subgoldy(int player_slot)
     this->row_event_cutscene_started = (unsigned char)zero;
     this->resurrect_progress = 0.0f;
     this->completion_handoff_timer = 0.0f;
-    this->movement_flags = zero;
-    this->previous_movement_flags = -1;
+    this->shoot_flags = zero;
+    this->previous_shoot_flags = -1;
     this->trampoline_bounce_active = (unsigned char)zero;
     this->presentation.invincible_shell.channel_release_steps_active =
         (unsigned char)zero;

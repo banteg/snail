@@ -186,7 +186,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   }
   zero_timer_counters(&game->player.stopwatch);
   game->player.score_tail = 0;
-  game->player.movement_flag_selector = 0;
+  game->player.shooting_tier = 0;
   set_math_random_seed(runtime_build_seed);
   select_level_track_texture_set(&g_game_base->track, game->level_definition.track_texture_set);
   v7 = game->level_mode;

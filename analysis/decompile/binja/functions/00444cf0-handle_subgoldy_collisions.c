@@ -7,7 +7,7 @@
 00444d1d        struct Vec3 vector_2
 00444d1d        if (player->attachment_exit_pending == 0 && player->boost_one_tick == 0 && player->control_override_active == 0)
 00444d2d        int16_t x87control
-00444d2d        if ((0x80 & player->movement_flags.b) == 0)
+00444d2d        if ((0x80 & player->shoot_flags.b) == 0)
 00444d33        int32_t salt_pool_byte_offset = 0
 00444e11        while (salt_pool_byte_offset s< 0x17c0)
 00444d40        struct SaltSlotCursor* salt_cursor = player->game + salt_pool_byte_offset
@@ -63,7 +63,7 @@
 00444f4d        long double temp22_1 = fconvert.t(0.980000019f)
 00444f4d        st0_3 - temp22_1
 00444f58        if ((((st0_3 < temp22_1 ? 1 : 0) << 8 | (is_unordered.t(st0_3, temp22_1) ? 1 : 0) << 0xa | (st0_3 == temp22_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00444f64        if ((player->movement_flags.b & 0x80) == 0)
+00444f64        if ((player->shoot_flags.b & 0x80) == 0)
 00444f7c        player->velocity.x = fconvert.s(fconvert.t(player->velocity.x) - fconvert.t(vector.x) * fconvert.t(player->velocity.z) * fconvert.t(0.180000007f))
 00444f98        player->velocity.z = fconvert.s(fconvert.t(player->velocity.z) - fconvert.t(vector.z) * fconvert.t(player->velocity.z) * fconvert.t(0.100000001f))
 00444fa3        active_garbage->state = SUB_GARBAGE_STATE_BURST_PENDING
@@ -94,7 +94,7 @@
 004450a2        st0_4 - temp23_1
 004450a8        int16_t eax_20 = (st0_4 < temp23_1 ? 1 : 0) << 8 | (is_unordered.t(st0_4, temp23_1) ? 1 : 0) << 0xa | (st0_4 == temp23_1 ? 1 : 0) << 0xe
 004450ad        if ((eax_20:1.b & 1) != 0)
-004450b9        if ((player->movement_flags.b & 0x80) != 0)
+004450b9        if ((player->shoot_flags.b & 0x80) != 0)
 0044523a        x87control = kill_slug_hazard(&player->game->slug_hazards + slug_pool_byte_offset)
 004450bf        eax_20.b = player->control_override_active
 004450c7        if (eax_20.b != 0)
@@ -282,23 +282,23 @@
 004457c0        if ((game_7->runtime_flags.b & 0x10) != 0 && game_7->level_mode != 3)
 004457c3        player->lives = lives + 1
 004457d4        play_voice_manager(&g_voice_manager, 5, 1, 0xffffffff)
-004457d9        int32_t movement_flag_selector_1 = player->movement_flag_selector
-004457e2        if (movement_flag_selector_1 s< 8)
-004457e5        player->movement_flag_selector = movement_flag_selector_1 + 1
-004457ed        if (movement_flag_selector_1 == 8)
-004457ef        player->movement_flag_selector = 7
-004457fb        eax_56 = player->movement_flag_selector - 1
+004457d9        int32_t shooting_tier_1 = player->shooting_tier
+004457e2        if (shooting_tier_1 s< 8)
+004457e5        player->shooting_tier = shooting_tier_1 + 1
+004457ed        if (shooting_tier_1 == 8)
+004457ef        player->shooting_tier = 7
+004457fb        eax_56 = player->shooting_tier - 1
 004457ff        if (eax_56 s> 6)
 004457ff        goto label_445801
 0044580d        play_sound_effect(&g_sound_effect_manager, eax_56 + 1)
 00445818        add_subgoldy_score(player, 2, 0)
 00445719        if (effect_kind == SUB_RING_KIND_POWER_UP_AUTHORED)
-0044571b        int32_t movement_flag_selector = player->movement_flag_selector
-00445724        if (movement_flag_selector s< 8)
-00445727        player->movement_flag_selector = movement_flag_selector + 1
-0044572f        if (movement_flag_selector == 8)
-00445731        player->movement_flag_selector = 7
-0044573d        eax_56 = player->movement_flag_selector - 1
+0044571b        int32_t shooting_tier = player->shooting_tier
+00445724        if (shooting_tier s< 8)
+00445727        player->shooting_tier = shooting_tier + 1
+0044572f        if (shooting_tier == 8)
+00445731        player->shooting_tier = 7
+0044573d        eax_56 = player->shooting_tier - 1
 00445741        if (eax_56 s<= 6)
 0044580d        play_sound_effect(&g_sound_effect_manager, eax_56 + 1)
 00445818        add_subgoldy_score(player, 2, 0)

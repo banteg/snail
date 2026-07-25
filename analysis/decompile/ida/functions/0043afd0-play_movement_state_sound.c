@@ -2,10 +2,10 @@
 /* function: play_movement_state_sound @ 0x43afd0 */
 /* selector: play_movement_state_sound */
 
-// Void `Player` member that chooses one of three movement sound families from `movement_flags` and attenuates playback while attachment-exit handling is active. Both direct `update_subgoldy` callsites discard EAX, and its two returns expose only incidental sound-manager call results.
+// Void `Player` member that chooses one of three movement sound families from `shoot_flags` and attenuates playback while attachment-exit handling is active. Both direct `update_subgoldy` callsites discard EAX, and its two returns expose only incidental sound-manager call results.
 void __thiscall play_movement_state_sound(Player *player)
 {
-  uint32_t movement_flags; // eax
+  uint32_t shoot_flags; // eax
   __int64 v3; // rax
   int32_t v4; // edi
   __int64 v5; // rax
@@ -15,14 +15,14 @@ void __thiscall play_movement_state_sound(Player *player)
   Vec3 vector; // [esp+18h] [ebp-Ch] BYREF
   Vec3 v10; // 0:^14.12
 
-  movement_flags = player->movement_flags;
-  if ( (movement_flags & 7) != 0 )
+  shoot_flags = player->shoot_flags;
+  if ( (shoot_flags & 7) != 0 )
   {
     v3 = (__int64)((double)next_math_random_value() * 0.000061035156);
     player->shoot_sfx_variant_sample = v3;
     v4 = v3 + 17;
   }
-  else if ( (movement_flags & 0x18) != 0 )
+  else if ( (shoot_flags & 0x18) != 0 )
   {
     v5 = (__int64)((double)next_math_random_value() * 0.000091552734);
     player->shoot_sfx_variant_sample = v5;
@@ -30,7 +30,7 @@ void __thiscall play_movement_state_sound(Player *player)
   }
   else
   {
-    if ( (movement_flags & 0x60) == 0 )
+    if ( (shoot_flags & 0x60) == 0 )
       return;
     v6 = (__int64)((double)next_math_random_value() * 0.000091552734);
     player->shoot_sfx_variant_sample = v6;

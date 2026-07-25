@@ -94,7 +94,7 @@ public:
     Snail* initialize_player_presentation_controller(); // @ 0x4086d0
     void release_snail_weapons();          // @ 0x442e40
     void set_snail_jetpack(int state);      // @ 0x445860
-    void set_snail_weapon(int movement_flags); // @ 0x445920
+    void set_snail_weapon(int shoot_flags);    // @ 0x445920
     void initialize_cutscene();             // @ 0x4428d0
     void dispatch_cutscene_animation(int animation, unsigned char immediate, int mode_flags); // @ 0x444600
     void update_snail_skin();               // @ 0x445cd0
@@ -188,15 +188,17 @@ public:
     // Click-start captures the replay cursor; completion persists it as the
     // source-tail anchor and ghost playback uses it to align the source run.
     int startup_track_index;                // +0x304
-    int movement_flag_selector;             // +0x308
+    // Authored cRSubGoldy::SetShootFlags maps this tier to shoot_flags. Ring
+    // kinds 4/5/8 advance it and PlayShootSfx uses the resulting mask.
+    int shooting_tier;                      // +0x308
     char unknown_30c[0x310 - 0x30c];
     int score_buckets[SUBGOLDY_SCORE_BUCKET_COUNT]; // +0x310
     float barrier_hold_progress;             // +0x328, tile-14 hold window
     float barrier_hold_step;                 // +0x32c
     float startup_voice_timer;               // +0x330
     float startup_voice_step;                // +0x334
-    unsigned int movement_flags;           // +0x338
-    unsigned int previous_movement_flags;   // +0x33c
+    unsigned int shoot_flags;               // +0x338
+    unsigned int previous_shoot_flags;      // +0x33c
     char unknown_340[0x350 - 0x340];
     int lane_lean_state;                   // +0x350
     float lane_lean_amplitude;             // +0x354

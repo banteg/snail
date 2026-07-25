@@ -16,7 +16,7 @@ void __thiscall update_invincible_shell(Invincible *invincible)
   switch ( invincible->state )
   {
     case INVINCIBLE_STATE_INACTIVE:
-      if ( SLOBYTE(g_game_base->subgame.player.movement_flags) >= 0 )
+      if ( SLOBYTE(g_game_base->subgame.player.shoot_flags) >= 0 )
         g_game_base->subgame.player.presentation.invincible_shell.body.bod.bod.list_flags &= ~0x20u;
       else
         start_invincible_shell(invincible);
@@ -29,11 +29,11 @@ void __thiscall update_invincible_shell(Invincible *invincible)
         invincible->fade_progress = 1.0;
         invincible->state = INVINCIBLE_STATE_ACTIVE;
       }
-      if ( SLOBYTE(g_game_base->subgame.player.movement_flags) >= 0 )
+      if ( SLOBYTE(g_game_base->subgame.player.shoot_flags) >= 0 )
         invincible->state = INVINCIBLE_STATE_FADING_OUT;
       goto LABEL_15;
     case INVINCIBLE_STATE_ACTIVE:
-      if ( SLOBYTE(g_game_base->subgame.player.movement_flags) >= 0 )
+      if ( SLOBYTE(g_game_base->subgame.player.shoot_flags) >= 0 )
         invincible->state = INVINCIBLE_STATE_FADING_OUT;
       goto LABEL_15;
     case INVINCIBLE_STATE_FADING_OUT:
@@ -41,7 +41,7 @@ void __thiscall update_invincible_shell(Invincible *invincible)
       invincible->fade_progress = v3;
       if ( v3 >= 0.0 )
       {
-        if ( SLOBYTE(g_game_base->subgame.player.movement_flags) < 0 )
+        if ( SLOBYTE(g_game_base->subgame.player.shoot_flags) < 0 )
           invincible->state = INVINCIBLE_STATE_FADING_IN;
 LABEL_15:
         v4 = invincible->spin_phase_step + invincible->spin_phase;

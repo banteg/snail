@@ -4414,7 +4414,7 @@ pub const Runner = struct {
             .world_position = world_position,
             .presentation_position = world_position,
             .presentation_scale = 1.0,
-            .movement_flag_selector_snapshot = self.presentation.movement_flag_selector,
+            .owner_lives_snapshot = self.visible_life_stock,
             .active_phase = active_phase,
             .active_phase_step = active_phase_step,
             // PORT(partial): `initialize_ring_or_special_effect_particles`
@@ -4582,7 +4582,7 @@ pub const Runner = struct {
 
                 const player_position = self.playerWorldPosition(preview);
                 if (effect.world_position.z >= player_position.z) {
-                    if (self.presentation.movement_flag_selector < effect.movement_flag_selector_snapshot) {
+                    if (self.visible_life_stock < effect.owner_lives_snapshot) {
                         effect.state = .miss_setup;
                     }
                     return true;
@@ -8116,6 +8116,43 @@ test "runtime ring effect collision arms the native collect follow state" {
     const post_follow = runner.activeRuntimeRingEffects()[0];
     try std.testing.expect(post_follow.presentation_scale < 1.0);
     try std.testing.expect(post_follow.presentation_position.z > pre_follow_position.z);
+}
+
+test "runtime ring miss transition follows owner lives rather than shooting tier" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.visible_life_stock = 3;
+    runner.presentation.movement_flag_selector = 7;
+    runner.lane_index = 1;
+    runner.lane_center = 1.5;
+    runner.row_position = 51.0;
+    runner.refreshLiveRuntimeRingEffects(&fixture.preview);
+
+    try std.testing.expectEqual(
+        @as(u32, 3),
+        runner.activeRuntimeRingEffects()[0].owner_lives_snapshot,
+    );
+    placeRunnerAtRuntimeRingEffect(
+        &runner,
+        &fixture.preview,
+        runner.activeRuntimeRingEffects()[0],
+    );
+
+    runner.presentation.movement_flag_selector = 0;
+    runner.updateRuntimeRingEffects(&fixture.preview);
+    try std.testing.expectEqual(
+        RuntimeRingEffectState.active,
+        runner.activeRuntimeRingEffects()[0].state,
+    );
+
+    runner.visible_life_stock = 2;
+    runner.updateRuntimeRingEffects(&fixture.preview);
+    try std.testing.expectEqual(
+        RuntimeRingEffectState.miss_setup,
+        runner.activeRuntimeRingEffects()[0].state,
+    );
 }
 
 test "runtime ring effect post-hit progress step follows native run rate" {

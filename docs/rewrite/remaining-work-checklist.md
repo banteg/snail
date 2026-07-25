@@ -258,7 +258,7 @@ If there is time for only one focused RE session, use this order:
 4. `initialize_subgoldy_death` / `update_subgoldy_resurrect`
 5. `begin_track_attachment_follow_state` / `update_track_attachment_follow_state`
 6. `update_row_event_display` / `flush_row_event_display`
-7. `play_movement_state_sound` and `movement_flags` producers
+7. `play_movement_state_sound` and `shooting_tier` / `shoot_flags` producers
 8. `update_warning` and the damage-warning owner chain
 9. track render-normalization helpers
 

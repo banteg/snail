@@ -14,7 +14,7 @@ Recovered mapping:
 - `32`/`64`/`192`: `0, 0, 3`.
 
 The default arm only assigns the first two target states from
-`movement_flags`; the third target state is intentionally left as the
+`shoot_flags`; the third target state is intentionally left as the
 source-shaped local seen in both decompilers. In normal gameplay the producer
 (`update_player_movement_flags`) only emits the handled values above.
 
@@ -65,7 +65,7 @@ state. A guarded split keeps the prologue pointer separate and leaves the
 default movement arm's channel-2 state honestly uninitialized, exactly as the
 native body and Android control flow imply; it does not invent a fallback.
 
-The overwritten low byte of `movement_flags` is likewise three disjoint
+The overwritten low byte of `shoot_flags` is likewise three disjoint
 per-channel `immediate` lifetimes, each with its own initial write, optional
 clear, and SSA join. Binja now exposes all three target states, all three
 selected states, the prior-channel change latch, and those transition flags

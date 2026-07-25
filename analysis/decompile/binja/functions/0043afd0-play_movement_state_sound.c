@@ -3,17 +3,17 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: play_movement_state_sound @ 0x43afd0 */
 
-0043afd7        uint8_t movement_flags = (player->movement_flags).b
+0043afd7        uint8_t shoot_flags = (player->shoot_flags).b
 0043afdf        int32_t eax_1
 0043afdf        int32_t sound_id
 0043afdf        int16_t x87control
-0043afdf        if ((movement_flags & 7) == 0)
-0043b006        if ((movement_flags & 0x18) != 0)
+0043afdf        if ((shoot_flags & 7) == 0)
+0043b006        if ((shoot_flags & 0x18) != 0)
 0043b01b        eax_1 = ftol(x87control, float.t(next_math_random_value()) * fconvert.t(9.15527344e-05f))
 0043b020        player->shoot_sfx_variant_sample = eax_1
 0043b026        sound_id = eax_1 + 0x13
 0043b029        goto label_43b054
-0043b02d        if ((movement_flags & 0x60) != 0)
+0043b02d        if ((shoot_flags & 0x60) != 0)
 0043b046        eax_1 = ftol(x87control, float.t(next_math_random_value()) * fconvert.t(9.15527344e-05f))
 0043b04b        player->shoot_sfx_variant_sample = eax_1
 0043b051        sound_id = eax_1 + 0x16

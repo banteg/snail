@@ -2,7 +2,7 @@
 
 Semantics complete and they REFINE the harvested hit-flash plan:
 
-- gate: `(Player::movement_flags & 0x80) == 0 || force` — the sign bit, with
+- gate: `(Player::shoot_flags & 0x80) == 0 || force` — the sign bit, with
   force bypassing (`Player +0x338`, relocatable `Game +0x4300b4`)
 - state 2 blocks unforced positive deltas; unforced negative deltas are
   also blocked while `Player::trampoline_bounce_active == 1`
@@ -75,7 +75,7 @@ Android's `cRSnailSkin::Change(int, float)` independently confirms this call;
 the shared type substitution is codegen-neutral at the same honest 72.43%.
 
 2026-07-12 Player-owner consolidation: the four former raw relocatable views
-are all fields of the embedded `cRSubGoldy`: `movement_flags` at +0x338,
+are all fields of the embedded `cRSubGoldy`: `shoot_flags` at +0x338,
 `trampoline_bounce_active` at +0x1e4, `control_override_active` at +0x2d8,
 and the authored `cRSnail` presentation at +0x2984. The skin receiver is the
 presentation's owned `cRSnailSkin` at +0x1938, hence `Player +0x42bc` and the
@@ -115,9 +115,9 @@ live `AI` nor `Take` consumes it.
 ## 2026-07-25 movement-gate owner replay
 
 The native byte test at `GameRoot +0x4300b4` is the low byte of the embedded
-`Player::movement_flags` word (`Player +0x338`), not a standalone
+`Player::shoot_flags` word (`Player +0x338`), not a standalone
 `g_invincible_damage_gate_flags_offset` global. Exact operand normalization
-makes IDA render `SLOBYTE(g_game_base->subgame.player.movement_flags) >= 0`,
-agreeing with Binary Ninja's `(movement_flags & 0x80) == 0` interpretation.
+makes IDA render `SLOBYTE(g_game_base->subgame.player.shoot_flags) >= 0`,
+agreeing with Binary Ninja's `(shoot_flags & 0x80) == 0` interpretation.
 The signed-byte source shape therefore confirms bit `0x80` as the unforced
 damage gate without changing the already exact matching source.

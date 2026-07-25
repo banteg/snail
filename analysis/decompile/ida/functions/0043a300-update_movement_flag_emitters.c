@@ -3,25 +3,25 @@
 /* selector: update_movement_flag_emitters */
 
 // Exact void `Player` member that iterates its 12 owned `GolbShot` slots at +0x450 and seeds one, two, or three live actors from an explicit `Player*` movement source. Both callers pass the same player as receiver and source.
-void __thiscall update_movement_flag_emitters(Player *owner, Player *movement_source)
+void __thiscall update_movement_flag_emitters(Player *owner, Player *shoot_source)
 {
-  uint32_t movement_flags; // eax
+  uint32_t shoot_flags; // eax
   int32_t v4; // ebx
   int32_t v5; // esi
   GolbShot *golb_shots; // edi
 
-  movement_flags = movement_source->movement_flags;
-  if ( (movement_flags & 0x69) != 0 )
+  shoot_flags = shoot_source->shoot_flags;
+  if ( (shoot_flags & 0x69) != 0 )
   {
     v4 = 1;
   }
-  else if ( (movement_flags & 0x12) != 0 )
+  else if ( (shoot_flags & 0x12) != 0 )
   {
     v4 = 2;
   }
   else
   {
-    if ( (movement_flags & 4) == 0 )
+    if ( (shoot_flags & 4) == 0 )
       return;
     v4 = 3;
   }

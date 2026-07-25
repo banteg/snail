@@ -65,7 +65,7 @@ void Player::handle_subgoldy_collisions()
     Vec3 probe_fx;     // v78
 
     if (!attachment_exit_pending && !boost_one_tick && !control_override_active) {
-        if ((movement_flags & 0x80) == 0) {
+        if ((shoot_flags & 0x80) == 0) {
             for (int i = 0;
                  i < (int)sizeof(game->salt_hazards.slots);
                 i += (int)sizeof(Salt)) {
@@ -124,7 +124,7 @@ void Player::handle_subgoldy_collisions()
                 delta.z = garbage->transform.position.z - cached_camera_target_world.z;
                 probe_b = delta;
                 if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.98000002f) {
-                    if ((movement_flags & 0x80) == 0) {
+                    if ((shoot_flags & 0x80) == 0) {
                         velocity.x = velocity.x - probe_b.x * velocity.z * 0.18000001f;
                         velocity.z = velocity.z - probe_b.z * velocity.z * 0.1f;
                     }
@@ -155,7 +155,7 @@ void Player::handle_subgoldy_collisions()
                 if (delta.z < 2.0f) {
                     float distance = normalize_vector(&probe_b);
                     if (distance < 1.5675001f) {
-                        if ((movement_flags & 0x80) == 0) {
+                        if ((shoot_flags & 0x80) == 0) {
                             if (!control_override_active) {
                                 SubgameRuntime* hit_game = game;
                                 control_override_active = 1;
@@ -325,14 +325,14 @@ void Player::handle_subgoldy_collisions()
                                 VOICE_PLAY_AFTER_GLOBAL_COOLDOWN,
                                 -1);
                         }
-                        int selector = movement_flag_selector;
-                        if (selector >= 8) {
-                            if (selector == 8)
-                                movement_flag_selector = 7;
+                        int tier = shooting_tier;
+                        if (tier >= 8) {
+                            if (tier == 8)
+                                shooting_tier = 7;
                         } else {
-                            movement_flag_selector = selector + 1;
+                            shooting_tier = tier + 1;
                         }
-                        int effect_index = movement_flag_selector - 1;
+                        int effect_index = shooting_tier - 1;
                         if (effect_index > 6)
                             effect_index = 6;
                         g_sound_effect_manager.play_sound_effect(effect_index + 1);
@@ -340,14 +340,14 @@ void Player::handle_subgoldy_collisions()
                         continue;
                     }
                     if (effect_kind == SUB_RING_KIND_POWER_UP_AUTHORED) {
-                        int selector = movement_flag_selector;
-                        if (selector >= 8) {
-                            if (selector == 8)
-                                movement_flag_selector = 7;
+                        int tier = shooting_tier;
+                        if (tier >= 8) {
+                            if (tier == 8)
+                                shooting_tier = 7;
                         } else {
-                            movement_flag_selector = selector + 1;
+                            shooting_tier = tier + 1;
                         }
-                        int effect_index = movement_flag_selector - 1;
+                        int effect_index = shooting_tier - 1;
                         if (effect_index > 6)
                             effect_index = 6;
                         g_sound_effect_manager.play_sound_effect(effect_index + 1);

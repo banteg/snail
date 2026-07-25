@@ -5,9 +5,9 @@
 
 004413f0        struct GameRoot* game_base_2 = g_game_base
 00441400        int16_t eax
-00441400        if ((game_base_2->subgame.player.movement_flags.b & 0x80) != 0)
+00441400        if ((game_base_2->subgame.player.shoot_flags.b & 0x80) != 0)
 00441402        eax.b = force
-00441408        if ((game_base_2->subgame.player.movement_flags.b & 0x80) != 0 && eax.b == 0)
+00441408        if ((game_base_2->subgame.player.shoot_flags.b & 0x80) != 0 && eax.b == 0)
 00441408        return
 0044140e        enum DamageGuageState state = damage_guage->state
 00441413        if (state == DAMAGE_GUAGE_STATE_DRAINING)

@@ -35,14 +35,14 @@
       ]
     },
     {
-      "name": "bn_player_movement_emitter_cursor_owner",
+      "name": "bn_player_shoot_emitter_cursor_owner",
       "artifact": "analysis/decompile/binja/functions/0043a300-update_movement_flag_emitters.c",
       "required_substrings": [
         "struct GolbShot* golb_shot_cursor",
         "&owner->golb_shots",
         "golb_shot_cursor->state",
         "create_golb(golb_shot_cursor, owner",
-        "movement_source->movement_flags"
+        "shoot_source->shoot_flags"
       ],
       "forbidden_substrings": [
         "(*)[0xc]",
@@ -52,11 +52,11 @@
       ]
     },
     {
-      "name": "ida_player_movement_emitter_cursor_owner",
+      "name": "ida_player_shoot_emitter_cursor_owner",
       "artifact": "analysis/decompile/ida/functions/0043a300-update_movement_flag_emitters.c",
       "required_substrings": [
-        "void __thiscall update_movement_flag_emitters(Player *owner, Player *movement_source)",
-        "movement_source->movement_flags",
+        "void __thiscall update_movement_flag_emitters(Player *owner, Player *shoot_source)",
+        "shoot_source->shoot_flags",
         "golb_shots = owner->golb_shots",
         "golb_shots->state",
         "create_golb(golb_shots, owner"
@@ -71,10 +71,16 @@
       "name": "bn_player_shoot_cooldown_step_owner",
       "artifact": "analysis/decompile/binja/functions/0043a1a0-update_player_movement_flags.c",
       "required_substrings": [
+        "player->shooting_tier",
+        "player->shoot_flags",
+        "player->previous_shoot_flags",
         "player->shoot_cooldown_step"
       ],
       "forbidden_substrings": [
         "movement_fire_progress",
+        "player->movement_flag_selector",
+        "player->movement_flags",
+        "player->previous_movement_flags",
         "player + 0x2734"
       ]
     },
@@ -82,10 +88,16 @@
       "name": "ida_player_shoot_cooldown_step_owner",
       "artifact": "analysis/decompile/ida/functions/0043a1a0-update_player_movement_flags.c",
       "required_substrings": [
+        "player->shooting_tier",
+        "player->shoot_flags",
+        "player->previous_shoot_flags",
         "player->shoot_cooldown_step"
       ],
       "forbidden_substrings": [
         "movement_fire_progress",
+        "player->movement_flag_selector",
+        "player->movement_flags",
+        "player->previous_movement_flags",
         "player + 10036"
       ]
     },
@@ -189,10 +201,10 @@
       ]
     },
     {
-      "name": "bn_player_movement_sound_owner",
+      "name": "bn_player_shoot_sound_owner",
       "artifact": "analysis/decompile/binja/functions/0043afd0-play_movement_state_sound.c",
       "required_substrings": [
-        "player->movement_flags",
+        "player->shoot_flags",
         "player->shoot_sfx_variant_sample",
         "player->attachment_exit_pending",
         "player->body.transform.position",
@@ -204,11 +216,11 @@
       ]
     },
     {
-      "name": "ida_player_movement_sound_owner",
+      "name": "ida_player_shoot_sound_owner",
       "artifact": "analysis/decompile/ida/functions/0043afd0-play_movement_state_sound.c",
       "required_substrings": [
         "void __thiscall play_movement_state_sound(Player *player)",
-        "player->movement_flags",
+        "player->shoot_flags",
         "player->shoot_sfx_variant_sample",
         "player->attachment_exit_pending",
         "g_game_base->players[0].body.transform.position"
@@ -365,7 +377,7 @@
       "artifact": "analysis/decompile/ida/functions/004413f0-apply_damage_gauge_delta.c",
       "required_substrings": [
         "void __thiscall apply_damage_gauge_delta(DamageGuage *damage_guage, float delta, bool force)",
-        "SLOBYTE(g_game_base->subgame.player.movement_flags) >= 0",
+        "SLOBYTE(g_game_base->subgame.player.shoot_flags) >= 0",
         "damage_guage->state != DAMAGE_GUAGE_STATE_DRAINING",
         "g_game_base->subgame.player.trampoline_bounce_active",
         "play_voice_manager(&g_voice_manager",
@@ -17073,7 +17085,7 @@
       "required_substrings": [
         "uint8_t any_channel_changed = 0",
         "int32_t target_channel_2_state",
-        "target_channel_0_state = movement_flags",
+        "target_channel_0_state = shoot_flags",
         "channel_0_selected_state = snail->weapon_channels[0].selected_state",
         "uint8_t channel_0_immediate = 1",
         "set_weapon_animation(&snail->weapon_channels[1], 1, channel_1_immediate, 4)",
@@ -17082,7 +17094,7 @@
       "forbidden_substrings": [
         "snail_1 = 1",
         "snail_2",
-        "movement_flags.b",
+        "shoot_flags.b",
         "->__offset("
       ]
     },
@@ -17090,7 +17102,7 @@
       "name": "ida_snail_weapon_channel_state_owner",
       "artifact": "analysis/decompile/ida/functions/00445920-set_snail_weapon.c",
       "required_substrings": [
-        "void __thiscall set_snail_weapon(Snail *snail, int32_t movement_flags)",
+        "void __thiscall set_snail_weapon(Snail *snail, int32_t shoot_flags)",
         "snail->weapon_channels[0].selected_state",
         "snail->weapon_channels[1].selected_state",
         "snail->weapon_channels[2].selected_state",
@@ -20571,7 +20583,7 @@
       "required_substrings": [
         "switch (invincible->state)",
         "case INVINCIBLE_STATE_FADING_OUT",
-        "g_game_base->subgame.player.movement_flags",
+        "g_game_base->subgame.player.shoot_flags",
         "&g_game_base->subgame.player.presentation.snail_skin",
         "invincible->body.bod.color.a",
         "&invincible->body.transform",
@@ -20591,7 +20603,7 @@
       "required_substrings": [
         "void __thiscall update_invincible_shell(Invincible *invincible)",
         "case INVINCIBLE_STATE_FADING_OUT:",
-        "g_game_base->subgame.player.movement_flags",
+        "g_game_base->subgame.player.shoot_flags",
         "g_game_base->subgame.player.presentation.invincible_shell.body.bod.bod.list_flags",
         "&g_game_base->subgame.player.presentation.snail_skin",
         "&g_game_base->subgame.player.presentation.body.transform",

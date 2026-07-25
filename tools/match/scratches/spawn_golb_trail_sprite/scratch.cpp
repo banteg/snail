@@ -12,10 +12,10 @@ Sprite* GolbShot::spawn_golb_trail_sprite(Vector3* position)
     sprite->progress = 0.0f;
     sprite->flags = flags;
 
-    int movement_flags = owner_player->movement_flags;
-    if ((movement_flags & 1) != 0)
+    int shoot_flags = owner_player->shoot_flags;
+    if ((shoot_flags & 1) != 0)
         sprite->progress_step = 0.23809524f;
-    else if ((movement_flags & 2) != 0)
+    else if ((shoot_flags & 2) != 0)
         sprite->progress_step = 0.33333334f;
 
     sprite->progress_step = 0.55555558f;

@@ -161,7 +161,8 @@ pub const RingEffect = struct {
     world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_scale: f32 = 1.0,
-    movement_flag_selector_snapshot: u8 = 0,
+    // Native SubRing +0x8c snapshots Player::lives, not the shooting tier.
+    owner_lives_snapshot: u32 = 0,
     child_update_cadence: u8 = 0,
     active_phase: f32 = 0.0,
     active_phase_step: f32 = 0.0,

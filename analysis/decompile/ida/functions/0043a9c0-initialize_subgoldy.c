@@ -26,8 +26,8 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   player->row_event_cutscene_started = 0;
   player->resurrect_progress = 0.0;
   player->completion_handoff_timer = 0.0;
-  player->movement_flags = 0;
-  player->previous_movement_flags = -1;
+  player->shoot_flags = 0;
+  player->previous_shoot_flags = -1;
   player->trampoline_bounce_active = 0;
   player->presentation.invincible_shell.channel_release_steps_active = 0;
   player->game->completion.state = COMPLETION_STATE_INACTIVE;

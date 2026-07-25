@@ -1,6 +1,6 @@
 // create_golb @ 0x415280 (thiscall, ret 0xc)
 // cRSubGolb::Create(cRSubGoldy*, int, int): link a projectile slot, seed its
-// spawn position and velocity from Goldy's movement flag family, then install
+// spawn position and velocity from Goldy's shoot-flag family, then install
 // the sprite, vapour, or path-search presentation path used by update_golb_ai.
 
 #include "bod_ai_dispatch.h"
@@ -47,7 +47,7 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
     }
 
     owner_player = player_;
-    DWORD kind_flags = player_->movement_flags;
+    DWORD kind_flags = player_->shoot_flags;
     if ((kind_flags & 7) != 0) {
         kind = 0;
     } else if ((kind_flags & 0x18) != 0) {
@@ -69,9 +69,9 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
     position->y = player->transform.basis_forward.y * 0.5f + position->y;
     position->z = player->transform.basis_forward.z * 0.5f + position->z;
 
-    DWORD movement_flags = player->movement_flags;
-    if ((movement_flags & 5) == 0) {
-        if ((movement_flags & 2) != 0) {
+    DWORD shoot_flags = player->shoot_flags;
+    if ((shoot_flags & 5) == 0) {
+        if ((shoot_flags & 2) != 0) {
             if (spawn_selector == 2) {
                 Vec3* source = &player->presentation.snail_hotspots_world[
                     SNAIL_HOTSPOT_BLASTER_LEFT_FIRE];
@@ -90,7 +90,7 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
             velocity.x = 0.0f;
             velocity.y = 0.0f;
             velocity.z = player->velocity.z + 1.0f;
-        } else if ((movement_flags & 0x18) != 0) {
+        } else if ((shoot_flags & 0x18) != 0) {
             Vec3* source;
             if (spawn_selector == 2)
                 source = &player->presentation.snail_hotspots_world[
@@ -110,7 +110,7 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
             velocity.x = 0.0f;
             velocity.y = 0.0f;
             velocity.z = player->velocity.z + 1.0f;
-        } else if ((movement_flags & 0x60) != 0) {
+        } else if ((shoot_flags & 0x60) != 0) {
             Vec3* source = &player->presentation.snail_hotspots_world[
                 SNAIL_HOTSPOT_ROCKET_BASE];
             position->x = source->x;
@@ -119,11 +119,11 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
             velocity.x = 0.0f;
             velocity.y = 0.0f;
             velocity.z = player->velocity.z + 0.60000002f;
-        } else if ((movement_flags & 0x29) != 0) {
+        } else if ((shoot_flags & 0x29) != 0) {
             velocity.x = 0.0f;
             velocity.y = 0.0f;
             velocity.z = player->velocity.z + 1.0f;
-        } else if ((movement_flags & 0x52) != 0) {
+        } else if ((shoot_flags & 0x52) != 0) {
             velocity.x = 0.0f;
             velocity.y = 0.0f;
             velocity.z = player->velocity.z + 1.0f;
@@ -137,28 +137,28 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
         if (spawn_selector == 3) {
             source = &player->presentation.snail_hotspots_world[
                 SNAIL_HOTSPOT_BLASTER_LEFT_FIRE];
-            goto copy_movement_flag_source;
+            goto copy_shoot_flag_source;
         }
         if (spawn_selector == 2) {
             source = &player->presentation.snail_hotspots_world[
                 SNAIL_HOTSPOT_BLASTER_RIGHT_FIRE];
-            goto copy_movement_flag_source;
+            goto copy_shoot_flag_source;
         }
         if (spawn_selector == 1) {
             source = &player->presentation.snail_hotspots_world[
                 SNAIL_HOTSPOT_BLASTER_TOP_FIRE];
-            goto copy_movement_flag_source;
+            goto copy_shoot_flag_source;
         }
-        goto after_movement_flag_source;
+        goto after_shoot_flag_source;
 
-copy_movement_flag_source:
+copy_shoot_flag_source:
         position->x = source->x;
         position->y = source->y;
         position->z = source->z;
 
-after_movement_flag_source:
+after_shoot_flag_source:
 
-        if ((player->movement_flags & 4) != 0) {
+        if ((player->shoot_flags & 4) != 0) {
             if (spawn_selector == 3) {
                 velocity.x = 0.1f;
                 velocity.y = 0.0f;

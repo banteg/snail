@@ -855,10 +855,10 @@ PLAYER_FIELD_UPDATES = (
     ("0x2e8", "stopwatch", "Time"),
     ("0x300", "score_tail", "int32_t"),
     ("0x304", "startup_track_index", "int32_t"),
-    ("0x308", "movement_flag_selector", "int32_t"),
+    ("0x308", "shooting_tier", "int32_t"),
     ("0x310", "score_buckets", "int32_t[0x6]"),
-    ("0x338", "movement_flags", "uint32_t"),
-    ("0x33c", "previous_movement_flags", "uint32_t"),
+    ("0x338", "shoot_flags", "uint32_t"),
+    ("0x33c", "previous_shoot_flags", "uint32_t"),
     ("0x328", "barrier_hold_progress", "float"),
     ("0x32c", "barrier_hold_step", "float"),
     ("0x330", "startup_voice_timer", "float"),
@@ -3087,7 +3087,7 @@ GOLB_PROTO_UPDATES = (
     ),
     (
         "update_movement_flag_emitters",
-        "void __thiscall update_movement_flag_emitters(Player* owner, Player* movement_source)",
+        "void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source)",
     ),
     (
         "spawn_golb_trail_sprite",
@@ -3568,7 +3568,7 @@ PROTO_UPDATES = (
     ),
     (
         "set_snail_weapon",
-        "void __thiscall set_snail_weapon(Snail* snail, int32_t movement_flags)",
+        "void __thiscall set_snail_weapon(Snail* snail, int32_t shoot_flags)",
     ),
     (
         "set_snail_jetpack",

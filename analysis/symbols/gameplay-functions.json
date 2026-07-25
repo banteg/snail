@@ -1006,7 +1006,7 @@
     {
       "address": "0x415280",
       "name": "create_golb",
-      "description": "Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current movement_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, primary sprite, embedded `Vapour`, or tertiary rocket owner and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and independent iOS body establish no result contract."
+      "description": "Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current `shoot_flags` family at +0x338 and emitter slot, choosing the matching spawn anchor, velocity lane, primary sprite, embedded `Vapour`, or tertiary rocket owner and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and independent iOS body establish no result contract."
     },
     {
       "address": "0x415bb0",
@@ -2309,7 +2309,7 @@
       "aliases": [
         "SetShootFlags"
       ],
-      "description": "Void Windows `cRSubGoldy::SetShootFlags()`: maps the player's shooting-tier selector at +0x308 onto the weapon-family flags at +0x338 and `shoot_cooldown_step` at +0x2734, then refreshes the owned cRSnail presentation when the flags change. Android preserves the authored symbol and an identical selector table; its common exit has incompatible R0 residues across the changed and unchanged paths, proving there is no result contract."
+      "description": "Void Windows `cRSubGoldy::SetShootFlags()`: maps `Player::shooting_tier` at +0x308 onto `shoot_flags` at +0x338 and `shoot_cooldown_step` at +0x2734, compares `previous_shoot_flags` at +0x33c, then refreshes the owned cRSnail presentation when the mask changes. Android preserves the authored symbol and identical tier table; its common exit has incompatible R0 residues across the changed and unchanged paths, proving there is no result contract. Ghidra 12.1.2 independently recovers the same void ownership chain."
     },
     {
       "address": "0x43a300",
@@ -2375,7 +2375,7 @@
       "aliases": [
         "PlayShootSfx"
       ],
-      "description": "Void Windows `cRSubGoldy::PlayShootSfx()`: chooses one of the authored shoot-SFX families 17..18, 19..21, or 22..24 from `movement_flags`, caches the sampled variant at Player +0x1cc, and attenuates playback while attachment-exit handling is active. Android and iOS preserve the authored symbol. Android's shared epilogue receives incompatible R0 residues from the no-sound, direct-play, and scaled-play paths, independently proving there is no result contract."
+      "description": "Void Windows `cRSubGoldy::PlayShootSfx()`: chooses one of the authored shoot-SFX families 17..18, 19..21, or 22..24 from `Player::shoot_flags` at +0x338, caches the sampled variant at Player +0x1cc, and attenuates playback while attachment-exit handling is active. Android and iOS preserve the authored symbol. Android's shared epilogue receives incompatible R0 residues from the no-sound, direct-play, and scaled-play paths, independently proving there is no result contract."
     },
     {
       "address": "0x43b120",
@@ -2611,7 +2611,7 @@
     {
       "address": "0x4413f0",
       "name": "apply_damage_gauge_delta",
-      "description": "Applies one signed delta to `Player::damage_gauge` at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by bit 0x80 of `Player::movement_flags`; state 2 ignores unforced positive deltas and also ignores unforced negative deltas while `Player::trampoline_bounce_active == 1`. Its fallback path changes `Player::presentation.snail_skin`, then dispatches damage animations through the same presentation unless `Player::control_override_active` is set. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path. Cross-port iOS symbols match this helper to `cRDamageGuage::Take(float, bool)`."
+      "description": "Applies one signed delta to `Player::damage_gauge` at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by bit 0x80 of `Player::shoot_flags`; state 2 ignores unforced positive deltas and also ignores unforced negative deltas while `Player::trampoline_bounce_active == 1`. Its fallback path changes `Player::presentation.snail_skin`, then dispatches damage animations through the same presentation unless `Player::control_override_active` is set. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path. Cross-port iOS symbols match this helper to `cRDamageGuage::Take(float, bool)`."
     },
     {
       "address": "0x441540",
@@ -2856,7 +2856,7 @@
     {
       "address": "0x444b50",
       "name": "update_invincible_shell",
-      "description": "Authored `cRInvincible::AI()`: fades the embedded shell visual in while the invincible movement bit stays active, spins it on the shared snail matrix, and fades back to the base skin once invincibility clears."
+      "description": "Authored `cRInvincible::AI()`: fades the embedded shell visual in while bit 0x80 of the owning Player's `shoot_flags` stays active, spins it on the shared snail matrix, and fades back to the base skin once invincibility clears."
     },
     {
       "address": "0x444cf0",
@@ -2876,7 +2876,7 @@
     {
       "address": "0x445920",
       "name": "set_snail_weapon",
-      "description": "Authored `cRSnail::SetWeapon(int)`: maps Player movement/weapon state onto the three animation channels owned by the exact Snail at `Player +0x2984`."
+      "description": "Authored `cRSnail::SetWeapon(int)`: maps `Player::shoot_flags` onto the three animation channels owned by the exact Snail at `Player +0x2984`."
     },
     {
       "address": "0x445cd0",

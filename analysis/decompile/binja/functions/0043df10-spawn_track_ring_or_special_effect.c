@@ -11,7 +11,7 @@
 0043df30        if (slot_index s>= 2)
 0043df39        return
 0043df5c        struct SubRingSlotCursor* slot_cursor = game + slot_index * 0x1f8
-0043df82        float default_phase_step = fconvert.s(fconvert.t(1f) / ((fconvert.t(2f) - fconvert.t(game->base_subgame_rate) * fconvert.t(0.300000012f)) * fconvert.t(60f)) * float.t(player->movement_flag_selector) * fconvert.t(0.125f) * fconvert.t(game->subgame_rate) * fconvert.t(6.28318548f))
+0043df82        float default_phase_step = fconvert.s(fconvert.t(1f) / ((fconvert.t(2f) - fconvert.t(game->base_subgame_rate) * fconvert.t(0.300000012f)) * fconvert.t(60f)) * float.t(player->shooting_tier) * fconvert.t(0.125f) * fconvert.t(game->subgame_rate) * fconvert.t(6.28318548f))
 0043df86        set_matrix_identity(&slot_cursor->ring.body.transform)
 0043df8b        int32_t effective_kind = requested_kind
 0043df8f        slot_cursor->ring.owner_player = player

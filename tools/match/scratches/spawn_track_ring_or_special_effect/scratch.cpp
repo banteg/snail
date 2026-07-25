@@ -35,7 +35,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
 
         SubRingSlotCursor* slot_cursor = (SubRingSlotCursor*)((char*)this
             + slot_index * sizeof(SubRing));
-        float owner_scale = (float)player->movement_flag_selector;
+        float owner_scale = (float)player->shooting_tier;
         owner_scale *= 0.125f;
         float default_phase_step =
             1.0f / ((2.0f - base_subgame_rate * 0.300000012f) * 60.0f);

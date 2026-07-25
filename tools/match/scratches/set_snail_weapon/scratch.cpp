@@ -3,7 +3,7 @@
 #include "audio_system.h"
 #include "player.h"
 
-void Snail::set_snail_weapon(int movement_flags)
+void Snail::set_snail_weapon(int shoot_flags)
 {
     bool any_channel_changed;
     int target_channel_0_state;
@@ -14,7 +14,7 @@ void Snail::set_snail_weapon(int movement_flags)
 
     any_channel_changed = 0;
 
-    switch (movement_flags) {
+    switch (shoot_flags) {
     case 1:
         target_channel_0_state = 0;
         target_channel_1_state = 0;
@@ -49,8 +49,8 @@ void Snail::set_snail_weapon(int movement_flags)
         target_channel_1_state = 2;
         break;
     default:
-        target_channel_0_state = movement_flags;
-        target_channel_1_state = movement_flags;
+        target_channel_0_state = shoot_flags;
+        target_channel_1_state = shoot_flags;
         break;
     }
 

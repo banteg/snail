@@ -7,19 +7,19 @@ Sprite *__thiscall spawn_golb_trail_sprite(GolbShot *shot, Vec3 *position)
 {
   Sprite *result; // eax
   SpriteFlag flags; // ecx
-  uint32_t movement_flags; // ecx
+  uint32_t shoot_flags; // ecx
 
   result = (Sprite *)allocate_sprite(g_sprite_manager, shot->owner_player->player_slot, 33, -1, -1);
   flags = result->flags;
   BYTE1(flags) |= 8u;
   result->progress = 0.0;
   result->flags = flags;
-  movement_flags = shot->owner_player->movement_flags;
-  if ( (movement_flags & 1) != 0 )
+  shoot_flags = shot->owner_player->shoot_flags;
+  if ( (shoot_flags & 1) != 0 )
   {
     result->progress_step = 0.23809524;
   }
-  else if ( (movement_flags & 2) != 0 )
+  else if ( (shoot_flags & 2) != 0 )
   {
     result->progress_step = 0.33333334;
   }

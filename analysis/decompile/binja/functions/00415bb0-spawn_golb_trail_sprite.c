@@ -8,10 +8,10 @@
 00415bd6        flags:1.b |= 8
 00415bd9        trail_sprite->progress = 0f
 00415bdc        trail_sprite->flags = flags
-00415be5        uint8_t movement_flags = (shot->owner_player->movement_flags).b
-00415bee        if ((movement_flags & 1) != 0)
+00415be5        uint8_t shoot_flags = (shot->owner_player->shoot_flags).b
+00415bee        if ((shoot_flags & 1) != 0)
 00415bf0        trail_sprite->progress_step = 0.238095239f
-00415bfc        if ((movement_flags & 2) != 0)
+00415bfc        if ((shoot_flags & 2) != 0)
 00415bfe        trail_sprite->progress_step = 0.333333343f
 00415c09        trail_sprite->progress_step = 0.555555582f
 00415c10        trail_sprite->lifetime = 0f

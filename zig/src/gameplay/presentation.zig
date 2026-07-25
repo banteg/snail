@@ -118,6 +118,8 @@ pub const WeaponChannelStates = struct {
 };
 
 pub const State = struct {
+    // Compatibility vocabulary in the Zig port. Native Player names are
+    // shooting_tier and shoot_flags.
     movement_flag_selector: u8 = 0,
     movement_flags: u32 = 1,
     barrier_hold_progress: f32 = 0.0,

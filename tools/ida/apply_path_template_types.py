@@ -393,7 +393,26 @@ GOLB_SHOT_PREFIX_MEMBERS = (
     (0x114, 0x004, "vapour_owner_shot", "GolbShot *"),
     (0x118, 0x080, "tertiary_body", "RenderableBod"),
 )
-PLAYER_SHOOT_COOLDOWN_EXPECTED_MEMBERS = {
+PLAYER_SHOOT_EXPECTED_MEMBERS = {
+    0x0308: {
+        "offset": "0x308",
+        "size": 4,
+        "name": "shooting_tier",
+        # IDA 9.4 canonicalizes this signed fixed-width typedef to plain int.
+        "type": "int",
+    },
+    0x0338: {
+        "offset": "0x338",
+        "size": 4,
+        "name": "shoot_flags",
+        "type": "uint32_t",
+    },
+    0x033C: {
+        "offset": "0x33c",
+        "size": 4,
+        "name": "previous_shoot_flags",
+        "type": "uint32_t",
+    },
     0x2730: {
         "offset": "0x2730",
         "size": 4,
@@ -1483,7 +1502,7 @@ PLAYER_ROOT_BORROW_OFFSET_OPERANDS = (
 # symbols, so IDA renders false global-plus-root expressions instead of the
 # recovered owner path. Normalize only the six exact operands: three reads of
 # Player::completion_handoff_active, one Player::attachment_exit_pending read,
-# the low-byte Player::movement_flags sign-bit test, and the intro path's
+# the low-byte Player::shoot_flags sign-bit test, and the intro path's
 # Player::click_start.hide_prompt clear. The evidence symbols remain named for
 # every other consumer.
 PLAYER_STATE_GATE_OFFSET_OPERANDS = (
@@ -1493,7 +1512,7 @@ PLAYER_STATE_GATE_OFFSET_OPERANDS = (
     (0x441174, 1, 0x430199),  # Player::attachment_exit_pending
     (0x44117E, 1, 0x4301BC),  # Player::completion_handoff_active
     # apply_damage_gauge_delta and update_cutscene.
-    (0x4413F9, 0, 0x4300B4),  # low byte of Player::movement_flags
+    (0x4413F9, 0, 0x4300B4),  # low byte of Player::shoot_flags
     (0x4467B1, 0, 0x42FEC4),  # Player::click_start.hide_prompt
 )
 
@@ -1931,7 +1950,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "update_movement_flag_emitters",
-        "void __thiscall update_movement_flag_emitters(Player* owner, Player* movement_source);",
+        "void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source);",
     ),
     (
         "spawn_golb_trail_sprite",
@@ -2687,7 +2706,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_snail_weapon",
-        "void __thiscall set_snail_weapon(Snail* snail, int32_t movement_flags);",
+        "void __thiscall set_snail_weapon(Snail* snail, int32_t shoot_flags);",
     ),
     (
         "set_snail_jetpack",
@@ -4177,9 +4196,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
         "name": "tile_id",
         "type": "SubLocTileId",
     }
-    player_shoot_cooldown_members = {
+    player_shoot_members = {
         hex(offset): _named_struct_member_readback("Player", offset)
-        for offset in PLAYER_SHOOT_COOLDOWN_EXPECTED_MEMBERS
+        for offset in PLAYER_SHOOT_EXPECTED_MEMBERS
     }
     bod_core_owner_size_failures = [
         {
@@ -4318,13 +4337,13 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "observed": track_row_cell_tile_owner,
             }
         )
-    for offset, expected in PLAYER_SHOOT_COOLDOWN_EXPECTED_MEMBERS.items():
-        observed = player_shoot_cooldown_members[hex(offset)]
+    for offset, expected in PLAYER_SHOOT_EXPECTED_MEMBERS.items():
+        observed = player_shoot_members[hex(offset)]
         if observed != expected:
             owner_size_failures.append(
                 {
                     "selector": f"Player.{expected['name']}",
-                    "owner_group": "player_shoot_cooldown",
+                    "owner_group": "player_shoot_state",
                     "reason": "member_mismatch",
                     "expected": expected,
                     "observed": observed,
@@ -4348,9 +4367,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "fringe_face_pair_cursor_size": fringe_face_pair_cursor_size,
                     "track_row_cell_tile_owner": track_row_cell_tile_owner,
-                    "player_shoot_cooldown_members": (
-                        player_shoot_cooldown_members
-                    ),
+                    "player_shoot_members": player_shoot_members,
                     "failed": owner_size_failures,
                 },
                 indent=2,
@@ -5051,7 +5068,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "fringe_vertex_row_cursor_size": fringe_vertex_row_cursor_size,
                 "fringe_face_pair_cursor_size": fringe_face_pair_cursor_size,
                 "track_row_cell_tile_owner": track_row_cell_tile_owner,
-                "player_shoot_cooldown_members": player_shoot_cooldown_members,
+                "player_shoot_members": player_shoot_members,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

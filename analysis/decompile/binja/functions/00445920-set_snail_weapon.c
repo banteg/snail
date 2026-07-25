@@ -8,11 +8,11 @@
 00445933        int32_t target_channel_2_state
 00445933        int32_t target_channel_1_state
 00445933        int32_t target_channel_0_state
-00445933        if (movement_flags - 1 u> 0xbf)
-0044599c        target_channel_0_state = movement_flags
-004459a0        target_channel_1_state = movement_flags
+00445933        if (shoot_flags - 1 u> 0xbf)
+0044599c        target_channel_0_state = shoot_flags
+004459a0        target_channel_1_state = shoot_flags
 00445935        int32_t edx_1 = 0
-00445937        edx_1.b = *(movement_flags + &set_snail_weapon_movement_jump_table[6]:3)
+00445937        edx_1.b = *(shoot_flags + &set_snail_weapon_movement_jump_table[6]:3)
 0044593d        switch (edx_1)
 00445944        case 0
 00445944        target_channel_0_state = 0
@@ -39,8 +39,8 @@
 0044597f        target_channel_1_state = 0
 00445981        target_channel_2_state = 3
 0044599c        case 6
-0044599c        target_channel_0_state = movement_flags
-004459a0        target_channel_1_state = movement_flags
+0044599c        target_channel_0_state = shoot_flags
+004459a0        target_channel_1_state = shoot_flags
 004459a4        int32_t channel_0_selected_state = snail->weapon_channels[0].selected_state
 004459aa        uint8_t channel_0_immediate = 1
 004459b1        if (channel_0_selected_state != target_channel_0_state)

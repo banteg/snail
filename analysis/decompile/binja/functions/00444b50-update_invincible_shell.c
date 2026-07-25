@@ -6,7 +6,7 @@
 00444b66        switch (invincible->state)
 00444b6d        case INVINCIBLE_STATE_INACTIVE
 00444b6d        struct GameRoot* game_base_1 = g_game_base
-00444b79        if ((game_base_1->subgame.player.movement_flags.b & 0x80) == 0)
+00444b79        if ((game_base_1->subgame.player.shoot_flags.b & 0x80) == 0)
 00444b8e        game_base_1->subgame.player.presentation.invincible_shell.body.bod.bod.list_flags &= 0xffffffdf
 00444b94        return
 00444b7d        start_invincible_shell(invincible)
@@ -19,10 +19,10 @@
 00444bb2        if ((((x87_r7_2 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp1_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 00444bb4        invincible->fade_progress = 1f
 00444bbe        invincible->state = INVINCIBLE_STATE_ACTIVE
-00444bd4        if ((g_game_base->subgame.player.movement_flags.b & 0x80) == 0)
+00444bd4        if ((g_game_base->subgame.player.shoot_flags.b & 0x80) == 0)
 00444bd6        invincible->state = INVINCIBLE_STATE_FADING_OUT
 00444beb        case INVINCIBLE_STATE_ACTIVE
-00444beb        if ((g_game_base->subgame.player.movement_flags.b & 0x80) == 0)
+00444beb        if ((g_game_base->subgame.player.shoot_flags.b & 0x80) == 0)
 00444bed        invincible->state = INVINCIBLE_STATE_FADING_OUT
 00444bfb        case INVINCIBLE_STATE_FADING_OUT
 00444bfb        long double x87_r7_4 = fconvert.t(invincible->fade_progress) - fconvert.t(invincible->fade_step)
@@ -34,7 +34,7 @@
 00444c1d        invincible->state = INVINCIBLE_STATE_INACTIVE
 00444c2f        change_snail_skin(&g_game_base->subgame.player.presentation.snail_skin, 0, 0f)
 00444c35        return
-00444c43        if ((g_game_base->subgame.player.movement_flags.b & 0x80) != 0)
+00444c43        if ((g_game_base->subgame.player.shoot_flags.b & 0x80) != 0)
 00444c45        invincible->state = INVINCIBLE_STATE_FADING_IN
 00444c55        long double x87_r7_6 = fconvert.t(invincible->spin_phase_step) + fconvert.t(invincible->spin_phase)
 00444c5b        long double temp0 = fconvert.t(1f)

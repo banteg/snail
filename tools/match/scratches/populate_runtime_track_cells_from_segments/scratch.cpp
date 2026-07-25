@@ -80,7 +80,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
 
     player.stopwatch.Zero();
     player.score_tail = 0;
-    player.movement_flag_selector = 0;
+    player.shooting_tier = 0;
     set_math_random_seed(runtime_build_seed);
     g_game->track.Change(level_definition.track_texture_set);
 

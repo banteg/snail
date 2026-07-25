@@ -44,9 +44,15 @@ The current high-confidence `Player` fields are:
 - `+0x2d8`: `control_override_active`
 - `+0x2dc`: `cutscene_pitch_cycle`
 - `+0x2e0`: `cutscene_pitch_cycle_step`
-- `+0x308`: `movement_flag_selector`
-- `+0x338`: `movement_flags`
-- `+0x33c`: `previous_movement_flags`
+- `+0x308`: `shooting_tier`
+  - ring kinds `4/5/8` advance or toggle this tier
+  - authored `cRSubGoldy::SetShootFlags()` maps it through the exact nine-case
+    table into `shoot_flags`
+- `+0x338`: `shoot_flags`
+  - consumed by `Shoot`, `PlayShootSfx`, Golb creation, weapon presentation,
+    and the bit-`0x80` invincibility/damage gates
+- `+0x33c`: `previous_shoot_flags`
+  - change detector for the owned `cRSnail::SetWeapon(int)` refresh
 - `+0x374`: `nuke_effect_progress`
 - `+0x378`: `nuke_effect_progress_step`
 - `+0x380`: `player_slot`
@@ -489,7 +495,12 @@ High-confidence current read:
 - Windows `update_player_movement_flags`, authored as the void
   `cRSubGoldy::SetShootFlags()`, feeds the authored
   `cRSnail::SetWeapon(int)` member (`set_snail_weapon` at `0x445920`)
-- `SetWeapon` resolves one `movement_flags` mask into three Weapon states
+- Android preserves the same tier table and ownership chain; Ghidra 12.1.2
+  independently demangles and decompiles that authored member with a void ABI
+- `SetWeapon` resolves one `shoot_flags` mask into three Weapon states
+- the Windows `update_player_movement_flags` and
+  `update_movement_flag_emitters` names remain stable matcher identifiers; the
+  authored members are `SetShootFlags` and `Shoot`
 - the three `Weapon` owners live at Snail offsets:
   - `+0x64c`
   - `+0xa28`
@@ -858,7 +869,7 @@ Current practical read:
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
   - `spawn_track_jetpack_pickup` uses the separate `jetpack_pickup` slot
   - `spawn_track_garbage_hazard` pushes slots into the `active_garbage_hazards` list over the `garbage_hazards` pool
-    - when `movement_flags & 0x80` is clear, the garbage-hit branch subtracts `normalized_contact.x * velocity.z * 0.18` from `player->velocity.x` and `normalized_contact.z * velocity.z * 0.10` from `player->velocity.z`
+    - when `shoot_flags & 0x80` is clear, the garbage-hit branch subtracts `normalized_contact.x * velocity.z * 0.18` from `player->velocity.x` and `normalized_contact.z * velocity.z * 0.10` from `player->velocity.z`
     - the grounded track leg in `update_subgoldy` then applies `position += velocity` and damps `velocity.x` by `1 - track_center_x * 0.1` each tick
   - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
 - the embedded `ParcelManager::slots` are the same runtime family allocated by the Windows `cRSubGame::AddParcel` path and remain separate only from the garbage runtime seeded at `game + 0x359144`
@@ -1324,11 +1335,13 @@ Current practical read:
 
 - `initialize_runtime_pools_and_path_template_bank` seeds both slots through `initialize_track_ring_or_special_effect_runtime`
 - `update_subgame` dispatches authored `0x23` ring rows plus the ramp families `0x02..0x0a` into `spawn_track_ring_or_special_effect`
-- `spawn_track_ring_or_special_effect` seeds the slot kind, owner selector snapshot, world position, and the child particle family (`ParticleRing`, `ParticleExplode`, `ParticleSlow`)
+- `spawn_track_ring_or_special_effect` seeds the slot kind, owner pointer,
+  owner-lives snapshot, world position, and the child particle family
+  (`ParticleRing`, `ParticleExplode`, `ParticleSlow`)
   - explicit authored ring rows use `SUB_RING_KIND_NORMAL_AUTHORED` (`5`), `POWER_UP_AUTHORED` (`8`), `EXPLODE_AUTHORED` (`6`), or `SLOW_AUTHORED` (`7`) and consume `RingSpeed` from the runtime row record at `game + 0x5ccac8 + row * 0xf4 + 0xe8`:
     - `phase_step = 1 / (ring_speed * 60) * track_center_x * tau`
   - the default ramp family uses `EXPLODE_RAMP` (`2`), randomized `SLOW_DEFAULT` (`3`), or `NORMAL_DEFAULT` (`4`) and the shared base-rate path instead:
-    - `phase_step = 1 / ((2 - base_subgame_rate * 0.3) * 60) * movement_flag_selector * 0.125 * track_center_x * tau`
+    - `phase_step = 1 / ((2 - base_subgame_rate * 0.3) * 60) * shooting_tier * 0.125 * track_center_x * tau`
   - values `0` and `1` remain explicit `UNKNOWN_0`/`UNKNOWN_1` tokens because no live Windows producer is recovered; the spawner still preserves their distinct placement/RNG paths and the collision consumer preserves kind `1`'s score + `PW1` behavior
   - after a `NORMAL_DEFAULT` (`4`) ramp spawn, `update_subgame` advances the spacing cursor to the source row during early startup movement modes, otherwise to `source + 35`; the live Zig scanner mirrors the non-startup `source + 35` branch
   - the active slot position is the mutable vector at `+0x68/+0x6c/+0x70`
@@ -1343,7 +1356,10 @@ Current practical read:
   second owner of the slot or its kind field
 - on hit, the slot does not die immediately: `handle_subgoldy_collisions` moves `ACTIVE -> COLLECT_PENDING`, and the slot's `update_ring_or_special_effect_parent` vtable advances `COLLECT_PENDING -> COLLECTING` before teardown
 - the collect transition (`2 -> 3`) and expand transition (`4 -> 5`) seed `effect_progress_step` from `Game.track_center_x * 0.0694444478`, not from the live subgame speed scalar
-- the same vtable owns the `EXPAND_PENDING -> EXPANDING` teardown lane keyed from `movement_flag_selector_snapshot`
+- the same vtable owns the `EXPAND_PENDING -> EXPANDING` teardown lane keyed
+  from `owner_lives_snapshot`; the older Zig-only
+  `movement_flag_selector_snapshot` label was a false ownership read, and the
+  runtime mirror now snapshots `visible_life_stock` instead
 - the collision switch owns the ring-kind ladder:
   - `UNKNOWN_1` (`1`) -> score + `PW1`
   - `EXPLODE_RAMP`/`EXPLODE_AUTHORED` (`2/6`) -> score + `EXPLODERING` + `initialize_nuke`

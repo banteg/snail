@@ -10,7 +10,7 @@
 
 void DamageGuage::apply_damage_gauge_delta(float delta, bool force)
 {
-    if (((g_game->subgame.embedded_player()->movement_flags & 0x80) == 0 || force)
+    if (((g_game->subgame.embedded_player()->shoot_flags & 0x80) == 0 || force)
         && (state != DAMAGE_GUAGE_STATE_DRAINING || delta <= 0.0f)
         && (state != DAMAGE_GUAGE_STATE_DRAINING
             || delta >= 0.0f

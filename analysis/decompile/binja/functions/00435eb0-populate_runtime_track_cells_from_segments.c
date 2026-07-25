@@ -32,7 +32,7 @@
 00435f66        game->player.visible_life_stock = 3
 00435f72        zero_timer_counters(&game->player.stopwatch)
 00435f78        game->player.score_tail = 0
-00435f7e        game->player.movement_flag_selector = 0
+00435f7e        game->player.shooting_tier = 0
 00435f84        set_math_random_seed(runtime_build_seed)
 00435f9f        int16_t x87control_1 = select_level_track_texture_set(&g_game_base->track, game->level_definition.track_texture_set)
 00435fa4        int32_t level_mode_2 = game->level_mode

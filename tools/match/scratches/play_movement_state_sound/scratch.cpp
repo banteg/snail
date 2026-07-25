@@ -10,7 +10,7 @@ double __fastcall normalize_vector(Vector3* vector);
 
 void Player::PlayShootSfx()
 {
-    unsigned int flags = movement_flags;
+    unsigned int flags = shoot_flags;
     int sound_id;
 
     if ((flags & 7) != 0) {

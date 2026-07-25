@@ -50,7 +50,7 @@ void __thiscall spawn_track_ring_or_special_effect(
   default_phase_step = 1.0
                      / ((2.0 - game->base_subgame_rate * 0.30000001)
                       * 60.0)
-                     * ((double)player->movement_flag_selector
+                     * ((double)player->shooting_tier
                       * 0.125)
                      * game->subgame_rate
                      * 6.2831855;

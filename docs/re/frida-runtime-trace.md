@@ -143,7 +143,13 @@ Current hooks in the script:
   - emits the branch that diverts respawn flow back through `complete_subgame`
   - currently disabled by default in the stable Windows pack
 - `0x43a1a0` `update_player_movement_flags`
-  - emits sampled selector-to-flag transitions for the `movement_flag_selector -> movement_flags` switch
+  - emits sampled tier-to-mask transitions for
+    `Player::shooting_tier -> Player::shoot_flags`
+  - the event name `movement_flags_update` and payload keys
+    `movement_flag_selector`, `movement_flags`, and
+    `previous_movement_flags` are retained as the stable trace schema; they map
+    to `shooting_tier`, `shoot_flags`, and `previous_shoot_flags` in the native
+    owner
   - includes the live movement-fire and track cursor fields:
     - `movement_fire_progress`
     - `movement_fire_progress_step`

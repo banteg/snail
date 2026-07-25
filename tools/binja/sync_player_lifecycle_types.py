@@ -67,7 +67,7 @@ PROTO_UPDATES = (
     ),
     (
         "update_movement_flag_emitters",
-        "void __thiscall update_movement_flag_emitters(Player* owner, Player* movement_source)",
+        "void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source)",
     ),
     (
         "end_jetpack_hover",

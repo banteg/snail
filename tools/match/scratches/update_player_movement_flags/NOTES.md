@@ -3,12 +3,12 @@
 Source-shaped match: 93.75%, 38/50 instruction prefix, 46/50 candidate/target
 insns.
 
-This helper maps the player movement selector at `+0x308` onto the
-`movement_flags` mask at `+0x338` and the fire cadence step at `+0x2734`.
-When the mask changes from `previous_movement_flags`, it refreshes the
+This helper maps the player's shooting tier at `+0x308` onto the
+`shoot_flags` mask at `+0x338` and the fire cadence step at `+0x2734`.
+When the mask changes from `previous_shoot_flags`, it refreshes the
 presentation controller at `+0x2984` through `set_snail_weapon`.
 
-Recovered selector table:
+Recovered tier table:
 
 - selectors 0, 1, and 2 produce masks `1`, `2`, and `4` with step
   `0.074074075f`;
@@ -21,8 +21,8 @@ Recovered selector table:
 Residual:
 
 - Native keeps a separate equal-mask block after the changed-mask return,
-  reloading `movement_flags` into `ecx` before storing
-  `previous_movement_flags`. VC6 tail-merges the equal branch into the changed
+  reloading `shoot_flags` into `ecx` before storing
+  `previous_shoot_flags`. VC6 tail-merges the equal branch into the changed
   branch's final return sequence for the clean C++ spelling. The old
   38/64-instruction reading was stale; the current curated extent is 50 target
   instructions with the first 38 matching exactly.
@@ -35,17 +35,17 @@ Residual:
   jump-table symbol audit (`$L321`/`$L322` versus the curated table symbol).
   Keep the baseline shape unless a source-plausible table-owner fix appears.
 - 2026-06-18 type/name sync: the compact local `Player` shell now marks
-  `movement_flags` and `previous_movement_flags` as `unsigned int`, matching
+  `shoot_flags` and `previous_shoot_flags` as `unsigned int`, matching
   `tools/match/include/player.h`, while still avoiding the full shared include
   because it changes the curated jump-table symbol. Focused Wibo remains
   93.75%, 46/50 candidate/target instructions, with 2 masked operands OK. The
   IDA artifact was updated from raw `this+206/207/2509` indexing to
-  `Player::movement_flags`, `previous_movement_flags`,
+  `Player::shoot_flags`, `previous_shoot_flags`,
   `shoot_cooldown_step`, and `presentation`.
 - 2026-06-19 equal-tail audit: decompiler-shaped `if (equal) { store; } else
   { set_snail_weapon; store; }`, explicit equal early-return, an
   `unchanged_flags` local, a typed `previous_flags` pointer, source label layout
-  with the equal block after the changed return, and returning `movement_flags`
+  with the equal block after the changed return, and returning `shoot_flags`
   directly from the equal branch all compile back to the same 93.75% candidate
   with clean `2 ok` masks. Keep the clearer baseline final branch; the only
   residual remains VC6 tail-merging the native duplicate equal-mask epilogue.
@@ -58,7 +58,7 @@ Residual:
   instructions, 38/50 prefix, and clean `2 ok` masked operands. The retained
   residual remains the equal-mask tail merge, but this scratch no longer carries
   a private `Player` shell.
-- 2026-06-21 equal-tail volatile reload: reading `movement_flags` back through a
+- 2026-06-21 equal-tail volatile reload: reading `shoot_flags` back through a
   narrow volatile view only in the equal branch prevents VC6 from tail-merging
   the equal store with the changed-mask return path. This recovers the native
   duplicate `mov ecx, [esi+0x338]; mov [esi+0x33c], ecx` epilogue without
@@ -70,7 +70,7 @@ Residual:
 
 2026-07-13 no-fakematch audit: the volatile equal-branch reload existed only to
 block VC6 tail merging and is removed. The direct member assignment preserves
-the recovered movement/presentation ownership and returns to the honest
+the recovered shoot/presentation ownership and returns to the honest
 93.75%, 46/50 object with a 38-instruction prefix and two clean operands. The
 missing duplicate equal-tail epilogue remains visible compiler-layout debt.
 

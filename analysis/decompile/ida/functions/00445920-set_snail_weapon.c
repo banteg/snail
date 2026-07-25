@@ -3,7 +3,7 @@
 /* selector: set_snail_weapon */
 
 // Authored `cRSnail::SetWeapon(int)`: maps Player movement/weapon state onto the three animation channels owned by the exact Snail at `Player +0x2984`.
-void __thiscall set_snail_weapon(Snail *snail, int32_t movement_flags)
+void __thiscall set_snail_weapon(Snail *snail, int32_t shoot_flags)
 {
   char v3; // cl
   int32_t v4; // edi
@@ -20,7 +20,7 @@ void __thiscall set_snail_weapon(Snail *snail, int32_t movement_flags)
   uint8_t movement_flagsc; // [esp+18h] [ebp+4h]
 
   v3 = 0;
-  switch ( movement_flags )
+  switch ( shoot_flags )
   {
     case 1:
       v4 = 0;
@@ -56,8 +56,8 @@ void __thiscall set_snail_weapon(Snail *snail, int32_t movement_flags)
       v12 = 3;
       break;
     default:
-      v4 = movement_flags;
-      v5 = movement_flags;
+      v4 = shoot_flags;
+      v5 = shoot_flags;
       break;
   }
   selected_state = snail->weapon_channels[0].selected_state;

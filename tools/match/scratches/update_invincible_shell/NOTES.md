@@ -5,7 +5,7 @@ Exact source-shaped recovery of authored `cRInvincible::AI` on the 0xa4-byte
 
 Recovered behavior:
 
-- state 0 either starts the shell while `Player::movement_flags & 0x80` is
+- state 0 either starts the shell while `Player::shoot_flags & 0x80` is
   active, or clears the embedded shell's inherited `list_flags & ~0x20`;
 - state 1 fades in to `1.0` and moves to state 2, but drops to state 3 as soon
   as the invincible bit clears;
@@ -18,7 +18,7 @@ Recovered behavior:
   `spin_phase * 6.2831855`.
 
 Focused Wibo result: exact 100%, 98/98 insns, 98/98 prefix, and 28 clean masked
-operands. The exact match requires direct `Player::movement_flags` bit tests;
+operands. The exact match requires direct `Player::shoot_flags` bit tests;
 a helper function was source-clean but introduced calls and an extra saved
 register, regressing to 68.39%.
 

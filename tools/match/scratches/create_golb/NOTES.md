@@ -4,7 +4,7 @@
 
 The Goldy input is now carried as a `Player*` throughout the movement selector.
 The inherited render transform supplies the initial position and forward basis,
-`movement_flags` selects the projectile family, and `velocity.z` supplies every
+`shoot_flags` selects the projectile family, and `velocity.z` supplies every
 launch-speed base. The six raw `+0x4134..+0x41ac` anchors are now the authored
 `Snail::snail_hotspots_world` entries for left/right/top blaster fire,
 left/right laser, and the rocket base. Windows `0x41554d..0x4155b9` and the
@@ -104,11 +104,11 @@ Residuals:
   pointer lifetimes until after the list/kind setup improves the scratch from
   27.93% to 28.16%, 448/582 instructions. Splitting the `player+0x338` read
   into a kind-classification `kind_flags` read and a later movement-tree
-  `movement_flags` read matches the native reload better and improves the
+  `shoot_flags` read matches the native reload better and improves the
   scratch to 28.38%, 447/582 instructions. Re-testing the previous-output
   whole-copy on top of that accepted source shape improves the scratch to
   28.54%, 448/582 instructions.
-- 2026-06-13 source-shaping follow-up 2: the `(movement_flags & 5)` selector
+- 2026-06-13 source-shaping follow-up 2: the `(shoot_flags & 5)` selector
   now uses the native direct compare order with a shared movement-source copy
   label visible in BN's disassembly. A cleaner `if/else if` spelling improved
   the scratch to 28.57%, but still emitted a null-source guard; the shared-label
@@ -148,7 +148,7 @@ Residuals:
   shared `Vector3` type, including the existing `vector_magnitude` method
   surface. Focused Wibo remained `30.96%`, `445/582`, with `31 ok` masked
   operands and the known mismatch.
-- 2026-06-19 movement-tree layout: inverting the top-level `(movement_flags & 5)`
+- 2026-06-19 shoot-tree layout: inverting the top-level `(shoot_flags & 5)`
   source branch keeps the non-`&5` movement families as the fallthrough path and
   moves the `&5` anchor-copy body out-of-line, matching the native tree shape
   better without changing spawn semantics. Focused Wibo improves to `31.71%`,

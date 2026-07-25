@@ -834,7 +834,7 @@
       "aliases": [
         "loc_4300b4"
       ],
-      "description": "Stable relocatable reference to the low byte of `Player::movement_flags` at Player +0x338; bit 0x80 gates invincible-shell activity and blocks unforced damage-gauge deltas."
+      "description": "Stable relocatable reference to the low byte of `Player::shoot_flags` at Player +0x338; bit 0x80 gates invincible-shell activity and blocks unforced damage-gauge deltas."
     },
     {
       "address": "0x4303f0",

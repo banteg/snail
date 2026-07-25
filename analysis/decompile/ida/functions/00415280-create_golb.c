@@ -2,13 +2,13 @@
 /* function: create_golb @ 0x415280 */
 /* selector: create_golb */
 
-// Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current movement_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, render owner, and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and the independent iOS body establish no result contract.
+// Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current shoot_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, render owner, and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and the independent iOS body establish no result contract.
 void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_selector, int32_t emitter_index)
 {
   BodNode **p_first; // eax
   BodNode *first; // ecx
   struct BodNode *list_prev; // ecx
-  uint32_t movement_flags; // eax
+  uint32_t shoot_flags; // eax
   Player *owner_player; // eax
   Vec4 *p_position; // edi
   double v11; // st7
@@ -94,16 +94,16 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
     shot->primary_body.bod.bod.list_flags |= 0x200u;
   }
   shot->owner_player = player;
-  movement_flags = player->movement_flags;
-  if ( (movement_flags & 7) != 0 )
+  shoot_flags = player->shoot_flags;
+  if ( (shoot_flags & 7) != 0 )
   {
     shot->kind = 0;
   }
-  else if ( (movement_flags & 0x18) != 0 )
+  else if ( (shoot_flags & 0x18) != 0 )
   {
     shot->kind = 1;
   }
-  else if ( (movement_flags & 0x60) != 0 )
+  else if ( (shoot_flags & 0x60) != 0 )
   {
     shot->kind = 2;
   }
@@ -121,7 +121,7 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
   shot->flight_transform.position.y = color.g + shot->flight_transform.position.y;
   shot->flight_transform.position.z = color.b + shot->flight_transform.position.z;
   v12 = shot->owner_player;
-  v13 = v12->movement_flags;
+  v13 = v12->shoot_flags;
   if ( (v13 & 5) != 0 )
   {
     switch ( spawn_selector )
@@ -137,7 +137,7 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
         break;
       default:
 LABEL_43:
-        if ( (v12->movement_flags & 4) == 0 )
+        if ( (v12->shoot_flags & 4) == 0 )
           goto LABEL_50;
         if ( spawn_selector == 3 )
         {

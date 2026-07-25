@@ -57,7 +57,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   int32_t v53; // eax
   int v54; // eax
   int32_t lives; // eax
-  int32_t movement_flag_selector; // eax
+  int32_t shooting_tier; // eax
   int32_t player_slot; // [esp-Ch] [ebp-90h]
   float v58; // [esp+10h] [ebp-74h]
   Vec3 v59; // [esp+18h] [ebp-6Ch] BYREF
@@ -75,7 +75,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
 
   if ( !player->attachment_exit_pending && !player->boost_one_tick && !player->control_override_active )
   {
-    if ( SLOBYTE(player->movement_flags) >= 0 )
+    if ( SLOBYTE(player->shoot_flags) >= 0 )
     {
       for ( i = 0; i < 40; ++i )
       {
@@ -125,7 +125,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
         v59 = v61;
         if ( v9 < 1.0 && normalize_vector(&v59) < 0.98000002 )
         {
-          if ( (player->movement_flags & 0x80) == 0 )
+          if ( (player->shoot_flags & 0x80) == 0 )
           {
             player->velocity.x = player->velocity.x - v59.x * player->velocity.z * 0.18000001;
             player->velocity.z = player->velocity.z - v59.z * player->velocity.z * 0.1;
@@ -160,7 +160,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
           v58 = v16;
           if ( v16 < 1.5675001 )
           {
-            if ( (player->movement_flags & 0x80) != 0 )
+            if ( (player->shoot_flags & 0x80) != 0 )
             {
               kill_slug_hazard(&player->game->slug_hazards.slots[m]);
             }
@@ -341,17 +341,17 @@ void __thiscall handle_subgoldy_collisions(Player *player)
                 player->lives = lives + 1;
               play_voice_manager(&g_voice_manager, 5, 1u, -1);
             }
-            movement_flag_selector = player->movement_flag_selector;
-            if ( movement_flag_selector >= 8 )
+            shooting_tier = player->shooting_tier;
+            if ( shooting_tier >= 8 )
             {
-              if ( movement_flag_selector == 8 )
-                player->movement_flag_selector = 7;
+              if ( shooting_tier == 8 )
+                player->shooting_tier = 7;
             }
             else
             {
-              player->movement_flag_selector = movement_flag_selector + 1;
+              player->shooting_tier = shooting_tier + 1;
             }
-            v54 = player->movement_flag_selector - 1;
+            v54 = player->shooting_tier - 1;
             if ( v54 > 6 )
 LABEL_105:
               v54 = 6;
@@ -360,17 +360,17 @@ LABEL_106:
             add_subgoldy_score(player, 2, 0);
             continue;
           case SUB_RING_KIND_POWER_UP_AUTHORED:
-            v53 = player->movement_flag_selector;
+            v53 = player->shooting_tier;
             if ( v53 >= 8 )
             {
               if ( v53 == 8 )
-                player->movement_flag_selector = 7;
+                player->shooting_tier = 7;
             }
             else
             {
-              player->movement_flag_selector = v53 + 1;
+              player->shooting_tier = v53 + 1;
             }
-            v54 = player->movement_flag_selector - 1;
+            v54 = player->shooting_tier - 1;
             if ( v54 > 6 )
               goto LABEL_105;
             goto LABEL_106;

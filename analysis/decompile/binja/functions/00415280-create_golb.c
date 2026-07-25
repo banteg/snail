@@ -21,12 +21,12 @@
 004152e0        shot->primary_body.bod.bod.list_flags |= 0x200
 004152a5        report_errorf("List ADD")
 004152e7        shot->owner_player = player
-004152ed        uint8_t movement_flags = (player->movement_flags).b
-004152f5        if ((movement_flags & 7) != 0)
+004152ed        uint8_t shoot_flags = (player->shoot_flags).b
+004152f5        if ((shoot_flags & 7) != 0)
 004152f7        shot->kind = 0
-00415301        if ((movement_flags & 0x18) != 0)
+00415301        if ((shoot_flags & 0x18) != 0)
 00415303        shot->kind = 1
-00415311        if ((movement_flags & 0x60) != 0)
+00415311        if ((shoot_flags & 0x60) != 0)
 00415313        shot->kind = 2
 00415324        set_matrix_identity(&shot->source_matrix)
 00415329        struct Player* owner_player = shot->owner_player
@@ -41,10 +41,10 @@
 00415383        shot->flight_transform.position.y = fconvert.s(fconvert.t(color.g) + fconvert.t(shot->flight_transform.position.y))
 0041538d        shot->flight_transform.position.z = fconvert.s(fconvert.t(color.b) + fconvert.t(shot->flight_transform.position.z))
 00415390        struct Player* owner_player_1 = shot->owner_player
-00415396        uint8_t movement_flags_1 = (owner_player_1->movement_flags).b
+00415396        uint8_t shoot_flags_1 = (owner_player_1->shoot_flags).b
 0041539e        struct Vec3* shot_velocity
 0041539e        float b
-0041539e        if ((movement_flags_1 & 5) != 0)
+0041539e        if ((shoot_flags_1 & 5) != 0)
 00415606        struct Vec3* spawn_anchor
 00415606        if (spawn_selector != 3)
 00415613        if (spawn_selector == 2)
@@ -58,7 +58,7 @@
 0041562c        shot->flight_transform.position.x = spawn_anchor->x
 00415631        shot->flight_transform.position.y = spawn_anchor->y
 00415637        shot->flight_transform.position.z = spawn_anchor->z
-00415643        if ((owner_player_1->movement_flags.b & 4) == 0)
+00415643        if ((owner_player_1->shoot_flags.b & 4) == 0)
 00415724        long double x87_r7_34 = fconvert.t(owner_player_1->velocity.z) + fconvert.t(1f)
 0041572a        color.r = 0
 00415736        shot_velocity = &shot->velocity
@@ -90,7 +90,7 @@
 004156d0        shot->velocity.y = 0
 004156d5        shot->velocity.z = color.b
 004156de        shot->flight_transform.position.x = fconvert.s(fconvert.t(shot->flight_transform.position.x) - fconvert.t(0.5f))
-004153a6        if ((movement_flags_1 & 2) != 0)
+004153a6        if ((shoot_flags_1 & 2) != 0)
 004153b3        if (spawn_selector == 2)
 004153bf        shot->flight_transform.position.x = owner_player_1->presentation.snail_hotspots_world[0].x
 004153c4        shot->flight_transform.position.y = owner_player_1->presentation.snail_hotspots_world[0].y
@@ -110,7 +110,7 @@
 0041542e        b = color.b
 00415432        shot_velocity->y = 0f
 00415755        shot_velocity->z = b
-0041543c        if ((movement_flags_1 & 0x18) != 0)
+0041543c        if ((shoot_flags_1 & 0x18) != 0)
 0041554b        if (spawn_selector != 2)
 0041558b        shot->flight_transform.position.x = owner_player_1->presentation.snail_hotspots_world[7].x
 00415590        shot->flight_transform.position.y = owner_player_1->presentation.snail_hotspots_world[7].y
@@ -139,7 +139,7 @@
 004155ec        color.b = fconvert.s(x87_r7_23)
 004155f4        shot->velocity.y = 0
 004155f7        shot->velocity.z = color.b
-00415444        if ((movement_flags_1 & 0x60) != 0)
+00415444        if ((shoot_flags_1 & 0x60) != 0)
 004154f3        color.r = 0
 004154fb        color.g = 0
 00415505        shot->flight_transform.position.x = owner_player_1->presentation.snail_hotspots_world[0xa].x
@@ -149,14 +149,14 @@
 00415533        color.b = fconvert.s(fconvert.t(owner_player_1->velocity.z) + fconvert.t(0.600000024f))
 0041553b        shot->velocity.y = color.g
 0041553e        shot->velocity.z = color.b
-0041544c        if ((movement_flags_1 & 0x29) != 0)
+0041544c        if ((shoot_flags_1 & 0x29) != 0)
 0041545a        color.r = 0
 0041546c        color.g = 0
 00415478        shot->velocity.x = color.r
 0041547a        color.b = fconvert.s(fconvert.t(owner_player_1->velocity.z) + fconvert.t(1f))
 00415482        shot->velocity.y = 0
 00415485        shot->velocity.z = color.b
-0041548f        if ((movement_flags_1 & 0x52) != 0)
+0041548f        if ((shoot_flags_1 & 0x52) != 0)
 004154a1        color.r = 0
 004154b3        color.g = 0
 004154bf        shot->velocity.x = color.r

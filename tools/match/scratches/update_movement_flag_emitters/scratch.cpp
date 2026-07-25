@@ -5,9 +5,9 @@
 
 typedef unsigned int DWORD;
 
-void Player::Shoot(Player* player)
+void Player::Shoot(Player* shoot_source)
 {
-    DWORD flags = player->movement_flags;
+    DWORD flags = shoot_source->shoot_flags;
     Player* owner = (Player*)this;
     int spawn_count;
 

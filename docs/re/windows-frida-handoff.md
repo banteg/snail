@@ -135,7 +135,9 @@ Important payload notes for the current script:
   - `attachment_exit_progress_step`
   - `attachment_exit_gate_a`
   - `attachment_exit_gate_b`
-- `movement_flags_update` now samples the `movement_flag_selector -> movement_flags` switch directly at `0x43a1a0`
+- `movement_flags_update` now samples the
+  `Player::shooting_tier -> Player::shoot_flags` table directly at `0x43a1a0`;
+  its older event and payload names remain stable for trace compatibility
 - `track_pair_payload` now records the scalar written into `Sprite::position.z` for `ghost_sprite_a/b` at `0x43d3d0`
 - `player_update`, `movement_flags_update`, and `track_pair_payload` now also expose the typed movement integrator and row-event state:
   - `level_mode`
