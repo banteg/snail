@@ -4,13 +4,13 @@
 
 | Metric | Before | After |
 |---|---:|---:|
-| Match | 0.19% on coarse range | **56.54%** focused |
+| Match | 0.19% on coarse range | **57.95%** focused |
 | Target instructions | 1029 coarse | **648** |
 | Candidate instructions | 2 | **629** |
 | Common prefix | 0 / 1029 | 0 / 648 |
-| Masked operands | none | **39 ok, 0 unresolved, 1 mismatch** |
+| Masked operands | none | **40 ok, 0 unresolved, 1 mismatch** |
 
-The current focused score is **56.54%**. The first mismatch is the native
+The current focused score is **57.95%**. The first mismatch is the native
 `sub esp, 0x54` versus the candidate's `sub esp, 0x48`.
 
 The single masked mismatch is at the curve-loop call alignment: target
@@ -35,6 +35,9 @@ symbols or constants.
 - Preserved the rotation constant sequence with an explicit float conversion.
 - Added a terminal-row lateral-offset vector, yielding the final increase from
   `43.49%` / 622 instructions to `43.55%` / 629 instructions.
+- Made the secondary interior sample copy Z from the primary sample's published
+  field. This recovers the native ownership and reload shape, raising the
+  focused score from `56.54%` to `57.95%` without changing instruction count.
 
 ## Rejected trials
 
@@ -71,9 +74,9 @@ revisit the terminal vertex-row scalar lifetimes that account for the remaining
 ## Final audit
 
 - Toolchain: `msvc6.5 /O2 /G5 /W3`.
-- Final score: `56.54%`.
+- Final score: `57.95%`.
 - Target/candidate: `648 / 629` instructions.
 - Prefix: `0 / 648`.
-- Masks: `39 ok, 0 unresolved, 1 mismatch`.
+- Masks: `40 ok, 0 unresolved, 1 mismatch`.
 - No inline assembly, naked functions, volatile padding, fake globals, dummy
   externs, artificial stack padding, or matcher/normalizer gaming.

@@ -93,6 +93,7 @@ the last row uses the corrected function boundary:
 | Float-boundary cleanup | 43.49% | 622 |
 | Terminal-row lateral vector | **43.55%** | **629** |
 | Promoted following-function boundary | **56.54%** | **629** |
+| Primary-owned secondary Z copy | **57.95%** | **629** |
 
 ## Resolved target boundary
 
@@ -202,3 +203,17 @@ vectors were rejected for adding eight backward offsets, and the current-sample
 terminal mesh view was rejected for adding six. Matcher source remains honest
 and unchanged at 56.54% (629/648 instructions, 39 accepted masked operands and
 one existing call-symbol mismatch).
+
+## 2026-07-25 secondary Z ownership
+
+The secondary interior sample now copies Z from the already-published primary
+sample instead of sharing a source-local floating temporary. This is the more
+direct ownership relationship and makes VC6 reload the primary sample field for
+the secondary store, as the native loop does. Removing the now-single-use local
+is code-generation neutral.
+
+The focused score rises from 56.54% to **57.95%** with the instruction counts
+unchanged at 629/648. The masked audit improves from 39 to **40** accepted
+operands, with no unresolved operands and the same one call-symbol mismatch.
+The compiler still carries the converted loop index into the next iteration, so
+the integer-induction recovery remains open.

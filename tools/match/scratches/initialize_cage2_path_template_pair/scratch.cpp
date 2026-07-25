@@ -66,14 +66,14 @@ void Path::initialize_cage2_path_template_pair(
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
         ++width_cells_;
         primary_samples[i].transform.position.y = 0.0f;
-        float sample_z = (float)width_cells_;
-        primary_samples[i].transform.position.z = sample_z;
+        primary_samples[i].transform.position.z = (float)width_cells_;
 
         set_matrix_identity(&secondary_samples[i].transform);
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;
         secondary_samples[i].transform.position.y =
             primary_samples[i].transform.position.y + 0.49000001f;
-        secondary_samples[i].transform.position.z = sample_z;
+        secondary_samples[i].transform.position.z =
+            primary_samples[i].transform.position.z;
 
         if (i <= 1) {
             primary_samples[i - 1].transform.set_matrix_rotation_identity();
