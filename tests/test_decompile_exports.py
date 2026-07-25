@@ -53,6 +53,32 @@ def test_binja_focused_summary_reports_only_refreshed_exports(
     assert summary["exports"] == refreshed
 
 
+def test_binja_focused_no_refresh_preserves_full_index_provenance(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/binja/export_manifest_functions.py",
+        "test_binja_export_manifest_functions_provenance",
+    )
+
+    assert module._index_analysis_refreshed(
+        refresh_result=None,
+        focused=True,
+        existing_index={"analysis_refreshed": True},
+    )
+    assert not module._index_analysis_refreshed(
+        refresh_result=None,
+        focused=False,
+        existing_index={"analysis_refreshed": True},
+    )
+    assert module._index_analysis_refreshed(
+        refresh_result={"refreshed": True},
+        focused=True,
+        existing_index={"analysis_refreshed": False},
+    )
+
+
 def test_tracked_export_defaults_to_the_pinned_binja_target(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

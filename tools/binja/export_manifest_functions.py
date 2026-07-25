@@ -265,6 +265,22 @@ def _command_summary(
     return summary
 
 
+def _index_analysis_refreshed(
+    *,
+    refresh_result: object | None,
+    focused: bool,
+    existing_index: dict[str, object],
+) -> bool:
+    """Keep a focused no-refresh export from degrading full-index provenance."""
+    if refresh_result is not None:
+        return True
+    if focused:
+        previous = existing_index.get("analysis_refreshed")
+        if isinstance(previous, bool):
+            return previous
+    return False
+
+
 def _load_live_function_map(target_selector: str) -> dict[int, dict[str, object]]:
     payload = _run_bn_json("function", "list", "--target", target_selector)
     if not isinstance(payload, list):
@@ -552,7 +568,11 @@ def main() -> int:
         "function_count": len(indexed_exports),
         "mismatch_count": len(mismatches),
         "mismatches": mismatches,
-        "analysis_refreshed": refresh_result is not None,
+        "analysis_refreshed": _index_analysis_refreshed(
+            refresh_result=refresh_result,
+            focused=bool(args.only),
+            existing_index=existing_index,
+        ),
         "timed_out_function_reanalysis": reanalysis_result,
         "removed_stale_artifacts": removed,
         "exports": indexed_exports,
