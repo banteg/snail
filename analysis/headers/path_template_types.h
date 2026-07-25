@@ -29,6 +29,20 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
+/*
+ * Analysis-only offset-pointer view for build_snail_hotspots' local hotspot
+ * walk. Native carries Vec3::z at +0x08 while clearing and accumulating x/y/z,
+ * then advances by one complete Vec3. Snail::snail_hotspots_local remains the
+ * sole owner of the 19-record bank.
+ */
+typedef struct __ptr_offset(0x08)
+    __base(Vec3, 0x00) SnailHotspotLocalZCursorView {
+    __inherited Vec3 hotspot;
+} SnailHotspotLocalZCursorView;
+typedef char SnailHotspotLocalZCursorView_must_be_0x0c[
+    (sizeof(SnailHotspotLocalZCursorView) == 0x0c) ? 1 : -1
+];
+
 typedef struct TransformMatrix {
     Vec3 basis_right;
     float basis_right_w;
@@ -1639,6 +1653,19 @@ typedef struct ObjectFaceQuad {
     TextureRef* texture_ref;
     ObjectUv uv[4];
 } ObjectFaceQuad;
+
+/*
+ * Analysis-only offset-pointer view for build_snail_hotspots' face scan.
+ * Native carries ObjectFaceQuad::texture_ref at +0x0c and advances by one
+ * complete 0x30-byte facequad. Object::facequads remains the allocation owner.
+ */
+typedef struct __ptr_offset(0x0c)
+    __base(ObjectFaceQuad, 0x00) ObjectFaceQuadTextureCursorView {
+    __inherited ObjectFaceQuad face;
+} ObjectFaceQuadTextureCursorView;
+typedef char ObjectFaceQuadTextureCursorView_must_be_0x30[
+    (sizeof(ObjectFaceQuadTextureCursorView) == 0x30) ? 1 : -1
+];
 
 /*
  * Analysis-only offset-pointer view for the generated four-vertex row shared

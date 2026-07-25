@@ -531,6 +531,8 @@ def ensure_path_analysis_views(
         "TimeTrial",
         "PresentationWobbleController",
         "PresentationAnimationObjectStrideCursor",
+        "SnailHotspotLocalZCursorView",
+        "ObjectFaceQuadTextureCursorView",
         "GolbShotVapourObjectStrideCursor",
         "SubLazerBodyObjectStrideCursor",
         "SaltOwnerGameStrideCursor",

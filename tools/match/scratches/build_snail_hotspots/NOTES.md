@@ -85,3 +85,19 @@ Binary Ninja exposes the same exact `Snail` receiver and bank; its nested
 claimed. The focused replay verifies all transitive owner sizes. The authored
 matcher remains honestly at 83.78%; this slice does not alter source shape or
 fakematch the residual branch/register scheduling.
+
+## 2026-07-25 mesh-bank and local-hotspot borrows
+
+The producer's five native register lifetimes now survive in both analysis
+lanes. EBP borrows the `Object` installed in
+`Snail::snail_hotspot_body`, EBX walks the 19-entry texture-name table, ESI
+walks `Snail::snail_hotspots_local` from each element's `z` field, EDI walks
+`Object::facequads` from each `texture_ref`, and EAX borrows the selected
+`Object::vertices` element.
+
+The two field-first cursors use offset-pointer views with the complete `0x0c`
+`Vec3` and `0x30` `ObjectFaceQuad` strides. They do not introduce allocations:
+the hotspot model owns its facequad and vertex banks, while `Snail` owns the
+19 local results. IDA replay now previews the complete type and lvar mutation
+on a temporary database before touching the canonical database. No matcher
+source changed; focused Wibo remains honestly at 83.78%.

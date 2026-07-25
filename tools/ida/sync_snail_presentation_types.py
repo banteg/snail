@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import shutil
 import sys
+import tempfile
 
 from runner import DEFAULT_IDA_DB_PATH, REPO_ROOT, find_ida_binary, run_ida_script
 
@@ -16,8 +18,8 @@ IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_snail_presentation_types.py
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Apply the focused cRSnail presentation and cRWeapon animation "
-            "ownership ABIs to IDA."
+            "Preview on a temporary database, then apply the focused cRSnail "
+            "presentation and cRWeapon animation ownership ABIs to IDA."
         )
     )
     parser.add_argument(
@@ -53,6 +55,20 @@ def main() -> int:
         raise FileNotFoundError(
             f"IDAPython sync script not found: {IDAPYTHON_SCRIPT_PATH}"
         )
+
+    with tempfile.TemporaryDirectory(prefix="snail-ida-presentation-preview-") as temp_dir:
+        preview_db_path = Path(temp_dir) / db_path.name
+        shutil.copy2(db_path, preview_db_path)
+        preview_exit_code, preview_log_text = run_ida_script(
+            ida_bin=ida_bin,
+            script_path=IDAPYTHON_SCRIPT_PATH,
+            db_path=preview_db_path,
+            script_args=[str(header_path)],
+            log_stem="preview-snail-presentation-types",
+        )
+        sys.stdout.write(preview_log_text)
+        if preview_exit_code:
+            return preview_exit_code
 
     exit_code, log_text = run_ida_script(
         ida_bin=ida_bin,

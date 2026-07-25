@@ -19977,15 +19977,22 @@
       "artifact": "analysis/decompile/binja/functions/00445d50-build_snail_hotspots.c",
       "required_substrings": [
         "struct Snail* snail_1 = snail",
-        "snail->snail_hotspot_body.bod.object",
-        "snail->snail_hotspots_local[0].z",
+        "struct Object* hotspot_model = snail->snail_hotspot_body.bod.object",
+        "char** hotspot_name_cursor = &data_4a4aa0",
+        "struct SnailHotspotLocalZCursorView* hotspot_local_z_cursor = &snail->snail_hotspots_local[0].z",
+        "struct ObjectFaceQuadTextureCursorView* hotspot_face_texture_cursor = &hotspot_model->facequads->texture_ref",
+        "hotspot_face_texture_cursor->texture_ref",
+        "struct Vec3* hotspot_source_vertex",
+        "hotspot_local_z_cursor = &hotspot_local_z_cursor[1]",
         "snail->snail_hotspots_local[0x12].y",
         "00445e1f        return"
       ],
       "forbidden_substrings": [
         "PlayerPresentationController",
         "_pad_1644",
-        "presentation->"
+        "presentation->",
+        "void* ebp",
+        "int32_t* edi_2"
       ]
     },
     {
@@ -19993,14 +20000,22 @@
       "artifact": "analysis/decompile/ida/functions/00445d50-build_snail_hotspots.c",
       "required_substrings": [
         "void __thiscall build_snail_hotspots(Snail *snail)",
-        "object = snail->snail_hotspot_body.bod.object;",
-        "p_z = &snail->snail_hotspots_local[0].z;",
+        "hotspot_model = snail->snail_hotspot_body.bod.object;",
+        "hotspot_name_cursor = g_snail_hotspot_texture_names;",
+        "float *__shifted(SnailHotspotLocalZCursorView,8) hotspot_local_z_cursor;",
+        "TextureRef **__shifted(ObjectFaceQuadTextureCursorView,0xC) hotspot_face_texture_cursor;",
+        "ADJ(hotspot_face_texture_cursor)->face.texture_ref",
+        "Vec3 *hotspot_source_vertex;",
+        "ADJ(hotspot_local_z_cursor)->hotspot.x",
         "snail->snail_hotspots_local[18].y"
       ],
       "forbidden_substrings": [
         "sub_445D50",
         "int this",
-        "return this;"
+        "return this;",
+        "Object *object;",
+        "float *p_z;",
+        "TextureRef **p_texture_ref;"
       ]
     },
     {

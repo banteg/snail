@@ -143,8 +143,10 @@ REQUIRED_OWNER_MARKERS = (
 EXPECTED_OWNER_SIZES = {
     "ObjectAnimation": 0x14,
     "Object": 0xDC,
+    "ObjectFaceQuadTextureCursorView": 0x30,
     "Sprite": 0xB4,
     "RenderableBod": 0x80,
+    "SnailHotspotLocalZCursorView": 0x0C,
     "PresentationAnimationSlot": 0x80,
     "AnimManager": 0x48,
     "SubHover": 0x214,
@@ -172,6 +174,45 @@ INVINCIBLE_ROOT_OFFSET_OPERANDS = (
     (0x444CBD, 1, 0x432738),
 )
 
+HOTSPOT_LVAR_SPECS = (
+    (
+        "build_snail_hotspots",
+        "hotspot_model",
+        "Object *hotspot_model;",
+        0x445D54,
+    ),
+    (
+        "build_snail_hotspots",
+        "hotspot_name_cursor",
+        "char **hotspot_name_cursor;",
+        0x445D60,
+    ),
+    (
+        "build_snail_hotspots",
+        "hotspot_local_z_cursor",
+        (
+            "float *__shifted(SnailHotspotLocalZCursorView, 0x08) "
+            "hotspot_local_z_cursor;"
+        ),
+        0x445D65,
+    ),
+    (
+        "build_snail_hotspots",
+        "hotspot_face_texture_cursor",
+        (
+            "TextureRef **__shifted(ObjectFaceQuadTextureCursorView, 0x0C) "
+            "hotspot_face_texture_cursor;"
+        ),
+        0x445D90,
+    ),
+    (
+        "build_snail_hotspots",
+        "hotspot_source_vertex",
+        "Vec3 *hotspot_source_vertex;",
+        0x445DCD,
+    ),
+)
+
 
 def _normalize_type_text(value: str | None) -> str | None:
     if value is None:
@@ -197,6 +238,109 @@ def _named_struct_size(name: str) -> int | None:
     if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
         return None
     return value.get_size()
+
+
+def _sync_hotspot_lvar(
+    selector: str,
+    expected_name: str,
+    declaration: str,
+    definition_address: int,
+) -> dict[str, object]:
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        return {"status": "failed", "selector": selector, "reason": "missing_function"}
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and not lvar.is_stk_var()
+        and lvar.defea == definition_address
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "unexpected_hotspot_lvar_candidates",
+            "definition_address": hex(definition_address),
+            "candidate_count": len(candidates),
+        }
+
+    expected_type = ida_typeinf.tinfo_t()
+    if not ida_typeinf.parse_decl(
+        expected_type,
+        None,
+        declaration,
+        ida_typeinf.PT_SIL,
+    ):
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "parse_hotspot_lvar_type_failed",
+            "declaration": declaration,
+        }
+
+    lvar = candidates[0]
+    normalized_expected_type = _normalize_type_text(str(expected_type))
+    observed_type = _normalize_type_text(str(lvar.type()))
+    if lvar.name == expected_name and observed_type == normalized_expected_type:
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "definition_address": hex(lvar.defea),
+        }
+
+    before_name = lvar.name
+    before_type = str(lvar.type())
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = expected_name
+    info.type = expected_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "modify_hotspot_lvar_failed",
+            "definition_address": hex(definition_address),
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and not candidate.is_stk_var()
+        and candidate.defea == definition_address
+        and candidate.name == expected_name
+        and _normalize_type_text(str(candidate.type())) == normalized_expected_type
+    ]
+    if len(verified) != 1:
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "hotspot_lvar_readback_failed",
+            "definition_address": hex(definition_address),
+            "candidate_count": len(verified),
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "before_name": before_name,
+        "before_type": before_type,
+        "name": verified[0].name,
+        "type": str(verified[0].type()),
+        "definition_address": hex(verified[0].defea),
+    }
 
 
 def _normalize_subhover_player_root_offset() -> dict[str, object]:
@@ -408,6 +552,23 @@ def _sync_types(header_path: pathlib.Path) -> int:
         )
     ida_hexrays.mark_cfunc_dirty(0x444B50, True)
 
+    hotspot_lvars = [
+        _sync_hotspot_lvar(
+            selector,
+            expected_name,
+            declaration,
+            definition_address,
+        )
+        for selector, expected_name, declaration, definition_address in (
+            HOTSPOT_LVAR_SPECS
+        )
+    ]
+    failed.extend(
+        {"hotspot_lvar": hotspot_lvar}
+        for hotspot_lvar in hotspot_lvars
+        if hotspot_lvar.get("status") == "failed"
+    )
+
     print(
         json.dumps(
             {
@@ -418,6 +579,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "owner_sizes": owner_sizes,
                 "subhover_player_root_offset": subhover_player_root_offset,
                 "invincible_root_offsets": invincible_root_offsets,
+                "hotspot_lvars": hotspot_lvars,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

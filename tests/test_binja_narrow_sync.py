@@ -445,6 +445,8 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
         'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"'
         in ida_runner
     )
+    assert "TemporaryDirectory" in ida_runner
+    assert "preview-snail-presentation-types" in ida_runner
 
 
 def test_snail_presentation_replay_preserves_slot_element_cursors() -> None:
@@ -3642,25 +3644,67 @@ def test_snail_hotspot_replay_preserves_local_and_world_borrows() -> None:
     source = (BINJA_DIR / "sync_snail_hotspot_lifetimes.py").read_text(
         encoding="utf-8"
     )
+    ida_source = (IDA_DIR / "apply_snail_presentation_types.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
     health_checks = (
         repo_root / "analysis/decompile/health_checks.json"
     ).read_text(encoding="utf-8")
 
     for expected in (
         '"Vec3": 0x0C',
+        '"SnailHotspotLocalZCursorView": 0x0C',
         '"TransformMatrix": 0x40',
+        '"ObjectFaceQuad": 0x30',
+        '"ObjectFaceQuadTextureCursorView": 0x30',
+        '"Object": 0xDC',
         '"RenderableBod": 0x80',
         '"Snail": 0x19B4',
+        '0x02: ("vertex_0", "uint16_t")',
+        '0x0C: ("texture_ref", "TextureRef*")',
+        '0x38: ("vertices", "Vec3*")',
+        '0x54: ("facequad_count", "int32_t")',
+        '0x5C: ("facequads", "ObjectFaceQuad*")',
         '0x15CC: ("snail_hotspot_source_body", "RenderableBod")',
         '0x164C: ("snail_hotspot_body", "RenderableBod")',
         '0x16CC: ("snail_hotspots_local", "Vec3[19]")',
         '0x17B0: ("snail_hotspots_world", "Vec3[19]")',
+        "ensure_hotspot_analysis_views",
+        "current_header_type_equivalence",
+        "types_declare_missing_only",
         "SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES",
         "current_struct_fields_batch",
         "apply_user_var_updates",
         "verify_snail_hotspot_owner_layout",
     ):
         assert expected in source
+    for index, storage, variable_name, variable_type in (
+        (3, 71, "hotspot_model", "Object*"),
+        (15, 69, "hotspot_name_cursor", "char**"),
+        (
+            20,
+            72,
+            "hotspot_local_z_cursor",
+            "SnailHotspotLocalZCursorView*",
+        ),
+        (
+            63,
+            73,
+            "hotspot_face_texture_cursor",
+            "ObjectFaceQuadTextureCursorView*",
+        ),
+        (124, 66, "hotspot_source_vertex", "Vec3*"),
+    ):
+        update = (
+            '"build_snail_hotspots",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{variable_name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert update in source
     for index, storage, variable_name in (
         (13, 71, "hotspot_world_cursor"),
         (25, 66, "hotspot_local_slot"),
@@ -3681,11 +3725,42 @@ def test_snail_hotspot_replay_preserves_local_and_world_borrows() -> None:
         "struct Vec3* hotspot_world_slot = hotspot_world_cursor",
         "hotspot_world_cursor = &hotspot_world_cursor[1]",
         "hotspot_world_slot->x = vector.x",
+        "struct Object* hotspot_model = snail->snail_hotspot_body.bod.object",
+        "char** hotspot_name_cursor = &data_4a4aa0",
+        "struct SnailHotspotLocalZCursorView* hotspot_local_z_cursor",
+        "struct ObjectFaceQuadTextureCursorView* hotspot_face_texture_cursor",
+        "hotspot_face_texture_cursor->texture_ref",
+        "struct Vec3* hotspot_source_vertex",
         '"struct Vec3 (*"',
         '"__offset(0x16cc)"',
         '"(hotspot_world_slot - 0x17b0)"',
     ):
         assert fragment in health_checks
+    for fragment in (
+        "typedef struct __ptr_offset(0x08)",
+        "__base(Vec3, 0x00) SnailHotspotLocalZCursorView",
+        "SnailHotspotLocalZCursorView_must_be_0x0c",
+        "typedef struct __ptr_offset(0x0c)",
+        "__base(ObjectFaceQuad, 0x00) ObjectFaceQuadTextureCursorView",
+        "ObjectFaceQuadTextureCursorView_must_be_0x30",
+    ):
+        assert fragment in header
+    for fragment in (
+        "HOTSPOT_LVAR_SPECS = (",
+        '"hotspot_model"',
+        '"hotspot_name_cursor"',
+        '"hotspot_local_z_cursor"',
+        '"hotspot_face_texture_cursor"',
+        '"hotspot_source_vertex"',
+        "0x445D54",
+        "0x445D60",
+        "0x445D65",
+        "0x445D90",
+        "0x445DCD",
+        "_sync_hotspot_lvar",
+        "hotspot_lvar_readback_failed",
+    ):
+        assert fragment in ida_source
 
 
 def test_contact_target_search_replay_preserves_entry_borrows() -> None:

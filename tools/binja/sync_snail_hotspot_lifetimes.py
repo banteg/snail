@@ -8,9 +8,11 @@ import sys
 
 from _narrow_sync import (
     apply_user_var_updates,
+    current_header_type_equivalence,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
+    types_declare_missing_only,
 )
 from _target import DEFAULT_TARGET
 
@@ -20,7 +22,11 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
     "Vec3": 0x0C,
+    "SnailHotspotLocalZCursorView": 0x0C,
     "TransformMatrix": 0x40,
+    "ObjectFaceQuad": 0x30,
+    "ObjectFaceQuadTextureCursorView": 0x30,
+    "Object": 0xDC,
     "RenderableBod": 0x80,
     "Snail": 0x19B4,
 }
@@ -30,6 +36,15 @@ EXPECTED_STRUCT_FIELDS = {
         0x00: ("x", "float"),
         0x04: ("y", "float"),
         0x08: ("z", "float"),
+    },
+    "ObjectFaceQuad": {
+        0x02: ("vertex_0", "uint16_t"),
+        0x0C: ("texture_ref", "TextureRef*"),
+    },
+    "Object": {
+        0x38: ("vertices", "Vec3*"),
+        0x54: ("facequad_count", "int32_t"),
+        0x5C: ("facequads", "ObjectFaceQuad*"),
     },
     "RenderableBod": {
         0x38: ("transform", "TransformMatrix"),
@@ -42,10 +57,56 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# EBP walks the 19-entry world bank. EAX borrows the corresponding local slot
-# exactly 19 Vec3 records behind it, while ECX retains the pre-increment world
-# destination. All three are element borrows from Snail-owned arrays.
+# build_snail_hotspots keeps five physical borrows: EBP on the hotspot Object,
+# EBX on the 19-name table, ESI at each local Vec3::z, EDI at each facequad's
+# texture_ref, and EAX on the selected source vertex. The two field-first views
+# preserve the carried addresses without moving either bank under a new owner.
+#
+# update_snail_skin then walks the 19-entry world bank. EAX borrows the
+# corresponding local slot exactly 19 Vec3 records behind it, while ECX retains
+# the pre-increment world destination. All are element borrows from Snail-owned
+# arrays or Object-owned mesh banks.
 SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
+    (
+        "build_snail_hotspots",
+        "RegisterVariableSourceType",
+        3,
+        71,
+        "hotspot_model",
+        "Object*",
+    ),
+    (
+        "build_snail_hotspots",
+        "RegisterVariableSourceType",
+        15,
+        69,
+        "hotspot_name_cursor",
+        "char**",
+    ),
+    (
+        "build_snail_hotspots",
+        "RegisterVariableSourceType",
+        20,
+        72,
+        "hotspot_local_z_cursor",
+        "SnailHotspotLocalZCursorView*",
+    ),
+    (
+        "build_snail_hotspots",
+        "RegisterVariableSourceType",
+        63,
+        73,
+        "hotspot_face_texture_cursor",
+        "ObjectFaceQuadTextureCursorView*",
+    ),
+    (
+        "build_snail_hotspots",
+        "RegisterVariableSourceType",
+        124,
+        66,
+        "hotspot_source_vertex",
+        "Vec3*",
+    ),
     (
         "update_snail_skin",
         "RegisterVariableSourceType",
@@ -70,6 +131,11 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
         "hotspot_world_slot",
         "Vec3*",
     ),
+)
+
+HOTSPOT_ANALYSIS_VIEWS = (
+    "SnailHotspotLocalZCursorView",
+    "ObjectFaceQuadTextureCursorView",
 )
 
 
@@ -131,6 +197,37 @@ def verify_snail_hotspot_owner_layout(target: str) -> dict[str, object]:
     }
 
 
+def ensure_hotspot_analysis_views(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    stale_types = tuple(
+        type_name
+        for type_name in HOTSPOT_ANALYSIS_VIEWS
+        if not equivalence.get(type_name, False)
+    )
+    if not stale_types:
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "hotspot analysis views already match the header",
+            "header": str(header_path),
+            "replace_types": (),
+            "include_types": HOTSPOT_ANALYSIS_VIEWS,
+        }
+    return types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=stale_types,
+        include_types=HOTSPOT_ANALYSIS_VIEWS,
+    )
+
+
 def main() -> int:
     args = parse_args()
     header_path = args.header.resolve()
@@ -138,6 +235,10 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations = [
+        ensure_hotspot_analysis_views(
+            target=args.target,
+            header_path=header_path,
+        ),
         verify_snail_hotspot_owner_layout(args.target),
         *apply_user_var_updates(
             REPO_ROOT,

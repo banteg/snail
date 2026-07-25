@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "place_parcels_on_track",
-      "address": "0x4438e0"
+      "name": "build_snail_hotspots",
+      "address": "0x445d50"
     }
   ],
   "health_check_count": 1057,
