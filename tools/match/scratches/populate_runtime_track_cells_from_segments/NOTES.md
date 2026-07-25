@@ -883,3 +883,31 @@ and operands remain untouched at the honest 29.67%, 1,229/1,245-instruction
 frontier with 66 clean operands and the same two documented mismatches. No
 score-shaped source, register coercion, dummy dependency, masked operand, or
 other fakematch was added.
+
+## 2026-07-25 runtime attachment-path borrows
+
+The `P`/`p` glyph arm now exposes the complete attachment borrow chain.
+`SubgameRuntime::path_pairs` owns 63 `PathPair` records. The mirror branch
+selects one complete `Path`, either `primary` or `secondary`, and the current
+`TrackRowCell` retains that borrowed path in `attachment_template_record`.
+The selected path's `row_span_count` then stamps borrowed links to that same
+cell across consecutive `SubRow` records. The pair, selected path, cell, and
+rows all keep their existing owners.
+
+Binary Ninja pins `selected_attachment_path` at
+`RegisterVariableSourceType(3686, 67)` and `attachment_span_index` at
+`RegisterVariableSourceType(3844, 68)`. Its transient EDI cell alias was
+explicitly rejected: persisting it adds no visible owner and weakens unrelated
+`set_bod_object` arguments to `BodVtable**`, so the replay removes that user
+variable and leaves the already typed alias automatic. IDA independently pins
+`runtime_cell`, `selected_attachment_path`, and `attachment_span_index` at
+`0x4366c5`, `0x436d17`, and `0x436db5`. Hex-Rays now selects
+`&path_pairs[index].primary` or `.secondary` directly instead of widening the
+secondary branch to a containing `PathPair*`.
+
+Both decompilers therefore agree on the selected record and the span-stamped
+cell links; no Ghidra tie-break was needed. Matcher source and operands remain
+untouched at the honest 29.67%, 1,229/1,245-instruction frontier with 66 clean
+operands and the same two documented mismatches. No score-shaped source,
+register coercion, dummy dependency, masked operand, or other fakematch was
+added.

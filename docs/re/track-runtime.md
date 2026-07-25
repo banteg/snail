@@ -75,6 +75,13 @@ The cross-port symbols also recover the authored builder hierarchy:
 - exact Windows `rebuild_track_runtime_from_segments` is the void `cRSubGame::GenerateLevel(int)`; it wraps `BuildLevel()` with feature, colour, parcel, normalization, warning, fringe, and cache passes
 - outer Windows `build_subgame_level` is `cRSubGame::StartLevel(int)`; it loads the level and managers, calls `GenerateLevel(int)`, and then establishes landscape, player, HUD, music, and active-list state
 
+Within `BuildLevel()`'s `P`/`p` glyph arm, `SubgameRuntime::path_pairs`
+remains the owner of each `PathPair`. The mirror flag selects a borrowed
+`primary` or `secondary` `Path`; the current `TrackRowCell` retains that path,
+and the path's `row_span_count` controls how many `SubRow` records retain a
+borrowed link back to the same cell. Neither selection nor stamping transfers
+ownership of a pair, path, cell, or row.
+
 Current high-confidence render-normalization read:
 
 - `select_track_tile_edge_variants` is the main edge/corner swap pass

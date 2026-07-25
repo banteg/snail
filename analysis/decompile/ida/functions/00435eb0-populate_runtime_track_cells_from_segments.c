@@ -52,7 +52,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int32_t v46; // ebp
   RuntimeCellStrideAnchor *runtime_cell_anchor; // esi
   uint32_t lane_and_flags; // eax
-  TrackRowCell *p_cell; // edi
+  TrackRowCell *runtime_cell; // edi
   char *v50; // ebp
   char v51; // al
   uint32_t list_flags; // eax
@@ -85,27 +85,29 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   uint32_t v79; // eax
   uint32_t v80; // eax
   int32_t attachment_template_index; // ecx
-  PathPair *p_secondary; // ecx
-  signed int v83; // edx
+  Path *selected_attachment_path; // ecx
+  int32_t attachment_span_index; // edx
   SubRow *stamped_row; // ecx
   uint32_t v85; // eax
   uint32_t v86; // ecx
   uint32_t v87; // eax
   uint32_t v88; // eax
+  char v89; // al
   Vec3 *p_anchor_position; // edi
   SubLocTileId tile_id; // al
-  SubLocTileId v91; // al
-  double v92; // st7
+  SubLocTileId v92; // al
   double v93; // st7
+  double v94; // st7
   tColour *track_skirt_color; // eax
-  uint32_t v95; // eax
-  SubLocTileId v96; // al
+  uint32_t v96; // eax
+  SubLocTileId v97; // al
   Fringe **fringe_slot; // ecx
   int32_t remaining_fringe_slots; // edx
   Fringe *fringe_object; // eax
   Vec3 *fringe_position; // eax
-  bool v101; // cc
-  float v102; // [esp+0h] [ebp-5Ch]
+  bool v102; // cc
+  float v103; // [esp+0h] [ebp-5Ch]
+  char *source_name; // [esp+4h] [ebp-58h]
   char first_or_last_row; // [esp+1Ah] [ebp-42h]
   char attachment_entry_installed; // [esp+1Bh] [ebp-41h]
   int32_t build_row; // [esp+1Ch] [ebp-40h]
@@ -115,7 +117,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int32_t lane; // [esp+2Ch] [ebp-30h]
   int32_t row_event_owner; // [esp+30h] [ebp-2Ch]
   TrackRowCellFringeFrontStrideCursor *row_fringe_front_cursor; // [esp+34h] [ebp-28h]
-  float v113; // [esp+34h] [ebp-28h]
+  float v115; // [esp+34h] [ebp-28h]
   int32_t segment_cursor; // [esp+38h] [ebp-24h]
   int32_t trampoline_counter; // [esp+3Ch] [ebp-20h]
   int edge_row; // [esp+40h] [ebp-1Ch]
@@ -328,8 +330,8 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                             * (double)build_runtime_owner->level_definition.segment_count;
             else
               segment_count = (double)build_runtime_owner->level_definition.segment_count;
-            v102 = segment_count;
-            selected_segment = &build_runtime_owner->level_definition.segment_slots[(__int64)((double)(int)(__int64)random_float_below(v102)
+            v103 = segment_count;
+            selected_segment = &build_runtime_owner->level_definition.segment_slots[(__int64)((double)(int)(__int64)random_float_below(v103)
                                                                                             * build_runtime_owner->base_subgame_rate)];
             active_segment = selected_segment;
             selected_segment->visited = 1;
@@ -512,7 +514,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
             runtime_cell_anchor->cell.fringe_back = nullptr;
             if ( build_row < game->first_block_row_count || (edge_rowa = 0, build_row >= game->completion_row_start) )
               edge_rowa = 1;
-            p_cell = &runtime_cell_anchor->cell;
+            runtime_cell = &runtime_cell_anchor->cell;
             set_bod_object((BodBase *)&runtime_cell_anchor->cell, nullptr);
             v50 = &active_segment->glyph_rows[v46][segment_row_index];
             v51 = normalize_segment_glyph_for_track_flags(game, *v50, build_row, edge_rowa);
@@ -746,10 +748,10 @@ LABEL_173:
                 }
                 attachment_template_index = runtime_row_anchor->row.attachment_template_index;
                 if ( game->track_mirror_enabled )
-                  p_secondary = (PathPair *)&game->path_pairs[attachment_template_index].secondary;
+                  selected_attachment_path = &game->path_pairs[attachment_template_index].secondary;
                 else
-                  p_secondary = &game->path_pairs[attachment_template_index];
-                runtime_cell_anchor->cell.attachment_template_record = &p_secondary->primary;
+                  selected_attachment_path = &game->path_pairs[attachment_template_index].primary;
+                runtime_cell_anchor->cell.attachment_template_record = selected_attachment_path;
                 runtime_cell_anchor->cell.bod.list_flags &= ~0x20u;
                 if ( !attachment_entry_installed )
                 {
@@ -763,7 +765,7 @@ LABEL_173:
                     runtime_cell_anchor->cell.attachment_template_record->fringe_mesh_bod.object);
                   runtime_row_anchor->row.attachment_body.bod.list_flags |= 0x20u;
                   LODWORD(runtime_row_anchor->row.installed_heading_delta) = active_segment->angle_radians.bits;
-                  v83 = 0;
+                  attachment_span_index = 0;
                   if ( (int)runtime_cell_anchor->cell.attachment_template_record->row_span_count > 0 )
                   {
                     stamped_row = &runtime_row_anchor->row;
@@ -774,18 +776,18 @@ LABEL_173:
                       {
                         LOBYTE(v85) = v85 | 0x80;
                         stamped_row->flags = v85;
-                        stamped_row->secondary_attachment_cell = p_cell;
+                        stamped_row->secondary_attachment_cell = runtime_cell;
                       }
                       else
                       {
                         LOBYTE(v85) = v85 | 0x40;
                         stamped_row->flags = v85;
-                        stamped_row->primary_attachment_cell = p_cell;
+                        stamped_row->primary_attachment_cell = runtime_cell;
                       }
-                      ++v83;
+                      ++attachment_span_index;
                       ++stamped_row;
                     }
-                    while ( v83 < (signed int)runtime_cell_anchor->cell.attachment_template_record->row_span_count );
+                    while ( attachment_span_index < (signed int)runtime_cell_anchor->cell.attachment_template_record->row_span_count );
                   }
                 }
                 break;
@@ -889,8 +891,9 @@ LABEL_174:
                 }
                 break;
               default:
-                normalize_segment_glyph_for_track_flags(game, *v50, build_row, 1);
-                debug_report_stub();
+                source_name = active_segment->source_name;
+                v89 = normalize_segment_glyph_for_track_flags(game, *v50, build_row, 1);
+                debug_report_stub("TrackError:%c in Segment %s\n", v89, source_name);
                 break;
             }
             p_anchor_position = &runtime_cell_anchor->cell.anchor_position;
@@ -904,59 +907,59 @@ LABEL_174:
             if ( tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE )
             {
               p_anchor_position->x = 0.0;
-              v92 = (double)build_row + 0.5;
-              v113 = v92;
-              v93 = v92 - 0.5;
-              runtime_cell_anchor->cell.anchor_position.z = v93;
+              v93 = (double)build_row + 0.5;
+              v115 = v93;
+              v94 = v93 - 0.5;
+              runtime_cell_anchor->cell.anchor_position.z = v94;
               if ( (g_runtime_config.render_flags & 0x20) != 0 )
               {
                 runtime_row_anchor->row.attachment_body.position.x = 0.0;
-                runtime_row_anchor->row.attachment_body.position.z = v93;
+                runtime_row_anchor->row.attachment_body.position.z = v94;
                 track_skirt_color = get_track_skirt_color(&g_game_base->subgame, &out);
                 runtime_row_anchor->row.attachment_body.color = *track_skirt_color;
                 set_object_color(runtime_row_anchor->row.attachment_body.object, *track_skirt_color);
               }
               else
               {
-                v95 = runtime_row_anchor->row.attachment_body.bod.list_flags;
-                LOBYTE(v95) = v95 & 0xDF;
-                runtime_row_anchor->row.attachment_body.bod.list_flags = v95;
+                v96 = runtime_row_anchor->row.attachment_body.bod.list_flags;
+                LOBYTE(v96) = v96 & 0xDF;
+                runtime_row_anchor->row.attachment_body.bod.list_flags = v96;
               }
             }
             else
             {
               p_anchor_position->x = (double)lane - 4.0 + 0.5;
               runtime_cell_anchor->cell.anchor_position.y = 0.0;
-              v91 = runtime_cell_anchor->cell.tile_id;
-              if ( v91 == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
-                || v91 == SUBLOC_TILE_RAMP_GREATER_RAISED
-                || v91 == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED )
+              v92 = runtime_cell_anchor->cell.tile_id;
+              if ( v92 == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+                || v92 == SUBLOC_TILE_RAMP_GREATER_RAISED
+                || v92 == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED )
               {
                 runtime_cell_anchor->cell.anchor_position.y = 0.5;
               }
-              v113 = (double)build_row + 0.5;
-              runtime_cell_anchor->cell.anchor_position.z = v113;
+              v115 = (double)build_row + 0.5;
+              runtime_cell_anchor->cell.anchor_position.z = v115;
             }
             if ( build_row < 4 && game->level_mode != 2 )
               runtime_cell_anchor->cell.anchor_position.y = game->path_pairs[36].primary.primary_samples->transform.position.y;
             if ( runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_UNIVERSE_HOLE )
               runtime_cell_anchor->cell.anchor_position.y = runtime_cell_anchor->cell.anchor_position.y - 0.029999999;
-            v96 = runtime_cell_anchor->cell.tile_id;
-            if ( v96 == SUBLOC_TILE_FLOOR_DOT
-              || v96 == SUBLOC_TILE_FLOOR_DASH
-              || v96 == SUBLOC_TILE_FLOOR_VARIANT_14
-              || v96 == SUBLOC_TILE_GARBAGE_HAZARD
-              || v96 == SUBLOC_TILE_SALT_HAZARD
-              || v96 == SUBLOC_TILE_SLIDE_UNDERSCORE
-              || v96 == SUBLOC_TILE_SLIDE_O
-              || v96 == SUBLOC_TILE_HEALTH_PICKUP
-              || v96 == SUBLOC_TILE_SPEEDUP_PICKUP
-              || v96 == SUBLOC_TILE_JETPACK_PICKUP
-              || v96 == SUBLOC_TILE_SLIDE_VARIANT_1A
-              || v96 == SUBLOC_TILE_FLOOR_VARIANT_1B
-              || v96 == SUBLOC_TILE_SLUG_HAZARD
-              || v96 == SUBLOC_TILE_SLIDE_F
-              || v96 == SUBLOC_TILE_GLYPH_G )
+            v97 = runtime_cell_anchor->cell.tile_id;
+            if ( v97 == SUBLOC_TILE_FLOOR_DOT
+              || v97 == SUBLOC_TILE_FLOOR_DASH
+              || v97 == SUBLOC_TILE_FLOOR_VARIANT_14
+              || v97 == SUBLOC_TILE_GARBAGE_HAZARD
+              || v97 == SUBLOC_TILE_SALT_HAZARD
+              || v97 == SUBLOC_TILE_SLIDE_UNDERSCORE
+              || v97 == SUBLOC_TILE_SLIDE_O
+              || v97 == SUBLOC_TILE_HEALTH_PICKUP
+              || v97 == SUBLOC_TILE_SPEEDUP_PICKUP
+              || v97 == SUBLOC_TILE_JETPACK_PICKUP
+              || v97 == SUBLOC_TILE_SLIDE_VARIANT_1A
+              || v97 == SUBLOC_TILE_FLOOR_VARIANT_1B
+              || v97 == SUBLOC_TILE_SLUG_HAZARD
+              || v97 == SUBLOC_TILE_SLIDE_F
+              || v97 == SUBLOC_TILE_GLYPH_G )
             {
               runtime_cell_anchor->cell.render_arg_1c = (double)(8 - lane) * 0.125;
               runtime_cell_anchor->cell.render_arg_20 = (double)(build_row % 8) * 0.125;
@@ -967,7 +970,7 @@ LABEL_174:
             {
               if ( game->level_mode != 3 || (game->runtime_flags & 0x400) != 0 )
                 runtime_cell_anchor->cell.anchor_position.y = -3.0;
-              runtime_cell_anchor->cell.anchor_position.z = v113;
+              runtime_cell_anchor->cell.anchor_position.z = v115;
             }
             fringe_slot = &runtime_cell_anchor->cell.fringe_front;
             remaining_fringe_slots = 4;
@@ -992,11 +995,11 @@ LABEL_174:
           }
           while ( lane < 8 );
           ++segment_row_index;
-          v101 = ++build_row < game->runtime_row_count;
+          v102 = ++build_row < game->runtime_row_count;
           runtime_row_index = build_row;
           build_runtime_owner = game;
         }
-        while ( v101 );
+        while ( v102 );
       }
       if ( build_runtime_owner->level_mode != 3 || !first_or_last_row )
         ++row_event_owner;

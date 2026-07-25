@@ -13,6 +13,7 @@ from _narrow_sync import (
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
+    remove_user_var_updates,
 )
 from _target import DEFAULT_TARGET
 
@@ -279,6 +280,42 @@ RUNTIME_SEGMENT_SELECTION_USER_VAR_UPDATES = (
     ),
 )
 
+# The P/p glyph arm borrows one Path from a runtime-owned PathPair. Mirroring
+# selects the secondary rather than the primary record; neither branch owns
+# the selected path. The current cell retains that borrowed path and row links
+# retain the current cell while the attachment span is stamped.
+RUNTIME_ATTACHMENT_INSTALL_USER_VAR_UPDATES = (
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        3686,
+        67,
+        "selected_attachment_path",
+        "Path*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        3844,
+        68,
+        "attachment_span_index",
+        "int32_t",
+    ),
+)
+
+# Binary Ninja already auto-types this transient EDI alias. A persistent user
+# variable adds no visible owner and degrades unrelated BodBase call operands.
+REJECTED_RUNTIME_CELL_ALIAS_REMOVALS = (
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        2068,
+        73,
+        "runtime_cell",
+        "TrackRowCell*",
+    ),
+)
+
 # The lane loop always writes the runtime-grid lane to EDX, while the glyph
 # lookup uses either that lane or its mirrored 7-lane value in EBP. Binary
 # Ninja presents each branch definition as a distinct split variable; merge
@@ -499,11 +536,19 @@ def main() -> int:
         )
     )
     operations.extend(
+        remove_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            removals=REJECTED_RUNTIME_CELL_ALIAS_REMOVALS,
+        )
+    )
+    operations.extend(
         apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
             updates=(
                 *RUNTIME_SEGMENT_SELECTION_USER_VAR_UPDATES,
+                *RUNTIME_ATTACHMENT_INSTALL_USER_VAR_UPDATES,
                 *RUNTIME_GRID_CLEAR_USER_VAR_UPDATES,
                 *RUNTIME_GRID_GLYPH_USER_VAR_UPDATES,
             ),

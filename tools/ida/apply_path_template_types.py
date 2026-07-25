@@ -543,6 +543,24 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ),
     ("lane", "int32_t lane;", 0x436637, 60),
     (
+        "runtime_cell",
+        "TrackRowCell *runtime_cell;",
+        0x4366C5,
+        None,
+    ),
+    (
+        "selected_attachment_path",
+        "Path *selected_attachment_path;",
+        0x436D17,
+        None,
+    ),
+    (
+        "attachment_span_index",
+        "int32_t attachment_span_index;",
+        0x436DB5,
+        None,
+    ),
+    (
         "stamped_row",
         "SubRow *stamped_row;",
         0x436DC2,

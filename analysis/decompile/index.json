@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "apply_distort_to_object",
-      "address": "0x41aa50"
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
     }
   ],
   "health_check_count": 1057,

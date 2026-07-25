@@ -20,6 +20,7 @@ from _narrow_sync import (
     current_type_widths,
     emit_summary,
     normalize_prototype,
+    remove_user_var_updates,
     run_bn,
     struct_exists,
     types_declare_if_missing,
@@ -2151,6 +2152,43 @@ POPULATE_SEGMENT_SELECTION_USER_VAR_UPDATES = (
         68,
         "source_segment",
         "SubSegment*",
+    ),
+)
+
+# The P/p glyph arm borrows one complete Path record from the runtime-owned
+# PathPair bank. The mirror branch chooses primary or secondary; it never
+# transfers the pair or either path. The selected path is retained by the
+# current cell, whose borrowed pointer is then stamped across its row span.
+POPULATE_ATTACHMENT_INSTALL_USER_VAR_UPDATES = (
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        3686,
+        67,
+        "selected_attachment_path",
+        "Path*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        3844,
+        68,
+        "attachment_span_index",
+        "int32_t",
+    ),
+)
+
+# This short-lived EDI alias is already auto-typed as TrackRowCell*. Persisting
+# it as a user variable makes no ownership visible in HLIL and weakens several
+# set_bod_object call arguments to BodVtable**. Keep it automatic.
+REJECTED_POPULATE_RUNTIME_CELL_ALIAS_REMOVALS = (
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        2068,
+        73,
+        "runtime_cell",
+        "TrackRowCell*",
     ),
 )
 
@@ -4891,6 +4929,13 @@ def main() -> int:
             )
         )
     operations.extend(
+        remove_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            removals=REJECTED_POPULATE_RUNTIME_CELL_ALIAS_REMOVALS,
+        )
+    )
+    operations.extend(
         apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
@@ -4920,6 +4965,7 @@ def main() -> int:
                 *COLLISION_POOL_CURSOR_USER_VAR_UPDATES,
                 *SPAWN_SALT_HAZARD_USER_VAR_UPDATES,
                 *POPULATE_SEGMENT_SELECTION_USER_VAR_UPDATES,
+                *POPULATE_ATTACHMENT_INSTALL_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_CLEAR_CURSOR_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,

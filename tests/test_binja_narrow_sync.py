@@ -19786,6 +19786,122 @@ def test_runtime_segment_selection_owner_chain_replays_cross_decompiler() -> Non
             assert any(marker in item for item in required)
 
 
+def test_runtime_attachment_path_borrows_replay_cross_decompiler() -> None:
+    repo_root = Path(__file__).parents[1]
+    canonical_binja = (
+        BINJA_DIR / "sync_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    focused_binja = (
+        BINJA_DIR / "sync_runtime_grid_clear_lifetimes.py"
+    ).read_text(encoding="utf-8")
+    canonical_ida = (
+        IDA_DIR / "apply_path_template_types.py"
+    ).read_text(encoding="utf-8")
+
+    assert "POPULATE_ATTACHMENT_INSTALL_USER_VAR_UPDATES" in canonical_binja
+    assert "RUNTIME_ATTACHMENT_INSTALL_USER_VAR_UPDATES" in focused_binja
+    for source_type, index, storage, name, type_name in (
+        (
+            "RegisterVariableSourceType",
+            3686,
+            67,
+            "selected_attachment_path",
+            "Path*",
+        ),
+        (
+            "RegisterVariableSourceType",
+            3844,
+            68,
+            "attachment_span_index",
+            "int32_t",
+        ),
+    ):
+        expected = (
+            '        "populate_runtime_track_cells_from_segments",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}"'
+        )
+        assert expected in canonical_binja
+        assert expected in focused_binja
+
+    for replay, removal_name in (
+        (canonical_binja, "REJECTED_POPULATE_RUNTIME_CELL_ALIAS_REMOVALS"),
+        (focused_binja, "REJECTED_RUNTIME_CELL_ALIAS_REMOVALS"),
+    ):
+        assert removal_name in replay
+        assert "remove_user_var_updates" in replay
+        rejected_alias = (
+            '        "populate_runtime_track_cells_from_segments",\n'
+            '        "RegisterVariableSourceType",\n'
+            "        2068,\n"
+            "        73,\n"
+            '        "runtime_cell",\n'
+            '        "TrackRowCell*"'
+        )
+        assert rejected_alias in replay
+
+    for name, declaration, definition_address in (
+        ("runtime_cell", "TrackRowCell *runtime_cell;", "0x4366C5"),
+        (
+            "selected_attachment_path",
+            "Path *selected_attachment_path;",
+            "0x436D17",
+        ),
+        (
+            "attachment_span_index",
+            "int32_t attachment_span_index;",
+            "0x436DB5",
+        ),
+    ):
+        assert f'"{name}"' in canonical_ida
+        assert f'"{declaration}"' in canonical_ida
+        assert definition_address in canonical_ida
+
+    health_checks = {
+        check["name"]: check
+        for check in json.loads(
+            (repo_root / "analysis/decompile/health_checks.json").read_text(
+                encoding="utf-8"
+            )
+        )["checks"]
+    }
+    bn_health = health_checks["bn_runtime_cell_stride_owner_graph"]
+    for marker in (
+        "struct Path* selected_attachment_path",
+        "runtime_cell_anchor->cell.attachment_template_record = selected_attachment_path",
+        "int32_t attachment_span_index = 0",
+        "attachment_span_index += 1",
+    ):
+        assert marker in bn_health["required_substrings"]
+    for marker in (
+        "struct Path* ecx_98",
+        "runtime_cell_anchor->cell.attachment_template_record = ecx_98",
+        "int32_t k = 0",
+    ):
+        assert marker in bn_health["forbidden_substrings"]
+
+    ida_health = health_checks["ida_runtime_cell_stride_owner_graph"]
+    for marker in (
+        "TrackRowCell *runtime_cell;",
+        "Path *selected_attachment_path;",
+        "int32_t attachment_span_index;",
+        "runtime_cell_anchor->cell.attachment_template_record = selected_attachment_path",
+        "stamped_row->primary_attachment_cell = runtime_cell",
+        "stamped_row->secondary_attachment_cell = runtime_cell",
+    ):
+        assert marker in ida_health["required_substrings"]
+    for marker in (
+        "TrackRowCell *p_cell;",
+        "PathPair *p_secondary;",
+        "signed int v83;",
+        "runtime_cell_anchor->cell.attachment_template_record = &p_secondary->primary",
+    ):
+        assert marker in ida_health["forbidden_substrings"]
+
+
 def test_segment_import_cursor_lifetimes_replay_cross_decompiler() -> None:
     repo_root = Path(__file__).parents[1]
     binja_sync = (

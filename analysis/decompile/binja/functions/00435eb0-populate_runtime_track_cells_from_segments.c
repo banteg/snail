@@ -525,11 +525,11 @@
 00436cef        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_PATH_ENTRY_LOWERCASE
 00436cfa        int32_t attachment_template_index = runtime_row_anchor->row.attachment_template_index
 00436d05        int32_t eax_89 = attachment_template_index << 3
-00436d0c        struct Path* ecx_98
+00436d0c        struct Path* selected_attachment_path
 00436d0c        if (game->track_mirror_enabled == 0)
-00436d27        ecx_98 = &game->path_pairs + (eax_89 - attachment_template_index) * 0x30
-00436d16        ecx_98 = &game->path_pairs[0].secondary + (eax_89 - attachment_template_index) * 0x30
-00436d32        runtime_cell_anchor->cell.attachment_template_record = ecx_98
+00436d27        selected_attachment_path = &game->path_pairs + (eax_89 - attachment_template_index) * 0x30
+00436d16        selected_attachment_path = &game->path_pairs[0].secondary + (eax_89 - attachment_template_index) * 0x30
+00436d32        runtime_cell_anchor->cell.attachment_template_record = selected_attachment_path
 00436d43        runtime_cell_anchor->cell.bod.list_flags &= 0xffffffdf
 00436d49        if (attachment_entry_installed == 0)
 00436d57        attachment_entry_installed = 1
@@ -538,7 +538,7 @@
 00436d8b        set_bod_object(&runtime_row_anchor->row.attachment_body, runtime_cell_anchor->cell.attachment_template_record->fringe_mesh_bod.object)
 00436d9c        runtime_row_anchor->row.attachment_body.bod.list_flags |= 0x20
 00436da8        runtime_row_anchor->row.installed_heading_delta = active_segment->angle_radians.bits
-00436db4        int32_t k = 0
+00436db4        int32_t attachment_span_index = 0
 00436dbb        if (runtime_cell_anchor->cell.attachment_template_record->row_span_count s> 0)
 00436dc1        struct SubRow* stamped_row = &runtime_row_anchor->row
 00436dc7        int32_t eax_98
@@ -559,9 +559,9 @@
 00436dcf        stamped_row->flags:2.b = eax_98:2.b
 00436dcf        stamped_row->flags:3.b = eax_98:3.b
 00436dd1        stamped_row->secondary_attachment_cell = &runtime_cell_anchor->cell
-00436de9        k += 1
+00436de9        attachment_span_index += 1
 00436dea        stamped_row = &stamped_row[1]
-00436df3        do while (k s< runtime_cell_anchor->cell.attachment_template_record->row_span_count)
+00436df3        do while (attachment_span_index s< runtime_cell_anchor->cell.attachment_template_record->row_span_count)
 00436733        case 0x14
 00436733        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RING_MARKER
 0043673a        uint32_t list_flags_1 = runtime_cell_anchor->cell.bod.list_flags
@@ -701,7 +701,7 @@
 004370fa        runtime_cell_anchor->cell.anchor_position.z = cell_anchor_z
 00437100        struct Fringe** fringe_slot = &runtime_cell_anchor->cell.fringe_front
 00437104        int32_t remaining_fringe_slots = 4
-00437135        int32_t k_1
+00437135        int32_t k
 00437109        struct Fringe* fringe_object
 00437109        fringe_object.b = *fringe_slot
 00437109        fringe_object:1.b = *(fringe_slot + 1)
@@ -722,9 +722,9 @@
 00437128        fringe_object_reloaded->bod.position.y = runtime_cell_anchor->cell.anchor_position.y
 0043712e        fringe_object_reloaded->bod.position.z = runtime_cell_anchor->cell.anchor_position.z
 00437131        fringe_slot = &fringe_slot[1]
-00437134        k_1 = remaining_fringe_slots
+00437134        k = remaining_fringe_slots
 00437134        remaining_fringe_slots -= 1
-00437135        do while (k_1 != 1)
+00437135        do while (k != 1)
 0043713c        cond:12_1 = lane + 1 s< 8
 0043713f        lane += 1
 00437143        do while (cond:12_1)
