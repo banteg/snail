@@ -240,6 +240,9 @@ TRACK_RENDER_CACHE_OWNER_SIZES = {
 # Header field-name changes need an explicit Hex-Rays refresh even when the
 # owning function prototype itself was already current.
 PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
+    0x404830,  # flush_row_event_display
+    0x404CF0,  # update_row_event_display
+    0x405040,  # register_parcel_delivery
     0x406DC0,  # game_startup_and_main_loop
     0x407B60,  # construct_game_runtime
     0x408040,  # initialize_noop_renderable_bod
@@ -346,6 +349,9 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x445840,  # kill_subgoldy
     0x445CD0,  # update_snail_skin
     0x445D50,  # build_snail_hotspots
+    0x445E20,  # update_times_up
+    0x446130,  # initialize_cutscene_ai
+    0x446160,  # initialize_cameraman
     0x447090,  # initialize_fringe_manager
     0x4470A0,  # allocate_fringe_object
     0x4470E0,  # uninit_nuke
@@ -1323,6 +1329,27 @@ HIGH_SCORE_LIFECYCLE_OFFSET_OPERANDS = (
     (0x43880D, 1, 0x68B4C8),
     (0x43881E, 1, 0x68B4C8),
     (0x438831, 1, 0x68B4C8),
+)
+
+# These frontend, landscape, and presentation sites all borrow the one embedded
+# Player at GameRoot +0x42fd7c. The numeric displacement is also the tracked
+# address of the g_player_block evidence symbol, so IDA promotes it to a global
+# expression and hides the already recovered
+# GameRoot -> SubgameRuntime -> Player owner graph. Normalize only these ten
+# exact operands; g_player_block remains intact as a bounded offset symbol.
+PLAYER_ROOT_BORROW_OFFSET_OPERANDS = (
+    # Completion teardown and row-event scoring.
+    (0x404853, 1, 0x42FD7C),
+    (0x404881, 1, 0x42FD7C),
+    (0x404D9A, 1, 0x42FD7C),
+    (0x404E5D, 1, 0x42FD7C),
+    (0x405057, 1, 0x42FD7C),
+    (0x405092, 1, 0x42FD7C),
+    # Landscape reference body and presentation lifecycle.
+    (0x4189AD, 1, 0x42FD7C),
+    (0x445E3A, 1, 0x42FD7C),
+    (0x446142, 1, 0x42FD7C),
+    (0x446168, 1, 0x42FD7C),
 )
 
 # Tutorial::Init borrows the containing SubgameRuntime and ORs the authored
@@ -4220,6 +4247,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    player_root_borrow_offset_operands = _normalize_root_offset_operands(
+        PLAYER_ROOT_BORROW_OFFSET_OPERANDS
+    )
+    for result in player_root_borrow_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "Player root borrows",
+                    "root_offset_operand": result,
+                }
+            )
     attachment_follow_root_offset_operands = _normalize_root_offset_operands(
         ATTACHMENT_FOLLOW_ROOT_OFFSET_OPERANDS
     )
@@ -4713,6 +4751,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "attachment_entry_root_offset_operands": attachment_entry_root_offset_operands,
                 "world_initializer_root_offset_operands": world_initializer_root_offset_operands,
                 "high_score_lifecycle_offset_operands": high_score_lifecycle_offset_operands,
+                "player_root_borrow_offset_operands": player_root_borrow_offset_operands,
                 "attachment_follow_root_offset_operands": attachment_follow_root_offset_operands,
                 "harmonize_root_offset_operands": harmonize_root_offset_operands,
                 "runtime_pool_row_offset_operands": runtime_pool_row_offset_operands,

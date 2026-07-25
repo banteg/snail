@@ -19,7 +19,7 @@ void __thiscall update_times_up(TimesUp *times_up)
     else if ( times_up->state == TIMES_UP_STATE_EXPIRED )
     {
       uninit_times_up(times_up);
-      kill_subgoldy((Player *)((char *)&g_player_block + (_DWORD)g_game_base));
+      kill_subgoldy(&g_game_base->subgame.player);
       times_up->state = TIMES_UP_STATE_INACTIVE;
     }
   }

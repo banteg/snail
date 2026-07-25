@@ -9743,7 +9743,7 @@ def test_ida_high_score_lifecycle_offsets_are_exact_and_fail_closed() -> None:
     )
     operand_block = ida_sync.split(
         "HIGH_SCORE_LIFECYCLE_OFFSET_OPERANDS = (", 1
-    )[1].split("\n)\n\n# Tutorial", 1)[0]
+    )[1].split("\n)\n\n# These frontend", 1)[0]
 
     assert operand_block.count("    (0x") == 10
     for operand_spec in (
@@ -9798,6 +9798,60 @@ def test_ida_high_score_lifecycle_offsets_are_exact_and_fail_closed() -> None:
             forbidden.startswith("g_parcel_set_buckets")
             for forbidden in check["forbidden_substrings"]
         )
+
+
+def test_ida_player_root_borrows_are_exact_and_fail_closed() -> None:
+    repo_root = Path(__file__).parents[1]
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    operand_block = ida_sync.split(
+        "PLAYER_ROOT_BORROW_OFFSET_OPERANDS = (", 1
+    )[1].split("\n)\n\n# Tutorial", 1)[0]
+
+    assert operand_block.count("    (0x") == 10
+    for operand_spec in (
+        "(0x404853, 1, 0x42FD7C)",
+        "(0x404881, 1, 0x42FD7C)",
+        "(0x404D9A, 1, 0x42FD7C)",
+        "(0x404E5D, 1, 0x42FD7C)",
+        "(0x405057, 1, 0x42FD7C)",
+        "(0x405092, 1, 0x42FD7C)",
+        "(0x4189AD, 1, 0x42FD7C)",
+        "(0x445E3A, 1, 0x42FD7C)",
+        "(0x446142, 1, 0x42FD7C)",
+        "(0x446168, 1, 0x42FD7C)",
+    ):
+        assert operand_spec in operand_block
+
+    assert (
+        "player_root_borrow_offset_operands = _normalize_root_offset_operands(\n"
+        "        PLAYER_ROOT_BORROW_OFFSET_OPERANDS\n"
+        "    )"
+    ) in ida_sync
+    assert '"selector": "Player root borrows"' in ida_sync
+    assert (
+        '"player_root_borrow_offset_operands": '
+        "player_root_borrow_offset_operands"
+    ) in ida_sync
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    for check_name in (
+        "ida_flush_row_event_player_owner",
+        "ida_update_row_event_player_owner",
+        "ida_register_parcel_delivery_player_owner",
+        "ida_activate_landscape_entry_directx_owner",
+        "ida_times_up_ai_tail_owner",
+        "ida_initialize_cutscene_player_owner",
+        "ida_nested_subgame_initialize_cameraman_owner",
+    ):
+        check = checks[check_name]
+        assert "g_player_block" in check["forbidden_substrings"]
 
 
 def test_cameraman_force_update_owner_survives_path_replay() -> None:

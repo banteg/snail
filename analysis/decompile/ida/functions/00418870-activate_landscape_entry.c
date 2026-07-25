@@ -69,7 +69,7 @@ void __thiscall activate_landscape_entry(LandscapeManager *manager, int32_t scri
       *((float *)p_list_flags + 33) = *(float *)(p_list_flags[8] + 184) - *(float *)(p_list_flags[8] + 172);
       set_matrix_identity((TransformMatrix *)(p_list_flags + 13));
       *((float *)p_list_flags + 27) = ((double)v12 - 0.5) * *((float *)p_list_flags + 33);
-      p_list_flags[34] = (uint32_t)&g_player_block + (_DWORD)g_game_base;
+      p_list_flags[34] = (uint32_t)&g_game_base->subgame.player;
     }
     ++v4;
     p_list_flags += 36;

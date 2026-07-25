@@ -115,3 +115,13 @@ the correctly recovered enclosing entry fields.
 Matching source remains unchanged at the honest 99.19%, 123/123-instruction,
 20-clean-operand frontier. The sole residual is still the independent state
 store/list-flag load schedule; no source was reshaped for score.
+
+## 2026-07-25 active-entry Player borrow
+
+The reference publication at `0x4189ad` adds root `+0x42fd7c`, the exact
+embedded Player boundary. `Player::body` begins at offset zero, so the active
+entry's borrowed `BodBase*` and the Player address are identical; Binary Ninja
+renders the nested body while IDA retains the honest shifted integer cursor
+and now at least exposes the containing Player owner. No shifted
+`ActiveLandscapeEntry*` is invented. Matching remains at the honest 99.19%
+frontier.

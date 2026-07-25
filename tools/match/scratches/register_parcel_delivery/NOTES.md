@@ -28,3 +28,11 @@ reloads and exact 36/36 code shape are unchanged.
 The final delivery now enters `COMPLETION_STATE_SUMMARY_PENDING`, which the
 exact AI member consumes to reveal the summary and continue prompt. Focused
 matching remains exact at 36/36 instructions with all 10 operands clean.
+
+## 2026-07-25 IDA Player-root replay
+
+The two native score calls at `0x405057` and `0x405092` add root `+0x42fd7c`,
+the exact embedded Player boundary. IDA's `g_player_block` rendering was an
+address collision, not a separate owner. The canonical replay now exposes
+both borrows as `&g_game_base->subgame.player`, matching Binary Ninja and the
+already exact source without changing the 36/36 result.

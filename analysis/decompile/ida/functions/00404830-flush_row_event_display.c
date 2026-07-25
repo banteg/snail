@@ -22,7 +22,7 @@ void __thiscall flush_row_event_display(Completion *completion)
       {
         do
         {
-          add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), 4, 0);
+          add_subgoldy_score(&g_game_base->subgame.player, 4, 0);
           v4 = completion->parcel_target_count;
           v5 = completion->delivered_parcel_count + 1;
           completion->delivered_parcel_count = v5;
@@ -30,7 +30,7 @@ void __thiscall flush_row_event_display(Completion *completion)
         while ( v5 < v4 );
       }
       if ( completion->bonus_enabled )
-        add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), completion->bonus_score, 0);
+        add_subgoldy_score(&g_game_base->subgame.player, completion->bonus_score, 0);
     }
     widget_a = completion->widget_a;
     ++completion->delivered_parcel_count;

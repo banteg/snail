@@ -7,7 +7,7 @@ void __thiscall initialize_cameraman(Cameraman *cameraman)
 {
   SubgameRuntime *p_subgame; // ecx
 
-  cameraman->player = (Player *)((char *)&g_player_block + (_DWORD)g_game_base);
+  cameraman->player = &g_game_base->subgame.player;
   p_subgame = &g_game_base->subgame;
   cameraman->force_camera_update = 0;
   cameraman->game = p_subgame;

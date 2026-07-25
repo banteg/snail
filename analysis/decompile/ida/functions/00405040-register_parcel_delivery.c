@@ -7,14 +7,14 @@ void __thiscall register_parcel_delivery(Completion *completion)
 {
   if ( completion->delivered_parcel_count != completion->parcel_target_count )
   {
-    add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), 4, 0);
+    add_subgoldy_score(&g_game_base->subgame.player, 4, 0);
     ++completion->delivered_parcel_count;
     play_sound_effect(&g_sound_effect_manager, 45);
     if ( completion->delivered_parcel_count == completion->parcel_target_count )
     {
       if ( completion->bonus_enabled )
       {
-        add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), 5, completion->bonus_score);
+        add_subgoldy_score(&g_game_base->subgame.player, 5, completion->bonus_score);
         play_sound_effect(&g_sound_effect_manager, 49);
       }
       completion->state = COMPLETION_STATE_SUMMARY_PENDING;

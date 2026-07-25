@@ -41,3 +41,12 @@ path. The semantic rename is instruction-exact in this initializer.
 database from retaining the older `unresolved_cc` spelling even when the
 complete imported type is structurally unchanged. The exact 20/20 initializer
 and its six clean operands are unaffected.
+
+## 2026-07-25 IDA Player-root replay
+
+The backlink at `0x446168` adds root `+0x42fd7c`, closing exactly to
+`GameRoot::subgame.player`. IDA had promoted the displacement into the
+standalone `g_player_block` evidence symbol even though the following store
+requires `Player*`. Exact operand normalization now makes both decompilers
+agree on the Player and SubgameRuntime backlinks; the matcher remains exact at
+20/20.

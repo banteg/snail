@@ -65,7 +65,7 @@ void __thiscall update_row_event_display(Completion *completion)
               v5 = spawn_track_parcel(
                      &g_game_base->subgame,
                      &g_game_base->subgame.player.presentation.snail_hotspots_world[11],
-                     (Player *)((char *)&g_player_block + (_DWORD)g_game_base));
+                     &g_game_base->subgame.player);
               sprite = v5->sprite;
               v5->state = PARCEL_STATE_DELIVERY_PENDING;
               sprite->size_end = 0.0;
@@ -102,7 +102,7 @@ void __thiscall update_row_event_display(Completion *completion)
           v11 = g_game_base;
           if ( g_game_base->subgame.level_mode == 1 )
           {
-            add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), 5, completion->bonus_score);
+            add_subgoldy_score(&g_game_base->subgame.player, 5, completion->bonus_score);
             play_sound_effect(&g_sound_effect_manager, 49);
 LABEL_18:
             v11 = g_game_base;

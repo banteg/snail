@@ -25,3 +25,13 @@ operands.
 `SubgameRuntime::player` and its owned `Player::presentation` directly instead
 of rebuilding root `+0x42fd7c/+0x432700`. It stays exact at 8/8 with all four
 operands clean.
+
+## 2026-07-25 IDA nested presentation replay
+
+The Player backlink at `0x446142` adds root `+0x42fd7c`; the adjacent
+presentation store uses root `+0x432700`, which closes as
+`Player + offsetof(Player, presentation) +0x2984`. Removing only the false
+`g_player_block` operand is sufficient for a fresh Hex-Rays pass to recover
+both `&g_game_base->subgame.player` and its owned `presentation`. This agrees
+with the cross-port constructor evidence and leaves the exact 8/8 source
+untouched.

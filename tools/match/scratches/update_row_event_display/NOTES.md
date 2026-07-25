@@ -183,3 +183,13 @@ The exact switch now exposes all seven `CompletionState` values. Init enters
 records accept input as `CONTINUE_ACCEPTED`. Final parcel registration supplies
 the other `SUMMARY_PENDING` producer. Focused matching remains exact at
 213/213 instructions with all 38 operands clean.
+
+## 2026-07-25 IDA Player-root replay
+
+The parcel-spawn owner at `0x404d9a` and bonus-score owner at `0x404e5d` both
+resolve to the embedded Player at root `+0x42fd7c`. Normalizing only those
+colliding IDA operands recovers the full
+`SubgameRuntime::player.presentation.snail_hotspots_world[11]` producer graph
+and the same Player score sink already shown by Binary Ninja. The parcel and
+Player lifetimes now agree across both decompilers; matching remains exact at
+213/213.

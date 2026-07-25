@@ -27,3 +27,11 @@ The maintained IDA subgame-runtime replay now applies the missing
 Both tracked decompilers expose the state/progress lifecycle directly; no
 matching source changed. Focused output remains exact at 26/26 instructions
 with five clean masked operands.
+
+## 2026-07-25 IDA Player-root replay
+
+The expiry kill at `0x445e3a` borrows root `+0x42fd7c`, exactly the embedded
+Player already named in source and Binary Ninja. Normalizing that single
+colliding operand removes IDA's false standalone `g_player_block` expression
+and closes the TimesUp-to-Player lifetime without changing the exact 26/26
+matcher result.
