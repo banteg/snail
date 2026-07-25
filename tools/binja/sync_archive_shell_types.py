@@ -11,9 +11,12 @@ from _narrow_sync import (
     apply_data_var_removals,
     apply_data_var_updates,
     apply_proto_updates,
+    apply_split_user_var_update,
     apply_symbol_removals,
     apply_symbol_updates,
+    apply_user_var_updates,
     emit_summary,
+    remove_user_var_updates,
     types_declare,
 )
 
@@ -22,6 +25,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_archive_shell_types.h"
 
 DATA_SYMBOL_UPDATES = (
+    ("0x503320", "g_enumerated_entry_count"),
     ("0x5088b0", "g_registered_sound_sample_names"),
     ("0x5108b0", "g_registered_sound_sample_count"),
     ("0x5108b4", "g_tracked_allocation_total_bytes"),
@@ -94,15 +98,24 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x449ba0", "resume_audio_backend_if_paused"),
     ("0x449bc0", "pause_audio_backend_if_running"),
     ("0x449be0", "set_audio_normalization_scales"),
+    ("0x48b3a7", "fclose"),
+    ("0x48b41d", "fopen"),
+    ("0x48b430", "fseek"),
+    ("0x48b4bc", "ftell"),
+    ("0x48b645", "fread"),
     ("0x48b72d", "malloc"),
+    ("0x48b7a1", "fwrite"),
+    ("0x48c18b", "chdir"),
     ("0x48c211", "findfirst"),
     ("0x48c2db", "findnext"),
+    ("0x496946", "getcwd"),
 )
 
 DATA_VAR_UPDATES = (
     ("0x49701c", "Win32GetProcAddressFn"),
     ("0x497020", "Win32LoadLibraryAFn"),
     ("0x497024", "Win32FreeLibraryFn"),
+    ("0x503320", "int32_t"),
     ("0x5088b0", "RegisteredSoundSampleName[256]"),
     ("0x5108b0", "int32_t"),
     ("0x5108b4", "int32_t"),
@@ -288,6 +301,38 @@ PROTO_UPDATES = (
         "void* __cdecl malloc(uint32_t size)",
     ),
     (
+        "fopen",
+        "File* __cdecl fopen(char* path, char* mode)",
+    ),
+    (
+        "fread",
+        "uint32_t __cdecl fread(void* bytes, uint32_t element_size, uint32_t element_count, File* stream)",
+    ),
+    (
+        "fwrite",
+        "uint32_t __cdecl fwrite(void* bytes, uint32_t element_size, uint32_t element_count, File* stream)",
+    ),
+    (
+        "fseek",
+        "int32_t __cdecl fseek(File* stream, int32_t offset, int32_t origin)",
+    ),
+    (
+        "ftell",
+        "int32_t __cdecl ftell(File* stream)",
+    ),
+    (
+        "fclose",
+        "int32_t __cdecl fclose(File* stream)",
+    ),
+    (
+        "getcwd",
+        "char* __cdecl getcwd(char* buffer, int32_t max_length)",
+    ),
+    (
+        "chdir",
+        "int32_t __cdecl chdir(char* path)",
+    ),
+    (
         "findfirst",
         "int32_t __cdecl findfirst(char* pattern, FileSearchData* find_data)",
     ),
@@ -390,6 +435,291 @@ PROTO_UPDATES = (
 )
 
 
+# These stale direct overrides predate the CRT prototypes below. Reanalysis
+# proved that one EAX identity spans unrelated enumerator values, while one ESI
+# identity is an unused pre-prototype artifact rather than the tracked buffer.
+STALE_ARCHIVE_CURSOR_USER_VAR_REMOVALS = (
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "RegisterVariableSourceType",
+        49,
+        66,
+        "archive_index",
+        "ArchiveIndex*",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        210,
+        69,
+        "tracked_memory",
+        "void*",
+    ),
+)
+
+
+# Split the two concrete ArchiveIndex loads and their loop phi away from the
+# directory byte, basename byte, and pattern-pointer lifetimes that reuse EAX.
+ARCHIVE_INDEX_SPLIT_DEFINITIONS = (
+    ("0x431740", "mlil", "RegisterVariableSourceType", 524288, 66),
+    ("0x431771", "mlil_ssa", "RegisterVariableSourceType", 49, 66),
+    ("0x43184c", "mlil", "RegisterVariableSourceType", 268, 66),
+)
+ARCHIVE_INDEX_SPLIT_TARGET_VAR = (
+    "RegisterVariableSourceType",
+    524288,
+    66,
+)
+
+
+# Exact SSA lifetimes recovered after applying the CRT prototypes. These names
+# do not infer new storage: they distinguish the ArchiveIndex owner, its current
+# 12-byte ArchiveEntry cursor, borrowed path cursors, stream handles, allocation
+# results, byte counts, archive positions, and caller-owned output buffers.
+ARCHIVE_CURSOR_USER_VAR_UPDATES = (
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "RegisterVariableSourceType",
+        53,
+        72,
+        "directory_cursor",
+        "char*",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "RegisterVariableSourceType",
+        60,
+        67,
+        "archive_path_cursor",
+        "char*",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "RegisterVariableSourceType",
+        64,
+        68,
+        "archive_path_char",
+        "char",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "RegisterVariableSourceType",
+        149,
+        66,
+        "folded_basename_char",
+        "char",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "RegisterVariableSourceType",
+        120,
+        71,
+        "basename_cursor",
+        "char*",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "RegisterVariableSourceType",
+        123,
+        73,
+        "basename_index",
+        "int32_t",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "RegisterVariableSourceType",
+        125,
+        72,
+        "pattern_index",
+        "int32_t",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "RegisterVariableSourceType",
+        304,
+        69,
+        "pattern_char",
+        "char",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "RegisterVariableSourceType",
+        235,
+        72,
+        "archive_names",
+        "EnumeratedEntryName*",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "RegisterVariableSourceType",
+        425,
+        73,
+        "filesystem_names",
+        "EnumeratedEntryName*",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "StackVariableSourceType",
+        31,
+        -796,
+        "archive_entry_index",
+        "int32_t",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "StackVariableSourceType",
+        45,
+        -800,
+        "archive_entry_offset",
+        "int32_t",
+    ),
+    (
+        "enumerate_matching_archive_or_fs_entries",
+        "StackVariableSourceType",
+        0,
+        -512,
+        "cwd_buffer",
+        "char[512]",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        20,
+        69,
+        "archive_index",
+        "ArchiveIndex*",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        39,
+        73,
+        "archive_entry_index",
+        "int32_t",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        49,
+        69,
+        "archive_entry_cursor",
+        "ArchiveEntry*",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        62,
+        68,
+        "archive_path_cursor",
+        "char*",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        54,
+        72,
+        "requested_path_cursor",
+        "char*",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        52,
+        67,
+        "archive_path_char",
+        "char",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        62,
+        66,
+        "requested_path_char",
+        "char",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        119,
+        66,
+        "filesystem_file",
+        "File*",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        124,
+        72,
+        "filesystem_stream",
+        "File*",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        263,
+        72,
+        "allocation_byte_count_offset",
+        "int32_t",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        271,
+        66,
+        "tracked_memory",
+        "void*",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        284,
+        66,
+        "allocation_archive_position",
+        "int32_t",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        388,
+        66,
+        "caller_archive_position",
+        "int32_t",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        442,
+        73,
+        "caller_byte_count_offset",
+        "int32_t",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        494,
+        66,
+        "filesystem_byte_count",
+        "int32_t",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "RegisterVariableSourceType",
+        499,
+        69,
+        "filesystem_output_buffer",
+        "void*",
+    ),
+    (
+        "load_file_bytes_from_archive_or_fs",
+        "StackVariableSourceType",
+        0,
+        -512,
+        "cwd_buffer",
+        "char[512]",
+    ),
+)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Apply the narrow RShell archive/audio ownership slice to Binary Ninja."
@@ -454,6 +784,31 @@ def main() -> int:
     )
     operations.extend(
         apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES)
+    )
+    operations.extend(
+        remove_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            removals=STALE_ARCHIVE_CURSOR_USER_VAR_REMOVALS,
+        )
+    )
+    operations.extend(
+        apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="enumerate_matching_archive_or_fs_entries",
+            definitions=ARCHIVE_INDEX_SPLIT_DEFINITIONS,
+            target_var=ARCHIVE_INDEX_SPLIT_TARGET_VAR,
+            variable_name="archive_index",
+            variable_type="ArchiveIndex*",
+        )
+    )
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=ARCHIVE_CURSOR_USER_VAR_UPDATES,
+        )
     )
     return emit_summary(
         repo_root=REPO_ROOT,

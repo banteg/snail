@@ -1366,17 +1366,27 @@
       "name": "bn_archive_enumerator_search_record_owner",
       "artifact": "analysis/decompile/binja/functions/00431740-enumerate_matching_archive_or_fs_entries.c",
       "required_substrings": [
-        "struct ArchiveIndex* archive_index_records_1 = g_archive_index_records",
+        "struct ArchiveIndex* archive_index = g_archive_index_records",
+        "g_enumerated_entry_count = 0",
+        "archive_index->count",
+        "&archive_index->entries",
+        "char cwd_buffer[0x200]",
+        "getcwd(&cwd_buffer, 0x200)",
         "struct FileSearchData find_data",
         "findfirst(pattern, &find_data)",
         "findnext(handle, &find_data)",
-        "archive_index_records_1->count"
+        "chdir(&cwd_buffer)"
       ],
       "forbidden_substrings": [
         "PresentationWeaponChannel",
         "Game hFindFile",
         "float* out_count",
-        "data_53c7f8"
+        "data_503320",
+        "data_53c7f8",
+        "pattern_1 + 4",
+        "archive_index.b",
+        "sub_496946",
+        "sub_48c18b"
       ]
     },
     {
@@ -1384,17 +1394,78 @@
       "artifact": "analysis/decompile/ida/functions/00431740-enumerate_matching_archive_or_fs_entries.c",
       "required_substrings": [
         "void __cdecl enumerate_matching_archive_or_fs_entries(",
-        "ArchiveIndex *v4",
-        "FileSearchData v18",
-        "findfirst(pattern, &v18)",
-        "findnext(v14, &v18)",
-        "v18.name"
+        "ArchiveIndex *archive_index",
+        "char *archive_path_cursor",
+        "char *basename_cursor",
+        "int archive_entry_offset",
+        "FileSearchData find_data",
+        "char cwd_buffer[512]",
+        "findfirst(pattern, &find_data)",
+        "findnext(filesystem_handle, &find_data)",
+        "find_data.name"
       ],
       "forbidden_substrings": [
         "PresentationWeaponChannel",
         "Game hFindFile",
         "MEMORY[0x53C7F8]",
-        "float *out_count"
+        "float *out_count",
+        "FileSearchData v18",
+        "char Path[512]"
+      ]
+    },
+    {
+      "name": "bn_archive_or_filesystem_load_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/004312d0-load_file_bytes_from_archive_or_fs.c",
+      "required_substrings": [
+        "struct ArchiveIndex* archive_index = g_archive_index_records",
+        "struct ArchiveEntry* archive_entry_cursor = &archive_index->entries",
+        "char* archive_path_cursor",
+        "char* requested_path_cursor",
+        "int32_t allocation_byte_count_offset",
+        "void* tracked_memory",
+        "int32_t allocation_archive_position",
+        "int32_t caller_archive_position",
+        "int32_t caller_byte_count_offset",
+        "struct File* filesystem_file = fopen(path, \"rb\")",
+        "int32_t filesystem_byte_count",
+        "void* filesystem_output_buffer",
+        "char cwd_buffer[0x200]",
+        "fread(filesystem_output_buffer, 1, filesystem_byte_count, filesystem_file)",
+        "fclose(filesystem_file)"
+      ],
+      "forbidden_substrings": [
+        "allocation_byte_count_offset = fopen",
+        "tracked_memory = fopen",
+        "sub_48b645",
+        "sub_496946",
+        "int32_t* filesystem_file"
+      ]
+    },
+    {
+      "name": "ida_archive_or_filesystem_load_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/004312d0-load_file_bytes_from_archive_or_fs.c",
+      "required_substrings": [
+        "ArchiveEntry *archive_entry_cursor",
+        "char *archive_path_cursor",
+        "char *requested_path_cursor",
+        "File *filesystem_file",
+        "File *filesystem_stream",
+        "int allocation_byte_count_offset",
+        "void *tracked_memory",
+        "int allocation_archive_position",
+        "int caller_archive_position",
+        "int caller_byte_count_offset",
+        "int filesystem_byte_count",
+        "void *filesystem_output_buffer",
+        "char cwd_buffer[512]",
+        "fread(filesystem_output_buffer, 1u, filesystem_byte_count, filesystem_stream)",
+        "fclose(filesystem_stream)"
+      ],
+      "forbidden_substrings": [
+        "FILE *v11",
+        "sub_48b645",
+        "char DstBuf[512]",
+        "ArchiveEntry *entries"
       ]
     },
     {

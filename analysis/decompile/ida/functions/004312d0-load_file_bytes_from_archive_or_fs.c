@@ -6,93 +6,110 @@
 void *__cdecl load_file_bytes_from_archive_or_fs(char *path, void *buffer, int *out_size)
 {
   int32_t count; // eax
-  int32_t v4; // edi
-  ArchiveEntry *entries; // ebx
-  char *v6; // edx
-  char *v7; // esi
-  char v8; // cl
-  char v9; // al
-  File *v10; // eax
-  FILE *v11; // esi
+  int archive_entry_index; // edi
+  ArchiveEntry *archive_entry_cursor; // ebx
+  char *archive_path_cursor; // edx
+  char *requested_path_cursor; // esi
+  char archive_path_char; // cl
+  char requested_path_char; // al
+  File *filesystem_file; // eax
+  File *filesystem_stream; // esi
   void *tracked_memory; // ebx
-  int v14; // esi
-  int v15; // eax
-  int32_t v16; // edi
-  int v17; // eax
-  int32_t v18; // esi
-  int v19; // edi
+  int allocation_byte_count_offset; // esi
+  int allocation_archive_position; // eax
+  int allocation_entry_index; // edi
+  int caller_archive_position; // eax
+  int caller_entry_index; // esi
+  int caller_byte_count_offset; // edi
   int stream_length_preserve_position; // eax
-  void *v21; // ebx
-  int v22; // edi
-  char DstBuf[512]; // [esp+14h] [ebp-200h] BYREF
+  void *filesystem_output_buffer; // ebx
+  int filesystem_byte_count; // edi
+  char cwd_buffer[512]; // [esp+14h] [ebp-200h] BYREF
 
   update_loading_screen(&g_loading_bar);
-  if ( g_archive_index_records && (count = g_archive_index_records->count, v4 = 0, g_archive_index_records->count > 0) )
+  if ( g_archive_index_records
+    && (count = g_archive_index_records->count, archive_entry_index = 0, g_archive_index_records->count > 0) )
   {
-    entries = g_archive_index_records->entries;
+    archive_entry_cursor = g_archive_index_records->entries;
     while ( 1 )
     {
-      v6 = entries->path;
-      v7 = path;
-      v8 = *entries->path;
-      if ( v8 )
+      archive_path_cursor = archive_entry_cursor->path;
+      requested_path_cursor = path;
+      archive_path_char = *archive_entry_cursor->path;
+      if ( archive_path_char )
       {
         do
         {
-          v9 = *v7;
-          if ( !*v7 )
+          requested_path_char = *requested_path_cursor;
+          if ( !*requested_path_cursor )
             break;
-          if ( v9 >= 97 && v9 <= 122 )
-            v9 -= 32;
-          if ( v8 != v9 )
+          if ( requested_path_char >= 97 && requested_path_char <= 122 )
+            requested_path_char -= 32;
+          if ( archive_path_char != requested_path_char )
             break;
-          v8 = v6[1];
-          ++v7;
-          ++v6;
+          archive_path_char = archive_path_cursor[1];
+          ++requested_path_cursor;
+          ++archive_path_cursor;
         }
-        while ( v8 );
+        while ( archive_path_char );
         count = g_archive_index_records->count;
       }
-      if ( !*v6 && !*v7 )
+      if ( !*archive_path_cursor && !*requested_path_cursor )
         break;
-      ++v4;
-      ++entries;
-      if ( v4 >= count )
+      ++archive_entry_index;
+      ++archive_entry_cursor;
+      if ( archive_entry_index >= count )
         goto LABEL_15;
     }
     if ( out_size )
-      *out_size = g_archive_index_records->entries[v4].byte_count;
+      *out_size = g_archive_index_records->entries[archive_entry_index].byte_count;
     tracked_memory = buffer;
     if ( buffer == (void *)-1 )
     {
-      return (void *)g_archive_index_records->entries[v4].data_offset;
+      return (void *)g_archive_index_records->entries[archive_entry_index].data_offset;
     }
     else
     {
       if ( buffer )
       {
-        v17 = ftell(g_archive_file);
-        v18 = v4;
-        fseek(g_archive_file, g_archive_index_records->entries[v4].data_offset - v17, 1);
-        v19 = 4 * (3 * v4 + 3);
-        fread(buffer, 1, *(int32_t *)((char *)&g_archive_index_records->count + v19), g_archive_file);
+        caller_archive_position = ftell(g_archive_file);
+        caller_entry_index = archive_entry_index;
+        fseek(
+          g_archive_file,
+          g_archive_index_records->entries[archive_entry_index].data_offset - caller_archive_position,
+          1);
+        caller_byte_count_offset = 4 * (3 * archive_entry_index + 3);
+        fread(
+          buffer,
+          1u,
+          *(int32_t *)((char *)&g_archive_index_records->count + caller_byte_count_offset),
+          g_archive_file);
         xor_archive_bytes_in_place(
-          g_archive_index_records->entries[v18].data_offset,
+          g_archive_index_records->entries[caller_entry_index].data_offset,
           (int)buffer,
-          *(int32_t *)((char *)&g_archive_index_records->count + v19));
+          *(int32_t *)((char *)&g_archive_index_records->count + caller_byte_count_offset));
       }
       else
       {
-        v14 = 4 * (3 * v4 + 3);
-        tracked_memory = allocate_tracked_memory(*(int32_t *)((char *)&g_archive_index_records->count + v14), path);
-        v15 = ftell(g_archive_file);
-        v16 = v4;
-        fseek(g_archive_file, g_archive_index_records->entries[v16].data_offset - v15, 1);
-        fread(tracked_memory, 1, *(int32_t *)((char *)&g_archive_index_records->count + v14), g_archive_file);
+        allocation_byte_count_offset = 4 * (3 * archive_entry_index + 3);
+        tracked_memory = allocate_tracked_memory(
+                           *(int32_t *)((char *)&g_archive_index_records->count + allocation_byte_count_offset),
+                           path);
+        allocation_archive_position = ftell(g_archive_file);
+        allocation_entry_index = archive_entry_index;
+        fseek(
+          g_archive_file,
+          g_archive_index_records->entries[allocation_entry_index].data_offset - allocation_archive_position,
+          1);
+        fread(
+          tracked_memory,
+          1u,
+          *(int32_t *)((char *)&g_archive_index_records->count + allocation_byte_count_offset),
+          g_archive_file);
         xor_archive_bytes_in_place(
-          g_archive_index_records->entries[v16].data_offset,
+          g_archive_index_records->entries[allocation_entry_index].data_offset,
           (int)tracked_memory,
-          *(int32_t *)((char *)&g_archive_index_records->count + v14));
+          *(int32_t *)((char *)&g_archive_index_records->count + allocation_byte_count_offset));
       }
       return tracked_memory;
     }
@@ -100,25 +117,25 @@ void *__cdecl load_file_bytes_from_archive_or_fs(char *path, void *buffer, int *
   else
   {
 LABEL_15:
-    v10 = fopen(path, Mode);
-    v11 = v10;
-    if ( v10 )
+    filesystem_file = fopen(path, mode);
+    filesystem_stream = filesystem_file;
+    if ( filesystem_file )
     {
-      stream_length_preserve_position = get_stream_length_preserve_position(v10);
-      v21 = buffer;
-      v22 = stream_length_preserve_position;
+      stream_length_preserve_position = get_stream_length_preserve_position(filesystem_file);
+      filesystem_output_buffer = buffer;
+      filesystem_byte_count = stream_length_preserve_position;
       if ( !buffer || buffer == (void *)-1 )
-        v21 = allocate_tracked_memory(stream_length_preserve_position, path);
-      fread(v21, 1, v22, v11);
-      fclose(v11);
+        filesystem_output_buffer = allocate_tracked_memory(stream_length_preserve_position, path);
+      fread(filesystem_output_buffer, 1u, filesystem_byte_count, filesystem_stream);
+      fclose(filesystem_stream);
       if ( out_size )
-        *out_size = v22;
-      return v21;
+        *out_size = filesystem_byte_count;
+      return filesystem_output_buffer;
     }
     else
     {
-      getcwd(DstBuf, 512);
-      report_messagef("WARNING:Cannot find file : %s (from %s)\n", path, DstBuf);
+      getcwd(cwd_buffer, 512);
+      report_messagef("WARNING:Cannot find file : %s (from %s)\n", path, cwd_buffer);
       return nullptr;
     }
   }

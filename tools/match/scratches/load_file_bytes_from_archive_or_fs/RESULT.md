@@ -4,9 +4,9 @@
 
 | Metric | Result |
 |---|---:|
-| Match | 65.71% |
+| Match | 79.23% |
 | Target instructions | 206 |
-| Candidate instructions | 211 |
+| Candidate instructions | 208 |
 | Common prefix | 10 / 206 |
 | Masked operands | 31 clean, 0 unresolved, 0 mismatched |
 
@@ -16,9 +16,11 @@ data-offset sentinel, archive decode, and filesystem fallback.
 
 ## Remaining mismatch shape
 
-- Archive scan register ownership differs: target uses `edx`/`cl`; candidate
-  uses `ecx`/`dl`.
-- Equivalent archive-found and filesystem-fallback blocks are laid out with
-  different label identities.
-- CRT stack cleanup around `ftell`/`_getcwd` remains locally scheduled in the
-  scratch instead of batched with later calls.
+- The archive scan and found-entry body now recover the native register
+  ownership and field contract.
+- VC6 lays out the filesystem-open failure block before the archive-found body;
+  this equivalent source emits it after the archive return paths.
+- Lowercase folding uses the equivalent `add al, 0xe0` encoding instead of
+  native `sub al, 0x20`.
+- CRT stack cleanup around `_getcwd` remains locally scheduled instead of
+  coalesced with the following report call.

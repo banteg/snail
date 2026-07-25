@@ -60,3 +60,21 @@ stream now use VC6's real `FILE` owner and `<stdio.h>` function declarations;
 Removing the opaque scratch `File` type and six hand-written CRT declarations
 is codegen-neutral: focused matching remains 79.23% with 31 clean masked
 operands and the same control-layout, lowercase-fold, and cleanup residuals.
+
+2026-07-25 archive/filesystem service ownership replay:
+
+- The analysis-only opaque `File` owner now flows through `fopen`, `fread`,
+  `fseek`, `ftell`, and `fclose` in both replay headers. It represents the
+  same CRT stream without importing the CRT's private structure layout.
+- IDA now distinguishes the 12-byte `ArchiveEntry` cursor and borrowed path
+  cursors from the filesystem stream, tracked allocation, caller buffer, and
+  512-byte cwd buffer. Separate archive-position and byte-count-offset
+  lifetimes preserve the native register reuse instead of merging unrelated
+  values under anonymous locals.
+- The Binary Ninja replay records the corresponding exact SSA identities and
+  names the previously anonymous `fread`, `getcwd`, and `chdir` callees.
+  Post-prototype reanalysis also distinguishes the saved filesystem stream,
+  tracked allocation result, archive positions, and byte counts instead of
+  retaining stale pre-prototype register names.
+- Focused matching remains 79.23%, 208/206 instructions, 10/206 prefix, and
+  31 clean masked operands. No source-shape probe or fake match was introduced.

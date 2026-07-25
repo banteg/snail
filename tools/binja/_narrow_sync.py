@@ -2302,7 +2302,7 @@ def function_variables(function):
     return list(by_identity.values())
 
 
-def find_variable(function, operation):
+def find_variable(function, operation, *, allow_missing=False):
     expected_source = str(operation["source_type"]).split(".")[-1]
     expected_index = int(operation["index"])
     expected_storage = int(operation["storage"])
@@ -2313,6 +2313,8 @@ def find_variable(function, operation):
         and int(variable.index) == expected_index
         and int(variable.storage) == expected_storage
     ]
+    if not candidates and allow_missing:
+        return None
     if len(candidates) != 1:
         raise RuntimeError(
             f"expected one {expected_source} variable at index {expected_index}, "
@@ -2324,12 +2326,17 @@ def find_variable(function, operation):
 user_vars = []
 for operation in operations:
     function = find_function(operation["identifier"])
-    variable = find_variable(function, operation)
-    observed = {
-        "name": str(variable.name),
-        "type": str(variable.type),
-        "user_defined": bool(function.is_var_user_defined(variable)),
-    }
+    deleting = operation["op"] == "user_var_delete"
+    variable = find_variable(function, operation, allow_missing=deleting)
+    observed = (
+        None
+        if variable is None
+        else {
+            "name": str(variable.name),
+            "type": str(variable.type),
+            "user_defined": bool(function.is_var_user_defined(variable)),
+        }
+    )
     user_vars.append({
         "identifier": str(operation["identifier"]),
         "source_type": str(operation["source_type"]),
@@ -2362,6 +2369,17 @@ result = {"user_vars": user_vars}
         )
     for operation, entry in zip(operations, user_vars, strict=True):
         observed = entry.get("observed") if isinstance(entry, dict) else None
+        deleting = operation.get("op") == "user_var_delete"
+        expected = {
+            "name": str(operation["variable_name"]),
+            "type": str(operation["variable_type"]),
+            "user_defined": not deleting,
+        }
+        entry["expected"] = expected
+        if observed is None and deleting:
+            entry["changed"] = False
+            entry["missing"] = True
+            continue
         if (
             not isinstance(observed, dict)
             or not isinstance(observed.get("name"), str)
@@ -2371,13 +2389,6 @@ result = {"user_vars": user_vars}
             raise RuntimeError(
                 f"Binary Ninja user-variable readback has invalid entries: {response!r}"
             )
-        deleting = operation.get("op") == "user_var_delete"
-        expected = {
-            "name": str(operation["variable_name"]),
-            "type": str(operation["variable_type"]),
-            "user_defined": not deleting,
-        }
-        entry["expected"] = expected
         if deleting:
             entry["changed"] = observed["user_defined"] is True
         else:

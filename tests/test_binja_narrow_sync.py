@@ -4226,11 +4226,16 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     )
 
     binja_declarations = (
+        "int32_t __cdecl fseek(File* stream, int32_t offset, int32_t origin)",
+        "int32_t __cdecl ftell(File* stream)",
         "char* __cdecl xor_decode_buffer_with_index(char* bytes, int32_t byte_count)",
         "int32_t __cdecl write_file_bytes(char* path, void* bytes, int32_t byte_count)",
         "char* __cdecl save_config_file(char* path, void* bytes, int32_t byte_count)",
     )
     ida_declarations = (
+        "unsigned int __cdecl fread(void* bytes, unsigned int element_size, unsigned int element_count, File* stream);",
+        "int __cdecl fseek(File* stream, int offset, int origin);",
+        "int __cdecl ftell(File* stream);",
         "char* __cdecl xor_decode_buffer_with_index(char* bytes, int byte_count);",
         "int __cdecl write_file_bytes(char* path, void* bytes, int byte_count);",
         "char* __cdecl save_config_file(char* path, void* bytes, int byte_count);",
@@ -4240,6 +4245,16 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         assert any(f"{declaration};" in header for header in headers)
     for declaration in ida_declarations:
         assert f'"{declaration}"' in ida_apply_source
+    assert (
+        "uint32_t __cdecl fread(void* bytes, uint32_t element_size, uint32_t element_count, File* stream)"
+        in binja_source
+    )
+    for header in headers:
+        compact_header = "".join(header.split())
+        assert (
+            "uint32_t__cdeclfread(void*bytes,uint32_telement_size,"
+            "uint32_telement_count,File*stream);"
+        ) in compact_header
 
     for lvar_declaration in (
         '"char cwd_buffer[512];"',
@@ -4272,6 +4287,7 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "char name[260];",
         "typedef struct TrackedAllocationRecord",
         "TrackedAllocationRecord records[1];",
+        "extern int32_t g_enumerated_entry_count;",
         "extern int32_t g_tracked_allocation_total_bytes;",
         "extern TrackedAllocationStack g_tracked_allocation_stack;",
     ):
@@ -4286,6 +4302,26 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         assert declaration in binja_source
     assert "STALE_DATA_ITEM_SPECS" in ida_apply_source
     assert '"int[4]"' in ida_apply_source
+    assert "(0x503320, 4)" in ida_apply_source
+    assert "STALE_ARCHIVE_CURSOR_USER_VAR_REMOVALS" in binja_source
+    assert "remove_user_var_updates" in binja_source
+    assert "ARCHIVE_INDEX_SPLIT_DEFINITIONS" in binja_source
+    assert "ARCHIVE_INDEX_SPLIT_TARGET_VAR" in binja_source
+    assert "apply_split_user_var_update" in binja_source
+    assert "ARCHIVE_CURSOR_USER_VAR_UPDATES" in binja_source
+    assert "apply_user_var_updates" in binja_source
+    for owner_name in (
+        '"archive_index"',
+        '"archive_entry_cursor"',
+        '"archive_path_cursor"',
+        '"requested_path_cursor"',
+        '"basename_cursor"',
+        '"archive_entry_offset"',
+        '"filesystem_file"',
+        '"filesystem_stream"',
+        '"filesystem_output_buffer"',
+    ):
+        assert owner_name in binja_source or owner_name in ida_apply_source
 
     assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_archive_shell_types.py"' in ida_sync_source
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/archive_shell_types.h"' in ida_sync_source
@@ -12696,6 +12732,52 @@ def test_user_var_readback_skips_type_parsing(monkeypatch) -> None:
 
     assert len(calls) == 1
     assert states[0]["changed"] is False
+
+
+def test_user_var_removal_readback_accepts_an_already_absent_identity(
+    monkeypatch,
+) -> None:
+    def fake_run_bn(_repo_root, *args):
+        code = args[args.index("--code") + 1]
+        assert "if not candidates and allow_missing:" in code
+        assert "allow_missing=deleting" in code
+        return {
+            "result": {
+                "user_vars": [
+                    {
+                        "identifier": "enumerate_matching_archive_or_fs_entries",
+                        "source_type": "RegisterVariableSourceType",
+                        "index": 49,
+                        "storage": 66,
+                        "observed": None,
+                    }
+                ]
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+    operations = _narrow_sync.user_var_removal_operations(
+        (
+            (
+                "enumerate_matching_archive_or_fs_entries",
+                "RegisterVariableSourceType",
+                49,
+                66,
+                "archive_index",
+                "ArchiveIndex*",
+            ),
+        )
+    )
+
+    states = _narrow_sync.current_user_var_states(
+        Path("."),
+        target="snail-mail.exe",
+        operations=operations,
+    )
+
+    assert states[0]["changed"] is False
+    assert states[0]["missing"] is True
+    assert states[0]["expected"]["user_defined"] is False
 
 
 def test_user_variable_replay_previews_before_apply(monkeypatch) -> None:

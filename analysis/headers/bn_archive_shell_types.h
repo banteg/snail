@@ -2,6 +2,7 @@ typedef unsigned char uint8_t;
 typedef int int32_t;
 typedef unsigned int uint32_t;
 
+/* Opaque MSVC6 CRT stream owner; its private FILE layout remains unclaimed. */
 typedef struct File File;
 
 typedef struct FileSearchData {
@@ -28,11 +29,18 @@ typedef struct TrackedAllocationStack {
 
 void* __cdecl malloc(uint32_t size);
 File* __cdecl fopen(char* path, char* mode);
+uint32_t __cdecl fread(
+    void* bytes,
+    uint32_t element_size,
+    uint32_t element_count,
+    File* stream);
 uint32_t __cdecl fwrite(
     void* bytes,
     uint32_t element_size,
     uint32_t element_count,
     File* stream);
+int32_t __cdecl fseek(File* stream, int32_t offset, int32_t origin);
+int32_t __cdecl ftell(File* stream);
 int32_t __cdecl fclose(File* stream);
 char* __cdecl getcwd(char* buffer, int32_t max_length);
 int32_t __cdecl chdir(char* path);
@@ -259,6 +267,7 @@ extern void* g_archive_data_base;
 extern File* g_archive_file;
 extern uint8_t g_archive_startup_flag;
 extern ArchiveIndex* g_archive_index_records;
+extern int32_t g_enumerated_entry_count;
 extern CachedMusicPath g_cached_music_path;
 extern BassChannelBytes2SecondsFn g_bass_channel_bytes2_seconds;
 extern BassChannelRemoveSyncFn g_bass_channel_remove_sync;

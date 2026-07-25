@@ -9,79 +9,79 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
         int *out_count,
         EnumeratedEntryName *names)
 {
-  ArchiveIndex *v4; // eax
-  char *v5; // esi
-  char *v6; // ecx
-  char i; // dl
-  char v8; // al
-  char *v9; // ebp
-  int v10; // edi
-  int v11; // esi
-  char v12; // bl
+  ArchiveIndex *archive_index; // eax
+  char *directory_cursor; // esi
+  char *archive_path_cursor; // ecx
+  char archive_path_char; // dl
+  char directory_char; // al
+  char *basename_cursor; // ebp
+  int basename_index; // edi
+  int pattern_index; // esi
+  char pattern_char; // bl
   bool v13; // cc
-  int v14; // esi
-  char v15; // [esp+Bh] [ebp-321h]
-  int v16; // [esp+Ch] [ebp-320h]
-  int v17; // [esp+10h] [ebp-31Ch]
-  FileSearchData v18; // [esp+14h] [ebp-318h] BYREF
-  char Path[512]; // [esp+12Ch] [ebp-200h] BYREF
+  int filesystem_handle; // esi
+  char folded_basename_char; // [esp+Bh] [ebp-321h]
+  int archive_entry_offset; // [esp+Ch] [ebp-320h]
+  int archive_entry_index; // [esp+10h] [ebp-31Ch]
+  FileSearchData find_data; // [esp+14h] [ebp-318h] BYREF
+  char cwd_buffer[512]; // [esp+12Ch] [ebp-200h] BYREF
 
-  v4 = g_archive_index_records;
+  archive_index = g_archive_index_records;
   g_enumerated_entry_count = 0;
   if ( g_archive_index_records )
   {
-    v17 = 0;
+    archive_entry_index = 0;
     if ( g_archive_index_records->count > 0 )
     {
-      v16 = 0;
+      archive_entry_offset = 0;
       do
       {
-        v5 = directory;
-        v6 = v4->entries[v16].path;
-        for ( i = *v6; i; ++v6 )
+        directory_cursor = directory;
+        archive_path_cursor = archive_index->entries[archive_entry_offset].path;
+        for ( archive_path_char = *archive_path_cursor; archive_path_char; ++archive_path_cursor )
         {
-          v8 = *v5;
-          if ( !*v5 )
+          directory_char = *directory_cursor;
+          if ( !*directory_cursor )
             break;
-          if ( v8 >= 97 && v8 <= 122 )
-            v8 -= 32;
-          if ( i != v8 )
+          if ( directory_char >= 97 && directory_char <= 122 )
+            directory_char -= 32;
+          if ( archive_path_char != directory_char )
             break;
-          i = v6[1];
-          ++v5;
+          archive_path_char = archive_path_cursor[1];
+          ++directory_cursor;
         }
-        if ( *v6 == 47 && !*v5 )
+        if ( *archive_path_cursor == 47 && !*directory_cursor )
         {
-          v9 = v6 + 1;
-          v10 = 0;
-          v11 = 0;
-          if ( v6[1] )
+          basename_cursor = archive_path_cursor + 1;
+          basename_index = 0;
+          pattern_index = 0;
+          if ( archive_path_cursor[1] )
           {
             do
             {
-              v12 = pattern[v11];
-              if ( !v12 )
+              pattern_char = pattern[pattern_index];
+              if ( !pattern_char )
                 break;
-              v15 = ascii_upper_if_lowercase(v9[v10]);
-              if ( v15 != ascii_upper_if_lowercase(v12) && pattern[v11] != 42 )
+              folded_basename_char = ascii_upper_if_lowercase(basename_cursor[basename_index]);
+              if ( folded_basename_char != ascii_upper_if_lowercase(pattern_char) && pattern[pattern_index] != 42 )
                 break;
-              if ( pattern[v11] == 42 && v9[v10] == pattern[v11 + 1] )
-                ++v11;
-              ++v10;
-              if ( pattern[v11] != 42 )
-                ++v11;
+              if ( pattern[pattern_index] == 42 && basename_cursor[basename_index] == pattern[pattern_index + 1] )
+                ++pattern_index;
+              ++basename_index;
+              if ( pattern[pattern_index] != 42 )
+                ++pattern_index;
             }
-            while ( v9[v10] );
+            while ( basename_cursor[basename_index] );
           }
-          if ( !v9[v10] )
+          if ( !basename_cursor[basename_index] )
           {
-            rstrcpy_checked_ascii(&(*names)[128 * g_enumerated_entry_count], v9);
+            rstrcpy_checked_ascii(&(*names)[128 * g_enumerated_entry_count], basename_cursor);
             ++g_enumerated_entry_count;
           }
         }
-        v4 = g_archive_index_records;
-        v13 = ++v17 < g_archive_index_records->count;
-        ++v16;
+        archive_index = g_archive_index_records;
+        v13 = ++archive_entry_index < g_archive_index_records->count;
+        ++archive_entry_offset;
       }
       while ( v13 );
     }
@@ -89,23 +89,23 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
   }
   else
   {
-    getcwd(Path, 512);
+    getcwd(cwd_buffer, 512);
     if ( set_current_directory_with_drive_fallback(directory) == 1 )
     {
       *out_count = g_enumerated_entry_count;
     }
     else
     {
-      v14 = findfirst(pattern, &v18);
-      if ( v14 != -1 )
+      filesystem_handle = findfirst(pattern, &find_data);
+      if ( filesystem_handle != -1 )
       {
-        rstrcpy_checked_ascii(&(*names)[128 * g_enumerated_entry_count], v18.name);
+        rstrcpy_checked_ascii(&(*names)[128 * g_enumerated_entry_count], find_data.name);
         ++g_enumerated_entry_count;
-        for ( ; findnext(v14, &v18) != -1; ++g_enumerated_entry_count )
-          rstrcpy_checked_ascii(&(*names)[128 * g_enumerated_entry_count], v18.name);
+        for ( ; findnext(filesystem_handle, &find_data) != -1; ++g_enumerated_entry_count )
+          rstrcpy_checked_ascii(&(*names)[128 * g_enumerated_entry_count], find_data.name);
       }
       *out_count = g_enumerated_entry_count;
-      chdir(Path);
+      chdir(cwd_buffer);
     }
   }
 }

@@ -76,6 +76,25 @@ Cross-port ownership:
   record. Focused matching remains 81.52%; no source-shape change was made to
   conceal the remaining compiler allocation residuals.
 
+2026-07-25 archive cursor ownership replay:
+
+- The private `g_enumerated_entry_count` dword at `0x503320` now has one
+  durable owner in both analysis lanes instead of surviving as `data_503320`
+  in Binary Ninja.
+- IDA now preserves the exact `ArchiveIndex`, directory, archive-path,
+  basename, wildcard-index, filesystem-handle, and 512-byte cwd lifetimes.
+  The two archive loop locals remain separate because the native advances a
+  12-byte record offset while comparing an independent logical entry index.
+- The Binary Ninja replay records the corresponding SSA and physical-stack
+  identities, including separate caller-owned output-name cursors for the
+  archive and filesystem branches. Its two concrete `ArchiveIndex` loads and
+  loop phi are split away from the byte and wildcard-pointer lifetimes that
+  reuse EAX, so the struct owner is no longer falsely reused as a character.
+- Focused matching remains honestly pinned at 81.52%, 186/182 instructions,
+  7/182 prefix, and 26 clean masked operands. The replay clarifies ownership;
+  it does not alter the source to conceal the documented VC6 allocation
+  residuals.
+
 Rejected probes:
 
 - branching to the filesystem path before clearing `g_enumerated_entry_count` regressed to 34.41%;
