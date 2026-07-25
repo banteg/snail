@@ -4,11 +4,10 @@ Live source map for the authored ring/special-effect spawner.
 
 Current match:
 
-- `99.14%`, `347/347` candidate/target instructions, prefix `173/347`, with
+- `99.71%`, `347/347` candidate/target instructions, prefix `294/347`, with
   all `75` masked operands clean and no unresolved or mismatched operands.
 - All nine authored kind paths are present with their native RNG streams. The
-  only remaining differences are two x87 result/store schedules and one
-  activation-store schedule.
+  only remaining difference is one activation-store schedule.
 - No compiler flag, volatile barrier, artificial return, or matcher-only state
   is retained.
 
@@ -351,3 +350,22 @@ Staging phase and phase-step in explicit locals regressed to `78.52%` and
 expanded the candidate to 384 instructions by defeating native tail merging;
 an explicit lives local compiled identically. Both probes were removed rather
 than encoding artificial sequencing.
+
+## 2026-07-25 selected moving-effect parent borrows
+
+The slow-default (`RR6`/`RR7`) and normal-default (`RR8`/`RR9`) arms now take
+an explicit `SubRing* selected_ring` borrow after finishing their transform
+placement. This is the same embedded parent selected by the enclosing
+`SubRingSlotCursor`; it neither adds storage nor changes the pool lifetime.
+Keeping that owner identity across the adjacent phase and phase-step stores
+recovers both native x87/GPR schedules. Focused matching rises from `99.14%`
+to `99.71%`, with the exact `347/347` instruction extent, prefix `294/347`,
+and all `75` masked operands clean.
+
+Swapping the two assignments instead was rejected: it changed VC6's switch-tail
+merging and regressed to `79.37%`. Moving the later whole-slot borrow ahead of
+activation likewise materialized the `SubRing*` base too early and regressed to
+`96.25%`. The sole residual is now the independent active-state versus
+owner-lives-snapshot store order; naming either value explicitly compiles
+identically, while reversing the source statements perturbs argument scheduling.
+No artificial sequencing is retained.

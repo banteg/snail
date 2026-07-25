@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**628/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **102610/317040** bytes (**32.37%**) are proof-grade, and overall fuzzy is **76.50%**.
+**628/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **102610/317040** bytes (**32.37%**) are proof-grade, and overall fuzzy is **76.51%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -660,7 +660,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | append_track_cache_object | 0x433960 | 454 | 167/167 | 98.80% | 155/167 | 6 ok |  |
 | 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 97.57% | 126/247 | 25 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 99/99 | 98.99% | 79/99 | - |  |
-| 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 347/347 | 99.14% | 173/347 | 75 ok |  |
+| 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 347/347 | 99.71% | 294/347 | 75 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 37 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  |

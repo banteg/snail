@@ -101,9 +101,10 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             slot_cursor->ring.transform.position = staged_position;
             float random_x = random_float_below(1.0f, "RR6") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
-            slot_cursor->ring.active_phase =
+            SubRing* selected_ring = &slot_cursor->ring;
+            selected_ring->active_phase =
                 random_float_below(1.0f, "RR7") * 6.28318548f;
-            slot_cursor->ring.active_phase_step = default_phase_step;
+            selected_ring->active_phase_step = default_phase_step;
             break;
         }
         case SUB_RING_KIND_NORMAL_DEFAULT: {
@@ -114,9 +115,10 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             slot_cursor->ring.transform.position = staged_position;
             float random_x = random_float_below(1.0f, "RR8") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
-            slot_cursor->ring.active_phase =
+            SubRing* selected_ring = &slot_cursor->ring;
+            selected_ring->active_phase =
                 random_float_below(1.0f, "RR9") * 6.28318548f;
-            slot_cursor->ring.active_phase_step = default_phase_step;
+            selected_ring->active_phase_step = default_phase_step;
             break;
         }
         case SUB_RING_KIND_NORMAL_AUTHORED: {

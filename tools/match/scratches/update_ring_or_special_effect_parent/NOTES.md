@@ -252,3 +252,18 @@ loops, replacing stale `int*`/`kill_sprite(*cursor)` output with
 98.21% (`336/336`, prefix `193/336`, 37 clean operands); the remaining two
 regions are the documented FPU/local schedule and one active-list register
 choice, not ownership gaps.
+
+## 2026-07-25 post-owner-recovery source probes
+
+The canonical nested `RenderableBod` and explicit child cursor replays were
+used to retest both remaining regions. Delaying the indexed child-loop counter,
+introducing an explicit per-element `SubRingStar*` borrow, and naming the
+`GameRoot*` list owner all compiled identically at `98.21%`; converting the
+indexed radius loop into a carried child pointer changed unrelated register
+lifetimes and regressed to `93.75%`. All probes were removed.
+
+The two residuals therefore remain ordinary backend schedules, not evidence
+for another storage owner: one derives the embedded child-radius cursor before
+staging the camera target, and one materializes the already-proved
+`GameRoot::active_bod_list` receiver through a different register. The source
+retains the clearer aggregate target and indexed embedded-child walk.
