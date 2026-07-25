@@ -1028,7 +1028,7 @@ steering_stored:
                         .flags
                     & 1) {
                     PlayShootSfx();
-                    update_movement_flag_emitters(this);
+                    Shoot(this);
                     movement_fire_progress = movement_fire_progress_step + 0.30000001f;
                 } else if (emitter_game
                                ->selected_level_record
@@ -1037,16 +1037,16 @@ steering_stored:
                            & 2) {
                     movement_fire_progress = movement_fire_progress_step;
                     PlayShootSfx();
-                    update_movement_flag_emitters(this);
+                    Shoot(this);
                 }
             } else if (control_source->control_flags_a & INPUT_BUTTON_PRIMARY) {
                 PlayShootSfx();
-                update_movement_flag_emitters(this);
+                Shoot(this);
                 movement_fire_progress = movement_fire_progress_step + 0.30000001f;
             } else if (control_source->control_flags_b & INPUT_BUTTON_PRIMARY) {
                 movement_fire_progress = movement_fire_progress_step;
                 PlayShootSfx();
-                update_movement_flag_emitters(this);
+                Shoot(this);
             }
         }
     }

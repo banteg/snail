@@ -752,3 +752,13 @@ families, cached variant, and attachment-exit attenuation. The stable
 `play_movement_state_sound` manifest entry carries `PlayShootSfx` as an alias,
 so the source clarification does not hide or relax any call relocation. The
 focused match remains honestly unchanged.
+
+## 2026-07-25 authored Shoot call ownership
+
+The four firing-edge emitter calls now use the cross-port authored member
+`cRSubGoldy::Shoot(cRSubGoldy*)`. Android retains that exact symbol and repeats
+the Windows flag-to-projectile-budget classifier plus the receiver-owned
+12-slot Golb scan. The stable `update_movement_flag_emitters` manifest entry
+carries `Shoot` as an alias, so every call relocation remains audited. This is
+an ownership clarification only; the focused match remains honestly
+unchanged.

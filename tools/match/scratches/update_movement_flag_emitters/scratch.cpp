@@ -1,10 +1,11 @@
-// update_movement_flag_emitters @ 0x43a300 (thiscall, ret 0x4)
+// update_movement_flag_emitters @ 0x43a300
+// Authored as cRSubGoldy::Shoot(cRSubGoldy*) (thiscall, ret 0x4).
 
 #include "player.h"
 
 typedef unsigned int DWORD;
 
-void Player::update_movement_flag_emitters(Player* player)
+void Player::Shoot(Player* player)
 {
     DWORD flags = player->movement_flags;
     Player* owner = (Player*)this;

@@ -132,7 +132,7 @@ public:
     void update_subgoldy();              // @ 0x43b120, cRSubGoldy::Update
     void begin_post_follow_carryover();   // @ 0x43af60
     void SetShootFlags();                  // @ 0x43a1a0, cRSubGoldy::SetShootFlags()
-    void update_movement_flag_emitters(Player* player); // @ 0x43a300
+    void Shoot(Player* player);                   // @ 0x43a300, cRSubGoldy::Shoot(cRSubGoldy*)
     void PlayShootSfx();                   // @ 0x43afd0, cRSubGoldy::PlayShootSfx()
     void add_subgoldy_score(int score_kind, int bonus_score); // @ 0x4402c0
     void clear_subgoldy_score_buckets();   // @ 0x4403a0

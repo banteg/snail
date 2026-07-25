@@ -2314,7 +2314,10 @@
     {
       "address": "0x43a300",
       "name": "update_movement_flag_emitters",
-      "description": "Exact void `Player` member that iterates its 12 owned `GolbShot` slots at +0x450 and seeds one, two, or three live actors from an explicit `Player*` movement source. Both callers pass the same player as receiver and source."
+      "aliases": [
+        "Shoot"
+      ],
+      "description": "Exact void Windows `cRSubGoldy::Shoot(cRSubGoldy*)`: classifies the explicit source Goldy's shoot flags into a one-, two-, or three-projectile budget, then fills inactive entries in the receiver's 12-slot owned `GolbShot` bank at +0x450. Android preserves the authored symbol and body; all Windows and Android callsites pass the same Goldy as receiver and source."
     },
     {
       "address": "0x43a370",

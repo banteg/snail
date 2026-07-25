@@ -53,3 +53,23 @@ owner subtraction before reading `state`; the refreshed artifact now walks
 `golb_shot_cursor->state` and passes that same record to `create_golb`. The
 owning 12-element array remains on `Player`. No matching edit was made: the
 function stays exact at 39/39 with its single operand clean.
+
+## 2026-07-25 authored Shoot ownership
+
+Android preserves this exact member as
+`cRSubGoldy::Shoot(cRSubGoldy*)`. Its body repeats the Windows flag classifier,
+one/two/three-projectile budget, 12-slot owned `cRSubGolb` scan, and early stop
+after the budget is exhausted. All observed Windows and Android callsites pass
+the same Goldy as receiver and explicit source.
+
+IDA 9.4 exposes the misleading result residue directly: a no-shoot early
+return leaves the receiver in R0, while any creation path leaves the unrelated
+result of `cRSubGolb::Create` there. Ghidra 12.1.2 independently demangles the
+member and reconstructs it as
+`void cRSubGoldy::Shoot(cRSubGoldy*)`. This agrees with the already-proven
+Windows `ret 4` void ABI.
+
+The stable manifest name remains `update_movement_flag_emitters`, with `Shoot`
+as the authored matcher alias. Renaming the matching source and its four
+`update_subgoldy` callsites does not relax the proof: the helper remains exact
+at 39/39 with its single operand clean.

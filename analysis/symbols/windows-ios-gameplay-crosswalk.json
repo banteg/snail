@@ -727,6 +727,14 @@
       "notes": "Android preserves the authored name and the same nine-case selector-to-weapon-flags/cadence table. Its common POP {R4,PC} exit leaves the original receiver in R0 when unchanged but the incidental residue of cRSnail::SetWeapon when changed, proving the member is void. The Windows harness name remains stable."
     },
     {
+      "address": "0x43a300",
+      "windows_name": "update_movement_flag_emitters",
+      "android_symbol": "cRSubGoldy::Shoot(cRSubGoldy*)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the authored name and repeats the exact flag-to-projectile-count classifier plus the 12-slot owned cRSubGolb scan. Ghidra 12.1.2 recovers a void member; IDA 9.4 shows the early-return path retaining the receiver in R0 while create paths retain incidental cRSubGolb::Create residue, independently ruling out a result contract. The Windows harness name remains stable."
+    },
+    {
       "address": "0x43a370",
       "windows_name": "end_jetpack_hover",
       "ios_symbol": "cRSubHover::End()",
