@@ -3,15 +3,19 @@ import ghidra.app.decompiler.DecompileResults;
 import ghidra.app.script.GhidraScript;
 import ghidra.framework.Application;
 import ghidra.program.model.listing.Function;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class DecompileSymbol extends GhidraScript {
     @Override
     public void run() throws Exception {
         String[] args = getScriptArgs();
-        if (args.length != 1) {
+        if (args.length != 2) {
             throw new IllegalArgumentException(
-                "expected one function-name fragment");
+                "expected a function-name fragment and output path");
         }
+        Path outputPath = Path.of(args[1]);
 
         Function selected = null;
         for (Function function :
@@ -44,9 +48,11 @@ public class DecompileSymbol extends GhidraScript {
             throw new IllegalStateException(result.getErrorMessage());
         }
 
-        println("GHIDRA_VERSION=" + Application.getApplicationVersion());
-        println("FUNCTION=" + selected.getName(true) + "@"
-            + selected.getEntryPoint());
-        println(result.getDecompiledFunction().getC());
+        String output =
+            "GHIDRA_VERSION=" + Application.getApplicationVersion() + "\n"
+            + "FUNCTION=" + selected.getName(true) + "@"
+            + selected.getEntryPoint() + "\n"
+            + result.getDecompiledFunction().getC() + "\n";
+        Files.writeString(outputPath, output, StandardCharsets.UTF_8);
     }
 }

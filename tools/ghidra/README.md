@@ -16,5 +16,9 @@ uv run tools/ghidra/decompile_symbol.py \
 ```
 
 The probe fails closed when the fragment is absent or ambiguous and prints the
-Ghidra version, selected fully qualified function, entry point, and decompiled
-C on success.
+Ghidra version, selected fully qualified function, entry point, and clean
+decompiled C on success. The Java probe writes that payload to an isolated
+temporary file, so routine analyzer startup logs are suppressed; a failed
+probe prints the script-error block when available, otherwise only the bounded
+tail of Ghidra's diagnostics. This also catches post-script failures because
+Ghidra may leave the headless launcher status at zero.

@@ -5480,9 +5480,14 @@ def test_ghidra_symbol_probe_is_versioned_name_based_and_profile_isolated() -> N
     assert "-Duser.home=" in wrapper
     assert '"DecompileSymbol.java"' in wrapper
     assert "symbol_fragment" in wrapper
+    assert "capture_output=True" in wrapper
+    assert "FAILURE_LOG_LINES = 80" in wrapper
+    assert 'output_path = root / "decompile.txt"' in wrapper
+    assert "output_path.read_text" in wrapper
     assert "function.getName(true)" in script
     assert "ambiguous function fragment" in script
-    assert 'println("GHIDRA_VERSION="' in script
+    assert "Files.writeString(outputPath" in script
+    assert '"GHIDRA_VERSION="' in script
 
 
 def test_ida_type_inspectors_report_function_and_data_ownership() -> None:

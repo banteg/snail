@@ -105,3 +105,16 @@ recovers the velocity, gravity, progress, lifetime, size, and position stores
 as direct `impact_sprite` fields. No source or mask changed: focused matching
 remains honestly pinned at 63.64%, 43/45 instructions, with all three masked
 operands clean.
+
+## 2026-07-25 Ghidra 12.1.2 cross-check
+
+Android's symbol-preserving `cRSubGolb::Explode(tVector)` independently
+confirms the same effect gate, allocated Sprite ownership, constant velocity,
+progress/lifetime, size, gravity, and copied position lanes. Its optimizer
+emits direct stores and provides no evidence for a second nested owner.
+
+The exact sibling spelling that closes `spawn_golb_smoke` was retried here as
+one constructed `Vector3` plus aggregate Sprite assignment. It remains
+63.64%, with the same 43/45 instruction count and three clean masks; only the
+already documented saved-ESI/store schedule moves. The existing source is
+therefore retained instead of treating sibling codegen as proof.

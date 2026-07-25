@@ -1,7 +1,7 @@
-# Source-shaped pinned match
+# Exact match — scaled Vector3 smoke velocity
 
-`spawn_golb_smoke` currently matches at 84.29%, 68 candidate instructions versus
-72 target instructions, with a 43/72 exact prefix.
+`spawn_golb_smoke` now matches at 100.00%, 72/72 candidate and target
+instructions, with a complete exact prefix and eight clean masked operands.
 
 The scratch covers the recovered smoke producer behavior:
 
@@ -12,12 +12,9 @@ The scratch covers the recovered smoke producer behavior:
 - scale the Golb velocity by `0.40000001f`, clear the gravity lane, and copy
   the caller position into the sprite.
 
-The remaining residual is source-shape/codegen, not a known semantic gap. The
-raw tail now keeps native color and scale stores at the sprite base. Native
-still creates a velocity pointer and advances the position base before the
-velocity stores, while the candidate stores those lanes through direct
-`sprite + offset` forms. The final velocity x/y/z x87 staging also differs,
-while the values and writes are covered.
+The former residual was source shape rather than a semantic gap. The accepted
+scaled-`Vector3` spelling and non-overlapping temporary scopes are documented
+in the 2026-07-25 recovery below.
 
 Rejected source-shaped probes:
 
@@ -72,7 +69,8 @@ Rejected source-shaped probes:
   reading `subgame_rate`. Focused Wibo remains pinned at 84.29%, 68/72
   candidate instructions, 43/72 prefix, and eight clean masked operands.
 
-Keep pinned unless a new source idiom explains the delayed sprite-base advance.
+This remained the pinned frontier until the scaled-vector owner recovery
+below explained the delayed Sprite-base advance.
 
 ## 2026-07-16 analysis receiver and ABI replay
 
@@ -95,3 +93,23 @@ motion-tail struct. Transactional preview rejected that overlay because it
 only traded `__offset` for misleading nested `position.x` expressions. This
 analysis-only clarification leaves the honest 84.29%, 68/72 frontier and all
 eight clean masks unchanged.
+
+## 2026-07-25 scaled-velocity owner recovery
+
+Ghidra 12.1.2 independently decompiles Android's symbol-preserving
+`cRSubGolb::Smoke(tVector)` as a side-effect-only Sprite producer: it scales
+the three projectile velocity lanes by the same factor, clears gravity, and
+copies the by-value position into the Sprite. The mobile optimizer emits those
+stores directly, while Windows retains a three-lane stack value.
+
+Modeling that value as `Vector3 smoke_velocity = velocity * 0.40000001f`
+followed by the authored aggregate assignment recovers all four previously
+missing Windows instructions and the exact split x/gravity/y/z store schedule.
+Narrowing the preceding temporary color to its real source scope lets VC6
+reuse the same 0x10-byte frame slot for the non-overlapping vector, matching
+the native stack extent without padding or an artificial local.
+
+Focused matching rises from 84.29% (68/72 instructions, prefix 43) to
+**100.00%** (72/72 instructions and prefix), with all eight masked operands
+clean. The smoke velocity and Sprite motion lanes now have semantic owners;
+no register-directed spelling or synthetic constant was introduced.
