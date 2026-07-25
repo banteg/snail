@@ -3295,7 +3295,7 @@ def _sync_populate_runtime_lvars() -> dict[str, object]:
 def _sync_golb_path_follow_copy_ownership() -> dict[str, object]:
     selector = "calc_path_length_z"
     address = idc.get_name_ea_simple(selector)
-    if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+    if address == idc.BADADDR or ida_funcs.get_func_start(address) == idc.BADADDR:
         return {"status": "failed", "reason": "missing_function", "selector": selector}
 
     declaration = "Vec3 *direction_source;"
@@ -4382,7 +4382,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
             missing.append({"selector": selector, "reason": "missing_symbol"})
             continue
 
-        if ida_funcs.get_func(address) is None:
+        if ida_funcs.get_func_start(address) == idc.BADADDR:
             missing.append({"selector": selector, "address": hex(address), "reason": "missing_function"})
             continue
 
@@ -4990,7 +4990,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
     dirty_functions = []
     for address in PATH_OWNERSHIP_DIRTY_FUNCTIONS:
-        if ida_funcs.get_func(address) is not None:
+        if ida_funcs.get_func_start(address) != idc.BADADDR:
             ida_hexrays.mark_cfunc_dirty(address, True)
             dirty_functions.append(hex(address))
 

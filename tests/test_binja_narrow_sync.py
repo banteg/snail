@@ -5387,7 +5387,8 @@ def test_ida_operand_inspector_reports_numeric_operand_identity() -> None:
     wrapper = (IDA_DIR / "query_function_operands.py").read_text(encoding="utf-8")
 
     for marker in (
-        "idautils.FuncItems(function.start_ea)",
+        "ida_funcs.get_func_start(address)",
+        "idautils.FuncItems(function_start)",
         "idc.get_operand_type(address, operand_index)",
         "idc.get_operand_value(address, operand_index)",
         "idc.print_operand(address, operand_index)",
@@ -5397,6 +5398,18 @@ def test_ida_operand_inspector_reports_numeric_operand_identity() -> None:
         assert marker in inspector
     assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/inspect_function_operands.py"' in wrapper
     assert 'script_args=[*args.selectors, "--", args.match]' in wrapper
+
+
+def test_ida_94_function_presence_checks_avoid_deprecated_get_func() -> None:
+    operand_inspector = (IDA_DIR / "inspect_function_operands.py").read_text(
+        encoding="utf-8"
+    )
+    path_replay = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "ida_funcs.get_func(" not in operand_inspector
+    assert "ida_funcs.get_func(" not in path_replay
 
 
 def test_ida_type_inspectors_report_function_and_data_ownership() -> None:

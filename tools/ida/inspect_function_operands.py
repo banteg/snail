@@ -10,14 +10,17 @@ import idautils
 import idc
 
 
-def _resolve_function(selector: str):
+def _resolve_function_start(selector: str) -> int | None:
     try:
         address = int(selector, 0)
     except ValueError:
         address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR:
         return None
-    return ida_funcs.get_func(address)
+    function_start = ida_funcs.get_func_start(address)
+    if function_start == idc.BADADDR:
+        return None
+    return function_start
 
 
 def main() -> None:
@@ -38,13 +41,13 @@ def main() -> None:
     functions = []
     failed = []
     for selector in selectors:
-        function = _resolve_function(selector)
-        if function is None:
+        function_start = _resolve_function_start(selector)
+        if function_start is None:
             failed.append({"selector": selector, "reason": "missing_function"})
             continue
 
         instructions = []
-        for address in idautils.FuncItems(function.start_ea):
+        for address in idautils.FuncItems(function_start):
             disassembly = ida_lines.tag_remove(
                 idc.generate_disasm_line(address, 0) or ""
             )
@@ -79,7 +82,7 @@ def main() -> None:
         functions.append(
             {
                 "selector": selector,
-                "address": hex(function.start_ea),
+                "address": hex(function_start),
                 "instructions": instructions,
             }
         )
