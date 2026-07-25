@@ -1,6 +1,12 @@
 #ifndef PARCEL_BUCKET_TYPES_H
 #define PARCEL_BUCKET_TYPES_H
 
+#ifndef BN_TYPE_PARSER
+#define __base(name, offset)
+#define __inherited
+#define __ptr_offset(offset)
+#endif
+
 /*
  * Narrow cross-decompiler ownership slice for the parcel-placement scratch
  * banks. Both constructor loops prove 0x800 entries with a 0x20c-byte stride;
@@ -23,6 +29,18 @@ typedef struct ParcelCandidate {
     int32_t row;
     Vec3 position;
 } ParcelCandidate;
+
+/*
+ * Analysis-only field-first view for PlaceParcels' positive-set claim loop.
+ * The native EBX cursor starts at ParcelCandidate::position, reads the row
+ * behind that address, then advances by one complete 0x10-byte candidate.
+ * The candidate remains owned by its global ParcelBucket scratch bank.
+ */
+typedef struct __ptr_offset(0x04)
+    __base(Vec3, 0x04) ParcelCandidatePositionCursorView {
+    int32_t row;
+    __inherited Vec3 position;
+} ParcelCandidatePositionCursorView;
 
 typedef struct ParcelBucket {
     ParcelCandidate candidates[PARCEL_CANDIDATE_CAPACITY];

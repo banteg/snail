@@ -9323,6 +9323,9 @@ def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
         "typedef struct ParcelCandidate",
         "int32_t row;",
         "Vec3 position;",
+        "typedef struct __ptr_offset(0x04)",
+        "__base(Vec3, 0x04) ParcelCandidatePositionCursorView",
+        "__inherited Vec3 position;",
         "typedef struct ParcelBucket",
         "ParcelCandidate candidates[PARCEL_CANDIDATE_CAPACITY];",
         "int32_t candidate_count;",
@@ -9354,6 +9357,7 @@ def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
     assert '("0x6487e8", "ParcelBucket")' in binja_sync
     assert '("0x6447e8", "int32_t[0x1000]")' in binja_sync
     assert '"ParcelBucketCountLane": 0x20C' in binja_sync
+    assert '"ParcelCandidatePositionCursorView": 0x10' in binja_sync
     assert "apply_data_var_removals" in binja_sync
     assert "apply_data_var_updates" in binja_sync
     assert "g_zero_parcel_bucket_count_lane_end" not in binja_sync.split(
@@ -9366,6 +9370,12 @@ def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
     assert "g_zero_parcel_bucket_count_lane_end" not in ida_apply.split(
         "TRUSTED_DATA_DECLARATIONS", 1
     )[1].split("TRUSTED_FUNCTION_DECLARATIONS", 1)[0]
+    assert "CURSOR_LVAR_SPECS = (" in ida_apply
+    assert '"parcel_set_candidate_position"' in ida_apply
+    assert (
+        "Vec3 *__shifted(ParcelCandidatePositionCursorView, 0x04)" in ida_apply
+    )
+    assert "0x443D80" in ida_apply
 
     for source in (binja_sync, path_binja_sync):
         assert (
@@ -9406,6 +9416,7 @@ def test_parcel_bucket_lifetime_replay_stays_guarded() -> None:
     for type_name, width in (
         ("Vec3", "0x0C"),
         ("ParcelCandidate", "0x10"),
+        ("ParcelCandidatePositionCursorView", "0x10"),
         ("ParcelBucket", "0x20C"),
         ("ParcelBucketCountLane", "0x20C"),
     ):
@@ -9414,6 +9425,12 @@ def test_parcel_bucket_lifetime_replay_stays_guarded() -> None:
     for owner, offset, field, field_type in (
         ("ParcelCandidate", "0x00", "row", "int32_t"),
         ("ParcelCandidate", "0x04", "position", "Vec3"),
+        (
+            "ParcelCandidatePositionCursorView",
+            "0x00",
+            "row",
+            "int32_t",
+        ),
         ("ParcelBucket", "0x000", "candidates", "ParcelCandidate[32]"),
         ("ParcelBucket", "0x200", "candidate_count", "int32_t"),
         ("ParcelBucket", "0x204", "set_id", "int32_t"),
@@ -9425,6 +9442,12 @@ def test_parcel_bucket_lifetime_replay_stays_guarded() -> None:
         assert f'{offset}: ("{field}", "{field_type}")' in source
 
     for index, storage, name, var_type in (
+        (
+            1183,
+            69,
+            "parcel_set_candidate_position",
+            "ParcelCandidatePositionCursorView*",
+        ),
         (1494, 67, "destination_candidate", "ParcelCandidate*"),
         (1500, 72, "source_candidate", "ParcelCandidate*"),
         (1506, 73, "destination_candidate_write", "ParcelCandidate*"),

@@ -37,7 +37,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
   int v30; // eax
   int v31; // edi
   int32_t v32; // eax
-  Vec3 *v33; // ebx
+  Vec3 *__shifted(ParcelCandidatePositionCursorView,4) parcel_set_candidate_position; // ebx
   RuntimeRowStrideAnchor *parcel_set_runtime_row_anchor; // esi
   double v35; // st7
   float x; // ecx
@@ -296,21 +296,21 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
           v69 = v32 + v29;
           if ( v32 > 0 )
           {
-            v33 = &g_parcel_set_buckets[v31].candidates[0].position;
+            parcel_set_candidate_position = &g_parcel_set_buckets[v31].candidates[0].position;
             do
             {
-              out_angle = (Vec3 *)(LODWORD(v33[-1].z)
+              out_angle = (Vec3 *)(ADJ(parcel_set_candidate_position)->row
                                  + v74->level_definition.segment_slots[g_parcel_set_buckets[v31].segment_index].row_base);
               parcel_set_runtime_row_anchor = (RuntimeRowStrideAnchor *)((char *)v74 + 244 * (_DWORD)out_angle);
               if ( (parcel_set_runtime_row_anchor->row.flags & 0x10) != 0 )
                 report_errorf("Duplicate Parcel Request in %s.", v74->level_definition.level_display_name);
               v35 = (double)(int)out_angle;
               parcel_set_runtime_row_anchor->row.flags |= 0x11u;
-              x = v33->x;
+              x = ADJ(parcel_set_candidate_position)->position.x;
               p_parcel_spawn_position = &parcel_set_runtime_row_anchor->row.parcel_spawn_position;
               parcel_set_runtime_row_anchor->row.parcel_spawn_position.x = x;
-              parcel_set_runtime_row_anchor->row.parcel_spawn_position.y = v33->y;
-              parcel_set_runtime_row_anchor->row.parcel_spawn_position.z = v33->z;
+              parcel_set_runtime_row_anchor->row.parcel_spawn_position.y = ADJ(parcel_set_candidate_position)->position.y;
+              parcel_set_runtime_row_anchor->row.parcel_spawn_position.z = ADJ(parcel_set_candidate_position)->position.z;
               parcel_set_runtime_row_anchor->row.parcel_spawn_position.z = v35
                                                                          + parcel_set_runtime_row_anchor->row.parcel_spawn_position.z
                                                                          + 0.5;
@@ -318,7 +318,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
                                                                          + 1.0;
               if ( (parcel_set_runtime_row_anchor->row.flags & 0x20) != 0 )
                 p_parcel_spawn_position->x = p_parcel_spawn_position->x * -1.0;
-              v33 = (Vec3 *)((char *)v33 + 16);
+              parcel_set_candidate_position = (Vec3 *__shifted(ParcelCandidatePositionCursorView,4))((char *)parcel_set_candidate_position + 16);
               ++v64;
             }
             while ( v64 < g_parcel_set_buckets[v31].candidate_count );

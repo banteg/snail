@@ -162,22 +162,23 @@
 00443d6b        int32_t candidate_count = (&g_parcel_set_buckets)[eax_29].candidate_count
 00443d75        var_210_1 = ebx_25 + candidate_count
 00443d79        if (candidate_count s> 0)
-00443d7f        int32_t* ebx_27 = eax_29 * 0x20c + &(*g_parcel_set_buckets.candidates)[0].position
+00443d7f        struct ParcelCandidatePositionCursorView* parcel_set_candidate_position = eax_29 * 0x20c + &(*g_parcel_set_buckets.candidates)[0].position
 00443e59        bool cond:14_1
-00443da8        float out_angle_3 = game->level_definition.segment_slots[(&g_parcel_set_buckets)[eax_29].segment_index].row_base + ebx_27[-1]
+00443da8        float out_angle_3 = game->level_definition.segment_slots[(&g_parcel_set_buckets)[eax_29].segment_index].row_base + parcel_set_candidate_position->row
 00443daa        out_angle = out_angle_3
 00443db7        struct RuntimeRowStrideAnchor* parcel_set_runtime_row_anchor = game + out_angle_3 i* 0xf4
 00443dc1        if ((parcel_set_runtime_row_anchor->row.flags.b & 0x10) != 0)
 00443dd3        report_errorf("Duplicate Parcel Request in %s.", &game->level_definition.level_display_name)
+00443dec        long double x87_r7_9 = float.t(out_angle)
 00443df0        parcel_set_runtime_row_anchor->row.flags |= 0x11
-00443dfc        parcel_set_runtime_row_anchor->row.parcel_spawn_position.x = *ebx_27
-00443e01        parcel_set_runtime_row_anchor->row.parcel_spawn_position.y = ebx_27[1]
-00443e07        parcel_set_runtime_row_anchor->row.parcel_spawn_position.z = ebx_27[2]
-00443e16        parcel_set_runtime_row_anchor->row.parcel_spawn_position.z = fconvert.s(float.t(out_angle) + fconvert.t(parcel_set_runtime_row_anchor->row.parcel_spawn_position.z) + fconvert.t(0.5f))
+00443dfc        parcel_set_runtime_row_anchor->row.parcel_spawn_position.x = parcel_set_candidate_position->x
+00443e01        parcel_set_runtime_row_anchor->row.parcel_spawn_position.y = parcel_set_candidate_position->y
+00443e07        parcel_set_runtime_row_anchor->row.parcel_spawn_position.z = parcel_set_candidate_position->z
+00443e16        parcel_set_runtime_row_anchor->row.parcel_spawn_position.z = fconvert.s(x87_r7_9 + fconvert.t(parcel_set_runtime_row_anchor->row.parcel_spawn_position.z) + fconvert.t(0.5f))
 00443e28        parcel_set_runtime_row_anchor->row.parcel_spawn_position.y = fconvert.s(fconvert.t(parcel_set_runtime_row_anchor->row.parcel_spawn_position.y) + fconvert.t(1f))
 00443e35        if ((parcel_set_runtime_row_anchor->row.flags.b & 0x20) != 0)
 00443e43        parcel_set_runtime_row_anchor->row.parcel_spawn_position.x = fconvert.s(fconvert.t(parcel_set_runtime_row_anchor->row.parcel_spawn_position.x) * fconvert.t(-1f))
-00443e50        ebx_27 = &ebx_27[4]
+00443e50        parcel_set_candidate_position = &parcel_set_candidate_position[1]
 00443e53        cond:14_1 = var_214_1 + 1 s< (&g_parcel_set_buckets)[eax_29].candidate_count
 00443e55        var_214_1 += 1
 00443e59        do while (cond:14_1)
@@ -325,8 +326,9 @@
 00444212        get_path_position_at_node(projection_row->primary_attachment_cell->attachment_template_record, &projection_row->parcel_spawn_position, node, row_index, &projection_row->parcel_spawn_position)
 004441d9        struct TransformMatrix transform
 004441d9        x87control = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], projection_row->parcel_spawn_position.x, projection_row->parcel_spawn_position.y, &transform, &out_angle)
+004441e5        float y = transform.position.y
 004441ec        projection_row->parcel_spawn_position.x = transform.position.x
-004441f2        projection_row->parcel_spawn_position.y = transform.position.y
+004441f2        projection_row->parcel_spawn_position.y = y
 0044421f        projection_row = &projection_row[1]
 00444225        cond:12_1 = var_214_4 + 1 s< game->runtime_row_count
 00444227        var_214_4 += 1

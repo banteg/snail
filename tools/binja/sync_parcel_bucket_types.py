@@ -23,6 +23,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/parcel_bucket_types.h"
 
 EXPECTED_STRUCT_SIZES = {
     "ParcelCandidate": 0x10,
+    "ParcelCandidatePositionCursorView": 0x10,
     "ParcelBucket": 0x20C,
     "ParcelBucketCountLane": 0x20C,
 }

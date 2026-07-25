@@ -21,6 +21,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/parcel_bucket_types.h"
 EXPECTED_TYPE_WIDTHS = {
     "Vec3": 0x0C,
     "ParcelCandidate": 0x10,
+    "ParcelCandidatePositionCursorView": 0x10,
     "ParcelBucket": 0x20C,
     "ParcelBucketCountLane": 0x20C,
 }
@@ -34,6 +35,9 @@ EXPECTED_STRUCT_FIELDS = {
     "ParcelCandidate": {
         0x00: ("row", "int32_t"),
         0x04: ("position", "Vec3"),
+    },
+    "ParcelCandidatePositionCursorView": {
+        0x00: ("row", "int32_t"),
     },
     "ParcelBucket": {
         0x000: ("candidates", "ParcelCandidate[32]"),
@@ -52,6 +56,14 @@ EXPECTED_STRUCT_FIELDS = {
 # registers are borrowed element cursors into the two global ParcelBucket
 # banks; none owns either bank or a separate allocation.
 PARCEL_BUCKET_USER_VAR_UPDATES = (
+    (
+        "place_parcels_on_track",
+        "RegisterVariableSourceType",
+        1183,
+        69,
+        "parcel_set_candidate_position",
+        "ParcelCandidatePositionCursorView*",
+    ),
     (
         "place_parcels_on_track",
         "RegisterVariableSourceType",

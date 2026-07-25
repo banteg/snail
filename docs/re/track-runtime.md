@@ -82,6 +82,13 @@ and the path's `row_span_count` controls how many `SubRow` records retain a
 borrowed link back to the same cell. Neither selection nor stamping transfers
 ownership of a pair, path, cell, or row.
 
+`PlaceParcels()` then builds two temporary global `ParcelBucket` banks. Its
+positive-set claim loop retains a field-first cursor at
+`ParcelCandidate::position`, reads the candidate row behind that address, and
+advances by the complete `0x10` candidate stride. The containing global bucket
+still owns each candidate; the cursor only borrows its row and position while
+the selected `SubRow` receives a copied spawn position.
+
 Current high-confidence render-normalization read:
 
 - `select_track_tile_edge_variants` is the main edge/corner swap pass

@@ -259,6 +259,21 @@ retain a containing `SubgameRuntime` base while advancing to a borrowed
 `SubRow*` cursor through the owned `runtime_rows` slab. Neither candidate bank
 nor any row cursor owns or transfers that storage.
 
+## Positive-set candidate cursor (2026-07-25)
+
+The positive-set claim loop keeps EBX rooted at
+`ParcelCandidate::position`, reads the candidate's row from the preceding
+dword, and advances by the complete `0x10` candidate stride. A field-first
+`ParcelCandidatePositionCursorView` now records that physical lifetime in
+Binary Ninja, while IDA uses the equivalent shifted `Vec3*` view at
+`0x443d80`. The cursor borrows one candidate from the selected global
+`ParcelBucket`; the runtime row receives copied position data and no ownership
+is transferred.
+
+The earlier `BuildLevel()` parcel-set and ring-speed stores were also checked
+before this slice. Both are direct compiler address arithmetic with no durable
+pointer lifetime, so no synthetic row or ring cursor was added.
+
 Binary Ninja replay pins the exact register-variable identities 1239/ESI and
 1832/EDI as `RuntimeRowStrideAnchor*`, plus 2177/ESI as `SubRow*`. IDA replay
 pins the corresponding definition addresses `0x443db8`, `0x444009`, and
