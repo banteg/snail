@@ -15032,13 +15032,20 @@
       "required_substrings": [
         "backdrop->backdrop_change_queued",
         "&backdrop->distort_grid",
+        "struct BackdropDistortCell* column_start",
+        "struct BackdropDistortCell* cell",
+        "cell->phase_step",
+        "cell->current_x_offset",
+        "cell = &cell[8]",
         "backdrop->active_primary_texture_id",
         "draw_split_backdrop(backdrop)",
         "render_backdrop(backdrop)"
       ],
       "forbidden_substrings": [
         "arg1",
-        "float* ebx = arg1"
+        "float* ebx = arg1",
+        "struct BackdropDistortCell (*",
+        ")->distort_grid[0][0]"
       ]
     },
     {
@@ -15062,12 +15069,18 @@
         "int32_t __thiscall update_backdrop(Backdrop *backdrop)",
         "backdrop->backdrop_change_queued",
         "backdrop->distort_grid[0]",
+        "struct BackdropDistortCell *column_start",
+        "struct BackdropDistortCell *cell",
+        "cell->phase_step + cell->phase",
+        "cell += 8",
         "backdrop->active_primary_texture_id"
       ],
       "forbidden_substrings": [
         "update_backdrop(int this)",
         "sub_4112F0(int this)",
-        "*(_BYTE *)(this +"
+        "*(_BYTE *)(this +",
+        "float *p_phase",
+        "p_phase["
       ]
     },
     {

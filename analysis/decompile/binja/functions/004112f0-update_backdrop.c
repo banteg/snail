@@ -8,28 +8,28 @@
 004112fb        if (eax.b != 0)
 004112fd        change_backdrop_real(backdrop)
 00411302        backdrop->backdrop_change_queued = 0
-00411309        struct BackdropDistortCell (* ebx)[0x8][0x8] = &backdrop->distort_grid
+00411309        struct BackdropDistortCell* column_start = &backdrop->distort_grid
 0041130c        int32_t var_4 = 8
 0041137a        bool cond:1_1
-00411314        struct BackdropDistortCell (* esi_1)[0x8][0x8] = ebx
+00411314        struct BackdropDistortCell* cell = column_start
 00411316        int32_t i_1 = 8
 0041136c        int32_t i
-0041131e        long double x87_r7_2 = fconvert.t((esi_1 - 0x58)->distort_grid[0][0].phase_step) + fconvert.t((esi_1 - 0x58)->distort_grid[0][0].phase)
+0041131e        long double x87_r7_2 = fconvert.t(cell->phase_step) + fconvert.t(cell->phase)
 00411320        float var_8_1 = fconvert.s(x87_r7_2)
-00411324        (esi_1 - 0x58)->distort_grid[0][0].phase = fconvert.s(x87_r7_2)
+00411324        cell->phase = fconvert.s(x87_r7_2)
 00411326        long double x87_r7_3 = fconvert.t(var_8_1)
 0041132a        long double temp0_1 = fconvert.t(6.28318548f)
 0041132a        x87_r7_3 - temp0_1
 00411335        if ((((x87_r7_3 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp0_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp0_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-00411341        (esi_1 - 0x58)->distort_grid[0][0].phase = fconvert.s(fconvert.t(var_8_1) - fconvert.t(6.28318548f))
-0041134e        (esi_1 - 0x58)->distort_grid[0][0].current_x_offset = fconvert.s(sine((esi_1 - 0x58)->distort_grid[0][0].phase) * fconvert.t((esi_1 - 0x58)->distort_grid[0][0].x_offset))
-00411359        long double x87_r7_9 = cosine((esi_1 - 0x58)->distort_grid[0][0].phase) * fconvert.t((esi_1 - 0x58)->distort_grid[0][0].y_offset)
-0041135f        esi_1 = &(*esi_1)[1]
+00411341        cell->phase = fconvert.s(fconvert.t(var_8_1) - fconvert.t(6.28318548f))
+0041134e        cell->current_x_offset = fconvert.s(sine(cell->phase) * fconvert.t(cell->x_offset))
+00411359        long double x87_r7_9 = cosine(cell->phase) * fconvert.t(cell->y_offset)
+0041135f        cell = &cell[8]
 00411365        i = i_1
 00411365        i_1 -= 1
-00411366        (esi_1 - 0x58)->__offset(0xffffffffffffffac).d = fconvert.s(x87_r7_9)
+00411366        cell->__offset(0xffffffffffffff54).d = fconvert.s(x87_r7_9)
 0041136c        do while (i != 1)
-00411372        ebx = &(*ebx)[0][1]
+00411372        column_start = &column_start[1]
 00411375        cond:1_1 = var_4 != 1
 00411376        var_4 -= 1
 0041137a        do while (cond:1_1)

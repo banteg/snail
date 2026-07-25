@@ -66,3 +66,24 @@ seven clean operands and no masked-operand mismatches.
 only the analyzer's inferred fastcall spelling and unnamed receiver are
 removed. The split renderer remains `int32_t`, while the cross-port-authored
 single-texture renderer is `void`.
+
+## 2026-07-24 distortion-cell cursor ownership
+
+The column-first grid traversal carries two borrowed cell pointers, not
+pointers to the complete `BackdropDistortCell[8][8]` owner. The outer EBX
+lifetime starts at `distort_grid[0]` and advances by one `0x18`-byte cell to
+select the next column. The inner ESI lifetime starts at that cell and advances
+by eight cells (`0xc0` bytes) to visit the same column in each subsequent row.
+`Backdrop` remains the sole owner of the complete grid.
+
+IDA independently recovers the same physical lifetimes at `0x41130a` and
+`0x411315`. Replaying both as `BackdropDistortCell*` produces direct
+`phase`, `phase_step`, source-offset, and current-offset field accesses,
+`cell += 8`, and `++column_start`; the previous inner `float*` view and Binary
+Ninja's false parent-relative subtraction are rejected by the health checks.
+The replay verifies `sizeof(BackdropDistortCell) == 0x18` and
+`sizeof(Backdrop) == 0x6cc` before mutation and is idempotent.
+
+Matcher source and bytes remain untouched at the honest 88.24%, 69/67
+candidate/target instruction frontier with seven clean operands. This is
+durable borrowed-cursor ownership, not source or operand shaping.

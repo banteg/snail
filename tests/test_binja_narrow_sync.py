@@ -803,8 +803,12 @@ def test_ida_frontend_owner_lanes_replay_the_shared_root_graph() -> None:
     assert '"Exit": 0x1C' in menu_apply
     assert 'analysis/headers/bn_frontend_menu_types.h' in menu_sync
     assert "EXPECTED_BOD_BASE_SIZE = 0x38" in backdrop_apply
+    assert "EXPECTED_BACKDROP_DISTORT_CELL_SIZE = 0x18" in backdrop_apply
     assert '"reason": "dependency_size_mismatch"' in backdrop_apply
     assert "EXPECTED_BACKDROP_SIZE = 0x6CC" in backdrop_apply
+    assert '"target_name": "column_start"' in backdrop_apply
+    assert '"target_name": "cell"' in backdrop_apply
+    assert "DISTORT_CELL_LVARS" in backdrop_apply
     assert "void __thiscall render_backdrop(Backdrop* backdrop);" in backdrop_apply
     assert "int32_t __thiscall update_backdrop(Backdrop* backdrop);" in backdrop_apply
     assert 'analysis/headers/bn_backdrop_types.h' in backdrop_sync
@@ -815,6 +819,7 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
     header = (HEADER_DIR / "bn_backdrop_types.h").read_text(encoding="utf-8")
 
     assert "apply_proto_updates" in source
+    assert "apply_user_var_updates" in source
     assert "types_declare_if_changed" in source
     assert "report_deferred_prototypes" not in source
     assert "proto_owner_deferred" not in source
@@ -825,6 +830,11 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
     assert "require_bod_base_dependency" in source
     assert 'struct_name="BodBase"' in source
     assert "size != 0x38" in source
+    assert "BACKDROP_DISTORT_USER_VAR_UPDATES" in source
+    assert '"column_start"' in source
+    assert '"cell"' in source
+    assert "--distort-cursors-only" in source
+    assert "if args.distort_cursors_only:" in source
     assert "int32_t backdrop_texture_id;" in header
     assert "uint8_t split_backdrop_texture_pair;" in header
     assert "float distort;" in header
