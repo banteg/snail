@@ -95,3 +95,19 @@ complete Win32 `Rect` required by `GetClipCursor`, replacing a byte-array stack
 surrogate without changing its 16-byte extent. Focused output remains 94.74%,
 48/47 instructions, with all 19 operands clean and only the documented
 controller-cursor scheduling residual.
+
+## 2026-07-25 decompiler ownership replay
+
+Binary Ninja and IDA now preserve the initializer's short-lived owners:
+`archive_ready` carries the `load_archive_index` result, `slot_axis_y_cursor`
+drives the two 0x38-byte controller passes, and `clip_rect` is a complete
+`Win32Rect`. Binary Ninja also renders the scratch allocation as the literal
+0x400000-byte extent instead of conflating that image-base-shaped integer with
+`__dos_header`.
+
+The focused scratch is unchanged at 94.74%, 48/47 instructions, with all 19
+masked operands clean. The call at `0x430e57` still decompiles through the
+single symbol assigned to the identical-code-folded body at `0x415e20`; both
+the real enemy-manager initializer and the tracked-allocation-stack initializer
+share that body. Keep the call-site owner in the source and analysis notes;
+inventing separate machine functions or a per-call symbol would be fakematching.

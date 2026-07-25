@@ -50,3 +50,16 @@ Rejected/no-op variants:
 - Explicit `entry_index >= count`, direct `return 0`, and found-before-not-found
   tail spellings all preserve the same found/not-found block layout, leaving
   the native shared not-found fallthrough as the main residual.
+
+## 2026-07-25 lookup lifetime replay
+
+Binary Ninja and IDA now retain the archive index, entry-count snapshot, entry
+index, requested path, typed `ArchiveEntry*` cursor, both byte cursors, and
+their current character values. Binary Ninja still exposes the physical
+compiler spill used for the entry-count snapshot; that is an honest stack
+lifetime rather than a second semantic count owner.
+
+This is analysis-only and leaves the focused result at 79.34%, 61/60
+instructions, a 7-instruction prefix, and two clean masked references. The
+remaining differences are the shared not-found block placement and equivalent
+ASCII-fold instruction encoding.

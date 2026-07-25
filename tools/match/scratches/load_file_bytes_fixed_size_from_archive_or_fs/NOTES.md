@@ -63,3 +63,17 @@ inside the decrypt loop.
 archive seeks use the authentic `SEEK_CUR` constant. This removes the synthetic
 `File` abstraction and hand-written CRT prototypes without changing the focused
 92.84% object or its 32 clean masked operands.
+
+## 2026-07-25 loader lifetime replay
+
+Both decompilers now preserve the archive index/count/index cursor, typed
+`ArchiveEntry*` owner, archive and requested path cursors and bytes, archive
+output allocation, saved stream position, filesystem stream and output
+allocation, byte count, caller/allocation positions, and the 512-byte current
+directory buffer. These are analysis-only ownership improvements; the retained
+scratch remains 92.84%, 189/188 instructions, with a 9-instruction prefix and
+32 clean masked operands.
+
+The remaining mismatch is confined to equivalent ASCII-fold encoding, fallback
+block layout, and the early `_getcwd` argument cleanup. No register forcing,
+volatile access, or fake alias was introduced.

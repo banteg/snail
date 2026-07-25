@@ -1,31 +1,39 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
-  "ida_exported": 725,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "ida_refreshed": false,
+  "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "load_file_bytes_from_archive_or_fs",
-      "address": "0x4312d0"
+      "name": "initialize_game_data_archive",
+      "address": "0x430e40"
     },
     {
-      "name": "enumerate_matching_archive_or_fs_entries",
-      "address": "0x431740"
+      "name": "load_file_bytes_fixed_size_from_archive_or_fs",
+      "address": "0x431030"
+    },
+    {
+      "name": "find_archive_entry",
+      "address": "0x431250"
+    },
+    {
+      "name": "load_archive_index",
+      "address": "0x4319c0"
     }
   ],
-  "health_check_count": 1040,
+  "health_check_count": 1049,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

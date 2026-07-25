@@ -21084,6 +21084,176 @@
         "unk_503270",
         "unk_503274"
       ]
+    },
+    {
+      "name": "bn_archive_initializer_service_owners",
+      "artifact": "analysis/decompile/binja/functions/00430e40-initialize_game_data_archive.c",
+      "required_substrings": [
+        "uint8_t archive_ready = load_archive_index(\"SnailMail.dat\")",
+        "allocate_tracked_memory(0x400000, \"Scratch Pad\")",
+        "float* slot_axis_y_cursor = &g_input_controller_slot0.axis_y",
+        "slot_axis_y_cursor = &slot_axis_y_cursor[0xe]",
+        "RECT clip_rect",
+        "GetClipCursor(&clip_rect)"
+      ],
+      "forbidden_substrings": [
+        "allocate_tracked_memory(&__dos_header",
+        "uint8_t result = load_archive_index",
+        "float* i =",
+        "RECT rect"
+      ]
+    },
+    {
+      "name": "ida_archive_initializer_service_owners",
+      "artifact": "analysis/decompile/ida/functions/00430e40-initialize_game_data_archive.c",
+      "required_substrings": [
+        "unsigned __int8 archive_ready",
+        "float *slot_axis_y_cursor",
+        "Win32Rect clip_rect",
+        "allocate_tracked_memory(0x400000, aScratchPad)",
+        "slot_axis_y_cursor += 14",
+        "GetClipCursor)(&clip_rect)"
+      ],
+      "forbidden_substrings": [
+        "unsigned __int8 result",
+        "float *v1",
+        "__int128 Rect"
+      ]
+    },
+    {
+      "name": "bn_archive_index_serialized_lifecycle",
+      "artifact": "analysis/decompile/binja/functions/004319c0-load_archive_index.c",
+      "required_substrings": [
+        "struct SerializedArchiveHeader serialized_header",
+        "serialized_header.entries[0].data_offset",
+        "struct SerializedArchiveIndex* allocated_serialized_index",
+        "struct ArchiveIndex* archive_index = allocated_serialized_index",
+        "int32_t entry_index = 0",
+        "int32_t entry_byte_offset = 0",
+        "int32_t serialized_path_offset",
+        "g_archive_index_records = archive_index"
+      ],
+      "forbidden_substrings": [
+        "void buffer",
+        "int32_t var_74",
+        "struct ArchiveIndex* buffer_1",
+        "archive_index_records_1",
+        "void* esi_1"
+      ]
+    },
+    {
+      "name": "ida_archive_index_serialized_lifecycle",
+      "artifact": "analysis/decompile/ida/functions/004319c0-load_archive_index.c",
+      "required_substrings": [
+        "SerializedArchiveHeader serialized_header",
+        "SerializedArchiveIndex *serialized_index",
+        "ArchiveIndex *archive_index",
+        "int index_byte_count",
+        "int entry_index",
+        "int entry_byte_offset",
+        "char *rebased_path",
+        "serialized_header.entries[0].data_offset"
+      ],
+      "forbidden_substrings": [
+        "FrontendWidget *title_widget",
+        "CompletionResultScreen",
+        "ArchiveIndex *tracked_memory",
+        "_BYTE Buffer",
+        "int v5"
+      ]
+    },
+    {
+      "name": "bn_fixed_archive_reader_lifetimes",
+      "artifact": "analysis/decompile/binja/functions/00431030-load_file_bytes_fixed_size_from_archive_or_fs.c",
+      "required_substrings": [
+        "struct ArchiveIndex* archive_index = g_archive_index_records",
+        "int32_t archive_entry_count",
+        "int32_t archive_entry_index",
+        "struct ArchiveEntry* archive_entry_cursor",
+        "char* archive_path_cursor",
+        "char* requested_path_cursor",
+        "void* allocated_buffer",
+        "int32_t allocation_archive_position",
+        "int32_t caller_archive_position",
+        "struct File* filesystem_file",
+        "void* filesystem_output_buffer",
+        "char cwd_buffer[0x200]"
+      ],
+      "forbidden_substrings": [
+        "struct ArchiveEntry (*",
+        "char* path_1",
+        "char* path_2",
+        "struct File* eax_10",
+        "sub_48b645",
+        "sub_496946"
+      ]
+    },
+    {
+      "name": "ida_fixed_archive_reader_lifetimes",
+      "artifact": "analysis/decompile/ida/functions/00431030-load_file_bytes_fixed_size_from_archive_or_fs.c",
+      "required_substrings": [
+        "int archive_entry_index",
+        "ArchiveEntry *archive_entry_cursor",
+        "char *archive_path_cursor",
+        "char *requested_path_cursor",
+        "void *archive_output_buffer",
+        "int allocation_archive_position",
+        "int caller_archive_position",
+        "File *filesystem_file",
+        "File *filesystem_stream",
+        "void *filesystem_output_buffer",
+        "char cwd_buffer[512]"
+      ],
+      "forbidden_substrings": [
+        "int32_t v3",
+        "ArchiveEntry *entries",
+        "char *v5",
+        "File *v14",
+        "FILE *v15",
+        "char DstBuf"
+      ]
+    },
+    {
+      "name": "bn_archive_entry_lookup_lifetimes",
+      "artifact": "analysis/decompile/binja/functions/00431250-find_archive_entry.c",
+      "required_substrings": [
+        "int32_t entry_count_snapshot",
+        "struct ArchiveIndex* archive_index = g_archive_index_records",
+        "int32_t archive_entry_count",
+        "int32_t archive_entry_index",
+        "struct ArchiveEntry* archive_entry_cursor",
+        "char* archive_path_cursor",
+        "char* requested_path_cursor",
+        "char archive_path_char",
+        "char requested_path_char"
+      ],
+      "forbidden_substrings": [
+        "archive_index_records_1",
+        "struct ArchiveEntry (* edi",
+        "char* path_1",
+        "char* path_2"
+      ]
+    },
+    {
+      "name": "ida_archive_entry_lookup_lifetimes",
+      "artifact": "analysis/decompile/ida/functions/00431250-find_archive_entry.c",
+      "required_substrings": [
+        "int archive_entry_count",
+        "int archive_entry_index",
+        "ArchiveEntry *archive_entry_cursor",
+        "char *archive_path_cursor",
+        "char *requested_path_cursor",
+        "char archive_path_char",
+        "char requested_path_char"
+      ],
+      "forbidden_substrings": [
+        "int v2",
+        "ArchiveEntry *i",
+        "char *v4",
+        "char *v5",
+        "char v6",
+        "char v7"
+      ]
     }
   ]
 }

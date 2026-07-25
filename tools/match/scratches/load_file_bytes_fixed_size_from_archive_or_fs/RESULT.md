@@ -4,9 +4,9 @@
 
 | Metric | Result |
 |---|---:|
-| Match | 81.05% |
+| Match | 92.84% |
 | Target instructions | 188 |
-| Candidate instructions | 192 |
+| Candidate instructions | 189 |
 | Common prefix | 9 / 188 |
 | Masked operands | 32 clean, 0 unresolved, 0 mismatched |
 
@@ -15,9 +15,13 @@ factoring away the native duplicated archive read/decode paths.
 
 ## Remaining mismatch shape
 
-- Archive scan register ownership differs: target uses `edx` for the archive
-  cursor and `cl` for the archive byte; candidate uses `ecx` and `dl`.
-- C++ codegen cleans `ftell` and `_getcwd` arguments earlier than native, which
-  batches those stack slots with the later `fseek`/`report_messagef` calls.
-- Equivalent loop-exit and fallback labels differ after the first archive-index
-  null/count checks.
+- VC6 encodes the uppercase fold as equivalent `add al, 0xe0` instead of
+  native `sub al, 0x20`.
+- C++ codegen cleans `_getcwd` arguments earlier than native, which batches
+  that stack slot with the later `report_messagef` call.
+- Equivalent loop-exit and filesystem-fallback blocks remain laid out
+  differently after the archive scan.
+
+The archive cursor, selected entry, data offset, saved stream position, and
+both output-buffer ownership paths are now recovered without artificial
+register shims.

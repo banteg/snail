@@ -71,6 +71,34 @@ typedef struct ArchiveIndex {
     ArchiveEntry entries[1];
 } ArchiveIndex;
 
+/*
+ * DAT bytes retain a file-relative path offset until load_archive_index
+ * rebases each record in place and publishes the allocation as ArchiveIndex.
+ * The loader's fixed 0x7c-byte probe is exactly one count plus ten entries.
+ */
+typedef struct SerializedArchiveEntry {
+    int32_t path_offset;
+    int32_t data_offset;
+    int32_t byte_count;
+} SerializedArchiveEntry;
+
+typedef struct SerializedArchiveIndex {
+    int32_t count;
+    SerializedArchiveEntry entries[1];
+} SerializedArchiveIndex;
+
+typedef struct SerializedArchiveHeader {
+    int32_t count;
+    SerializedArchiveEntry entries[10];
+} SerializedArchiveHeader;
+
+typedef struct Win32Rect {
+    int32_t left;
+    int32_t top;
+    int32_t right;
+    int32_t bottom;
+} Win32Rect;
+
 typedef char EnumeratedEntryName[128];
 
 typedef enum RegisteredSoundLimits {

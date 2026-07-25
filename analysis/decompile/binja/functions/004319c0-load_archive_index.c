@@ -9,25 +9,25 @@
 004319ee        int32_t eax_1
 004319ee        eax_1.b = 1
 004319f4        return 1
-004319ff        void buffer
-004319ff        load_file_bytes_fixed_size_from_archive_or_fs(path, &buffer, 0x7c)
-00431a0d        xor_archive_bytes_in_place(0, &buffer, 0x7c)
-00431a1c        int32_t var_74
-00431a1c        struct ArchiveIndex* buffer_1 = allocate_tracked_memory(var_74, "Dat File Header")
-00431a26        load_file_bytes_fixed_size_from_archive_or_fs(path, buffer_1, var_74)
-00431a2f        xor_archive_bytes_in_place(0, buffer_1, var_74)
-00431a34        struct ArchiveIndex* archive_index_records_1 = buffer_1
-00431a39        g_archive_index_records = archive_index_records_1
-00431a40        int32_t i = 0
-00431a44        if (buffer_1->count s> 0)
-00431a46        int32_t ecx_1 = 0
-00431a48        void* esi_1 = *(&archive_index_records_1->entries + ecx_1)
-00431a4c        ecx_1 += 0xc
-00431a51        i += 1
-00431a52        *(ecx_1 + archive_index_records_1 - 8) = esi_1 + archive_index_records_1
-00431a56        archive_index_records_1 = g_archive_index_records
-00431a5d        do while (i s< archive_index_records_1->count)
+004319ff        struct SerializedArchiveHeader serialized_header
+004319ff        load_file_bytes_fixed_size_from_archive_or_fs(path, &serialized_header, 0x7c)
+00431a0d        xor_archive_bytes_in_place(0, &serialized_header, 0x7c)
+00431a12        int32_t index_byte_count = serialized_header.entries[0].data_offset
+00431a1c        struct SerializedArchiveIndex* allocated_serialized_index = allocate_tracked_memory(index_byte_count, "Dat File Header")
+00431a26        load_file_bytes_fixed_size_from_archive_or_fs(path, allocated_serialized_index, index_byte_count)
+00431a2f        xor_archive_bytes_in_place(0, allocated_serialized_index, index_byte_count)
+00431a34        struct ArchiveIndex* archive_index = allocated_serialized_index
+00431a39        g_archive_index_records = archive_index
+00431a40        int32_t entry_index = 0
+00431a44        if (allocated_serialized_index->count s> 0)
+00431a46        int32_t entry_byte_offset = 0
+00431a48        int32_t serialized_path_offset = *(&archive_index->entries + entry_byte_offset)
+00431a4c        entry_byte_offset += 0xc
+00431a51        entry_index += 1
+00431a52        *(entry_byte_offset + archive_index - 8) = serialized_path_offset + archive_index
+00431a56        archive_index = g_archive_index_records
+00431a5d        do while (entry_index s< archive_index->count)
 00431a6d        g_archive_file = fopen(path, "rb")
-00431a72        int32_t* eax_3
-00431a72        eax_3.b = 1
+00431a72        struct File* eax_2
+00431a72        eax_2.b = 1
 00431a7a        return 1

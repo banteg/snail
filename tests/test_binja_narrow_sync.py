@@ -4287,6 +4287,13 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "char name[260];",
         "typedef struct TrackedAllocationRecord",
         "TrackedAllocationRecord records[1];",
+        "typedef struct SerializedArchiveEntry",
+        "int32_t path_offset;",
+        "typedef struct SerializedArchiveIndex",
+        "typedef struct SerializedArchiveHeader",
+        "SerializedArchiveEntry entries[10];",
+        "typedef struct Win32Rect",
+        "int32_t bottom;",
         "extern int32_t g_enumerated_entry_count;",
         "extern int32_t g_tracked_allocation_total_bytes;",
         "extern TrackedAllocationStack g_tracked_allocation_stack;",
@@ -4309,8 +4316,15 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     assert "ARCHIVE_INDEX_SPLIT_TARGET_VAR" in binja_source
     assert "apply_split_user_var_update" in binja_source
     assert "ARCHIVE_CURSOR_USER_VAR_UPDATES" in binja_source
+    assert "ARCHIVE_SERVICE_USER_VAR_UPDATES" in binja_source
+    assert "ARCHIVE_SERVICE_INT_DISPLAY_UPDATES" in binja_source
+    assert 'allocate_tracked_memory(0x400000, "Scratch Pad")' in binja_source
     assert "apply_user_var_updates" in binja_source
     for owner_name in (
+        '"serialized_header"',
+        '"serialized_index"',
+        '"index_byte_count"',
+        '"slot_axis_y_cursor"',
         '"archive_index"',
         '"archive_entry_cursor"',
         '"archive_path_cursor"',

@@ -70,3 +70,20 @@ not a scratch-invented opaque `File`. `archive_index.h` publishes
 declaration instead of a local approximation. All archive-header consumers
 recompile unchanged; the focused object remains 92.54% with 13 clean masked
 references and the same install-store scheduling residual.
+
+## 2026-07-25 serialized-header ownership replay
+
+The exact 0x7c-byte prefix is now represented in both decompilers as
+`SerializedArchiveHeader`: a count followed by ten 12-byte serialized entries.
+The first entry's `data_offset` is the complete encrypted-index byte count read
+by the native loader. The following allocation remains a
+`SerializedArchiveIndex` through decryption, then becomes an `ArchiveIndex` in
+place while each `path_offset` is rebased to a live path pointer and the result
+is published.
+
+Binary Ninja and IDA now retain the serialized header, byte count, allocated
+serialized index, live archive index, entry index/byte offset, serialized path
+offset, rebased path, and archive stream as distinct lifetimes. The scratch and
+focused object are unchanged at 92.54%, 67/67 instructions, a 40-instruction
+prefix, and 13 clean masked references; the remaining difference is still the
+documented install-store scheduling.
