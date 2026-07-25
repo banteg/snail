@@ -19,12 +19,22 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_pool_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
+    "Vec3": 0x0C,
+    "Sprite": 0xB4,
     "SubRingStar": 0x20,
     "SubRing": 0x1F8,
     "SubRingPool": 0x3F0,
 }
 
 EXPECTED_STRUCT_FIELDS = {
+    "Vec3": {
+        0x00: ("x", "float"),
+        0x04: ("y", "float"),
+        0x08: ("z", "float"),
+    },
+    "Sprite": {
+        0x48: ("position", "Vec3"),
+    },
     "SubRingStar": {
         0x00: ("sprite", "Sprite*"),
         0x04: ("parent", "SubRing*"),
@@ -60,6 +70,14 @@ RING_PARTICLE_USER_VAR_UPDATES = (
         72,
         "particle",
         "SubRingStar*",
+    ),
+    (
+        "initialize_ring_or_special_effect_particles",
+        "RegisterVariableSourceType",
+        427,
+        68,
+        "sprite_position",
+        "Vec3*",
     ),
     (
         "update_ring_or_special_effect_parent",

@@ -44,10 +44,10 @@
 0043e605        particle->sprite->gravity_step = 0f
 0043e60f        particle->sprite->size_start = 0.720000029f
 0043e614        particle->sprite->size_end = 0.720000029f
-0043e61b        int32_t* edx_10 = &particle->sprite->position
-0043e620        *edx_10 = ring->world_position.x
-0043e625        edx_10[1] = ring->world_position.y
-0043e62b        edx_10[2] = ring->world_position.z
+0043e61b        struct Vec3* sprite_position = &particle->sprite->position
+0043e620        sprite_position->x = ring->world_position.x
+0043e625        sprite_position->y = ring->world_position.y
+0043e62b        sprite_position->z = ring->world_position.z
 0043e62e        struct Sprite* sprite_1 = particle->sprite
 0043e630        float phase = particle->phase
 0043e633        sprite_1->facing_angle.b = phase.b

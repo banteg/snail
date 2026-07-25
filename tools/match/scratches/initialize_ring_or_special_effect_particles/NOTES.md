@@ -137,6 +137,13 @@ paired refresh also adopts the canonical `allocate_sprite(&g_sprite_manager,
 unchanged and exact at 153/153 instructions with all ten operands clean; no
 source or fakematch change was made.
 
+The later EDX lifetime is independent of that rejected suffix view. IDA
+identifies it as a `Vec3*` and native forms it from
+`particle->sprite + offsetof(Sprite, position)` before copying x/y/z. The same
+bounded replay now preserves this as `sprite_position`, replacing the
+misleading `int32_t*` word copy without affecting the carried child owner or
+the exact match.
+
 ## 2026-07-24 cross-port capacity boundary
 
 Android and iOS retain the same `cRSubRing::Init(int)` owner and the same

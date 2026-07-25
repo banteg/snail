@@ -7537,6 +7537,9 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     matcher_header = (
         repo_root / "tools/match/include/ring_special_effect_types.h"
     ).read_text(encoding="utf-8")
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
 
     assert '"SubRingState",' in pool_sync
     assert '"SubRingKind",' in pool_sync
@@ -7546,6 +7549,9 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     assert "current_type_widths" in particle_lifetime_sync
     assert "current_struct_fields_batch" in particle_lifetime_sync
     assert "RING_PARTICLE_USER_VAR_UPDATES" in particle_lifetime_sync
+    assert '"Vec3": 0x0C' in particle_lifetime_sync
+    assert '"Sprite": 0xB4' in particle_lifetime_sync
+    assert '0x48: ("position", "Vec3")' in particle_lifetime_sync
     assert '"SubRingStar": 0x20' in particle_lifetime_sync
     assert '"SubRing": 0x1F8' in particle_lifetime_sync
     assert '"SubRingPool": 0x3F0' in particle_lifetime_sync
@@ -7557,6 +7563,15 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
         '        72,\n'
         '        "particle",\n'
         '        "SubRingStar*"'
+        in particle_lifetime_sync
+    )
+    assert (
+        '"initialize_ring_or_special_effect_particles",\n'
+        '        "RegisterVariableSourceType",\n'
+        '        427,\n'
+        '        68,\n'
+        '        "sprite_position",\n'
+        '        "Vec3*"'
         in particle_lifetime_sync
     )
     for index, storage, name, type_name in (
@@ -7594,6 +7609,17 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
             f'        "{type_name}"'
         )
         assert expected in collision_state_sync
+
+    for fragment in (
+        "struct Vec3* sprite_position = &particle->sprite->position",
+        "sprite_position->x = ring->world_position.x",
+        "sprite_position->y = ring->world_position.y",
+        "sprite_position->z = ring->world_position.z",
+        '"int32_t* edx_10"',
+        '"edx_10[1]"',
+        '"edx_10[2]"',
+    ):
+        assert fragment in health_checks
 
     for header in (*analysis_headers, matcher_header):
         assert "SUB_RING_STATE_INACTIVE = 0" in header
