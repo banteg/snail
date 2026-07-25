@@ -4058,20 +4058,69 @@
       ]
     },
     {
+      "name": "ida_high_score_destroy_root_owners",
+      "artifact": "analysis/decompile/ida/functions/00417220-destroy_high_score_screen.c",
+      "required_substrings": [
+        "void __thiscall destroy_high_score_screen(HighScore *high_score)",
+        "g_runtime_config.high_score_selected_bank = high_score->selected_bank",
+        "kill_all_borders(&g_game_base->border_manager)",
+        "g_game_base->players[0].high_score_entry_pending = 0",
+        "g_game_base->players[0].selected_high_score_rank = 0"
+      ],
+      "forbidden_substrings": [
+        "g_high_score_selected_bank",
+        "(int *)g_game_base",
+        "*((_BYTE *)g_game_base",
+        "*((_DWORD *)g_game_base"
+      ]
+    },
+    {
       "name": "ida_high_score_update_void_owner",
       "artifact": "analysis/decompile/ida/functions/00417260-update_high_score_screen.c",
       "required_substrings": [
         "void __thiscall update_high_score_screen(",
         "HighScore *high_score",
         "high_score->replay_row_widgets",
+        "g_game_base->subgame.sub_high_score.active_record_bank",
+        "g_game_base->subgame.sub_high_score.active_record_count",
+        "g_game_base->players[0].player_name",
+        "g_game_base->players[0].frontend_state",
+        "g_game_base->players[0].redispatch_requested",
+        "g_game_base->subgame.selected_level_record",
+        "g_game_base->subgame.selected_level_record_active",
+        "g_game_base->subgame.selected_level_record_persistent",
+        "g_game_base->subgame.selected_level_record_cursor",
         "destroy_high_score_screen(high_score)",
         "exit_high_score_screen(high_score)"
       ],
       "forbidden_substrings": [
         "int __thiscall update_high_score_screen",
+        "g_parcel_set_buckets",
+        "byte_6FFAE0",
+        "unk_6FFAE4",
+        "*((_BYTE *)g_game_base",
+        "*((_DWORD *)g_game_base",
+        "(char *)g_game_base +",
         "return result",
         "__asm",
         "_ET1"
+      ]
+    },
+    {
+      "name": "ida_high_score_exit_root_owners",
+      "artifact": "analysis/decompile/ida/functions/00417b50-exit_high_score_screen.c",
+      "required_substrings": [
+        "void __thiscall exit_high_score_screen(HighScore *high_score)",
+        "GameRoot *v1",
+        "g_game_base->subgame.level_mode",
+        "g_game_base->players[0].frontend_state",
+        "g_game_base->subgame.subgame_rebuild_selector",
+        "g_game_base->players[0].redispatch_requested"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *v1",
+        "*((_BYTE *)g_game_base",
+        "*((_DWORD *)g_game_base"
       ]
     },
     {

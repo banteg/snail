@@ -6,43 +6,43 @@
 void __thiscall update_high_score_screen(HighScore *high_score)
 {
   FrontendWidget *v2; // ecx
-  uint32_t widget_flags; // eax
+  FrontendWidgetFlag widget_flags; // eax
   FrontendWidget *submit_name_button; // ecx
-  uint32_t v5; // eax
+  FrontendWidgetFlag v5; // eax
   FrontendWidget *v6; // eax
   FrontendWidget *cancel_name_button; // ecx
-  uint32_t v8; // eax
+  FrontendWidgetFlag v8; // eax
   FrontendWidget *bank_toggle_button; // ecx
-  uint32_t v10; // eax
+  FrontendWidgetFlag v10; // eax
   int32_t selected_bank; // eax
   FrontendWidget *back_button; // ecx
-  uint32_t v13; // eax
+  FrontendWidgetFlag v13; // eax
   int32_t mode; // eax
-  void *v15; // edx
-  int v16; // ebp
+  GameRoot *v15; // edx
+  int32_t v16; // ebp
   int v17; // edi
   FrontendWidget *v18; // ecx
-  uint32_t v19; // eax
+  FrontendWidgetFlag v19; // eax
   FrontendWidget **replay_row_widgets; // [esp+Ch] [ebp-4h]
 
   if ( high_score->entering_name )
   {
     v2 = high_score->name_row_widgets[high_score->selected_rank];
     widget_flags = v2->widget_flags;
-    if ( (widget_flags & 0x4000) != 0 )
+    if ( (BYTE1(widget_flags) & 0x40) != 0 )
     {
       BYTE1(widget_flags) &= ~0x40u;
       v2->widget_flags = widget_flags;
       destroy_high_score_screen(high_score);
-      kill_game_sprites();
+      kill_game_sprites(&g_sprite_manager);
       rstrcpy_checked_ascii(
-        (char *)(*(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] + 129728 * high_score->selected_rank + 84),
+        g_game_base->subgame.sub_high_score.active_record_bank[high_score->selected_rank].player_name,
         (char *)&high_score->name_row_widgets[high_score->selected_rank]->text_buffer);
       rstrcpy_checked_ascii(
-        (char *)g_game_base + 420,
+        g_game_base->players[0].player_name,
         (char *)&high_score->name_row_widgets[high_score->selected_rank]->text_buffer);
       rstrcpy_checked_ascii(
-        g_last_entered_player_name,
+        g_runtime_config.last_entered_player_name,
         (char *)&high_score->name_row_widgets[high_score->selected_rank]->text_buffer);
       exit_high_score_screen(high_score);
     }
@@ -64,10 +64,8 @@ void __thiscall update_high_score_screen(HighScore *high_score)
         LOBYTE(v8) = v8 & 0xDF;
         cancel_name_button->widget_flags = v8;
         destroy_high_score_screen(high_score);
-        kill_game_sprites();
-        mini_delete_high_score_entry(
-          (HighScoreRecordView *)&byte_6FFAE0[(_DWORD)g_game_base],
-          high_score->selected_rank);
+        kill_game_sprites(&g_sprite_manager);
+        mini_delete_high_score_entry(&g_game_base->subgame.sub_high_score, high_score->selected_rank);
         exit_high_score_screen(high_score);
       }
     }
@@ -91,7 +89,7 @@ void __thiscall update_high_score_screen(HighScore *high_score)
       {
         high_score->selected_bank = 1;
       }
-      g_high_score_selected_bank = high_score->selected_bank;
+      g_runtime_config.high_score_selected_bank = high_score->selected_bank;
       initialize_high_score_screen(high_score, high_score->selected_bank, -1);
     }
     else
@@ -105,14 +103,14 @@ void __thiscall update_high_score_screen(HighScore *high_score)
         mode = high_score->mode;
         if ( mode == 1 )
         {
-          *((_DWORD *)g_game_base + 110) = 10;
-          *((_BYTE *)g_game_base + 780) = 1;
+          g_game_base->players[0].frontend_state = 10;
+          g_game_base->players[0].redispatch_requested = 1;
           destroy_high_score_screen(high_score);
         }
         else
         {
           if ( !mode )
-            *((_DWORD *)g_game_base + 110) = 4;
+            g_game_base->players[0].frontend_state = 4;
           destroy_high_score_screen(high_score);
         }
       }
@@ -120,13 +118,13 @@ void __thiscall update_high_score_screen(HighScore *high_score)
       {
         v15 = g_game_base;
         v16 = 0;
-        if ( *(int *)((char *)&unk_6FFAE4 + (_DWORD)g_game_base) > 0 )
+        if ( g_game_base->subgame.sub_high_score.active_record_count > 0 )
         {
           v17 = 0;
           replay_row_widgets = high_score->replay_row_widgets;
           do
           {
-            if ( *(_DWORD *)(*(_DWORD *)&byte_6FFAE0[(_DWORD)v15] + v17) == 1 )
+            if ( v15->subgame.sub_high_score.active_record_bank[v17].active == 1 )
             {
               v18 = *replay_row_widgets;
               if ( *replay_row_widgets )
@@ -136,26 +134,25 @@ void __thiscall update_high_score_screen(HighScore *high_score)
                 {
                   LOBYTE(v19) = v19 & 0xDF;
                   v18->widget_flags = v19;
-                  *((_DWORD *)g_game_base + 110) = 10;
-                  *((_BYTE *)g_game_base + 780) = 1;
+                  g_game_base->players[0].frontend_state = 10;
+                  g_game_base->players[0].redispatch_requested = 1;
                   destroy_high_score_screen(high_score);
-                  *((_DWORD *)g_game_base + 4299515) = v17 + *(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base];
-                  *((_BYTE *)g_game_base + 17198056) = 1;
-                  *((_BYTE *)g_game_base + 17198057) = 1;
-                  *((_DWORD *)g_game_base + 4299516) = 18;
-                  *((_DWORD *)g_game_base + 119190) = *(_DWORD *)(*((_DWORD *)g_game_base + 4299515) + 44);
+                  g_game_base->subgame.selected_level_record = &g_game_base->subgame.sub_high_score.active_record_bank[v17];
+                  g_game_base->subgame.selected_level_record_active = 1;
+                  g_game_base->subgame.selected_level_record_persistent = 1;
+                  g_game_base->subgame.selected_level_record_cursor = 18;
+                  g_game_base->subgame.level_mode = g_game_base->subgame.selected_level_record->replay_mode_id;
                   v15 = g_game_base;
                 }
               }
             }
             ++v16;
-            v17 += 129728;
+            ++v17;
             ++replay_row_widgets;
           }
-          while ( v16 < *(_DWORD *)((char *)&unk_6FFAE4 + (_DWORD)v15) );
+          while ( v16 < v15->subgame.sub_high_score.active_record_count );
         }
       }
     }
   }
 }
-

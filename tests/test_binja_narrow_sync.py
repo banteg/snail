@@ -3830,6 +3830,82 @@ def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
         assert expected in ida_source
 
 
+def test_ida_high_score_lifecycle_replays_complete_owner_graph() -> None:
+    repo_root = Path(__file__).parents[1]
+    ida_source = (IDA_DIR / "apply_frontend_replay_types.py").read_text(
+        encoding="utf-8"
+    )
+    operand_block = ida_source.split(
+        "HIGH_SCORE_UPDATE_BANK_OFFSET_OPERANDS = (", 1
+    )[1].split("\n)\n\nHIGH_SCORE_LIFECYCLE", 1)[0]
+
+    assert operand_block.count("    (0x") == 6
+    for operand_spec in (
+        "(0x4172C5, 1, 0x6FFAE0)",
+        "(0x417377, 1, 0x6FFAE0)",
+        "(0x41744F, 1, 0x6FFAE4)",
+        "(0x41746F, 1, 0x6FFAE0)",
+        "(0x4174C6, 1, 0x6FFAE0)",
+        "(0x417527, 1, 0x6FFAE4)",
+    ):
+        assert operand_spec in operand_block
+
+    for selector, address in (
+        ("destroy_high_score_screen", "0x417220"),
+        ("update_high_score_screen", "0x417260"),
+        ("exit_high_score_screen", "0x417B50"),
+    ):
+        assert f'"{selector}": {address}' in ida_source
+
+    for owner in (
+        "g_game_base->subgame.sub_high_score.active_record_bank",
+        "g_game_base->subgame.sub_high_score.active_record_count",
+        "g_game_base->players[0].player_name",
+        "g_game_base->players[0].frontend_state",
+        "g_game_base->players[0].redispatch_requested",
+        "g_game_base->subgame.selected_level_record",
+        "g_game_base->subgame.selected_level_record_active",
+        "g_game_base->subgame.selected_level_record_persistent",
+        "g_game_base->subgame.selected_level_record_cursor",
+        "g_game_base->subgame.subgame_rebuild_selector",
+    ):
+        assert owner in ida_source
+
+    assert "idc.op_num(address, operand_index)" in ida_source
+    assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_source
+    assert '"selector": "cRHighScore lifecycle"' in ida_source
+    assert (
+        '"high_score_lifecycle_owner_graph": (\n'
+        "                    high_score_lifecycle_owner_graph\n"
+        "                )"
+    ) in ida_source
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    destroy = checks["ida_high_score_destroy_root_owners"]
+    update = checks["ida_high_score_update_void_owner"]
+    exit_screen = checks["ida_high_score_exit_root_owners"]
+
+    assert (
+        "g_runtime_config.high_score_selected_bank = high_score->selected_bank"
+        in destroy["required_substrings"]
+    )
+    assert (
+        "g_game_base->subgame.sub_high_score.active_record_bank"
+        in update["required_substrings"]
+    )
+    assert "g_parcel_set_buckets" in update["forbidden_substrings"]
+    assert (
+        "g_game_base->subgame.subgame_rebuild_selector"
+        in exit_screen["required_substrings"]
+    )
+    assert "_DWORD *v1" in exit_screen["forbidden_substrings"]
+
+
 def test_time_trial_high_score_replays_preserve_route_record_cursor_owner() -> None:
     binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"

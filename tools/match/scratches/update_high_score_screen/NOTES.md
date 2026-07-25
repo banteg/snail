@@ -91,3 +91,17 @@ The selected name row consumes and clears
 finish path in `cRBorder::InputText()`. This separates the completed-editor
 handoff from the Submit button's `TEXT_INPUT_SUBMIT_REQUESTED` command and
 keeps the exact 205/205-instruction result unchanged.
+
+## 2026-07-25 lifecycle owner replay
+
+Six exact `GameRoot +0x6ffae0/+0x6ffae4` instruction operands collided with
+the unrelated parcel-bucket symbol in IDA. Normalizing only those sites folds
+the whole method through `SubgameRuntime::sub_high_score`: name persistence
+uses the active `SubSolution[]` bank, cancellation borrows the containing
+`SubHighScore`, and the replay loop becomes typed record indexing rather than
+a `0x1fac0` byte cursor. The launch handoff now names
+`selected_level_record{,_active,_persistent,_cursor}`, while the shell side
+names `GamePlayer::player_name`, `frontend_state`, and
+`redispatch_requested`. Binary Ninja and the exact matching source already
+independently carried the same graph. A second copied-database replay is
+unchanged; the matcher remains exact at 205/205 instructions.

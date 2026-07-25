@@ -25,3 +25,11 @@ Windows callers establish a side-effect-only `void` member. Removing the
 synthetic `return 0` preserves the exact 11/11 body and five clean operands;
 Binary Ninja records the authored prototype as explicitly deferred because
 live analysis restores its stale scalar inference.
+
+## 2026-07-25 root-owner replay
+
+A fresh IDA lifecycle replay now reaches every teardown side effect through
+its real owner: the selected bank lives in `RuntimeConfig`, border teardown
+uses `GameRoot::border_manager`, and the two clears belong to
+`GamePlayer::high_score_entry_pending` and `selected_high_score_rank`.
+No matching source changed; the helper remains exact at 11/11 instructions.

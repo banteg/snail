@@ -17,19 +17,19 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_damage_gauge",
-      "address": "0x440fd0"
+      "name": "destroy_high_score_screen",
+      "address": "0x417220"
     },
     {
-      "name": "apply_damage_gauge_delta",
-      "address": "0x4413f0"
+      "name": "update_high_score_screen",
+      "address": "0x417260"
     },
     {
-      "name": "update_cutscene",
-      "address": "0x4466d0"
+      "name": "exit_high_score_screen",
+      "address": "0x417b50"
     }
   ],
-  "health_check_count": 1019,
+  "health_check_count": 1021,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"
