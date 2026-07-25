@@ -6979,6 +6979,24 @@
       ]
     },
     {
+      "name": "bn_blink_random_sample_borrow",
+      "artifact": "analysis/decompile/binja/functions/004408c0-initialize_blink_random.c",
+      "required_substrings": [
+        "struct SubgameRuntime* runtime_1 = runtime",
+        "runtime->blink_random_index = 0",
+        "float* blink_sample_cursor = &runtime->blink_random_samples",
+        "blink_sample_cursor = &blink_sample_cursor[1]",
+        "blink_sample_cursor[-1] =",
+        "return result"
+      ],
+      "forbidden_substrings": [
+        "float (*",
+        "(blink_sample_cursor - 0x3bb704)",
+        "(esi - 0x3bb704)",
+        "arg1"
+      ]
+    },
+    {
       "name": "bn_remove_subgame_bods_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00440910-remove_subgame_bods.c",
       "required_substrings": [

@@ -3500,6 +3500,43 @@ def test_runtime_pool_constructor_replay_preserves_element_borrows() -> None:
         assert fragment in health_checks
 
 
+def test_blink_random_replay_preserves_sample_borrow() -> None:
+    repo_root = Path(__file__).parents[1]
+    source = (BINJA_DIR / "sync_blink_random_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    for expected in (
+        '"Player": 0x4364',
+        '"SubgameRuntime": 0x1272838',
+        '0x3BB700: ("blink_random_index", "int32_t")',
+        '0x3BB704: ("blink_random_samples", "float[24]")',
+        '0x3BB764: ("player", "Player")',
+        "BLINK_RANDOM_SAMPLE_CURSOR_USER_VAR_UPDATES",
+        "current_struct_fields_batch",
+        "apply_user_var_updates",
+        "verify_blink_random_owner_layout",
+        '"initialize_blink_random",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        13,\n"
+        "        72,\n"
+        '        "blink_sample_cursor",\n'
+        '        "float*",',
+    ):
+        assert expected in source
+    for fragment in (
+        "float* blink_sample_cursor = &runtime->blink_random_samples",
+        "blink_sample_cursor = &blink_sample_cursor[1]",
+        "blink_sample_cursor[-1] =",
+        '"float (*"',
+        '"(blink_sample_cursor - 0x3bb704)"',
+    ):
+        assert fragment in health_checks
+
+
 def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
     binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"
