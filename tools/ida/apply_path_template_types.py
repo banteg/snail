@@ -275,6 +275,8 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x420CB0,  # update_track_attachment_follow_state
     0x421770,  # initialize_path_follow_golb
     0x4217B0,  # calc_path_length_z
+    0x4246A0,  # build_track_fringe_mesh
+    0x424AD0,  # build_track_fringe_supertramp_mesh
     0x42B9C0,  # get_path_position_at_node
     0x42C600,  # finalize_path_template
     0x42C770,  # try_enter_track_attachment_from_swept_motion
@@ -382,6 +384,8 @@ SALT_ASSET_CURSOR_EXPECTED_SIZE = 0x98
 TRACK_ROW_CELL_LANE_FLAGS_CURSOR_EXPECTED_SIZE = 0x54
 TRACK_ROW_CELL_FRINGE_CURSOR_EXPECTED_SIZE = 0x54
 SUB_ROW_PARCEL_SPAWN_Y_CURSOR_EXPECTED_SIZE = 0xF4
+FRINGE_VERTEX_ROW_CURSOR_EXPECTED_SIZE = 0x30
+FRINGE_FACE_PAIR_CURSOR_EXPECTED_SIZE = 0x60
 GOLB_SHOT_PREFIX_END = 0x198
 GOLB_SHOT_PREFIX_MEMBERS = (
     (0x000, 0x080, "primary_body", "RenderableBod"),
@@ -422,6 +426,17 @@ RUNTIME_GRID_CLEAR_CURSOR_HEADER_MARKERS = (
     "float parcel_spawn_y;",
     "BodBase attachment_body;",
     "uint8_t _stride_tail[0x94];",
+)
+
+FRINGE_MESH_CURSOR_HEADER_MARKERS = (
+    "typedef struct __ptr_offset(0x14)",
+    "__base(Vec3, 0x0c) FringeVertexRowCursorView {",
+    "__inherited Vec3 inner_a;",
+    "FringeVertexRowCursorView_must_be_0x30",
+    "typedef struct __ptr_offset(0x02)",
+    "__base(ObjectFaceQuad, 0x00) FringeFaceQuadPairCursorView {",
+    "__inherited ObjectFaceQuad first_face;",
+    "FringeFaceQuadPairCursorView_must_be_0x60",
 )
 
 GOLB_PATH_FOLLOW_DIRECTION_LVAR_DEFINITION = 0x421D22
@@ -978,6 +993,37 @@ FRINGE_RUNTIME_LVAR_SPECS = (
     ("fringe_left_new", "Fringe *fringe_left_new;", 0x434F4C, None),
     ("fringe_back_new", "Fringe *fringe_back_new;", 0x435050, None),
 )
+
+FRINGE_MESH_LVAR_SPECS = {
+    "build_track_fringe_mesh": (
+        (
+            "row_cursor",
+            "float *__shifted(FringeVertexRowCursorView, 0x14) row_cursor;",
+            0x424744,
+            None,
+        ),
+        (
+            "face_pair_cursor",
+            "uint16_t *__shifted(FringeFaceQuadPairCursorView, 0x02) face_pair_cursor;",
+            0x4249FD,
+            None,
+        ),
+    ),
+    "build_track_fringe_supertramp_mesh": (
+        (
+            "row_cursor",
+            "float *__shifted(FringeVertexRowCursorView, 0x14) row_cursor;",
+            0x424B3E,
+            None,
+        ),
+        (
+            "face_pair_cursor",
+            "uint16_t *__shifted(FringeFaceQuadPairCursorView, 0x02) face_pair_cursor;",
+            0x424D37,
+            None,
+        ),
+    ),
+}
 
 HARMONIZE_RUNTIME_LVAR_SPECS = (
     (
@@ -3504,6 +3550,27 @@ def _sync_fringe_runtime_lvars() -> dict[str, object]:
     )
 
 
+def _sync_fringe_mesh_lvars() -> dict[str, object]:
+    results = {
+        selector: _sync_exact_lvars(selector, specs)
+        for selector, specs in FRINGE_MESH_LVAR_SPECS.items()
+    }
+    failed = {
+        selector: result
+        for selector, result in results.items()
+        if result.get("status") == "failed"
+    }
+    return {
+        "status": "failed" if failed else (
+            "applied"
+            if any(result.get("status") == "applied" for result in results.values())
+            else "unchanged"
+        ),
+        "builders": results,
+        "failed": failed,
+    }
+
+
 def _sync_harmonize_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "harmonize_center_lane_floor_slide_variants",
@@ -3909,6 +3976,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in RUNTIME_GRID_CLEAR_CURSOR_HEADER_MARKERS
         if marker not in header_text
     ]
+    missing_fringe_mesh_cursor_markers = [
+        marker
+        for marker in FRINGE_MESH_CURSOR_HEADER_MARKERS
+        if marker not in header_text
+    ]
     if (
         missing_bod_core_owner_markers
         or missing_fringe_owner_markers
@@ -3916,6 +3988,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_sub_lazer_asset_cursor_markers
         or missing_salt_asset_cursor_markers
         or missing_runtime_grid_clear_cursor_markers
+        or missing_fringe_mesh_cursor_markers
     ):
         marker_failures = []
         if missing_bod_core_owner_markers:
@@ -3938,6 +4011,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
             marker_failures.append(
                 {"reason": "noncanonical_runtime_grid_clear_cursor_header"}
             )
+        if missing_fringe_mesh_cursor_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_fringe_mesh_cursor_header"}
+            )
         print(
             json.dumps(
                 {
@@ -3956,6 +4033,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "missing_runtime_grid_clear_cursor_markers": (
                         missing_runtime_grid_clear_cursor_markers
+                    ),
+                    "missing_fringe_mesh_cursor_markers": (
+                        missing_fringe_mesh_cursor_markers
                     ),
                     "failed": marker_failures,
                 },
@@ -3994,6 +4074,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
     )
     sub_row_parcel_spawn_y_cursor_size = _named_struct_size(
         "SubRowParcelSpawnYStrideCursor"
+    )
+    fringe_vertex_row_cursor_size = _named_struct_size(
+        "FringeVertexRowCursorView"
+    )
+    fringe_face_pair_cursor_size = _named_struct_size(
+        "FringeFaceQuadPairCursorView"
     )
     track_row_cell_tile_owner = _named_struct_member_readback("TrackRowCell", 0x3C)
     expected_track_row_cell_tile_owner = {
@@ -4109,6 +4195,26 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "observed": sub_row_parcel_spawn_y_cursor_size,
             }
         )
+    if fringe_vertex_row_cursor_size != FRINGE_VERTEX_ROW_CURSOR_EXPECTED_SIZE:
+        owner_size_failures.append(
+            {
+                "selector": "FringeVertexRowCursorView",
+                "owner_group": "fringe_mesh_cursor",
+                "reason": "owner_size_mismatch",
+                "expected": FRINGE_VERTEX_ROW_CURSOR_EXPECTED_SIZE,
+                "observed": fringe_vertex_row_cursor_size,
+            }
+        )
+    if fringe_face_pair_cursor_size != FRINGE_FACE_PAIR_CURSOR_EXPECTED_SIZE:
+        owner_size_failures.append(
+            {
+                "selector": "FringeFaceQuadPairCursorView",
+                "owner_group": "fringe_mesh_cursor",
+                "reason": "owner_size_mismatch",
+                "expected": FRINGE_FACE_PAIR_CURSOR_EXPECTED_SIZE,
+                "observed": fringe_face_pair_cursor_size,
+            }
+        )
     if track_row_cell_tile_owner != expected_track_row_cell_tile_owner:
         owner_size_failures.append(
             {
@@ -4132,6 +4238,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "golb_shot_asset_cursor_size": golb_shot_asset_cursor_size,
                     "sub_lazer_asset_cursor_size": sub_lazer_asset_cursor_size,
                     "salt_asset_cursor_size": salt_asset_cursor_size,
+                    "fringe_vertex_row_cursor_size": (
+                        fringe_vertex_row_cursor_size
+                    ),
+                    "fringe_face_pair_cursor_size": fringe_face_pair_cursor_size,
                     "track_row_cell_tile_owner": track_row_cell_tile_owner,
                     "failed": owner_size_failures,
                 },
@@ -4735,6 +4845,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "runtime_lvars": fringe_runtime_lvars,
             }
         )
+    fringe_mesh_lvars = _sync_fringe_mesh_lvars()
+    if fringe_mesh_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "fringe_mesh_builders",
+                "cursor_lvars": fringe_mesh_lvars,
+            }
+        )
     harmonize_runtime_lvars = _sync_harmonize_runtime_lvars()
     if harmonize_runtime_lvars.get("status") == "failed":
         failed.append(
@@ -4804,6 +4922,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "sub_row_parcel_spawn_y_cursor_size": (
                     sub_row_parcel_spawn_y_cursor_size
                 ),
+                "fringe_vertex_row_cursor_size": fringe_vertex_row_cursor_size,
+                "fringe_face_pair_cursor_size": fringe_face_pair_cursor_size,
                 "track_row_cell_tile_owner": track_row_cell_tile_owner,
                 "applied": applied,
                 "unchanged": unchanged,
@@ -4870,6 +4990,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "collision_pool_cursor_lvars": collision_pool_cursor_lvars,
                 "merge_runtime_lvars": merge_runtime_lvars,
                 "fringe_runtime_lvars": fringe_runtime_lvars,
+                "fringe_mesh_lvars": fringe_mesh_lvars,
                 "harmonize_runtime_lvars": harmonize_runtime_lvars,
                 "build_subgame_active_bod_lvars": build_subgame_active_bod_lvars,
                 "subgame_receiver_lvars": subgame_receiver_lvars,

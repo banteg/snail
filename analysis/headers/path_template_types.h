@@ -1619,6 +1619,38 @@ typedef struct ObjectFaceQuad {
     ObjectUv uv[4];
 } ObjectFaceQuad;
 
+/*
+ * Analysis-only offset-pointer view for the generated four-vertex row shared
+ * by both fringe mesh builders. Native carries inner_a.z at +0x14 while
+ * reading and writing the surrounding Vec3 values, then advances by the
+ * complete 0x30-byte row. The generated Object::vertices bank remains the
+ * sole owner.
+ */
+typedef struct __ptr_offset(0x14)
+    __base(Vec3, 0x0c) FringeVertexRowCursorView {
+    Vec3 outer_a;
+    __inherited Vec3 inner_a;
+    Vec3 outer_b;
+    Vec3 inner_b;
+} FringeVertexRowCursorView;
+typedef char FringeVertexRowCursorView_must_be_0x30[
+    (sizeof(FringeVertexRowCursorView) == 0x30) ? 1 : -1
+];
+
+/*
+ * Analysis-only offset-pointer view for the paired facequads emitted per
+ * generated row. Native carries first_face.vertex_0 at +0x02 and advances by
+ * the complete 0x60-byte pair. Object::facequads remains the sole owner.
+ */
+typedef struct __ptr_offset(0x02)
+    __base(ObjectFaceQuad, 0x00) FringeFaceQuadPairCursorView {
+    __inherited ObjectFaceQuad first_face;
+    ObjectFaceQuad second_face;
+} FringeFaceQuadPairCursorView;
+typedef char FringeFaceQuadPairCursorView_must_be_0x60[
+    (sizeof(FringeFaceQuadPairCursorView) == 0x60) ? 1 : -1
+];
+
 /* Authored four-float Windows AxisAngle value; Android calls it tAxis. */
 typedef struct AxisAngle {
     float x;

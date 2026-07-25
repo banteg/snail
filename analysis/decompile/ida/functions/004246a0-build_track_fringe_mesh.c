@@ -9,14 +9,14 @@ void __thiscall build_track_fringe_mesh(Path *self, char *texture_path, float cl
   tColour *track_skirt_color; // eax
   Object *object; // ebx
   int v7; // ebp
-  float *p_z; // esi
+  float *__shifted(FringeVertexRowCursorView,0x14) row_cursor; // esi
   uint32_t width_cells; // eax
   uint32_t v10; // ecx
   int v11; // edx
-  float *v12; // ebx
+  FringeVertexRowCursorView *v12; // ebx
   Vec3 *v13; // edx
-  float *v14; // eax
-  float *v15; // ebp
+  FringeVertexRowCursorView *v14; // eax
+  Vec3 *p_inner_a; // ebp
   Vec3 *v16; // eax
   double v17; // st7
   float v18; // eax
@@ -26,7 +26,7 @@ void __thiscall build_track_fringe_mesh(Path *self, char *texture_path, float cl
   float v22; // ecx
   int v23; // ecx
   int v24; // ecx
-  uint16_t *p_vertex_0; // esi
+  uint16_t *__shifted(FringeFaceQuadPairCursorView,2) face_pair_cursor; // esi
   signed int v26; // [esp+10h] [ebp-68h]
   signed int v27; // [esp+10h] [ebp-68h]
   int v28; // [esp+14h] [ebp-64h]
@@ -59,7 +59,7 @@ void __thiscall build_track_fringe_mesh(Path *self, char *texture_path, float cl
   v26 = 0;
   if ( (self->segment_count & 0x80000000) == 0 )
   {
-    p_z = &object->vertices[1].z;
+    row_cursor = &object->vertices[1].z;
     do
     {
       width_cells = self->width_cells;
@@ -77,63 +77,63 @@ void __thiscall build_track_fringe_mesh(Path *self, char *texture_path, float cl
         v29 = self->width_cells;
         v28 = width_cells - 1;
       }
-      v12 = p_z - 5;
+      v12 = ADJ(row_cursor);
       v13 = &self->bod.object->vertices[v11 + v26 * (width_cells + 1)];
-      v14 = p_z - 5;
-      *v14 = v13->x;
-      v14[1] = v13->y;
-      v15 = p_z - 2;
-      v14[2] = v13->z;
+      v14 = ADJ(row_cursor);
+      v14->outer_a.x = v13->x;
+      v14->outer_a.y = v13->y;
+      p_inner_a = &ADJ(row_cursor)->inner_a;
+      v14->outer_a.z = v13->z;
       v16 = &self->bod.object->vertices[v10 + v26 * (self->width_cells + 1)];
-      *v15 = v16->x;
-      v15[1] = v16->y;
-      *p_z = v16->z;
-      v32.x = *(p_z - 2) - *(p_z - 5);
-      v32.y = *(p_z - 1) - *(p_z - 4);
-      v32.z = *p_z - *(p_z - 3);
+      p_inner_a->x = v16->x;
+      p_inner_a->y = v16->y;
+      ADJ(row_cursor)->inner_a.z = v16->z;
+      v32.x = ADJ(row_cursor)->inner_a.x - ADJ(row_cursor)->outer_a.x;
+      v32.y = ADJ(row_cursor)->inner_a.y - ADJ(row_cursor)->outer_a.y;
+      v32.z = ADJ(row_cursor)->inner_a.z - ADJ(row_cursor)->outer_a.z;
       vector = v32;
       normalize_vector(&vector);
       v40 = vector.y * 0.40000001;
       v41 = vector.z * 0.40000001;
-      v33 = vector.x * 0.40000001 + *(p_z - 2);
-      v34 = v40 + *(p_z - 1);
-      v17 = v41 + *p_z;
+      v33 = vector.x * 0.40000001 + ADJ(row_cursor)->inner_a.x;
+      v34 = v40 + ADJ(row_cursor)->inner_a.y;
+      v17 = v41 + ADJ(row_cursor)->inner_a.z;
       v18 = v34;
-      *v12 = v33;
-      v12[1] = v18;
+      v12->outer_a.x = v33;
+      v12->outer_a.y = v18;
       v35 = v17;
-      v12[2] = v35;
+      v12->outer_a.z = v35;
       v19 = &self->bod.object->vertices[v28 + v26 * (self->width_cells + 1)];
-      p_z[1] = v19->x;
-      p_z[2] = v19->y;
-      p_z[3] = v19->z;
+      ADJ(row_cursor)->outer_b.x = v19->x;
+      ADJ(row_cursor)->outer_b.y = v19->y;
+      ADJ(row_cursor)->outer_b.z = v19->z;
       v20 = &self->bod.object->vertices[v29 + v26 * (self->width_cells + 1)];
-      p_z[4] = v20->x;
-      p_z[5] = v20->y;
-      p_z[6] = v20->z;
-      v36.x = p_z[4] - p_z[1];
-      v36.y = p_z[5] - p_z[2];
-      v36.z = p_z[6] - p_z[3];
+      ADJ(row_cursor)->inner_b.x = v20->x;
+      ADJ(row_cursor)->inner_b.y = v20->y;
+      ADJ(row_cursor)->inner_b.z = v20->z;
+      v36.x = ADJ(row_cursor)->inner_b.x - ADJ(row_cursor)->outer_b.x;
+      v36.y = ADJ(row_cursor)->inner_b.y - ADJ(row_cursor)->outer_b.y;
+      v36.z = ADJ(row_cursor)->inner_b.z - ADJ(row_cursor)->outer_b.z;
       vector = v36;
       normalize_vector(&vector);
       out.g = vector.y * 0.40000001;
       out.b = vector.z * 0.40000001;
-      v37 = vector.x * 0.40000001 + p_z[4];
-      v38 = out.g + p_z[5];
-      v21 = out.b + p_z[6];
+      v37 = vector.x * 0.40000001 + ADJ(row_cursor)->inner_b.x;
+      v38 = out.g + ADJ(row_cursor)->inner_b.y;
+      v21 = out.b + ADJ(row_cursor)->inner_b.z;
       v22 = v38;
-      p_z[1] = v37;
-      p_z[2] = v22;
+      ADJ(row_cursor)->outer_b.x = v37;
+      ADJ(row_cursor)->outer_b.y = v22;
       v39 = v21;
-      p_z[3] = v39;
+      ADJ(row_cursor)->outer_b.z = v39;
       if ( clamp_side == -1.0 )
       {
         v23 = 4;
         do
         {
-          if ( *v12 > 0.0 )
-            *v12 = 0.0;
-          v12 += 3;
+          if ( v12->outer_a.x > 0.0 )
+            v12->outer_a.x = 0.0;
+          v12 = (FringeVertexRowCursorView *)((char *)v12 + 12);
           --v23;
         }
         while ( v23 );
@@ -143,14 +143,14 @@ void __thiscall build_track_fringe_mesh(Path *self, char *texture_path, float cl
         v24 = 4;
         do
         {
-          if ( *v12 < 0.0 )
-            *v12 = 0.0;
-          v12 += 3;
+          if ( v12->outer_a.x < 0.0 )
+            v12->outer_a.x = 0.0;
+          v12 = (FringeVertexRowCursorView *)((char *)v12 + 12);
           --v24;
         }
         while ( v24 );
       }
-      p_z += 12;
+      row_cursor += 12;
       ++v26;
     }
     while ( v26 <= (signed int)self->segment_count );
@@ -158,36 +158,44 @@ void __thiscall build_track_fringe_mesh(Path *self, char *texture_path, float cl
   v27 = 0;
   if ( (int)self->segment_count > 0 )
   {
-    p_vertex_0 = &facequads->vertex_0;
+    face_pair_cursor = &facequads->vertex_0;
     do
     {
-      *(_DWORD *)(p_vertex_0 + 5) = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0);
-      *p_vertex_0 = 4 * v27 + 5;
-      p_vertex_0[1] = 4 * v27 + 4;
-      p_vertex_0[2] = 4 * v27;
-      p_vertex_0[3] = 4 * v27 + 1;
-      *(_DWORD *)(p_vertex_0 + 19) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 21) = 0;
-      *(_DWORD *)(p_vertex_0 + 7) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 9) = 0;
-      *(_DWORD *)(p_vertex_0 + 11) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 13) = 1065353216;
-      *(_DWORD *)(p_vertex_0 + 15) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 17) = 1065353216;
-      *(_DWORD *)(p_vertex_0 + 29) = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0);
-      p_vertex_0[24] = 4 * v27 + 6;
-      p_vertex_0[25] = 4 * v27 + 7;
-      p_vertex_0[26] = 4 * v27 + 3;
-      p_vertex_0[27] = 4 * v27 + 2;
-      *(_DWORD *)(p_vertex_0 + 43) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 45) = 1065353216;
-      *(_DWORD *)(p_vertex_0 + 31) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 33) = 1065353216;
-      *(_DWORD *)(p_vertex_0 + 35) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 37) = 0;
-      *(_DWORD *)(p_vertex_0 + 39) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 41) = 0;
-      p_vertex_0 += 48;
+      ADJ(face_pair_cursor)->first_face.texture_ref = get_or_create_texture_ref(
+                                                        &g_texture_refs,
+                                                        texture_path,
+                                                        nullptr,
+                                                        0);
+      ADJ(face_pair_cursor)->first_face.vertex_0 = 4 * v27 + 5;
+      ADJ(face_pair_cursor)->first_face.vertex_1 = 4 * v27 + 4;
+      ADJ(face_pair_cursor)->first_face.vertex_2 = 4 * v27;
+      ADJ(face_pair_cursor)->first_face.vertex_3 = 4 * v27 + 1;
+      ADJ(face_pair_cursor)->first_face.uv[3].u = 0.5;
+      ADJ(face_pair_cursor)->first_face.uv[3].v = 0.0;
+      ADJ(face_pair_cursor)->first_face.uv[0].u = 0.5;
+      ADJ(face_pair_cursor)->first_face.uv[0].v = 0.0;
+      ADJ(face_pair_cursor)->first_face.uv[1].u = 0.5;
+      ADJ(face_pair_cursor)->first_face.uv[1].v = 1.0;
+      ADJ(face_pair_cursor)->first_face.uv[2].u = 0.5;
+      ADJ(face_pair_cursor)->first_face.uv[2].v = 1.0;
+      ADJ(face_pair_cursor)->second_face.texture_ref = get_or_create_texture_ref(
+                                                         &g_texture_refs,
+                                                         texture_path,
+                                                         nullptr,
+                                                         0);
+      ADJ(face_pair_cursor)->second_face.vertex_0 = 4 * v27 + 6;
+      ADJ(face_pair_cursor)->second_face.vertex_1 = 4 * v27 + 7;
+      ADJ(face_pair_cursor)->second_face.vertex_2 = 4 * v27 + 3;
+      ADJ(face_pair_cursor)->second_face.vertex_3 = 4 * v27 + 2;
+      ADJ(face_pair_cursor)->second_face.uv[3].u = 0.5;
+      ADJ(face_pair_cursor)->second_face.uv[3].v = 1.0;
+      ADJ(face_pair_cursor)->second_face.uv[0].u = 0.5;
+      ADJ(face_pair_cursor)->second_face.uv[0].v = 1.0;
+      ADJ(face_pair_cursor)->second_face.uv[1].u = 0.5;
+      ADJ(face_pair_cursor)->second_face.uv[1].v = 0.0;
+      ADJ(face_pair_cursor)->second_face.uv[2].u = 0.5;
+      ADJ(face_pair_cursor)->second_face.uv[2].v = 0.0;
+      face_pair_cursor += 48;
       ++v27;
     }
     while ( v27 < (signed int)self->segment_count );

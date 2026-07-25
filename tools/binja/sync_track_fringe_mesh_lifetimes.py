@@ -22,6 +22,8 @@ EXPECTED_TYPE_WIDTHS = {
     "Vec3": 0x0C,
     "BodBase": 0x38,
     "ObjectFaceQuad": 0x30,
+    "FringeVertexRowCursorView": 0x30,
+    "FringeFaceQuadPairCursorView": 0x60,
     "Object": 0xDC,
     "Path": 0xA8,
 }
@@ -40,6 +42,15 @@ EXPECTED_STRUCT_FIELDS = {
         0x0C: ("texture_ref", "TextureRef*"),
         0x10: ("uv", "ObjectUv[4]"),
     },
+    # Binary Ninja omits inherited base fields from the direct member listing.
+    "FringeVertexRowCursorView": {
+        0x00: ("outer_a", "Vec3"),
+        0x18: ("outer_b", "Vec3"),
+        0x24: ("inner_b", "Vec3"),
+    },
+    "FringeFaceQuadPairCursorView": {
+        0x30: ("second_face", "ObjectFaceQuad"),
+    },
     "Object": {
         0x38: ("vertices", "Vec3*"),
         0x5C: ("facequads", "ObjectFaceQuad*"),
@@ -54,8 +65,10 @@ EXPECTED_STRUCT_FIELDS = {
 
 # Both fringe builders borrow the generated Object from Path::fringe_mesh_bod,
 # then keep disjoint vertex and face-bank lifetimes after allocation. Native
-# additionally strength-reduces the row and face loops to interior cursors;
-# those cursors remain non-owning views into the two Object-managed banks.
+# additionally strength-reduces the row loop to inner_a.z within each
+# four-Vec3 row and the face loop to first_face.vertex_0 within each two-face
+# pair. The offset-aware cursor types preserve those carried addresses without
+# inventing another allocation owner.
 #
 # The SuperTramp tail has two further Vec3 families: the final generated row
 # and its two extrapolated cap vertices. Typing the exact register definitions
@@ -81,6 +94,14 @@ TRACK_FRINGE_MESH_USER_VAR_UPDATES = (
     (
         "build_track_fringe_mesh",
         "RegisterVariableSourceType",
+        163,
+        72,
+        "row_cursor",
+        "FringeVertexRowCursorView*",
+    ),
+    (
+        "build_track_fringe_mesh",
+        "RegisterVariableSourceType",
         221,
         69,
         "generated_row",
@@ -93,6 +114,14 @@ TRACK_FRINGE_MESH_USER_VAR_UPDATES = (
         -92,
         "generated_facequads",
         "ObjectFaceQuad*",
+    ),
+    (
+        "build_track_fringe_mesh",
+        "RegisterVariableSourceType",
+        860,
+        72,
+        "face_pair_cursor",
+        "FringeFaceQuadPairCursorView*",
     ),
     (
         "build_track_fringe_supertramp_mesh",
@@ -117,6 +146,22 @@ TRACK_FRINGE_MESH_USER_VAR_UPDATES = (
         69,
         "generated_facequads",
         "ObjectFaceQuad*",
+    ),
+    (
+        "build_track_fringe_supertramp_mesh",
+        "RegisterVariableSourceType",
+        109,
+        73,
+        "row_cursor",
+        "FringeVertexRowCursorView*",
+    ),
+    (
+        "build_track_fringe_supertramp_mesh",
+        "RegisterVariableSourceType",
+        614,
+        73,
+        "face_pair_cursor",
+        "FringeFaceQuadPairCursorView*",
     ),
     (
         "build_track_fringe_supertramp_mesh",
@@ -171,8 +216,8 @@ TRACK_FRINGE_MESH_USER_VAR_UPDATES = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay only the generated vertex, face, row, and cap lifetimes "
-            "in the two Path fringe mesh builders."
+            "Replay only the generated vertex, face, borrowed row/pair "
+            "cursors, and cap lifetimes in the two Path fringe mesh builders."
         )
     )
     parser.add_argument(

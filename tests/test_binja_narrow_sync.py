@@ -17105,6 +17105,8 @@ def test_track_fringe_mesh_lifetime_replay_stays_guarded() -> None:
         ("Vec3", "0x0C"),
         ("BodBase", "0x38"),
         ("ObjectFaceQuad", "0x30"),
+        ("FringeVertexRowCursorView", "0x30"),
+        ("FringeFaceQuadPairCursorView", "0x60"),
         ("Object", "0xDC"),
         ("Path", "0xA8"),
     ):
@@ -17115,6 +17117,9 @@ def test_track_fringe_mesh_lifetime_replay_stays_guarded() -> None:
         ("BodBase", "0x24", "object", "Object*"),
         ("ObjectFaceQuad", "0x02", "vertex_0", "uint16_t"),
         ("ObjectFaceQuad", "0x0C", "texture_ref", "TextureRef*"),
+        ("FringeVertexRowCursorView", "0x00", "outer_a", "Vec3"),
+        ("FringeVertexRowCursorView", "0x18", "outer_b", "Vec3"),
+        ("FringeFaceQuadPairCursorView", "0x30", "second_face", "ObjectFaceQuad"),
         ("Object", "0x38", "vertices", "Vec3*"),
         ("Object", "0x5C", "facequads", "ObjectFaceQuad*"),
         ("Path", "0x44", "segment_count", "uint32_t"),
@@ -17143,6 +17148,14 @@ def test_track_fringe_mesh_lifetime_replay_stays_guarded() -> None:
         (
             "build_track_fringe_mesh",
             "RegisterVariableSourceType",
+            163,
+            72,
+            "row_cursor",
+            "FringeVertexRowCursorView*",
+        ),
+        (
+            "build_track_fringe_mesh",
+            "RegisterVariableSourceType",
             221,
             69,
             "generated_row",
@@ -17155,6 +17168,14 @@ def test_track_fringe_mesh_lifetime_replay_stays_guarded() -> None:
             -92,
             "generated_facequads",
             "ObjectFaceQuad*",
+        ),
+        (
+            "build_track_fringe_mesh",
+            "RegisterVariableSourceType",
+            860,
+            72,
+            "face_pair_cursor",
+            "FringeFaceQuadPairCursorView*",
         ),
         (
             "build_track_fringe_supertramp_mesh",
@@ -17179,6 +17200,22 @@ def test_track_fringe_mesh_lifetime_replay_stays_guarded() -> None:
             69,
             "generated_facequads",
             "ObjectFaceQuad*",
+        ),
+        (
+            "build_track_fringe_supertramp_mesh",
+            "RegisterVariableSourceType",
+            109,
+            73,
+            "row_cursor",
+            "FringeVertexRowCursorView*",
+        ),
+        (
+            "build_track_fringe_supertramp_mesh",
+            "RegisterVariableSourceType",
+            614,
+            73,
+            "face_pair_cursor",
+            "FringeFaceQuadPairCursorView*",
         ),
         (
             "build_track_fringe_supertramp_mesh",
@@ -17243,6 +17280,149 @@ def test_track_fringe_mesh_lifetime_replay_stays_guarded() -> None:
     assert "apply_user_var_updates" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+
+
+def test_track_fringe_mesh_cursor_views_stay_borrowed_and_replayable() -> None:
+    repo_root = Path(__file__).parents[1]
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    canonical_binja = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    canonical_ida = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    matcher_sources = "\n".join(
+        (
+            (
+                repo_root
+                / "tools/match/scratches/build_track_fringe_mesh/scratch.cpp"
+            ).read_text(encoding="utf-8"),
+            (
+                repo_root
+                / (
+                    "tools/match/scratches/"
+                    "build_track_fringe_supertramp_mesh/scratch.cpp"
+                )
+            ).read_text(encoding="utf-8"),
+        )
+    )
+    health_checks = {
+        check["name"]: check
+        for check in json.loads(
+            (repo_root / "analysis/decompile/health_checks.json").read_text(
+                encoding="utf-8"
+            )
+        )["checks"]
+    }
+
+    for marker in (
+        "typedef struct __ptr_offset(0x14)",
+        "__base(Vec3, 0x0c) FringeVertexRowCursorView {",
+        "__inherited Vec3 inner_a;",
+        "FringeVertexRowCursorView_must_be_0x30",
+        "typedef struct __ptr_offset(0x02)",
+        "__base(ObjectFaceQuad, 0x00) FringeFaceQuadPairCursorView {",
+        "__inherited ObjectFaceQuad first_face;",
+        "FringeFaceQuadPairCursorView_must_be_0x60",
+        "The generated Object::vertices bank remains the",
+        "Object::facequads remains the sole owner.",
+    ):
+        assert marker in analysis_header
+
+    for type_name in (
+        "FringeVertexRowCursorView",
+        "FringeFaceQuadPairCursorView",
+    ):
+        assert type_name not in matcher_sources
+        assert type_name in canonical_binja
+        assert type_name in canonical_ida
+
+    assert "FRINGE_MESH_CURSOR_SIZES" in canonical_binja
+    assert "verify_fringe_mesh_cursor_sizes" in canonical_binja
+    assert '"owner_group": "fringe_mesh_cursor"' in canonical_binja
+    assert "FRINGE_MESH_CURSOR_HEADER_MARKERS" in canonical_ida
+    assert "FRINGE_VERTEX_ROW_CURSOR_EXPECTED_SIZE = 0x30" in canonical_ida
+    assert "FRINGE_FACE_PAIR_CURSOR_EXPECTED_SIZE = 0x60" in canonical_ida
+    assert "FRINGE_MESH_LVAR_SPECS" in canonical_ida
+    for name, declaration, definition_address in (
+        (
+            "row_cursor",
+            (
+                "float *__shifted("
+                "FringeVertexRowCursorView, 0x14) row_cursor;"
+            ),
+            "0x424744",
+        ),
+        (
+            "face_pair_cursor",
+            (
+                "uint16_t *__shifted("
+                "FringeFaceQuadPairCursorView, 0x02) face_pair_cursor;"
+            ),
+            "0x4249FD",
+        ),
+        (
+            "row_cursor",
+            (
+                "float *__shifted("
+                "FringeVertexRowCursorView, 0x14) row_cursor;"
+            ),
+            "0x424B3E",
+        ),
+        (
+            "face_pair_cursor",
+            (
+                "uint16_t *__shifted("
+                "FringeFaceQuadPairCursorView, 0x02) face_pair_cursor;"
+            ),
+            "0x424D37",
+        ),
+    ):
+        assert f'"{name}"' in canonical_ida
+        assert f'"{declaration}"' in canonical_ida
+        assert definition_address in canonical_ida
+
+    assert "fringe_mesh_lvars = _sync_fringe_mesh_lvars()" in canonical_ida
+    for address in ("0x4246A0", "0x424AD0"):
+        assert address in canonical_ida
+
+    for check_name in (
+        "bn_track_fringe_mesh_object_owners",
+        "bn_track_fringe_supertramp_object_owners",
+    ):
+        check = health_checks[check_name]
+        for marker in (
+            "struct FringeVertexRowCursorView* row_cursor",
+            "struct FringeFaceQuadPairCursorView* face_pair_cursor",
+            "face_pair_cursor->second_face.texture_ref",
+        ):
+            assert marker in check["required_substrings"]
+
+    assert "__offset" in health_checks[
+        "bn_track_fringe_mesh_object_owners"
+    ]["forbidden_substrings"]
+    assert "__offset" not in health_checks[
+        "bn_track_fringe_supertramp_object_owners"
+    ]["forbidden_substrings"]
+
+    for check_name in (
+        "ida_track_fringe_mesh_borrowed_cursors",
+        "ida_track_fringe_supertramp_borrowed_cursors",
+    ):
+        check = health_checks[check_name]
+        for marker in (
+            "float *__shifted(FringeVertexRowCursorView,0x14) row_cursor",
+            (
+                "uint16_t *__shifted("
+                "FringeFaceQuadPairCursorView,2) face_pair_cursor"
+            ),
+            "ADJ(row_cursor)->inner_a",
+            "ADJ(face_pair_cursor)->second_face.vertex_0",
+        ):
+            assert marker in check["required_substrings"]
+        assert "p_vertex_0" in check["forbidden_substrings"]
 
 
 def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:

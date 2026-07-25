@@ -78,6 +78,11 @@ AUTHORED_ROW_CURSOR_SIZES = {
     "AuthoredSegmentRowPositionCursorView": 0x38,
 }
 
+FRINGE_MESH_CURSOR_SIZES = {
+    "FringeVertexRowCursorView": 0x30,
+    "FringeFaceQuadPairCursorView": 0x60,
+}
+
 RUNTIME_GRID_CLEAR_CURSOR_SIZES = {
     "TrackRowCell": 0x54,
     "TrackRowCellLaneAndFlagsStrideCursor": 0x54,
@@ -455,6 +460,8 @@ REQUIRED_HEADER_STRUCTS = (
     "SmtrackHeightfieldAnimator",
     "AuthoredSegmentRowFlag",
     "AuthoredSegmentRowPositionCursorView",
+    "FringeVertexRowCursorView",
+    "FringeFaceQuadPairCursorView",
     "SubSegment",
     "SubSegmentParcelScanAnchor",
     "SubSegmentRowStrideAnchor",
@@ -532,6 +539,8 @@ def ensure_path_analysis_views(
         "TrackRowCellFringeFrontStrideCursor",
         "SubRowParcelSpawnYStrideCursor",
         "AuthoredSegmentRowPositionCursorView",
+        "FringeVertexRowCursorView",
+        "FringeFaceQuadPairCursorView",
         "SubSegmentParcelScanAnchor",
         "SubSegmentEventBiasView",
         "SubLocTileId",
@@ -674,6 +683,28 @@ def verify_authored_row_cursor_sizes(*, target: str) -> dict[str, object]:
         "op": "owner_size_verify",
         "status": "verified",
         "owner_group": "authored_row_cursor",
+        "owner_sizes": observed,
+    }
+
+
+def verify_fringe_mesh_cursor_sizes(*, target: str) -> dict[str, object]:
+    """Fail closed before replaying the borrowed fringe row and face cursors."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=FRINGE_MESH_CURSOR_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in FRINGE_MESH_CURSOR_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"fringe mesh cursor size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "fringe_mesh_cursor",
         "owner_sizes": observed,
     }
 
@@ -4217,6 +4248,7 @@ def main() -> int:
             )
         )
         operations.append(verify_authored_row_cursor_sizes(target=args.target))
+        operations.append(verify_fringe_mesh_cursor_sizes(target=args.target))
         operations.append(
             verify_runtime_grid_clear_cursor_sizes(target=args.target)
         )
@@ -4594,6 +4626,7 @@ def main() -> int:
             )
         )
         operations.append(verify_authored_row_cursor_sizes(target=args.target))
+        operations.append(verify_fringe_mesh_cursor_sizes(target=args.target))
         operations.append(
             verify_runtime_grid_clear_cursor_sizes(target=args.target)
         )

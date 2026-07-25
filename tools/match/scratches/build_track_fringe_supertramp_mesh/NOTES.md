@@ -109,3 +109,20 @@ function is touched. An attempted name for the compiler's interior face cursor
 was rejected because it degraded shifted-structure recovery, so that cursor
 remains automatic. Matching source is unchanged at the current 94.54%,
 421/421-instruction frontier with 25 clean operands.
+
+## 2026-07-25 shared row and face-pair cursor ownership
+
+The main row and face loops now use the same analysis-only offset-pointer views
+as the ordinary fringe builder: a `0x30` four-vertex row carried at
+`inner_a.z`, and a `0x60` pair of `ObjectFaceQuad`s carried at
+`first_face.vertex_0`. These are non-owning cursors into the generated
+`Object` banks; the terminal cap pointers remain separate borrowed lifetimes
+over that same vertex allocation.
+
+An IDA probe that typed the carried address as a parent-struct pointer was
+rejected because it falsely labeled six references after the row cursor's
+post-increment. The committed shifted scalar-pointer form renders the main row
+correctly while leaving those post-increment references raw, rather than
+inventing field ownership. Binary Ninja likewise retains honest raw offsets in
+the cap tail. Matching source and the focused result remain unchanged at
+94.54%, 421/421 instructions, prefix 69/421, with all 25 masked operands clean.

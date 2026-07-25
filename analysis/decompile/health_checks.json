@@ -12860,12 +12860,19 @@
         "self->bod.object->vertices",
         "generated_mesh->facequads",
         "struct Vec3* generated_row",
+        "struct FringeVertexRowCursorView* row_cursor",
+        "row_cursor->outer_a.y",
+        "row_cursor->inner_b.z",
+        "struct FringeFaceQuadPairCursorView* face_pair_cursor",
+        "face_pair_cursor->second_face.texture_ref",
+        "face_pair_cursor->second_face.uv[2].v",
         "self->segment_count",
         "self->width_cells"
       ],
       "forbidden_substrings": [
         "PathTemplateStripMesh",
         "face_vertex_cursor",
+        "__offset",
         "arg1",
         "analysis skipped",
         "unimplemented"
@@ -12931,6 +12938,12 @@
         "struct Vec3* first_cap_vertex",
         "struct Vec3* final_row_second_edge",
         "struct Vec3* final_generated_row",
+        "struct FringeVertexRowCursorView* row_cursor",
+        "row_cursor->outer_a.x",
+        "row_cursor->inner_b.z",
+        "struct FringeFaceQuadPairCursorView* face_pair_cursor",
+        "face_pair_cursor->second_face.texture_ref",
+        "face_pair_cursor->second_face.uv[2].v",
         "self->bod.object->vertices",
         "self->segment_count",
         "self->width_cells"
@@ -13471,6 +13484,44 @@
         "unk_4B7648",
         "data_4B7648",
         "add_object_to_list((ObjectList *)0x4B7648)"
+      ]
+    },
+    {
+      "name": "ida_track_fringe_mesh_borrowed_cursors",
+      "artifact": "analysis/decompile/ida/functions/004246a0-build_track_fringe_mesh.c",
+      "required_substrings": [
+        "float *__shifted(FringeVertexRowCursorView,0x14) row_cursor",
+        "uint16_t *__shifted(FringeFaceQuadPairCursorView,2) face_pair_cursor",
+        "ADJ(row_cursor)->inner_a",
+        "ADJ(row_cursor)->outer_b",
+        "ADJ(face_pair_cursor)->first_face.texture_ref",
+        "ADJ(face_pair_cursor)->second_face.vertex_0"
+      ],
+      "forbidden_substrings": [
+        "p_z",
+        "p_vertex_0",
+        "*(_DWORD *)(face_pair_cursor",
+        "*(_WORD *)(face_pair_cursor",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_track_fringe_supertramp_borrowed_cursors",
+      "artifact": "analysis/decompile/ida/functions/00424ad0-build_track_fringe_supertramp_mesh.c",
+      "required_substrings": [
+        "float *__shifted(FringeVertexRowCursorView,0x14) row_cursor",
+        "uint16_t *__shifted(FringeFaceQuadPairCursorView,2) face_pair_cursor",
+        "ADJ(row_cursor)->inner_a",
+        "ADJ(row_cursor)->outer_b",
+        "ADJ(face_pair_cursor)->first_face.texture_ref",
+        "ADJ(face_pair_cursor)->second_face.vertex_0"
+      ],
+      "forbidden_substrings": [
+        "p_z",
+        "p_vertex_0",
+        "*(_DWORD *)(face_pair_cursor",
+        "*(_WORD *)(face_pair_cursor",
+        "unimplemented"
       ]
     },
     {

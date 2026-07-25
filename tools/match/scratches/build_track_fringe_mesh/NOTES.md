@@ -130,3 +130,19 @@ Naming that `uint16_t*` made Binary Ninja discard its better shifted
 `ObjectFaceQuad` field rendering, so the probe was removed before export. The
 remaining interior row/face expressions are borrowed cursors into the two
 Object-managed allocations, not evidence for another owner or transfer.
+
+## 2026-07-25 generated row and face-pair cursor ownership
+
+The two native interior cursors are now represented explicitly in the analysis
+type layer without changing matching source. The vertex loop carries
+`inner_a.z` at `+0x14` inside a four-`Vec3`, `0x30`-byte row; the face loop
+carries `first_face.vertex_0` at `+0x02` inside two adjacent
+`ObjectFaceQuad`s and advances by the complete `0x60`-byte pair. Both views
+borrow their storage from the generated `Object::vertices` and
+`Object::facequads` banks.
+
+Binary Ninja and IDA now replay those same offset-pointer layouts and fail
+closed on their sizes. The tracked decompiles expose the surrounding row and
+both faces rather than anonymous scalar offsets. Matching source and the
+focused result remain byte-identical at 92.77%, 318/318 instructions, prefix
+100/318, with all 23 masked operands clean.

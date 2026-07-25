@@ -11,10 +11,10 @@ void __thiscall build_track_fringe_supertramp_mesh(Path *self, char *texture_pat
   Vec3 *vertices; // edi
   ObjectFaceQuad *facequads; // ebx
   signed int v8; // ebp
-  float *p_z; // edi
-  float *v10; // ecx
+  float *__shifted(FringeVertexRowCursorView,0x14) row_cursor; // edi
+  FringeVertexRowCursorView *v10; // ecx
   Vec3 *v11; // edx
-  float *v12; // ecx
+  Vec3 *p_inner_a; // ecx
   Vec3 *v13; // eax
   double v14; // st7
   float v15; // edx
@@ -23,7 +23,7 @@ void __thiscall build_track_fringe_supertramp_mesh(Path *self, char *texture_pat
   double v18; // st7
   float v19; // edx
   __int16 v20; // bp
-  uint16_t *p_vertex_0; // edi
+  uint16_t *__shifted(FringeFaceQuadPairCursorView,2) face_pair_cursor; // edi
   TextureRef *texture_ref; // eax
   uint16_t v23; // dx
   uint16_t v24; // bp
@@ -72,59 +72,59 @@ void __thiscall build_track_fringe_supertramp_mesh(Path *self, char *texture_pat
   v41 = vertices;
   if ( (self->segment_count & 0x80000000) == 0 )
   {
-    p_z = &vertices[1].z;
+    row_cursor = &vertices[1].z;
     do
     {
-      v10 = p_z - 5;
+      v10 = ADJ(row_cursor);
       v11 = &self->bod.object->vertices[v8 * (self->width_cells + 1) + 1];
-      *v10 = v11->x;
-      v10[1] = v11->y;
-      v10[2] = v11->z;
-      v12 = p_z - 2;
+      v10->outer_a.x = v11->x;
+      v10->outer_a.y = v11->y;
+      v10->outer_a.z = v11->z;
+      p_inner_a = &ADJ(row_cursor)->inner_a;
       v13 = &self->bod.object->vertices[v8 * (self->width_cells + 1)];
-      *v12 = v13->x;
-      v12[1] = v13->y;
-      *p_z = v13->z;
-      v43.x = *(p_z - 2) - *(p_z - 5);
-      v43.y = *(p_z - 1) - *(p_z - 4);
-      v43.z = *p_z - *(p_z - 3);
+      p_inner_a->x = v13->x;
+      p_inner_a->y = v13->y;
+      ADJ(row_cursor)->inner_a.z = v13->z;
+      v43.x = ADJ(row_cursor)->inner_a.x - ADJ(row_cursor)->outer_a.x;
+      v43.y = ADJ(row_cursor)->inner_a.y - ADJ(row_cursor)->outer_a.y;
+      v43.z = ADJ(row_cursor)->inner_a.z - ADJ(row_cursor)->outer_a.z;
       vector = v43;
       normalize_vector(&vector);
       v51 = vector.y * 0.40000001;
       v52 = vector.z * 0.40000001;
-      v44 = vector.x * 0.40000001 + *(p_z - 2);
-      v45 = v51 + *(p_z - 1);
-      v14 = v52 + *p_z;
+      v44 = vector.x * 0.40000001 + ADJ(row_cursor)->inner_a.x;
+      v45 = v51 + ADJ(row_cursor)->inner_a.y;
+      v14 = v52 + ADJ(row_cursor)->inner_a.z;
       v15 = v45;
-      *(p_z - 5) = v44;
-      *(p_z - 4) = v15;
+      ADJ(row_cursor)->outer_a.x = v44;
+      ADJ(row_cursor)->outer_a.y = v15;
       v46 = v14;
-      *(p_z - 3) = v46;
+      ADJ(row_cursor)->outer_a.z = v46;
       v16 = &self->bod.object->vertices[self->width_cells - 1 + v8 * (self->width_cells + 1)];
-      p_z[1] = v16->x;
-      p_z[2] = v16->y;
-      p_z[3] = v16->z;
+      ADJ(row_cursor)->outer_b.x = v16->x;
+      ADJ(row_cursor)->outer_b.y = v16->y;
+      ADJ(row_cursor)->outer_b.z = v16->z;
       v17 = &self->bod.object->vertices[self->width_cells + v8 * (self->width_cells + 1)];
-      p_z[4] = v17->x;
-      p_z[5] = v17->y;
-      p_z[6] = v17->z;
-      v47.x = p_z[4] - p_z[1];
-      v47.y = p_z[5] - p_z[2];
-      v47.z = p_z[6] - p_z[3];
+      ADJ(row_cursor)->inner_b.x = v17->x;
+      ADJ(row_cursor)->inner_b.y = v17->y;
+      ADJ(row_cursor)->inner_b.z = v17->z;
+      v47.x = ADJ(row_cursor)->inner_b.x - ADJ(row_cursor)->outer_b.x;
+      v47.y = ADJ(row_cursor)->inner_b.y - ADJ(row_cursor)->outer_b.y;
+      v47.z = ADJ(row_cursor)->inner_b.z - ADJ(row_cursor)->outer_b.z;
       vector = v47;
       normalize_vector(&vector);
       ++v8;
-      p_z += 12;
+      row_cursor += 12;
       v53 = vector.y * 0.40000001;
       v54 = vector.z * 0.40000001;
-      v48 = vector.x * 0.40000001 + *(p_z - 8);
-      v49 = v53 + *(p_z - 7);
-      v18 = v54 + *(p_z - 6);
+      v48 = vector.x * 0.40000001 + *(row_cursor - 8);
+      v49 = v53 + *(row_cursor - 7);
+      v18 = v54 + *(row_cursor - 6);
       v19 = v49;
-      *(p_z - 11) = v48;
-      *(p_z - 10) = v19;
+      *(row_cursor - 11) = v48;
+      *(row_cursor - 10) = v19;
       v50 = v18;
-      *(p_z - 9) = v50;
+      *(row_cursor - 9) = v50;
     }
     while ( v8 <= (signed int)self->segment_count );
     vertices = v41;
@@ -133,39 +133,43 @@ void __thiscall build_track_fringe_supertramp_mesh(Path *self, char *texture_pat
   v40 = 0;
   if ( (int)self->segment_count > 0 )
   {
-    p_vertex_0 = &facequads->vertex_0;
+    face_pair_cursor = &facequads->vertex_0;
     while ( 1 )
     {
       texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0);
       v23 = 4 * v20 + 4;
-      *(_DWORD *)(p_vertex_0 + 5) = texture_ref;
+      ADJ(face_pair_cursor)->first_face.texture_ref = texture_ref;
       v24 = 4 * v20;
-      *p_vertex_0 = v23;
-      p_vertex_0[1] = v24 + 5;
-      p_vertex_0[2] = v24 + 1;
-      p_vertex_0[3] = v24;
-      *(_DWORD *)(p_vertex_0 + 19) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 21) = 1065353216;
-      *(_DWORD *)(p_vertex_0 + 7) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 9) = 1065353216;
-      *(_DWORD *)(p_vertex_0 + 11) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 13) = 0;
-      *(_DWORD *)(p_vertex_0 + 15) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 17) = 0;
-      *(_DWORD *)(p_vertex_0 + 29) = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0);
-      p_vertex_0[24] = v24 + 7;
-      p_vertex_0[25] = v24 + 6;
-      p_vertex_0[26] = v24 + 2;
-      p_vertex_0[27] = v24 + 3;
-      *(_DWORD *)(p_vertex_0 + 43) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 45) = 0;
-      *(_DWORD *)(p_vertex_0 + 31) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 33) = 0;
-      *(_DWORD *)(p_vertex_0 + 35) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 37) = 1065353216;
-      *(_DWORD *)(p_vertex_0 + 39) = 1056964608;
-      *(_DWORD *)(p_vertex_0 + 41) = 1065353216;
-      p_vertex_0 += 48;
+      ADJ(face_pair_cursor)->first_face.vertex_0 = v23;
+      ADJ(face_pair_cursor)->first_face.vertex_1 = v24 + 5;
+      ADJ(face_pair_cursor)->first_face.vertex_2 = v24 + 1;
+      ADJ(face_pair_cursor)->first_face.vertex_3 = v24;
+      ADJ(face_pair_cursor)->first_face.uv[3].u = 0.5;
+      ADJ(face_pair_cursor)->first_face.uv[3].v = 1.0;
+      ADJ(face_pair_cursor)->first_face.uv[0].u = 0.5;
+      ADJ(face_pair_cursor)->first_face.uv[0].v = 1.0;
+      ADJ(face_pair_cursor)->first_face.uv[1].u = 0.5;
+      ADJ(face_pair_cursor)->first_face.uv[1].v = 0.0;
+      ADJ(face_pair_cursor)->first_face.uv[2].u = 0.5;
+      ADJ(face_pair_cursor)->first_face.uv[2].v = 0.0;
+      ADJ(face_pair_cursor)->second_face.texture_ref = get_or_create_texture_ref(
+                                                         &g_texture_refs,
+                                                         texture_path,
+                                                         nullptr,
+                                                         0);
+      ADJ(face_pair_cursor)->second_face.vertex_0 = v24 + 7;
+      ADJ(face_pair_cursor)->second_face.vertex_1 = v24 + 6;
+      ADJ(face_pair_cursor)->second_face.vertex_2 = v24 + 2;
+      ADJ(face_pair_cursor)->second_face.vertex_3 = v24 + 3;
+      ADJ(face_pair_cursor)->second_face.uv[3].u = 0.5;
+      ADJ(face_pair_cursor)->second_face.uv[3].v = 0.0;
+      ADJ(face_pair_cursor)->second_face.uv[0].u = 0.5;
+      ADJ(face_pair_cursor)->second_face.uv[0].v = 0.0;
+      ADJ(face_pair_cursor)->second_face.uv[1].u = 0.5;
+      ADJ(face_pair_cursor)->second_face.uv[1].v = 1.0;
+      ADJ(face_pair_cursor)->second_face.uv[2].u = 0.5;
+      ADJ(face_pair_cursor)->second_face.uv[2].v = 1.0;
+      face_pair_cursor += 48;
       if ( ++v40 >= (signed int)self->segment_count )
         break;
       v20 = v40;
