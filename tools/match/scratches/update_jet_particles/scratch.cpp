@@ -57,9 +57,7 @@ void SubHover::update_jet_particles()
             JetParticleSlot* slot = &particle_slots[row][column];
             slot->sprite->size_end = sprite_size;
             slot->sprite->size_start = sprite_size;
-            slot->sprite->position.x = base_position.x;
-            slot->sprite->position.y = base_position.y;
-            slot->sprite->position.z = base_position.z;
+            slot->sprite->position = base_position;
 
             if (row == JET_PARTICLE_LAST_ROW_INDEX
                 && (float)next_math_random_value() * 0.0000305175781f
@@ -78,19 +76,14 @@ void SubHover::update_jet_particles()
                 sprite->size_start = 0.1f;
                 sprite->size_end = 0.300000012f;
 
-                Vector3* velocity = &sprite->velocity;
-                Vector3* out_position = &sprite->position;
                 Vector3* trail_source = &game->embedded_player()->velocity;
-                float velocity_x = trail_source->x * 0.850000024f;
-                float velocity_y = trail_source->y * 0.850000024f;
-                float velocity_z = trail_source->z * 0.850000024f;
+                Vector3 staged_velocity;
+                staged_velocity.x = trail_source->x * 0.850000024f;
+                staged_velocity.y = trail_source->y * 0.850000024f;
+                staged_velocity.z = trail_source->z * 0.850000024f;
                 sprite->gravity_step = 0.00100000005f;
-                velocity->x = velocity_x;
-                velocity->y = velocity_y;
-                velocity->z = velocity_z;
-                out_position->x = base_position.x;
-                out_position->y = base_position.y;
-                out_position->z = base_position.z;
+                sprite->velocity = staged_velocity;
+                sprite->position = base_position;
             }
             ++column;
         } while (column < JET_PARTICLE_COLUMN_COUNT);

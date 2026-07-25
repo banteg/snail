@@ -169,3 +169,19 @@ Matcher source remains untouched at the honest 52.96%, 174/181-instruction
 frontier, prefix 0/181, with all 16 operands clean. This slice recovers
 ownership and lifetime boundaries only; it does not add padding, volatile
 state, or any other fakematch.
+
+## 2026-07-25 exact vector-owner recovery
+
+The native stack and saved-register lifetimes come from three real vector
+values, not artificial storage. Each grid sprite receives the projected nozzle
+position as a whole `Sprite::position` member assignment. The optional detached
+puff owns one branch-local `Vector3 staged_velocity`, scaled from the borrowed
+`Player::velocity`, then assigns that value and the same projected position
+directly to the new Sprite's `velocity` and `position` members.
+
+Those direct member assignments are materially different from the previously
+rejected borrowed-pointer and mixed component probes: VC6 keeps projected X/Y
+in `ebx`/`ebp`, spills the inner column latch, and retains the scaled velocity
+in the three native stack slots. The resulting scratch is exact at 100.00%,
+181/181 instructions, prefix 181/181, with all 17 masked operands resolved and
+no unresolved or mismatched operands.
