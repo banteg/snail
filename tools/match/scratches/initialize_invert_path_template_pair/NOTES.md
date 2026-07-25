@@ -105,3 +105,18 @@ vertex, and both face records. Their accesses now render through
 16 existing fixed-index `__offset` occurrences for samples 32/33, but the
 replay adds none. Focused matching remains 49.66% (564/600) with 30 clean
 masked operands.
+
+## 2026-07-25 mesh-vector ownership
+
+Raw native assembly at `0x42978f..0x42986c` proves that the row-terminal test
+belongs inside the vertex column loop. Ordinary rows materialize a complete
+generated-position vector before copying its three lanes to the output vertex.
+The terminal row instead owns a separate lateral-offset vector based on the
+previous sample, followed by a generated-position vector whose Z lane owns the
+`+1.0f`.
+
+Recovering those branch-local aggregate owners raises focused matching from
+49.66% (564/600) to 50.00% (592/600). The masked audit improves from 30 to 31
+clean operands, with no unresolved or mismatched masks. The remaining native
+`0x54` versus candidate `0x3c` frame gap therefore belongs to other constructor
+lifetimes rather than the mesh vertex ownership.
