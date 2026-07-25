@@ -64,8 +64,10 @@ EXPECTED_STRUCT_FIELDS = {
 #
 # update_snail_skin then walks the 19-entry world bank. EAX borrows the
 # corresponding local slot exactly 19 Vec3 records behind it, while ECX retains
-# the pre-increment world destination. All are element borrows from Snail-owned
-# arrays or Object-owned mesh banks.
+# the pre-increment world destination. EBX is the shared local/world index and
+# ESI borrows one of the two complete RenderableBod transforms populated by
+# initialize_cutscene. All are element or transform borrows from Snail-owned
+# arrays/bodies or Object-owned mesh banks.
 SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
     (
         "build_snail_hotspots",
@@ -110,6 +112,14 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
     (
         "update_snail_skin",
         "RegisterVariableSourceType",
+        11,
+        69,
+        "hotspot_index",
+        "int32_t",
+    ),
+    (
+        "update_snail_skin",
+        "RegisterVariableSourceType",
         13,
         71,
         "hotspot_world_cursor",
@@ -122,6 +132,14 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
         66,
         "hotspot_local_slot",
         "Vec3*",
+    ),
+    (
+        "update_snail_skin",
+        "RegisterVariableSourceType",
+        34,
+        72,
+        "hotspot_transform",
+        "TransformMatrix*",
     ),
     (
         "update_snail_skin",

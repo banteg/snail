@@ -112,12 +112,19 @@ Current practical read for the hotspot bank:
   - index `17`: `X/CameraSlugDeath`
   - index `18`: `X/CameraIntroTalk`
 - `update_snail_skin` transforms that `19`-entry local bank into `snail_hotspots_world`
-  - slots `0..10` use `presentation + 0x1684` (`snail_hotspot_source_matrix_b`)
-  - slots `11..18` use `presentation + 0x1604` (`snail_hotspot_source_matrix_a`)
+  - exact-matched `initialize_cutscene` writes both source matrices every tick
+  - slots `0..10` use `presentation + 0x1684`: a copy of the owner player's
+    live body transform whose translation is replaced by
+    `Player::cached_camera_target_world`
+  - slots `11..18` use `presentation + 0x1604`: the final rendered
+    `Snail::body.transform`, after the presentation wobble/release/cutscene
+    adjustments in the same helper
 - the earlier standalone cutscene-anchor reads at `+0x1840` and `+0x1888` are `snail_hotspots_world[12]` (`CameraSkidStop`) and `snail_hotspots_world[18]` (`CameraIntroTalk`)
 - `update_cutscene` keeps reorienting the live intro camera around hotspot `18`, uses the `12 -> 18` lerp with the recovered sinusoidal x-offset in completion state `6`, and keeps the fixed completion/death look-at legs on hotspot `18`
 - hotspot `17` (`CameraSlugDeath`) is a real transformed hotspot, but no direct runtime consumer for it was recovered in this pass
-- the exact gameplay roles of the two source matrices, and the reason later cutscene legs keep reusing the authored `CameraIntroTalk` hotspot, are still unresolved
+- the source-matrix producer and index routing are closed; the reason later
+  cutscene legs keep reusing the authored `CameraIntroTalk` hotspot remains
+  unresolved
 
 Two `update_subgoldy` corrections from the latest static audit:
 

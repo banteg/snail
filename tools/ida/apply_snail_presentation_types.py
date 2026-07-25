@@ -176,6 +176,30 @@ INVINCIBLE_ROOT_OFFSET_OPERANDS = (
 
 HOTSPOT_LVAR_SPECS = (
     (
+        "update_snail_skin",
+        "hotspot_index",
+        "int32_t hotspot_index;",
+        0x445CDC,
+    ),
+    (
+        "update_snail_skin",
+        "hotspot_world_cursor",
+        "Vec3 *hotspot_world_cursor;",
+        0x445CDE,
+    ),
+    (
+        "update_snail_skin",
+        "hotspot_transform",
+        "TransformMatrix *hotspot_transform;",
+        0x445CF3,
+    ),
+    (
+        "update_snail_skin",
+        "hotspot_world_slot",
+        "Vec3 *hotspot_world_slot;",
+        0x445D32,
+    ),
+    (
         "build_snail_hotspots",
         "hotspot_model",
         "Object *hotspot_model;",
@@ -247,7 +271,10 @@ def _sync_hotspot_lvar(
     definition_address: int,
 ) -> dict[str, object]:
     address = idc.get_name_ea_simple(selector)
-    if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+    if (
+        address == idc.BADADDR
+        or ida_funcs.get_func_start(address) == idc.BADADDR
+    ):
         return {"status": "failed", "selector": selector, "reason": "missing_function"}
 
     ida_hexrays.mark_cfunc_dirty(address, True)
@@ -504,7 +531,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
     for selector, declaration in TRUSTED_DECLARATIONS:
         address = idc.get_name_ea_simple(selector)
-        if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        if (
+            address == idc.BADADDR
+            or ida_funcs.get_func_start(address) == idc.BADADDR
+        ):
             missing.append({"selector": selector, "reason": "missing_function"})
             continue
 

@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "build_snail_hotspots",
-      "address": "0x445d50"
+      "name": "update_snail_skin",
+      "address": "0x445cd0"
     }
   ],
   "health_check_count": 1057,

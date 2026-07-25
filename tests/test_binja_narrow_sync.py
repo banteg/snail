@@ -3719,8 +3719,23 @@ def test_snail_hotspot_replay_preserves_local_and_world_borrows() -> None:
             '        "Vec3*",'
         )
         assert update in source
+    for index, storage, variable_name, variable_type in (
+        (11, 69, "hotspot_index", "int32_t"),
+        (34, 72, "hotspot_transform", "TransformMatrix*"),
+    ):
+        update = (
+            '"update_snail_skin",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{variable_name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert update in source
     for fragment in (
+        "int32_t hotspot_index = 0",
         "struct Vec3* hotspot_world_cursor = &snail->snail_hotspots_world",
+        "struct TransformMatrix* hotspot_transform",
         "(hotspot_world_cursor - 0xe4)->x",
         "struct Vec3* hotspot_world_slot = hotspot_world_cursor",
         "hotspot_world_cursor = &hotspot_world_cursor[1]",
@@ -3747,11 +3762,19 @@ def test_snail_hotspot_replay_preserves_local_and_world_borrows() -> None:
         assert fragment in header
     for fragment in (
         "HOTSPOT_LVAR_SPECS = (",
+        '"hotspot_index"',
+        '"hotspot_world_cursor"',
+        '"hotspot_transform"',
+        '"hotspot_world_slot"',
         '"hotspot_model"',
         '"hotspot_name_cursor"',
         '"hotspot_local_z_cursor"',
         '"hotspot_face_texture_cursor"',
         '"hotspot_source_vertex"',
+        "0x445CDC",
+        "0x445CDE",
+        "0x445CF3",
+        "0x445D32",
         "0x445D54",
         "0x445D60",
         "0x445D65",

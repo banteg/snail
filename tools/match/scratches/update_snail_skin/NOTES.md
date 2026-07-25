@@ -63,3 +63,16 @@ cursor to `Vec3 (*)[19]` or subtracts back to the enclosing `Snail` for world
 writes. The replay guards both complete source bodies, both hotspot banks, and
 all relevant type widths. No matcher source changes: 44/44 instructions and
 the one masked operand remain clean.
+
+2026-07-25 source-transform closure: the exact-matched
+`initialize_cutscene` is the per-tick producer for both transform inputs.
+It copies the final rendered `Snail::body.transform` into the complete
+`RenderableBod` at `+0x15cc`, and copies the owner player's live body transform
+into the complete `RenderableBod` at `+0x164c` before replacing that copy's
+translation with `Player::cached_camera_target_world`.
+
+`update_snail_skin` routes weapon hotspots `0..10` through the player-derived
+`+0x1684` transform and routes parcel/camera/jetpack/base hotspots `11..18`
+through the rendered-snail `+0x1604` transform. EBX is now preserved as
+`hotspot_index` and ESI as the borrowed `hotspot_transform` in both analysis
+lanes. Neither transform is retained or transferred by this helper.

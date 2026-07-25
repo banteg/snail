@@ -17142,10 +17142,11 @@
       "artifact": "analysis/decompile/binja/functions/00445cd0-update_snail_skin.c",
       "required_substrings": [
         "struct Snail* snail_1 = snail",
+        "int32_t hotspot_index = 0",
         "struct Vec3* hotspot_world_cursor = &snail->snail_hotspots_world",
+        "struct TransformMatrix* hotspot_transform = &snail->snail_hotspot_body.transform",
         "(hotspot_world_cursor - 0xe4)->x",
-        "&snail->snail_hotspot_body.transform",
-        "&snail->snail_hotspot_source_body.transform",
+        "hotspot_transform = &snail->snail_hotspot_source_body.transform",
         "multiply_vector_by_matrix(&vector, matrix)",
         "struct Vec3* hotspot_world_slot = hotspot_world_cursor",
         "hotspot_world_cursor = &hotspot_world_cursor[1]",
@@ -17168,10 +17169,14 @@
       "artifact": "analysis/decompile/ida/functions/00445cd0-update_snail_skin.c",
       "required_substrings": [
         "void __thiscall update_snail_skin(Snail *snail)",
-        "snail_hotspots_world = snail->snail_hotspots_world;",
-        "p_transform = &snail->snail_hotspot_body.transform;",
-        "p_transform = &snail->snail_hotspot_source_body.transform;",
-        "multiply_vector_by_matrix(&vector, v7);"
+        "int32_t hotspot_index; // ebx",
+        "Vec3 *hotspot_world_cursor; // ebp",
+        "TransformMatrix *hotspot_transform; // esi",
+        "Vec3 *hotspot_world_slot; // ecx",
+        "hotspot_world_cursor = snail->snail_hotspots_world;",
+        "hotspot_transform = &snail->snail_hotspot_body.transform;",
+        "hotspot_transform = &snail->snail_hotspot_source_body.transform;",
+        "multiply_vector_by_matrix(&vector, *hotspot_transform);"
       ],
       "forbidden_substrings": [
         "PlayerPresentationController",

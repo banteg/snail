@@ -150,7 +150,14 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ### Phase 2. Finish cutscene and handoff runtime fields
 
-- [ ] Find the writer(s) for the hotspot source matrices consumed by `update_snail_skin` and `update_cutscene`
+- [x] Find the writer(s) for the hotspot source matrices consumed by
+  `update_snail_skin` and `update_cutscene`
+  - exact-matched `initialize_cutscene` writes both each tick: `+0x1604`
+    receives the final rendered `Snail::body.transform`; `+0x1684` receives
+    the owner player's live body transform with its translation replaced by
+    `Player::cached_camera_target_world`
+  - `update_snail_skin` routes hotspot slots `0..10` through `+0x1684` and
+    slots `11..18` through `+0x1604`
 - [ ] Capture intro, completion, and death hotspot-source values from Windows
 - [ ] Confirm the exact failure selector and visible-life decrement commit point
 - [ ] Confirm the exact completion-screen init, voice gate, and late finalize timings

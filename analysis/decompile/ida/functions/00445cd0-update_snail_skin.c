@@ -5,37 +5,35 @@
 // Stable Windows name for Android `cRSnail::BuildHotSpots()`: transforms the exact Snail's 19 local hotspots through two live source matrices into the world-space bank consumed by cRCutScene.
 void __thiscall update_snail_skin(Snail *snail)
 {
-  int v1; // ebx
-  Vec3 *snail_hotspots_world; // ebp
-  TransformMatrix *p_transform; // esi
+  int32_t hotspot_index; // ebx
+  Vec3 *hotspot_world_cursor; // ebp
+  TransformMatrix *hotspot_transform; // esi
   float y; // eax
-  Vec3 *v5; // ecx
+  Vec3 *hotspot_world_slot; // ecx
   float z; // edx
-  TransformMatrix v7; // [esp-40h] [ebp-60h] BYREF
-  Snail *v8; // [esp+10h] [ebp-10h]
+  Snail *v7; // [esp+10h] [ebp-10h]
   Vec3 vector; // [esp+14h] [ebp-Ch] BYREF
 
-  v8 = snail;
-  v1 = 0;
-  snail_hotspots_world = snail->snail_hotspots_world;
+  v7 = snail;
+  hotspot_index = 0;
+  hotspot_world_cursor = snail->snail_hotspots_world;
   while ( 1 )
   {
-    p_transform = &snail->snail_hotspot_body.transform;
-    vector = snail_hotspots_world[-19];
-    if ( v1 >= 11 )
-      p_transform = &snail->snail_hotspot_source_body.transform;
-    qmemcpy(&v7, p_transform, sizeof(v7));
-    multiply_vector_by_matrix(&vector, v7);
+    hotspot_transform = &snail->snail_hotspot_body.transform;
+    vector = hotspot_world_cursor[-19];
+    if ( hotspot_index >= 11 )
+      hotspot_transform = &snail->snail_hotspot_source_body.transform;
+    multiply_vector_by_matrix(&vector, *hotspot_transform);
     y = vector.y;
-    v5 = snail_hotspots_world;
-    ++v1;
-    ++snail_hotspots_world;
-    v5->x = vector.x;
+    hotspot_world_slot = hotspot_world_cursor;
+    ++hotspot_index;
+    ++hotspot_world_cursor;
+    hotspot_world_slot->x = vector.x;
     z = vector.z;
-    v5->y = y;
-    v5->z = z;
-    if ( v1 >= 19 )
+    hotspot_world_slot->y = y;
+    hotspot_world_slot->z = z;
+    if ( hotspot_index >= 19 )
       break;
-    snail = v8;
+    snail = v7;
   }
 }
