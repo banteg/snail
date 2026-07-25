@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **76.65%**.
+**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **76.64%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -807,7 +807,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 659/707 | 37.04% | 0/707 | 46 ok |  |
 | 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 593/677 | 27.72% | 0/677 | 40 ok |  |
 | 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 593/677 | 27.72% | 0/677 | 40 ok |  |
-| 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 601/663 | 45.89% | 1/663 | 27 ok |  |
+| 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 628/663 | 44.15% | 1/663 | 25 ok |  |
 | 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 610/668 | 23.63% | 0/668 | 36 ok |  |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 546/579 | 41.24% | 0/579 | 37 ok |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1229/1245 | 29.67% | 2/1245 | 2 mismatch, 66 ok |  |

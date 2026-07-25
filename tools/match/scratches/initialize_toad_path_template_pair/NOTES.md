@@ -93,3 +93,21 @@ the mesh sample and vertex, and both face records. Their accesses render
 through `Vec3`, `PathTemplateSample`, and `ObjectFaceQuad` with zero residual
 `__offset` expressions. Focused matching remains 45.89% (601/663), with its
 1-instruction prefix and 27 clean masked operands.
+
+## 2026-07-25 mesh-vector ownership
+
+Raw native assembly at `0x42d222..0x42d2ff` proves that the row-terminal test
+belongs inside the vertex column loop. Ordinary rows materialize one complete
+generated-position vector. The terminal row separately owns a previous-sample
+lateral-offset vector and a generated-position vector whose Z lane includes
+`+1.0f`, matching the same source boundary recovered in SBend, Invert, and
+Turnunder.
+
+Recovering that proven source shape moves the candidate instruction count from
+601 to 628 against the 663-instruction target. It regresses the global fuzzy
+alignment from 45.89% to 44.15% and leaves 25 rather than 27 aligned masked
+operands; all remaining masks are clean, with no unresolved or mismatched
+operands. The ownership correction is retained despite the score regression:
+the affected native region directly proves the aggregate temporaries, while
+the lost alignment is downstream compiler scheduling rather than contrary
+source evidence.
