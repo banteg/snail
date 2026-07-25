@@ -8790,6 +8790,49 @@ def test_banner_backlink_owner_survives_every_replay_lane() -> None:
     assert "3987096" in ida_initializer["forbidden_substrings"]
 
 
+def test_banner_update_replay_preserves_borrowed_player() -> None:
+    repo_root = Path(__file__).parents[1]
+    source = (BINJA_DIR / "sync_banner_update_lifetimes.py").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    for expected in (
+        '"Vec3": 0x0C',
+        '"TransformMatrix": 0x40',
+        '"BodBase": 0x38',
+        '"RenderableBod": 0x80',
+        '"Banner": 0x60',
+        '"Player": 0x4364',
+        '0x38: ("visibility_mode", "int32_t")',
+        '0x54: ("owner_player", "Player*")',
+        '0x00: ("body", "RenderableBod")',
+        "BANNER_OWNER_PLAYER_DEFINITIONS",
+        "BANNER_OWNER_PLAYER_VAR",
+        "BANNER_UPDATE_USER_VAR_UPDATES",
+        "current_struct_fields_batch",
+        "apply_split_user_var_update",
+        "apply_user_var_updates",
+        "verify_banner_update_owner_layout",
+        '("0x441d5f", "mlil", "RegisterVariableSourceType", 31, 67)',
+        'variable_name="owner_player"',
+        'variable_type="Player*"',
+    ):
+        assert expected in source
+    for fragment in (
+        "int32_t visibility_mode = banner->visibility_mode",
+        "fconvert.t(banner->owner_player->body.transform.position.z)",
+        "fconvert.t(banner->bod.position.z) - fconvert.t(banner->owner_player",
+        "banner->bod.position.y",
+        '"banner_2"',
+        '"banner->__offset(0x70)"',
+        '"owner_player->__offset"',
+    ):
+        assert fragment in health_checks
+
+
 def test_presentation_animation_object_cursor_survives_every_replay_lane() -> None:
     repo_root = Path(__file__).parents[1]
     headers = tuple(

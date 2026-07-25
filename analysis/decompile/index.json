@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_anim_manager",
-      "address": "0x4447d0"
+      "name": "update_banner",
+      "address": "0x441d40"
     }
   ],
   "health_check_count": 978,

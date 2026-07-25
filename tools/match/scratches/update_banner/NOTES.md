@@ -50,3 +50,14 @@ it back into the `+0x3c..+0x54` padding span. IDA startup can now render the
 producer as `banners.slots[i].owner_game = &game->subgame`; live Binary Ninja
 struct readback independently retains the same field. The exact 44/44
 implementation and its seven clean operands are unchanged.
+
+## 2026-07-24 borrowed Player lifetime
+
+- Native reuses the incoming ECX register only on the start-row branch,
+  replacing the `Banner*` receiver with `Banner::owner_player` before reading
+  `Player +0x70`. Binary Ninja had merged those incompatible lifetimes and
+  rendered the read as `banner->__offset(0x70)`.
+- Splitting the definition at `0x441d5f` restores the real `Player*` borrow.
+  Both visibility branches now read
+  `banner->owner_player->body.transform.position.z`, matching IDA and the exact
+  `Banner`/`Player` layouts without changing the 44/44 machine-code match.
