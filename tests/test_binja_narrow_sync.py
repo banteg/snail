@@ -6184,6 +6184,59 @@ def test_frame_sequence_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "uint8_t _storage[0xf0];" not in path_header
 
 
+def test_smtrack_heightmap_replay_preserves_borrowed_image_and_sample_cursors() -> None:
+    replay = (
+        BINJA_DIR / "sync_smtrack_heightmap_lifetimes.py"
+    ).read_text(encoding="utf-8")
+    health = (
+        Path(__file__).parents[1] / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    for type_name, width in (
+        ("TgaImageView", "0x14"),
+        ("TextureRef", "0xA4"),
+        ("Vec3", "0x0C"),
+        ("Object", "0xDC"),
+    ):
+        assert f'"{type_name}": {width}' in replay
+
+    for offset, field_name, field_type in (
+        ("0x0C", "width", "uint16_t"),
+        ("0x0E", "height", "uint16_t"),
+        ("0x10", "bits_per_pixel", "uint8_t"),
+        ("0x12", "pixels", "uint8_t[1]"),
+        ("0x98", "texture_ref", "void*"),
+        ("0x38", "vertices", "Vec3*"),
+    ):
+        assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for index, storage, name, variable_type in (
+        (14, 72, "image", "TgaImageView*"),
+        (84, 71, "sample_cursor", "Vec3*"),
+    ):
+        expected = (
+            '        "sample_smtrack_heightmap",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert expected in replay
+
+    for required in (
+        "struct TgaImageView* image = replacement->texture_ref",
+        "image->width",
+        "image->height",
+        "image->bits_per_pixel",
+        "struct Vec3* sample_cursor = source_1->vertices",
+        "sample_cursor = &sample_cursor[1]",
+        "void* texture_ref",
+        "struct Vec3* vertices =",
+    ):
+        assert required in health
+
+
 def test_sub_loc_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     repo_root = Path(__file__).parents[1]
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(

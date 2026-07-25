@@ -60,3 +60,25 @@ instruction shape, and all 12 clean operands.
 - Focused matching honestly remains 60.36%, 113/109 instructions, with all 12
   operands clean. This pass recovers ownership and ABI only; it does not hide
   the remaining VC6 register-scheduling difference.
+
+## 2026-07-25 retained-image and sample-cursor lifetimes
+
+- ESI borrows the `TgaImageView` stored in `TextureRef::texture_ref`; it does
+  not own the retained bytes. Replaying that exact lifetime exposes the
+  canonical `width`, `height`, and `bits_per_pixel` fields instead of raw
+  `+0x0c/+0x0e/+0x10` reads.
+- EBP remains a `Vec3*` cursor into the `Object`-owned vertex bank. Its durable
+  `sample_cursor` name records the borrow without inventing a new owner.
+- IDA independently keeps the same ESI header base and EBP `Vec3*` traversal:
+  `texture_ref[6]`, `texture_ref[7]`, and byte `+0x10` are the same TGA fields,
+  while `++vertices; vertices[-1].y = ...` proves the record stride and output
+  lane.
+- A `float*` EBP view was rejected because the register initially points at
+  `Vec3::x`, not `Vec3::y`; naming it a y cursor would be false ownership.
+  Splitting only the post-increment definition was also rejected because it
+  collapsed the update into `vertices[1].__offset(-8)` and lost the physical
+  cursor rather than clarifying it.
+
+Matcher source and bytes are untouched. Focused matching remains the honest
+60.36% result at 113/109 candidate/target instructions with all 12 masked
+operands clean; the residual is still VC6 frame and register scheduling.

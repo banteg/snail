@@ -15359,16 +15359,24 @@
       "name": "bn_smtrack_heightmap_object_fields",
       "artifact": "analysis/decompile/binja/functions/0041a360-sample_smtrack_heightmap.c",
       "required_substrings": [
+        "struct TgaImageView* image = replacement->texture_ref",
+        "image->width",
+        "image->height",
+        "image->bits_per_pixel",
         "replacement->texture_ref",
         "source_1->heightmap_sample_count",
         "source_1->heightmap_sample_scale",
         "source_1->heightmap_sample_divisor",
-        "source_1->vertices"
+        "struct Vec3* sample_cursor = source_1->vertices",
+        "sample_cursor = &sample_cursor[1]"
       ],
       "forbidden_substrings": [
         "source_1->_pad_1c",
         "arg1 + 0x1c",
-        "arg4 + 0x98"
+        "arg4 + 0x98",
+        "void* texture_ref",
+        "*(texture_ref +",
+        "struct Vec3* vertices ="
       ]
     },
     {
