@@ -55,24 +55,19 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
         {
           if ( v12 == 3 )
             add_time_trial_high_score(
-              (SubHighScore *)((char *)&g_parcel_set_buckets[522].candidates[6].position.y + (_DWORD)runtime),
+              &runtime->sub_high_score,
               &runtime->current_high_score_record,
               runtime->level_mode_arg,
               runtime->player.completion_handoff_active);
         }
         else
         {
-          add_survival_high_score(
-            (SubHighScore *)((char *)&g_parcel_set_buckets[522].candidates[6].position.y + (_DWORD)runtime),
-            &runtime->current_high_score_record);
+          add_survival_high_score(&runtime->sub_high_score, &runtime->current_high_score_record);
         }
       }
       else
       {
-        add_arcade_high_score(
-          (SubHighScore *)((char *)&g_parcel_set_buckets[522].candidates[6].position.y + (_DWORD)runtime),
-          &runtime->current_high_score_record,
-          runtime->level_mode_arg);
+        add_arcade_high_score(&runtime->sub_high_score, &runtime->current_high_score_record, runtime->level_mode_arg);
       }
     }
   }

@@ -14,7 +14,7 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
   double v11; // st7
   double v13; // st7
   char v14; // c0
-  int v15; // esi
+  HWND ActiveWindow; // esi
   int v16; // esi
   int v17; // eax
   double v18; // st7
@@ -52,7 +52,7 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
       else
       {
         TranslateMessage((const MSG *)Msg);
-        ((void (__stdcall *)(_DWORD *))DispatchMessageA)(Msg);
+        DispatchMessageA((const MSG *)Msg);
       }
     }
     if ( g_game_initialization_pending )
@@ -122,12 +122,12 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
         g_frame_time_accumulator = 0.0;
         g_render_queue_active = 1;
       }
-      v15 = ((int (*)(void))GetActiveWindow)();
-      if ( v15 == g_main_window )
+      ActiveWindow = GetActiveWindow();
+      if ( ActiveWindow == g_main_window )
       {
         if ( g_audio_backend.is_paused == 1 )
           resume_audio_backend_if_paused(&g_audio_backend);
-        if ( v15 == g_main_window )
+        if ( ActiveWindow == g_main_window )
           goto LABEL_42;
       }
       if ( g_window_deactivated )
@@ -172,21 +172,11 @@ LABEL_49:
   while ( !g_main_loop_exit_requested && !v6 );
   stop_audio_backend(&g_audio_backend);
   shutdown_bass_audio_window();
-  save_high_scores_and_config(
-    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)g_game_base),
-    1u);
-  save_high_scores_and_config(
-    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)g_game_base),
-    2u);
-  save_high_scores_and_config(
-    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)g_game_base),
-    4u);
-  save_high_scores_and_config(
-    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)g_game_base),
-    8u);
-  save_high_scores_and_config(
-    (SubHighScore *)((char *)&g_parcel_set_buckets[1431].candidates[30].position + (_DWORD)g_game_base),
-    0x10u);
+  save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 1u);
+  save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 2u);
+  save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 4u);
+  save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 8u);
+  save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 0x10u);
   noop_runtime_ai();
   free_tracked_allocations_to_mark();
   scalar_delete(g_game_base);

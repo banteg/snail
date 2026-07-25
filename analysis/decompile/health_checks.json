@@ -1497,6 +1497,18 @@
       ]
     },
     {
+      "name": "ida_game_shutdown_sub_high_score_owner",
+      "artifact": "analysis/decompile/ida/functions/00406dc0-game_startup_and_main_loop.c",
+      "required_substrings": [
+        "save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 1u);",
+        "save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 0x10u);"
+      ],
+      "forbidden_substrings": [
+        "g_parcel_set_buckets[1431]",
+        "(SubHighScore *)"
+      ]
+    },
+    {
       "name": "bn_game_main_loop_scalar_owners",
       "artifact": "analysis/decompile/binja/functions/00406dc0-game_startup_and_main_loop.c",
       "required_substrings": [
@@ -1970,12 +1982,17 @@
       "artifact": "analysis/decompile/ida/functions/00438700-complete_subgame.c",
       "required_substrings": [
         "current_high_score_record.run_records[runtime->replay_update_cursor].flags",
-        "(SubHighScore *)",
+        "add_arcade_high_score(&runtime->sub_high_score, &runtime->current_high_score_record",
+        "add_survival_high_score(&runtime->sub_high_score, &runtime->current_high_score_record",
+        "add_time_trial_high_score(",
+        "&runtime->sub_high_score,",
         "&runtime->current_high_score_record"
       ],
       "forbidden_substrings": [
         "HighScoreBank",
-        "HighScoreRecord"
+        "HighScoreRecord",
+        "g_parcel_set_buckets[522]",
+        "(SubHighScore *)"
       ]
     },
     {
@@ -4891,6 +4908,25 @@
         "data_4df904 +",
         "__offset(",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_update_new_game_menu_intro_ownership",
+      "artifact": "analysis/decompile/ida/functions/00417eb0-update_new_game_menu.c",
+      "required_substrings": [
+        "void __thiscall update_new_game_menu(Intro *intro)",
+        "intro->hide_for_replay_latch",
+        "intro->time_trial_button",
+        "g_game_base->subgame.selected_level_record",
+        "g_game_base->subgame.sub_high_score.postal_records[",
+        "g_game_base->subgame.sub_high_score.time_trial_route_records["
+      ],
+      "forbidden_substrings": [
+        "struct NewGameMenu",
+        "menu->",
+        "g_parcel_set_buckets[1431]",
+        "(SubSolution *)",
+        "__offset("
       ]
     },
     {

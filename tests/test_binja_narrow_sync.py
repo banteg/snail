@@ -9687,7 +9687,7 @@ def test_ida_world_initializer_root_offsets_are_exact_and_fail_closed() -> None:
     )
     operand_block = ida_sync.split(
         "WORLD_INITIALIZER_ROOT_OFFSET_OPERANDS = (", 1
-    )[1].split("\n)\n\n# Tutorial", 1)[0]
+    )[1].split("\n)\n\n# Three lifecycle", 1)[0]
 
     assert operand_block.count("    (0x") == 109
     for operand_spec in (
@@ -9734,6 +9734,70 @@ def test_ida_world_initializer_root_offsets_are_exact_and_fail_closed() -> None:
     )
     assert "loc_432" in ida_check["forbidden_substrings"]
     assert "g_parcel_set_buckets[1431]" in ida_check["forbidden_substrings"]
+
+
+def test_ida_high_score_lifecycle_offsets_are_exact_and_fail_closed() -> None:
+    repo_root = Path(__file__).parents[1]
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    operand_block = ida_sync.split(
+        "HIGH_SCORE_LIFECYCLE_OFFSET_OPERANDS = (", 1
+    )[1].split("\n)\n\n# Tutorial", 1)[0]
+
+    assert operand_block.count("    (0x") == 10
+    for operand_spec in (
+        "(0x407234, 1, 0x6FFAE0)",
+        "(0x407247, 1, 0x6FFAE0)",
+        "(0x407259, 1, 0x6FFAE0)",
+        "(0x40726C, 1, 0x6FFAE0)",
+        "(0x40727F, 1, 0x6FFAE0)",
+        "(0x418219, 1, 0x6FFAE8)",
+        "(0x418220, 1, 0x6FFAE8)",
+        "(0x43880D, 1, 0x68B4C8)",
+        "(0x43881E, 1, 0x68B4C8)",
+        "(0x438831, 1, 0x68B4C8)",
+    ):
+        assert operand_spec in operand_block
+
+    assert (
+        "high_score_lifecycle_offset_operands = _normalize_root_offset_operands(\n"
+        "        HIGH_SCORE_LIFECYCLE_OFFSET_OPERANDS\n"
+        "    )"
+    ) in ida_sync
+    assert '"selector": "high-score lifecycle"' in ida_sync
+    assert (
+        '"high_score_lifecycle_offset_operands": '
+        "high_score_lifecycle_offset_operands"
+    ) in ida_sync
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    startup_check = checks["ida_game_shutdown_sub_high_score_owner"]
+    complete_check = checks["ida_complete_subgame_high_score_owner"]
+    menu_check = checks["ida_update_new_game_menu_intro_ownership"]
+
+    assert (
+        "save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 1u);"
+        in startup_check["required_substrings"]
+    )
+    assert (
+        "add_arcade_high_score(&runtime->sub_high_score, "
+        "&runtime->current_high_score_record"
+    ) in complete_check["required_substrings"]
+    assert (
+        "g_game_base->subgame.sub_high_score.postal_records["
+        in menu_check["required_substrings"]
+    )
+    for check in (startup_check, complete_check, menu_check):
+        assert any(
+            forbidden.startswith("g_parcel_set_buckets")
+            for forbidden in check["forbidden_substrings"]
+        )
 
 
 def test_cameraman_force_update_owner_survives_path_replay() -> None:

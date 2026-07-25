@@ -293,3 +293,14 @@ zero/one register ledger and fixed-update block layout cause the sequence
 aligner to pair different stores and loads. Changing any owner to satisfy
 those pairs would be fakematching, so all three remain explicit alignment
 debt.
+
+## 2026-07-25 shutdown high-score owner replay
+
+The five shutdown calls at `0x407234..0x40727f` each form
+`g_game_base + 0x6ffae0`. The recovered layout closes that address exactly as
+`GameRoot::subgame +0x74618 + SubgameRuntime::sub_high_score +0x68b4c8`.
+Binary Ninja already exposes the direct owner, while IDA promoted the numeric
+displacement into the unrelated `g_parcel_set_buckets` range. Exact operand
+normalization now preserves `&g_game_base->subgame.sub_high_score` for all five
+save masks without renaming or reshaping the real parcel bank. Focused matching
+remains at the honest 70.86% frontier.

@@ -240,6 +240,7 @@ TRACK_RENDER_CACHE_OWNER_SIZES = {
 # Header field-name changes need an explicit Hex-Rays refresh even when the
 # owning function prototype itself was already current.
 PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
+    0x406DC0,  # game_startup_and_main_loop
     0x407B60,  # construct_game_runtime
     0x408040,  # initialize_noop_renderable_bod
     0x408060,  # initialize_runtime_pools_and_path_template_bank
@@ -260,6 +261,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x414670,  # kill_golb
     0x414820,  # update_golb_ai
     0x415280,  # create_golb
+    0x417EB0,  # update_new_game_menu
     0x4182E0,  # reset_landscape_manager
     0x4182F0,  # load_landscape_script_by_name
     0x418870,  # activate_landscape_entry
@@ -297,6 +299,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4374B0,  # initialize_subgame
     0x437DE0,  # rebuild_track_runtime_from_segments
     0x437EB0,  # build_subgame_level
+    0x438700,  # complete_subgame
     0x438B90,  # update_subgame
     0x439B00,  # refresh_fringe_object_draw_list
     0x439BC0,  # remove_sub_loc
@@ -1295,6 +1298,31 @@ WORLD_INITIALIZER_ROOT_OFFSET_OPERANDS = (
     (0x40FC3F, 1, 0x430308),
     # Subgame-owned high-score tracker used by the initializer tail.
     (0x4101CB, 1, 0x6FFAE0),
+)
+
+# Three lifecycle sites borrow the same embedded high-score bank from different
+# receiver depths. The shutdown tail addresses SubHighScore at
+# GameRoot +0x6ffae0, the New Game attract loop addresses its postal_records at
+# GameRoot +0x6ffae8, and Complete addresses the bank at
+# SubgameRuntime +0x68b4c8. Each numeric displacement falls inside the unrelated
+# g_parcel_set_buckets symbol, so IDA substitutes that global and hides the
+# already measured GameRoot -> SubgameRuntime -> SubHighScore owner chain.
+# Normalize only these ten exact operands; the parcel-bank symbol itself stays
+# intact for its real consumers.
+HIGH_SCORE_LIFECYCLE_OFFSET_OPERANDS = (
+    # game_startup_and_main_loop shutdown saves.
+    (0x407234, 1, 0x6FFAE0),
+    (0x407247, 1, 0x6FFAE0),
+    (0x407259, 1, 0x6FFAE0),
+    (0x40726C, 1, 0x6FFAE0),
+    (0x40727F, 1, 0x6FFAE0),
+    # update_new_game_menu postal-record selection and active check.
+    (0x418219, 1, 0x6FFAE8),
+    (0x418220, 1, 0x6FFAE8),
+    # complete_subgame score insertion.
+    (0x43880D, 1, 0x68B4C8),
+    (0x43881E, 1, 0x68B4C8),
+    (0x438831, 1, 0x68B4C8),
 )
 
 # Tutorial::Init borrows the containing SubgameRuntime and ORs the authored
@@ -4181,6 +4209,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    high_score_lifecycle_offset_operands = _normalize_root_offset_operands(
+        HIGH_SCORE_LIFECYCLE_OFFSET_OPERANDS
+    )
+    for result in high_score_lifecycle_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "high-score lifecycle",
+                    "root_offset_operand": result,
+                }
+            )
     attachment_follow_root_offset_operands = _normalize_root_offset_operands(
         ATTACHMENT_FOLLOW_ROOT_OFFSET_OPERANDS
     )
@@ -4673,6 +4712,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "tutorial_numeric_operands": tutorial_numeric_operands,
                 "attachment_entry_root_offset_operands": attachment_entry_root_offset_operands,
                 "world_initializer_root_offset_operands": world_initializer_root_offset_operands,
+                "high_score_lifecycle_offset_operands": high_score_lifecycle_offset_operands,
                 "attachment_follow_root_offset_operands": attachment_follow_root_offset_operands,
                 "harmonize_root_offset_operands": harmonize_root_offset_operands,
                 "runtime_pool_row_offset_operands": runtime_pool_row_offset_operands,

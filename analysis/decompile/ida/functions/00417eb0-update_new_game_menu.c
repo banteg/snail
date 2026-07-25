@@ -154,9 +154,8 @@ void __thiscall update_new_game_menu(Intro *intro)
               }
               else
               {
-                v19 = (SubSolution *)((int)&g_parcel_set_buckets[1431].candidates[30].position.z
-                                    + (_DWORD)g_game_base
-                                    + 129728 * (__int64)((double)next_math_random_value() * 0.00012207031));
+                v19 = &g_game_base->subgame.sub_high_score.postal_records[(__int64)((double)next_math_random_value()
+                                                                                  * 0.00012207031)];
                 if ( v19->active == 1 )
                 {
                   g_game_base->subgame.selected_level_record = v19;

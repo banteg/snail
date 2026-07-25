@@ -75,3 +75,15 @@ authored `cRIntro::AI()` body. Its refreshed artifact retains the six named
 buttons, replay timers, and bank cursor while also exposing the canonical
 player, SubHighScore, and replay-handoff graph. This is analysis replay only;
 the exact 273/273 matcher source does not change.
+
+## 2026-07-25 postal-record owner replay
+
+The postal attract branch computes `g_game_base + 0x6ffae8 + index * 0x1fac0`
+at `0x418219` and `0x418220`. The base is exactly
+`GameRoot::subgame.sub_high_score + offsetof(SubHighScore, postal_records)`;
+the `+0x8` follows the bank's pointer/count prefix, and the record stride is
+the independently recovered `sizeof(SubSolution)`. IDA had substituted the
+unrelated parcel-bank symbol because the root displacement lands within that
+global's address range. Normalizing only the two observed operands recovers
+the same `postal_records[index]` owner already shown by Binary Ninja. The
+matcher remains exact at 273/273.

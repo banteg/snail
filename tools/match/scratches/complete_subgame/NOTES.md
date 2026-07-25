@@ -231,3 +231,14 @@ masked operands. VC6 naturally sinks and schedules the independent stores into
 the native x86 order. The exact result uses only named owners and ordinary C++
 assignments; it is not a permutation derived from the x86 diff and contains no
 fakematching construct.
+
+## 2026-07-25 IDA high-score owner replay
+
+The three insertion calls at `0x43880d`, `0x43881e`, and `0x438831` all form
+`runtime + 0x68b4c8`. That displacement is the measured
+`SubgameRuntime::sub_high_score` boundary, already corroborated by Binary
+Ninja and every ranked-score helper. IDA instead promoted the displacement
+into the unrelated `g_parcel_set_buckets` range. The canonical replay now
+normalizes only those exact operands and Hex-Rays renders all three calls
+through `&runtime->sub_high_score`; the parcel owner remains unchanged at its
+real consumers. Matcher source and the exact 88/88 result are unchanged.
