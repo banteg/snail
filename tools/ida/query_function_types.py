@@ -23,7 +23,10 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--ida-bin",
-        help="Path to the IDA headless binary (defaults to the first idat*/ida* on PATH).",
+        help=(
+            "Path to the IDA headless binary (defaults to the IDA 9.4 macOS "
+            "bundle, then the first idat*/ida* on PATH)."
+        ),
     )
     parser.add_argument(
         "--db",

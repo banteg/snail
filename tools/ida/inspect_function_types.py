@@ -15,10 +15,10 @@ def _resolve_function(selector: str) -> int | None:
         if address == idc.BADADDR:
             return None
 
-    function = ida_funcs.get_func(address)
-    if function is None:
+    function_start = ida_funcs.get_func_start(address)
+    if function_start == idc.BADADDR:
         return None
-    return function.start_ea
+    return function_start
 
 
 def main() -> None:
