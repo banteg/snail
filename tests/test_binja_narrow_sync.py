@@ -3439,6 +3439,67 @@ def test_subgame_life_stock_replay_preserves_pointer_slot_borrows() -> None:
         assert fragment in health_checks
 
 
+def test_runtime_pool_constructor_replay_preserves_element_borrows() -> None:
+    repo_root = Path(__file__).parents[1]
+    source = (
+        BINJA_DIR / "sync_runtime_pool_constructor_lifetimes.py"
+    ).read_text(encoding="utf-8")
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    for expected in (
+        '"SubgameRuntime": 0x1272838',
+        '"SubHealth": 0x74',
+        '"Slug": 0xEC',
+        '"Banner": 0x60',
+        '"SubGarbage": 0xC4',
+        '"SubRing": 0x1F8',
+        '"TrackRowCell": 0x54',
+        '"Path": 0xA8',
+        '0x356000: ("health_pickups", "SubHealth[8]")',
+        '0x3BFAC8: ("runtime_cells", "TrackRowCell[3200][8]")',
+        '0xFF2914: ("path_pairs", "PathPair[63]")',
+        "RUNTIME_POOL_CONSTRUCTOR_CURSOR_USER_VAR_UPDATES",
+        "current_struct_fields_batch",
+        "apply_user_var_updates",
+        "verify_runtime_pool_constructor_owner_layouts",
+    ):
+        assert expected in source
+    for index, variable_name, variable_type in (
+        (334, "health_pickup_cursor", "SubHealth*"),
+        (358, "slug_cursor", "Slug*"),
+        (433, "banner_cursor", "Banner*"),
+        (463, "garbage_hazard_cursor", "SubGarbage*"),
+        (490, "ring_effect_cursor", "SubRing*"),
+        (628, "runtime_cell_cursor", "TrackRowCell*"),
+        (679, "path_template_cursor", "Path*"),
+    ):
+        update = (
+            '"initialize_runtime_pools_and_path_template_bank",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            "        73,\n"
+            f'        "{variable_name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert update in source
+    for fragment in (
+        "struct SubHealth* health_pickup_cursor",
+        "struct Slug* slug_cursor",
+        "struct Banner* banner_cursor",
+        "struct SubGarbage* garbage_hazard_cursor",
+        "struct SubRing* ring_effect_cursor",
+        "struct TrackRowCell* runtime_cell_cursor",
+        "struct Path* path_template_cursor",
+        '"struct SubHealth (*"',
+        '"struct SubGarbage (*"',
+        '"struct TrackRowCell (*"',
+        '"struct PathPair (*"',
+    ):
+        assert fragment in health_checks
+
+
 def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
     binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"

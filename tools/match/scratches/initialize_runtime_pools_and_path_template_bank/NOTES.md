@@ -7,6 +7,31 @@
   0x42f6e0 on the embedded height-field animator's `FrameSequence`, not
   `initialize_object` directly.
 
+## 2026-07-25 inline pool element borrows
+
+The constructor reuses EDI for seven independent inline-array walks. Native
+advances are exactly the recovered element widths: `SubHealth` `0x74`, `Slug`
+`0xec`, `Banner` `0x60`, `SubGarbage` `0xc4`, `SubRing` `0x1f8`,
+`TrackRowCell` `0x54`, and `Path` `0xa8`. Each loop therefore borrows one
+element from its enclosing `SubgameRuntime` pool; no loop owns or advances by
+the complete array.
+
+Binary Ninja had widened four lifetimes to pointers to the complete arrays and
+three wrapperless pool lifetimes to their enclosing pool types. The exact EDI
+SSA identities (register storage `73`, indices `334`, `358`, `433`, `463`,
+`490`, `628`, and `679`) now replay as the seven element-pointer cursors.
+The replay guards every owner boundary, pool slot field, and element width
+before applying any user variable.
+
+IDA independently preserves the same bases, loop counts, and byte strides. It
+directly renders element pointers for the health, garbage, and runtime-cell
+passes; its remaining pool and path-pair casts still advance by the exact
+recovered element widths. The final path loop is deliberately a flat
+126-record `Path*` walk over 63 adjacent `PathPair` owners.
+
+No matcher source changes: the constructor remains exact at 227/227
+instructions with all 72 operands clean.
+
 ## 2026-07-17 enclosing SubgameRuntime ABI
 
 The exact 227-instruction constructor, its sole `GameRoot::subgame` caller,

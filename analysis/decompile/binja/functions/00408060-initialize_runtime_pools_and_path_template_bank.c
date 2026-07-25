@@ -22,46 +22,46 @@
 00408193        initialize_bod_base(&game->unknown_bod_355d5c)
 0040819e        initialize_track_speedup_runtime(&game->speedup_pickup)
 004081a9        initialize_track_jetpack_pickup_runtime(&game->jetpack_pickup)
-004081ae        struct SubHealth (* pickup)[0x8] = &game->health_pickups
+004081ae        struct SubHealth* health_pickup_cursor = &game->health_pickups
 004081b4        int32_t i_8 = 8
 004081c4        int32_t i
-004081bb        initialize_track_health_pickup_runtime(pickup)
-004081c0        pickup = &(*pickup)[1]
+004081bb        initialize_track_health_pickup_runtime(health_pickup_cursor)
+004081c0        health_pickup_cursor = &health_pickup_cursor[1]
 004081c3        i = i_8
 004081c3        i_8 -= 1
 004081c4        do while (i != 1)
-004081c6        struct SlugPool* slug = &game->slug_hazards
+004081c6        struct Slug* slug_cursor = &game->slug_hazards
 004081cc        int32_t i_9 = 8
 004081df        int32_t i_1
-004081d3        initialize_slug_hazard_runtime(slug)
-004081d8        slug = &slug->slots[1]
+004081d3        initialize_slug_hazard_runtime(slug_cursor)
+004081d8        slug_cursor = &slug_cursor[1]
 004081de        i_1 = i_9
 004081de        i_9 -= 1
 004081df        do while (i_1 != 1)
 004081f4        initialize_array_with_constructor(&game->sub_lazers, 0xb0, 0x14, initialize_sub_lazer_runtime)
 0040820c        initialize_array_with_constructor(&game->salt_hazards, 0x98, 0x28, initialize_salt_hazard_runtime)
-00408211        struct BannerPool* bod = &game->banners
+00408211        struct Banner* banner_cursor = &game->banners
 00408217        int32_t i_10 = 2
 0040822d        int32_t i_2
-0040821e        initialize_bod_base(bod)
-00408223        bod->slots[0].bod.bod.vtable = &g_banner_callback_table
-00408229        bod = &bod->slots[1]
+0040821e        initialize_bod_base(banner_cursor)
+00408223        banner_cursor->bod.bod.vtable = &g_banner_callback_table
+00408229        banner_cursor = &banner_cursor[1]
 0040822c        i_2 = i_10
 0040822c        i_10 -= 1
 0040822d        do while (i_2 != 1)
-0040822f        struct SubGarbage (* sub_garbage)[0x32] = &game->garbage_hazards.slots
+0040822f        struct SubGarbage* garbage_hazard_cursor = &game->garbage_hazards.slots
 00408235        int32_t i_11 = 0x32
 00408248        int32_t i_3
-0040823c        initialize_garbage_hazard(sub_garbage)
-00408241        sub_garbage = &(*sub_garbage)[1]
+0040823c        initialize_garbage_hazard(garbage_hazard_cursor)
+00408241        garbage_hazard_cursor = &garbage_hazard_cursor[1]
 00408247        i_3 = i_11
 00408247        i_11 -= 1
 00408248        do while (i_3 != 1)
-0040824a        struct SubRingPool* ring = &game->ring_effects
+0040824a        struct SubRing* ring_effect_cursor = &game->ring_effects
 00408250        int32_t i_12 = 2
 00408263        int32_t i_4
-00408257        initialize_track_ring_or_special_effect_runtime(ring)
-0040825c        ring = &ring->slots[1]
+00408257        initialize_track_ring_or_special_effect_runtime(ring_effect_cursor)
+0040825c        ring_effect_cursor = &ring_effect_cursor[1]
 00408262        i_4 = i_12
 00408262        i_12 -= 1
 00408263        do while (i_4 != 1)
@@ -71,11 +71,11 @@
 004082be        initialize_array_with_constructor(&game->player.golb_shots, 0x2e8, 0xc, initialize_golb_shot)
 004082c9        initialize_player_presentation_controller(&game->player.presentation)
 004082ce        game->player.body.bod.bod.vtable = &g_subgoldy_callback_table
-004082d4        struct TrackRowCell (* cell)[0xc80][0x8] = &game->runtime_cells
+004082d4        struct TrackRowCell* runtime_cell_cursor = &game->runtime_cells
 004082da        int32_t i_13 = 0x6400
 004082ea        int32_t i_5
-004082e1        initialize_sub_loc(cell)
-004082e6        cell = &(*cell)[0][1]
+004082e1        initialize_sub_loc(runtime_cell_cursor)
+004082e6        runtime_cell_cursor = &runtime_cell_cursor[1]
 004082e9        i_5 = i_13
 004082e9        i_13 -= 1
 004082ea        do while (i_5 != 1)
@@ -87,11 +87,11 @@
 00408304        i_6 = i_14
 00408304        i_14 -= 1
 00408305        do while (i_6 != 1)
-00408307        struct PathPair (* edi_3)[0x3f] = &game->path_pairs
+00408307        struct Path* path_template_cursor = &game->path_pairs
 0040830d        int32_t i_15 = 0x7e
 00408320        int32_t i_7
-00408314        initialize_path_template_record_pair(edi_3)
-00408319        edi_3 += 0xa8
+00408314        initialize_path_template_record_pair(path_template_cursor)
+00408319        path_template_cursor = &path_template_cursor[1]
 0040831f        i_7 = i_15
 0040831f        i_15 -= 1
 00408320        do while (i_7 != 1)
