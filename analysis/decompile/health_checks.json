@@ -661,11 +661,19 @@
       "artifact": "analysis/decompile/ida/functions/00439bc0-remove_sub_loc.c",
       "required_substrings": [
         "void __thiscall remove_sub_loc(SubLoc *cell)",
+        "GameRootRuntimeRowStrideAnchor *runtime_row_anchor",
+        "g_game_base->subgame.runtime_rows[v4].flags",
+        "runtime_row_anchor->row.attachment_body.bod.list_flags",
+        "p_attachment_body = &runtime_row_anchor->row.attachment_body",
         "&g_game_base->active_bod_list",
         "&cell->fringe_front"
       ],
       "forbidden_substrings": [
         "_DWORD *__thiscall remove_sub_loc",
+        "unk_6410E0",
+        "unk_641190",
+        "unk_641194",
+        "void **v6",
         "g_game_base->unknown_12e6",
         "(char *)g_game_base + 1448"
       ]
@@ -694,9 +702,11 @@
         "g_game_base->subgame.player.body.transform.position",
         "&g_game_base->subgame.sub_lazers",
         "g_game_base->subgame.subgame_rate",
+        "g_game_base->subgame.runtime_rows[get_track_cell_row_index(cell)].attachment_body.color",
         "g_game_base->subgame.completion_row_start"
       ],
       "forbidden_substrings": [
+        "unk_6411B8",
         "subgame.unknown_",
         "(char *)g_game_base",
         "(_DWORD *)g_game_base",

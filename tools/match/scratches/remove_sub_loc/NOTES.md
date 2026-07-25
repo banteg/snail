@@ -195,3 +195,19 @@ complete `GameRoot::subgame +0x74618` owner live together. Rebinding
 sparse frame-root pointer snapshot, while the authored `void` SubLoc teardown
 contract remains explicit in both views. Focused output is unchanged at
 91.19%, 130/131 instructions, prefix 87/131, with all 17 operands clean.
+
+## 2026-07-25 runtime-row displacement replay
+
+IDA's four remaining `unk_6410e0..unk_641194` operands were auto-symbol
+collisions, not independent globals. Exact operand inspection maps them to
+`GameRoot::subgame.runtime_rows[row].flags` and the embedded
+`SubRow::attachment_body` node at row `+0xb0`. The repeatable replay now
+normalizes only those four instruction operands and types the native carried
+`GameRoot + row*0xf4` lifetime as `GameRootRuntimeRowStrideAnchor`; no
+overlapping data aliases are installed.
+
+The refreshed pseudocode names the row flag and complete attachment-body
+unlink through the recovered owner graph. Repeated disposable-database replays
+proved idempotent, and the live replay completed with no missing or failed
+updates. The matcher source is unchanged, so the honest result remains 91.19%
+(`130/131`, prefix `87/131`, all 17 masked operands clean).

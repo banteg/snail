@@ -1528,6 +1528,17 @@ typedef struct RuntimeRowStrideAnchor {
     SubRow row;
 } RuntimeRowStrideAnchor;
 
+/*
+ * remove_sub_loc retains the enclosing GameRoot base while advancing one
+ * 0xf4-byte runtime-row lane. The row at root + 0x6410e0 is still solely
+ * owned by GameRoot::subgame.runtime_rows; this view only preserves the
+ * native carried-base lifetime for the decompiler.
+ */
+typedef struct GameRootRuntimeRowStrideAnchor {
+    uint8_t root_prefix[0x6410e0];
+    SubRow row;
+} GameRootRuntimeRowStrideAnchor;
+
 /* Native likewise carries a SubgameRuntime-relative 0x54-byte cell cursor.
  * The immediate lane neighbors are one cell stride away, the same-lane row
  * neighbors are one eight-cell row stride (0x2a0) away, and update_subgame's

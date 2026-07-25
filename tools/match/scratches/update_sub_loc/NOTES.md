@@ -125,7 +125,22 @@ After the shared root composer rebinds `g_game_base`, IDA resolves the pause
 gate, rate, first-block boundary, embedded player transform and interaction
 plane, `SubLazerManager`, and completion boundary through
 `GameRoot::subgame`. Binary Ninja additionally renders the skirt destination
-as `runtime_rows[row].attachment_body.color`; IDA's independent
-`unk_6411B8` relocation remains honest rather than being coerced through a
-synthetic alias. Focused output stays at 83.20%, 188/187 instructions, prefix
-26/187, with all 35 operands clean.
+as `runtime_rows[row].attachment_body.color`; at this stage IDA still retained
+the numeric `unk_6411B8` relocation rather than installing a synthetic alias.
+Focused output stays at 83.20%, 188/187 instructions, prefix 26/187, with all
+35 operands clean.
+
+## 2026-07-25 attachment-color displacement replay
+
+Exact IDA operand inspection confirms `0x6411b8` is the same borrowed
+`GameRoot::subgame.runtime_rows[row].attachment_body.color` already recovered
+independently in Binary Ninja, not a standalone global. The repeatable replay
+now normalizes only the store operand at `0x439fc2` and explicitly includes
+`update_sub_loc` in the reanalysis set. The refreshed pseudocode writes all
+four `tColour` components through the owned attachment body, with no
+overlapping data alias.
+
+Repeated disposable-database replays proved idempotent, and the live replay
+completed with no missing or failed updates. The matcher source is unchanged,
+so the honest result remains 83.20% (`188/187`, prefix `26/187`, all 35 masked
+operands clean).

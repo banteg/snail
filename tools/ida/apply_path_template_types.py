@@ -300,6 +300,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x438B90,  # update_subgame
     0x439B00,  # refresh_fringe_object_draw_list
     0x439BC0,  # remove_sub_loc
+    0x439D50,  # update_sub_loc
     0x43A010,  # health_collect_particles
     0x43A300,  # update_movement_flag_emitters
     0x43A370,  # end_jetpack_hover
@@ -645,6 +646,15 @@ PROJECT_ATTACHMENT_LVAR_SPECS = (
     ),
     ("sample", "PathTemplateSample *sample;", 0x44451E, None),
     ("projected_position", "Vec3 projected_position;", 0x4445C9, None),
+)
+
+REMOVE_SUB_LOC_RUNTIME_LVAR_SPECS = (
+    (
+        "runtime_row_anchor",
+        "GameRootRuntimeRowStrideAnchor *runtime_row_anchor;",
+        0x439BFB,
+        None,
+    ),
 )
 
 UPDATE_SUBGAME_RUNTIME_LVAR_SPECS = (
@@ -1239,6 +1249,26 @@ REMOVE_SUBGAME_BODS_RUNTIME_ROW_OFFSET_OPERANDS = (
 
 MERGE_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x4351CB, 1, 0x5CCB7C),  # runtime_rows[0].attachment_body list_flags
+)
+
+# SubLoc teardown obtains the containing GameRoot and addresses one borrowed
+# SubRow through a row-stride byte offset. These four root-relative
+# displacements numerically collide with IDA auto-symbols, so normalize only
+# the proven row flag and attachment-body operands. The typed GameRoot and
+# SubgameRuntime owners can then recover runtime_rows[row] without installing
+# overlapping globals.
+REMOVE_SUB_LOC_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x439BF0, 1, 0x6410E0),  # runtime_rows[row].flags
+    (0x439BFF, 1, 0x641194),  # attachment_body list_flags precheck
+    (0x439C0A, 1, 0x641194),  # attachment_body list_flags
+    (0x439C10, 1, 0x641190),  # attachment_body list node
+)
+
+# The entry-tile update stores a borrowed skirt colour into the same row's
+# embedded attachment body. Its root-relative displacement has the same
+# auto-symbol collision and is normalized independently.
+UPDATE_SUB_LOC_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x439FC2, 1, 0x6411B8),  # runtime_rows[row].attachment_body.color
 )
 
 # BuildLevel carries the owning SubgameRuntime base while advancing one
@@ -3131,6 +3161,13 @@ def _sync_project_attachment_lvars() -> dict[str, object]:
     )
 
 
+def _sync_remove_sub_loc_runtime_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "remove_sub_loc",
+        REMOVE_SUB_LOC_RUNTIME_LVAR_SPECS,
+    )
+
+
 def _sync_update_subgame_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "update_subgame",
@@ -4096,6 +4133,28 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    remove_sub_loc_runtime_row_offset_operands = _normalize_root_offset_operands(
+        REMOVE_SUB_LOC_RUNTIME_ROW_OFFSET_OPERANDS
+    )
+    for result in remove_sub_loc_runtime_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "remove_sub_loc",
+                    "root_offset_operand": result,
+                }
+            )
+    update_sub_loc_runtime_row_offset_operands = _normalize_root_offset_operands(
+        UPDATE_SUB_LOC_RUNTIME_ROW_OFFSET_OPERANDS
+    )
+    for result in update_sub_loc_runtime_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "update_sub_loc",
+                    "root_offset_operand": result,
+                }
+            )
     populate_runtime_row_offset_operands = _normalize_root_offset_operands(
         POPULATE_RUNTIME_ROW_OFFSET_OPERANDS
     )
@@ -4252,6 +4311,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "selector": "project_position_onto_track_attachment",
                 "ownership_lvars": project_attachment_lvars,
+            }
+        )
+    remove_sub_loc_runtime_lvars = _sync_remove_sub_loc_runtime_lvars()
+    if remove_sub_loc_runtime_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "remove_sub_loc",
+                "runtime_lvars": remove_sub_loc_runtime_lvars,
             }
         )
     update_subgame_runtime_lvars = _sync_update_subgame_runtime_lvars()
@@ -4473,6 +4540,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "project_attachment_runtime_row_offset_operands": project_attachment_runtime_row_offset_operands,
                 "remove_subgame_bods_runtime_row_offset_operands": remove_subgame_bods_runtime_row_offset_operands,
                 "merge_runtime_row_offset_operands": merge_runtime_row_offset_operands,
+                "remove_sub_loc_runtime_row_offset_operands": remove_sub_loc_runtime_row_offset_operands,
+                "update_sub_loc_runtime_row_offset_operands": update_sub_loc_runtime_row_offset_operands,
                 "populate_runtime_row_offset_operands": populate_runtime_row_offset_operands,
                 "place_parcels_runtime_row_offset_operands": place_parcels_runtime_row_offset_operands,
                 "challenge_parcels_runtime_row_offset_operands": challenge_parcels_runtime_row_offset_operands,
@@ -4490,6 +4559,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "place_parcels_runtime_lvars": place_parcels_runtime_lvars,
                 "challenge_parcels_runtime_lvars": challenge_parcels_runtime_lvars,
                 "project_attachment_lvars": project_attachment_lvars,
+                "remove_sub_loc_runtime_lvars": remove_sub_loc_runtime_lvars,
                 "update_subgame_runtime_lvars": update_subgame_runtime_lvars,
                 "update_subgoldy_lvars": update_subgoldy_lvars,
                 "initialize_subgoldy_lvars": initialize_subgoldy_lvars,

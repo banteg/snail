@@ -7,15 +7,15 @@ void __thiscall remove_sub_loc(SubLoc *cell)
 {
   int32_t track_cell_row_index; // eax
   SubLocTileId tile_id; // cl
-  int v4; // eax
-  char v5; // cl
-  void **v6; // eax
-  int v7; // ecx
-  BodNode *v8; // eax
+  int32_t v4; // eax
+  char flags; // cl
+  GameRootRuntimeRowStrideAnchor *runtime_row_anchor; // eax
+  uint32_t list_flags; // ecx
+  BodBase *p_attachment_body; // eax
   BodList *p_active_bod_list; // edx
   struct BodNode *list_next; // ecx
   struct BodNode *list_prev; // ecx
-  uint32_t list_flags; // eax
+  uint32_t v12; // eax
   BodList *v13; // ecx
   struct BodNode *v14; // eax
   struct BodNode *v15; // eax
@@ -31,33 +31,33 @@ void __thiscall remove_sub_loc(SubLoc *cell)
   tile_id = cell->tile_id;
   if ( tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE )
   {
-    v4 = 61 * track_cell_row_index;
-    v5 = unk_6410E0[(_DWORD)g_game_base + 4 * v4];
-    v6 = &g_game_base->vtable + v4;
-    if ( (v5 & 8) != 0 && (*(_DWORD *)((_BYTE *)&unk_641194 + (_DWORD)v6) & 0x200) != 0 )
+    v4 = track_cell_row_index;
+    flags = g_game_base->subgame.runtime_rows[v4].flags;
+    runtime_row_anchor = (GameRootRuntimeRowStrideAnchor *)(&g_game_base->vtable + v4 * 61);
+    if ( (flags & 8) != 0 && (runtime_row_anchor->row.attachment_body.bod.list_flags & 0x200) != 0 )
     {
-      v7 = *(_DWORD *)((char *)&unk_641194 + (_DWORD)v6);
-      v8 = (BodNode *)((char *)&unk_641190 + (_DWORD)v6);
+      list_flags = runtime_row_anchor->row.attachment_body.bod.list_flags;
+      p_attachment_body = &runtime_row_anchor->row.attachment_body;
       p_active_bod_list = &g_game_base->active_bod_list;
-      if ( (v7 & 0x200) != 0 )
+      if ( (list_flags & 0x200) != 0 )
       {
-        if ( (v7 & 0x40) != 0 )
+        if ( (list_flags & 0x40) != 0 )
         {
           report_errorf(aListRemoveNext);
         }
         else
         {
-          list_next = v8->list_next;
+          list_next = p_attachment_body->bod.list_next;
           if ( list_next )
-            list_next->list_prev = v8->list_prev;
-          list_prev = v8->list_prev;
+            list_next->list_prev = p_attachment_body->bod.list_prev;
+          list_prev = p_attachment_body->bod.list_prev;
           if ( list_prev )
-            list_prev->list_next = v8->list_next;
+            list_prev->list_next = p_attachment_body->bod.list_next;
           else
-            p_active_bod_list->first = v8->list_next;
-          v8->list_next = p_active_bod_list->free_top;
-          p_active_bod_list->free_top = v8;
-          v8->list_flags &= ~0x200u;
+            p_active_bod_list->first = p_attachment_body->bod.list_next;
+          p_attachment_body->bod.list_next = p_active_bod_list->free_top;
+          p_active_bod_list->free_top = &p_attachment_body->bod;
+          p_attachment_body->bod.list_flags &= ~0x200u;
         }
       }
       else
@@ -66,11 +66,11 @@ void __thiscall remove_sub_loc(SubLoc *cell)
       }
     }
   }
-  list_flags = cell->bod.list_flags;
-  if ( (list_flags & 0x200) != 0 )
+  v12 = cell->bod.list_flags;
+  if ( (v12 & 0x200) != 0 )
   {
     v13 = &g_game_base->active_bod_list;
-    if ( (list_flags & 0x40) != 0 )
+    if ( (v12 & 0x40) != 0 )
     {
       report_errorf(aListRemoveNext);
     }

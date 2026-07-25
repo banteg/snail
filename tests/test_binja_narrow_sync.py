@@ -6545,6 +6545,75 @@ def test_sub_loc_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "tile_flags_3d" not in tile_view_header
 
 
+def test_sub_loc_runtime_row_owner_replay_stays_guarded() -> None:
+    repo_root = Path(__file__).parents[1]
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    health_checks = {
+        check["name"]: check
+        for check in json.loads(
+            (repo_root / "analysis/decompile/health_checks.json").read_text(
+                encoding="utf-8"
+            )
+        )["checks"]
+    }
+
+    assert "typedef struct GameRootRuntimeRowStrideAnchor {" in analysis_header
+    assert "uint8_t root_prefix[0x6410e0];" in analysis_header
+    assert "} GameRootRuntimeRowStrideAnchor;" in analysis_header
+    assert "solely" in analysis_header
+    assert "GameRootRuntimeRowStrideAnchor" not in matcher_header
+
+    assert "REMOVE_SUB_LOC_RUNTIME_ROW_OFFSET_OPERANDS" in ida_sync
+    for operand_spec in (
+        "(0x439BF0, 1, 0x6410E0)",
+        "(0x439BFF, 1, 0x641194)",
+        "(0x439C0A, 1, 0x641194)",
+        "(0x439C10, 1, 0x641190)",
+    ):
+        assert operand_spec in ida_sync
+    assert "UPDATE_SUB_LOC_RUNTIME_ROW_OFFSET_OPERANDS" in ida_sync
+    assert "(0x439FC2, 1, 0x6411B8)" in ida_sync
+    for result_name in (
+        "remove_sub_loc_runtime_row_offset_operands",
+        "update_sub_loc_runtime_row_offset_operands",
+    ):
+        assert f"{result_name} = _normalize_root_offset_operands(" in ida_sync
+        assert f'"{result_name}": {result_name}' in ida_sync
+
+    assert "0x439D50,  # update_sub_loc" in ida_sync
+    assert "REMOVE_SUB_LOC_RUNTIME_LVAR_SPECS" in ida_sync
+    assert '"GameRootRuntimeRowStrideAnchor *runtime_row_anchor;"' in ida_sync
+    assert "0x439BFB" in ida_sync
+    assert "_sync_remove_sub_loc_runtime_lvars" in ida_sync
+    assert '"remove_sub_loc_runtime_lvars": remove_sub_loc_runtime_lvars' in ida_sync
+
+    ida_remove = health_checks["ida_remove_sub_loc_root_list_owner"]
+    for marker in (
+        "GameRootRuntimeRowStrideAnchor *runtime_row_anchor",
+        "g_game_base->subgame.runtime_rows[v4].flags",
+        "runtime_row_anchor->row.attachment_body.bod.list_flags",
+        "p_attachment_body = &runtime_row_anchor->row.attachment_body",
+    ):
+        assert marker in ida_remove["required_substrings"]
+    for old_shape in ("unk_6410E0", "unk_641190", "unk_641194", "void **v6"):
+        assert old_shape in ida_remove["forbidden_substrings"]
+
+    ida_update = health_checks["ida_update_sub_loc_root_runtime_owner"]
+    assert (
+        "g_game_base->subgame.runtime_rows[get_track_cell_row_index(cell)].attachment_body.color"
+        in ida_update["required_substrings"]
+    )
+    assert "unk_6411B8" in ida_update["forbidden_substrings"]
+
+
 def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     repo_root = Path(__file__).parents[1]
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
