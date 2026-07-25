@@ -111,16 +111,16 @@ typedef struct cFontPrintBuffer {
     uint32_t flags;
     float x0;
     float y0;
-    int32_t unknown_0c;
+    float z0;
     float x1;
     float y1;
-    int32_t unknown_18;
+    float z1;
     float x2;
     float y2;
-    int32_t unknown_24;
+    float z2;
     float x3;
     float y3;
-    int32_t unknown_30;
+    float z3;
     float text_wave_amplitude;
     uint8_t shadow_enabled;
     char pad_39[3];
@@ -140,6 +140,9 @@ typedef struct cFontPrintBuffer {
     int32_t blend_mode;
     float rotation;
 } cFontPrintBuffer;
+
+typedef char cFontPrintBuffer_must_be_0x84[
+    (sizeof(cFontPrintBuffer) == 0x84) ? 1 : -1];
 
 void __cdecl initialize_global_font3d_bods_thunk(void);
 void __cdecl initialize_global_font3d_bods(void);
@@ -203,8 +206,8 @@ int32_t __cdecl queue_textured_quad_corners(
     float y2,
     float x3,
     float y3,
-    int32_t unused_28,
-    int32_t unused_2c,
+    float unused_28,
+    float unused_2c,
     uint32_t flags,
     tColour* color,
     float u0,

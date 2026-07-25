@@ -27,7 +27,7 @@ int32_t __cdecl queue_axis_aligned_textured_quad(
   float a; // edi
 
   LOBYTE(result) = g_render_queue_active;
-  if ( g_render_queue_active )
+  if ( g_render_queue_active != 0 )
   {
     v9 = g_font_queue_count;
     if ( g_font_queue_count == 1024 )

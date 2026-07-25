@@ -79,3 +79,11 @@ with exact `65/65` instruction parity, a 43-instruction prefix, and all 17
 masked operands clean. The residual is the existing queue-count publication
 schedule plus independent default-UV zero stores; no forced return value or
 barrier is retained.
+
+## 2026-07-25 authored overload provenance
+
+Both symbol-rich iOS phone builds and the unstripped Android library retain
+this helper as `OSDPrint(int, float, float, float, float, int, tColour, int)`
+inside `Font.cpp`/`Font.o`. Their bodies use the same queue gate, validate the
+rectangle, and append the same `0x84`-byte record. This closes the authored
+overload relationship without changing the honest 95.38% Windows source shape.

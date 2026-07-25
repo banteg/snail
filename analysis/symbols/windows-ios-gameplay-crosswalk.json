@@ -1338,6 +1338,33 @@
       "notes": "Android preserves the same queue gate, 0x84-byte cFontPrintBuffer stride, text-buffer cursor and cap, field layout, and queue-count increment."
     },
     {
+      "address": "0x44a8b0",
+      "windows_name": "queue_axis_aligned_textured_quad",
+      "ios_symbol": "OSDPrint(int, float, float, float, float, int, tColour, int)",
+      "android_symbol": "OSDPrint(int, float, float, float, float, int, tColour, int)",
+      "source_object": "Font.o",
+      "confidence": "high",
+      "notes": "Both ports preserve the default-UV overload, its rectangle and color arguments, the render-queue gate, and the 0x84-byte cFontPrintBuffer append."
+    },
+    {
+      "address": "0x44a9b0",
+      "windows_name": "queue_axis_aligned_textured_quad_uv",
+      "ios_symbol": "OSDPrintUV(int, float, float, float, float, int, tColour, float, float, float, float, int, float)",
+      "android_symbol": "OSDPrintUV(int, float, float, float, float, int, tColour, float, float, float, float, int, float)",
+      "source_object": "Font.o",
+      "confidence": "high",
+      "notes": "Both ports preserve the axis-aligned explicit-UV overload and append the same texture, rectangle, color, UV, blend-mode, and rotation fields."
+    },
+    {
+      "address": "0x44aac0",
+      "windows_name": "queue_textured_quad_corners",
+      "ios_symbol": "OSDPrintUV(int, float, float, float, float, float, float, float, float, float, float, int, tColour, float, float, float, float, int, float)",
+      "android_symbol": "OSDPrintUV(int, float, float, float, float, float, float, float, float, float, float, int, tColour, float, float, float, float, int, float)",
+      "source_object": "Font.o",
+      "confidence": "high",
+      "notes": "Both ports preserve the four-corner overload, including ten consecutive float formals before flags. The final two are unused while the helper clears width and height, proving that the corresponding Windows formals are floats rather than integers."
+    },
+    {
       "address": "0x44abe0",
       "windows_name": "layout_and_queue_wrapped_font_text",
       "android_symbol": "FontType(char*, int, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)",

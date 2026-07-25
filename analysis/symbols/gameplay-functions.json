@@ -3315,17 +3315,17 @@
     {
       "address": "0x44a8b0",
       "name": "queue_axis_aligned_textured_quad",
-      "description": "Appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue, using the supplied texture, authored rectangle, tint, and render flags."
+      "description": "OSDPrint counterpart: appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue, using the supplied texture, authored rectangle, tint, and render flags."
     },
     {
       "address": "0x44a9b0",
       "name": "queue_axis_aligned_textured_quad_uv",
-      "description": "Appends one axis-aligned textured quad with explicit UV bounds into the shared 2D render queue. Front-end widgets, progress bars, and the damage gauge all use this helper."
+      "description": "Short OSDPrintUV overload counterpart: appends one axis-aligned textured quad with explicit UV bounds into the shared 2D render queue. Front-end widgets, progress bars, and the damage gauge all use this helper."
     },
     {
       "address": "0x44aac0",
       "name": "queue_textured_quad_corners",
-      "description": "Appends one arbitrary four-corner textured quad with explicit per-corner positions and UV bounds into the shared 2D render queue. The backdrop and galaxy-line renderers use this helper."
+      "description": "Long OSDPrintUV overload counterpart: appends one arbitrary four-corner textured quad with explicit per-corner positions and UV bounds into the shared 2D render queue. Its two otherwise-unused post-corner formals are floats in both symbol-rich mobile builds. The backdrop and galaxy-line renderers use this helper."
     },
     {
       "address": "0x44abe0",

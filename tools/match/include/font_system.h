@@ -35,16 +35,16 @@ struct cFontPrintBuffer {
     unsigned int flags;     // +0x00
     float x0;               // +0x04
     float y0;               // +0x08
-    int unknown_0c;         // +0x0c
+    float z0;               // +0x0c, dormant tVector lane in 2D queue paths
     float x1;               // +0x10
     float y1;               // +0x14
-    int unknown_18;         // +0x18
+    float z1;               // +0x18, dormant tVector lane in 2D queue paths
     float x2;               // +0x1c
     float y2;               // +0x20
-    int unknown_24;         // +0x24
+    float z2;               // +0x24, dormant tVector lane in 2D queue paths
     float x3;               // +0x28
     float y3;               // +0x2c
-    int unknown_30;         // +0x30
+    float z3;               // +0x30, dormant tVector lane in 2D queue paths
     float text_wave_amplitude; // +0x34
     unsigned char shadow_enabled; // +0x38
     char pad_39[0x3c - 0x39];
@@ -144,8 +144,8 @@ int queue_textured_quad_corners(
     float x1, float y1,
     float x2, float y2,
     float x3, float y3,
-    int unused_28,
-    int unused_2c,
+    float unused_28,
+    float unused_2c,
     unsigned int flags,
     tColour* color,
     float u0, float v0,

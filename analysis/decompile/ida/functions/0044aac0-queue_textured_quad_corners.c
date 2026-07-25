@@ -13,8 +13,8 @@ int32_t __cdecl queue_textured_quad_corners(
         float y2,
         float x3,
         float y3,
-        int32_t unused_28,
-        int32_t unused_2c,
+        float unused_28,
+        float unused_2c,
         uint32_t flags,
         tColour *color,
         float u0,
@@ -30,7 +30,7 @@ int32_t __cdecl queue_textured_quad_corners(
   float a; // edi
 
   LOBYTE(result) = g_render_queue_active;
-  if ( g_render_queue_active )
+  if ( g_render_queue_active != 0 )
   {
     v20 = g_font_queue_count;
     if ( g_font_queue_count == 1024 )

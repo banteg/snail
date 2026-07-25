@@ -11625,6 +11625,15 @@ def test_font_system_ownership_stays_aligned() -> None:
         assert "shadow_offset_pixels" in header
         assert "font_kind" not in header
         assert "struct cFontPrintBuffer {" in header
+        for lane in ("z0", "z1", "z2", "z3"):
+            assert f"float {lane}" in header
+        for stale_lane in (
+            "unknown_0c",
+            "unknown_18",
+            "unknown_24",
+            "unknown_30",
+        ):
+            assert stale_lane not in header
         assert "text_wave_amplitude" in header
         assert "shadow_enabled" in header
         assert "text_wave_enabled" not in header
@@ -11663,6 +11672,10 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert '("0x7754e8", "BodBase[0x80]")' in binja_sync
     assert '("0x7770e8", "float[0x80]")' in binja_sync
     assert '("0x7772f8", "FontSheet[0x1]")' in binja_sync
+    assert '("0x0c", "z0", "float")' in binja_sync
+    assert '("0x18", "z1", "float")' in binja_sync
+    assert '("0x24", "z2", "float")' in binja_sync
+    assert '("0x30", "z3", "float")' in binja_sync
     assert '("0x6c", "color", "tColour")' in binja_sync
     assert '("0x7c", "blend_mode", "int32_t")' in binja_sync
     assert '("0x80", "rotation", "float")' in binja_sync
@@ -11679,6 +11692,8 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert "void __cdecl queue_font_text_instance" in binja_sync
     assert "int32_t __cdecl queue_axis_aligned_textured_quad" in binja_sync
     assert "int32_t __cdecl queue_textured_quad_corners" in binja_sync
+    assert "float unused_28, float unused_2c" in binja_sync
+    assert "float unused_28, float unused_2c" in ida_sync
     assert "float* __cdecl layout_and_queue_wrapped_font_text" in binja_sync
     assert "cFontPrintBuffer g_font_queue[0x400];" in ida_sync
     assert "FontSheet g_font_sheets[1];" in ida_sync
@@ -11795,6 +11810,21 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert "uint8_t _glyph_width_to_texture_page[0x1fc];" in analysis_header
     assert "void __cdecl initialize_font_wave_state(void);" in analysis_header
     assert "void __cdecl update_font_wave_state(void);" in analysis_header
+
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    crosswalk_by_address = {
+        int(entry["address"], 0): entry for entry in crosswalk["entries"]
+    }
+    assert crosswalk_by_address[0x44A8B0]["ios_symbol"].startswith("OSDPrint(")
+    assert crosswalk_by_address[0x44A9B0]["ios_symbol"].startswith("OSDPrintUV(")
+    assert (
+        "float, float, float, float, float, float, float, float, float, float"
+        in crosswalk_by_address[0x44AAC0]["ios_symbol"]
+    )
 
     references = json.loads(
         (repo_root / "analysis/symbols/gameplay-references.json").read_text(

@@ -90,3 +90,12 @@ parity, a 42-instruction prefix, and all 19 operands clean. Only the
 semantically independent `g_font_queue_count` store moves from the middle of
 the aggregate color copy to the completed-entry tail; natural allocation and
 post-copy placements regress and are not retained.
+
+## 2026-07-25 authored overload provenance
+
+Both symbol-rich iOS phone builds and Android retain the short overload as
+`OSDPrintUV(int, float, float, float, float, int, tColour, float, float,`
+` float, float, int, float)` in `Font.cpp`/`Font.o`. The mobile bodies append
+the same rectangle, UV, integer blend-mode, and float rotation fields at a
+`0x84` stride. The Windows scratch remains 98.48%; the evidence clarifies the
+owner and ABI rather than altering scheduling.

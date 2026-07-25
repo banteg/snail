@@ -110,7 +110,7 @@ TRUSTED_FUNCTION_DECLARATIONS = (
     ),
     (
         "queue_textured_quad_corners",
-        "int32_t __cdecl queue_textured_quad_corners(int32_t texture_id, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, int32_t unused_28, int32_t unused_2c, uint32_t flags, tColour *color, float u0, float v0, float u1, float v1, int32_t blend_mode, float rotation);",
+        "int32_t __cdecl queue_textured_quad_corners(int32_t texture_id, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, float unused_28, float unused_2c, uint32_t flags, tColour *color, float u0, float v0, float u1, float v1, int32_t blend_mode, float rotation);",
     ),
     (
         "layout_and_queue_wrapped_font_text",

@@ -84,3 +84,19 @@ matching from 87.14% (`71/69`) to 89.86% with exact `69/69` instruction parity,
 a 33-instruction prefix, and all 20 operands clean. The remaining differences
 are queue-count and argument-load scheduling after the aggregate color copy,
 not missing queue fields or a forced skip result.
+
+## 2026-07-25 long OSDPrintUV ABI closure
+
+iOS 1.5, iOS 1.9, and Android all retain the authored long overload as
+`OSDPrintUV(int, float, float, float, float, float, float, float, float,`
+` float, float, int, tColour, float, float, float, float, int, float)`.
+Their bodies copy the first eight floats into the four x/y corner pairs, ignore
+the final two pre-flag floats, and explicitly clear the queued width/height
+fields. The Windows `unused_28` and `unused_2c` formals are consequently floats,
+not integers.
+
+The same three ports preserve four 12-byte x/y/third-lane coordinate cadences
+inside `cFontPrintBuffer`; the dormant third lanes are now typed as float
+`z0..z3`. Neither mobile nor Windows code consumes those lanes. These are
+ABI/type corrections only: the focused Windows scratch stays at the honest
+89.86% frontier with no scheduling barrier or fake data access.
