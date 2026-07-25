@@ -1,3 +1,7 @@
+#ifndef BN_TYPE_PARSER
+#define __ptr_offset(offset)
+#endif
+
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
@@ -8,6 +12,21 @@ typedef struct Vec3 {
     float y;
     float z;
 } Vec3;
+
+/*
+ * Analysis-only offset-pointer view for initialize_backdrop_tile_quad's
+ * borrowed vertex walk. Native carries Vec3::z at +0x08 while reading and
+ * writing x/y/z, then advances by one complete Vec3. Object::vertices remains
+ * the sole owner of the four-record allocation.
+ */
+typedef struct __ptr_offset(0x08) BackdropTileVertexCursorView {
+    float x;
+    float y;
+    float z;
+} BackdropTileVertexCursorView;
+typedef char BackdropTileVertexCursorView_must_be_0x0c[
+    (sizeof(BackdropTileVertexCursorView) == 0x0c) ? 1 : -1
+];
 
 typedef struct tColour {
     float r;

@@ -104,3 +104,23 @@ databases. This retires Binary Ninja's stale float orientation/return lanes and
 IDA's obsolete `PathTemplateStripMesh*` receiver. The typed decompiles expose
 the shared vertices, facequad, UV array, texture ref, and named rotation helper;
 the proof-grade 367/367 matcher body is unchanged.
+
+## 2026-07-25 borrowed vertex-z cursor ownership
+
+The four-pass edge adjustment loop does not own another vertex buffer. Native
+loads `Object::vertices`, carries the first `Vec3::z` address at field offset
+`+0x08`, reaches x/y/z relative to that interior pointer, and advances by
+exactly three floats (`sizeof(Vec3)`) per iteration. The analysis-only
+`BackdropTileVertexCursorView` records that shifted borrow while
+`Object::vertices` remains the sole owner of the four-record allocation.
+
+Binary Ninja binds the exact ECX register lifetime at variable index 458 /
+storage 67. IDA independently binds the non-stack local defined at `0x41a69b`
+as a shifted pointer. A clean Ghidra import supplied a third opinion from the
+raw executable: it materializes `pfVar5 = object_vertices + 2`, uses
+`pfVar5[-2..0]`, and advances `pfVar5 += 3`. All three therefore agree on the
+same 0x0c record stride and +0x08 carried field.
+
+This is analysis-only ownership recovery. The matcher source remains unchanged
+and proof-grade at 100.00%, 367/367 instructions, a 367/367 prefix, and 63
+clean operands.

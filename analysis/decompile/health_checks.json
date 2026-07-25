@@ -19138,13 +19138,20 @@
         "request_object_vertices(object, 4)",
         "struct ObjectFaceQuad* facequads = object->facequads",
         "get_or_create_texture_ref(&g_texture_refs, texture_path",
-        "rotate_object_facequad_uv_pairs(facequads)"
+        "rotate_object_facequad_uv_pairs(facequads)",
+        "struct BackdropTileVertexCursorView* vertex_z_cursor = &vertices->z",
+        "vertex_z_cursor->x",
+        "vertex_z_cursor->y",
+        "vertex_z_cursor->z",
+        "vertex_z_cursor = &vertex_z_cursor[1]"
       ],
       "forbidden_substrings": [
         "PathTemplateStripMesh",
         "sub_430a30",
         "float arg3",
-        "arg1"
+        "arg1",
+        "float* ecx_10",
+        "(ecx_10 - 8)"
       ]
     },
     {
@@ -19155,13 +19162,21 @@
         "Object *object,",
         "int32_t orientation,",
         "facequads = object->facequads",
-        "rotate_object_facequad_uv_pairs(facequads)"
+        "rotate_object_facequad_uv_pairs(facequads)",
+        "float *__shifted(BackdropTileVertexCursorView,8) vertex_z_cursor",
+        "vertex_z_cursor = &vertices->z",
+        "ADJ(vertex_z_cursor)->x",
+        "ADJ(vertex_z_cursor)->y",
+        "ADJ(vertex_z_cursor)->z",
+        "vertex_z_cursor += 3"
       ],
       "forbidden_substrings": [
         "PathTemplateStripMesh",
         "sub_430A30",
         "sub_41A4D0",
-        "float orientation"
+        "float orientation",
+        "float *p_z",
+        "*(p_z - 2)"
       ]
     },
     {

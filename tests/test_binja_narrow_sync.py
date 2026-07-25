@@ -6196,6 +6196,62 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
     )
 
 
+def test_backdrop_tile_vertex_cursor_stays_borrowed_and_guarded() -> None:
+    repo_root = Path(__file__).parents[1]
+    headers = [
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_object_render_types.h", "object_render_types.h")
+    ]
+    binja_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    matcher_source = (
+        repo_root
+        / "tools/match/scratches/initialize_backdrop_tile_quad/scratch.cpp"
+    ).read_text(encoding="utf-8")
+
+    for header in headers:
+        for marker in (
+            "#define __ptr_offset(offset)",
+            "typedef struct __ptr_offset(0x08) BackdropTileVertexCursorView {",
+            "BackdropTileVertexCursorView_must_be_0x0c",
+            "Object::vertices remains",
+            "the sole owner of the four-record allocation.",
+        ):
+            assert marker in header
+
+    assert "BackdropTileVertexCursorView" not in matcher_source
+    assert "BACKDROP_TILE_VERTEX_CURSOR_USER_VAR_UPDATES" in binja_sync
+    expected_binja_lvar = (
+        '        "initialize_backdrop_tile_quad",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        458,\n"
+        "        67,\n"
+        '        "vertex_z_cursor",\n'
+        '        "BackdropTileVertexCursorView*"'
+    )
+    assert expected_binja_lvar in binja_sync
+    assert "verify_backdrop_tile_vertex_cursor" in binja_sync
+    assert "current_type_widths" in binja_sync
+    assert "current_struct_fields_batch" in binja_sync
+
+    assert '"BackdropTileVertexCursorView": 0xC' in ida_sync
+    assert "BACKDROP_TILE_VERTEX_LVAR_SPECS" in ida_sync
+    assert "0x41A69B" in ida_sync
+    assert (
+        '"float *__shifted(BackdropTileVertexCursorView, 0x08) "'
+        in ida_sync
+    )
+    assert '"vertex_z_cursor;"' in ida_sync
+    assert (
+        '"backdrop_tile_vertex_lvars": backdrop_tile_vertex_lvars'
+        in ida_sync
+    )
+
+
 def test_vertex_buffer_factory_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_vertex_buffer_factory_lifetimes.py"

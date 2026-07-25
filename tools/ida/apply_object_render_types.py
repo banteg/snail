@@ -455,6 +455,8 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct ObjectDistort {",
     "typedef struct ObjectGroupedVertex {",
     "typedef struct ImmediateQuadVertexBlock {",
+    "typedef struct __ptr_offset(0x08) BackdropTileVertexCursorView {",
+    "BackdropTileVertexCursorView_must_be_0x0c",
     "typedef struct ObjectToonEdge {",
     "typedef struct Object {",
     "typedef struct ObjectList {",
@@ -491,6 +493,7 @@ REQUIRED_OWNER_MARKERS = (
 
 EXPECTED_OWNER_SIZES = {
     "Vec3": 0xC,
+    "BackdropTileVertexCursorView": 0xC,
     "TextureRef": 0xA4,
     "ObjectRenderBuffers": 0xC,
     "ObjectIndexBuffer": 0x4,
@@ -544,6 +547,7 @@ REANALYSIS_FUNCTIONS = (
     0x418B50,  # initialize_loading_screen
     0x419110,  # open_logo
     0x419FD0,  # sort_object_faces_by_texture_group
+    0x41A4D0,  # initialize_backdrop_tile_quad
     0x41AA30,  # initialize_object_distort
     0x41AA50,  # apply_distort_to_object
     0x4246A0,  # build_track_fringe_mesh
@@ -616,6 +620,18 @@ IMMEDIATE_QUAD_LVAR_SPECS = (
         0x41308C,
         "quad",
         "ImmediateQuadVertexBlock *quad;",
+    ),
+)
+
+BACKDROP_TILE_VERTEX_LVAR_SPECS = (
+    (
+        "initialize_backdrop_tile_quad",
+        0x41A69B,
+        "vertex_z_cursor",
+        (
+            "float *__shifted(BackdropTileVertexCursorView, 0x08) "
+            "vertex_z_cursor;"
+        ),
     ),
 )
 
@@ -1328,6 +1344,33 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    backdrop_tile_vertex_lvars = [
+        _sync_owned_lvar(
+            selector,
+            definition_address,
+            expected_name,
+            declaration,
+        )
+        for (
+            selector,
+            definition_address,
+            expected_name,
+            declaration,
+        ) in BACKDROP_TILE_VERTEX_LVAR_SPECS
+    ]
+    backdrop_tile_vertex_failures = [
+        result
+        for result in backdrop_tile_vertex_lvars
+        if result.get("status") == "failed"
+    ]
+    if backdrop_tile_vertex_failures:
+        failed.append(
+            {
+                "selector": "initialize_backdrop_tile_quad",
+                "backdrop_tile_vertex_lvars": backdrop_tile_vertex_lvars,
+            }
+        )
+
     ida_auto.auto_wait()
     reanalysis_functions = []
     for address in REANALYSIS_FUNCTIONS:
@@ -1358,6 +1401,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "buffer_factory_lvars": buffer_factory_lvars,
                 "object_loader_lvars": object_loader_lvars,
                 "immediate_quad_lvars": immediate_quad_lvars,
+                "backdrop_tile_vertex_lvars": backdrop_tile_vertex_lvars,
                 "reanalysis_functions": reanalysis_functions,
                 "missing": missing,
                 "failed": failed,

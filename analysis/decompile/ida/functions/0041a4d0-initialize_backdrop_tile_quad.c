@@ -13,9 +13,9 @@ void __cdecl initialize_backdrop_tile_quad(
 {
   Vec3 *vertices; // edi
   ObjectFaceQuad *facequads; // esi
-  float *p_z; // ecx
+  float *__shifted(BackdropTileVertexCursorView,8) vertex_z_cursor; // ecx
   int v9; // edi
-  double v10; // st7
+  double y; // st7
   double v11; // st7
   float v12; // [esp+0h] [ebp-4h]
   float row_selectora; // [esp+14h] [ebp+10h]
@@ -39,7 +39,7 @@ void __cdecl initialize_backdrop_tile_quad(
   facequads->vertex_1 = 1;
   facequads->vertex_2 = 3;
   facequads->vertex_3 = 2;
-  facequads->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0);
+  facequads->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0);
   facequads->uv[1].u = 0.2;
   facequads->uv[2].u = 0.2;
   facequads->uv[0].u = 0.80000001;
@@ -99,93 +99,93 @@ void __cdecl initialize_backdrop_tile_quad(
     default:
       break;
   }
-  p_z = &vertices->z;
+  vertex_z_cursor = &vertices->z;
   v9 = 4;
   do
   {
     switch ( edge_selector )
     {
       case 1:
-        if ( *(p_z - 2) < 0.0 && *p_z < 0.0 )
+        if ( ADJ(vertex_z_cursor)->x < 0.0 && ADJ(vertex_z_cursor)->z < 0.0 )
         {
-          if ( *(p_z - 2) >= 0.0 )
-            row_selectorb = *(p_z - 2) != 0.0;
+          if ( ADJ(vertex_z_cursor)->x >= 0.0 )
+            row_selectorb = ADJ(vertex_z_cursor)->x != 0.0;
           else
             row_selectorb = -1;
-          *(p_z - 2) = *(p_z - 2) - (double)row_selectorb * 0.2;
-          if ( *p_z >= 0.0 )
-            *p_z = *p_z - (double)(*p_z != 0.0) * 0.2;
+          ADJ(vertex_z_cursor)->x = ADJ(vertex_z_cursor)->x - (double)row_selectorb * 0.2;
+          if ( ADJ(vertex_z_cursor)->z >= 0.0 )
+            ADJ(vertex_z_cursor)->z = ADJ(vertex_z_cursor)->z - (double)(ADJ(vertex_z_cursor)->z != 0.0) * 0.2;
           else
-            *p_z = *p_z - (double)-1 * 0.2;
+            ADJ(vertex_z_cursor)->z = ADJ(vertex_z_cursor)->z - (double)-1 * 0.2;
         }
         break;
       case 2:
-        if ( *(p_z - 2) < 0.0 && *p_z > 0.0 )
+        if ( ADJ(vertex_z_cursor)->x < 0.0 && ADJ(vertex_z_cursor)->z > 0.0 )
         {
-          if ( *(p_z - 2) >= 0.0 )
-            row_selectorc = *(p_z - 2) != 0.0;
+          if ( ADJ(vertex_z_cursor)->x >= 0.0 )
+            row_selectorc = ADJ(vertex_z_cursor)->x != 0.0;
           else
             row_selectorc = -1;
-          *(p_z - 2) = *(p_z - 2) - (double)row_selectorc * 0.2;
-          if ( *p_z >= 0.0 )
-            *p_z = *p_z - (double)(*p_z != 0.0) * 0.2;
+          ADJ(vertex_z_cursor)->x = ADJ(vertex_z_cursor)->x - (double)row_selectorc * 0.2;
+          if ( ADJ(vertex_z_cursor)->z >= 0.0 )
+            ADJ(vertex_z_cursor)->z = ADJ(vertex_z_cursor)->z - (double)(ADJ(vertex_z_cursor)->z != 0.0) * 0.2;
           else
-            *p_z = *p_z - (double)-1 * 0.2;
+            ADJ(vertex_z_cursor)->z = ADJ(vertex_z_cursor)->z - (double)-1 * 0.2;
         }
         break;
       case 3:
-        if ( *(p_z - 2) > 0.0 && *p_z < 0.0 )
+        if ( ADJ(vertex_z_cursor)->x > 0.0 && ADJ(vertex_z_cursor)->z < 0.0 )
         {
-          if ( *(p_z - 2) >= 0.0 )
-            row_selectord = *(p_z - 2) != 0.0;
+          if ( ADJ(vertex_z_cursor)->x >= 0.0 )
+            row_selectord = ADJ(vertex_z_cursor)->x != 0.0;
           else
             row_selectord = -1;
-          *(p_z - 2) = *(p_z - 2) - (double)row_selectord * 0.2;
-          if ( *p_z >= 0.0 )
-            *p_z = *p_z - (double)(*p_z != 0.0) * 0.2;
+          ADJ(vertex_z_cursor)->x = ADJ(vertex_z_cursor)->x - (double)row_selectord * 0.2;
+          if ( ADJ(vertex_z_cursor)->z >= 0.0 )
+            ADJ(vertex_z_cursor)->z = ADJ(vertex_z_cursor)->z - (double)(ADJ(vertex_z_cursor)->z != 0.0) * 0.2;
           else
-            *p_z = *p_z - (double)-1 * 0.2;
+            ADJ(vertex_z_cursor)->z = ADJ(vertex_z_cursor)->z - (double)-1 * 0.2;
         }
         break;
       case 4:
-        if ( *(p_z - 2) > 0.0 && *p_z > 0.0 )
+        if ( ADJ(vertex_z_cursor)->x > 0.0 && ADJ(vertex_z_cursor)->z > 0.0 )
         {
-          if ( *(p_z - 2) >= 0.0 )
-            row_selectore = *(p_z - 2) != 0.0;
+          if ( ADJ(vertex_z_cursor)->x >= 0.0 )
+            row_selectore = ADJ(vertex_z_cursor)->x != 0.0;
           else
             row_selectore = -1;
-          *(p_z - 2) = *(p_z - 2) - (double)row_selectore * 0.2;
-          if ( *p_z >= 0.0 )
-            *p_z = *p_z - (double)(*p_z != 0.0) * 0.2;
+          ADJ(vertex_z_cursor)->x = ADJ(vertex_z_cursor)->x - (double)row_selectore * 0.2;
+          if ( ADJ(vertex_z_cursor)->z >= 0.0 )
+            ADJ(vertex_z_cursor)->z = ADJ(vertex_z_cursor)->z - (double)(ADJ(vertex_z_cursor)->z != 0.0) * 0.2;
           else
-            *p_z = *p_z - (double)-1 * 0.2;
+            ADJ(vertex_z_cursor)->z = ADJ(vertex_z_cursor)->z - (double)-1 * 0.2;
         }
         break;
       case 5:
-        if ( *(p_z - 2) > 0.0 )
+        if ( ADJ(vertex_z_cursor)->x > 0.0 )
           goto LABEL_43;
         break;
       case 6:
         goto LABEL_43;
       case 7:
-        if ( *(p_z - 2) < 0.0 )
+        if ( ADJ(vertex_z_cursor)->x < 0.0 )
         {
 LABEL_43:
-          if ( *p_z > 0.0 )
+          if ( ADJ(vertex_z_cursor)->z > 0.0 )
           {
-            v10 = *(p_z - 1);
-            if ( *(_DWORD *)p_z == 1056964608 )
-              v11 = v10 + 0.5;
+            y = ADJ(vertex_z_cursor)->y;
+            if ( LODWORD(ADJ(vertex_z_cursor)->z) == 1056964608 )
+              v11 = y + 0.5;
             else
-              v11 = v10 + 0.60000002;
-            *(p_z - 1) = v11;
+              v11 = y + 0.60000002;
+            ADJ(vertex_z_cursor)->y = v11;
           }
         }
         break;
       default:
         break;
     }
-    p_z += 3;
+    vertex_z_cursor += 3;
     --v9;
   }
   while ( v9 );

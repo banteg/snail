@@ -13,6 +13,9 @@ from _narrow_sync import (
     apply_symbol_removals,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
+    apply_user_var_updates,
+    current_struct_fields_batch,
+    current_type_widths,
     emit_summary,
     types_declare_if_changed,
 )
@@ -20,6 +23,17 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
+
+BACKDROP_TILE_VERTEX_CURSOR_USER_VAR_UPDATES = (
+    (
+        "initialize_backdrop_tile_quad",
+        "RegisterVariableSourceType",
+        458,
+        67,
+        "vertex_z_cursor",
+        "BackdropTileVertexCursorView*",
+    ),
+)
 
 GAME_ROOT_FIELDS = (
     ("0x48e00", "directx_loader", "DirectXLoader"),
@@ -490,6 +504,61 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def verify_backdrop_tile_vertex_cursor(*, target: str) -> dict[str, object]:
+    expected_widths = {
+        "Vec3": 0x0C,
+        "BackdropTileVertexCursorView": 0x0C,
+        "Object": 0xDC,
+    }
+    expected_fields = {
+        "BackdropTileVertexCursorView": {
+            0x00: ("x", "float"),
+            0x04: ("y", "float"),
+            0x08: ("z", "float"),
+        },
+        "Object": {
+            0x38: ("vertices", "Vec3*"),
+        },
+    }
+    widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=expected_widths,
+    )
+    fields = current_struct_fields_batch(
+        REPO_ROOT,
+        target=target,
+        struct_names=expected_fields,
+    )
+    failures: list[str] = []
+    for type_name, expected_width in expected_widths.items():
+        observed_width = widths.get(type_name)
+        if observed_width != expected_width:
+            failures.append(
+                f"{type_name}: expected width {expected_width:#x}, "
+                f"observed {observed_width!r}"
+            )
+    for struct_name, expected_members in expected_fields.items():
+        observed_members = fields.get(struct_name, {})
+        for offset, expected_member in expected_members.items():
+            observed_member = observed_members.get(offset)
+            if observed_member != expected_member:
+                failures.append(
+                    f"{struct_name}+{offset:#x}: expected {expected_member!r}, "
+                    f"observed {observed_member!r}"
+                )
+    if failures:
+        raise RuntimeError(
+            "backdrop tile vertex cursor ownership is not current:\n"
+            + "\n".join(failures)
+        )
+    return {
+        "op": "verify_backdrop_tile_vertex_cursor",
+        "status": "verified",
+        "widths": widths,
+    }
+
+
 def main() -> int:
     args = parse_args()
     header_path = args.header.resolve()
@@ -502,6 +571,16 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
+        )
+    )
+    operations.append(
+        verify_backdrop_tile_vertex_cursor(target=args.target)
+    )
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=BACKDROP_TILE_VERTEX_CURSOR_USER_VAR_UPDATES,
         )
     )
     operations.append(
