@@ -55,19 +55,31 @@ static __forceinline void build_strip_mesh(
     int face_index;
     for (row = 0; row <= path->segment_count; ++row) {
         PathTemplateSample* sample = &path->primary_samples[row];
-        if (row == path->segment_count)
-            sample = &path->primary_samples[row - 1];
 
         for (column = 0; column <= path->width_cells; ++column) {
             float lateral = (float)column - (float)path->width_cells * 0.5f;
             Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            vertex->x = sample->transform.position.x
-                + lateral * sample->transform.basis_right.x;
-            vertex->y = sample->transform.position.y
-                + lateral * sample->transform.basis_right.y;
-            vertex->z = sample->transform.position.z
-                + lateral * sample->transform.basis_right.z
-                + (row == path->segment_count ? 1.0f : 0.0f);
+            if (row != path->segment_count) {
+                Vector3 generated_position(
+                    sample->transform.position.x
+                        + lateral * sample->transform.basis_right.x,
+                    sample->transform.position.y
+                        + lateral * sample->transform.basis_right.y,
+                    sample->transform.position.z
+                        + lateral * sample->transform.basis_right.z);
+                *vertex = generated_position;
+            } else {
+                PathTemplateSample* previous = &path->primary_samples[row - 1];
+                Vector3 lateral_offset(
+                    lateral * previous->transform.basis_right.x,
+                    lateral * previous->transform.basis_right.y,
+                    lateral * previous->transform.basis_right.z);
+                Vector3 generated_position(
+                    previous->transform.position.x + lateral_offset.x,
+                    previous->transform.position.y + lateral_offset.y,
+                    previous->transform.position.z + 1.0f + lateral_offset.z);
+                *vertex = generated_position;
+            }
         }
     }
 
@@ -148,8 +160,9 @@ void Path::initialize_sbend_path_template_pair(
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
 
-    for (int i = 1; i <= steps; ++i) {
-        float phase = (float)(i - 1) * 6.2831855f / (float)steps;
+    for (int sample_index = 0; sample_index < steps; ++sample_index) {
+        int i = sample_index + 1;
+        float phase = (float)sample_index * 6.2831855f / (float)steps;
         primary_samples[i].center_x = primary_samples[0].center_x;
         primary_samples[i].rotation_scalar_98 = 0.0f;
         primary_samples[i].rotation_scalar_94 = 0.0f;

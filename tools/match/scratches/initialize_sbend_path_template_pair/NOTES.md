@@ -85,3 +85,24 @@ sample and vertex, and both face records. The retained decompile has zero
 `__offset` expressions. Typing the byte-biased forward cursor was rejected
 because it introduced four backward-offset artifacts. Focused matching remains
 40.79% (529/579), with 36 clean masked operands.
+
+## 2026-07-25 induction and mesh-vector ownership
+
+Raw native assembly proves that the interior sample loop owns a zero-based
+counter at stack offset `0xa8`: the authored sample is `counter + 1`, while the
+phase uses the counter directly and the backedge compares it with `steps`.
+Recovering that split raises focused matching to 40.90% and adds a clean masked
+operand.
+
+The mesh vertex loop also branches on the terminal row inside the column loop.
+For ordinary rows it materializes one aggregate generated position before
+copying three lanes to the vertex. For the terminal row it separately
+materializes a lateral-offset vector and a generated position based on the
+previous sample, with the `+1.0f` owned by Z. Recovering those branch-local
+aggregate owners together with the zero-based sample counter raises the retained
+result from 40.79% (529/579) to 41.24% (546/579), with 37 clean masked operands
+and no unresolved or mismatched masks.
+
+An aggregate secondary-position offset was rejected. Although locally
+plausible, it regressed the combined result to 39.57% and changed unrelated
+register lifetimes; the native scalar additions remain the retained spelling.
