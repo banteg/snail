@@ -50,6 +50,9 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     matcher_header = (
         repo_root / "tools/match/include/galaxy_route_types.h"
     ).read_text(encoding="utf-8")
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
     analysis_headers = tuple(
         (HEADER_DIR / name).read_text(encoding="utf-8")
         for name in (
@@ -67,6 +70,55 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert "int32_t __thiscall update_galaxy(Galaxy* galaxy)" in runtime_sync
     assert "void __thiscall open_galaxy_route(" in runtime_sync
     assert "void __thiscall galaxy_border_bound(" in runtime_sync
+    assert "GALAXY_ROUTE_CURSOR_EXPECTED_SIZES" in runtime_sync
+    assert '"GalaxyRouteSlot": 0x2A0' in runtime_sync
+    assert '"Galaxy": 0x10FA8' in runtime_sync
+    assert "GALAXY_ROUTE_CURSOR_USER_VAR_UPDATES" in runtime_sync
+    assert (
+        '"update_galaxy",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        40,\n"
+        "        69,\n"
+        '        "route_slot_cursor",\n'
+        '        "GalaxyRouteSlot*",'
+    ) in runtime_sync
+    assert "remove_user_var_updates" in runtime_sync
+    assert "REJECTED_GALAXY_HIGHLIGHT_RESET_CURSOR_REMOVALS" in runtime_sync
+    assert (
+        '"update_galaxy",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        1086,\n"
+        "        67,\n"
+        '        "highlight_reset_cursor",\n'
+        '        "float*",'
+    ) in runtime_sync
+    assert (
+        '"update_galaxy",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        1352,\n"
+        "        73,\n"
+        '        "highlight_target_cursor",\n'
+        '        "float*",'
+    ) in runtime_sync
+    assert "--galaxy-route-cursor-only" in runtime_sync
+    assert "if args.galaxy_route_cursor_only:" in runtime_sync
+    assert "require_galaxy_route_cursor_dependencies" in runtime_sync
+    assert (
+        '"struct GalaxyRouteSlot* route_slot_cursor = &galaxy->route_slots"'
+        in health_checks
+    )
+    assert (
+        '"update_galaxy_route_record(route_slot_cursor)"' in health_checks
+    )
+    assert (
+        '"float* highlight_target_cursor = '
+        '&galaxy->route_slots[1].record.highlight_target"'
+    ) in health_checks
+    assert (
+        '"int32_t* edi_2 = '
+        '&galaxy->route_slots[1].record.highlight_target"'
+    ) in health_checks
+    assert '"struct GalaxyRouteSlot (*"' in health_checks
 
     for declaration in (
         "GalaxyRouteNameRecord* __thiscall initialize_galaxy_route_name_record(",

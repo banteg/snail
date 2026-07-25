@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_subgame",
-      "address": "0x438b90"
+      "name": "update_galaxy",
+      "address": "0x4092f0"
     }
   ],
   "health_check_count": 975,

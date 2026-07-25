@@ -196,3 +196,45 @@ resolves its two former anonymous helpers as
 transitions and the enclosing subgame backlink. Honest matching is unchanged
 at 71.01%, 569/566 candidate/target instructions, prefix 48, and 52 clean
 operands.
+
+## 2026-07-24 route-slot cursor ownership
+
+The first route-update pass borrows one element from the Galaxy-owned
+`route_slots[101]` bank. Native seeds EBX with `Galaxy +0x10`, calls
+`update_galaxy_route_record`, and advances EBX by exactly `0x2a0`, the proven
+`sizeof(GalaxyRouteSlot)`. Binary Ninja had promoted that induction value to
+`GalaxyRouteSlot (*)[101]`, which misleadingly presented the borrow as a
+pointer to the complete owner and rendered its increment through the whole
+array type.
+
+The exact SSA identity (`RegisterVariableSourceType`, index `40`, storage
+`69`) now replays as a borrowed `GalaxyRouteSlot* route_slot_cursor`. The
+tracked decompile consequently shows the one-slot update and
+`route_slot_cursor = &route_slot_cursor[1]`. IDA independently retains the
+same `GalaxyRouteSlot*` loop cursor, so no competing aggregate owner is
+needed.
+
+The later hover scan carries the interior
+`GalaxyRouteRecord::highlight_target` address in EDI and advances it by the
+same slot stride. Reanalysis had degraded that borrow to `int32_t*` because
+the loop stores the float constants as raw dword bits. Its exact SSA identity
+(`RegisterVariableSourceType`, index `1352`, storage `73`) is now pinned as
+`float* highlight_target_cursor`; Binary Ninja again exposes `1f` / `0f`
+stores, and IDA independently retains the same float-field cursor. A matching
+annotation on the earlier reset loop was tested and explicitly removed:
+typing that interior ECX value suppressed Binary Ninja's useful containing
+owner inference and expanded each native dword store into four byte writes.
+
+The focused export also catches the artifact up with the already-proved
+`g_sound_effect_manager` receiver on the three route open/switch/close feedback
+calls. That ABI was recovered in the 2026-07-12 pass; the stale checked-in
+Binary Ninja text had still omitted the receiver even though the live
+prototype and matcher source were current.
+
+The focused replay fails closed unless `GalaxyRouteSlot == 0x2a0` and the
+complete `Galaxy == 0x10fa8`; it also removes the rejected reset-loop
+experiment before applying the two useful borrows. A second run reports all
+three operations already current. This is an analysis-only ownership
+clarification. Focused matching remains honestly unchanged at 71.01%,
+569/566 instructions, prefix 48/566, with 52 clean and no unresolved or
+mismatched masked operands.

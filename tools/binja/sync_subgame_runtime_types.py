@@ -16,6 +16,7 @@ from _narrow_sync import (
     current_struct_size,
     emit_summary,
     reanalyze_functions,
+    remove_user_var_updates,
     struct_exists,
     types_declare_if_missing,
     types_declare_missing_only,
@@ -127,6 +128,11 @@ SALT_STARTUP_CURSOR_EXPECTED_SIZES = {
     "SaltOwnerGameStrideCursor": 0x98,
 }
 
+GALAXY_ROUTE_CURSOR_EXPECTED_SIZES = {
+    "GalaxyRouteSlot": 0x2A0,
+    "Galaxy": 0x10FA8,
+}
+
 BANNER_INITIALIZER_USER_VAR_UPDATES = (
     (
         "initialize_game_assets_and_world",
@@ -210,6 +216,47 @@ SALT_STARTUP_CURSOR_USER_VAR_UPDATES = (
         73,
         "salt_owner_game_cursor",
         "SaltOwnerGameStrideCursor*",
+    ),
+)
+
+# update_galaxy's first route pass borrows one GalaxyRouteSlot at a time from
+# Galaxy::route_slots. Native advances EBX by exactly sizeof(GalaxyRouteSlot);
+# without this bounded lifetime Binary Ninja promotes the borrow to a pointer
+# to the complete 101-slot owner and renders a misleading owner-sized step.
+#
+# Two later passes carry the address of GalaxyRouteRecord::highlight_target
+# and advance it by the same slot stride. The hover pass needs an explicit
+# float borrow because bit-pattern stores otherwise degrade it to int32_t*
+# after reanalysis. The earlier reset pass is deliberately left automatic:
+# annotating its interior address suppresses Binary Ninja's more useful
+# containing GalaxyRouteSlot recovery and expands each dword store into bytes.
+GALAXY_ROUTE_CURSOR_USER_VAR_UPDATES = (
+    (
+        "update_galaxy",
+        "RegisterVariableSourceType",
+        40,
+        69,
+        "route_slot_cursor",
+        "GalaxyRouteSlot*",
+    ),
+    (
+        "update_galaxy",
+        "RegisterVariableSourceType",
+        1352,
+        73,
+        "highlight_target_cursor",
+        "float*",
+    ),
+)
+
+REJECTED_GALAXY_HIGHLIGHT_RESET_CURSOR_REMOVALS = (
+    (
+        "update_galaxy",
+        "RegisterVariableSourceType",
+        1086,
+        67,
+        "highlight_reset_cursor",
+        "float*",
     ),
 )
 
@@ -524,7 +571,40 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_CONTACT_HEADER_PATH,
         help="Path to the shared contact-target type-import header.",
     )
+    parser.add_argument(
+        "--galaxy-route-cursor-only",
+        action="store_true",
+        help=(
+            "Replay only update_galaxy's borrowed route-slot cursor after "
+            "verifying the existing Galaxy owner layouts."
+        ),
+    )
     return parser.parse_args()
+
+
+def require_galaxy_route_cursor_dependencies(*, target: str) -> dict[str, object]:
+    observed_sizes = {
+        name: current_struct_size(REPO_ROOT, target=target, struct_name=name)
+        for name in GALAXY_ROUTE_CURSOR_EXPECTED_SIZES
+    }
+    mismatches = {
+        name: {
+            "expected": expected,
+            "observed": observed_sizes[name],
+        }
+        for name, expected in GALAXY_ROUTE_CURSOR_EXPECTED_SIZES.items()
+        if observed_sizes[name] != expected
+    }
+    if mismatches:
+        raise RuntimeError(
+            "refusing Galaxy route cursor replay with size mismatches: "
+            f"{mismatches!r}"
+        )
+    return {
+        "op": "verify_galaxy_route_cursor_dependencies",
+        "status": "verified",
+        "owner_sizes": observed_sizes,
+    }
 
 
 def ensure_time_trial_owner_types(
@@ -566,6 +646,27 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
     if not contact_header_path.is_file():
         raise FileNotFoundError(f"contact-target type header not found: {contact_header_path}")
+
+    if args.galaxy_route_cursor_only:
+        operations = [
+            require_galaxy_route_cursor_dependencies(target=args.target),
+            *remove_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                removals=REJECTED_GALAXY_HIGHLIGHT_RESET_CURSOR_REMOVALS,
+            ),
+            *apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=GALAXY_ROUTE_CURSOR_USER_VAR_UPDATES,
+            ),
+        ]
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
 
     operations: list[dict[str, object]] = [
         types_declare_if_missing(
@@ -625,6 +726,9 @@ def main() -> int:
             target=args.target,
             header_path=header_path,
         )
+    )
+    operations.append(
+        require_galaxy_route_cursor_dependencies(target=args.target)
     )
     parcel_sizes = {
         name: current_struct_size(REPO_ROOT, target=args.target, struct_name=name)
@@ -814,6 +918,13 @@ def main() -> int:
         )
     )
     operations.extend(
+        remove_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            removals=REJECTED_GALAXY_HIGHLIGHT_RESET_CURSOR_REMOVALS,
+        )
+    )
+    operations.extend(
         apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
@@ -822,6 +933,7 @@ def main() -> int:
                 *PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES,
                 *SUB_LAZER_STARTUP_CURSOR_USER_VAR_UPDATES,
                 *SALT_STARTUP_CURSOR_USER_VAR_UPDATES,
+                *GALAXY_ROUTE_CURSOR_USER_VAR_UPDATES,
             ),
         )
     )

@@ -13216,12 +13216,20 @@
       "artifact": "analysis/decompile/binja/functions/004092f0-update_galaxy.c",
       "required_substrings": [
         "hide_gameplay_scores(galaxy->level_progress_base)",
-        "update_galaxy_route_record(slot)",
+        "struct GalaxyRouteSlot* route_slot_cursor = &galaxy->route_slots",
+        "update_galaxy_route_record(route_slot_cursor)",
+        "route_slot_cursor = &route_slot_cursor[1]",
+        "float* highlight_target_cursor = &galaxy->route_slots[1].record.highlight_target",
+        "*highlight_target_cursor = 1f",
+        "highlight_target_cursor = &highlight_target_cursor[0xa8]",
         "draw_galaxy_line(galaxy",
         "destroy_galaxy(galaxy)",
         "open_galaxy_route(galaxy"
       ],
       "forbidden_substrings": [
+        "struct GalaxyRouteSlot (*",
+        "slot = &(*slot)[1]",
+        "int32_t* edi_2 = &galaxy->route_slots[1].record.highlight_target",
         "sub_409bd0",
         "arg1",
         "unimplemented"
@@ -13232,8 +13240,11 @@
       "artifact": "analysis/decompile/ida/functions/004092f0-update_galaxy.c",
       "required_substrings": [
         "int32_t __thiscall update_galaxy(Galaxy *galaxy)",
+        "GalaxyRouteSlot *route_slots;",
         "galaxy->level_progress_base",
         "update_galaxy_route_record(route_slots)",
+        "v26 = &galaxy->route_slots[1].record.highlight_target;",
+        "v26 += 168;",
         "draw_galaxy_line(galaxy",
         "destroy_galaxy(galaxy)",
         "open_galaxy_route(galaxy"

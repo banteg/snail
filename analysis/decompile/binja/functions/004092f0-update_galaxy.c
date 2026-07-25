@@ -6,10 +6,10 @@
 00409308        hide_gameplay_scores(galaxy->level_progress_base)
 00409312        int32_t i = 0
 00409316        if (g_runtime_config.highest_galaxy_route_index s>= 0)
-00409318        struct GalaxyRouteSlot (* slot)[0x65] = &galaxy->route_slots
-0040931d        update_galaxy_route_record(slot)
+00409318        struct GalaxyRouteSlot* route_slot_cursor = &galaxy->route_slots
+0040931d        update_galaxy_route_record(route_slot_cursor)
 00409327        i += 1
-00409328        slot = &(*slot)[1]
+00409328        route_slot_cursor = &route_slot_cursor[1]
 00409330        do while (i s<= g_runtime_config.highest_galaxy_route_index)
 00409351        struct tColour color_1
 00409351        if (galaxy->route_state == 1 && ((galaxy->bounds_frame_widget->widget_flags).w:1.b & 0x10) == 0)
@@ -170,13 +170,13 @@
 0040980a        galaxy->hover_state = 2
 00409823        (&galaxy->route_slots[0].record.highlight_target)[selected_index * 0xa8] = 0x3f800000
 00409832        if (g_runtime_config.highest_galaxy_route_index s>= 1)
-00409838        float* edi_2 = &galaxy->route_slots[1].record.highlight_target
-00409845        float map_z = (edi_2 - 0x2cc)->route_slots[1].record.map_z
-00409848        color.b = map_z
-0040984c        color.r = fconvert.s(fconvert.t((edi_2 - 0x2cc)->route_slots[1].record.map_x) - fconvert.t(authored_x))
-0040985b        vector.z = map_z
+00409838        float* highlight_target_cursor = &galaxy->route_slots[1].record.highlight_target
+00409845        int32_t ecx_29 = highlight_target_cursor[-2]
+00409848        color.b = ecx_29
+0040984c        color.r = fconvert.s(fconvert.t(highlight_target_cursor[-4]) - fconvert.t(authored_x))
+0040985b        vector.z = ecx_29
 00409863        vector.x = color.r
-00409867        color.g = fconvert.s(fconvert.t((edi_2 - 0x2cc)->route_slots[1].record.map_y) - fconvert.t(authored_y))
+00409867        color.g = fconvert.s(fconvert.t(highlight_target_cursor[-3]) - fconvert.t(authored_y))
 0040986f        vector.y = color.g
 00409873        long double st0_2 = normalize_vector(&vector)
 00409878        long double temp7_1 = fconvert.t(17f)
@@ -184,12 +184,12 @@
 0040988d        if ((((st0_2 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(st0_2, temp7_1) ? 1 : 0) << 0xa | (st0_2 == temp7_1 ? 1 : 0) << 0xe):1.b & 1) != 0 && galaxy->hover_state == 0)
 0040988f        galaxy->hover_state = 2
 00409899        selected_index = i_5
-0040989b        (edi_2 - 0x2cc)->route_slots[1].record.highlight_target = 1f
+0040989b        *highlight_target_cursor = 1f
 004098af        if (galaxy->route_state != 1 || i_5 != galaxy->selected_index)
-004098b9        (edi_2 - 0x2cc)->route_slots[1].record.highlight_target = 0f
-004098b1        (edi_2 - 0x2cc)->route_slots[1].record.highlight_target = 1f
+004098b9        *highlight_target_cursor = 0f
+004098b1        *highlight_target_cursor = 1f
 004098c4        i_5 += 1
-004098c5        edi_2 = &edi_2[0xa8]
+004098c5        highlight_target_cursor = &highlight_target_cursor[0xa8]
 004098cd        do while (i_5 s<= g_runtime_config.highest_galaxy_route_index)
 004098d8        struct GameRoot* game_base_3 = g_game_base
 004098e6        if (game_base_3->border_manager.delayed_widget_active == 0)
@@ -266,13 +266,13 @@
 00409a88        if (hover_state != 2 || (game_base_3->players[0].game_input->input.pressed_buttons & INPUT_BUTTON_PRIMARY) == 0)
 00409ad4        if (hover_state == 0 && (game_base_3->players[0].game_input->input.pressed_buttons & INPUT_BUTTON_PRIMARY) != 0 && route_state == 1 && g_runtime_config.highest_galaxy_route_index s> 1)
 00409ad8        close_galaxy_route(galaxy)
-00409ae4        play_sound_effect(8)
+00409ae4        play_sound_effect(&g_sound_effect_manager, 8)
 00409a90        if (selected_index != galaxy->selected_index)
 00409a95        if (route_state == 1)
 00409a99        close_galaxy_route(galaxy)
 00409aa1        open_galaxy_route(galaxy, selected_index)
-00409ae4        play_sound_effect(8)
+00409ae4        play_sound_effect(&g_sound_effect_manager, 8)
 00409aaa        if (route_state == 0)
 00409aaf        open_galaxy_route(galaxy, selected_index)
-00409ae4        play_sound_effect(8)
+00409ae4        play_sound_effect(&g_sound_effect_manager, 8)
 00409af2        return 0
