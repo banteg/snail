@@ -1003,7 +1003,7 @@ steering_stored:
     presentation.weapon_channels[2].anim_manager.update_anim_manager();
     game->parcel_manager.update_track_parcels();
     presentation.initialize_cutscene();
-    update_player_movement_flags();
+    SetShootFlags();
     if (g_game->subgame.replay_update_cursor < 10)
         movement_fire_progress = movement_fire_progress_step;
 

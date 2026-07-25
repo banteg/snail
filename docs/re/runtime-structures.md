@@ -478,7 +478,8 @@ consecutive `cRWeapon` instances plus a fourth jetpack instance.
 
 High-confidence current read:
 
-- `update_player_movement_flags` feeds the authored
+- Windows `update_player_movement_flags`, authored as the void
+  `cRSubGoldy::SetShootFlags()`, feeds the authored
   `cRSnail::SetWeapon(int)` member (`set_snail_weapon` at `0x445920`)
 - `SetWeapon` resolves one `movement_flags` mask into three Weapon states
 - the three `Weapon` owners live at Snail offsets:

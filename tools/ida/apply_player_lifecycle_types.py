@@ -16,6 +16,7 @@ import idc
 
 TRUSTED_NAMES = (
     (0x43A010, "health_collect_particles"),
+    (0x43A1A0, "update_player_movement_flags"),
     (0x43A300, "update_movement_flag_emitters"),
     (0x43A370, "end_jetpack_hover"),
     (0x43A9C0, "initialize_subgoldy"),
@@ -30,6 +31,10 @@ TRUSTED_DECLARATIONS = (
     (
         "health_collect_particles",
         "void __thiscall health_collect_particles(Player* player, SubHealth* pickup);",
+    ),
+    (
+        "update_player_movement_flags",
+        "void __thiscall update_player_movement_flags(Player* player);",
     ),
     (
         "update_movement_flag_emitters",

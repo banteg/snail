@@ -73,3 +73,28 @@ block VC6 tail merging and is removed. The direct member assignment preserves
 the recovered movement/presentation ownership and returns to the honest
 93.75%, 46/50 object with a 38-instruction prefix and two clean operands. The
 missing duplicate equal-tail epilogue remains visible compiler-layout debt.
+
+## 2026-07-25 authored SetShootFlags void ABI
+
+Android preserves this exact member as `cRSubGoldy::SetShootFlags()`. Its body
+repeats the Windows nine-case selector table, writes the same shooting-family
+flags and cadence step, and calls the authored `cRSnail::SetWeapon(int)` only
+when the flags change. This closes the stable Windows helper as shooting-state
+ownership rather than a generic movement-state updater.
+
+IDA 9.4's ARM disassembly supplies the result contract. Both Android paths join
+at one `POP {R4,PC}`: the unchanged path leaves the original `cRSubGoldy*` in
+R0, while the changed path leaves whatever the multi-exit `SetWeapon` call
+happened to leave there. Those incompatible residues cannot be one semantic
+return value, so the shared source declaration and both Windows analysis
+databases now use the authored void mutator.
+
+Ghidra 12.1.2 independently imports the Android ELF at image base zero,
+demangles the function as `cRSubGoldy::SetShootFlags()`, assigns it a void
+contract, and reconstructs the same nine-case table and conditional
+`cRSnail::SetWeapon` call.
+
+The void source shape remains honestly at 93.75%, 46/50 instructions, prefix
+38/50, with two clean operands. VC6 still tail-merges the clean equal path;
+the native duplicate equal-path field reload remains compiler-layout debt and
+the retired volatile barrier is not restored.

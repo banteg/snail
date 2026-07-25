@@ -719,6 +719,14 @@
       "notes": "The exact Windows helper and Android body both emit an eight-particle collection burst from the borrowed SubHealth sprite; renderer-specific sprite IDs and field offsets differ."
     },
     {
+      "address": "0x43a1a0",
+      "windows_name": "update_player_movement_flags",
+      "android_symbol": "cRSubGoldy::SetShootFlags()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the authored name and the same nine-case selector-to-weapon-flags/cadence table. Its common POP {R4,PC} exit leaves the original receiver in R0 when unchanged but the incidental residue of cRSnail::SetWeapon when changed, proving the member is void. The Windows harness name remains stable."
+    },
+    {
       "address": "0x43a370",
       "windows_name": "end_jetpack_hover",
       "ios_symbol": "cRSubHover::End()",

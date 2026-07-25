@@ -45,6 +45,7 @@ EXPECTED_OWNER_SIZES = {
 
 SYMBOL_UPDATES = (
     ("0x43a010", "health_collect_particles"),
+    ("0x43a1a0", "update_player_movement_flags"),
     ("0x43a300", "update_movement_flag_emitters"),
     ("0x43a370", "end_jetpack_hover"),
     ("0x43a9c0", "initialize_subgoldy"),
@@ -59,6 +60,10 @@ PROTO_UPDATES = (
     (
         "health_collect_particles",
         "void __thiscall health_collect_particles(Player* player, SubHealth* pickup)",
+    ),
+    (
+        "update_player_movement_flags",
+        "void __thiscall update_player_movement_flags(Player* player)",
     ),
     (
         "update_movement_flag_emitters",

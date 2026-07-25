@@ -284,12 +284,13 @@ source-shape issue is solved.
   these compact local slices as promotable `Warning`, `PlayerControlSource`,
   or `CutScene` definitions. Focused evidence stayed unchanged at `72.51%`,
   `2067/2087`, and the same `290 ok / 1` jump-table masked audit.
-- 2026-06-20 Player ABI cleanup, superseded 2026-07-14: the temporary local
-  method surface was aligned with `player.h` for `initialize_subgoldy_death()` and
-  `update_player_movement_flags()` returning `int`. Their return values are
-  still ignored at the callsites in this large update body, so focused Wibo
-  remains `72.51%`, `2067/2087`, with the same `290 ok / 1` jump-table masked
-  audit. The complete shared owner now compiles identically.
+- 2026-06-20 Player ABI cleanup, superseded 2026-07-25: the temporary local
+  method surface was aligned with `player.h` for `initialize_subgoldy_death()`.
+  Android has since closed the second call as the authored void
+  `cRSubGoldy::SetShootFlags()` mutator; its incidental Windows EAX residue was
+  already ignored at this callsite. The `SetShootFlags` manifest alias keeps
+  that call's masked operand clean; current focused Wibo remains `74.43%`,
+  `2070/2087`, with `290 ok / 1` remaining compiler-local jump-table mismatch.
 - 2026-06-21 Player type-row cleanup, superseded 2026-07-14: the temporary
   `SubgoldyPlayerView` prevented a misleading type merge while the shared
   header was incomplete. It is now retired; the body defines

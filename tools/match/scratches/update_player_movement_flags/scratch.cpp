@@ -2,7 +2,7 @@
 
 #include "player.h"
 
-int Player::update_player_movement_flags()
+void Player::SetShootFlags()
 {
     int selector = movement_flag_selector;
     movement_flags = 0;
@@ -50,14 +50,11 @@ slow_fire:
         break;
     }
 
-    unsigned int result = movement_flags;
-    if (result != previous_movement_flags) {
+    if (movement_flags != previous_movement_flags) {
         presentation.set_snail_weapon(movement_flags);
-        result = movement_flags;
-        previous_movement_flags = result;
-        return result;
+        previous_movement_flags = movement_flags;
+        return;
     }
 
     previous_movement_flags = movement_flags;
-    return result;
 }

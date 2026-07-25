@@ -3,14 +3,13 @@
 /* selector: update_player_movement_flags */
 
 // Maps the player movement-flag selector at +0x308 onto movement_flags and the movement-fire progress step at +0x2734, then refreshes the 0x2984 state machine when the mask changes.
-int __thiscall update_player_movement_flags(Player *player)
+void __thiscall update_player_movement_flags(Player *player)
 {
-  int selector; // eax
-  unsigned int result; // eax
+  int32_t movement_flag_selector; // eax
 
-  selector = player->movement_flag_selector;
+  movement_flag_selector = player->movement_flag_selector;
   player->movement_flags = 0;
-  switch ( selector )
+  switch ( movement_flag_selector )
   {
     case 0:
       player->movement_flags = 1;
@@ -53,16 +52,7 @@ LABEL_12:
       player->movement_fire_progress_step = 0.06666667;
       break;
   }
-  result = player->movement_flags;
-  if ( result == player->previous_movement_flags )
-  {
-    player->previous_movement_flags = player->movement_flags;
-  }
-  else
-  {
+  if ( player->movement_flags != player->previous_movement_flags )
     set_snail_weapon(&player->presentation, player->movement_flags);
-    result = player->movement_flags;
-    player->previous_movement_flags = result;
-  }
-  return result;
+  player->previous_movement_flags = player->movement_flags;
 }
