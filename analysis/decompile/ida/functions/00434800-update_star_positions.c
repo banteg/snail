@@ -2,7 +2,7 @@
 /* function: update_star_positions @ 0x434800 */
 /* selector: update_star_positions */
 
-// Advances each star-field streak along its cached direction, resets wrapped entries against the current camera origin, and scales the visible sprite trail by both per-streak speed and the controller fade factor.
+// Advances each star-field streak along its cached direction, resets wrapped entries against the current camera origin, and scales the visible sprite trail by both per-streak speed and the controller fade factor. Cross-port Android and iOS symbols match this member to `cRStarManager::UpdateStars(float)`.
 void __thiscall update_star_positions(StarManager *manager, float fade_alpha)
 {
   int32_t v2; // edi
@@ -37,11 +37,12 @@ void __thiscall update_star_positions(StarManager *manager, float fade_alpha)
       {
         *p_travel_distance = 0.0;
         manager->entries[v3].sprite->facing_refresh_progress = 0.0;
-        v17 = *((float *)g_game_base + 438) * 50.0;
-        v18 = *((float *)g_game_base + 439) * 50.0;
-        v14 = *((float *)g_game_base + 437) * 50.0 + *((float *)g_game_base + 441);
-        v15 = v17 + *((float *)g_game_base + 442);
-        v16 = v18 + *((float *)g_game_base + 443);
+        v17 = g_game_base->overlay_0.bod.transform.basis_forward.y * 50.0;
+        v18 = g_game_base->overlay_0.bod.transform.basis_forward.z * 50.0;
+        v14 = g_game_base->overlay_0.bod.transform.basis_forward.x * 50.0
+            + g_game_base->overlay_0.bod.transform.position.x;
+        v15 = v17 + g_game_base->overlay_0.bod.transform.position.y;
+        v16 = v18 + g_game_base->overlay_0.bod.transform.position.z;
         p_position = &manager->entries[v3].sprite->position;
         p_position->x = v14;
         p_position->y = v15;
@@ -71,4 +72,3 @@ void __thiscall update_star_positions(StarManager *manager, float fade_alpha)
     while ( v2 < manager->count );
   }
 }
-

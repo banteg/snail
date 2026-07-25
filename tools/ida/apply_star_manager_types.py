@@ -174,6 +174,7 @@ REANALYSIS_FUNCTIONS = (
     0x44E580,
     0x44E800,
     0x44E810,
+    0x434800,
 )
 
 

@@ -66,11 +66,12 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# Native retains a byte offset in EDI while the loop index advances in EBX.
+# Init retains a byte offset in EDI while the loop index advances in EBX.
 # Retyping that offset as an integer makes HLIL incorrectly associate the final
 # facing-refresh store with the incremented index, so it deliberately remains
-# automatic. These exact derived definitions are genuine borrowed owners: one
-# StarManagerEntry, its Sprite, and the Vec3/tColour children copied into it.
+# automatic. These exact derived definitions are genuine borrowed owners:
+# StarManagerEntry records, their Sprites, and the Vec3/tColour children copied
+# into them by Init and UpdateStars.
 STAR_FIELD_USER_VAR_UPDATES = (
     (
         "initialize_star_field",
@@ -224,6 +225,86 @@ STAR_FIELD_USER_VAR_UPDATES = (
         "facing_refresh_sprite",
         "Sprite*",
     ),
+    (
+        "update_star_positions",
+        "RegisterVariableSourceType",
+        24,
+        66,
+        "distance_entry",
+        "StarManagerEntry*",
+    ),
+    (
+        "update_star_positions",
+        "RegisterVariableSourceType",
+        48,
+        72,
+        "travel_distance",
+        "float*",
+    ),
+    (
+        "update_star_positions",
+        "RegisterVariableSourceType",
+        72,
+        66,
+        "respawn_sprite",
+        "Sprite*",
+    ),
+    (
+        "update_star_positions",
+        "RegisterVariableSourceType",
+        184,
+        66,
+        "respawn_position",
+        "Vec3*",
+    ),
+    (
+        "update_star_positions",
+        "RegisterVariableSourceType",
+        206,
+        66,
+        "velocity_entry",
+        "StarManagerEntry*",
+    ),
+    (
+        "update_star_positions",
+        "RegisterVariableSourceType",
+        214,
+        66,
+        "sprite_velocity",
+        "Vec3*",
+    ),
+    (
+        "update_star_positions",
+        "RegisterVariableSourceType",
+        236,
+        66,
+        "motion_entry",
+        "StarManagerEntry*",
+    ),
+    (
+        "update_star_positions",
+        "RegisterVariableSourceType",
+        272,
+        66,
+        "motion_position",
+        "Vec3*",
+    ),
+    (
+        "update_star_positions",
+        "RegisterVariableSourceType",
+        306,
+        66,
+        "travel_entry",
+        "StarManagerEntry*",
+    ),
+    (
+        "update_star_positions",
+        "RegisterVariableSourceType",
+        326,
+        66,
+        "alpha_entry",
+        "StarManagerEntry*",
+    ),
 )
 
 
@@ -231,7 +312,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Replay the borrowed entry, Sprite, vector, and color lifetimes "
-            "in cRStarManager::Init."
+            "in cRStarManager::Init and cRStarManager::UpdateStars."
         )
     )
     parser.add_argument(

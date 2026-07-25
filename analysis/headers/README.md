@@ -212,6 +212,10 @@ intentional.
 - `uv run python tools/binja/sync_subgame_pool_types.py`
 - `star_manager_types.h`
 - `uv run python tools/binja/sync_star_manager_types.py`
+- `uv run python tools/binja/sync_star_field_lifetimes.py`
+  - Replays the exact derived `StarManagerEntry`, `Sprite`, `Vec3`, and
+    `tColour` borrows in both `cRStarManager::Init` and
+    `cRStarManager::UpdateStars` after the canonical owner layouts exist.
 
 The presentation BN sync lane selectively replays the authoritative camera/render slice:
 - sparse `Player` / `Game` field overlays that have already proven stable in `update_subgoldy` / `update_cameraman`

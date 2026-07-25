@@ -4532,11 +4532,43 @@
       ]
     },
     {
+      "name": "bn_star_manager_update_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00434800-update_star_positions.c",
+      "required_substrings": [
+        "struct StarManagerEntry* distance_entry",
+        "struct GameRoot* game_base_1 = g_game_base",
+        "game_base_1->overlay_0.bod.transform.basis_forward",
+        "game_base_1->overlay_0.bod.transform.position",
+        "struct StarManagerEntry* velocity_entry",
+        "struct Vec3* sprite_velocity",
+        "struct StarManagerEntry* motion_entry",
+        "struct Vec3* motion_position",
+        "struct StarManagerEntry* travel_entry",
+        "struct StarManagerEntry* alpha_entry",
+        "->color.a"
+      ],
+      "forbidden_substrings": [
+        "void* eax_1",
+        "void* eax_9",
+        "void* eax_13",
+        "void* eax_17",
+        "void* eax_19",
+        "game_base_1 + 0x6d",
+        "+ 0x1c)",
+        "+ 0x38)",
+        "+ 0x54",
+        "+ 0x8c)",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "ida_star_manager_update_void_abi",
       "artifact": "analysis/decompile/ida/functions/00434800-update_star_positions.c",
       "required_substrings": [
         "void __thiscall update_star_positions",
         "travel_distance",
+        "g_game_base->overlay_0.bod.transform.basis_forward",
+        "g_game_base->overlay_0.bod.transform.position",
         "sprite->position",
         "sprite->velocity",
         "sprite->color.a"
@@ -4544,6 +4576,7 @@
       "forbidden_substrings": [
         "void *result",
         "return result",
+        "*((float *)g_game_base",
         "_pad_",
         "__offset(",
         "__asm",

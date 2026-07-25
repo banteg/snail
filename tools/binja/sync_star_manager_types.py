@@ -213,8 +213,9 @@ PROTO_UPDATES = (
     ),
 )
 
-SPRITE_TGA_REANALYSIS_FUNCTIONS = (
+STAR_MANAGER_REANALYSIS_FUNCTIONS = (
     "border_mouse_test",
+    "update_star_positions",
 )
 
 SPRITE_TGA_USER_VAR_UPDATES = (
@@ -361,7 +362,7 @@ def main() -> int:
         *reanalyze_functions(
             REPO_ROOT,
             target=args.target,
-            identifiers=SPRITE_TGA_REANALYSIS_FUNCTIONS,
+            identifiers=STAR_MANAGER_REANALYSIS_FUNCTIONS,
         ),
         *apply_user_var_updates(
             REPO_ROOT,

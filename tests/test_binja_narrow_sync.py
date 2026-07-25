@@ -2462,7 +2462,10 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "0x44E580" in ida_source
     assert "0x44E800" in ida_source
     assert "0x44E810" in ida_source
+    assert "0x434800" in ida_source
     assert '"border_mouse_test"' in source
+    assert "STAR_MANAGER_REANALYSIS_FUNCTIONS" in source
+    assert '"update_star_positions"' in source
     assert '"mask"' in source
     assert '"TgaImageView*"' in source
     for function_name in (
@@ -2557,7 +2560,35 @@ def test_star_field_lifetime_replay_stays_guarded() -> None:
         )
         assert expected in replay
 
+    for index, storage, name, variable_type in (
+        (24, 66, "distance_entry", "StarManagerEntry*"),
+        (48, 72, "travel_distance", "float*"),
+        (72, 66, "respawn_sprite", "Sprite*"),
+        (184, 66, "respawn_position", "Vec3*"),
+        (206, 66, "velocity_entry", "StarManagerEntry*"),
+        (214, 66, "sprite_velocity", "Vec3*"),
+        (236, 66, "motion_entry", "StarManagerEntry*"),
+        (272, 66, "motion_position", "Vec3*"),
+        (306, 66, "travel_entry", "StarManagerEntry*"),
+        (326, 66, "alpha_entry", "StarManagerEntry*"),
+    ):
+        expected = (
+            '        "update_star_positions",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}"'
+        )
+        assert expected in replay
+
     assert "Retyping that offset as an integer" in replay
+    assert "cRStarManager::Init and cRStarManager::UpdateStars" in replay
+    assert (
+        '        176,\n'
+        "        66,\n"
+        '        "position_sprite"'
+    ) not in replay
     assert "apply_user_var_updates" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay

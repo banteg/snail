@@ -78,3 +78,25 @@ native function does. Focused matching rises from 99.06% to 100.00%, with all
 106 instructions and 11 masked operands exact. The former scratch-local
 constructor-return operator is removed; arithmetic ownership now agrees with
 the other exact vector-expression callers.
+
+## 2026-07-25 durable UpdateStars ownership replay
+
+The exact source needs no code-shape change. The paired analysis replay now
+persists the derived `StarManagerEntry*`, `Sprite*`, `Vec3*`, and
+`travel_distance` borrows that Binary Ninja previously inferred only
+transiently, while both decompilers explicitly reanalyze this updater after
+the shared star/root graph is applied. Tracked canaries require the respawn
+origin through
+`GameRoot::overlay_0.bod.transform.{basis_forward,position}` and reject the
+former raw root, numeric velocity/alpha Sprite offsets, and `void*` entry
+temporaries.
+
+One tempting EAX definition immediately before the respawn reset was rejected:
+MLIL proves it is the loaded `Sprite*`, not another `StarManagerEntry*`, and
+forcing the intermediate type degraded the position fields into synthetic
+suffixes. The replay therefore records only the ten stable derived lifetimes
+whose owner identities survive reanalysis in the exact function. BN's final
+HLIL still folds the three typed `respawn_position` stores into one aggregate
+`Sprite +0x48` write; MLIL retains the `Vec3*` owner, and IDA independently
+renders the same write as `sprite->position`, so the canary does not pretend
+that the remaining BN presentation offset has disappeared.
