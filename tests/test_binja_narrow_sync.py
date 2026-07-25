@@ -5412,7 +5412,7 @@ def test_ida_type_inspectors_report_function_and_data_ownership() -> None:
     data_wrapper = (IDA_DIR / "query_data_types.py").read_text(encoding="utf-8")
 
     for marker in (
-        "ida_funcs.get_func(address)",
+        "ida_funcs.get_func_start(address)",
         '"type": idc.get_type(address)',
         '"name": idc.get_func_name(address)',
     ):
