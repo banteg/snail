@@ -7208,7 +7208,10 @@
         "struct TimeTrialRouteRecordCursor* time_trial_route_cursor",
         "time_trial_route_cursor->record.active",
         "&time_trial_route_cursor->record.score_or_time",
-        "update_slug_voice_manager(&game->slug_voice_manager)"
+        "update_slug_voice_manager(&game->slug_voice_manager)",
+        "game_base_1->players[0].saved_frontend_state = game_base_1->players[0].frontend_state",
+        "g_game_base->players[0].frontend_state = 0x1a",
+        "g_game_base->players[0].frontend_state = 0x1b"
       ],
       "forbidden_substrings": [
         "struct Game*",
@@ -7232,6 +7235,7 @@
         "struct RowModel* list_prev",
         "first_1->body.bod.bod.list_prev",
         "active_bod_list.first->vtable.128.bod.bod",
+        "*(g_game_base + 0x1b8)",
         "__asm",
         "_ET1"
       ],
@@ -7267,7 +7271,10 @@
         "time_trial_route_cursor->record.active",
         "&time_trial_route_cursor->record.score_or_time",
         "update_slug_voice_manager(&game->slug_voice_manager);",
-        "game->runtime_flags & 0x800000"
+        "game->runtime_flags & 0x800000",
+        "g_game_base->players[0].saved_frontend_state = g_game_base->players[0].frontend_state;",
+        "g_game_base->players[0].frontend_state = 26;",
+        "g_game_base->players[0].frontend_state = 27;"
       ],
       "forbidden_substrings": [
         "sub_438B90(int this)",
@@ -7288,6 +7295,7 @@
         "sub_43F5E0",
         "g_sprite_manager.sprites[2527]",
         "unk_800000",
+        "(char *)g_game_base + 440",
         "__asm",
         "_ET1"
       ]

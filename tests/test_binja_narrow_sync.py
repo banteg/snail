@@ -15795,6 +15795,47 @@ def test_subgame_level_activation_lifetime_replay_stays_guarded() -> None:
         assert hidden_ssa_name not in replay
 
 
+def test_update_subgame_frontend_root_split_stays_guarded() -> None:
+    repo_root = Path(__file__).parents[1]
+    replay = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "UPDATE_SUBGAME_FRONTEND_ROOT_SPLIT_DEFINITIONS" in replay
+    assert (
+        '("0x4399b8", "mlil", "RegisterVariableSourceType", 3624, 66)'
+        in replay
+    )
+    assert "UPDATE_SUBGAME_FRONTEND_ROOT_TARGET_VAR" in replay
+    assert replay.count(
+        "definitions=UPDATE_SUBGAME_FRONTEND_ROOT_SPLIT_DEFINITIONS"
+    ) == 2
+    assert replay.count(
+        "target_var=UPDATE_SUBGAME_FRONTEND_ROOT_TARGET_VAR"
+    ) == 2
+    assert 'variable_name="frontend_game_base"' in replay
+    assert 'variable_type="GameRoot*"' in replay
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    bn_check = checks["bn_update_subgame_owner_graph"]
+    ida_check = checks["ida_update_subgame_owner_graph"]
+    assert (
+        "g_game_base->players[0].frontend_state = 0x1b"
+        in bn_check["required_substrings"]
+    )
+    assert "*(g_game_base + 0x1b8)" in bn_check["forbidden_substrings"]
+    assert (
+        "g_game_base->players[0].frontend_state = 27;"
+        in ida_check["required_substrings"]
+    )
+    assert "(char *)g_game_base + 440" in ida_check["forbidden_substrings"]
+
+
 def test_update_subgame_fringe_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_update_subgame_fringe_lifetimes.py"

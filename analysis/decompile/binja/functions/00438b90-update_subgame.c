@@ -422,7 +422,7 @@
 00439984        eax_12.b = game->selected_level_record_persistent
 0043998c        if (eax_12.b == 0)
 004399b2        game_base_1->players[0].saved_frontend_state = game_base_1->players[0].frontend_state
-004399bd        *(g_game_base + 0x1b8) = 0x1b
+004399bd        g_game_base->players[0].frontend_state = 0x1b
 00439994        game_base_1->players[0].saved_frontend_state = game_base_1->players[0].frontend_state
 004399a0        g_game_base->players[0].frontend_state = 0x1a
 004399c7        struct GameRoot* game_base_2 = g_game_base

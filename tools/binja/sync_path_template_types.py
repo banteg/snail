@@ -1682,6 +1682,21 @@ UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES = (
     ),
 )
 
+# The replay-exit branch at 0x4399b8 loads g_game_base into EAX before storing
+# front-end state 27. Its sibling branch uses EAX for the previous integer
+# state, so Binary Ninja merges the two values and renders only this store as
+# raw GameRoot +0x1b8. Split the pointer-producing definition alone; retyping
+# the shared EAX lifetime would falsely claim the sibling integer as GameRoot*.
+UPDATE_SUBGAME_FRONTEND_ROOT_SPLIT_DEFINITIONS = (
+    ("0x4399b8", "mlil", "RegisterVariableSourceType", 3624, 66),
+)
+
+UPDATE_SUBGAME_FRONTEND_ROOT_TARGET_VAR = (
+    "RegisterVariableSourceType",
+    3624,
+    66,
+)
+
 # remove_subgame_bods advances through one runtime cell at a time, then borrows
 # the intrusive BodNode::list_next field from each embedded row/pickup/hazard
 # owner. Binary Ninja otherwise promotes the cell and Golb-shot iterators to
@@ -4260,6 +4275,17 @@ def main() -> int:
         operations.append(verify_bod_core_owner_sizes(target=args.target))
         operations.append(verify_authored_row_cursor_sizes(target=args.target))
         operations.extend(
+            apply_split_user_var_update(
+                REPO_ROOT,
+                target=args.target,
+                identifier="update_subgame",
+                definitions=UPDATE_SUBGAME_FRONTEND_ROOT_SPLIT_DEFINITIONS,
+                target_var=UPDATE_SUBGAME_FRONTEND_ROOT_TARGET_VAR,
+                variable_name="frontend_game_base",
+                variable_type="GameRoot*",
+            )
+        )
+        operations.extend(
             apply_user_var_updates(
                 REPO_ROOT,
                 target=args.target,
@@ -4688,6 +4714,17 @@ def main() -> int:
             target_var=UPDATE_SUBGOLDY_EVENT_VIEW_TARGET_VAR,
             variable_name="row_event_segment_view",
             variable_type="SubSegmentEventBiasView*",
+        )
+    )
+    operations.extend(
+        apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="update_subgame",
+            definitions=UPDATE_SUBGAME_FRONTEND_ROOT_SPLIT_DEFINITIONS,
+            target_var=UPDATE_SUBGAME_FRONTEND_ROOT_TARGET_VAR,
+            variable_name="frontend_game_base",
+            variable_type="GameRoot*",
         )
     )
     for definitions, target_var, variable_name, variable_type in (

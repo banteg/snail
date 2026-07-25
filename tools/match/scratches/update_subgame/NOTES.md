@@ -488,3 +488,19 @@ That final handoff closes the `SubRow +0x90` field's ownership and rules out a
 generic projection payload. The rename is layout- and codegen-neutral:
 focused Wibo remains 79.75%, 1036/1033 instructions, with 117 clean operands
 and the same two jump-table identity mismatches.
+
+## 2026-07-25 replay-exit root lifetime
+
+The replay-exit fork uses EAX for two unrelated values: the persistent branch
+loads the previous integer `GamePlayer::frontend_state`, while the
+non-persistent branch reloads `g_game_base` before storing state 27. Binary
+Ninja merged those sibling definitions and rendered only the latter write as
+raw `GameRoot +0x1b8`.
+
+The replay now splits the pointer-producing definition at `0x4399b8`
+(`RegisterVariableSourceType / 3624 / 66`) and types only that lifetime as
+`GameRoot *`. Both branches consequently expose
+`GamePlayer::saved_frontend_state` and `frontend_state`, matching IDA and the
+exact source without falsely retyping the sibling integer. This is
+analysis-only; the honest 79.75%, 1036/1033 frontier and its two jump-table
+identity mismatches remain unchanged.
