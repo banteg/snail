@@ -69,14 +69,14 @@
 00417457        if (game_base_3->subgame.sub_high_score.active_record_count s<= 0)
 00417457        return
 00417464        int32_t edi_1 = 0
-00417466        high_score_1 = &high_score->replay_row_widgets
+00417466        struct FrontendWidget** replay_widget_cursor = &high_score->replay_row_widgets
 00417478        if (*(game_base_3->subgame.sub_high_score.active_record_bank + edi_1) == 1)
-00417482        int32_t field_00 = high_score_1->field_00
-00417486        if (field_00 != 0)
-0041748c        int32_t eax_17 = *(field_00 + 0x1a0)
-00417494        if ((eax_17.b & 0x20) != 0)
-00417496        eax_17.b &= 0xdf
-00417498        *(field_00 + 0x1a0) = eax_17
+00417482        struct FrontendWidget* ecx_25 = *replay_widget_cursor
+00417486        if (ecx_25 != 0)
+0041748c        enum FrontendWidgetFlag widget_flags_4 = ecx_25->widget_flags
+00417494        if ((widget_flags_4.b & 0x20) != 0)
+00417496        widget_flags_4.b &= 0xdf
+00417498        ecx_25->widget_flags = widget_flags_4
 004174a4        g_game_base->players[0].frontend_state = 0xa
 004174b6        g_game_base->players[0].redispatch_requested = 1
 004174bc        destroy_high_score_screen(high_score)
@@ -90,6 +90,6 @@
 0041750f        game_base_3 = g_game_base
 00417519        i += 1
 0041751d        edi_1 += 0x1fac0
-00417523        high_score_1 = &high_score_1->mode
+00417523        replay_widget_cursor = &replay_widget_cursor[1]
 0041752f        do while (i s< game_base_3->subgame.sub_high_score.active_record_count)
 0041753a        return

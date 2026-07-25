@@ -22,8 +22,8 @@
 004401eb        int32_t score = record->score
 004401f9        compact->checksum = (score * score) ^ 0xdeadbabe
 004401ff        compact->runtime_build_seed = record->runtime_build_seed
-00440208        compact->unknown_80 = record->unknown_1fab8
-00440214        compact->unknown_84 = record->unknown_1fabc
+00440208        compact->opaque_persistence_word_0 = record->opaque_persistence_word_0
+00440214        compact->opaque_persistence_word_1 = record->opaque_persistence_word_1
 0044021d        compact->runtime_build_flags = record->runtime_build_flags
 00440223        compact->bank_selector = record->high_score_mode_tag
 00440229        compact->entry_index = record->route_or_rank_index

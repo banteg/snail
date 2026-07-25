@@ -64,3 +64,14 @@ Evidence from the paired serializer:
   `movzx` from the packed byte followed by a word store proves the widening.
 - Assigning the compact byte directly to that word removes the old aliasing
   cast while preserving the exact 114/114 match and clean masked operand.
+
+2026-07-25 opaque persistence-tail closure:
+
+- A complete Windows disassembly scan finds the expanded `+0x1fab8/+0x1fabc`
+  words and compact `+0x80/+0x84` words only in this load/save pair.
+- Android independently preserves the authored `cRSubSolution::Load`,
+  `Save`, `ReSet`, and `Tip` method boundary; `Tip` consumes score, mode,
+  level, time, speed, and name fields, but not either tail word.
+- The paired fields are therefore named `opaque_persistence_word_0/1`: their
+  stable ownership and round-trip contract are proven, while their absent
+  gameplay semantics remain explicit. No speculative semantic name is used.

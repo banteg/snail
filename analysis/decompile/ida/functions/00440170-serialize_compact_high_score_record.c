@@ -37,8 +37,8 @@ int __thiscall serialize_compact_high_score_record(SubSolution *record, CompactH
   compact->score = record->score;
   compact->checksum = (record->score * record->score) ^ 0xDEADBABE;
   compact->runtime_build_seed = record->runtime_build_seed;
-  compact->unknown_80 = record->unknown_1fab8;
-  compact->unknown_84 = record->unknown_1fabc;
+  compact->opaque_persistence_word_0 = record->opaque_persistence_word_0;
+  compact->opaque_persistence_word_1 = record->opaque_persistence_word_1;
   compact->runtime_build_flags = record->runtime_build_flags;
   compact->bank_selector = record->high_score_mode_tag;
   compact->entry_index = record->route_or_rank_index;

@@ -28,8 +28,8 @@ unsigned char SubSolution::deserialize_compact_high_score_record(
     salt_frequency_bits = compact->salt_frequency_bits;
     source_tail = compact->source_tail;
     runtime_build_seed = compact->runtime_build_seed;
-    unknown_1fab8 = compact->unknown_80;
-    unknown_1fabc = compact->unknown_84;
+    opaque_persistence_word_0 = compact->opaque_persistence_word_0;
+    opaque_persistence_word_1 = compact->opaque_persistence_word_1;
     runtime_build_flags = compact->runtime_build_flags;
     high_score_mode_tag = compact->bank_selector;
     route_or_rank_index = compact->entry_index;

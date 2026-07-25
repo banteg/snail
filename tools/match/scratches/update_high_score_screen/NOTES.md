@@ -110,3 +110,15 @@ Binary Ninja's narrow high-score sync now explicitly reanalyzes this lifecycle
 method and its paired health canary rejects a return to raw root offsets. The
 tracked BN artifact therefore carries the same owner graph durably; matching
 source remains unchanged.
+
+## 2026-07-25 replay-row cursor lifetime
+
+The new unresolved-field ranker initially reported `HighScore::field_00` as a
+consumer here. That was a false structure xref caused by VC6 reusing one stack
+slot: it first saves the `HighScore*` receiver, then recycles the slot as the
+`FrontendWidget**` cursor over `replay_row_widgets`.
+
+The Binary Ninja replay now splits those definitions and joins only the
+cursor's loop-carried lifetime. The decompiler retains both real owners,
+matches IDA 9.4's independent rendering, and no longer invents a
+`HighScore::field_00` read. Matching source remains exact at 205/205.

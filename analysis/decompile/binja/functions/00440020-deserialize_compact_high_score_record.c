@@ -24,8 +24,8 @@
 004400ab        record->salt_frequency.bits = compact->salt_frequency.bits
 004400b4        record->source_tail = compact->source_tail
 004400ba        record->runtime_build_seed = compact->runtime_build_seed
-004400c3        record->unknown_1fab8 = compact->unknown_80
-004400cf        record->unknown_1fabc = compact->unknown_84
+004400c3        record->opaque_persistence_word_0 = compact->opaque_persistence_word_0
+004400cf        record->opaque_persistence_word_1 = compact->opaque_persistence_word_1
 004400d8        record->runtime_build_flags = compact->runtime_build_flags
 004400de        record->high_score_mode_tag = compact->bank_selector
 004400e4        int32_t replay_sample_count_2 = record->replay_sample_count

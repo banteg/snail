@@ -295,8 +295,8 @@ typedef struct SubSolution {
     ReplayRunRecord run_records[SUB_SOLUTION_RUN_RECORD_COUNT];
     float garbage_frequency;
     float salt_frequency;
-    int32_t unknown_1fab8;
-    int32_t unknown_1fabc;
+    int32_t opaque_persistence_word_0;
+    int32_t opaque_persistence_word_1;
 } SubSolution;
 
 typedef struct SubHighScore {

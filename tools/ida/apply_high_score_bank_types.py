@@ -616,7 +616,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
             missing.append({"selector": selector, "reason": "missing_symbol"})
             continue
 
-        if ida_funcs.get_func(address) is None:
+        if ida_funcs.get_func_start(address) == idc.BADADDR:
             missing.append({"selector": selector, "address": hex(address), "reason": "missing_function"})
             continue
 

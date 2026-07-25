@@ -62,3 +62,14 @@ matching native register ownership while keeping the `int16[]`, `int16[]`,
   payload stride while the in-memory record remains six bytes.
 - The natural field read preserves the exact 109/109 match and clean masked
   operand.
+
+2026-07-25 opaque persistence-tail closure:
+
+- Machine-wide Windows operand evidence limits the two final expanded words
+  and their compact counterparts to this exact serializer/deserializer pair.
+  They are preserved data, not padding, but no consumer proves stronger
+  gameplay semantics.
+- Both owners now use the deliberately conservative
+  `opaque_persistence_word_0/1` names. Android's symbol-backed
+  `cRSubSolution::Tip` method does not consume either word, so the rename
+  records the persistence contract without fakematching a meaning.

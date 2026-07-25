@@ -67,8 +67,8 @@ typedef struct SubSolution {
     ReplayRunRecord run_records[SUB_SOLUTION_RUN_RECORD_COUNT];
     SubSolutionScalar garbage_frequency;
     SubSolutionScalar salt_frequency;
-    int32_t unknown_1fab8;
-    int32_t unknown_1fabc;
+    int32_t opaque_persistence_word_0;
+    int32_t opaque_persistence_word_1;
 } SubSolution;
 
 /*
@@ -100,8 +100,8 @@ typedef struct CompactHighScoreRecord {
     int32_t replay_sample_count;
     SubSolutionScalar garbage_frequency;
     SubSolutionScalar salt_frequency;
-    int32_t unknown_80;
-    int32_t unknown_84;
+    int32_t opaque_persistence_word_0;
+    int32_t opaque_persistence_word_1;
     uint8_t replay_payload[1];
 } CompactHighScoreRecord;
 

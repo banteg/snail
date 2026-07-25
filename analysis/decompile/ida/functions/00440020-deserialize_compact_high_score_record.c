@@ -34,8 +34,8 @@ unsigned __int8 __thiscall deserialize_compact_high_score_record(SubSolution *re
     record->salt_frequency.bits = compact->salt_frequency.bits;
     record->source_tail = compact->source_tail;
     record->runtime_build_seed = compact->runtime_build_seed;
-    record->unknown_1fab8 = compact->unknown_80;
-    record->unknown_1fabc = compact->unknown_84;
+    record->opaque_persistence_word_0 = compact->opaque_persistence_word_0;
+    record->opaque_persistence_word_1 = compact->opaque_persistence_word_1;
     record->runtime_build_flags = compact->runtime_build_flags;
     record->high_score_mode_tag = compact->bank_selector;
     replay_sample_count = record->replay_sample_count;

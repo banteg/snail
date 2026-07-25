@@ -8,6 +8,7 @@ import sys
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_proto_updates,
+    apply_split_user_var_update,
     apply_struct_field_updates,
     emit_summary,
     reanalyze_functions,
@@ -50,6 +51,18 @@ HIGH_SCORE_LIFECYCLE_REANALYSIS_FUNCTIONS = (
     "exit_high_score_screen",
 )
 
+HIGH_SCORE_REPLAY_CURSOR_DEFINITIONS = (
+    ("0x417466", "mlil", "StackVariableSourceType", 518, -4),
+    ("0x41746f", "mlil_ssa", "StackVariableSourceType", 527, -4),
+    ("0x417523", "mlil", "StackVariableSourceType", 707, -4),
+)
+
+HIGH_SCORE_REPLAY_CURSOR_VAR = (
+    "StackVariableSourceType",
+    518,
+    -4,
+)
+
 
 def main() -> int:
     operations = [
@@ -67,6 +80,15 @@ def main() -> int:
             updates=GAME_ROOT_FIELD_UPDATES,
         ),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
+        *apply_split_user_var_update(
+            REPO_ROOT,
+            target=TARGET,
+            identifier="update_high_score_screen",
+            definitions=HIGH_SCORE_REPLAY_CURSOR_DEFINITIONS,
+            target_var=HIGH_SCORE_REPLAY_CURSOR_VAR,
+            variable_name="replay_widget_cursor",
+            variable_type="FrontendWidget**",
+        ),
         *reanalyze_functions(
             REPO_ROOT,
             target=TARGET,

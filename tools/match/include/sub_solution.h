@@ -69,8 +69,10 @@ struct SubSolutionHeader {
         int salt_frequency_bits; // +0x7c
         float salt_frequency; // +0x7c
     };
-    int unknown_80; // +0x80
-    int unknown_84; // +0x84
+    // Opaque words preserved by cRSubSolution::Load/Save. A complete Windows
+    // instruction scan finds no consumer outside that persistence bridge.
+    int opaque_persistence_word_0; // +0x80
+    int opaque_persistence_word_1; // +0x84
     char replay_payload[1]; // +0x88, variable: int16 lateral_x, int16 delta_z, byte flags
 
     short* lateral_samples()
@@ -141,8 +143,8 @@ public:
         int salt_frequency_bits; // +0x1fab4
         float salt_frequency; // +0x1fab4
     };
-    int unknown_1fab8; // +0x1fab8
-    int unknown_1fabc; // +0x1fabc
+    int opaque_persistence_word_0; // +0x1fab8
+    int opaque_persistence_word_1; // +0x1fabc
 };
 
 typedef char SubSolution_must_be_0x1fac0[

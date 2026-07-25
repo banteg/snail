@@ -24,8 +24,8 @@ int SubSolution::serialize_compact_high_score_record(SubSolutionHeader* compact)
     compact->score = score;
     compact->checksum = (score * score) ^ SUB_SOLUTION_CHECKSUM_MASK;
     compact->runtime_build_seed = runtime_build_seed;
-    compact->unknown_80 = unknown_1fab8;
-    compact->unknown_84 = unknown_1fabc;
+    compact->opaque_persistence_word_0 = opaque_persistence_word_0;
+    compact->opaque_persistence_word_1 = opaque_persistence_word_1;
     compact->runtime_build_flags = runtime_build_flags;
     compact->bank_selector = high_score_mode_tag;
     compact->entry_index = route_or_rank_index;
