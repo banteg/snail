@@ -9004,11 +9004,23 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
         '("0x84", "death_toss_direction", "SubSlugDeathTossDirection")'
         in pool_sync
     )
+    for offset, name in (
+        ("0x9c", "death_toss_progress"),
+        ("0xa0", "death_toss_progress_step"),
+        ("0xa4", "death_toss_secondary_progress"),
+        ("0xa8", "death_toss_secondary_progress_step"),
+    ):
+        assert f'("{offset}", "{name}", "float")' in pool_sync
+        assert f'("{offset}", "{name}", "float")' in path_sync
     assert '("SlugStateStrideCursor", SLUG_STATE_CURSOR_FIELD_UPDATES)' in pool_sync
 
     for header in (*analysis_headers, matcher_header):
         assert "Slug slots[SUB_SLUG_SLOT_CAPACITY]" in header
-        assert "unknown_9c[0xac - 0x9c]" in header
+        assert "float death_toss_progress;" in header
+        assert "float death_toss_progress_step;" in header
+        assert "float death_toss_secondary_progress;" in header
+        assert "float death_toss_secondary_progress_step;" in header
+        assert "unknown_9c[0xac - 0x9c]" not in header
         assert "SUB_SLUG_STATE_INACTIVE = 0" in header
         assert "SUB_SLUG_STATE_ACTIVE = 1" in header
         assert "SUB_SLUG_STATE_DEATH_TOSS_PENDING = 2" in header

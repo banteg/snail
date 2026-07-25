@@ -43,8 +43,8 @@ public:
     Vector3 velocity;               // +0x90
     float radius;                   // +0x9c
     float attachment_facing_angle; // +0xa0, projection output added to player heading
-    int unknown_a4;                 // +0xa4
-    float burst_rate_step;          // +0xa8
+    float burst_progress;           // +0xa4, write-only in the retained AI
+    float burst_progress_step;      // +0xa8, write-only in the retained AI
     float smoke_timer;              // +0xac
     float smoke_timer_step;         // +0xb0
     Sprite* sprite; // +0xb4, borrowed SpriteManager handle

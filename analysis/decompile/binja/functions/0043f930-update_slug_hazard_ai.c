@@ -55,11 +55,11 @@
 0043fa18        slug->sprite->draw_mode = 5
 0043fa25        set_sprite_texture_ref(slug->sprite, 0x78, 0)
 0043fa3f        store_color4f(&slug->sprite->color, 1f, 0f, 0f, 0.99000001f)
-0043f9b7        struct Sprite* sprite_1 = slug->sprite
+0043f9b7        struct Sprite* sprite_2 = slug->sprite
 0043f9bd        slug->hit_flash_progress = 0f
 0043f9c3        slug->blink_progress = 1f
 0043f9cd        slug->blink_step = -0.166666672f
-0043f9d7        sprite_1->draw_mode = 0
+0043f9d7        sprite_2->draw_mode = 0
 0043f9f7        store_color4f(&slug->sprite->color, 1f, 1f, 1f, 1f)
 0043fa05        set_sprite_texture_ref(slug->sprite, 0x77, 0)
 0043fb20        long double x87_r7_11 = fconvert.t(slug->owner_player->body.transform.position.z) + fconvert.t(1f)
@@ -161,18 +161,12 @@
 0043ff1e        var_14_4 = 1
 0043ff01        var_14_4 = 0xffffffff
 0043ff2a        struct SubgameRuntime* owner_game = slug->owner_game
-0043ff30        slug->unknown_9c[0] = 0
-0043ff30        slug->unknown_9c[1] = 0
-0043ff30        slug->unknown_9c[2] = 0
-0043ff30        slug->unknown_9c[3] = 0
+0043ff30        slug->death_toss_progress = 0f
 0043ff3e        slug->velocity.x = fconvert.s(float.t(var_14_4) * fconvert.t(0.200000003f) + fconvert.t(slug->velocity.x))
 0043ff43        long double x87_r7_48 = fconvert.t(owner_game->subgame_rate) * fconvert.t(0.00833333377f)
-0043ff49        slug->unknown_9c[8] = 0
-0043ff49        slug->unknown_9c[9] = 0
-0043ff49        slug->unknown_9c[0xa] = 0
-0043ff49        slug->unknown_9c[0xb] = 0
-0043ff4f        slug->unknown_9c[4].d = fconvert.s(x87_r7_48)
-0043ff5e        slug->unknown_9c[0xc].d = fconvert.s(fconvert.t(owner_game->subgame_rate) * fconvert.t(0.166666672f))
+0043ff49        slug->death_toss_secondary_progress = 0f
+0043ff4f        slug->death_toss_progress_step = fconvert.s(x87_r7_48)
+0043ff5e        slug->death_toss_secondary_progress_step = fconvert.s(fconvert.t(owner_game->subgame_rate) * fconvert.t(0.166666672f))
 0043feff        goto label_43ff64
 0043ff64        case SUB_SLUG_STATE_TEARDOWN_PENDING
 0043ff64        label_43ff64:
@@ -200,9 +194,10 @@
 0043ffe5        slug->body.bod.bod.list_next = ecx_16->free_top
 0043ffe8        ecx_16->free_top = slug
 0043ffeb        uint32_t list_flags_3 = slug->body.bod.bod.list_flags
+0043ffee        struct Sprite* sprite_1 = slug->sprite
 0043fff4        list_flags_3:1.b &= 0xfd
 0043fff7        slug->body.bod.bod.list_flags = list_flags_3
-0043fffa        kill_sprite(slug->sprite)
+0043fffa        kill_sprite(sprite_1)
 0043fd11        case SUB_SLUG_STATE_LATERAL_ACTIVE
 0043fd11        long double x87_r7_26 = fconvert.t(slug->lateral_phase_step) + fconvert.t(slug->lateral_phase)
 0043fd17        long double temp0_1 = fconvert.t(6.28318548f)
@@ -211,9 +206,11 @@
 0043fd1d        bool c1_1 = unknown  {fst dword [esi+0xb8], st0}
 0043fd28        if ((((x87_r7_26 < temp0_1 ? 1 : 0) << 8 | (c1_1 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_26, temp0_1) ? 1 : 0) << 0xa | (x87_r7_26 == temp0_1 ? 1 : 0) << 0xe | 0x3800):1.b & 0x41) == 0)
 0043fd30        slug->lateral_phase = fconvert.s(x87_r7_26 - fconvert.t(6.28318548f))
-0043fd55        slug->body.transform.position.x = fconvert.s(sine(slug->lateral_phase) * fconvert.t(3f))
+0043fd46        long double x87_r7_30 = sine(slug->lateral_phase) * fconvert.t(3f)
+0043fd4c        struct Player* owner_player_3 = slug->owner_player
+0043fd55        slug->body.transform.position.x = fconvert.s(x87_r7_30)
 0043fd58        long double x87_r7_31 = fconvert.t(slug->body.transform.position.z)
-0043fd5b        long double temp5_1 = fconvert.t(slug->owner_player->body.transform.position.z)
+0043fd5b        long double temp5_1 = fconvert.t(owner_player_3->body.transform.position.z)
 0043fd5b        x87_r7_31 - temp5_1
 0043fd6b        if ((((x87_r7_31 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_31, temp5_1) ? 1 : 0) << 0xa | (x87_r7_31 == temp5_1 ? 1 : 0) << 0xe):1.b & 1) != 0 && slug->passed_player == 0)
 0043fd6d        slug->passed_player = 1
@@ -221,12 +218,12 @@
 0043fd80        edx_9->x = slug->body.transform.position.x
 0043fd85        edx_9->y = slug->body.transform.position.y
 0043fd8b        edx_9->z = slug->body.transform.position.z
-0043fd8e        struct Player* owner_player_3 = slug->owner_player
+0043fd8e        struct Player* owner_player_4 = slug->owner_player
 0043fd94        long double x87_r7_32 = fconvert.t(slug->body.transform.position.z)
-0043fd97        long double temp8_1 = fconvert.t(owner_player_3->interaction_max_z)
+0043fd97        long double temp8_1 = fconvert.t(owner_player_4->interaction_max_z)
 0043fd97        x87_r7_32 - temp8_1
 0043fda2        if ((((x87_r7_32 < temp8_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_32, temp8_1) ? 1 : 0) << 0xa | (x87_r7_32 == temp8_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
-0043fe23        long double x87_r7_33 = fconvert.t(owner_player_3->nuke_effect_progress)
+0043fe23        long double x87_r7_33 = fconvert.t(owner_player_4->nuke_effect_progress)
 0043fe29        long double temp12_1 = fconvert.t(0f)
 0043fe29        x87_r7_33 - temp12_1
 0043fe34        if ((((x87_r7_33 < temp12_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_33, temp12_1) ? 1 : 0) << 0xa | (x87_r7_33 == temp12_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)

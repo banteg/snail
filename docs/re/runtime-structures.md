@@ -1361,8 +1361,8 @@ High-confidence current fields:
 - `+0x90`: `velocity`
 - `+0x9c`: `radius`
 - `+0xa0`: `attachment_facing_angle`
-- `+0xa4`: unresolved scalar
-- `+0xa8`: `burst_rate_step`
+- `+0xa4`: `burst_progress`
+- `+0xa8`: `burst_progress_step`
 - `+0xac`: `smoke_timer`
 - `+0xb0`: `smoke_timer_step`
 - `+0xb4`: `sprite`
@@ -1387,6 +1387,10 @@ Current practical read:
   `SUB_GARBAGE_COLLISION_SIDE_LEFT`, and contributes the recovered `+0.04`
   gauge delta
 - `update_garbage_hazard` matches Android and iOS `cRSubGarbage::AI()`: after collision, the slot bursts outward with randomized velocity, emits periodic smoke, and self-destructs when it falls below the track or behind the player
+  - Windows and Android both seed the adjacent `burst_progress` /
+    `burst_progress_step` pair to `0` and `subgame_rate * 1/120`; neither
+    retained build reads the pair, so the names record only its typed
+    burst-state ownership and do not assign an unobserved effect
   - the Zig port now emits the smoke through a native-shaped burst event (`SMOKE.TGA`, position from the live garbage slot, `velocity * 0.2`, size `0.3 x 1.3`, and an ~8-tick lifetime) instead of hand-placing two collision puffs
 - `destroy_garbage_hazard` matches Android `cRSubGarbage::Kill()` and unlinks
   the same `next_active` chain rooted at
@@ -1414,8 +1418,10 @@ High-confidence current fields:
 - `+0x88`: `owner_game`
 - `+0x8c`: `velocity`
 - `+0x98`: `attachment_facing_angle`
-- `+0x9c..+0xab`: unnamed state-two teardown scratch; writes are proved but no
-  reader is identified
+- `+0x9c`: `death_toss_progress`
+- `+0xa0`: `death_toss_progress_step`
+- `+0xa4`: `death_toss_secondary_progress`
+- `+0xa8`: `death_toss_secondary_progress_step`
 - `+0xac`: `sprite`
 - `+0xb0`: `source_cell`
 - `+0xb4`: `passed_player`
@@ -1450,6 +1456,12 @@ Current practical read:
 - the same state sets `passed_player` after the slug's world `z` falls behind the player and clears `engagement_voice_gate` before `play_voice_manager(..., 2, 1, -1)` when the player is within `16` rows; this is separate from the direct ambient `play_slug_voice` one-shot
 - `hit_slug_hazard` decrements `hit_points`, latches `hit_flash_pending`, and calls `play_slug_voice(slot, 36 - scaled_random)` while the slot remains alive, mapping to `SLUG-HIT1..3`
 - `kill_slug_hazard` only acts on `ACTIVE`; it calls `play_slug_voice(slot, 28 - scaled_random)` for `SLUG-DEATH1..2`, switches the slot to `DEATH_TOSS_PENDING`, records `LEFT` or `RIGHT` from `world_position.x`, awards slug score, and then calls `explode_slug_hazard`
+- Windows and Android independently preserve the four death-toss lanes as two
+  adjacent float `(progress, step)` pairs, seeding them to `(0, rate * 1/120)`
+  and `(0, rate * 1/6)` before the immediate teardown fallthrough; neither
+  retained build reads them, so `secondary` deliberately avoids inventing an
+  effect role, and the concrete `Slug` owner is retained instead of positing
+  an unsupported shared base with `SubGarbage`
 - `spawn_slug_hazard` passes `attachment_facing_angle` to the track-attachment projector, and `update_slug_hazard_ai` later adds that projected angle to the player's heading for the sprite; the garbage family has the same producer/consumer contract at its own `attachment_facing_angle`
 - `play_slug_voice` and `update_slug_voice_ai` use the per-slot `voice_active`, `voice_progress`, and `voice_progress_step` fields in addition to the global slug voice manager gate
 - later Android and iOS ports still use the same semantic fields, but at least one later build expands the slug capacity beyond the Windows `8`-slot pool

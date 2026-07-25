@@ -2727,6 +2727,10 @@ SUB_HEALTH_FIELD_UPDATES = (
 SLUG_FIELD_UPDATES = (
     ("0x80", "state", "SubSlugState"),
     ("0x84", "death_toss_direction", "SubSlugDeathTossDirection"),
+    ("0x9c", "death_toss_progress", "float"),
+    ("0xa0", "death_toss_progress_step", "float"),
+    ("0xa4", "death_toss_secondary_progress", "float"),
+    ("0xa8", "death_toss_secondary_progress_step", "float"),
 )
 
 SLUG_STATE_CURSOR_FIELD_UPDATES = (

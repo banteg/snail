@@ -26,3 +26,10 @@ Both analysis lanes now preserve `SubSlugState` at owner `+0x80` and
 `0x760` eight-slot pool, and `0xec` state-stride cursor before saving; Binary
 Ninja independently replays the exact enum member sets. The constructor stays
 exact at 7/7 instructions and does not seed speculative fields.
+
+## 2026-07-25 death-toss lane typing
+
+The former `unknown_9c` span is now four float fields on the concrete `Slug`
+owner. Windows and Android independently preserve the two adjacent
+`(progress, step)` store pairs in the death-toss transition. No reader or
+shared hazard base is inferred; the constructor remains exact at 7/7.

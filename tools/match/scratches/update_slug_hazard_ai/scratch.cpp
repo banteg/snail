@@ -165,10 +165,12 @@ direction_adjustment_complete:
         }
 
         velocity.x = (float)side * 0.200000003f + velocity.x;
-        *(int*)((char*)this + 0x9c) = 0;
-        *(float*)((char*)this + 0xa0) = owner_game->subgame_rate * 0.00833333377f;
-        *(int*)((char*)this + 0xa4) = 0;
-        *(float*)((char*)this + 0xa8) = owner_game->subgame_rate * 0.166666672f;
+        death_toss_progress = 0.0f;
+        death_toss_progress_step =
+            owner_game->subgame_rate * 0.00833333377f;
+        death_toss_secondary_progress = 0.0f;
+        death_toss_secondary_progress_step =
+            owner_game->subgame_rate * 0.166666672f;
     }
 
     case SUB_SLUG_STATE_TEARDOWN_PENDING:

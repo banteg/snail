@@ -83,11 +83,11 @@
 0043f3c2        var_1c_1 = 1
 0043f3a5        var_1c_1 = 0xffffffff
 0043f3d4        long double x87_r7_18 = float.t(var_1c_1) * fconvert.t(0.200000003f) * fconvert.t(owner_game->subgame_rate)
-0043f3d7        sub_garbage->unknown_a4 = 0
+0043f3d7        sub_garbage->burst_progress = 0f
 0043f3df        sub_garbage->velocity.x = fconvert.s(x87_r7_18 + fconvert.t(sub_garbage->velocity.x))
 0043f3e4        long double x87_r7_21 = fconvert.t(owner_game->subgame_rate) * fconvert.t(0.00833333377f)
 0043f3ea        sub_garbage->smoke_timer = 0f
-0043f3f0        sub_garbage->burst_rate_step = fconvert.s(x87_r7_21)
+0043f3f0        sub_garbage->burst_progress_step = fconvert.s(x87_r7_21)
 0043f3ff        sub_garbage->smoke_timer_step = fconvert.s(fconvert.t(owner_game->subgame_rate) * fconvert.t(0.277777791f))
 0043f3a3        goto label_43f41a
 0043f41a        case SUB_GARBAGE_STATE_BURST

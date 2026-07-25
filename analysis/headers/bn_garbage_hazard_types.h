@@ -160,8 +160,8 @@ struct SubGarbage {
     Vec3 velocity;
     float radius;
     float attachment_facing_angle;
-    int32_t unknown_a4;
-    float burst_rate_step;
+    float burst_progress;
+    float burst_progress_step;
     float smoke_timer;
     float smoke_timer_step;
     Sprite* sprite;

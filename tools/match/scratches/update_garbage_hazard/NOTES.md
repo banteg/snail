@@ -319,3 +319,17 @@ enum-typed `state` and `collision_side` locals and names every transition;
 IDA independently renders the four switch states and both right/left burst
 sides. The matcher stays genuinely exact at 217/217 with all 22 operands
 clean—these names expose proved semantics and do not alter source shape.
+
+## 2026-07-25 burst progress lane ownership
+
+The formerly anonymous `+0xa4` word and misleading `burst_rate_step` at
+`+0xa8` are one typed `(burst_progress, burst_progress_step)` float pair.
+Windows seeds the pair to `(0, subgame_rate * 0.0083333338)` during
+`BURST_PENDING`; Android `cRSubGarbage::AI()` independently performs the same
+stores at its class-relative `+0x98/+0x9c`. Exhaustive Windows field xrefs and
+the retained Android AI show no reader, while the adjacent second pair is
+independently consumed as `smoke_timer/smoke_timer_step`.
+
+The names therefore capture only the proved state-local pair and do not claim
+an active effect or a shared base class. Focused matching remains genuinely
+exact at 217/217 instructions with all 22 masked operands clean.

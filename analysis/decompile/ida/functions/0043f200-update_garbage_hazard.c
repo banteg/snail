@@ -5,7 +5,7 @@
 // Void `cRSubGarbage::AI()` callback advancing one owned pool slot through the typed `SubGarbageState` lifecycle (`INACTIVE`, `ACTIVE`, `BURST_PENDING`, `BURST`) and orienting its burst through `SubGarbageCollisionSide` (`RIGHT` or `LEFT`) before teardown. The exact Windows constructor table at 0x497328 points directly here, and the active-BOD dispatcher invokes slot zero through a virtual void method; Android and iOS retain the same authored member.
 void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
 {
-  Vec4 *p_position; // edi
+  Vec3 *p_position; // edi
   Player *owner_player; // ecx
   double x; // st7
   double v5; // st7
@@ -38,7 +38,7 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
         return;
       case SUB_GARBAGE_STATE_ACTIVE:
         p_position = &sub_garbage->body.transform.position;
-        sub_garbage->sprite->position = *(Vec3 *)&sub_garbage->body.transform.position.x;
+        sub_garbage->sprite->position = sub_garbage->body.transform.position;
         owner_player = sub_garbage->owner_player;
         if ( sub_garbage->body.transform.position.z < (double)owner_player->interaction_max_z )
           goto LABEL_4;
@@ -54,7 +54,7 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
         }
         append_subgame_contact_target(
           &sub_garbage->owner_game->enemy_manager,
-          (const Vec3 *)&sub_garbage->body.transform.position,
+          &sub_garbage->body.transform.position,
           sub_garbage->radius,
           0,
           (ContactTargetObject *)sub_garbage);
@@ -96,11 +96,11 @@ LABEL_19:
         else
           v22 = -1;
         v16 = (double)v22 * 0.2 * owner_game->subgame_rate;
-        sub_garbage->unknown_a4 = 0;
+        sub_garbage->burst_progress = 0.0;
         p_velocity->x = v16 + p_velocity->x;
         v17 = owner_game->subgame_rate * 0.0083333338;
         sub_garbage->smoke_timer = 0.0;
-        sub_garbage->burst_rate_step = v17;
+        sub_garbage->burst_progress_step = v17;
         sub_garbage->smoke_timer_step = owner_game->subgame_rate * 0.27777779;
 LABEL_23:
         sub_garbage->body.transform.position.x = sub_garbage->velocity.x + sub_garbage->body.transform.position.x;
@@ -129,7 +129,7 @@ LABEL_4:
             sub_garbage->smoke_timer = 0.0;
             spawn_garbage_smoke_particle(
               sub_garbage,
-              (Vec3 *)&sub_garbage->body.transform.position,
+              &sub_garbage->body.transform.position,
               &sub_garbage->velocity,
               v19);
           }

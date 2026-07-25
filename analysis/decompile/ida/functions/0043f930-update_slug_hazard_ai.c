@@ -133,7 +133,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
             kill_slug_hazard(slug);
           append_subgame_contact_target(
             &slug->owner_game->enemy_manager,
-            (const Vec3 *)&slug->body.transform.position,
+            &slug->body.transform.position,
             2.0,
             1,
             (ContactTargetObject *)slug);
@@ -189,12 +189,12 @@ LABEL_65:
         else
           v42 = -1;
         owner_game = slug->owner_game;
-        *(_DWORD *)slug->unknown_9c = 0;
+        slug->death_toss_progress = 0.0;
         p_velocity->x = (double)v42 * 0.2 + p_velocity->x;
         v35 = owner_game->subgame_rate * 0.0083333338;
-        *(_DWORD *)&slug->unknown_9c[8] = 0;
-        *(float *)&slug->unknown_9c[4] = v35;
-        *(float *)&slug->unknown_9c[12] = owner_game->subgame_rate * 0.16666667;
+        slug->death_toss_secondary_progress = 0.0;
+        slug->death_toss_progress_step = v35;
+        slug->death_toss_secondary_progress_step = owner_game->subgame_rate * 0.16666667;
 LABEL_69:
         v36 = slug->body.bod.bod.list_flags;
         slug->state = SUB_SLUG_STATE_INACTIVE;

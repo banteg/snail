@@ -938,7 +938,10 @@ typedef struct Slug {
     SubgameRuntime* owner_game;
     Vec3 velocity;
     float attachment_facing_angle;
-    uint8_t unknown_9c[0xac - 0x9c];
+    float death_toss_progress;
+    float death_toss_progress_step;
+    float death_toss_secondary_progress;
+    float death_toss_secondary_progress_step;
     Sprite* sprite;
     TrackRowCell* source_cell;
     uint8_t passed_player;
@@ -1005,8 +1008,8 @@ struct SubGarbage {
     Vec3 velocity;
     float radius;
     float attachment_facing_angle;
-    int32_t unknown_a4;
-    float burst_rate_step;
+    float burst_progress;
+    float burst_progress_step;
     float smoke_timer;
     float smoke_timer_step;
     Sprite* sprite;

@@ -91,11 +91,11 @@ side_adjustment_complete:
             }
             float signed_push = (float)sign * 0.2f;
             signed_push *= rate_game->subgame_rate;
-            unknown_a4 = 0;
+            burst_progress = 0.0f;
             burst_velocity->x = signed_push + burst_velocity->x;
             float rate_step = rate_game->subgame_rate * 0.0083333338f;
             smoke_timer = 0.0f;
-            burst_rate_step = rate_step;
+            burst_progress_step = rate_step;
             smoke_timer_step = rate_game->subgame_rate * 0.27777779f;
         }
             // fall through

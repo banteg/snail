@@ -178,3 +178,18 @@ enums in both decompilers. Binary Ninja exposes a `SubSlugState` switch and a
 right/left tests. Broad and narrow replays are idempotent in either order, so
 the analysis views no longer fall back to integer literals. The already exact
 464/464 matcher body and its 71 clean operands are unchanged.
+
+## 2026-07-25 typed death-toss progress lanes
+
+The anonymous `+0x9c..+0xab` byte span is four floats arranged as two
+`(progress, step)` pairs. Windows seeds them during
+`DEATH_TOSS_PENDING` to `(0, subgame_rate * 0.0083333338)` and
+`(0, subgame_rate * 0.16666667)`. Android `cRSlug::AI()` independently
+retains the same four stores at its class-relative `+0x90..+0x9c`.
+
+Both retained AIs immediately fall through to teardown and expose no reader.
+The fields are therefore conservatively named `death_toss_progress` and
+`death_toss_secondary_progress` pairs: the state owner, float widths, pairing,
+and rate steps are proved, but no effect semantics or shared hazard base is
+claimed. Focused matching remains genuinely exact at 464/464 instructions
+with all 71 masked operands clean.

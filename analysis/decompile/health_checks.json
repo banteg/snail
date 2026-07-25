@@ -2808,14 +2808,19 @@
         "SUB_GARBAGE_COLLISION_SIDE_LEFT",
         "sub_garbage->body.transform.position.x",
         "struct SubgameRuntime* owner_game",
-        "owner_game->subgame_rate"
+        "owner_game->subgame_rate",
+        "sub_garbage->burst_progress = 0",
+        "sub_garbage->burst_progress_step",
+        "sub_garbage->smoke_timer"
       ],
       "forbidden_substrings": [
         "struct Game*",
         "GarbageHazardSlot",
         "GarbageHazardRuntime",
         "slot->",
-        "sub_garbage->world_position"
+        "sub_garbage->world_position",
+        "sub_garbage->unknown_a4",
+        "sub_garbage->burst_rate_step"
       ]
     },
     {
@@ -2850,13 +2855,18 @@
         "SUB_GARBAGE_COLLISION_SIDE_LEFT",
         "sub_garbage->body.transform.position.x",
         "SubgameRuntime *owner_game",
-        "owner_game->subgame_rate"
+        "owner_game->subgame_rate",
+        "sub_garbage->burst_progress = 0.0;",
+        "sub_garbage->burst_progress_step",
+        "sub_garbage->smoke_timer"
       ],
       "forbidden_substrings": [
         "GarbageHazardSlot",
         "GarbageHazardRuntime",
         "slot->",
-        "sub_garbage->world_position"
+        "sub_garbage->world_position",
+        "sub_garbage->unknown_a4",
+        "sub_garbage->burst_rate_step"
       ]
     },
     {
@@ -8500,6 +8510,10 @@
         "slug->engagement_voice_gate",
         "slug->body.transform.position",
         "slug->body.bod.bod.list_flags",
+        "slug->death_toss_progress = 0",
+        "slug->death_toss_progress_step",
+        "slug->death_toss_secondary_progress",
+        "slug->death_toss_secondary_progress_step",
         "play_voice_manager(&g_voice_manager",
         "advance_blink_random(&g_game_base->subgame)"
       ],
@@ -8509,6 +8523,7 @@
         "SlugHazardRuntime",
         "slug->unknown_00",
         "struct Game*",
+        "slug->unknown_9c",
         "g_game_base[0x74618]",
         "g_game_base->subgame.scan_reset",
         "play_voice_manager(0x751498"
@@ -8531,7 +8546,10 @@
         "update_slug_voice_ai(slug)",
         "slug->body.transform.position",
         "slug->body.bod.bod.list_flags",
-        "slug->unknown_9c",
+        "slug->death_toss_progress = 0.0;",
+        "slug->death_toss_progress_step",
+        "slug->death_toss_secondary_progress = 0.0;",
+        "slug->death_toss_secondary_progress_step",
         "play_voice_manager(&g_voice_manager"
       ],
       "forbidden_substrings": [
@@ -8539,6 +8557,7 @@
         "_ET1",
         "SlugHazardRuntime",
         "slug->unknown_00",
+        "slug->unknown_9c",
         "_DWORD *this",
         "play_voice_manager((int)g_voice_manager"
       ]
