@@ -70,18 +70,18 @@
 00437735        hide_border_init(game->lives_text_widget)
 00437740        int32_t i_1 = 0
 00437742        int32_t i_2 = 0
-00437746        struct FrontendWidget* (* esi_2)[0x9] = &game->life_stock_widgets
+00437746        struct FrontendWidget** life_stock_widget_cursor = &game->life_stock_widgets
 0043774c        __builtin_strncpy(&game->lives_text_widget->font_scale, "333?", 4)
-00437781        (esi_2 - 0x35bb98)->life_stock_widgets[0] = allocate_border(&g_game_base->border_manager)
+00437781        *life_stock_widget_cursor = allocate_border(&g_game_base->border_manager)
 00437783        struct tColour* color_4
 00437783        int32_t ecx_23
 00437783        color_4, ecx_23 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00437792        int32_t var_40_1 = ecx_23
-004377ab        initialize_frontend_sprite_button((esi_2 - 0x35bb98)->life_stock_widgets[0], 0x400800, 0x7b, fconvert.s(float.t(i_2) * fconvert.t(24f) + fconvert.t(13f)), 430f, color_4, 0f, 4)
-004377b2        (esi_2 - 0x35bb98)->life_stock_widgets[0]->sprite_shadow_offset = 0f
-004377ba        hide_border_init((esi_2 - 0x35bb98)->life_stock_widgets[0])
+004377ab        initialize_frontend_sprite_button(*life_stock_widget_cursor, 0x400800, 0x7b, fconvert.s(float.t(i_2) * fconvert.t(24f) + fconvert.t(13f)), 430f, color_4, 0f, 4)
+004377b2        (*life_stock_widget_cursor)->sprite_shadow_offset = 0f
+004377ba        hide_border_init(*life_stock_widget_cursor)
 004377bf        i_1 += 1
-004377c0        esi_2 = &(*esi_2)[1]
+004377c0        life_stock_widget_cursor = &life_stock_widget_cursor[1]
 004377c6        i_2 = i_1
 004377ca        do while (i_1 s< 9)
 004377d1        int32_t level_mode_1 = game->level_mode

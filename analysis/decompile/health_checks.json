@@ -6387,12 +6387,16 @@
         "clear_active_landscape_entries(&game->landscape_manager)",
         "flush_row_event_display(&game->completion)",
         "&game->sub_lazers.slots[0].body.bod.bod.list_next",
-        "&game->life_stock_widgets"
+        "struct FrontendWidget** life_stock_widget_cursor = &game->life_stock_widgets",
+        "kill_border(&g_game_base->border_manager, *life_stock_widget_cursor)",
+        "life_stock_widget_cursor = &life_stock_widget_cursor[1]"
       ],
       "forbidden_substrings": [
         "struct Game*",
         "__offset(Game",
         "arg1->",
+        "struct FrontendWidget* (*",
+        "(life_stock_widget_cursor -",
         "__asm",
         "_ET1"
       ],
@@ -6408,10 +6412,14 @@
         "uninit_warning(&game->player.warning)",
         "clear_active_landscape_entries(&game->landscape_manager)",
         "flush_row_event_display(&game->completion)",
-        "game->life_stock_widgets"
+        "FrontendWidget **life_stock_widgets;",
+        "life_stock_widgets = game->life_stock_widgets;",
+        "kill_border(&g_game_base->border_manager, *life_stock_widgets++);"
       ],
       "forbidden_substrings": [
         "sub_438850(int this)",
+        "FrontendWidget *(*",
+        "FrontendWidget ***",
         "this +",
         "__asm",
         "_ET1"
@@ -8395,6 +8403,10 @@
         "game->sub_high_score.active_record_bank = selected_record",
         "game->active_level_score = selected_record->score",
         "&selected_record->score_or_time",
+        "struct FrontendWidget** life_stock_widget_cursor = &game->life_stock_widgets",
+        "*life_stock_widget_cursor = allocate_border(&g_game_base->border_manager)",
+        "initialize_frontend_sprite_button(*life_stock_widget_cursor",
+        "life_stock_widget_cursor = &life_stock_widget_cursor[1]",
         "game->top_score_widget",
         "game->player.game = game",
         "struct tColour color",
@@ -8411,6 +8423,8 @@
         "0x106c7bc",
         "Color4f",
         "struct SubSolution (*",
+        "struct FrontendWidget* (*",
+        "(life_stock_widget_cursor -",
         "__asm",
         "_ET1"
       ],
@@ -8431,6 +8445,10 @@
         "game->sub_high_score.survival_records",
         "game->sub_high_score.time_trial_route_records",
         "game->sub_high_score.active_record_bank",
+        "FrontendWidget **life_stock_widgets;",
+        "life_stock_widgets = game->life_stock_widgets;",
+        "*life_stock_widgets = allocate_border(&g_game_base->border_manager);",
+        "++life_stock_widgets;",
         "game->top_score_widget",
         "game->player.game = game",
         "initialize_challenge_setup_screen(&game->gui)",
@@ -8444,6 +8462,8 @@
         "g_sprite_manager.sprites[1973]",
         "unknown_000000",
         "0x106c7bc",
+        "FrontendWidget *(*",
+        "FrontendWidget ***",
         "this +",
         "__asm",
         "_ET1"

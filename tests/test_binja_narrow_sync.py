@@ -3396,6 +3396,49 @@ def test_high_score_replay_preserves_embedded_record_element_borrows() -> None:
     assert '"struct SubSolution (*"' in health_checks
 
 
+def test_subgame_life_stock_replay_preserves_pointer_slot_borrows() -> None:
+    repo_root = Path(__file__).parents[1]
+    source = (
+        BINJA_DIR / "sync_subgame_life_stock_lifetimes.py"
+    ).read_text(encoding="utf-8")
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    for expected in (
+        '"FrontendWidget": 0x724',
+        '"SubgameRuntime": 0x1272838',
+        '0x35BB98: ("life_stock_widgets", "FrontendWidget*[9]")',
+        "LIFE_STOCK_WIDGET_CURSOR_USER_VAR_UPDATES",
+        "current_struct_fields_batch",
+        "apply_user_var_updates",
+        "verify_life_stock_widget_owner_layouts",
+    ):
+        assert expected in source
+    for function_name, index in (
+        ("initialize_subgame", 662),
+        ("destroy_subgame", 790),
+    ):
+        update = (
+            f'"{function_name}",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            "        72,\n"
+            '        "life_stock_widget_cursor",\n'
+            '        "FrontendWidget**",'
+        )
+        assert update in source
+    for fragment in (
+        "struct FrontendWidget** life_stock_widget_cursor",
+        "life_stock_widget_cursor = &life_stock_widget_cursor[1]",
+        '"struct FrontendWidget* (*"',
+        "FrontendWidget **life_stock_widgets;",
+        "++life_stock_widgets;",
+        "*life_stock_widgets++",
+    ):
+        assert fragment in health_checks
+
+
 def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
     binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"

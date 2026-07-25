@@ -128,3 +128,21 @@ algebraically equivalent additive spelling changes VC6's mask allocation and
 regresses this exact function to 76.70%. Keeping the native subtraction shape
 in the shared helper restores 246/246 instructions with all 41 operands clean,
 so the former literal `-8/-4/-0xc` spellings no longer need to be duplicated.
+
+## 2026-07-25 life-stock pointer-slot borrow
+
+Postal teardown walks the same nine-entry `SubgameRuntime::life_stock_widgets`
+pointer bank initialized at startup. It borrows each pointer slot, returns the
+referenced widget through `BorderManager`, and advances by one four-byte
+pointer; it does not own a separate widget array.
+
+Binary Ninja had promoted the ESI lifetime to
+`FrontendWidget* (*)[9]`, which forced every call through subtraction back to
+the enclosing runtime. The exact identity (`RegisterVariableSourceType`, index
+`790`, storage `72`) now replays as
+`FrontendWidget** life_stock_widget_cursor`. IDA independently shows the same
+`FrontendWidget**` post-increment teardown loop.
+
+This shares the guarded field and owner-size proof with `initialize_subgame`.
+No matcher source changes: `destroy_subgame` remains exact at 246/246
+instructions with all 41 operands clean.

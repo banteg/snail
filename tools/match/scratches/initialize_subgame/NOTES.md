@@ -567,3 +567,24 @@ toward the postal branch.
 This shares the guarded high-score replay and does not introduce another bank
 or record owner. Matcher source is unchanged; `initialize_subgame` remains
 exact at 396/396 instructions with all 85 operands clean.
+
+## 2026-07-25 life-stock pointer-slot borrow
+
+The postal HUD loop borrows one pointer slot at a time from the nine-entry
+`SubgameRuntime::life_stock_widgets` array. The runtime owns the pointer bank;
+`allocate_border` supplies each separately managed `FrontendWidget`, and the
+loop stores and configures that borrowed pointer before advancing by four
+bytes.
+
+Binary Ninja had promoted the ESI lifetime to a pointer to the entire
+nine-entry array, forcing subtraction back to the `SubgameRuntime` owner for
+every slot access. The exact identity (`RegisterVariableSourceType`, index
+`662`, storage `72`) now replays as
+`FrontendWidget** life_stock_widget_cursor`. IDA independently renders the
+same slot borrow as a `FrontendWidget**` increment loop.
+
+The shared initialization/teardown replay verifies
+`FrontendWidget == 0x724`, `SubgameRuntime == 0x1272838`, and the exact
+`life_stock_widgets` field at `+0x35bb98` before applying either cursor.
+Matcher source remains unchanged and exact at 396/396 instructions with all 85
+operands clean.
