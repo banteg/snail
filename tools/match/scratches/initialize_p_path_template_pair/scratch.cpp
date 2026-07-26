@@ -150,10 +150,11 @@ void Path::initialize_p_path_template_pair(
     segment_count = sample_count;
     segment_count_f = (float)sample_count;
 
-    double radius_calc = (end_x - start_x) * 0.5f;
-    if (radius_calc < 0.0f)
-        radius_calc = -radius_calc;
-    float radius = (float)radius_calc;
+    float half_distance = (end_x - start_x) * 0.5f;
+    if (half_distance < 0.0f)
+        scale_arg = -half_distance;
+    else
+        scale_arg = half_distance;
 
     allocate_path_template_samples();
     has_entry_mesh_transition = 0;
@@ -196,15 +197,15 @@ void Path::initialize_p_path_template_pair(
             switch (kind) {
             case 0x21:
                 primary_samples[i].center_x =
-                    sine(angle + 1.5707964f) * radius - radius + 0.5f;
+                    sine(angle + 1.5707964f) * scale_arg - scale_arg + 0.5f;
                 break;
             case 0x22:
                 primary_samples[i].center_x =
-                    2.0f - cosine(angle) * radius - radius + 0.5f;
+                    2.0f - cosine(angle) * scale_arg - scale_arg + 0.5f;
                 break;
             case 0x23:
                 primary_samples[i].center_x =
-                    (sine(angle + 1.5707964f) + 1.0f) * radius + 0.5f;
+                    (sine(angle + 1.5707964f) + 1.0f) * scale_arg + 0.5f;
                 break;
             }
 
@@ -289,6 +290,5 @@ void Path::initialize_p_path_template_pair(
 
     build_strip_mesh(this, texture_a, texture_b);
     finalize_path_template();
-    (void)scale_arg;
     (void)cap_texture;
 }

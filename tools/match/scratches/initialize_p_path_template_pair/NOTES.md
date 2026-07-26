@@ -195,3 +195,27 @@ operands with no unresolved or mismatched masks. P's candidate frame grows from
 variants did not recover that four-byte slot overlap. The branch-local form is
 retained because its native dataflow and near-exact instruction count are
 direct evidence, while the remaining frame residual is explicitly unresolved.
+
+## 2026-07-26 radius ownership
+
+Raw x86 at `0x425a80..0x425aa0` proves that the incoming scale slot becomes the
+single-precision absolute half-distance owner. The native code subtracts
+`start_x` from `end_x`, multiplies by `0.5f`, compares the x87 value against a
+dword zero, conditionally negates it, and performs one final store to the slot
+subsequently consumed by all three curve variants. Ghidra 12.1.2 independently
+recovers the same float half-distance and switch-wide consumer in the authored
+ARM `cRPath::BuildP` at `0x5f620`.
+
+Replacing the false `double radius_calc` plus separate float radius with a
+float producer and explicit two-arm assignment to `scale_arg` raises focused
+matching from 41.27% to **54.05%**. The candidate now has the exact **679/679**
+instruction count, restores the native `0x40` frame, and expands the clean
+masked audit from 31 to **38**, with no unresolved or mismatched operands.
+
+Later native reuse of dead argument stack slots does not imply that the curve
+divisor, angle, and Z value are source-level parameter owners. Directly
+assigning them through `end_x` and `start_x` regressed to 52.58%, while moving
+the curve-counter declaration to the native store site regressed to 53.76%.
+The ARM function independently retains a zero-based curve counter, one-based
+sample index, and byte cursor, so the scratch keeps those real owners and
+leaves the remaining x86 stack-slot coalescing to the compiler.
