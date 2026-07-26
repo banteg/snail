@@ -111,3 +111,19 @@ operands. The ownership correction is retained despite the score regression:
 the affected native region directly proves the aggregate temporaries, while
 the lost alignment is downstream compiler scheduling rather than contrary
 source evidence.
+
+## 2026-07-26 complete mesh-vector ownership
+
+The completed family model identifies the two owners missing from the first
+Toad rewrite. Native `0x42d231..0x42d2ff` first materializes an ordinary-row
+lateral-offset vector before the generated position. The terminal branch
+separately owns an endpoint reached from the previous sample through the
+current row cursor, with its Z lane extended by `1.0f`.
+
+Adding those owners resolves the earlier scheduling regression: focused
+matching rises from 44.15% (628/663) to 47.92% (635/663), restores the masked
+audit from 25 to 27 clean operands with no unresolved or mismatched masks, and
+recovers the exact native `0x54` frame. The exact prefix expands from one to 15
+instructions. The face initializer now also names the owning 16-bit
+`header_word` proven by the native word clear; that field-width correction is
+score-neutral.
