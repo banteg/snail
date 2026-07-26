@@ -13,12 +13,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 489,
-    "unverified_entries": 296,
-    "verified_android_symbols": 486,
-    "verified_ios_symbols": 407,
-    "available_android_mappings": 486,
-    "available_ios_mappings": 369
+    "verified_entries": 490,
+    "unverified_entries": 295,
+    "verified_android_symbols": 487,
+    "verified_ios_symbols": 408,
+    "available_android_mappings": 487,
+    "available_ios_mappings": 370
   },
   "entries": [
     {
@@ -4136,71 +4136,13 @@
       "address": "0x407b50",
       "windows_name": "noop_runtime_ai",
       "windows_size": 16,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cAccelerometer::Input(float, float, float)",
-          "score": 0.72,
-          "name_score": 0.5333,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRProgressBar::Init()",
-          "score": 0.7,
-          "name_score": 1.0,
-          "size_score": 0.25
-        },
-        {
-          "symbol": "cRSubGoldy::SpeedUpCollect()",
-          "score": 0.7,
-          "name_score": 1.0,
-          "size_score": 0.25
-        },
-        {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRTextures::Init(int)",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFDelegate::OFDelegate()",
-          "score": 0.62,
-          "name_score": 0.5,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRBod::IsAfterSprites()",
-          "score": 0.6134,
-          "name_score": 0.3556,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFXmlReader::endDecodeType()",
-          "score": 0.6087,
-          "name_score": 0.3478,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "tColour::Set(float, float, float)",
-          "score": 0.6033,
-          "name_score": 0.3388,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRWeapon::AI()",
+      "ios_symbol": "cRWeapon::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x407b60",

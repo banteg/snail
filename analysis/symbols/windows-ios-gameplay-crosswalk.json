@@ -4445,6 +4445,15 @@
       "source_object": "SubGame.o",
       "confidence": "high",
       "notes": "The sole Windows caller constructs the embedded SubgameRuntime and the exact helper returns that receiver after building every owned pool. Android and iOS preserve the authored cRSubGame constructor and the same owner families, but use smaller Bod prefixes, different pool capacities, and thirteen list heads rather than Windows ten; only ownership and lifecycle transfer across ports."
+    },
+    {
+      "address": "0x407b50",
+      "windows_name": "noop_runtime_ai",
+      "android_symbol": "cRWeapon::AI()",
+      "ios_symbol": "cRWeapon::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "This is one representative owner of a linker-folded Windows no-op body, not a claim that every callsite is cRWeapon. The dedicated Windows table at 0x49735c contains this address and is installed on the three weapon channels plus the jetpack Weapon; Android and iOS independently retain empty cRWeapon::AI() bodies."
     }
   ]
 }

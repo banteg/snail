@@ -28,3 +28,11 @@ The iOS symbol corpus names the same authored operation
 corresponding pickup branch. `Player::noop_runtime_ai()` now preserves that
 receiver-typed call surface while retaining the stable Windows identifier for
 the folded address. This is a Player method borrow, not a free global callback.
+
+2026-07-26 weapon callback ownership: Binary Ninja reads the sole pointer at
+the dedicated `g_weapon_noop_vtable` (`0x49735c`) as this exact body and finds
+four constructor stores, one for each of Snail's three weapon channels plus its
+jetpack Weapon. Android and iOS independently preserve empty
+`cRWeapon::AI()` bodies. The crosswalk therefore records cRWeapon as one exact
+authored owner of this folded address without collapsing the other proven
+ProgressBar and SubGoldy identities into it. The scratch remains exact at 1/1.

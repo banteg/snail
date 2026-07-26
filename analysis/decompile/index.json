@@ -18,8 +18,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_runtime_pools_and_path_template_bank",
-      "address": "0x408060"
+      "name": "noop_runtime_ai",
+      "address": "0x407b50"
     }
   ],
   "health_check_count": 1085,
