@@ -389,3 +389,36 @@ Both decompiler lanes agree on the same 12-byte field and no other native
 consumer gives it a competing meaning. The rename changes no layout or
 generated code; focused Wibo remains 33.81% (633/639 instructions), with 40
 clean operands and the same two documented address-shape mismatches.
+
+## Cross-port global parcel-bank lifetime (2026-07-26)
+
+Android's authored `cRSubGame::PlaceParcels()` keeps `gGroup` and `gGroup0` as
+global scratch banks throughout catalog construction and both compaction
+passes. iOS independently exposes the same `_gGroup` bank plus its parallel
+count, set-id, and segment-index lanes. Neither port gives a selected or moved
+bucket ownership of the pool. Windows agrees: the scan and compaction loops
+carry `0x20c`-scaled indices and fixed bank-lane addresses rather than a
+durable containing `ParcelBucket*`.
+
+The scratch now preserves that lifetime by indexing the two global
+`ParcelBucket` arrays directly while building candidates, selecting a positive
+set, and compacting both banks. This is still the shared semantic struct:
+direct indexing changes only expression lifetime and does not flatten the
+fields back into anonymous parallel arrays. Focused Wibo improves in four
+bounded steps:
+
+- catalog construction: 33.81% to 36.56%;
+- positive-set compaction: 36.56% to 38.61%;
+- digit-0 compaction: 38.61% to 40.13%;
+- positive-set selection: 40.13% to 40.44%.
+
+The accepted candidate is 627/639 instructions with 52 clean masked operands,
+two unresolved legacy aliases, and no audited mismatch. The former
+`g_parcel_set_buckets + 0x40c` compaction mismatch is gone.
+
+Two tempting spellings remain rejected. Constructor-shaped glyph `Vector3`
+temporaries reproduce a local copy pattern seen in Windows, but expand the
+candidate frame to `0x220` and regress the focused comparison. Removing the
+short-lived digit-0 selection borrow also regresses 40.44% to 40.10%, so that
+one `ParcelBucket*` remains an honest temporary view while the banks themselves
+remain global scratch storage.

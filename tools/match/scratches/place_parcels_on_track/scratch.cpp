@@ -48,63 +48,98 @@ void SubgameRuntime::place_parcels_on_track()
         SubSegment* record = &level_definition.segment_slots[segment];
         min_set_sizes[segment] = 10000;
         for (int set = 0; set < 10; ++set) {
-            ParcelBucket* set_entry = &g_parcel_set_buckets[set_entry_count];
             for (int row = 0; row < record->row_count; ++row) {
                 AuthoredSegmentRow* authored = &record->rows[row];
                 if ((authored->flags & AUTHORED_SEGMENT_ROW_FLAG_PARCEL) != 0
                     && authored->parcel_set_id == set) {
                     if (set) {
-                        set_entry->segment_index = segment;
-                        set_entry->candidates[set_entry->candidate_count].row = row;
-                        set_entry->candidates[set_entry->candidate_count].position =
-                            *authored->parcel_position();
-                        set_entry->set_id = set;
-                        ++set_entry->candidate_count;
+                        g_parcel_set_buckets[set_entry_count].segment_index =
+                            segment;
+                        g_parcel_set_buckets[set_entry_count]
+                            .candidates[g_parcel_set_buckets[set_entry_count]
+                                            .candidate_count]
+                            .row = row;
+                        g_parcel_set_buckets[set_entry_count]
+                            .candidates[g_parcel_set_buckets[set_entry_count]
+                                            .candidate_count]
+                            .position = *authored->parcel_position();
+                        g_parcel_set_buckets[set_entry_count].set_id = set;
+                        ++g_parcel_set_buckets[set_entry_count].candidate_count;
                     } else {
-                        ParcelBucket* zero_entry =
-                            &g_zero_parcel_buckets[zero_entry_count];
-                        zero_entry->segment_index = segment;
-                        zero_entry->candidates[zero_entry->candidate_count].row = row;
-                        zero_entry->candidates[zero_entry->candidate_count].position =
-                            *authored->parcel_position();
-                        zero_entry->set_id = 0;
+                        g_zero_parcel_buckets[zero_entry_count].segment_index =
+                            segment;
+                        g_zero_parcel_buckets[zero_entry_count]
+                            .candidates[g_zero_parcel_buckets[zero_entry_count]
+                                            .candidate_count]
+                            .row = row;
+                        g_zero_parcel_buckets[zero_entry_count]
+                            .candidates[g_zero_parcel_buckets[zero_entry_count]
+                                            .candidate_count]
+                            .position = *authored->parcel_position();
+                        g_zero_parcel_buckets[zero_entry_count].set_id = 0;
+                        ++g_zero_parcel_buckets[zero_entry_count].candidate_count;
                         ++zero_entry_count;
-                        ++zero_entry->candidate_count;
                         ++zero_candidate_total;
                     }
                 }
                 for (int lane = 0; lane < 8; ++lane) {
                     if (record->glyph_rows[lane][row] == set + 48) {
                         if (set) {
-                            set_entry->segment_index = segment;
-                            set_entry->candidates[set_entry->candidate_count].row = row;
-                            set_entry->candidates[set_entry->candidate_count].position.x =
-                                (float)lane - 4.0f + 0.5f;
-                            set_entry->candidates[set_entry->candidate_count].position.y = 0;
-                            set_entry->candidates[set_entry->candidate_count].position.z = 0;
-                            set_entry->set_id = set;
-                            ++set_entry->candidate_count;
+                            g_parcel_set_buckets[set_entry_count].segment_index =
+                                segment;
+                            g_parcel_set_buckets[set_entry_count]
+                                .candidates[g_parcel_set_buckets[set_entry_count]
+                                                .candidate_count]
+                                .row = row;
+                            g_parcel_set_buckets[set_entry_count]
+                                .candidates[g_parcel_set_buckets[set_entry_count]
+                                                .candidate_count]
+                                .position.x = (float)lane - 4.0f + 0.5f;
+                            g_parcel_set_buckets[set_entry_count]
+                                .candidates[g_parcel_set_buckets[set_entry_count]
+                                                .candidate_count]
+                                .position.y = 0;
+                            g_parcel_set_buckets[set_entry_count]
+                                .candidates[g_parcel_set_buckets[set_entry_count]
+                                                .candidate_count]
+                                .position.z = 0;
+                            g_parcel_set_buckets[set_entry_count].set_id = set;
+                            ++g_parcel_set_buckets[set_entry_count].candidate_count;
                         } else {
-                            ParcelBucket* zero_entry =
-                                &g_zero_parcel_buckets[zero_entry_count];
-                            zero_entry->segment_index = segment;
-                            zero_entry->candidates[zero_entry->candidate_count].row = row;
-                            zero_entry->candidates[zero_entry->candidate_count].position.x =
-                                (float)lane - 4.0f + 0.5f;
-                            zero_entry->candidates[zero_entry->candidate_count].position.y = 0;
-                            zero_entry->candidates[zero_entry->candidate_count].position.z = 0;
-                            zero_entry->set_id = 0;
+                            g_zero_parcel_buckets[zero_entry_count].segment_index =
+                                segment;
+                            g_zero_parcel_buckets[zero_entry_count]
+                                .candidates[g_zero_parcel_buckets[zero_entry_count]
+                                                .candidate_count]
+                                .row = row;
+                            g_zero_parcel_buckets[zero_entry_count]
+                                .candidates[g_zero_parcel_buckets[zero_entry_count]
+                                                .candidate_count]
+                                .position.x = (float)lane - 4.0f + 0.5f;
+                            g_zero_parcel_buckets[zero_entry_count]
+                                .candidates[g_zero_parcel_buckets[zero_entry_count]
+                                                .candidate_count]
+                                .position.y = 0;
+                            g_zero_parcel_buckets[zero_entry_count]
+                                .candidates[g_zero_parcel_buckets[zero_entry_count]
+                                                .candidate_count]
+                                .position.z = 0;
+                            g_zero_parcel_buckets[zero_entry_count].set_id = 0;
+                            ++g_zero_parcel_buckets[zero_entry_count].candidate_count;
                             ++zero_entry_count;
-                            ++zero_entry->candidate_count;
                             ++zero_candidate_total;
                         }
                     }
                 }
             }
-            if (set_entry->candidate_count > 0) {
-                int size = set_entry->candidate_count;
-                if (size < min_set_sizes[set_entry->segment_index])
-                    min_set_sizes[set_entry->segment_index] = size;
+            if (g_parcel_set_buckets[set_entry_count].candidate_count > 0) {
+                int size =
+                    g_parcel_set_buckets[set_entry_count].candidate_count;
+                if (size
+                    < min_set_sizes[g_parcel_set_buckets[set_entry_count]
+                                        .segment_index])
+                    min_set_sizes[g_parcel_set_buckets[set_entry_count]
+                                      .segment_index] = size;
                 if (size > last_segment_max_set_size)
                     last_segment_max_set_size = size;
                 ++set_entry_count;
@@ -130,12 +165,16 @@ void SubgameRuntime::place_parcels_on_track()
     if (set_target > 0) {
         while (set_entry_count > 0) {
             int picked = (int)random_float_below((float)set_entry_count, "P1");
-            ParcelBucket* entry = &g_parcel_set_buckets[picked];
-            placed += entry->candidate_count;
-            for (int spot = 0; spot < entry->candidate_count; ++spot) {
+            placed += g_parcel_set_buckets[picked].candidate_count;
+            for (int spot = 0;
+                 spot < g_parcel_set_buckets[picked].candidate_count;
+                 ++spot) {
                 int absolute_row =
-                    entry->candidates[spot].row
-                    + level_definition.segment_slots[entry->segment_index].row_base;
+                    g_parcel_set_buckets[picked].candidates[spot].row
+                    + level_definition
+                          .segment_slots[g_parcel_set_buckets[picked]
+                                             .segment_index]
+                          .row_base;
                 if (runtime_rows[absolute_row].flags
                     & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED)
                     report_errorf("Duplicate Parcel Request in %s.",
@@ -144,7 +183,7 @@ void SubgameRuntime::place_parcels_on_track()
                     SUBROW_FLAG_PARCEL_CANDIDATE
                     | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
                 runtime_rows[absolute_row].parcel_spawn_position =
-                    entry->candidates[spot].position;
+                    g_parcel_set_buckets[picked].candidates[spot].position;
                 runtime_rows[absolute_row].parcel_spawn_position.z =
                     (float)((double)absolute_row
                             + runtime_rows[absolute_row].parcel_spawn_position.z + 0.5);
@@ -154,17 +193,23 @@ void SubgameRuntime::place_parcels_on_track()
                     runtime_rows[absolute_row].parcel_spawn_position.x =
                         runtime_rows[absolute_row].parcel_spawn_position.x * -1.0f;
             }
-            int placed_segment = entry->segment_index;
+            int placed_segment =
+                g_parcel_set_buckets[picked].segment_index;
             for (int scan = 0; scan < set_entry_count; ++scan) {
                 if (g_parcel_set_buckets[scan].segment_index == placed_segment) {
                     for (int move = scan; move < set_entry_count - 1; ++move) {
-                        ParcelBucket* destination = &g_parcel_set_buckets[move];
-                        ParcelBucket* source = &g_parcel_set_buckets[move + 1];
-                        for (int copy = 0; copy < source->candidate_count; ++copy)
-                            destination->candidates[copy] = source->candidates[copy];
-                        destination->candidate_count = source->candidate_count;
-                        destination->segment_index = source->segment_index;
-                        destination->set_id = source->set_id;
+                        for (int copy = 0;
+                             copy
+                             < g_parcel_set_buckets[move + 1].candidate_count;
+                             ++copy)
+                            g_parcel_set_buckets[move].candidates[copy] =
+                                g_parcel_set_buckets[move + 1].candidates[copy];
+                        g_parcel_set_buckets[move].candidate_count =
+                            g_parcel_set_buckets[move + 1].candidate_count;
+                        g_parcel_set_buckets[move].segment_index =
+                            g_parcel_set_buckets[move + 1].segment_index;
+                        g_parcel_set_buckets[move].set_id =
+                            g_parcel_set_buckets[move + 1].set_id;
                     }
                     --set_entry_count;
                     --scan;
@@ -201,12 +246,13 @@ void SubgameRuntime::place_parcels_on_track()
                 runtime_rows[absolute_row].parcel_spawn_position.x =
                     runtime_rows[absolute_row].parcel_spawn_position.x * -1.0f;
             for (int move = picked; move < zero_entry_count - 1; ++move) {
-                ParcelBucket* destination = &g_zero_parcel_buckets[move];
-                ParcelBucket* source = &g_zero_parcel_buckets[move + 1];
-                destination->candidates[0] = source->candidates[0];
-                destination->candidate_count = source->candidate_count;
-                destination->set_id = 0;
-                destination->segment_index = source->segment_index;
+                g_zero_parcel_buckets[move].candidates[0] =
+                    g_zero_parcel_buckets[move + 1].candidates[0];
+                g_zero_parcel_buckets[move].candidate_count =
+                    g_zero_parcel_buckets[move + 1].candidate_count;
+                g_zero_parcel_buckets[move].set_id = 0;
+                g_zero_parcel_buckets[move].segment_index =
+                    g_zero_parcel_buckets[move + 1].segment_index;
             }
             --zero_entry_count;
             if (placed >= level_definition.parcel_count)
