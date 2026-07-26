@@ -108,3 +108,31 @@ vertex, and both face records. The retained decompile has zero `__offset`
 expressions. Typing the two byte-biased forward cursors was rejected because
 it introduced eight backward-offset artifacts. Focused matching remains 23.63%
 (610/668), with 36 clean masked operands.
+
+## 2026-07-26 complete mesh ownership
+
+Native instructions at `0x42dbc9..0x42dc99` prove distinct ordinary
+lateral-offset and generated-position lifetimes, plus terminal lateral-offset,
+endpoint, and generated-position lifetimes. The destination vertex pointer is
+materialized inside each branch after those values are complete. The face loop
+then materializes separate records at `0x42dd63` and `0x42de16`; each owns a
+16-bit zero header, indices, the compiler-preserved redundant parity branch,
+texture lookup, and all four UV pairs.
+
+Recovering the two face records first raises focused matching from 23.63%
+(610/668) to 34.10% (628/668). Adding the vector lifetimes with one pointer
+declared before the branch reaches 37.92% (661/668). Moving each vertex owner
+to its native branch-local materialization point completes the retained slice:
+
+```text
+match: 42.42%
+target: 668 insns, candidate: 671 insns
+prefix: 19/668 target insns
+masked operands: 33 ok, 0 unresolved, 0 mismatch
+```
+
+The resulting `0x48` stack frame exactly matches the target. A collapsed form
+that removed the separate lateral-offset and endpoint owners regressed to
+33.71% (643/668), lost the exact frame with a `0x3c` allocation, and was
+rejected. The final source therefore follows the native spill and pointer
+lifetime evidence rather than selecting the smallest expression tree.
