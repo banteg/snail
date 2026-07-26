@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **77.63%**.
+**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **77.69%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -798,11 +798,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 680/685 | 48.79% | 18/685 | 36 ok |  |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 644/655 | 38.95% | 8/655 | 30 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 646/685 | 48.53% | 6/685 | 34 ok |  |
-| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 627/696 | 28.42% | 0/696 | 27 ok |  |
-| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 623/696 | 29.26% | 0/696 | 28 ok |  |
+| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 629/696 | 30.79% | 0/696 | 29 ok |  |
+| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 625/696 | 31.64% | 0/696 | 30 ok |  |
 | 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 565/652 | 33.20% | 0/652 | 34 ok |  |
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 570/652 | 30.61% | 0/652 | 37 ok |  |
-| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 606/683 | 33.98% | 0/683 | 33 ok |  |
+| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 608/683 | 36.41% | 0/683 | 35 ok |  |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 678/679 | 41.27% | 0/679 | 31 ok |  |
 | 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 687/707 | 41.32% | 0/707 | 47 ok |  |
 | 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 653/677 | 48.72% | 94/677 | 1 mismatch, 39 ok |  |

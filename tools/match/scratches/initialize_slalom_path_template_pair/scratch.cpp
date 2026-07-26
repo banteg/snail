@@ -690,6 +690,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                         face->uv[2].u = u1;
                         face->uv[2].v = v1;
                         face->uv[3].u = u0;
+                        face->uv[3].v = v1;
                     } else {
                         face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
                         face->vertex_1 = face_column + face_row * ((unsigned short)width_cells + 1);
@@ -706,8 +707,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                         face->uv[2].u = u0;
                         face->uv[2].v = v1;
                         face->uv[3].u = u1;
+                        face->uv[3].v = v1;
                     }
-                    face->uv[3].v = v1;
                 }
                 face_column = next_column;
             } while (next_column < width_cells);

@@ -127,3 +127,16 @@ surrounding compilation context, and extending direct array indexing into the
 SlalomBig departure loop regresses the new 29.26% baseline to 28.14%. Both
 probes were reverted; only the independently improving fixed entrance owner is
 retained.
+
+## 2026-07-26 shared-face UV completion
+
+SlalomBig's mesh tail is instruction-identical in ownership to Slalom's. One
+face cursor survives the winding branch, while the two arms finish their own
+fourth UV pairs at `0x422b02` and `0x422ba5`. Moving `uv[3].v` into those
+branches raises focused matching from 29.26% to 31.64%, grows the candidate
+from 623 to 625 instructions, and raises the clean operand audit from 28 to 30.
+
+The native header clear is a 16-bit store. Replacing the old byte-sized
+`face->flags = 0` view with the shared `face->header_word = 0` owner is
+code-generation neutral at that improved result and prevents the scratch from
+misstating the record boundary.

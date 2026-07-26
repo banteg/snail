@@ -138,7 +138,7 @@ static __forceinline void build_extrapolated_strip_mesh(
             for (face_index = 0; face_index < 2; ++face_index) {
                 ObjectFaceQuad* face =
                     &facequads[2 * column + 2 * row * path->width_cells + face_index];
-                face->flags = 0;
+                face->header_word = 0;
 
                 if (face_index == 0) {
                     face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
@@ -153,6 +153,7 @@ static __forceinline void build_extrapolated_strip_mesh(
                     face->uv[2].u = u1;
                     face->uv[2].v = v1;
                     face->uv[3].u = u0;
+                    face->uv[3].v = v1;
                 } else {
                     face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
                     face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
@@ -166,8 +167,8 @@ static __forceinline void build_extrapolated_strip_mesh(
                     face->uv[2].u = u0;
                     face->uv[2].v = v1;
                     face->uv[3].u = u1;
+                    face->uv[3].v = v1;
                 }
-                face->uv[3].v = v1;
             }
         }
     }

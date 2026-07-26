@@ -97,6 +97,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                     face->uv[2].u = u1;
                     face->uv[2].v = v1;
                     face->uv[3].u = u0;
+                    face->uv[3].v = v1;
                 } else {
                     face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
                     face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
@@ -110,8 +111,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                     face->uv[2].u = u0;
                     face->uv[2].v = v1;
                     face->uv[3].u = u1;
+                    face->uv[3].v = v1;
                 }
-                face->uv[3].v = v1;
             }
         }
     }

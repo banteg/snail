@@ -121,3 +121,12 @@ previous-row mesh cursor remain automatic because typing their byte-relative
 addresses did not improve ownership. This is analysis-only: focused Wibo
 remains 33.98% (606/683), with 33 clean masked operands and no unresolved or
 mismatched operands.
+
+## 2026-07-26 shared-face UV completion
+
+The double-slalom face builder also computes one cursor before its winding
+branch and completes each record inside the selected arm. Native stores at
+`0x425940` and `0x4259e6` prove that both arms own `face->uv[3].v`.
+Recovering those writes raises focused matching from 33.98% to 36.41%, grows
+the candidate from 606 to 608 instructions, and expands the clean operand audit
+from 33 to 35 with no unresolved or mismatched operands.

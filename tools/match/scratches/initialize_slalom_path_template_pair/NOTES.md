@@ -106,3 +106,18 @@ fields with zero negative `__offset` expressions. The earlier current-sample,
 roll-source, and previous-row temporaries remain deliberately untyped. Matcher
 source and bytes remain unchanged at 28.42% (627/696 instructions, 27 clean
 masked operands); this is ownership recovery only.
+
+## 2026-07-26 shared-face UV completion
+
+The native two-pass face loop keeps one `ObjectFaceQuad*` cursor across its
+winding branch, but each arm completes the record independently. The front and
+back paths write their own `face->uv[3].v` at `0x420072` and `0x420115`
+before rejoining the loop. Recovering that branch-local completion raises
+focused matching from 28.42% to 30.79%, grows the candidate from 627 to 629
+instructions, and expands the clean operand audit from 27 to 29.
+
+This source boundary is not transferred blindly to the adjacent Sweep/Snake
+builders, whose analysis owns two separate face records. Moving only their
+final V stores regressed Sweep to 31.83% and Snake to 29.25%; splitting the
+entire Sweep record without its still-unrecovered surrounding control shape
+also regressed to 31.22%. All three probes were reverted.
