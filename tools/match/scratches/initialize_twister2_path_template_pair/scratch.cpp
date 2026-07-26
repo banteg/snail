@@ -91,20 +91,36 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     int row;
     int column;
     for (row = 0; row <= path->segment_count; ++row) {
-        PathTemplateSample* sample = &path->primary_samples[row];
-        if (row == path->segment_count)
-            sample = &path->primary_samples[row - 1];
-
         for (column = 0; column <= path->width_cells; ++column) {
             float lateral = (float)column - (float)path->width_cells * 0.5f;
+            PathTemplateSample* sample = &path->primary_samples[row];
             Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            vertex->x = sample->transform.position.x
-                + lateral * sample->transform.basis_right.x;
-            vertex->y = sample->transform.position.y
-                + lateral * sample->transform.basis_right.y;
-            vertex->z = sample->transform.position.z
-                + lateral * sample->transform.basis_right.z
-                + (row == path->segment_count ? 1.0f : 0.0f);
+            if (row != path->segment_count) {
+                Vector3 lateral_offset(
+                    lateral * sample->transform.basis_right.x,
+                    lateral * sample->transform.basis_right.y,
+                    lateral * sample->transform.basis_right.z);
+                Vector3 generated_position(
+                    sample->transform.position.x + lateral_offset.x,
+                    sample->transform.position.y + lateral_offset.y,
+                    sample->transform.position.z + lateral_offset.z);
+                *vertex = generated_position;
+            } else {
+                PathTemplateSample* previous = sample - 1;
+                Vector3 lateral_offset(
+                    lateral * previous->transform.basis_right.x,
+                    lateral * previous->transform.basis_right.y,
+                    lateral * previous->transform.basis_right.z);
+                Vector3 endpoint(
+                    previous->transform.position.x,
+                    previous->transform.position.y,
+                    previous->transform.position.z + 1.0f);
+                Vector3 generated_position(
+                    endpoint.x + lateral_offset.x,
+                    endpoint.y + lateral_offset.y,
+                    endpoint.z + lateral_offset.z);
+                *vertex = generated_position;
+            }
         }
     }
 
@@ -117,18 +133,23 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                 float u1 = (float)(column + 1) * 0.125f;
                 int face_index;
                 for (face_index = 0; face_index < 2; ++face_index) {
-                    ObjectFaceQuad* face =
-                        &facequads[2 * column + 2 * row * path->width_cells + face_index];
-                    face->header_word = 0;
                     if (face_index == 0) {
+                        ObjectFaceQuad* face = &facequads[
+                            face_index + 2 * (row * path->width_cells + column)];
+                        face->header_word = 0;
                         face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
                         face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
                         face->vertex_2 =
                             (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
                         face->vertex_3 =
                             column + (row + 1) * ((unsigned short)path->width_cells + 1);
-                        face->texture_ref =
-                            g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
+                        if (!((column ^ row) & 1)) {
+                            face->texture_ref =
+                                g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
+                        } else {
+                            face->texture_ref =
+                                g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
+                        }
                         face->uv[0].u = u0;
                         face->uv[0].v = v0;
                         face->uv[1].u = u1;
@@ -136,15 +157,24 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                         face->uv[2].u = u1;
                         face->uv[2].v = v1;
                         face->uv[3].u = u0;
+                        face->uv[3].v = v1;
                     } else {
+                        ObjectFaceQuad* face = &facequads[
+                            face_index + 2 * (row * path->width_cells + column)];
+                        face->header_word = 0;
                         face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
                         face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
                         face->vertex_2 =
                             column + (row + 1) * ((unsigned short)path->width_cells + 1);
                         face->vertex_3 =
                             (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-                        face->texture_ref =
-                            g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
+                        if (!((column ^ row) & 1)) {
+                            face->texture_ref =
+                                g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
+                        } else {
+                            face->texture_ref =
+                                g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
+                        }
                         face->uv[0].u = u1;
                         face->uv[0].v = v0;
                         face->uv[1].u = u0;
@@ -152,8 +182,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                         face->uv[2].u = u0;
                         face->uv[2].v = v1;
                         face->uv[3].u = u1;
+                        face->uv[3].v = v1;
                     }
-                    face->uv[3].v = v1;
                 }
             }
         }

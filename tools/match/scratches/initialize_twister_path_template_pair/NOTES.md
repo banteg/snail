@@ -134,3 +134,19 @@ verifies `Vec3 == 0x0c`, `PathTemplateSample == 0xa8`, and
 `ObjectFaceQuad == 0x30` before mutation. Matcher source and bytes remain
 unchanged at the honest 27.72%, 593/677-instruction frontier with 40 clean
 operands; no source-shaped padding or register coercion is introduced.
+
+## 2026-07-26 mesh vector and face ownership
+
+Raw native assembly at `0x42abf6..0x42acc6` proves separate ordinary
+lateral-offset and generated-position vectors, followed by terminal
+lateral-offset, endpoint, and generated-position vectors. Expressing those
+owners recovers the native `0x4c` frame and raises focused matching from 27.72%
+(593/677) to 31.08% (623/677).
+
+The native face loop separately materializes `face_first` and `face_second`
+inside the two `face_index` branches and retains the redundant checkerboard
+texture branches visible in both target exports. Recovering those record
+owners raises the final result to 48.72% (653/677) with a 94-instruction exact
+prefix. The audit is 39 clean operands and one shifted orientation-call
+pairing; that earlier call region is unchanged, so the source-backed mesh
+owners are retained rather than optimized back into a shared pointer.
