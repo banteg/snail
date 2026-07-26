@@ -10,7 +10,7 @@
 void __thiscall cRGameInput::AI(cRGameInput *this)
 
 {
-  if (*(char *)(**(int **)(DAT_0004a71c + 0x4a69c + DAT_0004a720) + 0x2dc) == '\0') {
+  if (*(char *)(Game + 0x2dc) == '\0') {
     return;
   }
   RShellInputRetrieve(*(int *)(this + 0x2c),(int *)(this + 0x68),(float *)(this + 0x40),

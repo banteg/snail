@@ -11,26 +11,22 @@ void __thiscall cRSubGame::GetSkirtColourRandom(cRSubGame *this,tColour *param_1
 
 {
   int iVar1;
-  float fVar2;
-  undefined4 uVar3;
   float in_r2;
   uint in_fpscr;
-  float fVar4;
+  float fVar2;
 
-  uVar3 = DAT_0006c6ac;
-  fVar2 = DAT_0006c6a8;
-  fVar4 = (float)VectorSignedToFloat((uint)*(ushort *)(*(int *)(this + 0x58) + 0xc),
+  fVar2 = (float)VectorSignedToFloat((uint)*(ushort *)(*(int *)(this + 0x58) + 0xc),
                                      (byte)(in_fpscr >> 0x16) & 3);
-  iVar1 = (int)(fVar4 * in_r2) * 4;
-  fVar4 = (float)VectorSignedToFloat((uint)*(byte *)(*(int *)(this + 0x58) + iVar1 + 0x12),
+  iVar1 = (int)(fVar2 * in_r2) * 4;
+  fVar2 = (float)VectorSignedToFloat((uint)*(byte *)(*(int *)(this + 0x58) + iVar1 + 0x12),
                                      (byte)(in_fpscr >> 0x16) & 3);
-  *(float *)param_1 = fVar4 / DAT_0006c6a8;
-  fVar4 = (float)VectorSignedToFloat((uint)*(byte *)(*(int *)(this + 0x58) + iVar1 + 0x13),
+  *(float *)param_1 = fVar2 / 255.0;
+  fVar2 = (float)VectorSignedToFloat((uint)*(byte *)(*(int *)(this + 0x58) + iVar1 + 0x13),
                                      (byte)(in_fpscr >> 0x16) & 3);
-  *(float *)(param_1 + 4) = fVar4 / fVar2;
-  fVar4 = (float)VectorSignedToFloat((uint)*(byte *)(*(int *)(this + 0x58) + iVar1 + 0x14),
+  *(float *)(param_1 + 4) = fVar2 / 255.0;
+  fVar2 = (float)VectorSignedToFloat((uint)*(byte *)(*(int *)(this + 0x58) + iVar1 + 0x14),
                                      (byte)(in_fpscr >> 0x16) & 3);
-  *(undefined4 *)(param_1 + 0xc) = uVar3;
-  *(float *)(param_1 + 8) = fVar4 / fVar2;
+  *(undefined4 *)(param_1 + 0xc) = 0x3efefeff;
+  *(float *)(param_1 + 8) = fVar2 / 255.0;
   return;
 }

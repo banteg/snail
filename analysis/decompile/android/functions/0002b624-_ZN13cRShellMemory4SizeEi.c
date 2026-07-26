@@ -30,6 +30,6 @@ undefined4 __thiscall cRShellMemory::Size(cRShellMemory *this,int param_1)
     return *(undefined4 *)(this + iVar2 * 0xc + 0x14);
   }
 LAB_0002b67c:
-  RShellError((char *)(DAT_0002b6a4 + 0x2b638 + DAT_0002b6a8));
+  RShellError("Cannot find Memory Size");
   return 0;
 }

@@ -14,16 +14,13 @@ cRMouse::ConvertScreenXY(cRMouse *this,float param_1,float param_2,float *param_
   int iVar1;
   float *in_r3;
   float fVar2;
-  float fVar3;
   float *in_stack_00000000;
 
-  fVar2 = ((float)param_4 * DAT_00030f6c) / DAT_00030f70 + DAT_00030f74;
-  iVar1 = (int)(*(float *)(**(int **)(DAT_00030f90 + 0x30e6c + DAT_00030f94) + 0x3c) -
-               **(float **)(DAT_00030f90 + 0x30e6c + DAT_00030f98)) % 0x168;
+  fVar2 = ((float)param_4 * 460.0) / 470.0 + 10.0;
+  iVar1 = (int)(*(float *)(Game + 0x3c) - gAndroidOrientation) % 0x168;
   if (iVar1 == 0x5a) {
-    fVar3 = ((float)param_3 * DAT_00030f78) / DAT_00030f7c;
-    *in_r3 = (fVar2 * DAT_00030f7c) / DAT_00030f88 + DAT_00030f8c;
-    *in_stack_00000000 = fVar3;
+    *in_r3 = (fVar2 * 640.0) / -480.0 + 639.0;
+    *in_stack_00000000 = ((float)param_3 * 480.0) / 640.0;
     return;
   }
   if (iVar1 < 0x5b) {
@@ -34,15 +31,13 @@ cRMouse::ConvertScreenXY(cRMouse *this,float param_1,float param_2,float *param_
     return;
   }
   if (iVar1 == 0xb4) {
-    fVar2 = DAT_00030f84 - fVar2;
-    *in_r3 = DAT_00030f8c - (float)param_3;
-    *in_stack_00000000 = fVar2;
+    *in_r3 = 639.0 - (float)param_3;
+    *in_stack_00000000 = 479.0 - fVar2;
     return;
   }
   if (iVar1 == 0x10e) {
-    fVar3 = ((float)param_3 * DAT_00030f78) / DAT_00030f80 + DAT_00030f84;
-    *in_r3 = (fVar2 * DAT_00030f7c) / DAT_00030f78;
-    *in_stack_00000000 = fVar3;
+    *in_r3 = (fVar2 * 640.0) / 480.0;
+    *in_stack_00000000 = ((float)param_3 * 480.0) / -640.0 + 479.0;
     return;
   }
   return;

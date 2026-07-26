@@ -10,6 +10,6 @@
 void __thiscall cRGUI::Open(cRGUI *this)
 
 {
-  *(int *)this = **(int **)(DAT_00063fe4 + 0x63fd0 + DAT_00063fe8) + 0x718a0;
+  *(int *)this = Game + 0x718a0;
   return;
 }

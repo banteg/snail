@@ -12,110 +12,80 @@ void __thiscall cRGalaxy::Init(cRGalaxy *this)
 {
   int iVar1;
   int iVar2;
-  undefined4 uVar3;
-  int iVar4;
-  int iVar5;
-  int iVar6;
-  int iVar7;
   undefined4 extraout_r3;
-  undefined4 uVar8;
-  int iVar9;
-  int iVar10;
-  int *piVar11;
+  undefined4 uVar3;
   int unaff_r9;
-  float fVar12;
+  float fVar4;
 
-  iVar2 = DAT_0005a4b0;
-  iVar6 = DAT_0005a4ac;
-  iVar9 = DAT_0005a4a8 + 0x5a234;
-  iVar10 = *(int *)(iVar9 + DAT_0005a4ac);
-  iVar1 = Rstrcmp((char *)(iVar9 + DAT_0005a4b0),(char *)(iVar10 + 0x60));
-  iVar4 = DAT_0005a4b4;
-  if (iVar1 == 0) {
-    iVar1 = **(int **)(iVar9 + DAT_0005a4b4);
-  }
-  else {
-    iVar1 = **(int **)(iVar9 + DAT_0005a4b4);
-    iVar7 = *(int *)(gOFOData + iVar1 + 0x1ed8);
-    iVar5 = *(int *)(iVar9 + iVar6);
-    if (iVar7 < *(int *)(iVar10 + 0xa4)) {
-      *(int *)(iVar10 + 0xa4) = iVar7;
+  iVar1 = Rstrcmp("Fluctuosa",gConfig + 0x60);
+  if (iVar1 != 0) {
+    gConfig._160_4_ = *(undefined4 *)(gOFOData + Game + 0x1ed8);
+    if ((int)gConfig._160_4_ < (int)gConfig._164_4_) {
+      gConfig._164_4_ = gConfig._160_4_;
     }
-    *(int *)(iVar10 + 0xa0) = iVar7;
-    iVar10 = *(int *)(&DAT_0039b7e8 + iVar1);
-    *(int *)(iVar5 + 0xe8) = iVar10;
-    if (iVar10 < *(int *)(iVar5 + 0xec)) {
-      *(int *)(iVar5 + 0xec) = iVar10;
+    gConfig._232_4_ = *(undefined4 *)(&DAT_0039b7e8 + Game);
+    if ((int)gConfig._232_4_ < (int)gConfig._236_4_) {
+      gConfig._236_4_ = gConfig._232_4_;
     }
   }
-  cRFade::FadeIn((cRFade *)(iVar1 + 0x24));
-  piVar11 = *(int **)(iVar9 + iVar4);
+  cRFade::FadeIn((cRFade *)(Game + 0x24));
   *(undefined4 *)this = 1;
-  cRStarManager::Hide((cRStarManager *)(*piVar11 + 0x4d440));
-  RShellMusicPlay((char *)(iVar9 + DAT_0005a4b8),0,(char *)(iVar9 + DAT_0005a4bc));
-  iVar1 = *piVar11;
-  if (*(int *)(gOFOData + iVar1 + 0x1ebc) == 0) {
+  cRStarManager::Hide((cRStarManager *)(Game + 0x4d440));
+  RShellMusicPlay("mainmenu",0,"");
+  if (*(int *)(gOFOData + Game + 0x1ebc) == 0) {
     unaff_r9 = cRLandscapeManager::Import
-                         ((cRLandscapeManager *)(gSegmentText + iVar1 + 0x3d8),
-                          (char *)(iVar9 + DAT_0005a4c0));
-    iVar1 = *piVar11;
+                         ((cRLandscapeManager *)(gSegmentText + Game + 0x3d8),"StarMap.txt");
   }
-  else if (*(int *)(gOFOData + iVar1 + 0x1ebc) == 1) {
+  else if (*(int *)(gOFOData + Game + 0x1ebc) == 1) {
     unaff_r9 = cRLandscapeManager::Import
-                         ((cRLandscapeManager *)(gSegmentText + iVar1 + 0x3d8),
-                          (char *)(iVar9 + DAT_0005a4c4));
-    iVar1 = *piVar11;
+                         ((cRLandscapeManager *)(gSegmentText + Game + 0x3d8),"StarMapPro.txt");
   }
-  fVar12 = (float)cRBackdrop::Change((cRBackdrop *)(iVar1 + 0x4d2e0),
-                                     (cRLandscape *)
-                                     (gSegmentText + unaff_r9 * 0x1ac + iVar1 + 0x3dc),false);
-  piVar11 = *(int **)(iVar9 + iVar4);
-  cRBorderManager::SetJustifyCentre((cRBorderManager *)(*piVar11 + 0xd14),fVar12);
-  cRMouse::SetActive((cRMouse *)(*piVar11 + 0x228));
-  iVar4 = *(int *)(this + 0x8e24);
-  iVar1 = *(int *)(iVar4 + 0x60);
-  if (iVar1 != 0) goto LAB_0005a370;
-  iVar1 = *(int *)(gGroup0 + iVar4 + 0xc06f4);
-  if (iVar1 - 2U < 2) {
+  fVar4 = (float)cRBackdrop::Change((cRBackdrop *)(Game + 0x4d2e0),
+                                    (cRLandscape *)(gSegmentText + unaff_r9 * 0x1ac + Game + 0x3dc),
+                                    false);
+  cRBorderManager::SetJustifyCentre((cRBorderManager *)(Game + 0xd14),fVar4);
+  cRMouse::SetActive((cRMouse *)(Game + 0x228));
+  iVar1 = *(int *)(this + 0x8e24);
+  iVar2 = *(int *)(iVar1 + 0x60);
+  if (iVar2 != 0) goto LAB_0005a370;
+  iVar2 = *(int *)(gGroup0 + iVar1 + 0xc06f4);
+  if (iVar2 - 2U < 2) {
     *(undefined4 *)(this + 0xc) = 0;
     *(undefined4 *)(this + 4) = 0;
-    if (*(int *)(gGroup0 + iVar4 + 0xaea18) == 0) {
-      *(undefined4 *)(this + 0x8e34) = *(undefined4 *)(*(int *)(iVar9 + iVar6) + 0xa4);
+    if (*(int *)(gGroup0 + iVar1 + 0xaea18) == 0) {
+      *(undefined4 *)(this + 0x8e34) = gConfig._164_4_;
     }
-    else if (*(int *)(gGroup0 + iVar4 + 0xaea18) == 1) {
-      iVar1 = *(int *)(iVar9 + iVar6);
-      iVar2 = Rstrcmp((char *)(iVar9 + iVar2),(char *)(iVar1 + 0x60));
-      uVar3 = *(undefined4 *)(*(int *)(iVar9 + iVar6) + 0xec);
-      uVar8 = extraout_r3;
+    else if (*(int *)(gGroup0 + iVar1 + 0xaea18) == 1) {
+      iVar2 = Rstrcmp("Fluctuosa",gConfig + 0x60);
+      uVar3 = extraout_r3;
       if (iVar2 != 0) {
-        uVar8 = *(undefined4 *)(&DAT_0039b7e8 + *piVar11);
+        uVar3 = *(undefined4 *)(&DAT_0039b7e8 + Game);
       }
-      iVar4 = *(int *)(this + 0x8e24);
+      iVar1 = *(int *)(this + 0x8e24);
       if (iVar2 != 0) {
-        *(undefined4 *)(iVar1 + 0xe8) = uVar8;
+        gConfig._232_4_ = uVar3;
       }
-      *(undefined4 *)(this + 0x8e34) = uVar3;
-      iVar1 = *(int *)(gGroup0 + iVar4 + 0xc06f4);
+      *(undefined4 *)(this + 0x8e34) = gConfig._236_4_;
+      iVar2 = *(int *)(gGroup0 + iVar1 + 0xc06f4);
       goto LAB_0005a340;
     }
-    iVar1 = *(int *)(gGroup0 + iVar4 + 0xc06f4);
+    iVar2 = *(int *)(gGroup0 + iVar1 + 0xc06f4);
   }
 LAB_0005a340:
-  if (iVar1 == 1 || iVar1 == 4) {
+  if (iVar2 == 1 || iVar2 == 4) {
     *(undefined4 *)(this + 0xc) = 1;
     *(undefined4 *)(this + 4) = 1;
     *(undefined4 *)(this + 0x8e34) = *(undefined4 *)(*(int *)(this + 0x8e24) + 100);
-    iVar1 = *(int *)(*(int *)(this + 0x8e24) + 0x60);
+    iVar2 = *(int *)(*(int *)(this + 0x8e24) + 0x60);
   }
   else {
-    iVar1 = *(int *)(iVar4 + 0x60);
+    iVar2 = *(int *)(iVar1 + 0x60);
   }
 LAB_0005a370:
-  if (iVar1 == 4) {
-    iVar6 = *(int *)(iVar9 + iVar6);
+  if (iVar2 == 4) {
     *(undefined4 *)(this + 4) = 0;
     *(undefined4 *)(this + 0xc) = 2;
-    *(undefined4 *)(this + 0x8e34) = *(undefined4 *)(iVar6 + 0xa4);
+    *(undefined4 *)(this + 0x8e34) = gConfig._164_4_;
   }
   Init2(this);
   return;

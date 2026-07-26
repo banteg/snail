@@ -15,7 +15,7 @@ void __thiscall cRObjects::ReBuildObjects(cRObjects *this)
   int iVar3;
   int iVar4;
 
-  wprintf((char *)(DAT_0002fec4 + 0x2fe58 + DAT_0002fec8),*(undefined4 *)this);
+  wprintf("ReBuild Objects Start %i Objects\n",*(undefined4 *)this);
   iVar2 = *(int *)this;
   if (0 < iVar2) {
     iVar3 = 0;

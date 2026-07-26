@@ -18,9 +18,9 @@ cRGalaxy::BorderBound
   if (*(int *)(param_5 + 0x254) == 2) {
     fVar1 = *param_2 - *param_1;
     if (fVar1 < *(float *)(param_5 + 0x23c)) {
-      fVar1 = *param_1 + (*(float *)(param_5 + 0x23c) - fVar1) * DAT_00058d78;
+      fVar1 = *param_1 + (*(float *)(param_5 + 0x23c) - fVar1) * -0.5;
       *param_1 = fVar1;
-      *param_1 = fVar1 + (*(float *)(param_5 + 0x23c) - (*param_2 - fVar1)) * DAT_00058d7c;
+      *param_1 = fVar1 + (*(float *)(param_5 + 0x23c) - (*param_2 - fVar1)) * 0.5;
     }
   }
   else {

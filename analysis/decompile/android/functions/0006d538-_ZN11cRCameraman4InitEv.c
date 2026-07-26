@@ -10,20 +10,17 @@
 void __thiscall cRCameraman::Init(cRCameraman *this)
 
 {
-  undefined4 uVar1;
-  int iVar2;
+  int iVar1;
 
-  iVar2 = DAT_0006d5ac;
   this[0xcc] = (cRCameraman)0x0;
-  iVar2 = **(int **)(iVar2 + 0x6d55c + DAT_0006d5b0);
-  *(int *)(this + 0xc0) = iVar2 + 0x81364;
-  *(int *)(this + 0xc4) = iVar2 + 0x718a0;
+  iVar1 = Game + 0x718a0;
+  *(int *)(this + 0xc0) = Game + 0x81364;
+  *(int *)(this + 0xc4) = iVar1;
   tMatrix::Identity((tMatrix *)(this + 0x80));
   tMatrix::Identity((tMatrix *)(this + 0x40));
   tMatrix::Identity((tMatrix *)this);
-  uVar1 = DAT_0006d5a4;
-  *(undefined4 *)(this + 0xd4) = DAT_0006d5a4;
-  *(undefined4 *)(this + 0xd0) = uVar1;
-  *(undefined4 *)(this + 200) = DAT_0006d5a8;
+  *(undefined4 *)(this + 0xd4) = 0;
+  *(undefined4 *)(this + 0xd0) = 0;
+  *(undefined4 *)(this + 200) = 0x42f00000;
   return;
 }

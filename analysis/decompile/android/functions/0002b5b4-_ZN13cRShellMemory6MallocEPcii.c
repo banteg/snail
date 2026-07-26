@@ -11,20 +11,18 @@ void __thiscall cRShellMemory::Malloc(cRShellMemory *this,char *param_1,int para
 
 {
   int iVar1;
-  int iVar2;
 
-  iVar1 = DAT_0002b61c + 0x2b5cc;
   *(int *)(this + *(int *)this * 0xc + 0x14) = param_3;
   *(int *)(this + *(int *)this * 0xc + 0x10) = param_2;
-  iVar2 = *(int *)this + 1;
-  *(int *)this = iVar2;
-  if (*(int *)(this + 4) < iVar2) {
-    *(int *)(this + 4) = iVar2;
+  iVar1 = *(int *)this + 1;
+  *(int *)this = iVar1;
+  if (*(int *)(this + 4) < iVar1) {
+    *(int *)(this + 4) = iVar1;
   }
-  if (iVar2 < 15000) {
+  if (iVar1 < 15000) {
     return;
   }
-  RShellError((char *)(iVar1 + DAT_0002b620));
+  RShellError("Memory Stack Full");
   uRam00000000 = 0;
   return;
 }

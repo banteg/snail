@@ -12,64 +12,54 @@ void __thiscall cRSnail::ExtractHotSpots(cRSnail *this)
 {
   int *piVar1;
   int iVar2;
-  undefined4 uVar3;
-  int iVar4;
+  int iVar3;
+  float *pfVar4;
   int iVar5;
-  float *pfVar6;
+  cRSnail *pcVar6;
   int iVar7;
-  char *pcVar8;
-  cRSnail *pcVar9;
-  int iVar10;
-  int iVar11;
-  cRTextures *this_00;
-  int iVar12;
-  int iVar13;
-  int iVar14;
-  float fVar15;
-  float fVar16;
+  int iVar8;
+  int iVar9;
+  float fVar10;
+  float fVar11;
 
-  iVar4 = DAT_00071e54;
-  uVar3 = DAT_00071e48;
-  iVar13 = DAT_00071e50 + 0x71d24;
-  iVar11 = *(int *)(this + 0x14c0);
-  pcVar9 = this + 0x1518;
-  iVar12 = *(int *)(iVar13 + DAT_00071e54);
-  iVar10 = 0;
-  this_00 = *(cRTextures **)(iVar13 + DAT_00071e58);
-  pcVar8 = (char *)(iVar13 + DAT_00071e5c);
+  iVar8 = *(int *)(this + 0x14c0);
+  pcVar6 = this + 0x1518;
+  iVar7 = 0;
   do {
-    *(undefined4 *)pcVar9 = uVar3;
-    *(undefined4 *)(pcVar9 + -4) = uVar3;
-    *(undefined4 *)(pcVar9 + -8) = uVar3;
-    iVar5 = cRTextures::Add(this_00,*(char **)(iVar12 + iVar10),(cTgaHeader *)0x0,0);
-    if (*(int *)(iVar11 + 0xc0) < 1) {
+    *(undefined4 *)pcVar6 = 0;
+    *(undefined4 *)(pcVar6 + -4) = 0;
+    *(undefined4 *)(pcVar6 + -8) = 0;
+    iVar3 = cRTextures::Add((cRTextures *)gTextureList,*(char **)((int)&gSnailHotSpotNames + iVar7),
+                            (cTgaHeader *)0x0,0);
+    if (*(int *)(iVar8 + 0xc0) < 1) {
 LAB_00071db4:
-      RShellError(pcVar8,*(undefined4 *)(*(int *)(iVar13 + iVar4) + iVar10));
+      RShellError("Cannot find HotPoint Texture %s",
+                  *(undefined4 *)((int)&gSnailHotSpotNames + iVar7));
     }
     else {
-      iVar14 = *(int *)(iVar11 + 200);
-      if (iVar5 != *(int *)(iVar14 + 0xc)) {
-        iVar7 = 0;
-        iVar2 = iVar14;
+      iVar9 = *(int *)(iVar8 + 200);
+      if (iVar3 != *(int *)(iVar9 + 0xc)) {
+        iVar5 = 0;
+        iVar2 = iVar9;
         do {
-          iVar14 = iVar2 + 0x30;
-          iVar7 = iVar7 + 1;
-          if (*(int *)(iVar11 + 0xc0) <= iVar7) goto LAB_00071db4;
+          iVar9 = iVar2 + 0x30;
+          iVar5 = iVar5 + 1;
+          if (*(int *)(iVar8 + 0xc0) <= iVar5) goto LAB_00071db4;
           piVar1 = (int *)(iVar2 + 0x3c);
-          iVar2 = iVar14;
-        } while (iVar5 != *piVar1);
+          iVar2 = iVar9;
+        } while (iVar3 != *piVar1);
       }
-      pfVar6 = (float *)(*(int *)(iVar11 + 0xa4) + (uint)*(ushort *)(iVar14 + 2) * 0xc);
-      fVar15 = *pfVar6;
-      fVar16 = pfVar6[1];
-      *(float *)pcVar9 = *(float *)pcVar9 + pfVar6[2];
-      *(float *)(pcVar9 + -8) = *(float *)(pcVar9 + -8) + fVar15;
-      *(float *)(pcVar9 + -4) = *(float *)(pcVar9 + -4) + fVar16;
+      pfVar4 = (float *)(*(int *)(iVar8 + 0xa4) + (uint)*(ushort *)(iVar9 + 2) * 0xc);
+      fVar10 = *pfVar4;
+      fVar11 = pfVar4[1];
+      *(float *)pcVar6 = *(float *)pcVar6 + pfVar4[2];
+      *(float *)(pcVar6 + -8) = *(float *)(pcVar6 + -8) + fVar10;
+      *(float *)(pcVar6 + -4) = *(float *)(pcVar6 + -4) + fVar11;
     }
-    iVar10 = iVar10 + 4;
-    pcVar9 = pcVar9 + 0xc;
-    if (iVar10 == 0x4c) {
-      *(float *)(this + 0x15ec) = *(float *)(this + 0x15ec) + DAT_00071e4c;
+    iVar7 = iVar7 + 4;
+    pcVar6 = pcVar6 + 0xc;
+    if (iVar7 == 0x4c) {
+      *(float *)(this + 0x15ec) = *(float *)(this + 0x15ec) + 0.3;
       return;
     }
   } while( true );

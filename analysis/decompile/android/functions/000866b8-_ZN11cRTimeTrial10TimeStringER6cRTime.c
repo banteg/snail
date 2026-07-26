@@ -7,29 +7,18 @@
 
 /* cRTimeTrial::TimeString(cRTime&) */
 
-undefined4 __thiscall cRTimeTrial::TimeString(cRTimeTrial *this,cRTime *param_1)
+undefined4 * __thiscall cRTimeTrial::TimeString(cRTimeTrial *this,cRTime *param_1)
 
 {
-  int iVar1;
-  undefined4 uVar2;
-  undefined4 *puVar3;
-  int iVar4;
-  char *__s;
-
-  iVar1 = DAT_00086748;
-  iVar4 = DAT_00086744 + 0x866d8;
   if (*(float *)param_1 == 0.0) {
-    puVar3 = *(undefined4 **)(iVar4 + DAT_00086748);
-    uVar2 = ((undefined4 *)(iVar4 + DAT_00086754))[1];
-    *puVar3 = *(undefined4 *)(iVar4 + DAT_00086754);
-    puVar3[1] = uVar2;
+    gTimeTrialString = 0x2d2d3a2d;
+    DAT_003887f0 = 0x2d2d3a;
   }
   else {
-    __s = *(char **)(iVar4 + DAT_00086748);
-    sprintf(__s,(char *)(iVar4 + DAT_0008674c),*(undefined4 *)(param_1 + 4),
+    sprintf((char *)&gTimeTrialString,"%1i:%02i:%03i",*(undefined4 *)(param_1 + 4),
             *(undefined4 *)(param_1 + 8),*(undefined4 *)(param_1 + 0x10));
-    sprintf(__s,(char *)(iVar4 + DAT_00086750),*(undefined4 *)(param_1 + 4),
+    sprintf((char *)&gTimeTrialString,"%1i:%02i:%02i",*(undefined4 *)(param_1 + 4),
             *(undefined4 *)(param_1 + 8),*(undefined4 *)(param_1 + 0xc));
   }
-  return *(undefined4 *)(iVar4 + iVar1);
+  return &gTimeTrialString;
 }

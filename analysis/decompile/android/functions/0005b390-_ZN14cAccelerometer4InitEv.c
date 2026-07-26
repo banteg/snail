@@ -10,28 +10,19 @@
 void __thiscall cAccelerometer::Init(cAccelerometer *this)
 
 {
-  undefined4 uVar1;
-  undefined4 uVar2;
-  int iVar3;
-  int *piVar4;
-  int iVar5;
+  int iVar1;
 
-  iVar3 = DAT_0005b3f8;
-  iVar5 = DAT_0005b3f4;
-  uVar1 = DAT_0005b3e4;
-  *(undefined4 *)(this + 8) = DAT_0005b3e4;
-  *(undefined4 *)this = uVar1;
-  *(undefined4 *)(this + 0xc) = uVar1;
-  *(undefined4 *)(this + 0x10) = uVar1;
-  piVar4 = *(int **)(iVar5 + 0x5b3a8 + iVar3);
-  *(undefined4 *)(this + 0x14) = uVar1;
-  uVar2 = DAT_0005b3e8;
-  *(undefined4 *)(this + 4) = DAT_0005b3ec;
-  iVar5 = *piVar4;
-  *(undefined4 *)(iVar5 + 0x4c) = uVar1;
-  *(undefined4 *)(iVar5 + 0x48) = uVar1;
-  *(undefined4 *)(iVar5 + 0x40) = uVar2;
-  *(undefined4 *)(iVar5 + 0x3c) = uVar2;
-  *(undefined4 *)(this + 0x18) = DAT_0005b3f0;
+  *(undefined4 *)(this + 8) = 0;
+  *(undefined4 *)this = 0;
+  *(undefined4 *)(this + 0xc) = 0;
+  *(undefined4 *)(this + 0x10) = 0;
+  *(undefined4 *)(this + 0x14) = 0;
+  *(undefined4 *)(this + 4) = 0x3f800000;
+  iVar1 = Game;
+  *(undefined4 *)(Game + 0x4c) = 0;
+  *(undefined4 *)(iVar1 + 0x48) = 0;
+  *(undefined4 *)(iVar1 + 0x40) = 0x43870000;
+  *(undefined4 *)(iVar1 + 0x3c) = 0x43870000;
+  *(undefined4 *)(this + 0x18) = 0x42c80000;
   return;
 }

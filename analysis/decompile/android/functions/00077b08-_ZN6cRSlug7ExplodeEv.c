@@ -10,105 +10,77 @@
 void __thiscall cRSlug::Explode(cRSlug *this)
 
 {
-  float fVar1;
-  float fVar2;
-  float fVar3;
-  float fVar4;
+  undefined4 uVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  uint in_fpscr;
+  float extraout_s0;
   float fVar5;
   float fVar6;
   float fVar7;
   float fVar8;
   float fVar9;
-  undefined4 uVar10;
-  int iVar11;
-  int iVar12;
-  int iVar13;
-  int iVar14;
-  int iVar15;
-  uint in_fpscr;
-  float extraout_s0;
-  float fVar16;
-  float fVar17;
-  float fVar18;
-  float fVar19;
-  float fVar20;
 
-  iVar15 = DAT_00077e24 + 0x77b24;
-  iVar12 = **(int **)(iVar15 + DAT_00077e28);
-  if (((gDirectory[iVar12 + 0x2544] == '\0') && (*(int *)(iVar12 + 100) == 1)) &&
-     (*(int *)(iVar12 + 0x71900) != 7)) {
-    if (**(int **)(iVar15 + DAT_00077e30) != -1) {
-      iVar12 = **(int **)(iVar15 + DAT_00077e30) * 0x168 + *(int *)(iVar15 + DAT_00077e34);
-      *(int *)(iVar12 + 0x28) = *(int *)(iVar12 + 0x28) + 1;
+  if (((gDirectory[Game + 0x2544] == '\0') && (*(int *)(Game + 100) == 1)) &&
+     (*(int *)(Game + 0x71900) != 7)) {
+    if (gOFORef != -1) {
+      *(int *)(gOFOData + gOFORef * 0x168 + 0x28) = *(int *)(gOFOData + gOFORef * 0x168 + 0x28) + 1;
     }
-    *(int *)(*(int *)(iVar15 + DAT_00077e38) + 0xc) =
-         *(int *)(*(int *)(iVar15 + DAT_00077e38) + 0xc) + 1;
+    gConfig._12_4_ = gConfig._12_4_ + 1;
   }
-  iVar12 = DAT_00077e2c;
-  fVar9 = DAT_00077e04;
-  fVar8 = DAT_00077e00;
-  fVar7 = DAT_00077dfc;
-  fVar6 = DAT_00077df8;
-  fVar5 = DAT_00077df4;
-  fVar4 = DAT_00077df0;
-  fVar3 = DAT_00077dec;
-  fVar2 = DAT_00077de8;
-  fVar1 = DAT_00077de4;
-  iVar14 = 0;
+  iVar4 = 0;
   do {
-    uVar10 = gRMathRand2();
-    fVar20 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-    fVar16 = fVar2 + fVar20 * fVar1 * fVar2;
-    uVar10 = gRMathRand2();
-    fVar20 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-    fVar17 = fVar4 + fVar20 * fVar1 * fVar3;
-    iVar11 = cRSpriteManager::New(*(int *)(iVar15 + iVar12),1,0x75,-1);
-    *(float *)(iVar11 + 0x84) = fVar17 + fVar17;
-    *(float *)(iVar11 + 0x68) = fVar5;
-    *(uint *)(iVar11 + 4) = *(uint *)(iVar11 + 4) | 0x802;
-    uVar10 = gRMathRand2();
-    fVar20 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-    in_fpscr = in_fpscr & 0xfffffff | (uint)(fVar7 + fVar20 * fVar1 * fVar6 == 0.0) << 0x1e;
-    fVar20 = fVar5;
+    uVar1 = gRMathRand2();
+    fVar9 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+    fVar5 = fVar9 * 3.0517578e-05 * 0.4 + 0.4;
+    uVar1 = gRMathRand2();
+    fVar9 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+    fVar6 = fVar9 * 3.0517578e-05 * 0.85 + 0.55;
+    iVar2 = cRSpriteManager::New((int)&gRSpriteManager,1,0x75,-1);
+    *(float *)(iVar2 + 0x84) = fVar6 + fVar6;
+    *(undefined4 *)(iVar2 + 0x68) = 0;
+    *(uint *)(iVar2 + 4) = *(uint *)(iVar2 + 4) | 0x802;
+    uVar1 = gRMathRand2();
+    fVar9 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+    in_fpscr = in_fpscr & 0xfffffff | (uint)(fVar9 * 3.0517578e-05 * 0.5 + 0.3 == 0.0) << 0x1e;
+    fVar9 = 0.0;
     if (!SUB41(in_fpscr >> 0x1e,0)) {
-      uVar10 = gRMathRand2();
-      fVar20 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-      fVar20 = fVar9 / ((fVar7 + fVar20 * fVar1 * fVar6) * fVar8);
+      uVar1 = gRMathRand2();
+      fVar9 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+      fVar9 = 1.0 / ((fVar9 * 3.0517578e-05 * 0.5 + 0.3) * 60.0);
     }
-    fVar18 = *(float *)(*(int *)(this + 0x7c) + 0x54);
-    *(float *)(iVar11 + 0x70) = fVar5;
-    *(float *)(iVar11 + 0x74) = fVar5;
-    iVar14 = iVar14 + 1;
-    *(float *)(iVar11 + 0x6c) = fVar20 * fVar18;
-    uVar10 = gRMathRand2();
-    VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-    tColour::Grey((tColour *)(iVar11 + 0x2c),extraout_s0);
-    iVar13 = *(int *)(this + 0x7c);
-    *(float *)(iVar11 + 100) = fVar17 * DAT_00077e0c;
-    fVar20 = DAT_00077e10;
-    *(float *)(iVar11 + 0x60) = fVar17 * fVar7;
-    *(float *)(iVar11 + 0x78) =
-         *(float *)(iVar13 + 0x54) * *(float *)(iVar13 + 0x54) * fVar20 * DAT_00077e14;
-    uVar10 = gRMathRand2();
-    fVar20 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-    fVar20 = (fVar20 - DAT_00077e18) * DAT_00077e1c;
-    uVar10 = gRMathRand2();
-    fVar17 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-    uVar10 = gRMathRand2();
-    fVar19 = *(float *)(*(int *)(this + 0x7c) + 0x54);
-    fVar18 = *(float *)(*(int *)(this + 0x7c) + 0xfed4);
-    *(float *)(iVar11 + 0x54) = fVar20 * fVar16 * fVar19;
-    fVar20 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-    *(float *)(iVar11 + 0x58) = fVar17 * fVar1 * (fVar16 + fVar7) * fVar19;
-    *(float *)(iVar11 + 0x5c) = (fVar18 + fVar20 * fVar1 * fVar16) * fVar19;
-    uVar10 = gRMathRand2();
-    fVar16 = *(float *)(this + 0x5c);
-    fVar17 = *(float *)(this + 0x60);
-    fVar20 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-    fVar20 = fVar20 * fVar1 * DAT_00077e20;
-    *(float *)(iVar11 + 0x50) = *(float *)(this + 100) + fVar20 * *(float *)(iVar11 + 0x5c);
-    *(float *)(iVar11 + 0x48) = fVar16 + fVar20 * *(float *)(iVar11 + 0x54);
-    *(float *)(iVar11 + 0x4c) = fVar17 + fVar20 * *(float *)(iVar11 + 0x58);
-  } while (iVar14 != 0x14);
+    fVar7 = *(float *)(*(int *)(this + 0x7c) + 0x54);
+    *(undefined4 *)(iVar2 + 0x70) = 0;
+    *(undefined4 *)(iVar2 + 0x74) = 0;
+    iVar4 = iVar4 + 1;
+    *(float *)(iVar2 + 0x6c) = fVar9 * fVar7;
+    uVar1 = gRMathRand2();
+    VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+    tColour::Grey((tColour *)(iVar2 + 0x2c),extraout_s0);
+    iVar3 = *(int *)(this + 0x7c);
+    *(float *)(iVar2 + 100) = fVar6 * 1.2;
+    *(float *)(iVar2 + 0x60) = fVar6 * 0.3;
+    *(float *)(iVar2 + 0x78) = *(float *)(iVar3 + 0x54) * *(float *)(iVar3 + 0x54) * -0.01 * 2.2;
+    uVar1 = gRMathRand2();
+    fVar9 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+    uVar1 = gRMathRand2();
+    fVar6 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+    uVar1 = gRMathRand2();
+    fVar8 = *(float *)(*(int *)(this + 0x7c) + 0x54);
+    fVar7 = *(float *)(*(int *)(this + 0x7c) + 0xfed4);
+    *(float *)(iVar2 + 0x54) = (fVar9 - 16384.0) * 6.1035156e-05 * fVar5 * fVar8;
+    fVar9 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+    *(float *)(iVar2 + 0x58) = fVar6 * 3.0517578e-05 * (fVar5 + 0.3) * fVar8;
+    *(float *)(iVar2 + 0x5c) = (fVar7 + fVar9 * 3.0517578e-05 * fVar5) * fVar8;
+    uVar1 = gRMathRand2();
+    fVar5 = *(float *)(this + 0x5c);
+    fVar6 = *(float *)(this + 0x60);
+    fVar9 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+    fVar9 = fVar9 * 3.0517578e-05 * 10.0;
+    *(float *)(iVar2 + 0x50) = *(float *)(this + 100) + fVar9 * *(float *)(iVar2 + 0x5c);
+    *(float *)(iVar2 + 0x48) = fVar5 + fVar9 * *(float *)(iVar2 + 0x54);
+    *(float *)(iVar2 + 0x4c) = fVar6 + fVar9 * *(float *)(iVar2 + 0x58);
+  } while (iVar4 != 0x14);
   return;
 }

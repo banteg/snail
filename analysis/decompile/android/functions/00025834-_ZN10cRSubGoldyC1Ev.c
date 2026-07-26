@@ -11,74 +11,66 @@ cRSubGoldy * __thiscall cRSubGoldy::cRSubGoldy(cRSubGoldy *this)
 
 {
   int iVar1;
-  int iVar2;
   cRBodPos *this_00;
-  int iVar3;
-  int iVar4;
+  int iVar2;
 
-  iVar4 = DAT_00025a44;
   cRBodPos::cRBodPos((cRBodPos *)this);
-  iVar1 = DAT_00025a50;
-  iVar3 = DAT_00025a4c;
-  iVar4 = iVar4 + 0x25850;
   this_00 = (cRBodPos *)(this + 0x44c);
-  *(int *)this = *(int *)(iVar4 + DAT_00025a48) + 8;
+  *(undefined ***)this = &PTR_AI_0009ace0;
   cRBodPos::cRBodPos((cRBodPos *)(this + 0x94));
-  iVar2 = DAT_00025a58;
-  *(int *)(this + 0x94) = *(int *)(iVar4 + DAT_00025a54) + 8;
+  *(undefined ***)(this + 0x94) = &PTR_AI_0009ad20;
   do {
     cRBodPos::cRBodPos(this_00);
-    *(int *)this_00 = *(int *)(iVar4 + iVar3) + 8;
+    *(undefined ***)this_00 = &PTR_AI_0009ac60;
     cRBodPos::cRBodPos(this_00 + 0x74);
-    *(int *)(this_00 + 0x74) = *(int *)(iVar4 + iVar1) + 8;
+    *(undefined ***)(this_00 + 0x74) = &PTR_AI_0009add0;
     cRBodPos::cRBodPos(this_00 + 0x100);
-    *(int *)(this_00 + 0x100) = *(int *)(iVar4 + iVar2) + 8;
+    *(undefined ***)(this_00 + 0x100) = &PTR_AI_0009ac70;
     this_00 = this_00 + 0x2c8;
   } while (this_00 != (cRBodPos *)(this + 0x25ac));
   cRBodPos::cRBodPos((cRBodPos *)(this + 0x2800));
-  iVar3 = 0;
-  *(int *)(this + 0x2800) = *(int *)(iVar4 + DAT_00025a5c) + 8;
+  iVar2 = 0;
+  *(undefined ***)(this + 0x2800) = &PTR_AI_0009acf0;
   do {
-    iVar1 = iVar3 + 0x2940;
-    iVar3 = iVar3 + 0x74;
+    iVar1 = iVar2 + 0x2940;
+    iVar2 = iVar2 + 0x74;
     cRBodPos::cRBodPos((cRBodPos *)(this + iVar1));
-    iVar1 = DAT_00025a60;
-  } while (iVar3 != 0x488);
+  } while (iVar2 != 0x488);
   cRBodPos::cRBodPos((cRBodPos *)(this + 0x2dc8));
-  iVar3 = 0;
-  *(int *)(this + 0x2dc8) = *(int *)(iVar4 + iVar1) + 8;
+  iVar2 = 0;
+  *(undefined ***)(this + 0x2dc8) = &PTR_AI_0009ad00;
   do {
-    iVar2 = iVar3 + 0x2f0c;
-    iVar3 = iVar3 + 0x74;
-    cRBodPos::cRBodPos((cRBodPos *)(this + iVar2));
-  } while (iVar3 != 0x244);
-  cRBodPos::cRBodPos((cRBodPos *)(this + 0x315c));
-  iVar3 = 0;
-  *(int *)(this + 0x315c) = *(int *)(iVar4 + iVar1) + 8;
-  do {
-    iVar2 = iVar3 + 0x32a0;
-    iVar3 = iVar3 + 0x74;
-    cRBodPos::cRBodPos((cRBodPos *)(this + iVar2));
-  } while (iVar3 != 0x244);
-  cRBodPos::cRBodPos((cRBodPos *)(this + 0x34f0));
-  iVar3 = 0;
-  *(int *)(this + 0x34f0) = *(int *)(iVar4 + iVar1) + 8;
-  do {
-    iVar2 = iVar3 + 0x3634;
-    iVar3 = iVar3 + 0x74;
-    cRBodPos::cRBodPos((cRBodPos *)(this + iVar2));
-  } while (iVar3 != 0x244);
-  cRBodPos::cRBodPos((cRBodPos *)(this + 0x3884));
-  iVar3 = 0;
-  *(int *)(this + 0x3884) = *(int *)(iVar4 + iVar1) + 8;
-  do {
-    iVar1 = iVar3 + 0x39c8;
-    iVar3 = iVar3 + 0x74;
+    iVar1 = iVar2 + 0x2f0c;
+    iVar2 = iVar2 + 0x74;
     cRBodPos::cRBodPos((cRBodPos *)(this + iVar1));
-  } while (iVar3 != 0x244);
+  } while (iVar2 != 0x244);
+  cRBodPos::cRBodPos((cRBodPos *)(this + 0x315c));
+  iVar2 = 0;
+  *(undefined ***)(this + 0x315c) = &PTR_AI_0009ad00;
+  do {
+    iVar1 = iVar2 + 0x32a0;
+    iVar2 = iVar2 + 0x74;
+    cRBodPos::cRBodPos((cRBodPos *)(this + iVar1));
+  } while (iVar2 != 0x244);
+  cRBodPos::cRBodPos((cRBodPos *)(this + 0x34f0));
+  iVar2 = 0;
+  *(undefined ***)(this + 0x34f0) = &PTR_AI_0009ad00;
+  do {
+    iVar1 = iVar2 + 0x3634;
+    iVar2 = iVar2 + 0x74;
+    cRBodPos::cRBodPos((cRBodPos *)(this + iVar1));
+  } while (iVar2 != 0x244);
+  cRBodPos::cRBodPos((cRBodPos *)(this + 0x3884));
+  iVar2 = 0;
+  *(undefined ***)(this + 0x3884) = &PTR_AI_0009ad00;
+  do {
+    iVar1 = iVar2 + 0x39c8;
+    iVar2 = iVar2 + 0x74;
+    cRBodPos::cRBodPos((cRBodPos *)(this + iVar1));
+  } while (iVar2 != 0x244);
   cRBodPos::cRBodPos((cRBodPos *)(this + 0x3c28));
   cRBodPos::cRBodPos((cRBodPos *)(this + 0x3c9c));
   cRBodPos::cRBodPos((cRBodPos *)(this + 0x3ed8));
-  *(int *)(this + 0x3ed8) = *(int *)(iVar4 + DAT_00025a64) + 8;
+  *(undefined ***)(this + 0x3ed8) = &PTR_AI_0009ad10;
   return this;
 }

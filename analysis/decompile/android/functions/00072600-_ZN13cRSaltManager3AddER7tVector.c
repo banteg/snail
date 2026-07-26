@@ -11,45 +11,41 @@ void __thiscall cRSaltManager::Add(cRSaltManager *this,tVector *param_1)
 
 {
   cRSaltManager *pcVar1;
-  float fVar2;
-  undefined4 uVar3;
-  int iVar4;
-  undefined4 uVar5;
-  cRSaltManager *pcVar6;
-  cRBod *pcVar7;
-  int *piVar8;
+  undefined4 uVar2;
+  int iVar3;
+  undefined4 uVar4;
+  cRSaltManager *pcVar5;
+  cRBod *pcVar6;
   uint in_fpscr;
   float extraout_s0;
 
-  iVar4 = 0;
-  pcVar6 = this;
+  iVar3 = 0;
+  pcVar5 = this;
   do {
-    pcVar1 = pcVar6 + 0x74;
-    pcVar6 = pcVar6 + 0x8c;
+    pcVar1 = pcVar5 + 0x74;
+    pcVar5 = pcVar5 + 0x8c;
     if (*(int *)pcVar1 == 0) {
-      piVar8 = *(int **)(DAT_000726fc + 0x72618 + DAT_00072700);
-      pcVar7 = (cRBod *)(this + iVar4 * 0x8c);
-      *(undefined4 *)(pcVar7 + 0x80) = DAT_000726e8;
-      fVar2 = DAT_000726ec;
-      iVar4 = *piVar8;
-      *(undefined4 *)(pcVar7 + 0x74) = 1;
-      *(float *)(pcVar7 + 0x84) = *(float *)(iVar4 + 0x718f4) * fVar2;
-      uVar3 = *(undefined4 *)(param_1 + 4);
-      uVar5 = *(undefined4 *)(param_1 + 8);
-      *(undefined4 *)(pcVar7 + 0x5c) = *(undefined4 *)param_1;
-      *(undefined4 *)(pcVar7 + 0x60) = uVar3;
-      *(undefined4 *)(pcVar7 + 100) = uVar5;
-      tMatrix::RotIdentity((tMatrix *)(pcVar7 + 0x2c));
-      uVar3 = gRMathRand2();
-      VectorSignedToFloat(uVar3,(byte)(in_fpscr >> 0x16) & 3);
-      tMatrix::RotLocalY((tMatrix *)(pcVar7 + 0x2c),extraout_s0);
-      iVar4 = *piVar8;
-      pcVar7[0x88] = (cRBod)0x1;
+      pcVar6 = (cRBod *)(this + iVar3 * 0x8c);
+      *(undefined4 *)(pcVar6 + 0x80) = 0;
+      iVar3 = Game;
+      *(undefined4 *)(pcVar6 + 0x74) = 1;
+      *(float *)(pcVar6 + 0x84) = *(float *)(iVar3 + 0x718f4) * 0.033333335;
+      uVar2 = *(undefined4 *)(param_1 + 4);
+      uVar4 = *(undefined4 *)(param_1 + 8);
+      *(undefined4 *)(pcVar6 + 0x5c) = *(undefined4 *)param_1;
+      *(undefined4 *)(pcVar6 + 0x60) = uVar2;
+      *(undefined4 *)(pcVar6 + 100) = uVar4;
+      tMatrix::RotIdentity((tMatrix *)(pcVar6 + 0x2c));
+      uVar2 = gRMathRand2();
+      VectorSignedToFloat(uVar2,(byte)(in_fpscr >> 0x16) & 3);
+      tMatrix::RotLocalY((tMatrix *)(pcVar6 + 0x2c),extraout_s0);
+      iVar3 = Game;
+      pcVar6[0x88] = (cRBod)0x1;
       cLinkedList<cRBod>::AddAfter
-                ((cLinkedList<cRBod> *)(iVar4 + 0x358),pcVar7,(cRBod *)(iVar4 + 0x74598));
+                ((cLinkedList<cRBod> *)(iVar3 + 0x358),pcVar6,(cRBod *)(iVar3 + 0x74598));
       return;
     }
-    iVar4 = iVar4 + 1;
-  } while (iVar4 != 0x28);
+    iVar3 = iVar3 + 1;
+  } while (iVar3 != 0x28);
   return;
 }

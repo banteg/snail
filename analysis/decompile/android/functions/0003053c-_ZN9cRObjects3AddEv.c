@@ -15,7 +15,7 @@ cRObject * __thiscall cRObjects::Add(cRObjects *this)
 
   iVar1 = *(int *)this;
   if (iVar1 == *(int *)(this + 4)) {
-    RShellError((char *)(DAT_00030594 + 0x30558 + DAT_00030598));
+    RShellError("Too many Objects - Increase ObjectList.Init(MAX) in G0.cpp");
     iVar1 = *(int *)this;
   }
   *(int *)this = iVar1 + 1;

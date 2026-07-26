@@ -13,19 +13,16 @@ void cAccelerometer::AI(void)
   bool bVar1;
   uint uVar2;
   byte bVar3;
-  double dVar4;
-  undefined4 uVar5;
   int in_r0;
-  float fVar6;
+  float fVar4;
+  float fVar5;
+  int iVar6;
   int iVar7;
   int iVar8;
   int iVar9;
-  int *piVar10;
-  int iVar11;
-  int iVar12;
-  float *pfVar13;
+  float *pfVar10;
   uint in_fpscr;
-  uint uVar14;
+  uint uVar11;
   float in_s0;
   float extraout_s0;
   float extraout_s0_00;
@@ -36,167 +33,141 @@ void cAccelerometer::AI(void)
   float extraout_s1;
   float extraout_s1_00;
   float extraout_s1_01;
-  float fVar15;
   float extraout_s1_02;
   float extraout_s1_03;
-  double dVar16;
-  float fVar17;
-  int iVar18;
-  float fVar19;
+  double dVar12;
+  float fVar13;
+  int iVar14;
 
-  iVar11 = DAT_0005b7dc + 0x5b418;
-  if ((*(char *)(*(int *)(iVar11 + DAT_0005b7e0) + 0xbd) == '\0') ||
-     (10 < **(int **)(iVar11 + DAT_0005b7e4))) {
-    wprintf((char *)(iVar11 + DAT_0005b7e8));
-    fVar19 = DAT_0005b7b0;
-    iVar11 = **(int **)(iVar11 + DAT_0005b7ec);
-    *(undefined4 *)(iVar11 + 0x48) = DAT_0005b7b4;
-    *(float *)(iVar11 + 0x40) = fVar19;
-    *(float *)(iVar11 + 0x3c) = fVar19;
+  if ((DAT_0038ca55 == '\0') || (10 < gAccelerometerCounter)) {
+    wprintf("!@#");
+    iVar9 = Game;
+    *(undefined4 *)(Game + 0x48) = 0;
+    *(undefined4 *)(iVar9 + 0x40) = 0x43870000;
+    *(undefined4 *)(iVar9 + 0x3c) = 0x43870000;
     OFOrientation();
     return;
   }
-  fVar6 = (float)ATan(in_s0,in_s1);
-  fVar15 = DAT_0005b7c4;
-  fVar19 = DAT_0005b7c0;
-  uVar5 = DAT_0005b7b4;
-  dVar4 = DAT_0005b7a8;
-  fVar17 = *(float *)(in_r0 + 8);
-  if (fVar17 < 0.0) {
-    uVar14 = in_fpscr & 0xfffffff | (uint)(fVar17 < DAT_0005b7c8) << 0x1f |
-             (uint)(fVar17 == DAT_0005b7c8) << 0x1e;
-    bVar3 = (byte)(uVar14 >> 0x18);
-    if (!(bool)(bVar3 >> 6 & 1) && (bool)(bVar3 >> 7) == (NAN(fVar17) || NAN(DAT_0005b7c8)))
-    goto LAB_0005b4ac;
-LAB_0005b644:
-    iVar18 = **(int **)(iVar11 + DAT_0005b7ec);
-    iVar12 = DAT_0005b7ec;
+  fVar4 = (float)ATan(in_s0,in_s1);
+  fVar13 = *(float *)(in_r0 + 8);
+  iVar9 = Game;
+  if (fVar13 < 0.0) {
+    uVar11 = in_fpscr & 0xfffffff | (uint)(fVar13 < -0.75) << 0x1f | (uint)(fVar13 == -0.75) << 0x1e
+    ;
+    bVar3 = (byte)(uVar11 >> 0x18);
+    if (!(bool)(bVar3 >> 6 & 1) && (bool)(bVar3 >> 7) == NAN(fVar13)) goto LAB_0005b4ac;
   }
   else {
-    uVar14 = in_fpscr & 0xfffffff | (uint)(fVar17 < DAT_0005b7b8) << 0x1f;
-    if (!SUB41(uVar14 >> 0x1f,0)) goto LAB_0005b644;
+    uVar11 = in_fpscr & 0xfffffff | (uint)(fVar13 < 0.75) << 0x1f;
+    if (SUB41(uVar11 >> 0x1f,0)) {
 LAB_0005b4ac:
-    fVar17 = (float)VectorSignedToFloat((int)((fVar6 * DAT_0005b804) / DAT_0005b7fc + DAT_0005b7f8)
-                                        % 0x168,(byte)(uVar14 >> 0x16) & 3);
-    iVar7 = (int)((fVar17 + DAT_0005b7bc) / DAT_0005b800) % 4;
-    fVar6 = (float)VectorSignedToFloat(iVar7 * 0x5a,(byte)(uVar14 >> 0x16) & 3);
-    pfVar13 = (float *)(in_r0 + iVar7 * 4 + 0xc);
-    iVar9 = 0;
-    iVar18 = (int)(fVar17 - fVar6);
-    if (iVar18 < 0) {
-      iVar18 = -iVar18;
-    }
-    iVar8 = in_r0;
-    if (0xb4 < iVar18) {
-      iVar18 = 0x168 - iVar18;
-    }
-    do {
-      if (iVar7 == iVar9) {
-        fVar6 = *pfVar13;
-        uVar2 = uVar14 & 0xfffffff;
-        uVar14 = uVar2 | (uint)(fVar6 < fVar15) << 0x1f;
-        if (SUB41(uVar14 >> 0x1f,0)) {
-          dVar16 = (double)VectorSignedToFloat(iVar18,(byte)(uVar14 >> 0x16) & 3);
-          uVar14 = uVar2 | (uint)(dVar16 < dVar4) << 0x1f;
-          if (SUB41(uVar14 >> 0x1f,0)) {
-            *pfVar13 = fVar6 + fVar19;
+      fVar13 = (float)VectorSignedToFloat((int)((fVar4 * 180.0) / 3.1415927 + 360.0) % 0x168,
+                                          (byte)(uVar11 >> 0x16) & 3);
+      iVar6 = (int)((fVar13 + 45.0) / 90.0) % 4;
+      fVar4 = (float)VectorSignedToFloat(iVar6 * 0x5a,(byte)(uVar11 >> 0x16) & 3);
+      pfVar10 = (float *)(in_r0 + iVar6 * 4 + 0xc);
+      iVar8 = 0;
+      iVar14 = (int)(fVar13 - fVar4);
+      if (iVar14 < 0) {
+        iVar14 = -iVar14;
+      }
+      iVar7 = in_r0;
+      if (0xb4 < iVar14) {
+        iVar14 = 0x168 - iVar14;
+      }
+      do {
+        if (iVar6 == iVar8) {
+          fVar4 = *pfVar10;
+          uVar2 = uVar11 & 0xfffffff;
+          uVar11 = uVar2 | (uint)(fVar4 < 100.0) << 0x1f;
+          if (SUB41(uVar11 >> 0x1f,0)) {
+            dVar12 = (double)VectorSignedToFloat(iVar14,(byte)(uVar11 >> 0x16) & 3);
+            uVar11 = uVar2 | (uint)(dVar12 < 22.5) << 0x1f;
+            if (SUB41(uVar11 >> 0x1f,0)) {
+              *pfVar10 = fVar4 + 1.0;
+            }
           }
         }
-      }
-      else {
-        fVar6 = *(float *)(iVar8 + 0xc);
-        uVar14 = uVar14 & 0xfffffff | (uint)(fVar6 < 0.0) << 0x1f | (uint)(fVar6 == 0.0) << 0x1e;
-        bVar3 = (byte)(uVar14 >> 0x18);
-        if (!(bool)(bVar3 >> 6 & 1) && (bool)(bVar3 >> 7) == NAN(fVar6)) {
-          *(undefined4 *)(iVar8 + 0xc) = uVar5;
+        else {
+          fVar4 = *(float *)(iVar7 + 0xc);
+          uVar11 = uVar11 & 0xfffffff | (uint)(fVar4 < 0.0) << 0x1f | (uint)(fVar4 == 0.0) << 0x1e;
+          bVar3 = (byte)(uVar11 >> 0x18);
+          if (!(bool)(bVar3 >> 6 & 1) && (bool)(bVar3 >> 7) == NAN(fVar4)) {
+            *(undefined4 *)(iVar7 + 0xc) = 0;
+          }
         }
+        iVar9 = Game;
+        iVar8 = iVar8 + 1;
+        iVar7 = iVar7 + 4;
+      } while (iVar8 != 4);
+      if ((90.0 < *(float *)(in_r0 + 0x18)) && (*(float *)(Game + 0x40) != 270.0)) {
+        *(undefined4 *)(Game + 0x40) = 0x43870000;
       }
-      iVar12 = DAT_0005b7ec;
-      iVar9 = iVar9 + 1;
-      iVar8 = iVar8 + 4;
-    } while (iVar9 != 4);
-    if (*(float *)(in_r0 + 0x18) <= DAT_0005b800) goto LAB_0005b644;
-    iVar18 = **(int **)(iVar11 + DAT_0005b7ec);
-    if (*(float *)(iVar18 + 0x40) != DAT_0005b7b0) {
-      *(float *)(iVar18 + 0x40) = DAT_0005b7b0;
     }
   }
-  iVar7 = DAT_0005b7f0;
-  fVar19 = *(float *)(iVar18 + 0x3c);
-  iVar8 = *(int *)(iVar18 + 0x718fc);
-  iVar9 = *(int *)(iVar11 + DAT_0005b7f0);
-  *(float *)(iVar9 + 200) = fVar19;
-  if (((iVar8 == 2 || iVar8 == 4) && (*(int *)(iVar9 + 8) == 1)) &&
-     (gDirectory[iVar18 + 0x2544] == '\0')) {
-    if (fVar19 == DAT_0005b800) {
-      *(float *)(iVar18 + 0x4c) = DAT_0005b7c0;
+  gConfig._200_4_ = *(float *)(iVar9 + 0x3c);
+  if (((*(int *)(iVar9 + 0x718fc) == 2 || *(int *)(iVar9 + 0x718fc) == 4) && (gConfig._8_4_ == 1))
+     && (gDirectory[iVar9 + 0x2544] == '\0')) {
+    if ((float)gConfig._200_4_ == 90.0) {
+      *(undefined4 *)(iVar9 + 0x4c) = 0x3f800000;
     }
     else {
-      if (fVar19 != DAT_0005b7b0) goto LAB_0005b5fc;
-      *(undefined4 *)(iVar18 + 0x4c) = DAT_0005b7d8;
+      if ((float)gConfig._200_4_ != 270.0) goto LAB_0005b5fc;
+      *(undefined4 *)(iVar9 + 0x4c) = 0xbf800000;
     }
   }
   else {
 LAB_0005b5fc:
-    *(undefined4 *)(iVar18 + 0x4c) = DAT_0005b7b4;
+    *(undefined4 *)(iVar9 + 0x4c) = 0;
   }
-  if (((*(int *)(iVar18 + 0x718fc) != 2) || (*(int *)(*(int *)(iVar11 + iVar7) + 8) != 0)) ||
-     (gDirectory[iVar18 + 0x2544] != '\0')) {
-    *(undefined4 *)(iVar18 + 0x48) = DAT_0005b7b4;
+  if (((*(int *)(iVar9 + 0x718fc) != 2) || (gConfig._8_4_ != 0)) ||
+     (gDirectory[iVar9 + 0x2544] != '\0')) {
+    *(undefined4 *)(iVar9 + 0x48) = 0;
     goto LAB_0005b620;
   }
-  iVar7 = (int)*(float *)(iVar18 + 0x3c);
-  if (iVar7 == 0x5a) {
-    fVar6 = (float)ACos(extraout_s0);
-    piVar10 = *(int **)(iVar11 + iVar12);
-    fVar6 = fVar6 * DAT_0005b804;
-    fVar19 = extraout_s0_02;
-    fVar15 = extraout_s1_02;
+  iVar14 = (int)*(float *)(iVar9 + 0x3c);
+  if (iVar14 == 0x5a) {
+    fVar5 = (float)ACos(extraout_s0);
+    fVar4 = extraout_s0_02;
+    fVar13 = extraout_s1_02;
 LAB_0005b6dc:
-    *(float *)(iVar18 + 0x48) = fVar6 / DAT_0005b7fc - DAT_0005b800;
-    iVar18 = *piVar10;
+    *(float *)(iVar9 + 0x48) = (fVar5 * 180.0) / 3.1415927 - 90.0;
+    iVar9 = Game;
   }
   else {
-    fVar19 = extraout_s0;
-    fVar15 = extraout_s1;
-    if (iVar7 < 0x5b) {
-      if (iVar7 == 0) {
-        fVar6 = (float)ACos(extraout_s0);
-        piVar10 = *(int **)(iVar11 + iVar12);
-        fVar6 = fVar6 * DAT_0005b804;
-        fVar19 = extraout_s0_00;
-        fVar15 = extraout_s1_00;
+    fVar4 = extraout_s0;
+    fVar13 = extraout_s1;
+    if (iVar14 < 0x5b) {
+      if (iVar14 == 0) {
+        fVar5 = (float)ACos(extraout_s0);
+        fVar4 = extraout_s0_00;
+        fVar13 = extraout_s1_00;
         goto LAB_0005b6dc;
       }
     }
     else {
-      if (iVar7 == 0xb4) {
-        fVar6 = (float)ACos(extraout_s0);
-        piVar10 = *(int **)(iVar11 + iVar12);
-        fVar6 = fVar6 * DAT_0005b808;
-        fVar19 = extraout_s0_03;
-        fVar15 = extraout_s1_03;
+      if (iVar14 == 0xb4) {
+        fVar5 = (float)ACos(extraout_s0);
+        fVar4 = extraout_s0_03;
+        fVar13 = extraout_s1_03;
       }
       else {
-        if (iVar7 != 0x10e) goto LAB_0005b6f4;
-        fVar6 = (float)ACos(extraout_s0);
-        piVar10 = *(int **)(iVar11 + iVar12);
-        fVar6 = fVar6 * DAT_0005b808;
-        fVar19 = extraout_s0_01;
-        fVar15 = extraout_s1_01;
+        if (iVar14 != 0x10e) goto LAB_0005b6f4;
+        fVar5 = (float)ACos(extraout_s0);
+        fVar4 = extraout_s0_01;
+        fVar13 = extraout_s1_01;
       }
-      *(float *)(iVar18 + 0x48) = fVar6 / DAT_0005b7fc + DAT_0005b800;
-      iVar18 = *piVar10;
+      *(float *)(iVar9 + 0x48) = (fVar5 * -180.0) / 3.1415927 + 90.0;
+      iVar9 = Game;
     }
   }
 LAB_0005b6f4:
-  fVar6 = DAT_0005b7cc;
-  fVar17 = *(float *)(iVar18 + 0x48);
-  if (DAT_0005b7cc < fVar17) {
-    *(float *)(iVar18 + 0x48) = DAT_0005b7cc;
-    fVar17 = fVar6;
+  fVar5 = *(float *)(iVar9 + 0x48);
+  if (80.0 < fVar5) {
+    *(undefined4 *)(iVar9 + 0x48) = 0x42a00000;
+    fVar5 = 80.0;
 LAB_0005b710:
-    if (DAT_0005b808 <= fVar17) {
+    if (-180.0 <= fVar5) {
       bVar1 = false;
     }
     else {
@@ -204,20 +175,20 @@ LAB_0005b710:
     }
 LAB_0005b724:
     if (bVar1) {
-      *(float *)(iVar18 + 0x48) = fVar17 + DAT_0005b7f8;
+      *(float *)(iVar9 + 0x48) = fVar5 + 360.0;
     }
   }
   else {
-    if (DAT_0005b7f4 <= fVar17) {
-      if (fVar17 <= DAT_0005b804) goto LAB_0005b710;
-      fVar17 = fVar17 - DAT_0005b7f8;
-      bVar1 = fVar17 < DAT_0005b808;
-      *(float *)(iVar18 + 0x48) = fVar17;
+    if (-80.0 <= fVar5) {
+      if (fVar5 <= 180.0) goto LAB_0005b710;
+      fVar5 = fVar5 - 360.0;
+      bVar1 = fVar5 < -180.0;
+      *(float *)(iVar9 + 0x48) = fVar5;
       goto LAB_0005b724;
     }
-    *(float *)(iVar18 + 0x48) = DAT_0005b7f4;
+    *(undefined4 *)(iVar9 + 0x48) = 0xc2a00000;
   }
-  cRMouse::ClickScreen((bool)((char)iVar18 + '('),fVar19,fVar15);
+  cRMouse::ClickScreen((bool)((char)iVar9 + '('),fVar4,fVar13);
 LAB_0005b620:
   OFOrientation();
   return;

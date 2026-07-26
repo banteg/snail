@@ -24,7 +24,6 @@ void cRSubRingStar::AI(void)
   float fVar9;
   float fVar10;
 
-  fVar1 = DAT_0006e06c;
   iVar4 = *(int *)(in_r0 + 4);
   fVar9 = *(float *)(in_r0 + 0x1c);
   iVar5 = *(int *)in_r0;
@@ -35,19 +34,19 @@ void cRSubRingStar::AI(void)
     fVar7 = *(float *)(in_r0 + 0x14) + *(float *)(in_r0 + 0x18);
     *(float *)(in_r0 + 0x14) = fVar7;
   }
-  if (fVar1 < fVar7) {
-    *(float *)(in_r0 + 0x14) = fVar7 - fVar1;
+  if (6.2831855 < fVar7) {
+    *(float *)(in_r0 + 0x14) = fVar7 - 6.2831855;
   }
-  fVar1 = (float)Sin(in_s0);
+  fVar7 = (float)Sin(in_s0);
   fVar10 = *(float *)(in_r0 + 0x1c);
-  fVar7 = (float)Cos(extraout_s0);
+  fVar1 = (float)Cos(extraout_s0);
+  fVar6 = *(float *)(iVar4 + 100);
   fVar8 = *(float *)(iVar4 + 0x60);
   iVar3 = *(int *)(in_r0 + 4);
   iVar2 = *(int *)(iVar3 + 0x19c);
-  fVar6 = *(float *)(iVar4 + 100) + DAT_0006e070;
-  *(float *)(iVar5 + 0x48) = fVar9 * fVar1 + *(float *)(iVar4 + 0x5c);
-  *(float *)(iVar5 + 0x50) = fVar6;
-  *(float *)(iVar5 + 0x4c) = fVar8 + fVar10 * fVar7;
+  *(float *)(iVar5 + 0x48) = fVar9 * fVar7 + *(float *)(iVar4 + 0x5c);
+  *(float *)(iVar5 + 0x50) = fVar6 + 0.0;
+  *(float *)(iVar5 + 0x4c) = fVar8 + fVar10 * fVar1;
   if (iVar2 != 0) {
     return;
   }

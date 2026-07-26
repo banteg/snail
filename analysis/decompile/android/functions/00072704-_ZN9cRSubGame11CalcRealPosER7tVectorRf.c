@@ -32,7 +32,7 @@ void __thiscall cRSubGame::CalcRealPos(cRSubGame *this,tVector *param_1,float *p
   undefined4 local_2c;
 
   fVar12 = *(float *)(param_1 + 8);
-  *param_2 = DAT_00072884;
+  *param_2 = 0.0;
   if ((*(uint *)(this + (int)fVar12 * 0xdc + 0x20dedc) & 0x40) != 0) {
     fVar14 = *(float *)(param_1 + 8);
     this_00 = *(cRSubLoc **)(this + (int)fVar12 * 0xdc + 0x20df74);

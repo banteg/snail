@@ -18,6 +18,6 @@ cRFringeManager * __thiscall cRFringeManager::GetFringe(cRFringeManager *this)
     *(undefined4 *)(this + iVar1 * 4) = 0;
     return this + iVar1 * 4;
   }
-  RShellError((char *)(DAT_0006d87c + 0x6d848 + DAT_0006d880));
+  RShellError("Too many Fringes increase RFRINGEMANAGER_NUMBER");
   return (cRFringeManager *)0x0;
 }

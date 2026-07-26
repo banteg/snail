@@ -10,13 +10,9 @@
 void __thiscall cRSplash::Init(cRSplash *this)
 
 {
-  undefined4 uVar1;
-  undefined4 uVar2;
-  int iVar3;
-  int iVar4;
-  int iVar5;
-  int *piVar6;
-  float fVar7;
+  int iVar1;
+  int iVar2;
+  float fVar3;
   float extraout_s0;
   float extraout_s1;
   float extraout_s2;
@@ -30,54 +26,45 @@ void __thiscall cRSplash::Init(cRSplash *this)
   undefined4 uStack_20;
   undefined4 uStack_1c;
 
-  iVar3 = DAT_0006adb4;
-  iVar5 = DAT_0006adb0 + 0x6abbc;
-  piVar6 = *(int **)(iVar5 + DAT_0006adb4);
-  cRFade::FadeIn((cRFade *)(*piVar6 + 0x24));
-  cRStarManager::Hide((cRStarManager *)(*piVar6 + 0x4d440));
-  RShellMusicPlay((char *)(iVar5 + DAT_0006adb8),0,(char *)(iVar5 + DAT_0006adbc));
-  iVar4 = *piVar6;
-  if (*(int *)(gOFOData + iVar4 + 0x1ebc) == 0) {
-    iVar4 = cRLandscapeManager::Import
-                      ((cRLandscapeManager *)(gSegmentText + iVar4 + 0x3d8),
-                       (char *)(iVar5 + DAT_0006adc0));
+  cRFade::FadeIn((cRFade *)(Game + 0x24));
+  cRStarManager::Hide((cRStarManager *)(Game + 0x4d440));
+  RShellMusicPlay("introtext",0,"");
+  if (*(int *)(gOFOData + Game + 0x1ebc) == 0) {
+    iVar1 = cRLandscapeManager::Import
+                      ((cRLandscapeManager *)(gSegmentText + Game + 0x3d8),"Splash.txt");
   }
   else {
-    iVar4 = cRLandscapeManager::Import
-                      ((cRLandscapeManager *)(gSegmentText + iVar4 + 0x3d8),
-                       (char *)(iVar5 + DAT_0006adcc));
+    iVar1 = cRLandscapeManager::Import
+                      ((cRLandscapeManager *)(gSegmentText + Game + 0x3d8),"SplashPro.txt");
   }
-  piVar6 = *(int **)(iVar5 + iVar3);
-  fVar7 = (float)cRBackdrop::Change((cRBackdrop *)(*piVar6 + 0x4d2e0),
-                                    (cRLandscape *)(gSegmentText + iVar4 * 0x1ac + *piVar6 + 0x3dc),
+  fVar3 = (float)cRBackdrop::Change((cRBackdrop *)(Game + 0x4d2e0),
+                                    (cRLandscape *)(gSegmentText + iVar1 * 0x1ac + Game + 0x3dc),
                                     false);
-  cRBorderManager::SetJustifyCentre((cRBorderManager *)(*piVar6 + 0xd14),fVar7);
-  iVar3 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar6 + 0xd14));
-  iVar4 = *(int *)(gOFOData + *piVar6 + 0x1ebc);
-  *(int *)(this + 8) = iVar3;
-  if (iVar4 == 0) {
+  cRBorderManager::SetJustifyCentre((cRBorderManager *)(Game + 0xd14),fVar3);
+  iVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  iVar2 = *(int *)(gOFOData + Game + 0x1ebc);
+  *(int *)(this + 8) = iVar1;
+  if (iVar2 == 0) {
     tColour::tColour((tColour *)&local_28,extraout_s0,extraout_s1,extraout_s2,extraout_s3);
-    iVar4 = DAT_0006adc4;
+    iVar2 = -0x7560;
   }
   else {
-    if (iVar4 != 1) goto LAB_0006ad00;
+    if (iVar2 != 1) goto LAB_0006ad00;
     tColour::tColour((tColour *)&local_38,extraout_s0,extraout_s1,extraout_s2,extraout_s3);
-    iVar4 = DAT_0006adc8;
+    iVar2 = -0x7548;
     local_28 = local_38;
     uStack_24 = uStack_34;
     uStack_20 = uStack_30;
     uStack_1c = uStack_2c;
   }
-  cRBorder::Init(iVar3,0x20400002,iVar5 + iVar4,0x14,0,DAT_0006ada0,local_28,uStack_24,uStack_20,
-                 uStack_1c,2,0);
-  iVar3 = *(int *)(this + 8);
+  cRBorder::Init(iVar1,0x20400002,(int)&__DT_PLTGOT + iVar2,0x14,0,0x43ca8000,local_28,uStack_24,
+                 uStack_20,uStack_1c,2,0);
+  iVar1 = *(int *)(this + 8);
 LAB_0006ad00:
-  uVar1 = DAT_0006ada4;
   *(undefined4 *)(this + 0xc) = 0;
   *this = (cRSplash)0x0;
-  uVar2 = DAT_0006ada8;
-  *(undefined4 *)(iVar3 + 0x6e8) = uVar1;
-  *(undefined4 *)(this + 0x10) = uVar2;
-  *(undefined4 *)(this + 0x14) = DAT_0006adac;
+  *(undefined4 *)(iVar1 + 0x6e8) = 0x3f99999a;
+  *(undefined4 *)(this + 0x10) = 0;
+  *(undefined4 *)(this + 0x14) = 0x3b888889;
   return;
 }

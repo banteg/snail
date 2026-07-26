@@ -10,11 +10,8 @@
 void __thiscall cRExit::Init(cRExit *this)
 
 {
-  int iVar1;
-  undefined4 uVar2;
-  int iVar3;
-  int *piVar4;
-  tColour *ptVar5;
+  undefined4 uVar1;
+  tColour *ptVar2;
   float extraout_s0;
   float extraout_s0_00;
   float extraout_s0_01;
@@ -31,7 +28,7 @@ void __thiscall cRExit::Init(cRExit *this)
   float extraout_s1;
   float extraout_s1_00;
   float extraout_s1_01;
-  float fVar6;
+  float fVar3;
   float extraout_s1_02;
   float extraout_s1_03;
   float extraout_s1_04;
@@ -45,7 +42,7 @@ void __thiscall cRExit::Init(cRExit *this)
   float extraout_s2;
   float extraout_s2_00;
   float extraout_s2_01;
-  float fVar7;
+  float fVar4;
   float extraout_s2_02;
   float extraout_s2_03;
   float extraout_s2_04;
@@ -59,7 +56,7 @@ void __thiscall cRExit::Init(cRExit *this)
   float extraout_s3;
   float extraout_s3_00;
   float extraout_s3_01;
-  float fVar8;
+  float fVar5;
   float extraout_s3_02;
   float extraout_s3_03;
   float extraout_s3_04;
@@ -70,9 +67,9 @@ void __thiscall cRExit::Init(cRExit *this)
   float extraout_s3_09;
   float extraout_s3_10;
   float extraout_s3_11;
-  float fVar9;
-  undefined4 uVar10;
-  undefined4 uVar11;
+  float fVar6;
+  undefined4 uVar7;
+  undefined4 uVar8;
   tColour *local_168;
   tColour *local_164;
   undefined4 local_160;
@@ -116,152 +113,139 @@ void __thiscall cRExit::Init(cRExit *this)
   undefined4 uStack_38;
   undefined4 uStack_34;
 
-  iVar1 = DAT_00062130;
-  iVar3 = DAT_0006212c + 0x61de0;
-  cRBorderManager::HideBorders((cRBorderManager *)(**(int **)(iVar3 + DAT_00062130) + 0xd14));
-  uVar11 = DAT_00062174;
-  uVar2 = DAT_00062128;
+  cRBorderManager::HideBorders((cRBorderManager *)(Game + 0xd14));
   switch(*(undefined4 *)this) {
   case 2:
     goto LAB_00061fbc;
   case 3:
-    piVar4 = *(int **)(iVar3 + iVar1);
     local_168 = atStack_100;
-    ptVar5 = atStack_f0;
-    iVar1 = *piVar4;
+    ptVar2 = atStack_f0;
     local_164 = atStack_110;
     goto LAB_00061fe8;
   case 4:
-    piVar4 = *(int **)(iVar3 + iVar1);
-    uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-    *(undefined4 *)(this + 0x10) = uVar2;
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)(this + 0x10) = uVar1;
     tColour::tColour((tColour *)&local_120,extraout_s0_05,extraout_s1_05,extraout_s2_05,
                      extraout_s3_05);
-    cRBorder::Init(uVar2,0x400002,iVar3 + DAT_00062134,0x14,DAT_00062174,DAT_00062140,local_120,
-                   uStack_11c,uStack_118,uStack_114,2,DAT_00062174);
-    uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-    *(undefined4 *)(this + 0x14) = uVar2;
+    cRBorder::Init(uVar1,0x400002,"Do you really want>to quit?",0x14,0,0x43480000,local_120,
+                   uStack_11c,uStack_118,uStack_114,2,0);
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)(this + 0x14) = uVar1;
     tColour::tColour((tColour *)&local_130,extraout_s0_06,extraout_s1_06,extraout_s2_06,
                      extraout_s3_06);
-    cRBorder::Init(uVar2,0x40000014,iVar3 + DAT_00062138,0x14,DAT_00062144,DAT_00062148,local_130,
-                   uStack_12c,uStack_128,uStack_124,2,DAT_0006214c);
+    cRBorder::Init(uVar1,0x40000014,&DAT_000931e8,0x14,0x43ea0000,0x43ba8000,local_130,uStack_12c,
+                   uStack_128,uStack_124,2,0xc2a00000);
     cRBorder::SetBelow(*(cRBorder **)(this + 0x14),*(cRBorder **)(this + 0x10));
-    uVar10 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-    *(undefined4 *)(this + 0x18) = uVar10;
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)(this + 0x18) = uVar1;
     tColour::tColour((tColour *)&local_140,extraout_s0_07,extraout_s1_07,extraout_s2_07,
                      extraout_s3_07);
-    uVar11 = DAT_00062150;
-    uVar2 = DAT_00062154;
+    uVar8 = 0x440e0000;
+    uVar7 = 0x43940000;
     goto LAB_00061f7c;
   case 5:
-    piVar4 = *(int **)(iVar3 + iVar1);
-    uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-    *(undefined4 *)(this + 0x14) = uVar2;
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)(this + 0x14) = uVar1;
     tColour::tColour((tColour *)&local_150,extraout_s0_08,extraout_s1_08,extraout_s2_08,
                      extraout_s3_08);
-    cRBorder::Init(uVar2,0x14,iVar3 + DAT_00062138,0x14,DAT_00062158,DAT_0006215c,local_150,
-                   uStack_14c,uStack_148,uStack_144,0,uVar11);
-    uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-    *(undefined4 *)(this + 0x18) = uVar2;
+    cRBorder::Init(uVar1,0x14,&DAT_000931e8,0x14,0x43ec8000,0x42040000,local_150,uStack_14c,
+                   uStack_148,uStack_144,0,0);
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)(this + 0x18) = uVar1;
     tColour::tColour((tColour *)&local_160,extraout_s0_09,extraout_s1_09,extraout_s2_09,
                      extraout_s3_09);
-    cRBorder::Init(uVar2,0x14,iVar3 + DAT_0006213c,0x14,DAT_00062160,DAT_00062164,local_160,
-                   uStack_15c,uStack_158,uStack_154,0,uVar11);
+    cRBorder::Init(uVar1,0x14,&DAT_000931ec,0x14,0x440d8000,0x42d80000,local_160,uStack_15c,
+                   uStack_158,uStack_154,0,0);
     break;
   case 6:
     break;
   case 7:
 LAB_00061fbc:
-    piVar4 = *(int **)(iVar3 + iVar1);
-    ptVar5 = local_c0;
+    ptVar2 = local_c0;
     local_164 = atStack_e0;
-    iVar1 = *piVar4;
     local_168 = local_d0;
 LAB_00061fe8:
-    uVar10 = cRBorderManager::GetBorder((cRBorderManager *)(iVar1 + 0xd14));
-    *(undefined4 *)(this + 0x10) = uVar10;
-    tColour::tColour(ptVar5,extraout_s0_02,extraout_s1_02,extraout_s2_02,extraout_s3_02);
-    cRBorder::Init(uVar10,0x400002,iVar3 + DAT_00062134,0x14,uVar11,DAT_00062140,
-                   *(undefined4 *)ptVar5,*(undefined4 *)(ptVar5 + 4),*(undefined4 *)(ptVar5 + 8),
-                   *(undefined4 *)(ptVar5 + 0xc),2,uVar11);
-    uVar10 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-    *(undefined4 *)(this + 0x14) = uVar10;
+    uVar7 = 0x43a50000;
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)(this + 0x10) = uVar1;
+    tColour::tColour(ptVar2,extraout_s0_02,extraout_s1_02,extraout_s2_02,extraout_s3_02);
+    cRBorder::Init(uVar1,0x400002,"Do you really want>to quit?",0x14,0,0x43480000,
+                   *(undefined4 *)ptVar2,*(undefined4 *)(ptVar2 + 4),*(undefined4 *)(ptVar2 + 8),
+                   *(undefined4 *)(ptVar2 + 0xc),2,0);
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)(this + 0x14) = uVar1;
     tColour::tColour(local_168,extraout_s0_03,extraout_s1_03,extraout_s2_03,extraout_s3_03);
-    cRBorder::Init(uVar10,0x40000014,iVar3 + DAT_00062138,0x14,uVar11,uVar2,*(undefined4 *)local_168
-                   ,*(undefined4 *)(local_168 + 4),*(undefined4 *)(local_168 + 8),
-                   *(undefined4 *)(local_168 + 0xc),2,DAT_0006214c);
+    cRBorder::Init(uVar1,0x40000014,&DAT_000931e8,0x14,0,0x43a50000,*(undefined4 *)local_168,
+                   *(undefined4 *)(local_168 + 4),*(undefined4 *)(local_168 + 8),
+                   *(undefined4 *)(local_168 + 0xc),2,0xc2a00000);
     cRBorder::SetBelow(*(cRBorder **)(this + 0x14),*(cRBorder **)(this + 0x10));
-    uVar10 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-    *(undefined4 *)(this + 0x18) = uVar10;
-    fVar9 = extraout_s0_04;
-    fVar6 = extraout_s1_04;
-    fVar7 = extraout_s2_04;
-    fVar8 = extraout_s3_04;
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)(this + 0x18) = uVar1;
+    fVar6 = extraout_s0_04;
+    fVar3 = extraout_s1_04;
+    fVar4 = extraout_s2_04;
+    fVar5 = extraout_s3_04;
 LAB_00061f68:
-    tColour::tColour(local_164,fVar9,fVar6,fVar7,fVar8);
+    tColour::tColour(local_164,fVar6,fVar3,fVar4,fVar5);
     local_140 = *(undefined4 *)local_164;
     uStack_13c = *(undefined4 *)(local_164 + 4);
     uStack_138 = *(undefined4 *)(local_164 + 8);
     uStack_134 = *(undefined4 *)(local_164 + 0xc);
+    uVar8 = 0;
 LAB_00061f7c:
-    cRBorder::Init(uVar10,0x14,iVar3 + DAT_0006213c,0x14,uVar11,uVar2,local_140,uStack_13c,
-                   uStack_138,uStack_134,2,DAT_00062124);
+    cRBorder::Init(uVar1,0x14,&DAT_000931ec,0x14,uVar8,uVar7,local_140,uStack_13c,uStack_138,
+                   uStack_134,2,0x42a00000);
     cRBorder::SetBelow(*(cRBorder **)(this + 0x18),*(cRBorder **)(this + 0x10));
     break;
   case 8:
     break;
   case 9:
-    piVar4 = *(int **)(iVar3 + iVar1);
-    uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-    fVar9 = *(float *)(this + 0xc) - DAT_00062168;
-    *(undefined4 *)(this + 0x14) = uVar2;
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    fVar6 = *(float *)(this + 0xc);
+    *(undefined4 *)(this + 0x14) = uVar1;
     tColour::tColour((tColour *)&local_40,extraout_s0_10,extraout_s1_10,extraout_s2_10,
                      extraout_s3_10);
-    cRBorder::Init(uVar2,0x14,iVar3 + DAT_00062138,0x14,uVar11,fVar9,local_40,uStack_3c,uStack_38,
-                   uStack_34,2,DAT_0006216c);
-    uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-    uVar10 = *(undefined4 *)(this + 0xc);
-    *(undefined4 *)(this + 0x18) = uVar2;
+    cRBorder::Init(uVar1,0x14,&DAT_000931e8,0x14,0,fVar6 - 54.0,local_40,uStack_3c,uStack_38,
+                   uStack_34,2,0x430c0000);
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    uVar7 = *(undefined4 *)(this + 0xc);
+    *(undefined4 *)(this + 0x18) = uVar1;
     tColour::tColour((tColour *)&local_50,extraout_s0_11,extraout_s1_11,extraout_s2_11,
                      extraout_s3_11);
-    cRBorder::Init(uVar2,0x14,iVar3 + DAT_0006213c,0x14,uVar11,uVar10,local_50,uStack_4c,uStack_48,
-                   uStack_44,2,DAT_00062170);
+    cRBorder::Init(uVar1,0x14,&DAT_000931ec,0x14,0,uVar7,local_50,uStack_4c,uStack_48,uStack_44,2,
+                   0x43860000);
     break;
   case 10:
-    piVar4 = *(int **)(iVar3 + iVar1);
     local_168 = atStack_70;
-    ptVar5 = atStack_60;
-    iVar1 = *piVar4;
+    ptVar2 = atStack_60;
     local_164 = atStack_80;
     goto LAB_00061e58;
   case 0xb:
-    piVar4 = *(int **)(iVar3 + iVar1);
-    ptVar5 = local_90;
+    ptVar2 = local_90;
     local_164 = local_b0;
-    iVar1 = *piVar4;
     local_168 = local_a0;
 LAB_00061e58:
-    uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(iVar1 + 0xd14));
-    *(undefined4 *)(this + 0x10) = uVar2;
-    tColour::tColour(ptVar5,extraout_s0,extraout_s1,extraout_s2,extraout_s3);
-    cRBorder::Init(uVar2,0x400002,iVar3 + DAT_00062134,0x14,uVar11,DAT_00062140,
-                   *(undefined4 *)ptVar5,*(undefined4 *)(ptVar5 + 4),*(undefined4 *)(ptVar5 + 8),
-                   *(undefined4 *)(ptVar5 + 0xc),2,uVar11);
-    uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-    *(undefined4 *)(this + 0x14) = uVar2;
-    uVar10 = *(undefined4 *)(this + 0xc);
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)(this + 0x10) = uVar1;
+    tColour::tColour(ptVar2,extraout_s0,extraout_s1,extraout_s2,extraout_s3);
+    cRBorder::Init(uVar1,0x400002,"Do you really want>to quit?",0x14,0,0x43480000,
+                   *(undefined4 *)ptVar2,*(undefined4 *)(ptVar2 + 4),*(undefined4 *)(ptVar2 + 8),
+                   *(undefined4 *)(ptVar2 + 0xc),2,0);
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)(this + 0x14) = uVar1;
+    uVar7 = *(undefined4 *)(this + 0xc);
     tColour::tColour(local_168,extraout_s0_00,extraout_s1_00,extraout_s2_00,extraout_s3_00);
-    cRBorder::Init(uVar2,0x40000014,iVar3 + DAT_00062138,0x14,uVar11,uVar10,*(undefined4 *)local_168
-                   ,*(undefined4 *)(local_168 + 4),*(undefined4 *)(local_168 + 8),
-                   *(undefined4 *)(local_168 + 0xc),2,DAT_0006214c);
+    cRBorder::Init(uVar1,0x40000014,&DAT_000931e8,0x14,0,uVar7,*(undefined4 *)local_168,
+                   *(undefined4 *)(local_168 + 4),*(undefined4 *)(local_168 + 8),
+                   *(undefined4 *)(local_168 + 0xc),2,0xc2a00000);
     cRBorder::SetBelow(*(cRBorder **)(this + 0x14),*(cRBorder **)(this + 0x10));
-    uVar10 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-    *(undefined4 *)(this + 0x18) = uVar10;
-    uVar2 = *(undefined4 *)(this + 0xc);
-    fVar9 = extraout_s0_01;
-    fVar6 = extraout_s1_01;
-    fVar7 = extraout_s2_01;
-    fVar8 = extraout_s3_01;
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)(this + 0x18) = uVar1;
+    uVar7 = *(undefined4 *)(this + 0xc);
+    fVar6 = extraout_s0_01;
+    fVar3 = extraout_s1_01;
+    fVar4 = extraout_s2_01;
+    fVar5 = extraout_s3_01;
     goto LAB_00061f68;
   }
   return;

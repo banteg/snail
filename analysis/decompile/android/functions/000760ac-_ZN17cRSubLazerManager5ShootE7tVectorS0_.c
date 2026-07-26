@@ -15,9 +15,8 @@ void cRSubLazerManager::Shoot
   int *piVar1;
   int iVar2;
   int iVar3;
-  int iVar4;
   uint in_fpscr;
-  float fVar5;
+  float fVar4;
   float local_2c;
   float local_28;
   float local_24;
@@ -25,25 +24,24 @@ void cRSubLazerManager::Shoot
   float local_18;
   float local_14;
 
-  iVar4 = 0;
-  iVar3 = DAT_00076168 + 0x760cc;
+  iVar3 = 0;
   iVar2 = param_1;
   do {
     piVar1 = (int *)(iVar2 + 0x74);
     iVar2 = iVar2 + 0xa4;
     if (*piVar1 == 0) {
-      fVar5 = (float)VectorSignedToFloat(iVar4,(byte)(in_fpscr >> 0x16) & 3);
-      local_18 = param_3 + fVar5 * DAT_00076160;
-      local_14 = param_4 + DAT_00076164;
-      local_1c = param_2 + DAT_00076164;
+      fVar4 = (float)VectorSignedToFloat(iVar3,(byte)(in_fpscr >> 0x16) & 3);
+      local_18 = param_3 + fVar4 * -0.01;
+      local_14 = param_4 + 0.0;
+      local_1c = param_2 + 0.0;
       local_2c = param_2;
       local_28 = param_3;
       local_24 = param_4;
-      cRSubLazer::Shoot(iVar4 * 0xa4 + param_1,local_1c,local_18,local_14,param_5,param_6,param_7);
-      cRSound::Play(*(cRSound **)(iVar3 + DAT_0007616c),0xf,(tVector *)&local_2c);
+      cRSubLazer::Shoot(iVar3 * 0xa4 + param_1,local_1c,local_18,local_14,param_5,param_6,param_7);
+      cRSound::Play((cRSound *)&gRSound,0xf,(tVector *)&local_2c);
       return;
     }
-    iVar4 = iVar4 + 1;
-  } while (iVar4 != 0x14);
+    iVar3 = iVar3 + 1;
+  } while (iVar3 != 0x14);
   return;
 }

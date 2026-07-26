@@ -10,6 +10,6 @@
 void __thiscall cRHash::UnInit(cRHash *this)
 
 {
-  (*(code *)PTR_free_0009b090)(*(undefined4 *)(this + 0x800));
+  free(*(void **)(this + 0x800));
   return;
 }

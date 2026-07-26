@@ -10,22 +10,18 @@
 void __thiscall tMatrix::RotIdentity(tMatrix *this)
 
 {
-  undefined4 uVar1;
-
-  uVar1 = DAT_00027790;
-  *(undefined4 *)(this + 4) = DAT_00027790;
-  *(undefined4 *)(this + 0x2c) = uVar1;
-  *(undefined4 *)(this + 0x24) = uVar1;
-  *(undefined4 *)(this + 0x20) = uVar1;
-  *(undefined4 *)(this + 0x1c) = uVar1;
-  *(undefined4 *)(this + 0x18) = uVar1;
-  *(undefined4 *)(this + 0x10) = uVar1;
-  *(undefined4 *)(this + 0xc) = uVar1;
-  *(undefined4 *)(this + 8) = uVar1;
-  uVar1 = DAT_00027794;
-  *(undefined4 *)this = DAT_00027794;
-  *(undefined4 *)(this + 0x3c) = uVar1;
-  *(undefined4 *)(this + 0x28) = uVar1;
-  *(undefined4 *)(this + 0x14) = uVar1;
+  *(undefined4 *)(this + 4) = 0;
+  *(undefined4 *)(this + 0x2c) = 0;
+  *(undefined4 *)(this + 0x24) = 0;
+  *(undefined4 *)(this + 0x20) = 0;
+  *(undefined4 *)(this + 0x1c) = 0;
+  *(undefined4 *)(this + 0x18) = 0;
+  *(undefined4 *)(this + 0x10) = 0;
+  *(undefined4 *)(this + 0xc) = 0;
+  *(undefined4 *)(this + 8) = 0;
+  *(undefined4 *)this = 0x3f800000;
+  *(undefined4 *)(this + 0x3c) = 0x3f800000;
+  *(undefined4 *)(this + 0x28) = 0x3f800000;
+  *(undefined4 *)(this + 0x14) = 0x3f800000;
   return;
 }

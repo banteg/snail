@@ -10,18 +10,16 @@
 void __thiscall cRSubTracks::UnHide(cRSubTracks *this,cRSubSegmentRaw **param_1)
 
 {
-  int iVar1;
-  cRSubSegmentRaw *pcVar2;
+  cRSubSegmentRaw *pcVar1;
 
-  pcVar2 = *param_1;
-  if (**(char **)(pcVar2 + 0x28) == '\0') {
+  pcVar1 = *param_1;
+  if (**(char **)(pcVar1 + 0x28) != '\0') {
+    do {
+      *(cRSubSegmentRaw **)(gSegmentIndex + *(int *)(pcVar1 + 0x1c) * 4) = pcVar1;
+      param_1 = param_1 + 1;
+      pcVar1 = *param_1;
+    } while (**(char **)(pcVar1 + 0x28) != '\0');
     return;
   }
-  iVar1 = *(int *)(DAT_00083cc8 + 0x83c98 + DAT_00083ccc);
-  do {
-    *(cRSubSegmentRaw **)(iVar1 + *(int *)(pcVar2 + 0x1c) * 4) = pcVar2;
-    param_1 = param_1 + 1;
-    pcVar2 = *param_1;
-  } while (**(char **)(pcVar2 + 0x28) != '\0');
   return;
 }

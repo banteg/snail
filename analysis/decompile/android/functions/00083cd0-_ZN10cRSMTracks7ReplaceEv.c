@@ -11,15 +11,10 @@ void __thiscall cRSMTracks::Replace(cRSMTracks *this)
 
 {
   int iVar1;
-  int iVar2;
-  int iVar3;
-  char *pcVar4;
-  char cVar5;
-  int *piVar6;
-  char *pcVar7;
-  int iVar8;
-  char *pcVar9;
-  int iVar10;
+  char *pcVar2;
+  char *pcVar3;
+  char cVar4;
+  char *pcVar5;
   int local_523c;
   char acStack_5230 [16384];
   int iStack_1230;
@@ -27,64 +22,57 @@ void __thiscall cRSMTracks::Replace(cRSMTracks *this)
   char acStack_22c [512];
   int local_2c;
 
-  iVar1 = DAT_00083f58;
-  iVar10 = DAT_00083f54 + 0x83ce8;
-  piVar6 = *(int **)(iVar10 + DAT_00083f58);
-  pcVar9 = (char *)(iVar10 + DAT_00083f5c);
   *(undefined4 *)this = 0;
-  local_2c = *piVar6;
-  iVar3 = RShellFindFile(pcVar9,false);
-  if (iVar3 == 0) {
-    RShellReadDirectory((char *)(iVar10 + DAT_00083f6c),(char *)(iVar10 + DAT_00083f70),(int *)this,
-                        acStack_5230);
-    RShellSaveDirectory(pcVar9,*(int *)this,acStack_5230);
+  local_2c = __stack_chk_guard;
+  iVar1 = RShellFindFile("Data/SegmentsDir.txt",false);
+  if (iVar1 == 0) {
+    RShellReadDirectory("Segments","*.txt",(int *)this,acStack_5230);
+    RShellSaveDirectory("Data/SegmentsDir.txt",*(int *)this,acStack_5230);
   }
   else {
-    RShellLoadDirectory(pcVar9,(int *)this,acStack_5230);
+    RShellLoadDirectory("Data/SegmentsDir.txt",(int *)this,acStack_5230);
   }
-  iVar2 = DAT_00083f64;
-  iVar3 = DAT_00083f60;
   if (0 < *(int *)this) {
     local_523c = 0;
     while( true ) {
-      pcVar7 = acStack_5230 + local_523c * 0x80;
-      sprintf(acStack_22c,(char *)(iVar10 + iVar3),pcVar7,acStack_122c);
+      pcVar5 = acStack_5230 + local_523c * 0x80;
+      sprintf(acStack_22c,"Segments/%s",pcVar5,acStack_122c);
       RShellLoadFile(acStack_22c,acStack_122c,&iStack_1230);
-      pcVar9 = (char *)Rstrfind((char *)(iVar10 + iVar2),acStack_122c);
-      if (pcVar9 == (char *)0x0) {
-        RShellError((char *)(iVar10 + DAT_00083f78),pcVar7);
+      pcVar2 = (char *)Rstrfind("Data:",acStack_122c);
+      if (pcVar2 == (char *)0x0) {
+        RShellError("Cannot find Data: in Segment %s\n",pcVar5);
         goto LAB_00083ea4;
       }
-      pcVar9 = (char *)Rstrnewline(pcVar9);
-      if ((pcVar9 == (char *)0x0) || (pcVar9 = (char *)Rstrnewline(pcVar9), pcVar9 == (char *)0x0))
+      pcVar2 = (char *)Rstrnewline(pcVar2);
+      if ((pcVar2 == (char *)0x0) || (pcVar2 = (char *)Rstrnewline(pcVar2), pcVar2 == (char *)0x0))
       break;
-      if (*pcVar9 != '@') {
-        RShellError((char *)(iVar10 + DAT_00083f7c),pcVar7);
+      if (*pcVar2 != '@') {
+        RShellError("Data line must start with \'@\' in Segment %s\n",pcVar5);
         goto LAB_00083ea4;
       }
       while( true ) {
-        cVar5 = pcVar9[1];
-        pcVar4 = pcVar9 + 1;
-        if ((cVar5 == '@') && (pcVar9[2] == '@')) break;
+        cVar4 = pcVar2[1];
+        pcVar3 = pcVar2 + 1;
+        if ((cVar4 == '@') && (pcVar2[2] == '@')) break;
         while( true ) {
-          iVar8 = 0;
+          iVar1 = 0;
           while( true ) {
-            if (cVar5 == 'F') {
-              pcVar4[iVar8] = '_';
+            if (cVar4 == 'F') {
+              pcVar3[iVar1] = '_';
             }
-            iVar8 = iVar8 + 1;
-            if (iVar8 == 8) break;
-            cVar5 = pcVar4[iVar8];
+            iVar1 = iVar1 + 1;
+            if (iVar1 == 8) break;
+            cVar4 = pcVar3[iVar1];
           }
-          if (pcVar4[8] != '@') {
-            RShellError((char *)(iVar10 + DAT_00083f74),pcVar7);
+          if (pcVar3[8] != '@') {
+            RShellError("Data line must end with \'@\' in Segment %s\n",pcVar5);
             goto LAB_00083ea4;
           }
-          pcVar9 = (char *)Rstrnewline(pcVar4 + 8);
-          if (pcVar9 == (char *)0x0) goto LAB_00083ec8;
-          if (*pcVar9 == '@') break;
-          cVar5 = pcVar9[1];
-          pcVar4 = pcVar9 + 1;
+          pcVar2 = (char *)Rstrnewline(pcVar3 + 8);
+          if (pcVar2 == (char *)0x0) goto LAB_00083ec8;
+          if (*pcVar2 == '@') break;
+          cVar4 = pcVar2[1];
+          pcVar3 = pcVar2 + 1;
         }
       }
       local_523c = local_523c + 1;
@@ -92,10 +80,10 @@ void __thiscall cRSMTracks::Replace(cRSMTracks *this)
       if (*(int *)this <= local_523c) goto LAB_00083ea4;
     }
 LAB_00083ec8:
-    RShellError((char *)(iVar10 + DAT_00083f68),pcVar7);
+    RShellError("Unexpected end of file in Segment %s\n",pcVar5);
   }
 LAB_00083ea4:
-  if (local_2c == **(int **)(iVar10 + iVar1)) {
+  if (local_2c == __stack_chk_guard) {
     return;
   }
                     /* WARNING: Subroutine does not return */

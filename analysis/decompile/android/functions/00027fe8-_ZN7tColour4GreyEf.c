@@ -10,13 +10,11 @@
 void __thiscall tColour::Grey(tColour *this,float param_1)
 
 {
-  undefined4 uVar1;
   undefined4 in_r1;
 
-  uVar1 = DAT_00028000;
   *(undefined4 *)(this + 8) = in_r1;
   *(undefined4 *)this = in_r1;
-  *(undefined4 *)(this + 0xc) = uVar1;
+  *(undefined4 *)(this + 0xc) = 0x3f800000;
   *(undefined4 *)(this + 4) = in_r1;
   return;
 }

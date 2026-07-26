@@ -10,8 +10,7 @@
 void cRMainMenu::UnInit(void)
 
 {
-  cRBorderManager::KillBorders
-            ((cRBorderManager *)(**(int **)(DAT_00069c14 + 0x69bf4 + DAT_00069c18) + 0xd14));
+  cRBorderManager::KillBorders((cRBorderManager *)(Game + 0xd14));
   cRSpriteManager::KillGame();
   return;
 }

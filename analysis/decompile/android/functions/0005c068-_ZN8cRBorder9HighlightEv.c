@@ -10,7 +10,7 @@
 void __thiscall cRBorder::Highlight(cRBorder *this)
 
 {
-  *(undefined4 *)(this + 0x200) = DAT_0005c07c;
+  *(undefined4 *)(this + 0x200) = 0x3f800000;
   *(undefined4 *)(this + 0x210) = *(undefined4 *)(this + 0x20c);
   return;
 }

@@ -10,7 +10,7 @@
 void __thiscall cRSplashManager::Init(cRSplashManager *this)
 
 {
-  wprintf((char *)(DAT_00089fb8 + 0x89f9c + DAT_00089fbc));
+  wprintf("Splash Init");
   this[0x46] = (cRSplashManager)0x0;
   this[4] = (cRSplashManager)0x0;
   this[0x45] = (cRSplashManager)0x0;

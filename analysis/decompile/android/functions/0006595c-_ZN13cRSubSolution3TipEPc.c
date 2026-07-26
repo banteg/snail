@@ -10,25 +10,21 @@
 void __thiscall cRSubSolution::Tip(cRSubSolution *this,char *param_1)
 
 {
-  int iVar1;
-  int iVar2;
   char local_41c [1024];
   int local_1c;
 
-  iVar1 = DAT_00065a48;
-  iVar2 = DAT_00065a44 + 0x65978;
   local_41c[0] = '\0';
-  local_1c = **(int **)(iVar2 + DAT_00065a48);
+  local_1c = __stack_chk_guard;
   if (*(int *)(this + 0x2c) == 0) {
-    sprintf(local_41c,(char *)(iVar2 + DAT_00065a4c),param_1,*(int *)(this + 0x28) + 1,
-            *(undefined4 *)(this + 4),*(undefined4 *)(this + 0x4c),this + 0x54);
+    sprintf(local_41c,"%s>Arcade %i>Score:%i>Speed:%i%%>Player:%s",param_1,*(int *)(this + 0x28) + 1
+            ,*(undefined4 *)(this + 4),*(undefined4 *)(this + 0x4c),this + 0x54);
   }
   else if (*(int *)(this + 0x2c) == 1) {
-    sprintf(local_41c,(char *)(iVar2 + DAT_00065a50),param_1,*(undefined4 *)(this + 4),
-            (int)*(float *)(this + 0x20),this + 0x54);
+    sprintf(local_41c,"%s>Warp>Score:%i>Warp Speed:%i%%>Player:%s",param_1,*(undefined4 *)(this + 4)
+            ,(int)*(float *)(this + 0x20),this + 0x54);
   }
   Rstrcpy(param_1,local_41c);
-  if (local_1c == **(int **)(iVar2 + iVar1)) {
+  if (local_1c == __stack_chk_guard) {
     return;
   }
                     /* WARNING: Subroutine does not return */

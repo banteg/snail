@@ -38,7 +38,7 @@ tVector::PointLine(tVector *this,tVector *param_1,tVector *param_2,float *param_
   fVar3 = (float)Dot((tVector *)&local_24,(tVector *)&local_30);
   fVar3 = fVar3 / (fVar5 + fVar1 + fVar2);
   *param_3 = fVar3;
-  if ((0.0 <= fVar3) && (fVar3 <= DAT_00028a18)) {
+  if ((0.0 <= fVar3) && (fVar3 <= 1.0)) {
     local_3c = *(float *)this - (*(float *)param_1 + fVar3 * local_24);
     local_38 = *(float *)(this + 4) - (*(float *)(param_1 + 4) + fVar3 * local_20);
     local_34 = *(float *)(this + 8) - (*(float *)(param_1 + 8) + fVar3 * local_1c);

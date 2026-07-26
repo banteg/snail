@@ -14,7 +14,6 @@ void __thiscall cRSnail::SetAnimation(cRSnail *this,int param_1,bool param_2,int
   int iVar2;
   bool bVar3;
   float fVar4;
-  float fVar5;
 
   if (!param_2) {
     iVar2 = *(int *)(this + 0x134);
@@ -35,21 +34,20 @@ void __thiscall cRSnail::SetAnimation(cRSnail *this,int param_1,bool param_2,int
   }
   *(ushort **)(this + 0x104) = puVar1;
   if ((param_3 & 8U) == 0) {
-    *(undefined4 *)(this + 0xfc) = DAT_0006ccb0;
-    fVar5 = *(float *)(puVar1 + 10);
-    if (fVar5 < 0.0) {
-      fVar5 = -fVar5;
+    *(undefined4 *)(this + 0xfc) = 0;
+    fVar4 = *(float *)(puVar1 + 10);
+    if (fVar4 < 0.0) {
+      fVar4 = -fVar4;
     }
-    *(float *)(this + 0x100) = fVar5;
+    *(float *)(this + 0x100) = fVar4;
   }
   else {
-    fVar5 = *(float *)(puVar1 + 10);
-    if (0.0 <= fVar5) {
-      fVar5 = -fVar5;
+    fVar4 = *(float *)(puVar1 + 10);
+    if (0.0 <= fVar4) {
+      fVar4 = -fVar4;
     }
-    fVar4 = fVar5 + DAT_0006ccb4;
-    *(float *)(this + 0x100) = fVar5;
-    *(float *)(this + 0xfc) = fVar4;
+    *(float *)(this + 0x100) = fVar4;
+    *(float *)(this + 0xfc) = fVar4 + 1.0;
   }
   *(undefined4 *)(this + 0x134) = 0;
   *(uint *)(*(int *)(this + 0x138) + 4) = *(uint *)(*(int *)(this + 0x138) + 4) | 0x20;

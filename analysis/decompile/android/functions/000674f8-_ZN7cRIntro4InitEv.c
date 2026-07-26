@@ -10,17 +10,12 @@
 void __thiscall cRIntro::Init(cRIntro *this)
 
 {
-  float fVar1;
+  int iVar1;
   undefined4 uVar2;
+  cRBorderManager *this_00;
   int iVar3;
-  undefined4 uVar4;
-  undefined4 uVar5;
-  undefined4 uVar6;
-  int iVar7;
-  int iVar8;
-  int iVar9;
-  int *piVar10;
-  float fVar11;
+  int iVar4;
+  float fVar5;
   float extraout_s0;
   float extraout_s0_00;
   float extraout_s0_01;
@@ -78,103 +73,91 @@ void __thiscall cRIntro::Init(cRIntro *this)
   undefined4 uStack_40;
   undefined4 uStack_3c;
 
-  iVar8 = DAT_00067918;
-  iVar7 = DAT_00067914;
-  uVar2 = DAT_00067908;
-  uVar6 = DAT_00067904;
-  fVar1 = DAT_00067900;
-  iVar9 = DAT_00067910 + 0x67518;
-  piVar10 = *(int **)(iVar9 + DAT_00067914);
-  cRFade::FadeIn((cRFade *)(*piVar10 + 0x24));
-  cRStarManager::Hide((cRStarManager *)(*piVar10 + 0x4d440));
-  RShellMusicPlay((char *)(iVar9 + DAT_0006791c),0,(char *)(iVar9 + DAT_00067920));
-  iVar3 = cRLandscapeManager::Import
-                    ((cRLandscapeManager *)(gSegmentText + *piVar10 + 0x3d8),
-                     (char *)(iVar9 + DAT_00067924));
-  fVar11 = (float)cRBackdrop::Change((cRBackdrop *)(*piVar10 + 0x4d2e0),
-                                     (cRLandscape *)
-                                     (gSegmentText + iVar3 * 0x1ac + *piVar10 + 0x3dc),false);
-  cRBorderManager::SetJustifyCentre((cRBorderManager *)(*piVar10 + 0xd14),fVar11);
-  uVar4 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar10 + 0xd14));
-  *(undefined4 *)(this + 0x40) = uVar4;
+  cRFade::FadeIn((cRFade *)(Game + 0x24));
+  cRStarManager::Hide((cRStarManager *)(Game + 0x4d440));
+  RShellMusicPlay("mainmenu",0,"");
+  iVar1 = cRLandscapeManager::Import
+                    ((cRLandscapeManager *)(gSegmentText + Game + 0x3d8),"Menubg.txt");
+  fVar5 = (float)cRBackdrop::Change((cRBackdrop *)(Game + 0x4d2e0),
+                                    (cRLandscape *)(gSegmentText + iVar1 * 0x1ac + Game + 0x3dc),
+                                    false);
+  cRBorderManager::SetJustifyCentre((cRBorderManager *)(Game + 0xd14),fVar5);
+  uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  *(undefined4 *)(this + 0x40) = uVar2;
   tColour::tColour((tColour *)&local_48,extraout_s0,extraout_s1,extraout_s2,extraout_s3);
-  cRBorder::Init(uVar4,0x40000014,iVar9 + DAT_00067928,0x14,fVar1,DAT_00067944,local_48,uStack_44,
-                 uStack_40,uStack_3c,2,uVar6);
-  uVar5 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar10 + 0xd14));
-  *(undefined4 *)(this + 0x30) = uVar5;
+  cRBorder::Init(uVar2,0x40000014,"Tutorial",0x14,0x41a00000,0x42b40000,local_48,uStack_44,uStack_40
+                 ,uStack_3c,2,0);
+  uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  *(undefined4 *)(this + 0x30) = uVar2;
   tColour::tColour((tColour *)&local_58,extraout_s0_00,extraout_s1_00,extraout_s2_00,extraout_s3_00)
   ;
-  uVar4 = DAT_00067904;
-  fVar11 = DAT_00067900;
-  cRBorder::Init(uVar5,0x40000014,iVar9 + DAT_0006792c,0x14,fVar1,fVar1,local_58,uStack_54,uStack_50
-                 ,uStack_4c,2,uVar6);
+  cRBorder::Init(uVar2,0x40000014,"Postal Adventure",0x14,0x41a00000,0x41a00000,local_58,uStack_54,
+                 uStack_50,uStack_4c,2,0);
   cRBorder::SetBelow(*(cRBorder **)(this + 0x30),*(cRBorder **)(this + 0x40));
-  if (0 < *(int *)(*(int *)(iVar9 + iVar8) + 0xd0)) {
+  if (0 < (int)gConfig._208_4_) {
     *(uint *)(*(int *)(this + 0x30) + 0x194) = *(uint *)(*(int *)(this + 0x30) + 0x194) & 0xbfffffff
     ;
   }
-  uVar6 = cRBorderManager::GetBorder((cRBorderManager *)(**(int **)(iVar9 + iVar7) + 0xd14));
-  *(undefined4 *)(this + 0x34) = uVar6;
+  uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  *(undefined4 *)(this + 0x34) = uVar2;
   tColour::tColour((tColour *)&local_68,extraout_s0_01,extraout_s1_01,extraout_s2_01,extraout_s3_01)
   ;
-  cRBorder::Init(uVar6,0x40000014,iVar9 + DAT_00067930,0x14,DAT_00067900,DAT_00067900,local_68,
-                 uStack_64,uStack_60,uStack_5c,2,DAT_00067904);
+  cRBorder::Init(uVar2,0x40000014,"Pro-Challenge",0x14,0x41a00000,0x41a00000,local_68,uStack_64,
+                 uStack_60,uStack_5c,2,0);
   cRBorder::SetBelow(*(cRBorder **)(this + 0x34),*(cRBorder **)(this + 0x30));
-  piVar10 = *(int **)(iVar9 + iVar7);
-  iVar7 = *piVar10;
-  if (0 < *(int *)(*(int *)(iVar9 + iVar8) + 0xe0)) {
+  this_00 = (cRBorderManager *)(Game + 0xd14);
+  if (0 < (int)gConfig._224_4_) {
     *(uint *)(*(int *)(this + 0x34) + 0x194) = *(uint *)(*(int *)(this + 0x34) + 0x194) & 0xbfffffff
     ;
   }
-  uVar6 = cRBorderManager::GetBorder((cRBorderManager *)(iVar7 + 0xd14));
-  *(undefined4 *)(this + 0x38) = uVar6;
+  uVar2 = cRBorderManager::GetBorder(this_00);
+  *(undefined4 *)(this + 0x38) = uVar2;
   tColour::tColour((tColour *)&local_78,extraout_s0_02,extraout_s1_02,extraout_s2_02,extraout_s3_02)
   ;
-  cRBorder::Init(uVar6,0x40000014,iVar9 + DAT_00067934,0x14,fVar11,fVar11,local_78,uStack_74,
-                 uStack_70,uStack_6c,2,uVar4);
+  cRBorder::Init(uVar2,0x40000014,"Time Trial",0x14,0x41a00000,0x41a00000,local_78,uStack_74,
+                 uStack_70,uStack_6c,2,0);
   cRBorder::SetBelow(*(cRBorder **)(this + 0x38),*(cRBorder **)(this + 0x34));
-  uVar6 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar10 + 0xd14));
-  *(undefined4 *)(this + 0x3c) = uVar6;
+  uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  *(undefined4 *)(this + 0x3c) = uVar2;
   tColour::tColour((tColour *)&local_88,extraout_s0_03,extraout_s1_03,extraout_s2_03,extraout_s3_03)
   ;
-  cRBorder::Init(uVar6,0x14,iVar9 + DAT_00067938,0x14,fVar11,fVar11,local_88,uStack_84,uStack_80,
-                 uStack_7c,2,uVar4);
+  cRBorder::Init(uVar2,0x14,"Challenge Mode",0x14,0x41a00000,0x41a00000,local_88,uStack_84,uStack_80
+                 ,uStack_7c,2,0);
   cRBorder::SetBelow(*(cRBorder **)(this + 0x3c),*(cRBorder **)(this + 0x38));
-  uVar6 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar10 + 0xd14));
-  *(undefined4 *)(this + 0x44) = uVar6;
+  uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  *(undefined4 *)(this + 0x44) = uVar2;
   tColour::tColour((tColour *)&local_98,extraout_s0_04,extraout_s1_04,extraout_s2_04,extraout_s3_04)
   ;
-  cRBorder::Init(uVar6,0x40000014,iVar9 + DAT_0006793c,0x14,uVar4,uVar2,local_98,uStack_94,uStack_90
-                 ,uStack_8c,2,DAT_0006790c);
-  uVar6 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar10 + 0xd14));
-  *(undefined4 *)(this + 0x48) = uVar6;
+  cRBorder::Init(uVar2,0x40000014,&DAT_00093600,0x14,0,0x43af0000,local_98,uStack_94,uStack_90,
+                 uStack_8c,2,0xc3520000);
+  uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  *(undefined4 *)(this + 0x48) = uVar2;
   tColour::tColour((tColour *)&local_a8,extraout_s0_05,extraout_s1_05,extraout_s2_05,extraout_s3_05)
   ;
-  cRBorder::Init(uVar6,0x14,iVar9 + DAT_00067940,0x14,fVar11,uVar2,local_a8,uStack_a4,uStack_a0,
-                 uStack_9c,2,uVar4);
+  cRBorder::Init(uVar2,0x14,&DAT_00092f10,0x14,0x41a00000,0x43af0000,local_a8,uStack_a4,uStack_a0,
+                 uStack_9c,2,0);
   cRBorder::SetBelow(*(cRBorder **)(this + 0x48),*(cRBorder **)(this + 0x3c));
-  if ((*(float *)(*piVar10 + 0x3c) == DAT_00067944) || (*(float *)(*piVar10 + 0x3c) == DAT_00067948)
-     ) {
+  if ((*(float *)(Game + 0x3c) == 90.0) || (*(float *)(Game + 0x3c) == 270.0)) {
     iVar3 = *(int *)(this + 0x44);
-    iVar7 = *(int *)(this + 0x3c);
-    *(undefined4 *)(iVar3 + 0x230) = *(undefined4 *)(iVar7 + 0x230);
-    *(undefined4 *)(iVar3 + 0x6f0) = *(undefined4 *)(iVar7 + 0x6f0);
+    iVar1 = *(int *)(this + 0x3c);
+    *(undefined4 *)(iVar3 + 0x230) = *(undefined4 *)(iVar1 + 0x230);
+    *(undefined4 *)(iVar3 + 0x6f0) = *(undefined4 *)(iVar1 + 0x6f0);
   }
   else {
     iVar3 = *(int *)(this + 0x44);
-    iVar7 = *(int *)(this + 0x48);
-    *(undefined4 *)(iVar3 + 0x230) = *(undefined4 *)(iVar7 + 0x230);
-    *(undefined4 *)(iVar3 + 0x6f0) = *(undefined4 *)(iVar7 + 0x6f0);
-    *(float *)(iVar3 + 600) = *(float *)(iVar3 + 600) + fVar11;
+    iVar1 = *(int *)(this + 0x48);
+    *(undefined4 *)(iVar3 + 0x230) = *(undefined4 *)(iVar1 + 0x230);
+    *(undefined4 *)(iVar3 + 0x6f0) = *(undefined4 *)(iVar1 + 0x6f0);
+    *(float *)(iVar3 + 600) = *(float *)(iVar3 + 600) + 20.0;
   }
-  if (*(char *)(*(int *)(iVar9 + iVar8) + 0xc0) == '\0') {
-    iVar7 = *(int *)(this + 0x34);
-    iVar8 = *(int *)(this + 0x38);
-    iVar3 = *(int *)(this + 0x3c);
+  if (gConfig[0xc0] == '\0') {
+    iVar1 = *(int *)(this + 0x34);
+    iVar3 = *(int *)(this + 0x38);
+    iVar4 = *(int *)(this + 0x3c);
     *(uint *)(*(int *)(this + 0x30) + 0x194) = *(uint *)(*(int *)(this + 0x30) + 0x194) | 0x8000;
-    *(uint *)(iVar7 + 0x194) = *(uint *)(iVar7 + 0x194) | 0x8000;
-    *(uint *)(iVar8 + 0x194) = *(uint *)(iVar8 + 0x194) | 0x8000;
+    *(uint *)(iVar1 + 0x194) = *(uint *)(iVar1 + 0x194) | 0x8000;
     *(uint *)(iVar3 + 0x194) = *(uint *)(iVar3 + 0x194) | 0x8000;
+    *(uint *)(iVar4 + 0x194) = *(uint *)(iVar4 + 0x194) | 0x8000;
   }
   return;
 }

@@ -14,7 +14,6 @@ void __thiscall cRWeapon::SetAnimation(cRWeapon *this,int param_1,bool param_2,i
   int iVar2;
   bool bVar3;
   float fVar4;
-  float fVar5;
 
   if (!param_2) {
     iVar2 = *(int *)(this + 0x138);
@@ -35,21 +34,20 @@ void __thiscall cRWeapon::SetAnimation(cRWeapon *this,int param_1,bool param_2,i
   }
   *(ushort **)(this + 0x108) = puVar1;
   if ((param_3 & 8U) == 0) {
-    *(undefined4 *)(this + 0x100) = DAT_0006cd70;
-    fVar5 = *(float *)(puVar1 + 10);
-    if (fVar5 < 0.0) {
-      fVar5 = -fVar5;
+    *(undefined4 *)(this + 0x100) = 0;
+    fVar4 = *(float *)(puVar1 + 10);
+    if (fVar4 < 0.0) {
+      fVar4 = -fVar4;
     }
-    *(float *)(this + 0x104) = fVar5;
+    *(float *)(this + 0x104) = fVar4;
   }
   else {
-    fVar5 = *(float *)(puVar1 + 10);
-    if (0.0 <= fVar5) {
-      fVar5 = -fVar5;
+    fVar4 = *(float *)(puVar1 + 10);
+    if (0.0 <= fVar4) {
+      fVar4 = -fVar4;
     }
-    fVar4 = fVar5 + DAT_0006cd74;
-    *(float *)(this + 0x104) = fVar5;
-    *(float *)(this + 0x100) = fVar4;
+    *(float *)(this + 0x104) = fVar4;
+    *(float *)(this + 0x100) = fVar4 + 1.0;
   }
   *(undefined4 *)(this + 0x138) = 0;
   *(uint *)(*(int *)(this + 0x13c) + 4) = *(uint *)(*(int *)(this + 0x13c) + 4) | 0x20;

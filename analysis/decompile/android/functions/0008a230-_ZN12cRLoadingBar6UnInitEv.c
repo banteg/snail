@@ -10,13 +10,8 @@
 void __thiscall cRLoadingBar::UnInit(cRLoadingBar *this)
 
 {
-  int iVar1;
-  cRSplashManager *this_00;
-
-  iVar1 = DAT_0008a270 + 0x8a240;
-  this_00 = *(cRSplashManager **)(iVar1 + DAT_0008a278);
-  *(undefined4 *)(*(int *)(iVar1 + DAT_0008a274) + 0xac) = *(undefined4 *)(this + 4);
-  cRSplashManager::SetSplash(this_00,(char *)(iVar1 + DAT_0008a27c));
+  gConfig._172_4_ = *(undefined4 *)(this + 4);
+  cRSplashManager::SetSplash((cRSplashManager *)G0SplashManager,"");
   cRSplashManager::RenderEnd();
   return;
 }

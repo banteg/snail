@@ -10,52 +10,40 @@
 void __thiscall cRQuit::AI(cRQuit *this)
 
 {
-  int iVar1;
   cRBorder *this_00;
-  uint uVar2;
-  int iVar3;
-  int iVar4;
-  int *piVar5;
+  uint uVar1;
+  int iVar2;
 
-  iVar1 = DAT_0006f650;
   this_00 = *(cRBorder **)(this + 4);
-  iVar4 = DAT_0006f64c + 0x6f528;
   if (this_00 == (cRBorder *)0x0) {
     return;
   }
-  piVar5 = *(int **)(iVar4 + DAT_0006f650);
-  if (*(char *)(*piVar5 + 0x718b9) != '\0') {
-    cRBorder::HideInit(this_00);
-    *(uint *)(*(int *)(this + 4) + 0x194) = *(uint *)(*(int *)(this + 4) + 0x194) & 0xffffffdf;
-    return;
-  }
-  cRBorder::UnHideInit(this_00);
-  uVar2 = *(uint *)(*(int *)(this + 4) + 0x194);
-  if ((uVar2 & 0x20) == 0) {
-    iVar3 = *piVar5;
-  }
-  else {
-    iVar3 = *piVar5;
-    *(uint *)(*(int *)(this + 4) + 0x194) = uVar2 & 0xffffffdf;
-    if ((*(int *)(iVar3 + 0x71900) != 0) ||
-       (((*(char *)(iVar3 + 0x81779) == '\0' || (DAT_0006f648 <= *(float *)(iVar3 + 0x813c4))) &&
-        (*(char *)(iVar3 + 0x81624) == '\0')))) {
-      wprintf((char *)(iVar4 + DAT_0006f658));
-      KeySet('\x01');
-      iVar3 = **(int **)(iVar4 + iVar1);
-      if (*(int *)(iVar3 + 0x718b4) < 1) {
+  if (*(char *)(Game + 0x718b9) == '\0') {
+    cRBorder::UnHideInit(this_00);
+    iVar2 = Game;
+    uVar1 = *(uint *)(*(int *)(this + 4) + 0x194);
+    if (((uVar1 & 0x20) == 0) ||
+       ((*(uint *)(*(int *)(this + 4) + 0x194) = uVar1 & 0xffffffdf, *(int *)(iVar2 + 0x71900) == 0
+        && (((*(char *)(iVar2 + 0x81779) != '\0' && (*(float *)(iVar2 + 0x813c4) < -0.1)) ||
+            (*(char *)(iVar2 + 0x81624) != '\0')))))) {
+      if (*(int *)(iVar2 + 0x718b4) < 1) {
         return;
       }
-      goto LAB_0006f574;
     }
-  }
-  if (*(int *)(iVar3 + 0x718b4) < 1) {
+    else {
+      wprintf("Border Quit");
+      KeySet('\x01');
+      iVar2 = Game;
+      if (*(int *)(Game + 0x718b4) < 1) {
+        return;
+      }
+    }
+    *(undefined4 *)(iVar2 + 0x718b4) = 0;
+    wprintf("Border Auto Quit");
+    KeySet('\x01');
     return;
   }
-LAB_0006f574:
-  iVar1 = DAT_0006f654;
-  *(undefined4 *)(iVar3 + 0x718b4) = 0;
-  wprintf((char *)(iVar4 + iVar1));
-  KeySet('\x01');
+  cRBorder::HideInit(this_00);
+  *(uint *)(*(int *)(this + 4) + 0x194) = *(uint *)(*(int *)(this + 4) + 0x194) & 0xffffffdf;
   return;
 }

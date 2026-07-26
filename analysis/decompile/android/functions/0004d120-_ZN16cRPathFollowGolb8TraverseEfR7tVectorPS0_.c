@@ -53,9 +53,9 @@ int cRPathFollowGolb::Traverse(float param_1,tVector *param_2,tVector *param_3)
   undefined4 uStack_e0;
   undefined4 uStack_dc;
   undefined4 uStack_d8;
-  float local_d4;
-  float local_d0;
-  float local_cc;
+  undefined4 local_d4;
+  undefined4 local_d0;
+  undefined4 local_cc;
   undefined4 uStack_c8;
   undefined4 local_c4;
   undefined4 uStack_c0;
@@ -69,9 +69,9 @@ int cRPathFollowGolb::Traverse(float param_1,tVector *param_2,tVector *param_3)
   undefined4 uStack_a0;
   undefined4 uStack_9c;
   undefined4 uStack_98;
-  float local_94;
-  float local_90;
-  float local_8c;
+  undefined4 local_94;
+  undefined4 local_90;
+  undefined4 local_8c;
   undefined4 uStack_88;
   float local_84;
   float local_80;
@@ -85,32 +85,31 @@ int cRPathFollowGolb::Traverse(float param_1,tVector *param_2,tVector *param_3)
   undefined4 local_54;
   undefined4 local_50;
 
-  fVar17 = DAT_0004d524;
   ptVar7 = *(tMatrix **)(param_2 + 4);
   fVar16 = *(float *)(*(int *)(param_2 + 0xc) * 0xa8 + *(int *)(ptVar7 + 0x50) + 0x8c);
   fVar20 = fVar16 * (float)param_3;
   iVar5 = *(int *)(param_2 + 0xc);
-  fVar12 = *(float *)(param_2 + 0x10);
+  fVar17 = *(float *)(param_2 + 0x10);
   while( true ) {
-    fVar13 = fVar20 + fVar12;
-    uVar1 = in_fpscr & 0xfffffff | (uint)(fVar13 < fVar16) << 0x1f |
-            (uint)(fVar13 == fVar16) << 0x1e;
-    in_fpscr = uVar1 | (uint)(NAN(fVar13) || NAN(fVar16)) << 0x1c;
+    fVar12 = fVar20 + fVar17;
+    uVar1 = in_fpscr & 0xfffffff | (uint)(fVar12 < fVar16) << 0x1f |
+            (uint)(fVar12 == fVar16) << 0x1e;
+    in_fpscr = uVar1 | (uint)(NAN(fVar12) || NAN(fVar16)) << 0x1c;
     bVar2 = (byte)(uVar1 >> 0x18);
     if ((bool)(bVar2 >> 6 & 1) || bVar2 >> 7 != ((byte)(in_fpscr >> 0x1c) & 1)) {
       iVar9 = *(int *)(ptVar7 + 0x38);
-      *(float *)(param_2 + 0x10) = fVar13;
+      *(float *)(param_2 + 0x10) = fVar12;
       if (iVar5 == iVar9 + -1) {
         iVar10 = iVar5 * 0xa8 + *(int *)(ptVar7 + 0x4c);
         pfVar18 = *(float **)(iVar10 + 0xa0);
-        fVar12 = *(float *)(iVar10 + 0x90);
+        fVar16 = *(float *)(iVar10 + 0x90);
         fVar17 = *(float *)(iVar10 + 0x9c);
       }
       else {
-        fVar17 = fVar13 / *(float *)(*(int *)(ptVar7 + 0x50) + iVar5 * 0xa8 + 0x8c);
+        fVar17 = fVar12 / *(float *)(*(int *)(ptVar7 + 0x50) + iVar5 * 0xa8 + 0x8c);
         iVar10 = *(int *)(ptVar7 + 0x4c) + iVar5 * 0xa8;
         iVar6 = *(int *)(ptVar7 + 0x4c) + iVar5 * 0xa8 + 0xa8;
-        fVar12 = *(float *)(iVar10 + 0x90) +
+        fVar16 = *(float *)(iVar10 + 0x90) +
                  (*(float *)(iVar6 + 0x90) - *(float *)(iVar10 + 0x90)) * fVar17;
         pfVar18 = (float *)(*(float *)(iVar10 + 0xa0) +
                            fVar17 * (*(float *)(iVar6 + 0xa0) - *(float *)(iVar10 + 0xa0)));
@@ -120,16 +119,16 @@ int cRPathFollowGolb::Traverse(float param_1,tVector *param_2,tVector *param_3)
       if (*(int *)(ptVar7 + 0x2c) == 0x39) {
         cRPath::HalfPipePos(param_1,in_s1,in_s2,ptVar7,pfVar18);
         iVar10 = *(int *)(param_2 + 4);
-        fVar16 = *(float *)(*(int *)(param_2 + 8) + 0x18);
+        fVar20 = *(float *)(*(int *)(param_2 + 8) + 0x18);
         iVar9 = *(int *)(param_2 + 0xc) * 0xa8 + *(int *)(iVar10 + 0x50);
         fVar13 = *(float *)(iVar9 + 0x38);
-        fVar20 = in_r3[1];
+        fVar12 = in_r3[1];
         *(undefined4 *)(param_2 + 0x18) = local_54;
         *(undefined4 *)(param_2 + 0x1c) = local_50;
         iVar5 = *(int *)(param_2 + 0x24);
         *(float *)(param_2 + 0x20) =
-             fVar16 + fVar13 + *(float *)(iVar9 + 0x88) * *(float *)(param_2 + 0x10);
-        *(float *)(param_2 + 0x14) = *(float *)(param_2 + 0x14) + fVar20;
+             fVar20 + fVar13 + *(float *)(iVar9 + 0x88) * *(float *)(param_2 + 0x10);
+        *(float *)(param_2 + 0x14) = *(float *)(param_2 + 0x14) + fVar12;
         *(float *)(iVar5 + 0x1a4) = local_84 * fVar17;
         *(float *)(iVar5 + 0x1a8) = local_80 * fVar17;
         *(float *)(iVar5 + 0x1ac) = local_7c * fVar17;
@@ -143,16 +142,16 @@ int cRPathFollowGolb::Traverse(float param_1,tVector *param_2,tVector *param_3)
       else if (*(int *)(ptVar7 + 0x2c) == 0x3a) {
         cRPath::HalfPolePos(param_1,in_s1,in_s2,ptVar7,pfVar18);
         iVar10 = *(int *)(param_2 + 4);
-        fVar16 = *(float *)(*(int *)(param_2 + 8) + 0x18);
+        fVar20 = *(float *)(*(int *)(param_2 + 8) + 0x18);
         iVar9 = *(int *)(param_2 + 0xc) * 0xa8 + *(int *)(iVar10 + 0x50);
         fVar13 = *(float *)(iVar9 + 0x38);
-        fVar20 = in_r3[1];
+        fVar12 = in_r3[1];
         *(undefined4 *)(param_2 + 0x18) = local_54;
         *(undefined4 *)(param_2 + 0x1c) = local_50;
         iVar5 = *(int *)(param_2 + 0x24);
         *(float *)(param_2 + 0x20) =
-             fVar16 + fVar13 + *(float *)(iVar9 + 0x88) * *(float *)(param_2 + 0x10);
-        *(float *)(param_2 + 0x14) = *(float *)(param_2 + 0x14) + fVar20;
+             fVar20 + fVar13 + *(float *)(iVar9 + 0x88) * *(float *)(param_2 + 0x10);
+        *(float *)(param_2 + 0x14) = *(float *)(param_2 + 0x14) + fVar12;
         *(float *)(iVar5 + 0x1a4) = local_84 * fVar17;
         *(float *)(iVar5 + 0x1a8) = local_80 * fVar17;
         *(float *)(iVar5 + 0x1ac) = local_7c * fVar17;
@@ -171,8 +170,8 @@ int cRPathFollowGolb::Traverse(float param_1,tVector *param_2,tVector *param_3)
         puVar8 = (undefined4 *)(iVar5 * 0xa8 + *(int *)(ptVar7 + 0x50));
         fVar19 = (float)puVar8[0x20];
         fVar15 = (float)puVar8[0x21];
-        fVar16 = (float)puVar8[0xc];
-        fVar20 = (float)puVar8[0xd];
+        fVar20 = (float)puVar8[0xc];
+        fVar13 = (float)puVar8[0xd];
         fVar14 = (float)puVar8[0xe];
         fVar21 = (float)puVar8[0x22];
         if (iVar5 == iVar9 + -1) {
@@ -206,24 +205,24 @@ int cRPathFollowGolb::Traverse(float param_1,tVector *param_2,tVector *param_3)
           uStack_dc = puVar11[10];
           uStack_d8 = puVar11[0xb];
           uStack_c8 = puVar11[0xf];
-          local_8c = DAT_0004d524;
-          local_90 = DAT_0004d524;
-          local_94 = DAT_0004d524;
-          local_d4 = DAT_0004d524;
-          local_cc = DAT_0004d524;
-          local_d0 = DAT_0004d524;
+          local_8c = 0;
+          local_90 = 0;
+          local_94 = 0;
+          local_d4 = 0;
+          local_cc = 0;
+          local_d0 = 0;
           tMatrix::LinearInterpolate
                     ((tMatrix *)&local_84,(tMatrix *)&local_c4,(tMatrix *)&local_104,param_1);
         }
         iVar5 = *(int *)(param_2 + 0x24);
         iVar10 = *(int *)(param_2 + 4);
         *(float *)(param_2 + 0x14) = *(float *)(param_2 + 0x14) + in_r3[1];
-        fVar22 = *in_r2 - fVar12;
+        fVar22 = *in_r2 - fVar16;
         *(float *)(param_2 + 0x18) =
-             fVar23 + fVar16 + fVar13 * fVar19 * fVar17 + fVar22 * fVar17 * local_84;
-        *(float *)(param_2 + 0x20) = fVar24 + fVar14 + fVar13 * fVar21 + fVar22 * fVar17 * local_7c;
+             fVar23 + fVar20 + fVar12 * fVar19 * fVar17 + fVar22 * fVar17 * local_84;
+        *(float *)(param_2 + 0x20) = fVar24 + fVar14 + fVar12 * fVar21 + fVar22 * fVar17 * local_7c;
         *(float *)(param_2 + 0x1c) =
-             fVar25 + fVar20 + fVar13 * fVar15 * fVar17 + fVar22 * fVar17 * local_80;
+             fVar25 + fVar13 + fVar12 * fVar15 * fVar17 + fVar22 * fVar17 * local_80;
         *(float *)(iVar5 + 0x1a4) = fVar17 * local_84;
         *(float *)(iVar5 + 0x1a8) = fVar17 * local_80;
         *(float *)(iVar5 + 0x1ac) = fVar17 * local_7c;
@@ -236,15 +235,14 @@ int cRPathFollowGolb::Traverse(float param_1,tVector *param_2,tVector *param_3)
       }
       fVar17 = (float)VectorSignedToFloat(*(undefined4 *)(iVar10 + 0x48),
                                           (byte)(in_fpscr >> 0x16) & 3);
-      fVar17 = DAT_0004d528 + fVar17 * DAT_0004d52c;
       *(undefined4 *)(iVar5 + 0x22c) = *(undefined4 *)(iVar5 + 0x238);
       *(undefined4 *)(iVar5 + 0x230) = *(undefined4 *)(iVar5 + 0x23c);
       *(undefined4 *)(iVar5 + 0x234) = *(undefined4 *)(iVar5 + 0x240);
-      fVar12 = *in_r2 - fVar12;
-      if (fVar12 < 0.0) {
-        fVar12 = -fVar12;
+      fVar16 = *in_r2 - fVar16;
+      if (fVar16 < 0.0) {
+        fVar16 = -fVar16;
       }
-      if (fVar12 <= fVar17) {
+      if (fVar16 <= fVar17 * 0.5 + 0.3) {
         if (1 < *(int *)(iVar10 + 0x2c) - 0x39U) {
           *in_r2 = *in_r2 + *in_r3;
         }
@@ -266,12 +264,12 @@ int cRPathFollowGolb::Traverse(float param_1,tVector *param_2,tVector *param_3)
     }
     iVar9 = iVar5 + 1;
     *(int *)(param_2 + 0xc) = iVar9;
-    *(float *)(param_2 + 0x10) = fVar17;
-    fVar20 = fVar20 - (fVar16 - fVar12);
+    *(undefined4 *)(param_2 + 0x10) = 0;
+    fVar20 = fVar20 - (fVar16 - fVar17);
     if (iVar9 == *(int *)(ptVar7 + 0x38)) break;
     fVar16 = *(float *)(iVar9 * 0xa8 + *(int *)(ptVar7 + 0x50) + 0x8c);
     iVar5 = iVar9;
-    fVar12 = fVar17;
+    fVar17 = 0.0;
   }
   iVar9 = *(int *)(ptVar7 + 0x2c);
   iVar10 = *(int *)(param_2 + 0x24);
@@ -295,17 +293,17 @@ int cRPathFollowGolb::Traverse(float param_1,tVector *param_2,tVector *param_3)
   fVar19 = *(float *)(iVar5 + 0x38);
   fVar14 = *(float *)(iVar9 + 0x18);
   fVar13 = *(float *)(iVar5 + 0x28);
-  in_r3[1] = in_r3[2] * DAT_0004d530;
+  in_r3[1] = in_r3[2] * 0.7;
   fVar17 = *(float *)(ptVar7 + 0x44);
-  fVar12 = *(float *)(iVar9 + 0x14);
+  fVar16 = *(float *)(iVar9 + 0x14);
   fVar15 = *(float *)(iVar5 + 0x34);
-  fVar16 = *(float *)(iVar5 + 0x24);
+  fVar12 = *(float *)(iVar5 + 0x24);
   in_r2[2] = fVar14 + fVar19 + (fVar20 + fVar17) * fVar13;
-  in_r2[1] = fVar12 + fVar15 + (fVar20 + fVar17) * fVar16;
+  in_r2[1] = fVar16 + fVar15 + (fVar20 + fVar17) * fVar12;
   fVar17 = in_r2[1];
-  fVar12 = in_r2[2];
+  fVar16 = in_r2[2];
   *(float *)(iVar10 + 0x1d4) = *in_r2;
   *(float *)(iVar10 + 0x1d8) = fVar17;
-  *(float *)(iVar10 + 0x1dc) = fVar12;
+  *(float *)(iVar10 + 0x1dc) = fVar16;
   return 3;
 }

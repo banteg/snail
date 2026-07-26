@@ -17,31 +17,28 @@ void __thiscall cRTime::Add(cRTime *this,float param_1)
   float fVar4;
   float fVar5;
 
-  fVar4 = DAT_0006c588;
-  fVar3 = in_r1 / DAT_0006c584;
-  fVar5 = fVar3 + *(float *)(this + 0x14);
-  *(float *)(this + 0x14) = fVar5;
-  *(float *)this = *(float *)this + fVar3;
-  fVar3 = fVar5;
-  if (fVar4 <= fVar5) {
-    fVar3 = fVar5 - fVar4;
+  fVar4 = in_r1 / 60.0 + *(float *)(this + 0x14);
+  *(float *)(this + 0x14) = fVar4;
+  *(float *)this = *(float *)this + in_r1 / 60.0;
+  fVar5 = fVar4;
+  if (1.0 <= fVar4) {
+    fVar5 = fVar4 - 1.0;
     iVar1 = *(int *)(this + 8);
     iVar2 = iVar1 + 1;
     *(int *)(this + 8) = iVar2;
-    fVar4 = fVar3;
+    fVar3 = fVar5;
     if (0x3b < iVar2) {
       *(int *)(this + 8) = iVar1 + -0x3b;
       *(int *)(this + 4) = *(int *)(this + 4) + 1;
+      fVar3 = fVar4;
+    }
+    *(float *)(this + 0x14) = fVar5;
+    fVar4 = fVar3;
+    if (0x3b < iVar2) {
       fVar4 = fVar5;
     }
-    *(float *)(this + 0x14) = fVar3;
-    fVar5 = fVar4;
-    if (0x3b < iVar2) {
-      fVar5 = fVar3;
-    }
   }
-  fVar5 = DAT_0006c590 * fVar5;
-  *(int *)(this + 0xc) = (int)(fVar3 * DAT_0006c58c);
-  *(int *)(this + 0x10) = (int)fVar5;
+  *(int *)(this + 0xc) = (int)(fVar5 * 100.0);
+  *(int *)(this + 0x10) = (int)(fVar4 * 1000.0);
   return;
 }

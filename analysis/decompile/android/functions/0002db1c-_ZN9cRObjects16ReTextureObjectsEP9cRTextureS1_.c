@@ -17,7 +17,6 @@ void __thiscall cRObjects::ReTextureObjects(cRObjects *this,cRTexture *param_1,c
   int iVar5;
   int iVar6;
   int iVar7;
-  char *pcVar8;
 
   iVar1 = *(int *)this;
   if (iVar1 < 1) {
@@ -25,13 +24,12 @@ void __thiscall cRObjects::ReTextureObjects(cRObjects *this,cRTexture *param_1,c
   }
   iVar4 = 0;
   iVar6 = 0;
-  pcVar8 = (char *)(DAT_0002dbe8 + 0x2db40 + DAT_0002dbec);
   do {
     iVar7 = *(int *)(this + 8);
     iVar5 = iVar7 + iVar4;
     uVar3 = *(uint *)(iVar7 + iVar4);
     if ((int)uVar3 < 0) {
-      wprintf(pcVar8);
+      wprintf("PATH START");
       uVar3 = *(uint *)(iVar7 + iVar4);
       iVar1 = *(int *)this;
     }

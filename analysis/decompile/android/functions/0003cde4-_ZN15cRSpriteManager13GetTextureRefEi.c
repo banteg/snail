@@ -10,6 +10,5 @@
 undefined4 __thiscall cRSpriteManager::GetTextureRef(cRSpriteManager *this,int param_1)
 
 {
-  return *(undefined4 *)
-          (*(int *)(*(int *)(DAT_0003ce04 + 0x3cdf4 + DAT_0003ce08) + param_1 * 0x20 + 4) + 0x8c);
+  return *(undefined4 *)(*(int *)(gSpriteReference + param_1 * 0x20 + 4) + 0x8c);
 }

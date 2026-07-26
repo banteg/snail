@@ -10,6 +10,6 @@
 void __thiscall cRSplash::Open(cRSplash *this)
 
 {
-  *(int *)(this + 4) = **(int **)(DAT_0006a8b8 + 0x6a8a4 + DAT_0006a8bc) + 0x718a0;
+  *(int *)(this + 4) = Game + 0x718a0;
   return;
 }

@@ -10,6 +10,6 @@
 void __thiscall cRSubGoldy::Passed(cRSubGoldy *this)
 
 {
-  *(float *)(this + 0x25c8) = DAT_0006be44 - *(float *)(this + 0x25c8);
+  *(float *)(this + 0x25c8) = 1.0 - *(float *)(this + 0x25c8);
   return;
 }

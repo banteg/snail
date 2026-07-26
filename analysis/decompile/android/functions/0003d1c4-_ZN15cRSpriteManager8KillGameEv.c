@@ -13,12 +13,10 @@ void cRSpriteManager::KillGame(void)
   cRSprite *pcVar1;
   cRSprite *this;
   int iVar2;
-  int iVar3;
 
-  iVar3 = *(int *)(DAT_0003d22c + 0x3d1d4 + DAT_0003d230);
   iVar2 = 0;
   do {
-    pcVar1 = *(cRSprite **)(iVar3 + iVar2 + 0x2af84);
+    pcVar1 = *(cRSprite **)((int)&DAT_0015cfd4 + iVar2);
     while (this = pcVar1, pcVar1 != (cRSprite *)0x0) {
       while (pcVar1 = *(cRSprite **)(this + 0xc), (*(uint *)(this + 4) & 0x800) == 0) {
         this = pcVar1;

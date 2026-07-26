@@ -10,39 +10,31 @@
 void __thiscall cRDirectX::Load(cRDirectX *this,char *param_1,cRObject *param_2,int param_3)
 
 {
-  int iVar1;
+  short sVar1;
   short sVar2;
-  short sVar3;
-  size_t sVar4;
-  int iVar5;
-  char *pcVar6;
-  char *pcVar7;
-  void *pvVar8;
-  undefined4 *puVar9;
-  undefined4 uVar10;
-  cRTextures *this_00;
-  int iVar11;
-  int iVar12;
-  int iVar13;
-  int iVar14;
-  char *pcVar15;
-  char cVar16;
-  uint *puVar17;
+  size_t sVar3;
+  int iVar4;
+  char *pcVar5;
+  void *pvVar6;
+  undefined4 *puVar7;
+  undefined4 uVar8;
+  int iVar9;
+  int iVar10;
+  char *pcVar11;
+  char *pcVar12;
+  char cVar13;
+  uint *puVar14;
+  uint uVar15;
+  int iVar16;
+  char *pcVar17;
   uint uVar18;
-  char *pcVar19;
-  int iVar20;
-  char *pcVar21;
+  int iVar19;
+  undefined4 *puVar20;
+  int iVar21;
   char *pcVar22;
-  uint uVar23;
-  int iVar24;
-  undefined4 *puVar25;
-  int iVar26;
-  int iVar27;
-  char *pcVar28;
-  int iVar29;
-  char *pcVar30;
-  uint uVar31;
-  char *pcVar32;
+  int iVar23;
+  char *pcVar24;
+  uint uVar25;
   int local_37c;
   undefined2 local_378;
   int local_374;
@@ -61,253 +53,244 @@ void __thiscall cRDirectX::Load(cRDirectX *this,char *param_1,cRObject *param_2,
   char acStack_12e [258];
   int local_2c;
 
-  iVar1 = DAT_00088fd0;
-  pcVar19 = acStack_12e + 2;
-  iVar27 = DAT_00088fd4 + 0x8876c;
-  local_2c = **(int **)(iVar27 + DAT_00088fd0);
-  sprintf(pcVar19,param_1);
-  sVar4 = strlen(pcVar19);
-  acStack_12e[sVar4] = '\0';
-  sprintf(acStack_22c,(char *)(iVar27 + DAT_00088fd8),pcVar19);
-  iVar5 = RShellFindFile(acStack_22c,false);
-  if (iVar5 == 0) {
-    pcVar6 = (char *)RShellMemoryScratch();
-    sprintf(pcVar19,(char *)(iVar27 + DAT_00088fdc),param_1);
-    RShellLoadFile(pcVar19,pcVar6,&local_340);
-    pcVar7 = (char *)(iVar27 + DAT_00088fe0);
-    pcVar6[local_340 + -2] = '\0';
-    pcVar6 = (char *)Rstrfind(pcVar7,pcVar6);
-    iVar5 = DAT_00088fe4;
-    if (pcVar6 == (char *)0x0) {
-      RShellError((char *)(iVar27 + DAT_00089034),pcVar19);
+  pcVar11 = acStack_12e + 2;
+  local_2c = __stack_chk_guard;
+  sprintf(pcVar11,param_1);
+  sVar3 = strlen(pcVar11);
+  acStack_12e[sVar3] = '\0';
+  sprintf(acStack_22c,"Data/O_%s.smo",pcVar11);
+  iVar4 = RShellFindFile(acStack_22c,false);
+  if (iVar4 == 0) {
+    pcVar5 = (char *)RShellMemoryScratch();
+    sprintf(pcVar11,"X/%s",param_1);
+    RShellLoadFile(pcVar11,pcVar5,&local_340);
+    pcVar5[local_340 + -2] = '\0';
+    pcVar5 = (char *)Rstrfind("Frame ",pcVar5);
+    if (pcVar5 == (char *)0x0) {
+      RShellError("No \'Frame \' Data in %s",pcVar11);
     }
     else {
-      local_330 = (char *)Rstrfind((char *)(iVar27 + DAT_00088fe4),pcVar6);
+      local_330 = (char *)Rstrfind("Mesh ",pcVar5);
       if (local_330 == (char *)0x0) {
-        RShellError((char *)(iVar27 + DAT_00089040),pcVar19);
+        RShellError("No \'VertexDuplicationIndices \'Data in %s",pcVar11);
       }
-      iVar14 = DAT_00088fe8;
-      local_330 = (char *)Rstrfind((char *)(iVar27 + DAT_00088fe8),local_330);
-      local_334 = (char *)Rstrfind((char *)(iVar27 + iVar5),pcVar6);
+      local_330 = (char *)Rstrfind("{",local_330);
+      local_334 = (char *)Rstrfind("Mesh ",pcVar5);
       if (local_334 == (char *)0x0) {
-        RShellError((char *)(iVar27 + DAT_00089038),acStack_12e + 2);
+        RShellError("No \'Mesh \'Data in %s",acStack_12e + 2);
       }
-      local_334 = (char *)Rstrfind((char *)(iVar27 + iVar14),local_334);
-      local_338 = (char *)Rstrfind((char *)(iVar27 + DAT_00088fec),pcVar6);
+      local_334 = (char *)Rstrfind("{",local_334);
+      local_338 = (char *)Rstrfind("MeshMaterialList ",pcVar5);
       if (local_338 == (char *)0x0) {
-        RShellError((char *)(iVar27 + DAT_0008903c),acStack_12e + 2);
+        RShellError("No \'MeshMaterialList \'Data in %s",acStack_12e + 2);
       }
-      local_338 = (char *)Rstrfind((char *)(iVar27 + iVar14),local_338);
+      local_338 = (char *)Rstrfind("{",local_338);
       Rstrint(&local_338);
-      sVar2 = Rstrint(&local_338);
-      sVar3 = Rstrint(&local_330);
-      iVar24 = (int)sVar3;
-      iVar5 = Rstrint(&local_334);
-      if (iVar24 != iVar5) {
-        RShellError((char *)(iVar27 + DAT_00088ff0),acStack_12e + 2);
+      sVar1 = Rstrint(&local_338);
+      sVar2 = Rstrint(&local_330);
+      iVar19 = (int)sVar2;
+      iVar4 = Rstrint(&local_334);
+      if (iVar19 != iVar4) {
+        RShellError("Mesh vertices count does not match vertext duplicate vertices count in %s",
+                    acStack_12e + 2);
       }
       Rstrint(&local_330);
-      local_33c = (char *)Rstrfind((char *)(iVar27 + DAT_00088ff4),pcVar6);
+      local_33c = (char *)Rstrfind("MeshTextureCoords ",pcVar5);
       if (local_33c == (char *)0x0) {
-        RShellError((char *)(iVar27 + DAT_00089038),acStack_12e + 2);
+        RShellError("No \'Mesh \'Data in %s",acStack_12e + 2);
       }
-      local_33c = (char *)Rstrfind((char *)(iVar27 + iVar14),local_33c);
-      iVar5 = Rstrint(&local_33c);
-      if (iVar24 != iVar5) {
-        RShellError((char *)(iVar27 + DAT_00088ff8),acStack_12e + 2);
+      local_33c = (char *)Rstrfind("{",local_33c);
+      iVar4 = Rstrint(&local_33c);
+      if (iVar19 != iVar4) {
+        RShellError("Mesh texture coords number does not match mesh vertext count in %s",
+                    acStack_12e + 2);
       }
-      iVar5 = (int)sVar2;
-      cRObject::RequestFaceQuads(param_2,iVar5);
-      cRObject::RequestVertices(param_2,iVar24);
-      pvVar8 = (void *)RShellMemoryMalloc(iVar24 << 2,(char *)(iVar27 + DAT_00088ffc));
-      puVar9 = (undefined4 *)RShellMemoryMalloc(iVar24 << 3,(char *)(iVar27 + DAT_00089000));
-      if (0 < iVar24) {
-        iVar26 = 0;
-        puVar25 = puVar9;
+      iVar4 = (int)sVar1;
+      cRObject::RequestFaceQuads(param_2,iVar4);
+      cRObject::RequestVertices(param_2,iVar19);
+      pvVar6 = (void *)RShellMemoryMalloc(iVar19 << 2,"Mesh vertex remap");
+      puVar7 = (undefined4 *)RShellMemoryMalloc(iVar19 << 3,"Mesh texture coords");
+      if (0 < iVar19) {
+        iVar21 = 0;
+        puVar20 = puVar7;
         do {
-          iVar26 = iVar26 + 1;
-          uVar10 = Rstrfloat(&local_33c);
-          *puVar25 = uVar10;
-          uVar10 = Rstrfloat(&local_33c);
-          puVar25[1] = uVar10;
-          puVar25 = puVar25 + 2;
-        } while (iVar26 < iVar24);
+          iVar21 = iVar21 + 1;
+          uVar8 = Rstrfloat(&local_33c);
+          *puVar20 = uVar8;
+          uVar8 = Rstrfloat(&local_33c);
+          puVar20[1] = uVar8;
+          puVar20 = puVar20 + 2;
+        } while (iVar21 < iVar19);
       }
-      if (0 < iVar24) {
-        iVar26 = 0;
-        sVar2 = 0;
+      if (0 < iVar19) {
+        iVar21 = 0;
+        sVar1 = 0;
         do {
-          iVar29 = *(int *)(param_2 + 0xa4);
-          uVar10 = Rstrfloat(&local_334);
-          sVar2 = sVar2 + 1;
-          *(undefined4 *)(iVar29 + iVar26) = uVar10;
-          iVar29 = *(int *)(param_2 + 0xa4);
-          uVar10 = Rstrfloat(&local_334);
-          *(undefined4 *)(iVar29 + iVar26 + 4) = uVar10;
-          iVar29 = *(int *)(param_2 + 0xa4);
-          uVar10 = Rstrfloat(&local_334);
-          iVar29 = iVar29 + iVar26;
-          iVar26 = iVar26 + 0xc;
-          *(undefined4 *)(iVar29 + 8) = uVar10;
-        } while (sVar2 < iVar24);
+          iVar23 = *(int *)(param_2 + 0xa4);
+          uVar8 = Rstrfloat(&local_334);
+          sVar1 = sVar1 + 1;
+          *(undefined4 *)(iVar23 + iVar21) = uVar8;
+          iVar23 = *(int *)(param_2 + 0xa4);
+          uVar8 = Rstrfloat(&local_334);
+          *(undefined4 *)(iVar23 + iVar21 + 4) = uVar8;
+          iVar23 = *(int *)(param_2 + 0xa4);
+          uVar8 = Rstrfloat(&local_334);
+          iVar23 = iVar23 + iVar21;
+          iVar21 = iVar21 + 0xc;
+          *(undefined4 *)(iVar23 + 8) = uVar8;
+        } while (sVar1 < iVar19);
       }
-      iVar24 = Rstrint(&local_334);
-      if (iVar5 != iVar24) {
-        RShellError((char *)(iVar27 + DAT_00089004),acStack_12e + 2);
+      iVar19 = Rstrint(&local_334);
+      if (iVar4 != iVar19) {
+        RShellError("Mesh face count does not match material face count in %s",acStack_12e + 2);
       }
-      iVar24 = DAT_00089008;
-      if (0 < iVar5) {
-        iVar26 = 0;
+      if (0 < iVar4) {
+        iVar19 = 0;
         local_37c = 0;
-        pcVar19 = (char *)(iVar27 + DAT_0008900c);
         do {
-          *(undefined2 *)(*(int *)(param_2 + 200) + iVar26) = 0;
-          iVar29 = Rstrint(&local_334);
-          iVar11 = Rstrint(&local_334);
-          iVar12 = Rstrint(&local_334);
-          iVar13 = Rstrint(&local_334);
-          if (iVar29 == 4) {
-            iVar29 = Rstrint(&local_334);
-            iVar20 = *(int *)(param_2 + 200);
-            local_378 = (undefined2)iVar29;
-            local_374 = iVar29 * 8 + 4;
-            iVar29 = iVar29 << 3;
+          *(undefined2 *)(*(int *)(param_2 + 200) + iVar19) = 0;
+          iVar21 = Rstrint(&local_334);
+          iVar23 = Rstrint(&local_334);
+          iVar9 = Rstrint(&local_334);
+          iVar10 = Rstrint(&local_334);
+          if (iVar21 == 4) {
+            iVar21 = Rstrint(&local_334);
+            iVar16 = *(int *)(param_2 + 200);
+            local_378 = (undefined2)iVar21;
+            local_374 = iVar21 * 8 + 4;
+            iVar21 = iVar21 << 3;
           }
           else {
-            iVar20 = *(int *)(param_2 + 200);
-            iVar29 = 0;
+            iVar16 = *(int *)(param_2 + 200);
+            iVar21 = 0;
             local_378 = 0;
             local_374 = 4;
-            *(ushort *)(iVar20 + iVar26) = *(ushort *)(iVar20 + iVar26) | 0x80;
+            *(ushort *)(iVar16 + iVar19) = *(ushort *)(iVar16 + iVar19) | 0x80;
           }
-          *(undefined4 *)(iVar20 + iVar26 + 0x20) = puVar9[iVar11 * 2];
-          *(undefined4 *)(*(int *)(param_2 + 200) + iVar26 + 0x24) = (puVar9 + iVar11 * 2)[1];
-          *(undefined4 *)(*(int *)(param_2 + 200) + iVar26 + 0x18) = puVar9[iVar12 * 2];
-          this_00 = *(cRTextures **)(iVar27 + iVar24);
-          *(undefined4 *)(*(int *)(param_2 + 200) + iVar26 + 0x1c) = (puVar9 + iVar12 * 2)[1];
-          *(undefined4 *)(*(int *)(param_2 + 200) + iVar26 + 0x10) = puVar9[iVar13 * 2];
+          *(undefined4 *)(iVar16 + iVar19 + 0x20) = puVar7[iVar23 * 2];
+          *(undefined4 *)(*(int *)(param_2 + 200) + iVar19 + 0x24) = (puVar7 + iVar23 * 2)[1];
+          *(undefined4 *)(*(int *)(param_2 + 200) + iVar19 + 0x18) = puVar7[iVar9 * 2];
+          *(undefined4 *)(*(int *)(param_2 + 200) + iVar19 + 0x1c) = (puVar7 + iVar9 * 2)[1];
+          *(undefined4 *)(*(int *)(param_2 + 200) + iVar19 + 0x10) = puVar7[iVar10 * 2];
           local_37c = local_37c + 1;
-          *(undefined4 *)(*(int *)(param_2 + 200) + iVar26 + 0x14) = (puVar9 + iVar13 * 2)[1];
-          *(undefined4 *)(*(int *)(param_2 + 200) + iVar26 + 0x28) =
-               *(undefined4 *)(iVar29 + (int)puVar9);
-          *(undefined4 *)(*(int *)(param_2 + 200) + iVar26 + 0x2c) =
-               *(undefined4 *)((int)puVar9 + local_374);
-          iVar20 = *(int *)(param_2 + 200);
-          uVar10 = cRTextures::Add(this_00,pcVar19,(cTgaHeader *)0x0,0);
-          iVar29 = *(int *)(param_2 + 200);
-          *(undefined4 *)(iVar20 + iVar26 + 0xc) = uVar10;
-          puVar17 = *(uint **)(iVar29 + iVar26 + 0xc);
-          *puVar17 = *puVar17 | 0x1000;
-          *(short *)(iVar29 + iVar26 + 6) = (short)iVar11;
-          *(short *)(*(int *)(param_2 + 200) + iVar26 + 4) = (short)iVar12;
-          *(short *)(*(int *)(param_2 + 200) + iVar26 + 2) = (short)iVar13;
-          iVar29 = *(int *)(param_2 + 200) + iVar26;
-          iVar26 = iVar26 + 0x30;
-          *(undefined2 *)(iVar29 + 8) = local_378;
-        } while (local_37c < iVar5);
+          *(undefined4 *)(*(int *)(param_2 + 200) + iVar19 + 0x14) = (puVar7 + iVar10 * 2)[1];
+          *(undefined4 *)(*(int *)(param_2 + 200) + iVar19 + 0x28) =
+               *(undefined4 *)(iVar21 + (int)puVar7);
+          *(undefined4 *)(*(int *)(param_2 + 200) + iVar19 + 0x2c) =
+               *(undefined4 *)((int)puVar7 + local_374);
+          iVar16 = *(int *)(param_2 + 200);
+          uVar8 = cRTextures::Add((cRTextures *)gTextureList,"X/snail-turbo.tga",(cTgaHeader *)0x0,0
+                                 );
+          iVar21 = *(int *)(param_2 + 200);
+          *(undefined4 *)(iVar16 + iVar19 + 0xc) = uVar8;
+          puVar14 = *(uint **)(iVar21 + iVar19 + 0xc);
+          *puVar14 = *puVar14 | 0x1000;
+          *(short *)(iVar21 + iVar19 + 6) = (short)iVar23;
+          *(short *)(*(int *)(param_2 + 200) + iVar19 + 4) = (short)iVar9;
+          *(short *)(*(int *)(param_2 + 200) + iVar19 + 2) = (short)iVar10;
+          iVar21 = *(int *)(param_2 + 200) + iVar19;
+          iVar19 = iVar19 + 0x30;
+          *(undefined2 *)(iVar21 + 8) = local_378;
+        } while (local_37c < iVar4);
       }
       *(uint *)param_2 = *(uint *)param_2 | 0x100000;
-      RShellMemoryFree(puVar9);
-      RShellMemoryFree(pvVar8);
-      local_344 = (char *)Rstrfind((char *)(iVar27 + DAT_00089010),pcVar6);
+      RShellMemoryFree(puVar7);
+      RShellMemoryFree(pvVar6);
+      local_344 = (char *)Rstrfind("MeshMaterialList",pcVar5);
       if (local_344 == (char *)0x0) {
-        RShellError((char *)(iVar27 + DAT_00089018),acStack_12e + 2);
+        RShellError("No MeshMaterialList { in %s",acStack_12e + 2);
       }
       else {
-        local_344 = (char *)Rstrfind((char *)(iVar27 + iVar14),local_344);
-        iVar14 = Rstrint(&local_344);
-        iVar24 = Rstrint(&local_344);
-        if (iVar5 == iVar24) {
-          pvVar8 = (void *)RShellMemoryMalloc(iVar14 << 2,(char *)(iVar27 + DAT_0008901c));
-          pcVar19 = local_344;
-          wprintf((char *)(iVar27 + DAT_00089020),iVar14);
-          iVar26 = DAT_0008902c;
-          iVar24 = DAT_00089008;
-          if (0 < iVar14) {
-            iVar29 = 0;
-            iVar11 = 0;
-            pcVar6 = (char *)(iVar27 + DAT_00089024);
-            pcVar7 = (char *)(iVar27 + DAT_00089028);
-            uVar31 = param_3 & 2;
-            pcVar21 = (char *)(iVar27 + DAT_00089030);
+        local_344 = (char *)Rstrfind("{",local_344);
+        iVar19 = Rstrint(&local_344);
+        iVar21 = Rstrint(&local_344);
+        if (iVar4 == iVar21) {
+          pvVar6 = (void *)RShellMemoryMalloc(iVar19 << 2,"Direct X Materiallist");
+          pcVar11 = local_344;
+          wprintf("MaterialNumber=%i\n",iVar19);
+          if (0 < iVar19) {
+            iVar21 = 0;
+            iVar23 = 0;
+            uVar25 = param_3 & 2;
             do {
-              pcVar19 = (char *)Rstrfind((char *)(iVar27 + iVar26),pcVar19);
-              if (pcVar19 == (char *)0x0) {
-                if (uVar31 == 0) {
-                  RShellWarning(pcVar21,iVar11,acStack_12e + 2);
+              pcVar11 = (char *)Rstrfind("TextureFilename ",pcVar11);
+              if (pcVar11 == (char *)0x0) {
+                if (uVar25 == 0) {
+                  RShellWarning("No TextureFilename for Material %i in %s",iVar23,acStack_12e + 2);
                 }
-                uVar10 = cRTextures::Add(*(cRTextures **)(iVar27 + iVar24),pcVar7,(cTgaHeader *)0x0,
-                                         0);
-                *(undefined4 *)((int)pvVar8 + iVar29) = uVar10;
-                pcVar19 = local_344;
+                uVar8 = cRTextures::Add((cRTextures *)gTextureList,"Sprites/debug.tga",
+                                        (cTgaHeader *)0x0,0);
+                *(undefined4 *)((int)pvVar6 + iVar21) = uVar8;
+                pcVar11 = local_344;
               }
               else {
-                iVar12 = Rstrfind(pcVar6,pcVar19);
+                iVar9 = Rstrfind("\"",pcVar11);
                 local_32c[0] = 'X';
                 local_32c[1] = 0x2f;
-                cVar16 = *(char *)(iVar12 + 1);
-                pcVar19 = (char *)(iVar12 + 1);
-                if (cVar16 == '.') {
-                  pcVar28 = local_326;
-                  pcVar15 = &local_327;
-                  pcVar32 = &local_329;
-                  pcVar30 = &local_328;
-                  pcVar22 = local_32c + 2;
+                cVar13 = *(char *)(iVar9 + 1);
+                pcVar11 = (char *)(iVar9 + 1);
+                if (cVar13 == '.') {
+                  pcVar22 = local_326;
+                  pcVar12 = &local_327;
+                  pcVar5 = &local_329;
+                  pcVar24 = &local_328;
+                  pcVar17 = local_32c + 2;
                 }
                 else {
-                  pcVar32 = &local_329;
+                  pcVar5 = &local_329;
                   do {
-                    pcVar22 = pcVar32;
-                    pcVar22[-1] = cVar16;
-                    pcVar19 = pcVar19 + 1;
-                    cVar16 = *pcVar19;
-                    pcVar32 = pcVar22 + 1;
-                  } while (cVar16 != '.');
-                  pcVar30 = pcVar22 + 2;
-                  pcVar15 = pcVar22 + 3;
-                  pcVar28 = pcVar22 + 4;
+                    pcVar17 = pcVar5;
+                    pcVar17[-1] = cVar13;
+                    pcVar11 = pcVar11 + 1;
+                    cVar13 = *pcVar11;
+                    pcVar5 = pcVar17 + 1;
+                  } while (cVar13 != '.');
+                  pcVar24 = pcVar17 + 2;
+                  pcVar12 = pcVar17 + 3;
+                  pcVar22 = pcVar17 + 4;
                 }
-                *pcVar22 = '.';
-                *pcVar32 = 't';
-                *pcVar30 = 'g';
-                *pcVar15 = 'a';
-                *pcVar28 = '\0';
-                puVar17 = (uint *)cRTextures::Add(*(cRTextures **)(iVar27 + iVar24),local_32c,
+                *pcVar17 = '.';
+                *pcVar5 = 't';
+                *pcVar24 = 'g';
+                *pcVar12 = 'a';
+                *pcVar22 = '\0';
+                puVar14 = (uint *)cRTextures::Add((cRTextures *)gTextureList,local_32c,
                                                   (cTgaHeader *)0x0,0);
-                uVar23 = *puVar17;
-                *(uint **)((int)pvVar8 + iVar29) = puVar17;
-                uVar18 = uVar23 | 0x1000;
-                if (uVar31 != 0) {
-                  uVar23 = uVar23 | 0x9000;
+                uVar18 = *puVar14;
+                *(uint **)((int)pvVar6 + iVar21) = puVar14;
+                uVar15 = uVar18 | 0x1000;
+                if (uVar25 != 0) {
+                  uVar18 = uVar18 | 0x9000;
                 }
-                *puVar17 = uVar18;
-                if (uVar31 != 0) {
-                  *puVar17 = uVar23;
+                *puVar14 = uVar15;
+                if (uVar25 != 0) {
+                  *puVar14 = uVar18;
                 }
               }
-              iVar11 = iVar11 + 1;
-              iVar29 = iVar29 + 4;
-            } while (iVar11 < iVar14);
+              iVar23 = iVar23 + 1;
+              iVar21 = iVar21 + 4;
+            } while (iVar23 < iVar19);
           }
-          if (0 < iVar5) {
-            iVar14 = 0;
-            iVar24 = 0;
+          if (0 < iVar4) {
+            iVar19 = 0;
+            iVar21 = 0;
             do {
-              iVar24 = iVar24 + 1;
-              sVar2 = Rstrint(&local_344);
-              iVar26 = *(int *)(param_2 + 200) + iVar14;
-              iVar14 = iVar14 + 0x30;
-              *(undefined4 *)(iVar26 + 0xc) = *(undefined4 *)((int)pvVar8 + sVar2 * 4);
-            } while (iVar24 < iVar5);
+              iVar21 = iVar21 + 1;
+              sVar1 = Rstrint(&local_344);
+              iVar23 = *(int *)(param_2 + 200) + iVar19;
+              iVar19 = iVar19 + 0x30;
+              *(undefined4 *)(iVar23 + 0xc) = *(undefined4 *)((int)pvVar6 + sVar1 * 4);
+            } while (iVar21 < iVar4);
           }
-          RShellMemoryFree(pvVar8);
+          RShellMemoryFree(pvVar6);
           ObjectProcSimplifyFaces(param_2);
           strcpy((char *)(param_2 + 0x20),param_1);
-          sVar4 = strlen((char *)(param_2 + 0x20));
-          param_2[sVar4 + 0x1e] = (cRObject)0x0;
+          sVar3 = strlen((char *)(param_2 + 0x20));
+          param_2[sVar3 + 0x1e] = (cRObject)0x0;
         }
         else {
-          RShellError((char *)(iVar27 + DAT_00089014),acStack_12e + 2);
+          RShellError("No MeshMaterialList face number is not equal to Mesh face number in %s",
+                      acStack_12e + 2);
         }
       }
     }
@@ -315,7 +298,7 @@ void __thiscall cRDirectX::Load(cRDirectX *this,char *param_1,cRObject *param_2,
   else {
     cRObject::Load(param_2,acStack_22c);
   }
-  if (local_2c != **(int **)(iVar27 + iVar1)) {
+  if (local_2c != __stack_chk_guard) {
                     /* WARNING: Subroutine does not return */
     __stack_chk_fail();
   }

@@ -14,7 +14,7 @@ void __thiscall cRResourceManager::Invalidate(cRResourceManager *this)
   int iVar2;
 
   iVar1 = *(int *)(this + 4);
-  *(undefined1 *)(*(int *)(DAT_0008e930 + 0x8e904 + DAT_0008e934) + 0x35) = 1;
+  DAT_0038c9cd = 1;
   if (iVar1 < 1) {
     return;
   }

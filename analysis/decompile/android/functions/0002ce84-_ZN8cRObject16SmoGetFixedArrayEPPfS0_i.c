@@ -11,27 +11,25 @@ void __thiscall
 cRObject::SmoGetFixedArray(cRObject *this,float **param_1,float *param_2,int param_3)
 
 {
-  float fVar1;
-  int iVar2;
-  float *pfVar3;
-  int iVar4;
+  int iVar1;
+  float *pfVar2;
+  int iVar3;
   uint in_fpscr;
-  float fVar5;
+  float fVar4;
 
-  fVar1 = DAT_0002ced8;
-  pfVar3 = *param_1;
+  pfVar2 = *param_1;
   if (0 < param_3) {
-    iVar2 = 0;
-    iVar4 = param_3;
+    iVar1 = 0;
+    iVar3 = param_3;
     do {
-      fVar5 = (float)VectorSignedToFloat((int)*(short *)((int)pfVar3 + iVar2),
+      fVar4 = (float)VectorSignedToFloat((int)*(short *)((int)pfVar2 + iVar1),
                                          (byte)(in_fpscr >> 0x16) & 3);
-      iVar4 = iVar4 + -1;
-      *(float *)((int)param_2 + iVar2 * 2) = fVar5 * fVar1;
-      iVar2 = iVar2 + 2;
-    } while (iVar4 != 0);
-    pfVar3 = (float *)((int)pfVar3 + param_3 * 2);
+      iVar3 = iVar3 + -1;
+      *(float *)((int)param_2 + iVar1 * 2) = fVar4 * 0.0078125;
+      iVar1 = iVar1 + 2;
+    } while (iVar3 != 0);
+    pfVar2 = (float *)((int)pfVar2 + param_3 * 2);
   }
-  *param_1 = pfVar3;
+  *param_1 = pfVar2;
   return;
 }

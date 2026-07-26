@@ -28,7 +28,7 @@ void tMatrix::LinearInterpolateSmooth(tMatrix *param_1,tMatrix *param_2,float pa
   fVar5 = *(float *)(in_r2 + 0x34);
   fVar2 = *(float *)(param_2 + 0x38);
   fVar3 = *(float *)(param_2 + 0x34);
-  fVar6 = DAT_00029288 - in_r3;
+  fVar6 = 1.0 - in_r3;
   *(float *)(param_1 + 0x30) = in_r3 * *(float *)(in_r2 + 0x30) + fVar6 * *(float *)(param_2 + 0x30)
   ;
   *(float *)(param_1 + 0x38) = in_r3 * fVar4 + fVar6 * fVar2;

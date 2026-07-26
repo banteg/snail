@@ -11,24 +11,18 @@ void __thiscall cRVoiceManager::Init(cRVoiceManager *this)
 
 {
   char cVar1;
-  int iVar2;
-  int iVar3;
-  int iVar4;
-  char *pcVar5;
-  char *pcVar6;
-  char *pcVar7;
-  undefined4 uVar8;
-  undefined4 uVar9;
-  undefined4 uVar10;
-  char *pcVar11;
-  char *pcVar12;
+  char *pcVar2;
+  char *pcVar3;
+  char *pcVar4;
+  undefined4 uVar5;
+  undefined4 uVar6;
+  undefined4 uVar7;
+  int iVar8;
+  int iVar9;
+  cRVoiceManager *pcVar10;
+  int iVar11;
+  int iVar12;
   int iVar13;
-  int iVar14;
-  cRVoiceManager *pcVar15;
-  int iVar16;
-  int iVar17;
-  int iVar18;
-  int iVar19;
   uint in_fpscr;
   float extraout_s0;
   float extraout_s1;
@@ -41,88 +35,82 @@ void __thiscall cRVoiceManager::Init(cRVoiceManager *this)
   char local_12c [256];
   int local_2c;
 
-  iVar3 = DAT_00087810;
-  iVar2 = DAT_0008780c;
-  iVar18 = DAT_00087808 + 0x872f8;
-  local_2c = **(int **)(iVar18 + DAT_0008780c);
+  local_2c = __stack_chk_guard;
   local_12c[0] = '\0';
   local_260 = 0;
-  pcVar5 = (char *)RShellMemoryScratch();
-  RShellLoadFile((char *)(iVar18 + DAT_00087814),pcVar5,&local_234);
-  pcVar11 = (char *)(iVar18 + DAT_00087818);
-  pcVar12 = (char *)(iVar18 + DAT_0008781c);
-  pcVar5[local_234 + -1] = '\0';
-  pcVar15 = this;
+  pcVar2 = (char *)RShellMemoryScratch();
+  RShellLoadFile("Voice/_Voice.txt",pcVar2,&local_234);
+  pcVar2[local_234 + -1] = '\0';
+  pcVar10 = this;
   do {
-    Rstrcpy(local_12c,(char *)(iVar18 + iVar3));
+    Rstrcpy(local_12c,"Set:");
     switch(local_260) {
     case 1:
-      strcat(local_12c,(char *)(iVar18 + DAT_0008786c));
+      strcat(local_12c,"Dying");
       break;
     case 2:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087868));
+      strcat(local_12c,"Enemies");
       break;
     case 3:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087864));
+      strcat(local_12c,"Fall");
       break;
     case 4:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087860));
+      strcat(local_12c,"Misc");
       break;
     case 5:
-      strcat(local_12c,(char *)(iVar18 + DAT_0008785c));
+      strcat(local_12c,"PowerUp");
       break;
     case 6:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087858));
+      strcat(local_12c,"Slow");
       break;
     case 7:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087854));
+      strcat(local_12c,"Start");
       break;
     case 8:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087850));
+      strcat(local_12c,"Victory");
       break;
     case 9:
-      strcat(local_12c,(char *)(iVar18 + DAT_0008784c));
+      strcat(local_12c,"Ouch");
       break;
     case 10:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087848));
+      strcat(local_12c,"Package");
       break;
     case 0xb:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087844));
+      strcat(local_12c,"Slugged");
       break;
     case 0xc:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087840));
+      strcat(local_12c,"WormTunnel");
       break;
     case 0xd:
-      strcat(local_12c,(char *)(iVar18 + DAT_0008783c));
+      strcat(local_12c,"Tutorial");
       break;
     case 0xe:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087820));
+      strcat(local_12c,"Postal");
       break;
     case 0xf:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087874));
+      strcat(local_12c,"SuperTramp");
       break;
     default:
-      strcat(local_12c,(char *)(iVar18 + DAT_00087870));
+      strcat(local_12c,"Damage");
     }
-    local_230 = (char *)Rstrfind(local_12c,pcVar5);
+    local_230 = (char *)Rstrfind(local_12c,pcVar2);
     if (local_230 == (char *)0x0) {
-      RShellError((char *)(iVar18 + DAT_00087878),local_12c);
+      RShellError("Cannot find %s in _Voice.txt",local_12c);
       goto LAB_0008766c;
     }
-    local_230 = (char *)Rstrfind(pcVar11,local_230);
-    pcVar6 = (char *)Rstrfind(pcVar12,local_230);
-    pcVar7 = (char *)Rstrnewline(local_230);
-    local_230 = pcVar7;
-    if (pcVar7 < pcVar6) {
-      iVar16 = 0;
+    local_230 = (char *)Rstrfind("{",local_230);
+    pcVar3 = (char *)Rstrfind("}",local_230);
+    pcVar4 = (char *)Rstrnewline(local_230);
+    local_230 = pcVar4;
+    if (pcVar4 < pcVar3) {
+      iVar11 = 0;
       do {
-        pcVar7 = (char *)Rstrnewline(pcVar7);
-        iVar4 = DAT_00087824;
-        iVar16 = iVar16 + 1;
-      } while (pcVar7 < pcVar6);
-      iVar14 = 0;
-      iVar17 = 0;
-      cRVoiceSet::Init((cRVoiceSet *)(this + local_260 * 0x18),iVar16);
+        pcVar4 = (char *)Rstrnewline(pcVar4);
+        iVar11 = iVar11 + 1;
+      } while (pcVar4 < pcVar3);
+      iVar9 = 0;
+      iVar12 = 0;
+      cRVoiceSet::Init((cRVoiceSet *)(this + local_260 * 0x18),iVar11);
       do {
         cVar1 = *local_230;
         if (cVar1 == '\t' || cVar1 == ' ') {
@@ -131,60 +119,58 @@ void __thiscall cRVoiceManager::Init(cRVoiceManager *this)
             cVar1 = *local_230;
           } while (cVar1 == '\t' || cVar1 == ' ');
         }
-        pcVar6 = &local_22c;
-        pcVar7 = local_22b;
+        pcVar3 = &local_22c;
+        pcVar4 = local_22b;
         if (cVar1 != '\r') {
           while (cVar1 != ' ') {
             local_230 = local_230 + 1;
-            pcVar7[-1] = cVar1;
+            pcVar4[-1] = cVar1;
             cVar1 = *local_230;
-            pcVar6 = pcVar7;
+            pcVar3 = pcVar4;
             if (cVar1 == '\t' || cVar1 == '\r') break;
-            pcVar7 = pcVar7 + 1;
+            pcVar4 = pcVar4 + 1;
           }
         }
-        *pcVar6 = '\0';
-        iVar17 = iVar17 + 1;
+        *pcVar3 = '\0';
+        iVar12 = iVar12 + 1;
         local_230 = (char *)Rstrnewline(local_230);
         cRResourceManager::Add
-                  (*(cRResourceManager **)(iVar18 + iVar4),2,*(int *)(pcVar15 + 0xc) + iVar14,
+                  ((cRResourceManager *)&gResourceManager,2,*(int *)(pcVar10 + 0xc) + iVar9,
                    &local_22c);
-        iVar19 = *(int *)(pcVar15 + 0xc);
-        uVar8 = RShellSoundRegister(&local_22c,1);
-        iVar13 = *(int *)(pcVar15 + 0xc);
-        *(undefined4 *)(iVar19 + iVar14) = uVar8;
-        strcpy((char *)(iVar13 + iVar14 + 4),&local_22c);
-        iVar14 = iVar14 + 0x8c;
-      } while (iVar17 < iVar16);
+        iVar13 = *(int *)(pcVar10 + 0xc);
+        uVar5 = RShellSoundRegister(&local_22c,1);
+        iVar8 = *(int *)(pcVar10 + 0xc);
+        *(undefined4 *)(iVar13 + iVar9) = uVar5;
+        strcpy((char *)(iVar8 + iVar9 + 4),&local_22c);
+        iVar9 = iVar9 + 0x8c;
+      } while (iVar12 < iVar11);
     }
     else {
       cRVoiceSet::Init((cRVoiceSet *)(this + local_260 * 0x18),0);
     }
-    iVar16 = DAT_0008782c;
-    pcVar15 = pcVar15 + 0x18;
+    pcVar10 = pcVar10 + 0x18;
     local_260 = local_260 + 1;
   } while (local_260 != 0x10);
-  local_230 = (char *)Rstrfind((char *)(iVar18 + DAT_00087828),pcVar5);
-  pcVar11 = (char *)(iVar18 + iVar16);
-  local_230 = (char *)Rstrfind(pcVar11,local_230);
-  uVar8 = Rstrint(&local_230);
-  local_230 = (char *)Rstrfind((char *)(iVar18 + DAT_00087830),pcVar5);
-  local_230 = (char *)Rstrfind(pcVar11,local_230);
-  uVar9 = Rstrint(&local_230);
-  local_230 = (char *)Rstrfind((char *)(iVar18 + DAT_00087834),pcVar5);
-  local_230 = (char *)Rstrfind(pcVar11,local_230);
-  uVar10 = Rstrint(&local_230);
-  VectorSignedToFloat(uVar8,(byte)(in_fpscr >> 0x16) & 3);
-  VectorSignedToFloat(uVar9,(byte)(in_fpscr >> 0x16) & 3);
-  VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
+  local_230 = (char *)Rstrfind("NormalizeMusic:",pcVar2);
+  local_230 = (char *)Rstrfind(":",local_230);
+  uVar5 = Rstrint(&local_230);
+  local_230 = (char *)Rstrfind("NormalizeSfx:",pcVar2);
+  local_230 = (char *)Rstrfind(":",local_230);
+  uVar6 = Rstrint(&local_230);
+  local_230 = (char *)Rstrfind("NormalizeVoice:",pcVar2);
+  local_230 = (char *)Rstrfind(":",local_230);
+  uVar7 = Rstrint(&local_230);
+  VectorSignedToFloat(uVar5,(byte)(in_fpscr >> 0x16) & 3);
+  VectorSignedToFloat(uVar6,(byte)(in_fpscr >> 0x16) & 3);
+  VectorSignedToFloat(uVar7,(byte)(in_fpscr >> 0x16) & 3);
   PfmAudioNormalize(extraout_s0,extraout_s1,extraout_s2);
-  local_230 = (char *)Rstrfind((char *)(iVar18 + DAT_00087838),pcVar5);
-  local_230 = (char *)Rstrfind(pcVar11,local_230);
-  uVar8 = Rstrfloat(&local_230);
-  *(undefined4 *)(this + 0x184) = uVar8;
+  local_230 = (char *)Rstrfind("Frequency:",pcVar2);
+  local_230 = (char *)Rstrfind(":",local_230);
+  uVar5 = Rstrfloat(&local_230);
+  *(undefined4 *)(this + 0x184) = uVar5;
   ReSet(this);
 LAB_0008766c:
-  if (local_2c != **(int **)(iVar18 + iVar2)) {
+  if (local_2c != __stack_chk_guard) {
                     /* WARNING: Subroutine does not return */
     __stack_chk_fail();
   }

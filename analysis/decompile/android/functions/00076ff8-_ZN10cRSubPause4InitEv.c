@@ -11,9 +11,6 @@ void __thiscall cRSubPause::Init(cRSubPause *this)
 
 {
   undefined4 uVar1;
-  undefined4 uVar2;
-  int iVar3;
-  int *piVar4;
   float extraout_s0;
   float extraout_s0_00;
   float extraout_s0_01;
@@ -39,32 +36,27 @@ void __thiscall cRSubPause::Init(cRSubPause *this)
   undefined4 uStack_38;
   undefined4 uStack_34;
 
-  uVar1 = DAT_000771cc;
-  iVar3 = DAT_000771e0 + 0x77018;
-  piVar4 = *(int **)(iVar3 + DAT_000771e4);
-  uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-  *(undefined4 *)(this + 4) = uVar2;
+  uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  *(undefined4 *)(this + 4) = uVar1;
   tColour::tColour((tColour *)&local_40,extraout_s0,extraout_s1,extraout_s2,extraout_s3);
-  cRBorder::Init(uVar2,0x14,iVar3 + DAT_000771e8,0x14,uVar1,DAT_000771d0,local_40,uStack_3c,
-                 uStack_38,uStack_34,2,uVar1);
+  cRBorder::Init(uVar1,0x14,"End Game",0x14,0,0x43110000,local_40,uStack_3c,uStack_38,uStack_34,2,0)
+  ;
   cRBorder::SetKeyLeft(*(cRBorder **)(this + 4),0xb);
-  uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-  *(undefined4 *)this = uVar2;
+  uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  *(undefined4 *)this = uVar1;
   tColour::tColour((tColour *)&local_50,extraout_s0_00,extraout_s1_00,extraout_s2_00,extraout_s3_00)
   ;
-  cRBorder::Init(uVar2,0x14,iVar3 + DAT_000771ec,0x14,uVar1,DAT_000771d8,local_50,uStack_4c,
-                 uStack_48,uStack_44,2,uVar1);
+  cRBorder::Init(uVar1,0x14,"Options",0x14,0,0x433e0000,local_50,uStack_4c,uStack_48,uStack_44,2,0);
   cRBorder::SetKeyLeft(*(cRBorder **)this,0x6f);
   cRBorder::RePosition(*(cRBorder **)this);
   cRBorder::SetBelow(*(cRBorder **)this,*(cRBorder **)(this + 4));
-  uVar2 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar4 + 0xd14));
-  *(undefined4 *)(this + 8) = uVar2;
+  uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  *(undefined4 *)(this + 8) = uVar1;
   tColour::tColour((tColour *)&local_60,extraout_s0_01,extraout_s1_01,extraout_s2_01,extraout_s3_01)
   ;
-  cRBorder::Init(uVar2,0x14,iVar3 + DAT_000771f0,0x14,uVar1,DAT_000771dc,local_60,uStack_5c,
-                 uStack_58,uStack_54,2,uVar1);
+  cRBorder::Init(uVar1,0x14,"Resume",0x14,0,0x43a00000,local_60,uStack_5c,uStack_58,uStack_54,2,0);
   cRBorder::SetKeyLeft(*(cRBorder **)(this + 8),5);
   cRBorder::SetBelow(*(cRBorder **)(this + 8),*(cRBorder **)this);
-  cRMouse::SetActive((cRMouse *)(*piVar4 + 0x228));
+  cRMouse::SetActive((cRMouse *)(Game + 0x228));
   return;
 }

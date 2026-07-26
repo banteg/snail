@@ -12,16 +12,14 @@ void __thiscall cROverlay::AI(cROverlay *this)
 {
   tMatrix *this_00;
   float fVar1;
-  float fVar2;
 
-  fVar1 = DAT_0004b2e0;
-  fVar2 = *(float *)(this + 300) + *(float *)(this + 0x130);
-  *(float *)(this + 300) = fVar2;
-  if (fVar1 < fVar2) {
-    *(float *)(this + 300) = fVar2 - fVar1;
+  fVar1 = *(float *)(this + 300) + *(float *)(this + 0x130);
+  *(float *)(this + 300) = fVar1;
+  if (6.2831855 < fVar1) {
+    *(float *)(this + 300) = fVar1 - 6.2831855;
   }
-  else if (fVar2 < 0.0) {
-    *(float *)(this + 300) = fVar2 + fVar1;
+  else if (fVar1 < 0.0) {
+    *(float *)(this + 300) = fVar1 + 6.2831855;
   }
   this_00 = (tMatrix *)(this + 0x2c);
   fVar1 = (float)tMatrix::Identity(this_00);

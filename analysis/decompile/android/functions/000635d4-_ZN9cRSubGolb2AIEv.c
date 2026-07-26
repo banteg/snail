@@ -12,21 +12,19 @@ void cRSubGolb::AI(void)
 {
   bool bVar1;
   cRSubGolb *in_r0;
-  float fVar2;
-  cRSubGoldy *pcVar3;
-  cRSubLoc *pcVar4;
+  cRSubGoldy *pcVar2;
+  cRSubLoc *pcVar3;
+  undefined4 uVar4;
   undefined4 uVar5;
-  undefined4 uVar6;
-  int iVar7;
-  tVector *ptVar8;
-  int iVar9;
-  cRSubGolb *pcVar10;
-  int iVar11;
+  int iVar6;
+  tVector *ptVar7;
+  int iVar8;
+  cRSubGolb *pcVar9;
+  int iVar10;
   float in_s0;
+  float fVar11;
   float fVar12;
   float fVar13;
-  float fVar14;
-  float fVar15;
   float local_6c;
   float local_68;
   float local_64;
@@ -55,70 +53,68 @@ void cRSubGolb::AI(void)
   }
   if (in_r0[0x29c] == (cRSubGolb)0x0) {
     *(float *)(in_r0 + 0x1d4) = *(float *)(in_r0 + 0x1d4) + *(float *)(in_r0 + 0x22c);
-    fVar14 = *(float *)(in_r0 + 0x1d8) + *(float *)(in_r0 + 0x230);
+    fVar11 = *(float *)(in_r0 + 0x1d8) + *(float *)(in_r0 + 0x230);
     *(float *)(in_r0 + 0x1dc) = *(float *)(in_r0 + 0x1dc) + *(float *)(in_r0 + 0x234);
-    *(float *)(in_r0 + 0x1d8) = fVar14;
-    fVar12 = DAT_00063a64;
+    *(float *)(in_r0 + 0x1d8) = fVar11;
     if (*(int *)(in_r0 + 0x1a0) == 0) {
-      if ((DAT_00063a24 < fVar14) || (fVar14 < 0.0)) {
+      if ((0.49 < fVar11) || (fVar11 < 0.0)) {
         *(float *)(in_r0 + 0x230) =
-             *(float *)(in_r0 + 0x230) + DAT_00063a28 * *(float *)(*(int *)(in_r0 + 0x250) + 0x54);
+             *(float *)(in_r0 + 0x230) + *(float *)(*(int *)(in_r0 + 0x250) + 0x54) * -0.017;
       }
       else {
-        *(float *)(in_r0 + 0x230) = DAT_00063a60;
+        *(undefined4 *)(in_r0 + 0x230) = 0;
       }
     }
     else if ((*(int *)(in_r0 + 0x1a0) == 2) && (*(int *)(in_r0 + 0x174) != 0)) {
-      fVar14 = *(float *)(in_r0 + 0x188);
-      *(float *)(in_r0 + 0x188) = fVar14 + *(float *)(in_r0 + 0x18c);
-      if (fVar12 < fVar14 + *(float *)(in_r0 + 0x18c)) {
-        *(float *)(in_r0 + 0x188) = fVar12;
+      fVar11 = *(float *)(in_r0 + 0x188);
+      *(float *)(in_r0 + 0x188) = fVar11 + *(float *)(in_r0 + 0x18c);
+      if (1.0 < fVar11 + *(float *)(in_r0 + 0x18c)) {
+        *(undefined4 *)(in_r0 + 0x188) = 0x3f800000;
       }
-      fVar12 = (float)tVector::Normalize((tVector *)(in_r0 + 0x22c));
+      fVar11 = (float)tVector::Normalize((tVector *)(in_r0 + 0x22c));
       local_3c = *(float *)(in_r0 + 0x178) - *(float *)(in_r0 + 0x1d4);
       local_38 = *(float *)(in_r0 + 0x17c) - *(float *)(in_r0 + 0x1d8);
       local_34 = *(float *)(in_r0 + 0x180) - *(float *)(in_r0 + 0x1dc);
-      fVar14 = (float)tVector::Normalize((tVector *)&local_3c);
-      if (fVar14 < DAT_00063a48) {
+      fVar13 = (float)tVector::Normalize((tVector *)&local_3c);
+      if (fVar13 < 0.4) {
         Explode();
         Kill(in_r0);
         return;
       }
-      fVar14 = *(float *)(in_r0 + 0x188);
-      fVar15 = DAT_00063a64 + fVar14 * DAT_00063a4c;
-      *(float *)(in_r0 + 0x234) = fVar14 * local_34 + fVar15 * *(float *)(in_r0 + 0x234);
-      *(float *)(in_r0 + 0x230) = fVar14 * local_38 + fVar15 * *(float *)(in_r0 + 0x230);
-      *(float *)(in_r0 + 0x22c) = fVar14 * local_3c + fVar15 * *(float *)(in_r0 + 0x22c);
+      fVar13 = *(float *)(in_r0 + 0x188);
+      fVar12 = fVar13 * -1.5 + 1.0;
+      *(float *)(in_r0 + 0x234) = fVar13 * local_34 + fVar12 * *(float *)(in_r0 + 0x234);
+      *(float *)(in_r0 + 0x230) = fVar13 * local_38 + fVar12 * *(float *)(in_r0 + 0x230);
+      *(float *)(in_r0 + 0x22c) = fVar13 * local_3c + fVar12 * *(float *)(in_r0 + 0x22c);
       tVector::Normalize((tVector *)(in_r0 + 0x22c));
-      *(float *)(in_r0 + 0x230) = *(float *)(in_r0 + 0x230) * fVar12;
-      fVar14 = DAT_00063a50;
-      *(float *)(in_r0 + 0x22c) = *(float *)(in_r0 + 0x22c) * fVar12;
-      *(float *)(in_r0 + 0x234) = *(float *)(in_r0 + 0x234) * fVar12;
-      if (fVar12 < fVar14) goto LAB_00063acc;
+      *(float *)(in_r0 + 0x230) = *(float *)(in_r0 + 0x230) * fVar11;
+      *(float *)(in_r0 + 0x22c) = *(float *)(in_r0 + 0x22c) * fVar11;
+      *(float *)(in_r0 + 0x234) = *(float *)(in_r0 + 0x234) * fVar11;
+      if (fVar11 < 0.1) goto LAB_00063acc;
     }
-    ptVar8 = (tVector *)(in_r0 + 0x1d4);
-    *(undefined4 *)(in_r0 + 0x28c) = *(undefined4 *)ptVar8;
+    ptVar7 = (tVector *)(in_r0 + 0x1d4);
+    *(undefined4 *)(in_r0 + 0x28c) = *(undefined4 *)ptVar7;
     *(undefined4 *)(in_r0 + 0x290) = *(undefined4 *)(in_r0 + 0x1d8);
     *(undefined4 *)(in_r0 + 0x294) = *(undefined4 *)(in_r0 + 0x1dc);
     if (((*(float *)(in_r0 + 0x2c4) < *(float *)(in_r0 + 0x294)) &&
-        (*(float *)(in_r0 + 0x1d8) < DAT_00063a64)) && (0.0 < *(float *)(in_r0 + 0x1d8))) {
-      pcVar4 = (cRSubLoc *)
+        (*(float *)(in_r0 + 0x1d8) < 1.0)) && (0.0 < *(float *)(in_r0 + 0x1d8))) {
+      pcVar3 = (cRSubLoc *)
                cRSubGame::LocFromPos
                          (*(undefined4 *)(in_r0 + 0x250),*(undefined4 *)(in_r0 + 0x28c),
                           *(undefined4 *)(in_r0 + 0x290),*(undefined4 *)(in_r0 + 0x294));
-      if (pcVar4[0x30] == (cRSubLoc)0x1e) {
+      if (pcVar3[0x30] == (cRSubLoc)0x1e) {
         *(undefined4 *)(in_r0 + 0x2c4) = *(undefined4 *)(in_r0 + 0x294);
-        cRPathFollowGolb::Init((cRPathFollowGolb *)(in_r0 + 0x29c),pcVar4,ptVar8,in_r0);
+        cRPathFollowGolb::Init((cRPathFollowGolb *)(in_r0 + 0x29c),pcVar3,ptVar7,in_r0);
       }
-      if ((DAT_00063a64 < *(float *)(in_r0 + 0x234)) && (pcVar4[-0x210] == (cRSubLoc)0x1e)) {
-        *(float *)(in_r0 + 0x2c4) = *(float *)(in_r0 + 0x294) + DAT_00063a64;
-        cRPathFollowGolb::Init((cRPathFollowGolb *)(in_r0 + 0x29c),pcVar4 + -0x240,ptVar8,in_r0);
+      if ((1.0 < *(float *)(in_r0 + 0x234)) && (pcVar3[-0x210] == (cRSubLoc)0x1e)) {
+        *(float *)(in_r0 + 0x2c4) = *(float *)(in_r0 + 0x294) + 1.0;
+        cRPathFollowGolb::Init((cRPathFollowGolb *)(in_r0 + 0x29c),pcVar3 + -0x240,ptVar7,in_r0);
       }
     }
     goto switchD_000639f8_default;
   }
-  uVar5 = cRPathFollowGolb::Traverse(in_s0,(tVector *)(in_r0 + 0x29c),*(tVector **)(in_r0 + 0x244));
-  switch(uVar5) {
+  uVar4 = cRPathFollowGolb::Traverse(in_s0,(tVector *)(in_r0 + 0x29c),*(tVector **)(in_r0 + 0x244));
+  switch(uVar4) {
   case 0:
     break;
   case 1:
@@ -137,15 +133,14 @@ LAB_00063e80:
   *(undefined4 *)(in_r0 + 0x290) = *(undefined4 *)(in_r0 + 0x2b8);
   *(undefined4 *)(in_r0 + 0x294) = *(undefined4 *)(in_r0 + 700);
 switchD_000639f8_default:
-  fVar12 = DAT_00063a5c;
-  pcVar10 = in_r0 + 0x28c;
-  iVar9 = *(int *)(in_r0 + 0x1a0);
-  if (iVar9 == 1) {
+  pcVar9 = in_r0 + 0x28c;
+  iVar8 = *(int *)(in_r0 + 0x1a0);
+  if (iVar8 == 1) {
     cRVapour::Add((cRVapour *)(in_r0 + 0x74),(tMatrix *)(in_r0 + 0x25c));
-    iVar9 = *(int *)(in_r0 + 0x1a0);
+    iVar8 = *(int *)(in_r0 + 0x1a0);
   }
-  else if (iVar9 == 2) {
-    fVar15 = *(float *)(in_r0 + 400) + *(float *)(in_r0 + 0x194);
+  else if (iVar8 == 2) {
+    fVar13 = *(float *)(in_r0 + 400) + *(float *)(in_r0 + 0x194);
     *(undefined4 *)(in_r0 + 300) = *(undefined4 *)(in_r0 + 0x25c);
     *(undefined4 *)(in_r0 + 0x130) = *(undefined4 *)(in_r0 + 0x260);
     *(undefined4 *)(in_r0 + 0x134) = *(undefined4 *)(in_r0 + 0x264);
@@ -162,118 +157,113 @@ switchD_000639f8_default:
     *(undefined4 *)(in_r0 + 0x160) = *(undefined4 *)(in_r0 + 0x290);
     *(undefined4 *)(in_r0 + 0x164) = *(undefined4 *)(in_r0 + 0x294);
     *(undefined4 *)(in_r0 + 0x168) = *(undefined4 *)(in_r0 + 0x298);
-    *(float *)(in_r0 + 400) = fVar15;
-    fVar14 = fVar15;
-    if (fVar12 < fVar15) {
-      fVar14 = fVar15 - fVar12;
+    *(float *)(in_r0 + 400) = fVar13;
+    fVar11 = fVar13;
+    if (6.2831855 < fVar13) {
+      fVar11 = fVar13 - 6.2831855;
     }
-    iVar11 = *(int *)(in_r0 + 0x198);
-    if (fVar12 < fVar15) {
-      *(float *)(in_r0 + 400) = fVar14;
+    iVar10 = *(int *)(in_r0 + 0x198);
+    if (6.2831855 < fVar13) {
+      *(float *)(in_r0 + 400) = fVar11;
     }
-    if (iVar11 == 0) {
+    if (iVar10 == 0) {
       Smoke();
-      local_60 = *(float *)(in_r0 + 0x28c) - DAT_00063fbc * *(float *)(in_r0 + 0x238);
-      local_58 = *(float *)(in_r0 + 0x294) - DAT_00063fbc * *(float *)(in_r0 + 0x240);
-      local_5c = *(float *)(in_r0 + 0x290) - DAT_00063fbc * *(float *)(in_r0 + 0x23c);
+      local_60 = *(float *)(in_r0 + 0x28c) - *(float *)(in_r0 + 0x238) * 0.5;
+      local_58 = *(float *)(in_r0 + 0x294) - *(float *)(in_r0 + 0x240) * 0.5;
+      local_5c = *(float *)(in_r0 + 0x290) - *(float *)(in_r0 + 0x23c) * 0.5;
       Smoke();
-      iVar11 = *(int *)(in_r0 + 0x198);
-      iVar9 = *(int *)(in_r0 + 0x1a0);
+      iVar10 = *(int *)(in_r0 + 0x198);
+      iVar8 = *(int *)(in_r0 + 0x1a0);
     }
-    *(int *)(in_r0 + 0x198) = (iVar11 + 1) % 4;
+    *(int *)(in_r0 + 0x198) = (iVar10 + 1) % 4;
   }
-  else if (iVar9 == 0) {
-    uVar5 = *(undefined4 *)(in_r0 + 0x290);
-    uVar6 = *(undefined4 *)(in_r0 + 0x294);
-    iVar9 = *(int *)(in_r0 + 0x228);
-    *(undefined4 *)(iVar9 + 0x48) = *(undefined4 *)pcVar10;
-    *(undefined4 *)(iVar9 + 0x4c) = uVar5;
-    *(undefined4 *)(iVar9 + 0x50) = uVar6;
+  else if (iVar8 == 0) {
+    uVar4 = *(undefined4 *)(in_r0 + 0x290);
+    uVar5 = *(undefined4 *)(in_r0 + 0x294);
+    iVar8 = *(int *)(in_r0 + 0x228);
+    *(undefined4 *)(iVar8 + 0x48) = *(undefined4 *)pcVar9;
+    *(undefined4 *)(iVar8 + 0x4c) = uVar4;
+    *(undefined4 *)(iVar8 + 0x50) = uVar5;
     Jet();
-    local_48 = *(float *)(in_r0 + 0x28c) - DAT_00063a2c * *(float *)(in_r0 + 0x238);
-    local_40 = *(float *)(in_r0 + 0x294) - DAT_00063a2c * *(float *)(in_r0 + 0x240);
-    local_44 = *(float *)(in_r0 + 0x290) - DAT_00063a2c * *(float *)(in_r0 + 0x23c);
+    local_48 = *(float *)(in_r0 + 0x28c) - *(float *)(in_r0 + 0x238) * 0.3;
+    local_40 = *(float *)(in_r0 + 0x294) - *(float *)(in_r0 + 0x240) * 0.3;
+    local_44 = *(float *)(in_r0 + 0x290) - *(float *)(in_r0 + 0x23c) * 0.3;
     Jet();
-    local_54 = *(float *)(in_r0 + 0x28c) - DAT_00063a30 * *(float *)(in_r0 + 0x238);
-    local_4c = *(float *)(in_r0 + 0x294) - DAT_00063a30 * *(float *)(in_r0 + 0x240);
-    local_50 = *(float *)(in_r0 + 0x290) - DAT_00063a30 * *(float *)(in_r0 + 0x23c);
+    local_54 = *(float *)(in_r0 + 0x28c) - *(float *)(in_r0 + 0x238) * 0.6;
+    local_4c = *(float *)(in_r0 + 0x294) - *(float *)(in_r0 + 0x240) * 0.6;
+    local_50 = *(float *)(in_r0 + 0x290) - *(float *)(in_r0 + 0x23c) * 0.6;
     Jet();
-    iVar9 = *(int *)(in_r0 + 0x1a0);
+    iVar8 = *(int *)(in_r0 + 0x1a0);
   }
   *(float *)(in_r0 + 0x238) = *(float *)(in_r0 + 0x28c) - *(float *)(in_r0 + 0x214);
   *(float *)(in_r0 + 0x23c) = *(float *)(in_r0 + 0x290) - *(float *)(in_r0 + 0x218);
   *(float *)(in_r0 + 0x240) = *(float *)(in_r0 + 0x294) - *(float *)(in_r0 + 0x21c);
-  if (iVar9 == 2) {
-    fVar12 = (float)tMatrix::SetZDir((tMatrix *)(in_r0 + 300),(tVector *)(in_r0 + 0x238));
-    tMatrix::RotLocalZ((tMatrix *)(in_r0 + 300),fVar12);
+  if (iVar8 == 2) {
+    fVar11 = (float)tMatrix::SetZDir((tMatrix *)(in_r0 + 300),(tVector *)(in_r0 + 0x238));
+    tMatrix::RotLocalZ((tMatrix *)(in_r0 + 300),fVar11);
   }
-  fVar2 = DAT_00063a64;
-  fVar13 = *(float *)(in_r0 + 0x248);
-  *(undefined4 *)(in_r0 + 0x214) = *(undefined4 *)pcVar10;
+  fVar11 = *(float *)(in_r0 + 0x248);
+  *(undefined4 *)(in_r0 + 0x214) = *(undefined4 *)pcVar9;
   *(undefined4 *)(in_r0 + 0x218) = *(undefined4 *)(in_r0 + 0x290);
   *(undefined4 *)(in_r0 + 0x21c) = *(undefined4 *)(in_r0 + 0x294);
-  *(float *)(in_r0 + 0x248) = fVar13 + *(float *)(in_r0 + 0x24c);
-  fVar15 = DAT_00063a3c;
-  fVar14 = DAT_00063a38;
-  fVar12 = DAT_00063a24;
-  if (fVar13 + *(float *)(in_r0 + 0x24c) <= fVar2) {
+  *(float *)(in_r0 + 0x248) = fVar11 + *(float *)(in_r0 + 0x24c);
+  if (fVar11 + *(float *)(in_r0 + 0x24c) <= 1.0) {
     if ((*(float *)(*(int *)(in_r0 + 600) + 0x27fc) <= *(float *)(in_r0 + 0x1dc)) &&
-       (*(float *)(in_r0 + 0x1dc) <= DAT_00063a34 + *(float *)(*(int *)(in_r0 + 600) + 100))) {
-      iVar9 = *(int *)(in_r0 + 0x250);
-      iVar11 = *(int *)(iVar9 + 0x6500);
-      if (iVar11 != 0) {
+       (*(float *)(in_r0 + 0x1dc) <= *(float *)(*(int *)(in_r0 + 600) + 100) + 48.0)) {
+      iVar8 = *(int *)(in_r0 + 0x250);
+      iVar10 = *(int *)(iVar8 + 0x6500);
+      if (iVar10 != 0) {
         do {
-          if (*(int *)(iVar11 + 0x78) == 1) {
-            local_64 = *(float *)(iVar11 + 100) - *(float *)(in_r0 + 0x294);
-            local_6c = *(float *)(iVar11 + 0x5c) - *(float *)(in_r0 + 0x28c);
-            local_68 = *(float *)(iVar11 + 0x60) - *(float *)(in_r0 + 0x290);
+          if (*(int *)(iVar10 + 0x78) == 1) {
+            local_64 = *(float *)(iVar10 + 100) - *(float *)(in_r0 + 0x294);
+            local_6c = *(float *)(iVar10 + 0x5c) - *(float *)(in_r0 + 0x28c);
+            local_68 = *(float *)(iVar10 + 0x60) - *(float *)(in_r0 + 0x290);
             if (0.0 <= local_64) {
-              bVar1 = local_64 < fVar14;
+              bVar1 = local_64 < 3.0;
             }
-            else if (local_64 <= fVar15) {
+            else if (local_64 <= -3.0) {
               bVar1 = false;
             }
             else {
               bVar1 = true;
             }
             if ((bVar1) &&
-               (fVar2 = (float)tVector::Normalize((tVector *)&local_6c),
-               fVar2 < fVar12 + *(float *)(iVar11 + 0x90))) {
-              *(undefined4 *)(iVar11 + 0x78) = 2;
-              pcVar3 = *(cRSubGoldy **)(in_r0 + 600);
+               (fVar11 = (float)tVector::Normalize((tVector *)&local_6c),
+               fVar11 < *(float *)(iVar10 + 0x90) + 0.49)) {
+              *(undefined4 *)(iVar10 + 0x78) = 2;
+              pcVar2 = *(cRSubGoldy **)(in_r0 + 600);
               if (0.0 <= local_6c) {
-                uVar5 = 1;
+                uVar4 = 1;
               }
               else {
-                uVar5 = 2;
+                uVar4 = 2;
               }
-              *(undefined4 *)(iVar11 + 0x7c) = uVar5;
-              cRSubGoldy::ScoreAdd(pcVar3,0,0);
+              *(undefined4 *)(iVar10 + 0x7c) = uVar4;
+              cRSubGoldy::ScoreAdd(pcVar2,0,0);
               if (*(int *)(in_r0 + 0x1a0) != 1) {
                 Kill(in_r0);
                 Explode();
-                fVar12 = DAT_00063a38;
                 if (*(int *)(in_r0 + 0x1a0) != 2) {
                   return;
                 }
-                for (iVar9 = *(int *)(*(int *)(in_r0 + 0x250) + 0x6500); iVar9 != 0;
-                    iVar9 = *(int *)(iVar9 + 0x74)) {
-                  if (*(int *)(iVar9 + 0x78) == 1) {
-                    local_6c = *(float *)(iVar9 + 0x5c) - *(float *)(in_r0 + 0x28c);
-                    local_64 = *(float *)(iVar9 + 100) - *(float *)(in_r0 + 0x294);
-                    local_68 = *(float *)(iVar9 + 0x60) - *(float *)(in_r0 + 0x290);
-                    fVar14 = (float)tVector::Normalize((tVector *)&local_6c);
-                    if (fVar14 < fVar12) {
-                      *(undefined4 *)(iVar9 + 0x78) = 2;
-                      pcVar3 = *(cRSubGoldy **)(in_r0 + 600);
+                for (iVar8 = *(int *)(*(int *)(in_r0 + 0x250) + 0x6500); iVar8 != 0;
+                    iVar8 = *(int *)(iVar8 + 0x74)) {
+                  if (*(int *)(iVar8 + 0x78) == 1) {
+                    local_6c = *(float *)(iVar8 + 0x5c) - *(float *)(in_r0 + 0x28c);
+                    local_64 = *(float *)(iVar8 + 100) - *(float *)(in_r0 + 0x294);
+                    local_68 = *(float *)(iVar8 + 0x60) - *(float *)(in_r0 + 0x290);
+                    fVar11 = (float)tVector::Normalize((tVector *)&local_6c);
+                    if (fVar11 < 3.0) {
+                      *(undefined4 *)(iVar8 + 0x78) = 2;
+                      pcVar2 = *(cRSubGoldy **)(in_r0 + 600);
                       if (local_6c < 0.0) {
-                        uVar5 = 2;
+                        uVar4 = 2;
                       }
                       else {
-                        uVar5 = 1;
+                        uVar4 = 1;
                       }
-                      *(undefined4 *)(iVar9 + 0x7c) = uVar5;
-                      cRSubGoldy::ScoreAdd(pcVar3,0,0);
+                      *(undefined4 *)(iVar8 + 0x7c) = uVar4;
+                      cRSubGoldy::ScoreAdd(pcVar2,0,0);
                     }
                   }
                 }
@@ -281,52 +271,49 @@ switchD_000639f8_default:
               }
             }
           }
-          iVar11 = *(int *)(iVar11 + 0x74);
-        } while (iVar11 != 0);
-        iVar9 = *(int *)(in_r0 + 0x250);
+          iVar10 = *(int *)(iVar10 + 0x74);
+        } while (iVar10 != 0);
+        iVar8 = *(int *)(in_r0 + 0x250);
       }
-      fVar15 = DAT_00063a60;
-      fVar14 = DAT_00063a58;
-      fVar12 = DAT_00063a54;
-      iVar11 = 0;
+      iVar10 = 0;
       do {
-        iVar7 = iVar9 + iVar11 * 0xe0;
-        if (*(int *)(iVar7 + 0x341c) == 1 || *(int *)(iVar7 + 0x341c) == 4) {
-          local_64 = *(float *)(iVar7 + 0x340c) - *(float *)(in_r0 + 0x294);
-          local_6c = *(float *)(iVar7 + 0x3404) - *(float *)(in_r0 + 0x28c);
-          local_68 = *(float *)(iVar7 + 0x3408) - *(float *)(in_r0 + 0x290);
+        iVar6 = iVar8 + iVar10 * 0xe0;
+        if (*(int *)(iVar6 + 0x341c) == 1 || *(int *)(iVar6 + 0x341c) == 4) {
+          local_64 = *(float *)(iVar6 + 0x340c) - *(float *)(in_r0 + 0x294);
+          local_6c = *(float *)(iVar6 + 0x3404) - *(float *)(in_r0 + 0x28c);
+          local_68 = *(float *)(iVar6 + 0x3408) - *(float *)(in_r0 + 0x290);
           if (local_64 < 0.0) {
-            if (fVar14 < local_64) goto LAB_00063cd0;
+            if (-2.5 < local_64) goto LAB_00063cd0;
           }
-          else if (local_64 < fVar12) {
+          else if (local_64 < 2.5) {
 LAB_00063cd0:
-            fVar2 = (float)tVector::Normalize((tVector *)&local_6c);
-            if (fVar2 < fVar12) {
+            fVar11 = (float)tVector::Normalize((tVector *)&local_6c);
+            if (fVar11 < 2.5) {
               in_r0[0x29c] = (cRSubGolb)0x0;
-              fVar2 = (float)tVector::Normalize((tVector *)(in_r0 + 0x22c));
-              local_68 = fVar15;
+              fVar11 = (float)tVector::Normalize((tVector *)(in_r0 + 0x22c));
+              local_68 = 0.0;
               tVector::Normalize((tVector *)&local_6c);
-              iVar9 = *(int *)(in_r0 + 0x1a0);
-              *(float *)(in_r0 + 0x230) = fVar15;
-              *(float *)(in_r0 + 0x22c) = -(local_6c * fVar2);
-              *(float *)(in_r0 + 0x234) = -(local_64 * fVar2);
-              if (iVar9 == 1) {
+              iVar8 = *(int *)(in_r0 + 0x1a0);
+              *(undefined4 *)(in_r0 + 0x230) = 0;
+              *(float *)(in_r0 + 0x22c) = -(local_6c * fVar11);
+              *(float *)(in_r0 + 0x234) = -(local_64 * fVar11);
+              if (iVar8 == 1) {
                 Kill(in_r0);
                 Explode();
-                iVar9 = *(int *)(in_r0 + 0x250);
-                iVar7 = 2;
+                iVar8 = *(int *)(in_r0 + 0x250);
+                iVar6 = 2;
 LAB_00063f80:
-                cRSlug::Hit((cRSlug *)(iVar9 + iVar11 * 0xe0 + 0x33a8),iVar7);
+                cRSlug::Hit((cRSlug *)(iVar8 + iVar10 * 0xe0 + 0x33a8),iVar6);
                 return;
               }
-              if (iVar9 == 2) {
+              if (iVar8 == 2) {
                 Kill(in_r0);
                 Explode();
-                iVar9 = *(int *)(in_r0 + 0x250);
-                iVar7 = 4;
+                iVar8 = *(int *)(in_r0 + 0x250);
+                iVar6 = 4;
                 goto LAB_00063f80;
               }
-              if (iVar9 == 0) {
+              if (iVar8 == 0) {
                 if (in_r0[0x19d] != (cRSubGolb)0x0) {
                   Kill(in_r0);
                   Explode();
@@ -336,21 +323,21 @@ LAB_00063f80:
                 return;
               }
             }
-            iVar9 = *(int *)(in_r0 + 0x250);
+            iVar8 = *(int *)(in_r0 + 0x250);
           }
         }
-        iVar11 = iVar11 + 1;
-      } while (iVar11 != 0x10);
-      iVar9 = cRSubGame::LocFromPos
-                        (iVar9,*(undefined4 *)pcVar10,*(undefined4 *)(in_r0 + 0x290),
+        iVar10 = iVar10 + 1;
+      } while (iVar10 != 0x10);
+      iVar8 = cRSubGame::LocFromPos
+                        (iVar8,*(undefined4 *)pcVar9,*(undefined4 *)(in_r0 + 0x290),
                          *(undefined4 *)(in_r0 + 0x294));
-      if (*(char *)(iVar9 + 0x30) != '\x0e') {
+      if (*(char *)(iVar8 + 0x30) != '\x0e') {
         return;
       }
-      if (*(float *)(in_r0 + 0x290) <= DAT_00063a40) {
+      if (*(float *)(in_r0 + 0x290) <= -1.0) {
         return;
       }
-      if (DAT_00063a44 <= *(float *)(in_r0 + 0x290)) {
+      if (7.0 <= *(float *)(in_r0 + 0x290)) {
         return;
       }
       Explode();

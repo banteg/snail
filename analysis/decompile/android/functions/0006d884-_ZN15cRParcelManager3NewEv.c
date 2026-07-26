@@ -24,6 +24,6 @@ cRParcelManager * __thiscall cRParcelManager::New(cRParcelManager *this)
     }
     iVar2 = iVar2 + 1;
   } while (iVar2 != 0x32);
-  RShellError((char *)(DAT_0006d8d4 + 0x6d89c + DAT_0006d8d8));
+  RShellError("Too Many Parcels increase RPARCEL_MAXIMUM");
   return (cRParcelManager *)0x0;
 }

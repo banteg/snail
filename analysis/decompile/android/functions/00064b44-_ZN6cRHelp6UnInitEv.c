@@ -10,7 +10,6 @@
 void cRHelp::UnInit(void)
 
 {
-  cRBorderManager::KillBorders
-            ((cRBorderManager *)(**(int **)(DAT_00064b64 + 0x64b54 + DAT_00064b68) + 0xd14));
+  cRBorderManager::KillBorders((cRBorderManager *)(Game + 0xd14));
   return;
 }

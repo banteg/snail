@@ -13,7 +13,7 @@ void __thiscall cLinkedList<cRBod>::Add(cLinkedList<cRBod> *this,cRBod *param_1)
   int iVar1;
 
   if ((*(uint *)(param_1 + 4) & 0x200) != 0) {
-    RShellError((char *)(DAT_0003f688 + 0x3f64c + DAT_0003f68c));
+    RShellError("List ADD");
     return;
   }
   iVar1 = *(int *)(this + 4);

@@ -11,59 +11,55 @@ void cRNuke::AI(void)
 
 {
   uint uVar1;
-  float fVar2;
   int *in_r0;
-  float fVar3;
+  int iVar2;
+  int *piVar3;
   int iVar4;
-  int *piVar5;
-  int iVar6;
-  int iVar7;
+  int iVar5;
+  byte bVar6;
+  bool bVar7;
   byte bVar8;
-  bool bVar9;
-  byte bVar10;
   uint in_fpscr;
-  uint uVar11;
+  uint uVar9;
   float in_s0;
   float extraout_s0;
   float extraout_s0_00;
-  float fVar12;
-  float fVar13;
+  float fVar10;
+  float fVar11;
 
-  fVar2 = DAT_0006dd54;
-  fVar3 = DAT_0006dd4c;
   if (*in_r0 == 1) {
-    fVar13 = (float)in_r0[4] + (float)in_r0[5];
-    iVar4 = 0;
-    uVar1 = in_fpscr & 0xfffffff | (uint)(fVar13 < DAT_0006dd4c) << 0x1f |
-            (uint)(fVar13 == DAT_0006dd4c) << 0x1e;
-    uVar11 = uVar1 | (uint)(NAN(fVar13) || NAN(DAT_0006dd4c)) << 0x1c;
-    in_r0[4] = (int)fVar13;
-    bVar10 = (byte)(uVar1 >> 0x18);
-    bVar8 = bVar10 >> 7;
-    bVar9 = (bool)(bVar10 >> 6 & 1);
-    bVar10 = (byte)(uVar11 >> 0x1c) & 1;
-    fVar12 = (float)in_r0[3] + (float)in_r0[2];
-    if (!bVar9 && bVar8 == bVar10) {
-      fVar13 = fVar13 - fVar3;
+    fVar11 = (float)in_r0[4] + (float)in_r0[5];
+    iVar2 = 0;
+    uVar1 = in_fpscr & 0xfffffff | (uint)(fVar11 < 6.2831855) << 0x1f |
+            (uint)(fVar11 == 6.2831855) << 0x1e;
+    uVar9 = uVar1 | (uint)NAN(fVar11) << 0x1c;
+    in_r0[4] = (int)fVar11;
+    bVar8 = (byte)(uVar1 >> 0x18);
+    bVar6 = bVar8 >> 7;
+    bVar7 = (bool)(bVar8 >> 6 & 1);
+    bVar8 = (byte)(uVar9 >> 0x1c) & 1;
+    fVar10 = (float)in_r0[3] + (float)in_r0[2];
+    if (!bVar7 && bVar6 == bVar8) {
+      fVar11 = fVar11 - 6.2831855;
     }
-    in_r0[3] = (int)fVar12;
-    piVar5 = in_r0;
-    if (!bVar9 && bVar8 == bVar10) {
-      in_r0[4] = (int)fVar13;
+    in_r0[3] = (int)fVar10;
+    piVar3 = in_r0;
+    if (!bVar7 && bVar6 == bVar8) {
+      in_r0[4] = (int)fVar11;
     }
     while( true ) {
-      VectorSignedToFloat(iVar4,(byte)(uVar11 >> 0x16) & 3);
-      iVar6 = piVar5[6];
-      *(float *)(iVar6 + 0x50) = fVar12;
-      iVar4 = iVar4 + 1;
-      fVar3 = (float)Sin(in_s0);
-      iVar7 = piVar5[6];
-      *(float *)(iVar6 + 0x48) = fVar3 * fVar2;
-      fVar3 = (float)Cos(extraout_s0);
-      *(float *)(iVar7 + 0x4c) = fVar3 * fVar2;
-      if (iVar4 == 0x19) break;
-      fVar12 = (float)in_r0[3];
-      piVar5 = piVar5 + 1;
+      VectorSignedToFloat(iVar2,(byte)(uVar9 >> 0x16) & 3);
+      iVar4 = piVar3[6];
+      *(float *)(iVar4 + 0x50) = fVar10;
+      iVar2 = iVar2 + 1;
+      fVar10 = (float)Sin(in_s0);
+      iVar5 = piVar3[6];
+      *(float *)(iVar4 + 0x48) = fVar10 * 7.0;
+      fVar10 = (float)Cos(extraout_s0);
+      *(float *)(iVar5 + 0x4c) = fVar10 * 7.0;
+      if (iVar2 == 0x19) break;
+      fVar10 = (float)in_r0[3];
+      piVar3 = piVar3 + 1;
       in_s0 = extraout_s0_00;
     }
   }

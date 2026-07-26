@@ -16,8 +16,6 @@ void cRSubGame::BuildLevel(void)
   cRSubGame *in_r0;
   cRSubGame *pcVar4;
   cRSubGame *pcVar5;
-  int iVar6;
-  cRSubGame *pcVar7;
   cRSubGame *extraout_r1;
   cRSubGame *extraout_r1_00;
   cRSubGame *extraout_r1_01;
@@ -28,7 +26,7 @@ void cRSubGame::BuildLevel(void)
   cRSubGame *extraout_r1_06;
   cRSubGame *extraout_r1_07;
   cRSubGame *extraout_r1_08;
-  cRObject *pcVar8;
+  cRObject *pcVar6;
   cRSubGame *extraout_r1_09;
   cRSubGame *extraout_r1_10;
   cRSubGame *extraout_r1_11;
@@ -48,24 +46,23 @@ void cRSubGame::BuildLevel(void)
   cRSubGame *extraout_r1_25;
   cRSubGame *extraout_r1_26;
   cRSubGame *extraout_r1_27;
+  cRSubGame *pcVar7;
+  int iVar8;
   cRSubGame *pcVar9;
-  int iVar10;
-  cRSubGame *pcVar11;
-  uint uVar12;
-  cRSubGame cVar13;
-  undefined1 uVar14;
+  uint uVar10;
+  cRSubGame cVar11;
+  undefined1 uVar12;
+  cRSubGame *pcVar13;
+  int iVar14;
   cRSubGame *pcVar15;
-  int iVar16;
-  cRSubGame *pcVar17;
+  cRSubGame *pcVar16;
+  int iVar17;
   cRSubGame *pcVar18;
-  int iVar19;
-  cRSubGame *pcVar20;
   cRBod *this;
-  int iVar21;
-  int iVar22;
-  cRSubGame *pcVar23;
-  bool bVar24;
-  bool bVar25;
+  int iVar19;
+  int iVar20;
+  bool bVar21;
+  bool bVar22;
   uint in_fpscr;
   float in_s0;
   float extraout_s0;
@@ -101,15 +98,15 @@ void cRSubGame::BuildLevel(void)
   float extraout_s1;
   float extraout_s2;
   float extraout_s3;
-  float fVar26;
-  float fVar27;
+  float fVar23;
+  float fVar24;
+  float fVar25;
+  undefined4 uVar26;
+  char *pcVar27;
   float fVar28;
-  float fVar29;
-  undefined4 uVar30;
-  char *pcVar31;
-  float fVar32;
   cRSubGame *local_98;
   cRSubGame *local_94;
+  undefined **local_8c;
   int local_88;
   cRSubGame *local_74;
   cRSubGame *local_6c;
@@ -118,33 +115,33 @@ void cRSubGame::BuildLevel(void)
   cRSubGame *local_60;
   int local_38;
 
-  pcVar4 = (cRSubGame *)(DAT_0007ea80 + 0x7e8b4);
   if (in_r0[0x30fcc0] == (cRSubGame)0x0) {
-    iVar22 = *(int *)(in_r0 + 0x60);
-    iVar16 = 0;
-    if (iVar22 != 4 && iVar22 != 7) {
-      fVar28 = (float)RAND(in_s0,(char *)0x47000000);
-      iVar22 = *(int *)(in_r0 + 0x60);
-      iVar16 = (int)fVar28;
+    iVar20 = *(int *)(in_r0 + 0x60);
+    iVar14 = 0;
+    if (iVar20 != 4 && iVar20 != 7) {
+      fVar24 = (float)RAND(in_s0,(char *)0x47000000);
+      iVar20 = *(int *)(in_r0 + 0x60);
+      iVar14 = (int)fVar24;
       in_s0 = extraout_s0_28;
     }
   }
   else {
-    iVar22 = *(int *)(in_r0 + 0x60);
-    iVar16 = *(int *)(*(int *)(in_r0 + 0x30fcc4) + 0x68);
+    iVar20 = *(int *)(in_r0 + 0x60);
+    iVar14 = *(int *)(*(int *)(in_r0 + 0x30fcc4) + 0x68);
   }
-  if (iVar22 != 1) {
-    if (iVar22 == 4) {
+  local_8c = &__DT_PLTGOT;
+  if (iVar20 != 1) {
+    if (iVar20 == 4) {
       cRSubSolution::ReSet
-                (*(cRSubSolution **)(in_r0 + 0x30fcbc),iVar16,*(int *)(in_r0 + 100),in_s0,
+                (*(cRSubSolution **)(in_r0 + 0x30fcbc),iVar14,*(int *)(in_r0 + 100),in_s0,
                  *(int *)(in_r0 + 0x4c),*(int *)(in_r0 + 0x6c),2);
       goto LAB_0007e910;
     }
-    if (iVar22 != 0) goto LAB_0007e910;
+    if (iVar20 != 0) goto LAB_0007e910;
   }
   cRSubSolution::ReSet
-            (*(cRSubSolution **)(in_r0 + 0x30fcbc),iVar16,*(int *)(in_r0 + 100),in_s0,
-             *(int *)(in_r0 + 0x4c),*(int *)(in_r0 + 0x6c),iVar22);
+            (*(cRSubSolution **)(in_r0 + 0x30fcbc),iVar14,*(int *)(in_r0 + 100),in_s0,
+             *(int *)(in_r0 + 0x4c),*(int *)(in_r0 + 0x6c),iVar20);
 LAB_0007e910:
   *(undefined4 *)(in_r0 + 0x30fccc) = 0;
   if (*(int *)(in_r0 + 0x332d9c) == 3) {
@@ -158,172 +155,166 @@ LAB_0007e910:
       *(undefined4 *)(in_r0 + 0x13ab8) = 8;
     }
   }
-  iVar22 = DAT_0007ea84;
   cRTime::Zero((cRTime *)(in_r0 + 0xfd94));
-  *(undefined4 *)(in_r0 + 0xfdac) = DAT_0007ea98;
+  *(undefined4 *)(in_r0 + 0xfdac) = 0;
   *(undefined4 *)(in_r0 + 0xfdb4) = 0;
-  RandSeed(iVar16);
-  cRTrack::Change(**(int **)(pcVar4 + iVar22) + 0x848);
-  iVar16 = *(int *)(in_r0 + 0x60);
-  if (((iVar16 == 0 || iVar16 == 7) || (iVar16 == 4)) || (iVar16 == 1)) {
+  RandSeed(iVar14);
+  cRTrack::Change(Game + 0x848);
+  iVar14 = *(int *)(in_r0 + 0x60);
+  if (((iVar14 == 0 || iVar14 == 7) || (iVar14 == 4)) || (iVar14 == 1)) {
     *(undefined4 *)(in_r0 + 0x70) = *(undefined4 *)(in_r0 + 0x14f8);
     *(undefined4 *)(in_r0 + 0x74) = *(undefined4 *)(in_r0 + 0x1590);
-    if (iVar16 == 1) {
-      fVar28 = (float)VectorSignedToFloat(*(undefined4 *)(in_r0 + 0x1590),
+    if (iVar14 == 1) {
+      fVar24 = (float)VectorSignedToFloat(*(undefined4 *)(in_r0 + 0x1590),
                                           (byte)(in_fpscr >> 0x16) & 3);
-      *(int *)(in_r0 + 0x74) =
-           (int)(fVar28 * (DAT_0007ea7c + DAT_0007ea78 * *(float *)(in_r0 + 0x50)));
+      *(int *)(in_r0 + 0x74) = (int)(fVar24 * (*(float *)(in_r0 + 0x50) * 0.65 + 0.35));
     }
     if (in_r0[0x1594] == (cRSubGame)0x0) {
-      iVar16 = *(int *)(in_r0 + 0x152c) + *(int *)(in_r0 + 0x14f8);
-      *(int *)(in_r0 + 0x74) = iVar16;
+      iVar14 = *(int *)(in_r0 + 0x152c) + *(int *)(in_r0 + 0x14f8);
+      *(int *)(in_r0 + 0x74) = iVar14;
       if (0 < *(int *)(in_r0 + 0xa0)) {
-        iVar6 = 0;
-        pcVar9 = in_r0;
+        iVar20 = 0;
+        pcVar7 = in_r0;
         do {
-          iVar6 = iVar6 + 1;
-          pcVar17 = pcVar9 + 0xa8;
-          pcVar9 = pcVar9 + 0x34;
-          iVar16 = iVar16 + *(int *)pcVar17;
-        } while (iVar6 < *(int *)(in_r0 + 0xa0));
-        *(int *)(in_r0 + 0x74) = iVar16;
+          iVar20 = iVar20 + 1;
+          pcVar15 = pcVar7 + 0xa8;
+          pcVar7 = pcVar7 + 0x34;
+          iVar14 = iVar14 + *(int *)pcVar15;
+        } while (iVar20 < *(int *)(in_r0 + 0xa0));
+        *(int *)(in_r0 + 0x74) = iVar14;
       }
     }
     *(int *)(in_r0 + 0x78) = *(int *)(in_r0 + 0x74) - *(int *)(in_r0 + 0x152c);
     if (0xdab < *(int *)(in_r0 + 0x74)) {
-      RShellError((char *)(pcVar4 + DAT_0007ea88),in_r0 + 0x15a8,0xdac);
+      RShellError("Track (%s) too long, Maximum Length %i",in_r0 + 0x15a8,0xdac);
     }
   }
-  else if (iVar16 == 3) {
+  else if (iVar14 == 3) {
     *(int *)(in_r0 + 0x70) = *(int *)(in_r0 + 0x14f8);
-    iVar16 = *(int *)(in_r0 + 0x152c) + *(int *)(in_r0 + 0x14f8) + *(int *)(in_r0 + 0xa8) * 0x10;
-    *(int *)(in_r0 + 0x74) = iVar16;
-    *(int *)(in_r0 + 0x78) = iVar16 - *(int *)(in_r0 + 0x152c);
+    iVar14 = *(int *)(in_r0 + 0x152c) + *(int *)(in_r0 + 0x14f8) + *(int *)(in_r0 + 0xa8) * 0x10;
+    *(int *)(in_r0 + 0x74) = iVar14;
+    *(int *)(in_r0 + 0x78) = iVar14 - *(int *)(in_r0 + 0x152c);
   }
-  iVar6 = 0;
-  pcVar9 = in_r0 + 0x20dedc;
-  iVar16 = 0;
+  iVar20 = 0;
+  pcVar7 = in_r0 + 0x20dedc;
+  iVar14 = 0;
   in_r0[2] = (cRSubGame)0x0;
   in_r0[0xfe74] = (cRSubGame)0x0;
-  uVar30 = DAT_0007ea98;
   *(undefined4 *)(in_r0 + 4) = 0;
   do {
-    *(undefined4 *)pcVar9 = 0;
-    *(undefined4 *)(pcVar9 + 0xa0) = uVar30;
-    iVar21 = iVar6 * 0x240;
-    *(undefined4 *)(pcVar9 + 0x94) = 0;
-    *(undefined4 *)(pcVar9 + 0xd0) = uVar30;
-    *(undefined4 *)(pcVar9 + 0x98) = 0;
-    pcVar17 = in_r0 + iVar21 + 0x13af8;
-    *(undefined4 *)(pcVar9 + 0x8c) = uVar30;
-    *(undefined4 *)(pcVar9 + 0x88) = uVar30;
-    *(undefined4 *)(pcVar9 + 0x84) = uVar30;
-    *(undefined4 *)(pcVar9 + 0x90) = 0;
-    *(undefined4 *)(pcVar9 + 0xd4) = 0;
-    *(undefined4 *)(pcVar9 + 0xd8) = 0;
-    iVar10 = 0;
+    *(undefined4 *)pcVar7 = 0;
+    *(undefined4 *)(pcVar7 + 0xa0) = 0;
+    iVar19 = iVar20 * 0x240;
+    *(undefined4 *)(pcVar7 + 0x94) = 0;
+    *(undefined4 *)(pcVar7 + 0xd0) = 0;
+    *(undefined4 *)(pcVar7 + 0x98) = 0;
+    pcVar15 = in_r0 + iVar19 + 0x13af8;
+    *(undefined4 *)(pcVar7 + 0x8c) = 0;
+    *(undefined4 *)(pcVar7 + 0x88) = 0;
+    *(undefined4 *)(pcVar7 + 0x84) = 0;
+    *(undefined4 *)(pcVar7 + 0x90) = 0;
+    *(undefined4 *)(pcVar7 + 0xd4) = 0;
+    *(undefined4 *)(pcVar7 + 0xd8) = 0;
+    iVar8 = 0;
     do {
-      iVar19 = iVar10 + 1;
-      iVar10 = iVar21 + iVar10 * 0x48;
-      in_r0[iVar10 + 0x13b11] = (cRSubGame)((byte)in_r0[iVar10 + 0x13b11] & 0x5f);
-      pcVar17[0x15] = (cRSubGame)0x0;
-      in_r0[iVar10 + 0x13b10] = (cRSubGame)((byte)in_r0[iVar10 + 0x13b10] & 0xa7);
-      in_r0[iVar10 + 0x13b11] = (cRSubGame)((byte)in_r0[iVar10 + 0x13b11] & 0xaf);
-      *(undefined2 *)(pcVar17 + 0x18) = 0;
-      *(uint *)(pcVar17 + -0x18) = *(uint *)(pcVar17 + -0x18) & 0xffffff7f;
-      fVar28 = (float)tColourSmall::White((tColourSmall *)(in_r0 + iVar10 + 0x13b04));
-      *(undefined4 *)pcVar17 = uVar30;
-      *(undefined4 *)(pcVar17 + 4) = uVar30;
-      pcVar17 = pcVar17 + 0x48;
-      iVar10 = iVar19;
-    } while (iVar19 != 8);
-    iVar10 = 0;
-    pcVar17 = in_r0 + iVar21 + 0x13adc;
+      iVar17 = iVar8 + 1;
+      iVar8 = iVar19 + iVar8 * 0x48;
+      in_r0[iVar8 + 0x13b11] = (cRSubGame)((byte)in_r0[iVar8 + 0x13b11] & 0x5f);
+      pcVar15[0x15] = (cRSubGame)0x0;
+      in_r0[iVar8 + 0x13b10] = (cRSubGame)((byte)in_r0[iVar8 + 0x13b10] & 0xa7);
+      in_r0[iVar8 + 0x13b11] = (cRSubGame)((byte)in_r0[iVar8 + 0x13b11] & 0xaf);
+      *(undefined2 *)(pcVar15 + 0x18) = 0;
+      *(uint *)(pcVar15 + -0x18) = *(uint *)(pcVar15 + -0x18) & 0xffffff7f;
+      fVar24 = (float)tColourSmall::White((tColourSmall *)(in_r0 + iVar8 + 0x13b04));
+      *(undefined4 *)pcVar15 = 0;
+      *(undefined4 *)(pcVar15 + 4) = 0;
+      pcVar15 = pcVar15 + 0x48;
+      iVar8 = iVar17;
+    } while (iVar17 != 8);
+    iVar8 = 0;
+    pcVar15 = in_r0 + iVar19 + 0x13adc;
     do {
-      iVar10 = iVar10 + 1;
-      *(undefined4 *)(pcVar17 + 0x38) = 0;
-      *(undefined4 *)(pcVar17 + 0x3c) = 0;
-      *(undefined4 *)(pcVar17 + 0x40) = 0;
-      *(undefined4 *)(pcVar17 + 0x44) = 0;
-      pcVar17 = pcVar17 + 0x48;
-    } while (iVar10 != 8);
-    iVar6 = iVar6 + 1;
-    pcVar9 = pcVar9 + 0xdc;
-  } while (iVar6 != 0xe10);
+      iVar8 = iVar8 + 1;
+      *(undefined4 *)(pcVar15 + 0x38) = 0;
+      *(undefined4 *)(pcVar15 + 0x3c) = 0;
+      *(undefined4 *)(pcVar15 + 0x40) = 0;
+      *(undefined4 *)(pcVar15 + 0x44) = 0;
+      pcVar15 = pcVar15 + 0x48;
+    } while (iVar8 != 8);
+    iVar20 = iVar20 + 1;
+    pcVar7 = pcVar7 + 0xdc;
+  } while (iVar20 != 0xe10);
   if ((in_r0[0x1594] != (cRSubGame)0x0) &&
-     (iVar6 = *(int *)(in_r0 + 0xa0), pcVar9 = in_r0, 0 < iVar6)) {
+     (iVar20 = *(int *)(in_r0 + 0xa0), pcVar7 = in_r0, 0 < iVar20)) {
     do {
-      iVar16 = iVar16 + 1;
-      pcVar9[0xac] = (cRSubGame)0x0;
-      pcVar9 = pcVar9 + 0x34;
-    } while (iVar16 < iVar6);
+      iVar14 = iVar14 + 1;
+      pcVar7[0xac] = (cRSubGame)0x0;
+      pcVar7 = pcVar7 + 0x34;
+    } while (iVar14 < iVar20);
   }
-  iVar16 = DAT_0007ea94;
-  iVar21 = 0;
+  iVar20 = 0;
   bVar2 = false;
   local_60 = (cRSubGame *)0x0;
-  pcVar17 = pcVar4 + DAT_0007ea90;
   bVar3 = false;
   local_64 = 0;
   local_38 = 0;
-  pcVar9 = in_r0 + 0x1528;
-  iVar6 = *(int *)(in_r0 + 0x74);
-  pcVar23 = in_r0 + 0x1680;
+  pcVar7 = in_r0 + 0x1528;
+  iVar14 = *(int *)(in_r0 + 0x74);
+  pcVar15 = in_r0 + 0x1680;
   while( true ) {
-    if (iVar6 <= iVar21) {
-      wprintf((char *)(pcVar4 + DAT_0007fe18),iVar21);
+    if (iVar14 <= iVar20) {
+      wprintf("Track Length %i\n",iVar20);
       return;
     }
     bVar2 = (bool)(bVar2 ^ 1);
-    if (iVar21 == 0) {
+    if (iVar20 == 0) {
       bVar3 = true;
       *(undefined4 *)(in_r0 + 0x14f4) = 0;
       local_68 = *(int *)(in_r0 + 0x14f8);
       local_94 = in_r0 + 0x14f4;
     }
-    else if ((*(int *)(in_r0 + 0x78) == iVar21) && (in_r0[0x1594] == (cRSubGame)0x0)) {
+    else if ((*(int *)(in_r0 + 0x78) == iVar20) && (in_r0[0x1594] == (cRSubGame)0x0)) {
       bVar3 = true;
-      *(int *)(in_r0 + 0x1528) = iVar21;
+      *(int *)(in_r0 + 0x1528) = iVar20;
       local_68 = *(int *)(in_r0 + 0x152c);
-      local_94 = pcVar9;
+      local_94 = pcVar7;
     }
     else {
-      *(undefined4 *)(in_r0 + 0x68) = DAT_0007fe2c;
+      *(undefined4 *)(in_r0 + 0x68) = 0x3f800000;
       if (in_r0[0x1594] == (cRSubGame)0x0) {
-        iVar6 = local_38 * 0x34;
+        iVar14 = local_38 * 0x34;
         local_38 = local_38 + 1;
-        local_94 = in_r0 + iVar6 + 0xa4;
+        local_94 = in_r0 + iVar14 + 0xa4;
       }
       else if (bVar2) {
         bVar3 = true;
-        *(int *)(in_r0 + 0x155c) = iVar21;
+        *(int *)(in_r0 + 0x155c) = iVar20;
         local_94 = in_r0 + 0x155c;
       }
       else {
         if (*(int *)(in_r0 + 0x60) == 1) {
-          fVar32 = (float)VectorSignedToFloat(*(undefined4 *)(in_r0 + 0xa0),
+          fVar28 = (float)VectorSignedToFloat(*(undefined4 *)(in_r0 + 0xa0),
                                               (byte)(in_fpscr >> 0x16) & 3);
-          fVar28 = (float)RAND(fVar28,(char *)(fVar32 * (DAT_0007fe34 +
-                                                        DAT_0007fe30 * *(float *)(in_r0 + 0x50))));
+          fVar24 = (float)RAND(fVar24,(char *)(fVar28 * (*(float *)(in_r0 + 0x50) * 0.9 + 0.1)));
         }
         else {
-          pcVar31 = (char *)VectorSignedToFloat(*(undefined4 *)(in_r0 + 0xa0),
+          pcVar27 = (char *)VectorSignedToFloat(*(undefined4 *)(in_r0 + 0xa0),
                                                 (byte)(in_fpscr >> 0x16) & 3);
-          fVar28 = (float)RAND(fVar28,pcVar31);
+          fVar24 = (float)RAND(fVar24,pcVar27);
         }
-        fVar28 = (float)VectorSignedToFloat((int)fVar28,(byte)(in_fpscr >> 0x16) & 3);
-        local_94 = in_r0 + (int)(fVar28 * *(float *)(in_r0 + 0x68)) * 0x34 + 0xa4;
-        in_r0[(int)(fVar28 * *(float *)(in_r0 + 0x68)) * 0x34 + 0xac] = (cRSubGame)0x1;
+        fVar24 = (float)VectorSignedToFloat((int)fVar24,(byte)(in_fpscr >> 0x16) & 3);
+        local_94 = in_r0 + (int)(fVar24 * *(float *)(in_r0 + 0x68)) * 0x34 + 0xa4;
+        in_r0[(int)(fVar24 * *(float *)(in_r0 + 0x68)) * 0x34 + 0xac] = (cRSubGame)0x1;
       }
       local_68 = *(int *)(local_94 + 4);
     }
-    fVar28 = (float)SwitchMirror();
-    *(int *)local_94 = iVar21;
+    fVar24 = (float)SwitchMirror();
+    *(int *)local_94 = iVar20;
     if (*(int *)(local_94 + 4) < 0) {
-      fVar28 = (float)RShellError((char *)(pcVar4 + DAT_0007fe1c));
+      fVar24 = (float)RShellError("Negative Segment Length");
     }
-    iVar6 = *(int *)(in_r0 + 0x74);
-    if (iVar21 < iVar6 && 0 < local_68) break;
+    iVar14 = *(int *)(in_r0 + 0x74);
+    if (iVar20 < iVar14 && 0 < local_68) break;
 LAB_0007fbc8:
     if (*(int *)(in_r0 + 0x60) == 3) {
       if (!bVar3) {
@@ -334,209 +325,206 @@ LAB_0007fbc8:
       local_64 = local_64 + 1;
     }
   }
-  pcVar5 = (cRSubGame *)(local_68 + iVar21);
+  pcVar4 = (cRSubGame *)(local_68 + iVar20);
   local_88 = 0;
-  pcVar20 = in_r0 + iVar21 * 0xdc + 0x20dfb4;
-  local_74 = pcVar5;
+  pcVar18 = in_r0 + iVar20 * 0xdc + 0x20dfb4;
+  local_74 = pcVar4;
 LAB_0007ed78:
-  pcVar11 = *(cRSubGame **)(in_r0 + 0x60);
-  if (pcVar11 == (cRSubGame *)0x2) {
-    iVar10 = local_88 * 10;
-    pcVar7 = local_94;
+  pcVar9 = *(cRSubGame **)(in_r0 + 0x60);
+  if (pcVar9 == (cRSubGame *)0x2) {
+    iVar19 = local_88 * 10;
+    pcVar5 = local_94;
   }
   else {
-    iVar19 = *(int *)(in_r0 + 0x78);
-    if (iVar21 < iVar19) {
-      iVar10 = local_88 * 10;
+    iVar8 = *(int *)(in_r0 + 0x78);
+    if (iVar20 < iVar8) {
+      iVar19 = local_88 * 10;
     }
     else {
-      local_94 = pcVar9;
-      if ((((pcVar11 != (cRSubGame *)0x0 && pcVar11 != (cRSubGame *)0x4) &&
-           (pcVar11 != (cRSubGame *)0x1)) && (pcVar11 != (cRSubGame *)0x7)) &&
-         (pcVar11 != (cRSubGame *)0x3)) {
-        local_94 = pcVar23;
+      local_94 = pcVar7;
+      if ((((pcVar9 != (cRSubGame *)0x0 && pcVar9 != (cRSubGame *)0x4) &&
+           (pcVar9 != (cRSubGame *)0x1)) && (pcVar9 != (cRSubGame *)0x7)) &&
+         (pcVar9 != (cRSubGame *)0x3)) {
+        local_94 = pcVar15;
       }
-      if (iVar21 == iVar19) {
-        iVar10 = 0;
+      if (iVar20 == iVar8) {
+        iVar19 = 0;
         local_88 = 0;
       }
       else {
-        iVar10 = local_88 * 10;
+        iVar19 = local_88 * 10;
       }
     }
-    pcVar5 = local_74 + -local_88;
-    pcVar7 = local_94;
-    if (((((iVar19 < (int)pcVar5) && (pcVar7 = pcVar23, pcVar23 != local_94)) &&
-         ((pcVar7 = local_94, in_r0 + 0x16e8 != local_94 && (in_r0 + 0x171c != local_94)))) &&
-        (((pcVar11 == (cRSubGame *)0x0 || pcVar11 == (cRSubGame *)0x4 ||
-          (pcVar11 == (cRSubGame *)0x1)) ||
-         ((pcVar11 == (cRSubGame *)0x7 || (pcVar11 == (cRSubGame *)0x3)))))) &&
-       (pcVar11 = pcVar9, pcVar7 = pcVar9, pcVar9 != local_94)) {
-      *(cRSubGame **)(in_r0 + 0x78) = pcVar5;
-      *(cRSubGame **)(in_r0 + 0x74) = pcVar5 + (iVar6 - iVar19);
-      pcVar7 = local_94;
+    pcVar4 = local_74 + -local_88;
+    pcVar5 = local_94;
+    if (((((iVar8 < (int)pcVar4) && (pcVar5 = pcVar15, pcVar15 != local_94)) &&
+         ((pcVar5 = local_94, in_r0 + 0x16e8 != local_94 && (in_r0 + 0x171c != local_94)))) &&
+        (((pcVar9 == (cRSubGame *)0x0 || pcVar9 == (cRSubGame *)0x4 || (pcVar9 == (cRSubGame *)0x1))
+         || ((pcVar9 == (cRSubGame *)0x7 || (pcVar9 == (cRSubGame *)0x3)))))) &&
+       (pcVar9 = pcVar7, pcVar5 = pcVar7, pcVar7 != local_94)) {
+      *(cRSubGame **)(in_r0 + 0x78) = pcVar4;
+      *(cRSubGame **)(in_r0 + 0x74) = pcVar4 + (iVar14 - iVar8);
+      pcVar5 = local_94;
     }
   }
-  local_94 = pcVar7;
-  cVar13 = in_r0[2];
-  bVar24 = cVar13 != (cRSubGame)0x0;
-  if (bVar24) {
-    pcVar11 = *(cRSubGame **)(pcVar20 + -0xd8);
+  local_94 = pcVar5;
+  cVar11 = in_r0[2];
+  bVar21 = cVar11 != (cRSubGame)0x0;
+  if (bVar21) {
+    pcVar9 = *(cRSubGame **)(pcVar18 + -0xd8);
   }
-  iVar6 = *(int *)(local_94 + 0x18);
-  if (bVar24) {
-    pcVar11 = (cRSubGame *)((uint)pcVar11 | 0x20);
+  iVar14 = *(int *)(local_94 + 0x18);
+  if (bVar21) {
+    pcVar9 = (cRSubGame *)((uint)pcVar9 | 0x20);
   }
-  *(cRSubGame **)(pcVar20 + -4) = local_94;
-  if (bVar24) {
-    *(cRSubGame **)(pcVar20 + -0xd8) = pcVar11;
+  *(cRSubGame **)(pcVar18 + -4) = local_94;
+  if (bVar21) {
+    *(cRSubGame **)(pcVar18 + -0xd8) = pcVar9;
   }
-  uVar1 = *(ushort *)(iVar6 + iVar10);
-  *(int *)pcVar20 = local_64;
+  uVar1 = *(ushort *)(iVar14 + iVar19);
+  *(int *)pcVar18 = local_64;
   if ((uVar1 & 0x100) != 0) {
-    pcVar5 = (cRSubGame *)(*(uint *)(pcVar20 + -0xd8) | 0x100);
-    *(cRSubGame **)(pcVar20 + -0xd8) = pcVar5;
+    pcVar4 = (cRSubGame *)(*(uint *)(pcVar18 + -0xd8) | 0x100);
+    *(cRSubGame **)(pcVar18 + -0xd8) = pcVar4;
   }
   if ((uVar1 & 0x8000) != 0) {
-    *(uint *)(pcVar20 + -0xd8) = *(uint *)(pcVar20 + -0xd8) | 0x8000;
+    *(uint *)(pcVar18 + -0xd8) = *(uint *)(pcVar18 + -0xd8) | 0x8000;
   }
-  uVar12 = (uint)*(ushort *)(iVar6 + iVar10);
-  if ((*(ushort *)(iVar6 + iVar10) & 2) == 0) {
-    fVar32 = (float)VectorSignedToFloat(iVar21,(byte)(in_fpscr >> 0x16) & 3);
+  iVar8 = Game;
+  uVar10 = (uint)*(ushort *)(iVar14 + iVar19);
+  if ((*(ushort *)(iVar14 + iVar19) & 2) == 0) {
+    fVar28 = (float)VectorSignedToFloat(iVar20,(byte)(in_fpscr >> 0x16) & 3);
   }
   else {
-    fVar32 = (float)VectorSignedToFloat(iVar21,(byte)(in_fpscr >> 0x16) & 3);
-    iVar19 = **(int **)(pcVar4 + iVar22);
-    *(uint *)(pcVar20 + -0xd8) = *(uint *)(pcVar20 + -0xd8) | 2;
-    cRBod::SetObject((cRBod *)(in_r0 + iVar21 * 0xdc + 0x20dee0),
-                     *(cRObject **)((uint)*(byte *)(iVar6 + iVar10 + 3) * 0xb0 + iVar19 + 0x47afc));
-    *(undefined4 *)(*(int *)(pcVar20 + -0xb0) + 8) = 1;
-    tMatrix::Identity((tMatrix *)(in_r0 + iVar21 * 0xdc + 0x20df0c));
-    iVar6 = *(int *)(local_94 + 0x18);
-    iVar19 = iVar6 + iVar10;
-    uVar1 = *(ushort *)(iVar6 + iVar10);
-    uVar12 = (uint)uVar1;
-    uVar30 = VectorUnsignedToFloat((uint)*(byte *)(iVar19 + 6),(byte)(in_fpscr >> 0x16) & 3);
-    *(undefined4 *)(pcVar20 + -0x78) = uVar30;
-    uVar30 = VectorUnsignedToFloat((uint)*(byte *)(iVar19 + 7),(byte)(in_fpscr >> 0x16) & 3);
-    *(undefined4 *)(pcVar20 + -0x74) = uVar30;
-    fVar28 = (float)VectorUnsignedToFloat((uint)*(byte *)(iVar19 + 8),(byte)(in_fpscr >> 0x16) & 3);
-    *(float *)(pcVar20 + -0x70) = fVar28 + fVar32;
-    uVar30 = DAT_0007fe24;
-    pcVar5 = local_94;
+    fVar28 = (float)VectorSignedToFloat(iVar20,(byte)(in_fpscr >> 0x16) & 3);
+    *(uint *)(pcVar18 + -0xd8) = *(uint *)(pcVar18 + -0xd8) | 2;
+    cRBod::SetObject((cRBod *)(in_r0 + iVar20 * 0xdc + 0x20dee0),
+                     *(cRObject **)((uint)*(byte *)(iVar14 + iVar19 + 3) * 0xb0 + iVar8 + 0x47afc));
+    *(undefined4 *)(*(int *)(pcVar18 + -0xb0) + 8) = 1;
+    tMatrix::Identity((tMatrix *)(in_r0 + iVar20 * 0xdc + 0x20df0c));
+    iVar14 = *(int *)(local_94 + 0x18);
+    iVar8 = iVar14 + iVar19;
+    uVar1 = *(ushort *)(iVar14 + iVar19);
+    uVar10 = (uint)uVar1;
+    uVar26 = VectorUnsignedToFloat((uint)*(byte *)(iVar8 + 6),(byte)(in_fpscr >> 0x16) & 3);
+    *(undefined4 *)(pcVar18 + -0x78) = uVar26;
+    uVar26 = VectorUnsignedToFloat((uint)*(byte *)(iVar8 + 7),(byte)(in_fpscr >> 0x16) & 3);
+    *(undefined4 *)(pcVar18 + -0x74) = uVar26;
+    fVar24 = (float)VectorUnsignedToFloat((uint)*(byte *)(iVar8 + 8),(byte)(in_fpscr >> 0x16) & 3);
+    *(float *)(pcVar18 + -0x70) = fVar24 + fVar28;
+    pcVar4 = local_94;
     if ((uVar1 & 8) == 0) {
-      cVar13 = in_r0[2];
-      *(undefined4 *)(pcVar20 + -0x60) = DAT_0007fe24;
-      *(undefined4 *)(pcVar20 + -0x58) = uVar30;
-      *(undefined4 *)(pcVar20 + -0x5c) = uVar30;
+      cVar11 = in_r0[2];
+      *(undefined4 *)(pcVar18 + -0x60) = 0;
+      *(undefined4 *)(pcVar18 + -0x58) = 0;
+      *(undefined4 *)(pcVar18 + -0x5c) = 0;
     }
     else {
-      *(undefined4 *)(pcVar20 + -0x60) = DAT_0007fe24;
-      *(undefined4 *)(pcVar20 + -0x58) = uVar30;
-      *(undefined4 *)(pcVar20 + -0x5c) = uVar30;
-      *(uint *)(pcVar20 + -0xd8) = *(uint *)(pcVar20 + -0xd8) | 8;
-      cVar13 = in_r0[2];
+      *(undefined4 *)(pcVar18 + -0x60) = 0;
+      *(undefined4 *)(pcVar18 + -0x58) = 0;
+      *(undefined4 *)(pcVar18 + -0x5c) = 0;
+      *(uint *)(pcVar18 + -0xd8) = *(uint *)(pcVar18 + -0xd8) | 8;
+      cVar11 = in_r0[2];
     }
   }
-  uVar30 = DAT_0007f278;
-  if ((uVar12 & 1) != 0) {
-    uVar12 = (uint)*(ushort *)(iVar6 + iVar10);
-    *(uint *)(pcVar20 + -0xd8) = *(uint *)(pcVar20 + -0xd8) | 0x4001;
-    pcVar5 = (cRSubGame *)(uint)*(byte *)(iVar6 + iVar10 + 2);
-    *(undefined4 *)(pcVar20 + -0x50) = uVar30;
-    *(undefined4 *)(pcVar20 + -0x54) = uVar30;
-    *(cRSubGame **)(pcVar20 + -0x48) = pcVar5;
-    uVar30 = VectorUnsignedToFloat((uint)*(byte *)(iVar6 + iVar10 + 5),(byte)(in_fpscr >> 0x16) & 3)
-    ;
-    *(undefined4 *)(pcVar20 + -0x4c) = uVar30;
+  if ((uVar10 & 1) != 0) {
+    uVar10 = (uint)*(ushort *)(iVar14 + iVar19);
+    *(uint *)(pcVar18 + -0xd8) = *(uint *)(pcVar18 + -0xd8) | 0x4001;
+    pcVar4 = (cRSubGame *)(uint)*(byte *)(iVar14 + iVar19 + 2);
+    *(undefined4 *)(pcVar18 + -0x50) = 0;
+    *(undefined4 *)(pcVar18 + -0x54) = 0;
+    *(cRSubGame **)(pcVar18 + -0x48) = pcVar4;
+    uVar26 = VectorUnsignedToFloat
+                       ((uint)*(byte *)(iVar14 + iVar19 + 5),(byte)(in_fpscr >> 0x16) & 3);
+    *(undefined4 *)(pcVar18 + -0x4c) = uVar26;
   }
-  if ((uVar12 & 8) != 0) {
-    uVar12 = (uint)*(ushort *)(iVar6 + iVar10);
-    *(uint *)(pcVar20 + -0xd8) = *(uint *)(pcVar20 + -0xd8) | 8;
-    pcVar5 = (cRSubGame *)(uint)*(byte *)(iVar6 + iVar10 + 4);
-    *(cRSubGame **)(pcVar20 + -0x44) = pcVar5;
+  if ((uVar10 & 8) != 0) {
+    uVar10 = (uint)*(ushort *)(iVar14 + iVar19);
+    *(uint *)(pcVar18 + -0xd8) = *(uint *)(pcVar18 + -0xd8) | 8;
+    pcVar4 = (cRSubGame *)(uint)*(byte *)(iVar14 + iVar19 + 4);
+    *(cRSubGame **)(pcVar18 + -0x44) = pcVar4;
   }
-  if ((uVar12 & 4) != 0) {
-    uVar12 = (uint)*(ushort *)(iVar6 + iVar10);
-    pcVar5 = (cRSubGame *)(*(uint *)(pcVar20 + -0xd8) | 4);
-    *(cRSubGame **)(pcVar20 + -0xd8) = pcVar5;
+  if ((uVar10 & 4) != 0) {
+    uVar10 = (uint)*(ushort *)(iVar14 + iVar19);
+    pcVar4 = (cRSubGame *)(*(uint *)(pcVar18 + -0xd8) | 4);
+    *(cRSubGame **)(pcVar18 + -0xd8) = pcVar4;
   }
-  bVar24 = (uVar12 & 0x200) != 0;
-  if (bVar24) {
-    pcVar5 = *(cRSubGame **)(pcVar20 + -0xd8);
+  bVar21 = (uVar10 & 0x200) != 0;
+  if (bVar21) {
+    pcVar4 = *(cRSubGame **)(pcVar18 + -0xd8);
   }
-  *(undefined4 *)(pcVar20 + -8) = DAT_0007f278;
-  if (bVar24) {
-    uVar12 = (uint)*(ushort *)(iVar6 + iVar10);
+  *(undefined4 *)(pcVar18 + -8) = 0;
+  if (bVar21) {
+    uVar10 = (uint)*(ushort *)(iVar14 + iVar19);
   }
-  pcVar11 = (cRSubGame *)0x0;
-  if (bVar24) {
-    pcVar5 = (cRSubGame *)((uint)pcVar5 | 0x200);
+  pcVar9 = (cRSubGame *)0x0;
+  if (bVar21) {
+    pcVar4 = (cRSubGame *)((uint)pcVar4 | 0x200);
   }
   local_6c = (cRSubGame *)0x0;
-  if (bVar24) {
-    *(cRSubGame **)(pcVar20 + -0xd8) = pcVar5;
+  if (bVar21) {
+    *(cRSubGame **)(pcVar18 + -0xd8) = pcVar4;
   }
-  if ((uVar12 & 0x400) != 0) {
-    uVar12 = (uint)*(ushort *)(iVar6 + iVar10);
-    *(uint *)(pcVar20 + -0xd8) = *(uint *)(pcVar20 + -0xd8) | 0x400;
+  if ((uVar10 & 0x400) != 0) {
+    uVar10 = (uint)*(ushort *)(iVar14 + iVar19);
+    *(uint *)(pcVar18 + -0xd8) = *(uint *)(pcVar18 + -0xd8) | 0x400;
   }
-  if ((uVar12 & 0x2000) != 0) {
-    uVar12 = (uint)*(ushort *)(iVar6 + iVar10);
-    *(uint *)(pcVar20 + -0xd8) = *(uint *)(pcVar20 + -0xd8) | 0x2000;
+  if ((uVar10 & 0x2000) != 0) {
+    uVar10 = (uint)*(ushort *)(iVar14 + iVar19);
+    *(uint *)(pcVar18 + -0xd8) = *(uint *)(pcVar18 + -0xd8) | 0x2000;
   }
-  if ((uVar12 & 0x800) != 0) {
-    uVar12 = (uint)*(ushort *)(iVar6 + iVar10);
-    *(uint *)(pcVar20 + -0xd8) = *(uint *)(pcVar20 + -0xd8) | 0x800;
+  if ((uVar10 & 0x800) != 0) {
+    uVar10 = (uint)*(ushort *)(iVar14 + iVar19);
+    *(uint *)(pcVar18 + -0xd8) = *(uint *)(pcVar18 + -0xd8) | 0x800;
   }
-  bVar24 = (uVar12 & 0x1000) != 0;
-  if (bVar24) {
-    uVar12 = *(uint *)(pcVar20 + -0xd8);
+  bVar21 = (uVar10 & 0x1000) != 0;
+  if (bVar21) {
+    uVar10 = *(uint *)(pcVar18 + -0xd8);
   }
-  pcVar7 = (cRSubGame *)((uint)(iVar21 >> 0x1f) >> 0x1d);
-  if (bVar24) {
-    *(uint *)(pcVar20 + -0xd8) = uVar12 | 0x1000;
+  pcVar5 = (cRSubGame *)((uint)(iVar20 >> 0x1f) >> 0x1d);
+  if (bVar21) {
+    *(uint *)(pcVar18 + -0xd8) = uVar10 | 0x1000;
   }
-  iVar6 = iVar21 * 0x240;
-  pcVar18 = in_r0 + iVar6 + 0x13b14;
+  iVar14 = iVar20 * 0x240;
+  pcVar16 = in_r0 + iVar14 + 0x13b14;
   do {
-    pcVar5 = pcVar11;
-    if (cVar13 != (cRSubGame)0x0) {
-      pcVar7 = (cRSubGame *)(7 - (int)pcVar11);
-      pcVar5 = local_98;
+    pcVar4 = pcVar9;
+    if (cVar11 != (cRSubGame)0x0) {
+      pcVar5 = (cRSubGame *)(7 - (int)pcVar9);
+      pcVar4 = local_98;
     }
-    local_98 = pcVar5;
-    iVar10 = iVar6 + (int)pcVar11 * 0x48;
-    if (cVar13 != (cRSubGame)0x0) {
-      local_98 = pcVar7;
+    local_98 = pcVar4;
+    iVar19 = iVar14 + (int)pcVar9 * 0x48;
+    if (cVar11 != (cRSubGame)0x0) {
+      local_98 = pcVar5;
     }
-    in_r0[iVar10 + 0x13b10] = (cRSubGame)((byte)in_r0[iVar10 + 0x13b10] & 0xe0 | (byte)pcVar11 & 7);
-    iVar19 = *(int *)(in_r0 + 0x70);
-    *(undefined4 *)pcVar18 = 0;
-    *(undefined4 *)(pcVar18 + 4) = 0;
-    *(undefined4 *)(pcVar18 + 8) = 0;
-    iVar10 = iVar19;
-    if (iVar21 < iVar19) {
-      iVar10 = 1;
+    in_r0[iVar19 + 0x13b10] = (cRSubGame)((byte)in_r0[iVar19 + 0x13b10] & 0xe0 | (byte)pcVar9 & 7);
+    iVar8 = *(int *)(in_r0 + 0x70);
+    *(undefined4 *)pcVar16 = 0;
+    *(undefined4 *)(pcVar16 + 4) = 0;
+    *(undefined4 *)(pcVar16 + 8) = 0;
+    iVar19 = iVar8;
+    if (iVar20 < iVar8) {
+      iVar19 = 1;
     }
-    uVar14 = (undefined1)iVar10;
-    *(undefined4 *)(pcVar18 + 0xc) = 0;
-    if (iVar19 <= iVar21) {
-      if (iVar21 < *(int *)(in_r0 + 0x78)) {
-        uVar14 = false;
+    uVar12 = (undefined1)iVar19;
+    *(undefined4 *)(pcVar16 + 0xc) = 0;
+    if (iVar8 <= iVar20) {
+      if (iVar20 < *(int *)(in_r0 + 0x78)) {
+        uVar12 = false;
       }
       else {
-        uVar14 = true;
+        uVar12 = true;
       }
     }
-    this = (cRBod *)(in_r0 + iVar6 + (int)pcVar11 * 0x48 + 0x13adc);
+    this = (cRBod *)(in_r0 + iVar14 + (int)pcVar9 * 0x48 + 0x13adc);
     cRBod::SetObject(this,(cRObject *)0x0);
-    pcVar5 = (cRSubGame *)
-             LevelConvert(in_r0,(char)local_98[*(int *)(local_94 + 0x14) + local_88 * 8],iVar21,
-                          (bool)uVar14);
-    pcVar7 = extraout_r1;
-    fVar28 = extraout_s0;
-    switch(pcVar5) {
+    pcVar4 = (cRSubGame *)
+             LevelConvert(in_r0,(char)local_98[*(int *)(local_94 + 0x14) + local_88 * 8],iVar20,
+                          (bool)uVar12);
+    pcVar5 = extraout_r1;
+    fVar24 = extraout_s0;
+    switch(pcVar4) {
     case (cRSubGame *)0x20:
       goto LAB_0007f294;
     case (cRSubGame *)0x21:
@@ -544,108 +532,100 @@ LAB_0007ed78:
     case (cRSubGame *)0x22:
       break;
     case (cRSubGame *)0x23:
-      pcVar18[-8] = (cRSubGame)0x20;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) & 0xffffffdf;
+      pcVar16[-8] = (cRSubGame)0x20;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) & 0xffffffdf;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x24:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44630));
-      pcVar18[-8] = (cRSubGame)0x17;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_17;
-      fVar28 = extraout_s0_16;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44630));
+      pcVar16[-8] = (cRSubGame)0x17;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_17;
+      fVar24 = extraout_s0_16;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x25:
       break;
     case (cRSubGame *)0x26:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44370));
-      pcVar18[-8] = (cRSubGame)0x22;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_16;
-      fVar28 = extraout_s0_15;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44370));
+      pcVar16[-8] = (cRSubGame)0x22;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_16;
+      fVar24 = extraout_s0_15;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x27:
       break;
     case (cRSubGame *)0x28:
-      uVar12 = *(uint *)(pcVar18 + -0x34);
-      pcVar5 = local_60 + 1;
-      if (pcVar5 == (cRSubGame *)0xf) {
-        pcVar7 = (cRSubGame *)0x0;
+      uVar10 = *(uint *)(pcVar16 + -0x34);
+      pcVar4 = local_60 + 1;
+      if (pcVar4 == (cRSubGame *)0xf) {
+        pcVar5 = (cRSubGame *)0x0;
       }
-      *(uint *)(pcVar18 + -0x34) = uVar12 & 0xffffffdf;
-      local_60 = pcVar7;
-      if (pcVar5 != (cRSubGame *)0xf) {
-        local_60 = pcVar5;
-        if (pcVar5 == (cRSubGame *)0x8) {
-          cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44134));
-          *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-          pcVar5 = (cRSubGame *)
+      *(uint *)(pcVar16 + -0x34) = uVar10 & 0xffffffdf;
+      local_60 = pcVar5;
+      if (pcVar4 != (cRSubGame *)0xf) {
+        local_60 = pcVar4;
+        if (pcVar4 == (cRSubGame *)0x8) {
+          cRBod::SetObject(this,*(cRObject **)(Game + 0x44134));
+          *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+          pcVar4 = (cRSubGame *)
                    tColourSmall::Set((tColourSmall *)
-                                     (in_r0 + (int)pcVar11 * 0x48 + iVar21 * 0x240 + 0x13b04),
+                                     (in_r0 + (int)pcVar9 * 0x48 + iVar20 * 0x240 + 0x13b04),
                                      extraout_s0_26,extraout_s1,extraout_s2,extraout_s3);
-          pcVar7 = extraout_r1_27;
-          fVar28 = extraout_s0_27;
+          pcVar5 = extraout_r1_27;
+          fVar24 = extraout_s0_27;
         }
         else {
-          *(uint *)(pcVar18 + -0x34) = uVar12 & 0xffffffdf;
+          *(uint *)(pcVar16 + -0x34) = uVar10 & 0xffffffdf;
         }
       }
-      pcVar18[-8] = (cRSubGame)0x16;
+      pcVar16[-8] = (cRSubGame)0x16;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x29:
       break;
     case (cRSubGame *)0x2a:
       break;
     case (cRSubGame *)0x2b:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44630));
-      pcVar18[-8] = (cRSubGame)0x18;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_15;
-      fVar28 = extraout_s0_14;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44630));
+      pcVar16[-8] = (cRSubGame)0x18;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_15;
+      fVar24 = extraout_s0_14;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x2c:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x43e48));
-      pcVar18[-8] = (cRSubGame)0x1c;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_14;
-      fVar28 = extraout_s0_13;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x43e48));
+      pcVar16[-8] = (cRSubGame)0x1c;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_14;
+      fVar24 = extraout_s0_13;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x2d:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44370));
-      pcVar18[-8] = (cRSubGame)0x15;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_13;
-      fVar28 = extraout_s0_12;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44370));
+      pcVar16[-8] = (cRSubGame)0x15;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_13;
+      fVar24 = extraout_s0_12;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x2e:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44370));
-      pcVar18[-8] = (cRSubGame)0x1;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_12;
-      fVar28 = extraout_s0_11;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44370));
+      pcVar16[-8] = (cRSubGame)0x1;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_12;
+      fVar24 = extraout_s0_11;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x2f:
       break;
     case (cRSubGame *)0x30:
       if (*(int *)(in_r0 + 0x60) != 1) goto LAB_0007f288;
-      fVar27 = (float)VectorSignedToFloat(pcVar11,(byte)(in_fpscr >> 0x16) & 3);
-      *(undefined4 *)(pcVar20 + -0x50) = *(undefined4 *)(pcVar18 + -0x24);
-      fVar29 = DAT_0007fe08;
-      fVar26 = DAT_0007fe04;
-      cVar13 = in_r0[2];
-      *(undefined4 *)(pcVar20 + -0x48) = 0;
-      uVar12 = *(uint *)(pcVar20 + -0xd8) & 0xffffbfff | 1;
-      *(uint *)(pcVar20 + -0xd8) = uVar12;
-      fVar26 = (fVar27 - fVar26) + fVar29;
-      *(float *)(pcVar20 + -0x4c) = fVar32 + fVar29;
-      *(float *)(pcVar20 + -0x54) = fVar26;
-      if (cVar13 != (cRSubGame)0x0) {
-        *(float *)(pcVar20 + -0x54) = -fVar26;
+      fVar23 = (float)VectorSignedToFloat(pcVar9,(byte)(in_fpscr >> 0x16) & 3);
+      *(undefined4 *)(pcVar18 + -0x50) = *(undefined4 *)(pcVar16 + -0x24);
+      cVar11 = in_r0[2];
+      *(undefined4 *)(pcVar18 + -0x48) = 0;
+      uVar10 = *(uint *)(pcVar18 + -0xd8) & 0xffffbfff | 1;
+      *(uint *)(pcVar18 + -0xd8) = uVar10;
+      fVar23 = (fVar23 - 4.0) + 0.5;
+      *(float *)(pcVar18 + -0x4c) = fVar28 + 0.5;
+      *(float *)(pcVar18 + -0x54) = fVar23;
+      if (cVar11 != (cRSubGame)0x0) {
+        *(float *)(pcVar18 + -0x54) = -fVar23;
       }
       goto LAB_0007f28c;
     case (cRSubGame *)0x31:
@@ -666,20 +646,19 @@ LAB_0007ed78:
       goto LAB_0007f288;
     case (cRSubGame *)0x39:
 LAB_0007f288:
-      uVar12 = *(uint *)(pcVar20 + -0xd8);
+      uVar10 = *(uint *)(pcVar18 + -0xd8);
 LAB_0007f28c:
-      if ((uVar12 & 0xc0) == 0) {
-        pcVar5 = (cRSubGame *)
-                 cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44630));
-        pcVar18[-8] = (cRSubGame)0xf;
-        *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-        pcVar7 = extraout_r1_22;
-        fVar28 = extraout_s0_21;
+      if ((uVar10 & 0xc0) == 0) {
+        pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44630));
+        pcVar16[-8] = (cRSubGame)0xf;
+        *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+        pcVar5 = extraout_r1_22;
+        fVar24 = extraout_s0_21;
       }
       else {
 LAB_0007f294:
-        pcVar18[-8] = (cRSubGame)0x0;
-        *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) & 0xffffffdf;
+        pcVar16[-8] = (cRSubGame)0x0;
+        *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) & 0xffffffdf;
       }
       goto LAB_0007f2a4;
     case (cRSubGame *)0x3a:
@@ -687,51 +666,45 @@ LAB_0007f294:
     case (cRSubGame *)0x3b:
       break;
     case (cRSubGame *)0x3c:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x447bc));
-      uVar30 = DAT_0007f278;
-      *(undefined4 *)(pcVar18 + -0x18) = DAT_0007f278;
-      *(undefined4 *)(pcVar18 + -0x1c) = uVar30;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar18[-8] = (cRSubGame)0x6;
-      pcVar7 = extraout_r1_02;
-      fVar28 = extraout_s0_02;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x447bc));
+      *(undefined4 *)(pcVar16 + -0x18) = 0;
+      *(undefined4 *)(pcVar16 + -0x1c) = 0;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar16[-8] = (cRSubGame)0x6;
+      pcVar5 = extraout_r1_02;
+      fVar24 = extraout_s0_02;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x3d:
       goto LAB_0007f3e8;
     case (cRSubGame *)0x3e:
-      if ((iVar21 < 1) || (pcVar18[-0x248] != (cRSubGame)0x3)) {
-        pcVar5 = (cRSubGame *)
-                 cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x447bc));
-        uVar30 = DAT_0007fe24;
-        *(undefined4 *)(pcVar18 + -0x18) = DAT_0007fe24;
-        *(undefined4 *)(pcVar18 + -0x1c) = uVar30;
-        *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-        pcVar18[-8] = (cRSubGame)0x3;
-        pcVar7 = extraout_r1_21;
-        fVar28 = extraout_s0_20;
+      if ((iVar20 < 1) || (pcVar16[-0x248] != (cRSubGame)0x3)) {
+        pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x447bc));
+        *(undefined4 *)(pcVar16 + -0x18) = 0;
+        *(undefined4 *)(pcVar16 + -0x1c) = 0;
+        *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+        pcVar16[-8] = (cRSubGame)0x3;
+        pcVar5 = extraout_r1_21;
+        fVar24 = extraout_s0_20;
       }
       else {
-        pcVar5 = (cRSubGame *)
-                 cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x447bc));
-        uVar30 = DAT_0007fe24;
-        *(undefined4 *)(pcVar18 + -0x18) = DAT_0007fe24;
-        *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-        *(undefined4 *)(pcVar18 + -0x1c) = uVar30;
-        pcVar18[-8] = (cRSubGame)0x9;
-        pcVar18[-0x248] = (cRSubGame)0xc;
-        pcVar7 = extraout_r1_24;
-        fVar28 = extraout_s0_23;
+        pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x447bc));
+        *(undefined4 *)(pcVar16 + -0x18) = 0;
+        *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+        *(undefined4 *)(pcVar16 + -0x1c) = 0;
+        pcVar16[-8] = (cRSubGame)0x9;
+        pcVar16[-0x248] = (cRSubGame)0xc;
+        pcVar5 = extraout_r1_24;
+        fVar24 = extraout_s0_23;
       }
       goto LAB_0007f2a4;
     case (cRSubGame *)0x3f:
       break;
     case (cRSubGame *)0x40:
-      pcVar18[-8] = (cRSubGame)0x0;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) & 0xffffffdf;
-      pcVar5 = (cRSubGame *)SwitchMirror();
-      pcVar7 = extraout_r1_20;
-      fVar28 = extraout_s0_19;
+      pcVar16[-8] = (cRSubGame)0x0;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) & 0xffffffdf;
+      pcVar4 = (cRSubGame *)SwitchMirror();
+      pcVar5 = extraout_r1_20;
+      fVar24 = extraout_s0_19;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x41:
       break;
@@ -744,44 +717,40 @@ LAB_0007f294:
     case (cRSubGame *)0x45:
       break;
     case (cRSubGame *)0x46:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44630));
-      pcVar18[-8] = (cRSubGame)0x13;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_19;
-      fVar28 = extraout_s0_18;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44630));
+      pcVar16[-8] = (cRSubGame)0x13;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_19;
+      fVar24 = extraout_s0_18;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x47:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44630));
-      pcVar18[-8] = (cRSubGame)0x11;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_18;
-      fVar28 = extraout_s0_17;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44630));
+      pcVar16[-8] = (cRSubGame)0x11;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_18;
+      fVar24 = extraout_s0_17;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x48:
       break;
     case (cRSubGame *)0x49:
       break;
     case (cRSubGame *)0x4a:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44630));
-      pcVar18[-8] = (cRSubGame)0x19;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_11;
-      fVar28 = extraout_s0_10;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44630));
+      pcVar16[-8] = (cRSubGame)0x19;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_11;
+      fVar24 = extraout_s0_10;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x4b:
       break;
     case (cRSubGame *)0x4c:
       break;
     case (cRSubGame *)0x4d:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44630));
-      pcVar18[-8] = (cRSubGame)0x12;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_10;
-      fVar28 = extraout_s0_09;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44630));
+      pcVar16[-8] = (cRSubGame)0x12;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_10;
+      fVar24 = extraout_s0_09;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x4e:
       break;
@@ -792,8 +761,8 @@ LAB_0007f294:
     case (cRSubGame *)0x51:
       break;
     case (cRSubGame *)0x52:
-      pcVar18[-8] = (cRSubGame)0x23;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) & 0xffffffdf;
+      pcVar16[-8] = (cRSubGame)0x23;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) & 0xffffffdf;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x53:
       break;
@@ -812,15 +781,13 @@ LAB_0007f294:
     case (cRSubGame *)0x5a:
       break;
     case (cRSubGame *)0x5b:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44790));
-      uVar30 = DAT_0007f278;
-      *(undefined4 *)(pcVar18 + -0x18) = DAT_0007f278;
-      *(undefined4 *)(pcVar18 + -0x1c) = uVar30;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar18[-8] = (cRSubGame)0x5;
-      pcVar7 = extraout_r1_08;
-      fVar28 = extraout_s0_08;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44790));
+      *(undefined4 *)(pcVar16 + -0x18) = 0;
+      *(undefined4 *)(pcVar16 + -0x1c) = 0;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar16[-8] = (cRSubGame)0x5;
+      pcVar5 = extraout_r1_08;
+      fVar24 = extraout_s0_08;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x5c:
       break;
@@ -829,12 +796,11 @@ LAB_0007f294:
     case (cRSubGame *)0x5e:
       break;
     case (cRSubGame *)0x5f:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44630));
-      pcVar18[-8] = (cRSubGame)0xf;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_07;
-      fVar28 = extraout_s0_07;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44630));
+      pcVar16[-8] = (cRSubGame)0xf;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_07;
+      fVar24 = extraout_s0_07;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x60:
       break;
@@ -867,62 +833,61 @@ LAB_0007f294:
     case (cRSubGame *)0x6e:
       break;
     case (cRSubGame *)0x6f:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44630));
-      pcVar18[-8] = (cRSubGame)0x10;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_06;
-      fVar28 = extraout_s0_06;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44630));
+      pcVar16[-8] = (cRSubGame)0x10;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_06;
+      fVar24 = extraout_s0_06;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x70:
 LAB_0007f638:
-      if (pcVar5 == (cRSubGame *)0x50) {
-        pcVar18[-8] = (cRSubGame)0x1e;
+      if (pcVar4 == (cRSubGame *)0x50) {
+        pcVar16[-8] = (cRSubGame)0x1e;
       }
-      else if (pcVar5 == (cRSubGame *)0x70) {
-        pcVar18[-8] = (cRSubGame)0x1d;
+      else if (pcVar4 == (cRSubGame *)0x70) {
+        pcVar16[-8] = (cRSubGame)0x1d;
       }
       if (in_r0[2] == (cRSubGame)0x0) {
-        *(cRSubGame **)(pcVar18 + -0xc) = in_r0 + *(int *)(pcVar20 + -0x44) * 0x120 + 0x310004;
+        *(cRSubGame **)(pcVar16 + -0xc) = in_r0 + *(int *)(pcVar18 + -0x44) * 0x120 + 0x310004;
       }
       else {
-        *(cRSubGame **)(pcVar18 + -0xc) = in_r0 + *(int *)(pcVar20 + -0x44) * 0x120 + 0x310094;
+        *(cRSubGame **)(pcVar16 + -0xc) = in_r0 + *(int *)(pcVar18 + -0x44) * 0x120 + 0x310094;
       }
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) & 0xffffffdf;
-      pcVar7 = local_6c;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) & 0xffffffdf;
+      pcVar5 = local_6c;
       if (local_6c == (cRSubGame *)0x0) {
-        cRBod::SetObject(this,*(cRObject **)(*(int *)(pcVar18 + -0xc) + 0x24));
-        pcVar8 = *(cRObject **)(*(int *)(pcVar18 + -0xc) + 0x78);
-        *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-        fVar28 = (float)cRBod::SetObject((cRBod *)(in_r0 + iVar21 * 0xdc + 0x20df80),pcVar8);
-        pcVar5 = *(cRSubGame **)(pcVar18 + -0xc);
-        uVar30 = *(undefined4 *)(local_94 + 0x1c);
-        *(uint *)(pcVar20 + -0x30) = *(uint *)(pcVar20 + -0x30) | 0x20;
-        iVar10 = *(int *)(pcVar5 + 0x3c);
-        *(undefined4 *)(pcVar20 + -0x38) = uVar30;
-        pcVar7 = extraout_r1_09;
-        if (0 < iVar10) {
-          pcVar7 = (cRSubGame *)0x0;
-          pcVar15 = in_r0 + iVar21 * 0xdc + 0x20df78;
+        cRBod::SetObject(this,*(cRObject **)(*(int *)(pcVar16 + -0xc) + 0x24));
+        pcVar6 = *(cRObject **)(*(int *)(pcVar16 + -0xc) + 0x78);
+        *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+        fVar24 = (float)cRBod::SetObject((cRBod *)(in_r0 + iVar20 * 0xdc + 0x20df80),pcVar6);
+        pcVar4 = *(cRSubGame **)(pcVar16 + -0xc);
+        uVar26 = *(undefined4 *)(local_94 + 0x1c);
+        *(uint *)(pcVar18 + -0x30) = *(uint *)(pcVar18 + -0x30) | 0x20;
+        iVar19 = *(int *)(pcVar4 + 0x3c);
+        *(undefined4 *)(pcVar18 + -0x38) = uVar26;
+        pcVar5 = extraout_r1_09;
+        if (0 < iVar19) {
+          pcVar5 = (cRSubGame *)0x0;
+          pcVar13 = in_r0 + iVar20 * 0xdc + 0x20df78;
           do {
-            uVar12 = *(uint *)(pcVar15 + -0x9c);
-            pcVar7 = pcVar7 + 1;
-            bVar24 = (uVar12 & 0x40) != 0;
-            if (bVar24) {
-              *(uint *)(pcVar15 + -0x9c) = uVar12 | 0x80;
+            uVar10 = *(uint *)(pcVar13 + -0x9c);
+            pcVar5 = pcVar5 + 1;
+            bVar21 = (uVar10 & 0x40) != 0;
+            if (bVar21) {
+              *(uint *)(pcVar13 + -0x9c) = uVar10 | 0x80;
             }
             else {
-              *(uint *)(pcVar15 + -0x9c) = uVar12 | 0x40;
+              *(uint *)(pcVar13 + -0x9c) = uVar10 | 0x40;
             }
-            iVar10 = *(int *)(pcVar5 + 0x3c);
-            if (bVar24) {
-              *(cRSubGame **)pcVar15 = in_r0 + iVar6 + (int)pcVar11 * 0x48 + 0x13adc;
+            iVar19 = *(int *)(pcVar4 + 0x3c);
+            if (bVar21) {
+              *(cRSubGame **)pcVar13 = in_r0 + iVar14 + (int)pcVar9 * 0x48 + 0x13adc;
             }
             else {
-              *(cRSubGame **)(pcVar15 + -4) = in_r0 + iVar6 + (int)pcVar11 * 0x48 + 0x13adc;
+              *(cRSubGame **)(pcVar13 + -4) = in_r0 + iVar14 + (int)pcVar9 * 0x48 + 0x13adc;
             }
-            pcVar15 = pcVar15 + 0xdc;
-          } while ((int)pcVar7 < iVar10);
+            pcVar13 = pcVar13 + 0xdc;
+          } while ((int)pcVar5 < iVar19);
         }
         local_6c = (cRSubGame *)0x1;
       }
@@ -932,12 +897,11 @@ LAB_0007f638:
     case (cRSubGame *)0x72:
       break;
     case (cRSubGame *)0x73:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44370));
-      pcVar18[-8] = (cRSubGame)0x21;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_05;
-      fVar28 = extraout_s0_05;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44370));
+      pcVar16[-8] = (cRSubGame)0x21;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_05;
+      fVar24 = extraout_s0_05;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x74:
       break;
@@ -954,167 +918,154 @@ LAB_0007f638:
     case (cRSubGame *)0x7a:
       break;
     case (cRSubGame *)0x7b:
-      if ((iVar21 < 1) || (pcVar18[-0x248] != (cRSubGame)0x3)) {
-        pcVar5 = (cRSubGame *)
-                 cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44790));
-        uVar30 = DAT_0007f278;
-        *(undefined4 *)(pcVar18 + -0x18) = DAT_0007f278;
-        *(undefined4 *)(pcVar18 + -0x1c) = uVar30;
-        *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-        pcVar18[-8] = (cRSubGame)0x2;
-        pcVar7 = extraout_r1_04;
-        fVar28 = extraout_s0_04;
+      if ((iVar20 < 1) || (pcVar16[-0x248] != (cRSubGame)0x3)) {
+        pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44790));
+        *(undefined4 *)(pcVar16 + -0x18) = 0;
+        *(undefined4 *)(pcVar16 + -0x1c) = 0;
+        *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+        pcVar16[-8] = (cRSubGame)0x2;
+        pcVar5 = extraout_r1_04;
+        fVar24 = extraout_s0_04;
       }
       else {
-        pcVar5 = (cRSubGame *)
-                 cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44790));
-        uVar30 = DAT_0007fe24;
-        *(undefined4 *)(pcVar18 + -0x18) = DAT_0007fe24;
-        *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-        *(undefined4 *)(pcVar18 + -0x1c) = uVar30;
-        pcVar18[-8] = (cRSubGame)0x8;
-        pcVar18[-0x248] = (cRSubGame)0xb;
-        pcVar7 = extraout_r1_26;
-        fVar28 = extraout_s0_25;
+        pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44790));
+        *(undefined4 *)(pcVar16 + -0x18) = 0;
+        *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+        *(undefined4 *)(pcVar16 + -0x1c) = 0;
+        pcVar16[-8] = (cRSubGame)0x8;
+        pcVar16[-0x248] = (cRSubGame)0xb;
+        pcVar5 = extraout_r1_26;
+        fVar24 = extraout_s0_25;
       }
       goto LAB_0007f2a4;
     case (cRSubGame *)0x7c:
 LAB_0007f3e8:
-      pcVar5 = (cRSubGame *)
-               cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x44210));
-      pcVar18[-8] = (cRSubGame)0xe;
-      *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-      pcVar7 = extraout_r1_01;
-      fVar28 = extraout_s0_01;
+      pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x44210));
+      pcVar16[-8] = (cRSubGame)0xe;
+      *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+      pcVar5 = extraout_r1_01;
+      fVar24 = extraout_s0_01;
       goto LAB_0007f2a4;
     case (cRSubGame *)0x7d:
-      if ((iVar21 < 1) || (pcVar18[-0x248] != (cRSubGame)0x3)) {
-        pcVar5 = (cRSubGame *)
-                 cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x447e8));
-        uVar30 = DAT_0007f278;
-        *(undefined4 *)(pcVar18 + -0x18) = DAT_0007f278;
-        *(undefined4 *)(pcVar18 + -0x1c) = uVar30;
-        *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-        pcVar18[-8] = (cRSubGame)0x4;
-        pcVar7 = extraout_r1_03;
-        fVar28 = extraout_s0_03;
+      if ((iVar20 < 1) || (pcVar16[-0x248] != (cRSubGame)0x3)) {
+        pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x447e8));
+        *(undefined4 *)(pcVar16 + -0x18) = 0;
+        *(undefined4 *)(pcVar16 + -0x1c) = 0;
+        *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+        pcVar16[-8] = (cRSubGame)0x4;
+        pcVar5 = extraout_r1_03;
+        fVar24 = extraout_s0_03;
       }
       else {
-        pcVar5 = (cRSubGame *)
-                 cRBod::SetObject(this,*(cRObject **)(**(int **)(pcVar4 + iVar22) + 0x447e8));
-        uVar30 = DAT_0007fe24;
-        *(undefined4 *)(pcVar18 + -0x18) = DAT_0007fe24;
-        *(uint *)(pcVar18 + -0x34) = *(uint *)(pcVar18 + -0x34) | 0x20;
-        *(undefined4 *)(pcVar18 + -0x1c) = uVar30;
-        pcVar18[-8] = (cRSubGame)0xa;
-        pcVar18[-0x248] = (cRSubGame)0xd;
-        pcVar7 = extraout_r1_25;
-        fVar28 = extraout_s0_24;
+        pcVar4 = (cRSubGame *)cRBod::SetObject(this,*(cRObject **)(Game + 0x447e8));
+        *(undefined4 *)(pcVar16 + -0x18) = 0;
+        *(uint *)(pcVar16 + -0x34) = *(uint *)(pcVar16 + -0x34) | 0x20;
+        *(undefined4 *)(pcVar16 + -0x1c) = 0;
+        pcVar16[-8] = (cRSubGame)0xa;
+        pcVar16[-0x248] = (cRSubGame)0xd;
+        pcVar5 = extraout_r1_25;
+        fVar24 = extraout_s0_24;
       }
       goto LAB_0007f2a4;
     }
-    uVar30 = LevelConvert(in_r0,(char)local_98[*(int *)(local_94 + 0x14) + local_88 * 8],iVar21,true
+    uVar26 = LevelConvert(in_r0,(char)local_98[*(int *)(local_94 + 0x14) + local_88 * 8],iVar20,true
                          );
-    pcVar5 = (cRSubGame *)wprintf((char *)pcVar17,uVar30,*(undefined4 *)(local_94 + 0x10));
-    pcVar7 = extraout_r1_00;
-    fVar28 = extraout_s0_00;
+    pcVar4 = (cRSubGame *)
+             wprintf("TrackError:%c in Segment %s\n",uVar26,*(undefined4 *)(local_94 + 0x10));
+    pcVar5 = extraout_r1_00;
+    fVar24 = extraout_s0_00;
 LAB_0007f2a4:
-    uVar30 = DAT_0007f278;
-    *(undefined4 *)(pcVar18 + -0x20) = DAT_0007f278;
-    *(undefined4 *)(pcVar18 + -0x24) = uVar30;
-    *(undefined4 *)(pcVar18 + -0x28) = uVar30;
-    *(undefined4 *)(pcVar20 + -0x1c) = uVar30;
-    *(undefined4 *)(pcVar20 + -0x20) = uVar30;
-    *(undefined4 *)(pcVar20 + -0x24) = uVar30;
-    cVar13 = pcVar18[-8];
-    if ((byte)((char)cVar13 - 0x1dU) < 2) {
-      uVar12 = *(uint *)(*(int *)(pcVar4 + iVar16) + 0x1c);
-      fVar26 = (fVar32 + DAT_0007fe08) - DAT_0007fe08;
-      *(float *)(pcVar18 + -0x20) = fVar26;
-      if ((uVar12 & 0x20) == 0) {
-        *(uint *)(pcVar20 + -0x30) = *(uint *)(pcVar20 + -0x30) & 0xffffffdf;
-        cVar13 = pcVar18[-8];
-        pcVar5 = pcVar4;
+    *(undefined4 *)(pcVar16 + -0x20) = 0;
+    *(undefined4 *)(pcVar16 + -0x24) = 0;
+    *(undefined4 *)(pcVar16 + -0x28) = 0;
+    *(undefined4 *)(pcVar18 + -0x1c) = 0;
+    *(undefined4 *)(pcVar18 + -0x20) = 0;
+    *(undefined4 *)(pcVar18 + -0x24) = 0;
+    cVar11 = pcVar16[-8];
+    if ((byte)((char)cVar11 - 0x1dU) < 2) {
+      fVar23 = (fVar28 + 0.5) - 0.5;
+      uVar10 = gConfig._28_4_ & 0x20;
+      *(float *)(pcVar16 + -0x20) = fVar23;
+      if (uVar10 == 0) {
+        *(uint *)(pcVar18 + -0x30) = *(uint *)(pcVar18 + -0x30) & 0xffffffdf;
+        cVar11 = pcVar16[-8];
+        pcVar4 = (cRSubGame *)local_8c;
       }
       else {
-        *(float *)(pcVar20 + -0x1c) = fVar26;
-        pcVar5 = (cRSubGame *)
-                 GetSkirtColour((tColourSmall *)(**(int **)(pcVar4 + iVar22) + 0x718a0));
-        cVar13 = pcVar18[-8];
-        pcVar7 = extraout_r1_23;
-        fVar28 = extraout_s0_22;
+        *(float *)(pcVar18 + -0x1c) = fVar23;
+        pcVar4 = (cRSubGame *)GetSkirtColour((tColourSmall *)(Game + 0x718a0));
+        cVar11 = pcVar16[-8];
+        pcVar5 = extraout_r1_23;
+        fVar24 = extraout_s0_22;
       }
     }
     else {
-      fVar27 = (float)VectorSignedToFloat(pcVar11,(byte)(in_fpscr >> 0x16) & 3);
-      *(undefined4 *)(pcVar18 + -0x24) = uVar30;
-      fVar29 = DAT_0007f268;
-      fVar26 = DAT_0007f264;
-      if ((byte)((char)cVar13 - 8U) < 3) {
-        *(float *)(pcVar18 + -0x24) = DAT_0007f268;
+      fVar23 = (float)VectorSignedToFloat(pcVar9,(byte)(in_fpscr >> 0x16) & 3);
+      *(undefined4 *)(pcVar16 + -0x24) = 0;
+      if ((byte)((char)cVar11 - 8U) < 3) {
+        *(undefined4 *)(pcVar16 + -0x24) = 0x3f000000;
       }
-      *(float *)(pcVar18 + -0x28) = (fVar27 - fVar26) + fVar29;
-      *(float *)(pcVar18 + -0x20) = fVar32 + DAT_0007f268;
+      *(float *)(pcVar16 + -0x28) = (fVar23 - 4.0) + 0.5;
+      *(float *)(pcVar16 + -0x20) = fVar28 + 0.5;
     }
-    if (iVar21 < 4) {
-      iVar10 = *(int *)(in_r0 + 0x60);
-      bVar24 = iVar10 != 2;
-      if (bVar24) {
-        iVar10 = *(int *)(in_r0 + 0x3131d0);
+    if (iVar20 < 4) {
+      iVar19 = *(int *)(in_r0 + 0x60);
+      bVar21 = iVar19 != 2;
+      if (bVar21) {
+        iVar19 = *(int *)(in_r0 + 0x3131d0);
       }
-      if (bVar24) {
-        *(undefined4 *)(pcVar18 + -0x24) = *(undefined4 *)(iVar10 + 0x34);
+      if (bVar21) {
+        *(undefined4 *)(pcVar16 + -0x24) = *(undefined4 *)(iVar19 + 0x34);
       }
     }
-    if (cVar13 == (cRSubGame)0x1c) {
-      *(float *)(pcVar18 + -0x24) = *(float *)(pcVar18 + -0x24) - DAT_0007f26c;
+    if (cVar11 == (cRSubGame)0x1c) {
+      *(float *)(pcVar16 + -0x24) = *(float *)(pcVar16 + -0x24) - 0.03;
     }
-    if ((((((cVar13 == (cRSubGame)0x1 || cVar13 == (cRSubGame)0x15) || (cVar13 == (cRSubGame)0x14))
-          || (cVar13 == (cRSubGame)0x21)) ||
-         (((cVar13 == (cRSubGame)0x22 || (cVar13 == (cRSubGame)0xf)) ||
-          ((cVar13 == (cRSubGame)0x10 ||
-           ((cVar13 == (cRSubGame)0x17 || (cVar13 == (cRSubGame)0x18)))))))) ||
-        (cVar13 == (cRSubGame)0x19)) ||
-       ((((cVar13 == (cRSubGame)0x1a || (cVar13 == (cRSubGame)0x1b)) || (cVar13 == (cRSubGame)0x12))
-        || ((cVar13 == (cRSubGame)0x13 || (cVar13 == (cRSubGame)0x11)))))) {
-      pcVar5 = (cRSubGame *)(8 - (int)pcVar11);
-      fVar26 = (float)VectorSignedToFloat(pcVar5,(byte)(in_fpscr >> 0x16) & 3);
-      fVar29 = (float)VectorSignedToFloat(iVar21 % 8,(byte)(in_fpscr >> 0x16) & 3);
-      fVar26 = fVar26 * DAT_0007f270 * DAT_0007f274;
-      *(float *)(pcVar18 + -0x18) = fVar29 * DAT_0007f274;
-      *(float *)(pcVar18 + -0x1c) = fVar26;
-      if (cVar13 != (cRSubGame)0x1f) goto LAB_0007f388;
+    if ((((((cVar11 == (cRSubGame)0x1 || cVar11 == (cRSubGame)0x15) || (cVar11 == (cRSubGame)0x14))
+          || (cVar11 == (cRSubGame)0x21)) ||
+         (((cVar11 == (cRSubGame)0x22 || (cVar11 == (cRSubGame)0xf)) ||
+          ((cVar11 == (cRSubGame)0x10 ||
+           ((cVar11 == (cRSubGame)0x17 || (cVar11 == (cRSubGame)0x18)))))))) ||
+        (cVar11 == (cRSubGame)0x19)) ||
+       ((((cVar11 == (cRSubGame)0x1a || (cVar11 == (cRSubGame)0x1b)) || (cVar11 == (cRSubGame)0x12))
+        || ((cVar11 == (cRSubGame)0x13 || (cVar11 == (cRSubGame)0x11)))))) {
+      pcVar4 = (cRSubGame *)(8 - (int)pcVar9);
+      fVar23 = (float)VectorSignedToFloat(pcVar4,(byte)(in_fpscr >> 0x16) & 3);
+      fVar25 = (float)VectorSignedToFloat(iVar20 % 8,(byte)(in_fpscr >> 0x16) & 3);
+      *(float *)(pcVar16 + -0x18) = fVar25 * 0.125;
+      *(float *)(pcVar16 + -0x1c) = fVar23 * 0.25 * 0.125;
+      if (cVar11 != (cRSubGame)0x1f) goto LAB_0007f388;
 LAB_0007fb70:
-      *(float *)(pcVar18 + -0x28) = *(float *)(pcVar18 + -0x28) * DAT_0007fe0c;
+      *(float *)(pcVar16 + -0x28) = *(float *)(pcVar16 + -0x28) * 1.1;
     }
     else {
-      if (cVar13 == (cRSubGame)0x1f) goto LAB_0007fb70;
+      if (cVar11 == (cRSubGame)0x1f) goto LAB_0007fb70;
 LAB_0007f388:
-      if (cVar13 == (cRSubGame)0x16) {
+      if (cVar11 == (cRSubGame)0x16) {
         if ((*(int *)(in_r0 + 0x60) != 3) || ((*(uint *)(in_r0 + 0x6c) & 0x400) != 0)) {
-          *(undefined4 *)(pcVar18 + -0x24) = DAT_0007fe10;
+          *(undefined4 *)(pcVar16 + -0x24) = 0xc0400000;
         }
-        *(float *)(pcVar18 + -0x20) = fVar32 + DAT_0007fe08;
+        *(float *)(pcVar16 + -0x20) = fVar28 + 0.5;
       }
     }
-    if (pcVar11 == (cRSubGame *)0x7) break;
-    pcVar11 = pcVar11 + 1;
-    pcVar18 = pcVar18 + 0x48;
-    cVar13 = in_r0[2];
+    if (pcVar9 == (cRSubGame *)0x7) break;
+    pcVar9 = pcVar9 + 1;
+    pcVar16 = pcVar16 + 0x48;
+    cVar11 = in_r0[2];
   } while( true );
-  iVar6 = *(int *)(in_r0 + 0x74);
-  iVar21 = iVar21 + 1;
+  iVar14 = *(int *)(in_r0 + 0x74);
+  iVar20 = iVar20 + 1;
   local_88 = local_88 + 1;
-  pcVar20 = pcVar20 + 0xdc;
-  bVar25 = SBORROW4(local_68,local_88);
-  iVar10 = local_68 - local_88;
-  bVar24 = local_68 == local_88;
+  pcVar18 = pcVar18 + 0xdc;
+  bVar22 = SBORROW4(local_68,local_88);
+  iVar19 = local_68 - local_88;
+  bVar21 = local_68 == local_88;
   if (local_88 < local_68) {
-    bVar25 = SBORROW4(iVar6,iVar21);
-    iVar10 = iVar6 - iVar21;
-    bVar24 = iVar6 == iVar21;
+    bVar22 = SBORROW4(iVar14,iVar20);
+    iVar19 = iVar14 - iVar20;
+    bVar21 = iVar14 == iVar20;
   }
   local_74 = local_74 + 1;
-  if (bVar24 || iVar10 < 0 != bVar25) goto LAB_0007fbc8;
+  if (bVar21 || iVar19 < 0 != bVar22) goto LAB_0007fbc8;
   goto LAB_0007ed78;
 }

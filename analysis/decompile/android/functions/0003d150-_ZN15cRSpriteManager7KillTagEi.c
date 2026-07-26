@@ -13,12 +13,10 @@ void __thiscall cRSpriteManager::KillTag(cRSpriteManager *this,int param_1)
   cRSprite *pcVar1;
   cRSprite *this_00;
   int iVar2;
-  int iVar3;
 
-  iVar3 = *(int *)(DAT_0003d1bc + 0x3d160 + DAT_0003d1c0);
   iVar2 = 0;
   do {
-    pcVar1 = *(cRSprite **)(iVar3 + iVar2 + 0x2af84);
+    pcVar1 = *(cRSprite **)((int)&DAT_0015cfd4 + iVar2);
     while (this_00 = pcVar1, pcVar1 != (cRSprite *)0x0) {
       while (pcVar1 = *(cRSprite **)(this_00 + 0xc), *(int *)this_00 != param_1) {
         this_00 = pcVar1;

@@ -10,56 +10,48 @@
 void __thiscall cRExit::AI(cRExit *this)
 
 {
-  uint uVar1;
-  undefined4 uVar2;
-  int iVar3;
-  int iVar4;
-  int *piVar5;
+  int iVar1;
+  uint uVar2;
+  undefined4 uVar3;
 
-  iVar4 = DAT_000629b4 + 0x62584;
   switch(*(undefined4 *)this) {
   case 2:
-    uVar1 = *(uint *)(*(int *)(this + 0x14) + 0x194);
-    if ((uVar1 & 0x20) != 0) {
-      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar1 & 0xffffffdf;
+    uVar2 = *(uint *)(*(int *)(this + 0x14) + 0x194);
+    if ((uVar2 & 0x20) != 0) {
+      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar2 & 0xffffffdf;
       UnInit(this);
-      piVar5 = *(int **)(iVar4 + DAT_000629b8);
-      cRSubPause::UnInit((cRSubPause *)(*piVar5 + 0x718c4));
-      *(undefined1 *)(*piVar5 + 0x718b9) = 0;
-      cRSpriteManager::Pause(*(cRSpriteManager **)(iVar4 + DAT_000629bc),false);
-      cRSubGame::UnInit((cRSubGame *)(*piVar5 + 0x718a0));
-      iVar3 = *piVar5;
-      if (*(int *)(iVar3 + 0x71900) == 4 || *(int *)(iVar3 + 0x71900) == 1) {
-        cRSubGame::Init((cRSubGame *)(iVar3 + 0x718a0));
+      cRSubPause::UnInit((cRSubPause *)(Game + 0x718c4));
+      *(undefined1 *)(Game + 0x718b9) = 0;
+      cRSpriteManager::Pause((cRSpriteManager *)&gRSpriteManager,false);
+      cRSubGame::UnInit((cRSubGame *)(Game + 0x718a0));
+      if (*(int *)(Game + 0x71900) == 4 || *(int *)(Game + 0x71900) == 1) {
+        cRSubGame::Init((cRSubGame *)(Game + 0x718a0));
       }
       else {
-        SetGameState(2,*(int *)(iVar3 + 0x81630),*(int *)(iVar3 + 0x71904),*(int *)(iVar3 + 0x85358)
-                    );
-        *(undefined4 *)(*piVar5 + 0x15c) = 2;
+        SetGameState(2,*(int *)(Game + 0x81630),*(int *)(Game + 0x71904),*(int *)(Game + 0x85358));
+        *(undefined4 *)(Game + 0x15c) = 2;
       }
     }
     break;
   case 3:
-    uVar1 = *(uint *)(*(int *)(this + 0x14) + 0x194);
-    if ((uVar1 & 0x20) != 0) {
-      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar1 & 0xffffffdf;
+    uVar2 = *(uint *)(*(int *)(this + 0x14) + 0x194);
+    if ((uVar2 & 0x20) != 0) {
+      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar2 & 0xffffffdf;
       UnInit(this);
-      piVar5 = *(int **)(iVar4 + DAT_000629b8);
-      cRSubPause::UnInit((cRSubPause *)(*piVar5 + 0x718c4));
-      *(undefined1 *)(*piVar5 + 0x718b9) = 0;
-      cRSpriteManager::Pause(*(cRSpriteManager **)(iVar4 + DAT_000629bc),false);
-      cRSubGame::UnInit((cRSubGame *)(*piVar5 + 0x718a0));
-      *(undefined4 *)(*piVar5 + 0x15c) = *(undefined4 *)(gDirectory + *piVar5 + 0x254c);
+      cRSubPause::UnInit((cRSubPause *)(Game + 0x718c4));
+      *(undefined1 *)(Game + 0x718b9) = 0;
+      cRSpriteManager::Pause((cRSpriteManager *)&gRSpriteManager,false);
+      cRSubGame::UnInit((cRSubGame *)(Game + 0x718a0));
+      *(undefined4 *)(Game + 0x15c) = *(undefined4 *)(gDirectory + Game + 0x254c);
     }
     break;
   case 4:
-    uVar1 = *(uint *)(*(int *)(this + 0x14) + 0x194);
-    if ((uVar1 & 0x20) != 0) {
-      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar1 & 0xffffffdf;
+    uVar2 = *(uint *)(*(int *)(this + 0x14) + 0x194);
+    if ((uVar2 & 0x20) != 0) {
+      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar2 & 0xffffffdf;
       UnInit(this);
-      piVar5 = *(int **)(iVar4 + DAT_000629b8);
-      cRSubGame::UnInit((cRSubGame *)(*piVar5 + 0x718a0));
-      *(undefined4 *)(*piVar5 + 0x15c) = 2;
+      cRSubGame::UnInit((cRSubGame *)(Game + 0x718a0));
+      *(undefined4 *)(Game + 0x15c) = 2;
       SetGameState(0,0,1,3);
     }
     break;
@@ -68,77 +60,71 @@ void __thiscall cRExit::AI(cRExit *this)
   case 6:
     break;
   case 7:
-    uVar1 = *(uint *)(*(int *)(this + 0x14) + 0x194);
-    if ((uVar1 & 0x20) == 0) break;
-    *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar1 & 0xffffffdf;
+    uVar2 = *(uint *)(*(int *)(this + 0x14) + 0x194);
+    if ((uVar2 & 0x20) == 0) break;
+    *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar2 & 0xffffffdf;
     UnInit(this);
-    piVar5 = *(int **)(iVar4 + DAT_000629b8);
-    cRSubPause::UnInit((cRSubPause *)(*piVar5 + 0x718c4));
-    *(undefined1 *)(*piVar5 + 0x718b9) = 0;
-    cRSpriteManager::Pause(*(cRSpriteManager **)(iVar4 + DAT_000629bc),false);
+    cRSubPause::UnInit((cRSubPause *)(Game + 0x718c4));
+    *(undefined1 *)(Game + 0x718b9) = 0;
+    cRSpriteManager::Pause((cRSpriteManager *)&gRSpriteManager,false);
     goto LAB_00062610;
   case 8:
-    piVar5 = *(int **)(iVar4 + DAT_000629b8);
-    cRIntro::AI((cRIntro *)(*piVar5 + 0x4d3d8));
-    uVar1 = *(uint *)(*(int *)(this + 0x14) + 0x194);
-    if ((uVar1 & 0x20) != 0) {
-      iVar3 = *piVar5;
-      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar1 & 0xffffffdf;
-      *(undefined1 *)(iVar3 + 0x324) = 0;
-      *(undefined4 *)(iVar3 + 0x15c) = 0;
+    cRIntro::AI((cRIntro *)(Game + 0x4d3d8));
+    iVar1 = Game;
+    uVar2 = *(uint *)(*(int *)(this + 0x14) + 0x194);
+    if ((uVar2 & 0x20) != 0) {
+      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar2 & 0xffffffdf;
+      *(undefined1 *)(iVar1 + 0x324) = 0;
+      *(undefined4 *)(iVar1 + 0x15c) = 0;
       UnInit(this);
     }
     break;
   case 9:
-    uVar1 = *(uint *)(*(int *)(this + 0x14) + 0x194);
-    if ((uVar1 & 0x20) != 0) {
-      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar1 & 0xffffffdf;
+    uVar2 = *(uint *)(*(int *)(this + 0x14) + 0x194);
+    if ((uVar2 & 0x20) != 0) {
+      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar2 & 0xffffffdf;
       UnInit(this);
-      *(undefined4 *)(**(int **)(iVar4 + DAT_000629b8) + 0x5c) = 3;
+      *(undefined4 *)(Game + 0x5c) = 3;
     }
     break;
   case 10:
-    piVar5 = *(int **)(iVar4 + DAT_000629b8);
-    cRMainMenu::AI((cRMainMenu *)(*piVar5 + 0x4d424));
-    uVar1 = *(uint *)(*(int *)(this + 0x14) + 0x194);
-    if ((uVar1 & 0x20) != 0) {
-      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar1 & 0xffffffdf;
+    cRMainMenu::AI((cRMainMenu *)(Game + 0x4d424));
+    uVar2 = *(uint *)(*(int *)(this + 0x14) + 0x194);
+    if ((uVar2 & 0x20) != 0) {
+      *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar2 & 0xffffffdf;
       UnInit(this);
       cRMainMenu::UnInit();
-      iVar3 = *piVar5;
-      if (*(int *)(iVar3 + 0x5c) == 0) {
-        *(undefined4 *)(iVar3 + 0x5c) = 1;
+      if (*(int *)(Game + 0x5c) == 0) {
+        *(undefined4 *)(Game + 0x5c) = 1;
       }
     }
     break;
   case 0xb:
-    uVar1 = *(uint *)(*(int *)(this + 0x14) + 0x194);
-    if ((uVar1 & 0x20) == 0) break;
-    *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar1 & 0xffffffdf;
-    piVar5 = *(int **)(iVar4 + DAT_000629b8);
+    uVar2 = *(uint *)(*(int *)(this + 0x14) + 0x194);
+    if ((uVar2 & 0x20) == 0) break;
+    *(uint *)(*(int *)(this + 0x14) + 0x194) = uVar2 & 0xffffffdf;
     cRGalaxy::UnInit((cRGalaxy *)
-                     (gOFOData + *(int *)(gOFOData + *piVar5 + 0x1ebc) * 0x8e6c + *piVar5 + 0x1ec0))
-    ;
+                     (gOFOData + *(int *)(gOFOData + Game + 0x1ebc) * 0x8e6c + Game + 0x1ec0));
     SetGameState(0,0,1,3);
-    cRSubGame::Complete((cRSubGame *)(*piVar5 + 0x718a0),true);
-    if (*(char *)(*piVar5 + 0x2c1) != '\0') {
-      *(undefined4 *)(this + 8) = *(undefined4 *)(*piVar5 + 0x15c);
+    cRSubGame::Complete((cRSubGame *)(Game + 0x718a0),true);
+    if (*(char *)(Game + 0x2c1) != '\0') {
+      *(undefined4 *)(this + 8) = *(undefined4 *)(Game + 0x15c);
       UnInit(this);
-      cRSubGame::UnInit((cRSubGame *)(*piVar5 + 0x718a0));
+      cRSubGame::UnInit((cRSubGame *)(Game + 0x718a0));
       break;
     }
     UnInit(this);
 LAB_00062610:
-    cRSubGame::UnInit((cRSubGame *)(*piVar5 + 0x718a0));
-    *(undefined4 *)(*piVar5 + 0x15c) = 2;
+    cRSubGame::UnInit((cRSubGame *)(Game + 0x718a0));
+    *(undefined4 *)(Game + 0x15c) = 2;
   }
-  uVar1 = *(uint *)(*(int *)(this + 0x18) + 0x194);
-  if ((uVar1 & 0x20) != 0) {
-    *(uint *)(*(int *)(this + 0x18) + 0x194) = uVar1 & 0xffffffdf;
-    uVar2 = *(undefined4 *)(this + 8);
-    iVar4 = **(int **)(iVar4 + DAT_000629b8);
-    *(undefined1 *)(iVar4 + 0x324) = 0;
-    *(undefined4 *)(iVar4 + 0x15c) = uVar2;
+  uVar2 = *(uint *)(*(int *)(this + 0x18) + 0x194);
+  if ((uVar2 & 0x20) != 0) {
+    *(uint *)(*(int *)(this + 0x18) + 0x194) = uVar2 & 0xffffffdf;
+    iVar1 = Game;
+    uVar3 = *(undefined4 *)(this + 8);
+    *(undefined1 *)(Game + 0x324) = 0;
+    *(undefined4 *)(iVar1 + 0x15c) = uVar3;
     UnInit(this);
     return;
   }

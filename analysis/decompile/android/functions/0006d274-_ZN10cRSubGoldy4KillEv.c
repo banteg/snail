@@ -11,6 +11,6 @@ void __thiscall cRSubGoldy::Kill(cRSubGoldy *this)
 
 {
   FallingInit(this);
-  *(undefined4 *)(this + 0x60) = DAT_0006d28c;
+  *(undefined4 *)(this + 0x60) = 0xc1000000;
   return;
 }

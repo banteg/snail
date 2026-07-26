@@ -39,14 +39,14 @@ void __thiscall tMatrix::InterpolateSmooth(tMatrix *this,float param_1,float par
   local_2c = fStack_4c;
   local_28 = fStack_48;
   uStack_24 = uStack_44;
-  if ((DAT_000291e4 < local_50) && (local_50 < DAT_000291e8)) {
-    local_30 = DAT_000291ec;
+  if ((-0.001 < local_50) && (local_50 < 0.001)) {
+    local_30 = 0.0;
   }
-  if ((DAT_000291e4 < fStack_4c) && (fStack_4c < DAT_000291e8)) {
-    local_2c = DAT_000291ec;
+  if ((-0.001 < fStack_4c) && (fStack_4c < 0.001)) {
+    local_2c = 0.0;
   }
-  if ((DAT_000291e4 < fStack_48) && (fStack_48 < DAT_000291e8)) {
-    local_28 = DAT_000291ec;
+  if ((-0.001 < fStack_48) && (fStack_48 < 0.001)) {
+    local_28 = 0.0;
   }
   if (((local_30 != 0.0) || (local_2c != 0.0)) || (local_28 != 0.0)) {
     tAxis::operator=(atStack_40,(tQuaternian *)&local_30);

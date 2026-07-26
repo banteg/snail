@@ -11,14 +11,11 @@ void __thiscall
 cRBorder::SpriteExtend(cRBorder *this,int param_1,int param_2,int param_3,bool param_4)
 
 {
-  undefined4 uVar1;
-
-  uVar1 = DAT_0005c8e8;
   *(int *)(this + 0x58) = param_3;
-  *(undefined4 *)(this + 0x20c) = uVar1;
+  *(undefined4 *)(this + 0x20c) = 0;
   *(int *)(this + 0x54) = param_1;
-  *(undefined4 *)(this + 0x210) = uVar1;
-  *(undefined4 *)(this + 0x208) = uVar1;
+  *(undefined4 *)(this + 0x210) = 0;
+  *(undefined4 *)(this + 0x208) = 0;
   *(int *)(this + 0x5c) = param_2;
   this[0x51] = (cRBorder)param_4;
   this[0x50] = (cRBorder)0x1;

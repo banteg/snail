@@ -10,12 +10,10 @@
 void __thiscall cRResourceManager::RenderSplash(cRResourceManager *this)
 
 {
-  undefined4 uVar1;
-  float fVar2;
+  float fVar1;
 
-  uVar1 = CalcPercent(this);
-  *(undefined4 *)(*(int *)(DAT_0008eb44 + 0x8eb28 + DAT_0008eb48) + 0xa0) = uVar1;
-  fVar2 = (float)cRSplashManager::RenderStart();
-  cRSplashManager::Render(fVar2);
+  G0SplashManager._160_4_ = CalcPercent(this);
+  fVar1 = (float)cRSplashManager::RenderStart();
+  cRSplashManager::Render(fVar1);
   return;
 }

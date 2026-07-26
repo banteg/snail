@@ -11,35 +11,22 @@ void __thiscall tVector::Cross(tVector *this,tVector *param_1,tVector *param_2)
 
 {
   int iVar1;
-  int iVar2;
-  undefined4 uVar3;
-  undefined4 uVar4;
-  int iVar5;
-  int iVar6;
-  float fVar7;
-  float fVar8;
-  float fVar9;
-  float fVar10;
+  float fVar2;
+  float fVar3;
 
-  iVar1 = DAT_00028308;
-  iVar5 = DAT_00028304 + 0x2827c;
-  iVar6 = iVar5 + DAT_00028308;
-  if (((*(uint *)(iVar5 + DAT_00028308) & 1) == 0) &&
-     (iVar2 = __cxa_guard_acquire(iVar6), iVar2 != 0)) {
-    __cxa_guard_release(iVar6);
+  if (((Cross(tVector_const&,tVector_const&)::T & 1) == 0) &&
+     (iVar1 = __cxa_guard_acquire(&Cross(tVector_const&,tVector_const&)::T), iVar1 != 0)) {
+    __cxa_guard_release(&Cross(tVector_const&,tVector_const&)::T);
   }
-  fVar7 = *(float *)(param_1 + 8);
-  fVar8 = *(float *)(param_2 + 8);
-  iVar5 = iVar5 + iVar1;
-  *(float *)(iVar5 + 4) = *(float *)(param_1 + 4) * fVar8 - fVar7 * *(float *)(param_2 + 4);
-  fVar10 = *(float *)param_1;
-  fVar9 = *(float *)param_2;
-  *(float *)(iVar5 + 8) = fVar7 * fVar9 - fVar10 * fVar8;
-  *(float *)(iVar5 + 0xc) = fVar10 * *(float *)(param_2 + 4) - *(float *)(param_1 + 4) * fVar9;
-  uVar3 = *(undefined4 *)(iVar5 + 8);
-  uVar4 = *(undefined4 *)(iVar5 + 0xc);
-  *(undefined4 *)this = *(undefined4 *)(iVar5 + 4);
-  *(undefined4 *)(this + 4) = uVar3;
-  *(undefined4 *)(this + 8) = uVar4;
+  Cross(tVector_const&,tVector_const&)::T._0_4_ =
+       *(float *)(param_1 + 4) * *(float *)(param_2 + 8) -
+       *(float *)(param_1 + 8) * *(float *)(param_2 + 4);
+  fVar2 = *(float *)(param_1 + 8) * *(float *)param_2 - *(float *)param_1 * *(float *)(param_2 + 8);
+  fVar3 = *(float *)param_1 * *(float *)(param_2 + 4) - *(float *)(param_1 + 4) * *(float *)param_2;
+  Cross(tVector_const&,tVector_const&)::T._4_4_ = fVar2;
+  Cross(tVector_const&,tVector_const&)::T._8_4_ = fVar3;
+  *(undefined4 *)this = Cross(tVector_const&,tVector_const&)::T._0_4_;
+  *(float *)(this + 4) = fVar2;
+  *(float *)(this + 8) = fVar3;
   return;
 }

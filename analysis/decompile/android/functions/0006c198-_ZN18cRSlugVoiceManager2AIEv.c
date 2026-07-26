@@ -11,14 +11,12 @@ void __thiscall cRSlugVoiceManager::AI(cRSlugVoiceManager *this)
 
 {
   float fVar1;
-  float fVar2;
 
-  fVar1 = DAT_0006c1d4;
   if (0.0 < *(float *)(this + 4)) {
-    fVar2 = *(float *)(this + 4) + *(float *)(this + 8);
-    *(float *)(this + 4) = fVar2;
-    if (fVar1 < fVar2) {
-      *(undefined4 *)(this + 4) = DAT_0006c1d8;
+    fVar1 = *(float *)(this + 4) + *(float *)(this + 8);
+    *(float *)(this + 4) = fVar1;
+    if (1.0 < fVar1) {
+      *(undefined4 *)(this + 4) = 0;
       *this = (cRSlugVoiceManager)0x0;
     }
     return;

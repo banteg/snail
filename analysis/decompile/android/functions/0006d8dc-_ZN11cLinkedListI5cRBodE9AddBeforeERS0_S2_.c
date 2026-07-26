@@ -14,7 +14,7 @@ cLinkedList<cRBod>::AddBefore(cLinkedList<cRBod> *this,cRBod *param_1,cRBod *par
   cRBod *pcVar1;
 
   if ((*(uint *)(param_1 + 4) & 0x200) != 0) {
-    RShellError((char *)(DAT_0006d940 + 0x6d8f4 + DAT_0006d944));
+    RShellError("List ADDbefore");
     return;
   }
   *(cRBod **)(param_1 + 0xc) = param_2;

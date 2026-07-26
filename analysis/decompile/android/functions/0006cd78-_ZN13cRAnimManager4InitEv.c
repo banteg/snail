@@ -10,11 +10,8 @@
 void __thiscall cRAnimManager::Init(cRAnimManager *this)
 
 {
-  undefined4 uVar1;
-
-  uVar1 = DAT_0006cd94;
-  *(undefined4 *)(this + 8) = DAT_0006cd94;
-  *(undefined4 *)(this + 4) = uVar1;
+  *(undefined4 *)(this + 8) = 0;
+  *(undefined4 *)(this + 4) = 0;
   this[0x10] = (cRAnimManager)0x0;
   *(undefined4 *)this = 0;
   return;

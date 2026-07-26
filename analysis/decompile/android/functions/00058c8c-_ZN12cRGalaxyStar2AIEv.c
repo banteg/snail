@@ -11,6 +11,6 @@ void __thiscall cRGalaxyStar::AI(cRGalaxyStar *this)
 
 {
   *(float *)(this + 0x18) =
-       *(float *)(this + 0x18) + (*(float *)(this + 0x1c) - *(float *)(this + 0x18)) * DAT_00058ca8;
+       *(float *)(this + 0x18) + (*(float *)(this + 0x1c) - *(float *)(this + 0x18)) * 0.1;
   return;
 }

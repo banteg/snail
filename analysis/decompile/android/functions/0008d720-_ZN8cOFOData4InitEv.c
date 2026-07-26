@@ -14,11 +14,9 @@ void __thiscall cOFOData::Init(cOFOData *this)
   cOFOData *pcVar2;
   int iVar3;
   int iVar4;
-  int iVar5;
 
   iVar3 = 0;
-  iVar5 = 0;
-  iVar4 = DAT_0008d7a4 + 0x8d748;
+  iVar4 = 0;
   *this = (cOFOData)0x0;
   this[1] = (cOFOData)0x0;
   *(undefined4 *)(this + 0x24) = 0;
@@ -33,10 +31,10 @@ void __thiscall cOFOData::Init(cOFOData *this)
     pcVar1 = pcVar1 + 1;
   } while (iVar3 != 0x38);
   do {
-    iVar5 = iVar5 + 1;
+    iVar4 = iVar4 + 1;
     this[0x144] = (cOFOData)0x0;
     this = this + 1;
-  } while (iVar5 != 0x23);
-  strcpy(*(char **)(iVar4 + DAT_0008d7ac),(char *)(*(int *)(iVar4 + DAT_0008d7a8) + 0xf0));
+  } while (iVar4 != 0x23);
+  strcpy(gOFUser,gConfig + 0xf0);
   return;
 }

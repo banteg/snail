@@ -11,73 +11,61 @@ void __thiscall cRStarManager::UpdateStars(cRStarManager *this,float param_1)
 
 {
   float *pfVar1;
-  float fVar2;
-  float fVar3;
-  float fVar4;
-  float fVar5;
-  float fVar6;
-  float fVar7;
+  int iVar2;
   float in_r1;
-  undefined4 uVar8;
-  undefined4 uVar9;
-  int iVar10;
-  int iVar11;
-  int iVar12;
-  int iVar13;
-  int iVar14;
-  float fVar15;
-  float fVar16;
-  float fVar17;
-  float fVar18;
-  float fVar19;
+  undefined4 uVar3;
+  undefined4 uVar4;
+  int iVar5;
+  int iVar6;
+  int iVar7;
+  int iVar8;
+  float fVar9;
+  float fVar10;
+  float fVar11;
+  float fVar12;
+  float fVar13;
 
-  fVar7 = DAT_0006afb4;
-  fVar6 = DAT_0006afb0;
-  fVar5 = DAT_0006afac;
-  fVar4 = DAT_0006afa8;
-  fVar3 = DAT_0006afa4;
-  fVar2 = DAT_0006afa0;
-  iVar13 = *(int *)(this + 0x34);
-  if (0 < iVar13) {
-    iVar12 = 0;
-    iVar10 = *(int *)(this + 0x30);
-    iVar11 = **(int **)(DAT_0006afb8 + 0x6ae74 + DAT_0006afbc);
+  iVar2 = Game;
+  iVar7 = *(int *)(this + 0x34);
+  if (0 < iVar7) {
+    iVar6 = 0;
+    iVar5 = *(int *)(this + 0x30);
     do {
-      fVar18 = *(float *)(iVar10 + 0x24) + *(float *)(iVar10 + 0x20);
-      *(float *)(iVar10 + 0x24) = fVar18;
-      if (fVar18 <= fVar2) {
-        iVar14 = *(int *)(iVar10 + 0x1c);
+      fVar12 = *(float *)(iVar5 + 0x24) + *(float *)(iVar5 + 0x20);
+      *(float *)(iVar5 + 0x24) = fVar12;
+      if (fVar12 <= 35.0) {
+        iVar8 = *(int *)(iVar5 + 0x1c);
       }
       else {
-        *(float *)(iVar10 + 0x24) = fVar3;
-        iVar14 = *(int *)(iVar10 + 0x1c);
-        *(float *)(iVar14 + 0x88) = fVar3;
-        fVar18 = *(float *)(iVar11 + 0x448);
-        fVar19 = *(float *)(iVar11 + 0x450) + fVar4 * *(float *)(iVar11 + 0x440);
-        fVar17 = *(float *)(iVar11 + 0x458);
-        fVar16 = *(float *)(iVar11 + 0x454) + fVar4 * *(float *)(iVar11 + 0x444);
-        *(float *)(iVar14 + 0x48) = fVar19;
-        fVar17 = fVar17 + fVar4 * fVar18;
-        *(float *)(iVar14 + 0x4c) = fVar16;
-        *(float *)(iVar14 + 0x50) = fVar17;
-        uVar8 = *(undefined4 *)(iVar10 + 0x14);
-        uVar9 = *(undefined4 *)(iVar10 + 0x18);
-        *(undefined4 *)(iVar14 + 0x54) = *(undefined4 *)(iVar10 + 0x10);
-        *(undefined4 *)(iVar14 + 0x58) = uVar8;
-        *(undefined4 *)(iVar14 + 0x5c) = uVar9;
-        fVar18 = *(float *)(iVar10 + 0x14);
-        fVar15 = *(float *)(iVar10 + 0x10);
-        *(float *)(iVar14 + 0x50) = fVar17 + fVar5 * *(float *)(iVar10 + 0x18);
-        *(float *)(iVar14 + 0x4c) = fVar16 + fVar5 * fVar18;
-        *(float *)(iVar14 + 0x48) = fVar19 + fVar5 * fVar15;
-        fVar18 = fVar3 + fVar5 * *(float *)(iVar10 + 0x20);
-        *(float *)(iVar10 + 0x24) = fVar18;
+        *(undefined4 *)(iVar5 + 0x24) = 0;
+        iVar8 = *(int *)(iVar5 + 0x1c);
+        *(undefined4 *)(iVar8 + 0x88) = 0;
+        fVar12 = *(float *)(iVar2 + 0x448);
+        fVar13 = *(float *)(iVar2 + 0x450) + *(float *)(iVar2 + 0x440) * 50.0;
+        fVar11 = *(float *)(iVar2 + 0x458);
+        fVar10 = *(float *)(iVar2 + 0x454) + *(float *)(iVar2 + 0x444) * 50.0;
+        *(float *)(iVar8 + 0x48) = fVar13;
+        fVar11 = fVar11 + fVar12 * 50.0;
+        *(float *)(iVar8 + 0x4c) = fVar10;
+        *(float *)(iVar8 + 0x50) = fVar11;
+        uVar3 = *(undefined4 *)(iVar5 + 0x14);
+        uVar4 = *(undefined4 *)(iVar5 + 0x18);
+        *(undefined4 *)(iVar8 + 0x54) = *(undefined4 *)(iVar5 + 0x10);
+        *(undefined4 *)(iVar8 + 0x58) = uVar3;
+        *(undefined4 *)(iVar8 + 0x5c) = uVar4;
+        fVar12 = *(float *)(iVar5 + 0x14);
+        fVar9 = *(float *)(iVar5 + 0x10);
+        *(float *)(iVar8 + 0x50) = fVar11 + *(float *)(iVar5 + 0x18) * 10.0;
+        *(float *)(iVar8 + 0x4c) = fVar10 + fVar12 * 10.0;
+        *(float *)(iVar8 + 0x48) = fVar13 + fVar9 * 10.0;
+        fVar12 = *(float *)(iVar5 + 0x20) * 10.0 + 0.0;
+        *(float *)(iVar5 + 0x24) = fVar12;
       }
-      pfVar1 = (float *)(iVar10 + 0x28);
-      iVar12 = iVar12 + 1;
-      iVar10 = iVar10 + 0x2c;
-      *(float *)(iVar14 + 0x38) = ((fVar6 * *pfVar1 * (fVar18 - fVar7)) / fVar2) * in_r1;
-    } while (iVar12 != iVar13);
+      pfVar1 = (float *)(iVar5 + 0x28);
+      iVar6 = iVar6 + 1;
+      iVar5 = iVar5 + 0x2c;
+      *(float *)(iVar8 + 0x38) = ((*pfVar1 * 0.5 * (fVar12 - 2.0)) / 35.0) * in_r1;
+    } while (iVar6 != iVar7);
   }
   return;
 }

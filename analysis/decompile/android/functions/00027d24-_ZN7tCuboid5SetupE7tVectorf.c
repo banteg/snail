@@ -11,19 +11,17 @@ void tCuboid::Setup(float *param_1,float param_2,float param_3,float param_4,flo
 
 {
   float fVar1;
-  float fVar2;
 
-  fVar1 = DAT_00027da8;
-  fVar2 = param_5 * DAT_00027da4;
+  fVar1 = param_5 * 0.5;
   param_1[6] = param_2;
   param_1[7] = param_3;
   param_1[8] = param_4;
-  param_1[9] = param_5 * fVar1;
-  param_1[3] = fVar2 + param_1[6];
-  param_1[5] = fVar2 + param_1[8];
-  param_1[4] = fVar2 + param_1[7];
-  param_1[2] = param_1[8] - fVar2;
-  param_1[1] = param_1[7] - fVar2;
-  *param_1 = param_1[6] - fVar2;
+  param_1[9] = param_5 * 0.866;
+  param_1[3] = fVar1 + param_1[6];
+  param_1[5] = fVar1 + param_1[8];
+  param_1[4] = fVar1 + param_1[7];
+  param_1[2] = param_1[8] - fVar1;
+  param_1[1] = param_1[7] - fVar1;
+  *param_1 = param_1[6] - fVar1;
   return;
 }

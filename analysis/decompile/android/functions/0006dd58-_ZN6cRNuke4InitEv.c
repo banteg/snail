@@ -10,48 +10,40 @@
 void __thiscall cRNuke::Init(cRNuke *this)
 
 {
-  undefined4 uVar1;
-  undefined4 uVar2;
-  undefined4 uVar3;
-  int iVar4;
-  int iVar5;
-  cRNuke *pcVar6;
-  int iVar7;
-  float fVar8;
+  int iVar1;
+  int iVar2;
+  cRNuke *pcVar3;
+  float fVar4;
 
-  uVar3 = DAT_0006de70;
-  uVar2 = DAT_0006de6c;
-  uVar1 = DAT_0006de68;
+  iVar1 = Game;
   if (*(int *)this == 0) {
-    iVar4 = *(int *)(this + 4);
-    fVar8 = *(float *)(iVar4 + 100) - DAT_0006de64;
-    iVar7 = *(int *)(DAT_0006de74 + 0x6dd74 + DAT_0006de7c);
-    iVar5 = **(int **)(DAT_0006de74 + 0x6dd74 + DAT_0006de78);
+    iVar2 = *(int *)(this + 4);
+    fVar4 = *(float *)(iVar2 + 100);
     *(undefined4 *)this = 1;
-    *(float *)(this + 0xc) = fVar8;
-    fVar8 = *(float *)(iVar5 + 0x718f4);
-    *(undefined4 *)(this + 0x14) = uVar2;
-    *(undefined4 *)(this + 0x10) = uVar1;
-    *(float *)(this + 8) = fVar8 + fVar8;
-    pcVar6 = this;
+    *(float *)(this + 0xc) = fVar4 - 5.0;
+    fVar4 = *(float *)(iVar1 + 0x718f4);
+    *(undefined4 *)(this + 0x14) = 0x3dd67751;
+    *(undefined4 *)(this + 0x10) = 0;
+    *(float *)(this + 8) = fVar4 + fVar4;
+    pcVar3 = this;
     while( true ) {
-      iVar4 = cRSpriteManager::New(iVar7,*(int *)(iVar4 + 0x370),0x77,-1);
-      *(int *)(pcVar6 + 0x18) = iVar4;
-      pcVar6 = pcVar6 + 4;
-      *(undefined4 *)(iVar4 + 0x78) = uVar1;
-      *(undefined4 *)(iVar4 + 0x68) = uVar1;
-      *(undefined4 *)(iVar4 + 0x6c) = uVar1;
-      *(uint *)(iVar4 + 4) = *(uint *)(iVar4 + 4) | 0x800;
-      *(undefined4 *)(iVar4 + 0x60) = uVar3;
-      *(undefined4 *)(iVar4 + 100) = uVar3;
-      *(undefined4 *)(iVar4 + 0x5c) = uVar1;
-      *(undefined4 *)(iVar4 + 0x58) = uVar1;
-      *(undefined4 *)(iVar4 + 0x54) = uVar1;
-      *(undefined4 *)(iVar4 + 0x50) = uVar1;
-      *(undefined4 *)(iVar4 + 0x4c) = uVar1;
-      *(undefined4 *)(iVar4 + 0x48) = uVar1;
-      if (pcVar6 == this + 100) break;
-      iVar4 = *(int *)(this + 4);
+      iVar1 = cRSpriteManager::New((int)&gRSpriteManager,*(int *)(iVar2 + 0x370),0x77,-1);
+      *(int *)(pcVar3 + 0x18) = iVar1;
+      pcVar3 = pcVar3 + 4;
+      *(undefined4 *)(iVar1 + 0x78) = 0;
+      *(undefined4 *)(iVar1 + 0x68) = 0;
+      *(undefined4 *)(iVar1 + 0x6c) = 0;
+      *(uint *)(iVar1 + 4) = *(uint *)(iVar1 + 4) | 0x800;
+      *(undefined4 *)(iVar1 + 0x60) = 0x40400000;
+      *(undefined4 *)(iVar1 + 100) = 0x40400000;
+      *(undefined4 *)(iVar1 + 0x5c) = 0;
+      *(undefined4 *)(iVar1 + 0x58) = 0;
+      *(undefined4 *)(iVar1 + 0x54) = 0;
+      *(undefined4 *)(iVar1 + 0x50) = 0;
+      *(undefined4 *)(iVar1 + 0x4c) = 0;
+      *(undefined4 *)(iVar1 + 0x48) = 0;
+      if (pcVar3 == this + 100) break;
+      iVar2 = *(int *)(this + 4);
     }
   }
   AI();

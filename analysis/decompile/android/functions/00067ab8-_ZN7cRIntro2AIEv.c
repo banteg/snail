@@ -12,38 +12,27 @@ void __thiscall cRIntro::AI(cRIntro *this)
 {
   byte bVar1;
   bool bVar2;
-  float fVar3;
-  float fVar4;
-  int iVar5;
-  undefined4 uVar6;
-  uint uVar7;
-  int iVar8;
-  int iVar9;
-  int iVar10;
-  int *piVar11;
+  int iVar3;
+  undefined4 uVar4;
+  cRTutorial *this_00;
+  uint uVar5;
+  int iVar6;
   uint in_fpscr;
-  uint uVar12;
-  float fVar13;
-  float fVar14;
-  int iVar15;
+  uint uVar7;
+  float fVar8;
 
-  iVar8 = DAT_00067ec0;
-  iVar9 = DAT_00067ebc + 0x67ad4;
-  uVar12 = in_fpscr & 0xfffffff |
-           (uint)(*(float *)(**(int **)(iVar9 + DAT_00067ec0) + 0x3c) ==
-                 *(float *)(**(int **)(iVar9 + DAT_00067ec0) + 0x44)) << 0x1e;
-  if (!SUB41(uVar12 >> 0x1e,0)) {
+  uVar7 = in_fpscr & 0xfffffff | (uint)(*(float *)(Game + 0x3c) == *(float *)(Game + 0x44)) << 0x1e;
+  if (!SUB41(uVar7 >> 0x1e,0)) {
     UnInit();
     Init(this);
   }
-  iVar5 = RShellInkey();
-  if ((iVar5 == 0) &&
-     ((*(uint *)(*(int *)(**(int **)(iVar9 + iVar8) + 0x224) + 0x30) & 0x4000) == 0)) {
-    iVar5 = *(int *)(this + 0x30);
-    uVar7 = *(uint *)(iVar5 + 0x194);
+  iVar3 = RShellInkey();
+  if ((iVar3 == 0) && ((*(uint *)(*(int *)(Game + 0x224) + 0x30) & 0x4000) == 0)) {
+    iVar3 = *(int *)(this + 0x30);
+    uVar5 = *(uint *)(iVar3 + 0x194);
   }
   else {
-    *(undefined4 *)(this + 0x10) = DAT_00067ea8;
+    *(undefined4 *)(this + 0x10) = 0;
     if (this[4] != (cRIntro)0x0) {
       cRBorder::UnHideInit(*(cRBorder **)(this + 0x30));
       cRBorder::UnHideInit(*(cRBorder **)(this + 0x34));
@@ -52,188 +41,172 @@ void __thiscall cRIntro::AI(cRIntro *this)
       cRBorder::UnHideInit(*(cRBorder **)(this + 0x3c));
       cRBorder::UnHideInit(*(cRBorder **)(this + 0x44));
       cRBorder::UnHideInit(*(cRBorder **)(this + 0x48));
-      cRMouse::SetActive((cRMouse *)(**(int **)(iVar9 + iVar8) + 0x228));
+      cRMouse::SetActive((cRMouse *)(Game + 0x228));
       this[4] = (cRIntro)0x0;
     }
-    iVar5 = *(int *)(this + 0x30);
-    uVar7 = *(uint *)(iVar5 + 0x194);
+    iVar3 = *(int *)(this + 0x30);
+    uVar5 = *(uint *)(iVar3 + 0x194);
   }
-  if ((uVar7 & 0x20) == 0) {
-    uVar7 = *(uint *)(*(int *)(this + 0x34) + 0x194);
-    if ((uVar7 & 0x20) == 0) {
-      uVar7 = *(uint *)(*(int *)(this + 0x38) + 0x194);
-      if ((uVar7 & 0x20) != 0) {
-        piVar11 = *(int **)(iVar9 + iVar8);
-        *(uint *)(*(int *)(this + 0x38) + 0x194) = uVar7 & 0xffffffdf;
-        *(undefined4 *)(gOFOData + *piVar11 + 0x1ebc) = 0;
+  if ((uVar5 & 0x20) == 0) {
+    uVar5 = *(uint *)(*(int *)(this + 0x34) + 0x194);
+    if ((uVar5 & 0x20) == 0) {
+      uVar5 = *(uint *)(*(int *)(this + 0x38) + 0x194);
+      if ((uVar5 & 0x20) != 0) {
+        *(uint *)(*(int *)(this + 0x38) + 0x194) = uVar5 & 0xffffffdf;
+        *(undefined4 *)(gOFOData + Game + 0x1ebc) = 0;
         UnInit();
-        iVar8 = *piVar11;
-        *(undefined4 *)(iVar8 + 0x15c) = 10;
-        *(undefined4 *)(iVar8 + 0x71900) = 4;
-        *(undefined1 *)(iVar8 + 0x2c0) = 1;
+        iVar3 = Game;
+        *(undefined4 *)(Game + 0x15c) = 10;
+        *(undefined4 *)(iVar3 + 0x71900) = 4;
+        *(undefined1 *)(iVar3 + 0x2c0) = 1;
         return;
       }
-      uVar7 = *(uint *)(*(int *)(this + 0x40) + 0x194);
-      if ((uVar7 & 0x20) != 0) {
-        piVar11 = *(int **)(iVar9 + iVar8);
-        *(uint *)(*(int *)(this + 0x40) + 0x194) = uVar7 & 0xffffffdf;
-        *(undefined4 *)(gOFOData + *piVar11 + 0x1ebc) = 0;
+      uVar5 = *(uint *)(*(int *)(this + 0x40) + 0x194);
+      if ((uVar5 & 0x20) != 0) {
+        *(uint *)(*(int *)(this + 0x40) + 0x194) = uVar5 & 0xffffffdf;
+        *(undefined4 *)(gOFOData + Game + 0x1ebc) = 0;
         UnInit();
-        iVar8 = *piVar11;
-        *(undefined1 *)(iVar8 + 0x2c0) = 1;
-        *(undefined4 *)(iVar8 + 0x15c) = 10;
-        *(undefined4 *)(iVar8 + 0x71900) = 7;
-        cRTutorial::Init((cRTutorial *)(iVar8 + 0x71924));
-        *(undefined1 *)(*(int *)(iVar9 + DAT_00067ec4) + 0xc0) = 1;
+        iVar3 = Game;
+        this_00 = (cRTutorial *)(Game + 0x71924);
+        *(undefined1 *)(Game + 0x2c0) = 1;
+        *(undefined4 *)(iVar3 + 0x15c) = 10;
+        *(undefined4 *)(iVar3 + 0x71900) = 7;
+        cRTutorial::Init(this_00);
+        gConfig[0xc0] = 1;
         return;
       }
-      uVar7 = *(uint *)(*(int *)(this + 0x3c) + 0x194);
-      if ((uVar7 & 0x20) != 0) {
-        piVar11 = *(int **)(iVar9 + iVar8);
-        *(uint *)(*(int *)(this + 0x3c) + 0x194) = uVar7 & 0xffffffdf;
-        *(undefined4 *)(gOFOData + *piVar11 + 0x1ebc) = 0;
+      uVar5 = *(uint *)(*(int *)(this + 0x3c) + 0x194);
+      if ((uVar5 & 0x20) != 0) {
+        *(uint *)(*(int *)(this + 0x3c) + 0x194) = uVar5 & 0xffffffdf;
+        *(undefined4 *)(gOFOData + Game + 0x1ebc) = 0;
         UnInit();
-        iVar8 = *piVar11;
-        *(undefined1 *)(iVar8 + 0x2c0) = 1;
-        *(undefined4 *)(iVar8 + 0x15c) = 10;
-        *(undefined4 *)(iVar8 + 0x71900) = 1;
+        iVar3 = Game;
+        *(undefined1 *)(Game + 0x2c0) = 1;
+        *(undefined4 *)(iVar3 + 0x15c) = 10;
+        *(undefined4 *)(iVar3 + 0x71900) = 1;
         return;
       }
-      uVar7 = *(uint *)(*(int *)(this + 0x48) + 0x194);
-      if ((uVar7 & 0x20) == 0) {
-        uVar7 = *(uint *)(*(int *)(this + 0x44) + 0x194);
-        if ((uVar7 & 0x20) != 0) {
-          *(uint *)(*(int *)(this + 0x44) + 0x194) = uVar7 & 0xffffffdf;
+      uVar5 = *(uint *)(*(int *)(this + 0x48) + 0x194);
+      if ((uVar5 & 0x20) == 0) {
+        uVar5 = *(uint *)(*(int *)(this + 0x44) + 0x194);
+        if ((uVar5 & 0x20) != 0) {
+          *(uint *)(*(int *)(this + 0x44) + 0x194) = uVar5 & 0xffffffdf;
           UnInit();
-          iVar5 = **(int **)(iVar9 + iVar8);
-          *(undefined1 *)(iVar5 + 0x2c0) = 1;
-          *(undefined4 *)(iVar5 + 0x15c) = 0x1f;
+          iVar3 = Game;
+          *(undefined1 *)(Game + 0x2c0) = 1;
+          *(undefined4 *)(iVar3 + 0x15c) = 0x1f;
         }
       }
       else {
-        *(uint *)(*(int *)(this + 0x48) + 0x194) = uVar7 & 0xffffffdf;
+        *(uint *)(*(int *)(this + 0x48) + 0x194) = uVar5 & 0xffffffdf;
         UnInit();
-        iVar5 = **(int **)(iVar9 + iVar8);
-        *(undefined1 *)(iVar5 + 0x2c0) = 1;
-        *(undefined4 *)(iVar5 + 0x15c) = 4;
+        iVar3 = Game;
+        *(undefined1 *)(Game + 0x2c0) = 1;
+        *(undefined4 *)(iVar3 + 0x15c) = 4;
       }
-      fVar13 = *(float *)(this + 0x10) + *(float *)(this + 0x14);
-      uVar12 = uVar12 & 0xfffffff | (uint)(fVar13 < DAT_00067eac) << 0x1f |
-               (uint)(fVar13 == DAT_00067eac) << 0x1e;
-      uVar7 = uVar12 | (uint)(NAN(fVar13) || NAN(DAT_00067eac)) << 0x1c;
-      *(float *)(this + 0x10) = fVar13;
-      bVar1 = (byte)(uVar12 >> 0x18);
-      if ((bool)(bVar1 >> 6 & 1) || bVar1 >> 7 != ((byte)(uVar7 >> 0x1c) & 1)) {
+      fVar8 = *(float *)(this + 0x10) + *(float *)(this + 0x14);
+      uVar7 = uVar7 & 0xfffffff | (uint)(fVar8 < 1.0) << 0x1f | (uint)(fVar8 == 1.0) << 0x1e;
+      uVar5 = uVar7 | (uint)NAN(fVar8) << 0x1c;
+      *(float *)(this + 0x10) = fVar8;
+      bVar1 = (byte)(uVar7 >> 0x18);
+      if ((bool)(bVar1 >> 6 & 1) || bVar1 >> 7 != ((byte)(uVar5 >> 0x1c) & 1)) {
         return;
       }
-      iVar5 = 0;
-      *(undefined4 *)(this + 0x10) = DAT_00067ea8;
-      fVar4 = DAT_00067eb8;
-      fVar3 = DAT_00067eb4;
-      fVar13 = DAT_00067eb0;
+      iVar3 = 0;
+      *(undefined4 *)(this + 0x10) = 0;
       do {
-        iVar10 = *(int *)this;
-        iVar5 = iVar5 + 1;
-        if (iVar10 == 1) {
-          uVar6 = gRMathRand2();
-          piVar11 = *(int **)(iVar9 + iVar8);
-          iVar15 = *piVar11;
-          fVar14 = (float)VectorSignedToFloat(uVar6,(byte)(uVar7 >> 0x16) & 3);
-          iVar10 = (int)(fVar14 * fVar13 * fVar3) + 0xb;
-          if (*(int *)(gGroup0 + iVar15 + iVar10 * 0x38 + 0xce69c) == 1) {
-            cRSubHighScore::MiniLoad((cRSubHighScore *)(gGroup0 + iVar15 + 0xce694),iVar10);
-            *(undefined4 *)(*piVar11 + 0x71900) = 1;
-            iVar10 = *(int *)this;
+        iVar6 = *(int *)this;
+        iVar3 = iVar3 + 1;
+        if (iVar6 == 1) {
+          uVar4 = gRMathRand2();
+          fVar8 = (float)VectorSignedToFloat(uVar4,(byte)(uVar5 >> 0x16) & 3);
+          iVar6 = (int)(fVar8 * 3.0517578e-05 * 4.0) + 0xb;
+          if (*(int *)(gGroup0 + Game + iVar6 * 0x38 + 0xce69c) == 1) {
+            cRSubHighScore::MiniLoad((cRSubHighScore *)(gGroup0 + Game + 0xce694),iVar6);
+            *(undefined4 *)(Game + 0x71900) = 1;
+            iVar6 = *(int *)this;
             bVar2 = true;
           }
           else {
 LAB_00067c30:
-            iVar10 = *(int *)this;
+            iVar6 = *(int *)this;
 LAB_00067c34:
             bVar2 = false;
           }
         }
-        else if (iVar10 == 3) {
-          uVar6 = gRMathRand2();
-          piVar11 = *(int **)(iVar9 + iVar8);
-          iVar15 = *piVar11;
-          fVar14 = (float)VectorSignedToFloat(uVar6,(byte)(uVar7 >> 0x16) & 3);
-          iVar10 = (int)(fVar14 * fVar13 * fVar4) + 0x16;
-          if (*(int *)(gGroup0 + iVar15 + iVar10 * 0x38 + 0xce69c) != 1) goto LAB_00067c30;
-          cRSubHighScore::MiniLoad((cRSubHighScore *)(gGroup0 + iVar15 + 0xce694),iVar10);
-          *(undefined4 *)(*piVar11 + 0x71900) = 4;
-          iVar10 = *(int *)this;
+        else if (iVar6 == 3) {
+          uVar4 = gRMathRand2();
+          fVar8 = (float)VectorSignedToFloat(uVar4,(byte)(uVar5 >> 0x16) & 3);
+          iVar6 = (int)(fVar8 * 3.0517578e-05 * 51.0) + 0x16;
+          if (*(int *)(gGroup0 + Game + iVar6 * 0x38 + 0xce69c) != 1) goto LAB_00067c30;
+          cRSubHighScore::MiniLoad((cRSubHighScore *)(gGroup0 + Game + 0xce694),iVar6);
+          *(undefined4 *)(Game + 0x71900) = 4;
+          iVar6 = *(int *)this;
           bVar2 = true;
         }
         else {
-          if (iVar10 != 0) goto LAB_00067c34;
-          uVar6 = gRMathRand2();
-          piVar11 = *(int **)(iVar9 + iVar8);
-          iVar10 = *piVar11;
-          fVar14 = (float)VectorSignedToFloat(uVar6,(byte)(uVar7 >> 0x16) & 3);
-          iVar15 = (int)(fVar14 * fVar13 * fVar3);
-          if (*(int *)(gGroup0 + iVar10 + iVar15 * 0x38 + 0xce69c) != 1) goto LAB_00067c30;
-          cRSubHighScore::MiniLoad((cRSubHighScore *)(gGroup0 + iVar10 + 0xce694),iVar15);
-          *(undefined4 *)(*piVar11 + 0x71900) = 0;
-          iVar10 = *(int *)this;
+          if (iVar6 != 0) goto LAB_00067c34;
+          uVar4 = gRMathRand2();
+          fVar8 = (float)VectorSignedToFloat(uVar4,(byte)(uVar5 >> 0x16) & 3);
+          iVar6 = (int)(fVar8 * 3.0517578e-05 * 4.0);
+          if (*(int *)(gGroup0 + Game + iVar6 * 0x38 + 0xce69c) != 1) goto LAB_00067c30;
+          cRSubHighScore::MiniLoad((cRSubHighScore *)(gGroup0 + Game + 0xce694),iVar6);
+          *(undefined4 *)(Game + 0x71900) = 0;
+          iVar6 = *(int *)this;
           bVar2 = true;
         }
-        iVar10 = iVar10 + 1;
-        if (iVar10 == 5) {
-          iVar10 = 0;
+        iVar6 = iVar6 + 1;
+        if (iVar6 == 5) {
+          iVar6 = 0;
         }
-        *(int *)this = iVar10;
+        *(int *)this = iVar6;
+        iVar6 = Game;
         if (bVar2) {
-          if (iVar5 < 1000) {
-            iVar8 = **(int **)(iVar9 + iVar8);
+          if (iVar3 < 1000) {
             this[4] = (cRIntro)0x1;
-            uVar6 = DAT_00067ea8;
-            *(undefined4 *)(iVar8 + 0x15c) = 10;
-            *(undefined4 *)(this + 8) = uVar6;
-            *(undefined1 *)(iVar8 + 0x2c0) = 1;
-            uVar6 = DAT_00067ecc;
-            *(undefined4 *)(gDirectory + iVar8 + 0x254c) = 2;
-            *(undefined4 *)(this + 0xc) = uVar6;
-            gDirectory[iVar8 + 0x2545] = 1;
-            gDirectory[iVar8 + 0x2544] = 1;
+            *(undefined4 *)(iVar6 + 0x15c) = 10;
+            *(undefined4 *)(this + 8) = 0;
+            *(undefined1 *)(iVar6 + 0x2c0) = 1;
+            *(undefined4 *)(gDirectory + iVar6 + 0x254c) = 2;
+            *(undefined4 *)(this + 0xc) = 0x3991a2b4;
+            gDirectory[iVar6 + 0x2545] = 1;
+            gDirectory[iVar6 + 0x2544] = 1;
             UnInit();
             return;
           }
           goto LAB_00067ed8;
         }
-        if (iVar5 == 1000) {
+        if (iVar3 == 1000) {
 LAB_00067ed8:
-          *(undefined4 *)(this + 8) = DAT_00067ec8;
-          *(undefined4 *)(this + 0xc) = DAT_00067ecc;
+          *(undefined4 *)(this + 8) = 0;
+          *(undefined4 *)(this + 0xc) = 0x3991a2b4;
           return;
         }
       } while( true );
     }
-    *(uint *)(*(int *)(this + 0x34) + 0x194) = uVar7 & 0xffffffdf;
+    *(uint *)(*(int *)(this + 0x34) + 0x194) = uVar5 & 0xffffffdf;
     UnInit();
-    iVar5 = *(int *)(iVar9 + DAT_00067ec4);
-    iVar8 = **(int **)(iVar9 + iVar8);
-    *(undefined4 *)(gOFOData + iVar8 + 0x1ebc) = 1;
-    *(undefined4 *)(iVar8 + 0x15c) = 10;
-    *(undefined4 *)(iVar8 + 0x71900) = 0;
-    *(undefined4 *)(&DAT_003a463c + iVar8) = 2;
-    iVar9 = *(int *)(iVar5 + 0xe0);
-    *(undefined1 *)(iVar8 + 0x2c0) = 1;
+    iVar3 = Game;
+    *(undefined4 *)(gOFOData + Game + 0x1ebc) = 1;
+    *(undefined4 *)(iVar3 + 0x15c) = 10;
+    *(undefined4 *)(iVar3 + 0x71900) = 0;
+    *(undefined4 *)(&DAT_003a463c + iVar3) = 2;
+    iVar6 = gConfig._224_4_;
+    *(undefined1 *)(iVar3 + 0x2c0) = 1;
   }
   else {
-    *(uint *)(iVar5 + 0x194) = uVar7 & 0xffffffdf;
+    *(uint *)(iVar3 + 0x194) = uVar5 & 0xffffffdf;
     UnInit();
-    iVar5 = *(int *)(iVar9 + DAT_00067ec4);
-    iVar8 = **(int **)(iVar9 + iVar8);
-    *(undefined4 *)(gOFOData + iVar8 + 0x1ebc) = 0;
-    *(undefined4 *)(iVar8 + 0x15c) = 10;
-    *(undefined4 *)(iVar8 + 0x71900) = 0;
-    *(undefined4 *)(&DAT_003a463c + iVar8) = 2;
-    iVar9 = *(int *)(iVar5 + 0xd0);
-    *(undefined1 *)(iVar8 + 0x2c0) = 1;
+    iVar3 = Game;
+    *(undefined4 *)(gOFOData + Game + 0x1ebc) = 0;
+    *(undefined4 *)(iVar3 + 0x15c) = 10;
+    *(undefined4 *)(iVar3 + 0x71900) = 0;
+    *(undefined4 *)(&DAT_003a463c + iVar3) = 2;
+    iVar6 = gConfig._208_4_;
+    *(undefined1 *)(iVar3 + 0x2c0) = 1;
   }
-  if (0 < iVar9) {
-    *(undefined4 *)(iVar8 + 0x15c) = 0x21;
+  if (0 < iVar6) {
+    *(undefined4 *)(iVar3 + 0x15c) = 0x21;
   }
   return;
 }

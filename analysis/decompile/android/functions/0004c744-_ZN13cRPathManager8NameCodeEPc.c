@@ -12,12 +12,10 @@ int __thiscall cRPathManager::NameCode(cRPathManager *this,char *param_1)
 {
   int iVar1;
   int iVar2;
-  int iVar3;
 
   iVar2 = 0;
-  iVar3 = *(int *)(DAT_0004c798 + 0x4c754 + DAT_0004c79c);
   do {
-    iVar1 = Rstrcmp(param_1,*(char **)(iVar3 + iVar2 * 4));
+    iVar1 = Rstrcmp(param_1,(char *)(&gPathName)[iVar2]);
     if (iVar1 != 0) {
       return iVar2;
     }

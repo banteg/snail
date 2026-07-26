@@ -10,7 +10,7 @@
 void __thiscall cRBorder::UnHideInit(cRBorder *this)
 
 {
-  *(undefined4 *)(this + 0x38) = DAT_0005beac;
+  *(undefined4 *)(this + 0x38) = 0x3f800000;
   *(uint *)(this + 0x194) = *(uint *)(this + 0x194) & 0xffffefff;
   return;
 }

@@ -10,80 +10,71 @@
 void __thiscall cRSquidge::AI(cRSquidge *this)
 
 {
-  float fVar1;
-  bool bVar2;
-  undefined4 uVar3;
-  float fVar4;
-  float fVar5;
-  float fVar6;
+  bool bVar1;
+  float fVar2;
+  float fVar3;
 
-  fVar6 = DAT_0006d1ec;
-  fVar5 = *(float *)(this + 4);
-  if (fVar5 != 0.0) {
-    fVar4 = fVar5 + *(float *)(this + 8);
-    fVar1 = fVar4 * DAT_0006d1e8;
-    *(float *)(this + 8) = fVar4;
-    fVar6 = (fVar5 + fVar1) * fVar6;
-    fVar4 = -fVar4;
-    *(float *)(this + 4) = fVar6;
-    *(float *)this = fVar4;
-    uVar3 = DAT_0006d1f4;
-    if (fVar6 < 0.0) {
-      bVar2 = DAT_0006d1f8 < fVar6;
+  fVar3 = *(float *)(this + 4);
+  if (fVar3 != 0.0) {
+    fVar2 = fVar3 + *(float *)(this + 8);
+    *(float *)(this + 8) = fVar2;
+    fVar3 = (fVar3 + fVar2 * -0.15) * 0.82;
+    fVar2 = -fVar2;
+    *(float *)(this + 4) = fVar3;
+    *(float *)this = fVar2;
+    if (fVar3 < 0.0) {
+      bVar1 = -0.001 < fVar3;
     }
-    else if (DAT_0006d1f0 <= fVar6) {
-      bVar2 = false;
+    else if (0.001 <= fVar3) {
+      bVar1 = false;
     }
     else {
-      bVar2 = true;
+      bVar1 = true;
     }
-    if (bVar2) {
-      if (fVar4 < 0.0) {
-        bVar2 = DAT_0006d1f8 < fVar4;
+    if (bVar1) {
+      if (fVar2 < 0.0) {
+        bVar1 = -0.001 < fVar2;
       }
-      else if (DAT_0006d1f0 <= fVar4) {
-        bVar2 = false;
+      else if (0.001 <= fVar2) {
+        bVar1 = false;
       }
       else {
-        bVar2 = true;
+        bVar1 = true;
       }
-      if (bVar2) {
-        *(undefined4 *)this = DAT_0006d1f4;
-        *(undefined4 *)(this + 4) = uVar3;
+      if (bVar1) {
+        *(undefined4 *)this = 0;
+        *(undefined4 *)(this + 4) = 0;
       }
     }
   }
-  fVar6 = DAT_0006d1ec;
-  fVar5 = *(float *)(this + 0x10);
-  if (fVar5 == 0.0) {
+  fVar3 = *(float *)(this + 0x10);
+  if (fVar3 == 0.0) {
     return;
   }
-  fVar4 = fVar5 + *(float *)(this + 0x14);
-  fVar1 = fVar4 * DAT_0006d1e8;
-  *(float *)(this + 0x14) = fVar4;
-  fVar6 = (fVar5 + fVar1) * fVar6;
-  fVar4 = -fVar4;
-  *(float *)(this + 0x10) = fVar6;
-  *(float *)(this + 0xc) = fVar4;
-  uVar3 = DAT_0006d1f4;
-  if (fVar6 < 0.0) {
-    if (fVar6 <= DAT_0006d1f8) {
+  fVar2 = fVar3 + *(float *)(this + 0x14);
+  *(float *)(this + 0x14) = fVar2;
+  fVar3 = (fVar3 + fVar2 * -0.15) * 0.82;
+  fVar2 = -fVar2;
+  *(float *)(this + 0x10) = fVar3;
+  *(float *)(this + 0xc) = fVar2;
+  if (fVar3 < 0.0) {
+    if (fVar3 <= -0.001) {
       return;
     }
   }
-  else if (DAT_0006d1f0 <= fVar6) {
+  else if (0.001 <= fVar3) {
     return;
   }
-  if (0.0 <= fVar4) {
-    if (fVar4 < DAT_0006d1f0) {
-      *(undefined4 *)(this + 0xc) = DAT_0006d1f4;
-      *(undefined4 *)(this + 0x10) = uVar3;
+  if (0.0 <= fVar2) {
+    if (fVar2 < 0.001) {
+      *(undefined4 *)(this + 0xc) = 0;
+      *(undefined4 *)(this + 0x10) = 0;
     }
     return;
   }
-  if (DAT_0006d1f8 < fVar4) {
-    *(undefined4 *)(this + 0xc) = DAT_0006d1f4;
-    *(undefined4 *)(this + 0x10) = uVar3;
+  if (-0.001 < fVar2) {
+    *(undefined4 *)(this + 0xc) = 0;
+    *(undefined4 *)(this + 0x10) = 0;
   }
   return;
 }

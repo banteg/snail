@@ -24,6 +24,6 @@ cRPathFollowGolb::Init(cRPathFollowGolb *this,cRSubLoc *param_1,tVector *param_2
   *(undefined4 *)(this + 4) = uVar1;
   *(undefined4 *)(this + 0xc) = 0;
   *(float *)(this + 0x10) = fVar2 - fVar3;
-  *(float *)(this + 0x14) = *(float *)(param_2 + 4) - DAT_0004c090;
+  *(float *)(this + 0x14) = *(float *)(param_2 + 4) - 0.49;
   return;
 }

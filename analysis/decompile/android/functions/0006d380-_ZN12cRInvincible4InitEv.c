@@ -10,13 +10,10 @@
 void cRInvincible::Init(void)
 
 {
-  int iVar1;
   int in_r0;
   float in_s0;
 
-  iVar1 = DAT_0006d3ac;
   *(undefined4 *)(in_r0 + 0x74) = 0;
-  cRSnailSkin::Change((cRSnailSkin *)(**(int **)(iVar1 + 0x6d39c + DAT_0006d3b0) + 0x852d4),0,in_s0)
-  ;
+  cRSnailSkin::Change((cRSnailSkin *)(Game + 0x852d4),0,in_s0);
   return;
 }

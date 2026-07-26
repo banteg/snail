@@ -19,7 +19,7 @@ cRTip * __thiscall cRTipManager::TipNew(cRTipManager *this,cRTipData *param_1,bo
     }
     else {
       if (*(int *)(this + 0x6c) != 0) {
-        RShellError((char *)(DAT_00086aec + 0x86a9c + DAT_00086af0));
+        RShellError("Run out of Tips");
         return (cRTip *)0x0;
       }
       iVar1 = 2;

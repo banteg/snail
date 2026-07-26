@@ -10,54 +10,49 @@
 void __thiscall cRObject::AddEdge(cRObject *this,int param_1,int param_2,int param_3)
 
 {
-  float fVar1;
+  ushort *puVar1;
   int iVar2;
-  int iVar3;
-  ushort *puVar4;
+  float fVar3;
+  int iVar4;
   int iVar5;
   ushort *puVar6;
   float *pfVar7;
-  int iVar8;
+  float *pfVar8;
   float *pfVar9;
-  float *pfVar10;
 
-  iVar5 = DAT_0002fc40;
-  fVar1 = (float)tVector::Magnitude(*(tVector **)(*(int *)(this + 0xcc) + param_3 * 4));
-  iVar5 = iVar5 + 0x2faec;
-  if (fVar1 < DAT_0002fc3c) {
+  fVar3 = (float)tVector::Magnitude(*(tVector **)(*(int *)(this + 0xcc) + param_3 * 4));
+  iVar2 = gEdgeCount;
+  puVar1 = gEdgeStore;
+  if (fVar3 < 0.9) {
     return;
   }
-  iVar8 = **(int **)(iVar5 + DAT_0002fc44);
-  if (iVar8 < 1) {
-    puVar6 = (ushort *)**(undefined4 **)(iVar5 + DAT_0002fc48);
-  }
-  else {
-    iVar2 = *(int *)(this + 0xa4);
-    iVar3 = 0;
-    pfVar9 = (float *)(iVar2 + param_2 * 0xc);
-    pfVar7 = (float *)(iVar2 + param_1 * 0xc);
-    puVar6 = (ushort *)**(undefined4 **)(iVar5 + DAT_0002fc48);
-    puVar4 = puVar6;
+  if (0 < gEdgeCount) {
+    iVar4 = *(int *)(this + 0xa4);
+    iVar5 = 0;
+    pfVar8 = (float *)(iVar4 + param_2 * 0xc);
+    pfVar7 = (float *)(iVar4 + param_1 * 0xc);
+    puVar6 = gEdgeStore;
     do {
-      iVar3 = iVar3 + 1;
-      pfVar10 = (float *)(iVar2 + (uint)puVar4[1] * 0xc);
-      if ((((*pfVar10 == *pfVar9) && (pfVar10[1] == pfVar9[1])) && (pfVar10[2] == pfVar9[2])) &&
-         (((pfVar10 = (float *)(iVar2 + (uint)puVar4[2] * 0xc), *pfVar10 == *pfVar7 &&
-           (pfVar10[1] == pfVar7[1])) && (pfVar10[2] == pfVar7[2])))) {
-        if ((*puVar4 & 1) != 0) {
-          puVar4[4] = (ushort)param_3;
-          *puVar4 = *puVar4 & 0xfffe | 2;
+      iVar5 = iVar5 + 1;
+      pfVar9 = (float *)(iVar4 + (uint)puVar6[1] * 0xc);
+      if ((((*pfVar9 == *pfVar8) && (pfVar9[1] == pfVar8[1])) && (pfVar9[2] == pfVar8[2])) &&
+         (((pfVar9 = (float *)(iVar4 + (uint)puVar6[2] * 0xc), *pfVar9 == *pfVar7 &&
+           (pfVar9[1] == pfVar7[1])) && (pfVar9[2] == pfVar7[2])))) {
+        if ((*puVar6 & 1) != 0) {
+          puVar6[4] = (ushort)param_3;
+          *puVar6 = *puVar6 & 0xfffe | 2;
         }
         return;
       }
-      puVar4 = puVar4 + 5;
-    } while (iVar3 < iVar8);
+      puVar6 = puVar6 + 5;
+    } while (iVar5 < gEdgeCount);
   }
-  **(int **)(iVar5 + DAT_0002fc44) = iVar8 + 1;
-  puVar6[iVar8 * 5] = 1;
-  puVar6[iVar8 * 5 + 1] = (ushort)param_1;
-  puVar6[iVar8 * 5 + 4] = 0;
-  puVar6[iVar8 * 5 + 2] = (ushort)param_2;
-  puVar6[iVar8 * 5 + 3] = (ushort)param_3;
+  iVar4 = gEdgeCount * 5;
+  gEdgeCount = gEdgeCount + 1;
+  gEdgeStore[iVar4] = 1;
+  puVar1[iVar2 * 5 + 1] = (ushort)param_1;
+  puVar1[iVar2 * 5 + 4] = 0;
+  puVar1[iVar2 * 5 + 2] = (ushort)param_2;
+  puVar1[iVar2 * 5 + 3] = (ushort)param_3;
   return;
 }

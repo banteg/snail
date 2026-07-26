@@ -10,44 +10,23 @@
 void __thiscall cRSMTracks::Import(cRSMTracks *this)
 
 {
-  int iVar1;
+  byte *pbVar1;
   int iVar2;
   int iVar3;
-  int iVar4;
-  int iVar5;
-  byte *pbVar6;
+  char *pcVar4;
+  char *pcVar5;
+  undefined4 uVar6;
+  cRDirectX *this_00;
   int iVar7;
-  int iVar8;
-  char *pcVar9;
-  undefined4 uVar10;
-  int iVar11;
-  int iVar12;
-  char cVar13;
-  int iVar14;
-  byte *pbVar15;
-  int extraout_r2;
-  int extraout_r2_00;
-  int extraout_r2_01;
-  int extraout_r2_02;
-  int extraout_r2_03;
-  cRSMTracks cVar16;
-  byte bVar17;
-  int *piVar18;
-  char *pcVar19;
-  char *pcVar20;
+  char cVar8;
+  byte *pbVar9;
+  cRSMTracks cVar10;
+  byte bVar11;
   char *__src;
-  int iVar21;
-  byte *pbVar22;
-  int extraout_r3;
-  int extraout_r3_00;
-  int extraout_r3_01;
-  int extraout_r3_02;
-  int extraout_r3_03;
-  char *pcVar23;
-  cRSMTracks *pcVar24;
-  int iVar25;
-  char *pcVar26;
-  int iVar27;
+  int iVar12;
+  int iVar13;
+  byte *pbVar14;
+  cRSMTracks *pcVar15;
   int local_528;
   int local_4f4;
   byte *local_4f0;
@@ -57,360 +36,301 @@ void __thiscall cRSMTracks::Import(cRSMTracks *this)
   byte local_6c [64];
   int local_2c;
 
-  iVar5 = DAT_0008438c;
-  iVar25 = DAT_00084388 + 0x83f98;
-  piVar18 = *(int **)(iVar25 + DAT_0008438c);
-  pcVar23 = (char *)(iVar25 + DAT_00084390);
   *(undefined4 *)this = 0;
-  local_2c = *piVar18;
-  iVar7 = RShellFindFile(pcVar23,false);
-  iVar2 = DAT_00084a70;
-  iVar1 = DAT_00084394;
-  if (iVar7 == 0) {
-    pcVar19 = *(char **)(iVar25 + DAT_00084a70);
-    RShellReadDirectory((char *)(iVar25 + DAT_00084a74),(char *)(iVar25 + DAT_00084a78),(int *)this,
-                        pcVar19);
-    RShellSaveDirectory(pcVar23,*(int *)this,pcVar19);
-    iVar7 = *(int *)this;
-    iVar1 = iVar2;
-    iVar2 = DAT_0008439c;
-    iVar3 = DAT_000843a4;
-    iVar4 = DAT_000843a8;
+  local_2c = __stack_chk_guard;
+  iVar2 = RShellFindFile("Data/SegmentsDir.txt",false);
+  if (iVar2 == 0) {
+    RShellReadDirectory("Segments","*.txt",(int *)this,gDirectory);
+    RShellSaveDirectory("Data/SegmentsDir.txt",*(int *)this,gDirectory);
+    iVar2 = *(int *)this;
   }
   else {
-    RShellLoadDirectory(pcVar23,(int *)this,*(char **)(iVar25 + DAT_00084394));
-    iVar7 = *(int *)this;
-    iVar2 = DAT_0008439c;
-    iVar3 = DAT_000843a4;
-    iVar4 = DAT_000843a8;
+    RShellLoadDirectory("Data/SegmentsDir.txt",(int *)this,gDirectory);
+    iVar2 = *(int *)this;
   }
-  DAT_0008439c = iVar2;
-  DAT_000843a4 = iVar3;
-  DAT_000843a8 = iVar4;
-  if (iVar7 < 0xb4) {
-    if (0 < iVar7) {
+  if (iVar2 < 0xb4) {
+    if (0 < iVar2) {
       local_528 = 0;
-      pcVar23 = (char *)(iVar25 + DAT_00084398);
-      pcVar19 = (char *)(iVar25 + DAT_000843a0);
-      pcVar20 = (char *)(iVar25 + DAT_000843ac);
-      pcVar24 = this;
+      pcVar15 = this;
       while( true ) {
-        pcVar26 = *(char **)(iVar25 + iVar3);
-        __src = (char *)(*(int *)(iVar25 + iVar1) + local_528 * 0x80);
-        sprintf(acStack_2ec,(char *)(iVar25 + iVar2),__src,pcVar26);
-        iVar7 = 0;
-        RShellLoadFile(acStack_2ec,pcVar26,&local_4f4);
-        pcVar26[local_4f4] = '\0';
-        iVar8 = Rstrfind((char *)(iVar25 + iVar4),pcVar26);
-        if (iVar8 == 0) {
-          RShellError((char *)(iVar25 + DAT_00084a94),__src);
+        __src = gDirectory + local_528 * 0x80;
+        sprintf(acStack_2ec,"Segments/%s",__src,gSegmentText);
+        iVar2 = 0;
+        RShellLoadFile(acStack_2ec,gSegmentText,&local_4f4);
+        gSegmentText[local_4f4] = 0;
+        iVar3 = Rstrfind("ID:",gSegmentText);
+        if (iVar3 == 0) {
+          RShellError("Cannot find ID: in Segment %s\n",__src);
           goto LAB_00084320;
         }
-        bVar17 = *(byte *)(iVar8 + 3);
-        while ((bVar17 - 0x30 & 0xff) < 10) {
-          pbVar22 = (byte *)(iVar8 + 4);
-          iVar7 = (uint)bVar17 + iVar7 * 10 + -0x30;
-          iVar8 = iVar8 + 1;
-          bVar17 = *pbVar22;
+        bVar11 = *(byte *)(iVar3 + 3);
+        while ((bVar11 - 0x30 & 0xff) < 10) {
+          pbVar14 = (byte *)(iVar3 + 4);
+          iVar2 = (uint)bVar11 + iVar2 * 10 + -0x30;
+          iVar3 = iVar3 + 1;
+          bVar11 = *pbVar14;
         }
-        *(int *)(pcVar24 + 0x84) = iVar7;
+        *(int *)(pcVar15 + 0x84) = iVar2;
         strcpy((char *)(this + local_528 * 0x90 + 0x44),__src);
-        pcVar26 = (char *)Rstrfind((char *)(iVar25 + DAT_000843b0),*(char **)(iVar25 + iVar3));
-        if (pcVar26 == (char *)0x0) break;
-        iVar7 = Rstrfind((char *)(iVar25 + DAT_000843b4),pcVar26);
-        cVar16 = *(cRSMTracks *)(iVar7 + 1);
-        if (cVar16 != (cRSMTracks)0x27) {
-          iVar8 = 0;
+        pcVar4 = (char *)Rstrfind("Name:\'",gSegmentText);
+        if (pcVar4 == (char *)0x0) break;
+        iVar2 = Rstrfind("\'",pcVar4);
+        cVar10 = *(cRSMTracks *)(iVar2 + 1);
+        if (cVar10 != (cRSMTracks)0x27) {
+          iVar3 = 0;
           do {
-            this[iVar8 + local_528 * 0x90 + 4] = cVar16;
-            iVar8 = iVar8 + 1;
-            cVar16 = *(cRSMTracks *)(iVar7 + 2);
-            iVar7 = iVar7 + 1;
-          } while (cVar16 != (cRSMTracks)0x27);
+            this[iVar3 + local_528 * 0x90 + 4] = cVar10;
+            iVar3 = iVar3 + 1;
+            cVar10 = *(cRSMTracks *)(iVar2 + 2);
+            iVar2 = iVar2 + 1;
+          } while (cVar10 != (cRSMTracks)0x27);
         }
-        pcVar26 = (char *)Rstrfind((char *)(iVar25 + DAT_000843b8),*(char **)(iVar25 + iVar3));
-        if (pcVar26 == (char *)0x0) {
-          RShellError((char *)(iVar25 + DAT_00084a88),__src);
+        pcVar4 = (char *)Rstrfind("Data:",gSegmentText);
+        if (pcVar4 == (char *)0x0) {
+          RShellError("Cannot find Data: in Segment %s\n",__src);
           goto LAB_00084320;
         }
-        pcVar26 = (char *)Rstrnewline(pcVar26);
-        if ((pcVar26 == (char *)0x0) ||
-           (pcVar26 = (char *)Rstrnewline(pcVar26), pcVar26 == (char *)0x0)) {
+        pcVar4 = (char *)Rstrnewline(pcVar4);
+        if ((pcVar4 == (char *)0x0) || (pcVar4 = (char *)Rstrnewline(pcVar4), pcVar4 == (char *)0x0)
+           ) {
 LAB_00084310:
-          RShellError((char *)(iVar25 + DAT_000843cc),__src);
+          RShellError("Unexpected end of file in Segment %s\n",__src);
           goto LAB_00084320;
         }
-        if (*pcVar26 != '@') {
-          RShellError((char *)(iVar25 + DAT_00084a8c),__src);
+        if (*pcVar4 != '@') {
+          RShellError("Data line must start with \'@\' in Segment %s\n",__src);
           goto LAB_00084320;
         }
-        iVar7 = 0;
-        pcVar9 = pcVar26;
-        while ((iVar8 = DAT_000843bc, pcVar9[1] != '@' || (pcVar9[2] != '@'))) {
+        iVar2 = 0;
+        pcVar5 = pcVar4;
+        while ((pcVar5[1] != '@' || (pcVar5[2] != '@'))) {
           do {
-            pcVar9 = (char *)Rstrnewline(pcVar9);
-            iVar7 = iVar7 + 1;
-          } while (*pcVar9 != '@');
+            pcVar5 = (char *)Rstrnewline(pcVar5);
+            iVar2 = iVar2 + 1;
+          } while (*pcVar5 != '@');
         }
-        iVar27 = 0;
-        uVar10 = RShellMemoryMalloc(iVar7 * 8,(char *)(iVar25 + DAT_000843c0));
-        pcVar9 = (char *)(iVar25 + DAT_000843c4);
-        *(undefined4 *)(pcVar24 + 0x8c) = uVar10;
-        uVar10 = RShellMemoryMalloc(iVar7 * 0x38,pcVar9);
-        iVar7 = DAT_000843c8;
-        *(undefined4 *)(pcVar24 + 0x88) = 0;
-        *(undefined4 *)(pcVar24 + 0x90) = uVar10;
-        while (((*pcVar26 != '@' || (pcVar26[1] != '@')) || (pcVar26[2] != '@'))) {
-          iVar14 = 0;
-          *(undefined4 *)(*(int *)(pcVar24 + 0x90) + iVar27 * 0x38) = 0;
+        iVar3 = 0;
+        uVar6 = RShellMemoryMalloc(iVar2 * 8,"Segment tiles");
+        *(undefined4 *)(pcVar15 + 0x8c) = uVar6;
+        uVar6 = RShellMemoryMalloc(iVar2 * 0x38,"CRSMRow");
+        *(undefined4 *)(pcVar15 + 0x88) = 0;
+        *(undefined4 *)(pcVar15 + 0x90) = uVar6;
+        while (((*pcVar4 != '@' || (pcVar4[1] != '@')) || (pcVar4[2] != '@'))) {
+          iVar2 = 0;
+          *(undefined4 *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) = 0;
           do {
-            iVar12 = iVar27 * 8 + iVar14;
-            iVar11 = iVar14 + 1;
-            iVar14 = iVar14 + 1;
-            *(char *)(*(int *)(pcVar24 + 0x8c) + iVar12) = pcVar26[iVar11];
-          } while (iVar14 != 8);
-          if (pcVar26[9] != '@') {
-            RShellError((char *)(iVar25 + DAT_00084a80),__src);
+            iVar7 = iVar3 * 8 + iVar2;
+            iVar12 = iVar2 + 1;
+            iVar2 = iVar2 + 1;
+            *(char *)(*(int *)(pcVar15 + 0x8c) + iVar7) = pcVar4[iVar12];
+          } while (iVar2 != 8);
+          if (pcVar4[9] != '@') {
+            RShellError("Data line must end with \'@\' in Segment %s\n",__src);
             goto LAB_00084320;
           }
-          pcVar9 = pcVar26 + 10;
-          *(int *)(pcVar24 + 0x88) = *(int *)(pcVar24 + 0x88) + 1;
-          cVar13 = pcVar26[10];
-          if (cVar13 == '*') {
-            *(uint *)(*(int *)(pcVar24 + 0x90) + iVar27 * 0x38) =
-                 *(uint *)(*(int *)(pcVar24 + 0x90) + iVar27 * 0x38) | 4;
-            cVar13 = pcVar26[10];
+          pcVar5 = pcVar4 + 10;
+          *(int *)(pcVar15 + 0x88) = *(int *)(pcVar15 + 0x88) + 1;
+          cVar8 = pcVar4[10];
+          if (cVar8 == '*') {
+            *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) =
+                 *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) | 4;
+            cVar8 = pcVar4[10];
           }
-          if (cVar13 == '\r') {
-            pcVar26 = local_4ec;
+          if (cVar8 == '\r') {
+            pcVar4 = local_4ec;
           }
           else {
-            pcVar26 = local_4ec;
+            pcVar4 = local_4ec;
             do {
-              pcVar26 = pcVar26 + 1;
-              pcVar26[-1] = cVar13;
-              pcVar9 = pcVar9 + 1;
-              cVar13 = *pcVar9;
-            } while (cVar13 != '\r');
+              pcVar4 = pcVar4 + 1;
+              pcVar4[-1] = cVar8;
+              pcVar5 = pcVar5 + 1;
+              cVar8 = *pcVar5;
+            } while (cVar8 != '\r');
           }
-          *pcVar26 = '\0';
+          *pcVar4 = '\0';
           if (local_4ec[0] == '\0') {
-            *(undefined4 *)(*(int *)(pcVar24 + 0x90) + iVar27 * 0x38 + 0x34) = DAT_00084384;
+            *(undefined4 *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38 + 0x34) = 0;
           }
           else {
-            local_4f0 = (byte *)Rstrfind(pcVar23,local_4ec);
-            iVar14 = DAT_000843f0;
+            local_4f0 = (byte *)Rstrfind("3DModel=",local_4ec);
             if (local_4f0 != (byte *)0x0) {
-              iVar11 = Rstrfind((char *)(iVar25 + DAT_000843f0),(char *)local_4f0);
-              local_4f0 = (byte *)(iVar11 + 1);
-              bVar17 = *(byte *)(iVar11 + 1);
-              if (bVar17 == 0x2e) {
-                pbVar22 = local_ec;
-                pbVar15 = local_ec + 1;
+              iVar2 = Rstrfind("=",(char *)local_4f0);
+              local_4f0 = (byte *)(iVar2 + 1);
+              bVar11 = *(byte *)(iVar2 + 1);
+              if (bVar11 == 0x2e) {
+                pbVar14 = local_ec;
+                pbVar9 = local_ec + 1;
               }
               else {
-                pbVar6 = (byte *)(iVar11 + 2);
-                pbVar15 = local_ec + 1;
+                pbVar1 = (byte *)(iVar2 + 2);
+                pbVar9 = local_ec + 1;
                 do {
-                  pbVar22 = pbVar15;
-                  local_4f0 = pbVar6;
-                  pbVar22[-1] = bVar17;
-                  pbVar15 = pbVar22 + 1;
-                  bVar17 = *local_4f0;
-                  pbVar6 = local_4f0 + 1;
-                } while (bVar17 != 0x2e);
+                  pbVar14 = pbVar9;
+                  local_4f0 = pbVar1;
+                  pbVar14[-1] = bVar11;
+                  pbVar9 = pbVar14 + 1;
+                  bVar11 = *local_4f0;
+                  pbVar1 = local_4f0 + 1;
+                } while (bVar11 != 0x2e);
               }
-              *pbVar22 = 0x2e;
-              *pbVar15 = 0x78;
-              pbVar22[2] = 0;
-              iVar11 = iVar27 * 0x38;
-              iVar21 = *(int *)(pcVar24 + 0x90);
-              iVar12 = **(int **)(iVar25 + DAT_000843d8);
-              *(uint *)(iVar21 + iVar11) = *(uint *)(iVar21 + iVar11) | 2;
-              uVar10 = cRDirectX::ModelAdd((cRDirectX *)(iVar12 + 0x47ad0),(char *)local_ec);
-              pcVar26 = (char *)(iVar25 + DAT_000843d4);
-              *(undefined4 *)(iVar21 + iVar11 + 0x14) = uVar10;
-              local_4f0 = (byte *)Rstrfind(pcVar26,(char *)local_4f0);
-              iVar12 = *(int *)(pcVar24 + 0x90);
-              uVar10 = Rstrfloat((char **)&local_4f0);
-              iVar21 = *(int *)(pcVar24 + 0x90);
-              *(undefined4 *)(iVar12 + iVar11 + 0x18) = uVar10;
-              uVar10 = Rstrfloat((char **)&local_4f0);
-              iVar12 = *(int *)(pcVar24 + 0x90);
-              *(undefined4 *)(iVar21 + iVar11 + 0x1c) = uVar10;
-              uVar10 = Rstrfloat((char **)&local_4f0);
-              *(undefined4 *)(iVar12 + iVar11 + 0x20) = uVar10;
-              local_4f0 = (byte *)Rstrfind((char *)(iVar25 + DAT_000843d0),local_4ec);
+              *pbVar14 = 0x2e;
+              *pbVar9 = 0x78;
+              pbVar14[2] = 0;
+              iVar2 = iVar3 * 0x38;
+              iVar12 = *(int *)(pcVar15 + 0x90);
+              this_00 = (cRDirectX *)(Game + 0x47ad0);
+              *(uint *)(iVar12 + iVar2) = *(uint *)(iVar12 + iVar2) | 2;
+              uVar6 = cRDirectX::ModelAdd(this_00,(char *)local_ec);
+              *(undefined4 *)(iVar12 + iVar2 + 0x14) = uVar6;
+              local_4f0 = (byte *)Rstrfind("(",(char *)local_4f0);
+              iVar12 = *(int *)(pcVar15 + 0x90);
+              uVar6 = Rstrfloat((char **)&local_4f0);
+              iVar7 = *(int *)(pcVar15 + 0x90);
+              *(undefined4 *)(iVar12 + iVar2 + 0x18) = uVar6;
+              uVar6 = Rstrfloat((char **)&local_4f0);
+              iVar12 = *(int *)(pcVar15 + 0x90);
+              *(undefined4 *)(iVar7 + iVar2 + 0x1c) = uVar6;
+              uVar6 = Rstrfloat((char **)&local_4f0);
+              *(undefined4 *)(iVar12 + iVar2 + 0x20) = uVar6;
+              local_4f0 = (byte *)Rstrfind("Velocity=",local_4ec);
               if (local_4f0 != (byte *)0x0) {
-                iVar14 = Rstrfind((char *)(iVar25 + iVar14),(char *)local_4f0);
-                *(uint *)(*(int *)(pcVar24 + 0x90) + iVar11) =
-                     *(uint *)(*(int *)(pcVar24 + 0x90) + iVar11) | 8;
-                local_4f0 = (byte *)(iVar14 + 1);
-                local_4f0 = (byte *)Rstrfind(pcVar26,(char *)local_4f0);
-                iVar14 = *(int *)(pcVar24 + 0x90);
-                uVar10 = Rstrfloat((char **)&local_4f0);
-                iVar12 = *(int *)(pcVar24 + 0x90);
-                *(undefined4 *)(iVar14 + iVar11 + 0x24) = uVar10;
-                uVar10 = Rstrfloat((char **)&local_4f0);
-                iVar14 = *(int *)(pcVar24 + 0x90);
-                *(undefined4 *)(iVar12 + iVar11 + 0x28) = uVar10;
-                uVar10 = Rstrfloat((char **)&local_4f0);
-                *(undefined4 *)(iVar14 + iVar11 + 0x2c) = uVar10;
+                iVar12 = Rstrfind("=",(char *)local_4f0);
+                *(uint *)(*(int *)(pcVar15 + 0x90) + iVar2) =
+                     *(uint *)(*(int *)(pcVar15 + 0x90) + iVar2) | 8;
+                local_4f0 = (byte *)(iVar12 + 1);
+                local_4f0 = (byte *)Rstrfind("(",(char *)local_4f0);
+                iVar12 = *(int *)(pcVar15 + 0x90);
+                uVar6 = Rstrfloat((char **)&local_4f0);
+                iVar7 = *(int *)(pcVar15 + 0x90);
+                *(undefined4 *)(iVar12 + iVar2 + 0x24) = uVar6;
+                uVar6 = Rstrfloat((char **)&local_4f0);
+                iVar12 = *(int *)(pcVar15 + 0x90);
+                *(undefined4 *)(iVar7 + iVar2 + 0x28) = uVar6;
+                uVar6 = Rstrfloat((char **)&local_4f0);
+                *(undefined4 *)(iVar12 + iVar2 + 0x2c) = uVar6;
               }
             }
-            local_4f0 = (byte *)Rstrfind(pcVar19,local_4ec);
+            local_4f0 = (byte *)Rstrfind("Parcel=",local_4ec);
             if (local_4f0 != (byte *)0x0) {
-              iVar14 = iVar27 * 0x38;
-              pcVar26 = (char *)(iVar25 + DAT_000843f0);
-              *(uint *)(*(int *)(pcVar24 + 0x90) + iVar14) =
-                   *(uint *)(*(int *)(pcVar24 + 0x90) + iVar14) | 1;
-              iVar11 = Rstrfind(pcVar26,(char *)local_4f0);
-              iVar12 = *(int *)(pcVar24 + 0x90);
-              local_4f0 = (byte *)(iVar11 + 1);
-              uVar10 = Rstrint((char **)&local_4f0);
-              *(undefined4 *)(iVar12 + iVar14 + 4) = uVar10;
-              iVar11 = Rstrfind((char *)(iVar25 + DAT_000843d4),(char *)local_4f0);
-              iVar12 = *(int *)(pcVar24 + 0x90);
-              local_4f0 = (byte *)(iVar11 + 1);
-              uVar10 = Rstrfloat((char **)&local_4f0);
-              iVar21 = iVar27 * 7 + 1;
-              iVar11 = *(int *)(pcVar24 + 0x90);
-              *(undefined4 *)(iVar12 + iVar21 * 8) = uVar10;
-              uVar10 = Rstrfloat((char **)&local_4f0);
-              iVar12 = *(int *)(pcVar24 + 0x90);
-              *(undefined4 *)(iVar11 + iVar21 * 8 + 4) = uVar10;
-              uVar10 = Rstrfloat((char **)&local_4f0);
-              *(undefined4 *)(iVar12 + iVar14 + 0x10) = uVar10;
+              iVar2 = iVar3 * 0x38;
+              *(uint *)(*(int *)(pcVar15 + 0x90) + iVar2) =
+                   *(uint *)(*(int *)(pcVar15 + 0x90) + iVar2) | 1;
+              iVar12 = Rstrfind("=",(char *)local_4f0);
+              iVar7 = *(int *)(pcVar15 + 0x90);
+              local_4f0 = (byte *)(iVar12 + 1);
+              uVar6 = Rstrint((char **)&local_4f0);
+              *(undefined4 *)(iVar7 + iVar2 + 4) = uVar6;
+              iVar12 = Rstrfind("(",(char *)local_4f0);
+              iVar7 = *(int *)(pcVar15 + 0x90);
+              local_4f0 = (byte *)(iVar12 + 1);
+              uVar6 = Rstrfloat((char **)&local_4f0);
+              iVar13 = iVar3 * 7 + 1;
+              iVar12 = *(int *)(pcVar15 + 0x90);
+              *(undefined4 *)(iVar7 + iVar13 * 8) = uVar6;
+              uVar6 = Rstrfloat((char **)&local_4f0);
+              iVar7 = *(int *)(pcVar15 + 0x90);
+              *(undefined4 *)(iVar12 + iVar13 * 8 + 4) = uVar6;
+              uVar6 = Rstrfloat((char **)&local_4f0);
+              *(undefined4 *)(iVar7 + iVar2 + 0x10) = uVar6;
             }
-            local_4f0 = (byte *)Rstrfind(pcVar20,local_4ec);
+            local_4f0 = (byte *)Rstrfind("Path=",local_4ec);
             if (local_4f0 != (byte *)0x0) {
-              iVar14 = Rstrfind((char *)(iVar25 + DAT_000843f0),(char *)local_4f0);
-              local_4f0 = (byte *)(iVar14 + 1);
-              bVar17 = *(byte *)(iVar14 + 1);
-              if (bVar17 < 0x20) {
-                pbVar22 = local_6c;
+              iVar2 = Rstrfind("=",(char *)local_4f0);
+              local_4f0 = (byte *)(iVar2 + 1);
+              bVar11 = *(byte *)(iVar2 + 1);
+              if (bVar11 < 0x20) {
+                pbVar14 = local_6c;
               }
               else {
-                pbVar22 = local_6c;
-                pbVar15 = (byte *)(iVar14 + 2);
+                pbVar14 = local_6c;
+                pbVar9 = (byte *)(iVar2 + 2);
                 do {
-                  local_4f0 = pbVar15;
-                  pbVar22 = pbVar22 + 1;
-                  pbVar22[-1] = bVar17;
-                  bVar17 = *local_4f0;
-                  pbVar15 = local_4f0 + 1;
-                } while (0x1f < bVar17);
+                  local_4f0 = pbVar9;
+                  pbVar14 = pbVar14 + 1;
+                  pbVar14[-1] = bVar11;
+                  bVar11 = *local_4f0;
+                  pbVar9 = local_4f0 + 1;
+                } while (0x1f < bVar11);
               }
-              *pbVar22 = 0;
-              iVar12 = *(int *)(pcVar24 + 0x90);
-              uVar10 = cRPathManager::NameCode
-                                 ((cRPathManager *)
-                                  (gDirectory + **(int **)(iVar25 + DAT_000843d8) + 0x2884),
-                                  (char *)local_6c);
-              iVar11 = *(int *)(pcVar24 + 0x90);
-              iVar14 = iVar27 * 0x38;
-              *(undefined4 *)(iVar12 + iVar14 + 0x30) = uVar10;
-              if (*(int *)(iVar11 + iVar14 + 0x30) == -1) {
-                RShellError((char *)(iVar25 + DAT_00084a84),local_6c,__src);
+              *pbVar14 = 0;
+              iVar7 = *(int *)(pcVar15 + 0x90);
+              uVar6 = cRPathManager::NameCode
+                                ((cRPathManager *)(gDirectory + Game + 0x2884),(char *)local_6c);
+              iVar12 = *(int *)(pcVar15 + 0x90);
+              iVar2 = iVar3 * 0x38;
+              *(undefined4 *)(iVar7 + iVar2 + 0x30) = uVar6;
+              if (*(int *)(iVar12 + iVar2 + 0x30) == -1) {
+                RShellError("Unknown path %s in %s",local_6c,__src);
               }
               else {
-                *(uint *)(iVar11 + iVar14) = *(uint *)(iVar11 + iVar14) | 8;
+                *(uint *)(iVar12 + iVar2) = *(uint *)(iVar12 + iVar2) | 8;
               }
             }
-            local_4f0 = (byte *)Rstrfind((char *)(iVar25 + iVar7),local_4ec);
+            local_4f0 = (byte *)Rstrfind("NoFall",local_4ec);
             if (local_4f0 != (byte *)0x0) {
-              *(uint *)(*(int *)(pcVar24 + 0x90) + iVar27 * 0x38) =
-                   *(uint *)(*(int *)(pcVar24 + 0x90) + iVar27 * 0x38) | 0x100;
+              *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) =
+                   *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) | 0x100;
             }
-            local_4f0 = (byte *)Rstrfind((char *)(iVar25 + iVar8),local_4ec);
-            iVar11 = extraout_r2;
-            iVar14 = extraout_r3;
+            local_4f0 = (byte *)Rstrfind("Ring=None",local_4ec);
             if (local_4f0 != (byte *)0x0) {
-              iVar14 = iVar27 * 0x38;
-              iVar11 = *(int *)(pcVar24 + 0x90);
+              *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) =
+                   *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) | 0x200;
             }
-            pcVar26 = (char *)(iVar25 + DAT_000843dc);
+            local_4f0 = (byte *)Rstrfind("Ring=Normal",local_4ec);
             if (local_4f0 != (byte *)0x0) {
-              *(uint *)(iVar11 + iVar14) = *(uint *)(iVar11 + iVar14) | 0x200;
+              *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) =
+                   *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) | 0x400;
             }
-            local_4f0 = (byte *)Rstrfind(pcVar26,local_4ec);
-            iVar11 = extraout_r2_00;
-            iVar14 = extraout_r3_00;
+            local_4f0 = (byte *)Rstrfind("Ring=PowerUp",local_4ec);
             if (local_4f0 != (byte *)0x0) {
-              iVar14 = iVar27 * 0x38;
-              iVar11 = *(int *)(pcVar24 + 0x90);
+              *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) =
+                   *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) | 0x2000;
             }
-            pcVar26 = (char *)(iVar25 + DAT_000843e0);
+            local_4f0 = (byte *)Rstrfind("Ring=Explode",local_4ec);
             if (local_4f0 != (byte *)0x0) {
-              *(uint *)(iVar11 + iVar14) = *(uint *)(iVar11 + iVar14) | 0x400;
+              *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) =
+                   *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) | 0x800;
             }
-            local_4f0 = (byte *)Rstrfind(pcVar26,local_4ec);
-            iVar11 = extraout_r2_01;
-            iVar14 = extraout_r3_01;
+            local_4f0 = (byte *)Rstrfind("Ring=Slow",local_4ec);
             if (local_4f0 != (byte *)0x0) {
-              iVar14 = iVar27 * 0x38;
-              iVar11 = *(int *)(pcVar24 + 0x90);
+              *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) =
+                   *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) | 0x1000;
             }
-            pcVar26 = (char *)(iVar25 + DAT_000843e4);
-            if (local_4f0 != (byte *)0x0) {
-              *(uint *)(iVar11 + iVar14) = *(uint *)(iVar11 + iVar14) | 0x2000;
-            }
-            local_4f0 = (byte *)Rstrfind(pcVar26,local_4ec);
-            iVar11 = extraout_r2_02;
-            iVar14 = extraout_r3_02;
-            if (local_4f0 != (byte *)0x0) {
-              iVar14 = iVar27 * 0x38;
-              iVar11 = *(int *)(pcVar24 + 0x90);
-            }
-            pcVar26 = (char *)(iVar25 + DAT_000843e8);
-            if (local_4f0 != (byte *)0x0) {
-              *(uint *)(iVar11 + iVar14) = *(uint *)(iVar11 + iVar14) | 0x800;
-            }
-            local_4f0 = (byte *)Rstrfind(pcVar26,local_4ec);
-            iVar11 = extraout_r2_03;
-            iVar14 = extraout_r3_03;
-            if (local_4f0 != (byte *)0x0) {
-              iVar14 = iVar27 * 0x38;
-              iVar11 = *(int *)(pcVar24 + 0x90);
-            }
-            pcVar26 = (char *)(iVar25 + DAT_000843ec);
-            if (local_4f0 != (byte *)0x0) {
-              *(uint *)(iVar11 + iVar14) = *(uint *)(iVar11 + iVar14) | 0x1000;
-            }
-            local_4f0 = (byte *)Rstrfind(pcVar26,local_4ec);
+            local_4f0 = (byte *)Rstrfind("RingSpeed=",local_4ec);
             if (local_4f0 == (byte *)0x0) {
-              *(undefined4 *)(*(int *)(pcVar24 + 0x90) + iVar27 * 0x38 + 0x34) = DAT_00084a6c;
+              *(undefined4 *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38 + 0x34) = 0;
               local_4f0 = (byte *)0x0;
             }
             else {
-              iVar14 = Rstrfind((char *)(iVar25 + DAT_000843f0),(char *)local_4f0);
-              iVar11 = *(int *)(pcVar24 + 0x90);
-              local_4f0 = (byte *)(iVar14 + 1);
-              uVar10 = Rstrfloat((char **)&local_4f0);
-              *(undefined4 *)(iVar11 + iVar27 * 0x38 + 0x34) = uVar10;
+              iVar2 = Rstrfind("=",(char *)local_4f0);
+              iVar12 = *(int *)(pcVar15 + 0x90);
+              local_4f0 = (byte *)(iVar2 + 1);
+              uVar6 = Rstrfloat((char **)&local_4f0);
+              *(undefined4 *)(iVar12 + iVar3 * 0x38 + 0x34) = uVar6;
             }
-            local_4f0 = (byte *)Rstrfind((char *)(iVar25 + DAT_000843f4),local_4ec);
+            local_4f0 = (byte *)Rstrfind("JetPack=Off",local_4ec);
             if (local_4f0 != (byte *)0x0) {
-              *(uint *)(*(int *)(pcVar24 + 0x90) + iVar27 * 0x38) =
-                   *(uint *)(*(int *)(pcVar24 + 0x90) + iVar27 * 0x38) | 0x8000;
+              *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) =
+                   *(uint *)(*(int *)(pcVar15 + 0x90) + iVar3 * 0x38) | 0x8000;
             }
           }
-          iVar27 = iVar27 + 1;
-          pcVar26 = (char *)Rstrnewline(pcVar9);
-          if (pcVar26 == (char *)0x0) goto LAB_00084310;
+          iVar3 = iVar3 + 1;
+          pcVar4 = (char *)Rstrnewline(pcVar5);
+          if (pcVar4 == (char *)0x0) goto LAB_00084310;
         }
-        pcVar24 = pcVar24 + 0x90;
+        pcVar15 = pcVar15 + 0x90;
         local_528 = local_528 + 1;
         if (*(int *)this <= local_528) goto LAB_00084320;
       }
-      RShellError((char *)(iVar25 + DAT_00084a90),__src);
+      RShellError("Cannot find Name: in Segment %s\n",__src);
     }
   }
   else {
-    RShellError((char *)(iVar25 + DAT_00084a7c));
+    RShellError("Too many Segments increase RSMTRACK_SEGMENT_MAX");
   }
 LAB_00084320:
-  if (local_2c != **(int **)(iVar25 + iVar5)) {
+  if (local_2c != __stack_chk_guard) {
                     /* WARNING: Subroutine does not return */
     __stack_chk_fail();
   }

@@ -16,11 +16,11 @@ float __thiscall tVector::Normalize(tVector *this)
   fVar1 = (float)Dot(this,this,this);
   fVar1 = (float)Sqrt(fVar1);
   if (fVar1 != 0.0) {
-    fVar2 = DAT_00028a9c / fVar1;
+    fVar2 = 1.0 / fVar1;
     *(float *)(this + 8) = *(float *)(this + 8) * fVar2;
     *(float *)this = *(float *)this * fVar2;
     *(float *)(this + 4) = *(float *)(this + 4) * fVar2;
     return fVar1;
   }
-  return DAT_00028aa0;
+  return 0.0;
 }

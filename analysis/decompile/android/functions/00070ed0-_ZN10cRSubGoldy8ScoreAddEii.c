@@ -12,9 +12,7 @@ void __thiscall cRSubGoldy::ScoreAdd(cRSubGoldy *this,int param_1,int param_2)
 {
   int iVar1;
   int iVar2;
-  int iVar3;
 
-  iVar2 = DAT_00070fec + 0x70ee8;
   switch(param_1) {
   case 0:
     param_2 = 10;
@@ -36,20 +34,18 @@ LAB_00070f0c:
     param_2 = 0xfa;
     break;
   default:
-    RShellError((char *)(iVar2 + DAT_00070ff4));
+    RShellError("Unknown Score Type");
     param_2 = 0;
   }
-  iVar3 = *(int *)(this + 0x2cc);
-  iVar1 = param_2 + iVar3;
+  iVar2 = *(int *)(this + 0x2cc);
+  iVar1 = param_2 + iVar2;
   *(int *)(this + 0x2cc) = iVar1;
   *(int *)(this + (param_1 + 0xbe) * 4) = param_2 + *(int *)(this + (param_1 + 0xbe) * 4);
-  if ((iVar3 / 50000 != iVar1 / 50000) && (*(int *)(this + 0x3ff4) < 9)) {
-    *(int *)(this + 0x3ff4) = *(int *)(this + 0x3ff4) + 1;
-    if ((*(int *)(**(int **)(iVar2 + DAT_00070ff0) + 0x71900) == 0) &&
-       (*(int *)(**(int **)(iVar2 + DAT_00070ff0) + 0x24) == 0)) {
-      cRSound::Play(*(int *)(iVar2 + DAT_00070ff8));
-      return;
-    }
+  if ((((iVar2 / 50000 != iVar1 / 50000) && (*(int *)(this + 0x3ff4) < 9)) &&
+      (*(int *)(this + 0x3ff4) = *(int *)(this + 0x3ff4) + 1, *(int *)(Game + 0x71900) == 0)) &&
+     (*(int *)(Game + 0x24) == 0)) {
+    cRSound::Play((int)&gRSound);
+    return;
   }
   return;
 }

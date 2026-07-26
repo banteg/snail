@@ -10,9 +10,6 @@
 void __thiscall cRSubSpeedUp::AI(cRSubSpeedUp *this)
 
 {
-  int iVar1;
-
-  iVar1 = DAT_0006e764 + 0x6e6fc;
   if (*(char *)(*(int *)(this + 0x80) + 0x19) != '\0') {
     return;
   }
@@ -25,8 +22,7 @@ void __thiscall cRSubSpeedUp::AI(cRSubSpeedUp *this)
     return;
   }
   *(undefined4 *)(this + 0x74) = 0;
-  cLinkedList<cRBod>::Remove
-            ((cLinkedList<cRBod> *)(**(int **)(iVar1 + DAT_0006e768) + 0x358),(cRBod *)this);
+  cLinkedList<cRBod>::Remove((cLinkedList<cRBod> *)(Game + 0x358),(cRBod *)this);
   cRSprite::Kill(*(cRSprite **)(this + 0xa0));
   return;
 }

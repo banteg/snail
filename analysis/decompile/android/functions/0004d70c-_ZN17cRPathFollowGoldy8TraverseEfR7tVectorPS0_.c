@@ -11,25 +11,21 @@
 int cRPathFollowGoldy::Traverse(float param_1,tVector *param_2,tVector *param_3)
 
 {
-  bool bVar1;
-  uint uVar2;
-  byte bVar3;
-  undefined4 uVar4;
-  cRSubLoc *pcVar5;
-  uint uVar6;
-  int iVar7;
+  uint uVar1;
+  byte bVar2;
+  cRSubLoc *pcVar3;
+  uint uVar4;
   float *in_r2;
+  float *pfVar5;
   int in_r3;
-  int iVar8;
-  int iVar9;
-  tMatrix *ptVar10;
-  int *piVar11;
-  int iVar12;
+  int iVar6;
+  int iVar7;
+  tMatrix *ptVar8;
+  float *pfVar9;
+  int iVar10;
+  undefined4 *puVar11;
+  undefined4 *puVar12;
   int iVar13;
-  int iVar14;
-  undefined4 *puVar15;
-  undefined4 *puVar16;
-  int iVar17;
   uint in_fpscr;
   float extraout_s0;
   float extraout_s0_00;
@@ -44,21 +40,20 @@ int cRPathFollowGoldy::Traverse(float param_1,tVector *param_2,tVector *param_3)
   float extraout_s2;
   float extraout_s2_00;
   float extraout_s2_01;
+  float fVar14;
+  float fVar15;
+  float fVar16;
+  float fVar17;
   float fVar18;
   float fVar19;
   float fVar20;
   float fVar21;
-  float *pfVar22;
+  float fVar22;
   float fVar23;
   float fVar24;
   float fVar25;
   float fVar26;
   float fVar27;
-  float fVar28;
-  float fVar29;
-  float fVar30;
-  float fVar31;
-  float fVar32;
   float local_184;
   float fStack_180;
   float fStack_17c;
@@ -140,46 +135,43 @@ int cRPathFollowGoldy::Traverse(float param_1,tVector *param_2,tVector *param_3)
   undefined4 uStack_4c;
   undefined4 uStack_48;
 
-  uVar4 = DAT_0004daa0;
-  iVar9 = DAT_0004da98;
-  iVar7 = DAT_0004da90;
-  ptVar10 = *(tMatrix **)(param_2 + 4);
-  iVar13 = *(int *)(param_2 + 0xc);
-  fVar26 = *(float *)(iVar13 * 0xa8 + *(int *)(ptVar10 + 0x50) + 0x8c);
-  iVar12 = DAT_0004da94 + 0x4d764;
-  fVar29 = fVar26 * (float)param_3;
+  ptVar8 = *(tMatrix **)(param_2 + 4);
+  iVar10 = *(int *)(param_2 + 0xc);
+  fVar20 = *(float *)(iVar10 * 0xa8 + *(int *)(ptVar8 + 0x50) + 0x8c);
+  fVar24 = fVar20 * (float)param_3;
   while( true ) {
-    fVar21 = *(float *)(param_2 + 0x10);
-    fVar19 = fVar21 + fVar29;
-    uVar6 = in_fpscr & 0xfffffff | (uint)(fVar19 < fVar26) << 0x1f |
-            (uint)(fVar19 == fVar26) << 0x1e;
-    in_fpscr = uVar6 | (uint)(NAN(fVar19) || NAN(fVar26)) << 0x1c;
-    bVar3 = (byte)(uVar6 >> 0x18);
-    if ((bool)(bVar3 >> 6 & 1) || bVar3 >> 7 != ((byte)(in_fpscr >> 0x1c) & 1)) {
-      iVar7 = *(int *)(ptVar10 + 0x38);
-      *(float *)(param_2 + 0x10) = fVar19;
-      if (iVar13 == iVar7 + -1) {
-        iVar9 = iVar13 * 0xa8 + *(int *)(ptVar10 + 0x4c);
-        pfVar22 = *(float **)(iVar9 + 0xa0);
-        fVar26 = *(float *)(iVar9 + 0x90);
-        fVar29 = *(float *)(iVar9 + 0x9c);
+    fVar16 = *(float *)(param_2 + 0x10);
+    fVar14 = fVar16 + fVar24;
+    uVar4 = in_fpscr & 0xfffffff | (uint)(fVar14 < fVar20) << 0x1f |
+            (uint)(fVar14 == fVar20) << 0x1e;
+    in_fpscr = uVar4 | (uint)(NAN(fVar14) || NAN(fVar20)) << 0x1c;
+    bVar2 = (byte)(uVar4 >> 0x18);
+    if ((bool)(bVar2 >> 6 & 1) || bVar2 >> 7 != ((byte)(in_fpscr >> 0x1c) & 1)) {
+      iVar6 = *(int *)(ptVar8 + 0x38);
+      *(float *)(param_2 + 0x10) = fVar14;
+      if (iVar10 == iVar6 + -1) {
+        iVar13 = iVar10 * 0xa8 + *(int *)(ptVar8 + 0x4c);
+        pfVar5 = *(float **)(iVar13 + 0xa0);
+        fVar20 = *(float *)(iVar13 + 0x90);
+        fVar24 = *(float *)(iVar13 + 0x9c);
       }
       else {
-        fVar29 = fVar19 / *(float *)(*(int *)(ptVar10 + 0x50) + iVar13 * 0xa8 + 0x8c);
-        iVar9 = *(int *)(ptVar10 + 0x4c) + iVar13 * 0xa8;
-        iVar8 = *(int *)(ptVar10 + 0x4c) + iVar13 * 0xa8 + 0xa8;
-        fVar26 = *(float *)(iVar9 + 0x90) +
-                 (*(float *)(iVar8 + 0x90) - *(float *)(iVar9 + 0x90)) * fVar29;
-        pfVar22 = (float *)(*(float *)(iVar9 + 0xa0) +
-                           fVar29 * (*(float *)(iVar8 + 0xa0) - *(float *)(iVar9 + 0xa0)));
-        fVar29 = *(float *)(iVar9 + 0x9c) +
-                 fVar29 * (*(float *)(iVar8 + 0x9c) - *(float *)(iVar9 + 0x9c));
+        fVar24 = fVar14 / *(float *)(*(int *)(ptVar8 + 0x50) + iVar10 * 0xa8 + 0x8c);
+        iVar13 = *(int *)(ptVar8 + 0x4c) + iVar10 * 0xa8;
+        iVar7 = *(int *)(ptVar8 + 0x4c) + iVar10 * 0xa8 + 0xa8;
+        fVar20 = *(float *)(iVar13 + 0x90) +
+                 (*(float *)(iVar7 + 0x90) - *(float *)(iVar13 + 0x90)) * fVar24;
+        pfVar5 = (float *)(*(float *)(iVar13 + 0xa0) +
+                          fVar24 * (*(float *)(iVar7 + 0xa0) - *(float *)(iVar13 + 0xa0)));
+        fVar24 = *(float *)(iVar13 + 0x9c) +
+                 fVar24 * (*(float *)(iVar7 + 0x9c) - *(float *)(iVar13 + 0x9c));
       }
-      if (*(int *)(ptVar10 + 0x2c) == 0x39) {
-        cRPath::HalfPipePos(param_1,in_s1,in_s2,ptVar10,pfVar22);
-        iVar7 = *(int *)(param_2 + 0xc);
-        if ((iVar7 == 0) || (iVar9 = *(int *)(param_2 + 4), iVar7 == *(int *)(iVar9 + 0x38) + -1)) {
-          fVar19 = (float)tMatrix::Identity((tMatrix *)&local_184);
+      if (*(int *)(ptVar8 + 0x2c) == 0x39) {
+        cRPath::HalfPipePos(param_1,in_s1,in_s2,ptVar8,pfVar5);
+        iVar10 = *(int *)(param_2 + 0xc);
+        if ((iVar10 == 0) || (iVar6 = *(int *)(param_2 + 4), iVar10 == *(int *)(iVar6 + 0x38) + -1))
+        {
+          fVar14 = (float)tMatrix::Identity((tMatrix *)&local_184);
           local_154 = local_54;
           uStack_150 = local_50;
           uStack_14c = uStack_4c;
@@ -200,36 +192,39 @@ int cRPathFollowGoldy::Traverse(float param_1,tVector *param_2,tVector *param_3)
           uStack_10c = uStack_4c;
           uStack_108 = uStack_48;
           tMatrix::LinearInterpolate
-                    ((tMatrix *)&local_84,(tMatrix *)&local_184,(tMatrix *)&local_144,fVar19);
-          iVar9 = *(int *)(param_2 + 4);
-          iVar7 = *(int *)(param_2 + 0xc);
+                    ((tMatrix *)&local_84,(tMatrix *)&local_184,(tMatrix *)&local_144,fVar14);
+          iVar6 = *(int *)(param_2 + 4);
+          iVar10 = *(int *)(param_2 + 0xc);
         }
-        iVar13 = DAT_0004e314;
-        fVar18 = *(float *)(*(int *)(param_2 + 8) + 0x18);
-        fVar21 = *(float *)(in_r3 + 4);
-        iVar8 = iVar7 * 0xa8 + *(int *)(iVar9 + 0x50);
-        fVar20 = *(float *)(iVar8 + 0x38);
-        fVar19 = *(float *)(iVar8 + 0x88);
+        fVar15 = *(float *)(*(int *)(param_2 + 8) + 0x18);
+        fVar16 = *(float *)(in_r3 + 4);
+        iVar13 = iVar10 * 0xa8 + *(int *)(iVar6 + 0x50);
+        fVar18 = *(float *)(iVar13 + 0x38);
+        fVar14 = *(float *)(iVar13 + 0x88);
         *(undefined4 *)(param_2 + 0x2c) = local_54;
         *(undefined4 *)(param_2 + 0x30) = local_50;
-        iVar12 = **(int **)(iVar12 + iVar13);
-        *(float *)(param_2 + 0x34) = fVar18 + fVar20 + fVar19 * *(float *)(param_2 + 0x10);
-        *(float *)(param_2 + 0x14) = *(float *)(param_2 + 0x14) + fVar21;
-        *(float *)(iVar12 + 0x81390) = local_84 * fVar29;
-        *(float *)(iVar12 + 0x81394) = local_80 * fVar29;
-        *(float *)(iVar12 + 0x81398) = local_7c * fVar29;
-        *(float *)(iVar12 + 0x813a0) = local_74;
-        *(float *)(iVar12 + 0x813a4) = local_70;
-        *(float *)(iVar12 + 0x813a8) = local_6c;
-        *(undefined4 *)(iVar12 + 0x813b0) = local_64;
-        *(undefined4 *)(iVar12 + 0x813b4) = uStack_60;
-        *(undefined4 *)(iVar12 + 0x813b8) = uStack_5c;
+        iVar13 = Game;
+        pfVar5 = (float *)(Game + 0x81390);
+        pfVar9 = (float *)(Game + 0x813a0);
+        puVar12 = (undefined4 *)(Game + 0x813b0);
+        *(float *)(param_2 + 0x34) = fVar15 + fVar18 + fVar14 * *(float *)(param_2 + 0x10);
+        *(float *)(param_2 + 0x14) = *(float *)(param_2 + 0x14) + fVar16;
+        *pfVar5 = local_84 * fVar24;
+        *(float *)(iVar13 + 0x81394) = local_80 * fVar24;
+        *(float *)(iVar13 + 0x81398) = local_7c * fVar24;
+        *pfVar9 = local_74;
+        *(float *)(iVar13 + 0x813a4) = local_70;
+        *(float *)(iVar13 + 0x813a8) = local_6c;
+        *puVar12 = local_64;
+        *(undefined4 *)(iVar13 + 0x813b4) = uStack_60;
+        *(undefined4 *)(iVar13 + 0x813b8) = uStack_5c;
       }
-      else if (*(int *)(ptVar10 + 0x2c) == 0x3a) {
-        cRPath::HalfPolePos(param_1,in_s1,in_s2,ptVar10,pfVar22);
-        iVar7 = *(int *)(param_2 + 0xc);
-        if ((iVar7 == 0) || (iVar9 = *(int *)(param_2 + 4), iVar7 == *(int *)(iVar9 + 0x38) + -1)) {
-          fVar19 = (float)tMatrix::Identity((tMatrix *)&local_144);
+      else if (*(int *)(ptVar8 + 0x2c) == 0x3a) {
+        cRPath::HalfPolePos(param_1,in_s1,in_s2,ptVar8,pfVar5);
+        iVar10 = *(int *)(param_2 + 0xc);
+        if ((iVar10 == 0) || (iVar6 = *(int *)(param_2 + 4), iVar10 == *(int *)(iVar6 + 0x38) + -1))
+        {
+          fVar14 = (float)tMatrix::Identity((tMatrix *)&local_144);
           local_114 = local_54;
           uStack_110 = local_50;
           uStack_10c = uStack_4c;
@@ -250,322 +245,314 @@ int cRPathFollowGoldy::Traverse(float param_1,tVector *param_2,tVector *param_3)
           uStack_14c = uStack_4c;
           uStack_148 = uStack_48;
           tMatrix::LinearInterpolate
-                    ((tMatrix *)&local_84,(tMatrix *)&local_144,(tMatrix *)&local_184,fVar19);
-          iVar9 = *(int *)(param_2 + 4);
-          iVar7 = *(int *)(param_2 + 0xc);
+                    ((tMatrix *)&local_84,(tMatrix *)&local_144,(tMatrix *)&local_184,fVar14);
+          iVar6 = *(int *)(param_2 + 4);
+          iVar10 = *(int *)(param_2 + 0xc);
         }
-        iVar13 = DAT_0004e314;
-        fVar18 = *(float *)(*(int *)(param_2 + 8) + 0x18);
-        fVar21 = *(float *)(in_r3 + 4);
-        iVar8 = iVar7 * 0xa8 + *(int *)(iVar9 + 0x50);
-        fVar20 = *(float *)(iVar8 + 0x38);
-        fVar19 = *(float *)(iVar8 + 0x88);
+        fVar15 = *(float *)(*(int *)(param_2 + 8) + 0x18);
+        fVar16 = *(float *)(in_r3 + 4);
+        iVar13 = iVar10 * 0xa8 + *(int *)(iVar6 + 0x50);
+        fVar18 = *(float *)(iVar13 + 0x38);
+        fVar14 = *(float *)(iVar13 + 0x88);
         *(undefined4 *)(param_2 + 0x2c) = local_54;
-        piVar11 = *(int **)(iVar12 + iVar13);
         *(undefined4 *)(param_2 + 0x30) = local_50;
-        iVar12 = *piVar11;
-        *(float *)(param_2 + 0x34) = fVar18 + fVar20 + fVar19 * *(float *)(param_2 + 0x10);
-        *(float *)(param_2 + 0x14) = *(float *)(param_2 + 0x14) + fVar21;
-        *(float *)(iVar12 + 0x81390) = local_84 * fVar29;
-        *(float *)(iVar12 + 0x81394) = local_80 * fVar29;
-        *(float *)(iVar12 + 0x81398) = local_7c * fVar29;
-        *(float *)(iVar12 + 0x813a0) = local_74;
-        *(float *)(iVar12 + 0x813a4) = local_70;
-        *(float *)(iVar12 + 0x813a8) = local_6c;
-        *(undefined4 *)(iVar12 + 0x813b0) = local_64;
-        *(undefined4 *)(iVar12 + 0x813b4) = uStack_60;
-        *(undefined4 *)(iVar12 + 0x813b8) = uStack_5c;
+        iVar13 = Game;
+        pfVar5 = (float *)(Game + 0x81390);
+        pfVar9 = (float *)(Game + 0x813a0);
+        puVar12 = (undefined4 *)(Game + 0x813b0);
+        *(float *)(param_2 + 0x34) = fVar15 + fVar18 + fVar14 * *(float *)(param_2 + 0x10);
+        *(float *)(param_2 + 0x14) = *(float *)(param_2 + 0x14) + fVar16;
+        *pfVar5 = local_84 * fVar24;
+        *(float *)(iVar13 + 0x81394) = local_80 * fVar24;
+        *(float *)(iVar13 + 0x81398) = local_7c * fVar24;
+        *pfVar9 = local_74;
+        *(float *)(iVar13 + 0x813a4) = local_70;
+        *(float *)(iVar13 + 0x813a8) = local_6c;
+        *puVar12 = local_64;
+        *(undefined4 *)(iVar13 + 0x813b4) = uStack_60;
+        *(undefined4 *)(iVar13 + 0x813b8) = uStack_5c;
       }
       else {
-        iVar9 = *(int *)(param_2 + 8);
-        fVar30 = *(float *)(iVar9 + 0x18);
-        fVar31 = *(float *)(iVar9 + 0x10);
-        fVar32 = *(float *)(iVar9 + 0x14);
-        puVar16 = (undefined4 *)(iVar13 * 0xa8 + *(int *)(ptVar10 + 0x50));
-        fVar25 = (float)puVar16[0x20];
-        fVar24 = (float)puVar16[0x21];
-        fVar21 = (float)puVar16[0xc];
-        fVar18 = (float)puVar16[0xd];
-        fVar20 = (float)puVar16[0xe];
-        fVar28 = (float)puVar16[0x22];
-        if (iVar13 == iVar7 + -1) {
+        iVar13 = *(int *)(param_2 + 8);
+        fVar25 = *(float *)(iVar13 + 0x18);
+        fVar26 = *(float *)(iVar13 + 0x10);
+        fVar27 = *(float *)(iVar13 + 0x14);
+        puVar12 = (undefined4 *)(iVar10 * 0xa8 + *(int *)(ptVar8 + 0x50));
+        fVar23 = (float)puVar12[0x20];
+        fVar19 = (float)puVar12[0x21];
+        fVar16 = (float)puVar12[0xc];
+        fVar15 = (float)puVar12[0xd];
+        fVar18 = (float)puVar12[0xe];
+        fVar21 = (float)puVar12[0x22];
+        if (iVar10 == iVar6 + -1) {
           tMatrix::Identity((tMatrix *)&local_84);
         }
         else {
-          local_c4 = *puVar16;
-          uStack_c0 = puVar16[1];
-          uStack_bc = puVar16[2];
-          uStack_b8 = puVar16[3];
-          puVar15 = (undefined4 *)(*(int *)(ptVar10 + 0x50) + iVar13 * 0xa8 + 0xa8);
-          local_b4 = puVar16[4];
-          uStack_b0 = puVar16[5];
-          uStack_ac = puVar16[6];
-          uStack_a8 = puVar16[7];
-          local_a4 = puVar16[8];
-          uStack_a0 = puVar16[9];
-          uStack_9c = puVar16[10];
-          uStack_98 = puVar16[0xb];
-          uStack_88 = puVar16[0xf];
-          local_104 = *puVar15;
-          uStack_100 = puVar15[1];
-          uStack_fc = puVar15[2];
-          uStack_f8 = puVar15[3];
-          local_f4 = puVar15[4];
-          uStack_f0 = puVar15[5];
-          uStack_ec = puVar15[6];
-          uStack_e8 = puVar15[7];
-          local_e4 = puVar15[8];
-          uStack_e0 = puVar15[9];
-          uStack_dc = puVar15[10];
-          uStack_d8 = puVar15[0xb];
-          uStack_c8 = puVar15[0xf];
-          local_8c = DAT_0004daa0;
-          local_90 = DAT_0004daa0;
-          local_94 = DAT_0004daa0;
-          local_d4 = DAT_0004daa0;
-          local_cc = DAT_0004daa0;
-          local_d0 = DAT_0004daa0;
+          local_c4 = *puVar12;
+          uStack_c0 = puVar12[1];
+          uStack_bc = puVar12[2];
+          uStack_b8 = puVar12[3];
+          puVar11 = (undefined4 *)(*(int *)(ptVar8 + 0x50) + iVar10 * 0xa8 + 0xa8);
+          local_b4 = puVar12[4];
+          uStack_b0 = puVar12[5];
+          uStack_ac = puVar12[6];
+          uStack_a8 = puVar12[7];
+          local_a4 = puVar12[8];
+          uStack_a0 = puVar12[9];
+          uStack_9c = puVar12[10];
+          uStack_98 = puVar12[0xb];
+          uStack_88 = puVar12[0xf];
+          local_104 = *puVar11;
+          uStack_100 = puVar11[1];
+          uStack_fc = puVar11[2];
+          uStack_f8 = puVar11[3];
+          local_f4 = puVar11[4];
+          uStack_f0 = puVar11[5];
+          uStack_ec = puVar11[6];
+          uStack_e8 = puVar11[7];
+          local_e4 = puVar11[8];
+          uStack_e0 = puVar11[9];
+          uStack_dc = puVar11[10];
+          uStack_d8 = puVar11[0xb];
+          uStack_c8 = puVar11[0xf];
+          local_8c = 0;
+          local_90 = 0;
+          local_94 = 0;
+          local_d4 = 0;
+          local_cc = 0;
+          local_d0 = 0;
           tMatrix::LinearInterpolate
                     ((tMatrix *)&local_84,(tMatrix *)&local_c4,(tMatrix *)&local_104,param_1);
         }
-        fVar27 = *(float *)(param_2 + 0x14) + *(float *)(in_r3 + 4);
-        iVar7 = **(int **)(iVar12 + DAT_0004da98);
-        *(float *)(param_2 + 0x14) = fVar27;
-        fVar23 = *in_r2 - fVar26;
+        iVar10 = Game;
+        fVar22 = *(float *)(param_2 + 0x14) + *(float *)(in_r3 + 4);
+        *(float *)(param_2 + 0x14) = fVar22;
+        fVar17 = *in_r2 - fVar20;
         *(float *)(param_2 + 0x2c) =
-             fVar31 + fVar21 + fVar19 * fVar25 * fVar29 + fVar23 * local_84 * fVar29 +
-             fVar27 * local_74;
+             fVar26 + fVar16 + fVar14 * fVar23 * fVar24 + fVar17 * local_84 * fVar24 +
+             fVar22 * local_74;
         *(float *)(param_2 + 0x34) =
-             fVar30 + fVar20 + fVar19 * fVar28 + fVar23 * fVar29 * local_7c + fVar27 * local_6c;
+             fVar25 + fVar18 + fVar14 * fVar21 + fVar17 * fVar24 * local_7c + fVar22 * local_6c;
         *(float *)(param_2 + 0x30) =
-             fVar32 + fVar18 + fVar19 * fVar24 * fVar29 + fVar23 * local_80 * fVar29 +
-             fVar27 * local_70;
-        *(float *)(iVar7 + 0x81390) = local_84 * fVar29;
-        *(float *)(iVar7 + 0x81394) = local_80 * fVar29;
-        *(float *)(iVar7 + 0x81398) = fVar29 * local_7c;
-        *(float *)(iVar7 + 0x813a0) = local_74;
-        *(float *)(iVar7 + 0x813a4) = local_70;
-        *(float *)(iVar7 + 0x813a8) = local_6c;
-        *(undefined4 *)(iVar7 + 0x813b0) = local_64;
-        *(undefined4 *)(iVar7 + 0x813b4) = uStack_60;
-        *(undefined4 *)(iVar7 + 0x813b8) = uStack_5c;
-        iVar9 = *(int *)(param_2 + 4);
-        iVar7 = *(int *)(param_2 + 0xc);
+             fVar27 + fVar15 + fVar14 * fVar19 * fVar24 + fVar17 * local_80 * fVar24 +
+             fVar22 * local_70;
+        *(float *)(iVar10 + 0x81390) = local_84 * fVar24;
+        *(float *)(iVar10 + 0x81394) = local_80 * fVar24;
+        *(float *)(iVar10 + 0x81398) = fVar24 * local_7c;
+        *(float *)(iVar10 + 0x813a0) = local_74;
+        *(float *)(iVar10 + 0x813a4) = local_70;
+        *(float *)(iVar10 + 0x813a8) = local_6c;
+        *(undefined4 *)(iVar10 + 0x813b0) = local_64;
+        *(undefined4 *)(iVar10 + 0x813b4) = uStack_60;
+        *(undefined4 *)(iVar10 + 0x813b8) = uStack_5c;
+        iVar6 = *(int *)(param_2 + 4);
+        iVar10 = *(int *)(param_2 + 0xc);
       }
-      iVar12 = *(int *)(iVar9 + 0x38);
+      iVar13 = *(int *)(iVar6 + 0x38);
       *(float *)(param_2 + 0x20) = local_74;
       *(float *)(param_2 + 0x24) = local_70;
       *(float *)(param_2 + 0x28) = local_6c;
-      fVar29 = DAT_0004daa4;
-      if (iVar7 == iVar12 + -1) {
-        iVar12 = iVar7 * 0xa8 + *(int *)(iVar9 + 0x4c);
-        *(undefined4 *)(param_2 + 0x1c) = *(undefined4 *)(iVar12 + 0x98);
-        *(undefined4 *)(param_2 + 0x18) = *(undefined4 *)(iVar12 + 0x94);
+      if (iVar10 == iVar13 + -1) {
+        iVar13 = iVar10 * 0xa8 + *(int *)(iVar6 + 0x4c);
+        *(undefined4 *)(param_2 + 0x1c) = *(undefined4 *)(iVar13 + 0x98);
+        *(undefined4 *)(param_2 + 0x18) = *(undefined4 *)(iVar13 + 0x94);
       }
       else {
-        fVar19 = *(float *)(*(int *)(iVar9 + 0x4c) + iVar7 * 0xa8 + 0x98);
-        fVar21 = *(float *)(*(int *)(iVar9 + 0x4c) + iVar7 * 0xa8 + 0x140) - fVar19;
-        uVar6 = in_fpscr & 0xfffffff | (uint)(fVar21 < DAT_0004daa4) << 0x1f |
-                (uint)(fVar21 == DAT_0004daa4) << 0x1e;
-        bVar3 = (byte)(uVar6 >> 0x18);
-        if ((bool)(bVar3 >> 6 & 1) || (bool)(bVar3 >> 7) != (NAN(fVar21) || NAN(DAT_0004daa4))) {
-          uVar6 = in_fpscr & 0xfffffff | (uint)(fVar21 < DAT_0004e304) << 0x1f;
-          if (SUB41(uVar6 >> 0x1f,0)) {
-            fVar21 = fVar21 + DAT_0004e308;
+        fVar24 = *(float *)(*(int *)(iVar6 + 0x4c) + iVar10 * 0xa8 + 0x98);
+        fVar14 = *(float *)(*(int *)(iVar6 + 0x4c) + iVar10 * 0xa8 + 0x140) - fVar24;
+        uVar4 = in_fpscr & 0xfffffff | (uint)(fVar14 < 3.1415927) << 0x1f |
+                (uint)(fVar14 == 3.1415927) << 0x1e;
+        bVar2 = (byte)(uVar4 >> 0x18);
+        if ((bool)(bVar2 >> 6 & 1) || (bool)(bVar2 >> 7) != NAN(fVar14)) {
+          uVar4 = in_fpscr & 0xfffffff | (uint)(fVar14 < -3.1415927) << 0x1f;
+          if (SUB41(uVar4 >> 0x1f,0)) {
+            fVar14 = fVar14 + 6.2831855;
           }
         }
         else {
-          fVar21 = fVar21 - DAT_0004daa8;
+          fVar14 = fVar14 - 6.2831855;
         }
-        iVar12 = *(int *)(iVar9 + 0x4c);
+        iVar13 = *(int *)(iVar6 + 0x4c);
         *(float *)(param_2 + 0x1c) =
-             fVar19 + (*(float *)(param_2 + 0x10) /
-                      *(float *)(*(int *)(iVar9 + 0x50) + iVar7 * 0xa8 + 0x8c)) * fVar21;
-        fVar19 = *(float *)(iVar12 + iVar7 * 0xa8 + 0x94);
-        fVar21 = *(float *)(iVar12 + iVar7 * 0xa8 + 0x13c) - fVar19;
-        uVar2 = uVar6 & 0xfffffff | (uint)(fVar21 < fVar29) << 0x1f |
-                (uint)(fVar21 == fVar29) << 0x1e;
-        in_fpscr = uVar2 | (uint)(NAN(fVar21) || NAN(fVar29)) << 0x1c;
-        bVar3 = (byte)(uVar2 >> 0x18);
-        if ((bool)(bVar3 >> 6 & 1) || bVar3 >> 7 != ((byte)(in_fpscr >> 0x1c) & 1)) {
-          in_fpscr = uVar6 & 0xfffffff | (uint)(fVar21 < DAT_0004e304) << 0x1f;
+             fVar24 + (*(float *)(param_2 + 0x10) /
+                      *(float *)(*(int *)(iVar6 + 0x50) + iVar10 * 0xa8 + 0x8c)) * fVar14;
+        fVar24 = *(float *)(iVar13 + iVar10 * 0xa8 + 0x94);
+        fVar14 = *(float *)(iVar13 + iVar10 * 0xa8 + 0x13c) - fVar24;
+        uVar1 = uVar4 & 0xfffffff | (uint)(fVar14 < 3.1415927) << 0x1f |
+                (uint)(fVar14 == 3.1415927) << 0x1e;
+        in_fpscr = uVar1 | (uint)NAN(fVar14) << 0x1c;
+        bVar2 = (byte)(uVar1 >> 0x18);
+        if ((bool)(bVar2 >> 6 & 1) || bVar2 >> 7 != ((byte)(in_fpscr >> 0x1c) & 1)) {
+          in_fpscr = uVar4 & 0xfffffff | (uint)(fVar14 < -3.1415927) << 0x1f;
           if (SUB41(in_fpscr >> 0x1f,0)) {
-            fVar21 = fVar21 + DAT_0004e308;
+            fVar14 = fVar14 + 6.2831855;
           }
         }
         else {
-          fVar21 = fVar21 - DAT_0004daa8;
+          fVar14 = fVar14 - 6.2831855;
         }
         *(float *)(param_2 + 0x18) =
-             fVar19 + (*(float *)(param_2 + 0x10) /
-                      *(float *)(*(int *)(iVar9 + 0x50) + iVar7 * 0xa8 + 0x8c)) * fVar21;
+             fVar24 + (*(float *)(param_2 + 0x10) /
+                      *(float *)(*(int *)(iVar6 + 0x50) + iVar10 * 0xa8 + 0x8c)) * fVar14;
       }
-      uVar6 = in_fpscr & 0xfffffff | (uint)(*(float *)(iVar9 + 0x80) == 0.0) << 0x1e;
-      if (!SUB41(uVar6 >> 0x1e,0)) {
-        fVar29 = (float)VectorSignedToFloat(iVar7,(byte)(uVar6 >> 0x16) & 3);
-        fVar19 = (float)VectorSignedToFloat(*(undefined4 *)(iVar9 + 0x38),(byte)(uVar6 >> 0x16) & 3)
+      uVar4 = in_fpscr & 0xfffffff | (uint)(*(float *)(iVar6 + 0x80) == 0.0) << 0x1e;
+      if (!SUB41(uVar4 >> 0x1e,0)) {
+        fVar24 = (float)VectorSignedToFloat(iVar10,(byte)(uVar4 >> 0x16) & 3);
+        fVar14 = (float)VectorSignedToFloat(*(undefined4 *)(iVar6 + 0x38),(byte)(uVar4 >> 0x16) & 3)
         ;
         *(float *)(param_2 + 0x1c) =
-             (*(float *)(iVar9 + 0x80) *
-             (*(float *)(param_2 + 0x10) / *(float *)(iVar7 * 0xa8 + *(int *)(iVar9 + 0x50) + 0x8c)
-             + fVar29)) / fVar19;
+             (*(float *)(iVar6 + 0x80) *
+             (*(float *)(param_2 + 0x10) / *(float *)(iVar10 * 0xa8 + *(int *)(iVar6 + 0x50) + 0x8c)
+             + fVar24)) / fVar14;
       }
-      uVar4 = DAT_0004e300;
-      fVar29 = DAT_0004dab4;
-      fVar19 = (float)VectorSignedToFloat(*(undefined4 *)(iVar9 + 0x48),(byte)(uVar6 >> 0x16) & 3);
-      fVar26 = *in_r2 - fVar26;
-      if (fVar26 < 0.0) {
-        fVar26 = -fVar26;
+      fVar24 = (float)VectorSignedToFloat(*(undefined4 *)(iVar6 + 0x48),(byte)(uVar4 >> 0x16) & 3);
+      fVar20 = *in_r2 - fVar20;
+      if (fVar20 < 0.0) {
+        fVar20 = -fVar20;
       }
-      if (fVar26 <= DAT_0004dab0 + fVar19 * DAT_0004daac) {
-        fVar26 = *(float *)(param_2 + 0x14);
+      if (fVar20 <= fVar24 * 0.5 + 0.3) {
+        fVar24 = *(float *)(param_2 + 0x14);
       }
       else {
-        fVar26 = *(float *)(param_2 + 0x14);
-        if (fVar26 <= 0.0) {
-          iVar7 = *(int *)(param_2 + 0x38);
-          fVar26 = *(float *)(param_2 + 0x30);
-          fVar19 = *(float *)(param_2 + 0x34);
+        fVar24 = *(float *)(param_2 + 0x14);
+        if (fVar24 <= 0.0) {
+          iVar10 = *(int *)(param_2 + 0x38);
+          fVar24 = -4.0;
+          fVar20 = *(float *)(param_2 + 0x30);
+          fVar14 = *(float *)(param_2 + 0x34);
           *in_r2 = *(float *)(param_2 + 0x2c);
-          in_r2[1] = fVar26;
-          in_r2[2] = fVar19;
-          *(float *)(iVar7 + 0x360) = *(float *)(iVar7 + 0x360) + *(float *)(iVar9 + 0x80);
-          fVar26 = *in_r2;
-          if ((fVar29 <= fVar26) && (fVar29 = fVar26, DAT_0004dab8 < fVar26)) {
-            fVar29 = DAT_0004dab8;
+          in_r2[1] = fVar20;
+          in_r2[2] = fVar14;
+          *(float *)(iVar10 + 0x360) = *(float *)(iVar10 + 0x360) + *(float *)(iVar6 + 0x80);
+          fVar20 = *in_r2;
+          if ((-4.0 <= fVar20) && (fVar24 = fVar20, 4.0 < fVar20)) {
+            fVar24 = 4.0;
           }
-          uVar6 = *(uint *)(iVar9 + 0x34);
-          *in_r2 = fVar29;
-          if (uVar6 < 2) {
-            return 1 - uVar6;
+          uVar4 = *(uint *)(iVar6 + 0x34);
+          *in_r2 = fVar24;
+          if (uVar4 < 2) {
+            return 1 - uVar4;
           }
           return 0;
         }
       }
-      if (fVar26 < 0.0) {
-        *(undefined4 *)(param_2 + 0x14) = DAT_0004e300;
-        *(undefined4 *)(in_r3 + 4) = uVar4;
+      if (fVar24 < 0.0) {
+        *(undefined4 *)(param_2 + 0x14) = 0;
+        *(undefined4 *)(in_r3 + 4) = 0;
       }
       return 0;
     }
-    iVar13 = iVar13 + 1;
-    *(int *)(param_2 + 0xc) = iVar13;
-    *(undefined4 *)(param_2 + 0x10) = uVar4;
-    iVar8 = *(int *)(ptVar10 + 0x38);
-    fVar29 = fVar29 - (fVar26 - fVar21);
-    if (iVar13 == iVar8 * 2) {
-      cRVoiceManager::Play(*(int *)(iVar12 + iVar7),4,1);
-      ptVar10 = *(tMatrix **)(param_2 + 4);
-      iVar13 = *(int *)(param_2 + 0xc);
-      iVar8 = *(int *)(ptVar10 + 0x38);
+    iVar10 = iVar10 + 1;
+    *(int *)(param_2 + 0xc) = iVar10;
+    *(undefined4 *)(param_2 + 0x10) = 0;
+    iVar6 = *(int *)(ptVar8 + 0x38);
+    fVar24 = fVar24 - (fVar20 - fVar16);
+    if (iVar10 == iVar6 * 2) {
+      cRVoiceManager::Play((int)&gVoiceManager,4,1);
+      ptVar8 = *(tMatrix **)(param_2 + 4);
+      iVar10 = *(int *)(param_2 + 0xc);
+      iVar6 = *(int *)(ptVar8 + 0x38);
       param_1 = extraout_s0;
       in_s1 = extraout_s1;
       in_s2 = extraout_s2;
     }
-    if (ptVar10[0x84] != (tMatrix)0x0) {
-      if (iVar8 + -1 == iVar13) {
-        piVar11 = *(int **)(iVar12 + iVar9);
-        iVar17 = *piVar11;
+    iVar13 = Game;
+    if (ptVar8[0x84] != (tMatrix)0x0) {
+      if (iVar6 + -1 == iVar10) {
+        iVar6 = cRSubLoc::Yi(*(cRSubLoc **)(param_2 + 8));
+        iVar10 = Game;
+        iVar7 = *(int *)(gGroup0 + iVar6 * 0xdc + iVar13 + 0xd16c);
         iVar13 = cRSubLoc::Yi(*(cRSubLoc **)(param_2 + 8));
-        iVar8 = *piVar11;
-        iVar17 = *(int *)(gGroup0 + iVar13 * 0xdc + iVar17 + 0xd16c);
-        iVar13 = cRSubLoc::Yi(*(cRSubLoc **)(param_2 + 8));
-        iVar14 = *piVar11;
-        pcVar5 = *(cRSubLoc **)(param_2 + 8);
-        *(undefined4 *)(iVar17 + 0x24) =
+        iVar6 = Game;
+        pcVar3 = *(cRSubLoc **)(param_2 + 8);
+        *(undefined4 *)(iVar7 + 0x24) =
              *(undefined4 *)
-              (*(int *)(*(int *)(gGroup0 + iVar13 * 0xdc + iVar8 + 0xd16c) + 0x2c) + 0x8c);
-        iVar13 = cRSubLoc::Yi(pcVar5);
+              (*(int *)(*(int *)(gGroup0 + iVar13 * 0xdc + iVar10 + 0xd16c) + 0x2c) + 0x8c);
+        iVar10 = cRSubLoc::Yi(pcVar3);
         tColourSmall::Alpha((tColourSmall *)
-                            (*(int *)(gGroup0 + iVar13 * 0xdc + iVar14 + 0xd16c) + 0x28),
+                            (*(int *)(gGroup0 + iVar10 * 0xdc + iVar6 + 0xd16c) + 0x28),
                             extraout_s0_00);
-        ptVar10 = *(tMatrix **)(param_2 + 4);
-        iVar13 = *(int *)(param_2 + 0xc);
-        iVar8 = *(int *)(ptVar10 + 0x38);
+        ptVar8 = *(tMatrix **)(param_2 + 4);
+        iVar10 = *(int *)(param_2 + 0xc);
+        iVar6 = *(int *)(ptVar8 + 0x38);
         param_1 = extraout_s0_01;
         in_s1 = extraout_s1_00;
         in_s2 = extraout_s2_00;
       }
-      else if ((iVar8 * 3) / 7 == iVar13) {
-        piVar11 = *(int **)(iVar12 + iVar9);
-        iVar8 = *piVar11;
+      else if ((iVar6 * 3) / 7 == iVar10) {
+        iVar6 = cRSubLoc::Yi(*(cRSubLoc **)(param_2 + 8));
+        iVar10 = Game;
+        pcVar3 = *(cRSubLoc **)(param_2 + 8);
+        *(uint *)(*(int *)(gGroup0 + iVar6 * 0xdc + iVar13 + 0xd16c) + 4) =
+             *(uint *)(*(int *)(gGroup0 + iVar6 * 0xdc + iVar13 + 0xd16c) + 4) | 0x80;
+        iVar13 = cRSubLoc::Yi(pcVar3);
+        iVar6 = Game;
+        iVar7 = *(int *)(gGroup0 + iVar13 * 0xdc + iVar10 + 0xd16c);
         iVar13 = cRSubLoc::Yi(*(cRSubLoc **)(param_2 + 8));
-        iVar17 = *piVar11;
-        pcVar5 = *(cRSubLoc **)(param_2 + 8);
-        *(uint *)(*(int *)(gGroup0 + iVar13 * 0xdc + iVar8 + 0xd16c) + 4) =
-             *(uint *)(*(int *)(gGroup0 + iVar13 * 0xdc + iVar8 + 0xd16c) + 4) | 0x80;
-        iVar13 = cRSubLoc::Yi(pcVar5);
-        iVar8 = *piVar11;
-        iVar17 = *(int *)(gGroup0 + iVar13 * 0xdc + iVar17 + 0xd16c);
-        iVar13 = cRSubLoc::Yi(*(cRSubLoc **)(param_2 + 8));
-        iVar14 = *piVar11;
-        pcVar5 = *(cRSubLoc **)(param_2 + 8);
-        *(undefined4 *)(iVar17 + 0x24) =
+        iVar10 = Game;
+        pcVar3 = *(cRSubLoc **)(param_2 + 8);
+        *(undefined4 *)(iVar7 + 0x24) =
              *(undefined4 *)
-              (*(int *)(*(int *)(gGroup0 + iVar13 * 0xdc + iVar8 + 0xd16c) + 0x2c) + 0x88);
-        iVar13 = cRSubLoc::Yi(pcVar5);
+              (*(int *)(*(int *)(gGroup0 + iVar13 * 0xdc + iVar6 + 0xd16c) + 0x2c) + 0x88);
+        iVar6 = cRSubLoc::Yi(pcVar3);
         tColourSmall::Alpha((tColourSmall *)
-                            (*(int *)(gGroup0 + iVar13 * 0xdc + iVar14 + 0xd16c) + 0x28),
+                            (*(int *)(gGroup0 + iVar6 * 0xdc + iVar10 + 0xd16c) + 0x28),
                             extraout_s0_02);
-        iVar8 = *piVar11;
-        iVar13 = cRSubLoc::Yi(*(cRSubLoc **)(param_2 + 8));
-        ptVar10 = *(tMatrix **)(param_2 + 4);
-        *(undefined4 *)(*(int *)(*(int *)(gGroup0 + iVar13 * 0xdc + iVar8 + 0xd16c) + 0x24) + 8) = 1
+        iVar10 = Game;
+        iVar6 = cRSubLoc::Yi(*(cRSubLoc **)(param_2 + 8));
+        ptVar8 = *(tMatrix **)(param_2 + 4);
+        *(undefined4 *)(*(int *)(*(int *)(gGroup0 + iVar6 * 0xdc + iVar10 + 0xd16c) + 0x24) + 8) = 1
         ;
-        iVar13 = *(int *)(param_2 + 0xc);
-        iVar8 = *(int *)(ptVar10 + 0x38);
+        iVar10 = *(int *)(param_2 + 0xc);
+        iVar6 = *(int *)(ptVar8 + 0x38);
         param_1 = extraout_s0_03;
         in_s1 = extraout_s1_01;
         in_s2 = extraout_s2_01;
       }
     }
-    fVar19 = DAT_0004da8c;
-    fVar26 = DAT_0004da88;
-    if (iVar8 == iVar13) break;
-    fVar26 = *(float *)(iVar13 * 0xa8 + *(int *)(ptVar10 + 0x50) + 0x8c);
+    if (iVar6 == iVar10) break;
+    fVar20 = *(float *)(iVar10 * 0xa8 + *(int *)(ptVar8 + 0x50) + 0x8c);
   }
-  iVar7 = *(int *)(ptVar10 + 0x50);
-  bVar1 = DAT_0004da88 <= fVar29;
-  iVar9 = *(int *)(ptVar10 + 0x2c);
-  fVar21 = (float)param_3 * *(float *)((*(int *)(ptVar10 + 0x38) + -1) * 0xa8 + iVar7 + 0x8c);
+  iVar10 = *(int *)(ptVar8 + 0x50);
+  iVar6 = *(int *)(ptVar8 + 0x2c);
+  fVar20 = (float)param_3 * *(float *)((*(int *)(ptVar8 + 0x38) + -1) * 0xa8 + iVar10 + 0x8c);
   *param_2 = (tVector)0x0;
-  if (bVar1) {
-    fVar29 = fVar19;
+  if (1.0 <= fVar24) {
+    fVar24 = 0.999;
   }
-  if (fVar21 <= fVar26) {
-    fVar26 = fVar21;
+  fVar14 = 1.0;
+  if (fVar20 <= 1.0) {
+    fVar14 = fVar20;
   }
-  *(float *)(in_r3 + 8) = fVar26;
-  if (iVar9 == 0x26) {
-    iVar17 = *(int *)(param_2 + 8);
-    fVar24 = *(float *)(iVar17 + 0x18);
-    iVar7 = (*(int *)(ptVar10 + 0x38) + -1) * 0xa8 + iVar7;
-    fVar28 = *(float *)(iVar7 + 0x38);
-    fVar20 = *(float *)(iVar7 + 0x28);
-    iVar8 = *(int *)(param_2 + 0x38);
-    iVar13 = **(int **)(iVar12 + DAT_0004da98);
-    iVar9 = *(int *)(iVar12 + DAT_0004da9c);
-    *(float *)(in_r3 + 4) = fVar26 * DAT_0004dabc;
-    fVar19 = *(float *)(ptVar10 + 0x44);
-    fVar21 = *(float *)(iVar17 + 0x14);
-    fVar25 = *(float *)(iVar7 + 0x34);
-    fVar18 = *(float *)(iVar7 + 0x24);
-    in_r2[2] = fVar24 + fVar28 + (fVar29 + fVar19) * fVar20;
-    fVar26 = DAT_0004e2fc;
-    in_r2[1] = fVar21 + fVar25 + (fVar29 + fVar19) * fVar18;
-    fVar26 = *(float *)(iVar13 + 0x718f4) * fVar26;
-    *(float *)(iVar8 + 0x2c4) = fVar26;
-    *(float *)(iVar8 + 0x2c8) = fVar26;
-    cRSound::Play(iVar9);
-    cRVoiceManager::Play(*(int *)(iVar12 + DAT_0004e310),0xf,0);
-    ptVar10 = *(tMatrix **)(param_2 + 4);
+  *(float *)(in_r3 + 8) = fVar14;
+  if (iVar6 == 0x26) {
+    iVar13 = *(int *)(param_2 + 8);
+    fVar18 = *(float *)(iVar13 + 0x18);
+    iVar10 = (*(int *)(ptVar8 + 0x38) + -1) * 0xa8 + iVar10;
+    fVar23 = *(float *)(iVar10 + 0x38);
+    fVar15 = *(float *)(iVar10 + 0x28);
+    iVar6 = *(int *)(param_2 + 0x38);
+    pfVar5 = (float *)(Game + 0x718f4);
+    *(float *)(in_r3 + 4) = fVar14 * 0.7;
+    fVar20 = *(float *)(ptVar8 + 0x44);
+    fVar14 = *(float *)(iVar13 + 0x14);
+    fVar19 = *(float *)(iVar10 + 0x34);
+    fVar16 = *(float *)(iVar10 + 0x24);
+    in_r2[2] = fVar18 + fVar23 + (fVar24 + fVar20) * fVar15;
+    in_r2[1] = fVar14 + fVar19 + (fVar24 + fVar20) * fVar16;
+    fVar24 = *pfVar5 * 0.013888889;
+    *(float *)(iVar6 + 0x2c4) = fVar24;
+    *(float *)(iVar6 + 0x2c8) = fVar24;
+    cRSound::Play((int)&gRSound);
+    cRVoiceManager::Play((int)&gVoiceManager,0xf,0);
+    ptVar8 = *(tMatrix **)(param_2 + 4);
   }
   else {
     in_r2[2] = *(float *)(*(int *)(param_2 + 8) + 0x18) +
-               *(float *)((*(int *)(ptVar10 + 0x38) + -1) * 0xa8 + *(int *)(ptVar10 + 0x50) + 0x38)
-               + *(float *)(ptVar10 + 0x44) + fVar29;
+               *(float *)((*(int *)(ptVar8 + 0x38) + -1) * 0xa8 + *(int *)(ptVar8 + 0x50) + 0x38) +
+               *(float *)(ptVar8 + 0x44) + fVar24;
   }
   *(float *)(*(int *)(param_2 + 0x38) + 0x360) =
-       *(float *)(*(int *)(param_2 + 0x38) + 0x360) + *(float *)(ptVar10 + 0x80);
+       *(float *)(*(int *)(param_2 + 0x38) + 0x360) + *(float *)(ptVar8 + 0x80);
   return 3;
 }

@@ -36,14 +36,14 @@ void __thiscall tMatrix::Interpolate(tMatrix *this,float param_1)
   local_2c = fStack_4c;
   local_28 = fStack_48;
   uStack_24 = uStack_44;
-  if ((DAT_000293fc < local_50) && (local_50 < DAT_00029400)) {
-    local_30 = DAT_00029404;
+  if ((-0.001 < local_50) && (local_50 < 0.001)) {
+    local_30 = 0.0;
   }
-  if ((DAT_000293fc < fStack_4c) && (fStack_4c < DAT_00029400)) {
-    local_2c = DAT_00029404;
+  if ((-0.001 < fStack_4c) && (fStack_4c < 0.001)) {
+    local_2c = 0.0;
   }
-  if ((DAT_000293fc < fStack_48) && (fStack_48 < DAT_00029400)) {
-    local_28 = DAT_00029404;
+  if ((-0.001 < fStack_48) && (fStack_48 < 0.001)) {
+    local_28 = 0.0;
   }
   if (((local_30 != 0.0) || (local_2c != 0.0)) || (local_28 != 0.0)) {
     tAxis::operator=(atStack_40,(tQuaternian *)&local_30);

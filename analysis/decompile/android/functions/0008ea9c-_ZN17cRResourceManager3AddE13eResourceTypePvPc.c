@@ -13,7 +13,7 @@ cRResourceManager::Add(cRResourceManager *this,undefined4 param_2,undefined4 par
 {
   int iVar1;
 
-  wprintf((char *)(DAT_0008eb08 + 0x8eabc + DAT_0008eb0c),*(undefined4 *)(this + 4));
+  wprintf("ResourceManager::Add %i",*(undefined4 *)(this + 4));
   iVar1 = *(int *)(this + 4);
   *(undefined4 *)(this + iVar1 * 0x8c + 0x10) = param_3;
   *(undefined4 *)(this + iVar1 * 0x8c + 8) = 2;

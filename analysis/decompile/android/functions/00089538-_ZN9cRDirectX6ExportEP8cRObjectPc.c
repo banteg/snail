@@ -10,88 +10,75 @@
 undefined4 __thiscall cRDirectX::Export(cRDirectX *this,cRObject *param_1,char *param_2)
 
 {
-  int iVar1;
   FILE *__s;
-  undefined4 uVar2;
-  float *pfVar3;
+  undefined4 uVar1;
+  float *pfVar2;
+  int iVar3;
   int iVar4;
   int iVar5;
-  int iVar6;
-  char *pcVar7;
-  void *pvVar8;
-  int iVar9;
-  void *pvVar10;
 
-  iVar9 = DAT_00089818 + 0x89550;
-  __s = fopen(param_2,(char *)(iVar9 + DAT_0008981c));
-  iVar1 = DAT_00089820;
+  __s = fopen(param_2,"w");
   if (__s == (FILE *)0x0) {
-    wprintf((char *)(iVar9 + DAT_00089850),param_2);
-    uVar2 = 0;
+    wprintf("Cannot open %s",param_2);
+    uVar1 = 0;
   }
   else {
-    fwrite((void *)(iVar9 + DAT_00089824),1,0x11,__s);
-    fwrite((void *)(iVar9 + DAT_00089828),1,8,__s);
-    fwrite((void *)(iVar9 + DAT_0008982c),1,0x18,__s);
-    fwrite((void *)(iVar9 + DAT_00089830),1,0x94,__s);
-    iVar5 = DAT_00089834;
-    fwrite((void *)(iVar9 + iVar1),1,3,__s);
-    fwrite((void *)(iVar9 + DAT_00089838),1,8,__s);
-    fprintf(__s,(char *)(iVar9 + iVar5),*(undefined4 *)(param_1 + 0xa0));
+    fwrite("xof 0303txt 0032\n",1,0x11,__s);
+    fwrite("Frame {\n",1,8,__s);
+    fwrite("\tFrameTransformMatrix {\n",1,0x18,__s);
+    fwrite("\t\t1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000;;\n"
+           ,1,0x94,__s);
+    fwrite(&DAT_000964c4,1,3,__s);
+    fwrite("\tMesh {\n",1,8,__s);
+    fprintf(__s,"\t\t%i;\n",*(undefined4 *)(param_1 + 0xa0));
     if (0 < *(int *)(param_1 + 0xa0)) {
       iVar4 = 0;
-      iVar6 = 0;
-      pcVar7 = (char *)(iVar9 + DAT_0008983c);
-      pvVar8 = (void *)(iVar9 + DAT_00089840);
-      pvVar10 = (void *)(iVar9 + DAT_00089844);
+      iVar5 = 0;
       do {
         while( true ) {
-          pfVar3 = (float *)(*(int *)(param_1 + 0xa4) + iVar4);
-          fprintf(__s,pcVar7,SUB84((double)*pfVar3,0),(int)((ulonglong)(double)*pfVar3 >> 0x20),
-                  (double)pfVar3[1],(double)pfVar3[2]);
-          if (*(int *)(param_1 + 0xa0) + -1 != iVar6) break;
-          iVar6 = iVar6 + 1;
-          fwrite(pvVar10,1,2,__s);
+          pfVar2 = (float *)(*(int *)(param_1 + 0xa4) + iVar4);
+          fprintf(__s,"\t\t%f;%f;%f;",SUB84((double)*pfVar2,0),
+                  (int)((ulonglong)(double)*pfVar2 >> 0x20),(double)pfVar2[1],(double)pfVar2[2]);
+          if (*(int *)(param_1 + 0xa0) + -1 != iVar5) break;
+          iVar5 = iVar5 + 1;
+          fwrite(&DAT_000964d8,1,2,__s);
           iVar4 = iVar4 + 0xc;
-          if (*(int *)(param_1 + 0xa0) <= iVar6) goto LAB_000896d8;
+          if (*(int *)(param_1 + 0xa0) <= iVar5) goto LAB_000896d8;
         }
-        fwrite(pvVar8,1,2,__s);
-        iVar6 = iVar6 + 1;
+        fwrite(&DAT_000964e8,1,2,__s);
+        iVar5 = iVar5 + 1;
         iVar4 = iVar4 + 0xc;
-      } while (iVar6 < *(int *)(param_1 + 0xa0));
+      } while (iVar5 < *(int *)(param_1 + 0xa0));
     }
 LAB_000896d8:
-    fprintf(__s,(char *)(iVar9 + iVar5),*(int *)(param_1 + 0xc0) << 1);
+    fprintf(__s,"\t\t%i;\n",*(int *)(param_1 + 0xc0) << 1);
     if (0 < *(int *)(param_1 + 0xc0)) {
-      iVar5 = 0;
       iVar4 = 0;
-      pcVar7 = (char *)(iVar9 + DAT_00089848);
-      pvVar8 = (void *)(iVar9 + DAT_00089840);
-      pvVar10 = (void *)(iVar9 + DAT_00089844);
+      iVar5 = 0;
       do {
         while( true ) {
-          iVar6 = *(int *)(param_1 + 200) + iVar5;
-          fprintf(__s,pcVar7,(uint)*(ushort *)(iVar6 + 2),(uint)*(ushort *)(iVar6 + 4),
-                  (uint)*(ushort *)(iVar6 + 6));
-          iVar6 = *(int *)(param_1 + 200) + iVar5;
-          fprintf(__s,pcVar7,(uint)*(ushort *)(iVar6 + 2),(uint)*(ushort *)(iVar6 + 6),
-                  (uint)*(ushort *)(iVar6 + 8));
-          if (*(int *)(param_1 + 0xc0) + -1 != iVar4) break;
-          iVar4 = iVar4 + 1;
-          fwrite(pvVar10,1,2,__s);
-          iVar5 = iVar5 + 0x30;
-          if (*(int *)(param_1 + 0xc0) <= iVar4) goto LAB_000897bc;
+          iVar3 = *(int *)(param_1 + 200) + iVar4;
+          fprintf(__s,"\t\t3;%i;%i;%i;",(uint)*(ushort *)(iVar3 + 2),(uint)*(ushort *)(iVar3 + 4),
+                  (uint)*(ushort *)(iVar3 + 6));
+          iVar3 = *(int *)(param_1 + 200) + iVar4;
+          fprintf(__s,"\t\t3;%i;%i;%i;",(uint)*(ushort *)(iVar3 + 2),(uint)*(ushort *)(iVar3 + 6),
+                  (uint)*(ushort *)(iVar3 + 8));
+          if (*(int *)(param_1 + 0xc0) + -1 != iVar5) break;
+          iVar5 = iVar5 + 1;
+          fwrite(&DAT_000964d8,1,2,__s);
+          iVar4 = iVar4 + 0x30;
+          if (*(int *)(param_1 + 0xc0) <= iVar5) goto LAB_000897bc;
         }
-        fwrite(pvVar8,1,2,__s);
-        iVar4 = iVar4 + 1;
-        iVar5 = iVar5 + 0x30;
-      } while (iVar4 < *(int *)(param_1 + 0xc0));
+        fwrite(&DAT_000964e8,1,2,__s);
+        iVar5 = iVar5 + 1;
+        iVar4 = iVar4 + 0x30;
+      } while (iVar5 < *(int *)(param_1 + 0xc0));
     }
 LAB_000897bc:
-    fwrite((void *)(iVar9 + iVar1),1,3,__s);
-    fwrite((void *)(iVar9 + DAT_0008984c),1,2,__s);
+    fwrite(&DAT_000964c4,1,3,__s);
+    fwrite(&DAT_000964fc,1,2,__s);
     fclose(__s);
-    uVar2 = 1;
+    uVar1 = 1;
   }
-  return uVar2;
+  return uVar1;
 }

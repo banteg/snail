@@ -20,7 +20,7 @@ float __thiscall cRResourceManager::CalcPercent(cRResourceManager *this)
 
   iVar2 = *(int *)(this + 4);
   if (iVar2 == 0) {
-    return DAT_0008e9a0;
+    return 100.0;
   }
   if (iVar2 < 1) {
     iVar4 = 0;
@@ -39,5 +39,5 @@ float __thiscall cRResourceManager::CalcPercent(cRResourceManager *this)
   }
   fVar5 = (float)VectorSignedToFloat(iVar4,(byte)(in_fpscr >> 0x16) & 3);
   fVar6 = (float)VectorSignedToFloat(iVar2,(byte)(in_fpscr >> 0x16) & 3);
-  return (fVar5 * DAT_0008e9a0) / fVar6;
+  return (fVar5 * 100.0) / fVar6;
 }

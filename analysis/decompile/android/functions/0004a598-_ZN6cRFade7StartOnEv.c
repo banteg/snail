@@ -10,7 +10,7 @@
 void __thiscall cRFade::StartOn(cRFade *this)
 
 {
-  *(undefined4 *)(this + 4) = DAT_0004a5ac;
+  *(undefined4 *)(this + 4) = 0x3f800000;
   *(undefined4 *)this = 1;
   AI();
   return;

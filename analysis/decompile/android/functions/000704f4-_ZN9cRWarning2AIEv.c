@@ -11,63 +11,57 @@ void __thiscall cRWarning::AI(cRWarning *this)
 
 {
   bool bVar1;
-  float fVar2;
-  int iVar3;
-  int iVar4;
-  float fVar5;
-  float fVar6;
+  int iVar2;
+  float fVar3;
+  float fVar4;
 
-  iVar4 = DAT_00070620 + 0x7050c;
-  if (*(char *)(**(int **)(iVar4 + DAT_00070624) + 0x718b9) != '\0') {
+  if (*(char *)(Game + 0x718b9) != '\0') {
     return;
   }
-  iVar3 = *(int *)this;
-  if (iVar3 == 1) {
-    *(undefined4 *)(*(int *)(this + 0x14) + 0x1fc) = DAT_00070614;
-    fVar6 = DAT_0007060c;
-    fVar5 = *(float *)(this + 4);
-    *(float *)(this + 4) = fVar5 + *(float *)(this + 8);
-    if (fVar6 < fVar5 + *(float *)(this + 8)) {
-      *(float *)(this + 4) = DAT_00070610;
+  iVar2 = *(int *)this;
+  if (iVar2 == 1) {
+    *(undefined4 *)(*(int *)(this + 0x14) + 0x1fc) = 0x3f7fbe77;
+    fVar3 = *(float *)(this + 4);
+    *(float *)(this + 4) = fVar3 + *(float *)(this + 8);
+    if (1.0 < fVar3 + *(float *)(this + 8)) {
+      *(undefined4 *)(this + 4) = 0;
       *(undefined4 *)this = 2;
     }
   }
-  else if (iVar3 == 2) {
-    fVar6 = *(float *)(this + 4);
-    if (fVar6 < DAT_00070618) {
-      iVar3 = *(int *)(this + 0x14);
-      fVar5 = fVar6;
-      fVar2 = DAT_0007060c + fVar6 * DAT_0007061c;
+  else if (iVar2 == 2) {
+    fVar3 = *(float *)(this + 4);
+    fVar4 = 0.5;
+    bVar1 = fVar3 < 0.5;
+    if (bVar1) {
+      fVar4 = fVar3 * -2.0 + 1.0;
+      iVar2 = *(int *)(this + 0x14);
     }
     else {
-      iVar3 = *(int *)(this + 0x14);
-      fVar5 = DAT_00070610;
-      fVar2 = DAT_00070618;
+      fVar3 = 0.0;
+      iVar2 = *(int *)(this + 0x14);
     }
-    if (fVar6 < DAT_00070618) {
-      *(float *)(iVar3 + 0x1fc) = fVar2;
+    if (bVar1) {
+      *(float *)(iVar2 + 0x1fc) = fVar4;
     }
     else {
-      *(float *)(iVar3 + 0x1fc) = fVar5;
+      *(float *)(iVar2 + 0x1fc) = fVar3;
     }
-    fVar6 = DAT_0007060c;
-    fVar5 = *(float *)(this + 4);
-    *(float *)(this + 4) = fVar5 + *(float *)(this + 8);
-    if (fVar6 < fVar5 + *(float *)(this + 8)) {
-      *(float *)(this + 4) = DAT_00070610;
+    fVar3 = *(float *)(this + 4);
+    *(float *)(this + 4) = fVar3 + *(float *)(this + 8);
+    if (1.0 < fVar3 + *(float *)(this + 8)) {
+      *(undefined4 *)(this + 4) = 0;
       *(undefined4 *)this = 1;
     }
   }
-  else if (iVar3 == 0) {
+  else if (iVar2 == 0) {
     return;
   }
-  bVar1 = *(float *)(this + 0xc) + *(float *)(this + 0x10) < DAT_0007060c;
-  *(float *)(this + 0xc) = *(float *)(this + 0xc) + *(float *)(this + 0x10);
-  iVar3 = DAT_00070628;
-  if (bVar1) {
+  fVar3 = *(float *)(this + 0xc);
+  *(float *)(this + 0xc) = fVar3 + *(float *)(this + 0x10);
+  if (fVar3 + *(float *)(this + 0x10) < 1.0) {
     return;
   }
-  *(float *)(this + 0xc) = DAT_00070610;
-  cRSound::Play(*(int *)(iVar4 + iVar3));
+  *(undefined4 *)(this + 0xc) = 0;
+  cRSound::Play((int)&gRSound);
   return;
 }

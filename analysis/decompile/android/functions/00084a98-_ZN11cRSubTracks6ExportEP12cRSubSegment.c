@@ -10,56 +10,48 @@
 void __thiscall cRSubTracks::Export(cRSubTracks *this,cRSubSegment *param_1)
 
 {
-  int iVar1;
-  int iVar2;
   FILE *__s;
-  undefined4 uVar3;
+  undefined4 uVar1;
+  int iVar2;
+  int iVar3;
   int iVar4;
-  int iVar5;
-  int iVar6;
-  void *__ptr;
-  int iVar7;
   char acStack_42c [1024];
   int local_2c;
 
-  iVar1 = DAT_00084c40;
-  iVar6 = DAT_00084c3c + 0x84ab0;
-  local_2c = **(int **)(iVar6 + DAT_00084c40);
-  sprintf(acStack_42c,(char *)(iVar6 + DAT_00084c44),*(undefined4 *)(param_1 + 0x10));
-  __s = fopen(acStack_42c,(char *)(iVar6 + DAT_00084c48));
-  iVar2 = DAT_00084c4c;
+  local_2c = __stack_chk_guard;
+  sprintf(acStack_42c,"Segments/%s.txt",*(undefined4 *)(param_1 + 0x10));
+  __s = fopen(acStack_42c,"w");
   if (__s == (FILE *)0x0) {
-    wprintf((char *)(iVar6 + DAT_00084c64),acStack_42c);
-    uVar3 = 0;
+    wprintf("Cannot open %s",acStack_42c);
+    uVar1 = 0;
   }
   else {
-    fwrite((void *)(iVar6 + DAT_00084c50),1,0x10,__s);
-    fprintf(__s,(char *)(iVar6 + DAT_00084c54),*(undefined4 *)(param_1 + 0xc));
-    fprintf(__s,(char *)(iVar6 + DAT_00084c58),*(undefined4 *)(param_1 + 0x10));
-    fwrite((void *)(iVar6 + DAT_00084c5c),1,6,__s);
-    fwrite((void *)(iVar6 + iVar2),1,0xb,__s);
+    fwrite("// Segment data\n",1,0x10,__s);
+    fprintf(__s,"ID:%i\n",*(undefined4 *)(param_1 + 0xc));
+    fprintf(__s,"Name:\'%s\'\n",*(undefined4 *)(param_1 + 0x10));
+    fwrite("Data:\n",1,6,__s);
+    fwrite("@@@@@@@@@@\n",1,0xb,__s);
     if (0 < *(int *)(param_1 + 4)) {
-      iVar5 = 0;
-      __ptr = (void *)(iVar6 + DAT_00084c60);
+      iVar3 = 0;
       do {
         fputc(0x40,__s);
-        iVar7 = 0;
+        iVar4 = 0;
         do {
-          iVar4 = iVar5 * 8 + iVar7;
-          iVar7 = iVar7 + 1;
-          fputc((uint)*(byte *)(*(int *)(param_1 + 0x14) + iVar4),__s);
-        } while (iVar7 != 8);
-        fwrite(__ptr,1,2,__s);
-        iVar5 = iVar5 + 1;
-      } while (iVar5 < *(int *)(param_1 + 4));
+          iVar2 = iVar3 * 8 + iVar4;
+          iVar4 = iVar4 + 1;
+          fputc((uint)*(byte *)(*(int *)(param_1 + 0x14) + iVar2),__s);
+        } while (iVar4 != 8);
+        fwrite(&DAT_000943f8,1,2,__s);
+        iVar3 = iVar3 + 1;
+      } while (iVar3 < *(int *)(param_1 + 4));
     }
-    fwrite((void *)(iVar6 + iVar2),1,0xb,__s);
+    fwrite("@@@@@@@@@@\n",1,0xb,__s);
     fclose(__s);
-    uVar3 = 1;
+    uVar1 = 1;
   }
-  if (local_2c == **(int **)(iVar6 + iVar1)) {
+  if (local_2c == __stack_chk_guard) {
     return;
   }
                     /* WARNING: Subroutine does not return */
-  __stack_chk_fail(uVar3);
+  __stack_chk_fail(uVar1);
 }

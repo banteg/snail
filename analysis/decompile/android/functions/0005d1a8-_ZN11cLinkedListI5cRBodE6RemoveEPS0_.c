@@ -15,11 +15,11 @@ void __thiscall cLinkedList<cRBod>::Remove(cLinkedList<cRBod> *this,cRBod *param
 
   uVar1 = *(uint *)(param_1 + 4);
   if ((uVar1 & 0x200) == 0) {
-    RShellError((char *)(DAT_0005d214 + 0x5d1bc + DAT_0005d218));
+    RShellError("List remove");
     return;
   }
   if ((uVar1 & 0x40) != 0) {
-    RShellError((char *)(DAT_0005d214 + 0x5d1bc + DAT_0005d21c));
+    RShellError("List remove NEXTBOD");
     return;
   }
   iVar2 = *(int *)(param_1 + 0xc);

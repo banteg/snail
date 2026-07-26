@@ -22,7 +22,7 @@ cRObject::ApplyUVPathSuperTramp
   float in_stack_00000000;
 
   uVar2 = *(uint *)(this + 0xc0);
-  fVar4 = in_stack_00000000 + DAT_0002d0e4;
+  fVar4 = in_stack_00000000 + 0.09375;
   iVar3 = *(int *)(this + 200);
   if (0 < (int)uVar2) {
     uVar1 = 0;

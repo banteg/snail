@@ -14,9 +14,7 @@ void __thiscall cRQuit::UnInit(cRQuit *this)
     *(undefined4 *)this = 0;
     return;
   }
-  cRBorderManager::Kill
-            ((cRBorderManager *)(**(int **)(DAT_0006f6b4 + 0x6f674 + DAT_0006f6b8) + 0xd14),
-             *(cRBorder **)(this + 4));
+  cRBorderManager::Kill((cRBorderManager *)(Game + 0xd14),*(cRBorder **)(this + 4));
   *(undefined4 *)(this + 4) = 0;
   *(undefined4 *)this = 0;
   return;

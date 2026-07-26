@@ -13,6 +13,5 @@ float __thiscall cRBorder::XRight(cRBorder *this)
   if (*(int *)(this + 0x254) != 2) {
     return *(float *)(this + 0x6ec) + *(float *)(this + 0x23c) + *(float *)(this + 0x20c);
   }
-  return DAT_0005c030 + *(float *)(this + 600) + DAT_0005c034 * *(float *)(this + 0x23c) +
-         *(float *)(this + 0x20c);
+  return *(float *)(this + 600) + 320.0 + *(float *)(this + 0x23c) * 0.5 + *(float *)(this + 0x20c);
 }

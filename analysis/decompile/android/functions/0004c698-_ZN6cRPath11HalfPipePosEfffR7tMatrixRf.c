@@ -20,7 +20,7 @@ void cRPath::HalfPipePos(float param_1,float param_2,float param_3,tMatrix *para
 
   uVar2 = Sqrt(param_1);
   fVar1 = (float)ATan((float)uVar2,(float)((ulonglong)uVar2 >> 0x20));
-  *in_stack_00000004 = fVar1 * in_r2 * DAT_0004c740;
+  *in_stack_00000004 = fVar1 * in_r2 * 0.25;
   fVar1 = (float)tMatrix::RotIdentity(in_stack_00000000);
   fVar1 = (float)tMatrix::RotLocalZ(in_stack_00000000,fVar1);
   fVar1 = (float)Sin(fVar1);

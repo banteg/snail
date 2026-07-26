@@ -33,7 +33,7 @@ int cRVoiceManager::Play(int param_1,int param_2,int param_3)
   }
 LAB_0008707c:
   if (param_3 - 1U < 2) {
-    *(undefined4 *)(param_1 + 0x180) = DAT_000870e4;
+    *(undefined4 *)(param_1 + 0x180) = 0;
   }
   return iVar1;
 }

@@ -10,7 +10,7 @@
 void __thiscall cRFade::Init(cRFade *this)
 
 {
-  *(undefined4 *)(this + 4) = DAT_0003e0ac;
+  *(undefined4 *)(this + 4) = 0;
   *(undefined4 *)this = 0;
   return;
 }

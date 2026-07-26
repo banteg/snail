@@ -15,7 +15,7 @@ cRTextures::Add(cRTextures *this,char *param_1,cTgaHeader *param_2,int param_3)
   int iVar2;
 
   if (*(int *)this == *(int *)(this + 4)) {
-    RShellError((char *)(DAT_0002cb50 + 0x2ca70 + DAT_0002cb54));
+    RShellError("Too many Texture References - Increase TextureList.Init(MAX) in g0.cpp");
   }
   if (((param_3 & 0x800U) != 0) ||
      (iVar1 = cRHash::Search((cRHash *)(this + 0x39b0),param_1), iVar1 == -1)) {

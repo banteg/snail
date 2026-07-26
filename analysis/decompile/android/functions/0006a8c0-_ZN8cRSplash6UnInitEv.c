@@ -10,10 +10,7 @@
 void __thiscall cRSplash::UnInit(cRSplash *this)
 
 {
-  int *piVar1;
-
-  piVar1 = *(int **)(DAT_0006a8f8 + 0x6a8d0 + DAT_0006a8fc);
-  cRBorderManager::Kill((cRBorderManager *)(*piVar1 + 0xd14),*(cRBorder **)(this + 8));
-  *(undefined4 *)(*piVar1 + 0x15c) = 0xe;
+  cRBorderManager::Kill((cRBorderManager *)(Game + 0xd14),*(cRBorder **)(this + 8));
+  *(undefined4 *)(Game + 0x15c) = 0xe;
   return;
 }

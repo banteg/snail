@@ -50,7 +50,7 @@ void __thiscall cRSubGame::ReSet(cRSubGame *this)
       cRSubGoldy::ScoreStatsInit((cRSubGoldy *)(this + 0xfac4));
     }
     cRTime::Zero((cRTime *)(this + 0xfd94));
-    *(undefined4 *)(this + 0xfdac) = DAT_0006c4f0;
+    *(undefined4 *)(this + 0xfdac) = 0;
     *(undefined4 *)(this + 0xfdb0) = 0;
   }
   else {
@@ -70,10 +70,9 @@ void __thiscall cRSubGame::ReSet(cRSubGame *this)
     *(undefined4 *)(this + 0xfdb0) = uVar1;
   }
   this[1] = (cRSubGame)0x1;
-  uVar1 = DAT_0006c4f0;
   *this = (cRSubGame)0x1;
   *(undefined4 *)(this + 0x6500) = 0;
   this[0x30fcc0] = (cRSubGame)0x0;
-  *(undefined4 *)(this + 0xfe30) = uVar1;
+  *(undefined4 *)(this + 0xfe30) = 0;
   return;
 }

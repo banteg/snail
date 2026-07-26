@@ -24,7 +24,7 @@ void __thiscall cRSubHighScore::LoadMiniData(cRSubHighScore *this)
   cRSubHighScore *pcVar8;
   int local_24 [2];
 
-  pcVar3 = (char *)RShellLoadFile((char *)(DAT_00064ec8 + 0x64d00 + DAT_00064ecc),local_24);
+  pcVar3 = (char *)RShellLoadFile("highscores.txt",local_24);
   if (pcVar3 != (char *)0x0) {
     iVar7 = 0;
     pcVar3[local_24[0] + -1] = '\0';

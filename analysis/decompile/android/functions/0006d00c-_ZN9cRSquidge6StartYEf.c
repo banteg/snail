@@ -11,10 +11,8 @@ void __thiscall cRSquidge::StartY(cRSquidge *this,float param_1)
 
 {
   float in_r1;
-  float fVar1;
 
-  fVar1 = in_r1 * DAT_0006d028;
-  *(undefined4 *)(this + 8) = DAT_0006d02c;
-  *(float *)(this + 4) = fVar1;
+  *(undefined4 *)(this + 8) = 0;
+  *(float *)(this + 4) = in_r1 * 0.5;
   return;
 }

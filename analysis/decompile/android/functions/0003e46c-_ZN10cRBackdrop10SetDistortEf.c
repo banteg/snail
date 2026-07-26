@@ -10,112 +10,92 @@
 float __thiscall cRBackdrop::SetDistort(cRBackdrop *this,float param_1)
 
 {
-  float fVar1;
-  float fVar2;
-  float fVar3;
-  float fVar4;
-  float fVar5;
-  float fVar6;
-  float fVar7;
-  float fVar8;
-  float fVar9;
-  undefined4 uVar10;
+  undefined4 uVar1;
   float in_r1;
-  uint uVar11;
-  int iVar12;
-  int iVar13;
-  uint uVar14;
-  int iVar15;
-  uint uVar16;
-  uint uVar17;
-  uint uVar18;
-  int iVar19;
+  uint uVar2;
+  int iVar3;
+  int iVar4;
+  uint uVar5;
+  int iVar6;
+  uint uVar7;
+  uint uVar8;
+  uint uVar9;
+  int iVar10;
   uint in_fpscr;
   float extraout_s0;
-  float fVar20;
-  float fVar21;
-  float fVar22;
-  float fVar23;
+  float fVar11;
+  float fVar12;
+  float fVar13;
 
-  uVar14 = *(uint *)(this + 0x3c);
+  uVar5 = *(uint *)(this + 0x3c);
   *(float *)(this + 0x78) = in_r1;
-  fVar5 = DAT_0003e680;
-  fVar4 = DAT_0003e67c;
-  fVar3 = DAT_0003e678;
-  fVar2 = DAT_0003e674;
-  fVar1 = DAT_0003e670;
-  if (-1 < (int)uVar14) {
-    uVar17 = 0;
+  if (-1 < (int)uVar5) {
+    uVar8 = 0;
     do {
-      fVar9 = DAT_0003e690;
-      fVar8 = DAT_0003e68c;
-      fVar7 = DAT_0003e688;
-      fVar6 = DAT_0003e684;
-      uVar18 = 1 - uVar17;
-      if (1 < uVar17) {
-        uVar18 = 0;
+      uVar9 = 1 - uVar8;
+      if (1 < uVar8) {
+        uVar9 = 0;
       }
-      uVar16 = 0;
+      uVar7 = 0;
       do {
-        uVar11 = uVar18;
-        if (uVar16 == 0) {
-          uVar11 = uVar18 | 1;
+        uVar2 = uVar9;
+        if (uVar7 == 0) {
+          uVar2 = uVar9 | 1;
         }
-        iVar13 = uVar14 * uVar17 + uVar17 + uVar16;
-        if (((uVar11 == 0) && (uVar16 != uVar14)) && (uVar17 != uVar14)) {
-          iVar15 = *(int *)(this + 0x7c);
-          uVar10 = gRMathRand2();
-          iVar19 = *(int *)(this + 0x7c);
-          iVar12 = iVar13 * 0x28;
-          fVar23 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-          *(float *)(iVar15 + iVar13 * 0x28) = fVar23 * fVar2 * fVar3;
-          uVar10 = gRMathRand2();
-          fVar23 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
+        iVar4 = uVar5 * uVar8 + uVar8 + uVar7;
+        if (((uVar2 == 0) && (uVar7 != uVar5)) && (uVar8 != uVar5)) {
+          iVar6 = *(int *)(this + 0x7c);
+          uVar1 = gRMathRand2();
+          iVar10 = *(int *)(this + 0x7c);
+          iVar3 = iVar4 * 0x28;
+          fVar11 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+          *(float *)(iVar6 + iVar4 * 0x28) = fVar11 * 3.0517578e-05 * 6.2831855;
+          uVar1 = gRMathRand2();
+          fVar11 = 0.0;
+          fVar12 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
           in_fpscr = in_fpscr & 0xfffffff |
-                     (uint)(fVar23 * fVar2 + fVar23 * fVar2 + fVar4 == DAT_0003e670) << 0x1e;
-          fVar23 = DAT_0003e670;
+                     (uint)(fVar12 * 3.0517578e-05 + fVar12 * 3.0517578e-05 + 3.0 == 0.0) << 0x1e;
           if (!SUB41(in_fpscr >> 0x1e,0)) {
-            uVar10 = gRMathRand2();
-            fVar23 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-            fVar23 = (fVar9 / ((fVar23 * fVar2 + fVar23 * fVar2 + fVar4) * fVar8)) * fVar3;
+            uVar1 = gRMathRand2();
+            fVar11 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+            fVar11 = (1.0 / ((fVar11 * 3.0517578e-05 + fVar11 * 3.0517578e-05 + 3.0) * 60.0)) *
+                     6.2831855;
           }
-          *(float *)(iVar19 + iVar12 + 4) = fVar23;
-          iVar13 = *(int *)(this + 0x7c);
-          uVar10 = gRMathRand2();
-          iVar19 = *(int *)(this + 0x7c);
-          fVar23 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-          *(float *)(iVar13 + iVar12 + 8) = (fVar23 - fVar6) * fVar7 * in_r1 * fVar5;
-          uVar10 = gRMathRand2();
-          uVar14 = *(uint *)(this + 0x3c);
-          iVar15 = *(int *)(this + 0x7c) + iVar12;
-          fVar23 = (float)VectorSignedToFloat(uVar10,(byte)(in_fpscr >> 0x16) & 3);
-          *(float *)(iVar19 + iVar12 + 0xc) = in_r1 * fVar5 * (fVar23 - fVar6) * fVar7;
+          *(float *)(iVar10 + iVar3 + 4) = fVar11;
+          iVar4 = *(int *)(this + 0x7c);
+          uVar1 = gRMathRand2();
+          iVar10 = *(int *)(this + 0x7c);
+          fVar11 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+          *(float *)(iVar4 + iVar3 + 8) = (fVar11 - 16384.0) * 6.1035156e-05 * in_r1 * 0.9;
+          uVar1 = gRMathRand2();
+          uVar5 = *(uint *)(this + 0x3c);
+          iVar6 = *(int *)(this + 0x7c) + iVar3;
+          fVar11 = (float)VectorSignedToFloat(uVar1,(byte)(in_fpscr >> 0x16) & 3);
+          *(float *)(iVar10 + iVar3 + 0xc) = in_r1 * 0.9 * (fVar11 - 16384.0) * 6.1035156e-05;
         }
         else {
-          iVar12 = *(int *)(this + 0x7c);
-          iVar15 = iVar12 + iVar13 * 0x28;
-          *(float *)(iVar15 + 4) = fVar1;
-          *(float *)(iVar12 + iVar13 * 0x28) = fVar1;
-          *(float *)(iVar15 + 8) = fVar1;
-          *(float *)(iVar15 + 0xc) = fVar1;
+          iVar3 = *(int *)(this + 0x7c);
+          iVar6 = iVar3 + iVar4 * 0x28;
+          *(undefined4 *)(iVar6 + 4) = 0;
+          *(undefined4 *)(iVar3 + iVar4 * 0x28) = 0;
+          *(undefined4 *)(iVar6 + 8) = 0;
+          *(undefined4 *)(iVar6 + 0xc) = 0;
         }
-        fVar23 = DAT_0003e694;
-        fVar20 = (float)VectorSignedToFloat(uVar14,(byte)(in_fpscr >> 0x16) & 3);
-        *(float *)(iVar15 + 0x20) = fVar1;
-        iVar13 = uVar16 + -((int)uVar14 / 2);
-        uVar16 = uVar16 + 1;
-        fVar21 = (float)VectorSignedToFloat(iVar13,(byte)(in_fpscr >> 0x16) & 3);
-        fVar22 = (float)VectorSignedToFloat(uVar17 + -((int)uVar14 / 2),(byte)(in_fpscr >> 0x16) & 3
-                                           );
-        *(float *)(iVar15 + 0x1c) = fVar22 / (fVar20 * fVar23);
-        *(float *)(iVar15 + 0x18) = fVar21 / (fVar20 * fVar23);
-        uVar10 = tVector::Normalize((tVector *)(iVar15 + 0x18));
-        uVar14 = *(uint *)(this + 0x3c);
-        *(undefined4 *)(iVar15 + 0x24) = uVar10;
-      } while ((int)uVar16 <= (int)uVar14);
-      uVar17 = uVar17 + 1;
+        fVar11 = (float)VectorSignedToFloat(uVar5,(byte)(in_fpscr >> 0x16) & 3);
+        *(undefined4 *)(iVar6 + 0x20) = 0;
+        iVar4 = uVar7 + -((int)uVar5 / 2);
+        uVar7 = uVar7 + 1;
+        fVar12 = (float)VectorSignedToFloat(iVar4,(byte)(in_fpscr >> 0x16) & 3);
+        fVar13 = (float)VectorSignedToFloat(uVar8 + -((int)uVar5 / 2),(byte)(in_fpscr >> 0x16) & 3);
+        *(float *)(iVar6 + 0x1c) = fVar13 / (fVar11 * 0.5);
+        *(float *)(iVar6 + 0x18) = fVar12 / (fVar11 * 0.5);
+        uVar1 = tVector::Normalize((tVector *)(iVar6 + 0x18));
+        uVar5 = *(uint *)(this + 0x3c);
+        *(undefined4 *)(iVar6 + 0x24) = uVar1;
+      } while ((int)uVar7 <= (int)uVar5);
+      uVar8 = uVar8 + 1;
       param_1 = extraout_s0;
-    } while (((int)uVar17 <= (int)uVar14) && (-1 < (int)uVar14));
+    } while (((int)uVar8 <= (int)uVar5) && (-1 < (int)uVar5));
   }
   return param_1;
 }

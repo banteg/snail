@@ -10,14 +10,11 @@
 void tColour::Red(float param_1)
 
 {
-  undefined4 uVar1;
   undefined4 *in_r0;
 
-  uVar1 = DAT_00027f90;
-  in_r0[3] = DAT_00027f90;
-  *in_r0 = uVar1;
-  uVar1 = DAT_00027f94;
-  in_r0[2] = DAT_00027f94;
-  in_r0[1] = uVar1;
+  in_r0[3] = 0x3f800000;
+  *in_r0 = 0x3f800000;
+  in_r0[2] = 0;
+  in_r0[1] = 0;
   return;
 }

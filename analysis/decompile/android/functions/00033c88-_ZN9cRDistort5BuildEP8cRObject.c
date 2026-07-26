@@ -12,117 +12,111 @@ void cRDistort::Build(cRObject *param_1)
 {
   bool bVar1;
   float fVar2;
-  float fVar3;
-  float *pfVar4;
+  float *pfVar3;
   int in_r1;
+  int iVar4;
   int iVar5;
-  int iVar6;
   float *unaff_r5;
-  float *pfVar7;
-  int iVar8;
-  float *pfVar9;
+  float *pfVar6;
+  int iVar7;
+  float *pfVar8;
   float in_s0;
   float extraout_s0;
   float extraout_s0_00;
   float extraout_s0_01;
   float extraout_s0_02;
+  float fVar9;
   float fVar10;
   float fVar11;
   float fVar12;
-  float fVar13;
 
-  fVar2 = DAT_00033ef4;
-  fVar12 = *(float *)param_1;
-  pfVar9 = *(float **)(in_r1 + 0xa4);
-  if (fVar12 == 0.0) {
+  fVar11 = *(float *)param_1;
+  pfVar8 = *(float **)(in_r1 + 0xa4);
+  if (fVar11 == 0.0) {
     bVar1 = false;
-    pfVar7 = pfVar9;
+    pfVar6 = pfVar8;
   }
   else {
     if (*(int *)(in_r1 + 0xa0) < 1) {
-      pfVar7 = *(float **)(in_r1 + 0xa8);
+      pfVar6 = *(float **)(in_r1 + 0xa8);
     }
     else {
       unaff_r5 = (float *)0x0;
-      pfVar7 = *(float **)(in_r1 + 0xa8);
-      iVar8 = 0;
-      pfVar4 = pfVar9;
+      pfVar6 = *(float **)(in_r1 + 0xa8);
+      iVar7 = 0;
+      pfVar3 = pfVar8;
       while( true ) {
-        fVar13 = (float)((undefined4 *)((int)pfVar9 + (int)unaff_r5))[1];
-        *(undefined4 *)((int)pfVar7 + (int)unaff_r5) = *(undefined4 *)((int)pfVar9 + (int)unaff_r5);
-        iVar8 = iVar8 + 1;
-        fVar3 = (float)Sin(in_s0);
-        iVar5 = *(int *)(in_r1 + 0xa0);
-        fVar10 = pfVar4[2];
-        pfVar4 = pfVar4 + 3;
-        *(float *)((int)pfVar7 + (int)unaff_r5 + 4) = fVar13 + fVar12 * (fVar3 + fVar2);
-        pfVar7 = *(float **)(in_r1 + 0xa8);
-        iVar6 = (int)pfVar7 + (int)unaff_r5;
+        fVar12 = (float)((undefined4 *)((int)pfVar8 + (int)unaff_r5))[1];
+        *(undefined4 *)((int)pfVar6 + (int)unaff_r5) = *(undefined4 *)((int)pfVar8 + (int)unaff_r5);
+        iVar7 = iVar7 + 1;
+        fVar2 = (float)Sin(in_s0);
+        iVar4 = *(int *)(in_r1 + 0xa0);
+        fVar9 = pfVar3[2];
+        pfVar3 = pfVar3 + 3;
+        *(float *)((int)pfVar6 + (int)unaff_r5 + 4) = fVar12 + fVar11 * (fVar2 + 1.0);
+        pfVar6 = *(float **)(in_r1 + 0xa8);
+        iVar5 = (int)pfVar6 + (int)unaff_r5;
         unaff_r5 = unaff_r5 + 3;
-        *(float *)(iVar6 + 8) = fVar10;
+        *(float *)(iVar5 + 8) = fVar9;
         in_s0 = extraout_s0;
-        if (iVar5 <= iVar8) break;
-        fVar12 = *(float *)param_1;
+        if (iVar4 <= iVar7) break;
+        fVar11 = *(float *)param_1;
       }
     }
     bVar1 = true;
   }
-  fVar2 = DAT_00033ef4;
   if (*(float *)(param_1 + 4) != 0.0) {
-    fVar3 = (float)Sin(in_s0);
-    fVar10 = (float)Sin(extraout_s0_01);
-    fVar12 = DAT_00033efc;
-    iVar8 = *(int *)(in_r1 + 0xa0);
-    if (iVar8 < 1) {
+    fVar11 = (float)Sin(in_s0);
+    fVar2 = (float)Sin(extraout_s0_01);
+    iVar7 = *(int *)(in_r1 + 0xa0);
+    if (iVar7 < 1) {
       unaff_r5 = *(float **)(in_r1 + 0xa8);
     }
-    if (0 < iVar8) {
+    if (0 < iVar7) {
       unaff_r5 = *(float **)(in_r1 + 0xa8);
-      iVar5 = 0;
-      pfVar9 = unaff_r5;
+      iVar4 = 0;
+      pfVar8 = unaff_r5;
       do {
-        fVar13 = pfVar7[1];
-        iVar5 = iVar5 + 1;
-        pfVar9[2] = pfVar7[2];
-        fVar11 = *pfVar7;
-        pfVar7 = pfVar7 + 3;
-        pfVar9[1] = fVar12 + (fVar2 - fVar10) * fVar13;
-        *pfVar9 = fVar11 * (fVar3 + fVar2);
-        pfVar9 = pfVar9 + 3;
-      } while (iVar5 != iVar8);
+        fVar9 = pfVar6[1];
+        iVar4 = iVar4 + 1;
+        pfVar8[2] = pfVar6[2];
+        fVar12 = *pfVar6;
+        pfVar6 = pfVar6 + 3;
+        pfVar8[1] = (1.0 - fVar2) * fVar9 + 0.0;
+        *pfVar8 = fVar12 * (fVar11 + 1.0);
+        pfVar8 = pfVar8 + 3;
+      } while (iVar4 != iVar7);
     }
     bVar1 = true;
-    pfVar7 = unaff_r5;
+    pfVar6 = unaff_r5;
     in_s0 = extraout_s0_02;
   }
-  fVar12 = DAT_00033ef8;
-  fVar2 = DAT_00033ef4;
   if (*(float *)(param_1 + 8) == 0.0) {
     if (!bVar1) {
       return;
     }
   }
   else {
-    fVar3 = (float)Sin(in_s0);
-    fVar3 = fVar2 + fVar3 * fVar12;
-    fVar12 = (float)Sin(extraout_s0_00);
-    iVar8 = *(int *)(in_r1 + 0xa0);
-    if (0 < iVar8) {
-      pfVar4 = *(float **)(in_r1 + 0xa8);
-      iVar5 = 0;
-      pfVar9 = pfVar4;
+    fVar11 = (float)Sin(in_s0);
+    fVar2 = fVar11 * 0.1 + 1.0;
+    fVar11 = (float)Sin(extraout_s0_00);
+    iVar7 = *(int *)(in_r1 + 0xa0);
+    if (0 < iVar7) {
+      pfVar3 = *(float **)(in_r1 + 0xa8);
+      iVar4 = 0;
+      pfVar8 = pfVar3;
       do {
-        fVar13 = *pfVar7;
-        fVar10 = pfVar7[1];
-        fVar11 = pfVar7[2];
-        iVar5 = iVar5 + 1;
-        pfVar7 = pfVar7 + 3;
-        *pfVar9 = fVar13 * fVar3;
-        pfVar9[1] = fVar10 * fVar3;
-        pfVar9[2] = fVar11 * (fVar2 - fVar12);
-        pfVar9 = pfVar9 + 3;
-      } while (iVar5 != iVar8);
-      *(float **)(in_r1 + 0xa4) = pfVar4;
+        fVar12 = *pfVar6;
+        fVar9 = pfVar6[1];
+        fVar10 = pfVar6[2];
+        iVar4 = iVar4 + 1;
+        pfVar6 = pfVar6 + 3;
+        *pfVar8 = fVar12 * fVar2;
+        pfVar8[1] = fVar9 * fVar2;
+        pfVar8[2] = fVar10 * (1.0 - fVar11);
+        pfVar8 = pfVar8 + 3;
+      } while (iVar4 != iVar7);
+      *(float **)(in_r1 + 0xa4) = pfVar3;
       return;
     }
   }

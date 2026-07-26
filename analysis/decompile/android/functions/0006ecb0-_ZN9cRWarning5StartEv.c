@@ -10,11 +10,8 @@
 void __thiscall cRWarning::Start(cRWarning *this)
 
 {
-  undefined4 uVar1;
-
-  uVar1 = DAT_0006ecd0;
-  *(undefined4 *)(this + 0xc) = DAT_0006ecd0;
-  *(undefined4 *)(this + 4) = uVar1;
+  *(undefined4 *)(this + 0xc) = 0x3f800000;
+  *(undefined4 *)(this + 4) = 0x3f800000;
   *(undefined4 *)this = 2;
   cRBorder::UnHideInit(*(cRBorder **)(this + 0x14));
   return;

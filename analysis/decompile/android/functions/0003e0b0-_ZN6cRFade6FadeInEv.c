@@ -10,16 +10,12 @@
 void __thiscall cRFade::FadeIn(cRFade *this)
 
 {
-  undefined4 uVar1;
-
-  uVar1 = DAT_0003e0e0;
   if (*(int *)this != 4) {
     return;
   }
   *(undefined4 *)this = 5;
-  *(undefined4 *)(this + 8) = uVar1;
-  uVar1 = DAT_0003e0e4;
+  *(undefined4 *)(this + 8) = 0;
   *(undefined4 *)(this + 0x14) = 3;
-  *(undefined4 *)(this + 4) = uVar1;
+  *(undefined4 *)(this + 4) = 0x3f800000;
   return;
 }

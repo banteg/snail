@@ -13,9 +13,11 @@ float __thiscall cRSubGame::CalcRateToSlider(cRSubGame *this,float param_1)
   float in_r1;
   float fVar1;
 
-  fVar1 = DAT_0006bce8;
-  if (in_r1 != DAT_0006bcdc) {
-    fVar1 = (in_r1 - DAT_0006bce0) / DAT_0006bce4;
+  if (in_r1 == 1.1) {
+    fVar1 = 1.0;
+  }
+  else {
+    fVar1 = (in_r1 - 0.2) / 0.90000004;
   }
   return fVar1;
 }

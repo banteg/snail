@@ -11,52 +11,50 @@ cREnemyManager * __thiscall cREnemyManager::Find(cREnemyManager *this,tVector *p
 
 {
   float fVar1;
-  float fVar2;
-  int iVar3;
-  cREnemyManager *pcVar4;
+  int iVar2;
+  cREnemyManager *pcVar3;
+  int iVar4;
   int iVar5;
-  int iVar6;
-  cREnemyManager *pcVar7;
-  float fVar8;
+  cREnemyManager *pcVar6;
+  float fVar7;
   float local_34;
   float local_30;
   float local_2c;
 
-  fVar1 = DAT_00062b2c;
-  iVar3 = *(int *)this;
-  if (iVar3 < 1) {
-    pcVar7 = (cREnemyManager *)0x0;
+  iVar2 = *(int *)this;
+  if (iVar2 < 1) {
+    pcVar6 = (cREnemyManager *)0x0;
   }
   else {
-    pcVar7 = (cREnemyManager *)0x0;
-    pcVar4 = this;
-    iVar5 = 0;
-    fVar8 = DAT_00062b28;
+    pcVar6 = (cREnemyManager *)0x0;
+    fVar7 = 1e+09;
+    pcVar3 = this;
+    iVar4 = 0;
     do {
       while( true ) {
-        local_2c = *(float *)(pcVar4 + 0x10) - *(float *)(param_1 + 8);
-        local_34 = *(float *)(pcVar4 + 8) - *(float *)param_1;
-        local_30 = *(float *)(pcVar4 + 0xc) - *(float *)(param_1 + 4);
-        if ((local_2c <= 0.0) || (fVar1 <= local_2c)) break;
-        pcVar4 = pcVar4 + 0x18;
-        fVar2 = (float)tVector::Magnitude((tVector *)&local_34);
-        iVar6 = iVar5 + 1;
-        if (fVar8 <= fVar2) {
-          iVar3 = *(int *)this;
+        local_2c = *(float *)(pcVar3 + 0x10) - *(float *)(param_1 + 8);
+        local_34 = *(float *)(pcVar3 + 8) - *(float *)param_1;
+        local_30 = *(float *)(pcVar3 + 0xc) - *(float *)(param_1 + 4);
+        if ((local_2c <= 0.0) || (30.0 <= local_2c)) break;
+        pcVar3 = pcVar3 + 0x18;
+        fVar1 = (float)tVector::Magnitude((tVector *)&local_34);
+        iVar5 = iVar4 + 1;
+        if (fVar7 <= fVar1) {
+          iVar2 = *(int *)this;
         }
         else {
-          iVar3 = *(int *)this;
-          pcVar7 = this + iVar5 * 0x18 + 4;
-          fVar8 = fVar2;
+          iVar2 = *(int *)this;
+          pcVar6 = this + iVar4 * 0x18 + 4;
+          fVar7 = fVar1;
         }
-        iVar5 = iVar6;
-        if (iVar3 <= iVar6) {
-          return pcVar7;
+        iVar4 = iVar5;
+        if (iVar2 <= iVar5) {
+          return pcVar6;
         }
       }
-      iVar5 = iVar5 + 1;
-      pcVar4 = pcVar4 + 0x18;
-    } while (iVar5 < iVar3);
+      iVar4 = iVar4 + 1;
+      pcVar3 = pcVar3 + 0x18;
+    } while (iVar4 < iVar2);
   }
-  return pcVar7;
+  return pcVar6;
 }

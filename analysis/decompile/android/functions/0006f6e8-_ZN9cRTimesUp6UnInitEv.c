@@ -13,8 +13,6 @@ void __thiscall cRTimesUp::UnInit(cRTimesUp *this)
   if (*(int *)this == 0) {
     return;
   }
-  cRBorderManager::Kill
-            ((cRBorderManager *)(**(int **)(DAT_0006f718 + 0x6f6fc + DAT_0006f71c) + 0xd14),
-             *(cRBorder **)(this + 4));
+  cRBorderManager::Kill((cRBorderManager *)(Game + 0xd14),*(cRBorder **)(this + 4));
   return;
 }

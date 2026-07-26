@@ -27,7 +27,7 @@ tMatrix::LinearInterpolate(tMatrix *this,tMatrix *param_1,tMatrix *param_2,float
   fVar4 = *(float *)(param_2 + 0x34);
   fVar1 = *(float *)(param_1 + 0x38);
   fVar2 = *(float *)(param_1 + 0x34);
-  fVar5 = DAT_0002949c - in_r3;
+  fVar5 = 1.0 - in_r3;
   *(float *)(this + 0x30) = in_r3 * *(float *)(param_2 + 0x30) + fVar5 * *(float *)(param_1 + 0x30);
   *(float *)(this + 0x38) = in_r3 * fVar3 + fVar5 * fVar1;
   *(float *)(this + 0x34) = in_r3 * fVar4 + fVar5 * fVar2;

@@ -19,6 +19,6 @@ void __thiscall cRVoiceManager::AI(cRVoiceManager *this)
     cRVoiceSet::AI((cRVoiceSet *)(this + iVar1 * 0x18));
     iVar1 = iVar2;
   } while (iVar2 != 0x10);
-  *(float *)(this + 0x180) = *(float *)(this + 0x180) + DAT_00086f60;
+  *(float *)(this + 0x180) = *(float *)(this + 0x180) + 0.016666668;
   return;
 }

@@ -11,60 +11,46 @@ void __thiscall cROptions::AI(cROptions *this)
 
 {
   int iVar1;
-  int iVar2;
-  int *piVar3;
-  int iVar4;
-  uint uVar5;
-  undefined4 *puVar6;
-  int iVar7;
-  int iVar8;
-  float *pfVar9;
+  uint uVar2;
 
-  iVar1 = DAT_0006a47c;
-  iVar7 = DAT_0006a478;
-  iVar8 = DAT_0006a474 + 0x6a330;
-  piVar3 = *(int **)(iVar8 + DAT_0006a478);
-  puVar6 = *(undefined4 **)(iVar8 + DAT_0006a47c);
-  puVar6[1] = *(undefined4 *)(*(int *)(this + 0x1c) + 0x170);
-  *puVar6 = *(undefined4 *)(*(int *)(this + 0x18) + 0x170);
-  if (*(float *)(*piVar3 + 0x3c) != *(float *)(*piVar3 + 0x44)) {
+  gConfig._4_4_ = *(undefined4 *)(*(int *)(this + 0x1c) + 0x170);
+  gConfig._0_4_ = *(undefined4 *)(*(int *)(this + 0x18) + 0x170);
+  if (*(float *)(Game + 0x3c) != *(float *)(Game + 0x44)) {
     UnInit(this);
     Init(this);
   }
-  iVar2 = *(int *)(this + 0x14);
-  if ((*(uint *)(iVar2 + 0x194) & 0x20) == 0) {
-    if (*(int *)(*(int *)(iVar8 + iVar1) + 8) != 0) goto LAB_0006a424;
+  iVar1 = *(int *)(this + 0x14);
+  if ((*(uint *)(iVar1 + 0x194) & 0x20) == 0) {
+    if (gConfig._8_4_ != 0) goto LAB_0006a424;
   }
   else {
-    iVar4 = *(int *)(iVar8 + iVar1);
-    *(uint *)(iVar2 + 0x194) = *(uint *)(iVar2 + 0x194) & 0xffffffdf;
-    if (*(int *)(iVar4 + 8) == 0) {
-      *(undefined4 *)(iVar4 + 8) = 1;
+    *(uint *)(iVar1 + 0x194) = *(uint *)(iVar1 + 0x194) & 0xffffffdf;
+    if (gConfig._8_4_ == 0) {
+      gConfig._8_4_ = 1;
 LAB_0006a424:
-      Rstrcpy((char *)(iVar2 + 0x2c4),(char *)(iVar8 + DAT_0006a488));
+      Rstrcpy((char *)(iVar1 + 0x2c4),"Touch Mode");
       goto LAB_0006a3b0;
     }
-    *(undefined4 *)(iVar4 + 8) = 0;
+    gConfig._8_4_ = 0;
   }
-  Rstrcpy((char *)(iVar2 + 0x2c4),(char *)(iVar8 + DAT_0006a480));
+  Rstrcpy((char *)(iVar1 + 0x2c4),"Tilt Mode");
 LAB_0006a3b0:
-  uVar5 = *(uint *)(*(int *)(this + 0x18) + 0x194);
-  if ((uVar5 & 0x20) != 0) {
-    *(uint *)(*(int *)(this + 0x18) + 0x194) = uVar5 & 0xffffffdf;
+  uVar2 = *(uint *)(*(int *)(this + 0x18) + 0x194);
+  if ((uVar2 & 0x20) != 0) {
+    *(uint *)(*(int *)(this + 0x18) + 0x194) = uVar2 & 0xffffffdf;
   }
-  uVar5 = *(uint *)(*(int *)(this + 0x10) + 0x194);
-  if ((uVar5 & 0x20) != 0) {
-    *(uint *)(*(int *)(this + 0x10) + 0x194) = uVar5 & 0xffffffdf;
+  uVar2 = *(uint *)(*(int *)(this + 0x10) + 0x194);
+  if ((uVar2 & 0x20) != 0) {
+    *(uint *)(*(int *)(this + 0x10) + 0x194) = uVar2 & 0xffffffdf;
     UnInit(this);
-    iVar7 = **(int **)(iVar8 + iVar7);
-    *(undefined4 *)(iVar7 + 0x15c) = *(undefined4 *)this;
-    *(undefined1 *)(iVar7 + 0x324) = 0;
+    iVar1 = Game;
+    *(undefined4 *)(Game + 0x15c) = *(undefined4 *)this;
+    *(undefined1 *)(iVar1 + 0x324) = 0;
   }
   Apply(SUB41(this,0));
-  pfVar9 = *(float **)(iVar8 + iVar1);
-  if (*(float *)(this + 0x24) != *pfVar9) {
-    cRSound::Play(*(int *)(iVar8 + DAT_0006a484));
-    *(float *)(this + 0x24) = *pfVar9;
+  if (*(float *)(this + 0x24) != (float)gConfig._0_4_) {
+    cRSound::Play((int)&gRSound);
+    *(undefined4 *)(this + 0x24) = gConfig._0_4_;
     return;
   }
   return;

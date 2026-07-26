@@ -13,8 +13,8 @@ void __thiscall cRRowModel::AI(cRRowModel *this)
   int iVar1;
   float fVar2;
 
+  iVar1 = Game;
   fVar2 = *(float *)(this + 100);
-  iVar1 = **(int **)(DAT_0006d734 + 0x6d6f8 + DAT_0006d738);
   *(float *)(this + 0x5c) = *(float *)(this + 0x5c) + *(float *)(this + 0x74);
   *(float *)(this + 100) = fVar2 + *(float *)(this + 0x7c);
   *(float *)(this + 0x60) = *(float *)(this + 0x60) + *(float *)(this + 0x78);

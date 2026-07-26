@@ -10,9 +10,7 @@
 void __thiscall cRSubLazer::Kill(cRSubLazer *this)
 
 {
-  cLinkedList<cRBod>::Remove
-            ((cLinkedList<cRBod> *)(**(int **)(DAT_0006d770 + 0x6d750 + DAT_0006d774) + 0x358),
-             (cRBod *)this);
+  cLinkedList<cRBod>::Remove((cLinkedList<cRBod> *)(Game + 0x358),(cRBod *)this);
   *(undefined4 *)(this + 0x74) = 0;
   return;
 }

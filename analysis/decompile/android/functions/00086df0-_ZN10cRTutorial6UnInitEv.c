@@ -10,7 +10,6 @@
 void cRTutorial::UnInit(void)
 
 {
-  cRTipManager::UnInitTips
-            ((cRTipManager *)(&DAT_003a63d8 + **(int **)(DAT_00086e14 + 0x86e08 + DAT_00086e18)));
+  cRTipManager::UnInitTips((cRTipManager *)(&DAT_003a63d8 + Game));
   return;
 }

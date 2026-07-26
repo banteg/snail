@@ -23,6 +23,6 @@ void __thiscall cLinkedList<cRBod>::AddAfter(cLinkedList<cRBod> *this,cRBod *par
     }
     return;
   }
-  RShellError((char *)(DAT_0003f6d0 + 0x3f6a4 + DAT_0003f6d4));
+  RShellError("List ADDafter");
   return;
 }

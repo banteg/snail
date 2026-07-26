@@ -13,7 +13,7 @@ int cRSubGame::LocFromPos(int param_1,float param_2,undefined4 param_3,float par
   uint uVar1;
   uint uVar2;
 
-  uVar2 = (uint)(DAT_0006c004 + param_2);
+  uVar2 = (uint)(param_2 + 4.0);
   uVar1 = 0xe0f;
   if ((int)param_4 < 0xe10) {
     uVar1 = (int)param_4;

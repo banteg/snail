@@ -10,26 +10,23 @@
 void __thiscall tMatrix::tMatrix(tMatrix *this,float param_1)
 
 {
-  undefined4 uVar1;
   undefined4 in_r1;
 
-  uVar1 = DAT_00026d60;
   *(undefined4 *)(this + 0x28) = in_r1;
-  *(undefined4 *)(this + 0x38) = uVar1;
-  *(undefined4 *)(this + 4) = uVar1;
-  *(undefined4 *)(this + 8) = uVar1;
-  *(undefined4 *)(this + 0xc) = uVar1;
-  *(undefined4 *)(this + 0x10) = uVar1;
-  *(undefined4 *)(this + 0x18) = uVar1;
-  *(undefined4 *)(this + 0x1c) = uVar1;
-  *(undefined4 *)(this + 0x20) = uVar1;
-  *(undefined4 *)(this + 0x24) = uVar1;
-  *(undefined4 *)(this + 0x2c) = uVar1;
-  *(undefined4 *)(this + 0x30) = uVar1;
-  *(undefined4 *)(this + 0x34) = uVar1;
+  *(undefined4 *)(this + 0x38) = 0;
+  *(undefined4 *)(this + 4) = 0;
+  *(undefined4 *)(this + 8) = 0;
+  *(undefined4 *)(this + 0xc) = 0;
+  *(undefined4 *)(this + 0x10) = 0;
+  *(undefined4 *)(this + 0x18) = 0;
+  *(undefined4 *)(this + 0x1c) = 0;
+  *(undefined4 *)(this + 0x20) = 0;
+  *(undefined4 *)(this + 0x24) = 0;
+  *(undefined4 *)(this + 0x2c) = 0;
+  *(undefined4 *)(this + 0x30) = 0;
+  *(undefined4 *)(this + 0x34) = 0;
   *(undefined4 *)this = in_r1;
-  uVar1 = DAT_00026d64;
   *(undefined4 *)(this + 0x14) = in_r1;
-  *(undefined4 *)(this + 0x3c) = uVar1;
+  *(undefined4 *)(this + 0x3c) = 0x3f800000;
   return;
 }

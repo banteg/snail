@@ -40,7 +40,7 @@ void __thiscall cRInputOK::AI(cRInputOK *this)
   uVar3 = *(undefined4 *)(iVar2 + 0x6f0);
   *(undefined4 *)(iVar1 + 0x230) = *(undefined4 *)(iVar2 + 0x230);
   *(undefined4 *)(iVar1 + 0x6f0) = uVar3;
-  fVar4 = ((fVar5 - *(float *)(iVar1 + 0x23c)) - fVar4) + DAT_0005c474 * *(float *)(iVar1 + 0x20c);
+  fVar4 = ((fVar5 - *(float *)(iVar1 + 0x23c)) - fVar4) + *(float *)(iVar1 + 0x20c) * -2.0;
   *(float *)(iVar1 + 0x22c) = fVar4;
   *(float *)(iVar1 + 0x6ec) = fVar4;
   return;

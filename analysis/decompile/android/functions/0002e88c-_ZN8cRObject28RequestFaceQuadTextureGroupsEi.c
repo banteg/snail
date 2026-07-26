@@ -13,7 +13,7 @@ void __thiscall cRObject::RequestFaceQuadTextureGroups(cRObject *this,int param_
   undefined4 uVar1;
 
   if (*(int *)(this + 0xd4) == 0) {
-    uVar1 = RShellMemoryMalloc(param_1 << 2,(char *)(DAT_0002e8f4 + 0x2e8a4 + DAT_0002e8fc));
+    uVar1 = RShellMemoryMalloc(param_1 << 2,"Object FaceQuad Texture Groups");
     *(int *)(this + 0xd8) = param_1;
     *(int *)(this + 0xd4) = param_1;
     *(undefined4 *)(this + 0xdc) = uVar1;
@@ -23,7 +23,7 @@ void __thiscall cRObject::RequestFaceQuadTextureGroups(cRObject *this,int param_
     *(int *)(this + 0xd4) = param_1;
     return;
   }
-  RShellError((char *)(DAT_0002e8f4 + 0x2e8a4 + DAT_0002e8f8));
+  RShellError("Fixed FaceQuadTextureGroupsNumber too small");
   *(int *)(this + 0xd4) = param_1;
   return;
 }

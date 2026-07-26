@@ -10,16 +10,14 @@
 void __thiscall cRVoiceManager::ReSet(cRVoiceManager *this)
 
 {
-  undefined4 uVar1;
-  int iVar2;
+  int iVar1;
 
-  uVar1 = DAT_00086ee8;
-  iVar2 = 0;
-  *(undefined4 *)(this + 0x180) = DAT_00086ee8;
+  iVar1 = 0;
+  *(undefined4 *)(this + 0x180) = 0;
   do {
-    iVar2 = iVar2 + 1;
-    *(undefined4 *)(this + 0x10) = uVar1;
+    iVar1 = iVar1 + 1;
+    *(undefined4 *)(this + 0x10) = 0;
     this = this + 0x18;
-  } while (iVar2 != 0x10);
+  } while (iVar1 != 0x10);
   return;
 }

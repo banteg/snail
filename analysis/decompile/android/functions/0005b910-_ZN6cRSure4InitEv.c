@@ -11,14 +11,9 @@ void __thiscall cRSure::Init(cRSure *this)
 
 {
   undefined4 uVar1;
-  int iVar2;
+  cRBorder *pcVar2;
   int iVar3;
-  undefined4 uVar4;
-  undefined4 uVar5;
-  cRBorder *pcVar6;
-  int iVar7;
-  int *piVar8;
-  float fVar9;
+  float fVar4;
   float extraout_s0;
   float extraout_s0_00;
   float extraout_s0_01;
@@ -52,55 +47,48 @@ void __thiscall cRSure::Init(cRSure *this)
   undefined4 uStack_38;
   undefined4 uStack_34;
 
-  iVar2 = DAT_0005bbb8;
-  iVar7 = DAT_0005bbb4 + 0x5b92c;
-  piVar8 = *(int **)(iVar7 + DAT_0005bbb8);
-  cRFade::FadeIn((cRFade *)(*piVar8 + 0x24));
-  fVar9 = (float)cRStarManager::Hide((cRStarManager *)(*piVar8 + 0x4d440));
-  cRBorderManager::SetJustifyCentre((cRBorderManager *)(*piVar8 + 0xd14),fVar9);
-  iVar3 = *piVar8;
-  if (*(int *)(gOFOData + iVar3 + 0x1ebc) == 0) {
-    uVar4 = cRBorderManager::GetBorder((cRBorderManager *)(iVar3 + 0xd14));
-    *(undefined4 *)this = uVar4;
+  cRFade::FadeIn((cRFade *)(Game + 0x24));
+  fVar4 = (float)cRStarManager::Hide((cRStarManager *)(Game + 0x4d440));
+  cRBorderManager::SetJustifyCentre((cRBorderManager *)(Game + 0xd14),fVar4);
+  if (*(int *)(gOFOData + Game + 0x1ebc) == 0) {
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)this = uVar1;
     tColour::tColour((tColour *)&local_40,extraout_s0_02,extraout_s1_02,extraout_s2_02,
                      extraout_s3_02);
-    iVar3 = DAT_0005bbc8;
+    iVar3 = -0x7dd0;
     local_50 = local_40;
     uStack_4c = uStack_3c;
     uStack_48 = uStack_38;
     uStack_44 = uStack_34;
   }
   else {
-    uVar4 = cRBorderManager::GetBorder((cRBorderManager *)(iVar3 + 0xd14));
-    *(undefined4 *)this = uVar4;
+    uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+    *(undefined4 *)this = uVar1;
     tColour::tColour((tColour *)&local_50,extraout_s0,extraout_s1,extraout_s2,extraout_s3);
-    iVar3 = DAT_0005bbbc;
+    iVar3 = -0x7d7c;
   }
-  cRBorder::Init(uVar4,0,iVar7 + iVar3,0x14,0x41a00000,DAT_0005bba4,local_50,uStack_4c,uStack_48,
-                 uStack_44,2,DAT_0005bba8);
-  piVar8 = *(int **)(iVar7 + iVar2);
-  *(undefined4 *)(*(int *)this + 0x264) = DAT_0005bbac;
-  uVar4 = DAT_0005bba8;
-  uVar5 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar8 + 0xd14));
-  uVar1 = DAT_0005bbac;
-  *(undefined4 *)(this + 4) = uVar5;
+  cRBorder::Init(uVar1,0,(int)&__DT_PLTGOT + iVar3,0x14,0x41a00000,0x42e40000,local_50,uStack_4c,
+                 uStack_48,uStack_44,2,0);
+  *(undefined4 *)(*(int *)this + 0x264) = 0x42700000;
+  uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  *(undefined4 *)(this + 4) = uVar1;
   tColour::tColour((tColour *)&local_60,extraout_s0_00,extraout_s1_00,extraout_s2_00,extraout_s3_00)
   ;
-  cRBorder::Init(uVar5,0x40000014,iVar7 + DAT_0005bbc0,0x14,0x41a00000,0x41a00000,local_60,uStack_5c
-                 ,uStack_58,uStack_54,2,uVar4);
-  pcVar6 = *(cRBorder **)(this + 4);
-  *(undefined4 *)(pcVar6 + 0x264) = uVar1;
-  cRBorder::SetBelow(pcVar6,*(cRBorder **)this);
-  uVar5 = cRBorderManager::GetBorder((cRBorderManager *)(*piVar8 + 0xd14));
-  *(undefined4 *)(this + 8) = uVar5;
+  cRBorder::Init(uVar1,0x40000014,&DAT_000931e8,0x14,0x41a00000,0x41a00000,local_60,uStack_5c,
+                 uStack_58,uStack_54,2,0);
+  pcVar2 = *(cRBorder **)(this + 4);
+  *(undefined4 *)(pcVar2 + 0x264) = 0x42700000;
+  cRBorder::SetBelow(pcVar2,*(cRBorder **)this);
+  uVar1 = cRBorderManager::GetBorder((cRBorderManager *)(Game + 0xd14));
+  *(undefined4 *)(this + 8) = uVar1;
   tColour::tColour((tColour *)&local_70,extraout_s0_01,extraout_s1_01,extraout_s2_01,extraout_s3_01)
   ;
-  cRBorder::Init(uVar5,0x14,iVar7 + DAT_0005bbc4,0x14,0x41a00000,DAT_0005bbb0,local_70,uStack_6c,
-                 uStack_68,uStack_64,2,uVar4);
-  pcVar6 = *(cRBorder **)(this + 8);
-  *(undefined4 *)(pcVar6 + 0x264) = uVar1;
-  fVar9 = (float)cRBorder::SetRight(pcVar6,*(cRBorder **)(this + 4));
-  cRBorderManager::CentreRow
-            ((cRBorderManager *)(*piVar8 + 0xd14),*(cRBorder **)(this + 8),false,fVar9);
+  cRBorder::Init(uVar1,0x14,&DAT_000931ec,0x14,0x41a00000,0x43240000,local_70,uStack_6c,uStack_68,
+                 uStack_64,2,0);
+  pcVar2 = *(cRBorder **)(this + 8);
+  *(undefined4 *)(pcVar2 + 0x264) = 0x42700000;
+  fVar4 = (float)cRBorder::SetRight(pcVar2,*(cRBorder **)(this + 4));
+  cRBorderManager::CentreRow((cRBorderManager *)(Game + 0xd14),*(cRBorder **)(this + 8),false,fVar4)
+  ;
   return;
 }

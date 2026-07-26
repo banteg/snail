@@ -11,31 +11,25 @@ void __thiscall cRPath::GetNodes(cRPath *this)
 
 {
   undefined4 uVar1;
-  undefined4 uVar2;
-  char *pcVar3;
+  int iVar2;
+  int iVar3;
   int iVar4;
-  int iVar5;
-  int iVar6;
 
-  iVar6 = DAT_0004e994 + 0x4e930;
-  uVar2 = RShellMemoryMalloc(*(int *)(this + 0x38) * 0xa8,(char *)(iVar6 + DAT_0004e998));
-  pcVar3 = (char *)(iVar6 + DAT_0004e99c);
-  *(undefined4 *)(this + 0x4c) = uVar2;
-  uVar2 = RShellMemoryMalloc(*(int *)(this + 0x38) * 0xa8,pcVar3);
-  iVar6 = *(int *)(this + 0x38);
-  *(undefined4 *)(this + 0x50) = uVar2;
-  uVar1 = DAT_0004e990;
-  uVar2 = DAT_0004e98c;
-  if (iVar6 < 1) {
+  uVar1 = RShellMemoryMalloc(*(int *)(this + 0x38) * 0xa8,"Path Tile Nodes");
+  *(undefined4 *)(this + 0x4c) = uVar1;
+  uVar1 = RShellMemoryMalloc(*(int *)(this + 0x38) * 0xa8,"Path Ball nodes");
+  iVar4 = *(int *)(this + 0x38);
+  *(undefined4 *)(this + 0x50) = uVar1;
+  if (iVar4 < 1) {
     return;
   }
-  iVar5 = *(int *)(this + 0x4c);
-  iVar4 = 0;
+  iVar3 = *(int *)(this + 0x4c);
+  iVar2 = 0;
   do {
-    iVar4 = iVar4 + 1;
-    *(undefined4 *)(iVar5 + 0xa0) = uVar2;
-    *(undefined4 *)(iVar5 + 0x9c) = uVar1;
-    iVar5 = iVar5 + 0xa8;
-  } while (iVar4 != iVar6);
+    iVar2 = iVar2 + 1;
+    *(undefined4 *)(iVar3 + 0xa0) = 0;
+    *(undefined4 *)(iVar3 + 0x9c) = 0x3f800000;
+    iVar3 = iVar3 + 0xa8;
+  } while (iVar2 != iVar4);
   return;
 }

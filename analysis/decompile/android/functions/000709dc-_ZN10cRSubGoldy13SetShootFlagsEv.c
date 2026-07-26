@@ -40,23 +40,23 @@ void __thiscall cRSubGoldy::SetShootFlags(cRSubGoldy *this)
     iVar2 = 0xc0;
 LAB_00070ac8:
     *(int *)(this + 0x324) = iVar2;
-    *(undefined4 *)(this + 0x25b0) = DAT_00070af8;
+    *(undefined4 *)(this + 0x25b0) = 0x3e088889;
     goto LAB_00070a3c;
   case 8:
     iVar2 = 0x90;
 LAB_00070a24:
     *(int *)(this + 0x324) = iVar2;
-    *(undefined4 *)(this + 0x25b0) = DAT_00070aec;
+    *(undefined4 *)(this + 0x25b0) = 0x3de38e39;
     goto LAB_00070a3c;
   default:
     iVar2 = 0x81;
 LAB_00070a60:
     *(int *)(this + 0x324) = iVar2;
-    *(undefined4 *)(this + 0x25b0) = DAT_00070af0;
+    *(undefined4 *)(this + 0x25b0) = 0x3d888889;
     goto LAB_00070a3c;
   }
   *(int *)(this + 0x324) = iVar2;
-  *(undefined4 *)(this + 0x25b0) = DAT_00070af4;
+  *(undefined4 *)(this + 0x25b0) = 0x3d97b425;
 LAB_00070a3c:
   iVar1 = *(int *)(this + 0x328);
   if (iVar1 != iVar2) {

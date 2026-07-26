@@ -12,67 +12,59 @@ void __thiscall cRLogo::UnInit(cRLogo *this)
 {
   int iVar1;
   int iVar2;
-  int iVar3;
-  uint uVar4;
-  cRLogo *pcVar5;
-  int iVar6;
-  int iVar7;
-  char *pcVar8;
-  char *pcVar9;
+  uint uVar3;
+  cRLogo *pcVar4;
+  int iVar5;
 
-  iVar1 = DAT_00068e94;
-  iVar7 = DAT_00068e90 + 0x68d78;
-  iVar3 = **(int **)(iVar7 + DAT_00068e94);
-  *(undefined4 *)(*(int *)(iVar7 + DAT_00068e98) + 0x1c) = *(undefined4 *)(this + 0x10);
-  if (*(char *)(iVar3 + 0x2c1) == '\0') {
-    *(undefined4 *)(iVar3 + 0x15c) = 3;
+  iVar2 = Game;
+  gConfig._28_4_ = *(undefined4 *)(this + 0x10);
+  if (*(char *)(Game + 0x2c1) == '\0') {
+    *(undefined4 *)(Game + 0x15c) = 3;
   }
   else {
-    *(undefined4 *)(iVar3 + 0x15c) = 0x14;
+    *(undefined4 *)(Game + 0x15c) = 0x14;
   }
   if (*(int *)(this + 0x2101c) < 1) {
     return;
   }
-  pcVar5 = this + 0x21024;
-  pcVar9 = (char *)(iVar7 + DAT_00068e9c);
-  iVar6 = 0;
-  pcVar8 = (char *)(iVar7 + DAT_00068ea0);
+  pcVar4 = this + 0x21024;
+  iVar5 = 0;
   do {
-    uVar4 = *(uint *)pcVar5;
-    if ((uVar4 & 0x200) == 0) {
-      RShellError(pcVar8);
-      if (*(int *)(this + 0x2101c) <= iVar6 + 1) {
+    uVar3 = *(uint *)pcVar4;
+    if ((uVar3 & 0x200) == 0) {
+      RShellError("List remove");
+      if (*(int *)(this + 0x2101c) <= iVar5 + 1) {
         return;
       }
     }
-    else if ((uVar4 & 0x40) == 0) {
-      iVar2 = *(int *)(pcVar5 + 8);
-      *(uint *)pcVar5 = uVar4 & 0xfffffdff;
-      if (iVar2 != 0) {
-        *(undefined4 *)(iVar2 + 8) = *(undefined4 *)(pcVar5 + 4);
+    else if ((uVar3 & 0x40) == 0) {
+      iVar1 = *(int *)(pcVar4 + 8);
+      *(uint *)pcVar4 = uVar3 & 0xfffffdff;
+      if (iVar1 != 0) {
+        *(undefined4 *)(iVar1 + 8) = *(undefined4 *)(pcVar4 + 4);
       }
-      if (*(int *)(pcVar5 + 4) == 0) {
-        *(int *)(iVar3 + 0x35c) = iVar2;
+      if (*(int *)(pcVar4 + 4) == 0) {
+        *(int *)(iVar2 + 0x35c) = iVar1;
       }
       else {
-        *(int *)(*(int *)(pcVar5 + 4) + 0xc) = iVar2;
+        *(int *)(*(int *)(pcVar4 + 4) + 0xc) = iVar1;
       }
-      *(undefined4 *)(pcVar5 + 8) = *(undefined4 *)(iVar3 + 0x360);
-      *(cRLogo **)(iVar3 + 0x360) =
+      *(undefined4 *)(pcVar4 + 8) = *(undefined4 *)(iVar2 + 0x360);
+      *(cRLogo **)(iVar2 + 0x360) =
            this + (int)("Java_com_sandlotgames_snailmail_MyOpenFeintDelegate_JNIOFOInit" +
-                       iVar6 * 0x84 + 0x3b);
-      if (*(int *)(this + 0x2101c) <= iVar6 + 1) {
+                       iVar5 * 0x84 + 0x3b);
+      if (*(int *)(this + 0x2101c) <= iVar5 + 1) {
         return;
       }
     }
     else {
-      RShellError(pcVar9);
-      if (*(int *)(this + 0x2101c) <= iVar6 + 1) {
+      RShellError("List remove NEXTBOD");
+      if (*(int *)(this + 0x2101c) <= iVar5 + 1) {
         return;
       }
     }
-    iVar6 = iVar6 + 1;
-    pcVar5 = pcVar5 + 0x84;
-    iVar3 = **(int **)(iVar7 + iVar1);
+    iVar5 = iVar5 + 1;
+    pcVar4 = pcVar4 + 0x84;
+    iVar2 = Game;
   } while( true );
 }

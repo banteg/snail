@@ -17,7 +17,7 @@ undefined4 __thiscall cRCheat::MatchText(cRCheat *this,char *param_1)
 
   sVar2 = strlen(param_1);
   if (7 < (int)sVar2) {
-    RShellError((char *)(DAT_00060af0 + 0x60a7c + DAT_00060af4));
+    RShellError("Cheat text too long");
     return 0;
   }
   if ((int)sVar2 < 1) {

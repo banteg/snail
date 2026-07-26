@@ -10,14 +10,9 @@
 cRBodPos * __thiscall cRBodPos::cRBodPos(cRBodPos *this)
 
 {
-  int iVar1;
-  int iVar2;
-
-  iVar1 = DAT_0003089c;
   cRBod::cRBod((cRBod *)this);
-  iVar2 = DAT_000308a0;
   *(undefined4 *)(this + 4) = 0x2000420;
-  *(int *)this = *(int *)(iVar1 + 0x30878 + iVar2) + 8;
+  *(undefined ***)this = &PTR_AI_0009abc0;
   tMatrix::Identity((tMatrix *)(this + 0x2c));
   return this;
 }

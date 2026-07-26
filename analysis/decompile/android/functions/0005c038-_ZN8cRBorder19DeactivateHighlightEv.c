@@ -10,7 +10,7 @@
 void __thiscall cRBorder::DeactivateHighlight(cRBorder *this)
 
 {
-  *(undefined4 *)(this + 0x200) = DAT_0005c04c;
+  *(undefined4 *)(this + 0x200) = 0;
   *(undefined4 *)(this + 0x210) = *(undefined4 *)(this + 0x208);
   return;
 }
