@@ -11,7 +11,7 @@
 004235a5        self->width_or_scale = 1f
 004235a8        self->segment_count = 0x1b
 004235af        self->segment_count_f = 27f
-004235b6        allocate_path_template_samples(self)
+004235b6        get_path_nodes(self)
 004235bb        self->has_entry_mesh_transition = 0
 004235c1        width_cells_ = 0
 004235c5        int32_t i = 0

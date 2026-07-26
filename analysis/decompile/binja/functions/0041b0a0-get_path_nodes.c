@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: allocate_path_template_samples @ 0x41b0a0 */
+/* function: get_path_nodes @ 0x41b0a0 */
 
 0041b0bb        struct PathTemplateSample* eax_4 = allocate_tracked_memory(self->segment_count * 0xa8, "Path Tile Nodes")
 0041b0c0        uint32_t segment_count = self->segment_count

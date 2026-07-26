@@ -2627,9 +2627,9 @@ typedef struct SubgameRuntime {
 TextureRef* __thiscall get_or_create_texture_ref(
     TextureRefList* texture_list, char* texture_path, void* payload,
     int32_t flags);
-void __fastcall allocate_path_template_samples(Path* self);
+void __fastcall get_path_nodes(Path* self);
 void __fastcall calc_path_length_z(Path* self);
-void __thiscall mirror_path_template_pair_x(Path* self, Path* source);
+void __thiscall mirror_path(Path* self, Path* source);
 void __thiscall set_matrix_identity(TransformMatrix* transform);
 void __thiscall set_matrix_rotation_identity(TransformMatrix* transform);
 TransformMatrix* __thiscall initialize_matrix_from_values(

@@ -7,7 +7,7 @@ than returning a placeholder value. The implementation:
 
 - initializes kind `0x0f`, mirror/exit flags, width, scale, and the fixed
   22-sample count;
-- calls `allocate_path_template_samples`;
+- calls `get_path_nodes`;
 - builds the primary and secondary endpoints, including the `0.49f` secondary
   Y offset and Z endpoints `0.0f` / `21.0f`;
 - generates the 20 interior samples with the two cage-curve angles,

@@ -27,7 +27,7 @@ void Path::initialize_worm_path_template_pair(char* texture_path)
     width_or_scale = 4.0f;
     segment_count = 24;
     segment_count_f = 96.0f;
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 0;
 
     int entrance_index = 0;

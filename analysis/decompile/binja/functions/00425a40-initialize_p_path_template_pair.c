@@ -17,7 +17,7 @@
 00425a9c        if ((((x87_r7_3 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp1) ? 1 : 0) << 0xa | (x87_r7_3 == temp1 ? 1 : 0) << 0xe | 0x3800):1.b & 1) != 0)
 00425a9e        x87_r7_3 = fneg(x87_r7_3)
 00425aa0        scale_arg = fconvert.s(x87_r7_3)
-00425aa6        allocate_path_template_samples(self)
+00425aa6        get_path_nodes(self)
 00425aab        struct PathTemplateSample* primary_samples = self->primary_samples
 00425ab2        self->has_entry_mesh_transition = 0
 00425ab9        primary_samples->center_x = start_x

@@ -107,7 +107,7 @@ int32_t __thiscall initialize_looptheloop_path_template_pair(
   v6 = (double)v45;
   v50 = v6;
   arg2a = v6 * 0.15915494;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   self->special_runtime_flag_9c = 1;
   arg3a = 0;
   v7 = 0;

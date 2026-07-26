@@ -15,7 +15,7 @@
 0041c63e        long double x87_r7_3 = float.t(eax_1)
 0041c642        float var_48 = fconvert.s(x87_r7_3)
 0041c64c        curve_source = fconvert.s(x87_r7_3 * fconvert.t(0.159154937f))
-0041c650        allocate_path_template_samples(self)
+0041c650        get_path_nodes(self)
 0041c655        self->has_entry_mesh_transition = 1
 0041c65c        width_cells_ = 0
 0041c660        void* i = nullptr

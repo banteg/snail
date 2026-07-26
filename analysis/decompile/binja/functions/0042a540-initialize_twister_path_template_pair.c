@@ -11,7 +11,7 @@
 0042a565        self->width_or_scale = 1f
 0042a568        self->segment_count = 0x22
 0042a56f        self->segment_count_f = 34f
-0042a576        allocate_path_template_samples(self)
+0042a576        get_path_nodes(self)
 0042a57b        long double x87_r7 = float.t(self->width_cells)
 0042a57e        struct PathTemplateSample* primary_samples_5 = self->primary_samples
 0042a585        self->has_entry_mesh_transition = 0

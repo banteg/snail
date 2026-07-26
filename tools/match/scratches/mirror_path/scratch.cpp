@@ -1,4 +1,4 @@
-// mirror_path_template_pair_x @ 0x421dc0 (thiscall, ret 0x4)
+// mirror_path @ 0x421dc0 (cRPath::Mirror, thiscall, ret 0x4)
 
 #include "object_render_types.h"
 #include "sprite.h"
@@ -6,14 +6,14 @@
 
 void __fastcall request_object_vertex_colours(Object* object);
 
-void Path::mirror_path_template_pair_x(Path* source)
+void Path::mirror_path(Path* source)
 {
     is_mirrored_x = 1;
     segment_count = source->segment_count;
     segment_count_f = source->segment_count_f;
     width_or_scale = source->width_or_scale;
     width_cells = source->width_cells;
-    allocate_path_template_samples();
+    get_path_nodes();
 
     has_entry_mesh_transition = source->has_entry_mesh_transition;
     strip_mesh->flags = source->strip_mesh->flags;

@@ -92,7 +92,7 @@ int32_t __thiscall initialize_worm_path_template_pair(PathTemplate *self, char *
   self->width_or_scale = 4.0;
   self->segment_count = 24;
   self->segment_count_f = 96.0;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   _ESI->special_runtime_flag_9c = 0;
   v78 = 0;
   v4 = 0;

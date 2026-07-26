@@ -107,7 +107,7 @@ int32_t __thiscall initialize_p_path_template_pair(
   if ( v10 < 0.0 )
     v10 = -v10;
   arg3a = v10;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   primary_samples = self->primary_samples;
   self->special_runtime_flag_9c = 0;
   primary_samples->center_x = arg5;

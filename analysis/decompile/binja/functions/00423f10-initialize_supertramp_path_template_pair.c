@@ -14,7 +14,7 @@
 00423f5c        self->segment_count_f = fconvert.s(float.t(eax_1 + 7))
 00423f5f        long double x87_r7_3 = float.t(eax_1)
 00423f6d        length = fconvert.s(x87_r7_3 * fconvert.t(0.95588547f))
-00423f71        allocate_path_template_samples(self)
+00423f71        get_path_nodes(self)
 00423f76        uint32_t segment_count = self->segment_count
 00423f79        self->has_entry_mesh_transition = 0
 00423f81        width_cells_ = 0

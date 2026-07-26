@@ -103,7 +103,7 @@ int32_t __thiscall initialize_hill_valley_path_template_pair(
   self->width_or_scale = 1.0;
   self->segment_count = v9 + 2;
   self->segment_count_f = (float)(v9 + 2);
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   self->special_runtime_flag_9c = 0;
   if ( arg5 )
     self->primary_samples->center_x = 0.0;

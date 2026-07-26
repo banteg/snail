@@ -104,7 +104,7 @@ int32_t __thiscall initialize_dip_path_template_pair(
   v8 = (double)(int)v6;
   v49 = v8;
   arg2a = v8 * 0.047746483;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   primary_samples = self->primary_samples;
   self->special_runtime_flag_9c = 0;
   primary_samples->center_x = 0.0;

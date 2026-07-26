@@ -118,7 +118,7 @@ void __thiscall initialize_toad_path_template_pair(
   arg2f = v49 + v6 + 26;
   self->segment_count = arg2f;
   self->segment_count_f = (float)arg2f;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   self->has_entry_mesh_transition = 0;
   arg2 = 0;
   v7 = 0;

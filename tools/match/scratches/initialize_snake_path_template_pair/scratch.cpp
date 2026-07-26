@@ -138,7 +138,7 @@ void Path::initialize_snake_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = 27;
     segment_count_f = 27.0f;
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 0;
 
     int i;

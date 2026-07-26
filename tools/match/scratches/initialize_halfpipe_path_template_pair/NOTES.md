@@ -10,7 +10,7 @@ slot `42`; its output also carries runtime kind `42`.
   (`ret 0x18`), using the `8` argument as the real width-cell count;
 - initializes kind `0x2a`, mirror/exit flags, width, scale, and the fixed
   66-sample count;
-- calls `allocate_path_template_samples` and clears the runtime flag at `+0x9c`;
+- calls `get_path_nodes` and clears the runtime flag at `+0x9c`;
 - builds the 16 entry samples and 16 exit samples with the sinusoidal depth
   envelope and stores the resulting kind-42 radius in the sample `+0xa0` field;
 - builds samples 16 through 49 as the straight center section with radius `4.0`,

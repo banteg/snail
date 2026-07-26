@@ -11,7 +11,7 @@
 0041edd6        self->width_or_scale = 1f
 0041edd9        self->segment_count = curve_source + 8
 0041eddc        self->segment_count_f = fconvert.s(float.t(curve_source + 8))
-0041eddf        allocate_path_template_samples(self)
+0041eddf        get_path_nodes(self)
 0041ede4        self->has_entry_mesh_transition = 0
 0041edea        width_cells_ = 0
 0041edee        void* i = nullptr

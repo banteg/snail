@@ -112,7 +112,7 @@ int32_t __thiscall initialize_turnunder_path_template_pair(
   v7 = (double)v51;
   v53 = v7;
   arg2a = v7 * 0.15915494;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   self->special_runtime_flag_9c = 0;
   arg3a = 0;
   v8 = 0;

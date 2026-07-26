@@ -13,7 +13,7 @@
 0042d5aa        self->width_or_scale = 1f
 0042d5b1        self->segment_count = eax_1 + 2
 0042d5b8        self->segment_count_f = fconvert.s(float.t(eax_1 + 2))
-0042d5bb        allocate_path_template_samples(self)
+0042d5bb        get_path_nodes(self)
 0042d5c4        self->has_entry_mesh_transition = 0
 0042d5cc        if (centered == 0)
 0042d5eb        self->primary_samples->center_x = fconvert.s(float.t(self->width_cells) * fconvert.t(0.5f) - fconvert.t(4f))

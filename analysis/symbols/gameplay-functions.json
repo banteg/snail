@@ -1309,8 +1309,12 @@
     },
     {
       "address": "0x41b0a0",
-      "name": "allocate_path_template_samples",
-      "description": "Allocates the primary and secondary `PathTemplateSample` arrays for one path template and stores both pointers on the template object. Constructors treat it as a pure allocator; the old returned secondary-sample pointer is not meaningfully consumed."
+      "name": "get_path_nodes",
+      "aliases": [
+        "allocate_path_template_samples",
+        "GetNodes"
+      ],
+      "description": "Windows `cRPath::GetNodes()`: allocates the primary and secondary `PathTemplateSample` arrays for one Path and stores both pointers on the owner. Android exports the authored name and preserves the same two labeled allocations at the corresponding constructor lifecycle edge, then additionally seeds primary-sample defaults; iOS inlines that broader mobile form. The Windows member is therefore the narrower allocator-only implementation, not an exact-body port match."
     },
     {
       "address": "0x41b0f0",
@@ -1379,8 +1383,12 @@
     },
     {
       "address": "0x421dc0",
-      "name": "mirror_path_template_pair_x",
-      "description": "Clones one path-template pair, negates X-space samples, and flips strip winding for the mirrored half. iOS Path.o names this `cRPath::Mirror(cRPath*)`."
+      "name": "mirror_path",
+      "aliases": [
+        "mirror_path_template_pair_x",
+        "Mirror"
+      ],
+      "description": "Windows `cRPath::Mirror(cRPath*)`: clones one Path, negates X-space samples, and additionally mirrors the Windows strip mesh and flips its winding. Android and iOS independently preserve the authored owner and signature, while their mobile implementations stop after sample mirroring and `CalcLengthZ()`."
     },
     {
       "address": "0x4221f0",

@@ -133,7 +133,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     segment_count_f = (float)(curve_count + 14);
     float curve_count_f = (float)curve_count;
     float loop_radius = curve_count_f * 0.15915494f;
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 1;
 
     for (i = 0; i < 7; ++i) {
@@ -219,7 +219,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     segment_count_f = (float)(curve_count + 14);
     float curve_count_f = (float)curve_count;
     float loop_radius = curve_count_f * 0.15915494f;
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 1;
 
     for (i = 0; i < 10; ++i) {
@@ -310,7 +310,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     segment_count_f = (float)(curve_count + 14);
     float curve_count_f = (float)curve_count;
     float hump_radius = curve_count_f * 0.095492966f;
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 0;
 
     for (i = 0; i < 7; ++i) {
@@ -372,7 +372,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     segment_count_f = (float)(endpoint_index + 1);
     float curve_count_f = (float)width_cells_;
     curve_source = curve_count_f * 0.047746483f;
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 0;
 
     primary_samples[0].center_x = 0.0f;
@@ -486,7 +486,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     kind = 0x15;
     segment_count = curve_count + 8;
     segment_count_f = (float)(curve_count + 8);
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 0;
 
     for (i = 0; i < 3; ++i) {
@@ -556,7 +556,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     kind = 0x16;
     segment_count = curve_count + 8;
     segment_count_f = (float)(curve_count + 8);
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 0;
 
     for (i = 0; i < 4; ++i) {

@@ -107,7 +107,7 @@ int32_t __thiscall initialize_halfpipe_path_template_pair(
   self->width_or_scale = 1.0;
   self->segment_count = 66;
   self->segment_count_f = 66.0;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   self->has_entry_mesh_transition = 0;
   v53 = 0;
   v5 = 0;

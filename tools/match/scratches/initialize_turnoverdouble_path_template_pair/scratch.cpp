@@ -199,7 +199,7 @@ void Path::initialize_turnoverdouble_path_template_pair(
     segment_count_f = (float)(curve_segments + 8);
     float curve_segments_f = (float)curve_segments;
     length = curve_segments_f * 0.079577468f;
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 0;
 
     int lead_z_index = 0;

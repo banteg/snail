@@ -1,4 +1,4 @@
-# allocate_path_template_samples @ 0x41b0a0
+# get_path_nodes @ 0x41b0a0
 
 Exact match: 100.00%, 23/23 instructions.
 
@@ -32,3 +32,13 @@ receiver identity with the full `Path*` owner. The shared header and both
 analysis lanes agree with the already exact matcher declaration. This is an
 analysis-only ownership repair; the focused source remains 100.00%, 23/23
 instructions.
+
+## 2026-07-26 cross-port authored owner
+
+Android exports this lifecycle member as `cRPath::GetNodes()`. Its body uses
+the same `0xa8` stride, exact `Path Tile Nodes` / `Path Ball nodes` allocation
+labels, paired Path fields, and corresponding constructor call neighborhood.
+Android then initializes primary-sample defaults; iOS inlines those same
+allocations and defaults in its Path constructors. Windows retains the
+narrower allocation-only member, so this recovers the authored owner and name
+without claiming an exact cross-port body.

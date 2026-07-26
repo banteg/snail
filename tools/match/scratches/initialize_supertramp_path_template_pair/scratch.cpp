@@ -165,7 +165,7 @@ void Path::initialize_supertramp_path_template_pair(
     segment_count_f = (float)last_segment_index;
     float curve_segments_f = (float)curve_segments;
     float radius = curve_segments_f * 0.95588547f;
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 0;
     segment_count = segment_count - 1;
 

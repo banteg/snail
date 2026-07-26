@@ -144,7 +144,7 @@ void Path::initialize_sbend_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = steps + 1;
     segment_count_f = (float)(steps + 1);
-    allocate_path_template_samples();
+    get_path_nodes();
 
     has_entry_mesh_transition = 0;
     if (centered)

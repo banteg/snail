@@ -1242,8 +1242,8 @@
     },
     {
       "address": "0x41b0a0",
-      "name": "allocate_path_template_samples",
-      "artifact": "analysis/decompile/binja/functions/0041b0a0-allocate_path_template_samples.c"
+      "name": "get_path_nodes",
+      "artifact": "analysis/decompile/binja/functions/0041b0a0-get_path_nodes.c"
     },
     {
       "address": "0x41b0f0",
@@ -1312,8 +1312,8 @@
     },
     {
       "address": "0x421dc0",
-      "name": "mirror_path_template_pair_x",
-      "artifact": "analysis/decompile/binja/functions/00421dc0-mirror_path_template_pair_x.c"
+      "name": "mirror_path",
+      "artifact": "analysis/decompile/binja/functions/00421dc0-mirror_path.c"
     },
     {
       "address": "0x4221f0",

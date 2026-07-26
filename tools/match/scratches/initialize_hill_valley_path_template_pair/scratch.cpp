@@ -219,7 +219,7 @@ void Path::initialize_hill_valley_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = last + 1;
     segment_count_f = (float)(last + 1);
-    allocate_path_template_samples();
+    get_path_nodes();
 
     has_entry_mesh_transition = 0;
 

@@ -457,7 +457,7 @@
 0040c1c2        game->subgame.path_pairs[0].primary.bod.position.y = 0f
 0040c1c8        game->subgame.path_pairs[0].primary.bod.position.x = 0
 0040c1da        set_bod_object(&game->subgame.path_pairs[0].secondary.bod, add_object_to_list(&g_object_list))
-0040c1e6        mirror_path_template_pair_x(&game->subgame.path_pairs[0].secondary, &game->subgame.path_pairs)
+0040c1e6        mirror_path(&game->subgame.path_pairs[0].secondary, &game->subgame.path_pairs)
 0040c1f3        game->subgame.path_pairs[0].secondary.bod.position.z = 0f
 0040c1f9        game->subgame.path_pairs[0].secondary.bod.position.y = 0f
 0040c1ff        game->subgame.path_pairs[0].secondary.bod.position.x = 0
@@ -475,7 +475,7 @@
 0040c281        game->subgame.path_pairs[1].primary.bod.position.y = 0f
 0040c287        game->subgame.path_pairs[1].primary.bod.position.x = 0
 0040c299        set_bod_object(&game->subgame.path_pairs[1].secondary.bod, add_object_to_list(&g_object_list))
-0040c2a5        mirror_path_template_pair_x(&game->subgame.path_pairs[1].secondary, &game->subgame.path_pairs[1])
+0040c2a5        mirror_path(&game->subgame.path_pairs[1].secondary, &game->subgame.path_pairs[1])
 0040c2b2        game->subgame.path_pairs[1].secondary.bod.position.z = 0f
 0040c2b8        game->subgame.path_pairs[1].secondary.bod.position.y = 0f
 0040c2be        game->subgame.path_pairs[1].secondary.bod.position.x = 0
@@ -493,7 +493,7 @@
 0040c340        game->subgame.path_pairs[2].primary.bod.position.y = 0f
 0040c346        game->subgame.path_pairs[2].primary.bod.position.x = 0
 0040c358        set_bod_object(&game->subgame.path_pairs[2].secondary.bod, add_object_to_list(&g_object_list))
-0040c364        mirror_path_template_pair_x(&game->subgame.path_pairs[2].secondary, &game->subgame.path_pairs[2])
+0040c364        mirror_path(&game->subgame.path_pairs[2].secondary, &game->subgame.path_pairs[2])
 0040c371        game->subgame.path_pairs[2].secondary.bod.position.z = 0f
 0040c377        game->subgame.path_pairs[2].secondary.bod.position.y = 0f
 0040c37d        game->subgame.path_pairs[2].secondary.bod.position.x = 0
@@ -511,7 +511,7 @@
 0040c3ff        game->subgame.path_pairs[6].primary.bod.position.y = 0f
 0040c405        game->subgame.path_pairs[6].primary.bod.position.x = 0
 0040c417        set_bod_object(&game->subgame.path_pairs[6].secondary.bod, add_object_to_list(&g_object_list))
-0040c423        mirror_path_template_pair_x(&game->subgame.path_pairs[6].secondary, &game->subgame.path_pairs[6])
+0040c423        mirror_path(&game->subgame.path_pairs[6].secondary, &game->subgame.path_pairs[6])
 0040c430        game->subgame.path_pairs[6].secondary.bod.position.z = 0f
 0040c436        game->subgame.path_pairs[6].secondary.bod.position.y = 0f
 0040c43c        game->subgame.path_pairs[6].secondary.bod.position.x = 0
@@ -529,7 +529,7 @@
 0040c4be        game->subgame.path_pairs[3].primary.bod.position.y = 0f
 0040c4c4        game->subgame.path_pairs[3].primary.bod.position.x = 0
 0040c4d6        set_bod_object(&game->subgame.path_pairs[3].secondary.bod, add_object_to_list(&g_object_list))
-0040c4e2        mirror_path_template_pair_x(&game->subgame.path_pairs[3].secondary, &game->subgame.path_pairs[3])
+0040c4e2        mirror_path(&game->subgame.path_pairs[3].secondary, &game->subgame.path_pairs[3])
 0040c4ef        game->subgame.path_pairs[3].secondary.bod.position.z = 0f
 0040c4f5        game->subgame.path_pairs[3].secondary.bod.position.y = 0f
 0040c4fb        game->subgame.path_pairs[3].secondary.bod.position.x = 0
@@ -547,7 +547,7 @@
 0040c57d        game->subgame.path_pairs[4].primary.bod.position.y = 0f
 0040c583        game->subgame.path_pairs[4].primary.bod.position.x = 0
 0040c595        set_bod_object(&game->subgame.path_pairs[4].secondary.bod, add_object_to_list(&g_object_list))
-0040c5a1        mirror_path_template_pair_x(&game->subgame.path_pairs[4].secondary, &game->subgame.path_pairs[4])
+0040c5a1        mirror_path(&game->subgame.path_pairs[4].secondary, &game->subgame.path_pairs[4])
 0040c5a7        game->subgame.path_pairs[4].secondary.bod.position.z = 0f
 0040c5ad        game->subgame.path_pairs[4].secondary.bod.position.y = 0f
 0040c5b3        game->subgame.path_pairs[4].secondary.bod.position.x = 0
@@ -565,7 +565,7 @@
 0040c63c        game->subgame.path_pairs[5].primary.bod.position.y = 0f
 0040c642        game->subgame.path_pairs[5].primary.bod.position.x = 0
 0040c654        set_bod_object(&game->subgame.path_pairs[5].secondary.bod, add_object_to_list(&g_object_list))
-0040c660        mirror_path_template_pair_x(&game->subgame.path_pairs[5].secondary, &game->subgame.path_pairs[5])
+0040c660        mirror_path(&game->subgame.path_pairs[5].secondary, &game->subgame.path_pairs[5])
 0040c66d        game->subgame.path_pairs[5].secondary.bod.position.z = 0f
 0040c673        game->subgame.path_pairs[5].secondary.bod.position.y = 0f
 0040c679        game->subgame.path_pairs[5].secondary.bod.position.x = 0
@@ -583,7 +583,7 @@
 0040c6fb        game->subgame.path_pairs[7].primary.bod.position.y = 0f
 0040c701        game->subgame.path_pairs[7].primary.bod.position.x = 0
 0040c713        set_bod_object(&game->subgame.path_pairs[7].secondary.bod, add_object_to_list(&g_object_list))
-0040c71f        mirror_path_template_pair_x(&game->subgame.path_pairs[7].secondary, &game->subgame.path_pairs[7])
+0040c71f        mirror_path(&game->subgame.path_pairs[7].secondary, &game->subgame.path_pairs[7])
 0040c724        game->subgame.path_pairs[7].secondary.bod.position.z = 0f
 0040c72a        game->subgame.path_pairs[7].secondary.bod.position.y = 0f
 0040c738        game->subgame.path_pairs[7].secondary.bod.position.x = 0
@@ -601,7 +601,7 @@
 0040c7ba        game->subgame.path_pairs[0x25].primary.bod.position.y = 0f
 0040c7c0        game->subgame.path_pairs[0x25].primary.bod.position.x = 0
 0040c7d2        set_bod_object(&game->subgame.path_pairs[0x25].secondary.bod, add_object_to_list(&g_object_list))
-0040c7de        mirror_path_template_pair_x(&game->subgame.path_pairs[0x25].secondary, &game->subgame.path_pairs[0x25])
+0040c7de        mirror_path(&game->subgame.path_pairs[0x25].secondary, &game->subgame.path_pairs[0x25])
 0040c7eb        game->subgame.path_pairs[0x25].secondary.bod.position.z = 0f
 0040c7f1        game->subgame.path_pairs[0x25].secondary.bod.position.y = 0f
 0040c7f7        game->subgame.path_pairs[0x25].secondary.bod.position.x = 0
@@ -619,7 +619,7 @@
 0040c879        game->subgame.path_pairs[0x26].primary.bod.position.y = 0f
 0040c87f        game->subgame.path_pairs[0x26].primary.bod.position.x = 0
 0040c891        set_bod_object(&game->subgame.path_pairs[0x26].secondary.bod, add_object_to_list(&g_object_list))
-0040c89d        mirror_path_template_pair_x(&game->subgame.path_pairs[0x26].secondary, &game->subgame.path_pairs[0x26])
+0040c89d        mirror_path(&game->subgame.path_pairs[0x26].secondary, &game->subgame.path_pairs[0x26])
 0040c8aa        game->subgame.path_pairs[0x26].secondary.bod.position.z = 0f
 0040c8b0        game->subgame.path_pairs[0x26].secondary.bod.position.y = 0f
 0040c8b6        game->subgame.path_pairs[0x26].secondary.bod.position.x = 0
@@ -637,7 +637,7 @@
 0040c938        game->subgame.path_pairs[0x2b].primary.bod.position.y = 0f
 0040c93e        game->subgame.path_pairs[0x2b].primary.bod.position.x = 0
 0040c950        set_bod_object(&game->subgame.path_pairs[0x2b].secondary.bod, add_object_to_list(&g_object_list))
-0040c95c        mirror_path_template_pair_x(&game->subgame.path_pairs[0x2b].secondary, &game->subgame.path_pairs[0x2b])
+0040c95c        mirror_path(&game->subgame.path_pairs[0x2b].secondary, &game->subgame.path_pairs[0x2b])
 0040c969        game->subgame.path_pairs[0x2b].secondary.bod.position.z = 0f
 0040c96f        game->subgame.path_pairs[0x2b].secondary.bod.position.y = 0f
 0040c975        game->subgame.path_pairs[0x2b].secondary.bod.position.x = 0
@@ -655,7 +655,7 @@
 0040c9f6        game->subgame.path_pairs[0x2c].primary.bod.position.y = 0f
 0040c9fc        game->subgame.path_pairs[0x2c].primary.bod.position.x = 0
 0040ca0e        set_bod_object(&game->subgame.path_pairs[0x2c].secondary.bod, add_object_to_list(&g_object_list))
-0040ca1a        mirror_path_template_pair_x(&game->subgame.path_pairs[0x2c].secondary, &game->subgame.path_pairs[0x2c])
+0040ca1a        mirror_path(&game->subgame.path_pairs[0x2c].secondary, &game->subgame.path_pairs[0x2c])
 0040ca27        game->subgame.path_pairs[0x2c].secondary.bod.position.z = 0f
 0040ca2d        game->subgame.path_pairs[0x2c].secondary.bod.position.y = 0f
 0040ca33        game->subgame.path_pairs[0x2c].secondary.bod.position.x = 0
@@ -673,7 +673,7 @@
 0040cab5        game->subgame.path_pairs[0x2d].primary.bod.position.y = 0f
 0040cabb        game->subgame.path_pairs[0x2d].primary.bod.position.x = 0
 0040cacd        set_bod_object(&game->subgame.path_pairs[0x2d].secondary.bod, add_object_to_list(&g_object_list))
-0040cad9        mirror_path_template_pair_x(&game->subgame.path_pairs[0x2d].secondary, &game->subgame.path_pairs[0x2d])
+0040cad9        mirror_path(&game->subgame.path_pairs[0x2d].secondary, &game->subgame.path_pairs[0x2d])
 0040cae6        game->subgame.path_pairs[0x2d].secondary.bod.position.z = 0f
 0040caec        game->subgame.path_pairs[0x2d].secondary.bod.position.y = 0f
 0040caf2        game->subgame.path_pairs[0x2d].secondary.bod.position.x = 0
@@ -691,7 +691,7 @@
 0040cb6e        game->subgame.path_pairs[0x2e].primary.bod.position.y = 0f
 0040cb74        game->subgame.path_pairs[0x2e].primary.bod.position.x = 0
 0040cb8b        set_bod_object(&game->subgame.path_pairs[0x2e].secondary.bod, add_object_to_list(&g_object_list))
-0040cb97        mirror_path_template_pair_x(&game->subgame.path_pairs[0x2e].secondary, &game->subgame.path_pairs[0x2e])
+0040cb97        mirror_path(&game->subgame.path_pairs[0x2e].secondary, &game->subgame.path_pairs[0x2e])
 0040cba4        game->subgame.path_pairs[0x2e].secondary.bod.position.z = 0f
 0040cbaa        game->subgame.path_pairs[0x2e].secondary.bod.position.y = 0f
 0040cbb0        game->subgame.path_pairs[0x2e].secondary.bod.position.x = 0
@@ -709,7 +709,7 @@
 0040cc32        game->subgame.path_pairs[0x27].primary.bod.position.y = 0f
 0040cc38        game->subgame.path_pairs[0x27].primary.bod.position.x = 0
 0040cc4a        set_bod_object(&game->subgame.path_pairs[0x27].secondary.bod, add_object_to_list(&g_object_list))
-0040cc56        mirror_path_template_pair_x(&game->subgame.path_pairs[0x27].secondary, &game->subgame.path_pairs[0x27])
+0040cc56        mirror_path(&game->subgame.path_pairs[0x27].secondary, &game->subgame.path_pairs[0x27])
 0040cc63        game->subgame.path_pairs[0x27].secondary.bod.position.z = 0f
 0040cc69        game->subgame.path_pairs[0x27].secondary.bod.position.y = 0f
 0040cc6f        game->subgame.path_pairs[0x27].secondary.bod.position.x = 0
@@ -727,7 +727,7 @@
 0040ccf1        game->subgame.path_pairs[0x29].primary.bod.position.y = 0f
 0040ccf7        game->subgame.path_pairs[0x29].primary.bod.position.x = 0
 0040cd09        set_bod_object(&game->subgame.path_pairs[0x29].secondary.bod, add_object_to_list(&g_object_list))
-0040cd15        mirror_path_template_pair_x(&game->subgame.path_pairs[0x29].secondary, &game->subgame.path_pairs[0x29])
+0040cd15        mirror_path(&game->subgame.path_pairs[0x29].secondary, &game->subgame.path_pairs[0x29])
 0040cd22        game->subgame.path_pairs[0x29].secondary.bod.position.z = 0f
 0040cd28        game->subgame.path_pairs[0x29].secondary.bod.position.y = 0f
 0040cd2e        game->subgame.path_pairs[0x29].secondary.bod.position.x = 0
@@ -745,7 +745,7 @@
 0040cdb0        game->subgame.path_pairs[0x2a].primary.bod.position.y = 0f
 0040cdb6        game->subgame.path_pairs[0x2a].primary.bod.position.x = 0
 0040cdc8        set_bod_object(&game->subgame.path_pairs[0x2a].secondary.bod, add_object_to_list(&g_object_list))
-0040cdd4        mirror_path_template_pair_x(&game->subgame.path_pairs[0x2a].secondary, &game->subgame.path_pairs[0x2a])
+0040cdd4        mirror_path(&game->subgame.path_pairs[0x2a].secondary, &game->subgame.path_pairs[0x2a])
 0040cde1        game->subgame.path_pairs[0x2a].secondary.bod.position.z = 0f
 0040cde7        game->subgame.path_pairs[0x2a].secondary.bod.position.y = 0f
 0040cded        game->subgame.path_pairs[0x2a].secondary.bod.position.x = 0
@@ -763,7 +763,7 @@
 0040ce6f        game->subgame.path_pairs[0x28].primary.bod.position.y = 0f
 0040ce75        game->subgame.path_pairs[0x28].primary.bod.position.x = 0
 0040ce87        set_bod_object(&game->subgame.path_pairs[0x28].secondary.bod, add_object_to_list(&g_object_list))
-0040ce93        mirror_path_template_pair_x(&game->subgame.path_pairs[0x28].secondary, &game->subgame.path_pairs[0x28])
+0040ce93        mirror_path(&game->subgame.path_pairs[0x28].secondary, &game->subgame.path_pairs[0x28])
 0040cea0        game->subgame.path_pairs[0x28].secondary.bod.position.z = 0f
 0040cea6        game->subgame.path_pairs[0x28].secondary.bod.position.y = 0f
 0040ceac        game->subgame.path_pairs[0x28].secondary.bod.position.x = 0
@@ -817,7 +817,7 @@
 0040d0d6        game->subgame.path_pairs[0x19].primary.bod.position.y = 0f
 0040d0dc        game->subgame.path_pairs[0x19].primary.bod.position.x = 0
 0040d0ee        set_bod_object(&game->subgame.path_pairs[0x19].secondary.bod, add_object_to_list(&g_object_list))
-0040d0fa        mirror_path_template_pair_x(&game->subgame.path_pairs[0x19].secondary, &game->subgame.path_pairs[0x19])
+0040d0fa        mirror_path(&game->subgame.path_pairs[0x19].secondary, &game->subgame.path_pairs[0x19])
 0040d107        game->subgame.path_pairs[0x19].secondary.bod.position.z = 0f
 0040d10d        game->subgame.path_pairs[0x19].secondary.bod.position.y = 0f
 0040d113        game->subgame.path_pairs[0x19].secondary.bod.position.x = 0
@@ -835,7 +835,7 @@
 0040d195        game->subgame.path_pairs[0x1b].primary.bod.position.y = 0f
 0040d19b        game->subgame.path_pairs[0x1b].primary.bod.position.x = 0
 0040d1ad        set_bod_object(&game->subgame.path_pairs[0x1b].secondary.bod, add_object_to_list(&g_object_list))
-0040d1b9        mirror_path_template_pair_x(&game->subgame.path_pairs[0x1b].secondary, &game->subgame.path_pairs[0x1b])
+0040d1b9        mirror_path(&game->subgame.path_pairs[0x1b].secondary, &game->subgame.path_pairs[0x1b])
 0040d1c6        game->subgame.path_pairs[0x1b].secondary.bod.position.z = 0f
 0040d1cc        game->subgame.path_pairs[0x1b].secondary.bod.position.y = 0f
 0040d1d2        game->subgame.path_pairs[0x1b].secondary.bod.position.x = 0
@@ -853,7 +853,7 @@
 0040d254        game->subgame.path_pairs[0x1a].primary.bod.position.y = 0f
 0040d25a        game->subgame.path_pairs[0x1a].primary.bod.position.x = 0
 0040d26c        set_bod_object(&game->subgame.path_pairs[0x1a].secondary.bod, add_object_to_list(&g_object_list))
-0040d278        mirror_path_template_pair_x(&game->subgame.path_pairs[0x1a].secondary, &game->subgame.path_pairs[0x1a])
+0040d278        mirror_path(&game->subgame.path_pairs[0x1a].secondary, &game->subgame.path_pairs[0x1a])
 0040d285        game->subgame.path_pairs[0x1a].secondary.bod.position.z = 0f
 0040d28b        game->subgame.path_pairs[0x1a].secondary.bod.position.y = 0f
 0040d291        game->subgame.path_pairs[0x1a].secondary.bod.position.x = 0
@@ -871,7 +871,7 @@
 0040d318        game->subgame.path_pairs[0x10].primary.bod.position.y = 0f
 0040d31e        game->subgame.path_pairs[0x10].primary.bod.position.x = 0
 0040d330        set_bod_object(&game->subgame.path_pairs[0x10].secondary.bod, add_object_to_list(&g_object_list))
-0040d33c        mirror_path_template_pair_x(&game->subgame.path_pairs[0x10].secondary, &game->subgame.path_pairs[0x10])
+0040d33c        mirror_path(&game->subgame.path_pairs[0x10].secondary, &game->subgame.path_pairs[0x10])
 0040d349        game->subgame.path_pairs[0x10].secondary.bod.position.z = 0f
 0040d34f        game->subgame.path_pairs[0x10].secondary.bod.position.y = 0f
 0040d355        game->subgame.path_pairs[0x10].secondary.bod.position.x = 0
@@ -889,7 +889,7 @@
 0040d3dc        game->subgame.path_pairs[0x11].primary.bod.position.y = 0f
 0040d3e2        game->subgame.path_pairs[0x11].primary.bod.position.x = 0
 0040d3f4        set_bod_object(&game->subgame.path_pairs[0x11].secondary.bod, add_object_to_list(&g_object_list))
-0040d400        mirror_path_template_pair_x(&game->subgame.path_pairs[0x11].secondary, &game->subgame.path_pairs[0x11])
+0040d400        mirror_path(&game->subgame.path_pairs[0x11].secondary, &game->subgame.path_pairs[0x11])
 0040d405        game->subgame.path_pairs[0x11].secondary.bod.position.z = 0f
 0040d40b        game->subgame.path_pairs[0x11].secondary.bod.position.y = 0f
 0040d411        game->subgame.path_pairs[0x11].secondary.bod.position.x = 0
@@ -907,7 +907,7 @@
 0040d4a0        game->subgame.path_pairs[0x12].primary.bod.position.y = 0f
 0040d4a6        game->subgame.path_pairs[0x12].primary.bod.position.x = 0
 0040d4b8        set_bod_object(&game->subgame.path_pairs[0x12].secondary.bod, add_object_to_list(&g_object_list))
-0040d4c4        mirror_path_template_pair_x(&game->subgame.path_pairs[0x12].secondary, &game->subgame.path_pairs[0x12])
+0040d4c4        mirror_path(&game->subgame.path_pairs[0x12].secondary, &game->subgame.path_pairs[0x12])
 0040d4d1        game->subgame.path_pairs[0x12].secondary.bod.position.z = 0f
 0040d4d7        game->subgame.path_pairs[0x12].secondary.bod.position.y = 0f
 0040d4dd        game->subgame.path_pairs[0x12].secondary.bod.position.x = 0
@@ -925,7 +925,7 @@
 0040d564        game->subgame.path_pairs[0x13].primary.bod.position.y = 0f
 0040d56a        game->subgame.path_pairs[0x13].primary.bod.position.x = 0
 0040d57c        set_bod_object(&game->subgame.path_pairs[0x13].secondary.bod, add_object_to_list(&g_object_list))
-0040d588        mirror_path_template_pair_x(&game->subgame.path_pairs[0x13].secondary, &game->subgame.path_pairs[0x13])
+0040d588        mirror_path(&game->subgame.path_pairs[0x13].secondary, &game->subgame.path_pairs[0x13])
 0040d595        game->subgame.path_pairs[0x13].secondary.bod.position.z = 0f
 0040d59b        game->subgame.path_pairs[0x13].secondary.bod.position.y = 0f
 0040d5a1        game->subgame.path_pairs[0x13].secondary.bod.position.x = 0
@@ -943,7 +943,7 @@
 0040d628        game->subgame.path_pairs[8].primary.bod.position.y = 0f
 0040d62e        game->subgame.path_pairs[8].primary.bod.position.x = 0
 0040d640        set_bod_object(&game->subgame.path_pairs[8].secondary.bod, add_object_to_list(&g_object_list))
-0040d64c        mirror_path_template_pair_x(&game->subgame.path_pairs[8].secondary, &game->subgame.path_pairs[8])
+0040d64c        mirror_path(&game->subgame.path_pairs[8].secondary, &game->subgame.path_pairs[8])
 0040d659        game->subgame.path_pairs[8].secondary.bod.position.z = 0f
 0040d65f        game->subgame.path_pairs[8].secondary.bod.position.y = 0f
 0040d665        game->subgame.path_pairs[8].secondary.bod.position.x = 0
@@ -961,7 +961,7 @@
 0040d6e6        game->subgame.path_pairs[0xa].primary.bod.position.y = 0f
 0040d6ec        game->subgame.path_pairs[0xa].primary.bod.position.x = 0
 0040d703        set_bod_object(&game->subgame.path_pairs[0xa].secondary.bod, add_object_to_list(&g_object_list))
-0040d70f        mirror_path_template_pair_x(&game->subgame.path_pairs[0xa].secondary, &game->subgame.path_pairs[0xa])
+0040d70f        mirror_path(&game->subgame.path_pairs[0xa].secondary, &game->subgame.path_pairs[0xa])
 0040d71c        game->subgame.path_pairs[0xa].secondary.bod.position.z = 0f
 0040d722        game->subgame.path_pairs[0xa].secondary.bod.position.y = 0f
 0040d728        game->subgame.path_pairs[0xa].secondary.bod.position.x = 0
@@ -979,7 +979,7 @@
 0040d7af        game->subgame.path_pairs[9].primary.bod.position.y = 0f
 0040d7b5        game->subgame.path_pairs[9].primary.bod.position.x = 0
 0040d7c7        set_bod_object(&game->subgame.path_pairs[9].secondary.bod, add_object_to_list(&g_object_list))
-0040d7d3        mirror_path_template_pair_x(&game->subgame.path_pairs[9].secondary, &game->subgame.path_pairs[9])
+0040d7d3        mirror_path(&game->subgame.path_pairs[9].secondary, &game->subgame.path_pairs[9])
 0040d7e0        game->subgame.path_pairs[9].secondary.bod.position.z = 0f
 0040d7e6        game->subgame.path_pairs[9].secondary.bod.position.y = 0f
 0040d7ec        game->subgame.path_pairs[9].secondary.bod.position.x = 0
@@ -997,7 +997,7 @@
 0040d873        game->subgame.path_pairs[0xe].primary.bod.position.y = 0f
 0040d879        game->subgame.path_pairs[0xe].primary.bod.position.x = 0
 0040d88b        set_bod_object(&game->subgame.path_pairs[0xe].secondary.bod, add_object_to_list(&g_object_list))
-0040d897        mirror_path_template_pair_x(&game->subgame.path_pairs[0xe].secondary, &game->subgame.path_pairs[0xe])
+0040d897        mirror_path(&game->subgame.path_pairs[0xe].secondary, &game->subgame.path_pairs[0xe])
 0040d8a4        game->subgame.path_pairs[0xe].secondary.bod.position.z = 0f
 0040d8aa        game->subgame.path_pairs[0xe].secondary.bod.position.y = 0f
 0040d8b0        game->subgame.path_pairs[0xe].secondary.bod.position.x = 0
@@ -1015,7 +1015,7 @@
 0040d937        game->subgame.path_pairs[0xb].primary.bod.position.y = 0f
 0040d93d        game->subgame.path_pairs[0xb].primary.bod.position.x = 0
 0040d94f        set_bod_object(&game->subgame.path_pairs[0xb].secondary.bod, add_object_to_list(&g_object_list))
-0040d95b        mirror_path_template_pair_x(&game->subgame.path_pairs[0xb].secondary, &game->subgame.path_pairs[0xb])
+0040d95b        mirror_path(&game->subgame.path_pairs[0xb].secondary, &game->subgame.path_pairs[0xb])
 0040d968        game->subgame.path_pairs[0xb].secondary.bod.position.z = 0f
 0040d96e        game->subgame.path_pairs[0xb].secondary.bod.position.y = 0f
 0040d974        game->subgame.path_pairs[0xb].secondary.bod.position.x = 0
@@ -1033,7 +1033,7 @@
 0040d9fa        game->subgame.path_pairs[0xd].primary.bod.position.y = 0f
 0040da00        game->subgame.path_pairs[0xd].primary.bod.position.x = 0
 0040da12        set_bod_object(&game->subgame.path_pairs[0xd].secondary.bod, add_object_to_list(&g_object_list))
-0040da1e        mirror_path_template_pair_x(&game->subgame.path_pairs[0xd].secondary, &game->subgame.path_pairs[0xd])
+0040da1e        mirror_path(&game->subgame.path_pairs[0xd].secondary, &game->subgame.path_pairs[0xd])
 0040da2b        game->subgame.path_pairs[0xd].secondary.bod.position.z = 0f
 0040da31        game->subgame.path_pairs[0xd].secondary.bod.position.y = 0f
 0040da37        game->subgame.path_pairs[0xd].secondary.bod.position.x = 0
@@ -1051,7 +1051,7 @@
 0040dabe        game->subgame.path_pairs[0xc].primary.bod.position.y = 0f
 0040dac4        game->subgame.path_pairs[0xc].primary.bod.position.x = 0
 0040dad6        set_bod_object(&game->subgame.path_pairs[0xc].secondary.bod, add_object_to_list(&g_object_list))
-0040dae2        mirror_path_template_pair_x(&game->subgame.path_pairs[0xc].secondary, &game->subgame.path_pairs[0xc])
+0040dae2        mirror_path(&game->subgame.path_pairs[0xc].secondary, &game->subgame.path_pairs[0xc])
 0040daef        game->subgame.path_pairs[0xc].secondary.bod.position.z = 0f
 0040daf5        game->subgame.path_pairs[0xc].secondary.bod.position.y = 0f
 0040dafb        game->subgame.path_pairs[0xc].secondary.bod.position.x = 0
@@ -1069,7 +1069,7 @@
 0040db7d        game->subgame.path_pairs[0x14].primary.bod.position.y = 0f
 0040db83        game->subgame.path_pairs[0x14].primary.bod.position.x = 0
 0040db95        set_bod_object(&game->subgame.path_pairs[0x14].secondary.bod, add_object_to_list(&g_object_list))
-0040dba1        mirror_path_template_pair_x(&game->subgame.path_pairs[0x14].secondary, &game->subgame.path_pairs[0x14])
+0040dba1        mirror_path(&game->subgame.path_pairs[0x14].secondary, &game->subgame.path_pairs[0x14])
 0040dbae        game->subgame.path_pairs[0x14].secondary.bod.position.z = 0f
 0040dbb4        game->subgame.path_pairs[0x14].secondary.bod.position.y = 0f
 0040dbba        game->subgame.path_pairs[0x14].secondary.bod.position.x = 0
@@ -1087,7 +1087,7 @@
 0040dc39        game->subgame.path_pairs[0x15].primary.bod.position.y = 0f
 0040dc3f        game->subgame.path_pairs[0x15].primary.bod.position.x = 0
 0040dc51        set_bod_object(&game->subgame.path_pairs[0x15].secondary.bod, add_object_to_list(&g_object_list))
-0040dc5d        mirror_path_template_pair_x(&game->subgame.path_pairs[0x15].secondary, &game->subgame.path_pairs[0x15])
+0040dc5d        mirror_path(&game->subgame.path_pairs[0x15].secondary, &game->subgame.path_pairs[0x15])
 0040dc6a        game->subgame.path_pairs[0x15].secondary.bod.position.z = 0f
 0040dc70        game->subgame.path_pairs[0x15].secondary.bod.position.y = 0f
 0040dc76        game->subgame.path_pairs[0x15].secondary.bod.position.x = 0
@@ -1105,7 +1105,7 @@
 0040dcf5        game->subgame.path_pairs[0x16].primary.bod.position.y = 0f
 0040dcfb        game->subgame.path_pairs[0x16].primary.bod.position.x = 0
 0040dd0d        set_bod_object(&game->subgame.path_pairs[0x16].secondary.bod, add_object_to_list(&g_object_list))
-0040dd19        mirror_path_template_pair_x(&game->subgame.path_pairs[0x16].secondary, &game->subgame.path_pairs[0x16])
+0040dd19        mirror_path(&game->subgame.path_pairs[0x16].secondary, &game->subgame.path_pairs[0x16])
 0040dd26        game->subgame.path_pairs[0x16].secondary.bod.position.z = 0f
 0040dd2c        game->subgame.path_pairs[0x16].secondary.bod.position.y = 0f
 0040dd32        game->subgame.path_pairs[0x16].secondary.bod.position.x = 0
@@ -1123,7 +1123,7 @@
 0040ddb1        game->subgame.path_pairs[0x17].primary.bod.position.y = 0f
 0040ddb7        game->subgame.path_pairs[0x17].primary.bod.position.x = 0
 0040ddc9        set_bod_object(&game->subgame.path_pairs[0x17].secondary.bod, add_object_to_list(&g_object_list))
-0040ddd5        mirror_path_template_pair_x(&game->subgame.path_pairs[0x17].secondary, &game->subgame.path_pairs[0x17])
+0040ddd5        mirror_path(&game->subgame.path_pairs[0x17].secondary, &game->subgame.path_pairs[0x17])
 0040dde2        game->subgame.path_pairs[0x17].secondary.bod.position.z = 0f
 0040dde8        game->subgame.path_pairs[0x17].secondary.bod.position.y = 0f
 0040ddee        game->subgame.path_pairs[0x17].secondary.bod.position.x = 0
@@ -1141,7 +1141,7 @@
 0040de6d        game->subgame.path_pairs[0x20].primary.bod.position.y = 0f
 0040de73        game->subgame.path_pairs[0x20].primary.bod.position.x = 0
 0040de85        set_bod_object(&game->subgame.path_pairs[0x20].secondary.bod, add_object_to_list(&g_object_list))
-0040de91        mirror_path_template_pair_x(&game->subgame.path_pairs[0x20].secondary, &game->subgame.path_pairs[0x20])
+0040de91        mirror_path(&game->subgame.path_pairs[0x20].secondary, &game->subgame.path_pairs[0x20])
 0040de9e        game->subgame.path_pairs[0x20].secondary.bod.position.z = 0f
 0040dea4        game->subgame.path_pairs[0x20].secondary.bod.position.y = 0f
 0040deaa        game->subgame.path_pairs[0x20].secondary.bod.position.x = 0
@@ -1159,7 +1159,7 @@
 0040df19        game->subgame.path_pairs[0x18].primary.bod.position.y = 0f
 0040df1f        game->subgame.path_pairs[0x18].primary.bod.position.x = 0
 0040df31        set_bod_object(&game->subgame.path_pairs[0x18].secondary.bod, add_object_to_list(&g_object_list))
-0040df3d        mirror_path_template_pair_x(&game->subgame.path_pairs[0x18].secondary, &game->subgame.path_pairs[0x18])
+0040df3d        mirror_path(&game->subgame.path_pairs[0x18].secondary, &game->subgame.path_pairs[0x18])
 0040df47        game->subgame.path_pairs[0x18].secondary.bod.position.z = 0f
 0040df4d        game->subgame.path_pairs[0x18].secondary.bod.position.y = 0f
 0040df53        game->subgame.path_pairs[0x18].secondary.bod.position.x = 0
@@ -1175,7 +1175,7 @@
 0040dff7        game->subgame.path_pairs[0x1c].primary.bod.position.y = 0f
 0040dffd        game->subgame.path_pairs[0x1c].primary.bod.position.x = 0
 0040e00f        set_bod_object(&game->subgame.path_pairs[0x1c].secondary.bod, add_object_to_list(&g_object_list))
-0040e01b        mirror_path_template_pair_x(&game->subgame.path_pairs[0x1c].secondary, &game->subgame.path_pairs[0x1c])
+0040e01b        mirror_path(&game->subgame.path_pairs[0x1c].secondary, &game->subgame.path_pairs[0x1c])
 0040e028        game->subgame.path_pairs[0x1c].secondary.bod.position.z = 0f
 0040e02e        game->subgame.path_pairs[0x1c].secondary.bod.position.y = 0f
 0040e034        game->subgame.path_pairs[0x1c].secondary.bod.position.x = 0
@@ -1193,7 +1193,7 @@
 0040e0af        game->subgame.path_pairs[0xf].primary.bod.position.y = 0f
 0040e0b5        game->subgame.path_pairs[0xf].primary.bod.position.x = 0
 0040e0c7        set_bod_object(&game->subgame.path_pairs[0xf].secondary.bod, add_object_to_list(&g_object_list))
-0040e0d3        mirror_path_template_pair_x(&game->subgame.path_pairs[0xf].secondary, &game->subgame.path_pairs[0xf])
+0040e0d3        mirror_path(&game->subgame.path_pairs[0xf].secondary, &game->subgame.path_pairs[0xf])
 0040e0e0        game->subgame.path_pairs[0xf].secondary.bod.position.z = 0f
 0040e0e6        game->subgame.path_pairs[0xf].secondary.bod.position.y = 0f
 0040e0ec        game->subgame.path_pairs[0xf].secondary.bod.position.x = 0
@@ -1211,7 +1211,7 @@
 0040e179        game->subgame.path_pairs[0x21].primary.bod.position.y = 0f
 0040e17f        game->subgame.path_pairs[0x21].primary.bod.position.x = 0
 0040e191        set_bod_object(&game->subgame.path_pairs[0x21].secondary.bod, add_object_to_list(&g_object_list))
-0040e19d        mirror_path_template_pair_x(&game->subgame.path_pairs[0x21].secondary, &game->subgame.path_pairs[0x21])
+0040e19d        mirror_path(&game->subgame.path_pairs[0x21].secondary, &game->subgame.path_pairs[0x21])
 0040e1aa        game->subgame.path_pairs[0x21].secondary.bod.position.z = 0f
 0040e1b0        game->subgame.path_pairs[0x21].secondary.bod.position.y = 0f
 0040e1b6        game->subgame.path_pairs[0x21].secondary.bod.position.x = 0
@@ -1229,7 +1229,7 @@
 0040e244        game->subgame.path_pairs[0x22].primary.bod.position.y = 0f
 0040e24a        game->subgame.path_pairs[0x22].primary.bod.position.x = 0
 0040e25c        set_bod_object(&game->subgame.path_pairs[0x22].secondary.bod, add_object_to_list(&g_object_list))
-0040e268        mirror_path_template_pair_x(&game->subgame.path_pairs[0x22].secondary, &game->subgame.path_pairs[0x22])
+0040e268        mirror_path(&game->subgame.path_pairs[0x22].secondary, &game->subgame.path_pairs[0x22])
 0040e275        game->subgame.path_pairs[0x22].secondary.bod.position.z = 0f
 0040e27b        game->subgame.path_pairs[0x22].secondary.bod.position.y = 0f
 0040e281        game->subgame.path_pairs[0x22].secondary.bod.position.x = 0
@@ -1247,7 +1247,7 @@
 0040e30f        game->subgame.path_pairs[0x23].primary.bod.position.y = 0f
 0040e315        game->subgame.path_pairs[0x23].primary.bod.position.x = 0
 0040e327        set_bod_object(&game->subgame.path_pairs[0x23].secondary.bod, add_object_to_list(&g_object_list))
-0040e333        mirror_path_template_pair_x(&game->subgame.path_pairs[0x23].secondary, &game->subgame.path_pairs[0x23])
+0040e333        mirror_path(&game->subgame.path_pairs[0x23].secondary, &game->subgame.path_pairs[0x23])
 0040e340        game->subgame.path_pairs[0x23].secondary.bod.position.z = 0f
 0040e346        game->subgame.path_pairs[0x23].secondary.bod.position.y = 0f
 0040e34c        game->subgame.path_pairs[0x23].secondary.bod.position.x = 0
@@ -1265,7 +1265,7 @@
 0040e3c9        game->subgame.path_pairs[0x1d].primary.bod.position.y = 0f
 0040e3cf        game->subgame.path_pairs[0x1d].primary.bod.position.x = 0
 0040e3e6        set_bod_object(&game->subgame.path_pairs[0x1d].secondary.bod, add_object_to_list(&g_object_list))
-0040e3f2        mirror_path_template_pair_x(&game->subgame.path_pairs[0x1d].secondary, &game->subgame.path_pairs[0x1d])
+0040e3f2        mirror_path(&game->subgame.path_pairs[0x1d].secondary, &game->subgame.path_pairs[0x1d])
 0040e3ff        game->subgame.path_pairs[0x1d].secondary.bod.position.z = 0f
 0040e405        game->subgame.path_pairs[0x1d].secondary.bod.position.y = 0f
 0040e40b        game->subgame.path_pairs[0x1d].secondary.bod.position.x = 0
@@ -1283,7 +1283,7 @@
 0040e486        game->subgame.path_pairs[0x2f].primary.bod.position.y = 0f
 0040e48c        game->subgame.path_pairs[0x2f].primary.bod.position.x = 0
 0040e49e        set_bod_object(&game->subgame.path_pairs[0x2f].secondary.bod, add_object_to_list(&g_object_list))
-0040e4aa        mirror_path_template_pair_x(&game->subgame.path_pairs[0x2f].secondary, &game->subgame.path_pairs[0x2f])
+0040e4aa        mirror_path(&game->subgame.path_pairs[0x2f].secondary, &game->subgame.path_pairs[0x2f])
 0040e4b7        game->subgame.path_pairs[0x2f].secondary.bod.position.z = 0f
 0040e4bd        game->subgame.path_pairs[0x2f].secondary.bod.position.y = 0f
 0040e4c3        game->subgame.path_pairs[0x2f].secondary.bod.position.x = 0
@@ -1301,7 +1301,7 @@
 0040e538        game->subgame.path_pairs[0x30].primary.bod.position.y = 0f
 0040e53e        game->subgame.path_pairs[0x30].primary.bod.position.x = 0
 0040e555        set_bod_object(&game->subgame.path_pairs[0x30].secondary.bod, add_object_to_list(&g_object_list))
-0040e561        mirror_path_template_pair_x(&game->subgame.path_pairs[0x30].secondary, &game->subgame.path_pairs[0x30])
+0040e561        mirror_path(&game->subgame.path_pairs[0x30].secondary, &game->subgame.path_pairs[0x30])
 0040e56e        game->subgame.path_pairs[0x30].secondary.bod.position.z = 0f
 0040e574        game->subgame.path_pairs[0x30].secondary.bod.position.y = 0f
 0040e57a        game->subgame.path_pairs[0x30].secondary.bod.position.x = 0
@@ -1319,7 +1319,7 @@
 0040e5f5        game->subgame.path_pairs[0x31].primary.bod.position.y = 0f
 0040e5fb        game->subgame.path_pairs[0x31].primary.bod.position.x = 0
 0040e60d        set_bod_object(&game->subgame.path_pairs[0x31].secondary.bod, add_object_to_list(&g_object_list))
-0040e619        mirror_path_template_pair_x(&game->subgame.path_pairs[0x31].secondary, &game->subgame.path_pairs[0x31])
+0040e619        mirror_path(&game->subgame.path_pairs[0x31].secondary, &game->subgame.path_pairs[0x31])
 0040e62a        game->subgame.path_pairs[0x31].secondary.bod.position.z = 0f
 0040e630        game->subgame.path_pairs[0x31].secondary.bod.position.y = 0f
 0040e636        game->subgame.path_pairs[0x31].secondary.bod.position.x = 0
@@ -1337,7 +1337,7 @@
 0040e6b4        game->subgame.path_pairs[0x32].primary.bod.position.y = 0f
 0040e6ba        game->subgame.path_pairs[0x32].primary.bod.position.x = 0
 0040e6cc        set_bod_object(&game->subgame.path_pairs[0x32].secondary.bod, add_object_to_list(&g_object_list))
-0040e6d8        mirror_path_template_pair_x(&game->subgame.path_pairs[0x32].secondary, &game->subgame.path_pairs[0x32])
+0040e6d8        mirror_path(&game->subgame.path_pairs[0x32].secondary, &game->subgame.path_pairs[0x32])
 0040e6e9        game->subgame.path_pairs[0x32].secondary.bod.position.z = 0f
 0040e6ef        game->subgame.path_pairs[0x32].secondary.bod.position.y = 0f
 0040e6f5        game->subgame.path_pairs[0x32].secondary.bod.position.x = 0
@@ -1357,7 +1357,7 @@
 0040e7a1        game->subgame.path_pairs[0x33].primary.bod.position.y = 0f
 0040e7a7        game->subgame.path_pairs[0x33].primary.bod.position.x = 0
 0040e7b9        set_bod_object(&game->subgame.path_pairs[0x33].secondary.bod, add_object_to_list(&g_object_list))
-0040e7c5        mirror_path_template_pair_x(&game->subgame.path_pairs[0x33].secondary, &game->subgame.path_pairs[0x33])
+0040e7c5        mirror_path(&game->subgame.path_pairs[0x33].secondary, &game->subgame.path_pairs[0x33])
 0040e7d2        game->subgame.path_pairs[0x33].secondary.bod.position.z = 0f
 0040e7d8        game->subgame.path_pairs[0x33].secondary.bod.position.y = 0f
 0040e7de        game->subgame.path_pairs[0x33].secondary.bod.position.x = 0
@@ -1382,7 +1382,7 @@
 0040e890        game->subgame.path_pairs[0x34].primary.bod.position.y = 0f
 0040e896        game->subgame.path_pairs[0x34].primary.bod.position.x = 0
 0040e8a8        set_bod_object(&game->subgame.path_pairs[0x34].secondary.bod, add_object_to_list(&g_object_list))
-0040e8b4        mirror_path_template_pair_x(&game->subgame.path_pairs[0x34].secondary, &game->subgame.path_pairs[0x34])
+0040e8b4        mirror_path(&game->subgame.path_pairs[0x34].secondary, &game->subgame.path_pairs[0x34])
 0040e8c1        game->subgame.path_pairs[0x34].secondary.bod.position.z = 0f
 0040e8c7        game->subgame.path_pairs[0x34].secondary.bod.position.y = 0f
 0040e8cd        game->subgame.path_pairs[0x34].secondary.bod.position.x = 0
@@ -1406,7 +1406,7 @@
 0040e97f        game->subgame.path_pairs[0x35].primary.bod.position.y = 0f
 0040e985        game->subgame.path_pairs[0x35].primary.bod.position.x = 0
 0040e997        set_bod_object(&game->subgame.path_pairs[0x35].secondary.bod, add_object_to_list(&g_object_list))
-0040e9a3        mirror_path_template_pair_x(&game->subgame.path_pairs[0x35].secondary, &game->subgame.path_pairs[0x35])
+0040e9a3        mirror_path(&game->subgame.path_pairs[0x35].secondary, &game->subgame.path_pairs[0x35])
 0040e9a9        game->subgame.path_pairs[0x35].secondary.bod.position.z = 0f
 0040e9af        game->subgame.path_pairs[0x35].secondary.bod.position.y = 0f
 0040e9b5        game->subgame.path_pairs[0x35].secondary.bod.position.x = 0
@@ -1430,7 +1430,7 @@
 0040ea6e        game->subgame.path_pairs[0x39].primary.bod.position.y = 0f
 0040ea74        game->subgame.path_pairs[0x39].primary.bod.position.x = 0
 0040ea86        set_bod_object(&game->subgame.path_pairs[0x39].secondary.bod, add_object_to_list(&g_object_list))
-0040ea92        mirror_path_template_pair_x(&game->subgame.path_pairs[0x39].secondary, &game->subgame.path_pairs[0x39])
+0040ea92        mirror_path(&game->subgame.path_pairs[0x39].secondary, &game->subgame.path_pairs[0x39])
 0040ea9f        game->subgame.path_pairs[0x39].secondary.bod.position.z = 0f
 0040eaa5        game->subgame.path_pairs[0x39].secondary.bod.position.y = 0f
 0040eaab        game->subgame.path_pairs[0x39].secondary.bod.position.x = 0
@@ -1452,7 +1452,7 @@
 0040eb5d        game->subgame.path_pairs[0x36].primary.bod.position.y = 0f
 0040eb63        game->subgame.path_pairs[0x36].primary.bod.position.x = 0
 0040eb75        set_bod_object(&game->subgame.path_pairs[0x36].secondary.bod, add_object_to_list(&g_object_list))
-0040eb81        mirror_path_template_pair_x(&game->subgame.path_pairs[0x36].secondary, &game->subgame.path_pairs[0x36])
+0040eb81        mirror_path(&game->subgame.path_pairs[0x36].secondary, &game->subgame.path_pairs[0x36])
 0040eb8e        game->subgame.path_pairs[0x36].secondary.bod.position.z = 0f
 0040eb94        game->subgame.path_pairs[0x36].secondary.bod.position.y = 0f
 0040eb9a        game->subgame.path_pairs[0x36].secondary.bod.position.x = 0
@@ -1474,7 +1474,7 @@
 0040ec4c        game->subgame.path_pairs[0x37].primary.bod.position.y = 0f
 0040ec52        game->subgame.path_pairs[0x37].primary.bod.position.x = 0
 0040ec64        set_bod_object(&game->subgame.path_pairs[0x37].secondary.bod, add_object_to_list(&g_object_list))
-0040ec70        mirror_path_template_pair_x(&game->subgame.path_pairs[0x37].secondary, &game->subgame.path_pairs[0x37])
+0040ec70        mirror_path(&game->subgame.path_pairs[0x37].secondary, &game->subgame.path_pairs[0x37])
 0040ec7d        game->subgame.path_pairs[0x37].secondary.bod.position.z = 0f
 0040ec83        game->subgame.path_pairs[0x37].secondary.bod.position.y = 0f
 0040ec89        game->subgame.path_pairs[0x37].secondary.bod.position.x = 0
@@ -1496,7 +1496,7 @@
 0040ed3b        game->subgame.path_pairs[0x38].primary.bod.position.y = 0f
 0040ed41        game->subgame.path_pairs[0x38].primary.bod.position.x = 0
 0040ed53        set_bod_object(&game->subgame.path_pairs[0x38].secondary.bod, add_object_to_list(&g_object_list))
-0040ed5f        mirror_path_template_pair_x(&game->subgame.path_pairs[0x38].secondary, &game->subgame.path_pairs[0x38])
+0040ed5f        mirror_path(&game->subgame.path_pairs[0x38].secondary, &game->subgame.path_pairs[0x38])
 0040ed6c        game->subgame.path_pairs[0x38].secondary.bod.position.z = 0f
 0040ed72        game->subgame.path_pairs[0x38].secondary.bod.position.y = 0f
 0040ed78        game->subgame.path_pairs[0x38].secondary.bod.position.x = 0
@@ -1518,7 +1518,7 @@
 0040ee2a        game->subgame.path_pairs[0x3a].primary.bod.position.y = 0f
 0040ee30        game->subgame.path_pairs[0x3a].primary.bod.position.x = 0
 0040ee42        set_bod_object(&game->subgame.path_pairs[0x3a].secondary.bod, add_object_to_list(&g_object_list))
-0040ee4e        mirror_path_template_pair_x(&game->subgame.path_pairs[0x3a].secondary, &game->subgame.path_pairs[0x3a])
+0040ee4e        mirror_path(&game->subgame.path_pairs[0x3a].secondary, &game->subgame.path_pairs[0x3a])
 0040ee5b        game->subgame.path_pairs[0x3a].secondary.bod.position.z = 0f
 0040ee61        game->subgame.path_pairs[0x3a].secondary.bod.position.y = 0f
 0040ee67        game->subgame.path_pairs[0x3a].secondary.bod.position.x = 0
@@ -1540,7 +1540,7 @@
 0040ef19        game->subgame.path_pairs[0x3e].primary.bod.position.y = 0f
 0040ef1f        game->subgame.path_pairs[0x3e].primary.bod.position.x = 0
 0040ef31        set_bod_object(&game->subgame.path_pairs[0x3e].secondary.bod, add_object_to_list(&g_object_list))
-0040ef3d        mirror_path_template_pair_x(&game->subgame.path_pairs[0x3e].secondary, &game->subgame.path_pairs[0x3e])
+0040ef3d        mirror_path(&game->subgame.path_pairs[0x3e].secondary, &game->subgame.path_pairs[0x3e])
 0040ef4a        game->subgame.path_pairs[0x3e].secondary.bod.position.z = 0f
 0040ef50        game->subgame.path_pairs[0x3e].secondary.bod.position.y = 0f
 0040ef56        game->subgame.path_pairs[0x3e].secondary.bod.position.x = 0
@@ -1562,7 +1562,7 @@
 0040f008        game->subgame.path_pairs[0x3b].primary.bod.position.y = 0f
 0040f00e        game->subgame.path_pairs[0x3b].primary.bod.position.x = 0
 0040f020        set_bod_object(&game->subgame.path_pairs[0x3b].secondary.bod, add_object_to_list(&g_object_list))
-0040f02c        mirror_path_template_pair_x(&game->subgame.path_pairs[0x3b].secondary, &game->subgame.path_pairs[0x3b])
+0040f02c        mirror_path(&game->subgame.path_pairs[0x3b].secondary, &game->subgame.path_pairs[0x3b])
 0040f039        game->subgame.path_pairs[0x3b].secondary.bod.position.z = 0f
 0040f03f        game->subgame.path_pairs[0x3b].secondary.bod.position.y = 0f
 0040f045        game->subgame.path_pairs[0x3b].secondary.bod.position.x = 0
@@ -1584,7 +1584,7 @@
 0040f0f7        game->subgame.path_pairs[0x3d].primary.bod.position.y = 0f
 0040f0fd        game->subgame.path_pairs[0x3d].primary.bod.position.x = 0
 0040f10f        set_bod_object(&game->subgame.path_pairs[0x3d].secondary.bod, add_object_to_list(&g_object_list))
-0040f11b        mirror_path_template_pair_x(&game->subgame.path_pairs[0x3d].secondary, &game->subgame.path_pairs[0x3d])
+0040f11b        mirror_path(&game->subgame.path_pairs[0x3d].secondary, &game->subgame.path_pairs[0x3d])
 0040f128        game->subgame.path_pairs[0x3d].secondary.bod.position.z = 0f
 0040f12e        game->subgame.path_pairs[0x3d].secondary.bod.position.y = 0f
 0040f134        game->subgame.path_pairs[0x3d].secondary.bod.position.x = 0
@@ -1604,7 +1604,7 @@
 0040f1d6        initialize_loopout_path_template_pair(&game->subgame.path_pairs[0x3c], 3f, 3, 1, "Objects/World00/Slide0.tga", "Objects/World00/Back.tga", "Objects/Path/VeryDark.tga")
 0040f1e1        zero_vector3(&game->subgame.path_pairs[0x3c].primary.bod.position)
 0040f1f7        set_bod_object(&game->subgame.path_pairs[0x3c].secondary.bod, add_object_to_list(&g_object_list))
-0040f203        mirror_path_template_pair_x(&game->subgame.path_pairs[0x3c].secondary, &game->subgame.path_pairs[0x3c])
+0040f203        mirror_path(&game->subgame.path_pairs[0x3c].secondary, &game->subgame.path_pairs[0x3c])
 0040f20e        zero_vector3(&game->subgame.path_pairs[0x3c].secondary.bod.position)
 0040f21b        build_track_fringe_mesh(&game->subgame.path_pairs[0x3c], "Objects/Universe/Fringe.tga", 0f)
 0040f226        zero_vector3(&game->subgame.path_pairs[0x3c].primary.fringe_mesh_bod.position)

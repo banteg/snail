@@ -12,7 +12,7 @@
 0042221c        self->width_or_scale = 1f
 00422227        self->segment_count = width_cells_1 + 4
 0042222e        self->segment_count_f = fconvert.s(float.t(width_cells_1 + 4))
-00422231        allocate_path_template_samples(self)
+00422231        get_path_nodes(self)
 00422236        self->has_entry_mesh_transition = 0
 0042223d        width_cells_ = 0
 00422241        void* i = nullptr

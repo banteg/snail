@@ -98,7 +98,7 @@ int32_t __thiscall initialize_snake_path_template_pair(
   self->width_or_scale = 1.0;
   self->segment_count = 27;
   self->segment_count_f = 27.0;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   self->special_runtime_flag_9c = 0;
   texture_aa = nullptr;
   v6 = 0;

@@ -1,16 +1,16 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 2,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 2,
+  "ida_exported": 2,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "binja_analysis_refreshed": false,
   "ida_refreshed": true,
@@ -18,8 +18,12 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "build_sprite_tail",
-      "address": "0x44e410"
+      "name": "get_path_nodes",
+      "address": "0x41b0a0"
+    },
+    {
+      "name": "mirror_path",
+      "address": "0x421dc0"
     }
   ],
   "health_check_count": 1059,

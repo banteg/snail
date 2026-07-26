@@ -16,7 +16,7 @@
 0042802e        long double x87_r7_3 = float.t(eax_1)
 00428032        float var_50 = fconvert.s(x87_r7_3)
 0042803c        turns = fconvert.s(x87_r7_3 * fconvert.t(0.159154937f))
-00428040        allocate_path_template_samples(self)
+00428040        get_path_nodes(self)
 00428045        self->has_entry_mesh_transition = 0
 0042804b        width_cells_ = 0
 0042804f        void* i = nullptr

@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: mirror_path_template_pair_x @ 0x421dc0 */
+/* function: mirror_path @ 0x421dc0 */
 
 00421dc5        struct Path* source_1 = source
 00421dcd        self->is_mirrored_x = 1
@@ -9,7 +9,7 @@
 00421dda        self->segment_count_f = source_1->segment_count_f
 00421de0        self->width_or_scale = source_1->width_or_scale
 00421de8        self->width_cells = source_1->width_cells
-00421deb        allocate_path_template_samples(self)
+00421deb        get_path_nodes(self)
 00421df6        struct Object* object = self->bod.object
 00421df9        self->has_entry_mesh_transition = source_1->has_entry_mesh_transition
 00421e05        object->flags = source_1->bod.object->flags

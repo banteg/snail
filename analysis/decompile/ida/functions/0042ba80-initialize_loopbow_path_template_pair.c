@@ -120,7 +120,7 @@ void __thiscall initialize_loopbow_path_template_pair(
   v9 = (double)v73;
   v59 = v9;
   arg2 = v9 * 0.15915494;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   self->has_entry_mesh_transition = 1;
   v49 = 0;
   v10 = 0;

@@ -95,7 +95,7 @@ int32_t __thiscall initialize_twister_path_template_pair(
   self->width_or_scale = 1.0;
   self->segment_count = 34;
   self->segment_count_f = 34.0;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   width_cells = (double)(int)self->width_cells;
   primary_samples = self->primary_samples;
   self->special_runtime_flag_9c = 0;

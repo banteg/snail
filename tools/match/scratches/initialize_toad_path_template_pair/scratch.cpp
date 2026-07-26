@@ -160,7 +160,7 @@ void Path::initialize_toad_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = lead_count + tail_count + 26;
     segment_count_f = (float)segment_count;
-    allocate_path_template_samples();
+    get_path_nodes();
 
     has_entry_mesh_transition = 0;
     for (int i = 0; i < lead_count; ++i) {

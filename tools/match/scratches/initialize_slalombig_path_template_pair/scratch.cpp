@@ -202,7 +202,7 @@ void Path::initialize_slalombig_path_template_pair(
     int total_segments = lead_out_start + 4;
     segment_count = total_segments;
     segment_count_f = (float)total_segments;
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 0;
 
     int i;

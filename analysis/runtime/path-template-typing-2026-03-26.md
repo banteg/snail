@@ -203,7 +203,7 @@ Applied in the live BN database:
 - `PathTemplateSample`
 - `PathTemplateStripMesh`
 - `ObjectFaceQuad`
-- `allocate_path_template_samples(PathTemplate* self)`
+- `get_path_nodes(PathTemplate* self)`
 - `calc_path_length_z(Path* self)` (`cRPath::CalcLengthZ()`)
 - `request_object_vertices(PathTemplateStripMesh* mesh, ...)`
 - `request_object_vertex_colours(PathTemplateStripMesh* mesh)`
@@ -215,7 +215,7 @@ Applied in the live BN database:
 - `initialize_halfpipe_path_template_pair(PathTemplate* self, ...)`
 - `initialize_hump_path_template_pair(PathTemplate* self, ...)`
 - most of the remaining `initialize_*_path_template_pair` family now also uses `PathTemplate* self`
-- `mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source)`
+- `mirror_path(PathTemplate* self, PathTemplate* source)`
 - `get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4)`
 - `rotate_matrix_world_z(TransformMatrix* transform, float angle)` as a typed `__thiscall` helper
 - `normalize_vector_from_source(Vec3* out, Vec3* src)` as the copy-and-normalize helper under the matrix family
@@ -228,7 +228,7 @@ Applied in the live BN database:
 - `set_color_grayscale(tColour* color, float intensity)`
 - `store_color4f(tColour* color, float r, float g, float b, float a)`
 - `pack_color_rgba_u8(tColourSmall* out, tColour* color)`
-- `allocate_path_template_samples(PathTemplate* self)` now reads back as a pure allocator for the primary and secondary sample arrays, which matches how the constructor family actually uses it
+- `get_path_nodes(PathTemplate* self)` now reads back as a pure allocator for the primary and secondary sample arrays, which matches how the constructor family actually uses it
 - `request_object_vertices(...)` and `request_object_vertex_colours(...)` now stay `void`, which matches all current callers and avoids pretending their tail-end allocation helpers are meaningful values
 
 The same trusted slice now has a checked-in narrow IDA mirror as well:
@@ -264,8 +264,8 @@ Earlier notes that called out `initialize_sweep_path_template_pair` and `initial
 
 The two shared lifecycle helpers are also now named more literally:
 
-- `allocate_path_template_samples` allocates the paired sample arrays and stores them on the template object
-- `calc_path_length_z` is the common post-build pass used by the constructor family and by `mirror_path_template_pair_x`
+- `get_path_nodes` allocates the paired sample arrays and stores them on the template object
+- `calc_path_length_z` is the common post-build pass used by the constructor family and by `mirror_path`
 
 The remaining rough edges in this family are presentation-level, not structural:
 

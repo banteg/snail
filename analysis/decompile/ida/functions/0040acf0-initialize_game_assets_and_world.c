@@ -936,7 +936,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[0].primary.bod.position.x = 0.0;
   v99 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[0].secondary.bod, v99);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[0].secondary, &game->subgame.path_pairs[0].primary);
+  mirror_path(&game->subgame.path_pairs[0].secondary, &game->subgame.path_pairs[0].primary);
   game->subgame.path_pairs[0].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[0].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[0].secondary.bod.position.x = 0.0;
@@ -963,7 +963,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[1].primary.bod.position.x = 0.0;
   v101 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[1].secondary.bod, v101);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[1].secondary, &game->subgame.path_pairs[1].primary);
+  mirror_path(&game->subgame.path_pairs[1].secondary, &game->subgame.path_pairs[1].primary);
   game->subgame.path_pairs[1].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[1].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[1].secondary.bod.position.x = 0.0;
@@ -990,7 +990,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[2].primary.bod.position.x = 0.0;
   v103 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[2].secondary.bod, v103);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[2].secondary, &game->subgame.path_pairs[2].primary);
+  mirror_path(&game->subgame.path_pairs[2].secondary, &game->subgame.path_pairs[2].primary);
   game->subgame.path_pairs[2].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[2].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[2].secondary.bod.position.x = 0.0;
@@ -1017,7 +1017,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[6].primary.bod.position.x = 0.0;
   v105 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[6].secondary.bod, v105);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[6].secondary, &game->subgame.path_pairs[6].primary);
+  mirror_path(&game->subgame.path_pairs[6].secondary, &game->subgame.path_pairs[6].primary);
   game->subgame.path_pairs[6].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[6].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[6].secondary.bod.position.x = 0.0;
@@ -1044,7 +1044,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[3].primary.bod.position.x = 0.0;
   v107 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[3].secondary.bod, v107);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[3].secondary, &game->subgame.path_pairs[3].primary);
+  mirror_path(&game->subgame.path_pairs[3].secondary, &game->subgame.path_pairs[3].primary);
   game->subgame.path_pairs[3].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[3].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[3].secondary.bod.position.x = 0.0;
@@ -1071,7 +1071,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[4].primary.bod.position.x = 0.0;
   v109 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[4].secondary.bod, v109);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[4].secondary, &game->subgame.path_pairs[4].primary);
+  mirror_path(&game->subgame.path_pairs[4].secondary, &game->subgame.path_pairs[4].primary);
   game->subgame.path_pairs[4].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[4].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[4].secondary.bod.position.x = 0.0;
@@ -1098,7 +1098,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[5].primary.bod.position.x = 0.0;
   v111 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[5].secondary.bod, v111);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[5].secondary, &game->subgame.path_pairs[5].primary);
+  mirror_path(&game->subgame.path_pairs[5].secondary, &game->subgame.path_pairs[5].primary);
   game->subgame.path_pairs[5].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[5].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[5].secondary.bod.position.x = 0.0;
@@ -1125,7 +1125,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[7].primary.bod.position.x = 0.0;
   v113 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[7].secondary.bod, v113);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[7].secondary, &game->subgame.path_pairs[7].primary);
+  mirror_path(&game->subgame.path_pairs[7].secondary, &game->subgame.path_pairs[7].primary);
   game->subgame.path_pairs[7].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[7].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[7].secondary.bod.position.x = 0.0;
@@ -1152,7 +1152,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[37].primary.bod.position.x = 0.0;
   v115 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[37].secondary.bod, v115);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[37].secondary, &game->subgame.path_pairs[37].primary);
+  mirror_path(&game->subgame.path_pairs[37].secondary, &game->subgame.path_pairs[37].primary);
   game->subgame.path_pairs[37].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[37].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[37].secondary.bod.position.x = 0.0;
@@ -1179,7 +1179,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[38].primary.bod.position.x = 0.0;
   v117 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[38].secondary.bod, v117);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[38].secondary, &game->subgame.path_pairs[38].primary);
+  mirror_path(&game->subgame.path_pairs[38].secondary, &game->subgame.path_pairs[38].primary);
   game->subgame.path_pairs[38].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[38].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[38].secondary.bod.position.x = 0.0;
@@ -1206,7 +1206,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[43].primary.bod.position.x = 0.0;
   v119 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[43].secondary.bod, v119);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[43].secondary, &game->subgame.path_pairs[43].primary);
+  mirror_path(&game->subgame.path_pairs[43].secondary, &game->subgame.path_pairs[43].primary);
   game->subgame.path_pairs[43].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[43].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[43].secondary.bod.position.x = 0.0;
@@ -1233,7 +1233,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[44].primary.bod.position.x = 0.0;
   v121 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[44].secondary.bod, v121);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[44].secondary, &game->subgame.path_pairs[44].primary);
+  mirror_path(&game->subgame.path_pairs[44].secondary, &game->subgame.path_pairs[44].primary);
   game->subgame.path_pairs[44].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[44].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[44].secondary.bod.position.x = 0.0;
@@ -1260,7 +1260,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[45].primary.bod.position.x = 0.0;
   v123 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[45].secondary.bod, v123);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[45].secondary, &game->subgame.path_pairs[45].primary);
+  mirror_path(&game->subgame.path_pairs[45].secondary, &game->subgame.path_pairs[45].primary);
   game->subgame.path_pairs[45].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[45].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[45].secondary.bod.position.x = 0.0;
@@ -1287,7 +1287,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[46].primary.bod.position.x = 0.0;
   v125 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[46].secondary.bod, v125);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[46].secondary, &game->subgame.path_pairs[46].primary);
+  mirror_path(&game->subgame.path_pairs[46].secondary, &game->subgame.path_pairs[46].primary);
   game->subgame.path_pairs[46].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[46].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[46].secondary.bod.position.x = 0.0;
@@ -1314,7 +1314,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[39].primary.bod.position.x = 0.0;
   v127 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[39].secondary.bod, v127);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[39].secondary, &game->subgame.path_pairs[39].primary);
+  mirror_path(&game->subgame.path_pairs[39].secondary, &game->subgame.path_pairs[39].primary);
   game->subgame.path_pairs[39].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[39].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[39].secondary.bod.position.x = 0.0;
@@ -1341,7 +1341,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[41].primary.bod.position.x = 0.0;
   v129 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[41].secondary.bod, v129);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[41].secondary, &game->subgame.path_pairs[41].primary);
+  mirror_path(&game->subgame.path_pairs[41].secondary, &game->subgame.path_pairs[41].primary);
   game->subgame.path_pairs[41].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[41].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[41].secondary.bod.position.x = 0.0;
@@ -1368,7 +1368,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[42].primary.bod.position.x = 0.0;
   v131 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[42].secondary.bod, v131);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[42].secondary, &game->subgame.path_pairs[42].primary);
+  mirror_path(&game->subgame.path_pairs[42].secondary, &game->subgame.path_pairs[42].primary);
   game->subgame.path_pairs[42].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[42].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[42].secondary.bod.position.x = 0.0;
@@ -1395,7 +1395,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[40].primary.bod.position.x = 0.0;
   v133 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[40].secondary.bod, v133);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[40].secondary, &game->subgame.path_pairs[40].primary);
+  mirror_path(&game->subgame.path_pairs[40].secondary, &game->subgame.path_pairs[40].primary);
   game->subgame.path_pairs[40].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[40].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[40].secondary.bod.position.x = 0.0;
@@ -1492,7 +1492,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[25].primary.bod.position.x = 0.0;
   v139 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[25].secondary.bod, v139);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[25].secondary, &game->subgame.path_pairs[25].primary);
+  mirror_path(&game->subgame.path_pairs[25].secondary, &game->subgame.path_pairs[25].primary);
   game->subgame.path_pairs[25].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[25].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[25].secondary.bod.position.x = 0.0;
@@ -1519,7 +1519,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[27].primary.bod.position.x = 0.0;
   v141 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[27].secondary.bod, v141);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[27].secondary, &game->subgame.path_pairs[27].primary);
+  mirror_path(&game->subgame.path_pairs[27].secondary, &game->subgame.path_pairs[27].primary);
   game->subgame.path_pairs[27].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[27].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[27].secondary.bod.position.x = 0.0;
@@ -1546,7 +1546,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[26].primary.bod.position.x = 0.0;
   v143 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[26].secondary.bod, v143);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[26].secondary, &game->subgame.path_pairs[26].primary);
+  mirror_path(&game->subgame.path_pairs[26].secondary, &game->subgame.path_pairs[26].primary);
   game->subgame.path_pairs[26].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[26].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[26].secondary.bod.position.x = 0.0;
@@ -1574,7 +1574,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[16].primary.bod.position.x = 0.0;
   v145 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[16].secondary.bod, v145);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[16].secondary, &game->subgame.path_pairs[16].primary);
+  mirror_path(&game->subgame.path_pairs[16].secondary, &game->subgame.path_pairs[16].primary);
   game->subgame.path_pairs[16].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[16].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[16].secondary.bod.position.x = 0.0;
@@ -1602,7 +1602,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[17].primary.bod.position.x = 0.0;
   v147 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[17].secondary.bod, v147);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[17].secondary, &game->subgame.path_pairs[17].primary);
+  mirror_path(&game->subgame.path_pairs[17].secondary, &game->subgame.path_pairs[17].primary);
   game->subgame.path_pairs[17].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[17].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[17].secondary.bod.position.x = 0.0;
@@ -1630,7 +1630,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[18].primary.bod.position.x = 0.0;
   v149 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[18].secondary.bod, v149);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[18].secondary, &game->subgame.path_pairs[18].primary);
+  mirror_path(&game->subgame.path_pairs[18].secondary, &game->subgame.path_pairs[18].primary);
   game->subgame.path_pairs[18].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[18].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[18].secondary.bod.position.x = 0.0;
@@ -1658,7 +1658,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[19].primary.bod.position.x = 0.0;
   v151 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[19].secondary.bod, v151);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[19].secondary, &game->subgame.path_pairs[19].primary);
+  mirror_path(&game->subgame.path_pairs[19].secondary, &game->subgame.path_pairs[19].primary);
   game->subgame.path_pairs[19].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[19].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[19].secondary.bod.position.x = 0.0;
@@ -1686,7 +1686,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[8].primary.bod.position.x = 0.0;
   v153 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[8].secondary.bod, v153);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[8].secondary, &game->subgame.path_pairs[8].primary);
+  mirror_path(&game->subgame.path_pairs[8].secondary, &game->subgame.path_pairs[8].primary);
   game->subgame.path_pairs[8].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[8].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[8].secondary.bod.position.x = 0.0;
@@ -1714,7 +1714,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[10].primary.bod.position.x = 0.0;
   v155 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[10].secondary.bod, v155);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[10].secondary, &game->subgame.path_pairs[10].primary);
+  mirror_path(&game->subgame.path_pairs[10].secondary, &game->subgame.path_pairs[10].primary);
   game->subgame.path_pairs[10].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[10].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[10].secondary.bod.position.x = 0.0;
@@ -1742,7 +1742,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[9].primary.bod.position.x = 0.0;
   v157 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[9].secondary.bod, v157);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[9].secondary, &game->subgame.path_pairs[9].primary);
+  mirror_path(&game->subgame.path_pairs[9].secondary, &game->subgame.path_pairs[9].primary);
   game->subgame.path_pairs[9].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[9].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[9].secondary.bod.position.x = 0.0;
@@ -1770,7 +1770,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[14].primary.bod.position.x = 0.0;
   v159 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[14].secondary.bod, v159);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[14].secondary, &game->subgame.path_pairs[14].primary);
+  mirror_path(&game->subgame.path_pairs[14].secondary, &game->subgame.path_pairs[14].primary);
   game->subgame.path_pairs[14].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[14].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[14].secondary.bod.position.x = 0.0;
@@ -1798,7 +1798,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[11].primary.bod.position.x = 0.0;
   v161 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[11].secondary.bod, v161);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[11].secondary, &game->subgame.path_pairs[11].primary);
+  mirror_path(&game->subgame.path_pairs[11].secondary, &game->subgame.path_pairs[11].primary);
   game->subgame.path_pairs[11].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[11].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[11].secondary.bod.position.x = 0.0;
@@ -1826,7 +1826,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[13].primary.bod.position.x = 0.0;
   v163 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[13].secondary.bod, v163);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[13].secondary, &game->subgame.path_pairs[13].primary);
+  mirror_path(&game->subgame.path_pairs[13].secondary, &game->subgame.path_pairs[13].primary);
   game->subgame.path_pairs[13].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[13].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[13].secondary.bod.position.x = 0.0;
@@ -1854,7 +1854,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[12].primary.bod.position.x = 0.0;
   v165 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[12].secondary.bod, v165);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[12].secondary, &game->subgame.path_pairs[12].primary);
+  mirror_path(&game->subgame.path_pairs[12].secondary, &game->subgame.path_pairs[12].primary);
   game->subgame.path_pairs[12].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[12].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[12].secondary.bod.position.x = 0.0;
@@ -1881,7 +1881,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[20].primary.bod.position.x = 0.0;
   v167 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[20].secondary.bod, v167);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[20].secondary, &game->subgame.path_pairs[20].primary);
+  mirror_path(&game->subgame.path_pairs[20].secondary, &game->subgame.path_pairs[20].primary);
   game->subgame.path_pairs[20].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[20].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[20].secondary.bod.position.x = 0.0;
@@ -1908,7 +1908,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[21].primary.bod.position.x = 0.0;
   v169 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[21].secondary.bod, v169);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[21].secondary, &game->subgame.path_pairs[21].primary);
+  mirror_path(&game->subgame.path_pairs[21].secondary, &game->subgame.path_pairs[21].primary);
   game->subgame.path_pairs[21].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[21].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[21].secondary.bod.position.x = 0.0;
@@ -1935,7 +1935,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[22].primary.bod.position.x = 0.0;
   v171 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[22].secondary.bod, v171);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[22].secondary, &game->subgame.path_pairs[22].primary);
+  mirror_path(&game->subgame.path_pairs[22].secondary, &game->subgame.path_pairs[22].primary);
   game->subgame.path_pairs[22].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[22].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[22].secondary.bod.position.x = 0.0;
@@ -1962,7 +1962,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[23].primary.bod.position.x = 0.0;
   v173 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[23].secondary.bod, v173);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[23].secondary, &game->subgame.path_pairs[23].primary);
+  mirror_path(&game->subgame.path_pairs[23].secondary, &game->subgame.path_pairs[23].primary);
   game->subgame.path_pairs[23].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[23].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[23].secondary.bod.position.x = 0.0;
@@ -1989,7 +1989,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[32].primary.bod.position.x = 0.0;
   v175 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[32].secondary.bod, v175);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[32].secondary, &game->subgame.path_pairs[32].primary);
+  mirror_path(&game->subgame.path_pairs[32].secondary, &game->subgame.path_pairs[32].primary);
   game->subgame.path_pairs[32].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[32].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[32].secondary.bod.position.x = 0.0;
@@ -2009,7 +2009,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[24].primary.bod.position.x = 0.0;
   v177 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[24].secondary.bod, v177);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[24].secondary, &game->subgame.path_pairs[24].primary);
+  mirror_path(&game->subgame.path_pairs[24].secondary, &game->subgame.path_pairs[24].primary);
   game->subgame.path_pairs[24].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[24].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[24].secondary.bod.position.x = 0.0;
@@ -2036,7 +2036,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[28].primary.bod.position.x = 0.0;
   v181 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[28].secondary.bod, v181);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[28].secondary, &game->subgame.path_pairs[28].primary);
+  mirror_path(&game->subgame.path_pairs[28].secondary, &game->subgame.path_pairs[28].primary);
   game->subgame.path_pairs[28].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[28].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[28].secondary.bod.position.x = 0.0;
@@ -2056,7 +2056,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[15].primary.bod.position.x = 0.0;
   v183 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[15].secondary.bod, v183);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[15].secondary, &game->subgame.path_pairs[15].primary);
+  mirror_path(&game->subgame.path_pairs[15].secondary, &game->subgame.path_pairs[15].primary);
   game->subgame.path_pairs[15].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[15].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[15].secondary.bod.position.x = 0.0;
@@ -2086,7 +2086,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[33].primary.bod.position.x = 0.0;
   v185 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[33].secondary.bod, v185);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[33].secondary, &game->subgame.path_pairs[33].primary);
+  mirror_path(&game->subgame.path_pairs[33].secondary, &game->subgame.path_pairs[33].primary);
   game->subgame.path_pairs[33].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[33].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[33].secondary.bod.position.x = 0.0;
@@ -2116,7 +2116,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[34].primary.bod.position.x = 0.0;
   v187 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[34].secondary.bod, v187);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[34].secondary, &game->subgame.path_pairs[34].primary);
+  mirror_path(&game->subgame.path_pairs[34].secondary, &game->subgame.path_pairs[34].primary);
   game->subgame.path_pairs[34].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[34].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[34].secondary.bod.position.x = 0.0;
@@ -2146,7 +2146,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[35].primary.bod.position.x = 0.0;
   v189 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[35].secondary.bod, v189);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[35].secondary, &game->subgame.path_pairs[35].primary);
+  mirror_path(&game->subgame.path_pairs[35].secondary, &game->subgame.path_pairs[35].primary);
   game->subgame.path_pairs[35].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[35].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[35].secondary.bod.position.x = 0.0;
@@ -2173,7 +2173,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[29].primary.bod.position.x = 0.0;
   v191 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[29].secondary.bod, v191);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[29].secondary, &game->subgame.path_pairs[29].primary);
+  mirror_path(&game->subgame.path_pairs[29].secondary, &game->subgame.path_pairs[29].primary);
   game->subgame.path_pairs[29].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[29].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[29].secondary.bod.position.x = 0.0;
@@ -2198,7 +2198,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[47].primary.bod.position.x = 0.0;
   v193 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[47].secondary.bod, v193);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[47].secondary, &game->subgame.path_pairs[47].primary);
+  mirror_path(&game->subgame.path_pairs[47].secondary, &game->subgame.path_pairs[47].primary);
   game->subgame.path_pairs[47].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[47].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[47].secondary.bod.position.x = 0.0;
@@ -2223,7 +2223,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[48].primary.bod.position.x = 0.0;
   v195 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[48].secondary.bod, v195);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[48].secondary, &game->subgame.path_pairs[48].primary);
+  mirror_path(&game->subgame.path_pairs[48].secondary, &game->subgame.path_pairs[48].primary);
   game->subgame.path_pairs[48].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[48].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[48].secondary.bod.position.x = 0.0;
@@ -2248,7 +2248,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[49].primary.bod.position.x = 0.0;
   v197 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[49].secondary.bod, v197);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[49].secondary, &game->subgame.path_pairs[49].primary);
+  mirror_path(&game->subgame.path_pairs[49].secondary, &game->subgame.path_pairs[49].primary);
   game->subgame.path_pairs[49].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[49].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[49].secondary.bod.position.x = 0.0;
@@ -2273,7 +2273,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[50].primary.bod.position.x = 0.0;
   v199 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[50].secondary.bod, v199);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[50].secondary, &game->subgame.path_pairs[50].primary);
+  mirror_path(&game->subgame.path_pairs[50].secondary, &game->subgame.path_pairs[50].primary);
   game->subgame.path_pairs[50].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[50].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[50].secondary.bod.position.x = 0.0;
@@ -2302,7 +2302,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[51].primary.bod.position.x = 0.0;
   v201 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[51].secondary.bod, v201);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[51].secondary, &game->subgame.path_pairs[51].primary);
+  mirror_path(&game->subgame.path_pairs[51].secondary, &game->subgame.path_pairs[51].primary);
   game->subgame.path_pairs[51].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[51].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[51].secondary.bod.position.x = 0.0;
@@ -2336,7 +2336,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[52].primary.bod.position.x = 0.0;
   v206 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[52].secondary.bod, v206);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[52].secondary, &game->subgame.path_pairs[52].primary);
+  mirror_path(&game->subgame.path_pairs[52].secondary, &game->subgame.path_pairs[52].primary);
   game->subgame.path_pairs[52].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[52].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[52].secondary.bod.position.x = 0.0;
@@ -2369,7 +2369,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[53].primary.bod.position.x = 0.0;
   v210 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[53].secondary.bod, v210);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[53].secondary, &game->subgame.path_pairs[53].primary);
+  mirror_path(&game->subgame.path_pairs[53].secondary, &game->subgame.path_pairs[53].primary);
   game->subgame.path_pairs[53].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[53].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[53].secondary.bod.position.x = 0.0;
@@ -2402,7 +2402,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[57].primary.bod.position.x = 0.0;
   v214 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[57].secondary.bod, v214);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[57].secondary, &game->subgame.path_pairs[57].primary);
+  mirror_path(&game->subgame.path_pairs[57].secondary, &game->subgame.path_pairs[57].primary);
   game->subgame.path_pairs[57].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[57].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[57].secondary.bod.position.x = 0.0;
@@ -2433,7 +2433,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[54].primary.bod.position.x = 0.0;
   v216 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[54].secondary.bod, v216);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[54].secondary, &game->subgame.path_pairs[54].primary);
+  mirror_path(&game->subgame.path_pairs[54].secondary, &game->subgame.path_pairs[54].primary);
   game->subgame.path_pairs[54].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[54].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[54].secondary.bod.position.x = 0.0;
@@ -2464,7 +2464,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[55].primary.bod.position.x = 0.0;
   v218 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[55].secondary.bod, v218);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[55].secondary, &game->subgame.path_pairs[55].primary);
+  mirror_path(&game->subgame.path_pairs[55].secondary, &game->subgame.path_pairs[55].primary);
   game->subgame.path_pairs[55].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[55].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[55].secondary.bod.position.x = 0.0;
@@ -2495,7 +2495,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[56].primary.bod.position.x = 0.0;
   v220 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[56].secondary.bod, v220);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[56].secondary, &game->subgame.path_pairs[56].primary);
+  mirror_path(&game->subgame.path_pairs[56].secondary, &game->subgame.path_pairs[56].primary);
   game->subgame.path_pairs[56].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[56].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[56].secondary.bod.position.x = 0.0;
@@ -2526,7 +2526,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[58].primary.bod.position.x = 0.0;
   v222 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[58].secondary.bod, v222);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[58].secondary, &game->subgame.path_pairs[58].primary);
+  mirror_path(&game->subgame.path_pairs[58].secondary, &game->subgame.path_pairs[58].primary);
   game->subgame.path_pairs[58].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[58].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[58].secondary.bod.position.x = 0.0;
@@ -2557,7 +2557,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[62].primary.bod.position.x = 0.0;
   v224 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[62].secondary.bod, v224);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[62].secondary, &game->subgame.path_pairs[62].primary);
+  mirror_path(&game->subgame.path_pairs[62].secondary, &game->subgame.path_pairs[62].primary);
   game->subgame.path_pairs[62].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[62].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[62].secondary.bod.position.x = 0.0;
@@ -2588,7 +2588,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[59].primary.bod.position.x = 0.0;
   v226 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[59].secondary.bod, v226);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[59].secondary, &game->subgame.path_pairs[59].primary);
+  mirror_path(&game->subgame.path_pairs[59].secondary, &game->subgame.path_pairs[59].primary);
   game->subgame.path_pairs[59].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[59].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[59].secondary.bod.position.x = 0.0;
@@ -2619,7 +2619,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[61].primary.bod.position.x = 0.0;
   v228 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[61].secondary.bod, v228);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[61].secondary, &game->subgame.path_pairs[61].primary);
+  mirror_path(&game->subgame.path_pairs[61].secondary, &game->subgame.path_pairs[61].primary);
   game->subgame.path_pairs[61].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[61].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[61].secondary.bod.position.x = 0.0;
@@ -2648,7 +2648,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   zero_vector3(&game->subgame.path_pairs[60].primary.bod.position.x);
   v230 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[60].secondary.bod, v230);
-  mirror_path_template_pair_x(&game->subgame.path_pairs[60].secondary, &game->subgame.path_pairs[60].primary);
+  mirror_path(&game->subgame.path_pairs[60].secondary, &game->subgame.path_pairs[60].primary);
   zero_vector3(&game->subgame.path_pairs[60].secondary.bod.position.x);
   build_track_fringe_mesh(&game->subgame.path_pairs[60].primary, aObjectsUnivers_1, 0.0);
   zero_vector3(&game->subgame.path_pairs[60].primary.fringe_mesh_bod.position.x);

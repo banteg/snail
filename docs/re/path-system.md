@@ -19,7 +19,7 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `initialize_garbage_hazard` at `0x408550`
 - `initialize_path_template_record_pair` at `0x4085c0`
 - `initialize_halfpipe_path_template_pair` at `0x429b20`
-- `mirror_path_template_pair_x` at `0x421dc0`
+- `mirror_path` at `0x421dc0`
 - `load_segment_definitions` at `0x448160`
 - `load_level_definitions` at `0x448900`
 - `load_level_definition_file` at `0x447480`

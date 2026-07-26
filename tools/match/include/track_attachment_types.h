@@ -20,7 +20,7 @@ class Player;
 
 struct Path : public BodBase {
     Path* initialize_path_template_record_pair(); // @ 0x4085c0
-    void allocate_path_template_samples(); // @ 0x41b0a0
+    void get_path_nodes(); // @ 0x41b0a0
     void initialize_worm_path_template_pair(char* texture_path);
     void initialize_cage2_path_template_pair(
         int width_cells_, char* texture_a, char* texture_b, char* vertical_texture);
@@ -218,7 +218,7 @@ struct Path : public BodBase {
         char* vertical_texture);
     void build_track_fringe_mesh(char* texture_path, float clamp_side); // @ 0x4246a0, cRPath::BuildFringe
     void build_track_fringe_supertramp_mesh(char* texture_path); // @ 0x424ad0, cRPath::BuildFringeSuperTramp
-    void mirror_path_template_pair_x(Path* source); // @ 0x421dc0, cRPath::Mirror
+    void mirror_path(Path* source); // @ 0x421dc0, cRPath::Mirror
     void __fastcall calc_path_length_z(); // @ 0x42c600, cRPath::CalcLengthZ
     void try_enter_track_attachment_from_swept_motion(
         float px, float py, float pz,

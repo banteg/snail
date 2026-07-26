@@ -19,7 +19,7 @@ void Path::initialize_cage2_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = 22;
     segment_count_f = 22.0f;
-    allocate_path_template_samples();
+    get_path_nodes();
 
     has_entry_mesh_transition = 0;
     primary_samples[0].center_x = (float)width_cells * 0.5f - 4.0f;

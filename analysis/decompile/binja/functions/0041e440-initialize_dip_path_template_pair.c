@@ -14,7 +14,7 @@
 0041e48e        self->segment_count_f = fconvert.s(float.t(eax_1 + 2))
 0041e491        long double x87_r7_3 = float.t(eax_1)
 0041e49f        curve_source = fconvert.s(x87_r7_3 * fconvert.t(0.0477464832f))
-0041e4a3        allocate_path_template_samples(self)
+0041e4a3        get_path_nodes(self)
 0041e4a8        struct PathTemplateSample* primary_samples_2 = self->primary_samples
 0041e4ab        self->has_entry_mesh_transition = 0
 0041e4b2        primary_samples_2->center_x = 0f

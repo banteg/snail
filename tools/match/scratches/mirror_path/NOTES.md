@@ -1,6 +1,6 @@
-# mirror_path_template_pair_x reconstruction notes
+# mirror_path reconstruction notes
 
-`mirror_path_template_pair_x` builds the mirrored half of an attachment path
+`mirror_path` builds the mirrored half of an attachment path
 template from an authored source half. It copies the source template metadata,
 allocates matching samples, mirrors X-space sample transforms and deltas,
 requests a destination strip mesh, mirrors strip vertices, copies optional
@@ -61,3 +61,9 @@ the Windows callers that discard tail register state. This removes the stale
 partial `PathTemplate*` identity without perturbing the accepted source:
 focused matching remains 97.45%, 314/314 instructions, with a 273-instruction
 exact prefix and all 15 masked operands clean.
+
+Android and iOS independently preserve the exact authored
+`cRPath::Mirror(cRPath*)` symbol. Their implementations confirm the sample
+array ownership and stop after `CalcLengthZ()`; Windows additionally mirrors
+the strip mesh and flips its face winding. The authored name is therefore
+high-confidence while the platform body difference remains explicit.

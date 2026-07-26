@@ -138,6 +138,8 @@ GOLB_PATH_FOLLOW_SYMBOL_UPDATES = (
 )
 
 PATH_FUNCTION_SYMBOL_UPDATES = (
+    ("0x41b0a0", "get_path_nodes"),
+    ("0x421dc0", "mirror_path"),
     ("0x42c600", "calc_path_length_z"),
 )
 
@@ -4053,8 +4055,8 @@ DEFERRED_PATH_OWNER_PROTO_UPDATES = (
         "void __thiscall initialize_sbend_path_template_pair(Path* self, int32_t width_cells_, float height, float z_amplitude, char centered, char* texture_a, char* texture_b, char* vertical_texture)",
     ),
     (
-        "allocate_path_template_samples",
-        "void __fastcall allocate_path_template_samples(Path* self)",
+        "get_path_nodes",
+        "void __fastcall get_path_nodes(Path* self)",
     ),
     (
         "calc_path_length_z",
@@ -4069,8 +4071,8 @@ DEFERRED_PATH_OWNER_PROTO_UPDATES = (
         "void __thiscall initialize_cage2_path_template_pair(Path* self, int32_t width_cells_, char* texture_a, char* texture_b, char* vertical_texture)",
     ),
     (
-        "mirror_path_template_pair_x",
-        "void __thiscall mirror_path_template_pair_x(Path* self, Path* source)",
+        "mirror_path",
+        "void __thiscall mirror_path(Path* self, Path* source)",
     ),
 )
 

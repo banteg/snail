@@ -105,7 +105,7 @@ int32_t __thiscall initialize_slalomdouble_path_template_pair(
   self->width_or_scale = 1.0;
   self->segment_count = 70;
   self->segment_count_f = 70.0;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   self->special_runtime_flag_9c = 0;
   texture_aa = nullptr;
   for ( i = 0; i < 4; ++i )

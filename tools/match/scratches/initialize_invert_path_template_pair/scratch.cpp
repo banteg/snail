@@ -204,7 +204,7 @@ void Path::initialize_invert_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = 34;
     segment_count_f = 34.0f;
-    allocate_path_template_samples();
+    get_path_nodes();
 
     has_entry_mesh_transition = 1;
     primary_samples[0].center_x = (float)width_cells * 0.5f - 4.0f;

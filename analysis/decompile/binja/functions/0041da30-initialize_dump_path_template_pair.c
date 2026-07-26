@@ -16,7 +16,7 @@
 0041da7d        self->segment_count_f = fconvert.s(float.t(width_cells_1 + 7))
 0041da80        long double x87_r7_3 = float.t(secondary_samples_4)
 0041da8e        curve_source = fconvert.s(x87_r7_3 * fconvert.t(0.0954929665f))
-0041da92        allocate_path_template_samples(self)
+0041da92        get_path_nodes(self)
 0041da97        self->has_entry_mesh_transition = 0
 0041da9d        width_cells_ = 0
 0041daa1        void* i = nullptr

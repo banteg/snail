@@ -20,7 +20,7 @@
 0042bae7        long double x87_r7_3 = float.t(eax_1)
 0042baeb        float var_94 = fconvert.s(x87_r7_3)
 0042baf5        curve_scale = fconvert.s(x87_r7_3 * fconvert.t(0.159154937f))
-0042bafc        allocate_path_template_samples(self)
+0042bafc        get_path_nodes(self)
 0042bb01        self->has_entry_mesh_transition = 1
 0042bb08        int32_t var_9c = 0
 0042bb0c        void* i = nullptr

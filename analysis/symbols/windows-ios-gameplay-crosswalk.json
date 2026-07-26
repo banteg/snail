@@ -2306,10 +2306,11 @@
     },
     {
       "address": "0x421dc0",
-      "windows_name": "mirror_path_template_pair_x",
+      "windows_name": "mirror_path",
       "ios_symbol": "cRPath::Mirror(cRPath*)",
       "source_object": "Path.o",
       "confidence": "high",
+      "notes": "Both mobile builds preserve the authored owner, signature, sample-array walk, aggregate transform copies, and CalcLengthZ tail. Windows additionally mirrors the owned strip mesh and flips face winding, so this is an owner/name mapping across a real platform body difference rather than an exact-body claim.",
       "android_symbol": "cRPath::Mirror(cRPath*)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -3761,6 +3762,15 @@
       "source_object": "Options.o",
       "confidence": "medium",
       "notes": "Windows callers pass the cROptions receiver but no bool and the exact body only applies the two audio scalars. This is the no-argument audio subset of the broader mobile Apply lifecycle, not a signature-identical mapping."
+    },
+    {
+      "address": "0x41b0a0",
+      "windows_name": "get_path_nodes",
+      "android_symbol": "cRPath::GetNodes()",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "Path.o",
+      "confidence": "high",
+      "notes": "Android performs the same two 0xa8-stride allocations with the exact `Path Tile Nodes` and `Path Ball nodes` labels, stores them in the mobile Path +0x4c/+0x50 fields, and reaches the member from every corresponding constructor at the same lifecycle point as Windows. Windows stores the arrays at Path +0x58/+0x5c and retains only the allocation portion; Android additionally seeds primary-sample defaults, while iOS inlines the allocation plus defaults in the corresponding Path constructors. This is an owner/name mapping, not an exact-body claim."
     },
     {
       "address": "0x434270",

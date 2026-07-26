@@ -97,7 +97,7 @@ int32_t __thiscall initialize_start_path_template_pair(
   v5 = (double)v43;
   v45 = v5;
   arg2a = v5 * 0.31830987;
-  allocate_path_template_samples(self);
+  get_path_nodes(self);
   segment_count = self->segment_count;
   self->special_runtime_flag_9c = 0;
   v7 = arg2a + arg2a;

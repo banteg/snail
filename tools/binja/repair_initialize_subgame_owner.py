@@ -631,9 +631,9 @@ def _path_function_spec(
 
 FUNCTION_SPECS.update(
     {
-        "allocate_path_template_samples": _path_function_spec(
+        "get_path_nodes": _path_function_spec(
             address=0x41B0A0,
-            name="allocate_path_template_samples",
+            name="get_path_nodes",
             return_type="void",
             stale_return_type="void",
             calling_convention="__fastcall",
@@ -1316,9 +1316,9 @@ FUNCTION_SPECS.update(
             ),
             stale_variable_annotations=((16, "arg4", "char*"),),
         ),
-        "mirror_path_template_pair_x": _path_function_spec(
+        "mirror_path": _path_function_spec(
             address=0x421DC0,
-            name="mirror_path_template_pair_x",
+            name="mirror_path",
             return_type="void",
             stale_return_type="int32_t",
             calling_convention="__thiscall",

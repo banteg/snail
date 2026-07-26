@@ -27,7 +27,7 @@
 0042cc71        turn_left.d = var_4c + primary_samples_6 + 0x1a
 0042cc75        self->segment_count = var_4c + primary_samples_6 + 0x1a
 0042cc7c        self->segment_count_f = fconvert.s(float.t(turn_left.d))
-0042cc7f        struct PathTemplateSample* primary_samples_1 = allocate_path_template_samples(self)
+0042cc7f        struct PathTemplateSample* primary_samples_1 = get_path_nodes(self)
 0042cc86        self->has_entry_mesh_transition = 0
 0042cc8d        turn_left.d = 0
 0042cc91        if (primary_samples_6 s> 0)

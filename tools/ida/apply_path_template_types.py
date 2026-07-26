@@ -42,8 +42,10 @@ TRUSTED_NAMES = [
     (0x43A370, "end_jetpack_hover"),
     (0x4182E0, "reset_landscape_manager"),
     (0x4182F0, "load_landscape_script_by_name"),
+    (0x41B0A0, "get_path_nodes"),
     (0x421770, "initialize_path_follow_golb"),
     (0x4217B0, "traverse_path_follow_golb"),
+    (0x421DC0, "mirror_path"),
     (0x42B9C0, "get_path_position_at_node"),
     (0x42C600, "calc_path_length_z"),
     (0x42CA90, "is_point_inside_track_attachment"),
@@ -2126,16 +2128,16 @@ TRUSTED_DECLARATIONS = [
         "TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, void* payload, int32_t flags);",
     ),
     (
-        "allocate_path_template_samples",
-        "void __fastcall allocate_path_template_samples(Path* self);",
+        "get_path_nodes",
+        "void __fastcall get_path_nodes(Path* self);",
     ),
     (
         "calc_path_length_z",
         "void __fastcall calc_path_length_z(Path* self);",
     ),
     (
-        "mirror_path_template_pair_x",
-        "void __thiscall mirror_path_template_pair_x(Path* self, Path* source);",
+        "mirror_path",
+        "void __thiscall mirror_path(Path* self, Path* source);",
     ),
     (
         "set_matrix_identity",

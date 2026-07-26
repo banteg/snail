@@ -2868,6 +2868,16 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "apply_struct_and_proto_updates" in source
     assert "apply_direct_proto_update" not in source
     assert "proto_owner_current" in source
+    for symbol_update in (
+        '("0x41b0a0", "get_path_nodes")',
+        '("0x421dc0", "mirror_path")',
+    ):
+        assert symbol_update in source
+    for trusted_name in (
+        '(0x41B0A0, "get_path_nodes")',
+        '(0x421DC0, "mirror_path")',
+    ):
+        assert trusted_name in ida_source
     assert "repair_deferred_owner_abi.py" in source
     assert 'f"--target {target} --function {identifier} --apply"' in source
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in source
@@ -3082,11 +3092,11 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "void __thiscall initialize_loopbow_path_template_pair(Path* self, float curve_scale, uint32_t width_cells_arg, char mode, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_hill_valley_path_template_pair(Path* self, int32_t width_cells_, float height, float length, char centered, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_sbend_path_template_pair(Path* self, int32_t width_cells_, float height, float z_amplitude, char centered, char* texture_a, char* texture_b, char* vertical_texture)",
-        "void __fastcall allocate_path_template_samples(Path* self)",
+        "void __fastcall get_path_nodes(Path* self)",
         "void __fastcall calc_path_length_z(Path* self)",
         "void __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path)",
         "void __thiscall initialize_cage2_path_template_pair(Path* self, int32_t width_cells_, char* texture_a, char* texture_b, char* vertical_texture)",
-        "void __thiscall mirror_path_template_pair_x(Path* self, Path* source)",
+        "void __thiscall mirror_path(Path* self, Path* source)",
     ):
         assert declaration in deferred_path_prototypes
         assert "".join(f"{declaration};".split()) in compact_header
@@ -3135,12 +3145,12 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "initialize_loopbow_path_template_pair",
         "initialize_hill_valley_path_template_pair",
         "initialize_sbend_path_template_pair",
-        "allocate_path_template_samples",
+        "get_path_nodes",
         "calc_path_length_z",
         "initialize_worm_path_template_pair",
         "initialize_cage2_path_template_pair",
         "initialize_toad_path_template_pair",
-        "mirror_path_template_pair_x",
+        "mirror_path",
     ):
         assert f'"{function_name}": _path_function_spec(' in repair_source
     assert '"owner_type": "Path"' in repair_source

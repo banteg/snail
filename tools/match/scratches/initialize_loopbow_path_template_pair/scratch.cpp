@@ -48,7 +48,7 @@ void Path::initialize_loopbow_path_template_pair(
     float curve_segment_count_f = (float)curve_segment_count;
     curve_scale = curve_segment_count_f * 0.15915494f;
 
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 1;
 
     int i = 0;

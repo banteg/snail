@@ -146,7 +146,7 @@ void Path::initialize_slalomdouble_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = 70;
     segment_count_f = 70.0f;
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 0;
 
     int i;

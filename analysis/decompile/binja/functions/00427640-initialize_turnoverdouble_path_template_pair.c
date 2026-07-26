@@ -16,7 +16,7 @@
 0042768e        long double x87_r7_3 = float.t(i_6)
 00427692        float var_48 = fconvert.s(x87_r7_3)
 0042769c        length = fconvert.s(x87_r7_3 * fconvert.t(0.0795774683f))
-004276a0        allocate_path_template_samples(self)
+004276a0        get_path_nodes(self)
 004276a5        self->has_entry_mesh_transition = 0
 004276ab        width_cells_ = 0
 004276af        int32_t i = 0

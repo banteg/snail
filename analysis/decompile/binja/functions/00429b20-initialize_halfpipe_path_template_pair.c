@@ -10,7 +10,7 @@
 00429b4b        self->width_or_scale = 1f
 00429b4e        self->segment_count = 0x42
 00429b55        self->segment_count_f = 66f
-00429b5c        struct PathTemplateSample* secondary_samples = allocate_path_template_samples(self)
+00429b5c        struct PathTemplateSample* secondary_samples = get_path_nodes(self)
 00429b61        self->has_entry_mesh_transition = 0
 00429b68        int32_t var_9c = 0
 00429b6c        int32_t i = 0

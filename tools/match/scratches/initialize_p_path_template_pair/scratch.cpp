@@ -156,7 +156,7 @@ void Path::initialize_p_path_template_pair(
     else
         scale_arg = half_distance;
 
-    allocate_path_template_samples();
+    get_path_nodes();
     has_entry_mesh_transition = 0;
 
     primary_samples[0].center_x = start_x;
