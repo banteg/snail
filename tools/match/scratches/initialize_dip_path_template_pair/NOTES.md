@@ -75,3 +75,30 @@ real preceding-sample member, typing the byte-biased lifetimes introduced eight
 backward `__offset` expressions in adjacent position reads. The retained set
 previews and exports with zero offsets. No scratch source changed, preserving
 the honest 34.74% focused match and 26 clean masked operands.
+
+## 2026-07-26 coupled mesh ownership
+
+Raw instructions at `0x41ea51..0x41eb28` prove distinct ordinary and terminal
+mesh owners. The ordinary branch first materializes a lateral-offset vector,
+then a generated-position vector, and only then its destination vertex. The
+terminal branch separately owns its lateral offset, raised endpoint, generated
+position, and terminal destination vertex. Dip's native acquisition order
+remains intentionally distinct from Hump and Dump: `facequads` precedes
+`vertices`.
+
+The face loop simultaneously proves independent records at `0x41ebf8` and
+`0x41ecab`. Each branch owns its face pointer and header word, preserves the
+redundant parity-selected texture call, and writes all four UV pairs. Replaying
+the complete dependent owner set produces:
+
+```text
+match: 38.95%
+target: 655 insns, candidate: 644 insns
+prefix: 8/655 target insns
+masked operands: 30 ok, 0 unresolved, 0 mismatch
+```
+
+This raises the focused result by 4.21 points, recovers 44 candidate
+instructions and four clean operands, and gives the candidate the exact native
+`0x50` frame. The remaining broad alignment drift begins in the earlier sample
+construction/orientation region rather than this mesh tail.
