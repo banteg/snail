@@ -34,17 +34,28 @@ public class DecompileSymbol extends GhidraScript {
                     "no function at " + selector);
             }
         } else {
+            // Prefer an exact fully qualified name match so selectors such as
+            // "cRPath::BuildSlalom" do not trip over "cRPath::BuildSlalomBig".
             for (Function function :
                     currentProgram.getFunctionManager().getFunctions(true)) {
-                String name = function.getName(true);
-                if (!name.contains(selector)) {
-                    continue;
+                if (function.getName(true).equals(selector)) {
+                    selected = function;
+                    break;
                 }
-                if (selected != null) {
-                    throw new IllegalStateException(
-                        "ambiguous function fragment: " + selector);
+            }
+            if (selected == null) {
+                for (Function function :
+                        currentProgram.getFunctionManager().getFunctions(true)) {
+                    String name = function.getName(true);
+                    if (!name.contains(selector)) {
+                        continue;
+                    }
+                    if (selected != null) {
+                        throw new IllegalStateException(
+                            "ambiguous function fragment: " + selector);
+                    }
+                    selected = function;
                 }
-                selected = function;
             }
             if (selected == null) {
                 throw new IllegalStateException(
