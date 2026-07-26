@@ -14,7 +14,7 @@ void __cdecl initialize_backdrop_tile_quad(
   Vec3 *vertices; // edi
   ObjectFaceQuad *facequads; // esi
   float *__shifted(BackdropTileVertexCursorView,8) vertex_z_cursor; // ecx
-  int v9; // edi
+  int i; // edi
   double y; // st7
   double v11; // st7
   float v12; // [esp+0h] [ebp-4h]
@@ -100,8 +100,7 @@ void __cdecl initialize_backdrop_tile_quad(
       break;
   }
   vertex_z_cursor = &vertices->z;
-  v9 = 4;
-  do
+  for ( i = 4; i != 0; --i )
   {
     switch ( edge_selector )
     {
@@ -186,7 +185,5 @@ LABEL_43:
         break;
     }
     vertex_z_cursor += 3;
-    --v9;
   }
-  while ( v9 );
 }

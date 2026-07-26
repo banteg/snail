@@ -533,7 +533,7 @@ void __cdecl initialize_backdrop_corner_quad(
 void __cdecl initialize_backdrop_tile_quad(
     Object* object, int32_t edge_selector, int32_t orientation,
     int32_t row_selector, int32_t column_selector, char* texture_path);
-void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad);
+void __thiscall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad);
 
 void __thiscall initialize_object(Object* object);
 void __thiscall initialize_object_list(ObjectList* object_list, int32_t capacity);

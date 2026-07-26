@@ -2,7 +2,7 @@
 /* function: apply_distort_to_object @ 0x41aa50 */
 /* selector: apply_distort_to_object */
 
-// Applies the embedded ObjectDistort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to an Object's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals.
+// Authored `cRDistort::Build(cRObject*)` member: applies the embedded ObjectDistort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to an Object's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals. Android confirms the owner, argument, control order, and copy-buffer lifecycle while retaining platform-specific bounds and render-tail behavior.
 void __thiscall apply_distort_to_object(ObjectDistort *distort, Object *object)
 {
   char v4; // cl
@@ -49,22 +49,22 @@ void __thiscall apply_distort_to_object(ObjectDistort *distort, Object *object)
   if ( distort->z_wave == 0.0 )
     goto LABEL_18;
   z = object->bounds_min.z;
-  if ( v8 )
+  if ( v8 != 0 )
     z = -z;
   v10 = object->bounds_max.z;
-  if ( v11 )
+  if ( v11 != 0 )
     v10 = -v10;
   if ( z >= v10 )
   {
     v13 = object->bounds_min.z;
-    if ( v16 )
+    if ( v16 != 0 )
 LABEL_10:
       v13 = -v13;
   }
   else
   {
     v13 = object->bounds_max.z;
-    if ( v14 )
+    if ( v14 != 0 )
       goto LABEL_10;
   }
   vertex_count = object->vertex_count;
@@ -78,7 +78,7 @@ LABEL_10:
     {
       object->copied_vertices[v19].x = ADJ(z_wave_source_cursor)->x;
       v22 = object->vertices[v19].z;
-      if ( v23 )
+      if ( v23 != 0 )
         v22 = -v22;
       v34 = v22 * 1.5707964 / objecta + 4.712389;
       ++v18;
@@ -123,7 +123,7 @@ LABEL_18:
   }
   if ( distort->xyz_scale == 0.0 )
   {
-    if ( !v4 )
+    if ( v4 == 0 )
       return;
   }
   else

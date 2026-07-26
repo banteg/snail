@@ -19983,10 +19983,21 @@
       "name": "bn_object_facequad_uv_rotation_owner",
       "artifact": "analysis/decompile/binja/functions/00430a30-rotate_object_facequad_uv_pairs.c",
       "required_substrings": [
+        "float u_1 = quad->uv[2].u",
+        "long double x87_r7 = fconvert.t(quad->uv[0].u)",
         "quad->uv[0].u = quad->uv[1].u",
-        "quad->uv[2].u = quad->uv[3].u",
-        "quad->uv[0].v = quad->uv[1].v",
-        "quad->uv[2].v = quad->uv[3].v"
+        "float u = quad->uv[3].u",
+        "quad->uv[3].u = fconvert.s(x87_r7)",
+        "quad->uv[1].u = u_1",
+        "quad->uv[2].u = u",
+        "long double x87_r7_1 = fconvert.t(quad->uv[0].v)",
+        "float v_1 = quad->uv[1].v",
+        "float v = quad->uv[2].v",
+        "quad->uv[0].v = v_1",
+        "float v_2 = quad->uv[3].v",
+        "quad->uv[3].v = fconvert.s(x87_r7_1)",
+        "quad->uv[1].v = v",
+        "quad->uv[2].v = v_2"
       ],
       "forbidden_substrings": [
         "arg1",
@@ -19998,7 +20009,7 @@
       "name": "ida_object_facequad_uv_rotation_owner",
       "artifact": "analysis/decompile/ida/functions/00430a30-rotate_object_facequad_uv_pairs.c",
       "required_substrings": [
-        "void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad *quad)",
+        "void __thiscall rotate_object_facequad_uv_pairs(ObjectFaceQuad *quad)",
         "quad->uv[0].u = quad->uv[1].u",
         "quad->uv[2].u = v3",
         "quad->uv[0].v = v5",

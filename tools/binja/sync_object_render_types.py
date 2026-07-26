@@ -275,7 +275,7 @@ PROTO_UPDATES = (
     ),
     (
         "rotate_object_facequad_uv_pairs",
-        "void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad)",
+        "void __thiscall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad)",
     ),
     (
         "initialize_direct3d_renderer_defaults",

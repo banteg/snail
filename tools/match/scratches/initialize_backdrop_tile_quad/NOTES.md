@@ -124,3 +124,11 @@ same 0x0c record stride and +0x08 carried field.
 This is analysis-only ownership recovery. The matcher source remains unchanged
 and proof-grade at 100.00%, 367/367 instructions, a 367/367 prefix, and 63
 clean operands.
+
+## 2026-07-26 UV member propagation
+
+Both mobile ports identify the six orientation calls as
+`cRFaceQuad::RotateUVCCW()`. Rewriting them as calls on the borrowed
+`ObjectFaceQuad* quad` preserves the complete Windows instruction stream:
+100.00%, 367/367 instructions, a 367/367 prefix, and all 63 relocations clean.
+This is a source-level ownership gain with no matching concession.

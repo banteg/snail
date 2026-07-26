@@ -76,6 +76,8 @@ enum ObjectFaceQuadFlag {
 };
 
 struct ObjectFaceQuad {
+    void rotate_object_facequad_uv_pairs(); // @ 0x430a30; mobile cRFaceQuad::RotateUVCCW()
+
     union {
         unsigned short header_word; // +0x00, constructor word store
         struct {
@@ -106,8 +108,6 @@ struct ObjectFaceQuad {
 
 typedef char ObjectFaceQuad_must_be_0x30[
     (sizeof(ObjectFaceQuad) == 0x30) ? 1 : -1];
-
-void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad); // @ 0x430a30
 
 enum ObjectToonEdgeFlag {
     OBJECT_TOON_EDGE_FLAG_BOUNDARY = 0x1,
@@ -140,7 +140,7 @@ struct ObjectDistort {
     float unknown_0c;
     float unknown_10;
 
-    void apply_distort_to_object(Object* object); // @ 0x41aa50
+    void apply_distort_to_object(Object* object); // @ 0x41aa50; Android cRDistort::Build(cRObject*)
 };
 
 typedef char ObjectDistort_must_be_0x14[

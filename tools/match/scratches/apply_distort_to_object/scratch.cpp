@@ -1,4 +1,4 @@
-// apply_distort_to_object @ 0x41aa50 (thiscall)
+// cRDistort::Build(cRObject*) / apply_distort_to_object @ 0x41aa50
 
 #include "object_render_types.h"
 

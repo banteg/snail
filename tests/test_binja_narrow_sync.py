@@ -6538,10 +6538,16 @@ def test_backdrop_quad_helper_replay_keeps_object_owners_and_void_abis() -> None
     for prototype in (
         "void __cdecl raise_backdrop_quad_edge_pair(int32_t selector, Object* object)",
         "void __cdecl initialize_backdrop_corner_quad(int32_t selector, Object* object, char* texture_path)",
-        "void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad)",
+        "void __thiscall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad)",
     ):
         assert prototype in binja_sync
         assert prototype + ";" in ida_sync
+
+    for header in analysis_headers:
+        assert (
+            "void __thiscall rotate_object_facequad_uv_pairs("
+            "ObjectFaceQuad* quad);"
+        ) in header
 
     for address, name, data_type in (
         ("0x4a3c40", "g_backdrop_raise_first_vertex_index", "int32_t"),

@@ -2965,6 +2965,16 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x430a30",
+      "windows_name": "rotate_object_facequad_uv_pairs",
+      "ios_symbol": "cRFaceQuad::RotateUVCCW()",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "notes": "Android, iOS, and Windows all rotate the four cRFaceQuad UV pairs counter-clockwise by one slot. Rewriting the Windows fastcall-equivalent helper and its exact backdrop caller as an authored ObjectFaceQuad member is byte-identical.",
+      "android_symbol": "cRFaceQuad::RotateUVCCW()",
+      "android_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
       "address": "0x430a70",
       "windows_name": "request_object_animation",
       "ios_symbol": "cRObject::RequestAnim(int, cRBodPos*, float, int)",
@@ -4376,6 +4386,15 @@
       "source_object": "ObjectProc.o",
       "confidence": "high",
       "notes": "All ports initialize the same five-float cRDistort subobject. Windows embeds it at Object +0x80; mobile preserves the authored owner while using its platform Object layout."
+    },
+    {
+      "address": "0x41aa50",
+      "windows_name": "apply_distort_to_object",
+      "android_symbol": "cRDistort::Build(cRObject*)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "notes": "Android proves the authored cRDistort owner, the borrowed cRObject target, the three leading float controls, and the same ordered copy-buffer chaining. Windows independently uses its own bounds policy and refreshes simple face normals after redirecting the live vertex view; those platform details do not transfer."
     },
     {
       "address": "0x4446e0",

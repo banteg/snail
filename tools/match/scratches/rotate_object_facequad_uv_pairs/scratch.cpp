@@ -1,18 +1,18 @@
-// rotate_object_facequad_uv_pairs @ 0x430a30 (fastcall)
+// cRFaceQuad::RotateUVCCW() / rotate_object_facequad_uv_pairs @ 0x430a30
 
 #include "object_render_types.h"
 
-void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad)
+void ObjectFaceQuad::rotate_object_facequad_uv_pairs()
 {
-    float first_u = quad->uv[0].u;
-    quad->uv[0].u = quad->uv[1].u;
-    quad->uv[1].u = quad->uv[2].u;
-    quad->uv[2].u = quad->uv[3].u;
-    quad->uv[3].u = first_u;
+    float first_u = uv[0].u;
+    uv[0].u = uv[1].u;
+    uv[1].u = uv[2].u;
+    uv[2].u = uv[3].u;
+    uv[3].u = first_u;
 
-    float first_v = quad->uv[0].v;
-    quad->uv[0].v = quad->uv[1].v;
-    quad->uv[1].v = quad->uv[2].v;
-    quad->uv[2].v = quad->uv[3].v;
-    quad->uv[3].v = first_v;
+    float first_v = uv[0].v;
+    uv[0].v = uv[1].v;
+    uv[1].v = uv[2].v;
+    uv[2].v = uv[3].v;
+    uv[3].v = first_v;
 }

@@ -2,8 +2,8 @@
 /* function: rotate_object_facequad_uv_pairs @ 0x430a30 */
 /* selector: rotate_object_facequad_uv_pairs */
 
-// Rotates one ObjectFaceQuad's four UV pairs forward by one slot; used by backdrop tile orientation cases before writing the matching quad vertices.
-void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad *quad)
+// Authored `cRFaceQuad::RotateUVCCW()` member in both mobile ports: rotates one ObjectFaceQuad's four UV pairs counter-clockwise by one slot; used by backdrop tile orientation cases before writing the matching quad vertices.
+void __thiscall rotate_object_facequad_uv_pairs(ObjectFaceQuad *quad)
 {
   float u; // edx
   double v2; // st7

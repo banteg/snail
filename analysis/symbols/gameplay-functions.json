@@ -1313,7 +1313,7 @@
     {
       "address": "0x41aa50",
       "name": "apply_distort_to_object",
-      "description": "Applies the embedded ObjectDistort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to an Object's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals."
+      "description": "Authored `cRDistort::Build(cRObject*)` member: applies the embedded ObjectDistort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to an Object's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals. Android confirms the owner, argument, control order, and copy-buffer lifecycle while retaining platform-specific bounds and render-tail behavior."
     },
     {
       "address": "0x41ace0",
@@ -1728,7 +1728,7 @@
     {
       "address": "0x430a30",
       "name": "rotate_object_facequad_uv_pairs",
-      "description": "Rotates one ObjectFaceQuad's four UV pairs forward by one slot; used by backdrop tile orientation cases before writing the matching quad vertices."
+      "description": "Authored `cRFaceQuad::RotateUVCCW()` member in both mobile ports: rotates one ObjectFaceQuad's four UV pairs counter-clockwise by one slot; used by backdrop tile orientation cases before writing the matching quad vertices."
     },
     {
       "address": "0x430a70",

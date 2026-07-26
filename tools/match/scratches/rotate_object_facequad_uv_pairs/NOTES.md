@@ -34,3 +34,18 @@ The function is now a first-class tracked artifact and both databases pin
 `void __fastcall(ObjectFaceQuad*)`. That replaces the anonymous integer
 receiver/return view and lets the tile builder call the named UV owner directly.
 The 17/17 matcher remains byte-identical.
+
+## 2026-07-26 cross-port member recovery
+
+Android and iOS both export the exact-demangled
+`cRFaceQuad::RotateUVCCW()` method, and both bodies perform the same four-pair
+rotation as Windows. The canonical source is therefore now an authored
+`ObjectFaceQuad` member rather than a merely thiscall-shaped free helper.
+Member spelling remains exactly 17/17 with no masked operands, and propagating
+it through all six calls in `initialize_backdrop_tile_quad` leaves that caller
+exactly 367/367 with all 63 operands clean.
+
+The repeatable Binary Ninja and IDA contracts now use the ABI-equivalent
+`void __thiscall(ObjectFaceQuad*)` signature. The existing Windows function
+name is retained as the matching identifier while the mobile symbols preserve
+the original `RotateUVCCW` provenance.

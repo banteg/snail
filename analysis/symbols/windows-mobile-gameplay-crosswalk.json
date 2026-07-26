@@ -13,12 +13,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 499,
-    "unverified_entries": 286,
-    "verified_android_symbols": 496,
-    "verified_ios_symbols": 408,
-    "available_android_mappings": 496,
-    "available_ios_mappings": 370
+    "verified_entries": 501,
+    "unverified_entries": 284,
+    "verified_android_symbols": 498,
+    "verified_ios_symbols": 409,
+    "available_android_mappings": 498,
+    "available_ios_mappings": 371
   },
   "entries": [
     {
@@ -12073,45 +12073,30 @@
       "address": "0x41aa50",
       "windows_name": "apply_distort_to_object",
       "windows_size": 656,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRDistort::Build(cRObject*)",
-          "score": 0.667,
-          "name_score": 0.4978,
-          "size_score": 0.9207
-        },
-        {
-          "symbol": "cRObject::CalcFaceQuadNormals()",
-          "score": 0.6472,
-          "name_score": 0.54,
-          "size_score": 0.8079
-        },
-        {
-          "symbol": "cRBackdrop::SetDistort(float)",
-          "score": 0.6257,
-          "name_score": 0.5185,
-          "size_score": 0.7866
-        },
-        {
-          "symbol": "GLObjectVBO(cRObject*)",
-          "score": 0.6124,
-          "name_score": 0.4516,
-          "size_score": 0.8537
-        },
-        {
-          "symbol": "cRDirectX::Export(cRObject*, char*)",
-          "score": 0.6072,
-          "name_score": 0.4178,
-          "size_score": 0.8913
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRDistort::Build(cRObject*)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
+        {
+          "symbol": "cRBackdrop::Render()",
+          "score": 0.6492,
+          "name_score": 0.45,
+          "size_score": 0.948
+        },
         {
           "symbol": "GLObjectVBO(cRObject*)",
           "score": 0.6441,
           "name_score": 0.4516,
           "size_score": 0.9329
+        },
+        {
+          "symbol": "cRDistort::BuildMatrix(tMatrix*, tMatrix*)",
+          "score": 0.6063,
+          "name_score": 0.6,
+          "size_score": 0.6159
         },
         {
           "symbol": "cRObject::AddEdge(int, int, int)",
@@ -12124,18 +12109,6 @@
           "score": 0.5965,
           "name_score": 0.5185,
           "size_score": 0.7134
-        },
-        {
-          "symbol": "OFHttpNestedQueryStringWriter::storeInnerStreamOfType(OFISerializer*, OFRTTI const*)",
-          "score": 0.5814,
-          "name_score": 0.3333,
-          "size_score": 0.9535
-        },
-        {
-          "symbol": "cRDirectX::LoadAnim(char*, cRObject*)",
-          "score": 0.5803,
-          "name_score": 0.4178,
-          "size_score": 0.8241
         }
       ]
     },
@@ -13986,71 +13959,14 @@
       "address": "0x430a30",
       "windows_name": "rotate_object_facequad_uv_pairs",
       "windows_size": 64,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRObject::ScaleVertices(float)",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRObject::VerticesPush()",
-          "score": 0.6648,
-          "name_score": 0.6,
-          "size_score": 0.7619
-        },
-        {
-          "symbol": "cRFaceQuad::RotateUVCCW()",
-          "score": 0.6465,
-          "name_score": 0.45,
-          "size_score": 0.9412
-        },
-        {
-          "symbol": "cRObject::Destroy()",
-          "score": 0.6465,
-          "name_score": 0.45,
-          "size_score": 0.9412
-        },
-        {
-          "symbol": "cRObject::Init()",
-          "score": 0.6465,
-          "name_score": 0.45,
-          "size_score": 0.9412
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRFaceQuad::RotateUVCCW()",
-          "score": 0.6465,
-          "name_score": 0.45,
-          "size_score": 0.9412
-        },
-        {
-          "symbol": "cRFace::AI()",
-          "score": 0.6068,
-          "name_score": 0.45,
-          "size_score": 0.8421
-        },
-        {
-          "symbol": "OFHttpService::startRequest(NSString*, NSString*, NSData*, OFHttpServiceObserver*)",
-          "score": 0.5904,
-          "name_score": 0.359,
-          "size_score": 0.9375
-        },
-        {
-          "symbol": "cRObject::ApplyUV(float, float)",
-          "score": 0.5807,
-          "name_score": 0.6,
-          "size_score": 0.5517
-        },
-        {
-          "symbol": "OFViewDataGetter::OFViewDataGetter(UIView*, OFViewDataMap*)",
-          "score": 0.5675,
-          "name_score": 0.2791,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRFaceQuad::RotateUVCCW()",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "ios_symbol": "cRFaceQuad::RotateUVCCW()",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x430a70",

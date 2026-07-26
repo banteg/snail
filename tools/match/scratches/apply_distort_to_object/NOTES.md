@@ -82,3 +82,19 @@ borrowed pointers and verifies every name/type readback. The tracked artifact
 therefore distinguishes the Z-wave, Y-squash, and XYZ-scale source walks
 without changing the matcher. Focused Wibo remains honestly at `95.43%`,
 `197/197` instructions, with the same nine equivalent SIB encodings.
+
+## 2026-07-26 Android authored owner
+
+Android exports the exact-demangled `cRDistort::Build(cRObject*)`. Its body
+confirms the five-float `cRDistort` owner, the borrowed render-object argument,
+the three leading optional controls, and the same ordered rule that each active
+pass writes the owned copy bank and feeds that bank into the next pass. This
+turns the Windows owner/argument model from inference into cross-port
+provenance.
+
+The ports deliberately diverge after that shared core: Windows uses its
+recovered object bounds in the envelopes and rebuilds simple face normals after
+redirecting the live vertex view, while Android's rendering path has a
+different tail. No mobile offset or tail is transplanted. The honest Windows
+frontier remains 95.43%, 197/197 instructions, with only the nine equivalent
+SIB base/index encodings outstanding.

@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 5,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 5,
-  "ida_exported": 5,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,24 +18,16 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "copy_object_vertices",
-      "address": "0x42f790"
+      "name": "initialize_backdrop_tile_quad",
+      "address": "0x41a4d0"
     },
     {
-      "name": "request_object_facequad_normals",
-      "address": "0x42f800"
+      "name": "apply_distort_to_object",
+      "address": "0x41aa50"
     },
     {
-      "name": "request_object_vertex_colours",
-      "address": "0x42f850"
-    },
-    {
-      "name": "request_object_texture_groups",
-      "address": "0x42f930"
-    },
-    {
-      "name": "request_object_edges",
-      "address": "0x430570"
+      "name": "rotate_object_facequad_uv_pairs",
+      "address": "0x430a30"
     }
   ],
   "health_check_count": 1085,
