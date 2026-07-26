@@ -394,6 +394,6 @@ int32_t __thiscall initialize_slalomdouble_path_template_pair(
     }
     while ( v5 < (signed int)self->segment_count );
   }
-  return finalize_path_template(self);
+  return calc_path_length_z(self);
 }
 

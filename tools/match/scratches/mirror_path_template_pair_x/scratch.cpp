@@ -139,5 +139,5 @@ void Path::mirror_path_template_pair_x(Path* source)
         } while (segment < segment_count);
     }
 
-    finalize_path_template();
+    calc_path_length_z();
 }

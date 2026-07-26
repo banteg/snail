@@ -372,5 +372,5 @@ void __thiscall initialize_toad_path_template_pair(
       while ( anglea < (signed int)self->width_cells );
     }
   }
-  finalize_path_template(self);
+  calc_path_length_z(self);
 }

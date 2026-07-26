@@ -664,6 +664,6 @@ int32_t __thiscall initialize_worm_path_template_pair(PathTemplate *self, char *
     }
     while ( v3 < (signed int)_ESI->segment_count );
   }
-  return finalize_path_template(_ESI);
+  return calc_path_length_z(_ESI);
 }
 

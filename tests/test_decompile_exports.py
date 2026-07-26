@@ -180,6 +180,45 @@ def test_tracked_export_forwards_focused_selectors_to_ida_sync(
     ]
 
 
+def test_tracked_export_can_preserve_replayed_binja_lifetimes(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/export_tracked_decompiles.py",
+        "test_export_tracked_decompiles_binja_refresh",
+    )
+    manifest = tmp_path / "functions.json"
+    out_dir = tmp_path / "binja" / "functions"
+    index = tmp_path / "binja" / "index.json"
+
+    command = module._build_binja_export_args(
+        manifest_path=manifest,
+        target="SnailMail_unwrapped.exe.bndb",
+        out_dir=out_dir,
+        index_path=index,
+        selectors=["calc_path_length_z", "0x42c600"],
+        skip_analysis_refresh=True,
+    )
+
+    assert command == [
+        "--manifest",
+        str(manifest),
+        "--target",
+        "SnailMail_unwrapped.exe.bndb",
+        "--out-dir",
+        str(out_dir.resolve()),
+        "--index",
+        str(index.resolve()),
+        "--skip-analysis-refresh",
+        "--only",
+        "calc_path_length_z",
+        "--only",
+        "0x42c600",
+    ]
+
+
 def test_ida_symbol_sync_filters_manifest_by_name_and_address(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

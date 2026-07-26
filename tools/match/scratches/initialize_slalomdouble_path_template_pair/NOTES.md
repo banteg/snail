@@ -7,7 +7,7 @@ family and the native epilogue is `ret 0x18`. The runtime kind written by this
 public constructor is `0x20`, matching the current decompile. The scratch builds
 the fixed 70-sample double-slalom body with four straight samples at each end,
 sinusoidal lateral motion, raised Y motion, orientation, deltas, strip mesh, and
-`finalize_path_template`.
+`calc_path_length_z`.
 
 Residuals are expected. This is a semantic starter, not a tuned byte match.
 

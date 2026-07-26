@@ -299,5 +299,5 @@
 0042c5d4        if (edi_12 s>= self->segment_count)
 0042c5d4        break
 0042c3be        i_4 = 0
-0042c5dc        finalize_path_template(self)
+0042c5dc        calc_path_length_z(self)
 0042c5eb        return

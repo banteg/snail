@@ -395,6 +395,6 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
       v6 = 0;
     }
   }
-  return finalize_path_template(self);
+  return calc_path_length_z(self);
 }
 

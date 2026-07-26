@@ -2287,7 +2287,7 @@ typedef struct PathTemplateSample {
     float lateral_scale;
     float special_scalar;
     /* Cross/dot-derived lateral source, mirrored and clamped by
-     * finalize_path_template. */
+     * calc_path_length_z. */
     float lateral_source;
 } PathTemplateSample;
 
@@ -2628,7 +2628,7 @@ TextureRef* __thiscall get_or_create_texture_ref(
     TextureRefList* texture_list, char* texture_path, void* payload,
     int32_t flags);
 void __fastcall allocate_path_template_samples(Path* self);
-void __fastcall finalize_path_template(Path* self);
+void __fastcall calc_path_length_z(Path* self);
 void __thiscall mirror_path_template_pair_x(Path* self, Path* source);
 void __thiscall set_matrix_identity(TransformMatrix* transform);
 void __thiscall set_matrix_rotation_identity(TransformMatrix* transform);

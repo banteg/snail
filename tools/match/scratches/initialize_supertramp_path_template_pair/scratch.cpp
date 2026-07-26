@@ -272,7 +272,7 @@ void Path::initialize_supertramp_path_template_pair(
         } while (delta_index < segment_count);
     }
     build_direct_strip_mesh(this, texture_a, texture_b, cap_texture);
-    finalize_path_template();
+    calc_path_length_z();
     (void)side_exit;
     (void)unused_texture;
 }

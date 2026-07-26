@@ -23,11 +23,7 @@
     "snapshot_saved": false,
     "unresolved": []
   },
-  "removed_stale_artifacts": [
-    "analysis/decompile/binja/functions/0043a1a0-update_player_movement_flags.c",
-    "analysis/decompile/binja/functions/0043a300-update_movement_flag_emitters.c",
-    "analysis/decompile/binja/functions/0043afd0-play_movement_state_sound.c"
-  ],
+  "removed_stale_artifacts": [],
   "exports": [
     {
       "address": "0x401000",
@@ -1426,8 +1422,8 @@
     },
     {
       "address": "0x42c600",
-      "name": "finalize_path_template",
-      "artifact": "analysis/decompile/binja/functions/0042c600-finalize_path_template.c"
+      "name": "calc_path_length_z",
+      "artifact": "analysis/decompile/binja/functions/0042c600-calc_path_length_z.c"
     },
     {
       "address": "0x42c770",

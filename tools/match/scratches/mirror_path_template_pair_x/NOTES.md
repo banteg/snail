@@ -39,7 +39,7 @@ Important shape notes:
   not artifacts. The transform copy only covers the first 0x40 bytes.
 - Transform and delta X components use multiply-by-`-1.0f`, while the direct
   copied scalar/vertex X values use `fchs`.
-- `finalize_path_template` is fastcall/this-shaped here; the non-void return
+- `calc_path_length_z` is fastcall/this-shaped here; the non-void return
   observed by decompilers is stale register state.
 
 Remaining gap:

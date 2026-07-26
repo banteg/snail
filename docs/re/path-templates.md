@@ -153,7 +153,7 @@ object.
 
 One more shared helper is now clear from the constructor xrefs:
 
-- `finalize_path_template` (`0x42c600`) is the common `Path` post-constructor member used by most concrete path families and by `mirror_path_template_pair_x`; iOS preserves the authored owner/name as `cRPath::CalcLengthZ()`
+- `calc_path_length_z` (`0x42c600`) is the common `cRPath::CalcLengthZ()` post-constructor member used by most concrete path families and by `mirror_path_template_pair_x`; Android and iOS independently preserve the authored owner/name, while `finalize_path_template` remains only a compatibility alias
 - it is not another family constructor; it recomputes derived per-sample lengths and final strip-mesh state after the primary/secondary sample arrays have been written
 
 ## Dynamic Family Cross-Check

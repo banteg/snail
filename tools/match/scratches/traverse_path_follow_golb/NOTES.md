@@ -6,12 +6,13 @@ The former Windows label `calc_path_length_z` was an ownership error. Exact
 Itanium symbols and independently exported bodies from both Android and iOS
 identify `0x4217b0` as
 `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`. The actual
-no-argument `cRPath::CalcLengthZ()` owner maps to `finalize_path_template` at
+no-argument `cRPath::CalcLengthZ()` owner maps to `calc_path_length_z` at
 `0x42c600`.
 
-The canonical Windows name is now `traverse_path_follow_golb`; the old label is
-retained only as a manifest alias for compatibility. The scratch source and
-machine code are otherwise unchanged, so focused Wibo remains **71.82%**
+The canonical Windows name is now `traverse_path_follow_golb`; the false
+historical label has been removed from this owner and reassigned to the real
+method at `0x42c600`. The scratch source and machine code are otherwise
+unchanged, so focused Wibo remains **71.82%**
 (416/425 instructions), with a 32-instruction exact prefix and 7 clean masked
 operands.
 

@@ -45,6 +45,7 @@ TRUSTED_NAMES = [
     (0x421770, "initialize_path_follow_golb"),
     (0x4217B0, "traverse_path_follow_golb"),
     (0x42B9C0, "get_path_position_at_node"),
+    (0x42C600, "calc_path_length_z"),
     (0x42CA90, "is_point_inside_track_attachment"),
     (0x42F6E0, "initialize_object_constructor_thunk"),
     (0x42F5C0, "is_bod_after_sprites"),
@@ -281,7 +282,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4246A0,  # build_track_fringe_mesh
     0x424AD0,  # build_track_fringe_supertramp_mesh
     0x42B9C0,  # get_path_position_at_node
-    0x42C600,  # finalize_path_template
+    0x42C600,  # calc_path_length_z
     0x42C770,  # try_enter_track_attachment_from_swept_motion
     0x42CA90,  # is_point_inside_track_attachment
     0x42F5C0,  # is_bod_after_sprites
@@ -2129,8 +2130,8 @@ TRUSTED_DECLARATIONS = [
         "void __fastcall allocate_path_template_samples(Path* self);",
     ),
     (
-        "finalize_path_template",
-        "void __fastcall finalize_path_template(Path* self);",
+        "calc_path_length_z",
+        "void __fastcall calc_path_length_z(Path* self);",
     ),
     (
         "mirror_path_template_pair_x",

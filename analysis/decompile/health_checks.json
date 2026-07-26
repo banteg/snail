@@ -11417,8 +11417,8 @@
       ]
     },
     {
-      "name": "bn_path_finalizer_row_span_owner",
-      "artifact": "analysis/decompile/binja/functions/0042c600-finalize_path_template.c",
+      "name": "bn_path_length_row_span_owner",
+      "artifact": "analysis/decompile/binja/functions/0042c600-calc_path_length_z.c",
       "required_substrings": [
         "self->segment_count",
         "self->row_span_count",
@@ -11470,13 +11470,13 @@
         "face->vertex_0",
         "face->texture_ref",
         "face->uv[3].v",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "arg2",
         "self->strip_mesh",
         "__offset",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11486,13 +11486,13 @@
         "struct Path* source_1 = source",
         "self->bod.object",
         "source_1->bod.object",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate*",
         "self->strip_mesh",
         "source_1->strip_mesh",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11526,14 +11526,14 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "struct TransformMatrix* transform = self->primary_samples",
         "terminal_center_x = i +",
         "terminal_center_x = rotate_matrix_local_z",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ],
       "max_counts": {
         "__offset": 13
@@ -11564,13 +11564,13 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "arg2",
         "__offset",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11605,13 +11605,13 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "arg2",
         "__offset",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11646,13 +11646,13 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "arg2",
         "__offset",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11687,13 +11687,13 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "arg2",
         "__offset",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11718,7 +11718,7 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -11731,7 +11731,7 @@
         "int16_t* ebp_3",
         "__offset",
         "arg2",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11756,7 +11756,7 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -11769,7 +11769,7 @@
         "int16_t* ebp_4",
         "__offset",
         "arg2",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11804,14 +11804,14 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "arg2",
         "arg3",
         "__offset",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11842,14 +11842,14 @@
         "face->vertex_0",
         "face->texture_ref",
         "face->uv[3].v",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "arg2",
         "arg3",
         "__offset",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11872,7 +11872,7 @@
         "face->vertex_0",
         "face->texture_ref",
         "face->uv[3].v",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -11885,7 +11885,7 @@
         "__offset",
         "arg2",
         "arg3",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11908,7 +11908,7 @@
         "face->vertex_0",
         "face->texture_ref",
         "face->uv[3].v",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -11921,7 +11921,7 @@
         "__offset",
         "arg2",
         "arg3",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11948,14 +11948,14 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "self->width_cells = texture_a",
         "__offset",
         "arg2",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -11983,13 +11983,13 @@
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
         "__offset(0x1050).d",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "self->width_cells = texture_a",
         "arg2",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ],
       "max_counts": {
         "__offset": 1
@@ -12026,7 +12026,7 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12034,7 +12034,7 @@
         "arg2",
         "arg3",
         "texture_path_2",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -12059,14 +12059,14 @@
         "face->vertex_0",
         "face->texture_ref",
         "face->uv[3].v",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "__offset",
         "arg2",
         "arg3",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -12096,14 +12096,14 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "__offset",
         "arg2",
         "arg3",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -12136,14 +12136,14 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "__offset",
         "arg2",
         "arg3",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -12176,14 +12176,14 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "__offset",
         "arg2",
         "arg3",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -12216,14 +12216,14 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "__offset",
         "arg2",
         "arg3",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -12258,13 +12258,13 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "arg2",
         "arg3",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ],
       "max_counts": {
         "__offset": 16
@@ -12302,13 +12302,13 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "arg2",
         "arg3",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ],
       "max_counts": {
         "__offset": 16
@@ -12348,13 +12348,13 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "arg2",
         "arg3",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ],
       "max_counts": {
         "__offset": 1
@@ -12383,7 +12383,7 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12401,7 +12401,7 @@
         "arg2",
         "arg3",
         "arg4",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -12427,7 +12427,7 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12445,7 +12445,7 @@
         "arg2",
         "arg3",
         "arg4",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -12472,7 +12472,7 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12480,7 +12480,7 @@
         "arg2",
         "arg3",
         "arg4",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -12519,7 +12519,7 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12534,7 +12534,7 @@
         "arg2",
         "arg3",
         "arg4",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -12569,7 +12569,7 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12578,7 +12578,7 @@
         "arg4",
         "arg5",
         "__offset",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -12614,7 +12614,7 @@
         "face_first->uv[3].v",
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
-        "finalize_path_template(self)"
+        "calc_path_length_z(self)"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12623,7 +12623,7 @@
         "arg4",
         "arg5",
         "__offset",
-        "return finalize_path_template"
+        "return calc_path_length_z"
       ]
     },
     {
@@ -17937,7 +17937,7 @@
     },
     {
       "name": "bn_path_sample_lateral_source_owner",
-      "artifact": "analysis/decompile/binja/functions/0042c600-finalize_path_template.c",
+      "artifact": "analysis/decompile/binja/functions/0042c600-calc_path_length_z.c",
       "required_substrings": [
         "struct PathTemplateSample* source = self->primary_samples",
         "&source->inverse_matrix",
@@ -17956,7 +17956,7 @@
     },
     {
       "name": "ida_path_sample_lateral_source_owner",
-      "artifact": "analysis/decompile/ida/functions/0042c600-finalize_path_template.c",
+      "artifact": "analysis/decompile/ida/functions/0042c600-calc_path_length_z.c",
       "required_substrings": [
         "lateral_source"
       ],

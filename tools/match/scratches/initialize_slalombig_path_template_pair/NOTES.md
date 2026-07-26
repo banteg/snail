@@ -9,7 +9,7 @@ scratch keeps six explicit arguments after `this`.
 The implementation initializes the `SLALOMBIG` path-template record, allocates
 primary/secondary samples, builds the four straight lead-in and lead-out nodes,
 fills the sinusoidal interior slalom body, derives per-sample orientation and
-segment deltas, emits the strip mesh, and calls `finalize_path_template`.
+segment deltas, emits the strip mesh, and calls `calc_path_length_z`.
 
 Residuals are expected. The scratch uses small semantic helpers for the repeated
 sample/orientation/mesh idioms instead of attempting instruction scheduling.

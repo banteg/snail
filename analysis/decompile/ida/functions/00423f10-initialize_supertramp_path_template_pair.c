@@ -312,6 +312,6 @@ LABEL_28:
     }
     while ( v51 < (signed int)self->width_cells );
   }
-  return finalize_path_template(self);
+  return calc_path_length_z(self);
 }
 

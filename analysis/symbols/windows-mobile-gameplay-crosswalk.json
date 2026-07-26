@@ -13724,7 +13724,7 @@
     },
     {
       "address": "0x42c600",
-      "windows_name": "finalize_path_template",
+      "windows_name": "calc_path_length_z",
       "windows_size": 368,
       "status": "verified",
       "android_symbol": "cRPath::CalcLengthZ()",

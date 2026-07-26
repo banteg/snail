@@ -311,5 +311,5 @@ void Path::initialize_worm_path_template_pair(char* texture_path)
         } while (face_row < segment_count);
     }
 
-    finalize_path_template();
+    calc_path_length_z();
 }

@@ -26,4 +26,4 @@ stores, not from an authored return contract.
 Ninja replay, and IDA replay now agree on a void destination-member thiscall
 with one `const TransformMatrix&` source. Converting all owned callers from
 pointer syntax to that const-reference surface preserves every exact baseline
-and the existing `finalize_path_template` partial baseline.
+and the existing `calc_path_length_z` partial baseline.

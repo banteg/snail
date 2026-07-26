@@ -1,6 +1,23 @@
-# finalize_path_template
+# calc_path_length_z
 
-First tracked scratch for `finalize_path_template @ 0x42c600`.
+## 2026-07-26 mobile owner correction
+
+Exact exported symbols and matching bodies from both Android and iOS identify
+`0x42c600` as `cRPath::CalcLengthZ()`. The historical Windows
+`calc_path_length_z` label had been attached to the unrelated
+`cRPathFollowGolb::Traverse` method at `0x4217b0`; that false assignment is now
+retired. This function is the real owner, and `finalize_path_template` remains
+only as a manifest compatibility alias.
+
+The mobile body also confirms the existing Windows ownership model: one
+`cRPath` owns the primary and secondary `0xa8`-byte sample banks, the derived
+row span, the mirrored-path flag, and the nested strip mesh. Spelling the
+secondary inverse-loop sample as the mobile-shaped `base + offset` expression
+is byte-identical. Focused matching therefore remains honestly partial at
+**81.78%** (112/113 candidate/target instructions), with a 24-instruction
+exact prefix and nine clean masked operands.
+
+First tracked scratch for `calc_path_length_z @ 0x42c600`.
 
 Recovered behavior:
 
@@ -89,7 +106,7 @@ nine operands clean.
 ## 2026-07-16 analysis replay ownership
 
 The durable analysis type now names sample `+0xa4` as the same `float
-lateral_source` already proved by the matcher. `finalize_path_template` is its
+lateral_source` already proved by the matcher. `calc_path_length_z` is its
 eight-reference producer: it stores the cross/dot result, mirrors it for an
 x-mirrored path, clamps it to `[-0.1, 0]`, and clears the terminal sample.
 Both analysis replay lanes now update the field explicitly so the checked-in

@@ -5,7 +5,7 @@ This is an honest semantic starter for the path-template initializer at
 
 It reconstructs the loop-out metadata, ten-sample approach, four-sample exit,
 outward circular section, primary/secondary radius offset, delta vectors,
-strip-mesh vertices/faces, and `finalize_path_template`.
+strip-mesh vertices/faces, and `calc_path_length_z`.
 
 The source is intentionally semantic and partial. Remaining differences should
 be pursued through source-shape work, not flags or byte-shaped scaffolding.
@@ -67,7 +67,7 @@ and back textures, and the cap texture.
 The guarded migration fingerprints the four stale parameters, the exact
 stack-20 `arg5` annotation, and the missing stack-24 variable before recreating
 the function with its void `Path*` owner. Readback confirms the complete ABI
-and a non-returning `finalize_path_template(self)` tail. The uniform
+and a non-returning `calc_path_length_z(self)` tail. The uniform
 `side_exit` and `cap_texture` inputs are unused by this implementation, so the
 recovered declaration preserves the proven interface without fakematched
 dummy uses.

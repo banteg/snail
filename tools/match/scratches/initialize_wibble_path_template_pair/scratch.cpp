@@ -280,7 +280,7 @@ void Path::initialize_wibble_path_template_pair(
 
     compute_path_deltas(this);
     build_strip_mesh(this, texture_a, texture_b);
-    finalize_path_template();
+    calc_path_length_z();
     (void)radius;
     (void)side_exit;
     (void)vertical_texture;

@@ -266,5 +266,5 @@ void Path::initialize_cage2_path_template_pair(
         }
     }
 
-    finalize_path_template();
+    calc_path_length_z();
 }

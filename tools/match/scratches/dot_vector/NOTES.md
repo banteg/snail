@@ -14,5 +14,5 @@ remain exact after consolidating that return type.
 2026-07-14 const-reference pass: the one explicit operand is now a
 `const Vector3&`, matching the iOS and Android `tVector::Dot(const tVector&)`
 exports. The exact body stays 10/10, `render_object_toon` stays 219/219, and
-the 73.36% `add_object_edge` and 81.78% `finalize_path_template` partials are
+the 73.36% `add_object_edge` and 81.78% `calc_path_length_z` partials are
 byte-identical after their direct callsites adopt reference syntax.

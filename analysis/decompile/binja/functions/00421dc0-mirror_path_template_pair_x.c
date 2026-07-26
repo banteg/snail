@@ -125,5 +125,5 @@
 004221c5        cond:0_1 = var_8 + 1 s< self->segment_count
 004221c7        var_8 += 1
 004221cb        do while (cond:0_1)
-004221d3        finalize_path_template(self)
+004221d3        calc_path_length_z(self)
 004221df        return

@@ -267,7 +267,7 @@ void Path::initialize_slalomdouble_path_template_pair(
     secondary_samples[segment_count - 1].delta_length = 1.0f;
 
     build_strip_mesh(this, texture_a, texture_b);
-    finalize_path_template();
+    calc_path_length_z();
     (void)curve_segments;
     (void)side_exit;
     (void)cap_texture;

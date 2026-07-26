@@ -6,7 +6,7 @@ This is an honest semantic starter for the path-template initializer at
 The scratch reconstructs the recovered loop-the-loop family setup from the IDA
 and Binary Ninja decompiles: template metadata, primary/secondary samples,
 straight approach/departure runs, the circular loop section, delta vectors,
-strip-mesh vertices/faces, and the final `finalize_path_template` call.
+strip-mesh vertices/faces, and the final `calc_path_length_z` call.
 
 It deliberately keeps the implementation source-level and plausible rather than
 trying to force register allocation. Residuals are expected around helper
@@ -68,7 +68,7 @@ the surviving stack-20 `arg5` annotation, and the absent stack-24 variable
 before recreating the function as
 `void __thiscall(Path*, float, int32_t, int32_t, char*, char*, char*)`.
 Readback confirms every stack slot and the ordinary terminal
-`finalize_path_template(self)` call. The two uniform API inputs are optimized
+`calc_path_length_z(self)` call. The two uniform API inputs are optimized
 out in this constructor, but the caller evidence and callee cleanup retain
 their ownership without inventing uses.
 

@@ -154,6 +154,6 @@ int32_t __thiscall mirror_path_template_pair_x(PathTemplate *self, PathTemplate 
       while ( v24 < 2 );
     }
   }
-  return finalize_path_template(self);
+  return calc_path_length_z(self);
 }
 

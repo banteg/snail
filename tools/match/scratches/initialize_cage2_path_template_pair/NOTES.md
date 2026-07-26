@@ -17,7 +17,7 @@ than returning a placeholder value. The implementation:
 - installs terminal `{0, 0, 1}` directions and unit lengths;
 - allocates and fills the strip-mesh vertex grid and both facequads per cell;
 - assigns the two supplied textures and the `1/8`-tile UVs; and
-- calls `finalize_path_template`.
+- calls `calc_path_length_z`.
 
 No shared headers were changed. Conservative scratch-local overlays are used for
 fields whose promoted repository types are still incomplete.

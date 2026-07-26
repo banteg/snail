@@ -733,7 +733,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         }
     }
 
-    finalize_path_template();
+    calc_path_length_z();
     (void)side_exit;
     (void)cap_texture;
 }

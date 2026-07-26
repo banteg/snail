@@ -87,6 +87,32 @@ def _build_ida_sync_command(
     return command
 
 
+def _build_binja_export_args(
+    *,
+    manifest_path: Path,
+    target: str,
+    out_dir: Path,
+    index_path: Path,
+    selectors: list[str],
+    skip_analysis_refresh: bool,
+) -> list[str]:
+    args = [
+        "--manifest",
+        str(manifest_path),
+        "--target",
+        target,
+        "--out-dir",
+        str(out_dir.resolve()),
+        "--index",
+        str(index_path.resolve()),
+    ]
+    if skip_analysis_refresh:
+        args.append("--skip-analysis-refresh")
+    for selector in selectors:
+        args.extend(["--only", selector])
+    return args
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Refresh tracked Binary Ninja and IDA decompile artifacts for all named functions in the manifest."
@@ -131,6 +157,14 @@ def parse_args() -> argparse.Namespace:
         "--skip-binja",
         action="store_true",
         help="Reuse the current Binary Ninja index and refresh only the IDA lane.",
+    )
+    parser.add_argument(
+        "--skip-binja-analysis-refresh",
+        action="store_true",
+        help=(
+            "Export the Binary Ninja lane without a global analysis refresh. "
+            "Use after replaying owner lifetimes against an already-fresh database."
+        ),
     )
     parser.add_argument(
         "--skip-ida",
@@ -209,6 +243,10 @@ def main() -> int:
     args = parse_args()
     if args.skip_binja and args.skip_ida:
         raise RuntimeError("cannot skip both decompile lanes")
+    if args.skip_binja and args.skip_binja_analysis_refresh:
+        raise RuntimeError(
+            "cannot skip Binary Ninja analysis refresh while skipping the Binary Ninja lane"
+        )
     if args.skip_ida and args.sync_ida_symbols:
         raise RuntimeError("cannot sync IDA symbols while skipping the IDA lane")
     manifest_path = args.manifest.resolve()
@@ -239,15 +277,14 @@ def main() -> int:
         if args.skip_binja
         else _run_python(
             REPO_ROOT / "tools/binja/export_manifest_functions.py",
-            "--manifest",
-            str(manifest_path),
-            "--target",
-            args.bn_target,
-            "--out-dir",
-            str((bn_root / "functions").resolve()),
-            "--index",
-            str(bn_index),
-            *[item for selector in args.only for item in ("--only", selector)],
+            *_build_binja_export_args(
+                manifest_path=manifest_path,
+                target=args.bn_target,
+                out_dir=bn_root / "functions",
+                index_path=bn_index,
+                selectors=list(args.only),
+                skip_analysis_refresh=args.skip_binja_analysis_refresh,
+            ),
         )
     )
 
@@ -297,6 +334,9 @@ def main() -> int:
         "has_mismatches": bool(bn_result.get("mismatch_count", 0) or ida_result.get("mismatch_count", 0)),
         "sync_ida_symbols": args.sync_ida_symbols,
         "binja_refreshed": not args.skip_binja,
+        "binja_analysis_refreshed": (
+            not args.skip_binja and not args.skip_binja_analysis_refresh
+        ),
         "ida_refreshed": not args.skip_ida,
         "health_check_ran": not args.skip_health_check,
         "strict": args.strict,

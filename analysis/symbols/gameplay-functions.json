@@ -1375,10 +1375,7 @@
     {
       "address": "0x4217b0",
       "name": "traverse_path_follow_golb",
-      "aliases": [
-        "calc_path_length_z"
-      ],
-      "description": "Advances one Golb projectile attachment-follow session through the borrowed authored `Path::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. Android and iOS Path.o independently name this owner `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`; the distinct no-argument `cRPath::CalcLengthZ()` owner is `finalize_path_template` at 0x42c600."
+      "description": "Advances one Golb projectile attachment-follow session through the borrowed authored `Path::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. Android and iOS Path.o independently name this owner `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`; the formerly misassigned `calc_path_length_z` name now belongs to the distinct no-argument `cRPath::CalcLengthZ()` owner at 0x42c600."
     },
     {
       "address": "0x421dc0",
@@ -1492,8 +1489,12 @@
     },
     {
       "address": "0x42c600",
-      "name": "finalize_path_template",
-      "description": "Finalizes one built path template after constructor or mirror edits by recomputing derived per-sample lengths, inverting sample transforms, updating the derived sample scalar at `+0xa4`, and normalizing the nested strip-mesh state. iOS Path.o names this finalizer family `cRPath::CalcLengthZ()`."
+      "name": "calc_path_length_z",
+      "aliases": [
+        "finalize_path_template",
+        "CalcLengthZ"
+      ],
+      "description": "Windows `cRPath::CalcLengthZ()`: recomputes one built path's derived row span and per-sample lateral length scalars, inverts both sample-transform banks, and normalizes the nested strip-mesh flags. Android and iOS Path.o independently preserve the exact authored owner and name. The former `finalize_path_template` label remains only as a compatibility alias."
     },
     {
       "address": "0x42c770",

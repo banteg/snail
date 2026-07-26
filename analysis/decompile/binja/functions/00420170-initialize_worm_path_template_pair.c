@@ -291,5 +291,5 @@
 00420c16        i_3 += 1
 00420c19        i_4 = i_3
 00420c1d        do while (i_3 s< self->segment_count)
-00420c25        finalize_path_template(self)
+00420c25        calc_path_length_z(self)
 00420c34        return

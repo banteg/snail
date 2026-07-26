@@ -638,9 +638,9 @@ FUNCTION_SPECS.update(
             stale_return_type="void",
             calling_convention="__fastcall",
         ),
-        "finalize_path_template": _path_function_spec(
+        "calc_path_length_z": _path_function_spec(
             address=0x42C600,
-            name="finalize_path_template",
+            name="calc_path_length_z",
             return_type="void",
             stale_return_type="int32_t",
             calling_convention="__fastcall",

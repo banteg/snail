@@ -1887,10 +1887,10 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "finalize_path_template",
+      "selector": "calc_path_length_z",
       "address": "0x42c600",
-      "name": "finalize_path_template",
-      "artifact": "analysis/decompile/ida/functions/0042c600-finalize_path_template.c",
+      "name": "calc_path_length_z",
+      "artifact": "analysis/decompile/ida/functions/0042c600-calc_path_length_z.c",
       "removed_stale_artifacts": []
     },
     {

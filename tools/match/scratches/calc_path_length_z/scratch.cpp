@@ -1,11 +1,11 @@
-// finalize_path_template @ 0x42c600 (thiscall)
+// calc_path_length_z @ 0x42c600 (cRPath::CalcLengthZ)
 
 #include <stddef.h>
 
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
-void __fastcall Path::finalize_path_template()
+void __fastcall Path::calc_path_length_z()
 {
     int segment_count = this->segment_count;
     this->row_span_count = 0;
@@ -29,7 +29,7 @@ void __fastcall Path::finalize_path_template()
             AttachmentSample* primary = (AttachmentSample*)((char*)this->primary_samples + sample_offset);
             primary->inverse_matrix.invert_matrix_from_source(primary->transform);
 
-            AttachmentSample* secondary = (AttachmentSample*)(sample_offset + (char*)this->secondary_samples);
+            AttachmentSample* secondary = (AttachmentSample*)((char*)this->secondary_samples + sample_offset);
             secondary->inverse_matrix.invert_matrix_from_source(secondary->transform);
 
             ++i;

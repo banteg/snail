@@ -138,7 +138,7 @@ The guarded recreation accepts only the observed six-parameter legacy view,
 the automatic stack-24 texture candidate, and an absent stack-28 candidate.
 Direct readback confirms a void `Path*` owner and all eight parameters including
 `this`. Decompilation now names `height_scale` in the cosine profile and ends
-with an ordinary `finalize_path_template(self)` call. Focused Wibo remains
+with an ordinary `calc_path_length_z(self)` call. Focused Wibo remains
 40.91% (640/685), with 35 masked operands ok, 0 unresolved, 0 mismatch; the
 source was not changed to manufacture the recovered unused interface inputs.
 

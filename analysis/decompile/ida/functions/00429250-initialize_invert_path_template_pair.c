@@ -339,6 +339,6 @@ int32_t __thiscall initialize_invert_path_template_pair(
       while ( v52 < (signed int)self->width_cells );
     }
   }
-  return finalize_path_template(self);
+  return calc_path_length_z(self);
 }
 

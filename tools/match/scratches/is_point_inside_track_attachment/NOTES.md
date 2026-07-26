@@ -55,7 +55,7 @@ The live Windows ABI is now durable across both analysis backends: ECX owns a
 `ret 0x1c`.
 
 The sample member at `+0x40` is also proved as a full `TransformMatrix`, not
-padding. `finalize_path_template` produces it for both sample arrays by
+padding. `calc_path_length_z` produces it for both sample arrays by
 inverting each sample's authored transform, while this method and
 `try_enter_track_attachment_from_swept_motion` consume it through matrix-vector
 rotation. The canonical owner is therefore

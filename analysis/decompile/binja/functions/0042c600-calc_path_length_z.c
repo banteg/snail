@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: finalize_path_template @ 0x42c600 */
+/* function: calc_path_length_z @ 0x42c600 */
 
 0042c609        uint32_t segment_count = self->segment_count
 0042c60c        self->row_span_count = 0

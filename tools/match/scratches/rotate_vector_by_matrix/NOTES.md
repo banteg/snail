@@ -17,7 +17,7 @@ stack `Vec3` before overwriting the destination vector.
 - Focused rechecks stayed at their baselines: this helper 100.00%,
   `is_point_inside_track_attachment` 99.10%,
   `try_enter_track_attachment_from_swept_motion` 79.80%,
-  `finalize_path_template` 69.41%, `update_sprite_facing_angle` 97.67%, and
+  `calc_path_length_z` 69.41%, `update_sprite_facing_angle` 97.67%, and
   `render_object_toon` 57.76%. The header-only `Vector3` ABI-conflict row is
   gone from `uv run snail match types --paths`.
 

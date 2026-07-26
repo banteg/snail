@@ -204,7 +204,7 @@ Applied in the live BN database:
 - `PathTemplateStripMesh`
 - `ObjectFaceQuad`
 - `allocate_path_template_samples(PathTemplate* self)`
-- `finalize_path_template(PathTemplate* self)`
+- `calc_path_length_z(Path* self)` (`cRPath::CalcLengthZ()`)
 - `request_object_vertices(PathTemplateStripMesh* mesh, ...)`
 - `request_object_vertex_colours(PathTemplateStripMesh* mesh)`
 - `request_object_facequads(PathTemplateStripMesh* mesh, ...)`
@@ -265,7 +265,7 @@ Earlier notes that called out `initialize_sweep_path_template_pair` and `initial
 The two shared lifecycle helpers are also now named more literally:
 
 - `allocate_path_template_samples` allocates the paired sample arrays and stores them on the template object
-- `finalize_path_template` is the common post-build pass used by the constructor family and by `mirror_path_template_pair_x`
+- `calc_path_length_z` is the common post-build pass used by the constructor family and by `mirror_path_template_pair_x`
 
 The remaining rough edges in this family are presentation-level, not structural:
 

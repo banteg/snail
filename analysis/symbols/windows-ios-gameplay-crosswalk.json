@@ -2300,7 +2300,7 @@
       "ios_symbol": "cRPathFollowGolb::Traverse(float, tVector&, tVector*)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "This Windows helper advances the Golb follow state; the similarly named no-argument `cRPath::CalcLengthZ()` maps to `finalize_path_template`.",
+      "notes": "This Windows helper advances the Golb follow state. The formerly misassigned `calc_path_length_z` name now maps to the distinct no-argument `cRPath::CalcLengthZ()` at 0x42c600.",
       "android_symbol": "cRPathFollowGolb::Traverse(float, tVector&, tVector*)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -2509,11 +2509,11 @@
     },
     {
       "address": "0x42c600",
-      "windows_name": "finalize_path_template",
+      "windows_name": "calc_path_length_z",
       "ios_symbol": "cRPath::CalcLengthZ()",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "No-argument iOS method aligns with the template finalization pass that recomputes derived length scalars.",
+      "notes": "Android and iOS independently preserve the exact no-argument `cRPath::CalcLengthZ()` symbol and matching owner body. The old `finalize_path_template` Windows label remains a compatibility alias only.",
       "android_symbol": "cRPath::CalcLengthZ()",
       "android_symbol_evidence": "exact-demangled-symbol"
     },

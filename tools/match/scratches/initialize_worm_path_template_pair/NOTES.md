@@ -42,7 +42,7 @@ function:
   y zero by `0.3`, and emits two opposite windings for every row/column cell;
 - wraps the final radial column, assigns U coordinates from the 16-column
   fraction, advances V by `0.125` per path row, resolves the supplied texture,
-  and calls `finalize_path_template`.
+  and calls `calc_path_length_z`.
 
 The constructor and finalizer are intentionally declared `void`. The related
 matched finalizer shows that the apparent non-void decompiler result is stale

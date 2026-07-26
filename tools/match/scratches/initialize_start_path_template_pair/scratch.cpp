@@ -287,7 +287,7 @@ void Path::initialize_start_path_template_pair(
         } while (delta_index < segment_count);
     }
     build_direct_strip_mesh(this, texture_a);
-    finalize_path_template();
+    calc_path_length_z();
     (void)side_exit;
     (void)texture_b;
     (void)cap_texture;

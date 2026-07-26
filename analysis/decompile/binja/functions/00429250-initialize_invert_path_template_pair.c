@@ -239,5 +239,5 @@
 00429aa6        do while (j s< self->width_cells)
 00429aaf        i_3 += 1
 00429ab2        do while (i_3 s< self->segment_count)
-00429aba        finalize_path_template(self)
+00429aba        calc_path_length_z(self)
 00429ac6        return

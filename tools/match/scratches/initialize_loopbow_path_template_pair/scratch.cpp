@@ -16,7 +16,7 @@ static __inline Vector3 vector_subtract(const Vector3& lhs, const Vector3& rhs)
 }
 
 // The native caller ignores the incidental EAX state left by this finalizer.
-void __fastcall finalize_path_template(Path* path);
+void __fastcall calc_path_length_z(Path* path);
 
 void Path::initialize_loopbow_path_template_pair(
     float curve_scale,
@@ -371,5 +371,5 @@ void Path::initialize_loopbow_path_template_pair(
         } while (segment < segment_count);
     }
 
-    ::finalize_path_template(this);
+    ::calc_path_length_z(this);
 }

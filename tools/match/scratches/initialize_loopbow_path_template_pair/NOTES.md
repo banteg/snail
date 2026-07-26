@@ -67,7 +67,7 @@ The accepted body follows the native phases in order:
    grid, and synthesize the extra terminal row from the final sample.
 6. Emit two `0x30` face quads per cell with the native winding split, UV scale
    of `0.125f`, parity branch, and the two texture arguments.
-7. Call `finalize_path_template(this)`.
+7. Call `calc_path_length_z(this)`.
 
 2026-06-20 thunk audit: `0x44d1d0` was initially bounded as an anonymous
 matrix forwarder. The two aligned calls at `+0x56c` and `+0x57d` were therefore

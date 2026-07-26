@@ -1,9 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: finalize_path_template @ 0x42c600 */
-/* selector: finalize_path_template */
+/* function: calc_path_length_z @ 0x42c600 */
+/* selector: calc_path_length_z */
 
-// Finalizes one built path template after constructor or mirror edits by recomputing derived per-sample lengths, inverting sample transforms, updating the derived sample scalar at `+0xa4`, and normalizing the nested strip-mesh state. iOS Path.o names this finalizer family `cRPath::CalcLengthZ()`.
-int32_t __fastcall finalize_path_template(Path *self)
+// Windows `cRPath::CalcLengthZ()`: recomputes one built path's derived row span and per-sample lateral length scalars, inverts both sample-transform banks, and normalizes the nested strip-mesh flags. Android and iOS Path.o independently preserve the exact authored owner and name. The former `finalize_path_template` label remains only as a compatibility alias.
+void __fastcall calc_path_length_z(Path *self)
 {
   signed int segment_count; // ebx
   signed int v3; // ebp
@@ -17,8 +17,6 @@ int32_t __fastcall finalize_path_template(Path *self)
   float *p_lateral_source; // ecx
   Object *object; // eax
   ObjectFlag flags; // ecx
-  Object *v14; // esi
-  int32_t result; // eax
   Vec3 out; // [esp+10h] [ebp-Ch] BYREF
 
   segment_count = self->segment_count;
@@ -35,7 +33,7 @@ int32_t __fastcall finalize_path_template(Path *self)
       p_z += 42;
       --v3;
     }
-    while ( v3 );
+    while ( v3 != 0 );
   }
   v6 = 0;
   if ( segment_count > 0 )
@@ -43,12 +41,8 @@ int32_t __fastcall finalize_path_template(Path *self)
     v7 = 0;
     do
     {
-      invert_matrix_from_source(
-        (TransformMatrix *)self->primary_samples[v7]._pad_40,
-        &self->primary_samples[v7].transform);
-      invert_matrix_from_source(
-        (TransformMatrix *)self->secondary_samples[v7]._pad_40,
-        &self->secondary_samples[v7].transform);
+      invert_matrix_from_source(&self->primary_samples[v7].inverse_matrix, &self->primary_samples[v7].transform);
+      invert_matrix_from_source(&self->secondary_samples[v7].inverse_matrix, &self->secondary_samples[v7].transform);
       ++v6;
       ++v7;
     }
@@ -62,10 +56,10 @@ int32_t __fastcall finalize_path_template(Path *self)
     {
       cross_vectors(
         &out,
-        (const Vec3 *)&self->primary_samples[v9].transform.basis_forward,
-        (const Vec3 *)&self->primary_samples[v9 + 1].transform.basis_forward);
-      self->primary_samples[v9].lateral_source = dot_vector(&out, (const Vec3 *)&self->primary_samples[v9]);
-      if ( self->is_mirrored_x )
+        &self->primary_samples[v9].transform.basis_forward,
+        &self->primary_samples[v9 + 1].transform.basis_forward);
+      self->primary_samples[v9].lateral_source = dot_vector(&out, &self->primary_samples[v9].transform.basis_right);
+      if ( self->is_mirrored_x != 0 )
         self->primary_samples[v9].lateral_source = self->primary_samples[v9].lateral_source * -1.0;
       primary_samples = self->primary_samples;
       if ( primary_samples[v9].lateral_source > 0.0 )
@@ -83,8 +77,5 @@ int32_t __fastcall finalize_path_template(Path *self)
   flags = object->flags;
   LOBYTE(flags) = flags | 0x80;
   object->flags = flags;
-  v14 = self->bod.object;
-  result = v14->flags & 0xFFEFFFFF;
-  v14->flags = result;
-  return result;
+  self->bod.object->flags &= ~0x100000u;
 }

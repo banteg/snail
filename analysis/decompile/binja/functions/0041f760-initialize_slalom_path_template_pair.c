@@ -265,5 +265,5 @@
 00420143        if (ebx_1 s>= self->segment_count)
 00420143        break
 0041ff49        i_3 = 0
-0042014b        finalize_path_template(self)
+0042014b        calc_path_length_z(self)
 00420157        return

@@ -417,5 +417,5 @@ void __thiscall initialize_loopbow_path_template_pair(
       v8 = 0;
     }
   }
-  finalize_path_template(self);
+  calc_path_length_z(self);
 }

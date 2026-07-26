@@ -317,6 +317,6 @@ int32_t __thiscall initialize_sbend_path_template_pair(
       while ( v50 < (signed int)self->width_cells );
     }
   }
-  return finalize_path_template(self);
+  return calc_path_length_z(self);
 }
 

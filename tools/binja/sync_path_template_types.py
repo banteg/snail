@@ -137,6 +137,10 @@ GOLB_PATH_FOLLOW_SYMBOL_UPDATES = (
     ("0x4217b0", "traverse_path_follow_golb"),
 )
 
+PATH_FUNCTION_SYMBOL_UPDATES = (
+    ("0x42c600", "calc_path_length_z"),
+)
+
 SYMBOL_UPDATES = (
     ("0x408040", "initialize_noop_renderable_bod"),
     ("0x408060", "initialize_runtime_pools_and_path_template_bank"),
@@ -148,6 +152,7 @@ SYMBOL_UPDATES = (
     *TRACK_RENDER_CACHE_SYMBOL_UPDATES,
     *FRINGE_SYMBOL_UPDATES,
     *GOLB_PATH_FOLLOW_SYMBOL_UPDATES,
+    *PATH_FUNCTION_SYMBOL_UPDATES,
     ("0x42f6e0", "initialize_object_constructor_thunk"),
     ("0x442500", "initialize_vapour"),
     ("0x442540", "reset_vapour"),
@@ -2502,13 +2507,13 @@ HARMONIZE_RUNTIME_USER_VAR_UPDATES = (
     ),
 )
 
-# finalize_path_template produces the inverse transform for each 0xa8-byte
+# calc_path_length_z produces the inverse transform for each 0xa8-byte
 # sample, while the swept-entry scan consumes two sample bases carried in
 # transient ECX definitions. Preserve the containing sample owner instead of
 # letting the matrix calls collapse those variables to TransformMatrix*/void*.
 PATH_SAMPLE_INVERSE_USER_VAR_UPDATES = (
     (
-        "finalize_path_template",
+        "calc_path_length_z",
         "StackVariableSourceType",
         74,
         -32,
@@ -2516,7 +2521,7 @@ PATH_SAMPLE_INVERSE_USER_VAR_UPDATES = (
         "PathTemplateSample*",
     ),
     (
-        "finalize_path_template",
+        "calc_path_length_z",
         "StackVariableSourceType",
         89,
         -32,
@@ -4052,8 +4057,8 @@ DEFERRED_PATH_OWNER_PROTO_UPDATES = (
         "void __fastcall allocate_path_template_samples(Path* self)",
     ),
     (
-        "finalize_path_template",
-        "void __fastcall finalize_path_template(Path* self)",
+        "calc_path_length_z",
+        "void __fastcall calc_path_length_z(Path* self)",
     ),
     (
         "initialize_worm_path_template_pair",
