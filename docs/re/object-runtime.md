@@ -89,7 +89,7 @@ interior pointer at `Vec3::z`, reads the surrounding x/y/z lanes at the
 `ObjectVertexZCursorView` describes those interior walks without changing
 either buffer's ownership.
 
-`build_snail_hotspots` is another ownership-neutral mesh consumer. It borrows
+`extract_snail_local_hotspots` is another ownership-neutral mesh consumer. It borrows
 the `Object` attached to `Snail::snail_hotspot_body`, walks that object's
 `facequads` from each `texture_ref`, and borrows the selected element of its
 `vertices` allocation. The copied vectors land in the separate 19-entry

@@ -30,7 +30,7 @@ typedef struct Vec3 {
 } Vec3;
 
 /*
- * Analysis-only offset-pointer view for build_snail_hotspots' local hotspot
+ * Analysis-only offset-pointer view for extract_snail_local_hotspots' local hotspot
  * walk. Native carries Vec3::z at +0x08 while clearing and accumulating x/y/z,
  * then advances by one complete Vec3. Snail::snail_hotspots_local remains the
  * sole owner of the 19-record bank.
@@ -1655,7 +1655,7 @@ typedef struct ObjectFaceQuad {
 } ObjectFaceQuad;
 
 /*
- * Analysis-only offset-pointer view for build_snail_hotspots' face scan.
+ * Analysis-only offset-pointer view for extract_snail_local_hotspots' face scan.
  * Native carries ObjectFaceQuad::texture_ref at +0x0c and advances by one
  * complete 0x30-byte facequad. Object::facequads remains the allocation owner.
  */
@@ -2841,8 +2841,8 @@ void __thiscall start_invincible_shell(Invincible* invincible);
 void __thiscall update_invincible_shell(Invincible* invincible);
 void __thiscall initialize_snail_skin(SnailSkin* snail_skin);
 void __thiscall release_snail_weapons(Snail* snail);
-void __thiscall update_snail_skin(Snail* snail);
-void __thiscall build_snail_hotspots(Snail* snail);
+void __thiscall build_snail_world_hotspots(Snail* snail);
+void __thiscall extract_snail_local_hotspots(Snail* snail);
 void __thiscall initialize_anim_manager(AnimManager* manager);
 void __thiscall update_anim_manager(AnimManager* manager);
 void __thiscall advance_frame_sequence(FrameSequence* sequence);
@@ -2914,7 +2914,7 @@ void __thiscall kill_subgoldy(Player* player);
 void __thiscall initialize_subgoldy_death(Player* player);
 void __thiscall set_snail_weapon(Snail* snail, int32_t shoot_flags);
 void __thiscall set_snail_jetpack(Snail* snail, int32_t state);
-void __thiscall initialize_cutscene(Snail* snail);
+void __thiscall update_snail_presentation(Snail* snail);
 void __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t mode_flags);
 void __thiscall initialize_cutscene_ai(CutScene* cutscene);
 void __thiscall update_cutscene(CutScene* cutscene);

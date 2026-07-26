@@ -1,7 +1,7 @@
-# update_snail_skin @ 0x445cd0
+# build_snail_world_hotspots @ 0x445cd0
 
-Exact Windows counterpart of Android `cRSnail::BuildHotSpots()`. The stable
-Windows name predates cross-port ownership recovery; this promotes the
+Exact Windows counterpart of Android `cRSnail::BuildHotSpots()`. The historical
+`update_snail_skin` name predates cross-port ownership recovery; this promotes the
 cross-confirmed Snail hotspot fields:
 
 - `snail_hotspot_source_body.transform` at `+0x1604`;
@@ -65,14 +65,22 @@ all relevant type widths. No matcher source changes: 44/44 instructions and
 the one masked operand remain clean.
 
 2026-07-25 source-transform closure: the exact-matched
-`initialize_cutscene` is the per-tick producer for both transform inputs.
+`update_snail_presentation` is the per-tick producer for both transform inputs.
 It copies the final rendered `Snail::body.transform` into the complete
 `RenderableBod` at `+0x15cc`, and copies the owner player's live body transform
 into the complete `RenderableBod` at `+0x164c` before replacing that copy's
 translation with `Player::cached_camera_target_world`.
 
-`update_snail_skin` routes weapon hotspots `0..10` through the player-derived
+`build_snail_world_hotspots` routes weapon hotspots `0..10` through the player-derived
 `+0x1684` transform and routes parcel/camera/jetpack/base hotspots `11..18`
 through the rendered-snail `+0x1604` transform. EBX is now preserved as
 `hotspot_index` and ESI as the borrowed `hotspot_transform` in both analysis
 lanes. Neither transform is retained or transferred by this helper.
+
+## 2026-07-26 mobile-backed canonical ownership
+
+Android's exact `cRSnail::BuildHotSpots()` symbol and matching body identify
+this per-frame local-to-world transform pass. The canonical Windows name is
+now `build_snail_world_hotspots`; `update_snail_skin` remains only as a
+compatibility alias. This is identifier and ownership recovery only: the exact
+44/44 matcher body is unchanged.

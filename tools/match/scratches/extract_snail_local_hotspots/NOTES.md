@@ -1,7 +1,7 @@
-# build_snail_hotspots @ 0x445d50
+# extract_snail_local_hotspots @ 0x445d50
 
 Authored `cRSnail::ExtractHotSpots()` producer for the local hotspot bank
-consumed by `update_snail_skin`.
+consumed by `build_snail_world_hotspots`.
 `initialize_game_assets_and_world` loads `TurboHOTSPOTS.X` into presentation
 `+0x1670` immediately before calling this helper, so the promoted field is
 `snail_hotspot_model`.
@@ -76,7 +76,7 @@ recover native's six-instruction hotspot self-copy tail (best 80.52%, worse
 than 83.78%). Keep the current break-on-match scan.
 
 2026-07-18 analysis replay: the Windows databases now pin the authored receiver
-as `void __thiscall build_snail_hotspots(Snail* snail)`, retiring Binary Ninja's
+as `void __thiscall extract_snail_local_hotspots(Snail* snail)`, retiring Binary Ninja's
 stale `PlayerPresentationController*` view and IDA's `int this`/returned-owner
 artifact. IDA now exposes the exact `Snail` hotspot body, `Object` facequad and
 vertex owners, the named 19-entry texture table, and the local hotspot bank.
@@ -101,3 +101,11 @@ the hotspot model owns its facequad and vertex banks, while `Snail` owns the
 19 local results. IDA replay now previews the complete type and lvar mutation
 on a temporary database before touching the canonical database. No matcher
 source changed; focused Wibo remains honestly at 83.78%.
+
+## 2026-07-26 mobile-backed canonical ownership
+
+Android and iOS both retain `cRSnail::ExtractHotSpots()` and the same
+initialization-time texture-to-local-bank scan. The canonical Windows name is
+now `extract_snail_local_hotspots`; the historical `build_snail_hotspots`
+label remains a compatibility alias. No matcher source shape changed, so the
+honest 83.78% result and residual scheduling differences are preserved.

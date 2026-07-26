@@ -21,14 +21,15 @@ TRUSTED_NAMES = (
     (0x43A690, "update_jet_particles"),
     (0x43A930, "initialize_jetpack_gauge"),
     (0x43A980, "arm_jetpack_gauge"),
+    (0x4428D0, "update_snail_presentation"),
     (0x442E40, "release_snail_weapons"),
     (0x444600, "dispatch_cutscene_animation"),
     (0x4446E0, "set_weapon_animation"),
     (0x444AC0, "initialize_invincible_shell"),
     (0x444AE0, "start_invincible_shell"),
     (0x444B50, "update_invincible_shell"),
-    (0x445CD0, "update_snail_skin"),
-    (0x445D50, "build_snail_hotspots"),
+    (0x445CD0, "build_snail_world_hotspots"),
+    (0x445D50, "extract_snail_local_hotspots"),
     (0x445F60, "initialize_snail_skin"),
     (0x445F80, "update_snail_skin_transition"),
     (0x445FD0, "change_snail_skin"),
@@ -60,6 +61,10 @@ TRUSTED_DECLARATIONS = (
         "void __thiscall arm_jetpack_gauge(SubHover* sub_hover);",
     ),
     (
+        "update_snail_presentation",
+        "void __thiscall update_snail_presentation(Snail* snail);",
+    ),
+    (
         "release_snail_weapons",
         "void __thiscall release_snail_weapons(Snail* snail);",
     ),
@@ -84,12 +89,12 @@ TRUSTED_DECLARATIONS = (
         "void __thiscall update_invincible_shell(Invincible* invincible);",
     ),
     (
-        "update_snail_skin",
-        "void __thiscall update_snail_skin(Snail* snail);",
+        "build_snail_world_hotspots",
+        "void __thiscall build_snail_world_hotspots(Snail* snail);",
     ),
     (
-        "build_snail_hotspots",
-        "void __thiscall build_snail_hotspots(Snail* snail);",
+        "extract_snail_local_hotspots",
+        "void __thiscall extract_snail_local_hotspots(Snail* snail);",
     ),
     (
         "initialize_snail_skin",
@@ -176,43 +181,43 @@ INVINCIBLE_ROOT_OFFSET_OPERANDS = (
 
 HOTSPOT_LVAR_SPECS = (
     (
-        "update_snail_skin",
+        "build_snail_world_hotspots",
         "hotspot_index",
         "int32_t hotspot_index;",
         0x445CDC,
     ),
     (
-        "update_snail_skin",
+        "build_snail_world_hotspots",
         "hotspot_world_cursor",
         "Vec3 *hotspot_world_cursor;",
         0x445CDE,
     ),
     (
-        "update_snail_skin",
+        "build_snail_world_hotspots",
         "hotspot_transform",
         "TransformMatrix *hotspot_transform;",
         0x445CF3,
     ),
     (
-        "update_snail_skin",
+        "build_snail_world_hotspots",
         "hotspot_world_slot",
         "Vec3 *hotspot_world_slot;",
         0x445D32,
     ),
     (
-        "build_snail_hotspots",
+        "extract_snail_local_hotspots",
         "hotspot_model",
         "Object *hotspot_model;",
         0x445D54,
     ),
     (
-        "build_snail_hotspots",
+        "extract_snail_local_hotspots",
         "hotspot_name_cursor",
         "char **hotspot_name_cursor;",
         0x445D60,
     ),
     (
-        "build_snail_hotspots",
+        "extract_snail_local_hotspots",
         "hotspot_local_z_cursor",
         (
             "float *__shifted(SnailHotspotLocalZCursorView, 0x08) "
@@ -221,7 +226,7 @@ HOTSPOT_LVAR_SPECS = (
         0x445D65,
     ),
     (
-        "build_snail_hotspots",
+        "extract_snail_local_hotspots",
         "hotspot_face_texture_cursor",
         (
             "TextureRef **__shifted(ObjectFaceQuadTextureCursorView, 0x0C) "
@@ -230,7 +235,7 @@ HOTSPOT_LVAR_SPECS = (
         0x445D90,
     ),
     (
-        "build_snail_hotspots",
+        "extract_snail_local_hotspots",
         "hotspot_source_vertex",
         "Vec3 *hotspot_source_vertex;",
         0x445DCD,

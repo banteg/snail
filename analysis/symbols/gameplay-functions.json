@@ -2728,8 +2728,11 @@
     },
     {
       "address": "0x4428d0",
-      "name": "initialize_cutscene",
-      "description": "Stable historical Windows name for authored `cRSnail::AIGoldy()`. This per-frame presentation method borrows `Player::live_transform()` and `cached_camera_target_world`, advances the Snail's matrices, skin, hotspots, hover jets and animation channels, and updates the embedded cRCutScene owner; Android exposes the same call sequence directly."
+      "name": "update_snail_presentation",
+      "aliases": [
+        "initialize_cutscene"
+      ],
+      "description": "Authored `cRSnail::AIGoldy()`, preserved by Android and iOS: this per-frame presentation method borrows `Player::live_transform()` and `cached_camera_target_world`, advances the Snail's matrices, skin, world hotspots, hover jets and animation channels, and updates the embedded cRCutScene owner. The historical `initialize_cutscene` label remains an alias; the distinct exact `initialize_cutscene_ai @ 0x446130` is the real cRCutScene initializer."
     },
     {
       "address": "0x442e40",
@@ -2883,13 +2886,19 @@
     },
     {
       "address": "0x445cd0",
-      "name": "update_snail_skin",
-      "description": "Stable Windows name for Android `cRSnail::BuildHotSpots()`: transforms the exact Snail's 19 local hotspots through two live source matrices into the world-space bank consumed by cRCutScene."
+      "name": "build_snail_world_hotspots",
+      "aliases": [
+        "update_snail_skin"
+      ],
+      "description": "Android `cRSnail::BuildHotSpots()`: transforms the exact Snail's 19 local hotspots through two live source matrices into the world-space bank consumed by cRCutScene. The historical `update_snail_skin` label remains an alias."
     },
     {
       "address": "0x445d50",
-      "name": "build_snail_hotspots",
-      "description": "Authored `cRSnail::ExtractHotSpots()`: fills the exact Snail's 19-entry local hotspot bank from named model textures, including CameraSkidStop, CameraSlugDeath, and CameraIntroTalk."
+      "name": "extract_snail_local_hotspots",
+      "aliases": [
+        "build_snail_hotspots"
+      ],
+      "description": "Authored `cRSnail::ExtractHotSpots()`, preserved by Android and iOS: fills the exact Snail's 19-entry local hotspot bank from named model textures, including CameraSkidStop, CameraSlugDeath, and CameraIntroTalk. The historical `build_snail_hotspots` label remains an alias."
     },
     {
       "address": "0x445e20",

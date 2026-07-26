@@ -2073,15 +2073,15 @@
     },
     {
       "address": "0x445cd0",
-      "windows_name": "update_snail_skin",
+      "windows_name": "build_snail_world_hotspots",
       "android_symbol": "cRSnail::BuildHotSpots()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Despite the stable Windows name, both bodies transform the 19 local cRSnail hotspots through the two live source matrices into the world-space bank each frame."
+      "notes": "Both bodies transform the 19 local cRSnail hotspots through the two live source matrices into the world-space bank each frame. The canonical Windows name distinguishes this authored BuildHotSpots pass from the initialization-time ExtractHotSpots producer."
     },
     {
       "address": "0x445d50",
-      "windows_name": "build_snail_hotspots",
+      "windows_name": "extract_snail_local_hotspots",
       "ios_symbol": "cRSnail::ExtractHotSpots()",
       "android_symbol": "cRSnail::ExtractHotSpots()",
       "source_object": "SubGame.o",
@@ -2168,12 +2168,12 @@
     },
     {
       "address": "0x4428d0",
-      "windows_name": "initialize_cutscene",
+      "windows_name": "update_snail_presentation",
       "ios_symbol": "cRSnail::AIGoldy()",
       "android_symbol": "cRSnail::AIGoldy()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Windows name is a stable historical harness identifier. Like Android cRSnail::AIGoldy, this per-frame presentation method runs snail-skin AI, matrix interpolation, hotspot construction, hover jets, animation dispatch, and the embedded cRCutScene::AI; it is not cRCutScene::Init."
+      "notes": "Like Android and iOS cRSnail::AIGoldy, this per-frame presentation method runs snail-skin AI, matrix interpolation, hotspot construction, hover jets, animation dispatch, and the embedded cRCutScene::AI; it is not cRCutScene::Init."
     },
     {
       "address": "0x4466d0",

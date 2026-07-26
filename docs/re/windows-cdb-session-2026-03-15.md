@@ -402,7 +402,7 @@ Planned repro order for this pivot:
 
 Practical read:
 
-- the anchor-writer question from the earlier wish list is now lower priority because the old `player + 0x1840` / `+0x1888` reads are already better explained as `snail_hotspots_world` outputs maintained by `update_snail_skin`
+- the anchor-writer question from the earlier wish list is now lower priority because the old `player + 0x1840` / `+0x1888` reads are already better explained as `snail_hotspots_world` outputs maintained by `build_snail_world_hotspots`
 - the current best `cdb` return is now precise handoff timing and selector ownership rather than more generic attachment tracing
 
 The first stop after arming the new watch set happened immediately on level selection from the galaxy screen and clarified the startup write path for `visible_life_stock`.
@@ -851,13 +851,13 @@ Most useful current conclusion:
 - this widened slug-death capture does **not** support hotspot `17` (`CameraSlugDeath`) as the live death-camera anchor for the observed respawn path
 - the best present read is stronger than before: the first usable death override is already on the hotspot-`18` lane, and the later closeness to hotspot `18` is not just an artifact of the respawn intro handoff
 
-## Hotspot Constructor Captures: `initialize_cutscene` And `update_snail_skin`
+## Hotspot Constructor Captures: `update_snail_presentation` And `build_snail_world_hotspots`
 
 After the hotspot comparisons, the probe pack was narrowed to the actual constructor path:
 
-- `initialize_cutscene`
-- `update_snail_skin`
-- static readback from `build_snail_hotspots`
+- `update_snail_presentation`
+- `build_snail_world_hotspots`
+- static readback from `extract_snail_local_hotspots`
 
 The purpose was to settle whether hotspot `18` is a fixed authored world-space anchor or a runtime product of the cutscene/player matrix setup.
 
@@ -865,25 +865,26 @@ The purpose was to settle whether hotspot `18` is a fixed authored world-space a
 
 One clean intro transition from the black level-start screen produced the following sequence:
 
-- first stop at `initialize_cutscene` entry:
+- first stop at `update_snail_presentation` entry:
   - live state after one instruction:
     - `cutscene.state = 1`
     - `player = 0x0d338d9c`
     - `src1604_t = (0x00000000, 0x40f480a1, 0x40800000)`
     - `src1684_t = (0x00000000, 0x40f47644, 0x40800000)`
     - hotspot `18` was still zero before the rebuild
-- second stop at `update_snail_skin` entry:
+- second stop at `build_snail_world_hotspots` entry:
   - `player = 0x0d33b720`
   - `hotspot18_before = (0xc018e52e, 0x3f248a6e, 0x441ed5ca)` from the prior level state
   - `src1604_t = (0x00000000, 0x40f480a1, 0x40800000)`
   - `src1684_t = (0x00000000, 0x40f47644, 0x40800000)`
-- after stepping out of `update_snail_skin`, hotspot `18` became:
+- after stepping out of `build_snail_world_hotspots`, hotspot `18` became:
   - `(0x3f5c154d, 0x40f87c88, 0x40bccf42)`
 
 Practical read from the intro constructor capture:
 
 - hotspot `18` is rebuilt during the intro path rather than treated as a fixed authored constant
-- the rebuild happens through `update_snail_skin` / `build_snail_hotspots`
+- the rebuild happens through `build_snail_world_hotspots` /
+  `extract_snail_local_hotspots`
 - the two source translations feeding the rebuild are already populated before the hotspot update and are nearly identical during intro start
 - the rebuilt hotspot `18` exactly matches the earlier intro-camera override sample
 
@@ -896,13 +897,13 @@ One normal level finish produced the matching completion-side sequence:
   - `player = 0x0d33b720`
   - `hotspot18 = (0x3f678197, 0x3f4a9266, 0x4402f3a3)`
   - `cutscene_xyz = (0x00000000, 0x4132ac86, 0x40690d9f)`
-- second stop at `update_snail_skin` during `cutscene.state = 6`:
+- second stop at `build_snail_world_hotspots` during `cutscene.state = 6`:
   - `subgame = 0x0d33b720`
   - `player = 0x0d338d9c`
   - `hotspot18_before = (0x00000000, 0x00000000, 0x00000000)`
   - `src1604_t = (0xbe6cf236, 0x3efbd016, 0x440295fd)`
   - `src1684_t = (0xbe584000, 0x3f05325b, 0x440295d2)`
-- after stepping out of `update_snail_skin`, hotspot `18` became:
+- after stepping out of `build_snail_world_hotspots`, hotspot `18` became:
   - `(0x3f498b24, 0x3f2a67f2, 0x44030a36)`
 
 Practical read from the completion constructor capture:
@@ -922,20 +923,21 @@ One spare-life slug death produced the matching death-side sequence:
   - `hotspot17 = (0xbfac04a4, 0x3f922f50, 0x43128213)`
   - `hotspot18 = (0xbf7347b6, 0x3f0af7f0, 0x4319f703)`
   - `cutscene_xyz = (0x00000000, 0x41325ad4, 0x4019436c)`
-- second stop at `update_snail_skin` during `cutscene.state = 0xb`:
+- second stop at `build_snail_world_hotspots` during `cutscene.state = 0xb`:
   - `subgame = 0x0d33b720`
   - `player = 0x0d338d9c`
   - `hotspot17_before = (0x00000000, 0x00000000, 0x00000000)`
   - `hotspot18_before = (0x00000000, 0x00000000, 0x00000000)`
   - `src1604_t = (0xbfdac122, 0x3f0da750, 0x4317edfc)`
   - `src1684_t = (0xbfdd4000, 0x3f147a3d, 0x4317edb4)`
-- after stepping out of `update_snail_skin`, the rebuilt hotspot vectors became:
+- after stepping out of `build_snail_world_hotspots`, the rebuilt hotspot vectors became:
   - `hotspot17 = (0xbfad329d, 0x3f9dc3f2, 0x43126af6)`
   - `hotspot18 = (0xbf72ca4a, 0x3f224005, 0x4319dfc0)`
 
 Practical read from the death constructor capture:
 
-- death uses the same `update_snail_skin` / `build_snail_hotspots` rebuild lane as intro and completion
+- death uses the same `build_snail_world_hotspots` /
+  `extract_snail_local_hotspots` rebuild lane as intro and completion
 - during the observed death transition, both hotspot `17` and hotspot `18` are zeroed before the rebuild and then synthesized from the same two source matrices
 - this means hotspot `17` is not just a static authored marker sitting untouched in memory; it is also regenerated on the runtime cutscene path
 - combined with the earlier death-camera trace, the current best read is:
@@ -946,11 +948,17 @@ Most useful current conclusion:
 
 - the camera bug in the Zig port is unlikely to be only "wrong hotspot id"
 - intro, completion, and death all show the cutscene hotspots being synthesized from runtime matrix state
-- the next high-value step is to recover the exact formula inside `build_snail_hotspots` or the source-matrix setup feeding `1604` and `1684`, because that is now the most likely place where the port diverges from Windows
+- the next high-value step is to recover the exact formula inside
+  `extract_snail_local_hotspots` or the source-matrix setup feeding `1604` and
+  `1684`, because that is now the most likely place where the port diverges
+  from Windows
 
 ### Intro Source-Matrix Dump
 
-A later clean intro repro was instrumented to dump the full `1604` and `1684` matrices at the first `update_snail_skin` hit after `cutscene.state = 1` had been observed. The useful capture landed at `cutscene.state = 2`, with both hotspot vectors still zero before the rebuild:
+A later clean intro repro was instrumented to dump the full `1604` and `1684`
+matrices at the first `build_snail_world_hotspots` hit after
+`cutscene.state = 1` had been observed. The useful capture landed at
+`cutscene.state = 2`, with both hotspot vectors still zero before the rebuild:
 
 - `[intro_update_snail_skin_matrix_dump] subgame=0x0d33b720 player=0x0d338d9c state=2 hotspot17=(0,0,0) hotspot18=(0,0,0)`
 - `1604` matrix:

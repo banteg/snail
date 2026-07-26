@@ -85,11 +85,12 @@ TRUSTED_NAMES = [
     (0x442540, "reset_vapour"),
     (0x442560, "add_vapour_point"),
     (0x4425F0, "update_vapour"),
+    (0x4428D0, "update_snail_presentation"),
     (0x442E40, "release_snail_weapons"),
     (0x444600, "dispatch_cutscene_animation"),
     (0x4446E0, "set_weapon_animation"),
-    (0x445CD0, "update_snail_skin"),
-    (0x445D50, "build_snail_hotspots"),
+    (0x445CD0, "build_snail_world_hotspots"),
+    (0x445D50, "extract_snail_local_hotspots"),
     (0x447090, "initialize_fringe_manager"),
     (0x4470A0, "allocate_fringe_object"),
     (0x447290, "recycle_bod_to_free_list"),
@@ -353,8 +354,8 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4446E0,  # set_weapon_animation
     0x444CF0,  # handle_subgoldy_collisions
     0x445840,  # kill_subgoldy
-    0x445CD0,  # update_snail_skin
-    0x445D50,  # build_snail_hotspots
+    0x445CD0,  # build_snail_world_hotspots
+    0x445D50,  # extract_snail_local_hotspots
     0x445E20,  # update_times_up
     0x446130,  # initialize_cutscene_ai
     0x446160,  # initialize_cameraman
@@ -2369,12 +2370,12 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall initialize_snail_skin(SnailSkin* snail_skin);",
     ),
     (
-        "update_snail_skin",
-        "void __thiscall update_snail_skin(Snail* snail);",
+        "build_snail_world_hotspots",
+        "void __thiscall build_snail_world_hotspots(Snail* snail);",
     ),
     (
-        "build_snail_hotspots",
-        "void __thiscall build_snail_hotspots(Snail* snail);",
+        "extract_snail_local_hotspots",
+        "void __thiscall extract_snail_local_hotspots(Snail* snail);",
     ),
     (
         "initialize_invincible_shell",
@@ -2717,8 +2718,8 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall release_snail_weapons(Snail* snail);",
     ),
     (
-        "initialize_cutscene",
-        "void __thiscall initialize_cutscene(Snail* snail);",
+        "update_snail_presentation",
+        "void __thiscall update_snail_presentation(Snail* snail);",
     ),
     (
         "dispatch_cutscene_animation",

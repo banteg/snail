@@ -22608,7 +22608,7 @@
     },
     {
       "address": "0x4428d0",
-      "windows_name": "initialize_cutscene",
+      "windows_name": "update_snail_presentation",
       "windows_size": 1392,
       "status": "verified",
       "android_symbol": "cRSnail::AIGoldy()",
@@ -23421,7 +23421,7 @@
     },
     {
       "address": "0x445cd0",
-      "windows_name": "update_snail_skin",
+      "windows_name": "build_snail_world_hotspots",
       "windows_size": 128,
       "status": "verified",
       "android_symbol": "cRSnail::BuildHotSpots()",
@@ -23442,10 +23442,10 @@
           "size_score": 0.7812
         },
         {
-          "symbol": "cRBodPos::cRBodPos()",
-          "score": 0.6575,
+          "symbol": "cRCheat::AI()",
+          "score": 0.67,
           "name_score": 0.45,
-          "size_score": 0.9688
+          "size_score": 1.0
         },
         {
           "symbol": "cRBodPos::cRBodPos()",
@@ -23454,16 +23454,16 @@
           "size_score": 0.9688
         },
         {
-          "symbol": "OpenFile(char const*, OpaqueAudioFileID*&)",
-          "score": 0.6488,
-          "name_score": 0.4348,
-          "size_score": 0.9697
+          "symbol": "cRBodPos::cRBodPos()",
+          "score": 0.6575,
+          "name_score": 0.45,
+          "size_score": 0.9688
         }
       ]
     },
     {
       "address": "0x445d50",
-      "windows_name": "build_snail_hotspots",
+      "windows_name": "extract_snail_local_hotspots",
       "windows_size": 208,
       "status": "verified",
       "android_symbol": "cRSnail::ExtractHotSpots()",

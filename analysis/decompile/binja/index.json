@@ -2567,8 +2567,8 @@
     },
     {
       "address": "0x4428d0",
-      "name": "initialize_cutscene",
-      "artifact": "analysis/decompile/binja/functions/004428d0-initialize_cutscene.c"
+      "name": "update_snail_presentation",
+      "artifact": "analysis/decompile/binja/functions/004428d0-update_snail_presentation.c"
     },
     {
       "address": "0x442e40",
@@ -2712,13 +2712,13 @@
     },
     {
       "address": "0x445cd0",
-      "name": "update_snail_skin",
-      "artifact": "analysis/decompile/binja/functions/00445cd0-update_snail_skin.c"
+      "name": "build_snail_world_hotspots",
+      "artifact": "analysis/decompile/binja/functions/00445cd0-build_snail_world_hotspots.c"
     },
     {
       "address": "0x445d50",
-      "name": "build_snail_hotspots",
-      "artifact": "analysis/decompile/binja/functions/00445d50-build_snail_hotspots.c"
+      "name": "extract_snail_local_hotspots",
+      "artifact": "analysis/decompile/binja/functions/00445d50-extract_snail_local_hotspots.c"
     },
     {
       "address": "0x445e20",

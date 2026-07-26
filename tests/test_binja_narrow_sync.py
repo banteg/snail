@@ -374,8 +374,14 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
         analysis_header,
     ):
         assert "void __thiscall release_snail_weapons(Snail* snail)" in source
-        assert "void __thiscall build_snail_hotspots(Snail* snail)" in source
-        assert "void __thiscall update_snail_skin(Snail* snail)" in source
+        assert (
+            "void __thiscall extract_snail_local_hotspots(Snail* snail)"
+            in source
+        )
+        assert (
+            "void __thiscall build_snail_world_hotspots(Snail* snail)"
+            in source
+        )
         assert (
             "void __thiscall dispatch_cutscene_animation(Snail* snail, "
             "int32_t animation_id, uint8_t immediate, int32_t mode_flags)"
@@ -3717,7 +3723,7 @@ def test_snail_hotspot_replay_preserves_local_and_world_borrows() -> None:
         (124, 66, "hotspot_source_vertex", "Vec3*"),
     ):
         update = (
-            '"build_snail_hotspots",\n'
+            '"extract_snail_local_hotspots",\n'
             '        "RegisterVariableSourceType",\n'
             f"        {index},\n"
             f"        {storage},\n"
@@ -3731,7 +3737,7 @@ def test_snail_hotspot_replay_preserves_local_and_world_borrows() -> None:
         (97, 67, "hotspot_world_slot"),
     ):
         update = (
-            '"update_snail_skin",\n'
+            '"build_snail_world_hotspots",\n'
             '        "RegisterVariableSourceType",\n'
             f"        {index},\n"
             f"        {storage},\n"
@@ -3744,7 +3750,7 @@ def test_snail_hotspot_replay_preserves_local_and_world_borrows() -> None:
         (34, 72, "hotspot_transform", "TransformMatrix*"),
     ):
         update = (
-            '"update_snail_skin",\n'
+            '"build_snail_world_hotspots",\n'
             '        "RegisterVariableSourceType",\n'
             f"        {index},\n"
             f"        {storage},\n"
@@ -10569,9 +10575,12 @@ def test_presentation_animation_object_cursor_survives_every_replay_lane() -> No
     bn_check = checks["bn_game_initializer_animation_object_cursor_ownership"]
     ida_check = checks["ida_game_initializer_animation_object_cursor_ownership"]
     assert (
-        "struct Object* object = cutscene_animation_object_cursor->object"
+        "= cutscene_animation_object_cursor->object"
         in bn_check["required_substrings"]
     )
+    assert "->flags |= OBJECT_FLAG_DYNAMIC_VERTICES" in bn_check[
+        "required_substrings"
+    ]
     assert "(var_12c - 0x432870)->subgame" in bn_check["forbidden_substrings"]
     assert (
         "cutscene_animation_object_cursor[-1].object->distort.y_squash = 0.0;"
@@ -12163,7 +12172,7 @@ def test_cut_scene_state_ownership_stays_aligned() -> None:
         "initialize_cutscene_ai": "CUT_SCENE_STATE_INACTIVE",
         "initialize_subgoldy": "CUT_SCENE_STATE_INTRO_PENDING",
         "update_subgame_camera": "CUT_SCENE_STATE_INACTIVE",
-        "initialize_cutscene": "CUT_SCENE_STATE_INACTIVE",
+        "update_snail_presentation": "CUT_SCENE_STATE_INACTIVE",
         "handle_subgoldy_collisions": "CUT_SCENE_STATE_DEATH_PENDING",
         "update_subgoldy": "CUT_SCENE_STATE_COMPLETION_PENDING",
         "update_cutscene": "CUT_SCENE_STATE_DEATH_HOLD",
@@ -12206,7 +12215,7 @@ def test_presentation_wobble_view_stays_exact_and_replayable() -> None:
 
     consumers = {
         "initialize_subgoldy": "presentation.wobble.roll_phase_step",
-        "initialize_cutscene": "wobble.lift_phase_step",
+        "update_snail_presentation": "wobble.lift_phase_step",
         "handle_subgoldy_collisions": "presentation.wobble.lift_phase_step",
     }
     for function_name, field in consumers.items():

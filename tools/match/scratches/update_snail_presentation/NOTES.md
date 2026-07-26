@@ -1,4 +1,4 @@
-# initialize_cutscene @ 0x4428d0
+# update_snail_presentation @ 0x4428d0
 
 First structural scratch for the per-frame presentation/cutscene setup path.
 This function ties together the fields promoted on the exact authored `Snail`:
@@ -8,7 +8,8 @@ This function ties together the fields promoted on the exact authored `Snail`:
   `cached_cutscene_matrix` at `+0xc0`
 - inherited channel `RenderableBod::transform` at `+0x38` and
   `release_step` at `+0x3d0`
-- the two hotspot-source renderable transforms, then `update_snail_skin`
+- the two hotspot-source renderable transforms, then
+  `build_snail_world_hotspots`
 - embedded authored `cRCutScene` at `+0x1958`
 
 The first version is meant to be an honest source-shaped baseline for matching
@@ -123,3 +124,12 @@ adjacent `tMatrix::Multiply` symbol branches to the operator just as Windows'
 four-instruction `0x44d1d0` member does. The exact source now spells the three
 calls as multiply assignments. This preserves the full 339/339 instruction
 match and all 44 clean operands while assigning the calls to their real member.
+
+## 2026-07-26 mobile-backed canonical ownership
+
+Android and iOS both retain the exact symbol `cRSnail::AIGoldy()` and the same
+per-frame presentation body. Windows calls it once from `update_subgoldy`;
+the distinct `initialize_cutscene_ai @ 0x446130` remains the real
+`cRCutScene::Init`. The canonical Windows name is therefore
+`update_snail_presentation`, with `initialize_cutscene` retained only as a
+compatibility alias. The exact 339/339 matcher body is unchanged.

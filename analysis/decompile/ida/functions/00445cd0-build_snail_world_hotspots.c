@@ -1,9 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: update_snail_skin @ 0x445cd0 */
-/* selector: update_snail_skin */
+/* function: build_snail_world_hotspots @ 0x445cd0 */
+/* selector: build_snail_world_hotspots */
 
-// Stable Windows name for Android `cRSnail::BuildHotSpots()`: transforms the exact Snail's 19 local hotspots through two live source matrices into the world-space bank consumed by cRCutScene.
-void __thiscall update_snail_skin(Snail *snail)
+// Android `cRSnail::BuildHotSpots()`: transforms the exact Snail's 19 local hotspots through two live source matrices into the world-space bank consumed by cRCutScene. The historical `update_snail_skin` label remains an alias.
+void __thiscall build_snail_world_hotspots(Snail *snail)
 {
   int32_t hotspot_index; // ebx
   Vec3 *hotspot_world_cursor; // ebp

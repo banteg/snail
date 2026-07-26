@@ -1,9 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: initialize_cutscene @ 0x4428d0 */
-/* selector: initialize_cutscene */
+/* function: update_snail_presentation @ 0x4428d0 */
+/* selector: update_snail_presentation */
 
-// Stable historical Windows name for authored `cRSnail::AIGoldy()`. This per-frame presentation method borrows `Player::live_transform()` and `cached_camera_target_world`, advances the Snail's matrices, skin, hotspots, hover jets and animation channels, and updates the embedded cRCutScene owner; Android exposes the same call sequence directly.
-void __thiscall initialize_cutscene(Snail *snail)
+// Authored `cRSnail::AIGoldy()`, preserved by Android and iOS: this per-frame presentation method borrows `Player::live_transform()` and `cached_camera_target_world`, advances the Snail's matrices, skin, world hotspots, hover jets and animation channels, and updates the embedded cRCutScene owner. The historical `initialize_cutscene` label remains an alias; the distinct exact `initialize_cutscene_ai @ 0x446130` is the real cRCutScene initializer.
+void __thiscall update_snail_presentation(Snail *snail)
 {
   Player *owner_player; // ecx
   Player *v3; // ecx
@@ -41,16 +41,16 @@ void __thiscall initialize_cutscene(Snail *snail)
   TransformMatrix out; // [esp+F0h] [ebp-80h] BYREF
   TransformMatrix v38; // [esp+130h] [ebp-40h] BYREF
 
-  if ( !g_game_base->subgame.subgame_pause_gate )
+  if ( g_game_base->subgame.subgame_pause_gate == 0 )
   {
     update_snail_skin_transition(&snail->snail_skin);
     owner_player = snail->owner_player;
     if ( owner_player->cutscene_pitch_cycle <= 0.0 )
     {
-      if ( owner_player->attachment_exit_pending )
+      if ( owner_player->attachment_exit_pending != 0 )
       {
-        qmemcpy(&transform, &owner_player->body.transform, sizeof(transform));
-        qmemcpy(&to, &owner_player->body.transform, sizeof(to));
+        transform = owner_player->body.transform;
+        to = owner_player->body.transform;
         set_matrix_rotation_identity(&transform);
         linear_interpolate_matrix(&snail->owner_player->body.transform, &transform, &to, 0.97000003);
       }
@@ -62,8 +62,8 @@ void __thiscall initialize_cutscene(Snail *snail)
       if ( v3->cutscene_pitch_cycle > 1.0 )
         v3->cutscene_pitch_cycle = 0.0;
       p_transform = &snail->owner_player->body.transform;
-      qmemcpy(&transform, p_transform, sizeof(transform));
-      qmemcpy(&to, p_transform, sizeof(to));
+      transform = *p_transform;
+      to = *p_transform;
       set_matrix_rotation_identity(&transform);
       v5 = (-0.78539819 - snail->owner_player->cutscene_pitch_cycle * 6.2831855) * 1.4;
       angle = v5;
@@ -80,7 +80,7 @@ void __thiscall initialize_cutscene(Snail *snail)
     snail->body.transform.position.x = *v6;
     snail->body.transform.position.y = v6[1];
     snail->body.transform.position.z = v6[2];
-    qmemcpy(&transform, &snail->body.transform, sizeof(transform));
+    transform = snail->body.transform;
     linear_interpolate_matrix(&snail->body.transform, &transform, &snail->cached_cutscene_matrix, 0.69999999);
     y = snail->body.transform.basis_up.y;
     snail->body.transform.position = transform.position;
@@ -91,13 +91,13 @@ void __thiscall initialize_cutscene(Snail *snail)
     }
     v10 = snail->wobble.roll_phase_step + snail->wobble.roll_phase;
     snail->wobble.roll_phase = v10;
-    if ( !(v12 | v13) )
+    if ( (v12 | v13) == 0 )
       snail->wobble.roll_phase = v10 - 1.0;
     v14 = snail->wobble.lift_phase_step + snail->wobble.lift_phase;
     snail->wobble.lift_phase = v14;
-    if ( !(v16 | v17) )
+    if ( (v16 | v17) == 0 )
       snail->wobble.lift_phase = v14 - 1.0;
-    qmemcpy(&v38, v7, sizeof(v38));
+    v38 = *v7;
     set_matrix_identity(&rhs);
     v25 = snail->wobble.roll_phase * 6.2831855;
     v26 = sine(v25) * 0.017449999;
@@ -129,7 +129,7 @@ void __thiscall initialize_cutscene(Snail *snail)
       if ( v21 > 1.0 )
         snail->invincible_shell.cutscene_roll_progress = 1.0;
     }
-    if ( snail->invincible_shell.channel_release_steps_active )
+    if ( snail->invincible_shell.channel_release_steps_active != 0 )
     {
       snail->jetpack_channel.body.transform.position.x = snail->jetpack_channel.release_step.x
                                                        + snail->jetpack_channel.body.transform.position.x;
@@ -171,12 +171,12 @@ void __thiscall initialize_cutscene(Snail *snail)
     snail->snail_hotspot_body.transform.position.x = *v22;
     snail->snail_hotspot_body.transform.position.y = v22[1];
     snail->snail_hotspot_body.transform.position.z = v22[2];
-    update_snail_skin(snail);
-    if ( snail->cutscene.state )
+    build_snail_world_hotspots(snail);
+    if ( snail->cutscene.state != CUT_SCENE_STATE_INACTIVE )
     {
       update_cutscene(&snail->cutscene);
     }
-    else if ( !snail->anim_manager.queue_count && !snail->owner_player->control_override_active )
+    else if ( snail->anim_manager.queue_count == 0 && snail->owner_player->control_override_active == 0 )
     {
       dispatch_cutscene_animation(snail, 1, 0, -1);
     }

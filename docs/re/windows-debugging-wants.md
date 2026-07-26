@@ -43,7 +43,10 @@ That order is intentional:
 
 ### Why this matters
 
-The old `player + 6208` / `+6280` mystery is no longer a pair of isolated writer-less cutscene fields. Later RE and the March 15 CDB session now explain those reads as `snail_hotspots_world[12]` and `snail_hotspots_world[18]`, maintained by `update_snail_skin`.
+The old `player + 6208` / `+6280` mystery is no longer a pair of isolated
+writer-less cutscene fields. Later RE and the March 15 CDB session now explain
+those reads as `snail_hotspots_world[12]` and `snail_hotspots_world[18]`,
+maintained by `build_snail_world_hotspots`.
 
 What is still unresolved is upstream of that:
 

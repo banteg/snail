@@ -20,5 +20,5 @@ those commutative operands, causing VC6 to hoist the first matrix load ahead of
 the aggregate source copy. Making x consistent with the already-exact y and z
 lanes restores the native copy-before-arithmetic schedule and closes the body
 to 40/40 instructions without masking or artificial dependencies. The exact
-`update_snail_skin` caller remains 44/44, and partial `render_game_frame`
+`build_snail_world_hotspots` caller remains 44/44, and partial `render_game_frame`
 remains at 45.43% with all 26 operands clean.

@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 5,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
-  "ida_exported": 2,
+  "bn_exported": 5,
+  "ida_exported": 5,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,12 +17,24 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_golb_ai",
-      "address": "0x414820"
+      "name": "initialize_game_assets_and_world",
+      "address": "0x40acf0"
     },
     {
-      "name": "traverse_path_follow_golb",
-      "address": "0x4217b0"
+      "name": "update_subgoldy",
+      "address": "0x43b120"
+    },
+    {
+      "name": "update_snail_presentation",
+      "address": "0x4428d0"
+    },
+    {
+      "name": "build_snail_world_hotspots",
+      "address": "0x445cd0"
+    },
+    {
+      "name": "extract_snail_local_hotspots",
+      "address": "0x445d50"
     }
   ],
   "health_check_count": 1059,

@@ -59,7 +59,10 @@ These are the player-side camera inputs that `update_cameraman` now reads direct
 - `post_follow_value_a`
 - `cached_camera_target_world`
 
-And these presentation-side controller slices now read back with stable names in `initialize_cutscene`, `initialize_invincible_shell`, and `update_invincible_shell` instead of anonymous `+0x15bc` / `+0x1894` float blocks.
+And these presentation-side controller slices now read back with stable names
+in `update_snail_presentation`, `initialize_invincible_shell`, and
+`update_invincible_shell` instead of anonymous `+0x15bc` / `+0x1894` float
+blocks.
 
 ## Helper Typing
 
@@ -109,4 +112,8 @@ The tracked IDA exports are materially clearer after the sync:
 
 - most player-side attachment and presentation fields that `update_cameraman` touches are still only partially typed
 - the authoritative checked-in header now drives both the IDA sync lane and the live BN camera-mutator pass; `uv run python tools/binja/sync_path_template_types.py` queries all required widths in one bridge call, imports only missing complete types, and batches guarded field/prototype readback so the full proven presentation and `SubgameRuntime` owner graph can be replayed without the former whole-header timeout
-- the remaining BN caller residue in `update_cameraman` is now localized to presentation noise around `rotate_matrix_world_z` rather than the broader helper signature set; `linear_interpolate_matrix`, `initialize_cutscene`, and `dispatch_cutscene_animation` are safe to replay through the narrow BN sync lane
+- the remaining BN caller residue in `update_cameraman` is now localized to
+  presentation noise around `rotate_matrix_world_z` rather than the broader
+  helper signature set; `linear_interpolate_matrix`,
+  `update_snail_presentation`, and `dispatch_cutscene_animation` are safe to
+  replay through the narrow BN sync lane

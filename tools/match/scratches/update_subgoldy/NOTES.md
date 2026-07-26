@@ -72,7 +72,7 @@ scratch additionally pins:
 - **Tail**: collisions, 5 anim managers (presentation +0x104, jetpack
   channel base +0x11e0 with manager +0x12e8, weapon channel bases
   +0x64c/+0xa28/+0xe04 stride 0x3dc with managers at base +0x108), track parcels
-  (`SubgameRuntime::parcel_manager`), initialize_cutscene,
+  (`SubgameRuntime::parcel_manager`), update_snail_presentation,
   update_player_movement_flags, `Completion` row-event display,
   `current_high_score_record.replay_sample_count++`, and
   `replay_update_cursor++ == 21000` → `TimesUp`.

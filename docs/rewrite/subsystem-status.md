@@ -253,7 +253,8 @@ Implemented now:
 Still missing or approximate:
 
 - the remaining Windows `cameraman` lift/attachment semantics beyond the current roll-order port
-- the exact gameplay roles of the two `build_snail_hotspots` source matrices beyond the currently consumed `12/17/18` camera slots
+- the exact gameplay roles of the two `build_snail_world_hotspots` source
+  matrices beyond the currently consumed `12/17/18` camera slots
 - any still-missing `cRCutScene::AI()` branches outside the now-ported intro `1 -> 2 -> 8 -> 9`, completion `5 -> 6 -> 7`, and death `10 -> 11 -> 12` lanes
 - the exact gameplay model anchor/orientation and the rest of Turbo's state-specific animation switching beyond the current gameplay/talk split
 - the original row-event/tip actor/controller and payload-table path that own tutorial dialogue timing and presentation beyond the now-runner-owned row-message entry

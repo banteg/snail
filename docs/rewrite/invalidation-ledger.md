@@ -223,13 +223,25 @@ Template:
 ## 2026-03-26 - Player presentation root
 
 - invalidated claim: `player + 0x29a8` is a standalone `snail_visual` sibling field and `player + 0x2984` is anonymous padding
-- replacement evidence: `set_snail_weapon`, `dispatch_cutscene_animation`, and `initialize_cutscene` all operate on the inline root at `player + 0x2984`; `initialize_subgoldy` and `update_subgoldy` both reach the live visual object through that root as `presentation.visual_root`, and the embedded cutscene AI sits at `player + 0x42dc`
+- replacement evidence: `set_snail_weapon`, `dispatch_cutscene_animation`, and
+  `update_snail_presentation` all operate on the inline root at
+  `player + 0x2984`; `initialize_subgoldy` and `update_subgoldy` both reach the
+  live visual object through that root as `presentation.visual_root`, and the
+  embedded cutscene AI sits at `player + 0x42dc`
 - port consequence: keep the recovered type lane and docs centered on one inline authored `Snail`; future Zig or RE naming should stop treating `+0x29a8` as a standalone sibling object
 
 ## 2026-03-26 - Player weapon animation lanes
 
 - invalidated claim: the presentation root stores a flat `active_keyframe` at `+0x110`, a flat `queued_animation_count` at `+0x140`, and each repeated lane stores an anim-manager root at `+0x104`
-- replacement evidence: `dispatch_cutscene_animation`, `set_weapon_animation`, `initialize_subgoldy`, `initialize_cutscene`, and `set_snail_jetpack` first established the nested layout; Android then retained `cRWeapon::SetAnimation(int, bool, int)` and `cRWeapon::AI()`, iOS retained the cRWeapon RTTI/vtable, and the Windows constructor built four identical `0x3dc`-byte children. The Snail therefore owns `Weapon weapon_channels[3]` plus `Weapon jetpack_channel`; every Weapon has `selected_state` at `+0x104`, an inline `AnimManager` at `+0x108`, and five owned renderable slots at `+0x150`.
+- replacement evidence: `dispatch_cutscene_animation`, `set_weapon_animation`,
+  `initialize_subgoldy`, `update_snail_presentation`, and `set_snail_jetpack`
+  first established the nested layout; Android then retained
+  `cRWeapon::SetAnimation(int, bool, int)` and `cRWeapon::AI()`, iOS retained
+  the cRWeapon RTTI/vtable, and the Windows constructor built four identical
+  `0x3dc`-byte children. The Snail therefore owns
+  `Weapon weapon_channels[3]` plus `Weapon jetpack_channel`; every Weapon has
+  `selected_state` at `+0x104`, an inline `AnimManager` at `+0x108`, and five
+  owned renderable slots at `+0x150`.
 - port consequence: keep the checked-in BN/IDA type lane centered on the authored `Weapon` owner and nested `AnimManager`; future Zig or RE naming should stop flattening those lanes into standalone root fields, treating `+0x104` as the manager root, or modeling the embedded Snail as a separate global jetpack controller
 
 ## 2026-03-26 - Camera matrix helper prototypes
@@ -253,7 +265,12 @@ Template:
 ## 2026-03-27 - Presentation tail boundary
 
 - invalidated claim: `Snail` has a standalone `weapon_release_active` byte at `+0x1938`, with its skin child starting at `+0x193c` and `cutscene` at `+0x195c`
-- replacement evidence: raw Windows callsites show `initialize_cutscene` passes `presentation + 0x1938` directly to `update_snail_skin_transition` (`0x4428ef: lea ecx, [ebx+0x1938]`), and later passes `presentation + 0x1958` directly to `update_cutscene` (`0x442dec: lea ecx, [ebx+0x1958]`); the old extra byte was a mis-modeled boundary, not a real standalone field
+- replacement evidence: raw Windows callsites show
+  `update_snail_presentation` passes `presentation + 0x1938` directly to
+  `update_snail_skin_transition` (`0x4428ef: lea ecx, [ebx+0x1938]`), and
+  later passes `presentation + 0x1958` directly to `update_cutscene`
+  (`0x442dec: lea ecx, [ebx+0x1958]`); the old extra byte was a mis-modeled
+  boundary, not a real standalone field
 - replacement ownership: Android exports the exact Windows method family as `cRSnailSkin::Init`, `AI`, and `Change`, while iOS v1.9 exposes `cRSnailSkin::Init(cRSnail*)`; the child is an exact 0x20 bytes with a borrowed `Snail*` backlink at `+0x10`, not a generic render-owner view
 - port consequence: keep native `snail_skin` starting at `+0x1938` and the exact 0x5c-byte `cutscene` at `+0x1958`, and do not reintroduce a fake `weapon_release_active` field or generic render-owner struct ahead of the CutScene in BN/IDA headers or docs
 

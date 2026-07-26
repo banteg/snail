@@ -308,7 +308,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   InputState *p_input; // esi
   int v303; // edi
   struct BorderRecordFlagsStrideCursor *border_flags_cursor; // eax
-  int v305; // ecx
+  int k; // ecx
   float x_offset; // [esp+10h] [ebp-12Ch]
   struct PresentationAnimationObjectStrideCursor *cutscene_animation_object_cursor; // [esp+10h] [ebp-12Ch]
   struct PresentationAnimationObjectStrideCursor *jetpack_animation_object_cursor; // [esp+10h] [ebp-12Ch]
@@ -381,7 +381,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   {
     p_first = &g_game_base->active_bod_list.first;
     first = g_game_base->active_bod_list.first;
-    if ( first )
+    if ( first != nullptr )
     {
       first->list_prev = (struct BodNode *)p_overlay_0;
       (*p_first)->list_prev->list_next = *p_first;
@@ -446,7 +446,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   {
     v9 = &g_game_base->active_bod_list.first;
     v10 = g_game_base->active_bod_list.first;
-    if ( v10 )
+    if ( v10 != nullptr )
     {
       v10->list_prev = (struct BodNode *)p_overlay_2;
       (*v9)->list_prev->list_next = *v9;
@@ -482,7 +482,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   {
     v14 = &g_game_base->active_bod_list.first;
     v15 = g_game_base->active_bod_list.first;
-    if ( v15 )
+    if ( v15 != nullptr )
     {
       v15->list_prev = (struct BodNode *)p_overlay_1;
       (*v14)->list_prev->list_next = *v14;
@@ -718,8 +718,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object((BodBase *)&game->root_bod_catalog.salt_model, v57);
   load_x_mesh(&game->directx_loader, aSaltX, game->root_bod_catalog.salt_model.object, 1);
   salt_owner_game_cursor = (SaltOwnerGameStrideCursor *)&game->subgame.salt_hazards.slots[0].owner_game;
-  edge_selectorc = 40;
-  do
+  for ( edge_selectorc = 40; edge_selectorc != 0; --edge_selectorc )
   {
     set_bod_object((BodBase *)&salt_owner_game_cursor[-1]._stride_tail[12], game->root_bod_catalog.salt_model.object);
     salt_owner_game_cursor->owner_game = &game->subgame;
@@ -727,15 +726,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     *(_DWORD *)(*(_DWORD *)&salt_owner_game_cursor[-1]._stride_tail[48] + 20) = 12;
     set_matrix_identity((TransformMatrix *)&salt_owner_game_cursor[-1]._stride_tail[68]);
     ++salt_owner_game_cursor;
-    --edge_selectorc;
   }
-  while ( edge_selectorc );
   for ( i = 0; i < 2; ++i )
   {
     banner_stride_view = (struct BannerInitStrideView *)((char *)game + 96 * i);
     v60 = add_object_to_list(&g_object_list);
     set_bod_object(&banner_stride_view->banner.bod, v60);
-    if ( i )
+    if ( i != 0 )
     {
       if ( i == 1 )
         load_x_mesh(&game->directx_loader, aPostofficestop, game->subgame.banners.slots[1].bod.object, 1);
@@ -761,7 +758,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   {
     v62 = game->active_bod_list.first;
     v63 = &game->active_bod_list.first;
-    if ( v62 )
+    if ( v62 != nullptr )
     {
       v62->list_prev = &p_track_body_list_head->bod;
       (*v63)->list_prev->list_next = *v63;
@@ -791,7 +788,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     game->subgame.barrier_sub_lazer_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
     game->subgame.track_body_list_head.bod.list_next = &p_barrier_sub_lazer_list_head->bod;
     list_next = game->subgame.barrier_sub_lazer_list_head.bod.list_next;
-    if ( list_next )
+    if ( list_next != nullptr )
       list_next->list_prev = &p_barrier_sub_lazer_list_head->bod;
     v69 = *v67;
     BYTE1(v69) = BYTE1(*v67) | 2;
@@ -809,7 +806,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     game->subgame.salt_hazard_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
     game->subgame.track_body_list_head.bod.list_next = &p_salt_hazard_list_head->bod;
     v72 = game->subgame.salt_hazard_list_head.bod.list_next;
-    if ( v72 )
+    if ( v72 != nullptr )
       v72->list_prev = &p_salt_hazard_list_head->bod;
     v73 = *v71;
     BYTE1(v73) = BYTE1(*v71) | 2;
@@ -827,7 +824,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     game->subgame.golb_vapour_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
     game->subgame.track_body_list_head.bod.list_next = &p_golb_vapour_list_head->bod;
     v76 = game->subgame.golb_vapour_list_head.bod.list_next;
-    if ( v76 )
+    if ( v76 != nullptr )
       v76->list_prev = &p_golb_vapour_list_head->bod;
     v77 = *v75;
     BYTE1(v77) = BYTE1(*v75) | 2;
@@ -845,7 +842,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     game->subgame.fringe_attachment_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
     game->subgame.track_body_list_head.bod.list_next = &p_fringe_attachment_list_head->bod;
     v80 = game->subgame.fringe_attachment_list_head.bod.list_next;
-    if ( v80 )
+    if ( v80 != nullptr )
       v80->list_prev = &p_fringe_attachment_list_head->bod;
     v81 = *v79;
     BYTE1(v81) = BYTE1(*v79) | 2;
@@ -863,7 +860,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     game->subgame.special_track_cell_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
     game->subgame.track_body_list_head.bod.list_next = &p_special_track_cell_list_head->bod;
     v84 = game->subgame.special_track_cell_list_head.bod.list_next;
-    if ( v84 )
+    if ( v84 != nullptr )
       v84->list_prev = &p_special_track_cell_list_head->bod;
     v85 = *v83;
     BYTE1(v85) = BYTE1(*v83) | 2;
@@ -881,7 +878,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     game->subgame.unknown_bod_355cec.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
     game->subgame.track_body_list_head.bod.list_next = &p_unknown_bod_355cec->bod;
     v88 = game->subgame.unknown_bod_355cec.bod.list_next;
-    if ( v88 )
+    if ( v88 != nullptr )
       v88->list_prev = &p_unknown_bod_355cec->bod;
     v89 = *v87;
     BYTE1(v89) = BYTE1(*v87) | 2;
@@ -899,7 +896,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     game->subgame.landscape_slice_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
     game->subgame.track_body_list_head.bod.list_next = &p_landscape_slice_list_head->bod;
     v92 = game->subgame.landscape_slice_list_head.bod.list_next;
-    if ( v92 )
+    if ( v92 != nullptr )
       v92->list_prev = &p_landscape_slice_list_head->bod;
     v93 = *v91;
     BYTE1(v93) = BYTE1(*v91) | 2;
@@ -917,13 +914,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     game->subgame.unknown_bod_355c7c.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
     game->subgame.track_body_list_head.bod.list_next = &p_unknown_bod_355c7c->bod;
     v96 = game->subgame.unknown_bod_355c7c.bod.list_next;
-    if ( v96 )
+    if ( v96 != nullptr )
       v96->list_prev = &p_unknown_bod_355c7c->bod;
     v97 = *v95;
     BYTE1(v97) = BYTE1(*v95) | 2;
     *v95 = v97;
   }
-  debug_report_stub();
+  debug_report_stub(aPathGeneration);
   v98 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[0].primary.bod, v98);
   initialize_looptheloop_path_template_pair(
@@ -2192,7 +2189,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object(&game->subgame.path_pairs[47].primary.bod, v192);
   initialize_toad_path_template_pair(
     &game->subgame.path_pairs[47].primary,
-    1,
+    true,
     texture_a,
     aObjectsWorld00,
     vertical_texture);
@@ -2217,7 +2214,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object(&game->subgame.path_pairs[48].primary.bod, v194);
   initialize_toad_path_template_pair(
     &game->subgame.path_pairs[48].primary,
-    0,
+    false,
     texture_a,
     aObjectsWorld00,
     vertical_texture);
@@ -2242,7 +2239,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object(&game->subgame.path_pairs[49].primary.bod, v196);
   initialize_toad_path_template_pair(
     &game->subgame.path_pairs[49].primary,
-    1,
+    true,
     texture_a,
     aObjectsWorld00,
     vertical_texture);
@@ -2267,7 +2264,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object(&game->subgame.path_pairs[50].primary.bod, v198);
   initialize_toad_path_template_pair(
     &game->subgame.path_pairs[50].primary,
-    0,
+    false,
     texture_a,
     aObjectsWorld00,
     vertical_texture);
@@ -2661,11 +2658,11 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[26].primary.entry_base_strip_mesh = game->subgame.path_pairs[26].primary.bod.object;
   game->subgame.path_pairs[26].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[60].secondary.bod.object;
   game->subgame.path_pairs[26].secondary.entry_base_strip_mesh = game->subgame.path_pairs[26].secondary.bod.object;
-  debug_report_stub();
+  debug_report_stub(aPathGeneration_0);
   v231 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[0].body.bod, v231);
   case_insensitive_substring = find_case_insensitive_substring(aTest, game->directx_loader.animation_bytes);
-  if ( case_insensitive_substring )
+  if ( case_insensitive_substring != nullptr )
   {
     v233 = find_case_insensitive_substring(asc_4A1644, case_insensitive_substring);
     v234 = v233[1];
@@ -2758,7 +2755,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     aTurbohotspotsX,
     game->subgame.player.presentation.snail_hotspot_body.bod.object,
     2);
-  build_snail_hotspots(&game->subgame.player.presentation);
+  extract_snail_local_hotspots(&game->subgame.player.presentation);
   edge_selectord = 10;
   cutscene_animation_object_cursor = (struct PresentationAnimationObjectStrideCursor *)&game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object;
   do
@@ -3012,8 +3009,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object(&game->subgame.player.golb_shots[0].tertiary_body.bod, v277);
   load_x_mesh(&game->directx_loader, aRocketBase000X, game->subgame.player.golb_shots[0].tertiary_body.bod.object, 1);
   golb_shot_vapour_object_cursor = (GolbShotVapourObjectStrideCursor *)&game->subgame.player.golb_shots[0].vapour.body.bod.object;
-  edge_selectori = 12;
-  do
+  for ( edge_selectori = 12; edge_selectori != 0; --edge_selectori )
   {
     v279 = add_object_to_list(&g_object_list);
     set_bod_object((BodBase *)&golb_shot_vapour_object_cursor[-1]._stride_tail[464], v279);
@@ -3028,9 +3024,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
       &golb_shot_vapour_object_cursor->tertiary_body.bod,
       game->subgame.player.golb_shots[0].tertiary_body.bod.object);
     ++golb_shot_vapour_object_cursor;
-    --edge_selectori;
   }
-  while ( edge_selectori );
   v280 = get_or_create_texture_ref(&g_texture_refs, aObjectsVapourl_0, nullptr, 0);
   v281 = v280->flags;
   BYTE1(v281) = ((unsigned __int16)v280->flags >> 8) | 4;
@@ -3166,7 +3160,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     initialize_frontend_overlay_color_lerp(&player_initializer_stride_view->player.frontend_overlay, 0x1000000);
     release_mouse_cursor(&player_initializer_stride_view->player.mouse_cursor);
     player_initializer_stride_view->player.mouse_cursor.suppress_next_draw = 0;
-    if ( !x_offsetb )
+    if ( x_offsetb == 0 )
       game->players[0].frontend_state = 12;
     player_initializer_stride_view->player.high_score_entry_pending = 0;
     player_initializer_stride_view->player.selected_high_score_rank = 0;
@@ -3192,14 +3186,11 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->border_manager.delayed_widget_active = 0;
   set_border_justify_centre(&game->border_manager, 25.0);
   border_flags_cursor = (struct BorderRecordFlagsStrideCursor *)&game->border_manager.borders[0].flags;
-  v305 = 150;
-  do
+  for ( k = 150; k != 0; --k )
   {
     border_flags_cursor->flags = 0;
     ++border_flags_cursor;
-    --v305;
   }
-  while ( v305 );
   build_all_objects(&g_object_list);
   set_object_color(game->subgame.path_pairs[51].primary.bod.object, (tColour)color);
   set_object_color(game->subgame.path_pairs[51].secondary.bod.object, (tColour)color);

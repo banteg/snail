@@ -3488,10 +3488,10 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "initialize_cutscene",
+      "selector": "update_snail_presentation",
       "address": "0x4428d0",
-      "name": "initialize_cutscene",
-      "artifact": "analysis/decompile/ida/functions/004428d0-initialize_cutscene.c",
+      "name": "update_snail_presentation",
+      "artifact": "analysis/decompile/ida/functions/004428d0-update_snail_presentation.c",
       "removed_stale_artifacts": []
     },
     {
@@ -3691,17 +3691,17 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "update_snail_skin",
+      "selector": "build_snail_world_hotspots",
       "address": "0x445cd0",
-      "name": "update_snail_skin",
-      "artifact": "analysis/decompile/ida/functions/00445cd0-update_snail_skin.c",
+      "name": "build_snail_world_hotspots",
+      "artifact": "analysis/decompile/ida/functions/00445cd0-build_snail_world_hotspots.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "build_snail_hotspots",
+      "selector": "extract_snail_local_hotspots",
       "address": "0x445d50",
-      "name": "build_snail_hotspots",
-      "artifact": "analysis/decompile/ida/functions/00445d50-build_snail_hotspots.c",
+      "name": "extract_snail_local_hotspots",
+      "artifact": "analysis/decompile/ida/functions/00445d50-extract_snail_local_hotspots.c",
       "removed_stale_artifacts": []
     },
     {

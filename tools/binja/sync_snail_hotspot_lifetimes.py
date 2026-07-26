@@ -57,20 +57,20 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# build_snail_hotspots keeps five physical borrows: EBP on the hotspot Object,
+# extract_snail_local_hotspots keeps five physical borrows: EBP on the hotspot Object,
 # EBX on the 19-name table, ESI at each local Vec3::z, EDI at each facequad's
 # texture_ref, and EAX on the selected source vertex. The two field-first views
 # preserve the carried addresses without moving either bank under a new owner.
 #
-# update_snail_skin then walks the 19-entry world bank. EAX borrows the
+# build_snail_world_hotspots then walks the 19-entry world bank. EAX borrows the
 # corresponding local slot exactly 19 Vec3 records behind it, while ECX retains
 # the pre-increment world destination. EBX is the shared local/world index and
 # ESI borrows one of the two complete RenderableBod transforms populated by
-# initialize_cutscene. All are element or transform borrows from Snail-owned
+# update_snail_presentation. All are element or transform borrows from Snail-owned
 # arrays/bodies or Object-owned mesh banks.
 SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
     (
-        "build_snail_hotspots",
+        "extract_snail_local_hotspots",
         "RegisterVariableSourceType",
         3,
         71,
@@ -78,7 +78,7 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
         "Object*",
     ),
     (
-        "build_snail_hotspots",
+        "extract_snail_local_hotspots",
         "RegisterVariableSourceType",
         15,
         69,
@@ -86,7 +86,7 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
         "char**",
     ),
     (
-        "build_snail_hotspots",
+        "extract_snail_local_hotspots",
         "RegisterVariableSourceType",
         20,
         72,
@@ -94,7 +94,7 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
         "SnailHotspotLocalZCursorView*",
     ),
     (
-        "build_snail_hotspots",
+        "extract_snail_local_hotspots",
         "RegisterVariableSourceType",
         63,
         73,
@@ -102,7 +102,7 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
         "ObjectFaceQuadTextureCursorView*",
     ),
     (
-        "build_snail_hotspots",
+        "extract_snail_local_hotspots",
         "RegisterVariableSourceType",
         124,
         66,
@@ -110,7 +110,7 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
         "Vec3*",
     ),
     (
-        "update_snail_skin",
+        "build_snail_world_hotspots",
         "RegisterVariableSourceType",
         11,
         69,
@@ -118,7 +118,7 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
         "int32_t",
     ),
     (
-        "update_snail_skin",
+        "build_snail_world_hotspots",
         "RegisterVariableSourceType",
         13,
         71,
@@ -126,7 +126,7 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
         "Vec3*",
     ),
     (
-        "update_snail_skin",
+        "build_snail_world_hotspots",
         "RegisterVariableSourceType",
         25,
         66,
@@ -134,7 +134,7 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
         "Vec3*",
     ),
     (
-        "update_snail_skin",
+        "build_snail_world_hotspots",
         "RegisterVariableSourceType",
         34,
         72,
@@ -142,7 +142,7 @@ SNAIL_HOTSPOT_CURSOR_USER_VAR_UPDATES = (
         "TransformMatrix*",
     ),
     (
-        "update_snail_skin",
+        "build_snail_world_hotspots",
         "RegisterVariableSourceType",
         97,
         67,

@@ -32,8 +32,9 @@ slot objects and the snail's main object receive toon mode and zeroed distortion
 The adjacent hotspot storage is not a loose model pointer plus an unrelated
 matrix. Calls and consumers prove one complete `RenderableBod` at snail
 `+0x164c`: its object is at `+0x1670` and its transform at `+0x1684`.
-`initialize_cutscene` and `update_snail_skin` remain exact after spelling that
-shared owner; `build_snail_hotspots` remains unchanged at 83.78%.
+`update_snail_presentation` and `build_snail_world_hotspots` remain exact after
+spelling that shared owner; `extract_snail_local_hotspots` remains unchanged at
+83.78%.
 
 Focused Wibo rises from 49.81% (4,078/5,411 candidate instructions) to 51.10%
 (4,260/5,411), with clean masked operands rising from 1,300 to 1,352. The broad

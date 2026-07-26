@@ -1,9 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: build_snail_hotspots @ 0x445d50 */
-/* selector: build_snail_hotspots */
+/* function: extract_snail_local_hotspots @ 0x445d50 */
+/* selector: extract_snail_local_hotspots */
 
-// Authored `cRSnail::ExtractHotSpots()`: fills the exact Snail's 19-entry local hotspot bank from named model textures, including CameraSkidStop, CameraSlugDeath, and CameraIntroTalk.
-void __thiscall build_snail_hotspots(Snail *snail)
+// Authored `cRSnail::ExtractHotSpots()`, preserved by Android and iOS: fills the exact Snail's 19-entry local hotspot bank from named model textures, including CameraSkidStop, CameraSlugDeath, and CameraIntroTalk. The historical `build_snail_hotspots` label remains an alias.
+void __thiscall extract_snail_local_hotspots(Snail *snail)
 {
   Object *hotspot_model; // ebp
   char **hotspot_name_cursor; // ebx

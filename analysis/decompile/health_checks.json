@@ -2760,7 +2760,7 @@
     },
     {
       "name": "bn_snail_wobble_presentation_owner",
-      "artifact": "analysis/decompile/binja/functions/004428d0-initialize_cutscene.c",
+      "artifact": "analysis/decompile/binja/functions/004428d0-update_snail_presentation.c",
       "required_substrings": [
         "snail->wobble.roll_phase_step",
         "snail->wobble.lift_phase_step",
@@ -2776,9 +2776,9 @@
     },
     {
       "name": "ida_snail_wobble_presentation_owner",
-      "artifact": "analysis/decompile/ida/functions/004428d0-initialize_cutscene.c",
+      "artifact": "analysis/decompile/ida/functions/004428d0-update_snail_presentation.c",
       "required_substrings": [
-        "void __thiscall initialize_cutscene(Snail *snail)",
+        "void __thiscall update_snail_presentation(Snail *snail)",
         "snail->wobble.roll_phase_step",
         "snail->wobble.lift_phase_step",
         "snail->body.transform",
@@ -5011,7 +5011,7 @@
         "game->track.current_texture_set = 0",
         "game->subgame.banners.slots[0].bod.object",
         "struct BannerInitStrideView*",
-        "->banner.bod.position.z = 0f",
+        "->banner.bod.position = struct Vec3 {",
         "->banner.visibility_mode = options_flags",
         "->banner.phase_step = 0.00694444403f",
         "->mip_levels = 2"
@@ -5053,8 +5053,8 @@
       "required_substrings": [
         "struct PresentationAnimationObjectStrideCursor* cutscene_animation_object_cursor",
         "cutscene_animation_object_cursor = &game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object",
-        "struct Object* object = cutscene_animation_object_cursor->object",
-        "object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES",
+        "= cutscene_animation_object_cursor->object",
+        "->flags |= OBJECT_FLAG_DYNAMIC_VERTICES",
         "&cutscene_animation_object_cursor[1]",
         "struct PresentationAnimationObjectStrideCursor* jetpack_animation_object_cursor",
         "jetpack_animation_object_cursor = &game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object",
@@ -12630,7 +12630,7 @@
       "name": "bn_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
-        "initialize_toad_path_template_pair(&game->subgame.path_pairs[0x2f], 1, \"Objects/World00/Slide0.tga\", \"Objects/World00/Track0.tga\", \"Objects/Path/VeryDark.tga\")"
+        "initialize_toad_path_template_pair(&game->subgame.path_pairs[0x2f], true, \"Objects/World00/Slide0.tga\", \"Objects/World00/Track0.tga\", \"Objects/Path/VeryDark.tga\")"
       ],
       "required_regexes": [
         "initialize_cage2_path_template_pair\\(&game->subgame\\.path_pairs\\[0xf\\](?:\\.primary)?, 3, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
@@ -17181,7 +17181,7 @@
     },
     {
       "name": "bn_snail_hotspot_transform_owner",
-      "artifact": "analysis/decompile/binja/functions/00445cd0-update_snail_skin.c",
+      "artifact": "analysis/decompile/binja/functions/00445cd0-build_snail_world_hotspots.c",
       "required_substrings": [
         "struct Snail* snail_1 = snail",
         "int32_t hotspot_index = 0",
@@ -17208,9 +17208,9 @@
     },
     {
       "name": "ida_snail_hotspot_transform_owner",
-      "artifact": "analysis/decompile/ida/functions/00445cd0-update_snail_skin.c",
+      "artifact": "analysis/decompile/ida/functions/00445cd0-build_snail_world_hotspots.c",
       "required_substrings": [
-        "void __thiscall update_snail_skin(Snail *snail)",
+        "void __thiscall build_snail_world_hotspots(Snail *snail)",
         "int32_t hotspot_index; // ebx",
         "Vec3 *hotspot_world_cursor; // ebp",
         "TransformMatrix *hotspot_transform; // esi",
@@ -20025,7 +20025,7 @@
     },
     {
       "name": "bn_snail_hotspot_bank_owner_and_void_abi",
-      "artifact": "analysis/decompile/binja/functions/00445d50-build_snail_hotspots.c",
+      "artifact": "analysis/decompile/binja/functions/00445d50-extract_snail_local_hotspots.c",
       "required_substrings": [
         "struct Snail* snail_1 = snail",
         "struct Object* hotspot_model = snail->snail_hotspot_body.bod.object",
@@ -20048,9 +20048,9 @@
     },
     {
       "name": "ida_snail_hotspot_bank_owner_and_void_abi",
-      "artifact": "analysis/decompile/ida/functions/00445d50-build_snail_hotspots.c",
+      "artifact": "analysis/decompile/ida/functions/00445d50-extract_snail_local_hotspots.c",
       "required_substrings": [
-        "void __thiscall build_snail_hotspots(Snail *snail)",
+        "void __thiscall extract_snail_local_hotspots(Snail *snail)",
         "hotspot_model = snail->snail_hotspot_body.bod.object;",
         "hotspot_name_cursor = g_snail_hotspot_texture_names;",
         "float *__shifted(SnailHotspotLocalZCursorView,8) hotspot_local_z_cursor;",

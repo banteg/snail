@@ -1,4 +1,4 @@
-// initialize_cutscene @ 0x4428d0 (thiscall, ret)
+// update_snail_presentation @ 0x4428d0 (thiscall, ret)
 
 #include "game_root.h"
 #include "player.h"
@@ -6,7 +6,7 @@
 
 float sine(float angle);
 
-void Snail::initialize_cutscene()
+void Snail::update_snail_presentation()
 {
     if (g_game->subgame.subgame_pause_gate != 0)
         return;
@@ -141,7 +141,7 @@ void Snail::initialize_cutscene()
     camera_target = &owner_player->cached_camera_target_world;
     snail_hotspot_body.transform.position = *camera_target;
 
-    update_snail_skin();
+    build_snail_world_hotspots();
 
     if (cutscene.state != CUT_SCENE_STATE_INACTIVE) {
         cutscene.update_cutscene();

@@ -151,12 +151,12 @@ Work this top-down unless a new runtime capture invalidates the order.
 ### Phase 2. Finish cutscene and handoff runtime fields
 
 - [x] Find the writer(s) for the hotspot source matrices consumed by
-  `update_snail_skin` and `update_cutscene`
-  - exact-matched `initialize_cutscene` writes both each tick: `+0x1604`
+  `build_snail_world_hotspots` and `update_cutscene`
+  - exact-matched `update_snail_presentation` writes both each tick: `+0x1604`
     receives the final rendered `Snail::body.transform`; `+0x1684` receives
     the owner player's live body transform with its translation replaced by
     `Player::cached_camera_target_world`
-  - `update_snail_skin` routes hotspot slots `0..10` through `+0x1684` and
+  - `build_snail_world_hotspots` routes hotspot slots `0..10` through `+0x1684` and
     slots `11..18` through `+0x1604`
 - [ ] Capture intro, completion, and death hotspot-source values from Windows
 - [ ] Confirm the exact failure selector and visible-life decrement commit point
@@ -254,7 +254,7 @@ If there is time for only one focused RE session, use this order:
 
 1. `update_subgame` / outer bridge state machine
 2. `initialize_subgame` / `build_subgame_level` rebuild ownership
-3. `update_snail_skin` / `update_cutscene` hotspot-source matrix path
+3. `build_snail_world_hotspots` / `update_cutscene` hotspot-source matrix path
 4. `initialize_subgoldy_death` / `update_subgoldy_resurrect`
 5. `begin_track_attachment_follow_state` / `update_track_attachment_follow_state`
 6. `update_row_event_display` / `flush_row_event_display`

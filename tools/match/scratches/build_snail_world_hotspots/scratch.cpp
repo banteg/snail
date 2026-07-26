@@ -1,8 +1,8 @@
-// update_snail_skin @ 0x445cd0 (thiscall, ret)
+// build_snail_world_hotspots @ 0x445cd0 (thiscall, ret)
 
 #include "player.h"
 
-void Snail::update_snail_skin()
+void Snail::build_snail_world_hotspots()
 {
     for (int index = 0; index < SNAIL_HOTSPOT_COUNT; ++index) {
         TransformMatrix* source_matrix = &snail_hotspot_body.transform;

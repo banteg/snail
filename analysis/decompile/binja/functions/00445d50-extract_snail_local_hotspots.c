@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: build_snail_hotspots @ 0x445d50 */
+/* function: extract_snail_local_hotspots @ 0x445d50 */
 
 00445d50        struct Snail* snail_1 = snail
 00445d53        struct Object* hotspot_model = snail->snail_hotspot_body.bod.object

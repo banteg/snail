@@ -118,13 +118,14 @@ before updating total score at `+0x2e4`:
 
 Current practical read for the hotspot bank:
 
-- `build_snail_hotspots` seeds `snail_hotspots_local` from the snail model's named hotpoint textures
+- `extract_snail_local_hotspots` seeds `snail_hotspots_local` from the snail model's named hotpoint textures
 - the recovered authored hotspot names include:
   - index `12`: `X/CameraSkidStop.tga`
   - index `17`: `X/CameraSlugDeath`
   - index `18`: `X/CameraIntroTalk`
-- `update_snail_skin` transforms that `19`-entry local bank into `snail_hotspots_world`
-  - exact-matched `initialize_cutscene` writes both source matrices every tick
+- `build_snail_world_hotspots` transforms that `19`-entry local bank into
+  `snail_hotspots_world`
+  - exact-matched `update_snail_presentation` writes both source matrices every tick
   - slots `0..10` use `presentation + 0x1684`: a copy of the owner player's
     live body transform whose translation is replaced by
     `Player::cached_camera_target_world`
@@ -186,7 +187,7 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x04`: `roll_phase_step`
     - `+0x08`: `lift_phase`
     - `+0x0c`: `lift_phase_step`
-    - `initialize_cutscene` seeds the two phase-step pairs before the intro wobble branches
+    - `update_snail_presentation` seeds the two phase-step pairs before the intro wobble branches
   - `+0x15cc`: owned `snail_hotspot_source_body`
     - inherited transform at `+0x1604` (`snail_hotspot_source_matrix_a`)
   - `+0x164c`: owned `snail_hotspot_body`
@@ -220,7 +221,9 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `update_snail_skin_transition` follows `owner_snail->object`, raises
       object flag `0x8`, writes the selected material index, and advances the
       timer lanes
-    - raw code at `0x4428ef` confirms `initialize_cutscene` passes `presentation + 0x1938` directly to `update_snail_skin_transition`; there is no separate `weapon_release_active` byte ahead of this state
+    - raw code at `0x4428ef` confirms `update_snail_presentation` passes
+      `presentation + 0x1938` directly to `update_snail_skin_transition`; there
+      is no separate `weapon_release_active` byte ahead of this state
   - `+0x1958`: exact 0x5c-byte `cutscene` (`cRCutScene`)
     - `+0x00/+0x04`: presentation and Player backlinks
     - `+0x08`: `camera_mode`; Windows only writes `1` or `-1`, so the value
@@ -310,11 +313,11 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `update_subgoldy` seeds that tail as a small tip payload and passes `&player->row_event.tip_definition` to `enqueue_tip_message`; it is not a standalone row-event controller suffix
 - `player + 0x2d8` is a broader `control_override_active` gate than the earlier cutscene-only guess
   - it suppresses several normal control and attachment branches in `update_subgoldy`
-  - `initialize_cutscene` also reads it to decide whether to auto-dispatch the default idle animation
+  - `update_snail_presentation` also reads it to decide whether to auto-dispatch the default idle animation
 - `player + 0x2dc/+0x2e0` form the current safe cutscene-side cycle pair
   - `cutscene_pitch_cycle`
   - `cutscene_pitch_cycle_step`
-  - `initialize_cutscene` advances them before rotating the player-owned cutscene frame around world X
+  - `update_snail_presentation` advances them before rotating the player-owned cutscene frame around world X
 - `player + 0x328/+0x32c` is the current safe barrier-hold timer pair
   - `barrier_hold_progress`
   - `barrier_hold_step`

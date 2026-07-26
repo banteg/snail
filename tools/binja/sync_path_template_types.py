@@ -209,11 +209,12 @@ SYMBOL_UPDATES = (
     ("0x43b120", "update_subgoldy"),
     ("0x43d230", "initialize_subgoldy_ghost"),
     ("0x43d3d0", "set_subgoldy_ghost_z"),
+    ("0x4428d0", "update_snail_presentation"),
     ("0x442e40", "release_snail_weapons"),
     ("0x444600", "dispatch_cutscene_animation"),
     ("0x4446e0", "set_weapon_animation"),
-    ("0x445cd0", "update_snail_skin"),
-    ("0x445d50", "build_snail_hotspots"),
+    ("0x445cd0", "build_snail_world_hotspots"),
+    ("0x445d50", "extract_snail_local_hotspots"),
     ("0x4ac5c8", "g_default_tip_message"),
     ("0x497354", "g_player_presentation_noop_vtable"),
     ("0x497358", "g_invincible_shell_update_vtable"),
@@ -3579,8 +3580,8 @@ PROTO_UPDATES = (
         "void __thiscall release_snail_weapons(Snail* snail)",
     ),
     (
-        "initialize_cutscene",
-        "void __thiscall initialize_cutscene(Snail* snail)",
+        "update_snail_presentation",
+        "void __thiscall update_snail_presentation(Snail* snail)",
     ),
     *CUT_SCENE_PROTO_UPDATES,
     (
@@ -3600,12 +3601,12 @@ PROTO_UPDATES = (
         "void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
     ),
     (
-        "update_snail_skin",
-        "void __thiscall update_snail_skin(Snail* snail)",
+        "build_snail_world_hotspots",
+        "void __thiscall build_snail_world_hotspots(Snail* snail)",
     ),
     (
-        "build_snail_hotspots",
-        "void __thiscall build_snail_hotspots(Snail* snail)",
+        "extract_snail_local_hotspots",
+        "void __thiscall extract_snail_local_hotspots(Snail* snail)",
     ),
     (
         "initialize_subgoldy",

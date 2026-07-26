@@ -162,5 +162,6 @@ The point of this map is not “audio parity” in isolation. These callsites sh
    Audio evidence: `sfx 46`, `voice 3`, `voice 11`.
    Native implication: completion-screen init and death voices are both owned by explicit cutscene states.
    Current Zig suspicion: cutscene timing and cameras are closer now, but audio still lags behind the recovered state machine.
-   Next trace boundary: `initialize_cutscene`, `update_cutscene`, and the death or completion entry helpers it calls.
+   Next trace boundary: `update_snail_presentation`, `update_cutscene`, and the
+   death or completion entry helpers it calls.
    Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) cutscene controller and [`zig/src/main.zig`](../../zig/src/main.zig) completion/death handoff.
