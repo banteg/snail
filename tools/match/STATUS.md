@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **78.59%**.
+**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **78.60%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -811,7 +811,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 635/663 | 47.92% | 15/663 | 33 ok |  |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 559/579 | 44.99% | 7/579 | 39 ok |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1229/1245 | 29.67% | 2/1245 | 1 mismatch, 117 unaudited, 77 ok |  |
-| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 627/639 | 40.44% | 0/639 | 2 unresolved, 92 unaudited, 52 ok |  |
+| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 627/639 | 40.92% | 0/639 | 1 unresolved, 98 unaudited, 50 ok |  |
 
 ## Reference Only (third-party) (3)
 

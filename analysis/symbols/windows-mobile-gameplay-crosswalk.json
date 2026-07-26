@@ -4323,10 +4323,10 @@
           "size_score": 0.25
         },
         {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
+          "symbol": "cRSubGoldy::SpeedUpCollect()",
+          "score": 0.7,
+          "name_score": 1.0,
+          "size_score": 0.25
         },
         {
           "symbol": "cRObject::cRObject()",
@@ -4335,10 +4335,10 @@
           "size_score": 0.8
         },
         {
-          "symbol": "tColourSmall::Set(unsigned char, unsigned char, unsigned char)",
-          "score": 0.6095,
-          "name_score": 0.3491,
-          "size_score": 1.0
+          "symbol": "cRObject::cRObject()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
         }
       ],
       "ios_candidates": [

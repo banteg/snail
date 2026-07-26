@@ -45,27 +45,16 @@ void SubgameRuntime::place_parcels_on_track()
 
     for (int segment = 0; segment < level_definition.segment_count; ++segment) {
         last_segment_max_set_size = 0;
-        SubSegment* record = &level_definition.segment_slots[segment];
+        SubSegmentParcelScanAnchor* record =
+            (SubSegmentParcelScanAnchor*)
+                &level_definition.segment_slots[segment].row_count;
         min_set_sizes[segment] = 10000;
         for (int set = 0; set < 10; ++set) {
             for (int row = 0; row < record->row_count; ++row) {
                 AuthoredSegmentRow* authored = &record->rows[row];
                 if ((authored->flags & AUTHORED_SEGMENT_ROW_FLAG_PARCEL) != 0
                     && authored->parcel_set_id == set) {
-                    if (set) {
-                        g_parcel_set_buckets[set_entry_count].segment_index =
-                            segment;
-                        g_parcel_set_buckets[set_entry_count]
-                            .candidates[g_parcel_set_buckets[set_entry_count]
-                                            .candidate_count]
-                            .row = row;
-                        g_parcel_set_buckets[set_entry_count]
-                            .candidates[g_parcel_set_buckets[set_entry_count]
-                                            .candidate_count]
-                            .position = *authored->parcel_position();
-                        g_parcel_set_buckets[set_entry_count].set_id = set;
-                        ++g_parcel_set_buckets[set_entry_count].candidate_count;
-                    } else {
+                    if (set == 0) {
                         g_zero_parcel_buckets[zero_entry_count].segment_index =
                             segment;
                         g_zero_parcel_buckets[zero_entry_count]
@@ -80,32 +69,24 @@ void SubgameRuntime::place_parcels_on_track()
                         ++g_zero_parcel_buckets[zero_entry_count].candidate_count;
                         ++zero_entry_count;
                         ++zero_candidate_total;
+                    } else {
+                        g_parcel_set_buckets[set_entry_count].segment_index =
+                            segment;
+                        g_parcel_set_buckets[set_entry_count]
+                            .candidates[g_parcel_set_buckets[set_entry_count]
+                                            .candidate_count]
+                            .row = row;
+                        g_parcel_set_buckets[set_entry_count]
+                            .candidates[g_parcel_set_buckets[set_entry_count]
+                                            .candidate_count]
+                            .position = *authored->parcel_position();
+                        g_parcel_set_buckets[set_entry_count].set_id = set;
+                        ++g_parcel_set_buckets[set_entry_count].candidate_count;
                     }
                 }
                 for (int lane = 0; lane < 8; ++lane) {
                     if (record->glyph_rows[lane][row] == set + 48) {
-                        if (set) {
-                            g_parcel_set_buckets[set_entry_count].segment_index =
-                                segment;
-                            g_parcel_set_buckets[set_entry_count]
-                                .candidates[g_parcel_set_buckets[set_entry_count]
-                                                .candidate_count]
-                                .row = row;
-                            g_parcel_set_buckets[set_entry_count]
-                                .candidates[g_parcel_set_buckets[set_entry_count]
-                                                .candidate_count]
-                                .position.x = (float)lane - 4.0f + 0.5f;
-                            g_parcel_set_buckets[set_entry_count]
-                                .candidates[g_parcel_set_buckets[set_entry_count]
-                                                .candidate_count]
-                                .position.y = 0;
-                            g_parcel_set_buckets[set_entry_count]
-                                .candidates[g_parcel_set_buckets[set_entry_count]
-                                                .candidate_count]
-                                .position.z = 0;
-                            g_parcel_set_buckets[set_entry_count].set_id = set;
-                            ++g_parcel_set_buckets[set_entry_count].candidate_count;
-                        } else {
+                        if (set == 0) {
                             g_zero_parcel_buckets[zero_entry_count].segment_index =
                                 segment;
                             g_zero_parcel_buckets[zero_entry_count]
@@ -115,19 +96,42 @@ void SubgameRuntime::place_parcels_on_track()
                             g_zero_parcel_buckets[zero_entry_count]
                                 .candidates[g_zero_parcel_buckets[zero_entry_count]
                                                 .candidate_count]
-                                .position.x = (float)lane - 4.0f + 0.5f;
+                                .position.x =
+                                (float)lane - 4.0f + 0.5f;
                             g_zero_parcel_buckets[zero_entry_count]
                                 .candidates[g_zero_parcel_buckets[zero_entry_count]
                                                 .candidate_count]
-                                .position.y = 0;
+                                .position.y = 0.0f;
                             g_zero_parcel_buckets[zero_entry_count]
                                 .candidates[g_zero_parcel_buckets[zero_entry_count]
                                                 .candidate_count]
-                                .position.z = 0;
+                                .position.z = 0.0f;
                             g_zero_parcel_buckets[zero_entry_count].set_id = 0;
                             ++g_zero_parcel_buckets[zero_entry_count].candidate_count;
                             ++zero_entry_count;
                             ++zero_candidate_total;
+                        } else {
+                            g_parcel_set_buckets[set_entry_count].segment_index =
+                                segment;
+                            g_parcel_set_buckets[set_entry_count]
+                                .candidates[g_parcel_set_buckets[set_entry_count]
+                                                .candidate_count]
+                                .row = row;
+                            g_parcel_set_buckets[set_entry_count]
+                                .candidates[g_parcel_set_buckets[set_entry_count]
+                                                .candidate_count]
+                                .position.x =
+                                (float)lane - 4.0f + 0.5f;
+                            g_parcel_set_buckets[set_entry_count]
+                                .candidates[g_parcel_set_buckets[set_entry_count]
+                                                .candidate_count]
+                                .position.y = 0.0f;
+                            g_parcel_set_buckets[set_entry_count]
+                                .candidates[g_parcel_set_buckets[set_entry_count]
+                                                .candidate_count]
+                                .position.z = 0.0f;
+                            g_parcel_set_buckets[set_entry_count].set_id = set;
+                            ++g_parcel_set_buckets[set_entry_count].candidate_count;
                         }
                     }
                 }

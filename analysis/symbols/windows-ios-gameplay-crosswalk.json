@@ -1111,7 +1111,7 @@
       "android_symbol": "cRSubGame::PlaceParcels()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All three ports dispatch the authored void method on the same cRSubGame receiver. The level definition and runtime rows are SubgameRuntime-owned; the normal digit/set candidate banks are global scratch and retain the mobile names gGroup0/gGroup. Windows and Android independently reset the maximum set size inside each segment iteration, so the post-loop target intentionally uses the final segment's maximum rather than a level-wide maximum."
+      "notes": "All three ports dispatch the authored void method on the same cRSubGame receiver. The level definition and runtime rows are SubgameRuntime-owned; the normal digit/set candidate banks are global scratch and retain the mobile names gGroup0/gGroup. Android and iOS independently keep digit 0 on the natural catalog path. Windows roots its inline segment scan at SubSegment::row_count and advances that borrow by the full segment stride without transferring ownership. Windows and Android reset the maximum set size inside each segment iteration, so the post-loop target intentionally uses the final segment's maximum rather than a level-wide maximum."
     },
     {
       "address": "0x444240",

@@ -2791,7 +2791,7 @@
     {
       "address": "0x4438e0",
       "name": "place_parcels_on_track",
-      "description": "Implements the authored void `cRSubGame::PlaceParcels()` method on the verified SubgameRuntime receiver: scans the embedded SubTracks definition into the cross-port `gGroup`/`gGroup0` global ParcelBucket scratch banks, claims rows in the owned runtime_rows slab, and projects flagged parcel offsets onto their track attachments. Windows and Android both reset the maximum parcel-set size for each segment and retain only the final segment's maximum when deriving the 80-percent set target."
+      "description": "Implements the authored void `cRSubGame::PlaceParcels()` method on the verified SubgameRuntime receiver: borrows a row_count-rooted cursor across the embedded SubTracks segment slots, scans authored rows and glyphs into the cross-port `gGroup`/`gGroup0` global ParcelBucket scratch banks, claims rows in the owned runtime_rows slab, and projects flagged parcel offsets onto their track attachments. Mobile and Windows keep digit 0 on the natural catalog path; Windows and Android reset the maximum parcel-set size for each segment and retain only the final segment's maximum when deriving the 80-percent set target."
     },
     {
       "address": "0x444240",

@@ -422,3 +422,30 @@ candidate frame to `0x220` and regress the focused comparison. Removing the
 short-lived digit-0 selection borrow also regresses 40.44% to 40.10%, so that
 one `ParcelBucket*` remains an honest temporary view while the banks themselves
 remain global scratch storage.
+
+## Mobile-assisted catalog control and segment borrow (2026-07-26)
+
+The verified Android and iOS `cRSubGame::PlaceParcels()` bodies independently
+separate digit-0 candidates from positive parcel sets in both authored-row and
+glyph-grid discovery. Their control flow agrees with the Windows branch shape:
+digit 0 stays on the natural path and positive set IDs take the alternate path.
+Expressing that source order in both Windows catalog probes improves focused
+Wibo from 40.44% to 40.92%, still 627/639 instructions, with one unresolved
+legacy zero-bank alias and no audited operand mismatch.
+
+Windows adds a platform-specific ownership detail that the pointer-backed
+mobile layouts cannot show directly. Its outer scan roots the cursor at
+`SubSegment::row_count`, reaches `glyph_rows` and `rows` relative to that
+field, and advances by the complete `0x4220`-byte segment stride. The shared
+`SubSegmentParcelScanAnchor` now records that field-first borrow, including the
+final word that overlaps the next segment's `row_base`; the containing
+`SubTracks::segment_slots` array remains the sole owner.
+
+Two source-real but incomplete probes remain rejected. Restoring the two
+Windows glyph `Vector3` staging copies reproduces their local copy sequences,
+but the current source shape grows the frame from `0x200` to `0x21c` instead
+of the native `0x214` and rotates all three long-lived scan registers. Inlining
+the final attachment row-index call likewise reproduces the native argument
+evaluation order locally but destroys the stronger runtime-row cursor
+alignment. Neither regression is retained, and no synthetic stack padding or
+register forcing was introduced.

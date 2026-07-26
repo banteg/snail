@@ -93,6 +93,28 @@ struct SubSegment {
 typedef char SubSegment_must_be_0x4220[
     (sizeof(SubSegment) == 0x4220) ? 1 : -1];
 
+// Borrowed field-first cursor used by PlaceParcels' Windows segment scan.
+// The cursor starts at SubSegment::row_count and advances by the complete
+// SubSegment stride. Its final word overlaps the next owned segment's
+// row_base; SubTracks::segment_slots remains the sole storage owner.
+struct SubSegmentParcelScanAnchor {
+    int row_count;                  // +0x0000, SubSegment +0x04
+    unsigned char visited;          // +0x0004
+    char unknown_05[3];
+    int path_index;                 // +0x0008
+    char* source_name;              // +0x000c
+    char glyph_rows[8][0x100];      // +0x0010
+    AuthoredSegmentRow rows[256];   // +0x0810
+    AuthoredFloatBits angle_radians; // +0x4010
+    char message_text[0x200];       // +0x4014
+    AuthoredFloatBits message_duration; // +0x4214
+    int message_sample_id;          // +0x4218
+    int next_segment_row_base;      // +0x421c, next SubSegment +0x00
+};
+
+typedef char SubSegmentParcelScanAnchor_must_be_0x4220[
+    (sizeof(SubSegmentParcelScanAnchor) == sizeof(SubSegment)) ? 1 : -1];
+
 // Windows layout of the authored cRSubSegmentRaw records named by the iOS
 // cRSubTracks::Init(cRSubSegmentRaw**) symbol.
 struct SubSegmentRaw {
