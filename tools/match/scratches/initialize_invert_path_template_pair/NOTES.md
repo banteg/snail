@@ -120,3 +120,17 @@ Recovering those branch-local aggregate owners raises focused matching from
 clean operands, with no unresolved or mismatched masks. The remaining native
 `0x54` versus candidate `0x3c` frame gap therefore belongs to other constructor
 lifetimes rather than the mesh vertex ownership.
+
+## 2026-07-26 complete mesh-vector ownership
+
+The recovered family model shows that the initial rewrite still collapsed the
+ordinary branch's lateral-offset vector and the terminal branch's endpoint
+vector. Native `0x42979e..0x42986c` materializes both: the endpoint comes from
+the previous sample reached through the current row cursor and extends its Z
+lane by `1.0f`.
+
+Adding those owners raises focused matching from 50.00% (592/600) to 51.71%
+(599/600), preserves 31 clean masked operands with no unresolved or mismatched
+masks, and recovers the exact native `0x54` frame plus a seven-instruction exact
+prefix. The candidate is now one instruction shorter than the target. Its first
+residual is an ESI/EDI owner swap after the prologue, not missing mesh dataflow.
