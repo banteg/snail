@@ -1014,7 +1014,7 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
     assert "float distort;" in header
     for prototype in (
         "void __thiscall initialize_game_last(GameRoot* game)",
-        "void __thiscall set_backdrop_progress_fraction(Backdrop* backdrop, float zoom)",
+        "void __thiscall set_backdrop_zoom(Backdrop* backdrop, float zoom)",
         "void __thiscall set_backdrop_distort(Backdrop* backdrop, float distort)",
         "void __thiscall change_backdrop(Backdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip)",
         "void __thiscall change_backdrop_real(Backdrop* backdrop)",
@@ -2447,8 +2447,8 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
             "TextureRef *__thiscall get_sprite_texture(SpriteManager *manager, int32_t texture_id);",
         ),
         (
-            "TgaImageView* __thiscall get_sprite_texture_ref(SpriteManager* manager, int32_t texture_id)",
-            "TgaImageView *__thiscall get_sprite_texture_ref(SpriteManager *manager, int32_t texture_id);",
+            "TgaImageView* __thiscall get_sprite_tga(SpriteManager* manager, int32_t texture_id)",
+            "TgaImageView *__thiscall get_sprite_tga(SpriteManager *manager, int32_t texture_id);",
         ),
         (
             "void __thiscall update_sprite_facing_angle(Sprite* sprite, const TransformMatrix* matrix)",
@@ -2513,7 +2513,7 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "#define TEXTURE_REF_LIST_CAPACITY 500" in star_analysis_header
     assert "typedef struct TgaImageView {" in star_analysis_header
     assert "uint8_t pixels[1];" in star_analysis_header
-    assert "TgaImageView* __thiscall get_sprite_texture_ref(" in star_analysis_header
+    assert "TgaImageView* __thiscall get_sprite_tga(" in star_analysis_header
     assert "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];" in star_analysis_header
     assert "extern TextureRefList g_texture_refs;" in star_analysis_header
     assert "TEXTURE_REF_LIST_CAPACITY = 500" in sprite_matcher_header
@@ -5166,7 +5166,7 @@ def test_mouse_cursor_and_borrowed_input_owner_graph_is_replayed_cross_decompile
             "border_mouse_test",
             "resolve_uncaptured_cursor_sensitivity_scale",
             "click_mouse_screen",
-            "get_sprite_texture_ref",
+            "get_sprite_tga",
         ):
             assert function in source
     assert "MOUSE_INPUT_OWNER_REANALYSIS_FUNCTIONS" in binja_sync

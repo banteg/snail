@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
-  "ida_exported": 2,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,12 +17,20 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_sub_loc",
-      "address": "0x439d50"
+      "name": "border_mouse_test",
+      "address": "0x404580"
     },
     {
-      "name": "shoot_sub_lazer_pool",
-      "address": "0x441ad0"
+      "name": "set_backdrop_zoom",
+      "address": "0x410c30"
+    },
+    {
+      "name": "update_subgoldy",
+      "address": "0x43b120"
+    },
+    {
+      "name": "get_sprite_tga",
+      "address": "0x44e580"
     }
   ],
   "health_check_count": 1059,

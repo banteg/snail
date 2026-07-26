@@ -1,4 +1,4 @@
-# get_sprite_texture_ref / cRSpriteManager::GetTga
+# get_sprite_tga / cRSpriteManager::GetTga
 
 Small sprite texture-table accessor at 0x44e580. Returns the texture reference
 stored at offset `0x98` inside the registered sprite texture record.
@@ -24,3 +24,11 @@ readback proves the 0x14-byte TGA view and exposes its width and height fields
 in the sole Windows caller. The generic `TextureRef::texture_ref` storage
 remains `void*`: registration accepts arbitrary caller payloads, while this
 accessor supplies the narrower borrowed view.
+
+## 2026-07-26 canonical owner correction
+
+Android and iOS independently preserve this exact accessor as
+`cRSpriteManager::GetTga(int)`. All three ports return the texture record's
+`+0x98` payload, while the distinct mobile `GetTextureRef(int)` accessor
+returns `+0x8c`. The canonical manifest, scratch directory, and live databases
+now use `get_sprite_tga`; `get_sprite_texture_ref` remains an alias only.

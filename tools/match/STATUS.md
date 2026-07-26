@@ -138,7 +138,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_frontend_state_machine | 0x4107d0 | 1064 | 180/180 | 100.00% | 180/180 | 69 ok |  |
 | ✅ | initialize_global_color4f_bank_32_thunk | 0x410c00 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
 | ✅ | initialize_global_color4f_bank_32 | 0x410c10 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
-| ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
+| ✅ | set_backdrop_zoom | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_backdrop_distort | 0x410c40 | 261 | 73/73 | 100.00% | 73/73 | 14 ok |  |
 | ✅ | change_backdrop | 0x410d50 | 111 | 34/34 | 100.00% | 34/34 | - |  |
 | ✅ | change_backdrop_real | 0x410dc0 | 87 | 30/30 | 100.00% | 30/30 | 1 ok |  |
@@ -630,7 +630,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_sprite_manager_paused | 0x44e540 | 9 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_sprite_texture_ref | 0x44e550 | 30 | 8/8 | 100.00% | 8/8 | 1 ok |  |
 | ✅ | get_sprite_texture | 0x44e570 | 14 | 3/3 | 100.00% | 3/3 | 1 ok |  |
-| ✅ | get_sprite_texture_ref | 0x44e580 | 20 | 4/4 | 100.00% | 4/4 | 1 ok |  |
+| ✅ | get_sprite_tga | 0x44e580 | 20 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | ascii_upper_if_lowercase | 0x44e5a0 | 16 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | rstrcpy_checked_ascii | 0x44e5b0 | 72 | 31/31 | 100.00% | 31/31 | 2 ok |  |
 | ✅ | advance_to_next_crlf_line | 0x44e690 | 47 | 22/22 | 100.00% | 22/22 | - |  |

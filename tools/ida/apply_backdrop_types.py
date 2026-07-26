@@ -26,6 +26,7 @@ EXPECTED_BACKDROP_SIZE = 0x6CC
 
 TRUSTED_NAMES = (
     (0x410720, "initialize_game_last"),
+    (0x410C30, "set_backdrop_zoom"),
 )
 
 TRUSTED_DECLARATIONS = (
@@ -34,8 +35,8 @@ TRUSTED_DECLARATIONS = (
         "void __thiscall initialize_game_last(GameRoot* game);",
     ),
     (
-        "set_backdrop_progress_fraction",
-        "void __thiscall set_backdrop_progress_fraction(Backdrop* backdrop, float zoom);",
+        "set_backdrop_zoom",
+        "void __thiscall set_backdrop_zoom(Backdrop* backdrop, float zoom);",
     ),
     (
         "set_backdrop_distort",

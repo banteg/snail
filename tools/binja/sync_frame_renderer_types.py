@@ -92,7 +92,7 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x44c3c0", "capture_mouse_cursor"),
     ("0x44c400", "release_mouse_cursor"),
     ("0x44e410", "update_sprite_facing_angle"),
-    ("0x44e580", "get_sprite_texture_ref"),
+    ("0x44e580", "get_sprite_tga"),
     ("0x44e900", "attach_render_camera_source"),
     ("0x44e920", "initialize_render_camera_slot"),
     ("0x48ba3f", "operator_new"),
@@ -180,8 +180,8 @@ PROTO_UPDATES = (
         "void __thiscall release_mouse_cursor(MouseCursorState* mouse)",
     ),
     (
-        "get_sprite_texture_ref",
-        "TgaImageView* __thiscall get_sprite_texture_ref("
+        "get_sprite_tga",
+        "TgaImageView* __thiscall get_sprite_tga("
         "SpriteManager* manager, int32_t texture_id)",
     ),
     (

@@ -896,7 +896,7 @@ LABEL_287:
           }
         }
         valueb = player->body.transform.position.z / (double)player->game->runtime_row_count;
-        set_backdrop_progress_fraction(&g_game_base->backdrop, valueb);
+        set_backdrop_zoom(&g_game_base->backdrop, valueb);
         v94 = (double)player->game->completion_row_start - 30.0;
         source_cellc = player->body.transform.position.z - 8.0;
         if ( v94 >= source_cellc )

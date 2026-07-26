@@ -28,6 +28,7 @@ OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 
 FUNCTION_SYMBOL_UPDATES = (
     ("0x44e410", "update_sprite_facing_angle"),
+    ("0x44e580", "get_sprite_tga"),
     ("0x44e800", "initialize_texture_list"),
     ("0x44e810", "get_or_create_texture_ref"),
 )
@@ -192,8 +193,8 @@ PROTO_UPDATES = (
         "TextureRef* __thiscall get_sprite_texture(SpriteManager* manager, int32_t texture_id)",
     ),
     (
-        "get_sprite_texture_ref",
-        "TgaImageView* __thiscall get_sprite_texture_ref(SpriteManager* manager, int32_t texture_id)",
+        "get_sprite_tga",
+        "TgaImageView* __thiscall get_sprite_tga(SpriteManager* manager, int32_t texture_id)",
     ),
     ("destroy_star_field", "void __thiscall destroy_star_field(StarManager* manager)"),
     (

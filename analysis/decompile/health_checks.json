@@ -4905,7 +4905,7 @@
         "players[0].mouse_cursor.saved_x",
         "players[0].mouse_cursor.saved_y",
         "struct TgaImageView* mask",
-        "get_sprite_texture_ref(&g_sprite_manager",
+        "get_sprite_tga(&g_sprite_manager",
         "mask->width",
         "mask->height"
       ],
@@ -4936,7 +4936,7 @@
         "g_game_base->players[0].mouse_cursor.saved_x",
         "g_game_base->players[0].mouse_cursor.saved_y",
         "TgaImageView *",
-        "get_sprite_texture_ref(&g_sprite_manager",
+        "get_sprite_tga(&g_sprite_manager",
         "->width",
         "->height"
       ],
@@ -16630,7 +16630,7 @@
     },
     {
       "name": "bn_backdrop_zoom_void_owner",
-      "artifact": "analysis/decompile/binja/functions/00410c30-set_backdrop_progress_fraction.c",
+      "artifact": "analysis/decompile/binja/functions/00410c30-set_backdrop_zoom.c",
       "required_substrings": [
         "backdrop->zoom = zoom",
         "00410c3a        return"

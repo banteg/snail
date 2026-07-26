@@ -50,7 +50,7 @@ Ownership note:
 - `advance_timer_counters` at `0x441b90` (authored `cRTime::Add(float)`)
 - `update_damage_gauge` at `0x440fd0`
 - `apply_damage_gauge_delta` at `0x4413f0`
-- `set_backdrop_progress_fraction` at `0x410c30` (authored
+- `set_backdrop_zoom` at `0x410c30` (authored
   `cRBackdrop::SetZoom(float)`)
 - `set_matrix_rotation_identity` at `0x44d250`
 - `initialize_subgoldy` at `0x43a9c0`

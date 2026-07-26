@@ -23,7 +23,10 @@
     "snapshot_saved": false,
     "unresolved": []
   },
-  "removed_stale_artifacts": [],
+  "removed_stale_artifacts": [
+    "analysis/decompile/binja/functions/00410c30-set_backdrop_progress_fraction.c",
+    "analysis/decompile/binja/functions/0044e580-get_sprite_texture_ref.c"
+  ],
   "exports": [
     {
       "address": "0x401000",
@@ -712,8 +715,8 @@
     },
     {
       "address": "0x410c30",
-      "name": "set_backdrop_progress_fraction",
-      "artifact": "analysis/decompile/binja/functions/00410c30-set_backdrop_progress_fraction.c"
+      "name": "set_backdrop_zoom",
+      "artifact": "analysis/decompile/binja/functions/00410c30-set_backdrop_zoom.c"
     },
     {
       "address": "0x410c40",
@@ -3655,8 +3658,8 @@
     },
     {
       "address": "0x44e580",
-      "name": "get_sprite_texture_ref",
-      "artifact": "analysis/decompile/binja/functions/0044e580-get_sprite_texture_ref.c"
+      "name": "get_sprite_tga",
+      "artifact": "analysis/decompile/binja/functions/0044e580-get_sprite_tga.c"
     },
     {
       "address": "0x44e5a0",

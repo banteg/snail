@@ -192,7 +192,7 @@ void __thiscall initialize_texture_list(
 TextureRef* __thiscall get_or_create_texture_ref(
     TextureRefList* texture_list, char* texture_path, void* payload,
     int32_t flags);
-TgaImageView* __thiscall get_sprite_texture_ref(
+TgaImageView* __thiscall get_sprite_tga(
     SpriteManager* manager, int32_t texture_id);
 
 extern TextureRefList g_texture_refs;

@@ -51,7 +51,7 @@
 004045f6        if ((eax:1.b & 0x41) == 0)
 00404616        float var_8_1 = fconvert.s((fconvert.t(game_base_1->players[0].mouse_cursor.saved_x) - fconvert.t(widget->texture_hit_x)) / fconvert.t(widget->texture_hit_width))
 00404631        float var_4_1 = fconvert.s((fconvert.t(game_base_1->players[0].mouse_cursor.saved_y) - fconvert.t(widget->texture_hit_y)) / fconvert.t(widget->texture_hit_height))
-00404635        struct TgaImageView* mask = get_sprite_texture_ref(&g_sprite_manager, widget->texture_hit_test_sprite)
+00404635        struct TgaImageView* mask = get_sprite_tga(&g_sprite_manager, widget->texture_hit_test_sprite)
 0040463c        int32_t esi_1 = 0
 0040463e        esi_1.w = mask->width
 0040464e        int32_t eax_2

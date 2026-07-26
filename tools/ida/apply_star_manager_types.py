@@ -33,7 +33,7 @@ TRUSTED_NAMES = [
     (0x44E540, "set_sprite_manager_paused"),
     (0x44E550, "set_sprite_texture_ref"),
     (0x44E570, "get_sprite_texture"),
-    (0x44E580, "get_sprite_texture_ref"),
+    (0x44E580, "get_sprite_tga"),
     (0x44E800, "initialize_texture_list"),
     (0x44E810, "get_or_create_texture_ref"),
 ]
@@ -92,8 +92,8 @@ TRUSTED_DECLARATIONS = [
         "TextureRef *__thiscall get_sprite_texture(SpriteManager *manager, int32_t texture_id);",
     ),
     (
-        "get_sprite_texture_ref",
-        "TgaImageView *__thiscall get_sprite_texture_ref(SpriteManager *manager, int32_t texture_id);",
+        "get_sprite_tga",
+        "TgaImageView *__thiscall get_sprite_tga(SpriteManager *manager, int32_t texture_id);",
     ),
     (
         "destroy_star_field",
@@ -134,7 +134,7 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct TextureRefList {",
     "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];",
     "typedef struct TgaImageView {",
-    "TgaImageView* __thiscall get_sprite_texture_ref(",
+    "TgaImageView* __thiscall get_sprite_tga(",
     "void __thiscall initialize_texture_list(",
     "TextureRef* __thiscall get_or_create_texture_ref(",
     "extern TextureRefList g_texture_refs;",

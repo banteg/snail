@@ -7575,7 +7575,7 @@
     },
     {
       "address": "0x410c30",
-      "windows_name": "set_backdrop_progress_fraction",
+      "windows_name": "set_backdrop_zoom",
       "windows_size": 16,
       "status": "verified",
       "android_symbol": "cRBackdrop::SetZoom(float)",
@@ -31066,7 +31066,7 @@
     },
     {
       "address": "0x44e580",
-      "windows_name": "get_sprite_texture_ref",
+      "windows_name": "get_sprite_tga",
       "windows_size": 32,
       "status": "verified",
       "android_symbol": "cRSpriteManager::GetTga(int)",

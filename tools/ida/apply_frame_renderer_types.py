@@ -89,7 +89,7 @@ TRUSTED_NAMES = [
     (0x44C3B0, "is_mouse_captured"),
     (0x44C3C0, "capture_mouse_cursor"),
     (0x44C400, "release_mouse_cursor"),
-    (0x44E580, "get_sprite_texture_ref"),
+    (0x44E580, "get_sprite_tga"),
     (0x44E900, "attach_render_camera_source"),
     (0x44E920, "initialize_render_camera_slot"),
     (0x4972F4, "g_game_player_callback_table"),
@@ -214,8 +214,8 @@ TRUSTED_FUNCTION_DECLARATIONS = [
         "void __thiscall release_mouse_cursor(MouseCursorState *mouse);",
     ),
     (
-        "get_sprite_texture_ref",
-        "TgaImageView *__thiscall get_sprite_texture_ref("
+        "get_sprite_tga",
+        "TgaImageView *__thiscall get_sprite_tga("
         "SpriteManager *manager, int32_t texture_id);",
     ),
     (
@@ -575,7 +575,7 @@ def _verify_mouse_input_owner_graph() -> dict[str, object]:
             "g_game_base->players[0].mouse_cursor.saved_x",
             "g_game_base->players[0].mouse_cursor.saved_y",
             "TgaImageView *",
-            "get_sprite_texture_ref(&g_sprite_manager",
+            "get_sprite_tga(&g_sprite_manager",
             "->width",
             "->height",
         ),

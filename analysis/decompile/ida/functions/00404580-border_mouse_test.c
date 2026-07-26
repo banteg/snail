@@ -5,7 +5,7 @@
 // Runs cRBorder::MouseTest() on one FrontendWidget: tests the player-zero saved cursor position against either the padded layout rectangle or a normalized per-pixel RGB hit mask selected by the widget's texture-hit sprite.
 uint8_t __thiscall border_mouse_test(FrontendWidget *widget)
 {
-  TgaImageView *sprite_texture_ref; // ebp
+  TgaImageView *sprite_tga; // ebp
   int width; // esi
   int v3; // edi
   int height; // ebx
@@ -13,7 +13,7 @@ uint8_t __thiscall border_mouse_test(FrontendWidget *widget)
   float v7; // [esp+4h] [ebp-8h]
   float v8; // [esp+8h] [ebp-4h]
 
-  if ( widget->texture_hit_test_enabled )
+  if ( widget->texture_hit_test_enabled != 0 )
   {
     if ( g_game_base->players[0].mouse_cursor.saved_x >= (double)widget->texture_hit_x
       && widget->texture_hit_width + widget->texture_hit_x > g_game_base->players[0].mouse_cursor.saved_x
@@ -22,10 +22,10 @@ uint8_t __thiscall border_mouse_test(FrontendWidget *widget)
     {
       v7 = (g_game_base->players[0].mouse_cursor.saved_x - widget->texture_hit_x) / widget->texture_hit_width;
       v8 = (g_game_base->players[0].mouse_cursor.saved_y - widget->texture_hit_y) / widget->texture_hit_height;
-      sprite_texture_ref = get_sprite_texture_ref(&g_sprite_manager, widget->texture_hit_test_sprite);
-      width = sprite_texture_ref->width;
+      sprite_tga = get_sprite_tga(&g_sprite_manager, widget->texture_hit_test_sprite);
+      width = sprite_tga->width;
       v3 = (__int64)((double)(unsigned __int16)width * v7);
-      height = sprite_texture_ref->height;
+      height = sprite_tga->height;
       v5 = (__int64)((double)(unsigned __int16)height * v8);
       if ( v3 >= 0 )
       {
@@ -45,7 +45,7 @@ uint8_t __thiscall border_mouse_test(FrontendWidget *widget)
       {
         LODWORD(v5) = 0;
       }
-      if ( !sprite_texture_ref->pixels[2 * v5 * width + 2 * v3 + v5 * width + v3] )
+      if ( sprite_tga->pixels[2 * v5 * width + 2 * v3 + v5 * width + v3] == 0 )
         return 1;
     }
   }

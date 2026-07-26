@@ -1404,7 +1404,7 @@
 0043cdeb        unimplemented  {fdivr st0, dword [ebp+0x70]}
 0043cdee        float zoom = fconvert.s(unimplemented  {fstp dword [esp], st0})
 0043cdee        unimplemented  {fstp dword [esp], st0}
-0043cdf1        set_backdrop_progress_fraction(&g_game_base->backdrop, zoom)
+0043cdf1        set_backdrop_zoom(&g_game_base->backdrop, zoom)
 0043cdfc        unimplemented  {fild st0, dword [ecx+0x58]}
 0043cdff        unimplemented  {fsub st0, dword [0x4972c0]}
 0043ce05        unimplemented  {fld st0, dword [ebp+0x70]}

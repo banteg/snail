@@ -954,11 +954,13 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "set_backdrop_progress_fraction",
+      "selector": "set_backdrop_zoom",
       "address": "0x410c30",
-      "name": "set_backdrop_progress_fraction",
-      "artifact": "analysis/decompile/ida/functions/00410c30-set_backdrop_progress_fraction.c",
-      "removed_stale_artifacts": []
+      "name": "set_backdrop_zoom",
+      "artifact": "analysis/decompile/ida/functions/00410c30-set_backdrop_zoom.c",
+      "removed_stale_artifacts": [
+        "analysis/decompile/ida/functions/00410c30-set_backdrop_progress_fraction.c"
+      ]
     },
     {
       "selector": "set_backdrop_distort",
@@ -5012,11 +5014,13 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "get_sprite_texture_ref",
+      "selector": "get_sprite_tga",
       "address": "0x44e580",
-      "name": "get_sprite_texture_ref",
-      "artifact": "analysis/decompile/ida/functions/0044e580-get_sprite_texture_ref.c",
-      "removed_stale_artifacts": []
+      "name": "get_sprite_tga",
+      "artifact": "analysis/decompile/ida/functions/0044e580-get_sprite_tga.c",
+      "removed_stale_artifacts": [
+        "analysis/decompile/ida/functions/0044e580-get_sprite_texture_ref.c"
+      ]
     },
     {
       "selector": "ascii_upper_if_lowercase",

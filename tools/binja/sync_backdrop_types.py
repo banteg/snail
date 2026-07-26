@@ -10,6 +10,7 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_proto_updates,
     apply_struct_field_updates,
+    apply_symbol_updates,
     apply_user_var_updates,
     current_struct_size,
     emit_summary,
@@ -25,14 +26,18 @@ GAME_ROOT_FIELD_UPDATES = (
     ("0x4ec10", "backdrop", "Backdrop"),
 )
 
+SYMBOL_UPDATES = (
+    ("0x410c30", "set_backdrop_zoom"),
+)
+
 PROTO_UPDATES = (
     (
         "initialize_game_last",
         "void __thiscall initialize_game_last(GameRoot* game)",
     ),
     (
-        "set_backdrop_progress_fraction",
-        "void __thiscall set_backdrop_progress_fraction(Backdrop* backdrop, float zoom)",
+        "set_backdrop_zoom",
+        "void __thiscall set_backdrop_zoom(Backdrop* backdrop, float zoom)",
     ),
     (
         "set_backdrop_distort",
@@ -190,6 +195,13 @@ def main() -> int:
         REPO_ROOT, target=args.target, header_path=header_path
     )
     operations: list[dict[str, object]] = [type_replay]
+    operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SYMBOL_UPDATES,
+        )
+    )
     operations.extend(
         apply_struct_field_updates(
             REPO_ROOT,

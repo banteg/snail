@@ -69,13 +69,13 @@
     },
     {
       "address": "0x410c30",
-      "name": "set_backdrop_progress_fraction",
+      "name": "set_backdrop_zoom",
       "kind": "function",
       "aliases": [
-        "set_backdrop_zoom",
+        "set_backdrop_progress_fraction",
         "sub_410c30"
       ],
-      "description": "Stable Windows harness identity for the authored cRBackdrop::SetZoom(float) member."
+      "description": "Canonical Windows identity for the authored cRBackdrop::SetZoom(float) member preserved by Android and iOS."
     },
     {
       "address": "0x410f40",

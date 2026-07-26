@@ -1,4 +1,4 @@
-// set_backdrop_progress_fraction @ 0x410c30 (thiscall, ret 0x4)
+// set_backdrop_zoom @ 0x410c30 (thiscall, ret 0x4)
 // Cross-port authored name: cRBackdrop::SetZoom(float).
 
 #include "backdrop.h"

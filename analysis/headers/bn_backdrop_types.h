@@ -81,7 +81,7 @@ typedef struct Backdrop {
 
 typedef char Backdrop_must_be_0x6cc[(sizeof(Backdrop) == 0x6cc) ? 1 : -1];
 
-void __thiscall set_backdrop_progress_fraction(Backdrop* backdrop, float zoom);
+void __thiscall set_backdrop_zoom(Backdrop* backdrop, float zoom);
 void __thiscall set_backdrop_distort(Backdrop* backdrop, float distort);
 void __thiscall change_backdrop(
     Backdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip);

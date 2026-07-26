@@ -491,11 +491,11 @@
     },
     {
       "address": "0x410c30",
-      "windows_name": "set_backdrop_progress_fraction",
+      "windows_name": "set_backdrop_zoom",
       "ios_symbol": "cRBackdrop::SetZoom(float)",
       "source_object": "Game.o",
       "confidence": "high",
-      "notes": "Both are one-store cRBackdrop members. Windows writes the normalized live track position to the owned float at +0x6c8; the stable Windows harness name is retained while shared source uses the authored zoom vocabulary.",
+      "notes": "All three ports are one-store cRBackdrop members. Windows writes the normalized live track position to the owned float at +0x6c8; the former set_backdrop_progress_fraction name remains an alias only.",
       "android_symbol": "cRBackdrop::SetZoom(float)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -3550,12 +3550,12 @@
     },
     {
       "address": "0x44e580",
-      "windows_name": "get_sprite_texture_ref",
+      "windows_name": "get_sprite_tga",
       "ios_symbol": "cRSpriteManager::GetTga(int)",
       "android_symbol": "cRSpriteManager::GetTga(int)",
       "source_object": "RSprite.o",
       "confidence": "high",
-      "notes": "All three implementations return the sprite texture record's +0x98 payload. The mobile GetTextureRef accessor is a distinct function returning record +0x8c; the Windows stable harness name is therefore historically misleading."
+      "notes": "All three implementations return the sprite texture record's +0x98 payload. The mobile GetTextureRef accessor is a distinct function returning record +0x8c; the former get_sprite_texture_ref Windows name remains an alias only."
     },
     {
       "address": "0x44e5a0",
