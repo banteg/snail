@@ -199,18 +199,55 @@ def test_persistent_project_rejects_ghidra_build_drift(
 
 def test_persistent_project_lock_fails_closed(tmp_path: Path) -> None:
     namespace = _project_namespace()
-    persistent_project = namespace["persistent_project"]
-    project_lock = namespace["project_lock"]
+    locked_persistent_project = namespace["locked_persistent_project"]
     lock_error = namespace["ProjectLockError"]
     ghidra_dir = tmp_path / "ghidra"
+    project_root = tmp_path / "projects"
     binary = tmp_path / "snail.exe"
     binary.write_bytes(b"windows binary")
     _write_ghidra_build(ghidra_dir)
-    project = persistent_project(binary, ghidra_dir, tmp_path / "projects")
 
     with (
-        project_lock(project),
+        locked_persistent_project(binary, ghidra_dir, project_root),
         pytest.raises(lock_error, match="already in use"),
-        project_lock(project),
+        locked_persistent_project(binary, ghidra_dir, project_root),
     ):
         pass
+
+
+def test_persistent_project_state_is_checked_after_lock(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    namespace = _project_namespace()
+    locked_persistent_project = namespace["locked_persistent_project"]
+    fcntl = namespace["fcntl"]
+    events = []
+    expected_project = object()
+
+    def fake_flock(_descriptor: int, operation: int) -> None:
+        events.append("unlock" if operation == fcntl.LOCK_UN else "lock")
+
+    def fake_persistent_project(
+        _binary: Path,
+        _ghidra_dir: Path,
+        _project_root: Path,
+    ) -> object:
+        events.append("inspect")
+        return expected_project
+
+    monkeypatch.setattr(fcntl, "flock", fake_flock)
+    monkeypatch.setitem(
+        locked_persistent_project.__wrapped__.__globals__,
+        "persistent_project",
+        fake_persistent_project,
+    )
+
+    with locked_persistent_project(
+        tmp_path / "snail.exe",
+        tmp_path / "ghidra",
+        tmp_path / "projects",
+    ) as project:
+        assert project is expected_project
+
+    assert events == ["lock", "inspect", "unlock"]

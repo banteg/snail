@@ -220,20 +220,25 @@ def record_initialized_project(project: Project) -> None:
 
 
 @contextmanager
-def project_lock(project: Project) -> Iterator[None]:
-    if not project.persistent:
-        yield
-        return
-    project.lock_path.parent.mkdir(parents=True, exist_ok=True)
-    with project.lock_path.open("a+", encoding="utf-8") as stream:
+def locked_persistent_project(
+    binary: Path,
+    ghidra_dir: Path,
+    project_root: Path = DEFAULT_PROJECT_ROOT,
+) -> Iterator[Project]:
+    key = project_key(binary)
+    resolved_root = project_root.resolve()
+    lock_path = resolved_root / f".{key}.lock"
+    project_root_path = resolved_root / key
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    with lock_path.open("a+", encoding="utf-8") as stream:
         try:
             fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as error:
             raise ProjectLockError(
-                f"persistent Ghidra project is already in use: {project.root}"
+                f"persistent Ghidra project is already in use: {project_root_path}"
             ) from error
         try:
-            yield
+            yield persistent_project(binary, ghidra_dir, resolved_root)
         finally:
             fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
 

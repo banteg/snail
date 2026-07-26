@@ -5478,7 +5478,7 @@ def test_ghidra_symbol_probe_is_versioned_bounded_and_persistent() -> None:
 
     assert 'Path("/Applications/ghidra_12.1.2_PUBLIC")' in wrapper
     assert "-Duser.home=" in wrapper
-    assert "persistent_project(" in wrapper
+    assert "locked_persistent_project(" in wrapper
     assert "temporary_fresh_project(" in wrapper
     assert '"--fresh"' in wrapper
     assert '"DecompileSymbol.java"' in wrapper

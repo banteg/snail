@@ -18,9 +18,8 @@ from project import (
     Project,
     ProjectLockError,
     ProjectMetadataError,
-    persistent_project,
+    locked_persistent_project,
     prepare_project,
-    project_lock,
     record_initialized_project,
     temporary_fresh_project,
 )
@@ -382,12 +381,11 @@ def main() -> int:
                     symbols=symbols,
                 )
 
-        project = persistent_project(
+        with locked_persistent_project(
             binary,
             args.ghidra_dir,
             args.project_root,
-        )
-        with project_lock(project):
+        ) as project:
             prepare_project(project)
             print(f"using persistent Ghidra project: {project.root}")
             return run_export(
