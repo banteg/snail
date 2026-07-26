@@ -76,3 +76,29 @@ four backward `__offset` expressions to neighboring sample reads. The guarded
 replay retains only the zero-offset set behind canonical layout checks. The
 scratch remains unchanged at its honest 39.88% focused match with 32 clean
 masked operands.
+
+## 2026-07-26 mesh and shared-face ownership
+
+Raw instructions at `0x41f43e..0x41f50e` prove the same branch-dependent vector
+construction as the adjacent path builders: an ordinary lateral offset plus
+generated position, and a terminal lateral offset, raised endpoint, and
+generated position. Both paths materialize their destination late and converge
+on the final Z store, matching Binary Ninja's one shared `vertex` lifetime.
+Replaying these owners alone raises focused matching from 39.88% to 43.96%.
+
+Screw's face loop remains structurally distinct from Dip. Native instructions
+at `0x41f5ce` materialize one face cursor before the two-pass branch and reuse
+it for either orientation. Each pass nevertheless owns a complete record,
+including its final `uv[3].v` write. Keeping the shared pointer while completing
+the two branch-local records produces:
+
+```text
+match: 48.53%
+target: 685 insns, candidate: 646 insns
+prefix: 6/685 target insns
+masked operands: 34 ok, 0 unresolved, 0 mismatch
+```
+
+The complete recovery gains 8.65 focused points, 27 candidate instructions,
+two clean operands, and the exact native `0x50` frame without inventing a
+second face owner.
