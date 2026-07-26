@@ -160,3 +160,21 @@ now rises from 44.05% (615/679) to 46.46% (634/679), with 32 clean masked
 operands and no unresolved or mismatched masks. The candidate frame moves no
 farther than `0x34` against the native `0x40`; the remaining frame ownership
 includes the still-unrecovered two-face record loop.
+
+## 2026-07-25 face-record ownership
+
+Raw native assembly at `0x42623f..0x4263b2` proves an inner two-iteration face
+loop. Its index is `face_index + 2 * (row * width_cells + column)`, and each
+branch owns a complete, distinct `ObjectFaceQuad` lifetime. The first branch
+writes the even face and both parity arms select `texture_a`; the second writes
+the odd face and both parity arms select `texture_b`. Both branches write the
+header, four vertices, texture reference, and all four UV pairs.
+
+This agrees independently with the guarded Binary Ninja lifetime replay, which
+recovers separate `face_first` and `face_second` pointers. A shared pointer
+probe both contradicted those lifetimes and fell to 36.32%. Retaining the two
+branch-local records and the native index expression yields 40.83% (668/679)
+with a `0x38` frame against the native `0x40`, 30 clean masked operands, and no
+unresolved or mismatched masks. The previous simplified two-record writer
+scored 46.46% (634/679) with a `0x34` frame, but hid the proven loop and record
+ownership; its higher fuzzy score was therefore not retained.
