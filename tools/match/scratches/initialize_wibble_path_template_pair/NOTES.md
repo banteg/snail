@@ -134,3 +134,17 @@ header, vertices, texture reference, and UV record, including redundant parity
 arms that select the same branch texture. Recovering those records resolves the
 tail rescheduling: focused matching reaches 58.72% (591/608), with 35 clean
 masked operands and no unresolved or mismatched masks.
+
+## 2026-07-26 complete mesh-vector ownership
+
+The Turnover-family closure exposes two vector owners still collapsed by the
+initial Wibble mesh rewrite. Native `0x428f0d..0x428fdb` first materializes a
+lateral-offset vector in the ordinary branch before its generated position.
+The terminal branch separately owns an endpoint vector derived from the
+previous sample with its Z lane extended by `1.0f`.
+
+Recovering both owners raises focused matching from 58.72% (591/608) to 60.73%
+(604/608), improves the masked audit from 35 to 36 clean operands with no
+unresolved or mismatched masks, and recovers the exact native `0x54` frame.
+The exact prefix expands from zero to 85 instructions. The candidate is now
+only four instructions shorter than the target.
