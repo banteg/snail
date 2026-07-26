@@ -207,3 +207,18 @@ byte-relative accesses made the decompile less exact. All nine retained owners
 render direct fields and introduce no `__offset` expression. This is
 analysis-only: focused matching remains 60.84% (603/610), with 31 clean masked
 operands.
+
+2026-07-26 branch-local UV completion: the native front and back paths end
+independently at `0x426ba7` and `0x426c5e`; each writes its own
+`face->uv[3].v` before rejoining the two-face loop. Recovering those authored
+branch-local writes raises focused Wibo from 60.84% to 63.70% (603 to 605
+candidate instructions) and expands the clean operand audit from 31 to 33,
+with no unresolved or mismatched operands.
+
+Unlike Supertramp and the loop family, moving Start's face pointer and whole
+record lifetime into the two branches regresses the focused result to 54.72%.
+That probe does shrink the candidate frame from 0x48 to the native 0x44, but
+it also disrupts the proven register schedule across the constructor. It is
+rejected rather than treating frame parity as sufficient evidence. Moving the
+mesh vertex destination below the generated-position temporary is
+byte-neutral and is likewise not retained.

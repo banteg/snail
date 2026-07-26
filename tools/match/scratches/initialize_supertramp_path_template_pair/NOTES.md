@@ -174,3 +174,18 @@ an `__offset` expression. The replay extends ownership from the path arrays
 into the object mesh while preserving the independently proven constructor
 shape. This is analysis-only: focused Wibo remains 51.62% (529/552), with a
 15-instruction prefix and 32 clean masked operands.
+
+2026-07-26 face-owner completion: the native front face at
+`0x4244eb..0x424584` and back face at `0x4245b0..0x42464a` each own their
+complete record, including the header, indices, texture lookup, and all four
+UV pairs. Moving the face pointer and final `uv[3].v` write into each branch
+recovers that ownership boundary and raises focused Wibo from 51.62% to
+54.53% (529 to 541 candidate instructions), with the exact prefix growing
+from 15 to 17 and all 32 audited operands still clean.
+
+This is a coupled lifetime result: duplicating only the native final UV write
+reaches 52.09%, while moving the already complete mesh vertex destination
+below its generated-position temporary is byte-neutral. The adjacent `start`
+constructor independently confirms the duplicated UV completion but rejects
+branch-local face pointers, so the retained Supertramp owner shape is not a
+blind family transfer.

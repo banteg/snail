@@ -69,10 +69,10 @@ static __forceinline void build_direct_strip_mesh(
                 float u1 = (float)next_column * 0.125f;
                 int side = 0;
                 do {
-                    ObjectFaceQuad* face =
-                        &facequads[side + 2 * (column + row * path->width_cells)];
-                    face->header_word = 0;
                     if (side == 0) {
+                        ObjectFaceQuad* face = &facequads[
+                            side + 2 * (column + row * path->width_cells)];
+                        face->header_word = 0;
                         face->vertex_0 =
                             column + row * ((unsigned short)path->width_cells + 1);
                         face->vertex_1 = row *
@@ -103,7 +103,11 @@ static __forceinline void build_direct_strip_mesh(
                         face->uv[2].u = u1;
                         face->uv[2].v = v1;
                         face->uv[3].u = u0;
+                        face->uv[3].v = v1;
                     } else {
+                        ObjectFaceQuad* face = &facequads[
+                            side + 2 * (column + row * path->width_cells)];
+                        face->header_word = 0;
                         face->vertex_0 = row *
                                 ((unsigned short)path->width_cells + 1) +
                             column + 1;
@@ -130,8 +134,8 @@ static __forceinline void build_direct_strip_mesh(
                         face->uv[2].u = u0;
                         face->uv[2].v = v1;
                         face->uv[3].u = u1;
+                        face->uv[3].v = v1;
                     }
-                    face->uv[3].v = v1;
                     ++side;
                 } while (side < 2);
                 column = next_column;

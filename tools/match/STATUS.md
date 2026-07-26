@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **77.59%**.
+**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **77.63%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -763,8 +763,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 727/736 | 72.32% | 0/736 | 37 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 698/726 | 72.89% | 122/726 | 63 ok |  |
 | 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 416/425 | 71.82% | 32/425 | 7 ok |  |
-| 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 529/552 | 51.62% | 15/552 | 32 ok |  |
-| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 603/610 | 60.84% | 0/610 | 31 ok |  |
+| 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 541/552 | 54.53% | 17/552 | 32 ok |  |
+| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 605/610 | 63.70% | 0/610 | 33 ok |  |
 | 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 651/671 | 51.89% | 15/671 | 39 ok |  |
 | 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 655/680 | 50.79% | 15/680 | 44 ok |  |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 670/687 | 50.55% | 6/687 | 42 ok |  |
