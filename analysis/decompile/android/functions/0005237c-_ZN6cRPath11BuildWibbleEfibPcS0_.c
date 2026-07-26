@@ -1,0 +1,226 @@
+/*
+ * mangled: _ZN6cRPath11BuildWibbleEfibPcS0_
+ * demangled: cRPath::BuildWibble(float, int, bool, char*, char*)
+ * address: 0005237c
+ * size: 1092
+ */
+
+/* cRPath::BuildWibble(float, int, bool, char*, char*) */
+
+void cRPath::BuildWibble(float param_1,int param_2,bool param_3,char *param_4,char *param_5)
+
+{
+  float fVar1;
+  undefined4 uVar2;
+  float fVar3;
+  undefined4 uVar4;
+  tVector *this;
+  int iVar5;
+  tMatrix *ptVar6;
+  int iVar7;
+  undefined4 uVar8;
+  int iVar9;
+  int iVar10;
+  undefined4 *puVar11;
+  undefined4 *puVar12;
+  int iVar13;
+  int iVar14;
+  uint in_fpscr;
+  float extraout_s0;
+  float fVar15;
+  float fVar16;
+  float fVar17;
+  undefined4 uVar18;
+  float fVar19;
+  float fVar20;
+  int local_64;
+
+  uVar18 = DAT_000526ac;
+  *(char **)(param_2 + 0x48) = param_4;
+  uVar2 = DAT_000526d4;
+  *(undefined4 *)(param_2 + 0x40) = uVar18;
+  *(undefined4 *)(param_2 + 0x44) = uVar2;
+  *(undefined1 *)(param_2 + 0x30) = 0;
+  *(undefined4 *)(param_2 + 0x2c) = 0x32;
+  *(undefined4 *)(param_2 + 0x34) = 0;
+  fVar20 = DAT_000526b0;
+  *(undefined4 *)(param_2 + 0x38) = 0x20;
+  fVar3 = DAT_000526d8;
+  GetNodes((cRPath *)param_2);
+  fVar16 = DAT_000526b4;
+  fVar15 = (float)VectorSignedToFloat(*(undefined4 *)(param_2 + 0x48),(byte)(in_fpscr >> 0x16) & 3);
+  ptVar6 = *(tMatrix **)(param_2 + 0x4c);
+  *(undefined4 *)(ptVar6 + 0x9c) = uVar2;
+  *(float *)(ptVar6 + 0x98) = fVar3;
+  *(float *)(ptVar6 + 0x94) = fVar3;
+  *(float *)(ptVar6 + 0xa0) = fVar3;
+  *(undefined1 *)(param_2 + 0x84) = 0;
+  fVar1 = DAT_000526c0;
+  uVar18 = DAT_000526bc;
+  fVar19 = DAT_000526b8;
+  iVar14 = 0;
+  *(float *)(ptVar6 + 0x90) = fVar15 * fVar16 - fVar20;
+  tMatrix::Identity(ptVar6);
+  iVar7 = *(int *)(param_2 + 0x4c);
+  ptVar6 = *(tMatrix **)(param_2 + 0x50);
+  *(undefined4 *)(iVar7 + 0x8c) = uVar2;
+  *(undefined4 *)(iVar7 + 0x30) = *(undefined4 *)(iVar7 + 0x90);
+  *(float *)(iVar7 + 0x34) = fVar3;
+  *(float *)(iVar7 + 0x38) = fVar3;
+  tMatrix::Identity(ptVar6);
+  fVar15 = (float)VectorSignedToFloat(*(undefined4 *)(param_2 + 0x48),(byte)(in_fpscr >> 0x16) & 3);
+  iVar5 = *(int *)(param_2 + 0x50);
+  iVar7 = *(int *)(param_2 + 0x4c);
+  *(undefined4 *)(iVar5 + 0x30) = *(undefined4 *)(iVar7 + 0x90);
+  fVar16 = DAT_000526d0;
+  *(undefined4 *)(iVar5 + 0x8c) = uVar2;
+  *(float *)(iVar5 + 0x34) = fVar19;
+  *(float *)(iVar5 + 0x38) = fVar3;
+  *(float *)(iVar7 + 0x14f0) = fVar3;
+  *(float *)(iVar7 + 0x14ec) = fVar3;
+  *(float *)(iVar7 + 0x14f8) = fVar3;
+  *(undefined4 *)(iVar7 + 0x14f4) = uVar2;
+  *(float *)(iVar7 + 0x14e8) = fVar20 + fVar15 * fVar16;
+  tMatrix::Identity((tMatrix *)(iVar7 + 0x1458));
+  iVar5 = *(int *)(param_2 + 0x4c);
+  iVar7 = *(int *)(param_2 + 0x50);
+  *(undefined4 *)(iVar5 + 0x14e4) = uVar2;
+  *(undefined4 *)(iVar5 + 0x1488) = *(undefined4 *)(iVar5 + 0x14e8);
+  *(float *)(iVar5 + 0x148c) = fVar3;
+  *(undefined4 *)(iVar5 + 0x1490) = uVar18;
+  tMatrix::Identity((tMatrix *)(iVar7 + 0x1458));
+  iVar5 = *(int *)(param_2 + 0x4c);
+  iVar7 = *(int *)(param_2 + 0x50);
+  *(undefined4 *)(iVar7 + 0x1490) = uVar18;
+  uVar18 = *(undefined4 *)(iVar5 + 0x14e8);
+  *(undefined4 *)(iVar7 + 0x14e4) = uVar2;
+  *(float *)(iVar7 + 0x148c) = fVar19;
+  *(undefined4 *)(iVar7 + 0x1488) = uVar18;
+  iVar7 = 0;
+  fVar20 = fVar3;
+  do {
+    fVar15 = *(float *)(iVar5 + 0x90);
+    fVar16 = *(float *)(iVar5 + 0x14e8);
+    iVar10 = iVar7 + 0xa8;
+    ptVar6 = (tMatrix *)(iVar5 + iVar10);
+    *(float *)(ptVar6 + 0x98) = fVar3;
+    *(float *)(ptVar6 + 0x94) = fVar3;
+    *(float *)(ptVar6 + 0xa0) = fVar3;
+    *(undefined4 *)(ptVar6 + 0x9c) = uVar2;
+    iVar14 = iVar14 + 1;
+    *(float *)(ptVar6 + 0x90) = fVar15 + (fVar20 * (fVar16 - fVar15)) / fVar1;
+    fVar20 = (float)VectorSignedToFloat(iVar14,(byte)(in_fpscr >> 0x16) & 3);
+    fVar16 = (float)tMatrix::Identity(ptVar6);
+    iVar9 = *(int *)(param_2 + 0x4c) + iVar10;
+    *(float *)(iVar9 + 0x30) = fVar3;
+    *(float *)(iVar9 + 0x34) = fVar3;
+    *(float *)(iVar9 + 0x38) = fVar20;
+    fVar16 = (float)Sin(fVar16);
+    uVar18 = Sin(fVar16);
+    fVar16 = (float)Sin(extraout_s0);
+    uVar4 = Cos(fVar16);
+    iVar5 = *(int *)(param_2 + 0x4c);
+    *(undefined4 *)(iVar9 + 0x10) = uVar18;
+    *(float *)(iVar9 + 0x18) = fVar3;
+    iVar7 = iVar5 + iVar7;
+    iVar5 = iVar5 + iVar10;
+    fVar16 = *(float *)(iVar5 + 0x30);
+    fVar15 = *(float *)(iVar7 + 0x30);
+    fVar17 = *(float *)(iVar7 + 0x34);
+    *(float *)(iVar5 + 0x28) = *(float *)(iVar5 + 0x38) - *(float *)(iVar7 + 0x38);
+    *(float *)(iVar5 + 0x24) = *(float *)(iVar5 + 0x34) - fVar17;
+    *(undefined4 *)(iVar9 + 0x14) = uVar4;
+    *(float *)(iVar5 + 0x20) = fVar16 - fVar15;
+    tVector::Normalize((tVector *)(iVar5 + 0x20));
+    this = (tVector *)(*(int *)(param_2 + 0x4c) + iVar10);
+    tVector::Cross(this,this + 0x10,this + 0x20);
+    iVar5 = *(int *)(param_2 + 0x4c);
+    local_64 = *(int *)(param_2 + 0x50);
+    puVar12 = (undefined4 *)(iVar5 + iVar10);
+    puVar11 = (undefined4 *)(local_64 + iVar10);
+    uVar18 = puVar12[1];
+    uVar4 = puVar12[2];
+    uVar8 = puVar12[3];
+    *puVar11 = *puVar12;
+    puVar11[1] = uVar18;
+    puVar11[2] = uVar4;
+    puVar11[3] = uVar8;
+    uVar18 = puVar12[5];
+    uVar4 = puVar12[6];
+    uVar8 = puVar12[7];
+    puVar11[4] = puVar12[4];
+    puVar11[5] = uVar18;
+    puVar11[6] = uVar4;
+    puVar11[7] = uVar8;
+    uVar18 = puVar12[9];
+    uVar4 = puVar12[10];
+    uVar8 = puVar12[0xb];
+    puVar11[8] = puVar12[8];
+    puVar11[9] = uVar18;
+    puVar11[10] = uVar4;
+    puVar11[0xb] = uVar8;
+    uVar18 = puVar12[0xd];
+    uVar4 = puVar12[0xe];
+    uVar8 = puVar12[0xf];
+    puVar11[0xc] = puVar12[0xc];
+    puVar11[0xd] = uVar18;
+    puVar11[0xe] = uVar4;
+    puVar11[0xf] = uVar8;
+    fVar16 = (float)puVar12[5];
+    fVar15 = (float)puVar12[6];
+    puVar11[0xc] = (float)puVar11[0xc] + fVar19 * (float)puVar12[4];
+    puVar11[0xd] = (float)puVar11[0xd] + fVar19 * fVar16;
+    puVar11[0xe] = (float)puVar11[0xe] + fVar19 * fVar15;
+    iVar7 = iVar10;
+  } while (iVar14 != 0x1e);
+  if (*(int *)(param_2 + 0x38) < 2) {
+    iVar7 = *(int *)(param_2 + 0x38) + -1;
+  }
+  else {
+    iVar9 = 0;
+    iVar14 = 0;
+    while( true ) {
+      iVar13 = iVar14 + 0xa8;
+      iVar10 = iVar5 + iVar14;
+      iVar5 = iVar5 + iVar13;
+      fVar16 = *(float *)(iVar5 + 0x38);
+      fVar20 = *(float *)(iVar5 + 0x34);
+      iVar9 = iVar9 + 1;
+      *(float *)(iVar10 + 0x80) = *(float *)(iVar5 + 0x30) - *(float *)(iVar10 + 0x30);
+      *(float *)(iVar10 + 0x84) = fVar20 - *(float *)(iVar10 + 0x34);
+      *(float *)(iVar10 + 0x88) = fVar16 - *(float *)(iVar10 + 0x38);
+      uVar18 = tVector::Normalize((tVector *)(iVar10 + 0x80));
+      iVar14 = *(int *)(param_2 + 0x50) + iVar14;
+      iVar7 = *(int *)(param_2 + 0x50) + iVar13;
+      fVar16 = *(float *)(iVar7 + 0x38);
+      fVar20 = *(float *)(iVar7 + 0x34);
+      fVar19 = *(float *)(iVar14 + 0x38);
+      *(float *)(iVar14 + 0x80) = *(float *)(iVar7 + 0x30) - *(float *)(iVar14 + 0x30);
+      *(float *)(iVar14 + 0x84) = fVar20 - *(float *)(iVar14 + 0x34);
+      *(undefined4 *)(iVar10 + 0x8c) = uVar18;
+      *(float *)(iVar14 + 0x88) = fVar16 - fVar19;
+      uVar18 = tVector::Normalize((tVector *)(iVar14 + 0x80));
+      iVar7 = *(int *)(param_2 + 0x38) + -1;
+      *(undefined4 *)(iVar14 + 0x8c) = uVar18;
+      if (iVar7 <= iVar9) break;
+      iVar5 = *(int *)(param_2 + 0x4c);
+      iVar14 = iVar13;
+    }
+    local_64 = *(int *)(param_2 + 0x50);
+    iVar5 = *(int *)(param_2 + 0x4c);
+  }
+  fVar20 = DAT_000526d8;
+  uVar18 = DAT_000526d4;
+  local_64 = local_64 + iVar7 * 0xa8;
+  iVar5 = iVar5 + iVar7 * 0xa8;
+  *(undefined4 *)(iVar5 + 0x8c) = DAT_000526d4;
+  *(undefined4 *)(iVar5 + 0x88) = uVar18;
+  *(float *)(iVar5 + 0x84) = fVar20;
+  *(float *)(iVar5 + 0x80) = fVar20;
+  *(undefined4 *)(local_64 + 0x8c) = uVar18;
+  *(float *)(local_64 + 0x80) = fVar20;
+  *(undefined4 *)(local_64 + 0x88) = uVar18;
+  *(float *)(local_64 + 0x84) = fVar20;
+  CalcLengthZ((cRPath *)param_2);
+  return;
+}

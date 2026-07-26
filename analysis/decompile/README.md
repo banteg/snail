@@ -15,7 +15,18 @@ Layout:
 - `binja/index.json`: Binary Ninja export index
 - `ida/functions/`: IDA pseudocode exports for every named manifest function
 - `ida/index.json`: IDA export index
+- `android/functions/`: Ghidra exports keyed by Android Itanium symbols
+- `android/index.json`: Android symbol/decompile metadata and status
+- `ios/functions/`: Ghidra exports keyed by iPhone Itanium symbols
+- `ios/index.json`: iPhone symbol/decompile metadata and status
 - `index.json`: top-level refresh summary, including combined mismatch counts
+
+The Windows Binary Ninja and IDA lanes are curated by
+`gameplay-functions.json`. The mobile lanes intentionally cover every nested
+C++ text/weak symbol in their respective binaries, including functions outside
+the Windows manifest. Use mobile bodies for original class/method vocabulary,
+field order, control flow, and expression trees; keep Windows evidence
+authoritative for object offsets and VC6 code shape.
 
 Each per-tool index also records mismatch data:
 
@@ -77,6 +88,20 @@ Run just the hotspot health checks with:
 
 ```bash
 uv run python tools/check_decompile_health.py --strict
+```
+
+Refresh the mobile corpora with one Ghidra analysis run per binary:
+
+```bash
+uv run tools/ghidra/export_itanium_symbols.py \
+  artifacts/android/unpacked/com.sandlotgames.snailmail.1/lib/armeabi-v7a/libsnailmail.so \
+  analysis/decompile/android \
+  --strict
+
+uv run tools/ghidra/export_itanium_symbols.py \
+  "artifacts/ios/unpacked/Snail Mail/Payload/iSM.app/iSM" \
+  analysis/decompile/ios \
+  --strict
 ```
 
 Notes:
