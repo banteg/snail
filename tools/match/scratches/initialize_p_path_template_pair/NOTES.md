@@ -178,3 +178,20 @@ with a `0x38` frame against the native `0x40`, 30 clean masked operands, and no
 unresolved or mismatched masks. The previous simplified two-record writer
 scored 46.46% (634/679) with a `0x34` frame, but hid the proven loop and record
 ownership; its higher fuzzy score was therefore not retained.
+
+## 2026-07-26 complete mesh-vector ownership
+
+Raw native assembly at `0x4260bc..0x42618c` proves the same complete four-vector
+model as the adjacent constructors. The ordinary branch materializes a
+lateral-offset vector before its generated position. The terminal branch
+reaches the previous sample through the current row cursor, materializes its
+own lateral offset and an endpoint whose Z lane is extended by `1.0f`, then
+constructs the generated position.
+
+Adding the two previously collapsed owners raises focused matching from 40.83%
+(668/679) to 41.27% (678/679) and improves the masked audit from 30 to 31 clean
+operands with no unresolved or mismatched masks. P's candidate frame grows from
+`0x38` to `0x44` against the native `0x40`; honest endpoint and counter scope
+variants did not recover that four-byte slot overlap. The branch-local form is
+retained because its native dataflow and near-exact instruction count are
+direct evidence, while the remaining frame residual is explicitly unresolved.
