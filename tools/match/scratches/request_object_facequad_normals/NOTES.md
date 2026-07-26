@@ -30,3 +30,14 @@ IDA now shares the exact `Vec3* __thiscall ... (Object*)` contract. The export
 distinguishes the Object-owned per-vertex `vertex_normals` bank from the paired
 per-face `facequad_normals` bank, retains the latter as the return value, and
 removes the raw `_DWORD*` receiver. The exact 26/26 matcher is unchanged.
+
+## 2026-07-26 Android owner verification
+
+Android exposes the exact-demangled authored method
+`cRObject::RequestFaceQuadNormals()`, confirming that this allocator belongs to
+the render object rather than to the toon pass or a caller-owned workspace.
+The mobile implementation derives and allocates a different normal
+representation, so its offsets, extent, and decompiler-derived `void` return
+do not transfer. Windows independently proves its separate per-vertex and
+paired per-face banks and leaves the retained face-normal pointer coherently in
+EAX. The exact Windows source remains 26/26 with four clean operands.

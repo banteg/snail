@@ -23,3 +23,13 @@ raw `_DWORD*` receiver and fake allocation-pointer return. The manifest now
 also describes only the bank this helper actually owns; the temporary index
 selection workspace belongs to the downstream rendering path. Matching remains
 exact at 16/16.
+
+## 2026-07-26 Android owner verification
+
+Android exposes the exact-demangled `cRObject::RequestEdges(int)` method and
+the same one-time allocation guard, confirming the Object owner and retained
+edge-count lifecycle. Its port additionally allocates an Object-owned edge
+index array and uses ten-byte edge records; Windows instead allocates one
+36-byte `ObjectToonEdge` bank. Those storage details are intentionally kept
+platform-local. The Windows member remains exact at 16/16 with two clean
+operands.

@@ -4,8 +4,6 @@
 #include "sprite.h"
 #include "track_attachment_types.h"
 
-void __fastcall request_object_vertex_colours(Object* object);
-
 void Path::mirror_path(Path* source)
 {
     is_mirrored_x = 1;
@@ -63,7 +61,7 @@ void Path::mirror_path(Path* source)
     Object* destination_mesh = strip_mesh;
     tColour* destination_colours = 0;
     if ((destination_mesh->flags & OBJECT_FLAG_USE_VERTEX_COLOURS) != 0) {
-        request_object_vertex_colours((Object*)destination_mesh);
+        destination_mesh->request_object_vertex_colours();
         destination_mesh = strip_mesh;
         destination_colours = destination_mesh->vertex_colours;
     }

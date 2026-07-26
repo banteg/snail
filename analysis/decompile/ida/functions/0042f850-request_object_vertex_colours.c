@@ -2,6 +2,7 @@
 /* function: request_object_vertex_colours @ 0x42f850 */
 /* selector: request_object_vertex_colours */
 
+// Authored `cRObject::RequestColours()` member: allocates one Object-owned `tColour` bank sized by `vertex_count`, initializes each record's red, green, and blue lanes to 1.0, and intentionally leaves alpha untouched. The Android body confirms the same 16-byte stride and initialization contract.
 void __fastcall request_object_vertex_colours(Object *object)
 {
   int32_t v2; // ecx

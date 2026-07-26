@@ -19,8 +19,9 @@ from `tColour`. Matching remains exact at 30/30 instructions with both operands
 clean.
 
 2026-07-15 Binary Ninja replay: the live fastcall prototype and tracked
-artifact now retain the canonical `Object* object` receiver. Matching remains
-exact.
+artifact retain the canonical `Object* object` receiver. Matching remains
+exact; the later mobile owner replay below resolves that ABI-equivalent helper
+as an authored member.
 
 ## 2026-07-23 colour-bank byte-cursor replay
 
@@ -45,3 +46,20 @@ the canonical Object-owned `tColour* vertex_colours` bank and that the loop
 uses `Object::vertex_count`. This retires the stale
 `PathTemplateStripMesh`/`Color4f` owner shell without altering the exact
 matcher source or inventing an alpha write.
+
+## 2026-07-26 Android owner and source recovery
+
+Android exposes the exact-demangled `cRObject::RequestColours()` method and an
+equivalent body: one 16-byte colour per vertex, RGB initialized to 1.0, and
+alpha deliberately untouched. This resolves the Windows fastcall-equivalent
+helper as an authored `Object` member. Rewriting the canonical scratch as
+`void Object::request_object_vertex_colours()` remains byte-exact at 30/30
+instructions with two clean operands, and its exact `request_object_vertices`
+caller also accepts the member spelling.
+
+The difficult worm-path constructor is a source-shape exception, not an
+ownership exception: changing that call site to member syntax collapses its
+VC6 register and temporary plan and broadly reschedules the function despite a
+coincidentally unchanged aggregate score. It therefore retains a local
+fastcall-compatible declaration until that caller's unresolved source shape is
+recovered.

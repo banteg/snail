@@ -1628,7 +1628,7 @@
     {
       "address": "0x42f790",
       "name": "copy_object_vertices",
-      "description": "Copies exactly `vertex_count` source `Vec3` records from one Object's borrowed `vertices` view into its owned `copied_vertices` bank, preserving the x, y, and z components used by the non-destructive distortion path."
+      "description": "Copies exactly `vertex_count` source `Vec3` records from one Object's borrowed `vertices` view into its owned `copied_vertices` bank, preserving the x, y, and z components used by the non-destructive distortion path. Android names the owner `cRObject::CopyVertices()` and preserves this 12-byte path, while its additional packed six-byte branch is port-specific."
     },
     {
       "address": "0x42f7d0",
@@ -1638,12 +1638,12 @@
     {
       "address": "0x42f800",
       "name": "request_object_facequad_normals",
-      "description": "Ensures one object's toon-normal storage exists by allocating the per-vertex accumulated normal list and the per-face quad-normal pairs consumed by the outline pass."
+      "description": "Ensures one object's toon-normal storage exists by allocating the per-vertex accumulated normal list and the per-face quad-normal pairs consumed by the outline pass. Android names the authored owner `cRObject::RequestFaceQuadNormals()`, but uses a different mobile normal representation; Windows layout and retained-pointer return remain independently proved."
     },
     {
       "address": "0x42f850",
       "name": "request_object_vertex_colours",
-      "description": "Allocates one Object-owned `tColour` bank sized by `vertex_count`, initializes each record's red, green, and blue lanes to 1.0, and intentionally leaves alpha untouched."
+      "description": "Authored `cRObject::RequestColours()` member: allocates one Object-owned `tColour` bank sized by `vertex_count`, initializes each record's red, green, and blue lanes to 1.0, and intentionally leaves alpha untouched. The Android body confirms the same 16-byte stride and initialization contract."
     },
     {
       "address": "0x42f8a0",
@@ -1662,7 +1662,8 @@
     },
     {
       "address": "0x42f930",
-      "name": "request_object_texture_groups"
+      "name": "request_object_texture_groups",
+      "description": "Authored `cRObject::RequestFaceQuadTextureGroups(int)` member: retains an Object-owned int bank with separate live count and fixed capacity, reports the fixed-capacity error on overflow, and updates the live count on every request. Android confirms the lifecycle while using port-specific field offsets."
     },
     {
       "address": "0x42f990",
@@ -1712,7 +1713,7 @@
     {
       "address": "0x430570",
       "name": "request_object_edges",
-      "description": "Installs the requested edge count and allocates the Object-owned packed `ObjectToonEdge` bank when no edge bank is active; an existing bank is retained."
+      "description": "Authored `cRObject::RequestEdges(int)` member: installs the requested edge count and allocates the Object-owned packed `ObjectToonEdge` bank when no edge bank is active; an existing bank is retained. Android confirms the one-time owner but adds a separate index bank and uses a different edge stride, so those mobile layout details do not transfer."
     },
     {
       "address": "0x4305a0",

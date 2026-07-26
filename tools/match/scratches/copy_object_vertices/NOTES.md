@@ -49,3 +49,13 @@ Object-owned `Vec3* vertices` and `Vec3* copied_vertices` banks and renders the
 three component assignments directly. This retires the stale
 `unsigned int* this` view and its fake integer return without changing the
 already-exact matcher source.
+
+## 2026-07-26 Android owner verification
+
+The Android port preserves the exact-demangled
+`cRObject::CopyVertices()` owner. Its ordinary vertex branch copies the same
+three 32-bit components with a 12-byte stride, independently confirming the
+Windows member and its borrowed-source/owned-copy relationship. Android also
+has a packed six-byte vertex branch guarded by a mobile flag; that branch and
+all mobile field offsets are port-specific and are not transplanted into the
+Windows layout. Focused Windows matching remains exact at 28/28 instructions.

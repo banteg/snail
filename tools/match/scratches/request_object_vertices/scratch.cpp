@@ -6,8 +6,6 @@ void* allocate_tracked_memory(int size, char* name);
 void free_tracked_memory(void* ptr);
 int report_errorf(char* format, ...);
 
-void __fastcall request_object_vertex_colours(Object* mesh);
-
 void Object::request_object_vertices(int requested_count)
 {
     if (requested_count > 0x10000)
@@ -24,6 +22,6 @@ void Object::request_object_vertices(int requested_count)
         vertex_count = requested_count;
         vertices = (Vector3*)allocate_tracked_memory(
             requested_count * sizeof(Vector3), "Object Vertex List");
-        request_object_vertex_colours(this);
+        request_object_vertex_colours();
     }
 }

@@ -13472,9 +13472,11 @@
       "artifact": "analysis/decompile/ida/functions/00430570-request_object_edges.c",
       "required_substrings": [
         "void __thiscall request_object_edges(Object *object, int32_t edge_count)",
-        "if ( !object->edge_count )",
         "object->edge_count = edge_count",
         "object->edges = (ObjectToonEdge *)allocate_tracked_memory(36 * edge_count, aObjectEdges)"
+      ],
+      "required_regexes": [
+        "if\\s*\\(\\s*(?:!\\s*object->edge_count|object->edge_count\\s*==\\s*0)\\s*\\)"
       ],
       "forbidden_substrings": [
         "sub_430570",

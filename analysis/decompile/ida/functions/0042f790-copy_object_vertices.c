@@ -2,6 +2,7 @@
 /* function: copy_object_vertices @ 0x42f790 */
 /* selector: copy_object_vertices */
 
+// Copies exactly `vertex_count` source `Vec3` records from one Object's borrowed `vertices` view into its owned `copied_vertices` bank, preserving the x, y, and z components used by the non-destructive distortion path. Android names the owner `cRObject::CopyVertices()` and preserves this 12-byte path, while its additional packed six-byte branch is port-specific.
 void __thiscall copy_object_vertices(Object *object)
 {
   int32_t v1; // edx

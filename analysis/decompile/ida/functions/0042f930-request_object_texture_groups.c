@@ -2,11 +2,12 @@
 /* function: request_object_texture_groups @ 0x42f930 */
 /* selector: request_object_texture_groups */
 
+// Authored `cRObject::RequestFaceQuadTextureGroups(int)` member: retains an Object-owned int bank with separate live count and fixed capacity, reports the fixed-capacity error on overflow, and updates the live count on every request. Android confirms the lifecycle while using port-specific field offsets.
 void __thiscall request_object_texture_groups(Object *object, int32_t group_count)
 {
   int32_t *tracked_memory; // eax
 
-  if ( object->texture_group_count )
+  if ( object->texture_group_count != 0 )
   {
     if ( group_count > object->texture_group_capacity )
       report_errorf(aFixedFacequadt);

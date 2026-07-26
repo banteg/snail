@@ -13,11 +13,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 494,
-    "unverified_entries": 291,
-    "verified_android_symbols": 491,
+    "verified_entries": 499,
+    "unverified_entries": 286,
+    "verified_android_symbols": 496,
     "verified_ios_symbols": 408,
-    "available_android_mappings": 491,
+    "available_android_mappings": 496,
     "available_ios_mappings": 370
   },
   "entries": [
@@ -13291,45 +13291,24 @@
       "address": "0x42f790",
       "windows_name": "copy_object_vertices",
       "windows_size": 64,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRObject::CopyVertices()",
-          "score": 0.7829,
-          "name_score": 1.0,
-          "size_score": 0.4571
-        },
-        {
-          "symbol": "cRObject::ScaleVertices(float)",
-          "score": 0.7559,
-          "name_score": 0.7265,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRObject::VerticesPush()",
-          "score": 0.7528,
-          "name_score": 0.7467,
-          "size_score": 0.7619
-        },
-        {
-          "symbol": "cRObject::RequestVerticesCopy()",
-          "score": 0.706,
-          "name_score": 0.75,
-          "size_score": 0.64
-        },
-        {
-          "symbol": "cRObjects::ReSetFlags(int)",
-          "score": 0.6923,
-          "name_score": 0.5264,
-          "size_score": 0.9412
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRObject::CopyVertices()",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRObject::cRObject()",
-          "score": 0.6431,
-          "name_score": 0.5385,
+          "score": 0.86,
+          "name_score": 0.9,
           "size_score": 0.8
+        },
+        {
+          "symbol": "cRViewport::cRViewport()",
+          "score": 0.735,
+          "name_score": 0.6,
+          "size_score": 0.9375
         },
         {
           "symbol": "OFHttpService::cancelAllRequests()",
@@ -13348,12 +13327,6 @@
           "score": 0.6292,
           "name_score": 0.5486,
           "size_score": 0.75
-        },
-        {
-          "symbol": "cRObject::RequestVertices(int)",
-          "score": 0.62,
-          "name_score": 0.6892,
-          "size_score": 0.5161
         }
       ]
     },
@@ -13374,40 +13347,31 @@
       "address": "0x42f800",
       "windows_name": "request_object_facequad_normals",
       "windows_size": 80,
-      "status": "unverified",
-      "android_candidates": [
+      "status": "verified",
+      "android_symbol": "cRObject::RequestFaceQuadNormals()",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_candidates": [
         {
-          "symbol": "cRObject::RequestFaceQuadNormals()",
-          "score": 0.8758,
-          "name_score": 0.88,
-          "size_score": 0.8696
-        },
-        {
-          "symbol": "cRObject::RequestEdges(int)",
-          "score": 0.681,
-          "name_score": 0.5,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "ObjectProcWorldInit(bool, cRObject*)",
-          "score": 0.6791,
-          "name_score": 0.4651,
+          "symbol": "cRObject::cRObject()",
+          "score": 0.94,
+          "name_score": 0.9,
           "size_score": 1.0
         },
         {
-          "symbol": "cRObject::RequestFaceQuadTextureGroups(int)",
-          "score": 0.672,
-          "name_score": 0.6071,
-          "size_score": 0.7692
+          "symbol": "cRBod::cRBod()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
         },
         {
-          "symbol": "cRObject::RequestFaceQuads(int)",
-          "score": 0.6717,
-          "name_score": 0.7273,
-          "size_score": 0.5882
-        }
-      ],
-      "ios_candidates": [
+          "symbol": "cRBod::cRBod()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
+        },
         {
           "symbol": "tVector::Normalize()",
           "score": 0.6618,
@@ -13415,28 +13379,10 @@
           "size_score": 1.0
         },
         {
-          "symbol": "cRObject::RequestFaceQuads(int)",
-          "score": 0.6526,
-          "name_score": 0.7273,
-          "size_score": 0.5405
-        },
-        {
-          "symbol": "cRFace::AI()",
-          "score": 0.65,
-          "name_score": 0.45,
-          "size_score": 0.95
-        },
-        {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.6333,
-          "name_score": 0.3889,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRFaceQuad::RotateUVCCW()",
-          "score": 0.61,
-          "name_score": 0.45,
-          "size_score": 0.85
+          "symbol": "cRViewport::cRViewport()",
+          "score": 0.66,
+          "name_score": 0.6,
+          "size_score": 0.75
         }
       ]
     },
@@ -13444,69 +13390,42 @@
       "address": "0x42f850",
       "windows_name": "request_object_vertex_colours",
       "windows_size": 80,
-      "status": "unverified",
-      "android_candidates": [
+      "status": "verified",
+      "android_symbol": "cRObject::RequestColours()",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_candidates": [
         {
-          "symbol": "cRObject::RequestColours()",
-          "score": 0.7978,
-          "name_score": 0.75,
-          "size_score": 0.8696
-        },
-        {
-          "symbol": "tColour::operator*(float) const",
-          "score": 0.76,
-          "name_score": 0.6,
+          "symbol": "cRObject::cRObject()",
+          "score": 0.94,
+          "name_score": 0.9,
           "size_score": 1.0
         },
         {
-          "symbol": "tColour::operator=(tColourSmall const&)",
-          "score": 0.7236,
+          "symbol": "cRBod::cRBod()",
+          "score": 0.68,
           "name_score": 0.6,
-          "size_score": 0.9091
+          "size_score": 0.8
         },
         {
-          "symbol": "cRObject::VerticesPush()",
-          "score": 0.7213,
-          "name_score": 0.5673,
-          "size_score": 0.9524
+          "symbol": "cRBod::cRBod()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
         },
         {
-          "symbol": "tColour::operator+(tColour const&) const",
-          "score": 0.7078,
+          "symbol": "cRViewport::cRViewport()",
+          "score": 0.66,
           "name_score": 0.6,
-          "size_score": 0.8696
-        }
-      ],
-      "ios_candidates": [
+          "size_score": 0.75
+        },
         {
           "symbol": "tColour::tColour(float, float, float, float)",
           "score": 0.66,
           "name_score": 0.9,
           "size_score": 0.3
-        },
-        {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.6471,
-          "name_score": 0.4118,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRObject::RequestVertices(int)",
-          "score": 0.6385,
-          "name_score": 0.6341,
-          "size_score": 0.6452
-        },
-        {
-          "symbol": "tColourSmall::Set(float, float, float, float)",
-          "score": 0.6336,
-          "name_score": 0.45,
-          "size_score": 0.9091
-        },
-        {
-          "symbol": "tColourSmall::operator=(tColour const&)",
-          "score": 0.6336,
-          "name_score": 0.45,
-          "size_score": 0.9091
         }
       ]
     },
@@ -13667,69 +13586,42 @@
       "address": "0x42f930",
       "windows_name": "request_object_texture_groups",
       "windows_size": 96,
-      "status": "unverified",
-      "android_candidates": [
+      "status": "verified",
+      "android_symbol": "cRObject::RequestFaceQuadTextureGroups(int)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_candidates": [
         {
-          "symbol": "cRObject::RequestFaceQuadTextureGroups(int)",
-          "score": 0.8359,
-          "name_score": 0.7778,
-          "size_score": 0.9231
+          "symbol": "cRObject::cRObject()",
+          "score": 0.8733,
+          "name_score": 0.9,
+          "size_score": 0.8333
         },
         {
-          "symbol": "cRObject::RequestColours()",
-          "score": 0.7133,
-          "name_score": 0.55,
-          "size_score": 0.9583
-        },
-        {
-          "symbol": "cRResourceManager::RemoveTexture(int)",
-          "score": 0.672,
-          "name_score": 0.48,
+          "symbol": "cRBod::cRBod()",
+          "score": 0.744,
+          "name_score": 0.6,
           "size_score": 0.96
         },
         {
-          "symbol": "cRObject::RequestEdges(int)",
-          "score": 0.6658,
-          "name_score": 0.5263,
-          "size_score": 0.875
+          "symbol": "cRBod::cRBod()",
+          "score": 0.744,
+          "name_score": 0.6,
+          "size_score": 0.96
         },
         {
-          "symbol": "cRObject::RequestColoursPointer()",
-          "score": 0.6501,
-          "name_score": 0.4681,
+          "symbol": "RShellError(char*, ...)",
+          "score": 0.7292,
+          "name_score": 0.6,
           "size_score": 0.9231
-        }
-      ],
-      "ios_candidates": [
+        },
         {
           "symbol": "cRObject::RequestVertices(int)",
-          "score": 0.6316,
-          "name_score": 0.5366,
+          "score": 0.6697,
+          "name_score": 0.6,
           "size_score": 0.7742
-        },
-        {
-          "symbol": "OFHttpAsciiParameter::getAsMPURLRequestParameter() const",
-          "score": 0.6205,
-          "name_score": 0.4231,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "OFXmlElement::dequeueNextUnreadChild()",
-          "score": 0.595,
-          "name_score": 0.4583,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "OFHttpNestedQueryStringWriter::nviIo(OFISerializerKey*, float&)",
-          "score": 0.592,
-          "name_score": 0.32,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFHttpBinaryParameter::getAsMPURLRequestParameter() const",
-          "score": 0.5849,
-          "name_score": 0.4231,
-          "size_score": 0.8276
         }
       ]
     },
@@ -14025,40 +13917,25 @@
       "address": "0x430570",
       "windows_name": "request_object_edges",
       "windows_size": 48,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRObject::RequestEdges(int)",
-          "score": 0.8286,
-          "name_score": 1.0,
-          "size_score": 0.5714
-        },
-        {
-          "symbol": "cRObject::RequestAlphas()",
-          "score": 0.6763,
-          "name_score": 0.5161,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "cRObject::RequestStrip(int)",
-          "score": 0.6628,
-          "name_score": 0.5333,
-          "size_score": 0.8571
-        },
-        {
-          "symbol": "cRObjects::ReSetFlags(int)",
-          "score": 0.6064,
-          "name_score": 0.54,
-          "size_score": 0.7059
-        },
-        {
-          "symbol": "cRBorder::SpriteExtend(int, int, int, bool)",
-          "score": 0.592,
-          "name_score": 0.32,
-          "size_score": 1.0
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRObject::RequestEdges(int)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
+        {
+          "symbol": "cRObject::cRObject()",
+          "score": 0.78,
+          "name_score": 0.9,
+          "size_score": 0.6
+        },
+        {
+          "symbol": "cRViewport::cRViewport()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
+        },
         {
           "symbol": "OFHttpService::startRequest(NSString*, NSString*, NSData*, OFHttpServiceObserver*)",
           "score": 0.6,
@@ -14076,18 +13953,6 @@
           "score": 0.5943,
           "name_score": 0.4571,
           "size_score": 0.8
-        },
-        {
-          "symbol": "OFSqlQuery::step()",
-          "score": 0.5852,
-          "name_score": 0.36,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "OFSqlQuery::destroyQueryNow()",
-          "score": 0.5846,
-          "name_score": 0.3077,
-          "size_score": 1.0
         }
       ]
     },

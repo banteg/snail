@@ -29,3 +29,13 @@ remains exact at 29/29 instructions with all four operands clean.
 2026-07-15 analysis replay: the repeatable Binary Ninja slice now carries the
 proved `void __thiscall(Object*, int)` contract, so callers retain the owned
 `texture_group_*` fields instead of inventing a `void*` result.
+
+## 2026-07-26 Android owner verification
+
+Android names the exact authored owner
+`cRObject::RequestFaceQuadTextureGroups(int)` and preserves the same lifecycle:
+the first request allocates an Object-owned int bank, records its fixed
+capacity, every request updates the live count, and overflow reports the same
+`"Fixed FaceQuadTextureGroupsNumber too small"` error. Only the platform field
+offsets differ. The Windows member remains exact at 29/29 instructions with
+four clean operands.

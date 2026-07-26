@@ -183,3 +183,15 @@ the honest source. Explicit right-radius/right-component names compile
 byte-identically, while a copied sample position and declaration-then-
 assignment for the final vertex regress to 67.85% and 68.49% respectively;
 none are retained.
+
+## 2026-07-26 colour-owner propagation check
+
+Android proves the exact colour allocator owner as
+`cRObject::RequestColours()`, and the allocator itself is now written as an
+exact `Object` member. Propagating member-call syntax into this unresolved
+constructor is nevertheless rejected for now: VC6 broadly changes the register
+and temporary schedule while leaving the aggregate score coincidentally
+unchanged. The local fastcall-compatible declaration therefore remains solely
+to preserve this caller's better native source shape; it does not challenge the
+recovered callee ownership. Restoring it returns the accepted 72.81%, 728/736
+baseline with all 37 operands clean.

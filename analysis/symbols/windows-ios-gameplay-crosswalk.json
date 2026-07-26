@@ -2830,6 +2830,15 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x42f790",
+      "windows_name": "copy_object_vertices",
+      "android_symbol": "cRObject::CopyVertices()",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "notes": "Android proves the authored cRObject owner and includes the same ordinary 12-byte vertex-copy loop as Windows. Its additional packed six-byte vertex branch is mobile-only, so no flag or field offsets transfer."
+    },
+    {
       "address": "0x42f7d0",
       "windows_name": "request_object_vertices_copy",
       "ios_symbol": "cRObject::RequestVerticesCopy()",
@@ -2839,6 +2848,24 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x42f800",
+      "windows_name": "request_object_facequad_normals",
+      "android_symbol": "cRObject::RequestFaceQuadNormals()",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "notes": "Android proves the authored cRObject allocation owner, but its mobile normal representation and allocation layout differ. Windows independently proves separate per-vertex and paired per-face normal banks plus a coherent retained face-normal pointer in EAX; mobile offsets and return behavior do not transfer."
+    },
+    {
+      "address": "0x42f850",
+      "windows_name": "request_object_vertex_colours",
+      "android_symbol": "cRObject::RequestColours()",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "notes": "Both implementations allocate one cRObject-owned 16-byte colour record per vertex, initialize RGB to 1.0, and intentionally leave alpha untouched. Android's exact member symbol resolves the Windows fastcall-equivalent helper as an authored Object member."
+    },
+    {
       "address": "0x42f8c0",
       "windows_name": "request_object_facequads",
       "ios_symbol": "cRObject::RequestFaceQuads(int)",
@@ -2846,6 +2873,15 @@
       "confidence": "high",
       "android_symbol": "cRObject::RequestFaceQuads(int)",
       "android_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
+      "address": "0x42f930",
+      "windows_name": "request_object_texture_groups",
+      "android_symbol": "cRObject::RequestFaceQuadTextureGroups(int)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "notes": "Both implementations retain a cRObject-owned int bank with separate live count and fixed capacity, report the same fixed-capacity error on overflow, and update the live count on every request. Platform field offsets do not transfer."
     },
     {
       "address": "0x42f990",
@@ -2900,6 +2936,15 @@
       "confidence": "high",
       "android_symbol": "cRObject::CalcTextureGroups()",
       "android_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
+      "address": "0x430570",
+      "windows_name": "request_object_edges",
+      "android_symbol": "cRObject::RequestEdges(int)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "notes": "Android proves the authored cRObject one-time edge allocation owner. Its port additionally allocates an edge-index array and uses ten-byte edge records, while Windows owns a single 36-byte ObjectToonEdge bank; only owner and lifecycle transfer."
     },
     {
       "address": "0x4305a0",
