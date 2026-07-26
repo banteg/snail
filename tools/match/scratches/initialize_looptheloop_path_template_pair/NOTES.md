@@ -90,3 +90,24 @@ The replay verifies the canonical `Vec3`, `PathTemplateSample`, and
 variables. Preview and exported readback both retain zero `__offset`
 expressions. This is decompiler ownership recovery only: the honest scratch and
 its 64.47% focused match remain unchanged.
+
+## 2026-07-26 complete mesh ownership
+
+Raw native instructions at `0x41b7ad..0x41b8b8` close the values behind the
+previously typed mesh sample and vertex. The ordinary branch owns a lateral
+offset and generated position before materializing its destination vertex. The
+terminal branch independently owns its lateral offset, the previous sample's
+endpoint with the Z lane extended by `1.0f`, a generated position, and its
+branch-local destination vertex.
+
+The face loop at `0x41b98b..0x41bae2` likewise materializes separate complete
+front and back records. Each branch owns its face pointer, 16-bit header clear,
+indices, redundant parity-selected texture call, and all four UV pairs. The
+coupled owner recovery raises focused matching from 64.47% (706/721) to 69.43%
+(725/721), adds a clean masked operand for 47 ok with no unresolved or
+mismatched operands, and preserves the exact native `0x54` frame.
+
+A follow-up spelling through the shared by-value `Vector3` arithmetic operators
+regressed the focused result to 67.17% (723/721). The retained explicit vector
+owners follow the native branch-local lifetime evidence without forcing its
+register schedule.

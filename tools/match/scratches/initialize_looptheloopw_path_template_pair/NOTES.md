@@ -91,3 +91,17 @@ The guarded replay records this constructor's distinct SSA indices and checks
 the canonical owner layouts before mutation. The source remains untouched, so
 the honest 63.27% focused match and its remaining compiler-scheduling residuals
 are preserved.
+
+## 2026-07-26 complete mesh ownership
+
+The W-loop independently preserves the same complete mesh value graph at
+`0x41c256..0x41c361`: ordinary lateral offset and generated position, plus a
+terminal lateral offset, raised endpoint, generated position, and branch-local
+destination vertex. Its face tail at `0x41c434..0x41c591` also owns distinct
+front and back `ObjectFaceQuad` records through their final UV lanes, rather
+than one pointer hoisted across the branch.
+
+Recovering that coupled owner set raises focused matching from 63.27%
+(728/745) to 65.73% (746/745). The masked audit improves from 51 to 52 clean
+operands with no unresolved or mismatched entries, the ten-instruction exact
+prefix remains intact, and the candidate retains the native `0x60` frame.

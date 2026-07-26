@@ -89,3 +89,19 @@ The replay encodes those loopout-specific register IDs behind canonical
 `Vec3`, `PathTemplateSample`, and `ObjectFaceQuad` layout checks. Transactional
 preview and exported readback both retain zero `__offset` expressions. No
 scratch source changed, preserving the honest 55.77% focused match.
+
+## 2026-07-26 complete mesh ownership
+
+Loopout proves the shared value model on its independent native schedule.
+Instructions at `0x41cca4..0x41cdaf` own separate ordinary lateral-offset and
+generated-position vectors, while the terminal branch owns its own lateral
+offset, raised endpoint, generated position, and destination vertex. The
+ordinary `for` face traversal remains Loopout-specific, but
+`0x41ce82..0x41cfd6` still proves distinct complete front and back face records
+through the final UV stores.
+
+Recovering those owners raises focused matching from 55.77% (702/718) to
+58.89% (722/718) and improves the masked audit from 45 to 46 clean operands
+with no unresolved or mismatched entries. The remaining candidate `0x54`
+versus native `0x50` frame gap belongs to earlier Loopout-specific lifetimes,
+not missing mesh values.

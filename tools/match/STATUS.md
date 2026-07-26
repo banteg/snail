@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **77.50%**.
+**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **77.59%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -756,9 +756,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | create_vertex_buffer | 0x4114b0 | 286 | 92/101 | 76.68% | 8/101 | 10 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 12 ok |  |
-| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 706/721 | 64.47% | 9/721 | 46 ok |  |
-| 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 728/745 | 63.27% | 10/745 | 51 ok |  |
-| 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 702/718 | 55.77% | 0/718 | 45 ok |  |
+| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 725/721 | 69.43% | 9/721 | 47 ok |  |
+| 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 746/745 | 65.73% | 10/745 | 52 ok |  |
+| 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 722/718 | 58.89% | 0/718 | 46 ok |  |
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 683/690 | 51.86% | 18/690 | 36 ok |  |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 727/736 | 72.32% | 0/736 | 37 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 698/726 | 72.89% | 122/726 | 63 ok |  |
