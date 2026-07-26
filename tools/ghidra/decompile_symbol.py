@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import a native artifact and decompile one unambiguous named function."""
+"""Import a native artifact and decompile one selected function."""
 
 from __future__ import annotations
 
@@ -18,10 +18,17 @@ FAILURE_LOG_LINES = 80
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("binary", type=Path, help="ELF or PE artifact to import")
     parser.add_argument(
-        "symbol_fragment",
-        help="unique demangled function-name fragment, such as SetShootFlags",
+        "binary",
+        type=Path,
+        help="ELF, Mach-O, or PE artifact to import",
+    )
+    parser.add_argument(
+        "selector",
+        help=(
+            "unique function-name fragment, such as SetShootFlags, or an "
+            "exact hexadecimal entry address, such as 0x5f620"
+        ),
     )
     parser.add_argument(
         "--ghidra-dir",
@@ -101,7 +108,7 @@ def main() -> int:
             str(SCRIPT_DIR),
             "-postScript",
             "DecompileSymbol.java",
-            args.symbol_fragment,
+            args.selector,
             str(output_path),
             "-deleteProject",
         )

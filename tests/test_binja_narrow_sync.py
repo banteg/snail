@@ -5467,7 +5467,7 @@ def test_ida_path_replay_verifies_player_shoot_members() -> None:
         assert "player->movement_flags" in check["forbidden_substrings"]
 
 
-def test_ghidra_symbol_probe_is_versioned_name_based_and_profile_isolated() -> None:
+def test_ghidra_symbol_probe_is_versioned_bounded_and_profile_isolated() -> None:
     repo_root = Path(__file__).parents[1]
     wrapper = (repo_root / "tools/ghidra/decompile_symbol.py").read_text(
         encoding="utf-8"
@@ -5479,13 +5479,17 @@ def test_ghidra_symbol_probe_is_versioned_name_based_and_profile_isolated() -> N
     assert 'Path("/Applications/ghidra_12.1.2_PUBLIC")' in wrapper
     assert "-Duser.home=" in wrapper
     assert '"DecompileSymbol.java"' in wrapper
-    assert "symbol_fragment" in wrapper
+    assert '"selector"' in wrapper
+    assert '"ELF, Mach-O, or PE artifact to import"' in wrapper
     assert "capture_output=True" in wrapper
     assert "FAILURE_LOG_LINES = 80" in wrapper
     assert 'output_path = root / "decompile.txt"' in wrapper
     assert "output_path.read_text" in wrapper
     assert "function.getName(true)" in script
     assert "ambiguous function fragment" in script
+    assert 'selector.matches("0[xX][0-9a-fA-F]+")' in script
+    assert "getFunctionAt(address)" in script
+    assert '"no function at " + selector' in script
     assert "Files.writeString(outputPath" in script
     assert '"GHIDRA_VERSION="' in script
 

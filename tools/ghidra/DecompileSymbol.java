@@ -2,6 +2,7 @@ import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileResults;
 import ghidra.app.script.GhidraScript;
 import ghidra.framework.Application;
+import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -18,21 +19,37 @@ public class DecompileSymbol extends GhidraScript {
         Path outputPath = Path.of(args[1]);
 
         Function selected = null;
-        for (Function function :
-                currentProgram.getFunctionManager().getFunctions(true)) {
-            String name = function.getName(true);
-            if (!name.contains(args[0])) {
-                continue;
-            }
-            if (selected != null) {
+        String selector = args[0];
+        if (selector.matches("0[xX][0-9a-fA-F]+")) {
+            Address address =
+                currentProgram.getAddressFactory().getAddress(selector);
+            if (address == null) {
                 throw new IllegalStateException(
-                    "ambiguous function fragment: " + args[0]);
+                    "invalid function address: " + selector);
             }
-            selected = function;
-        }
-        if (selected == null) {
-            throw new IllegalStateException(
-                "no function matching " + args[0]);
+            selected =
+                currentProgram.getFunctionManager().getFunctionAt(address);
+            if (selected == null) {
+                throw new IllegalStateException(
+                    "no function at " + selector);
+            }
+        } else {
+            for (Function function :
+                    currentProgram.getFunctionManager().getFunctions(true)) {
+                String name = function.getName(true);
+                if (!name.contains(selector)) {
+                    continue;
+                }
+                if (selected != null) {
+                    throw new IllegalStateException(
+                        "ambiguous function fragment: " + selector);
+                }
+                selected = function;
+            }
+            if (selected == null) {
+                throw new IllegalStateException(
+                    "no function matching " + selector);
+            }
         }
 
         DecompInterface decompiler = new DecompInterface();
