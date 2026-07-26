@@ -4244,6 +4244,207 @@
       "notes": "The bodies agree exactly on the class layout and conversion role: float RGBA is multiplied by 255 and stored at byte offsets +2, +1, +0, and +3. Android G0SetColour reads the same record as red, green, blue, and alpha, proving the shared four-byte BGRA owner; the Windows harness keeps its stable descriptive function name.",
       "ios_symbol": "tColourSmall::operator=(tColour const&)",
       "ios_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
+      "address": "0x404070",
+      "windows_name": "draw_twinkle",
+      "android_symbol": "cRTwinkle::Draw()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "The exact Windows helper is the authored void cRTwinkle draw member. Android preserves the same owner and no-argument method; the Windows body only constructs the temporary draw colour because its receiver-dependent rendering was compiled away."
+    },
+    {
+      "address": "0x404740",
+      "windows_name": "initialize_cheat",
+      "android_symbol": "cRCheat::Init()",
+      "ios_symbol": "cRCheat::Init()",
+      "source_object": "Cheat.o",
+      "confidence": "high",
+      "notes": "All ports clear the cRCheat rolling input buffer and flag state. The exact Windows helper is void; its zero EAX residue comes from the final flags store."
+    },
+    {
+      "address": "0x404750",
+      "windows_name": "update_cheat",
+      "android_symbol": "cRCheat::AI()",
+      "ios_symbol": "cRCheat::AI()",
+      "source_object": "Cheat.o",
+      "confidence": "high",
+      "notes": "The ports retain the same cRCheat owner, eight-byte rolling input buffer, and NEWTON, AUTUMN, and SHEEP flag updates. The exact Windows callback has a void contract."
+    },
+    {
+      "address": "0x4047d0",
+      "windows_name": "match_cheat_text",
+      "android_symbol": "cRCheat::MatchText(char*)",
+      "source_object": "Cheat.o",
+      "confidence": "high",
+      "notes": "Windows and Android reject strings of length eight or more and reverse-compare shorter text against the cRCheat rolling input buffer, returning a real boolean result."
+    },
+    {
+      "address": "0x410730",
+      "windows_name": "select_level_track_texture_set",
+      "android_symbol": "cRTrack::Change(int)",
+      "ios_symbol": "cRTrack::Change(int)",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "All ports retain the authored void cRTrack texture-set mutator. Windows owns four track and slide texture pairs and uses selector 5 for random choice; mobile owns seven platform texture sets and uses selector 8, so the owner and role transfer without transplanting either layout or selector range."
+    },
+    {
+      "address": "0x4129f0",
+      "windows_name": "set_cull_mode",
+      "android_symbol": "G0SetCull(bool)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "This exact Windows wrapper forwards the one-bit cull selector to the Direct3D renderer singleton. Android preserves the authored G0SetCull boolean operation while implementing the platform state through OpenGL."
+    },
+    {
+      "address": "0x419b30",
+      "windows_name": "destroy_main_menu",
+      "android_symbol": "cRMainMenu::UnInit()",
+      "ios_symbol": "cRMainMenu::UnInit()",
+      "source_object": "MainMenu.o",
+      "confidence": "high",
+      "notes": "Windows linker-folds the byte-identical cRMainMenu::UnInit and cRIntro::UnInit bodies at this address. The canonical MainMenu member clears the global border and game-sprite scene; Android retains both distinct authored methods."
+    },
+    {
+      "address": "0x419b50",
+      "windows_name": "initialize_main_menu",
+      "android_symbol": "cRMainMenu::Init()",
+      "ios_symbol": "cRMainMenu::Init()",
+      "source_object": "MainMenu.o",
+      "confidence": "high",
+      "notes": "All ports preserve the cRMainMenu owner and construct the New Game, High Scores, Options, Credits, and Exit flow. Windows additionally retains its desktop music, backdrop, and duplicated Options-widget behavior."
+    },
+    {
+      "address": "0x419e00",
+      "windows_name": "update_main_menu",
+      "android_symbol": "cRMainMenu::AI()",
+      "ios_symbol": "cRMainMenu::AI()",
+      "source_object": "MainMenu.o",
+      "confidence": "high",
+      "notes": "The exact Windows cRMainMenu AI member consumes the owned widget actions and dispatches New Game, Credits, Exit, Options, and High Scores through the root front-end state machine. Android and iOS preserve the same authored owner."
+    },
+    {
+      "address": "0x41aa30",
+      "windows_name": "initialize_object_distort",
+      "android_symbol": "cRDistort::Init()",
+      "ios_symbol": "cRDistort::Init()",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "notes": "All ports initialize the same five-float cRDistort subobject. Windows embeds it at Object +0x80; mobile preserves the authored owner while using its platform Object layout."
+    },
+    {
+      "address": "0x4446e0",
+      "windows_name": "set_weapon_animation",
+      "android_symbol": "cRWeapon::SetAnimation(int, bool, int)",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android preserves the authored void cRWeapon mutator and its three formals. Windows applies the selection to one exact 0x3dc-byte Weapon owner and its five owned RenderableBod slots; no mobile offsets are transplanted."
+    },
+    {
+      "address": "0x448df0",
+      "windows_name": "initialize_voice_set",
+      "android_symbol": "cRVoiceSet::Init(int)",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "notes": "Windows and Android allocate the cRVoiceSet playlist and sample banks, seed the order, and shuffle it. Their incompatible incidental return-register residues plus value-agnostic callers prove the void member contract."
+    },
+    {
+      "address": "0x44c890",
+      "windows_name": "convert_math_type32_to_16",
+      "android_symbol": "MathType32to16(float, float)",
+      "ios_symbol": "MathType32to16(float, float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "All ports convert float to the shared signed-16 gameplay representation by scaling with 65536 divided by the caller scale and truncating."
+    },
+    {
+      "address": "0x44c8b0",
+      "windows_name": "convert_math_type16_to_32",
+      "android_symbol": "MathType16to32(short, float)",
+      "ios_symbol": "MathType16to32(short, float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "All ports convert the signed-16 gameplay representation back to float by scaling with the caller scale divided by 65536."
+    },
+    {
+      "address": "0x44c8d0",
+      "windows_name": "initialize_math_random_table",
+      "android_symbol": "gRMathRand2Init()",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "Android preserves the authored random-table initializer family. Windows fills its fixed 0x1fff-entry gameplay table from the shared linear-congruential generator and resets the ring index."
+    },
+    {
+      "address": "0x44c900",
+      "windows_name": "next_math_random_value",
+      "android_symbol": "gRMathRand2()",
+      "ios_symbol": "gRMathRand2()",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "All ports advance the gameplay random-table cursor and return the next cached value; Windows wraps its fixed table index modulo 0x1fff."
+    },
+    {
+      "address": "0x44c970",
+      "windows_name": "set_math_random_seed",
+      "android_symbol": "RandSeed(int)",
+      "ios_symbol": "RandSeed(int)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "All ports store one caller-provided seed into the shared gameplay linear-congruential generator before the random table is consumed."
+    },
+    {
+      "address": "0x44c980",
+      "windows_name": "cosine",
+      "android_symbol": "Cos(float)",
+      "ios_symbol": "Cos(float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact Windows wrapper and both mobile exports implement the authored single-float Cos operation."
+    },
+    {
+      "address": "0x44c9d0",
+      "windows_name": "sine",
+      "android_symbol": "Sin(float)",
+      "ios_symbol": "Sin(float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact Windows wrapper and both mobile exports implement the authored single-float Sin operation."
+    },
+    {
+      "address": "0x44ca00",
+      "windows_name": "arccosine",
+      "android_symbol": "ACos(float)",
+      "ios_symbol": "ACos(float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact Windows wrapper and both mobile exports implement the authored single-float ACos operation."
+    },
+    {
+      "address": "0x44ca10",
+      "windows_name": "atan2_positive",
+      "android_symbol": "ATan(float, float)",
+      "ios_symbol": "ATan(float, float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "All ports compute the authored two-argument arctangent and wrap negative results into the positive full-turn range."
+    },
+    {
+      "address": "0x44cab0",
+      "windows_name": "square_root",
+      "android_symbol": "Sqrt(float)",
+      "ios_symbol": "Sqrt(float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact Windows wrapper and both mobile exports implement the authored single-float Sqrt operation."
+    },
+    {
+      "address": "0x408060",
+      "windows_name": "initialize_runtime_pools_and_path_template_bank",
+      "android_symbol": "cRSubGame::cRSubGame()",
+      "ios_symbol": "cRSubGame::cRSubGame()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The sole Windows caller constructs the embedded SubgameRuntime and the exact helper returns that receiver after building every owned pool. Android and iOS preserve the authored cRSubGame constructor and the same owner families, but use smaller Bod prefixes, different pool capacities, and thirteen list heads rather than Windows ten; only ownership and lifecycle transfer across ports."
     }
   ]
 }

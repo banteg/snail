@@ -2,26 +2,26 @@
 /* function: initialize_runtime_pools_and_path_template_bank @ 0x408060 */
 /* selector: initialize_runtime_pools_and_path_template_bank */
 
-// Initializes the embedded subgame pools, including exactly 126 0xa8-byte path-template records at SubgameRuntime+0xff2914. Those records form the same 63 primary/secondary pairs later constructed through the GameRoot+0x1066f2c alias; their 0x52b0 extent ends at the barrier actor at +0xff7bc4.
+// Exact Windows constructor projection for the embedded cRSubGame/SubgameRuntime owner. It initializes every desktop pool, including exactly 126 0xa8-byte path-template records at SubgameRuntime+0xff2914; Android and iOS preserve the authored cRSubGame constructor with port-specific layouts and capacities. The Windows records form the same 63 primary/secondary pairs later constructed through the GameRoot+0x1066f2c alias, and their 0x52b0 extent ends at the barrier actor at +0xff7bc4.
 SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime *game)
 {
   SegmentCache *p_segment_cache; // edi
   SubHealth *health_pickups; // edi
-  int v4; // ebx
+  int i; // ebx
   SlugPool *p_slug_hazards; // edi
-  int v6; // ebx
+  int j; // ebx
   BannerPool *p_banners; // edi
-  int v8; // ebx
+  int k; // ebx
   SubGarbage *slots; // edi
-  int v10; // ebx
+  int m; // ebx
   SubRingPool *p_ring_effects; // edi
-  int v12; // ebx
+  int n; // ebx
   TrackRowCell *v13; // edi
-  int v14; // ebx
+  int ii; // ebx
   SubRow *runtime_rows; // edi
-  int v16; // ebx
+  int jj; // ebx
   PathPair *path_pairs; // edi
-  int v18; // ebx
+  int kk; // ebx
 
   p_segment_cache = &game->segment_cache;
   noop_this_constructor(&game->segment_cache);
@@ -63,22 +63,14 @@ SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(Subga
   initialize_track_speedup_runtime(&game->speedup_pickup);
   initialize_track_jetpack_pickup_runtime(&game->jetpack_pickup);
   health_pickups = game->health_pickups;
-  v4 = 8;
-  do
-  {
+  for ( i = 8; i != 0; --i )
     initialize_track_health_pickup_runtime(health_pickups++);
-    --v4;
-  }
-  while ( v4 );
   p_slug_hazards = &game->slug_hazards;
-  v6 = 8;
-  do
+  for ( j = 8; j != 0; --j )
   {
     initialize_slug_hazard_runtime(p_slug_hazards->slots);
     p_slug_hazards = (SlugPool *)((char *)p_slug_hazards + 236);
-    --v6;
   }
-  while ( v6 );
   initialize_array_with_constructor(
     &game->sub_lazers,
     176,
@@ -90,32 +82,21 @@ SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(Subga
     40,
     (void *(__thiscall *)(void *))initialize_salt_hazard_runtime);
   p_banners = &game->banners;
-  v8 = 2;
-  do
+  for ( k = 2; k != 0; --k )
   {
     initialize_bod_base((BodBase *)p_banners);
     p_banners->slots[0].bod.bod.vtable = &g_banner_callback_table;
     p_banners = (BannerPool *)((char *)p_banners + 96);
-    --v8;
   }
-  while ( v8 );
   slots = game->garbage_hazards.slots;
-  v10 = 50;
-  do
-  {
+  for ( m = 50; m != 0; --m )
     initialize_garbage_hazard(slots++);
-    --v10;
-  }
-  while ( v10 );
   p_ring_effects = &game->ring_effects;
-  v12 = 2;
-  do
+  for ( n = 2; n != 0; --n )
   {
     initialize_track_ring_or_special_effect_runtime(p_ring_effects->slots);
     p_ring_effects = (SubRingPool *)((char *)p_ring_effects + 504);
-    --v12;
   }
-  while ( v12 );
   initialize_array_with_constructor(
     &game->fringe_manager,
     56,
@@ -133,30 +114,17 @@ SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(Subga
   initialize_player_presentation_controller(&game->player.presentation);
   game->player.body.bod.bod.vtable = &g_subgoldy_callback_table;
   v13 = game->runtime_cells[0];
-  v14 = 25600;
-  do
-  {
+  for ( ii = 25600; ii != 0; --ii )
     initialize_sub_loc(v13++);
-    --v14;
-  }
-  while ( v14 );
   runtime_rows = game->runtime_rows;
-  v16 = 3200;
-  do
-  {
+  for ( jj = 3200; jj != 0; --jj )
     initialize_track_row_runtime(runtime_rows++);
-    --v16;
-  }
-  while ( v16 );
   path_pairs = game->path_pairs;
-  v18 = 126;
-  do
+  for ( kk = 126; kk != 0; --kk )
   {
     initialize_path_template_record_pair(path_pairs);
     path_pairs = (PathPair *)((char *)path_pairs + 168);
-    --v18;
   }
-  while ( v18 );
   initialize_bod_base(&game->barrier.bod);
   game->barrier.bod.bod.vtable = &g_barrier_actor_callback_table;
   initialize_array_with_constructor(
@@ -164,7 +132,11 @@ SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(Subga
     144,
     10,
     (void *(__thiscall *)(void *))initialize_active_landscape_entry);
-  initialize_array_with_constructor(game->landscape_manager.scripts, 292, 128, initialize_landscape_script_record);
+  initialize_array_with_constructor(
+    game->landscape_manager.scripts,
+    292,
+    128,
+    (void *(__thiscall *)(void *))initialize_landscape_script_record);
   initialize_bod_base(&game->smtrack_heightfield.bod);
   initialize_object_constructor_thunk((Object *)&game->smtrack_heightfield.frame_sequence);
   game->smtrack_heightfield.bod.bod.vtable = g_smtracks_callback_table;

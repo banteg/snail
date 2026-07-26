@@ -32,6 +32,30 @@ recovered element widths. The final path loop is deliberately a flat
 No matcher source changes: the constructor remains exact at 227/227
 instructions with all 72 operands clean.
 
+## 2026-07-26 mobile constructor projection
+
+The expanded Android and iOS constructor bodies independently identify this
+exact Windows helper as the desktop projection of
+`cRSubGame::cRSubGame()`. All three ports construct the paired level owners,
+BOD group heads, pickup and hazard pools, embedded Goldy, runtime cells and
+rows, Path bank, landscape/catalog owners, parcel bank, Galaxy records, and
+enemy/contact registry in one receiver-owned lifecycle. The Windows stable
+harness name remains descriptive because its platform layout and folded
+constructor helpers differ substantially.
+
+The mobile list-head band is useful as structural evidence without being an
+offset map. Android and iOS construct thirteen consecutive 0x2c-byte cRBod
+heads where Windows constructs ten 0x38-byte BodBase heads. Independent mobile
+consumers identify head 1 as the fringe/row-attachment anchor, head 2 as the
+ordinary track anchor, head 5 as the barrier/sub-lazer anchor, head 7 as the
+salt anchor, head 10 as the special-cell anchor, and head 12 as the Golb-vapour
+anchor. Mobile startup leaves head 13 unlinked, paralleling the unlinked final
+Windows head. The additional mobile groups and different insertion order mean
+the three xref-free Windows records still do not acquire speculative names.
+
+This is provenance and ownership recovery only. The exact Windows constructor
+remains byte-identical at 227/227 instructions with all 72 operands clean.
+
 ## 2026-07-17 enclosing SubgameRuntime ABI
 
 The exact 227-instruction constructor, its sole `GameRoot::subgame` caller,

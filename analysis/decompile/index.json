@@ -1,49 +1,25 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 7,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 7,
-  "ida_exported": 7,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "binja_refreshed": true,
-  "binja_analysis_refreshed": false,
+  "binja_analysis_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "layout_frontend_widget",
-      "address": "0x4024a0"
-    },
-    {
-      "name": "update_frontend_widget_interaction",
-      "address": "0x402820"
-    },
-    {
-      "name": "calc_object_texture_groups",
-      "address": "0x4303f0"
-    },
-    {
-      "name": "register_font_texture_sheet_wrapper",
-      "address": "0x432d20"
-    },
-    {
-      "name": "register_font_texture_sheet",
-      "address": "0x449f50"
-    },
-    {
-      "name": "layout_and_queue_wrapped_font_text",
-      "address": "0x44abe0"
-    },
-    {
-      "name": "initialize_font3d_objects",
-      "address": "0x44ae10"
+      "name": "initialize_runtime_pools_and_path_template_bank",
+      "address": "0x408060"
     }
   ],
   "health_check_count": 1085,
