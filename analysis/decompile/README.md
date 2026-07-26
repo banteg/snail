@@ -91,7 +91,7 @@ Run just the hotspot health checks with:
 uv run python tools/check_decompile_health.py --strict
 ```
 
-Refresh the mobile corpora with one Ghidra analysis run per binary:
+Refresh the mobile corpora from the persistent per-binary Ghidra projects:
 
 ```bash
 uv run tools/ghidra/export_itanium_symbols.py \
@@ -109,6 +109,10 @@ Notes:
 
 - the Binary Ninja lane exports from the active target by default; pass `--bn-target` if needed
 - the IDA lane exports from the tracked `.i64` unless `--ida-db` is provided
+- the Ghidra lane imports and analyzes each binary once under `artifacts/ghidra/`,
+  then reuses it; pass `--fresh` for an isolated clean-room analysis
+- persistent Ghidra projects fail closed on source SHA-256 or Ghidra-build drift
+  and are locked against concurrent headless mutation
 - reruns prune stale `.c` files from the tracked output trees when a manifest name changes
 - inspect mismatch entries first when one tool appears to “miss” a function; they often indicate real database drift rather than an export failure
 - the health check is intentionally narrow and only guards a few high-value tracked exports where type/prototype regressions have caused real readability loss before

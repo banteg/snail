@@ -13,6 +13,18 @@ import sys
 import tempfile
 from pathlib import Path
 
+from project import (
+    DEFAULT_PROJECT_ROOT,
+    Project,
+    ProjectLockError,
+    ProjectMetadataError,
+    persistent_project,
+    prepare_project,
+    project_lock,
+    record_initialized_project,
+    temporary_fresh_project,
+)
+
 DEFAULT_GHIDRA_DIR = Path("/Applications/ghidra_12.1.2_PUBLIC")
 DEFAULT_NM = Path("/usr/bin/nm")
 DEFAULT_CXXFILT = Path("/usr/bin/c++filt")
@@ -84,6 +96,20 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Exit non-zero instead of installing a corpus with failed functions",
     )
+    parser.add_argument(
+        "--project-root",
+        type=Path,
+        default=DEFAULT_PROJECT_ROOT,
+        help=(
+            "Persistent per-binary Ghidra project root "
+            f"(default: {DEFAULT_PROJECT_ROOT})"
+        ),
+    )
+    parser.add_argument(
+        "--fresh",
+        action="store_true",
+        help="Use and delete a temporary clean-room project instead of the persistent project",
+    )
     return parser.parse_args()
 
 
@@ -96,16 +122,12 @@ def parse_nm_symbols(output: str) -> list[tuple[str, str]]:
         binary_symbol = fields[-1]
         if not ITANIUM_FUNCTION_SYMBOL.match(binary_symbol):
             continue
-        is_text_symbol = (
-            len(fields) == 3 and fields[-2] in TEXT_SYMBOL_TYPES
-        )
+        is_text_symbol = len(fields) == 3 and fields[-2] in TEXT_SYMBOL_TYPES
         is_stabs_function = len(fields) >= 6 and fields[-2] == "FUN"
         if not is_text_symbol and not is_stabs_function:
             continue
         mangled = (
-            binary_symbol[1:]
-            if binary_symbol.startswith("__Z")
-            else binary_symbol
+            binary_symbol[1:] if binary_symbol.startswith("__Z") else binary_symbol
         )
         symbols.setdefault(mangled, binary_symbol)
     return sorted(symbols.items())
@@ -147,18 +169,14 @@ def collect_symbols(
         )
     demangled = demangle_result.stdout.splitlines()
     if len(demangled) != len(parsed):
-        raise RuntimeError(
-            "c++filt output count does not match the symbol-table input"
-        )
+        raise RuntimeError("c++filt output count does not match the symbol-table input")
     return [
         {
             "mangled": mangled,
             "binarySymbol": binary_symbol,
             "demangled": readable,
         }
-        for (mangled, binary_symbol), readable in zip(
-            parsed, demangled, strict=True
-        )
+        for (mangled, binary_symbol), readable in zip(parsed, demangled, strict=True)
     ]
 
 
@@ -214,66 +232,34 @@ def failure_lines(index: dict) -> list[str]:
     ]
 
 
-def main() -> int:
-    args = parse_args()
-    binary = args.binary.resolve()
-    output = args.output.resolve()
-    headless = args.ghidra_dir / "support" / "analyzeHeadless"
-    if not binary.is_file():
-        raise SystemExit(f"missing binary: {binary}")
-    if not headless.is_file():
-        raise SystemExit(f"missing Ghidra headless launcher: {headless}")
-    if args.limit is not None and args.limit < 1:
-        raise SystemExit("--limit must be positive")
-    if (
-        args.analysis_timeout < 1
-        or args.decompile_timeout < 1
-        or args.max_payload_mb < 1
-    ):
-        raise SystemExit("timeouts and --max-payload-mb must be positive")
-
-    symbols = collect_symbols(binary, nm=args.nm, cxxfilt=args.cxxfilt)
-    if args.contains:
-        symbols = [
-            symbol
-            for symbol in symbols
-            if args.contains in symbol["mangled"]
-            or args.contains in symbol["demangled"]
-        ]
-    if args.limit is not None:
-        symbols = symbols[: args.limit]
-    if not symbols:
-        raise SystemExit("no symbols matched the requested filters")
-
+def run_export(
+    *,
+    args: argparse.Namespace,
+    project: Project,
+    headless: Path,
+    binary: Path,
+    output: Path,
+    symbols: list[dict[str, str]],
+) -> int:
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(
         prefix=f"{output.name}-export-",
         dir=output.parent,
     ) as temporary:
         root = Path(temporary)
-        home = root / "home"
-        projects = root / "projects"
         staged = root / "corpus"
         manifest = root / "symbols.json"
-        home.mkdir()
-        projects.mkdir()
         manifest.write_text(
             json.dumps(symbols, indent=2) + "\n",
             encoding="utf-8",
         )
 
         env = os.environ.copy()
-        env["HOME"] = str(home)
+        env["HOME"] = str(project.home)
         java_options = env.get("JAVA_TOOL_OPTIONS", "")
-        env["JAVA_TOOL_OPTIONS"] = (
-            f"{java_options} -Duser.home={home}".strip()
-        )
+        env["JAVA_TOOL_OPTIONS"] = f"{java_options} -Duser.home={project.home}".strip()
         command = (
-            str(headless),
-            str(projects),
-            "SnailMobileExport",
-            "-import",
-            str(binary),
+            *project.command_prefix(headless, binary),
             "-analysisTimeoutPerFile",
             str(args.analysis_timeout),
             "-scriptPath",
@@ -284,7 +270,7 @@ def main() -> int:
             str(staged),
             str(args.decompile_timeout),
             str(args.max_payload_mb),
-            "-deleteProject",
+            *project.command_suffix(),
         )
         completed = subprocess.run(
             command,
@@ -294,6 +280,8 @@ def main() -> int:
             text=True,
         )
         index_path = staged / "index.json"
+        if completed.returncode == 0 and project.project_file.is_file():
+            record_initialized_project(project)
         if completed.returncode != 0 or not index_path.is_file():
             detail = failure_log_tail(completed.stdout, completed.stderr)
             print("Ghidra batch export failed", file=sys.stderr)
@@ -329,6 +317,11 @@ def main() -> int:
                 print(f"  {line}", file=sys.stderr)
             return 1
 
+        index["project"] = project.provenance()
+        index_path.write_text(
+            json.dumps(index, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
         install_corpus(staged, output)
         print(
             f"exported {index['exported_count']}/{index['symbol_count']} "
@@ -339,6 +332,74 @@ def main() -> int:
             for line in failure_lines(index):
                 print(f"  {line}")
         return 0
+
+
+def main() -> int:
+    args = parse_args()
+    binary = args.binary.resolve()
+    output = args.output.resolve()
+    headless = args.ghidra_dir / "support" / "analyzeHeadless"
+    if not binary.is_file():
+        raise SystemExit(f"missing binary: {binary}")
+    if not headless.is_file():
+        raise SystemExit(f"missing Ghidra headless launcher: {headless}")
+    if args.limit is not None and args.limit < 1:
+        raise SystemExit("--limit must be positive")
+    if (
+        args.analysis_timeout < 1
+        or args.decompile_timeout < 1
+        or args.max_payload_mb < 1
+    ):
+        raise SystemExit("timeouts and --max-payload-mb must be positive")
+
+    symbols = collect_symbols(binary, nm=args.nm, cxxfilt=args.cxxfilt)
+    if args.contains:
+        symbols = [
+            symbol
+            for symbol in symbols
+            if args.contains in symbol["mangled"]
+            or args.contains in symbol["demangled"]
+        ]
+    if args.limit is not None:
+        symbols = symbols[: args.limit]
+    if not symbols:
+        raise SystemExit("no symbols matched the requested filters")
+
+    try:
+        if args.fresh:
+            with temporary_fresh_project(
+                binary,
+                args.ghidra_dir,
+                prefix=f"{output.name}-ghidra-",
+                parent=output.parent,
+            ) as project:
+                return run_export(
+                    args=args,
+                    project=project,
+                    headless=headless,
+                    binary=binary,
+                    output=output,
+                    symbols=symbols,
+                )
+
+        project = persistent_project(
+            binary,
+            args.ghidra_dir,
+            args.project_root,
+        )
+        with project_lock(project):
+            prepare_project(project)
+            print(f"using persistent Ghidra project: {project.root}")
+            return run_export(
+                args=args,
+                project=project,
+                headless=headless,
+                binary=binary,
+                output=output,
+                symbols=symbols,
+            )
+    except (ProjectLockError, ProjectMetadataError) as error:
+        raise SystemExit(str(error)) from error
 
 
 if __name__ == "__main__":
