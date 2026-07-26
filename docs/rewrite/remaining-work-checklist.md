@@ -195,7 +195,9 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ### Phase 4. Recover the missing gameplay owners exposed by audio
 
-- [ ] Recover the deeper movement-state emitter owner and literal input-device source behind `play_movement_state_sound`
+- [ ] Recover the literal input-device source behind
+  `play_subgoldy_shoot_sfx`. The emitter owner is now closed as exact
+  `cRSubGoldy::Shoot(cRSubGoldy*)` / `shoot_subgoldy`.
 - [ ] Add a projectile-specific visual smoke path for the movement-fire VAPOURLAZER trail. The current laser-shot render fix is grounded in `create_golb` / `initialize_vapour` / `update_vapour`, but the CLI smoke path still cannot script a fired shot and capture the generated trail for visual regression review.
 - [ ] Port Golb shot path-follow over attachment cells. Native `update_golb_ai` @ 0x414820 switches a shot into path-follow mode (`initialize_path_follow_golb` @ 0x421770, `traverse_path_follow_golb`, `search_path_for_golb` @ 0x415e30) when it crosses a tile-`0x1e` cell, so shots ride humps/loops instead of flying level through them. The port now has the kind-0 `[0, 0.49]` level band + `subgame_rate * 0.017` gravity and the lifetime/window despawn from `create_golb`/`update_golb_ai`, but not the path-follow lane (also the rocket homing lane fed by `search_path_for_golb` at spawn). Both helpers are matched in `tools/match/scratches` (100% and 92% with a documented scheduling-only residual) — port from the matched sources: candidate samples are gated on `0 < dz < 30` toward positive z and chosen by nearest 3D magnitude, first-best-wins.
 - [ ] Finish the remaining payload-table and tip-actor semantics behind `voice 13`
@@ -258,7 +260,7 @@ If there is time for only one focused RE session, use this order:
 4. `initialize_subgoldy_death` / `update_subgoldy_resurrect`
 5. `begin_track_attachment_follow_state` / `update_track_attachment_follow_state`
 6. `update_row_event_display` / `flush_row_event_display`
-7. `play_movement_state_sound` and `shooting_tier` / `shoot_flags` producers
+7. `play_subgoldy_shoot_sfx` and `shooting_tier` / `shoot_flags` producers
 8. `update_warning` and the damage-warning owner chain
 9. track render-normalization helpers
 

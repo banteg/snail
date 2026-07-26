@@ -266,7 +266,7 @@ const VA = {
   try_enter_track_attachment_from_swept_motion: 0x42c770,
   update_subgoldy_attachment_probe_flag40: 0x43bdf0,
   update_subgoldy_attachment_probe_flag80: 0x43bec5,
-  update_player_movement_flags: 0x43a1a0,
+  set_subgoldy_shoot_flags: 0x43a1a0,
   normalize_level_runtime_fields: 0x437eb0,
   end_track_attachment_follow_state: 0x43af60,
   update_subgoldy: 0x43b120,
@@ -1334,7 +1334,7 @@ function installHooks(module) {
   }
 
   if (HOOKS.movement_flags_update) {
-    Interceptor.attach(fromVa(module, VA.update_player_movement_flags), {
+    Interceptor.attach(fromVa(module, VA.set_subgoldy_shoot_flags), {
       onEnter() {
         this.player = asPtr(this.context.ecx);
         this.before = summarizePlayer(this.player, getTrackCellRowIndex);

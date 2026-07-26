@@ -1,3 +1,5 @@
+# play_subgoldy_shoot_sfx / cRSubGoldy::PlayShootSfx @ 0x43afd0
+
 Best current result: 89.13%.
 
 The native stack has two `Vector3` locals: the camera-minus-player delta is
@@ -79,4 +81,13 @@ to `shoot_sfx_variant_sample`, the cached 0..1 or 0..2 family variant. The
 stable manifest name remains `play_movement_state_sound`, with
 `PlayShootSfx` as its authored matcher alias. This is ownership-only: the
 honest 89.13%, 96/88 result and the unresolved VC6 lower-clamp tail remain
+unchanged.
+
+## 2026-07-26 canonical owner and attenuation spelling
+
+Android and iOS now supply the canonical Windows identity
+`play_subgoldy_shoot_sfx`; `play_movement_state_sound` remains an alias. The
+source also adopts the mobile-preserved `distance / -60.0f + 1.0f`
+attenuation spelling. VC6 emits the same 96-instruction candidate, so the
+honest 89.13% result, 26/88 prefix, and unresolved lower-clamp tail remain
 unchanged.

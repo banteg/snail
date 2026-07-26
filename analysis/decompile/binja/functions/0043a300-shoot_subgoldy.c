@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: update_movement_flag_emitters @ 0x43a300 */
+/* function: shoot_subgoldy @ 0x43a300 */
 
 0043a307        uint8_t shoot_flags = (shoot_source->shoot_flags).b
 0043a312        int32_t spawn_selector

@@ -1181,7 +1181,7 @@
         "$L319"
       ],
       "size": "0x24",
-      "description": "Compiler-emitted shooting-tier selector jump table used by Windows cRSubGoldy::SetShootFlags (stable harness name update_player_movement_flags)."
+      "description": "Compiler-emitted shooting-tier selector jump table used by Windows cRSubGoldy::SetShootFlags (canonical harness name set_subgoldy_shoot_flags)."
     },
     {
       "address": "0x43d218",

@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: update_player_movement_flags @ 0x43a1a0 */
+/* function: set_subgoldy_shoot_flags @ 0x43a1a0 */
 
 0043a1a3        int32_t shooting_tier = player->shooting_tier
 0043a1a9        player->shoot_flags = 0

@@ -1,4 +1,4 @@
-// update_player_movement_flags @ 0x43a1a0 (thiscall, ret)
+// set_subgoldy_shoot_flags @ 0x43a1a0, authored cRSubGoldy::SetShootFlags()
 
 #include "player.h"
 

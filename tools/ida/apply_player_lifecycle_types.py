@@ -16,13 +16,13 @@ import idc
 
 TRUSTED_NAMES = (
     (0x43A010, "health_collect_particles"),
-    (0x43A1A0, "update_player_movement_flags"),
-    (0x43A300, "update_movement_flag_emitters"),
+    (0x43A1A0, "set_subgoldy_shoot_flags"),
+    (0x43A300, "shoot_subgoldy"),
     (0x43A370, "end_jetpack_hover"),
     (0x43A9C0, "initialize_subgoldy"),
     (0x43AF10, "show_subgoldy_lives"),
     (0x43AF60, "begin_post_follow_carryover"),
-    (0x43AFD0, "play_movement_state_sound"),
+    (0x43AFD0, "play_subgoldy_shoot_sfx"),
     (0x43D230, "initialize_subgoldy_ghost"),
     (0x43D3D0, "set_subgoldy_ghost_z"),
 )
@@ -33,12 +33,12 @@ TRUSTED_DECLARATIONS = (
         "void __thiscall health_collect_particles(Player* player, SubHealth* pickup);",
     ),
     (
-        "update_player_movement_flags",
-        "void __thiscall update_player_movement_flags(Player* player);",
+        "set_subgoldy_shoot_flags",
+        "void __thiscall set_subgoldy_shoot_flags(Player* player);",
     ),
     (
-        "update_movement_flag_emitters",
-        "void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source);",
+        "shoot_subgoldy",
+        "void __thiscall shoot_subgoldy(Player* owner, Player* shoot_source);",
     ),
     (
         "end_jetpack_hover",
@@ -57,8 +57,8 @@ TRUSTED_DECLARATIONS = (
         "void __thiscall begin_post_follow_carryover(Player* player);",
     ),
     (
-        "play_movement_state_sound",
-        "void __thiscall play_movement_state_sound(Player* player);",
+        "play_subgoldy_shoot_sfx",
+        "void __thiscall play_subgoldy_shoot_sfx(Player* player);",
     ),
     (
         "initialize_subgoldy_ghost",

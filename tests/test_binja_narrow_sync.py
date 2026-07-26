@@ -525,12 +525,13 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
 
     prototypes = (
         "void __thiscall health_collect_particles(Player* player, SubHealth* pickup)",
-        "void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source)",
+        "void __thiscall set_subgoldy_shoot_flags(Player* player)",
+        "void __thiscall shoot_subgoldy(Player* owner, Player* shoot_source)",
         "void __thiscall end_jetpack_hover(SubHover* sub_hover)",
         "void __thiscall initialize_subgoldy(Player* player, int32_t player_slot)",
         "void __thiscall show_subgoldy_lives(Player* player)",
         "void __thiscall begin_post_follow_carryover(Player* player)",
-        "void __thiscall play_movement_state_sound(Player* player)",
+        "void __thiscall play_subgoldy_shoot_sfx(Player* player)",
         "void __thiscall initialize_subgoldy_ghost(Player* player, int32_t owner)",
         "void __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z)",
     )
@@ -567,12 +568,13 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
 
     for address, name in (
         ("0x43a010", "health_collect_particles"),
-        ("0x43a300", "update_movement_flag_emitters"),
+        ("0x43a1a0", "set_subgoldy_shoot_flags"),
+        ("0x43a300", "shoot_subgoldy"),
         ("0x43a370", "end_jetpack_hover"),
         ("0x43a9c0", "initialize_subgoldy"),
         ("0x43af10", "show_subgoldy_lives"),
         ("0x43af60", "begin_post_follow_carryover"),
-        ("0x43afd0", "play_movement_state_sound"),
+        ("0x43afd0", "play_subgoldy_shoot_sfx"),
         ("0x43d230", "initialize_subgoldy_ghost"),
         ("0x43d3d0", "set_subgoldy_ghost_z"),
     ):
@@ -3183,7 +3185,7 @@ def test_golb_replays_preserve_real_lifecycle_and_emitter_abis() -> None:
         "void __thiscall kill_golb(GolbShot* shot)",
         "void __thiscall update_golb_ai(GolbShot* shot)",
         "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index)",
-        "void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source)",
+        "void __thiscall shoot_subgoldy(Player* owner, Player* shoot_source)",
         "Sprite* __thiscall spawn_golb_trail_sprite(GolbShot* shot, Vec3* position)",
         "void __thiscall spawn_golb_smoke(GolbShot* shot, Vec3* position)",
         "void __thiscall spawn_golb_impact_sprite(GolbShot* shot, Vec3* position)",
@@ -3344,7 +3346,7 @@ def test_subgoldy_replays_preserve_void_lifecycle_abis() -> None:
         "void __thiscall begin_post_follow_carryover(Player* player)",
         "void __thiscall initialize_subgoldy_ghost(Player* player, int32_t owner)",
         "void __thiscall update_subgoldy(Player* player)",
-        "void __thiscall play_movement_state_sound(Player* player)",
+        "void __thiscall play_subgoldy_shoot_sfx(Player* player)",
         "void __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z)",
         "void __thiscall add_subgoldy_score(Player* player, int32_t score_kind, int32_t bonus_score)",
         "void __thiscall clear_subgoldy_score_buckets(Player* player)",

@@ -1,9 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: play_movement_state_sound @ 0x43afd0 */
-/* selector: play_movement_state_sound */
+/* function: play_subgoldy_shoot_sfx @ 0x43afd0 */
+/* selector: play_subgoldy_shoot_sfx */
 
-// Void `Player` member that chooses one of three movement sound families from `shoot_flags` and attenuates playback while attachment-exit handling is active. Both direct `update_subgoldy` callsites discard EAX, and its two returns expose only incidental sound-manager call results.
-void __thiscall play_movement_state_sound(Player *player)
+// Void Windows `cRSubGoldy::PlayShootSfx()`: chooses one of the authored shoot-SFX families 17..18, 19..21, or 22..24 from `Player::shoot_flags` at +0x338, caches the sampled variant at Player +0x1cc, and attenuates playback while attachment-exit handling is active. Android and iOS preserve the authored symbol. Android's shared epilogue receives incompatible R0 residues from the no-sound, direct-play, and scaled-play paths, independently proving there is no result contract.
+void __thiscall play_subgoldy_shoot_sfx(Player *player)
 {
   uint32_t shoot_flags; // eax
   __int64 v3; // rax

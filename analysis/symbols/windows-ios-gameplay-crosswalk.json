@@ -787,19 +787,19 @@
     },
     {
       "address": "0x43a1a0",
-      "windows_name": "update_player_movement_flags",
+      "windows_name": "set_subgoldy_shoot_flags",
       "android_symbol": "cRSubGoldy::SetShootFlags()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android preserves the authored name and the same nine-case selector-to-weapon-flags/cadence table. Its common POP {R4,PC} exit leaves the original receiver in R0 when unchanged but the incidental residue of cRSnail::SetWeapon when changed, proving the member is void. The Windows harness name remains stable."
+      "notes": "Android preserves the authored name and the same nine-case selector-to-weapon-flags/cadence table. Its common POP {R4,PC} exit leaves the original receiver in R0 when unchanged but the incidental residue of cRSnail::SetWeapon when changed, proving the member is void. The former update_player_movement_flags name remains an alias."
     },
     {
       "address": "0x43a300",
-      "windows_name": "update_movement_flag_emitters",
+      "windows_name": "shoot_subgoldy",
       "android_symbol": "cRSubGoldy::Shoot(cRSubGoldy*)",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android preserves the authored name and repeats the exact flag-to-projectile-count classifier plus the 12-slot owned cRSubGolb scan. Ghidra 12.1.2 recovers a void member; IDA 9.4 shows the early-return path retaining the receiver in R0 while create paths retain incidental cRSubGolb::Create residue, independently ruling out a result contract. The Windows harness name remains stable."
+      "notes": "Android preserves the authored name and repeats the exact flag-to-projectile-count classifier plus the 12-slot owned cRSubGolb scan. Ghidra 12.1.2 recovers a void member; IDA 9.4 shows the early-return path retaining the receiver in R0 while create paths retain incidental cRSubGolb::Create residue, independently ruling out a result contract. The canonical Windows identity now retires its false historical assignment to the SubLazer manager; update_movement_flag_emitters remains an alias."
     },
     {
       "address": "0x43a370",
@@ -1540,7 +1540,7 @@
     },
     {
       "address": "0x43afd0",
-      "windows_name": "play_movement_state_sound",
+      "windows_name": "play_subgoldy_shoot_sfx",
       "ios_symbol": "cRSubGoldy::PlayShootSfx()",
       "android_symbol": "cRSubGoldy::PlayShootSfx()",
       "source_object": "SubGame.o",
@@ -1937,7 +1937,7 @@
       "android_symbol": "cRSubLazerManager::Shoot(tVector, tVector)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All ports scan the manager's 20 owned SubLazer actors for SUB_LAZER_STATE_INACTIVE, dispatch the actor-level Shoot method, and play the positional fire cue. The former shoot_subgoldy Windows name remains an alias only; the receiver is the SubLazer pool, not a Goldy."
+      "notes": "All ports scan the manager's 20 owned SubLazer actors for SUB_LAZER_STATE_INACTIVE, dispatch the actor-level Shoot method, and play the positional fire cue. The former shoot_subgoldy Windows name was misassigned here and is now canonical at the actual cRSubGoldy::Shoot method, 0x43a300; this receiver is the SubLazer pool."
     },
     {
       "address": "0x441b70",

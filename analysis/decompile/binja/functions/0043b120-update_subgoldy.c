@@ -1566,7 +1566,7 @@
 0043d03b        update_anim_manager(&player->presentation.weapon_channels[2].anim_manager)
 0043d04c        update_track_parcels(&player->game->parcel_manager)
 0043d057        update_snail_presentation(&player->presentation)
-0043d05e        update_player_movement_flags(player)
+0043d05e        set_subgoldy_shoot_flags(player)
 0043d06f        if (g_game_base->subgame.replay_update_cursor s< 0xa)
 0043d077        player->shoot_cooldown_progress = player->shoot_cooldown_step
 0043d07d        struct SubgameRuntime* game_18 = player->game
@@ -1596,8 +1596,8 @@
 0043d18e        goto label_43d198
 0043d12c        if ((game_18->selected_level_record->run_records[game_18->replay_update_cursor].flags.b & 1) != 0)
 0043d143        label_43d143:
-0043d143        play_movement_state_sound(player)
-0043d14b        update_movement_flag_emitters(player, player)
+0043d143        play_subgoldy_shoot_sfx(player)
+0043d14b        shoot_subgoldy(player, player)
 0043d150        unimplemented  {fld st0, dword [ebp+0x2734]}
 0043d156        unimplemented  {fadd dword [0x4973d8]}
 0043d15c        player->shoot_cooldown_progress = fconvert.s(unimplemented  {fstp dword [ebp+0x2730], st0})
@@ -1608,8 +1608,8 @@
 0043d17c        if ((game_18->selected_level_record->run_records[game_18->replay_update_cursor].flags.b & 2) != 0)
 0043d198        label_43d198:
 0043d198        player->shoot_cooldown_progress = player->shoot_cooldown_step
-0043d19e        play_movement_state_sound(player)
-0043d1a6        update_movement_flag_emitters(player, player)
+0043d19e        play_subgoldy_shoot_sfx(player)
+0043d1a6        shoot_subgoldy(player, player)
 0043d180        if (selected_level_record_active == 0)
 0043d180        goto label_43d18b
 0043d0d2        unimplemented  {fld st0, dword [ebp+0x2734]}

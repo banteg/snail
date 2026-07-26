@@ -970,7 +970,7 @@ LABEL_287:
         update_anim_manager(&player->presentation.weapon_channels[2].anim_manager);
         update_track_parcels(&player->game->parcel_manager);
         update_snail_presentation(&player->presentation);
-        update_player_movement_flags(player);
+        set_subgoldy_shoot_flags(player);
         if ( g_game_base->subgame.replay_update_cursor < 10 )
           player->shoot_cooldown_progress = player->shoot_cooldown_step;
         v104 = player->game;
@@ -1006,8 +1006,8 @@ LABEL_287:
           if ( (player->control_source->control_flags_a & 0x4000) != 0 )
           {
 LABEL_359:
-            play_movement_state_sound(player);
-            update_movement_flag_emitters(player, player);
+            play_subgoldy_shoot_sfx(player);
+            shoot_subgoldy(player, player);
             player->shoot_cooldown_progress = player->shoot_cooldown_step + 0.30000001;
             goto LABEL_365;
           }
@@ -1015,8 +1015,8 @@ LABEL_359:
           {
 LABEL_364:
             player->shoot_cooldown_progress = player->shoot_cooldown_step;
-            play_movement_state_sound(player);
-            update_movement_flag_emitters(player, player);
+            play_subgoldy_shoot_sfx(player);
+            shoot_subgoldy(player, player);
           }
         }
 LABEL_365:

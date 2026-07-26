@@ -20465,7 +20465,7 @@
     },
     {
       "address": "0x43a1a0",
-      "windows_name": "update_player_movement_flags",
+      "windows_name": "set_subgoldy_shoot_flags",
       "windows_size": 352,
       "status": "verified",
       "android_symbol": "cRSubGoldy::SetShootFlags()",
@@ -20475,39 +20475,39 @@
       "ios_candidates": [
         {
           "symbol": "cRSubGoldy::PlayShootSfx()",
-          "score": 0.6832,
-          "name_score": 0.54,
+          "score": 0.7525,
+          "name_score": 0.6556,
           "size_score": 0.898
+        },
+        {
+          "symbol": "cRSubGoldy::GhostInit(int)",
+          "score": 0.7356,
+          "name_score": 0.6212,
+          "size_score": 0.9072
+        },
+        {
+          "symbol": "cRSubGoldy::ScoreStatsDisplay()",
+          "score": 0.6756,
+          "name_score": 0.5426,
+          "size_score": 0.875
+        },
+        {
+          "symbol": "cRSubGoldy::HealthCollect(cRSubHealth*)",
+          "score": 0.6632,
+          "name_score": 0.5186,
+          "size_score": 0.88
         },
         {
           "symbol": "cRSubLazerManager::Shoot(tVector, tVector)",
           "score": 0.6367,
           "name_score": 0.45,
           "size_score": 0.9167
-        },
-        {
-          "symbol": "cRSubGoldy::GhostInit(int)",
-          "score": 0.6329,
-          "name_score": 0.45,
-          "size_score": 0.9072
-        },
-        {
-          "symbol": "OFXmlElement::~OFXmlElement()",
-          "score": 0.627,
-          "name_score": 0.3784,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGoldy::HealthCollect(cRSubHealth*)",
-          "score": 0.622,
-          "name_score": 0.45,
-          "size_score": 0.88
         }
       ]
     },
     {
       "address": "0x43a300",
-      "windows_name": "update_movement_flag_emitters",
+      "windows_name": "shoot_subgoldy",
       "windows_size": 112,
       "status": "verified",
       "android_symbol": "cRSubGoldy::Shoot(cRSubGoldy*)",
@@ -20528,22 +20528,22 @@
           "size_score": 0.8929
         },
         {
+          "symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
+          "score": 0.6686,
+          "name_score": 0.5486,
+          "size_score": 0.8485
+        },
+        {
+          "symbol": "RShellSoundRegister(char*, int)",
+          "score": 0.65,
+          "name_score": 0.4167,
+          "size_score": 1.0
+        },
+        {
           "symbol": "cRObject::cRObject()",
           "score": 0.6457,
           "name_score": 0.6,
           "size_score": 0.7143
-        },
-        {
-          "symbol": "OFDelegate::OFDelegate(NSObject*, objc_selector*, OFDelegate const&)",
-          "score": 0.6366,
-          "name_score": 0.4174,
-          "size_score": 0.9655
-        },
-        {
-          "symbol": "cRBodPos::cRBodPos()",
-          "score": 0.6313,
-          "name_score": 0.45,
-          "size_score": 0.9032
         }
       ]
     },
@@ -20875,7 +20875,7 @@
     },
     {
       "address": "0x43afd0",
-      "windows_name": "play_movement_state_sound",
+      "windows_name": "play_subgoldy_shoot_sfx",
       "windows_size": 336,
       "status": "verified",
       "android_symbol": "cRSubGoldy::PlayShootSfx()",

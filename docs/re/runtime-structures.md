@@ -293,7 +293,7 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `update_subgoldy` flips it the first time the row-event tip path dispatches the one-shot cutscene animation
 - `player + 0x1cc..+0x1e0` is a non-row-event movement and reaction slice
   - `+0x00`: `shoot_sfx_variant_sample`
-    - Windows `play_movement_state_sound`, authored as
+    - Windows `play_subgoldy_shoot_sfx`, authored as
       `cRSubGoldy::PlayShootSfx()`, stores the sampled variant here before
       deriving SFX 17..24
   - `+0x08`: `damage_retrigger_timer`
@@ -495,15 +495,15 @@ consecutive `cRWeapon` instances plus a fourth jetpack instance.
 
 High-confidence current read:
 
-- Windows `update_player_movement_flags`, authored as the void
+- Windows `set_subgoldy_shoot_flags`, authored as the void
   `cRSubGoldy::SetShootFlags()`, feeds the authored
   `cRSnail::SetWeapon(int)` member (`set_snail_weapon` at `0x445920`)
 - Android preserves the same tier table and ownership chain; Ghidra 12.1.2
   independently demangles and decompiles that authored member with a void ABI
 - `SetWeapon` resolves one `shoot_flags` mask into three Weapon states
-- the Windows `update_player_movement_flags` and
-  `update_movement_flag_emitters` names remain stable matcher identifiers; the
-  authored members are `SetShootFlags` and `Shoot`
+- the Windows `set_subgoldy_shoot_flags` and `shoot_subgoldy` identities now
+  follow the authored `SetShootFlags` and `Shoot` owners; their former behavior
+  labels remain aliases
 - the three `Weapon` owners live at Snail offsets:
   - `+0x64c`
   - `+0xa28`
@@ -1525,8 +1525,8 @@ only; live receivers and manager arrays use `SubLazer` and `Salt`.
   writes active, and AI consumes recycle-pending after bob expiry or collision
 - `spawn_sub_lazer_projectile` is the slot-level authored `Shoot`, while
   `deactivate_sub_lazer_projectile` is `cRSubLazer::Kill()`; the manager-level
-  `shoot_sub_lazer_pool` scans the same inline array (`shoot_subgoldy` is only
-  its former compatibility alias)
+  `shoot_sub_lazer_pool` scans the same inline array. Its formerly misassigned
+  `shoot_subgoldy` alias now belongs to the actual Goldy method at `0x43a300`
 - `initialize_salt_hazard_runtime` constructs the same inherited owner and
   installs the table at `0x497340`; its callback is the exact
   `cRSalt::AI()` at `update_salt_hazard`

@@ -2,7 +2,7 @@
 
 `initialize_golb_shot` @ 0x408690 constructs one 0x2e8-byte Golb shot slot.
 `initialize_runtime_pools_and_path_template_bank` seeds 12 of these slots, and
-`cRSubGoldy::Shoot` (stable Windows name `update_movement_flag_emitters`) later
+`cRSubGoldy::Shoot` (canonical Windows name `shoot_subgoldy`) later
 iterates that same 12-slot bank before calling `create_golb`.
 
 The callback tables pin the ownership:

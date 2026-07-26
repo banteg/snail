@@ -1,4 +1,4 @@
-# update_movement_flag_emitters @ 0x43a300
+# shoot_subgoldy / cRSubGoldy::Shoot @ 0x43a300
 
 Exact match: 100.00%, 39/39 instructions.
 
@@ -73,3 +73,12 @@ The stable manifest name remains `update_movement_flag_emitters`, with `Shoot`
 as the authored matcher alias. Renaming the matching source and its four
 `update_subgoldy` callsites does not relax the proof: the helper remains exact
 at 39/39 with its single operand clean.
+
+## 2026-07-26 canonical owner correction
+
+The cross-port authored owner now supplies the canonical Windows identity
+`shoot_subgoldy`; `update_movement_flag_emitters` remains an alias. The same
+name had been preserved historically on the unrelated SubLazer pool, but
+Android proves that manager is `cRSubLazerManager::Shoot(tVector, tVector)` and
+that this exact 12-Golb pool method is `cRSubGoldy::Shoot(cRSubGoldy*)`. The
+false SubLazer alias is retired and the exact 39/39 proof is unchanged.

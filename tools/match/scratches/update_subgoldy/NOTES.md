@@ -73,7 +73,7 @@ scratch additionally pins:
   channel base +0x11e0 with manager +0x12e8, weapon channel bases
   +0x64c/+0xa28/+0xe04 stride 0x3dc with managers at base +0x108), track parcels
   (`SubgameRuntime::parcel_manager`), update_snail_presentation,
-  update_player_movement_flags, `Completion` row-event display,
+  set_subgoldy_shoot_flags, `Completion` row-event display,
   `current_high_score_record.replay_sample_count++`, and
   `replay_update_cursor++ == 21000` → `TimesUp`.
 
@@ -750,7 +750,7 @@ The four firing-edge calls now use the cross-port authored member
 `cRSubGoldy::PlayShootSfx()`. Android and iOS retain that exact symbol, and the
 Android body independently matches the Windows flag buckets, SFX 17..24
 families, cached variant, and attachment-exit attenuation. The stable
-`play_movement_state_sound` manifest entry carries `PlayShootSfx` as an alias,
+`play_subgoldy_shoot_sfx` manifest entry carries `PlayShootSfx` as an alias,
 so the source clarification does not hide or relax any call relocation. The
 focused match remains honestly unchanged.
 
@@ -759,7 +759,7 @@ focused match remains honestly unchanged.
 The four firing-edge emitter calls now use the cross-port authored member
 `cRSubGoldy::Shoot(cRSubGoldy*)`. Android retains that exact symbol and repeats
 the Windows flag-to-projectile-budget classifier plus the receiver-owned
-12-slot Golb scan. The stable `update_movement_flag_emitters` manifest entry
+12-slot Golb scan. The canonical `shoot_subgoldy` manifest entry
 carries `Shoot` as an alias, so every call relocation remains audited. This is
 an ownership clarification only; the focused match remains honestly
 unchanged.

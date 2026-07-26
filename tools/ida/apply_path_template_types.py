@@ -37,7 +37,8 @@ TRUSTED_NAMES = [
     (0x4113B0, "add_bod_to_front"),
     (0x411420, "append_bod_to_end"),
     (0x43A010, "health_collect_particles"),
-    (0x43A300, "update_movement_flag_emitters"),
+    (0x43A1A0, "set_subgoldy_shoot_flags"),
+    (0x43A300, "shoot_subgoldy"),
     (0x43A370, "end_jetpack_hover"),
     (0x4182E0, "reset_landscape_manager"),
     (0x4182F0, "load_landscape_script_by_name"),
@@ -71,7 +72,7 @@ TRUSTED_NAMES = [
     (0x43A9C0, "initialize_subgoldy"),
     (0x43AF10, "show_subgoldy_lives"),
     (0x43AF60, "begin_post_follow_carryover"),
-    (0x43AFD0, "play_movement_state_sound"),
+    (0x43AFD0, "play_subgoldy_shoot_sfx"),
     (0x43B120, "update_subgoldy"),
     (0x43D230, "initialize_subgoldy_ghost"),
     (0x43D3D0, "set_subgoldy_ghost_z"),
@@ -314,7 +315,8 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x439BC0,  # remove_sub_loc
     0x439D50,  # update_sub_loc
     0x43A010,  # health_collect_particles
-    0x43A300,  # update_movement_flag_emitters
+    0x43A1A0,  # set_subgoldy_shoot_flags
+    0x43A300,  # shoot_subgoldy
     0x43A370,  # end_jetpack_hover
     0x43A390,  # update_jetpack_gauge
     0x43A580,  # uninit_jet_particles
@@ -325,7 +327,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x43A9C0,  # initialize_subgoldy
     0x43AF10,  # show_subgoldy_lives
     0x43AF60,  # begin_post_follow_carryover
-    0x43AFD0,  # play_movement_state_sound
+    0x43AFD0,  # play_subgoldy_shoot_sfx
     0x43B120,  # update_subgoldy
     0x43D230,  # initialize_subgoldy_ghost
     0x43D3D0,  # set_subgoldy_ghost_z
@@ -1951,8 +1953,8 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index);",
     ),
     (
-        "update_movement_flag_emitters",
-        "void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source);",
+        "shoot_subgoldy",
+        "void __thiscall shoot_subgoldy(Player* owner, Player* shoot_source);",
     ),
     (
         "spawn_golb_trail_sprite",
@@ -2575,6 +2577,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall health_collect_particles(Player* player, SubHealth* pickup);",
     ),
     (
+        "set_subgoldy_shoot_flags",
+        "void __thiscall set_subgoldy_shoot_flags(Player* player);",
+    ),
+    (
         "show_subgoldy_lives",
         "void __thiscall show_subgoldy_lives(Player* player);",
     ),
@@ -2591,8 +2597,8 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_subgoldy(Player* player);",
     ),
     (
-        "play_movement_state_sound",
-        "void __thiscall play_movement_state_sound(Player* player);",
+        "play_subgoldy_shoot_sfx",
+        "void __thiscall play_subgoldy_shoot_sfx(Player* player);",
     ),
     (
         "set_subgoldy_ghost_z",

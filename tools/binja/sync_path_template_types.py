@@ -194,7 +194,8 @@ SYMBOL_UPDATES = (
     ("0x42ca90", "is_point_inside_track_attachment"),
     ("0x4086d0", "initialize_player_presentation_controller"),
     ("0x43a010", "health_collect_particles"),
-    ("0x43a300", "update_movement_flag_emitters"),
+    ("0x43a1a0", "set_subgoldy_shoot_flags"),
+    ("0x43a300", "shoot_subgoldy"),
     ("0x43a370", "end_jetpack_hover"),
     ("0x43a390", "update_jetpack_gauge"),
     ("0x43a580", "uninit_jet_particles"),
@@ -205,7 +206,7 @@ SYMBOL_UPDATES = (
     ("0x43a9c0", "initialize_subgoldy"),
     ("0x43af10", "show_subgoldy_lives"),
     ("0x43af60", "begin_post_follow_carryover"),
-    ("0x43afd0", "play_movement_state_sound"),
+    ("0x43afd0", "play_subgoldy_shoot_sfx"),
     ("0x43b120", "update_subgoldy"),
     ("0x43d230", "initialize_subgoldy_ghost"),
     ("0x43d3d0", "set_subgoldy_ghost_z"),
@@ -1010,7 +1011,7 @@ INITIALIZE_SUBGOLDY_USER_VAR_UPDATES = (
 # the entire 12-element array and inventing a compensating owner subtraction.
 MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES = (
     (
-        "update_movement_flag_emitters",
+        "shoot_subgoldy",
         "RegisterVariableSourceType",
         49,
         73,
@@ -3088,8 +3089,8 @@ GOLB_PROTO_UPDATES = (
         "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index)",
     ),
     (
-        "update_movement_flag_emitters",
-        "void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source)",
+        "shoot_subgoldy",
+        "void __thiscall shoot_subgoldy(Player* owner, Player* shoot_source)",
     ),
     (
         "spawn_golb_trail_sprite",
@@ -3618,6 +3619,10 @@ PROTO_UPDATES = (
         "void __thiscall health_collect_particles(Player* player, SubHealth* pickup)",
     ),
     (
+        "set_subgoldy_shoot_flags",
+        "void __thiscall set_subgoldy_shoot_flags(Player* player)",
+    ),
+    (
         "show_subgoldy_lives",
         "void __thiscall show_subgoldy_lives(Player* player)",
     ),
@@ -3634,8 +3639,8 @@ PROTO_UPDATES = (
         "void __thiscall update_subgoldy(Player* player)",
     ),
     (
-        "play_movement_state_sound",
-        "void __thiscall play_movement_state_sound(Player* player)",
+        "play_subgoldy_shoot_sfx",
+        "void __thiscall play_subgoldy_shoot_sfx(Player* player)",
     ),
     (
         "set_subgoldy_ghost_z",

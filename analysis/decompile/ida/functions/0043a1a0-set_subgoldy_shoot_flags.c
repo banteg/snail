@@ -1,9 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: update_player_movement_flags @ 0x43a1a0 */
-/* selector: update_player_movement_flags */
+/* function: set_subgoldy_shoot_flags @ 0x43a1a0 */
+/* selector: set_subgoldy_shoot_flags */
 
-// Maps the player movement-flag selector at +0x308 onto shoot_flags and the movement-fire progress step at +0x2734, then refreshes the 0x2984 state machine when the mask changes.
-void __thiscall update_player_movement_flags(Player *player)
+// Void Windows `cRSubGoldy::SetShootFlags()`: maps `Player::shooting_tier` at +0x308 onto `shoot_flags` at +0x338 and `shoot_cooldown_step` at +0x2734, compares `previous_shoot_flags` at +0x33c, then refreshes the owned cRSnail presentation when the mask changes. Android preserves the authored symbol and identical tier table; its common exit has incompatible R0 residues across the changed and unchanged paths, proving there is no result contract. Ghidra 12.1.2 independently recovers the same void ownership chain.
+void __thiscall set_subgoldy_shoot_flags(Player *player)
 {
   int32_t shooting_tier; // eax
 

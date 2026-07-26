@@ -24,8 +24,9 @@
     "unresolved": []
   },
   "removed_stale_artifacts": [
-    "analysis/decompile/binja/functions/00410c30-set_backdrop_progress_fraction.c",
-    "analysis/decompile/binja/functions/0044e580-get_sprite_texture_ref.c"
+    "analysis/decompile/binja/functions/0043a1a0-update_player_movement_flags.c",
+    "analysis/decompile/binja/functions/0043a300-update_movement_flag_emitters.c",
+    "analysis/decompile/binja/functions/0043afd0-play_movement_state_sound.c"
   ],
   "exports": [
     {
@@ -2160,13 +2161,13 @@
     },
     {
       "address": "0x43a1a0",
-      "name": "update_player_movement_flags",
-      "artifact": "analysis/decompile/binja/functions/0043a1a0-update_player_movement_flags.c"
+      "name": "set_subgoldy_shoot_flags",
+      "artifact": "analysis/decompile/binja/functions/0043a1a0-set_subgoldy_shoot_flags.c"
     },
     {
       "address": "0x43a300",
-      "name": "update_movement_flag_emitters",
-      "artifact": "analysis/decompile/binja/functions/0043a300-update_movement_flag_emitters.c"
+      "name": "shoot_subgoldy",
+      "artifact": "analysis/decompile/binja/functions/0043a300-shoot_subgoldy.c"
     },
     {
       "address": "0x43a370",
@@ -2220,8 +2221,8 @@
     },
     {
       "address": "0x43afd0",
-      "name": "play_movement_state_sound",
-      "artifact": "analysis/decompile/binja/functions/0043afd0-play_movement_state_sound.c"
+      "name": "play_subgoldy_shoot_sfx",
+      "artifact": "analysis/decompile/binja/functions/0043afd0-play_subgoldy_shoot_sfx.c"
     },
     {
       "address": "0x43b120",

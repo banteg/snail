@@ -142,7 +142,7 @@ Current hooks in the script:
 - `0x442096` `respawn_complete_subgame_branch`
   - emits the branch that diverts respawn flow back through `complete_subgame`
   - currently disabled by default in the stable Windows pack
-- `0x43a1a0` `update_player_movement_flags`
+- `0x43a1a0` `set_subgoldy_shoot_flags`
   - emits sampled tier-to-mask transitions for
     `Player::shooting_tier -> Player::shoot_flags`
   - the event name `movement_flags_update` and payload keys

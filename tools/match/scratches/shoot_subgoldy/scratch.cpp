@@ -1,4 +1,4 @@
-// update_movement_flag_emitters @ 0x43a300
+// shoot_subgoldy @ 0x43a300
 // Authored as cRSubGoldy::Shoot(cRSubGoldy*) (thiscall, ret 0x4).
 
 #include "player.h"

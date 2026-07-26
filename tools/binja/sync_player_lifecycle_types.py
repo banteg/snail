@@ -45,13 +45,13 @@ EXPECTED_OWNER_SIZES = {
 
 SYMBOL_UPDATES = (
     ("0x43a010", "health_collect_particles"),
-    ("0x43a1a0", "update_player_movement_flags"),
-    ("0x43a300", "update_movement_flag_emitters"),
+    ("0x43a1a0", "set_subgoldy_shoot_flags"),
+    ("0x43a300", "shoot_subgoldy"),
     ("0x43a370", "end_jetpack_hover"),
     ("0x43a9c0", "initialize_subgoldy"),
     ("0x43af10", "show_subgoldy_lives"),
     ("0x43af60", "begin_post_follow_carryover"),
-    ("0x43afd0", "play_movement_state_sound"),
+    ("0x43afd0", "play_subgoldy_shoot_sfx"),
     ("0x43d230", "initialize_subgoldy_ghost"),
     ("0x43d3d0", "set_subgoldy_ghost_z"),
 )
@@ -62,12 +62,12 @@ PROTO_UPDATES = (
         "void __thiscall health_collect_particles(Player* player, SubHealth* pickup)",
     ),
     (
-        "update_player_movement_flags",
-        "void __thiscall update_player_movement_flags(Player* player)",
+        "set_subgoldy_shoot_flags",
+        "void __thiscall set_subgoldy_shoot_flags(Player* player)",
     ),
     (
-        "update_movement_flag_emitters",
-        "void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source)",
+        "shoot_subgoldy",
+        "void __thiscall shoot_subgoldy(Player* owner, Player* shoot_source)",
     ),
     (
         "end_jetpack_hover",
@@ -86,8 +86,8 @@ PROTO_UPDATES = (
         "void __thiscall begin_post_follow_carryover(Player* player)",
     ),
     (
-        "play_movement_state_sound",
-        "void __thiscall play_movement_state_sound(Player* player)",
+        "play_subgoldy_shoot_sfx",
+        "void __thiscall play_subgoldy_shoot_sfx(Player* player)",
     ),
     (
         "initialize_subgoldy_ghost",
@@ -104,7 +104,7 @@ PROTO_UPDATES = (
 # Player.golb_shots remains the sole owning array.
 USER_VAR_UPDATES = (
     (
-        "update_movement_flag_emitters",
+        "shoot_subgoldy",
         "RegisterVariableSourceType",
         49,
         73,

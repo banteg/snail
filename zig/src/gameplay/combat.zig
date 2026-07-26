@@ -2,7 +2,7 @@
 //!
 //! Native references:
 //! - Subgoldy weapon lanes fire projectiles from `movement_flags` selectors
-//!   (`update_player_movement_flags` / `play_movement_state_sound`).
+//!   (`set_subgoldy_shoot_flags` / `play_subgoldy_shoot_sfx`).
 //! The manager here holds the 12 native Golb emitter slots; Runner still owns
 //! the spawn + step methods because they cross-read motion / attachment state.
 

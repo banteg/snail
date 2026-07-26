@@ -180,7 +180,7 @@ integration" note is OVERTURNED (ledger).
 v9 progress (1a058525): the recorded t=8 volley now FIRES (the ten-tick
 fire hold was keyed to subgame ticks; native keys the reseed to the APP
 frame counter at +0x1066bf4 — past 10 by any subgame), and every volley
-now consumes the play_movement_state_sound variant draw on the shared
+now consumes the play_subgoldy_shoot_sfx variant draw on the shared
 stream. first_div still 251: the t~153 garbage clip persists — the t=8
 volley dies ~50 ticks in (z<9) so it cannot kill the z=33.5 garbage;
 the native miss must come from the garbage's animation PHASE (the bob y

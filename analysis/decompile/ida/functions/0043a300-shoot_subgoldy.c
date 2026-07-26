@@ -1,9 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: update_movement_flag_emitters @ 0x43a300 */
-/* selector: update_movement_flag_emitters */
+/* function: shoot_subgoldy @ 0x43a300 */
+/* selector: shoot_subgoldy */
 
-// Exact void `Player` member that iterates its 12 owned `GolbShot` slots at +0x450 and seeds one, two, or three live actors from an explicit `Player*` movement source. Both callers pass the same player as receiver and source.
-void __thiscall update_movement_flag_emitters(Player *owner, Player *shoot_source)
+// Exact void Windows `cRSubGoldy::Shoot(cRSubGoldy*)`: classifies the explicit source Goldy's shoot flags into a one-, two-, or three-projectile budget, then fills inactive entries in the receiver's 12-slot owned `GolbShot` bank at +0x450. Android preserves the authored symbol and body; all Windows and Android callsites pass the same Goldy as receiver and source.
+void __thiscall shoot_subgoldy(Player *owner, Player *shoot_source)
 {
   uint32_t shoot_flags; // eax
   int32_t v4; // ebx
@@ -29,10 +29,10 @@ void __thiscall update_movement_flag_emitters(Player *owner, Player *shoot_sourc
   golb_shots = owner->golb_shots;
   do
   {
-    if ( !golb_shots->state )
+    if ( golb_shots->state == 0 )
     {
       create_golb(golb_shots, owner, v4--, v5);
-      if ( !v4 )
+      if ( v4 == 0 )
         break;
     }
     ++v5;

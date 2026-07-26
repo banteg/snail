@@ -1,4 +1,4 @@
-# update_player_movement_flags @ 0x43a1a0
+# set_subgoldy_shoot_flags / cRSubGoldy::SetShootFlags @ 0x43a1a0
 
 Source-shaped match: 93.75%, 38/50 instruction prefix, 46/50 candidate/target
 insns.
@@ -103,3 +103,11 @@ The void source shape remains honestly at 93.75%, 46/50 instructions, prefix
 38/50, with two clean operands. VC6 still tail-merges the clean equal path;
 the native duplicate equal-path field reload remains compiler-layout debt and
 the retired volatile barrier is not restored.
+
+## 2026-07-26 canonical owner correction
+
+The Android-authored name now owns the canonical Windows identity
+`set_subgoldy_shoot_flags`. The former behavior label
+`update_player_movement_flags` remains an alias. This is an ownership-only
+correction: the honest 93.75% result and native duplicate-tail residual are
+unchanged.

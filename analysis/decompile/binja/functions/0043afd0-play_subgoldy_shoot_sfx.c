@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: play_movement_state_sound @ 0x43afd0 */
+/* function: play_subgoldy_shoot_sfx @ 0x43afd0 */
 
 0043afd7        uint8_t shoot_flags = (player->shoot_flags).b
 0043afdf        int32_t eax_1

@@ -1,4 +1,4 @@
-// play_movement_state_sound @ 0x43afd0, authored cRSubGoldy::PlayShootSfx()
+// play_subgoldy_shoot_sfx @ 0x43afd0, authored cRSubGoldy::PlayShootSfx()
 
 #include "audio_system.h"
 #include "game_root.h"
@@ -40,7 +40,7 @@ void Player::PlayShootSfx()
 
             normalized_vector = vector;
             float distance = (float)normalize_vector(&normalized_vector);
-            float volume = 1.0f - distance * 0.016666668f;
+            float volume = distance / -60.0f + 1.0f;
             if (volume < 0.0f) {
                 volume = 0.0f;
             } else if (volume > 1.0f) {

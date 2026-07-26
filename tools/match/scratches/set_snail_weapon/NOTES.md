@@ -1,7 +1,7 @@
 # set_snail_weapon @ 0x445920
 
 First source-shaped scratch for authored `cRSnail::SetWeapon(int)`.
-This sits between `update_player_movement_flags` and
+This sits between `set_subgoldy_shoot_flags` and
 `Weapon::set_weapon_animation`.
 
 Recovered mapping:
@@ -16,7 +16,7 @@ Recovered mapping:
 The default arm only assigns the first two target states from
 `shoot_flags`; the third target state is intentionally left as the
 source-shaped local seen in both decompilers. In normal gameplay the producer
-(`update_player_movement_flags`) only emits the handled values above.
+(`set_subgoldy_shoot_flags`) only emits the handled values above.
 
 Focused Wibo result: 68.29%, 244/248 candidate/target instructions, with 23
 clean masked operands. The calls hit channel bases `+0x64c`, `+0xa28`, and

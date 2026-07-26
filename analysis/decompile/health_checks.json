@@ -36,7 +36,7 @@
     },
     {
       "name": "bn_player_shoot_emitter_cursor_owner",
-      "artifact": "analysis/decompile/binja/functions/0043a300-update_movement_flag_emitters.c",
+      "artifact": "analysis/decompile/binja/functions/0043a300-shoot_subgoldy.c",
       "required_substrings": [
         "struct GolbShot* golb_shot_cursor",
         "&owner->golb_shots",
@@ -53,9 +53,9 @@
     },
     {
       "name": "ida_player_shoot_emitter_cursor_owner",
-      "artifact": "analysis/decompile/ida/functions/0043a300-update_movement_flag_emitters.c",
+      "artifact": "analysis/decompile/ida/functions/0043a300-shoot_subgoldy.c",
       "required_substrings": [
-        "void __thiscall update_movement_flag_emitters(Player *owner, Player *shoot_source)",
+        "void __thiscall shoot_subgoldy(Player *owner, Player *shoot_source)",
         "shoot_source->shoot_flags",
         "golb_shots = owner->golb_shots",
         "golb_shots->state",
@@ -69,7 +69,7 @@
     },
     {
       "name": "bn_player_shoot_cooldown_step_owner",
-      "artifact": "analysis/decompile/binja/functions/0043a1a0-update_player_movement_flags.c",
+      "artifact": "analysis/decompile/binja/functions/0043a1a0-set_subgoldy_shoot_flags.c",
       "required_substrings": [
         "player->shooting_tier",
         "player->shoot_flags",
@@ -86,7 +86,7 @@
     },
     {
       "name": "ida_player_shoot_cooldown_step_owner",
-      "artifact": "analysis/decompile/ida/functions/0043a1a0-update_player_movement_flags.c",
+      "artifact": "analysis/decompile/ida/functions/0043a1a0-set_subgoldy_shoot_flags.c",
       "required_substrings": [
         "player->shooting_tier",
         "player->shoot_flags",
@@ -202,7 +202,7 @@
     },
     {
       "name": "bn_player_shoot_sound_owner",
-      "artifact": "analysis/decompile/binja/functions/0043afd0-play_movement_state_sound.c",
+      "artifact": "analysis/decompile/binja/functions/0043afd0-play_subgoldy_shoot_sfx.c",
       "required_substrings": [
         "player->shoot_flags",
         "player->shoot_sfx_variant_sample",
@@ -217,9 +217,9 @@
     },
     {
       "name": "ida_player_shoot_sound_owner",
-      "artifact": "analysis/decompile/ida/functions/0043afd0-play_movement_state_sound.c",
+      "artifact": "analysis/decompile/ida/functions/0043afd0-play_subgoldy_shoot_sfx.c",
       "required_substrings": [
-        "void __thiscall play_movement_state_sound(Player *player)",
+        "void __thiscall play_subgoldy_shoot_sfx(Player *player)",
         "player->shoot_flags",
         "player->shoot_sfx_variant_sample",
         "player->attachment_exit_pending",

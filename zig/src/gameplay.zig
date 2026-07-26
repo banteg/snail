@@ -554,7 +554,7 @@ pub const Runner = struct {
     cutscene: phase_module.CutsceneState = .{},
     handoff: phase_module.HandoffState = .{},
     tick_count: u64 = 0,
-    /// the native movement-fire sound variant draw (play_movement_state_sound)
+    /// the native movement-fire sound variant draw (play_subgoldy_shoot_sfx)
     movement_sound_variant: u32 = 0,
     stopwatch: Stopwatch = .{},
     movement_mode: MovementMode = .track,
@@ -3013,7 +3013,7 @@ pub const Runner = struct {
         if ((preview.runtime_build_flags & track.runtime_build_flag_movement_fire) == 0) return;
         if (fire_input_state == .none or self.attachment.exit.pending or self.presentation.movement_fire_cooldown > 0.0) return;
         // PORT(verified): every native volley draws one math random for the
-        // movement-state sound variant (play_movement_state_sound, matched
+        // movement-state sound variant (play_subgoldy_shoot_sfx, matched
         // 89%) — the draw must land even though the port's audio wiring is
         // pending, or the shared stream desyncs one draw per shot.
         self.movement_sound_variant = self.nextMathRandomInt15();

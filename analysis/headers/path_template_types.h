@@ -2885,7 +2885,8 @@ void __thiscall register_parcel_delivery(Completion* completion);
 void __thiscall initialize_cameraman(Cameraman* cameraman);
 void __thiscall update_cameraman(Cameraman* cameraman);
 void __thiscall health_collect_particles(Player* player, SubHealth* pickup);
-void __thiscall update_movement_flag_emitters(Player* owner, Player* shoot_source);
+void __thiscall set_subgoldy_shoot_flags(Player* player);
+void __thiscall shoot_subgoldy(Player* owner, Player* shoot_source);
 void __thiscall initialize_subgoldy(Player* player, int32_t player_slot);
 void __thiscall end_jetpack_hover(SubHover* sub_hover);
 void __thiscall update_jetpack_gauge(SubHover* sub_hover);
@@ -2898,7 +2899,7 @@ void __thiscall show_subgoldy_lives(Player* player);
 void __thiscall begin_post_follow_carryover(Player* player);
 void __thiscall initialize_subgoldy_ghost(Player* player, int32_t owner);
 void __thiscall update_subgoldy(Player* player);
-void __thiscall play_movement_state_sound(Player* player);
+void __thiscall play_subgoldy_shoot_sfx(Player* player);
 void __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);
 void __thiscall add_subgoldy_score(
     Player* player,

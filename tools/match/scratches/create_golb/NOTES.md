@@ -62,7 +62,7 @@ Recovered semantics covered by this scratch:
 - initializes the live matrix, state, owner pointer, and spawn position from
   `player+0x68..0x70` plus half extents at `player+0x58..0x60`;
 - handles all shoot-flag spawn-anchor families used by
-  `cRSubGoldy::Shoot` (`update_movement_flag_emitters`): side offsets at
+  `cRSubGoldy::Shoot` (`shoot_subgoldy`): side offsets at
   `+0x4134/+0x414c/+0x4164`,
   attachment lanes at `+0x417c/+0x4188`, and the rocket lane at `+0x41ac`;
 - for the `flags & 0x18` attachment family, repurposes the incoming selector as
@@ -219,7 +219,7 @@ Residuals:
 ## 2026-07-13 void AI-dispatch contract
 
 - The sole Windows caller, authored as `cRSubGoldy::Shoot` and retained as
-  `update_movement_flag_emitters` in the stable analysis catalog, discards EAX. The
+  `shoot_subgoldy` in the stable analysis catalog, discards EAX. The
   independent iOS `cRSubGolb::Create(cRSubGoldy*, int, int)` body also ends by
   invoking the actor's slot-zero AI callback and returns without establishing
   a result value.

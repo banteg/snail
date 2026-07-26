@@ -88,5 +88,12 @@ without changing the exact 48/48-instruction implementation.
 this exact method as `cRSubLazerManager::Shoot(tVector, tVector)`. The Windows
 receiver is likewise `SubgameRuntime::sub_lazers`, the exact 20-slot manager
 owner. The scratch and manifest therefore use `shoot_sub_lazer_pool`;
-`shoot_subgoldy` remains an alias only. Matching stays exact at 48/48 with all
-four operands clean.
+the then-provisional `shoot_subgoldy` label was not its owner. Matching stays
+exact at 48/48 with all four operands clean.
+
+## 2026-07-26 false alias retirement
+
+Android's exact `cRSubGoldy::Shoot(cRSubGoldy*)` body maps to Windows
+0x43a300, not this manager. The misleading `shoot_subgoldy` compatibility
+alias is therefore retired here and assigned to its actual owner. This
+SubLazer pool remains exact at 48/48.
