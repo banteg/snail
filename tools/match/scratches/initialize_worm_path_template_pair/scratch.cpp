@@ -288,6 +288,7 @@ void Path::initialize_worm_path_template_pair(char* texture_path)
                             face->u2 = u1;
                             face->v2 = next_row_v;
                             face->u3 = u0;
+                            face->v3 = next_row_v;
                         } else {
                             face->u0 = u1;
                             face->v0 = row_v;
@@ -296,8 +297,8 @@ void Path::initialize_worm_path_template_pair(char* texture_path)
                             face->u2 = u0;
                             face->v2 = next_row_v;
                             face->u3 = u1;
+                            face->v3 = next_row_v;
                         }
-                        face->v3 = next_row_v;
 
                         ++side;
                     } while (side < 2);

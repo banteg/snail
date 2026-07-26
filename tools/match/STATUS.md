@@ -760,7 +760,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 746/745 | 65.73% | 10/745 | 52 ok |  |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 722/718 | 58.89% | 0/718 | 46 ok |  |
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 683/690 | 51.86% | 18/690 | 36 ok |  |
-| 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 727/736 | 72.32% | 0/736 | 37 ok |  |
+| 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 728/736 | 72.81% | 0/736 | 37 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 698/726 | 72.89% | 122/726 | 63 ok |  |
 | 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 416/425 | 71.82% | 32/425 | 7 ok |  |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 541/552 | 54.53% | 17/552 | 32 ok |  |

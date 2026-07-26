@@ -6,8 +6,8 @@ strip mesh using the shared native `AttachmentSample`, `Path`, and
 
 Current focused result:
 
-- match: **72.32%**;
-- target/candidate instructions: **736 / 727**;
+- match: **72.81%**;
+- target/candidate instructions: **736 / 728**;
 - common prefix: **0 / 736**;
 - masked operands: **37 clean, 0 unresolved, 0 mismatched**;
 - native/candidate local frames: **0x80 / 0x68**.
@@ -165,3 +165,21 @@ them introduced eight backward `__offset` expressions in adjacent position
 reads. The retained transaction previews with zero offsets. Matcher source and
 bytes remain unchanged at the honest 72.32% frontier (727/736 instructions,
 37 clean masked operands); this is ownership recovery, not matching coercion.
+
+## 2026-07-26 branch-local UV completion
+
+The native face loop computes one `ObjectFaceQuad*` cursor before the winding
+branch and keeps that owner live through both arms. Each arm then completes its
+own fourth UV pair: the front path writes `face->v3` at `0x420bc7`, while the
+back path writes it at `0x420bef`. Moving that final V store into the two
+authored branches raises focused matching from 72.32% to 72.81% and grows the
+candidate from 727 to 728 instructions, with all 37 masked operands still
+clean.
+
+The parity-looking native texture branch still supplies the same sole
+`texture_path` on both sides. Reintroducing it explicitly now falls to 58.38%
+(737 instructions, 0x6c frame, 35 clean operands), so the direct lookup remains
+the honest source. Explicit right-radius/right-component names compile
+byte-identically, while a copied sample position and declaration-then-
+assignment for the final vertex regress to 67.85% and 68.49% respectively;
+none are retained.
