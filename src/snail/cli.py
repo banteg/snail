@@ -120,12 +120,16 @@ def _print_masked_audit_issues(issues, *, limit: int | None = None) -> None:
         print(f"  candidate: {_format_masked_reference_list(first.candidate_references)}")
         for issue in group[:5]:
             entry = issue.entry
+            locations = []
+            if entry.target_offset is not None:
+                locations.append(f"target +0x{entry.target_offset:x}")
+            if entry.candidate_offset is not None:
+                locations.append(f"candidate +0x{entry.candidate_offset:x}")
             print(
                 "  "
                 f"{issue.config.function} 0x{issue.address:x} "
                 f"match {issue.ratio:.2%} "
-                f"target +0x{entry.target_offset:x} "
-                f"candidate +0x{entry.candidate_offset:x}: "
+                f"{' '.join(locations)}: "
                 f"{entry.instruction}"
             )
         if len(group) > 5:
@@ -141,18 +145,26 @@ def _print_masked_operand_audit(audit) -> None:
         "masked operands: "
         f"{audit.ok_count} ok, "
         f"{audit.unresolved_count} unresolved, "
-        f"{audit.mismatch_count} mismatch"
+        f"{audit.mismatch_count} mismatch, "
+        f"{audit.unaudited_count} unaudited"
     )
     problem_entries = [entry for entry in audit.entries if entry.status != "ok"]
     if not problem_entries:
         return
     print("masked operand audit:")
     for entry in problem_entries:
-        print(
-            f"  {entry.status}: target[{entry.target_index}] "
-            f"0x{entry.target_address:x} (off +0x{entry.target_offset:x}) "
-            f"candidate[{entry.candidate_index}] (off +0x{entry.candidate_offset:x})"
-        )
+        locations = []
+        if entry.target_index is not None:
+            locations.append(
+                f"target[{entry.target_index}] "
+                f"0x{entry.target_address:x} (off +0x{entry.target_offset:x})"
+            )
+        if entry.candidate_index is not None:
+            locations.append(
+                f"candidate[{entry.candidate_index}] "
+                f"(off +0x{entry.candidate_offset:x})"
+            )
+        print(f"  {entry.status}: {' '.join(locations)}")
         print(f"    insn: {entry.instruction}")
         print(f"    target: {_format_masked_reference_list(entry.target_references)}")
         print(f"    candidate: {_format_masked_reference_list(entry.candidate_references)}")
@@ -615,7 +627,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     match_audit_parser.add_argument(
         "--status",
-        choices=("problem", "unresolved", "mismatch", "all"),
+        choices=("problem", "unresolved", "mismatch", "unaudited", "all"),
         default="problem",
         help="Which audit entries to include (default: problem).",
     )
@@ -885,9 +897,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         manifest = load_function_symbol_manifest(args.manifest)
         image_path = args.image or REPO_ROOT / manifest.primary_target
         if args.status == "all":
-            audit_statuses = frozenset(("ok", "unresolved", "mismatch"))
+            audit_statuses = frozenset(
+                ("ok", "unresolved", "mismatch", "unaudited")
+            )
         elif args.status == "problem":
-            audit_statuses = frozenset(("unresolved", "mismatch"))
+            audit_statuses = frozenset(
+                ("unresolved", "mismatch", "unaudited")
+            )
         else:
             audit_statuses = frozenset((args.status,))
         report = collect_masked_operand_issues(

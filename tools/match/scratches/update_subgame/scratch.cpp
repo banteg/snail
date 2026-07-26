@@ -104,8 +104,10 @@ void SubgameRuntime::update_subgame()
         // Fresh state-zero setup enters the same front-end dispatch as state one.
     case 1: {
         random_float_below(1.0f, 0);
-        completion_bonus_x_source = g_runtime_config.completion_bonus_y_source;
-        completion_bonus_y_source = g_runtime_config.completion_bonus_x_source;
+        int completion_x = g_runtime_config.completion_bonus_x_source;
+        int completion_y = g_runtime_config.completion_bonus_y_source;
+        completion_bonus_x_source = completion_x;
+        completion_bonus_y_source = completion_y;
 
         int result;
         switch (level_mode) {

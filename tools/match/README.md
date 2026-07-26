@@ -81,9 +81,11 @@ Useful analysis helpers:
 - `snail match diff` also prints a masked-operand audit. Normalized `ADDR`
   operands still keep linker noise out of the score, but the audit compares
   target resolved references (function names, imports, strings, or raw image
-  addresses) against candidate relocation symbols/string literals. A 100%
-  normalized score is proof-grade only when this audit has no unresolved or
-  mismatched entries.
+  addresses) against candidate relocation symbols/string literals. On partial
+  matches, reference-bearing instructions that sequence alignment could not
+  pair are reported separately as `unaudited`; they are not assumed to be
+  mismatches. A 100% normalized score is proof-grade only when this audit has
+  no unresolved, mismatched, or unaudited entries.
 - `uv run snail match audit --exact-only` groups unresolved/mismatched masked
   operands across all 100% scratches. Use it before editing the reference
   manifest so repeated target addresses and wrong aliases are visible together.

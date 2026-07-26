@@ -232,12 +232,12 @@ class MaskedReference:
 
 @dataclass(frozen=True, slots=True)
 class MaskedOperandAuditEntry:
-    target_index: int
-    candidate_index: int
-    target_offset: int
-    candidate_offset: int
-    target_address: int
-    candidate_address: int
+    target_index: int | None
+    candidate_index: int | None
+    target_offset: int | None
+    candidate_offset: int | None
+    target_address: int | None
+    candidate_address: int | None
     instruction: str
     target_references: tuple[MaskedReference, ...]
     candidate_references: tuple[MaskedReference, ...]
@@ -261,8 +261,12 @@ class MaskedOperandAudit:
         return sum(entry.status == "mismatch" for entry in self.entries)
 
     @property
+    def unaudited_count(self) -> int:
+        return sum(entry.status == "unaudited" for entry in self.entries)
+
+    @property
     def problem_count(self) -> int:
-        return self.unresolved_count + self.mismatch_count
+        return self.unresolved_count + self.mismatch_count + self.unaudited_count
 
 
 @dataclass(frozen=True, slots=True)
@@ -1755,6 +1759,49 @@ def audit_masked_operands(
         candidate_index for _, candidate_index in reference_masked_pairs
     }
 
+    # A whole-function alignment can leave equivalent references unmatched
+    # when nearby register scheduling differs. Re-align only the remaining
+    # reference-bearing instructions before falling back to text-only pairs;
+    # this preserves order and exact reference keys without letting unrelated
+    # plain instructions hide an otherwise auditable operand.
+    remaining_target_indices = [
+        index
+        for index, line in enumerate(target_disassembly)
+        if line.masked_references and index not in used_target_indices
+    ]
+    remaining_candidate_indices = [
+        index
+        for index, line in enumerate(candidate_disassembly)
+        if line.masked_references and index not in used_candidate_indices
+    ]
+    remaining_reference_matcher = difflib.SequenceMatcher(
+        a=tuple(
+            alignment_token(target_disassembly[index])
+            for index in remaining_target_indices
+        ),
+        b=tuple(
+            alignment_token(candidate_disassembly[index])
+            for index in remaining_candidate_indices
+        ),
+        autojunk=False,
+    )
+    remaining_reference_pairs = {
+        (
+            remaining_target_indices[target_index],
+            remaining_candidate_indices[candidate_index],
+        )
+        for target_index, candidate_index in equal_pairs(
+            remaining_reference_matcher
+        )
+    }
+    reference_masked_pairs.update(remaining_reference_pairs)
+    used_target_indices.update(
+        target_index for target_index, _ in remaining_reference_pairs
+    )
+    used_candidate_indices.update(
+        candidate_index for _, candidate_index in remaining_reference_pairs
+    )
+
     text_matcher = difflib.SequenceMatcher(
         a=tuple(line.text for line in target_disassembly),
         b=tuple(line.text for line in candidate_disassembly),
@@ -1794,6 +1841,48 @@ def audit_masked_operands(
                     target_line.masked_references,
                     candidate_line.masked_references,
                 ),
+            )
+        )
+    paired_target_indices = {target_index for target_index, _ in audit_pairs}
+    paired_candidate_indices = {candidate_index for _, candidate_index in audit_pairs}
+    for target_index, target_line in enumerate(target_disassembly):
+        if (
+            not target_line.masked_references
+            or target_index in paired_target_indices
+        ):
+            continue
+        entries.append(
+            MaskedOperandAuditEntry(
+                target_index=target_index,
+                candidate_index=None,
+                target_offset=target_line.offset,
+                candidate_offset=None,
+                target_address=target_line.address,
+                candidate_address=None,
+                instruction=target_line.text,
+                target_references=target_line.masked_references,
+                candidate_references=(),
+                status="unaudited",
+            )
+        )
+    for candidate_index, candidate_line in enumerate(candidate_disassembly):
+        if (
+            not candidate_line.masked_references
+            or candidate_index in paired_candidate_indices
+        ):
+            continue
+        entries.append(
+            MaskedOperandAuditEntry(
+                target_index=None,
+                candidate_index=candidate_index,
+                target_offset=None,
+                candidate_offset=candidate_line.offset,
+                target_address=None,
+                candidate_address=candidate_line.address,
+                instruction=candidate_line.text,
+                target_references=(),
+                candidate_references=candidate_line.masked_references,
+                status="unaudited",
             )
         )
     return MaskedOperandAudit(tuple(entries))
@@ -2058,6 +2147,7 @@ class ScratchStatus:
     masked_ok: int = 0
     masked_unresolved: int = 0
     masked_mismatches: int = 0
+    masked_unaudited: int = 0
     error: str | None = None
 
     @property
@@ -2068,6 +2158,7 @@ class ScratchStatus:
             self.ratio == 1.0
             and self.masked_unresolved == 0
             and self.masked_mismatches == 0
+            and self.masked_unaudited == 0
         ):
             return "match"
         if self.ratio == 1.0:
@@ -2749,7 +2840,7 @@ def compile_idiom_case(
 
 
 # bump when the cache schema changes; matcher source mtime handles scoring edits
-CACHE_VERSION = 9
+CACHE_VERSION = 10
 
 
 def _masked_reference_cache_payload(reference: MaskedReference) -> dict:
@@ -3041,6 +3132,7 @@ def _scratch_status_fields(target_size: int, result: MatchResult) -> dict:
         "masked_ok": result.masked_operand_audit.ok_count,
         "masked_unresolved": result.masked_operand_audit.unresolved_count,
         "masked_mismatches": result.masked_operand_audit.mismatch_count,
+        "masked_unaudited": result.masked_operand_audit.unaudited_count,
         "error": None,
     }
 
@@ -3257,6 +3349,7 @@ def collect_scratch_statuses(
                 "masked_ok": 0,
                 "masked_unresolved": 0,
                 "masked_mismatches": 0,
+                "masked_unaudited": 0,
                 "error": outcome.error or "unknown error",
             }
         else:
@@ -3524,6 +3617,8 @@ def _format_masked_counts(status: ScratchStatus) -> str:
         parts.append(f"{status.masked_mismatches} mismatch")
     if status.masked_unresolved:
         parts.append(f"{status.masked_unresolved} unresolved")
+    if status.masked_unaudited:
+        parts.append(f"{status.masked_unaudited} unaudited")
     if status.masked_ok:
         parts.append(f"{status.masked_ok} ok")
     return ", ".join(parts) if parts else "-"

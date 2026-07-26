@@ -529,9 +529,13 @@ def test_masked_operand_audit_prefers_matching_repeated_reference() -> None:
     audit = audit_masked_operands(target, candidate)
 
     assert audit.ok_count == 1
-    assert audit.problem_count == 0
+    assert audit.unaudited_count == 1
+    assert audit.problem_count == 1
     assert audit.entries[0].target_index == 2
     assert audit.entries[0].candidate_index == 0
+    assert audit.entries[1].status == "unaudited"
+    assert audit.entries[1].target_index == 0
+    assert audit.entries[1].candidate_index is None
 
 
 def test_masked_operand_audit_aligns_alias_equivalent_call_sequence() -> None:
@@ -1986,6 +1990,32 @@ def test_render_status_rows_includes_prefix() -> None:
     assert render_status_rows([status])[0][6] == "2/4"
 
 
+def test_unaudited_masked_operand_prevents_proof_grade_status() -> None:
+    config = ScratchConfig(
+        directory=Path("scratch"),
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    status = ScratchStatus(
+        config=config,
+        address=0x401000,
+        target_size=10,
+        ratio=1.0,
+        prefix_instructions=4,
+        target_instructions=4,
+        candidate_instructions=4,
+        masked_ok=2,
+        masked_unaudited=1,
+        error=None,
+    )
+
+    assert status.state == "audit"
+    assert render_status_rows([status])[0][7] == "1 unaudited, 2 ok"
+
+
 def test_render_status_rows_skip_image_load_when_manifest_is_fully_scratched() -> None:
     config = ScratchConfig(
         directory=Path("scratch/foo"),
@@ -2797,6 +2827,18 @@ def test_masked_operand_audit_cache_roundtrip() -> None:
                 candidate_references=(reference,),
                 status="mismatch",
             ),
+            MaskedOperandAuditEntry(
+                target_index=4,
+                candidate_index=None,
+                target_offset=6,
+                candidate_offset=None,
+                target_address=0x401006,
+                candidate_address=None,
+                instruction="push ADDR",
+                target_references=(reference,),
+                candidate_references=(),
+                status="unaudited",
+            ),
         )
     )
 
@@ -3028,6 +3070,10 @@ def test_match_status_jobs_must_be_positive() -> None:
     parser = build_parser()
     assert parser.parse_args(["match", "status", "-j", "3"]).jobs == 3
     assert parser.parse_args(["match", "audit", "-j", "4"]).jobs == 4
+    assert (
+        parser.parse_args(["match", "audit", "--status", "unaudited"]).status
+        == "unaudited"
+    )
     with pytest.raises(SystemExit):
         parser.parse_args(["match", "status", "-j", "0"])
     with pytest.raises(SystemExit):

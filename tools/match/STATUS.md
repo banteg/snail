@@ -656,23 +656,23 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 199/204 | 95.78% | 16/204 | 47 ok |  |
 | 🚧 | calc_object_bounding_box | 0x42fb10 | 402 | 119/119 | 99.16% | 28/119 | 1 ok |  |
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 55/55 | 98.18% | 18/55 | 1 ok |  |
-| 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 134/134 | 98.51% | 131/134 | 30 ok |  |
-| 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.32% | 408/440 | 73 ok |  |
+| 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 134/134 | 98.51% | 131/134 | 4 unaudited, 30 ok |  |
+| 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.32% | 408/440 | 2 unaudited, 73 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 99.18% | 29/122 | 18 ok |  |
 | 🚧 | build_track_render_caches | 0x433220 | 1552 | 475/475 | 99.79% | 90/475 | 20 ok |  |
 | 🚧 | append_track_cache_object | 0x433960 | 454 | 167/167 | 98.80% | 155/167 | 6 ok |  |
-| 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 97.57% | 126/247 | 25 ok |  |
+| 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 97.57% | 126/247 | 26 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 99/99 | 98.99% | 79/99 | - |  |
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 347/347 | 99.71% | 294/347 | 75 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
-| 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 37 ok |  |
+| 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 2 unaudited, 37 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 218/218 | 97.25% | 82/218 | 24 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 98.91% | 18/92 | - |  |
-| 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 65/65 | 95.38% | 43/65 | 17 ok |  |
-| 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 66/66 | 98.48% | 42/66 | 19 ok |  |
-| 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 19 ok |  |
+| 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 65/65 | 95.38% | 43/65 | 2 unaudited, 19 ok |  |
+| 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 66/66 | 98.48% | 42/66 | 20 ok |  |
+| 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 20 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
 ## High Progress (80-94.99%) (59)
@@ -680,61 +680,61 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | layout_frontend_widget | 0x4024a0 | 741 | 177/177 | 84.18% | 21/177 | 20 ok |  |
-| 🚧 | initialize_completion_screen | 0x404920 | 972 | 276/278 | 89.89% | 23/278 | 44 ok |  |
+| 🚧 | initialize_completion_screen | 0x404920 | 972 | 276/278 | 89.89% | 23/278 | 4 unaudited, 44 ok |  |
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 141/141 | 94.33% | 4/141 | 2 mismatch, 37 ok |  |
-| 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 120 ok | msvc6.5 /O2 /G5 /W3 /GX |
-| 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 39 ok |  |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5392/5411 | 80.50% | 0/5411 | 36 mismatch, 1639 ok |  |
-| 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 86.61% | 12/192 | 26 ok |  |
+| 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 3 unaudited, 120 ok | msvc6.5 /O2 /G5 /W3 /GX |
+| 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 2 unaudited, 41 ok |  |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5392/5411 | 80.50% | 0/5411 | 23 mismatch, 97 unaudited, 1808 ok |  |
+| 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 86.61% | 12/192 | 3 unaudited, 27 ok |  |
 | 🚧 | update_backdrop | 0x4112f0 | 189 | 69/67 | 88.24% | 17/67 | 7 ok |  |
 | 🚧 | initialize_game_window_and_input | 0x4119d0 | 920 | 266/266 | 92.48% | 6/266 | 1 mismatch, 56 ok |  |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 137/139 | 90.58% | 7/139 | 4 ok |  |
 | 🚧 | set_blend_mode | 0x412d00 | 325 | 92/92 | 92.39% | 2/92 | 1 mismatch, 15 ok |  |
-| 🚧 | set_immediate_blend_mode | 0x412e50 | 472 | 126/136 | 85.50% | 2/136 | 1 mismatch, 19 ok |  |
+| 🚧 | set_immediate_blend_mode | 0x412e50 | 472 | 126/136 | 85.50% | 2/136 | 1 mismatch, 2 unaudited, 20 ok |  |
 | 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 128/127 | 83.14% | 25/127 | 18 ok |  |
-| 🚧 | update_golb_ai | 0x414820 | 2656 | 669/694 | 81.88% | 9/694 | 66 ok |  |
+| 🚧 | update_golb_ai | 0x414820 | 2656 | 669/694 | 81.88% | 9/694 | 4 unaudited, 69 ok |  |
 | 🚧 | add_survival_high_score | 0x417780 | 289 | 86/84 | 89.41% | 36/84 | 6 ok |  |
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 89.80% | 29/49 | 1 ok |  |
 | 🚧 | mini_delete_high_score_entry | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  |
-| 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
+| 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 8 unaudited, 50 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 523/521 | 88.31% | 88/521 | 66 ok |  |
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 92.77% | 100/318 | 23 ok |  |
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 94.54% | 69/421 | 25 ok |  |
 | 🚧 | finalize_path_template | 0x42c600 | 363 | 112/113 | 81.78% | 24/113 | 9 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 436/437 | 90.03% | 27/437 | 22 ok |  |
-| 🚧 | initialize_game_data_archive | 0x430e40 | 176 | 48/47 | 94.74% | 27/47 | 19 ok |  |
+| 🚧 | initialize_game_data_archive | 0x430e40 | 176 | 48/47 | 94.74% | 27/47 | 2 unaudited, 19 ok |  |
 | 🚧 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 189/188 | 92.84% | 9/188 | 32 ok |  |
 | 🚧 | enumerate_matching_archive_or_fs_entries | 0x431740 | 570 | 186/182 | 81.52% | 7/182 | 26 ok | msvc6.5 /O2 /G5 /W3 /TC |
-| 🚧 | load_archive_index | 0x4319c0 | 187 | 67/67 | 92.54% | 40/67 | 13 ok | msvc6.5 /O2 /G5 /W3 /TC |
+| 🚧 | load_archive_index | 0x4319c0 | 187 | 67/67 | 92.54% | 40/67 | 2 unaudited, 13 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | strings_equal_case_insensitive | 0x431dc0 | 104 | 50/50 | 84.00% | 5/50 | - |  |
 | 🚧 | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 75/75 | 81.33% | 11/75 | 6 ok |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  |
-| 🚧 | remove_sub_loc | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 17 ok |  |
-| 🚧 | update_sub_loc | 0x439d50 | 702 | 188/187 | 83.20% | 26/187 | 35 ok |  |
+| 🚧 | remove_sub_loc | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 2 unaudited, 17 ok |  |
+| 🚧 | update_sub_loc | 0x439d50 | 702 | 188/187 | 83.20% | 26/187 | 3 unaudited, 37 ok |  |
 | 🚧 | update_player_movement_flags | 0x43a1a0 | 344 | 46/50 | 93.75% | 38/50 | 2 ok |  |
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 132/131 | 85.93% | 6/131 | 34 ok |  |
-| 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 19 ok |  |
+| 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 2 unaudited, 19 ok |  |
 | 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 120/122 | 90.08% | 6/122 | 7 ok |  |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 144/144 | 84.72% | 7/144 | 9 ok |  |
 | 🚧 | spawn_slug_hazard | 0x43dc80 | 642 | 158/160 | 94.34% | 6/160 | 18 ok |  |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 94.03% | 122/268 | 65 ok |  |
 | 🚧 | spawn_salt_hazard | 0x441560 | 236 | 64/67 | 88.55% | 4/67 | 10 ok |  |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  |
-| 🚧 | release_snail_weapons | 0x442e40 | 554 | 125/125 | 92.80% | 5/125 | 31 ok |  |
-| 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 mismatch, 11 ok |  |
-| 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 173/171 | 81.40% | 0/171 | 33 ok |  |
+| 🚧 | release_snail_weapons | 0x442e40 | 554 | 125/125 | 92.80% | 5/125 | 33 ok |  |
+| 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 mismatch, 1 unaudited, 11 ok |  |
+| 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 173/171 | 81.40% | 0/171 | 2 unaudited, 33 ok |  |
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 55/55 | 94.55% | 48/55 | 3 ok |  |
 | 🚧 | set_weapon_animation | 0x4446e0 | 221 | 55/55 | 94.55% | 48/55 | 3 ok |  |
 | 🚧 | set_snail_jetpack | 0x445860 | 185 | 61/62 | 86.18% | 0/62 | 8 ok |  |
-| 🚧 | build_snail_hotspots | 0x445d50 | 208 | 74/74 | 83.78% | 22/74 | 7 ok |  |
-| 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 73 ok |  |
+| 🚧 | build_snail_hotspots | 0x445d50 | 208 | 74/74 | 83.78% | 22/74 | 2 unaudited, 7 ok |  |
+| 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 76 ok |  |
 | 🚧 | update_cutscene | 0x4466d0 | 1888 | 503/505 | 93.25% | 0/505 | 1 mismatch, 57 ok |  |
 | 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 | 5 ok |  |
 | 🚧 | copy_segment_definition_to_level_slot | 0x447300 | 379 | 125/125 | 85.60% | 74/125 | 5 ok |  |
-| 🚧 | load_level_definition_file | 0x447480 | 3039 | 941/926 | 82.27% | 20/926 | 178 ok |  |
-| 🚧 | initialize_tip | 0x448a40 | 511 | 154/154 | 83.12% | 16/154 | 25 ok |  |
+| 🚧 | load_level_definition_file | 0x447480 | 3039 | 941/926 | 82.27% | 20/926 | 2 unaudited, 183 ok |  |
+| 🚧 | initialize_tip | 0x448a40 | 511 | 154/154 | 83.12% | 16/154 | 2 unaudited, 26 ok |  |
 | 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 270/269 | 88.68% | 99/269 | 62 ok |  |
-| 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 69/69 | 89.86% | 33/69 | 20 ok |  |
+| 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 69/69 | 89.86% | 33/69 | 6 unaudited, 21 ok |  |
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 155/155 | 94.19% | 22/155 | 12 ok |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
@@ -743,75 +743,75 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
-| 🚧 | draw_frontend_widget | 0x401130 | 2353 | 694/712 | 67.28% | 3/712 | 61 ok |  |
-| 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 647/647 | 75.73% | 1/647 | 95 ok |  |
+| 🚧 | draw_frontend_widget | 0x401130 | 2353 | 694/712 | 67.28% | 3/712 | 4 unaudited, 65 ok |  |
+| 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 647/647 | 75.73% | 1/647 | 1 unaudited, 95 ok |  |
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 442/446 | 64.64% | 2/446 | 8 ok |  |
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 70.33% | 4/46 | - |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC |
-| 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 327/325 | 70.86% | 1/325 | 3 mismatch, 136 ok |  |
-| 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.01% | 48/566 | 52 ok |  |
-| 🚧 | render_game_frame | 0x40a490 | 1460 | 430/439 | 56.16% | 6/439 | 26 ok |  |
+| 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 327/325 | 70.86% | 1/325 | 1 mismatch, 41 unaudited, 141 ok |  |
+| 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.01% | 48/566 | 6 unaudited, 52 ok |  |
+| 🚧 | render_game_frame | 0x40a490 | 1460 | 430/439 | 56.16% | 6/439 | 12 unaudited, 28 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  |
-| 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 6 ok |  |
-| 🚧 | create_vertex_buffer | 0x4114b0 | 286 | 92/101 | 76.68% | 8/101 | 10 ok |  |
+| 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 2 unaudited, 6 ok |  |
+| 🚧 | create_vertex_buffer | 0x4114b0 | 286 | 92/101 | 76.68% | 8/101 | 11 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
-| 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 12 ok |  |
-| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 725/721 | 69.43% | 9/721 | 47 ok |  |
-| 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 746/745 | 65.73% | 10/745 | 52 ok |  |
-| 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 722/718 | 58.89% | 0/718 | 46 ok |  |
-| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 695/685 | 60.00% | 20/685 | 36 ok |  |
-| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 703/690 | 56.86% | 8/690 | 36 ok |  |
+| 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 13 ok |  |
+| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 725/721 | 69.43% | 9/721 | 49 ok |  |
+| 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 746/745 | 65.73% | 10/745 | 55 ok |  |
+| 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 722/718 | 58.89% | 0/718 | 4 unaudited, 50 ok |  |
+| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 695/685 | 60.00% | 20/685 | 2 unaudited, 42 ok |  |
+| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 703/690 | 56.86% | 8/690 | 2 unaudited, 42 ok |  |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 728/736 | 72.81% | 0/736 | 37 ok |  |
-| 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 698/726 | 72.89% | 122/726 | 63 ok |  |
+| 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 698/726 | 72.89% | 122/726 | 2 unaudited, 63 ok |  |
 | 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 416/425 | 71.82% | 32/425 | 7 ok |  |
-| 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 541/552 | 54.53% | 17/552 | 32 ok |  |
-| 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 679/679 | 54.05% | 6/679 | 38 ok |  |
-| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 605/610 | 63.70% | 0/610 | 33 ok |  |
-| 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 651/671 | 51.89% | 15/671 | 39 ok |  |
-| 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 655/680 | 50.79% | 15/680 | 44 ok |  |
-| 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 670/687 | 50.55% | 6/687 | 42 ok |  |
-| 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 604/608 | 60.73% | 85/608 | 36 ok |  |
-| 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 598/600 | 52.92% | 7/600 | 33 ok |  |
-| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 672/677 | 57.97% | 94/677 | 45 ok |  |
-| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 672/677 | 57.97% | 94/677 | 45 ok |  |
-| 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 800/796 | 67.54% | 10/796 | 62 ok |  |
-| 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 676/668 | 51.04% | 19/668 | 33 ok |  |
-| 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 651/648 | 59.43% | 7/648 | 40 ok |  |
-| 🚧 | add_object_edge | 0x4305a0 | 772 | 231/227 | 73.36% | 1/227 | 29 ok |  |
-| 🚧 | calc_object_edges | 0x4308b0 | 382 | 142/141 | 75.62% | 0/141 | 14 ok |  |
+| 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 541/552 | 54.53% | 17/552 | 36 ok |  |
+| 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 679/679 | 54.05% | 6/679 | 41 ok |  |
+| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 605/610 | 63.70% | 0/610 | 35 ok |  |
+| 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 651/671 | 51.89% | 15/671 | 41 ok |  |
+| 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 655/680 | 50.79% | 15/680 | 46 ok |  |
+| 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 670/687 | 50.55% | 6/687 | 45 ok |  |
+| 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 604/608 | 60.73% | 85/608 | 39 ok |  |
+| 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 598/600 | 52.92% | 7/600 | 35 ok |  |
+| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 672/677 | 57.97% | 94/677 | 49 ok |  |
+| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 672/677 | 57.97% | 94/677 | 49 ok |  |
+| 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 800/796 | 67.54% | 10/796 | 63 ok |  |
+| 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 676/668 | 51.04% | 19/668 | 2 unaudited, 40 ok |  |
+| 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 651/648 | 59.43% | 7/648 | 46 ok |  |
+| 🚧 | add_object_edge | 0x4305a0 | 772 | 231/227 | 73.36% | 1/227 | 12 unaudited, 30 ok |  |
+| 🚧 | calc_object_edges | 0x4308b0 | 382 | 142/141 | 75.62% | 0/141 | 6 unaudited, 14 ok |  |
 | 🚧 | replace_object_list_texture_refs | 0x430d90 | 129 | 54/53 | 74.77% | 14/53 | 1 ok |  |
 | 🚧 | find_archive_entry | 0x431250 | 122 | 61/60 | 79.34% | 7/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC |
-| 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 208/206 | 79.23% | 10/206 | 31 ok |  |
+| 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 208/206 | 79.23% | 10/206 | 36 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  |
-| 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 48 ok |  |
+| 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 6 unaudited, 48 ok |  |
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 284/276 | 67.50% | 0/276 | 12 ok |  |
-| 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 12 ok |  |
-| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 77.67% | 177/555 | 101 ok |  |
-| 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.75% | 9/1033 | 2 mismatch, 117 ok |  |
-| 🚧 | update_subgoldy | 0x43b120 | 8456 | 2070/2087 | 74.43% | 12/2087 | 1 mismatch, 290 ok |  |
-| 🚧 | remove_subgame_bods | 0x440910 | 1644 | 495/501 | 67.67% | 6/501 | 1 mismatch, 64 ok |  |
-| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 651/673 | 54.23% | 8/673 | 88 ok |  |
+| 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 6 unaudited, 25 ok |  |
+| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 77.67% | 177/555 | 4 unaudited, 106 ok |  |
+| 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.94% | 9/1033 | 2 mismatch, 12 unaudited, 121 ok |  |
+| 🚧 | update_subgoldy | 0x43b120 | 8456 | 2070/2087 | 74.43% | 12/2087 | 1 mismatch, 19 unaudited, 305 ok |  |
+| 🚧 | remove_subgame_bods | 0x440910 | 1644 | 495/501 | 67.67% | 6/501 | 7 unaudited, 66 ok |  |
+| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 651/673 | 54.23% | 8/673 | 2 unaudited, 88 ok |  |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 68.29% | 1/248 | 1 mismatch, 23 ok |  |
-| 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 1 mismatch, 88 ok |  |
-| 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
+| 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 5 unaudited, 91 ok |  |
+| 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 4 unaudited, 54 ok |  |
 
 ## Early Progress (>0-49.99%) (13)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
-| 🚧 | create_golb | 0x415280 | 2349 | 459/582 | 34.77% | 1/582 | 35 ok |  |
-| 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 646/655 | 48.89% | 20/655 | 31 ok |  |
-| 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 646/685 | 48.53% | 6/685 | 34 ok |  |
-| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 657/696 | 32.08% | 1/696 | 26 ok |  |
-| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 653/696 | 33.80% | 2/696 | 29 ok |  |
-| 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 615/652 | 35.67% | 5/652 | 33 ok |  |
-| 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 620/652 | 33.49% | 5/652 | 36 ok |  |
-| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 643/683 | 39.22% | 5/683 | 34 ok |  |
-| 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 691/707 | 43.20% | 18/707 | 50 ok |  |
-| 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 635/663 | 47.92% | 15/663 | 27 ok |  |
-| 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 559/579 | 44.99% | 7/579 | 38 ok |  |
-| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1229/1245 | 29.67% | 2/1245 | 2 mismatch, 66 ok |  |
-| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 633/639 | 33.81% | 0/639 | 2 mismatch, 40 ok |  |
+| 🚧 | create_golb | 0x415280 | 2349 | 459/582 | 34.77% | 1/582 | 10 unaudited, 41 ok |  |
+| 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 646/655 | 48.89% | 20/655 | 37 ok |  |
+| 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 646/685 | 48.53% | 6/685 | 2 unaudited, 38 ok |  |
+| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 657/696 | 32.08% | 1/696 | 12 unaudited, 34 ok |  |
+| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 653/696 | 33.80% | 2/696 | 10 unaudited, 35 ok |  |
+| 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 615/652 | 35.67% | 5/652 | 37 ok |  |
+| 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 620/652 | 33.49% | 5/652 | 40 ok |  |
+| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 643/683 | 39.22% | 5/683 | 10 unaudited, 40 ok |  |
+| 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 691/707 | 43.20% | 18/707 | 55 ok |  |
+| 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 635/663 | 47.92% | 15/663 | 33 ok |  |
+| 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 559/579 | 44.99% | 7/579 | 39 ok |  |
+| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1229/1245 | 29.67% | 2/1245 | 1 mismatch, 117 unaudited, 77 ok |  |
+| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 633/639 | 33.81% | 0/639 | 1 mismatch, 70 unaudited, 46 ok |  |
 
 ## Reference Only (third-party) (3)
 

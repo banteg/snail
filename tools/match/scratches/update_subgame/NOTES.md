@@ -8,9 +8,10 @@ This scratch reconstructs the outer gameplay state machine and the state-2 runti
 `+0x125ffdc` are the normalized level-script spawn controls. The garbage lane
 drives the 0.8..1.0 random threshold and the salt lane drives the 0.98..1.0
 threshold; `build_subgame_level` seeds both and `complete_subgame` persists
-both into the replay/high-score record. Direct member access preserves the
-focused 78.22% result (`1033/1033`, `116` clean operands and the two existing
-jump-table label mismatches).
+both into the replay/high-score record. The corrected completion snapshots and
+their two semantic source locals produce a focused 79.94% result
+(`1036/1033`, `121` clean operands, `12` explicitly unaudited operands, and
+the two existing jump-table label mismatches).
 
 ## Recovered control flow
 
@@ -51,7 +52,9 @@ Several source-level details were important rather than cosmetic:
 - The fringe selector is signed `cell_index % 8`; replacing it with `& 7` loses the target's signed modulus sequence.
 - The four authored tile-35 ring variants converge on one shared last-ring-Z assignment.
 - RNG calls are kept on the left side of comparisons where that produces the native operand ordering and clean call audits.
-- Completion-source assignments intentionally retain the matcher-confirmed X/Y source ordering.
+- Completion-source values are captured in semantic X/Y locals before either
+  receiver field is written, preserving ownership while giving VC6 the closer
+  native load/store schedule.
 - Duplicating the challenge-setup `result == 1` build-zero path scores better than sharing the later case-7 label; the native places that build return before the challenge destroy path.
 - `format_time_trial_string` is the receiver-free body of
   `cRTimeTrial::TimeString(cRTime&)`; callers bind the exact embedded owner at
@@ -73,7 +76,9 @@ cmp eax, 7
 
 ## Remaining mismatches
 
-Focused matcher result: 79.75%, 1036 candidate instructions versus 1033 target instructions, 9-instruction prefix, 117 clean masked operands, and 2 jump-table mismatches.
+Focused matcher result: 79.94%, 1036 candidate instructions versus 1033 target
+instructions, 9-instruction prefix, 121 clean masked operands, 12 explicitly
+unaudited operands, and 2 jump-table mismatches.
 
 The first mismatch is the destination label of the range-check `ja`; its semantics agree, but later block sizes give the normalized target and candidate labels different identities. Both switch jump-table operands are now content-audited and classified as real mismatches, not unresolved data or call targets.
 
@@ -84,6 +89,34 @@ regions are:
 2. residual authored/ambient ring register scheduling;
 3. residual HUD and handoff register scheduling;
 4. residual jump-table target identities driven by the remaining block layout.
+
+## 2026-07-26 completion-snapshot ownership correction
+
+The state-1 snapshot copies like-named configuration lanes into like-named
+subgame lanes. Raw Windows instructions at `0x438cb3..0x438ccd` load
+`g_runtime_config +0x40` (`g_completion_bonus_x_source`) into
+`SubgameRuntime +0x28`, then load `g_runtime_config +0x48`
+(`g_completion_bonus_y_source`) into `SubgameRuntime +0x2c`:
+
+```asm
+mov ecx, dword [0x4df958]
+mov eax, dword [esi+0x40]
+mov dword [esi+0x28], ecx
+mov edx, dword [0x4df960]
+add esp, 8
+cmp eax, 7
+fstp st(0)
+mov dword [esi+0x2c], edx
+```
+
+The previous scratch crossed those sources solely because that spelling
+resembled the target register schedule. That was a semantic error hidden by
+partial sequence alignment: the audit paired one later same-key reference and
+silently omitted other reference-bearing instructions. Two honest semantic
+locals improve the score from 79.75% to 79.94% and restore X-to-X/Y-to-Y
+ownership. The matcher now reports every unpaired reference instruction as
+`unaudited`; this partial function currently has 121 paired references, 12
+unaudited locations, and only the same two true jump-table mismatches.
 
 ## 2026-07-24 runtime-row active-list borrow
 

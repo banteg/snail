@@ -4,13 +4,17 @@
 
 | Metric | Starter | Final |
 |---|---:|---:|
-| Match | 0.19% | **78.22%** |
+| Match | 0.19% | **79.94%** |
 | Target instructions | 1033 | 1033 |
-| Candidate instructions | 1 | 1033 |
+| Candidate instructions | 1 | 1036 |
 | Common prefix | 0 / 1033 | **9 / 1033** |
-| Masked operands | none | **116 clean, 0 unresolved, 2 mismatched** |
+| Masked operands | none | **121 clean, 0 unresolved, 2 mismatched, 12 unaudited** |
 
-The final candidate has the same 1033-instruction length as the target. Both switch jump-table operands are content-audited and classified as real mismatches. There are no unresolved masked operands or mismatched call/data references.
+Both switch jump-table operands are content-audited and classified as real
+mismatches. There are no unresolved masked operands. The matcher separately
+reports 12 reference-bearing instructions that partial sequence alignment
+cannot pair; those locations are not silently treated as clean or mislabeled
+as operand mismatches.
 
 The first remaining mismatch is:
 
@@ -30,6 +34,9 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 - Preserved a slot-base overlay so VC6 emits the native `+0x3bfac8` cell addressing form.
 - Reloaded the fringe object after the skirt-color call, recovering the exact `0x3c` frame and native nonvolatile-register roles.
 - Used nested tile-`29`/`30` control flow, signed `% 8`, matcher-confirmed RNG comparison ordering, and a shared tile-35 last-Z update.
+- Captured the two completion inputs in semantic X/Y locals before writing the
+  subgame snapshot, correcting the old crossed-source fakematch and improving
+  the native load/store schedule.
 - Duplicated the challenge-setup success path instead of sharing the later case-7 zero-level build label; this recovers the native ordering around `result == 1`.
 - Modeled `format_time_trial_string` as a member-style call through a scratch-local receiver at `game + 0xff25e0`. The real callee is still the `ret 4` formatter, but the native callsites seed `ecx` before the call.
 - Recovered `game + 0x3bb764` as one complete embedded `Player` ending exactly
@@ -72,6 +79,7 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 | Inline projected-cell addresses | 70.97% | 1027 | Kept; 115 clean operands |
 | Time-trial record-base owner retest | 71.32% | 1028 | Kept; 116 clean operands |
 | Split authored/procedural garbage arms | **78.22%** | **1033** | Final retained result; exact target instruction count |
+| Correct X/Y completion snapshots | **79.94%** | **1036** | Kept; real ownership, 121 paired operands, 12 explicitly unaudited |
 
 ## Rejected trials
 
@@ -99,9 +107,11 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 
 ## Pinned boundary
 
-The semantic state machine, runtime rows, ownership, call/data operands,
-`0x3c` frame, and 1033-instruction extent are covered. Remaining differences
-are state-1, ring, HUD/handoff register scheduling and the two jump-table label
-identities. Do not force them with long-lived aliases, `volatile`, dummy
-symbols, raw offsets, or normalizer-specific control flow; resume only with
-new source or cross-port evidence.
+The semantic state machine, runtime rows, and principal ownership are covered.
+The `0x3c` frame remains exact, while the candidate is three instructions
+longer than the 1033-instruction target. Remaining differences are state-1,
+ring, HUD/handoff register scheduling, 12 explicitly unaudited reference
+locations, and the two jump-table label identities. Do not force them with
+long-lived aliases, `volatile`, dummy symbols, raw offsets, or
+normalizer-specific control flow; resume only with new source or cross-port
+evidence.
