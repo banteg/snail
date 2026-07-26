@@ -14,6 +14,9 @@ import idc
 
 TRUSTED_NAMES = [
     (0x4972F0, "g_game_input_callback_table"),
+    (0x40AA50, "initialize_input"),
+    (0x40AA80, "update_input"),
+    (0x40AAB0, "update_game_input"),
     (0x50333C, "g_input_controller_slot0"),
     (0x503374, "g_input_controller_slot1"),
     (0x431FD0, "set_input_controller_slot0_button_axes"),

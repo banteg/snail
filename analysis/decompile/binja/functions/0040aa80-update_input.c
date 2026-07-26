@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_input @ 0x40aa80 */
 
-0040aa80        int32_t current_buttons = state->current_buttons
+0040aa80        enum InputButtonFlag current_buttons = state->current_buttons
 0040aa86        int32_t edx_1 = state->previous_buttons ^ current_buttons
 0040aa8e        state->previous_buttons = current_buttons
 0040aa91        state->pressed_buttons = edx_1 & current_buttons

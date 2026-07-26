@@ -61,3 +61,14 @@ Natural five-local and statement-scoped variants derived from the Android
 algebra were tested at 37.84% and 52.94%; neither recreated Windows' extra EDI
 lifetime. They were rejected and the existing clear 52.94% source retained.
 No volatile barrier or duplicated tail was introduced.
+
+## 2026-07-26 analyzer replay closure
+
+The focused input replay now names and prototypes `initialize_input`,
+`update_input`, and `update_game_input` directly instead of relying on a prior
+broad campaign. Both analyzer headers document the `void cRInput::Update()`
+contract, and Binary Ninja/IDA health checks preserve the five exact
+`InputState` button-mask fields.
+
+Focused matching remains honestly unchanged at 52.94%, 15/19 instructions,
+with the same extra native EDI lifetime and no masked operands.

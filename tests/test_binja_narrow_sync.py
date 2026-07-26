@@ -628,6 +628,10 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
             "int32_t animation_id, uint8_t immediate, int32_t mode_flags)"
             in source
         )
+        assert (
+            "void __thiscall set_snail_jetpack(Snail* snail, int32_t state)"
+            in source
+        )
         for declaration in (
             "void __thiscall initialize_invincible_shell(Invincible* invincible)",
             "void __thiscall start_invincible_shell(Invincible* invincible)",
@@ -689,6 +693,18 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
     )
     assert "TemporaryDirectory" in ida_runner
     assert "preview-snail-presentation-types" in ida_runner
+    for marker in (
+        "JETPACK_LVAR_SPECS = (",
+        '"target_state"',
+        '"selected_state"',
+        '"transition_immediate"',
+        "0x445871",
+        "0x445880",
+        "0x445886",
+        "_sync_named_lvar",
+        "jetpack_lvars",
+    ):
+        assert marker in ida_sync
 
 
 def test_snail_presentation_replay_preserves_slot_element_cursors() -> None:
@@ -4060,8 +4076,8 @@ def test_snail_hotspot_replay_preserves_local_and_world_borrows() -> None:
         "0x445D65",
         "0x445D90",
         "0x445DCD",
-        "_sync_hotspot_lvar",
-        "hotspot_lvar_readback_failed",
+        "_sync_named_lvar",
+        "named_lvar_readback_failed",
     ):
         assert fragment in ida_source
 
@@ -4612,6 +4628,8 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "char* __cdecl xor_decode_buffer_with_index(char* bytes, int32_t byte_count)",
         "int32_t __cdecl write_file_bytes(char* path, void* bytes, int32_t byte_count)",
         "char* __cdecl save_config_file(char* path, void* bytes, int32_t byte_count)",
+        "bool __cdecl strings_equal_case_insensitive(char* left, char* right)",
+        "char* __cdecl find_case_insensitive_substring(char* pattern, char* searched)",
     )
     ida_declarations = (
         "unsigned int __cdecl fread(void* bytes, unsigned int element_size, unsigned int element_count, File* stream);",
@@ -4620,6 +4638,8 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "char* __cdecl xor_decode_buffer_with_index(char* bytes, int byte_count);",
         "int __cdecl write_file_bytes(char* path, void* bytes, int byte_count);",
         "char* __cdecl save_config_file(char* path, void* bytes, int byte_count);",
+        "bool __cdecl strings_equal_case_insensitive(char* left, char* right);",
+        "char* __cdecl find_case_insensitive_substring(char* pattern, char* searched);",
     )
     for declaration in binja_declarations:
         assert declaration in binja_source
@@ -4717,6 +4737,8 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     assert "int32_t __cdecl printf(char* format, ...)" in binja_source
     assert "void __cdecl free(void* pointer)" in binja_source
     assert '(0x42F0A0, "load_png_image")' in ida_apply_source
+    assert '(0x431DC0, "strings_equal_case_insensitive")' in ida_apply_source
+    assert '(0x44E600, "find_case_insensitive_substring")' in ida_apply_source
     assert '(0x48B614, "printf")' in ida_apply_source
     assert '(0x48B8D5, "free")' in ida_apply_source
     assert "ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension" in ida_apply_source
@@ -4727,6 +4749,8 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     assert "char* __cdecl toggle_archive_high_bit_in_place" in ida_apply_source
     assert "int __cdecl printf(char* format, ...);" in ida_apply_source
     assert "void __cdecl free(void* pointer);" in ida_apply_source
+    assert '("0x431dc0", "strings_equal_case_insensitive")' in binja_source
+    assert '("0x44e600", "find_case_insensitive_substring")' in binja_source
     assert "apply_user_var_updates" in binja_source
     for owner_name in (
         '"serialized_header"',
@@ -5537,6 +5561,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         "void __cdecl copy_active_input_controller_state(",
         "void __cdecl update_input_controller_pointer_region(",
         "void* __cdecl set_input_controller_pointer_authored_xy(",
+        "void __thiscall initialize_input(InputState* state);",
+        "void __thiscall update_input(InputState* state);",
+        "void __thiscall update_game_input(GameInput* game_input);",
     ):
         assert all(declaration in header for header in headers)
 
@@ -5556,6 +5583,10 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '"char __cdecl read_pressed_text_input_key_code()"',
         '"char __cdecl read_repeating_text_input_key_code()"',
         "RSHELL_INPUT_FUNCTION_SYMBOL_UPDATES",
+        "GAME_INPUT_FUNCTION_SYMBOL_UPDATES",
+        '("0x40aa50", "initialize_input")',
+        '("0x40aa80", "update_input")',
+        '("0x40aab0", "update_game_input")',
         "RSHELL_INPUT_PROTO_UPDATES",
         '("0x431fd0", "set_input_controller_slot0_button_axes")',
         '("0x431ff0", "update_input_controller_slot_button_axes")',
@@ -5581,6 +5612,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '(0x50339C, 20, "g_text_input_repeat_step", "float[5]")',
         '(0x50333C, "g_input_controller_slot0")',
         '(0x503374, "g_input_controller_slot1")',
+        '(0x40AA50, "initialize_input")',
+        '(0x40AA80, "update_input")',
+        '(0x40AAB0, "update_game_input")',
         '"InputControllerSlot g_input_controller_slot0;"',
         '"InputControllerSlot g_input_controller_slot1;"',
         "InputButtonFlag *out_buttons",
@@ -18448,6 +18482,9 @@ def test_snail_weapon_state_lifetime_replay_stays_guarded() -> None:
         "channel_0_selected_state",
         "channel_1_selected_state",
         "channel_2_selected_state",
+        "target_state",
+        "selected_state",
+        "transition_immediate",
     ):
         assert f'"{name}"' in replay
     assert "apply_split_away_user_var_update" in replay
@@ -18455,6 +18492,74 @@ def test_snail_weapon_state_lifetime_replay_stays_guarded() -> None:
     assert "apply_user_var_updates" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    for index, storage, variable_name, variable_type in (
+        (16, 69, "target_state", "int32_t"),
+        (31, 66, "selected_state", "int32_t"),
+        (98, 66, "transition_immediate", "uint8_t"),
+    ):
+        update = (
+            '"set_snail_jetpack",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{variable_name}",\n'
+            f'        "{variable_type}",'
+        )
+        assert update in replay
+
+
+def test_mobile_backed_owner_health_guards_are_registered() -> None:
+    repo_root = Path(__file__).parents[1]
+    checks = {
+        check["name"]: check
+        for check in json.loads(
+            (repo_root / "analysis/decompile/health_checks.json").read_text(
+                encoding="utf-8"
+            )
+        )["checks"]
+    }
+
+    expected = {
+        "bn_input_update_mobile_owner_contract": "0040aa80-update_input.c",
+        "ida_input_update_mobile_owner_contract": "0040aa80-update_input.c",
+        "bn_rstrcmp_mobile_argument_ownership": (
+            "00431dc0-strings_equal_case_insensitive.c"
+        ),
+        "ida_rstrcmp_mobile_argument_ownership": (
+            "00431dc0-strings_equal_case_insensitive.c"
+        ),
+        "bn_snail_jetpack_mobile_state_ownership": (
+            "00445860-set_snail_jetpack.c"
+        ),
+        "ida_snail_jetpack_mobile_state_ownership": (
+            "00445860-set_snail_jetpack.c"
+        ),
+        "bn_rstrfind_mobile_argument_ownership": (
+            "0044e600-find_case_insensitive_substring.c"
+        ),
+        "ida_rstrfind_mobile_argument_ownership": (
+            "0044e600-find_case_insensitive_substring.c"
+        ),
+    }
+    for name, artifact_name in expected.items():
+        assert checks[name]["artifact"].endswith(artifact_name)
+        assert checks[name]["required_substrings"]
+        assert checks[name]["forbidden_substrings"]
+
+    assert (
+        "uint8_t transition_immediate"
+        in checks["ida_snail_jetpack_mobile_state_ownership"][
+            "required_substrings"
+        ]
+    )
+    assert (
+        "return *right_1 == 0"
+        in checks["bn_rstrcmp_mobile_argument_ownership"]["required_substrings"]
+    )
+    assert (
+        "char* pattern_1 = pattern"
+        in checks["bn_rstrfind_mobile_argument_ownership"]["required_substrings"]
+    )
 
 
 def test_subgoldy_position_lifetime_replay_stays_guarded() -> None:

@@ -1,16 +1,16 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 13,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 13,
-  "ida_exported": 13,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "binja_analysis_refreshed": false,
   "ida_refreshed": true,
@@ -18,105 +18,24 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "calc_slider_to_rate",
-      "address": "0x437e80"
+      "name": "update_input",
+      "address": "0x40aa80"
     },
     {
-      "name": "show_subgoldy_lives",
-      "address": "0x43af10"
+      "name": "strings_equal_case_insensitive",
+      "address": "0x431dc0"
     },
     {
-      "name": "set_subgoldy_ghost_z",
-      "address": "0x43d3d0"
+      "name": "set_snail_jetpack",
+      "address": "0x445860"
     },
     {
-      "name": "get_track_grid_cell_at_world_position",
-      "address": "0x43d410"
-    },
-    {
-      "name": "get_track_runtime_cell_at_world_z",
-      "address": "0x43d480"
-    },
-    {
-      "name": "sample_track_floor_height_at_position",
-      "address": "0x43d4d0"
-    },
-    {
-      "name": "clear_subgoldy_score_buckets",
-      "address": "0x4403a0"
-    },
-    {
-      "name": "calc_subgame_rate",
-      "address": "0x4404d0"
-    },
-    {
-      "name": "advance_blink_random",
-      "address": "0x4408a0"
-    },
-    {
-      "name": "initialize_blink_random",
-      "address": "0x4408c0"
-    },
-    {
-      "name": "kill_subgoldy",
-      "address": "0x445840"
-    },
-    {
-      "name": "hide_gameplay_scores",
-      "address": "0x445f10"
-    },
-    {
-      "name": "unhide_gameplay_scores",
-      "address": "0x445f40"
+      "name": "find_case_insensitive_substring",
+      "address": "0x44e600"
     }
   ],
-  "health_check_count": 1071,
-  "health_failing_check_count": 2,
-  "health_passed": false,
-  "health_config": "analysis/decompile/health_checks.json",
-  "failing_checks": [
-    {
-      "name": "bn_nested_subgame_rate_owner",
-      "artifact": "analysis/decompile/binja/functions/004404d0-calc_subgame_rate.c",
-      "exists": true,
-      "passed": false,
-      "failures": [
-        "missing required substring: struct SubgameRuntime* runtime_1",
-        "missing required substring: runtime->player.body.transform.position.z",
-        "missing required substring: runtime->subgame_rate"
-      ],
-      "observed_counts": {
-        "runtime->player.body.transform.position.z": 0,
-        "runtime->subgame_rate": 0,
-        "struct Game*": 0,
-        "struct SubgameRuntime* runtime_1": 0
-      },
-      "observed_regex_counts": {}
-    },
-    {
-      "name": "bn_blink_random_sample_borrow",
-      "artifact": "analysis/decompile/binja/functions/004408c0-initialize_blink_random.c",
-      "exists": true,
-      "passed": false,
-      "failures": [
-        "missing required substring: struct SubgameRuntime* runtime_1 = runtime",
-        "missing required substring: runtime->blink_random_index = 0",
-        "missing required substring: float* blink_sample_cursor = &runtime->blink_random_samples"
-      ],
-      "observed_counts": {
-        "(blink_sample_cursor - 0x3bb704)": 0,
-        "(esi - 0x3bb704)": 0,
-        "00440909        return": 1,
-        "arg1": 0,
-        "blink_sample_cursor = &blink_sample_cursor[1]": 1,
-        "blink_sample_cursor[-1] =": 1,
-        "float (*": 0,
-        "float* blink_sample_cursor = &runtime->blink_random_samples": 0,
-        "return result": 0,
-        "runtime->blink_random_index = 0": 0,
-        "struct SubgameRuntime* runtime_1 = runtime": 0
-      },
-      "observed_regex_counts": {}
-    }
-  ]
+  "health_check_count": 1083,
+  "health_failing_check_count": 0,
+  "health_passed": true,
+  "health_config": "analysis/decompile/health_checks.json"
 }

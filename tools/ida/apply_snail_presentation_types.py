@@ -28,6 +28,7 @@ TRUSTED_NAMES = (
     (0x444AC0, "initialize_invincible_shell"),
     (0x444AE0, "start_invincible_shell"),
     (0x444B50, "update_invincible_shell"),
+    (0x445860, "set_snail_jetpack"),
     (0x445CD0, "build_snail_world_hotspots"),
     (0x445D50, "extract_snail_local_hotspots"),
     (0x445F60, "initialize_snail_skin"),
@@ -87,6 +88,10 @@ TRUSTED_DECLARATIONS = (
     (
         "update_invincible_shell",
         "void __thiscall update_invincible_shell(Invincible* invincible);",
+    ),
+    (
+        "set_snail_jetpack",
+        "void __thiscall set_snail_jetpack(Snail* snail, int32_t state);",
     ),
     (
         "build_snail_world_hotspots",
@@ -242,6 +247,30 @@ HOTSPOT_LVAR_SPECS = (
     ),
 )
 
+JETPACK_LVAR_SPECS = (
+    (
+        "set_snail_jetpack",
+        "target_state",
+        "int32_t target_state;",
+        0x445871,
+        False,
+    ),
+    (
+        "set_snail_jetpack",
+        "selected_state",
+        "int32_t selected_state;",
+        0x445880,
+        False,
+    ),
+    (
+        "set_snail_jetpack",
+        "transition_immediate",
+        "uint8_t transition_immediate;",
+        0x445886,
+        True,
+    ),
+)
+
 
 def _normalize_type_text(value: str | None) -> str | None:
     if value is None:
@@ -269,11 +298,12 @@ def _named_struct_size(name: str) -> int | None:
     return value.get_size()
 
 
-def _sync_hotspot_lvar(
+def _sync_named_lvar(
     selector: str,
     expected_name: str,
     declaration: str,
     definition_address: int,
+    expected_stack: bool = False,
 ) -> dict[str, object]:
     address = idc.get_name_ea_simple(selector)
     if (
@@ -288,15 +318,16 @@ def _sync_hotspot_lvar(
         lvar
         for lvar in cfunc.get_lvars()
         if not lvar.is_arg_var
-        and not lvar.is_stk_var()
+        and lvar.is_stk_var() == expected_stack
         and lvar.defea == definition_address
     ]
     if len(candidates) != 1:
         return {
             "status": "failed",
             "selector": selector,
-            "reason": "unexpected_hotspot_lvar_candidates",
+            "reason": "unexpected_named_lvar_candidates",
             "definition_address": hex(definition_address),
+            "expected_stack": expected_stack,
             "candidate_count": len(candidates),
         }
 
@@ -310,7 +341,7 @@ def _sync_hotspot_lvar(
         return {
             "status": "failed",
             "selector": selector,
-            "reason": "parse_hotspot_lvar_type_failed",
+            "reason": "parse_named_lvar_type_failed",
             "declaration": declaration,
         }
 
@@ -340,7 +371,7 @@ def _sync_hotspot_lvar(
         return {
             "status": "failed",
             "selector": selector,
-            "reason": "modify_hotspot_lvar_failed",
+            "reason": "modify_named_lvar_failed",
             "definition_address": hex(definition_address),
         }
 
@@ -350,7 +381,7 @@ def _sync_hotspot_lvar(
         candidate
         for candidate in verified_cfunc.get_lvars()
         if not candidate.is_arg_var
-        and not candidate.is_stk_var()
+        and candidate.is_stk_var() == expected_stack
         and candidate.defea == definition_address
         and candidate.name == expected_name
         and _normalize_type_text(str(candidate.type())) == normalized_expected_type
@@ -359,8 +390,9 @@ def _sync_hotspot_lvar(
         return {
             "status": "failed",
             "selector": selector,
-            "reason": "hotspot_lvar_readback_failed",
+            "reason": "named_lvar_readback_failed",
             "definition_address": hex(definition_address),
+            "expected_stack": expected_stack,
             "candidate_count": len(verified),
         }
 
@@ -588,7 +620,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     ida_hexrays.mark_cfunc_dirty(0x444B50, True)
 
     hotspot_lvars = [
-        _sync_hotspot_lvar(
+        _sync_named_lvar(
             selector,
             expected_name,
             declaration,
@@ -603,6 +635,27 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for hotspot_lvar in hotspot_lvars
         if hotspot_lvar.get("status") == "failed"
     )
+    jetpack_lvars = [
+        _sync_named_lvar(
+            selector,
+            expected_name,
+            declaration,
+            definition_address,
+            expected_stack,
+        )
+        for (
+            selector,
+            expected_name,
+            declaration,
+            definition_address,
+            expected_stack,
+        ) in JETPACK_LVAR_SPECS
+    ]
+    failed.extend(
+        {"jetpack_lvar": jetpack_lvar}
+        for jetpack_lvar in jetpack_lvars
+        if jetpack_lvar.get("status") == "failed"
+    )
 
     print(
         json.dumps(
@@ -615,6 +668,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "subhover_player_root_offset": subhover_player_root_offset,
                 "invincible_root_offsets": invincible_root_offsets,
                 "hotspot_lvars": hotspot_lvars,
+                "jetpack_lvars": jetpack_lvars,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

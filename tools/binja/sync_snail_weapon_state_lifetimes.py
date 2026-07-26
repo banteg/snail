@@ -135,11 +135,38 @@ SNAIL_WEAPON_STATE_USER_VAR_UPDATES = (
     ),
 )
 
+SNAIL_JETPACK_STATE_USER_VAR_UPDATES = (
+    (
+        "set_snail_jetpack",
+        "RegisterVariableSourceType",
+        16,
+        69,
+        "target_state",
+        "int32_t",
+    ),
+    (
+        "set_snail_jetpack",
+        "RegisterVariableSourceType",
+        31,
+        66,
+        "selected_state",
+        "int32_t",
+    ),
+    (
+        "set_snail_jetpack",
+        "RegisterVariableSourceType",
+        98,
+        66,
+        "transition_immediate",
+        "uint8_t",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the three cRSnail weapon-channel state and transition-flag "
+            "Replay cRSnail weapon and jetpack channel state/transition "
             "lifetimes without merging them into the receiver or selector."
         )
     )
@@ -231,7 +258,10 @@ def main() -> int:
         apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=SNAIL_WEAPON_STATE_USER_VAR_UPDATES,
+            updates=(
+                *SNAIL_WEAPON_STATE_USER_VAR_UPDATES,
+                *SNAIL_JETPACK_STATE_USER_VAR_UPDATES,
+            ),
         )
     )
     return emit_summary(

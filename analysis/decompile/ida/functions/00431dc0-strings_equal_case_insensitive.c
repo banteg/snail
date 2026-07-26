@@ -2,30 +2,30 @@
 /* function: strings_equal_case_insensitive @ 0x431dc0 */
 /* selector: strings_equal_case_insensitive */
 
-// Compares two NUL-terminated strings case-insensitively and returns true only when both terminate together after matching.
-bool __cdecl sub_431DC0(char *a1, _BYTE *a2)
+// Windows `Rstrcmp(char*, char*)`: compares two strings case-insensitively and returns true when the right-hand string terminates after matching, preserving the prefix-friendly termination contract also present in Android and iOS `RString.o`.
+bool __cdecl strings_equal_case_insensitive(char *left, char *right)
 {
-  _BYTE *v2; // esi
+  char *v2; // esi
   char *v3; // edi
   char v4; // dl
   char v5; // cl
   char v6; // al
   char v7; // bl
 
-  v2 = a2;
-  v3 = a1;
-  v4 = *a2;
-  v5 = *a2;
-  v6 = *a1;
-  if ( *a1 >= 97 && v6 <= 122 )
+  v2 = right;
+  v3 = left;
+  v4 = *right;
+  v5 = *right;
+  v6 = *left;
+  if ( *left >= 97 && v6 <= 122 )
     v6 -= 32;
   if ( v5 >= 97 && v5 <= 122 )
     v5 -= 32;
-  if ( *a1 )
+  if ( *left != 0 )
   {
     do
     {
-      if ( !v4 || v6 != v5 )
+      if ( v4 == 0 || v6 != v5 )
         break;
       v7 = v3[1];
       v4 = v2[1];
@@ -38,8 +38,7 @@ bool __cdecl sub_431DC0(char *a1, _BYTE *a2)
       if ( v4 >= 97 && v4 <= 122 )
         v5 = v4 - 32;
     }
-    while ( v7 );
+    while ( v7 != 0 );
   }
   return *v2 == 0;
 }
-

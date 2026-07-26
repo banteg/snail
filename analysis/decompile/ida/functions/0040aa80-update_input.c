@@ -4,8 +4,8 @@
 
 void __thiscall update_input(InputState *state)
 {
-  int32_t current_buttons; // eax
-  int v2; // edx
+  InputButtonFlag current_buttons; // eax
+  __int32 v2; // edx
 
   current_buttons = state->current_buttons;
   v2 = current_buttons ^ state->previous_buttons;
@@ -15,4 +15,3 @@ void __thiscall update_input(InputState *state)
   state->current_buttons = 0;
   state->released_buttons = v2 & ~current_buttons;
 }
-

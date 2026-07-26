@@ -2971,7 +2971,7 @@
     {
       "address": "0x445860",
       "name": "set_snail_jetpack",
-      "description": "Authored `cRSnail::SetJetPack(int)`: maps the requested jetpack state onto the exact embedded Snail's jetpack animation channel."
+      "description": "Windows `cRSnail::SetJetPack(int)`: maps the requested state onto the exact Snail-owned jetpack `Weapon`, preserving the target/selected-state transition and one-byte immediate flag independently corroborated by Android and iOS."
     },
     {
       "address": "0x445920",

@@ -21871,6 +21871,135 @@
         "FrontendWidget",
         "CompletionResultScreen"
       ]
+    },
+    {
+      "name": "bn_input_update_mobile_owner_contract",
+      "artifact": "analysis/decompile/binja/functions/0040aa80-update_input.c",
+      "required_substrings": [
+        "enum InputButtonFlag current_buttons = state->current_buttons",
+        "state->previous_buttons = current_buttons",
+        "state->pressed_buttons = edx_1 & current_buttons",
+        "state->inverse_current_buttons = esi_3",
+        "state->released_buttons = esi_3 & edx_1"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "state +",
+        "return state"
+      ]
+    },
+    {
+      "name": "ida_input_update_mobile_owner_contract",
+      "artifact": "analysis/decompile/ida/functions/0040aa80-update_input.c",
+      "required_substrings": [
+        "void __thiscall update_input(InputState *state)",
+        "InputButtonFlag current_buttons",
+        "state->previous_buttons = current_buttons",
+        "state->pressed_buttons = current_buttons & v2",
+        "state->inverse_current_buttons = ~current_buttons",
+        "state->released_buttons = v2 & ~current_buttons"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_40AA80",
+        "int this",
+        "state +"
+      ]
+    },
+    {
+      "name": "bn_rstrcmp_mobile_argument_ownership",
+      "artifact": "analysis/decompile/binja/functions/00431dc0-strings_equal_case_insensitive.c",
+      "required_substrings": [
+        "char* right_1 = right",
+        "char* left_1 = left",
+        "char i = *right_1",
+        "char ebx = *left_1",
+        "return *right_1 == 0"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2"
+      ]
+    },
+    {
+      "name": "ida_rstrcmp_mobile_argument_ownership",
+      "artifact": "analysis/decompile/ida/functions/00431dc0-strings_equal_case_insensitive.c",
+      "required_substrings": [
+        "bool __cdecl strings_equal_case_insensitive(char *left, char *right)",
+        "v2 = right",
+        "v3 = left",
+        "return *v2 == 0"
+      ],
+      "forbidden_substrings": [
+        "bool __cdecl sub_431DC0",
+        "char *a1",
+        "_BYTE *a2"
+      ]
+    },
+    {
+      "name": "bn_snail_jetpack_mobile_state_ownership",
+      "artifact": "analysis/decompile/binja/functions/00445860-set_snail_jetpack.c",
+      "required_substrings": [
+        "int32_t target_state",
+        "target_state = state",
+        "int32_t selected_state = snail->jetpack_channel.selected_state",
+        "selected_state == target_state",
+        "set_weapon_animation(&snail->jetpack_channel",
+        "snail->jetpack_channel.selected_state = target_state"
+      ],
+      "forbidden_substrings": [
+        "mode_flags",
+        "arg1",
+        "snail +"
+      ]
+    },
+    {
+      "name": "ida_snail_jetpack_mobile_state_ownership",
+      "artifact": "analysis/decompile/ida/functions/00445860-set_snail_jetpack.c",
+      "required_substrings": [
+        "void __thiscall set_snail_jetpack(Snail *snail, int32_t state)",
+        "int32_t target_state",
+        "int32_t selected_state",
+        "uint8_t transition_immediate",
+        "set_weapon_animation(&snail->jetpack_channel",
+        "snail->jetpack_channel.selected_state = target_state"
+      ],
+      "forbidden_substrings": [
+        "int32_t v3",
+        "uint8_t statea",
+        "void __thiscall sub_445860",
+        "snail +"
+      ]
+    },
+    {
+      "name": "bn_rstrfind_mobile_argument_ownership",
+      "artifact": "analysis/decompile/binja/functions/0044e600-find_case_insensitive_substring.c",
+      "required_substrings": [
+        "char* eax = searched",
+        "char* result = eax",
+        "char* pattern_1 = pattern",
+        "result - pattern_1",
+        "return result"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2"
+      ]
+    },
+    {
+      "name": "ida_rstrfind_mobile_argument_ownership",
+      "artifact": "analysis/decompile/ida/functions/0044e600-find_case_insensitive_substring.c",
+      "required_substrings": [
+        "char *__cdecl find_case_insensitive_substring(char *pattern, char *searched)",
+        "v2 = searched",
+        "v3 = pattern",
+        "v5 = v2 - pattern",
+        "return v2"
+      ],
+      "forbidden_substrings": [
+        "char *__cdecl sub_44E600",
+        "char *a1",
+        "char *a2"
+      ]
     }
   ]
 }

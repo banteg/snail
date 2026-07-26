@@ -251,5 +251,8 @@ void* __cdecl set_input_controller_pointer_authored_xy(
     int32_t slot,
     float authored_x,
     float authored_y);
+void __thiscall initialize_input(InputState* state);
+void __thiscall update_input(InputState* state);
+void __thiscall update_game_input(GameInput* game_input);
 
 #endif

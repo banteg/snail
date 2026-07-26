@@ -76,6 +76,7 @@ SYMBOL_UPDATES = (
     ("0x444ac0", "initialize_invincible_shell"),
     ("0x444ae0", "start_invincible_shell"),
     ("0x444b50", "update_invincible_shell"),
+    ("0x445860", "set_snail_jetpack"),
     ("0x445cd0", "build_snail_world_hotspots"),
     ("0x445d50", "extract_snail_local_hotspots"),
     ("0x445f60", "initialize_snail_skin"),
@@ -135,6 +136,10 @@ PROTO_UPDATES = (
     (
         "update_invincible_shell",
         "void __thiscall update_invincible_shell(Invincible* invincible)",
+    ),
+    (
+        "set_snail_jetpack",
+        "void __thiscall set_snail_jetpack(Snail* snail, int32_t state)",
     ),
     (
         "build_snail_world_hotspots",

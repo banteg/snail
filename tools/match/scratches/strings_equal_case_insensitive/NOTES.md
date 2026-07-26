@@ -95,3 +95,14 @@ the later strict path comparator at `0x44e6c0`.
 The provenance does not explain Windows' remaining raw/fold byte-register
 allocation, so focused matching stays honestly pinned at 84.00%, 50/50
 instructions. No source change is made to chase that compiler-only residual.
+
+## 2026-07-26 analyzer replay closure
+
+The focused RShell replay now applies the mobile-authored
+`Rstrcmp(char* left, char* right)` argument roles to Binary Ninja and IDA 9.4.
+Durable health checks preserve the asymmetric right-terminator success rule and
+reject anonymous `arg1`/`arg2` or `a1`/`a2` regressions.
+
+This is an ownership-only improvement: the honest Windows scratch remains
+84.00%, 50/50 instructions, with the same raw/fold byte-register allocation
+residual and no masked operands.

@@ -58,3 +58,16 @@ Android preserves `cRWeapon::SetAnimation`, `cRWeapon::AI`, RTTI, and the same
 Snail-to-Weapon call relationship; Windows independently constructs four
 0x3dc-byte children and installs one callback slot on all four. This retires the
 synthetic presentation-channel type without changing focused codegen.
+
+## 2026-07-26 analyzer replay closure
+
+The verified Android and iOS `cRSnail::SetJetPack(int)` bodies now drive the
+focused Binary Ninja and IDA 9.4 replay lanes. Both retain the exact `Snail*`
+receiver and embedded `Weapon jetpack_channel`; Binary Ninja additionally
+guards the `target_state` and `selected_state` register lifetimes, while IDA
+guards those plus the stack-reused `transition_immediate` byte.
+
+Tracked decompile health checks reject a return to the old `mode_flags`,
+`v3`, or `statea` views. Focused Windows matching is intentionally unchanged at
+86.18%, 61/62 instructions, with eight clean masked operands: the remaining
+gap is still the native prologue/register schedule, not missing ownership.

@@ -28,6 +28,12 @@ GAME_INPUT_DATA_VAR_UPDATES = (
     ("0x4972f0", "void*"),
 )
 
+GAME_INPUT_FUNCTION_SYMBOL_UPDATES = (
+    ("0x40aa50", "initialize_input"),
+    ("0x40aa80", "update_input"),
+    ("0x40aab0", "update_game_input"),
+)
+
 INPUT_CONTROLLER_DATA_SYMBOL_UPDATES = (
     ("0x50333c", "g_input_controller_slot0"),
     ("0x503374", "g_input_controller_slot1"),
@@ -301,6 +307,12 @@ def main() -> int:
             REPO_ROOT,
             target=TARGET,
             updates=GAME_INPUT_DATA_VAR_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=GAME_INPUT_FUNCTION_SYMBOL_UPDATES,
+            kind="function",
         ),
         *apply_symbol_updates(
             REPO_ROOT,

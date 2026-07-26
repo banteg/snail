@@ -5,38 +5,38 @@
 // Authored `cRSnail::SetJetPack(int)`: maps the requested jetpack state onto the exact embedded Snail's jetpack animation channel.
 void __thiscall set_snail_jetpack(Snail *snail, int32_t state)
 {
-  int32_t v3; // ebx
+  int32_t target_state; // ebx
   int32_t selected_state; // eax
-  uint8_t statea; // [esp+Ch] [ebp+4h]
+  uint8_t transition_immediate; // [esp+Ch] [ebp+4h]
 
-  if ( state )
+  if ( state != 0 )
   {
     if ( state == 1 )
-      v3 = 4;
+      target_state = 4;
     else
-      v3 = state;
+      target_state = state;
   }
   else
   {
-    v3 = 0;
+    target_state = 0;
   }
   selected_state = snail->jetpack_channel.selected_state;
-  statea = 1;
-  if ( selected_state != v3 )
+  transition_immediate = 1;
+  if ( selected_state != target_state )
   {
     if ( selected_state == 4 )
     {
       set_weapon_animation(&snail->jetpack_channel, 1, 1u, 8);
-      statea = 0;
-      play_sound_effect(26);
+      transition_immediate = 0;
+      play_sound_effect(&g_sound_effect_manager, 26);
     }
-    if ( v3 )
+    if ( target_state != 0 )
     {
-      if ( v3 == 4 )
+      if ( target_state == 4 )
       {
-        set_weapon_animation(&snail->jetpack_channel, 1, statea, 4);
+        set_weapon_animation(&snail->jetpack_channel, 1, transition_immediate, 4);
         set_weapon_animation(&snail->jetpack_channel, 0, 0, -1);
-        play_sound_effect(16);
+        play_sound_effect(&g_sound_effect_manager, 16);
         snail->jetpack_channel.selected_state = 4;
         return;
       }
@@ -45,6 +45,6 @@ void __thiscall set_snail_jetpack(Snail *snail, int32_t state)
     {
       set_weapon_animation(&snail->jetpack_channel, -1, 0, -1);
     }
-    snail->jetpack_channel.selected_state = v3;
+    snail->jetpack_channel.selected_state = target_state;
   }
 }

@@ -112,3 +112,14 @@ Windows compiler and regressed to 39.39% by adding a stack temporary and
 changing saved-register ownership. The retained 85.25% Windows source remains
 the best honest representation; cross-port provenance clarifies ownership and
 argument roles without being used as a fakematch.
+
+## 2026-07-26 analyzer replay closure
+
+The focused RShell replay now records `Rstrfind(char* pattern, char* searched)`
+in both Binary Ninja and IDA 9.4. The tracked exports consequently expose the
+pattern cursor separately from the searched-string cursor returned on success,
+and health checks reject anonymous argument regressions in either analyzer.
+
+No Windows source was distorted to mimic the mobile compilers. Focused matching
+remains 85.25%, 59/63 instructions, with four clean masked operands; the
+remaining gap is still Windows control-flow scheduling.
