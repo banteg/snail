@@ -48,10 +48,10 @@
 0044ad9c        *out_height = fconvert.s(fconvert.t(y_1) - fconvert.t(y))
 0044ad9e        if (horizontal_align == 1)
 0044adb1        *out_x = fconvert.s(fconvert.t(anchor_x) + fconvert.t(320f))
-0044adb9        return out_x
+0044adb9        return
 0044adbd        if (horizontal_align == 3)
 0044add2        *out_x = fconvert.s(fconvert.t(anchor_x) + fconvert.t(320f) - fconvert.t(*out_width))
-0044adda        return out_x
+0044adda        return
 0044adde        if (horizontal_align == 2)
 0044adf7        *out_x = fconvert.s(fconvert.t(anchor_x) + fconvert.t(320f) - fconvert.t(*out_width) * fconvert.t(0.5f))
-0044ae03        return out_x
+0044ae03        return

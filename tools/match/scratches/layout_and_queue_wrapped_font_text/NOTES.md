@@ -58,3 +58,16 @@ The byte forwarded beside `text_wave_amplitude` is now `shadow_enabled`.
 Windows consumes it only in the offset black glyph pass; it does not gate the
 wave displacement. The wrapper remains 94.19% with exact 155/155 instruction
 count and 12 clean operands.
+
+## 2026-07-26 mobile void contract
+
+Android and iOS both retain the exact long-form `FontType(...)` symbol and
+decompile it as void. Both Windows callers likewise discard EAX and consume
+only the four borrowed output pointers. The old `float*` result was the
+incidental `out_x` value resident in EAX after the final stores, not an owned
+return value.
+
+Changing the shared matcher and analyzer declarations to void preserves the
+honest focused result at 94.19%, exactly 155/155 instructions with 12 clean
+operands. The two callers also remain at their established results, so this is
+an ABI correction rather than source shaping.

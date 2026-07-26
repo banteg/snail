@@ -216,7 +216,7 @@ int32_t __cdecl queue_textured_quad_corners(
     float v1,
     int32_t blend_mode,
     float rotation);
-float* __cdecl layout_and_queue_wrapped_font_text(
+void __cdecl layout_and_queue_wrapped_font_text(
     char* text,
     int32_t font_id,
     float text_scale,

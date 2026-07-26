@@ -76,7 +76,7 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
   widget->slider_position_current = (widget->slider_position_target - widget->slider_position_current) * 0.80000001
                                   + widget->slider_position_current;
   widget_flags = widget->widget_flags;
-  if ( !widget_flags )
+  if ( widget_flags == 0 )
   {
     list_flags = widget->list_flags;
     p_active_bod_list = &g_game_base->active_bod_list;
@@ -90,10 +90,10 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
       else
       {
         list_next = widget->list_next;
-        if ( list_next )
+        if ( list_next != nullptr )
           list_next->list_prev = widget->list_prev;
         list_prev = widget->list_prev;
-        if ( list_prev )
+        if ( list_prev != nullptr )
           list_prev->list_next = widget->list_next;
         else
           p_active_bod_list->first = (BodNode *)widget->list_next;
@@ -134,10 +134,10 @@ LABEL_18:
       goto LABEL_33;
     }
     v11 = widget->list_next;
-    if ( v11 )
+    if ( v11 != nullptr )
       v11->list_prev = widget->list_prev;
     v12 = widget->list_prev;
-    if ( v12 )
+    if ( v12 != nullptr )
     {
       v12->list_next = widget->list_next;
 LABEL_32:
@@ -167,14 +167,14 @@ LABEL_82:
       widget->hover_blend_target = 1.0;
     v19 = widget->widget_flags;
     if ( (v19 & 0x2000000) != 0
-      && !widget->mouse_history_warmup_frames
+      && widget->mouse_history_warmup_frames == 0
       && (g_game_base->players[0].mouse_cursor.saved_x != widget->previous_mouse_x
        || g_game_base->players[0].mouse_cursor.saved_y != widget->previous_mouse_y) )
     {
       widget->widget_flags = v19 | 0x4000000;
     }
     if ( (widget->widget_flags & 0x80000) != 0
-      && is_mouse_captured(&g_game_base->players[0].mouse_cursor)
+      && is_mouse_captured(&g_game_base->players[0].mouse_cursor) != 0
       && read_pressed_text_input_key_code() == widget->shortcut_key_code )
     {
       reset_tooltip(&widget->tooltip);
@@ -189,7 +189,7 @@ LABEL_82:
         queue_frontend_widget_flag_after_delay(&g_game_base->border_manager, widget, 32);
       }
     }
-    if ( !is_mouse_captured(&g_game_base->players[0].mouse_cursor) || !border_mouse_test(widget) )
+    if ( is_mouse_captured(&g_game_base->players[0].mouse_cursor) == 0 || border_mouse_test(widget) == 0 )
     {
       v27 = widget->widget_flags & 0xFFDFFFFF;
       widget->widget_flags = v27;
@@ -214,7 +214,7 @@ LABEL_82:
     if ( (v22 & 2) == 0 && (v22 & 4) != 0 )
     {
       if ( (v22 & 0x40000) == 0 )
-        play_sound_effect(9);
+        play_sound_effect(&g_sound_effect_manager, 9);
       v23 = widget->widget_flags;
       LOBYTE(v23) = v23 | 2;
       widget->widget_flags = v23;
@@ -223,7 +223,7 @@ LABEL_82:
     if ( (v24 & 0x10) != 0 )
     {
       v25 = g_game_base;
-      if ( g_game_base->border_manager.delayed_widget_active
+      if ( g_game_base->border_manager.delayed_widget_active != 0
         || (BYTE1(g_game_base->players[0].game_input->input.pressed_buttons) & 0x40) == 0 )
       {
 LABEL_72:
@@ -239,7 +239,7 @@ LABEL_72:
           {
             queue_frontend_widget_flag_after_delay(&v25->border_manager, widget, 128);
           }
-          play_sound_effect(8);
+          play_sound_effect(&g_sound_effect_manager, 8);
           reset_tooltip(&widget->tooltip);
         }
         goto LABEL_83;
@@ -253,8 +253,8 @@ LABEL_72:
       {
         queue_frontend_widget_flag_after_delay(&g_game_base->border_manager, widget, 32);
       }
-      if ( ((unsigned int)&unk_800000 & widget->widget_flags) == 0 )
-        play_sound_effect(8);
+      if ( ((unsigned int)&g_sprite_manager.sprites[2527] & widget->widget_flags) == 0 )
+        play_sound_effect(&g_sound_effect_manager, 8);
       if ( (widget->tooltip.mode_flags & 0x20) == 0 )
         reset_tooltip(&widget->tooltip);
     }
@@ -272,10 +272,10 @@ LABEL_72:
     if ( (v14 & 0x40) != 0 )
       goto LABEL_18;
     v15 = widget->list_next;
-    if ( v15 )
+    if ( v15 != nullptr )
       v15->list_prev = widget->list_prev;
     v16 = widget->list_prev;
-    if ( v16 )
+    if ( v16 != nullptr )
     {
       v16->list_next = widget->list_next;
       goto LABEL_32;
@@ -312,14 +312,11 @@ LABEL_83:
     if ( v31 < 0.1 )
       widget->text_effect_current = widget->text_effect_target;
   }
-  if ( (widget->widget_flags & 0x2000) != 0 )
+  if ( (widget->widget_flags & 0x2000) != 0 && is_mouse_captured(&g_game_base->players[0].mouse_cursor) != 0 )
   {
-    if ( is_mouse_captured(&g_game_base->players[0].mouse_cursor) )
-    {
-      border_input_text(widget);
-      if ( (widget->widget_flags & 0x2000) == 0 )
-        activate_all_borders(&g_game_base->border_manager);
-    }
+    border_input_text(widget);
+    if ( (widget->widget_flags & 0x2000) == 0 )
+      activate_all_borders(&g_game_base->border_manager);
   }
   update_twinkle_manager(&widget->twinkle_manager);
   update_tooltip(&widget->tooltip);
@@ -388,7 +385,7 @@ LABEL_83:
     draw_frontend_widget(widget);
   }
   mouse_history_warmup_frames = widget->mouse_history_warmup_frames;
-  if ( mouse_history_warmup_frames )
+  if ( mouse_history_warmup_frames != 0 )
     widget->mouse_history_warmup_frames = mouse_history_warmup_frames - 1;
   widget->previous_mouse_x = g_game_base->players[0].mouse_cursor.saved_x;
   widget->previous_mouse_y = g_game_base->players[0].mouse_cursor.saved_y;

@@ -1702,7 +1702,7 @@
     {
       "address": "0x4303f0",
       "name": "calc_object_texture_groups",
-      "description": "Collapses contiguous face quads by texture group for one render object; iOS RObject.o names this `cRObject::CalcTextureGroups()`."
+      "description": "Authored void `cRObject::CalcTextureGroups()` in both mobile ports: borrows the Object-owned facequad bank, marks texture refs when required, allocates the Object-owned cumulative texture-group end array, then fills it on the second pass."
     },
     {
       "address": "0x430470",
@@ -1963,7 +1963,7 @@
     {
       "address": "0x432d20",
       "name": "register_font_texture_sheet_wrapper",
-      "description": "Small cdecl wrapper used by startup to forward the FONT-MENU-HOVER sheet path, font kind, width scale, and height scale into `register_font_texture_sheet`."
+      "description": "Exact Windows cdecl forwarding wrapper for the FONT-MENU-HOVER path, shadow offset, and two scales; it preserves the registrar's Windows integer result even though the sole startup caller discards it."
     },
     {
       "address": "0x432d40",
@@ -3413,7 +3413,7 @@
     {
       "address": "0x449f50",
       "name": "register_font_texture_sheet",
-      "description": "Owns one loaded FONT-MENU-HOVER atlas buffer through its terminal release, derives stack-local page paths for split atlases, scans row-0 white delimiters into resettable glyph runs and the column-0 height marker, and stores registry-backed texture refs plus per-glyph glyph_u0/glyph_u1, width/page, and sheet-wide glyph_v0/glyph_v1 metadata."
+      "description": "Windows integer-returning `FontLoad` variant: owns one FONT-MENU-HOVER atlas buffer through release, derives split-page paths, publishes texture refs and glyph metadata into the Windows-specific FontSheet owner, then returns the pre-increment sheet index. Both mobile ports retain a void ABI and a different 0xa28 sheet format."
     },
     {
       "address": "0x44a360",
@@ -3453,7 +3453,7 @@
     {
       "address": "0x44abe0",
       "name": "layout_and_queue_wrapped_font_text",
-      "description": "Splits one text string into wrapped line runs, queues each run through `queue_font_text_instance`, and returns the aligned authored-space origin and measured bounds for the wrapped block."
+      "description": "Authored void `FontType(...)`: splits one text string into wrapped line runs, queues each run through `queue_font_text_instance`, and writes the aligned authored-space origin and measured bounds through four borrowed output pointers."
     },
     {
       "address": "0x44ae10",

@@ -2,7 +2,7 @@
 /* function: calc_object_texture_groups @ 0x4303f0 */
 /* selector: calc_object_texture_groups */
 
-// Collapses contiguous face quads by texture group for one render object; iOS RObject.o names this `cRObject::CalcTextureGroups()`.
+// Authored void `cRObject::CalcTextureGroups()` in both mobile ports: borrows the Object-owned facequad bank, marks texture refs when required, allocates the Object-owned cumulative texture-group end array, then fills it on the second pass.
 void __thiscall calc_object_texture_groups(Object *object)
 {
   int i; // ebp
@@ -48,7 +48,7 @@ void __thiscall calc_object_texture_groups(Object *object)
     {
       object->texture_group_ends[v4] = v5;
     }
-    else if ( !i )
+    else if ( i == 0 )
     {
       request_object_texture_groups(object, v4 + 1);
     }

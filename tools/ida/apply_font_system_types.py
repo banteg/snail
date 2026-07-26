@@ -14,6 +14,7 @@ import idc
 
 
 TRUSTED_NAMES = (
+    (0x432D20, "register_font_texture_sheet_wrapper"),
     (0x449C10, "initialize_global_font3d_bods_thunk"),
     (0x449C20, "initialize_global_font3d_bods"),
     (0x449C40, "initialize_global_font_queue_colors_thunk"),
@@ -48,6 +49,10 @@ TRUSTED_NAMES = (
 )
 
 TRUSTED_FUNCTION_DECLARATIONS = (
+    (
+        "register_font_texture_sheet_wrapper",
+        "int32_t __cdecl register_font_texture_sheet_wrapper(char *texture_path, int32_t shadow_offset_pixels, float width_scale, float height_scale);",
+    ),
     (
         "initialize_global_font3d_bods_thunk",
         "void __cdecl initialize_global_font3d_bods_thunk();",
@@ -114,7 +119,7 @@ TRUSTED_FUNCTION_DECLARATIONS = (
     ),
     (
         "layout_and_queue_wrapped_font_text",
-        "float *__cdecl layout_and_queue_wrapped_font_text(char *text, int32_t font_id, float text_scale, float x, float y, float *out_x, float *out_y, float *out_width, float *out_height, float text_wave_amplitude, uint8_t shadow_enabled, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour *color, uint8_t measure_only, uint8_t pulse_alpha);",
+        "void __cdecl layout_and_queue_wrapped_font_text(char *text, int32_t font_id, float text_scale, float x, float y, float *out_x, float *out_y, float *out_width, float *out_height, float text_wave_amplitude, uint8_t shadow_enabled, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour *color, uint8_t measure_only, uint8_t pulse_alpha);",
     ),
     (
         "initialize_font3d_objects",
@@ -139,6 +144,7 @@ TRUSTED_DATA_DECLARATIONS = (
 )
 
 DIRTY_FUNCTIONS = (
+    0x432D20,
     0x449C70,
     0x449CA0,
     0x449E90,

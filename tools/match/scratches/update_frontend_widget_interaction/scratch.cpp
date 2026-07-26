@@ -13,24 +13,6 @@
 
 char read_pressed_text_input_key_code();
 int sprintf(char* buffer, const char* format, ...);
-float* layout_and_queue_wrapped_font_text(
-    char* text,
-    int font_id,
-    float text_scale,
-    float x,
-    float y,
-    float* out_x,
-    float* out_y,
-    float* out_width,
-    float* out_height,
-    float text_wave_amplitude,
-    char shadow_enabled,
-    int horizontal_align,
-    float anchor_x,
-    unsigned int flags,
-    tColour* color_arg,
-    char measure_only,
-    char pulse_alpha);
 
 void FrontendWidget::update_frontend_widget_interaction()
 {

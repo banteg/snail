@@ -137,3 +137,12 @@ second run is fully idempotent.
 Focused Wibo remains `98.18%`, exactly `55/55` instructions, prefix `18`, and
 one clean masked operand. No matcher source changed, and the sole equivalent
 SIB base/index encoding residual remains visible.
+
+## 2026-07-26 dual-mobile owner confirmation
+
+Android and iOS both retain void `cRObject::CalcTextureGroups()`. Their
+platform layouts differ from Windows, but both bodies preserve the same two
+passes, Object-owned facequad borrow, conditional texture flag mutation, and
+Object-owned cumulative group-end allocation. This confirms the existing
+Windows owner graph without justifying any source shaping for the remaining
+equivalent SIB encoding.

@@ -2,7 +2,7 @@
 /* function: register_font_texture_sheet @ 0x449f50 */
 /* selector: register_font_texture_sheet */
 
-// Loads one FONT-MENU-HOVER atlas, scans row-0 white delimiters into resettable glyph runs and the column-0 height marker, registers single- or split-page texture refs with their source-retention policy, and stores per-font UV, page, and scale metadata.
+// Windows integer-returning `FontLoad` variant: owns one FONT-MENU-HOVER atlas buffer through release, derives split-page paths, publishes texture refs and glyph metadata into the Windows-specific FontSheet owner, then returns the pre-increment sheet index. Both mobile ports retain a void ABI and a different 0xa28 sheet format.
 int32_t __cdecl register_font_texture_sheet(
         char *texture_path,
         int32_t shadow_offset_pixels,
@@ -67,7 +67,7 @@ int32_t __cdecl register_font_texture_sheet(
   v26 = 0;
   v23 = -1;
   v22 = 0;
-  if ( file_bytes->width )
+  if ( file_bytes->width != 0 )
   {
     do
     {

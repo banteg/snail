@@ -14,7 +14,7 @@
 004024d3        out_y = &slider_value_widget->layout_top
 004024d9        slider_value_widget->layout_anchor_x = slider_value_widget->layout_left
 004024df        slider_value_widget->layout_anchor_y = layout_top
-004024ef        if ((eax_4 & 0x10000) == 0)
+004024ef        if ((eax_4 & FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT) == 0)
 00402557        out_y = &slider_value_widget->layout_top
 00402564        out_x = &slider_value_widget->layout_left
 00402584        layout_and_queue_wrapped_font_text(&slider_value_widget->text_buffer.raw, slider_value_widget->font_id, slider_value_widget->font_scale, slider_value_widget->layout_anchor_x, slider_value_widget->layout_anchor_y, out_x, out_y, &slider_value_widget->layout_width, &slider_value_widget->layout_height, slider_value_widget->text_effect_current, (g_runtime_config.render_flags u>> 8).b & 1, slider_value_widget->text_alignment, slider_value_widget->anchor_x, 0x1000000, &slider_value_widget->idle_text_color, 1, 0)
@@ -54,7 +54,7 @@
 00402648        slider_value_widget->texture_hit_y = slider_value_widget->hot_padding
 00402625        slider_value_widget->texture_hit_y = fconvert.s(fconvert.t(480f) - fconvert.t(slider_value_widget->hot_padding))
 00402654        long double x87_r7_16 = fconvert.t(slider_value_widget->texture_hit_x) - fconvert.t((out_x - 0x238)->layout_left)
-00402658        eax_12 = widget_flags & 0x100000
+00402658        eax_12 = widget_flags & FRONTEND_WIDGET_FLAG_SLIDER
 00402665        slider_value_widget->anchor_x = fconvert.s(x87_r7_16 + fconvert.t(slider_value_widget->anchor_x))
 00402671        slider_value_widget->layout_anchor_x = fconvert.s(x87_r7_16 + fconvert.t(slider_value_widget->layout_anchor_x))
 00402685        slider_value_widget->layout_anchor_y = fconvert.s(fconvert.t(slider_value_widget->texture_hit_y) - fconvert.t((out_y - 0x23c)->layout_top) + fconvert.t(slider_value_widget->layout_anchor_y))

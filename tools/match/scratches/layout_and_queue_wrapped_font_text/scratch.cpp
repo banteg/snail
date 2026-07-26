@@ -2,7 +2,7 @@
 
 #include "font_system.h"
 
-float* layout_and_queue_wrapped_font_text(
+void layout_and_queue_wrapped_font_text(
     char* text,
     int font_id,
     float text_scale,
@@ -80,16 +80,14 @@ float* layout_and_queue_wrapped_font_text(
 
     if (horizontal_align == 1) {
         *out_x = anchor_x + 320.0f;
-        return out_x;
+        return;
     }
     if (horizontal_align == 3) {
         *out_x = anchor_x + 320.0f - *out_width;
-        return out_x;
+        return;
     }
     if (horizontal_align == 2) {
         *out_x = anchor_x + 320.0f - *out_width * 0.5f;
-        return out_x;
+        return;
     }
-
-    return out_x;
 }

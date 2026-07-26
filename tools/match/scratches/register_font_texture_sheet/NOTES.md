@@ -142,3 +142,18 @@ to float, and adds it to both glyph coordinates for the black shadow pass.
 That producer/consumer chain closes the field and parameter as
 `shadow_offset_pixels`, replacing the misleading `font_kind` vocabulary.
 The registrar remains at the honest 75.41% frontier with 51 clean operands.
+
+## 2026-07-26 mobile ABI boundary
+
+Android and iOS both retain `FontLoad(char*, int, float, float)` but decompile
+their mobile implementation as void. Projecting that return onto Windows was
+explicitly tested and rejected: it perturbs the complete VC6 register-lifetime
+shape, lowers the focused result from 75.41% to 74.09%, and worsens the
+masked-operand residuals.
+The native Windows post-increment deliberately leaves the pre-increment sheet
+index in EAX, and its exact forwarding wrapper preserves that integer result.
+
+Windows therefore keeps its locally proved integer ABI. Mobile still supplies
+the authored owner name and parameter roles, but its `0xa28` metadata-driven
+font sheet is also layout-incompatible with the Windows `0x828` atlas owner;
+neither the mobile return nor its offsets are transplanted.

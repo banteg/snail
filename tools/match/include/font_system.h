@@ -85,6 +85,24 @@ int font_slot_index_for_char(char value); // @ 0x449d20
 float measure_font_text_width(char* text, int font_id, float scale); // @ 0x449e90
 int register_font_texture_sheet(char* texture_path, int shadow_offset_pixels,
     float width_scale, float height_scale); // @ 0x449f50
+void layout_and_queue_wrapped_font_text(
+    char* text,
+    int font_id,
+    float text_scale,
+    float x,
+    float y,
+    float* out_x,
+    float* out_y,
+    float* out_width,
+    float* out_height,
+    float text_wave_amplitude,
+    char shadow_enabled,
+    int horizontal_align,
+    float anchor_x,
+    unsigned int flags,
+    tColour* color,
+    char measure_only,
+    char pulse_alpha); // @ 0x44abe0
 void initialize_font3d_objects(short font_id); // @ 0x44ae10
 float sine(float angle); // @ 0x44c9d0
 float cosine(float angle); // @ 0x44c980

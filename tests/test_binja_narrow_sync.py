@@ -12189,6 +12189,11 @@ def test_font_system_ownership_stays_aligned() -> None:
         assert "int32_t blend_mode" in header or "int blend_mode" in header
         assert "float rotation" in header
 
+    assert "int32_t __cdecl register_font_texture_sheet(" in analysis_header
+    assert "void __cdecl layout_and_queue_wrapped_font_text(" in analysis_header
+    assert "int register_font_texture_sheet(" in matcher_header
+    assert "void layout_and_queue_wrapped_font_text(" in matcher_header
+
     for source in (binja_sync, ida_sync):
         assert "g_render_queue_active" in source
         assert "g_font_text_buffer" in source
@@ -12211,10 +12216,13 @@ def test_font_system_ownership_stays_aligned() -> None:
         assert "queue_textured_quad_corners" in source
         assert "layout_and_queue_wrapped_font_text" in source
         assert "initialize_font3d_objects" in source
+        assert "register_font_texture_sheet_wrapper" in source
         assert "shadow_offset_pixels" in source
         assert "shadow_enabled" in source
         assert "font_kind" not in source
         assert "text_wave_enabled" not in source
+        assert "int32_t __cdecl register_font_texture_sheet" in source
+        assert "void __cdecl layout_and_queue_wrapped_font_text" in source
 
     assert '("0x7544e8", "cFontPrintBuffer[0x400]")' in binja_sync
     assert '("0x7754e8", "BodBase[0x80]")' in binja_sync
@@ -12242,7 +12250,7 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert "int32_t __cdecl queue_textured_quad_corners" in binja_sync
     assert "float unused_28, float unused_2c" in binja_sync
     assert "float unused_28, float unused_2c" in ida_sync
-    assert "float* __cdecl layout_and_queue_wrapped_font_text" in binja_sync
+    assert "void __cdecl layout_and_queue_wrapped_font_text" in binja_sync
     assert "cFontPrintBuffer g_font_queue[0x400];" in ida_sync
     assert "FontSheet g_font_sheets[1];" in ida_sync
     assert "void __cdecl initialize_font_wave_state();" in ida_sync
@@ -12367,6 +12375,31 @@ def test_font_system_ownership_stays_aligned() -> None:
     crosswalk_by_address = {
         int(entry["address"], 0): entry for entry in crosswalk["entries"]
     }
+    assert crosswalk_by_address[0x449F50]["android_symbol"] == (
+        "FontLoad(char*, int, float, float)"
+    )
+    assert crosswalk_by_address[0x449F50]["ios_symbol"] == (
+        "FontLoad(char*, int, float, float)"
+    )
+    assert crosswalk_by_address[0x44ABE0]["android_symbol"].startswith("FontType(")
+    assert crosswalk_by_address[0x44ABE0]["ios_symbol"].startswith("FontType(")
+    assert crosswalk_by_address[0x44AE10]["android_symbol"] == "FontMake3D(short)"
+    assert crosswalk_by_address[0x44AE10]["ios_symbol"] == "FontMake3D(short)"
+
+    for mobile_body in (
+        "analysis/decompile/android/functions/00032d78-_Z8FontLoadPciff.c",
+        "analysis/decompile/ios/functions/0000f09c-_Z8FontLoadPciff.c",
+    ):
+        body = (repo_root / mobile_body).read_text(encoding="utf-8")
+        assert "void FontLoad(" in body
+    for mobile_body in (
+        "analysis/decompile/android/functions/"
+        "00032174-_Z8FontTypePcifffPfS0_S0_S0_fbifi7tColourbb.c",
+        "analysis/decompile/ios/functions/"
+        "0000f444-_Z8FontTypePcifffPfS0_S0_S0_fbifi7tColourbb.c",
+    ):
+        body = (repo_root / mobile_body).read_text(encoding="utf-8")
+        assert "void FontType(" in body
     assert crosswalk_by_address[0x44A8B0]["ios_symbol"].startswith("OSDPrint(")
     assert crosswalk_by_address[0x44A9B0]["ios_symbol"].startswith("OSDPrintUV(")
     assert (

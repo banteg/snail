@@ -1,27 +1,8 @@
 // layout_frontend_widget @ 0x4024a0 (thiscall, ret)
 
+#include "font_system.h"
 #include "frontend_widget.h"
 #include "runtime_config.h"
-
-
-float* layout_and_queue_wrapped_font_text(
-    char* text,
-    int font_id,
-    float text_scale,
-    float x,
-    float y,
-    float* out_x,
-    float* out_y,
-    float* out_width,
-    float* out_height,
-    float text_wave_amplitude,
-    char shadow_enabled,
-    int horizontal_align,
-    float anchor_x,
-    unsigned int flags,
-    tColour* color_arg,
-    char measure_only,
-    char pulse_alpha);
 
 void FrontendWidget::layout_frontend_widget()
 {
@@ -56,7 +37,7 @@ void FrontendWidget::layout_frontend_widget()
         } else {
             layout_top_ptr = &widget->layout_y;
             layout_left_ptr = &widget->layout_x;
-            result = (int)layout_and_queue_wrapped_font_text(
+            layout_and_queue_wrapped_font_text(
                 widget->text_buffer,
                 widget->font_id,
                 widget->font_scale,

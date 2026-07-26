@@ -11000,6 +11000,35 @@
       ]
     },
     {
+      "name": "bn_font_registrar_wrapper_windows_result",
+      "artifact": "analysis/decompile/binja/functions/00432d20-register_font_texture_sheet_wrapper.c",
+      "required_substrings": [
+        "register_font_texture_sheet("
+      ],
+      "forbidden_substrings": [
+        "sub_432D20",
+        "font_kind",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_font_registrar_wrapper_windows_result",
+      "artifact": "analysis/decompile/ida/functions/00432d20-register_font_texture_sheet_wrapper.c",
+      "required_substrings": [
+        "int32_t __cdecl register_font_texture_sheet_wrapper(",
+        "int32_t shadow_offset_pixels",
+        "return register_font_texture_sheet("
+      ],
+      "forbidden_substrings": [
+        "void __cdecl register_font_texture_sheet_wrapper(",
+        "sub_432D20",
+        "font_kind",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_font_registrar_sheet_owners",
       "artifact": "analysis/decompile/binja/functions/00449f50-register_font_texture_sheet.c",
       "required_substrings": [
@@ -11032,7 +11061,8 @@
         "g_font_sheets[registered_font_count_2].shadow_offset_pixels = shadow_offset_pixels",
         "g_font_sheets[g_registered_font_count].texture_ref_a",
         "width_scale",
-        "height_scale"
+        "height_scale",
+        "return registered_font_count_1"
       ],
       "forbidden_substrings": [
         "int32_t ebx = 0",
@@ -11084,15 +11114,18 @@
       "name": "ida_font_registrar_sheet_owners",
       "artifact": "analysis/decompile/ida/functions/00449f50-register_font_texture_sheet.c",
       "required_substrings": [
+        "int32_t __cdecl register_font_texture_sheet(",
         "int32_t shadow_offset_pixels",
         "float width_scale",
         "float height_scale",
         ".shadow_offset_pixels = shadow_offset_pixels",
         "g_font_sheets[g_registered_font_count].line_marker_y",
         "g_font_sheets[g_registered_font_count].texture_ref_a",
-        "g_font_sheets[v20].spacing_scale"
+        "g_font_sheets[v20].spacing_scale",
+        "return g_registered_font_count++"
       ],
       "forbidden_substrings": [
+        "void __cdecl register_font_texture_sheet(",
         "sub_449F50",
         "font_kind",
         "unk_777",
@@ -11496,6 +11529,7 @@
       "forbidden_substrings": [
         "data_7772f8",
         "text_wave_enabled",
+        "return out_x",
         "arg1",
         "__asm",
         "_ET1"
@@ -11505,7 +11539,7 @@
       "name": "ida_wrapped_font_layout_owners",
       "artifact": "analysis/decompile/ida/functions/0044abe0-layout_and_queue_wrapped_font_text.c",
       "required_substrings": [
-        "float *__cdecl layout_and_queue_wrapped_font_text(",
+        "void __cdecl layout_and_queue_wrapped_font_text(",
         "uint8_t shadow_enabled",
         "queue_font_text_instance(",
         "g_font_sheets[font_id].height_scale",
@@ -11513,6 +11547,7 @@
         "g_font_sheets[font_id].line_marker_y"
       ],
       "forbidden_substrings": [
+        "float *__cdecl layout_and_queue_wrapped_font_text(",
         "sub_44ABE0",
         "text_wave_enabled",
         "unk_7772F8",

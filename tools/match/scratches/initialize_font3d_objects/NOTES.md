@@ -145,3 +145,12 @@ The same replay also splits the full-width `0x44ae71` SSA definition away from
 the incoming `int16_t font_id`. VC6 keeps the original id in EAX and reuses its
 four-byte stack argument slot for a derived float `glyph_scale`; treating that
 slot as one source variable produced the false `font_id.d` field access.
+
+## 2026-07-26 cross-port owner boundary
+
+Both mobile corpora retain void `FontMake3D(short)` and the same high-level
+borrow graph: one font-sheet glyph lane selects an ObjectList object, a font
+BOD retains that object, the first facequad borrows the atlas texture, and the
+four vertex X lanes are scaled by glyph width. Mobile uses a `0x2c` BOD stride
+and a `0xa28` font sheet, so those offsets are deliberately not transferred to
+the Windows `BodBase[128]` and `FontSheet` owners.

@@ -13,3 +13,10 @@ The integer argument is now `shadow_offset_pixels`: the only caller supplies
 2, the registrar stores it at `FontSheet +0x824`, and the renderer adds that
 value to both coordinates of the offset black glyph pass. The forwarding
 wrapper remains exact.
+
+2026-07-26 cross-port boundary: both mobile `FontLoad` bodies are void, but
+changing the Windows registrar to void disrupted its full VC6 allocation and
+worsened the registrar's masked-operand residuals. The exact Windows wrapper
+naturally forwards the pre-increment sheet index in EAX, even though its sole
+startup caller discards it, so the Windows integer contract remains locally
+authoritative.

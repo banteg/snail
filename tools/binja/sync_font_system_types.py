@@ -100,6 +100,7 @@ FONT_PRINT_BUFFER_FIELD_UPDATES = (
 )
 
 FUNCTION_SYMBOL_UPDATES = (
+    ("0x432d20", "register_font_texture_sheet_wrapper"),
     ("0x449c10", "initialize_global_font3d_bods_thunk"),
     ("0x449c20", "initialize_global_font3d_bods"),
     ("0x449c40", "initialize_global_font_queue_colors_thunk"),
@@ -153,6 +154,10 @@ DATA_VAR_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "register_font_texture_sheet_wrapper",
+        "int32_t __cdecl register_font_texture_sheet_wrapper(char* texture_path, int32_t shadow_offset_pixels, float width_scale, float height_scale)",
+    ),
     (
         "initialize_global_font3d_bods_thunk",
         "void __cdecl initialize_global_font3d_bods_thunk()",
@@ -219,7 +224,7 @@ PROTO_UPDATES = (
     ),
     (
         "layout_and_queue_wrapped_font_text",
-        "float* __cdecl layout_and_queue_wrapped_font_text(char* text, int32_t font_id, float text_scale, float x, float y, float* out_x, float* out_y, float* out_width, float* out_height, float text_wave_amplitude, uint8_t shadow_enabled, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour* color, uint8_t measure_only, uint8_t pulse_alpha)",
+        "void __cdecl layout_and_queue_wrapped_font_text(char* text, int32_t font_id, float text_scale, float x, float y, float* out_x, float* out_y, float* out_width, float* out_height, float text_wave_amplitude, uint8_t shadow_enabled, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour* color, uint8_t measure_only, uint8_t pulse_alpha)",
     ),
     (
         "initialize_font3d_objects",
@@ -233,9 +238,11 @@ ANALYSIS_GUARD_FUNCTIONS = (
 )
 
 FONT_OWNER_REANALYSIS_FUNCTIONS = (
+    "register_font_texture_sheet_wrapper",
     "initialize_font_wave_state",
     "update_font_wave_state",
     "register_font_texture_sheet",
+    "layout_and_queue_wrapped_font_text",
     "draw_font_text_instance",
     "initialize_font3d_objects",
 )
