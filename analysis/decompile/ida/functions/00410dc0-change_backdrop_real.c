@@ -2,7 +2,7 @@
 /* function: change_backdrop_real @ 0x410dc0 */
 /* selector: change_backdrop_real */
 
-// Commits the pending backdrop selection, refreshes the distortion grid when the world index changes, and copies the current split-vs-single draw flags into the active renderer state. Cross-port Android and iOS symbols match this helper to `cRBackdrop::ChangeReal()`.
+// Exact void Windows `cRBackdrop::ChangeReal` projection: commits the pending backdrop selection, refreshes the distortion grid when the world index changes, and copies the split-vs-single flags into active state. Android and iOS independently preserve `cRBackdrop::ChangeReal()`.
 void __thiscall change_backdrop_real(Backdrop *backdrop)
 {
   int32_t pending_primary_texture_id; // eax
@@ -12,7 +12,7 @@ void __thiscall change_backdrop_real(Backdrop *backdrop)
   int v6; // eax
 
   pending_primary_texture_id = backdrop->pending_primary_texture_id;
-  if ( pending_primary_texture_id )
+  if ( pending_primary_texture_id != 0 )
   {
     if ( pending_primary_texture_id != backdrop->active_primary_texture_id )
     {

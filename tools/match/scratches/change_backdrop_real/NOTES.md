@@ -13,3 +13,11 @@ Recovered `Backdrop` fields:
   builds name its setter `cRBackdrop::SetZoom(float)`.
 - `active_flip +0x55` and `active_split_backdrop_pair +0x38` mirror the
   pending fields after every call.
+
+## 2026-07-26 authored backdrop owner
+
+Both mobile corpora preserve `cRBackdrop::ChangeReal()`. Their implementations
+commit the staged texture pair, refresh distortion when the primary texture
+changes, and publish the staged flip/split flags through the same owner. The
+exact 30/30 Windows body and void lifecycle contract now carry that authored
+identity explicitly.

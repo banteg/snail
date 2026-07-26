@@ -2,7 +2,8 @@
 /* function: draw_galaxy_line @ 0x409b00 */
 /* selector: draw_galaxy_line */
 
-int32_t __thiscall draw_galaxy_line(
+// Exact void Windows `cRGalaxy::Line` projection: normalizes one route segment, expands it by the requested half-width, and queues the resulting four-corner textured quad. Android preserves the authored `cRGalaxy::Line(int, float, float, float, float, float, tColour&)` body and void contract; every Windows caller discards the queue helper's platform-specific integer result.
+void __thiscall draw_galaxy_line(
         Galaxy *galaxy,
         int32_t texture_id,
         float x0,
@@ -38,24 +39,24 @@ int32_t __thiscall draw_galaxy_line(
   x1a = x1 - v8;
   y0a = y0 - v9;
   x0a = x0 - v8;
-  return queue_textured_quad_corners(
-           texture_id,
-           x0a,
-           y0a,
-           x1a,
-           y1a,
-           x2,
-           y2,
-           x3,
-           y3,
-           0,
-           0,
-           0x1000000u,
-           color,
-           0.0,
-           0.0,
-           1.0,
-           1.0,
-           15,
-           0.0);
+  queue_textured_quad_corners(
+    texture_id,
+    x0a,
+    y0a,
+    x1a,
+    y1a,
+    x2,
+    y2,
+    x3,
+    y3,
+    0.0,
+    0.0,
+    0x1000000u,
+    color,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    15,
+    0.0);
 }

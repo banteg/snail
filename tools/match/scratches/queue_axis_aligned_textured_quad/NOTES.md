@@ -87,3 +87,14 @@ this helper as `OSDPrint(int, float, float, float, float, int, tColour, int)`
 inside `Font.cpp`/`Font.o`. Their bodies use the same queue gate, validate the
 rectangle, and append the same `0x84`-byte record. This closes the authored
 overload relationship without changing the honest 95.38% Windows source shape.
+
+## 2026-07-26 platform return ABI audit
+
+Both mobile bodies declare `OSDPrint` void. Applying that declaration to
+Windows is not source-faithful: the successful Windows append leaves its
+`0x84 * index` queue offset in EAX, and a natural void transcription changes
+the address/register schedule. Focused matching drops from 95.38% to 66.15%.
+
+The Windows helper therefore remains `int`, with its already documented
+partial result contract. This records the mobile evidence while explicitly
+rejecting a cross-port fakematch.

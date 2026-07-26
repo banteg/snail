@@ -11365,6 +11365,7 @@
       "name": "ida_font_quad_queue_producer_owner",
       "artifact": "analysis/decompile/ida/functions/0044a9b0-queue_axis_aligned_textured_quad_uv.c",
       "required_substrings": [
+        "int32_t __cdecl queue_axis_aligned_textured_quad_uv(",
         "int32_t blend_mode,",
         "float rotation)",
         "g_font_queue[result / 0x84u].texture_id",
@@ -11372,11 +11373,40 @@
         "g_font_queue[result / 0x84u].rotation"
       ],
       "forbidden_substrings": [
+        "void __cdecl queue_axis_aligned_textured_quad_uv(",
         "sub_44A9B0",
         "unk_7544E8",
         ".layer",
         "__asm",
         "_ET1"
+      ]
+    },
+    {
+      "name": "ida_font_quad_default_windows_result",
+      "artifact": "analysis/decompile/ida/functions/0044a8b0-queue_axis_aligned_textured_quad.c",
+      "required_substrings": [
+        "int32_t __cdecl queue_axis_aligned_textured_quad(",
+        "result = 132 * g_font_queue_count;",
+        "return result;"
+      ],
+      "forbidden_substrings": [
+        "void __cdecl queue_axis_aligned_textured_quad(",
+        "sub_44A8B0",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_font_quad_corner_windows_result",
+      "artifact": "analysis/decompile/ida/functions/0044aac0-queue_textured_quad_corners.c",
+      "required_substrings": [
+        "int32_t __cdecl queue_textured_quad_corners(",
+        "result = 132 * g_font_queue_count;",
+        "return result;"
+      ],
+      "forbidden_substrings": [
+        "void __cdecl queue_textured_quad_corners(",
+        "sub_44AAC0",
+        "unimplemented"
       ]
     },
     {
@@ -14645,6 +14675,37 @@
       "forbidden_substrings": [
         "FrontendWidget ***this",
         "sub_4092F0",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_galaxy_line_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00409b00-draw_galaxy_line.c",
+      "required_substrings": [
+        "struct Vec3 vector",
+        "normalize_vector(&vector)",
+        "queue_textured_quad_corners(texture_id",
+        "00409bcb        return"
+      ],
+      "forbidden_substrings": [
+        "return result",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_galaxy_line_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00409b00-draw_galaxy_line.c",
+      "required_substrings": [
+        "void __thiscall draw_galaxy_line(",
+        "Galaxy *galaxy",
+        "normalize_vector(&vector);",
+        "queue_textured_quad_corners("
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall draw_galaxy_line",
+        "return queue_textured_quad_corners",
+        "sub_409B00",
         "unimplemented"
       ]
     },

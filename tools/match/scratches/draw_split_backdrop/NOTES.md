@@ -14,3 +14,12 @@ names both active texture ids through the enclosing controller. The Windows
 the second queue call's EAX; this slice does not infer a void contract from
 discarding callers. The matcher remains exact at 50/50 instructions with four
 clean operands.
+
+## 2026-07-26 cross-port return boundary
+
+Mobile renders the backdrop through a separate void `cRBackdrop::Render()`
+path and exposes no separate split helper. Windows folds this two-quad path
+into `update_backdrop`, whose observed integer tail depends on the second
+queue append. The exact Windows `int32_t` helper is consequently retained;
+mobile lifecycle signatures do not justify erasing its platform-specific
+result.

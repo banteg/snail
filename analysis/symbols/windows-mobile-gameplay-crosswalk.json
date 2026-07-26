@@ -13,12 +13,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 449,
-    "unverified_entries": 336,
-    "verified_android_symbols": 446,
-    "verified_ios_symbols": 383,
-    "available_android_mappings": 446,
-    "available_ios_mappings": 346
+    "verified_entries": 453,
+    "unverified_entries": 332,
+    "verified_android_symbols": 450,
+    "verified_ios_symbols": 385,
+    "available_android_mappings": 450,
+    "available_ios_mappings": 348
   },
   "entries": [
     {
@@ -6456,39 +6456,11 @@
       "address": "0x409b00",
       "windows_name": "draw_galaxy_line",
       "windows_size": 208,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRGalaxy::Line(int, float, float, float, float, float, tColour&)",
-          "score": 0.7841,
-          "name_score": 0.7385,
-          "size_score": 0.8525
-        },
-        {
-          "symbol": "cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)",
-          "score": 0.6999,
-          "name_score": 0.5127,
-          "size_score": 0.9808
-        },
-        {
-          "symbol": "cRBorderManager::DelayClick(cRBorder*, int)",
-          "score": 0.6616,
-          "name_score": 0.5385,
-          "size_score": 0.8462
-        },
-        {
-          "symbol": "cRBorder::InputTextInit(int, char*, int)",
-          "score": 0.6447,
-          "name_score": 0.4335,
-          "size_score": 0.9615
-        },
-        {
-          "symbol": "RShellInputRegister(int, int, float, float)",
-          "score": 0.6316,
-          "name_score": 0.4444,
-          "size_score": 0.9123
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRGalaxy::Line(int, float, float, float, float, float, tColour&)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRGalaxy::UnInit()",
@@ -7602,179 +7574,35 @@
       "address": "0x410d50",
       "windows_name": "change_backdrop",
       "windows_size": 112,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBackdrop::Change(cRLandscape*, bool)",
-          "score": 0.8714,
-          "name_score": 1.0,
-          "size_score": 0.6786
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.7213,
-          "name_score": 0.6,
-          "size_score": 0.9032
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.7213,
-          "name_score": 0.6,
-          "size_score": 0.9032
-        },
-        {
-          "symbol": "G0BackdropVBO(unsigned int*, int, unsigned short*, unsigned int*, unsigned short*)",
-          "score": 0.72,
-          "name_score": 0.6667,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
-          "score": 0.6465,
-          "name_score": 0.75,
-          "size_score": 0.4912
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBackdrop::Change(cRLandscape*, bool)",
-          "score": 0.9143,
-          "name_score": 1.0,
-          "size_score": 0.7857
-        },
-        {
-          "symbol": "G0BackdropVBO(unsigned int*, int, unsigned short*)",
-          "score": 0.7286,
-          "name_score": 0.6667,
-          "size_score": 0.8214
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.7171,
-          "name_score": 0.6,
-          "size_score": 0.8929
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.7171,
-          "name_score": 0.6,
-          "size_score": 0.8929
-        },
-        {
-          "symbol": "cRLoadingBar::Init()",
-          "score": 0.6742,
-          "name_score": 0.48,
-          "size_score": 0.9655
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRBackdrop::Change(cRLandscape*, bool)",
+      "ios_symbol": "cRBackdrop::Change(cRLandscape*, bool)",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x410dc0",
       "windows_name": "change_backdrop_real",
       "windows_size": 96,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBackdrop::Change(cRLandscape*, bool)",
-          "score": 0.8567,
-          "name_score": 0.9,
-          "size_score": 0.7917
-        },
-        {
-          "symbol": "cRBackdrop::ChangeReal()",
-          "score": 0.7091,
-          "name_score": 1.0,
-          "size_score": 0.2727
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.6697,
-          "name_score": 0.6,
-          "size_score": 0.7742
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.6697,
-          "name_score": 0.6,
-          "size_score": 0.7742
-        },
-        {
-          "symbol": "cRStarManager::Open(int)",
-          "score": 0.646,
-          "name_score": 0.4655,
-          "size_score": 0.9167
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBackdrop::Change(cRLandscape*, bool)",
-          "score": 0.9067,
-          "name_score": 0.9,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.744,
-          "name_score": 0.6,
-          "size_score": 0.96
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.744,
-          "name_score": 0.6,
-          "size_score": 0.96
-        },
-        {
-          "symbol": "G0BackdropVBO(unsigned int*, int, unsigned short*)",
-          "score": 0.7317,
-          "name_score": 0.5806,
-          "size_score": 0.9583
-        },
-        {
-          "symbol": "cRBackdrop::ChangeReal()",
-          "score": 0.7129,
-          "name_score": 1.0,
-          "size_score": 0.2824
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRBackdrop::ChangeReal()",
+      "ios_symbol": "cRBackdrop::ChangeReal()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x410e20",
       "windows_name": "initialize_backdrop",
       "windows_size": 288,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBackdrop::Init(int)",
-          "score": 0.9429,
-          "name_score": 1.0,
-          "size_score": 0.8571
-        },
-        {
-          "symbol": "cRBackdrop::ChangeReal()",
-          "score": 0.7785,
-          "name_score": 0.752,
-          "size_score": 0.8182
-        },
-        {
-          "symbol": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
-          "score": 0.753,
-          "name_score": 0.7273,
-          "size_score": 0.7917
-        },
-        {
-          "symbol": "cRBackdrop::Open(int)",
-          "score": 0.7083,
-          "name_score": 0.752,
-          "size_score": 0.6429
-        },
-        {
-          "symbol": "cRBackdrop::AI()",
-          "score": 0.707,
-          "name_score": 0.768,
-          "size_score": 0.6154
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRBackdrop::Init(int)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
@@ -7857,37 +7685,55 @@
       "status": "unverified",
       "android_candidates": [
         {
-          "symbol": "ATan(float, float)",
-          "score": 0.6609,
+          "symbol": "cRTextures::Add(char*, cTgaHeader*, int)",
+          "score": 0.8027,
+          "name_score": 0.9,
+          "size_score": 0.6567
+        },
+        {
+          "symbol": "cRBackdrop::AI()",
+          "score": 0.6904,
+          "name_score": 0.9,
+          "size_score": 0.3761
+        },
+        {
+          "symbol": "cRSprite::AI()",
+          "score": 0.6843,
+          "name_score": 0.9,
+          "size_score": 0.3607
+        },
+        {
+          "symbol": "cRFlash::AI()",
+          "score": 0.6611,
           "name_score": 0.45,
-          "size_score": 0.9773
+          "size_score": 0.9778
         },
         {
-          "symbol": "cRBorderManager::DelayClick(cRBorder*, int)",
-          "score": 0.6483,
-          "name_score": 0.4138,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
-          "score": 0.6398,
-          "name_score": 0.5517,
-          "size_score": 0.7719
-        },
-        {
-          "symbol": "gRegisterUserEncrypt(char*, int)",
-          "score": 0.6323,
-          "name_score": 0.3871,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFAddArcadePro(int)",
-          "score": 0.6309,
-          "name_score": 0.4,
-          "size_score": 0.9773
+          "symbol": "cRHelp::AI()",
+          "score": 0.6611,
+          "name_score": 0.45,
+          "size_score": 0.9778
         }
       ],
       "ios_candidates": [
+        {
+          "symbol": "cRTextures::Add(char*, cTgaHeader*, int)",
+          "score": 0.7125,
+          "name_score": 0.9,
+          "size_score": 0.4314
+        },
+        {
+          "symbol": "cRBackdrop::AI()",
+          "score": 0.6958,
+          "name_score": 0.9,
+          "size_score": 0.3894
+        },
+        {
+          "symbol": "cRSplash::AI()",
+          "score": 0.6614,
+          "name_score": 0.9,
+          "size_score": 0.3034
+        },
         {
           "symbol": "SoundEngineEffect::PlaybackProc(void*)",
           "score": 0.6548,
@@ -7895,28 +7741,10 @@
           "size_score": 0.8627
         },
         {
-          "symbol": "ATan(float, float)",
-          "score": 0.6336,
+          "symbol": "cRHelp::AI()",
+          "score": 0.6526,
           "name_score": 0.45,
-          "size_score": 0.9091
-        },
-        {
-          "symbol": "cRSprite::Kill()",
-          "score": 0.622,
-          "name_score": 0.45,
-          "size_score": 0.88
-        },
-        {
-          "symbol": "cRBorderManager::HideBorders()",
-          "score": 0.6115,
-          "name_score": 0.3525,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRObject::RequestFaceQuads(int)",
-          "score": 0.6106,
-          "name_score": 0.4571,
-          "size_score": 0.8409
+          "size_score": 0.9565
         }
       ]
     },

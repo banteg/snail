@@ -2,7 +2,7 @@
 /* function: queue_textured_quad_corners @ 0x44aac0 */
 /* selector: queue_textured_quad_corners */
 
-// Appends one arbitrary four-corner textured quad with explicit per-corner positions and UV bounds into the shared 2D render queue. The backdrop and galaxy-line renderers use this helper.
+// Long OSDPrintUV overload counterpart: appends one arbitrary four-corner textured quad with explicit per-corner positions and UV bounds into the shared 2D render queue. Its two otherwise-unused post-corner formals are floats in both symbol-rich mobile builds. Mobile declares the overload void, but Windows retains an integer queue-offset result; the backdrop and galaxy-line renderers consume it according to their platform-specific contracts.
 int32_t __cdecl queue_textured_quad_corners(
         int32_t texture_id,
         float x0,

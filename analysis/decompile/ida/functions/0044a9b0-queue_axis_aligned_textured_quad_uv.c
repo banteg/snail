@@ -2,7 +2,7 @@
 /* function: queue_axis_aligned_textured_quad_uv @ 0x44a9b0 */
 /* selector: queue_axis_aligned_textured_quad_uv */
 
-// Appends one axis-aligned textured quad with explicit UV bounds into the shared 2D render queue. Front-end widgets, progress bars, and the damage gauge all use this helper.
+// Short OSDPrintUV overload counterpart: appends one axis-aligned textured quad with explicit UV bounds into the shared 2D render queue. Front-end widgets, progress bars, and the damage gauge all use this helper. The mobile overloads are void, while Windows retains the successful append offset as an integer result; the focused matcher rejects a cross-port void projection.
 int32_t __cdecl queue_axis_aligned_textured_quad_uv(
         int32_t texture_id,
         float x,

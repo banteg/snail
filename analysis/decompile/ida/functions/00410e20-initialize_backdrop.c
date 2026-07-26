@@ -2,7 +2,7 @@
 /* function: initialize_backdrop @ 0x410e20 */
 /* selector: initialize_backdrop */
 
-// Initializes the shared backdrop renderer, seeds its texture-transition state, and primes its distortion grid. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Init(int)`.
+// Exact void Windows `cRBackdrop::Init` projection: initializes the shared renderer, seeds its texture-transition state, and primes its distortion grid. The unstripped Android build independently preserves `cRBackdrop::Init(int)`; no corresponding iOS export is present.
 void __thiscall initialize_backdrop(Backdrop *backdrop, int32_t last_mode)
 {
   backdrop->corner_index_buffer_handle = 1;
@@ -25,7 +25,7 @@ void __thiscall initialize_backdrop(Backdrop *backdrop, int32_t last_mode)
     backdrop->unknown_664 = 0.0;
   }
   backdrop->unknown_668 = 0.020833334;
-  if ( !last_mode )
+  if ( last_mode == 0 )
   {
     backdrop->unknown_66c = 0.0;
     backdrop->unknown_670 = 0.0013089969;

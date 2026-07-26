@@ -2,7 +2,7 @@
 /* function: queue_axis_aligned_textured_quad @ 0x44a8b0 */
 /* selector: queue_axis_aligned_textured_quad */
 
-// Appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue, using the supplied texture, authored rectangle, tint, and render flags.
+// OSDPrint counterpart: appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue, using the supplied texture, authored rectangle, tint, and render flags. The mobile overloads are void, but Windows intentionally retains an integer queue-offset result; forcing the mobile ABI destroys the native register schedule.
 int32_t __cdecl queue_axis_aligned_textured_quad(
         int32_t texture_id,
         float x,

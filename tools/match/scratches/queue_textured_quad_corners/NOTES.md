@@ -73,10 +73,11 @@ The matcher source remains untouched and focused Wibo stays honestly at 87.14%
 
 ## 2026-07-24 partial return contract
 
-The corner producer likewise returns its appended byte offset or the overflow
-reporter result, while an inactive queue falls through with incidental
-register state. Binary Ninja's two callers prove both uses: `render_backdrop`
-discards the result and `draw_galaxy_line` forwards the successful tail value.
+The corner producer likewise leaves its appended byte offset or the overflow
+reporter result in EAX, while an inactive queue falls through with incidental
+register state. Binary Ninja's two callers do not establish a shared authored
+result: `render_backdrop` discards it, and the now-void `cRGalaxy::Line`
+member merely lets the successful tail value survive incidentally.
 
 Disabling only C4715 locally lets VC6 emit that native fallthrough without
 changing compiler flags. Removing the invented zero epilogue raises focused
@@ -100,3 +101,15 @@ inside `cFontPrintBuffer`; the dormant third lanes are now typed as float
 `z0..z3`. Neither mobile nor Windows code consumes those lanes. These are
 ABI/type corrections only: the focused Windows scratch stays at the honest
 89.86% frontier with no scheduling barrier or fake data access.
+
+## 2026-07-26 platform return ABI audit
+
+Android and iOS both declare the long `OSDPrintUV` overload void. Windows still
+requires its integer queue-offset signature to reproduce the native append
+address schedule: a natural void probe falls from 89.86% to 57.97%.
+
+The mobile declaration does, however, resolve its caller: Android
+`cRGalaxy::Line` is explicitly void, every Windows line caller discards EAX,
+and changing only that enclosing member preserves its exact 67/67 body. The
+queue helper stays integer on Windows while the recovered galaxy owner becomes
+void; neither boundary is fakematched.

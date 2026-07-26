@@ -609,7 +609,11 @@
     },
     {
       "address": "0x409b00",
-      "name": "draw_galaxy_line"
+      "name": "draw_galaxy_line",
+      "aliases": [
+        "cRGalaxy_Line"
+      ],
+      "description": "Exact void Windows `cRGalaxy::Line` projection: normalizes one route segment, expands it by the requested half-width, and queues the resulting four-corner textured quad. Android preserves the authored `cRGalaxy::Line(int, float, float, float, float, float, tColour&)` body and void contract; every Windows caller discards the queue helper's platform-specific integer result."
     },
     {
       "address": "0x409bd0",
@@ -745,17 +749,26 @@
     {
       "address": "0x410d50",
       "name": "change_backdrop",
-      "description": "Binds one parsed background script entry into the shared backdrop renderer, including its texture handles, Distort scalar, and split-vs-single draw mode. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Change(cRLandscape*, bool)`."
+      "aliases": [
+        "cRBackdrop_Change"
+      ],
+      "description": "Exact void Windows `cRBackdrop::Change` projection: binds one parsed background script entry into the shared renderer, including its texture handles, Distort scalar, and split-vs-single draw mode. Android and iOS independently preserve `cRBackdrop::Change(cRLandscape*, bool)`."
     },
     {
       "address": "0x410dc0",
       "name": "change_backdrop_real",
-      "description": "Commits the pending backdrop selection, refreshes the distortion grid when the world index changes, and copies the current split-vs-single draw flags into the active renderer state. Cross-port Android and iOS symbols match this helper to `cRBackdrop::ChangeReal()`."
+      "aliases": [
+        "cRBackdrop_ChangeReal"
+      ],
+      "description": "Exact void Windows `cRBackdrop::ChangeReal` projection: commits the pending backdrop selection, refreshes the distortion grid when the world index changes, and copies the split-vs-single flags into active state. Android and iOS independently preserve `cRBackdrop::ChangeReal()`."
     },
     {
       "address": "0x410e20",
       "name": "initialize_backdrop",
-      "description": "Initializes the shared backdrop renderer, seeds its texture-transition state, and primes its distortion grid. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Init(int)`."
+      "aliases": [
+        "cRBackdrop_Init"
+      ],
+      "description": "Exact void Windows `cRBackdrop::Init` projection: initializes the shared renderer, seeds its texture-transition state, and primes its distortion grid. The unstripped Android build independently preserves `cRBackdrop::Init(int)`; no corresponding iOS export is present."
     },
     {
       "address": "0x410f40",
@@ -765,7 +778,7 @@
     {
       "address": "0x410f90",
       "name": "draw_split_backdrop",
-      "description": "Queues the split `_A` / `_B` backdrop textures directly into the sprite renderer when a background script points at a split menu or splash layout."
+      "description": "Queues the split `_A` / `_B` backdrop textures directly into the sprite renderer when a background script points at a split menu or splash layout. Windows intentionally propagates the second queue append's integer offset into its folded `cRBackdrop::AI` path."
     },
     {
       "address": "0x411040",
@@ -775,7 +788,10 @@
     {
       "address": "0x4112f0",
       "name": "update_backdrop",
-      "description": "Advances the shared backdrop renderer, updates its distortion grid, and dispatches the split or warped draw path. Cross-port Android and iOS symbols match this helper to `cRBackdrop::AI()`."
+      "aliases": [
+        "cRBackdrop_AI"
+      ],
+      "description": "Windows `cRBackdrop::AI` projection: advances the shared renderer, updates its distortion grid, and dispatches the split or warped draw path. Android and iOS preserve a void `cRBackdrop::AI()` with rendering split into `Render()`, but Windows folds rendering into this member and retains its observed integer tail result; projecting the mobile void ABI regresses native codegen."
     },
     {
       "address": "0x4113b0",
@@ -3378,17 +3394,17 @@
     {
       "address": "0x44a8b0",
       "name": "queue_axis_aligned_textured_quad",
-      "description": "OSDPrint counterpart: appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue, using the supplied texture, authored rectangle, tint, and render flags."
+      "description": "OSDPrint counterpart: appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue, using the supplied texture, authored rectangle, tint, and render flags. The mobile overloads are void, but Windows intentionally retains an integer queue-offset result; forcing the mobile ABI destroys the native register schedule."
     },
     {
       "address": "0x44a9b0",
       "name": "queue_axis_aligned_textured_quad_uv",
-      "description": "Short OSDPrintUV overload counterpart: appends one axis-aligned textured quad with explicit UV bounds into the shared 2D render queue. Front-end widgets, progress bars, and the damage gauge all use this helper."
+      "description": "Short OSDPrintUV overload counterpart: appends one axis-aligned textured quad with explicit UV bounds into the shared 2D render queue. Front-end widgets, progress bars, and the damage gauge all use this helper. The mobile overloads are void, while Windows retains the successful append offset as an integer result; the focused matcher rejects a cross-port void projection."
     },
     {
       "address": "0x44aac0",
       "name": "queue_textured_quad_corners",
-      "description": "Long OSDPrintUV overload counterpart: appends one arbitrary four-corner textured quad with explicit per-corner positions and UV bounds into the shared 2D render queue. Its two otherwise-unused post-corner formals are floats in both symbol-rich mobile builds. The backdrop and galaxy-line renderers use this helper."
+      "description": "Long OSDPrintUV overload counterpart: appends one arbitrary four-corner textured quad with explicit per-corner positions and UV bounds into the shared 2D render queue. Its two otherwise-unused post-corner formals are floats in both symbol-rich mobile builds. Mobile declares the overload void, but Windows retains an integer queue-offset result; the backdrop and galaxy-line renderers consume it according to their platform-specific contracts."
     },
     {
       "address": "0x44abe0",

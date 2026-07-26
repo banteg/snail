@@ -87,3 +87,16 @@ The replay verifies `sizeof(BackdropDistortCell) == 0x18` and
 Matcher source and bytes remain untouched at the honest 88.24%, 69/67
 candidate/target instruction frontier with seven clean operands. This is
 durable borrowed-cursor ownership, not source or operand shaping.
+
+## 2026-07-26 mobile AI return-boundary audit
+
+Android and iOS both declare `cRBackdrop::AI()` void, and the Windows root BOD
+dispatcher ignores this callback's result. Windows nevertheless folds the
+split/single render dispatch into AI, unlike mobile, and its native tail keeps
+the selected renderer's integer state.
+
+A natural Windows `void` probe regressed focused matching from 88.24% to
+85.29% with the same 69/67 instruction counts because VC6 changed the register
+schedule around the folded dispatch. The observed Windows `int32_t` contract
+is therefore retained. This is an intentional platform ABI boundary, not a
+reason to copy the mobile declaration or shape a fake return.

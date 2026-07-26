@@ -22,3 +22,11 @@ initial `texture_id` local. That source shape gives VC6 the native zero lane in
 `edx`, path split byte in `bl`, and texture id in `esi`, recovering the
 `cmp bl, dl` / `cmp esi, edx` guards without volatile state or fake
 dependencies.
+
+## 2026-07-26 authored backdrop owner
+
+Android and iOS independently retain this exact lifecycle method as
+`cRBackdrop::Change(cRLandscape*, bool)`. Their bodies stage the landscape
+texture, split-pair flag, Distort value, and flip flag through the same
+`cRBackdrop` owner. This closes the original class/method identity while the
+Windows void transcription remains exact at 34/34 instructions.

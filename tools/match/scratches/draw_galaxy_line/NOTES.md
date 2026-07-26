@@ -26,3 +26,16 @@ Live readback now preserves the true `Galaxy*` receiver plus the texture,
 endpoint, width, and `tColour*` arguments. This removes the false-stdcall
 ambiguity from the database while focused matching remains exact at 67/67
 with four clean operands.
+
+## 2026-07-26 Android owner and void ABI
+
+The unstripped Android build preserves the complete helper as
+`cRGalaxy::Line(int, float, float, float, float, float, tColour&)`. Its body
+normalizes the same segment, derives the same perpendicular half-width, calls
+the long `OSDPrintUV` overload, and returns explicitly without a value.
+
+Every Windows callsite also discards EAX. Declaring the Windows member `void`
+therefore recovers the authored contract without changing its exact 67/67
+instruction body or four clean operands. The nested Windows queue helper still
+has its own platform-specific integer queue-offset ABI; the value merely
+survives incidentally through this void member.

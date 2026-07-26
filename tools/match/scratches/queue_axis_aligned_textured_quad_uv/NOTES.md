@@ -99,3 +99,13 @@ Both symbol-rich iOS phone builds and Android retain the short overload as
 the same rectangle, UV, integer blend-mode, and float rotation fields at a
 `0x84` stride. The Windows scratch remains 98.48%; the evidence clarifies the
 owner and ABI rather than altering scheduling.
+
+## 2026-07-26 platform return ABI audit
+
+Although both mobile bodies declare this `OSDPrintUV` overload void, the
+Windows append path exposes its byte offset and `draw_split_backdrop` forwards
+the second append's EAX. Projecting the mobile return type changes VC6's queue
+address schedule and drops focused matching from 98.48% to 68.18%.
+
+Windows therefore keeps the evidence-backed integer result and mobile keeps
+its void API. No dummy dependency or forced return was introduced.

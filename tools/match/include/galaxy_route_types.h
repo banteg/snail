@@ -109,7 +109,7 @@ public:
     int update_galaxy(); // @ 0x4092f0
     void close_galaxy_route(); // @ 0x409bf0
     void open_galaxy_route(int selected_level_index); // @ 0x409c50, cRGalaxy::BoxOn
-    int draw_galaxy_line(
+    void draw_galaxy_line(
         int texture_id,
         float x0,
         float y0,

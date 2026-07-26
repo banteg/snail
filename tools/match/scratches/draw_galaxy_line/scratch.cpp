@@ -4,7 +4,7 @@
 #include "galaxy_route_types.h"
 #include "vector3.h"
 
-int Galaxy::draw_galaxy_line(
+void Galaxy::draw_galaxy_line(
     int texture_id,
     float x0,
     float y0,
@@ -22,7 +22,7 @@ int Galaxy::draw_galaxy_line(
     float offset_x = normal.y * width * -0.5f;
     float offset_y = normal.x * width * 0.5f;
 
-    return queue_textured_quad_corners(
+    queue_textured_quad_corners(
         texture_id,
         x0 - offset_x,
         y0 - offset_y,

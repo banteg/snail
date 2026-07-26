@@ -50,3 +50,12 @@ the backdrop grid. This proves Windows `+0x65c` as the shared
 unused backend slot to one. The adjacent `unknown_660` remains unnamed:
 Android confirms the same click-start write at its corresponding `+0x88`, but
 neither port exposes a reader that proves the latch's role.
+
+## 2026-07-26 authored initializer
+
+The unstripped Android library retains this lifecycle member as
+`cRBackdrop::Init(int)`. Its receiver, integer mode argument, world/texture
+transition setup, and final Distort initialization independently confirm the
+Windows owner and void ABI. No corresponding iOS export is present, so the
+crosswalk records Android-only provenance rather than transferring a name
+through adjacency.

@@ -68,6 +68,8 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert '("0x4a1d14", "g_galaxy_route_points")' in runtime_sync
     assert '("0x84", "color", "tColour")' in runtime_sync
     assert "int32_t __thiscall update_galaxy(Galaxy* galaxy)" in runtime_sync
+    assert "void __thiscall draw_galaxy_line(Galaxy* galaxy," in runtime_sync
+    assert "int32_t __thiscall draw_galaxy_line(Galaxy* galaxy," not in runtime_sync
     assert "void __thiscall open_galaxy_route(" in runtime_sync
     assert "void __thiscall galaxy_border_bound(" in runtime_sync
     assert "GALAXY_ROUTE_CURSOR_EXPECTED_SIZES" in runtime_sync
@@ -126,7 +128,7 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
         "void __thiscall destroy_galaxy(Galaxy* galaxy);",
         "void __thiscall initialize_galaxy(Galaxy* galaxy);",
         "int32_t __thiscall update_galaxy(Galaxy* galaxy);",
-        "int32_t __thiscall draw_galaxy_line(Galaxy* galaxy,",
+        "void __thiscall draw_galaxy_line(Galaxy* galaxy,",
         "void __thiscall update_galaxy_route_record(GalaxyRouteSlot* slot);",
         "void __thiscall close_galaxy_route(Galaxy* galaxy);",
         "void __thiscall open_galaxy_route(Galaxy* galaxy,",
@@ -160,6 +162,70 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
 
     assert "extern GalaxyPoint g_galaxy_group_points[10];" in matcher_header
     assert "extern GalaxyPoint g_galaxy_route_points[101];" in matcher_header
+    assert "void draw_galaxy_line(" in matcher_header
+    assert "int draw_galaxy_line(" not in matcher_header
+
+
+def test_mobile_galaxy_and_backdrop_evidence_preserves_windows_abi_boundaries() -> None:
+    repo_root = Path(__file__).parents[1]
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    functions_by_address = {
+        entry["address"]: entry for entry in functions["functions"]
+    }
+    crosswalk_by_address = {
+        entry["address"]: entry for entry in crosswalk["entries"]
+    }
+
+    assert "cRGalaxy_Line" in functions_by_address["0x409b00"]["aliases"]
+    assert (
+        crosswalk_by_address["0x409b00"]["android_symbol"]
+        == "cRGalaxy::Line(int, float, float, float, float, float, tColour&)"
+    )
+    assert "ios_symbol" not in crosswalk_by_address["0x409b00"]
+
+    for address, alias, symbol in (
+        ("0x410d50", "cRBackdrop_Change", "cRBackdrop::Change(cRLandscape*, bool)"),
+        ("0x410dc0", "cRBackdrop_ChangeReal", "cRBackdrop::ChangeReal()"),
+        ("0x410e20", "cRBackdrop_Init", "cRBackdrop::Init(int)"),
+        ("0x4112f0", "cRBackdrop_AI", "cRBackdrop::AI()"),
+    ):
+        assert alias in functions_by_address[address]["aliases"]
+        assert crosswalk_by_address[address]["android_symbol"] == symbol
+
+    assert (
+        crosswalk_by_address["0x410d50"]["ios_symbol"]
+        == "cRBackdrop::Change(cRLandscape*, bool)"
+    )
+    assert (
+        crosswalk_by_address["0x410dc0"]["ios_symbol"]
+        == "cRBackdrop::ChangeReal()"
+    )
+    assert "ios_symbol" not in crosswalk_by_address["0x410e20"]
+
+    galaxy_header = (
+        repo_root / "tools/match/include/galaxy_route_types.h"
+    ).read_text(encoding="utf-8")
+    backdrop_header = (repo_root / "tools/match/include/backdrop.h").read_text(
+        encoding="utf-8"
+    )
+    font_header = (repo_root / "tools/match/include/font_system.h").read_text(
+        encoding="utf-8"
+    )
+    assert "void draw_galaxy_line(" in galaxy_header
+    assert "int update_backdrop();" in backdrop_header
+    assert "int draw_split_backdrop();" in backdrop_header
+    assert "int queue_axis_aligned_textured_quad(" in font_header
+    assert "int queue_axis_aligned_textured_quad_uv(" in font_header
+    assert "int queue_textured_quad_corners(" in font_header
 
 
 def test_galaxy_layout_lifetime_replay_preserves_borrowed_cursors() -> None:

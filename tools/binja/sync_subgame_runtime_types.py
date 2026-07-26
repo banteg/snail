@@ -411,7 +411,7 @@ PROTO_UPDATES = (
     ),
     (
         "draw_galaxy_line",
-        "int32_t __thiscall draw_galaxy_line(Galaxy* galaxy, int32_t texture_id, float x0, float y0, float x1, float y1, float width, tColour* color)",
+        "void __thiscall draw_galaxy_line(Galaxy* galaxy, int32_t texture_id, float x0, float y0, float x1, float y1, float width, tColour* color)",
     ),
     (
         "update_galaxy_route_record",

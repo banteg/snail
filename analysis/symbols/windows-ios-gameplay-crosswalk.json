@@ -368,6 +368,14 @@
       "notes": "Windows folds the mobile cRGalaxy::Render() route/icon pass into cRGalaxy::AI(); Android and iOS call those methods separately. Mobile cRGalaxy::AIControl() is only the result-state getter used by cRSubGame, while Windows returns that result directly from update_galaxy."
     },
     {
+      "address": "0x409b00",
+      "windows_name": "draw_galaxy_line",
+      "android_symbol": "cRGalaxy::Line(int, float, float, float, float, float, tColour&)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Android body independently preserves the same cRGalaxy receiver, normalized segment, perpendicular half-width expansion, and long OSDPrintUV call. Its explicit void return agrees with every Windows caller discarding EAX; the natural Windows void transcription remains exact at 67/67 instructions. No matching iOS export is present."
+    },
+    {
       "address": "0x409bf0",
       "windows_name": "close_galaxy_route",
       "ios_symbol": "cRGalaxy::BoxOff()",
@@ -509,6 +517,32 @@
       "notes": "All ports seed the owned backdrop distortion grid from one amplitude; Windows uses a fixed 8x8 BackdropDistortCell matrix while mobile sizes the equivalent grid from its active subdivision count."
     },
     {
+      "address": "0x410d50",
+      "windows_name": "change_backdrop",
+      "ios_symbol": "cRBackdrop::Change(cRLandscape*, bool)",
+      "android_symbol": "cRBackdrop::Change(cRLandscape*, bool)",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "Both mobile bodies preserve the cRBackdrop receiver, cRLandscape-owned texture and Distort inputs, split-pair staging, flip flag, and void lifecycle contract seen in the exact Windows member."
+    },
+    {
+      "address": "0x410dc0",
+      "windows_name": "change_backdrop_real",
+      "ios_symbol": "cRBackdrop::ChangeReal()",
+      "android_symbol": "cRBackdrop::ChangeReal()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "All ports commit the staged primary and secondary textures, refresh distortion when the active texture changes, and publish the staged flip and split-pair flags through the same cRBackdrop owner."
+    },
+    {
+      "address": "0x410e20",
+      "windows_name": "initialize_backdrop",
+      "android_symbol": "cRBackdrop::Init(int)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Android initializer independently preserves the cRBackdrop owner, integer mode argument, texture/world transition setup, and distortion initialization. The exact Windows member has the same void lifecycle contract; no matching iOS export is present."
+    },
+    {
       "address": "0x410f40",
       "windows_name": "set_backdrop_texture_target",
       "android_symbol": "cRBackdrop::SetWorld(int)",
@@ -532,7 +566,7 @@
       "android_symbol": "cRBackdrop::AI()",
       "source_object": "Game.o",
       "confidence": "high",
-      "notes": "All ports consume staged backdrop changes and advance the distortion cells. Windows additionally dispatches split or single rendering from AI when the persistent +0x658 draw gate equals one; mobile calls cRBackdrop::Render() separately from the game render loop."
+      "notes": "All ports consume staged backdrop changes and advance the distortion cells. Windows additionally dispatches split or single rendering from AI when the persistent +0x658 draw gate equals one; mobile calls void cRBackdrop::Render() separately from the game render loop. Windows retains an integer tail result from that folded dispatch: projecting the mobile void ABI regresses focused matching from 88.24% to 85.29%, so the ports intentionally differ here."
     },
     {
       "address": "0x415280",
@@ -1525,7 +1559,7 @@
       "android_symbol": "OSDPrint(int, float, float, float, float, int, tColour, int)",
       "source_object": "Font.o",
       "confidence": "high",
-      "notes": "Both ports preserve the default-UV overload, its rectangle and color arguments, the render-queue gate, and the 0x84-byte cFontPrintBuffer append."
+      "notes": "Both mobile ports preserve the default-UV overload, its rectangle and color arguments, the render-queue gate, and the 0x84-byte cFontPrintBuffer append as a void API. Windows instead retains a successful queue-offset result; changing its signature to void regresses focused matching from 95.38% to 66.15%, so the integer Windows ABI is retained."
     },
     {
       "address": "0x44a9b0",
@@ -1534,7 +1568,7 @@
       "android_symbol": "OSDPrintUV(int, float, float, float, float, int, tColour, float, float, float, float, int, float)",
       "source_object": "Font.o",
       "confidence": "high",
-      "notes": "Both ports preserve the axis-aligned explicit-UV overload and append the same texture, rectangle, color, UV, blend-mode, and rotation fields."
+      "notes": "Both mobile ports preserve the axis-aligned explicit-UV overload and append the same texture, rectangle, color, UV, blend-mode, and rotation fields as a void API. Windows retains the successful queue offset; changing it to void regresses focused matching from 98.48% to 68.18%."
     },
     {
       "address": "0x44aac0",
@@ -1543,7 +1577,7 @@
       "android_symbol": "OSDPrintUV(int, float, float, float, float, float, float, float, float, float, float, int, tColour, float, float, float, float, int, float)",
       "source_object": "Font.o",
       "confidence": "high",
-      "notes": "Both ports preserve the four-corner overload, including ten consecutive float formals before flags. The final two are unused while the helper clears width and height, proving that the corresponding Windows formals are floats rather than integers."
+      "notes": "Both mobile ports preserve the four-corner overload, including ten consecutive float formals before flags. The final two are unused while the helper clears width and height, proving that the corresponding Windows formals are floats rather than integers. Mobile declares the API void, but the Windows successful queue-offset result is real: a void projection regresses focused matching from 89.86% to 57.97%."
     },
     {
       "address": "0x44abe0",

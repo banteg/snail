@@ -2,7 +2,7 @@
 /* function: change_backdrop @ 0x410d50 */
 /* selector: change_backdrop */
 
-// Binds one parsed background script entry into the shared backdrop renderer, including its texture handles, Distort scalar, and split-vs-single draw mode. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Change(cRLandscape*, bool)`.
+// Exact void Windows `cRBackdrop::Change` projection: binds one parsed background script entry into the shared renderer, including its texture handles, Distort scalar, and split-vs-single draw mode. Android and iOS independently preserve `cRBackdrop::Change(cRLandscape*, bool)`.
 void __thiscall change_backdrop(Backdrop *backdrop, LandscapeScriptRecord *record, uint8_t flip)
 {
   int32_t v3; // edx
@@ -10,9 +10,9 @@ void __thiscall change_backdrop(Backdrop *backdrop, LandscapeScriptRecord *recor
 
   v3 = 0;
   backdrop_texture_id = record->backdrop_texture_id;
-  if ( record->split_backdrop_texture_pair )
+  if ( record->split_backdrop_texture_pair != 0 )
   {
-    if ( backdrop_texture_id )
+    if ( backdrop_texture_id != 0 )
     {
       v3 = 1;
       backdrop->pending_split_backdrop_pair = 1;
@@ -24,7 +24,7 @@ LABEL_6:
       backdrop->pending_flip = flip;
     }
   }
-  else if ( backdrop_texture_id )
+  else if ( backdrop_texture_id != 0 )
   {
     backdrop->pending_split_backdrop_pair = 0;
     v3 = 1;
