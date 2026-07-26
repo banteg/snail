@@ -2,6 +2,7 @@
 /* function: kill_golb @ 0x414670 */
 /* selector: kill_golb */
 
+// Void `cRSubGolb::Kill()` teardown for one 0x2e8-byte `GolbShot`: removes its primary body, releases the kind-specific sprite, complete embedded vapour body, or tertiary rocket and homing-target reservation, and marks the owned player-bank slot inactive.
 void __thiscall kill_golb(GolbShot *shot)
 {
   BodList *p_active_bod_list; // ecx
@@ -35,10 +36,10 @@ void __thiscall kill_golb(GolbShot *shot)
     else
     {
       list_next = shot->primary_body.bod.bod.list_next;
-      if ( list_next )
+      if ( list_next != nullptr )
         list_next->list_prev = shot->primary_body.bod.bod.list_prev;
       list_prev = shot->primary_body.bod.bod.list_prev;
-      if ( list_prev )
+      if ( list_prev != nullptr )
         list_prev->list_next = shot->primary_body.bod.bod.list_next;
       else
         p_active_bod_list->first = shot->primary_body.bod.bod.list_next;
@@ -55,10 +56,10 @@ void __thiscall kill_golb(GolbShot *shot)
   }
   kind = shot->kind;
   shot->state = 0;
-  if ( kind )
+  if ( kind != 0 )
   {
     v8 = kind - 1;
-    if ( v8 )
+    if ( v8 != 0 )
     {
       if ( v8 == 1 )
       {
@@ -73,10 +74,10 @@ void __thiscall kill_golb(GolbShot *shot)
           else
           {
             v11 = shot->tertiary_body.bod.bod.list_next;
-            if ( v11 )
+            if ( v11 != nullptr )
               v11->list_prev = shot->tertiary_body.bod.bod.list_prev;
             v12 = shot->tertiary_body.bod.bod.list_prev;
-            if ( v12 )
+            if ( v12 != nullptr )
               v12->list_next = shot->tertiary_body.bod.bod.list_next;
             else
               v9->first = shot->tertiary_body.bod.bod.list_next;
@@ -92,7 +93,7 @@ void __thiscall kill_golb(GolbShot *shot)
           report_errorf(aListRemove);
         }
         homing_target_object = shot->homing_target_object;
-        if ( homing_target_object )
+        if ( homing_target_object != nullptr )
         {
           v15 = homing_target_object->list_flags;
           BYTE1(v15) &= ~0x10u;
@@ -113,10 +114,10 @@ void __thiscall kill_golb(GolbShot *shot)
         else
         {
           v18 = shot->vapour.body.bod.bod.list_next;
-          if ( v18 )
+          if ( v18 != nullptr )
             v18->list_prev = shot->vapour.body.bod.bod.list_prev;
           v19 = shot->vapour.body.bod.bod.list_prev;
-          if ( v19 )
+          if ( v19 != nullptr )
             v19->list_next = shot->vapour.body.bod.bod.list_next;
           else
             v17->first = shot->vapour.body.bod.bod.list_next;
@@ -135,6 +136,6 @@ void __thiscall kill_golb(GolbShot *shot)
   }
   else
   {
-    kill_sprite((int)shot->render_body_owner);
+    kill_sprite(shot->render_sprite);
   }
 }

@@ -1,4 +1,4 @@
-// spawn_golb_impact_sprite @ 0x415d80 (thiscall, ret 0x4)
+// cRSubGolb::Explode(tVector) / spawn_golb_impact_sprite @ 0x415d80
 
 #include "golb.h"
 #include "player.h"

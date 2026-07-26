@@ -1,4 +1,4 @@
-// kill_golb @ 0x414670 (thiscall, ret)
+// cRSubGolb::Kill() / kill_golb @ 0x414670
 
 #include "bod_flags.h"
 #include "game_root.h"

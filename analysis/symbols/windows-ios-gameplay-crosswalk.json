@@ -621,6 +621,24 @@
       "notes": "All ports consume staged backdrop changes and advance the distortion cells. Windows additionally dispatches split or single rendering from AI when the persistent +0x658 draw gate equals one; mobile calls void cRBackdrop::Render() separately from the game render loop. Windows retains an integer tail result from that folded dispatch: projecting the mobile void ABI regresses focused matching from 88.24% to 85.29%, so the ports intentionally differ here."
     },
     {
+      "address": "0x414670",
+      "windows_name": "kill_golb",
+      "ios_symbol": "cRSubGolb::Kill()",
+      "android_symbol": "cRSubGolb::Kill()",
+      "source_object": "Golb.o",
+      "confidence": "high",
+      "notes": "All ports preserve the authored cRSubGolb teardown owner and the same kind dispatch: remove the primary body and clear the live state, then kill the kind-zero sprite, unlink the kind-one embedded vapour body, or unlink the kind-two tertiary body and release its borrowed homing-target reservation. Android calls its linked-list helper while iOS and Windows inline equivalent list removal."
+    },
+    {
+      "address": "0x414820",
+      "windows_name": "update_golb_ai",
+      "ios_symbol": "cRSubGolb::AI()",
+      "android_symbol": "cRSubGolb::AI()",
+      "source_object": "Golb.o",
+      "confidence": "high",
+      "notes": "Both mobile bodies preserve the complete cRSubGolb AI state machine seen on Windows: pause and one-tick gates, straight or path-follow motion, kind-zero gravity, kind-two homing, per-kind trail presentation, lifetime cleanup, garbage and slug contacts, and terminal wall impact. Mobile pool offsets and inlined effect code are platform-specific; the GolbShot receiver and field order agree."
+    },
+    {
       "address": "0x415280",
       "windows_name": "create_golb",
       "ios_symbol": "cRSubGolb::Create(cRSubGoldy*, int, int)",
@@ -629,6 +647,22 @@
       "notes": "The sole Windows caller discards EAX. The independent iOS body invokes the actor's slot-zero AI callback and returns without establishing a result, proving the shared void contract.",
       "android_symbol": "cRSubGolb::Create(cRSubGoldy*, int, int)",
       "android_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
+      "address": "0x415c60",
+      "windows_name": "spawn_golb_smoke",
+      "android_symbol": "cRSubGolb::Smoke(tVector)",
+      "source_object": "Golb.o",
+      "confidence": "high",
+      "notes": "Android preserves the authored cRSubGolb smoke owner and the same Sprite initialization as Windows: gameplay-owned flag, subgame-rate progress and lifetime steps, white colour, 0.1-to-0.5 size, zero gravity, velocity scaled by 0.4, and the supplied world position. The tVector argument is expressed through each platform ABI rather than transferred as a Windows layout claim."
+    },
+    {
+      "address": "0x415d80",
+      "windows_name": "spawn_golb_impact_sprite",
+      "android_symbol": "cRSubGolb::Explode(tVector)",
+      "source_object": "Golb.o",
+      "confidence": "high",
+      "notes": "Android's symbol-preserving Explode body matches the Windows impact helper's particle gate, cRSubGolb receiver, allocated Sprite owner, constant motion/progress/lifetime/size lanes, and copied world position. The sprite resource identifier is platform-specific. Android cRSubGolb::Jet(tVector) is a no-op and is intentionally not mapped to Windows spawn_golb_trail_sprite."
     },
     {
       "address": "0x415e20",

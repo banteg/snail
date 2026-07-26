@@ -2,7 +2,7 @@
 /* function: update_golb_ai @ 0x414820 */
 /* selector: update_golb_ai */
 
-// Advances one live Golb shot actor, borrowing the authored `SubLoc`/`Path` follow owners and shared `SubGarbagePool` collision chain while updating the embedded `Vapour` trail or `tertiary_body.transform` rocket owner for straight-flight, path-follow motion, impacts, and cleanup.
+// Authored `cRSubGolb::AI()` member: advances one live `GolbShot`, borrowing the `SubLoc`/`Path` follow owners and shared `SubGarbagePool` collision chain while updating the embedded `Vapour` trail or `tertiary_body.transform` rocket owner for straight-flight, path-follow motion, impacts, and cleanup. Android and iOS preserve the complete state machine over their platform layouts.
 void __thiscall update_golb_ai(GolbShot *shot)
 {
   GolbPathFollowState *p_path_follow; // ecx

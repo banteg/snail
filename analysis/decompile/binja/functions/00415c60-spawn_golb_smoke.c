@@ -22,10 +22,11 @@
 00415cff        smoke_sprite->size_end = 0.5f
 00415d06        smoke_sprite->color.a = a
 00415d1b        color.r = fconvert.s(fconvert.t(shot->velocity.x) * fconvert.t(0.400000006f))
+00415d2b        float r = color.r
 00415d2f        color.g = fconvert.s(fconvert.t(shot->velocity.y) * fconvert.t(0.400000006f))
 00415d39        long double x87_r7_9 = fconvert.t(shot->velocity.z) * fconvert.t(0.400000006f)
 00415d3f        float g = color.g
-00415d43        smoke_sprite->velocity.x = color.r
+00415d43        smoke_sprite->velocity.x = r
 00415d45        smoke_sprite->gravity_step = 0
 00415d4d        smoke_sprite->velocity.y = g
 00415d54        color.b = fconvert.s(x87_r7_9)

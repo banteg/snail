@@ -1,4 +1,4 @@
-// spawn_golb_smoke @ 0x415c60 (thiscall, ret 0x4)
+// cRSubGolb::Smoke(tVector) / spawn_golb_smoke @ 0x415c60
 
 #include "golb.h"
 #include "sprite.h"

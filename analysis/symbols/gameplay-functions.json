@@ -1035,7 +1035,7 @@
     {
       "address": "0x414820",
       "name": "update_golb_ai",
-      "description": "Advances one live Golb shot actor, borrowing the authored `SubLoc`/`Path` follow owners and shared `SubGarbagePool` collision chain while updating the embedded `Vapour` trail or `tertiary_body.transform` rocket owner for straight-flight, path-follow motion, impacts, and cleanup."
+      "description": "Authored `cRSubGolb::AI()` member: advances one live `GolbShot`, borrowing the `SubLoc`/`Path` follow owners and shared `SubGarbagePool` collision chain while updating the embedded `Vapour` trail or `tertiary_body.transform` rocket owner for straight-flight, path-follow motion, impacts, and cleanup. Android and iOS preserve the complete state machine over their platform layouts."
     },
     {
       "address": "0x415280",
@@ -1050,12 +1050,12 @@
     {
       "address": "0x415c60",
       "name": "spawn_golb_smoke",
-      "description": "Side-effect-only `GolbShot` smoke emitter that borrows the owning subgame rate and projectile velocity to seed one sprite at the supplied world position."
+      "description": "Side-effect-only `cRSubGolb::Smoke(tVector)`/`GolbShot` member that borrows the owning subgame rate and projectile velocity to seed one sprite at the supplied world position. Android preserves the owner and all Sprite initialization lanes."
     },
     {
       "address": "0x415d80",
       "name": "spawn_golb_impact_sprite",
-      "description": "Side-effect-only `GolbShot` member that allocates the short-lived impact sprite used when a shot is killed or reaches a terminal collision point, seeded from the supplied world position."
+      "description": "Side-effect-only `cRSubGolb::Explode(tVector)`/`GolbShot` member that allocates the short-lived impact sprite used when a shot is killed or reaches a terminal collision point, seeded from the supplied world position. Android preserves the owner and effect contract with a platform-specific sprite resource id."
     },
     {
       "address": "0x415e20",

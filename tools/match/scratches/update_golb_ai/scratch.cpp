@@ -1,4 +1,4 @@
-// update_golb_ai @ 0x414820 (thiscall, ret) — one live Golb shot per tick.
+// cRSubGolb::AI() / update_golb_ai @ 0x414820 — one live Golb shot per tick.
 // Straight or path-follow flight, homing blend (kind 2), per-kind trail
 // effects, garbage/slug contact sweeps, wall-14 impact, lifetime cleanup.
 
