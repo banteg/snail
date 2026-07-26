@@ -2778,7 +2778,7 @@ def test_path_sync_owns_golb_follow_abis() -> None:
         "int32_t __thiscall initialize_path_follow_golb("
         "GolbPathFollowState* state, TrackRowCell* source_cell, "
         "const Vec3* position, GolbShot* shot);",
-        "int32_t __thiscall calc_path_length_z("
+        "int32_t __thiscall traverse_path_follow_golb("
         "GolbPathFollowState* state, float path_factor, "
         "Vec3* position, Vec3* velocity);",
     )
@@ -2793,12 +2793,12 @@ def test_path_sync_owns_golb_follow_abis() -> None:
     assert "GolbPathFollowState path_follow;" in header
     for symbol_update in (
         '("0x421770", "initialize_path_follow_golb")',
-        '("0x4217b0", "calc_path_length_z")',
+        '("0x4217b0", "traverse_path_follow_golb")',
     ):
         assert symbol_update in source
     for trusted_name in (
         '(0x421770, "initialize_path_follow_golb")',
-        '(0x4217B0, "calc_path_length_z")',
+        '(0x4217B0, "traverse_path_follow_golb")',
     ):
         assert trusted_name in ida_source
     for address in ("0x414820", "0x421770", "0x4217B0"):
@@ -2825,7 +2825,7 @@ def test_path_sync_owns_golb_follow_abis() -> None:
     )
     assert (
         ida_check["artifact"]
-        == "analysis/decompile/ida/functions/004217b0-calc_path_length_z.c"
+        == "analysis/decompile/ida/functions/004217b0-traverse_path_follow_golb.c"
     )
     assert (
         "state->shot->velocity = state->shot->direction;"
@@ -19460,7 +19460,7 @@ def test_golb_path_follow_replay_preserves_sample_and_flight_owners() -> None:
     ):
         assert f'"{type_name}": {width}' in replay
 
-    assert '"calc_path_length_z"' in replay
+    assert '"traverse_path_follow_golb"' in replay
     for index, storage, name, variable_type in (
         (261, 68, "flight_position_overflow", "Vec3*"),
         (360, 68, "source_anchor_position", "Vec3*"),

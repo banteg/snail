@@ -11,7 +11,7 @@
 00414859        if (shot->state != 1)
 00414859        return
 0041486d        if (shot->path_follow.active == 1)
-00414892        switch (calc_path_length_z(&shot->path_follow, shot->path_factor, &shot->flight_transform.position, &shot->velocity))
+00414892        switch (traverse_path_follow_golb(&shot->path_follow, shot->path_factor, &shot->flight_transform.position, &shot->velocity))
 004148c6        case 0, 2
 004148c6        shot->source_matrix.position.x = shot->path_follow.output_position.x
 004148cb        shot->source_matrix.position.y = shot->path_follow.output_position.y
@@ -48,18 +48,22 @@
 00414998        if ((((x87_r7_13 < temp8_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_13, temp8_1) ? 1 : 0) << 0xa | (x87_r7_13 == temp8_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 0041499a        shot->homing_blend = 1f
 004149ab        float var_70_1 = fconvert.s(normalize_vector(&shot->velocity.x))
+004149c1        long double x87_r7_18 = fconvert.t(shot->homing_target.y) - fconvert.t(shot->flight_transform.position.y)
 004149c8        vector_1.x = fconvert.s(fconvert.t(shot->homing_target.x) - fconvert.t(shot->flight_transform.position.x))
-004149e1        vector_1.y = fconvert.s(fconvert.t(shot->homing_target.y) - fconvert.t(shot->flight_transform.position.y))
-004149ed        vector_1.z = fconvert.s(fconvert.t(shot->homing_target.z) - fconvert.t(shot->flight_transform.position.z))
+004149da        long double x87_r7_20 = fconvert.t(shot->homing_target.z) - fconvert.t(shot->flight_transform.position.z)
+004149e1        vector_1.y = fconvert.s(x87_r7_18)
+004149ed        vector_1.z = fconvert.s(x87_r7_20)
 004149f1        long double st0_2 = normalize_vector(&vector_1)
 004149f6        long double temp11_1 = fconvert.t(0.400000006f)
 004149f6        st0_2 - temp11_1
 00414a01        if ((((st0_2 < temp11_1 ? 1 : 0) << 8 | (is_unordered.t(st0_2, temp11_1) ? 1 : 0) << 0xa | (st0_2 == temp11_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
 00414a09        long double x87_r7_22 = fconvert.t(shot->homing_blend)
 00414a35        long double x87_r6_7 = fconvert.t(1f) - fconvert.t(shot->homing_blend) * fconvert.t(1.5f)
-00414a67        shot->velocity.x = fconvert.s(fconvert.t(fconvert.s(x87_r6_7 * fconvert.t(shot->velocity.x))) + fconvert.t(fconvert.s(fconvert.t(vector_1.x) * x87_r7_22)))
-00414a73        shot->velocity.y = fconvert.s(fconvert.t(fconvert.s(x87_r6_7 * fconvert.t(shot->velocity.y))) + fconvert.t(fconvert.s(fconvert.t(vector_1.y) * x87_r7_22)))
-00414a80        shot->velocity.z = fconvert.s(x87_r6_7 * fconvert.t(shot->velocity.z) + x87_r7_22 * fconvert.t(vector_1.z))
+00414a80        shot->velocity.x.12 = struct Vec3 {
+    .x = fconvert.s(fconvert.t(fconvert.s(x87_r6_7 * fconvert.t(shot->velocity.x))) + fconvert.t(fconvert.s(fconvert.t(vector_1.x) * x87_r7_22)))
+    .y = fconvert.s(fconvert.t(fconvert.s(x87_r6_7 * fconvert.t(shot->velocity.y))) + fconvert.t(fconvert.s(fconvert.t(vector_1.y) * x87_r7_22)))
+    .z = fconvert.s(x87_r6_7 * fconvert.t(shot->velocity.z) + x87_r7_22 * fconvert.t(vector_1.z))
+}
 00414a83        normalize_vector(&shot->velocity)
 00414a90        shot->velocity.x = fconvert.s(fconvert.t(var_70_1) * fconvert.t(shot->velocity.x))
 00414a99        shot->velocity.y = fconvert.s(fconvert.t(var_70_1) * fconvert.t(shot->velocity.y))
@@ -107,15 +111,19 @@
 00414c98        render_position->y = shot->source_matrix.position.y
 00414c9e        render_position->z = shot->source_matrix.position.z
 00414ca3        spawn_golb_trail_sprite(shot, &shot->source_matrix.position)
+00414cd0        float var_34_2 = fconvert.s(fconvert.t(shot->direction.z) * fconvert.t(0.300000012f))
+00414ce5        long double x87_r7_55 = fconvert.t(shot->source_matrix.position.y) - fconvert.t(fconvert.s(fconvert.t(shot->direction.y) * fconvert.t(0.300000012f)))
 00414ce9        struct Vec3 position_1
 00414ce9        position_1.x = fconvert.s(fconvert.t(shot->source_matrix.position.x) - fconvert.t(shot->direction.x) * fconvert.t(0.300000012f))
-00414d01        position_1.y = fconvert.s(fconvert.t(shot->source_matrix.position.y) - fconvert.t(fconvert.s(fconvert.t(shot->direction.y) * fconvert.t(0.300000012f))))
-00414d0f        position_1.z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(fconvert.s(fconvert.t(shot->direction.z) * fconvert.t(0.300000012f))))
+00414d01        position_1.y = fconvert.s(x87_r7_55)
+00414d0f        position_1.z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(var_34_2))
 00414d13        spawn_golb_trail_sprite(shot, &position_1)
+00414d40        float var_34_3 = fconvert.s(fconvert.t(shot->direction.z) * fconvert.t(0.600000024f))
+00414d55        long double x87_r7_62 = fconvert.t(shot->source_matrix.position.y) - fconvert.t(fconvert.s(fconvert.t(shot->direction.y) * fconvert.t(0.600000024f)))
 00414d59        struct Vec3 position_2
 00414d59        position_2.x = fconvert.s(fconvert.t(shot->source_matrix.position.x) - fconvert.t(shot->direction.x) * fconvert.t(0.600000024f))
-00414d73        position_2.y = fconvert.s(fconvert.t(shot->source_matrix.position.y) - fconvert.t(fconvert.s(fconvert.t(shot->direction.y) * fconvert.t(0.600000024f))))
-00414d7f        position_2.z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(fconvert.s(fconvert.t(shot->direction.z) * fconvert.t(0.600000024f))))
+00414d73        position_2.y = fconvert.s(x87_r7_62)
+00414d7f        position_2.z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(var_34_3))
 00414d83        spawn_golb_trail_sprite(shot, &position_2)
 00414b96        if (kind_1 == 1)
 00414c75        add_vapour_point(&shot->vapour, &shot->source_matrix)
@@ -129,14 +137,18 @@
 00414bd3        if ((((x87_r7_41 < temp13_1 ? 1 : 0) << 8 | (c1_1 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_41, temp13_1) ? 1 : 0) << 0xa | (x87_r7_41 == temp13_1 ? 1 : 0) << 0xe | 0x3800):1.b & 0x41) == 0)
 00414bdb        shot->spin = fconvert.s(x87_r7_41 - fconvert.t(6.28318548f))
 00414bee        spawn_golb_smoke(shot, &shot->source_matrix.position)
+00414c1b        float var_34_1 = fconvert.s(fconvert.t(shot->direction.z) * fconvert.t(0.5f))
+00414c30        long double x87_r7_48 = fconvert.t(shot->source_matrix.position.y) - fconvert.t(fconvert.s(fconvert.t(shot->direction.y) * fconvert.t(0.5f)))
 00414c34        struct Vec3 position
 00414c34        position.x = fconvert.s(fconvert.t(shot->source_matrix.position.x) - fconvert.t(shot->direction.x) * fconvert.t(0.5f))
-00414c4c        position.y = fconvert.s(fconvert.t(shot->source_matrix.position.y) - fconvert.t(fconvert.s(fconvert.t(shot->direction.y) * fconvert.t(0.5f))))
-00414c58        position.z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(fconvert.s(fconvert.t(shot->direction.z) * fconvert.t(0.5f))))
+00414c4c        position.y = fconvert.s(x87_r7_48)
+00414c58        position.z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(var_34_1))
 00414c5e        spawn_golb_smoke(shot, &position)
-00414dc5        shot->direction.x = fconvert.s(fconvert.t(shot->source_matrix.position.x) - fconvert.t(shot->previous_flight_transform.position.x))
-00414dcb        shot->direction.y = fconvert.s(fconvert.t(shot->source_matrix.position.y) - fconvert.t(shot->previous_flight_transform.position.y))
-00414dd6        shot->direction.z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(shot->previous_flight_transform.position.z))
+00414dd6        shot->direction.x.12 = struct Vec3 {
+    .x = fconvert.s(fconvert.t(shot->source_matrix.position.x) - fconvert.t(shot->previous_flight_transform.position.x))
+    .y = fconvert.s(fconvert.t(shot->source_matrix.position.y) - fconvert.t(shot->previous_flight_transform.position.y))
+    .z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(shot->previous_flight_transform.position.z))
+}
 00414de1        if (shot->kind == 2)
 00414dec        set_matrix_z_direction(&shot->tertiary_body.transform, &shot->direction)
 00414dfa        rotate_matrix_local_z(&shot->tertiary_body.transform, shot->spin)
@@ -173,9 +185,10 @@
 00414f6e        struct SlugSlotCursor* slug_slot_cursor = shot->game + slug_pool_byte_offset
 00414f70        enum SubSlugState slug_state = slug_slot_cursor->slug.state
 00414f7e        if (slug_state == SUB_SLUG_STATE_ACTIVE || slug_state == SUB_SLUG_STATE_LATERAL_ACTIVE)
+00414f9d        float var_50_8 = fconvert.s(fconvert.t(slug_slot_cursor->slug.body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
 00414fa7        long double x87_r7_90 = fconvert.t(slug_slot_cursor->slug.body.transform.position.z) - fconvert.t(shot->source_matrix.position.z)
 00414fae        vector.x = fconvert.s(fconvert.t(slug_slot_cursor->slug.body.transform.position.x) - fconvert.t(shot->source_matrix.position.x))
-00414fb2        vector.y = fconvert.s(fconvert.t(slug_slot_cursor->slug.body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
+00414fb2        vector.y = var_50_8
 00414fb6        long double temp19_1 = fconvert.t(0f)
 00414fb6        x87_r7_90 - temp19_1
 00414fbc        bool c1_3 = unknown  {fst dword [esp+0x34], st0}
@@ -193,12 +206,15 @@
 0041500e        float var_70_2 = fconvert.s(normalize_vector(&shot->velocity))
 00415016        vector.y = 0
 0041501e        normalize_vector(&vector)
+00415029        long double x87_r7_96 = fconvert.t(var_70_2) * fconvert.t(vector.x)
 00415033        vector_1.y = 0
-00415041        vector_1.x = fconvert.s(fneg(fconvert.t(var_70_2) * fconvert.t(vector.x)))
+00415041        vector_1.x = fconvert.s(fneg(x87_r7_96))
+00415049        long double x87_r7_99 = fconvert.t(var_70_2) * fconvert.t(vector.z)
 00415051        shot->velocity.x = vector_1.x
-00415055        vector_1.z = fconvert.s(fneg(fconvert.t(var_70_2) * fconvert.t(vector.z)))
+00415055        vector_1.z = fconvert.s(fneg(x87_r7_99))
+00415059        float z = vector_1.z
 0041505d        shot->velocity.y = 0f
-00415060        shot->velocity.z = vector_1.z
+00415060        shot->velocity.z = z
 00415063        int32_t kind_2 = shot->kind
 0041506c        if (kind_2 == 1)
 00415173        kill_golb(shot)
@@ -226,15 +242,17 @@
 0041523b        float y_1 = y
 0041523f        struct Vec3 wall_impact
 0041523f        wall_impact.x = x
+00415243        float var_4c_10 = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(1f))
 00415251        wall_impact.y = y
-00415255        wall_impact.z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(1f))
+00415255        wall_impact.z = var_4c_10
 0041525c        spawn_golb_impact_sprite(shot, &wall_impact)
 00415263        kill_golb(shot)
 00414e90        while (true)
 00414e90        if (active_garbage->state == SUB_GARBAGE_STATE_ACTIVE)
+00414ea9        float var_50_7 = fconvert.s(fconvert.t(active_garbage->body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
 00414eb0        long double x87_r7_81 = fconvert.t(active_garbage->body.transform.position.z) - fconvert.t(shot->source_matrix.position.z)
 00414eb7        vector.x = fconvert.s(fconvert.t(active_garbage->body.transform.position.x) - fconvert.t(shot->source_matrix.position.x))
-00414ebb        vector.y = fconvert.s(fconvert.t(active_garbage->body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
+00414ebb        vector.y = var_50_7
 00414ebf        long double temp18_1 = fconvert.t(0f)
 00414ebf        x87_r7_81 - temp18_1
 00414ec5        bool c1_2 = unknown  {fst dword [esp+0x34], st0}
@@ -263,9 +281,11 @@
 004150bd        struct SubGarbage* splash_garbage = shot->game->garbage_hazards.active_head
 004150c5        if (splash_garbage != 0)
 004150d1        if (splash_garbage->state == SUB_GARBAGE_STATE_ACTIVE)
-004150f8        vector.x = fconvert.s(fconvert.t(splash_garbage->body.transform.position.x) - fconvert.t(shot->source_matrix.position.x))
-004150fc        vector.y = fconvert.s(fconvert.t(splash_garbage->body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
-0041510c        vector.z = fconvert.s(fconvert.t(splash_garbage->body.transform.position.z) - fconvert.t(shot->source_matrix.position.z))
+0041510c        vector = struct Vec3 {
+    .x = fconvert.s(fconvert.t(splash_garbage->body.transform.position.x) - fconvert.t(shot->source_matrix.position.x))
+    .y = fconvert.s(fconvert.t(splash_garbage->body.transform.position.y) - fconvert.t(shot->source_matrix.position.y))
+    .z = fconvert.s(fconvert.t(splash_garbage->body.transform.position.z) - fconvert.t(shot->source_matrix.position.z))
+}
 00415110        long double st0_8 = normalize_vector(&vector)
 00415115        long double temp24_1 = fconvert.t(3f)
 00415115        st0_8 - temp24_1

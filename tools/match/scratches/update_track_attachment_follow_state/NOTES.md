@@ -97,14 +97,14 @@ the iteration notes above.
 
 Native loads `ecx = template_record` immediately before the kind-42 transform
 helper call, matching the member-call evidence seen in
-`project_position_onto_track_attachment` and `calc_path_length_z`. Rewriting
+`project_position_onto_track_attachment` and `traverse_path_follow_golb`. Rewriting
 this scratch's helper declaration as a `Path` member still regressed
 the focused match from 46.44% to 44.87%, mostly by perturbing the already
 fragile stack/layout alignment. Treat the convention evidence as a future
 shared-type consolidation lead, not a bulk scratch rewrite.
 
 2026-06-15 type consolidation: the sample view is now named
-`AttachmentSampleMatrixView`, matching `calc_path_length_z`. The fields align
+`AttachmentSampleMatrixView`, matching `traverse_path_follow_golb`. The fields align
 with the shared `AttachmentSample` layout; the local view remains only because
 this scratch needs a `TransformMatrix`-typed transform for interpolation and
 the shared attachment header still uses `AttachmentTransform`.

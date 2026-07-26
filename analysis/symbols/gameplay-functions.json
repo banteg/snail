@@ -1371,8 +1371,11 @@
     },
     {
       "address": "0x4217b0",
-      "name": "calc_path_length_z",
-      "description": "Advances one Golb projectile attachment-follow session through the borrowed authored `Path::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. iOS Path.o names this family `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`."
+      "name": "traverse_path_follow_golb",
+      "aliases": [
+        "calc_path_length_z"
+      ],
+      "description": "Advances one Golb projectile attachment-follow session through the borrowed authored `Path::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. Android and iOS Path.o independently name this owner `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`; the distinct no-argument `cRPath::CalcLengthZ()` owner is `finalize_path_template` at 0x42c600."
     },
     {
       "address": "0x421dc0",

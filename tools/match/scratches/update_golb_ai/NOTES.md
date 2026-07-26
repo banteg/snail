@@ -45,7 +45,7 @@ The projectile follow state now borrows the shared authored `Path*` and
 duplicate `GolbPathTemplate` / `GolbPathSourceCell` prefix types. The fast-shot
 look-ahead is the preceding runtime row (`cell - 8`, or `8 * 0x54 = 672`
 bytes), while the same `SubLoc` supplies the attachment template and anchor
-position consumed by `initialize_path_follow_golb` and `calc_path_length_z`.
+position consumed by `initialize_path_follow_golb` and `traverse_path_follow_golb`.
 
 Both garbage collision sweeps now walk the shared `SubGarbagePool::active_head`
 chain as `SubGarbage*`: the first sweep handles direct projectile contact and
@@ -100,7 +100,7 @@ candidate `645`, prefix `9/694`, with `68 ok, 0 unresolved, 0 mismatch`.
 Exact Golb helper sentinels (`initialize_golb_shot`, `kill_golb`,
 `spawn_golb_trail_sprite`, `initialize_path_follow_golb`) remain exact, and the
 documented partial Golb consumers (`spawn_golb_smoke`,
-`spawn_golb_impact_sprite`, `calc_path_length_z`) keep their dashboard
+`spawn_golb_impact_sprite`, `traverse_path_follow_golb`) keep their dashboard
 baselines. `uv run snail match types --paths` now reports only the remaining
 `Player` header-compatible row.
 
@@ -228,7 +228,7 @@ candidate count. Trail, smoke, and wall-impact stack temporaries are now typed
 `Vec3` locals; that source cleanup emitted the same score on its own. The
 unused `Vec3 scratch` local was removed after the full matcher stayed at 21.84%,
 637/700 instructions. A
-destination-pointer spelling for the `calc_path_length_z` output switch was
+destination-pointer spelling for the `traverse_path_follow_golb` output switch was
 tested and rejected because it regressed to 21.04%.
 
 2026-06-13 source-shaping follow-up: the live-state gate is now spelled as a
@@ -473,12 +473,12 @@ function is read (next session).
 
 ## In-follow stepping + rocket homing (lines 94-175)
 
-- following (state byte +700 == 1): `calc_path_length_z(state, step
+- following (state byte +700 == 1): `traverse_path_follow_golb(state, step
   scalar +612, position +500, velocity +588)` rides the path and returns
   a mode: 0/2 -> position adopts the state's output vector (+724/728/732
   — the GolbPathFollowState shares the FollowState output_position
   layout, sibling types confirmed); 1/3 -> keep the raw integrated
-  position. calc_path_length_z now has a structure-complete scratch; use
+  position. traverse_path_follow_golb now has a structure-complete scratch; use
   its NOTES for path-follow residuals.
 - not following: position += velocity, then per state:
   - 0 (laser): outside the y band [0, 0.49], vy -= subgame_rate * 0.017
@@ -492,10 +492,10 @@ function is read (next session).
   for the exit conditions next).
 
 Mirror plan: entry + homing + trails are transcribable now; riding waits
-on calc_path_length_z. Spawn-side setup now has a structure-complete
+on traverse_path_follow_golb. Spawn-side setup now has a structure-complete
 create_golb scratch; use its NOTES for movement-flag spawn semantics.
 
-## calc_path_length_z @ 0x4217b0 (read 2026-06-12)
+## traverse_path_follow_golb @ 0x4217b0 (read 2026-06-12)
 
 It is a sibling of update_track_attachment_follow_state: identical
 advance structure (step = factor * delta_length, segment-fit check,

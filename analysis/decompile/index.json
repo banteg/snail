@@ -1,35 +1,31 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 2,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 2,
+  "ida_exported": 2,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "binja_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "queue_axis_aligned_textured_quad",
-      "address": "0x44a8b0"
+      "name": "update_golb_ai",
+      "address": "0x414820"
     },
     {
-      "name": "queue_axis_aligned_textured_quad_uv",
-      "address": "0x44a9b0"
-    },
-    {
-      "name": "queue_textured_quad_corners",
-      "address": "0x44aac0"
+      "name": "traverse_path_follow_golb",
+      "address": "0x4217b0"
     }
   ],
-  "health_check_count": 1057,
+  "health_check_count": 1059,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

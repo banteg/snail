@@ -42,7 +42,7 @@ TRUSTED_NAMES = [
     (0x4182E0, "reset_landscape_manager"),
     (0x4182F0, "load_landscape_script_by_name"),
     (0x421770, "initialize_path_follow_golb"),
-    (0x4217B0, "calc_path_length_z"),
+    (0x4217B0, "traverse_path_follow_golb"),
     (0x42B9C0, "get_path_position_at_node"),
     (0x42CA90, "is_point_inside_track_attachment"),
     (0x42F6E0, "initialize_object_constructor_thunk"),
@@ -274,7 +274,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x420C40,  # begin_track_attachment_follow_state
     0x420CB0,  # update_track_attachment_follow_state
     0x421770,  # initialize_path_follow_golb
-    0x4217B0,  # calc_path_length_z
+    0x4217B0,  # traverse_path_follow_golb
     0x4246A0,  # build_track_fringe_mesh
     0x424AD0,  # build_track_fringe_supertramp_mesh
     0x42B9C0,  # get_path_position_at_node
@@ -1969,8 +1969,8 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall initialize_path_follow_golb(GolbPathFollowState* state, TrackRowCell* source_cell, const Vec3* position, GolbShot* shot);",
     ),
     (
-        "calc_path_length_z",
-        "int32_t __thiscall calc_path_length_z(GolbPathFollowState* state, float path_factor, Vec3* position, Vec3* velocity);",
+        "traverse_path_follow_golb",
+        "int32_t __thiscall traverse_path_follow_golb(GolbPathFollowState* state, float path_factor, Vec3* position, Vec3* velocity);",
     ),
     (
         "d3dx_create_texture_from_file_in_memory_ex",
@@ -3326,7 +3326,7 @@ def _sync_populate_runtime_lvars() -> dict[str, object]:
 
 
 def _sync_golb_path_follow_copy_ownership() -> dict[str, object]:
-    selector = "calc_path_length_z"
+    selector = "traverse_path_follow_golb"
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR or ida_funcs.get_func_start(address) == idc.BADADDR:
         return {"status": "failed", "reason": "missing_function", "selector": selector}
@@ -4796,7 +4796,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     if golb_path_follow_copy_ownership.get("status") == "failed":
         failed.append(
             {
-                "selector": "calc_path_length_z",
+                "selector": "traverse_path_follow_golb",
                 "copy_ownership": golb_path_follow_copy_ownership,
             }
         )

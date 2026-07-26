@@ -347,7 +347,7 @@ const native_turbo_projectile_spread_x_per_tick: f32 = 0.1;
 // `gameplay/native/golb.zig` mirror (band gravity, homing, trail offsets,
 // slug deflection, contact band, path-entry predicate). Tile-`0x1e`
 // path-follow riding (`initialize_path_follow_golb` + the
-// calc_path_length_z stepping) is still unrouted, so shots fly level
+// traverse_path_follow_golb stepping) is still unrouted, so shots fly level
 // through raised attachments instead of riding them.
 const native_golb_level_band_max_y: f32 = native_golb.band_ceiling_y;
 const native_golb_band_gravity_per_tick: f32 = native_golb.band_gravity_coefficient;

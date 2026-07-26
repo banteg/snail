@@ -9,7 +9,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
   float y; // edx
   float z; // ecx
   Vec3 *p_velocity; // edi
-  Vec4 *p_position; // esi
+  Vec3 *p_position; // esi
   int32_t kind; // eax
   double v8; // st7
   double v9; // st7
@@ -31,14 +31,14 @@ void __thiscall update_golb_ai(GolbShot *shot)
   double v26; // st7
   double v27; // st7
   double v28; // st7
-  float *v29; // ecx
+  Vec3 *v29; // ecx
   double v30; // st7
   double v31; // st7
   double v32; // st7
   double v33; // st7
   double v34; // st7
   double v35; // st7
-  Vec4 *v36; // edi
+  Vec3 *v36; // edi
   double v37; // st7
   double v38; // st7
   float x; // ecx
@@ -75,7 +75,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
   Vec3 v72; // [esp+68h] [ebp-18h] BYREF
   Vec3 v73; // [esp+74h] [ebp-Ch] BYREF
 
-  if ( !shot->game->subgame_pause_gate )
+  if ( shot->game->subgame_pause_gate == 0 )
   {
     if ( shot->skip_one_tick == 1 )
     {
@@ -87,10 +87,10 @@ void __thiscall update_golb_ai(GolbShot *shot)
       p_path_follow = &shot->path_follow;
       if ( shot->path_follow.active == 1 )
       {
-        switch ( calc_path_length_z(
+        switch ( traverse_path_follow_golb(
                    p_path_follow,
                    shot->path_factor,
-                   (Vec3 *)&shot->flight_transform.position,
+                   &shot->flight_transform.position,
                    &shot->velocity) )
         {
           case 0:
@@ -119,9 +119,9 @@ void __thiscall update_golb_ai(GolbShot *shot)
         shot->flight_transform.position.y = shot->velocity.y + shot->flight_transform.position.y;
         shot->flight_transform.position.z = shot->velocity.z + shot->flight_transform.position.z;
         kind = shot->kind;
-        if ( kind )
+        if ( kind != 0 )
         {
-          if ( kind == 2 && shot->homing_target_object )
+          if ( kind == 2 && shot->homing_target_object != nullptr )
           {
             v8 = shot->homing_blend_step + shot->homing_blend;
             shot->homing_blend = v8;
@@ -138,7 +138,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
             vector.z = v64.z;
             if ( normalize_vector(&vector) < 0.40000001 )
             {
-              spawn_golb_impact_sprite(shot, (Vec3 *)&shot->flight_transform.position);
+              spawn_golb_impact_sprite(shot, &shot->flight_transform.position);
               goto LABEL_82;
             }
             homing_blend = shot->homing_blend;
@@ -183,7 +183,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
         {
           track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(
                                                 shot->game,
-                                                (Vec3 *)&shot->source_matrix.position);
+                                                &shot->source_matrix.position);
           v19 = track_grid_cell_at_world_position;
           if ( track_grid_cell_at_world_position->tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE )
           {
@@ -191,34 +191,30 @@ void __thiscall update_golb_ai(GolbShot *shot)
             initialize_path_follow_golb(
               &shot->path_follow,
               track_grid_cell_at_world_position,
-              (const Vec3 *)&shot->flight_transform.position,
+              &shot->flight_transform.position,
               shot);
           }
           if ( shot->velocity.z > 1.0 && v19[-8].tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE )
           {
             shot->path_entry_z_latch = shot->source_matrix.position.z + 1.0;
-            initialize_path_follow_golb(
-              &shot->path_follow,
-              v19 - 8,
-              (const Vec3 *)&shot->flight_transform.position,
-              shot);
+            initialize_path_follow_golb(&shot->path_follow, v19 - 8, &shot->flight_transform.position, shot);
           }
         }
       }
       v20 = shot->kind;
-      if ( v20 )
+      if ( v20 != 0 )
       {
         v21 = v20 - 1;
-        if ( v21 )
+        if ( v21 != 0 )
         {
           if ( v21 == 1 )
           {
             v22 = shot->spin_step + shot->spin;
             shot->spin = v22;
             qmemcpy(&shot->tertiary_body.transform, &shot->source_matrix, sizeof(shot->tertiary_body.transform));
-            if ( !(v24 | v25) )
+            if ( (v24 | v25) == 0 )
               shot->spin = v22 - 6.2831855;
-            spawn_golb_smoke(shot, (Vec3 *)&shot->source_matrix.position);
+            spawn_golb_smoke(shot, &shot->source_matrix.position);
             v26 = shot->direction.x * 0.5;
             v68 = shot->direction.y * 0.5;
             v69 = shot->direction.z * 0.5;
@@ -240,11 +236,11 @@ void __thiscall update_golb_ai(GolbShot *shot)
       }
       else
       {
-        v29 = (float *)((char *)shot->render_body_owner + 72);
-        *v29 = shot->source_matrix.position.x;
-        v29[1] = shot->source_matrix.position.y;
-        v29[2] = shot->source_matrix.position.z;
-        spawn_golb_trail_sprite(shot, (Vec3 *)&shot->source_matrix.position);
+        v29 = &shot->render_sprite->position;
+        v29->x = shot->source_matrix.position.x;
+        v29->y = shot->source_matrix.position.y;
+        v29->z = shot->source_matrix.position.z;
+        spawn_golb_trail_sprite(shot, &shot->source_matrix.position);
         v30 = shot->direction.x * 0.30000001;
         v68 = shot->direction.y * 0.30000001;
         v69 = shot->direction.z * 0.30000001;
@@ -298,7 +294,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
           && owner_player->body.transform.position.z + 46.0 >= shot->flight_transform.position.z )
         {
           active_head = shot->game->garbage_hazards.active_head;
-          if ( active_head )
+          if ( active_head != nullptr )
           {
             while ( 1 )
             {
@@ -309,7 +305,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
                 v44 = active_head->body.transform.position.z - shot->source_matrix.position.z;
                 v64.z = v44;
                 v62 = v64;
-                if ( v46 )
+                if ( v46 != 0 )
                   v44 = -v44;
                 if ( v44 < 3.0 && normalize_vector(&v62) < active_head->radius + 0.49000001 )
                 {
@@ -323,14 +319,14 @@ void __thiscall update_golb_ai(GolbShot *shot)
                 }
               }
               active_head = active_head->next_active;
-              if ( !active_head )
+              if ( active_head == nullptr )
                 goto LABEL_53;
             }
             kill_golb(shot);
-            spawn_golb_impact_sprite(shot, (Vec3 *)&shot->source_matrix.position);
+            spawn_golb_impact_sprite(shot, &shot->source_matrix.position);
             if ( shot->kind == 2 )
             {
-              for ( i = shot->game->garbage_hazards.active_head; i; i = i->next_active )
+              for ( i = shot->game->garbage_hazards.active_head; i != nullptr; i = i->next_active )
               {
                 if ( i->state == SUB_GARBAGE_STATE_ACTIVE )
                 {
@@ -365,7 +361,7 @@ LABEL_53:
               v51 = *((float *)v49 + 874756) - shot->source_matrix.position.z;
               v64.z = v51;
               v62 = v64;
-              if ( v53 )
+              if ( v53 != 0 )
                 v51 = -v51;
               if ( v51 < 2.5 && normalize_vector(&v62) < 2.5 )
               {
@@ -386,40 +382,40 @@ LABEL_53:
                 {
                   case 1:
                     kill_golb(shot);
-                    spawn_golb_impact_sprite(shot, (Vec3 *)&shot->source_matrix.position);
+                    spawn_golb_impact_sprite(shot, &shot->source_matrix.position);
                     hit_slug_hazard(&shot->game->slug_hazards.slots[v47], 2);
                     return;
                   case 2:
                     kill_golb(shot);
-                    spawn_golb_impact_sprite(shot, (Vec3 *)&shot->source_matrix.position);
+                    spawn_golb_impact_sprite(shot, &shot->source_matrix.position);
                     hit_slug_hazard(&shot->game->slug_hazards.slots[v47], 4);
                     return;
                   case 0:
-                    if ( shot->slug_bounce_armed )
+                    if ( shot->slug_bounce_armed != 0 )
                     {
                       kill_golb(shot);
-                      spawn_golb_impact_sprite(shot, (Vec3 *)&shot->source_matrix.position);
+                      spawn_golb_impact_sprite(shot, &shot->source_matrix.position);
                     }
                     else
                     {
                       shot->slug_bounce_armed = 1;
                     }
                     return;
+                  default:
+                    break;
                 }
               }
             }
             ++v47;
           }
-          if ( get_track_grid_cell_at_world_position(shot->game, (Vec3 *)&shot->source_matrix.position)->tile_id != SUBLOC_TILE_WALL2 )
+          if ( get_track_grid_cell_at_world_position(shot->game, &shot->source_matrix.position)->tile_id != SUBLOC_TILE_WALL2 )
             return;
           v58 = shot->source_matrix.position.z - 1.0;
           v59 = shot->source_matrix.position.y;
           v64.x = v36->x;
           v64.y = v59;
-          v73.x = v64.x;
+          v73 = v64;
           v64.z = v58;
-          v73.y = v59;
-          v73.z = v64.z;
           spawn_golb_impact_sprite(shot, &v73);
         }
       }

@@ -763,7 +763,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 703/690 | 56.86% | 8/690 | 2 unaudited, 42 ok |  |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 728/736 | 72.81% | 0/736 | 37 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 698/726 | 72.89% | 122/726 | 2 unaudited, 63 ok |  |
-| 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 416/425 | 71.82% | 32/425 | 7 ok |  |
+| 🚧 | traverse_path_follow_golb | 0x4217b0 | 1551 | 416/425 | 71.82% | 32/425 | 7 ok |  |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 541/552 | 54.53% | 17/552 | 36 ok |  |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 679/679 | 54.05% | 6/679 | 41 ok |  |
 | 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 605/610 | 63.70% | 0/610 | 35 ok |  |

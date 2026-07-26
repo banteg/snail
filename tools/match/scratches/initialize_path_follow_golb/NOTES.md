@@ -15,4 +15,4 @@ clean operand.
 The focused Golb replay now explicitly owns both path-follow symbols as well
 as the `GolbPathFollowState`, `TrackRowCell`, `Path`, and `GolbShot` boundaries.
 This keeps the borrowed attachment links distinct from the embedded state and
-gives `calc_path_length_z` and the harder Golb AI a stable owner graph.
+gives `traverse_path_follow_golb` and the harder Golb AI a stable owner graph.

@@ -1,4 +1,19 @@
-# calc_path_length_z
+# traverse_path_follow_golb
+
+## 2026-07-26 mobile owner correction
+
+The former Windows label `calc_path_length_z` was an ownership error. Exact
+Itanium symbols and independently exported bodies from both Android and iOS
+identify `0x4217b0` as
+`cRPathFollowGolb::Traverse(float, tVector&, tVector*)`. The actual
+no-argument `cRPath::CalcLengthZ()` owner maps to `finalize_path_template` at
+`0x42c600`.
+
+The canonical Windows name is now `traverse_path_follow_golb`; the old label is
+retained only as a manifest alias for compatibility. The scratch source and
+machine code are otherwise unchanged, so focused Wibo remains **71.82%**
+(416/425 instructions), with a 32-instruction exact prefix and 7 clean masked
+operands.
 
 ## 2026-07-24 paired IDA copy-owner closure
 
@@ -55,7 +70,7 @@ position rows during path traversal. The adjacent matrix-shaped owner at
 matching is byte-for-byte unchanged at 55.52% (400/425 instructions, 7 clean
 masked operands).
 
-calc_path_length_z @ 0x4217b0 advances the Golb projectile path-follow state
+traverse_path_follow_golb @ 0x4217b0 advances the Golb projectile path-follow state
 used by `update_golb_ai`.
 
 Recovered semantics covered by this scratch:
@@ -81,7 +96,7 @@ Recovered semantics covered by this scratch:
 Residuals:
 
 - Current matcher result: 71.82% (`uv run snail match scratch
-  tools/match/scratches/calc_path_length_z`).
+  tools/match/scratches/traverse_path_follow_golb`).
 - The shared `golb.h` path-follow names were corrected while keeping
   `initialize_path_follow_golb` exact: this state stores the attachment
   template at `+0x04` and source cell at `+0x08`, not an independent Golb path
@@ -200,7 +215,7 @@ accepted source-shape patch measures **55.41%** (398 candidate instructions),
 with 7 masked operands resolved and no unresolved or mismatched masks, using:
 
 ```sh
-tools/match/match.sh tools/match/scratches/calc_path_length_z --regions --max-regions 12 --region-context 5
+tools/match/match.sh tools/match/scratches/traverse_path_follow_golb --regions --max-regions 12 --region-context 5
 ```
 
 Accepted changes preserve all previously mapped behavior:

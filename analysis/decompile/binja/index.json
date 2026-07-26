@@ -1307,8 +1307,8 @@
     },
     {
       "address": "0x4217b0",
-      "name": "calc_path_length_z",
-      "artifact": "analysis/decompile/binja/functions/004217b0-calc_path_length_z.c"
+      "name": "traverse_path_follow_golb",
+      "artifact": "analysis/decompile/binja/functions/004217b0-traverse_path_follow_golb.c"
     },
     {
       "address": "0x421dc0",

@@ -5,7 +5,7 @@
 //! structure complete, full semantics extracted 2026-06-13). RULE: do not
 //! refactor for taste; quirks and exact constants are the point.
 //!
-//! Zig seams: the path-follow riding lane (calc_path_length_z — a
+//! Zig seams: the path-follow riding lane (traverse_path_follow_golb — a
 //! template-stamped sibling of update_track_attachment_follow_state),
 //! grid-cell tile probes, the garbage/slug pools, and sprite/smoke/vapour
 //! emission arrive through GolbDeps. The pure lanes (band gravity, rocket

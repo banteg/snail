@@ -13425,7 +13425,7 @@
     },
     {
       "address": "0x4217b0",
-      "windows_name": "calc_path_length_z",
+      "windows_name": "traverse_path_follow_golb",
       "windows_size": 1552,
       "status": "verified",
       "android_symbol": "cRPathFollowGolb::Traverse(float, tVector&, tVector*)",

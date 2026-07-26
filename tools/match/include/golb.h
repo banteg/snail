@@ -38,7 +38,7 @@ public:
         SubLoc* source_cell,
         const Vector3* position,
         GolbShot* shot_); // @ 0x421770
-    int calc_path_length_z(float path_factor, Vector3* position, Vector3* velocity); // @ 0x4217b0
+    int traverse_path_follow_golb(float path_factor, Vector3* position, Vector3* velocity); // @ 0x4217b0
 
     unsigned char active;     // +0x00
     char unknown_01[3];

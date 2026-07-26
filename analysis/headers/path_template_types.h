@@ -2741,7 +2741,7 @@ int32_t __thiscall initialize_path_follow_golb(
     const Vec3* position,
     GolbShot* shot
 );
-int32_t __thiscall calc_path_length_z(
+int32_t __thiscall traverse_path_follow_golb(
     GolbPathFollowState* state,
     float path_factor,
     Vec3* position,

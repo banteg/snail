@@ -18474,7 +18474,7 @@
     },
     {
       "name": "bn_golb_path_follow_owner_graph",
-      "artifact": "analysis/decompile/binja/functions/004217b0-calc_path_length_z.c",
+      "artifact": "analysis/decompile/binja/functions/004217b0-traverse_path_follow_golb.c",
       "required_substrings": [
         "struct Path* template_record_1 = state->template_record",
         "state->sample_index",
@@ -18491,10 +18491,10 @@
         "secondary_sample->delta_dir_to_next.y",
         "__builtin_memcpy(&from, secondary_sample, 0x40)",
         "struct Vec3* output_position",
-        "output_position->x = fconvert.s",
-        "struct TransformMatrix* flight_transform",
-        "struct Vec3* flight_up",
-        "struct Vec3* flight_forward",
+        "*output_position = struct Vec3 {",
+        "state->shot->flight_transform.basis_right = var_c0.basis_right",
+        "state->shot->flight_transform.basis_up",
+        "state->shot->flight_transform.basis_forward",
         "struct Vec3* flight_position_side_exit",
         "compute_kind42_attachment_transform(template_record_1",
         "shot->velocity.x = shot->direction.x",
@@ -18522,20 +18522,24 @@
       "name": "bn_golb_path_follow_consumer",
       "artifact": "analysis/decompile/binja/functions/00414820-update_golb_ai.c",
       "required_substrings": [
-        "switch (calc_path_length_z(&shot->path_follow, shot->path_factor, &shot->flight_transform.position, &shot->velocity))",
+        "switch (traverse_path_follow_golb(&shot->path_follow, shot->path_factor, &shot->flight_transform.position, &shot->velocity))",
         "shot->path_follow.output_position",
         "initialize_path_follow_golb(&shot->path_follow"
       ],
       "forbidden_substrings": [
-        "calc_path_length_z(shot +",
+        "traverse_path_follow_golb(shot +",
         "shot->__offset"
       ]
     },
     {
       "name": "ida_golb_path_follow_owner_graph",
-      "artifact": "analysis/decompile/ida/functions/004217b0-calc_path_length_z.c",
+      "artifact": "analysis/decompile/ida/functions/004217b0-traverse_path_follow_golb.c",
       "required_substrings": [
-        "int32_t __thiscall calc_path_length_z(GolbPathFollowState *state, float path_factor, Vec3 *position, Vec3 *velocity)",
+        "int32_t __thiscall traverse_path_follow_golb(",
+        "GolbPathFollowState *state,",
+        "float path_factor,",
+        "Vec3 *position,",
+        "Vec3 *velocity)",
         "template_record = state->template_record;",
         "secondary_samples = template_record->secondary_samples;",
         "state->source_cell->anchor_position.z",

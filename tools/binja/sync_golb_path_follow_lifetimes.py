@@ -90,7 +90,7 @@ GOLB_PATH_FOLLOW_LIFETIME_SPECS = (
 
 GOLB_PATH_FOLLOW_USER_VAR_UPDATES = tuple(
     (
-        "calc_path_length_z",
+        "traverse_path_follow_golb",
         "RegisterVariableSourceType",
         index,
         storage,

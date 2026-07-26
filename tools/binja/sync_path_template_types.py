@@ -134,7 +134,7 @@ TRACK_RENDER_CACHE_SYMBOL_UPDATES = (
 
 GOLB_PATH_FOLLOW_SYMBOL_UPDATES = (
     ("0x421770", "initialize_path_follow_golb"),
-    ("0x4217b0", "calc_path_length_z"),
+    ("0x4217b0", "traverse_path_follow_golb"),
 )
 
 SYMBOL_UPDATES = (
@@ -3106,8 +3106,8 @@ GOLB_PROTO_UPDATES = (
         "int32_t __thiscall initialize_path_follow_golb(GolbPathFollowState* state, TrackRowCell* source_cell, const Vec3* position, GolbShot* shot)",
     ),
     (
-        "calc_path_length_z",
-        "int32_t __thiscall calc_path_length_z(GolbPathFollowState* state, float path_factor, Vec3* position, Vec3* velocity)",
+        "traverse_path_follow_golb",
+        "int32_t __thiscall traverse_path_follow_golb(GolbPathFollowState* state, float path_factor, Vec3* position, Vec3* velocity)",
     ),
 )
 

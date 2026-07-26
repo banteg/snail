@@ -1,5 +1,5 @@
-// calc_path_length_z @ 0x4217b0 (thiscall, ret 0xc)
-// cRPathFollowGolb::Traverse(float, Vec3*, Vec3*): advance the Golb
+// traverse_path_follow_golb @ 0x4217b0 (thiscall, ret 0xc)
+// cRPathFollowGolb::Traverse(float, Vec3&, Vec3*): advance the Golb
 // projectile path-follow state and return the mode consumed by update_golb_ai.
 #include "transform_matrix.h"
 #include "golb.h"
@@ -7,7 +7,7 @@
 
 typedef Vector3 Vec3;
 
-int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, Vec3* velocity)
+int GolbPathFollowState::traverse_path_follow_golb(float path_factor, Vec3* position, Vec3* velocity)
 {
     Path* current_template = template_record;
     AttachmentSample* samples = current_template->secondary_samples;

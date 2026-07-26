@@ -1,9 +1,13 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: calc_path_length_z @ 0x4217b0 */
-/* selector: calc_path_length_z */
+/* function: traverse_path_follow_golb @ 0x4217b0 */
+/* selector: traverse_path_follow_golb */
 
-// Advances one Golb projectile attachment-follow session through the borrowed authored `Path::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. iOS Path.o names this family `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`.
-int32_t __thiscall calc_path_length_z(GolbPathFollowState *state, float path_factor, Vec3 *position, Vec3 *velocity)
+// Advances one Golb projectile attachment-follow session through the borrowed authored `Path::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. Android and iOS Path.o independently name this owner `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`; the distinct no-argument `cRPath::CalcLengthZ()` owner is `finalize_path_template` at 0x42c600.
+int32_t __thiscall traverse_path_follow_golb(
+        GolbPathFollowState *state,
+        float path_factor,
+        Vec3 *position,
+        Vec3 *velocity)
 {
   int32_t sample_index; // ecx
   Path *template_record; // edx
@@ -38,32 +42,31 @@ int32_t __thiscall calc_path_length_z(GolbPathFollowState *state, float path_fac
   double v36; // st6
   PathTemplateSample *v37; // ecx
   double v38; // st7
-  float *v39; // esi
+  TransformMatrix *p_transform; // esi
   TrackRowCell *source_cell; // ecx
   double v41; // st7
   double v42; // st7
   double v43; // st6
   double v44; // st7
-  TransformMatrix *p_flight_transform; // eax
-  double v46; // st7
-  Path *v47; // edi
+  double v45; // st7
+  Path *v46; // edi
   float x; // eax
   Vec3 *p_position; // edx
   float arg2; // [esp+0h] [ebp-114h]
   float alpha; // [esp+Ch] [ebp-108h]
-  float v52; // [esp+20h] [ebp-F4h]
-  float v53; // [esp+24h] [ebp-F0h]
+  float v51; // [esp+20h] [ebp-F4h]
+  float v52; // [esp+24h] [ebp-F0h]
   float arg1; // [esp+28h] [ebp-ECh] BYREF
-  float v55; // [esp+2Ch] [ebp-E8h]
-  float v56; // [esp+30h] [ebp-E4h]
-  float v57; // [esp+34h] [ebp-E0h]
-  float v58; // [esp+38h] [ebp-DCh]
-  float v59; // [esp+3Ch] [ebp-D8h]
-  float v60; // [esp+40h] [ebp-D4h]
-  float v61; // [esp+44h] [ebp-D0h]
-  float v62; // [esp+48h] [ebp-CCh]
-  float v63; // [esp+4Ch] [ebp-C8h]
-  float v64; // [esp+50h] [ebp-C4h]
+  float v54; // [esp+2Ch] [ebp-E8h]
+  float v55; // [esp+30h] [ebp-E4h]
+  float v56; // [esp+34h] [ebp-E0h]
+  float v57; // [esp+38h] [ebp-DCh]
+  float v58; // [esp+3Ch] [ebp-D8h]
+  float v59; // [esp+40h] [ebp-D4h]
+  float v60; // [esp+44h] [ebp-D0h]
+  float v61; // [esp+48h] [ebp-CCh]
+  float v62; // [esp+4Ch] [ebp-C8h]
+  float v63; // [esp+50h] [ebp-C4h]
   TransformMatrix transform; // [esp+54h] [ebp-C0h] BYREF
   TransformMatrix to; // [esp+94h] [ebp-80h] BYREF
   TransformMatrix from; // [esp+D4h] [ebp-40h] BYREF
@@ -76,36 +79,36 @@ int32_t __thiscall calc_path_length_z(GolbPathFollowState *state, float path_fac
   {
 LABEL_4:
     v11 = state->sample_index;
-    v53 = v8 + state->progress;
-    state->progress = v53;
+    v52 = v8 + state->progress;
+    state->progress = v52;
     v12 = template_record->segment_count - 1;
     v13 = v11;
     p_x = &template_record->primary_samples[v11].transform.basis_right.x;
     if ( v11 == v12 )
-      v55 = p_x[36];
+      v54 = p_x[36];
     else
-      v55 = v53 / template_record->secondary_samples[v11].delta_length * (p_x[78] - p_x[36]) + p_x[36];
+      v54 = v52 / template_record->secondary_samples[v11].delta_length * (p_x[78] - p_x[36]) + p_x[36];
     if ( v11 == v12 )
-      v52 = p_x[39];
+      v51 = p_x[39];
     else
-      v52 = v53 / template_record->secondary_samples[v13].delta_length * (p_x[81] - p_x[39]) + p_x[39];
+      v51 = v52 / template_record->secondary_samples[v13].delta_length * (p_x[81] - p_x[39]) + p_x[39];
     if ( v11 == v12 )
       arg1 = p_x[40];
     else
-      arg1 = v53 / template_record->secondary_samples[v13].delta_length * (p_x[82] - p_x[40]) + p_x[40];
+      arg1 = v52 / template_record->secondary_samples[v13].delta_length * (p_x[82] - p_x[40]) + p_x[40];
     if ( template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42 )
     {
       v32 = position;
-      arg2 = position->x - v55;
+      arg2 = position->x - v54;
       compute_kind42_attachment_transform(template_record, arg1, arg2, 0.49000001, &transform, &arg1);
       v33 = velocity;
       p_output_position = &state->output_position;
       v35 = state->template_record->secondary_samples[state->sample_index].delta_dir_to_next.z * state->progress
           + state->source_cell->anchor_position.z
           + state->template_record->secondary_samples[state->sample_index].transform.position.z;
-      transform.basis_right.x = transform.basis_right.x * v52;
-      transform.basis_right.y = transform.basis_right.y * v52;
-      transform.basis_right.z = transform.basis_right.z * v52;
+      transform.basis_right.x = transform.basis_right.x * v51;
+      transform.basis_right.y = transform.basis_right.y * v51;
+      transform.basis_right.z = transform.basis_right.z * v51;
       v36 = velocity->y + state->vertical_offset;
       state->output_position.x = transform.position.x;
       state->output_position.y = transform.position.y;
@@ -115,59 +118,56 @@ LABEL_4:
     else
     {
       v37 = template_record->secondary_samples;
-      v38 = v53 * v37[v13].delta_dir_to_next.x;
-      v39 = &v37[v13].transform.basis_right.x;
+      v38 = v52 * v37[v13].delta_dir_to_next.x;
+      p_transform = &v37[v13].transform;
       source_cell = state->source_cell;
-      v56 = v38 * v52 + v39[12] + source_cell->anchor_position.x;
-      v57 = v53 * v39[33] * v52 + v39[13] + source_cell->anchor_position.y;
-      v58 = v53 * v39[34] + v39[14] + source_cell->anchor_position.z;
+      v55 = v38 * v51 + p_transform->position.x + source_cell->anchor_position.x;
+      v56 = v52 * p_transform[2].basis_right.y * v51 + p_transform->position.y + source_cell->anchor_position.y;
+      v57 = v52 * p_transform[2].basis_right.z + p_transform->position.z + source_cell->anchor_position.z;
       if ( v11 == v12 )
       {
         set_matrix_identity(&transform);
       }
       else
       {
-        qmemcpy(&from, v39, sizeof(from));
-        qmemcpy(&to, &template_record->secondary_samples[v11 + 1], sizeof(to));
+        from = *p_transform;
+        to = template_record->secondary_samples[v11 + 1].transform;
         memset(&from.position, 0, sizeof(from.position));
         memset(&to.position, 0, sizeof(to.position));
-        alpha = v53 / template_record->secondary_samples[v13].delta_length;
+        alpha = v52 / template_record->secondary_samples[v13].delta_length;
         linear_interpolate_matrix(&transform, &from, &to, alpha);
       }
       v33 = velocity;
       v32 = position;
       p_output_position = &state->output_position;
-      transform.basis_right.x = transform.basis_right.x * v52;
-      transform.basis_right.y = transform.basis_right.y * v52;
-      transform.basis_right.z = transform.basis_right.z * v52;
+      transform.basis_right.x = transform.basis_right.x * v51;
+      transform.basis_right.y = transform.basis_right.y * v51;
+      transform.basis_right.z = transform.basis_right.z * v51;
       state->vertical_offset = velocity->y + state->vertical_offset;
-      v41 = position->x - v55;
-      v62 = v41 * transform.basis_right.x;
-      v63 = transform.basis_right.y * v41;
+      v41 = position->x - v54;
+      v61 = v41 * transform.basis_right.x;
+      v62 = transform.basis_right.y * v41;
       v42 = v41 * transform.basis_right.z;
-      v59 = v62 + v56;
-      v43 = v63 + v57;
-      state->output_position.x = v59;
-      v60 = v43;
-      v44 = v42 + v58;
-      state->output_position.y = v60;
-      v61 = v44;
-      state->output_position.z = v61;
+      v58 = v61 + v55;
+      v43 = v62 + v56;
+      state->output_position.x = v58;
+      v59 = v43;
+      v44 = v42 + v57;
+      state->output_position.y = v59;
+      v60 = v44;
+      state->output_position.z = v60;
     }
-    p_flight_transform = &state->shot->flight_transform;
-    p_flight_transform->basis_right.x = transform.basis_right.x;
-    p_flight_transform->basis_right.y = transform.basis_right.y;
-    p_flight_transform->basis_right.z = transform.basis_right.z;
+    state->shot->flight_transform.basis_right = transform.basis_right;
     state->shot->flight_transform.basis_up = transform.basis_up;
     state->shot->flight_transform.basis_forward = transform.basis_forward;
     state->shot->velocity = state->shot->direction;
-    v46 = v32->x - v55;
-    if ( v46 < 0.0 )
-      v46 = -v46;
-    v47 = state->template_record;
-    if ( v46 <= (double)(int)v47->width_cells * 0.5 + 0.30000001 )
+    v45 = v32->x - v54;
+    if ( v45 < 0.0 )
+      v45 = -v45;
+    v46 = state->template_record;
+    if ( v45 <= (double)(int)v46->width_cells * 0.5 + 0.30000001 )
     {
-      if ( v47->kind != PATH_TEMPLATE_KIND_NONLINEAR_42 )
+      if ( v46->kind != PATH_TEMPLATE_KIND_NONLINEAR_42 )
         v32->x = v32->x + v33->x;
       return 0;
     }
@@ -215,20 +215,20 @@ LABEL_4:
       v21 = v19 * v20[segment_count - 1].transform.basis_forward.x;
       v22 = &v20[segment_count];
       p_anchor_position = &state->source_cell->anchor_position;
-      v59 = v21;
-      v60 = v19 * v22[-1].transform.basis_forward.y;
+      v58 = v21;
+      v59 = v19 * v22[-1].transform.basis_forward.y;
       v24 = v19 * v22[-1].transform.basis_forward.z;
       v25 = p_anchor_position->x + v22[-1].transform.position.x;
-      v63 = v22[-1].transform.position.y + p_anchor_position->y;
-      v64 = v22[-1].transform.position.z + p_anchor_position->z;
-      v56 = v25 + v59;
-      v26 = v63 + v60;
-      position->x = v56;
-      v57 = v26;
-      v27 = v64 + v24;
-      position->y = v57;
-      v58 = v27;
-      position->z = v58;
+      v62 = v22[-1].transform.position.y + p_anchor_position->y;
+      v63 = v22[-1].transform.position.z + p_anchor_position->z;
+      v55 = v25 + v58;
+      v26 = v62 + v59;
+      position->x = v55;
+      v56 = v26;
+      v27 = v63 + v24;
+      position->y = v56;
+      v57 = v27;
+      position->z = v57;
       v28 = arg1;
       position->x = arg1;
       v29 = &state->shot->flight_transform.position;

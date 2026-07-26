@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: calc_path_length_z @ 0x4217b0 */
+/* function: traverse_path_follow_golb @ 0x4217b0 */
 
 004217c5        struct Path* template_record_1 = state->template_record
 004217c8        struct PathTemplateSample* secondary_samples_3 = template_record_1->secondary_samples
@@ -44,12 +44,11 @@
 00421906        uint32_t eax_22 = template_record_2->segment_count * 0x15
 00421912        void* eax_23 = secondary_samples_2 + (eax_22 << 3)
 00421918        struct Vec3* source_anchor_position = &state->source_cell->anchor_position
-0042192b        long double x87_r7_4 = x87_r7_3 * fconvert.t(*(eax_23 - 0x80))
-00421945        float var_c4 = fconvert.s(fconvert.t(*(eax_23 - 0x70)) + fconvert.t(source_anchor_position->z))
-00421955        long double x87_r6_16 = fconvert.t(fconvert.s(fconvert.t(*(eax_23 - 0x74)) + fconvert.t(source_anchor_position->y))) + fconvert.t(fconvert.s(x87_r7_3 * fconvert.t(*(eax_23 - 0x84))))
-0042195d        position->x = fconvert.s(fconvert.t(source_anchor_position->x) + fconvert.t(*(eax_23 - 0x78)) + fconvert.t(fconvert.s(x87_r7_3 * fconvert.t(*(secondary_samples_2 + (eax_22 << 3) - 0x88)))))
-0042196d        position->y = fconvert.s(x87_r6_16)
-00421978        position->z = fconvert.s(fconvert.t(var_c4) + x87_r7_4)
+00421978        *position = struct Vec3 {
+    .x = fconvert.s(fconvert.t(source_anchor_position->x) + fconvert.t(*(eax_23 - 0x78)) + fconvert.t(fconvert.s(x87_r7_3 * fconvert.t(*(secondary_samples_2 + (eax_22 << 3) - 0x88)))))
+    .y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(eax_23 - 0x74)) + fconvert.t(source_anchor_position->y))) + fconvert.t(fconvert.s(x87_r7_3 * fconvert.t(*(eax_23 - 0x84)))))
+    .z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(eax_23 - 0x70)) + fconvert.t(source_anchor_position->z))) + x87_r7_3 * fconvert.t(*(eax_23 - 0x80)))
+}
 0042197b        float eax_25 = var_ec
 0042197f        position->x.b = eax_25.b
 0042197f        position->x:1.b = eax_25:1.b
@@ -110,16 +109,18 @@
 00421c40        velocity_1 = velocity
 00421c47        position_1 = position
 00421c4e        output_position = &state->output_position
-00421c53        var_c0.basis_right.x = fconvert.s(fconvert.t(var_c0.basis_right.x) * fconvert.t(var_f4))
-00421c5f        var_c0.basis_right.y = fconvert.s(fconvert.t(var_c0.basis_right.y) * fconvert.t(var_f4))
-00421c6b        var_c0.basis_right.z = fconvert.s(fconvert.t(var_c0.basis_right.z) * fconvert.t(var_f4))
+00421c6b        var_c0.basis_right = struct Vec3 {
+    .x = fconvert.s(fconvert.t(var_c0.basis_right.x) * fconvert.t(var_f4))
+    .y = fconvert.s(fconvert.t(var_c0.basis_right.y) * fconvert.t(var_f4))
+    .z = fconvert.s(fconvert.t(var_c0.basis_right.z) * fconvert.t(var_f4))
+}
 00421c75        state->vertical_offset = fconvert.s(fconvert.t(velocity_1->y) + fconvert.t(state->vertical_offset))
 00421c7a        long double x87_r7_50 = fconvert.t(position_1->x) - fconvert.t(var_e8)
-00421c92        long double x87_r7_51 = x87_r7_50 * fconvert.t(var_c0.basis_right.z)
-00421ca6        long double x87_r6_44 = fconvert.t(fconvert.s(fconvert.t(var_c0.basis_right.y) * x87_r7_50)) + fconvert.t(var_e0_2)
-00421cae        output_position->x = fconvert.s(fconvert.t(fconvert.s(x87_r7_50 * fconvert.t(var_c0.basis_right.x))) + fconvert.t(var_e4_2))
-00421cbc        output_position->y = fconvert.s(x87_r6_44)
-00421cc7        output_position->z = fconvert.s(x87_r7_51 + fconvert.t(var_dc_2))
+00421cc7        *output_position = struct Vec3 {
+    .x = fconvert.s(fconvert.t(fconvert.s(x87_r7_50 * fconvert.t(var_c0.basis_right.x))) + fconvert.t(var_e4_2))
+    .y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_c0.basis_right.y) * x87_r7_50)) + fconvert.t(var_e0_2))
+    .z = fconvert.s(x87_r7_50 * fconvert.t(var_c0.basis_right.z) + fconvert.t(var_dc_2))
+}
 00421a99        position_1 = position
 00421ab9        struct TransformMatrix* var_114_1 = &var_c0
 00421ac0        compute_kind42_attachment_transform(template_record_1, var_ec, fconvert.s(fconvert.t(position_1->x) - fconvert.t(var_e8)), 0.49000001f, &var_c0, &var_ec)
@@ -129,28 +130,22 @@
 00421af4        output_position = &state->output_position
 00421af7        long double x87_r7_24 = fconvert.t((&secondary_samples->delta_dir_to_next.z)[ecx_18 * 2]) * fconvert.t(state->progress) + fconvert.t(state->source_cell->anchor_position.z) + fconvert.t((secondary_samples + (ecx_18 << 3))->transform.position.z)
 00421b02        float x = var_c0.position.x
-00421b06        var_c0.basis_right.x = fconvert.s(fconvert.t(var_c0.basis_right.x) * fconvert.t(var_f4))
-00421b12        var_c0.basis_right.y = fconvert.s(fconvert.t(var_c0.basis_right.y) * fconvert.t(var_f4))
-00421b1e        var_c0.basis_right.z = fconvert.s(fconvert.t(var_c0.basis_right.z) * fconvert.t(var_f4))
+00421b1e        var_c0.basis_right = struct Vec3 {
+    .x = fconvert.s(fconvert.t(var_c0.basis_right.x) * fconvert.t(var_f4))
+    .y = fconvert.s(fconvert.t(var_c0.basis_right.y) * fconvert.t(var_f4))
+    .z = fconvert.s(fconvert.t(var_c0.basis_right.z) * fconvert.t(var_f4))
+}
+00421b25        long double x87_r6_36 = fconvert.t(velocity_1->y) + fconvert.t(state->vertical_offset)
 00421b28        output_position->x.b = x.b
 00421b28        output_position->x:1.b = x:1.b
 00421b28        output_position->x:2.b = x:2.b
 00421b28        output_position->x:3.b = x:3.b
 00421b2e        state->output_position.y = var_c0.position.y
-00421b31        state->vertical_offset = fconvert.s(fconvert.t(velocity_1->y) + fconvert.t(state->vertical_offset))
+00421b31        state->vertical_offset = fconvert.s(x87_r6_36)
 00421b34        state->output_position.z = fconvert.s(x87_r7_24)
-00421cd1        struct TransformMatrix* flight_transform = &state->shot->flight_transform
-00421cd6        flight_transform->basis_right.x = var_c0.basis_right.x
-00421cdc        flight_transform->basis_right.y = var_c0.basis_right.y
-00421ce3        flight_transform->basis_right.z = var_c0.basis_right.z
-00421ced        struct Vec3* flight_up = &state->shot->flight_transform.basis_up
-00421cf2        flight_up->x = var_c0.basis_up.x
-00421cf8        flight_up->y = var_c0.basis_up.y
-00421cff        flight_up->z = var_c0.basis_up.z
-00421d09        struct Vec3* flight_forward = &state->shot->flight_transform.basis_forward
-00421d0e        flight_forward->x = var_c0.basis_forward.x
-00421d14        flight_forward->y = var_c0.basis_forward.y
-00421d1b        flight_forward->z = var_c0.basis_forward.z
+00421ce3        state->shot->flight_transform.basis_right = var_c0.basis_right
+00421cff        state->shot->flight_transform.basis_up.x.12 = var_c0.basis_up
+00421d1b        state->shot->flight_transform.basis_forward.x.12 = var_c0.basis_forward
 00421d1e        struct GolbShot* shot = state->shot
 00421d2e        shot->velocity.x = shot->direction.x
 00421d33        shot->velocity.y = shot->direction.y
