@@ -208,3 +208,43 @@ the input. Assigning the derived radius back to `curve_source` regressed to
 loop index for departure reached 48.50%, and rewriting the phases through the
 `width_cells_` input reached 48.06%. Those ownership probes are rejected; no
 parameter mutation or artificial lifetime is retained.
+
+## 2026-07-26 curved-sample and mesh cursor closure
+
+Raw Windows instructions at `0x41d254..0x41d4f5` distinguish the current
+curved samples from their predecessors. The current primary and secondary
+records remain owned by the two member arrays plus the advancing `0xa8` byte
+cursor; hoisting either current record into a pointer hides the native repeated
+member-base loads. The predecessor orientation is the complementary owner:
+each preceding record owns its right, forward, and up vectors through the
+normalize and cross-product sequence.
+
+Recovering the current-array spelling first raised focused matching to 52.21%.
+Writing the proven predecessor vector operations at their actual records,
+instead of routing them through pointer-shaped helper parameters, raised it to
+55.31%. The strip-mesh instructions at `0x41d6a6..0x41d7e6` then supplied the
+dependent outer owner: a mesh-row counter and a separate primary-sample byte
+cursor. Replaying that cursor only after the curved ownership was complete
+restored the native zero/departure register plan and produced:
+
+```text
+match: 59.28%
+target: 685 insns, candidate: 695 insns
+prefix: 16/685 target insns
+masked operands: 37 ok, 0 unresolved, 0 mismatch
+```
+
+This is a 10.34-point gain from the retained 48.94% frontier. The exact prefix
+is four instructions shorter because the candidate still assigns the curve
+count and radius to different stack slots, but the recovered middle and mesh
+regions are materially closer and every audited relocation remains correct.
+Face-row, column, and record indices are now scoped to the loops that own them;
+that clarification is code-generation neutral.
+
+Several tempting partial owners were measured and rejected. Keeping the
+orientation helper with the mesh cursor stayed at 52.00%; a narrow primary-base
+alias fell to 49.89%; an explicit common face-record index also fell to 49.89%
+and globally rotated the register plan; and a guarded delta `do/while` reached
+only 53.15%. The target arithmetic does not prove those source lifetimes. No
+dummy use, parameter mutation, equal-arm texture rewrite, or dead relocation
+was introduced.
