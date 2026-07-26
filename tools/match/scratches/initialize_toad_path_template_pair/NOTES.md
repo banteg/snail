@@ -127,3 +127,18 @@ recovers the exact native `0x54` frame. The exact prefix expands from one to 15
 instructions. The face initializer now also names the owning 16-bit
 `header_word` proven by the native word clear; that field-width correction is
 score-neutral.
+
+## 2026-07-26 portable selector type
+
+Android and iOS independently export the exact mangled
+`cRPath::BuildToad(bool, char*, char*)` symbol. That resolves the Windows
+selector's previously known one-byte storage width from generic `char` to the
+authored `bool turn_left` type. The Windows-only fourth stack argument remains
+`vertical_texture`: native `ret 0x10` cleanup and all four world-initializer
+callsites prove it, while the mobile builders stop before the Windows strip-mesh
+tail and therefore expose only the portable two-texture surface.
+
+The matcher declaration, authoritative analysis header, and Binary Ninja/IDA
+replay specifications now agree on the boolean selector. VC6 emits the same
+47.92% candidate (635/663), with its 15-instruction prefix and 33 clean masked
+operands, so this is an ownership correction rather than a score claim.

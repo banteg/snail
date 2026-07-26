@@ -2544,7 +2544,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildToad(bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols resolve the selector as bool. Windows retains an additional vertical strip-mesh texture after the portable arguments, proven by native ret 0x10 cleanup and four full-arity world-initializer callsites."
     },
     {
       "address": "0x42d570",

@@ -111,3 +111,18 @@ A follow-up spelling through the shared by-value `Vector3` arithmetic operators
 regressed the focused result to 67.17% (723/721). The retained explicit vector
 owners follow the native branch-local lifetime evidence without forcing its
 register schedule.
+
+## 2026-07-26 mobile-backed initializer order
+
+The exact iOS `cRPath::BuildLoopTheLoop(float, int, bool, char*, char*)` body
+retains the redundant kind-0 assignment in the width-4 branch, while Android
+independently confirms the same base kind and width-4 wiggle selection. The
+Windows target stores its initial kind before materializing the zero-valued
+wiggle local; the shared variant-0 skeleton had declared that local first.
+
+Moving the ordinary kind assignment ahead of the local declaration recovers
+that natural source order. Focused matching rises from 69.43% to 69.71%
+(725/721), and the exact prefix expands from 9 to 22 instructions with all 49
+masked operands clean. An explicit `curve_count + 14` owner and the mobile
+taper-expression grouping were tested separately and rejected because they
+regressed the Windows build to 66.90% and 65.14%, respectively.

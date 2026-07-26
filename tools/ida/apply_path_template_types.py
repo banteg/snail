@@ -2898,7 +2898,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_toad_path_template_pair",
-        "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_toad_path_template_pair(Path* self, bool turn_left, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_hill_valley_path_template_pair",

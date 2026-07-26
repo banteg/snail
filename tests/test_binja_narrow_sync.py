@@ -2854,6 +2854,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
 
     assert "CORE_SUBGAME_PROTO_UPDATES" in source
     assert "DEFERRED_SUBGAME_OWNER_PROTO_UPDATES" in source
+    assert "REFINED_PATH_OWNER_PROTO_UPDATES" in source
     assert "DEFERRED_PATH_OWNER_PROTO_UPDATES" in source
     assert "proto_owner_deferred" in source
     assert "apply_struct_and_proto_updates" in source
@@ -2878,6 +2879,9 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     )[1].split("\n)\n\nPROTO_UPDATES", 1)[0]
     deferred_prototypes = source.split(
         "DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (", 1
+    )[1].split("\n)\n\n\nDEFERRED_PATH_OWNER_PROTO_UPDATES", 1)[0]
+    refined_path_prototypes = source.split(
+        "REFINED_PATH_OWNER_PROTO_UPDATES = (", 1
     )[1].split("\n)\n\n\nDEFERRED_PATH_OWNER_PROTO_UPDATES", 1)[0]
     deferred_path_prototypes = source.split(
         "DEFERRED_PATH_OWNER_PROTO_UPDATES = (", 1
@@ -3074,12 +3078,28 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "void __fastcall finalize_path_template(Path* self)",
         "void __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path)",
         "void __thiscall initialize_cage2_path_template_pair(Path* self, int32_t width_cells_, char* texture_a, char* texture_b, char* vertical_texture)",
-        "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall mirror_path_template_pair_x(Path* self, Path* source)",
     ):
         assert declaration in deferred_path_prototypes
         assert "".join(f"{declaration};".split()) in compact_header
         assert "".join(f'"{declaration};"'.split()) in compact_ida_source
+    previous_toad_prototype = (
+        "void __thiscall initialize_toad_path_template_pair("
+        "Path* self, char turn_left, char* texture_a, char* texture_b, "
+        "char* vertical_texture)"
+    )
+    desired_toad_prototype = previous_toad_prototype.replace(
+        "char turn_left", "bool turn_left"
+    )
+    assert previous_toad_prototype in refined_path_prototypes
+    assert desired_toad_prototype in refined_path_prototypes
+    assert previous_toad_prototype not in deferred_path_prototypes
+    assert "".join(f"{desired_toad_prototype};".split()) in compact_header
+    assert "".join(f'"{desired_toad_prototype};"'.split()) in compact_ida_source
+    assert "def apply_refined_owner_prototypes(" in source
+    assert "elif observed_normalized == previous_normalized:" in source
+    assert "updates=((identifier, desired_prototype),)" in source
+    assert '"owner ABI is not the exact previously recovered form; "' in source
     for function_name in (
         "initialize_looptheloop_path_template_pair",
         "initialize_looptheloopw_path_template_pair",

@@ -3926,6 +3926,14 @@ DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
     ),
 )
 
+REFINED_PATH_OWNER_PROTO_UPDATES = (
+    (
+        "initialize_toad_path_template_pair",
+        "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
+        "void __thiscall initialize_toad_path_template_pair(Path* self, bool turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+)
+
 
 DEFERRED_PATH_OWNER_PROTO_UPDATES = (
     (
@@ -4049,10 +4057,6 @@ DEFERRED_PATH_OWNER_PROTO_UPDATES = (
         "void __thiscall initialize_cage2_path_template_pair(Path* self, int32_t width_cells_, char* texture_a, char* texture_b, char* vertical_texture)",
     ),
     (
-        "initialize_toad_path_template_pair",
-        "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
-    ),
-    (
         "mirror_path_template_pair_x",
         "void __thiscall mirror_path_template_pair_x(Path* self, Path* source)",
     ),
@@ -4095,6 +4099,72 @@ def report_deferred_owner_prototypes(
                 f"--target {target} --function {identifier} --apply"
             )
         results.append(result)
+    return results
+
+
+def apply_refined_owner_prototypes(
+    *,
+    target: str,
+    updates: tuple[tuple[str, str, str], ...],
+) -> list[dict[str, object]]:
+    observed_prototypes = current_prototypes(
+        REPO_ROOT,
+        target=target,
+        identifiers=(identifier for identifier, _previous, _desired in updates),
+    )
+    results: list[dict[str, object]] = []
+    for identifier, previous_prototype, desired_prototype in updates:
+        observed = observed_prototypes.get(identifier)
+        observed_normalized = (
+            normalize_prototype(observed, identifier=identifier)
+            if observed is not None
+            else None
+        )
+        desired_normalized = normalize_prototype(
+            desired_prototype,
+            identifier=identifier,
+        )
+        previous_normalized = normalize_prototype(
+            previous_prototype,
+            identifier=identifier,
+        )
+        if observed_normalized == desired_normalized:
+            results.append(
+                {
+                    "op": "proto_owner_refinement",
+                    "status": "skipped",
+                    "reason": "already current",
+                    "identifier": identifier,
+                    "prototype": desired_prototype,
+                }
+            )
+        elif observed_normalized == previous_normalized:
+            results.extend(
+                apply_proto_updates(
+                    REPO_ROOT,
+                    target=target,
+                    updates=((identifier, desired_prototype),),
+                )
+            )
+        else:
+            results.append(
+                {
+                    "op": "proto_owner_refinement",
+                    "status": "deferred",
+                    "reason": (
+                        "owner ABI is not the exact previously recovered form; "
+                        "guarded function recreation remains required"
+                    ),
+                    "identifier": identifier,
+                    "previous_prototype": previous_prototype,
+                    "desired_prototype": desired_prototype,
+                    "observed_prototype": observed,
+                    "repair_command": (
+                        "uv run tools/binja/repair_deferred_owner_abi.py "
+                        f"--target {target} --function {identifier} --apply"
+                    ),
+                }
+            )
     return results
 
 
@@ -4976,6 +5046,12 @@ def main() -> int:
                 *PATH_SAMPLE_INVERSE_USER_VAR_UPDATES,
                 *ATTACHMENT_FOLLOW_USER_VAR_UPDATES,
             ),
+        )
+    )
+    operations.extend(
+        apply_refined_owner_prototypes(
+            target=args.target,
+            updates=REFINED_PATH_OWNER_PROTO_UPDATES,
         )
     )
     operations.extend(

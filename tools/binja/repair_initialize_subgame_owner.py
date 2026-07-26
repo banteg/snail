@@ -1304,7 +1304,7 @@ FUNCTION_SPECS.update(
             stale_return_type="int32_t",
             calling_convention="__thiscall",
             parameters=(
-                ("turn_left", "char", "char"),
+                ("turn_left", "bool", "char"),
                 ("texture_a", "char*", "char*"),
                 ("texture_b", "char*", "char*"),
                 ("vertical_texture", "char*", "char*"),

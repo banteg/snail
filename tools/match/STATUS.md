@@ -756,7 +756,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | create_vertex_buffer | 0x4114b0 | 286 | 92/101 | 76.68% | 8/101 | 11 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 13 ok |  |
-| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 725/721 | 69.43% | 9/721 | 49 ok |  |
+| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 725/721 | 69.71% | 22/721 | 49 ok |  |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 746/745 | 65.73% | 10/745 | 55 ok |  |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 722/718 | 58.89% | 0/718 | 4 unaudited, 50 ok |  |
 | 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 695/685 | 60.00% | 20/685 | 2 unaudited, 42 ok |  |

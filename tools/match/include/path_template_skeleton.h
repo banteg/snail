@@ -102,8 +102,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     kind = 0x00;
     float loop_wiggle = 0.0f;
 #else
-    float loop_wiggle = 0.0f;
     kind = 0x00;
+    float loop_wiggle = 0.0f;
 #endif
     if (width_cells_ == 4) {
 #if PATH_VARIANT == 1

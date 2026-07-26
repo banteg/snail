@@ -144,16 +144,18 @@
 0042d0f4        *(&self->secondary_samples->delta_length + esi_8) = fconvert.s(normalize_vector(&self->secondary_samples->delta_dir_to_next + esi_8))
 0042d0fe        esi_8 += 0xa8
 0042d107        do while (i s< self->segment_count - 1)
-0042d137        struct Vec3* primary_terminal_delta = &self->primary_samples[self->segment_count] - 0x28
-0042d14b        primary_terminal_delta->x = 0
-0042d159        primary_terminal_delta->y = 0f
-0042d15c        primary_terminal_delta->z = 1f
+0042d15c        *(&self->primary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 0042d16e        int32_t var_28_3 = 0x3f800000
 0042d17a        *(&self->primary_samples[self->segment_count] - 0x1c) = 0x3f800000
-0042d190        struct Vec3* secondary_terminal_delta = &self->secondary_samples[self->segment_count] - 0x28
-0042d198        secondary_terminal_delta->x = 0
-0042d19e        secondary_terminal_delta->y = 0f
-0042d1a3        secondary_terminal_delta->z = 1f
+0042d1a3        *(&self->secondary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 0042d1b8        *(&self->secondary_samples[self->segment_count] - 0x1c) = 0x3f800000
 0042d1cb        request_object_vertices(self->bod.object, (self->width_cells + 1) * (self->segment_count + 1))
 0042d1dd        request_object_facequads(self->bod.object, (self->width_cells * self->segment_count) << 1)

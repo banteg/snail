@@ -1502,7 +1502,7 @@
     {
       "address": "0x42cbf0",
       "name": "initialize_toad_path_template_pair",
-      "description": "Builds the Toad attachment path-template pair; iOS Path.o names this `cRPath::BuildToad(bool, char*, char*)`."
+      "description": "Builds the Toad attachment path-template pair. Android and iOS both preserve the exact authored `cRPath::BuildToad(bool, char*, char*)` symbol, resolving the Windows selector's one-byte storage as `bool`; Windows additionally owns a vertical strip-mesh texture proven by its four-argument cleanup and callsites."
     },
     {
       "address": "0x42d570",
