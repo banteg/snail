@@ -181,3 +181,37 @@ including the grouped negative cosine profile. Its optimized ARM output cannot
 distinguish a source alias from the input itself; the Windows build can.
 Removing the retained height-scale owner regressed focused matching to 49.85%
 and shortened the candidate by one instruction, so that cleanup is rejected.
+
+## 2026-07-26 curved-record and parameter ownership
+
+Dump's curved section at `0x41dc54..0x41dec5` confirms the same split ownership
+as Hump. Current primary and secondary records stay rooted in their member
+arrays plus the advancing `0xa8` byte offset, while each preceding record owns
+the right, forward, and up vectors written by the normalize/cross sequence.
+Replacing current-record pointer locals and the pointer-shaped orientation
+helper with those observed owners moves focused matching from 52.00% to 55.13%
+and adds one clean audited operand.
+
+The native prologue uses a `0x4c` frame, writes the derived radius into the
+now-dead `curve_source` input slot, and later reads `height_scale` from its
+incoming slot. Rechecking those owners after the curved-record recovery changes
+the result of the earlier isolated probe: using `height_scale` directly reaches
+56.14%, and reusing `curve_source` for the radius reaches the retained frontier:
+
+```text
+match: 56.86%
+target: 690 insns, candidate: 703 insns
+prefix: 8/690 target insns
+masked operands: 36 ok, 0 unresolved, 0 mismatch
+```
+
+The mesh instructions at `0x41e0d1..0x41e1f0` independently show an outer row
+counter and a separate primary-sample byte cursor. Making those owners explicit,
+and scoping face indices to their loops, is code-generation neutral for Dump but
+keeps the recovered source model aligned with the native lifetime structure.
+
+An explicit departure-limit local was rejected even though it reached 56.92%
+with 38 clean operands. Binary Ninja's structured form preserves the authored
+`departure_index - 7 - curve_count < 7` expression and does not establish a
+separate source lifetime, so the slightly higher score is insufficient evidence.
+No dummy use, artificial lifetime, or equal-arm texture rewrite is retained.
