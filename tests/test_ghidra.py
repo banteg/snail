@@ -47,6 +47,8 @@ def test_parse_nm_symbols_normalizes_macho_and_deduplicates() -> None:
     parse_nm_symbols = _batch_namespace()["parse_nm_symbols"]
     output = (
         "00046350 T _ZN6cRPath11BuildSlalomEiibPcS0_\n"
+            "00014118 T _Z10G0SetBlendi\n"
+            "00014118 - 01 0000 FUN __Z10G0SetBlendi\n"
             "00057c54 t __ZN6cRPath11BuildSlalomEiibPcS0_\n"
             "00057c54 - 01 0000 FUN __ZN6cRPath11BuildSlalomEiibPcS0_\n"
             "00020124 - 01 0000 FUN __ZN9cRSubGame12PlaceParcelsEv\n"
@@ -56,6 +58,10 @@ def test_parse_nm_symbols_normalizes_macho_and_deduplicates() -> None:
         )
 
     assert parse_nm_symbols(output) == [
+        (
+            "_Z10G0SetBlendi",
+            "_Z10G0SetBlendi",
+        ),
         (
             "_ZN6cRPath11BuildSlalomEiibPcS0_",
             "_ZN6cRPath11BuildSlalomEiibPcS0_",

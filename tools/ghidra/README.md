@@ -2,7 +2,7 @@
 
 ## Batch corpus export
 
-`export_itanium_symbols.py` exports every nested Itanium C++ function selected
+`export_itanium_symbols.py` exports every Itanium C++ text/weak function selected
 from the binary symbol table in one headless analysis run. The index keeps the
 mangled and demangled names, Ghidra entry point, function size, parameter types,
 prototype, output path, and per-function status.

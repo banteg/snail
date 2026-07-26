@@ -18,7 +18,7 @@ DEFAULT_NM = Path("/usr/bin/nm")
 DEFAULT_CXXFILT = Path("/usr/bin/c++filt")
 SCRIPT_DIR = Path(__file__).resolve().parent
 FAILURE_LOG_LINES = 80
-ITANIUM_NESTED_SYMBOL = re.compile(r"^_{1,2}ZN")
+ITANIUM_FUNCTION_SYMBOL = re.compile(r"^_{1,2}Z")
 TEXT_SYMBOL_TYPES = frozenset(("T", "t", "W", "w"))
 
 
@@ -27,7 +27,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "binary",
         type=Path,
-        help="ELF or Mach-O artifact whose nested C++ functions will be exported",
+        help="ELF or Mach-O artifact whose C++ functions will be exported",
     )
     parser.add_argument(
         "output",
@@ -94,7 +94,7 @@ def parse_nm_symbols(output: str) -> list[tuple[str, str]]:
         if not fields:
             continue
         binary_symbol = fields[-1]
-        if not ITANIUM_NESTED_SYMBOL.match(binary_symbol):
+        if not ITANIUM_FUNCTION_SYMBOL.match(binary_symbol):
             continue
         is_text_symbol = (
             len(fields) == 3 and fields[-2] in TEXT_SYMBOL_TYPES
@@ -104,7 +104,7 @@ def parse_nm_symbols(output: str) -> list[tuple[str, str]]:
             continue
         mangled = (
             binary_symbol[1:]
-            if binary_symbol.startswith("__ZN")
+            if binary_symbol.startswith("__Z")
             else binary_symbol
         )
         symbols.setdefault(mangled, binary_symbol)
@@ -130,7 +130,7 @@ def collect_symbols(
         )
     parsed = parse_nm_symbols(nm_result.stdout)
     if not parsed:
-        raise RuntimeError(f"no _ZN symbols found in {binary}")
+        raise RuntimeError(f"no Itanium _Z symbols found in {binary}")
 
     mangled_input = "\n".join(mangled for mangled, _ in parsed) + "\n"
     demangle_result = subprocess.run(

@@ -184,7 +184,7 @@ public class ExportItaniumSymbols extends GhidraScript {
         Set<String> candidateNames = new LinkedHashSet<>();
         candidateNames.add(request.binarySymbol);
         candidateNames.add(request.mangled);
-        if (request.binarySymbol.startsWith("__ZN")) {
+        if (request.binarySymbol.startsWith("__Z")) {
             candidateNames.add(request.binarySymbol.substring(1));
         }
 

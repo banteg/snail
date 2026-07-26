@@ -22,9 +22,10 @@ Layout:
 - `index.json`: top-level refresh summary, including combined mismatch counts
 
 The Windows Binary Ninja and IDA lanes are curated by
-`gameplay-functions.json`. The mobile lanes intentionally cover every nested
-C++ text/weak symbol in their respective binaries, including functions outside
-the Windows manifest. Use mobile bodies for original class/method vocabulary,
+`gameplay-functions.json`. The mobile lanes intentionally cover every Itanium
+C++ text/weak function in their respective binaries, including global
+functions and functions outside the Windows manifest. Use mobile bodies for
+original class/method vocabulary,
 field order, control flow, and expression trees; keep Windows evidence
 authoritative for object offsets and VC6 code shape.
 
