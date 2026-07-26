@@ -111,3 +111,19 @@ The replay first checks all canonical owner widths and fields, and its
 transaction preview yields no negative `__offset` expressions. Matcher source
 and bytes remain unchanged at 28.64% (617/696 instructions, 27 clean masked
 operands); no source coercion or fakematching is involved.
+
+## 2026-07-26 entrance array ownership
+
+The native fixed entrance loop advances one byte-stride cursor while indexing
+both sample arrays from the `Path` owner; it does not retain separate primary
+and secondary sample-pointer aliases across the loop body. Removing those two
+aliases from SlalomBig moves focused Wibo from 28.64% (617/696) to 29.26%
+(623/696), and improves the masked audit from 27 to 28 clean operands with no
+unresolved or mismatched operands.
+
+This ownership boundary does not transfer blindly. The same source change
+regresses the smaller Slalom scratch from 28.42% to 27.84% in its different
+surrounding compilation context, and extending direct array indexing into the
+SlalomBig departure loop regresses the new 29.26% baseline to 28.14%. Both
+probes were reverted; only the independently improving fixed entrance owner is
+retained.

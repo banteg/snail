@@ -195,24 +195,21 @@ void Path::initialize_slalombig_path_template_pair(
 
     int i;
     for (i = 0; i < 4; ++i) {
-        PathTemplateSample* primary = &primary_samples[i];
-        PathTemplateSample* secondary = &secondary_samples[i];
-
-        primary->center_x = 0.0f;
-        primary->rotation_scalar_98 = 0.0f;
-        primary->rotation_scalar_94 = 0.0f;
-        primary->special_scalar = 0.0f;
-        primary->lateral_scale = 1.0f;
-        set_matrix_identity(&primary->transform);
+        primary_samples[i].center_x = 0.0f;
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
         float z = (float)i;
-        primary->transform.position.x = primary->center_x;
-        primary->transform.position.y = 0.0f;
-        primary->transform.position.z = z;
+        primary_samples[i].transform.position.x = primary_samples[i].center_x;
+        primary_samples[i].transform.position.y = 0.0f;
+        primary_samples[i].transform.position.z = z;
 
-        set_matrix_identity(&secondary->transform);
-        secondary->transform.position.x = primary->center_x;
-        secondary->transform.position.y = 0.49000001f;
-        secondary->transform.position.z = z;
+        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y = 0.49000001f;
+        secondary_samples[i].transform.position.z = z;
     }
 
     int departure_index = lead_out_start;
