@@ -104,7 +104,9 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     int curve_count = PATH_CURVE_COUNT;
 #endif
     float height_scale_value = PATH_HEIGHT_SCALE;
+#if PATH_VARIANT != 5
     int i;
+#endif
 
 #if PATH_VARIANT == 5
     kind = 0x14;
@@ -363,13 +365,13 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         }
     }
 #elif PATH_VARIANT == 5
-    curve_count = (int)curve_count_source;
-    int endpoint_index = curve_count + 1;
-    width_or_scale = 1.0f;
+    width_cells_ = (int)curve_count_source;
+    int endpoint_index = width_cells_ + 1;
+    width_or_scale = height_scale_value;
     segment_count = endpoint_index + 1;
     segment_count_f = (float)(endpoint_index + 1);
-    float curve_count_f = (float)curve_count;
-    float dip_radius = curve_count_f * 0.047746483f;
+    float curve_count_f = (float)width_cells_;
+    curve_source = curve_count_f * 0.047746483f;
     allocate_path_template_samples();
     has_entry_mesh_transition = 0;
 
@@ -377,7 +379,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     primary_samples[0].rotation_scalar_98 = 0.0f;
     primary_samples[0].rotation_scalar_94 = 0.0f;
     primary_samples[0].special_scalar = 0.0f;
-    primary_samples[0].lateral_scale = 1.0f;
+    primary_samples[0].lateral_scale = height_scale_value;
     primary_samples[0].transform.set_matrix_identity();
     primary_samples[0].transform.position.x = primary_samples[0].center_x;
     primary_samples[0].transform.position.y = 0.0f;
@@ -387,64 +389,98 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
 
-    primary_samples[endpoint_index].center_x = 0.0f;
-    primary_samples[endpoint_index].rotation_scalar_98 = 0.0f;
-    primary_samples[endpoint_index].rotation_scalar_94 = 0.0f;
-    primary_samples[endpoint_index].special_scalar = 0.0f;
-    primary_samples[endpoint_index].lateral_scale = 1.0f;
-    primary_samples[endpoint_index].transform.set_matrix_identity();
+    int endpoint_sample_offset =
+        endpoint_index * (int)sizeof(PathAttachmentSample);
+    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))
+        ->center_x = 0.0f;
+    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))
+        ->rotation_scalar_98 = 0.0f;
+    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))
+        ->rotation_scalar_94 = 0.0f;
+    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))
+        ->special_scalar = 0.0f;
+    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))
+        ->lateral_scale = height_scale_value;
+    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))
+        ->transform.set_matrix_identity();
     float endpoint_z = (float)endpoint_index;
-    primary_samples[endpoint_index].transform.position.x =
-        primary_samples[endpoint_index].center_x;
-    primary_samples[endpoint_index].transform.position.y = 0.0f;
-    primary_samples[endpoint_index].transform.position.z = endpoint_z;
-    secondary_samples[endpoint_index].transform.set_matrix_identity();
-    secondary_samples[endpoint_index].transform.position.x =
-        primary_samples[endpoint_index].center_x;
-    secondary_samples[endpoint_index].transform.position.y = 0.49000001f;
-    secondary_samples[endpoint_index].transform.position.z = endpoint_z;
+    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))
+        ->transform.position.x =
+        ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))
+            ->center_x;
+    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))
+        ->transform.position.y = 0.0f;
+    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))
+        ->transform.position.z = endpoint_z;
+    ((PathAttachmentSample*)((char*)secondary_samples + endpoint_sample_offset))
+        ->transform.set_matrix_identity();
+    ((PathAttachmentSample*)((char*)secondary_samples + endpoint_sample_offset))
+        ->transform.position.x =
+        ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))
+            ->center_x;
+    ((PathAttachmentSample*)((char*)secondary_samples + endpoint_sample_offset))
+        ->transform.position.y = 0.49000001f;
+    ((PathAttachmentSample*)((char*)secondary_samples + endpoint_sample_offset))
+        ->transform.position.z = endpoint_z;
 
-    if (curve_count > 0) {
-        i = 0;
+    if (width_cells_ > 0) {
+        int i = 0;
         int sample_offset = (int)sizeof(PathAttachmentSample);
         do {
-            PathAttachmentSample* primary =
-                (PathAttachmentSample*)((char*)primary_samples + sample_offset);
-            PathAttachmentSample* secondary =
-                (PathAttachmentSample*)((char*)secondary_samples + sample_offset);
-            primary->center_x = 0.0f;
-            primary->rotation_scalar_98 = 0.0f;
-            primary->rotation_scalar_94 = 0.0f;
-            primary->special_scalar = 0.0f;
-            primary->lateral_scale = 1.0f;
+            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))->center_x =
+                0.0f;
+            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                ->rotation_scalar_98 = 0.0f;
+            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                ->rotation_scalar_94 = 0.0f;
+            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                ->special_scalar = 0.0f;
+            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                ->lateral_scale = 1.0f;
             float angle = (float)i * 6.2831855f / curve_count_f;
-            primary->transform.set_matrix_identity();
-            primary->transform.position.x = primary->center_x;
+            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                ->transform.set_matrix_identity();
+            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                ->transform.position.x =
+                ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                    ->center_x;
             ++i;
-            primary->transform.position.y =
-                -((1.0f - cosine(angle)) * dip_radius);
+            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                ->transform.position.y =
+                -((1.0f - cosine(angle)) * curve_source);
             float z = (float)i;
-            primary->transform.position.z = z;
-            secondary->transform.set_matrix_identity();
-            secondary->transform.position.x = primary->center_x;
-            secondary->transform.position.y =
-                0.49000001f - (1.0f - cosine(angle)) * dip_radius;
-            secondary->transform.position.z = z;
-            PathAttachmentSample* previous_primary = primary - 1;
-            PathAttachmentSample* previous_secondary = secondary - 1;
+            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                ->transform.position.z = z;
+            ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
+                ->transform.set_matrix_identity();
+            ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
+                ->transform.position.x =
+                ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                    ->center_x;
+            ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
+                ->transform.position.y =
+                0.49000001f - (1.0f - cosine(angle)) * curve_source;
+            ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
+                ->transform.position.z = z;
+            PathAttachmentSample* previous_primary =
+                (PathAttachmentSample*)((char*)primary_samples + sample_offset)
+                - 1;
+            PathAttachmentSample* previous_secondary =
+                (PathAttachmentSample*)((char*)secondary_samples + sample_offset)
+                - 1;
             if (sample_offset <= (int)sizeof(PathAttachmentSample)) {
                 previous_primary->transform.set_matrix_rotation_identity();
                 previous_secondary->transform.set_matrix_rotation_identity();
             } else {
                 orient_previous_with_fixed_right(
                     previous_primary,
-                    primary);
+                    (PathAttachmentSample*)((char*)primary_samples + sample_offset));
                 orient_previous_with_fixed_right(
                     previous_secondary,
-                    secondary);
+                    (PathAttachmentSample*)((char*)secondary_samples + sample_offset));
             }
             sample_offset += (int)sizeof(PathAttachmentSample);
-        } while (i < curve_count);
+        } while (i < width_cells_);
     }
 #elif PATH_VARIANT == 6
     kind = 0x15;
@@ -589,7 +625,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
 #endif
 
     if (segment_count - 1 > 0) {
-        for (i = 0; i < segment_count - 1; ++i) {
+        for (int i = 0; i < segment_count - 1; ++i) {
             primary_samples[i].delta_dir_to_next = Vector3(
                 primary_samples[i + 1].transform.position.x
                     - primary_samples[i].transform.position.x,
@@ -623,64 +659,70 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     ObjectFaceQuad* facequads = strip_mesh->facequads;
     Vector3* vertices = strip_mesh->vertices;
 
-    int mesh_row;
-    int mesh_column;
-    int face_row;
-    int face_column;
-    int face_index;
-
-    for (mesh_row = 0; mesh_row <= segment_count; ++mesh_row) {
-        for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {
-            float lateral = (float)mesh_column - (float)width_cells * 0.5f;
-            if (mesh_row != segment_count) {
-                PathAttachmentSample* sample = &primary_samples[mesh_row];
-                Vector3 lateral_offset(
-                    lateral * sample->transform.basis_right.x,
-                    lateral * sample->transform.basis_right.y,
-                    lateral * sample->transform.basis_right.z);
-                Vector3 generated_position(
-                    sample->transform.position.x + lateral_offset.x,
-                    sample->transform.position.y + lateral_offset.y,
-                    sample->transform.position.z + lateral_offset.z);
-                Vector3* vertex =
-                    &vertices[mesh_column + mesh_row * (width_cells + 1)];
-                *vertex = generated_position;
-            } else {
-                PathAttachmentSample* previous = &primary_samples[mesh_row - 1];
-                Vector3 lateral_offset(
-                    lateral * previous->transform.basis_right.x,
-                    lateral * previous->transform.basis_right.y,
-                    lateral * previous->transform.basis_right.z);
-                Vector3 endpoint(
-                    previous->transform.position.x,
-                    previous->transform.position.y,
-                    previous->transform.position.z + 1.0f);
-                Vector3 generated_position(
-                    endpoint.x + lateral_offset.x,
-                    endpoint.y + lateral_offset.y,
-                    endpoint.z + lateral_offset.z);
-                Vector3* vertex =
-                    &vertices[mesh_column + mesh_row * (width_cells + 1)];
-                *vertex = generated_position;
+    int mesh_row = 0;
+    if (mesh_row <= segment_count) {
+        int mesh_sample_offset = 0;
+        do {
+            for (int mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {
+                float lateral = (float)mesh_column - (float)width_cells * 0.5f;
+                if (mesh_row != segment_count) {
+                    PathAttachmentSample* sample =
+                        (PathAttachmentSample*)((char*)primary_samples
+                            + mesh_sample_offset);
+                    Vector3 lateral_offset(
+                        lateral * sample->transform.basis_right.x,
+                        lateral * sample->transform.basis_right.y,
+                        lateral * sample->transform.basis_right.z);
+                    Vector3 generated_position(
+                        sample->transform.position.x + lateral_offset.x,
+                        sample->transform.position.y + lateral_offset.y,
+                        sample->transform.position.z + lateral_offset.z);
+                    Vector3* vertex =
+                        &vertices[mesh_column + mesh_row * (width_cells + 1)];
+                    *vertex = generated_position;
+                } else {
+                    PathAttachmentSample* previous =
+                        (PathAttachmentSample*)((char*)primary_samples
+                            + mesh_sample_offset)
+                        - 1;
+                    Vector3 lateral_offset(
+                        lateral * previous->transform.basis_right.x,
+                        lateral * previous->transform.basis_right.y,
+                        lateral * previous->transform.basis_right.z);
+                    Vector3 endpoint(
+                        previous->transform.position.x,
+                        previous->transform.position.y,
+                        previous->transform.position.z + 1.0f);
+                    Vector3 generated_position(
+                        endpoint.x + lateral_offset.x,
+                        endpoint.y + lateral_offset.y,
+                        endpoint.z + lateral_offset.z);
+                    Vector3* vertex =
+                        &vertices[mesh_column + mesh_row * (width_cells + 1)];
+                    *vertex = generated_position;
+                }
             }
-        }
+            ++mesh_row;
+            mesh_sample_offset += (int)sizeof(PathAttachmentSample);
+        } while (mesh_row <= segment_count);
     }
 
-    for (face_row = 0; face_row < segment_count; ++face_row) {
+    for (int face_row = 0; face_row < segment_count; ++face_row) {
         if (width_cells > 0) {
             float v0 = (float)(face_row % 8) * 0.125f;
             float v1 = (float)(face_row % 8 + 1) * 0.125f;
-            face_column = 0;
+            int face_column = 0;
             int next_column;
             do {
                 next_column = face_column + 1;
                 float u0 = (float)face_column * 0.125f;
                 float u1 = (float)(face_column + 1) * 0.125f;
-                for (face_index = 0; face_index < 2; ++face_index) {
+                for (int face_index = 0; face_index < 2; ++face_index) {
+                    int face_record_index =
+                        face_index
+                        + 2 * (face_row * width_cells + face_column);
                     if (face_index == 0) {
-                        ObjectFaceQuad* face = &facequads[
-                            face_index
-                            + 2 * (face_row * width_cells + face_column)];
+                        ObjectFaceQuad* face = &facequads[face_record_index];
                         face->header_word = 0;
                         face->vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);
                         face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
@@ -688,7 +730,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                             (face_row + 1) * ((unsigned short)width_cells + 1) + face_column + 1;
                         face->vertex_3 =
                             face_column + (face_row + 1) * ((unsigned short)width_cells + 1);
-                        if ((face_column ^ face_row) & 1)
+                        if (!((face_column ^ face_row) & 1))
                             face->texture_ref =
                                 g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
                         else
@@ -703,9 +745,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                         face->uv[3].u = u0;
                         face->uv[3].v = v1;
                     } else {
-                        ObjectFaceQuad* face = &facequads[
-                            face_index
-                            + 2 * (face_row * width_cells + face_column)];
+                        ObjectFaceQuad* face = &facequads[face_record_index];
                         face->header_word = 0;
                         face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
                         face->vertex_1 = face_column + face_row * ((unsigned short)width_cells + 1);
@@ -713,7 +753,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                             face_column + (face_row + 1) * ((unsigned short)width_cells + 1);
                         face->vertex_3 =
                             (face_row + 1) * ((unsigned short)width_cells + 1) + face_column + 1;
-                        if ((face_column ^ face_row) & 1)
+                        if (!((face_column ^ face_row) & 1))
                             face->texture_ref =
                                 g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
                         else

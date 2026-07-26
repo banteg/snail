@@ -102,3 +102,42 @@ This raises the focused result by 4.21 points, recovers 44 candidate
 instructions and four clean operands, and gives the candidate the exact native
 `0x50` frame. The remaining broad alignment drift begins in the earlier sample
 construction/orientation region rather than this mesh tail.
+
+## 2026-07-26 Dip count and cursor ownership
+
+Windows raw assembly, IDA Professional 9.4, and the optimized ARM sibling
+inspected with Ghidra 12.1.2 agree on the two early aliases. The dead
+`width_cells_` argument owns the integer curve count after conversion, while
+the consumed `curve_source` argument owns the derived dip radius. IDA also
+shows the input stack slots being reused for exactly those values. Keeping
+either rewrite in isolation was not sufficient; the coupled aliases raise the
+focused result from 38.95% to 39.88%.
+
+The curved middle keeps its current primary and secondary samples owned by
+their member arrays and a `0xa8` byte cursor across the identity and cosine
+calls. Hoisting those current samples into pointer locals was the main source
+of drift. Leaving the array expressions explicit raises the focused result to
+50.08%. The preceding samples are different owners: removing their two
+explicit pointers regressed the result to 46.13%, so they remain local aliases.
+
+The endpoint and strip-mesh passes likewise expose distinct byte cursors, and
+the face loop computes one common record index before selecting one of two
+branch-local `ObjectFaceQuad` records. A single face pointer shortened the
+candidate by another ten instructions and contradicted the two native
+materializations at `0x41ebf8` and `0x41ecab`, so it was rejected despite a
+higher scalar score. The retained ownership model produces:
+
+```text
+match: 48.89%
+target: 655 insns, candidate: 646 insns
+prefix: 20/655 target insns
+masked operands: 31 ok, 0 unresolved, 0 mismatch
+```
+
+This final scalar is lower than the transient current-sample-only result
+because the common face index changes global register allocation, but it
+extends the exact prefix from 8 to 20 instructions and preserves every audited
+relocation. Branch-scoped preceding-sample pointers, a shared face pointer,
+explicit delta cursors, direct orientation expansion, and statement-order-only
+micro-adjustments were all measured and rejected. No dummy calls, dead
+relocations, or equal-arm texture rewrites were introduced.
