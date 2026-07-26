@@ -85,11 +85,11 @@ void Path::initialize_halfpipe_path_template_pair(
         exit_sample_offset += sizeof(AttachmentSample);
     } while (exit_sample_offset < 66 * sizeof(AttachmentSample));
 
+    float out_angle;
     int middle = 0;
     for (i = 16; i < 50; ++i) {
         float middle_f = (float)middle;
-        float out_angle[2];
-        out_angle[0] = middle_f * 0.18479957f;
+        out_angle = middle_f * 0.18479957f;
         primary_samples[i].center_x =
             (primary_samples[50].center_x - primary_samples[0].center_x)
                 * middle_f * 0.029411765f
@@ -162,7 +162,6 @@ void Path::initialize_halfpipe_path_template_pair(
     Vector3* vertices = strip_mesh->vertices;
     ObjectFaceQuad* facequads = strip_mesh->facequads;
     TransformMatrix kind42_transform;
-    float out_angle[2];
     set_matrix_identity(&kind42_transform);
 
     int sample_offset = 0;
@@ -209,7 +208,7 @@ void Path::initialize_halfpipe_path_template_pair(
                 vertex->x,
                 0.0f,
                 &kind42_transform,
-                out_angle);
+                &out_angle);
             if (sample_offset > sizeof(AttachmentSample) && row != segment_count) {
                 vertex->x = kind42_transform.position.x;
                 vertex->y = kind42_transform.position.y;

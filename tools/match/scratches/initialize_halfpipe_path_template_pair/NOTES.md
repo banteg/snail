@@ -232,3 +232,24 @@ lifetime declared only after vertex generation regressed to 39.03% and was
 rejected. The remaining four-byte overlap is therefore documented rather than
 forced: the retained owners follow direct native dataflow and provide a net
 4.28-point focused improvement without an artificial stack-shaping variable.
+
+## 2026-07-26 cross-phase out-angle ownership
+
+Native code first writes the middle-loop roll value to the same stack owner
+later passed to `compute_kind42_attachment_transform`. That exact helper takes
+one `float*` and only reads and writes the pointed-to scalar. The old scratch
+instead declared two unrelated `float[2]` arrays, inventing an unused second
+lane and losing the value's lifetime across the sample and mesh phases.
+
+Unifying those declarations as one scalar recovers the native `0x9c` frame and
+improves every focused signal:
+
+```text
+match: 43.20% (was 41.32%)
+target: 707 insns, candidate: 691 insns (was 687)
+prefix: 18/707 target insns (was 0)
+masked operands: 50 ok, 0 unresolved, 0 mismatch (was 47 ok)
+```
+
+No padding or unused stack-shaping variable is involved; the retained lifetime
+comes directly from native dataflow and the exact callee contract.
