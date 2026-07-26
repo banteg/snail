@@ -204,3 +204,31 @@ remains unchanged. Typing the pre-biased curved-sample cursor was rejected
 because it added three backward `__offset` accesses; the retained replay keeps
 that cursor automatic. Focused matching remains 37.04% (659/707) with 46 clean
 masked operands.
+
+## 2026-07-26 complete mesh ownership
+
+Raw native instructions at `0x42a17a..0x42a244` prove separate ordinary
+lateral-offset and generated-position vectors, followed by separate terminal
+lateral-offset, endpoint, and generated-position vectors. The generated vertex
+remains live through the kind-42 transform call and its conditional X/Y
+copyback. Native face pointer sites at `0x42a397` and `0x42a44f` likewise prove
+two branch-local `ObjectFaceQuad` records, each with its own header, texture
+selection, indices, and complete UV writes.
+
+The four-vector rewrite alone produced an honest temporary regression from
+37.04% (659/707) to 35.38% because it exposed more native stack ownership before
+the dependent face and vertex lifetimes were recovered. Adding the two face
+owners raised the result to 40.00%; retaining one live `Vector3* vertex` across
+generation, kind-42 adjustment, and copyback completes this slice:
+
+```text
+match: 41.32%
+target: 707 insns, candidate: 687 insns
+masked operands: 47 ok, 0 unresolved, 0 mismatch
+```
+
+The candidate frame is `0xa0` versus the native `0x9c`. A narrower pointer
+lifetime declared only after vertex generation regressed to 39.03% and was
+rejected. The remaining four-byte overlap is therefore documented rather than
+forced: the retained owners follow direct native dataflow and provide a net
+4.28-point focused improvement without an artificial stack-shaping variable.
