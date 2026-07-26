@@ -1,4 +1,4 @@
-// build_track_fringe_objects @ 0x434be0 (thiscall, ret)
+// build_track_fringe_objects @ 0x434be0 (thiscall, void)
 // Structure-first scratch for directional runtime fringe object emission.
 
 #include "track_attachment_types.h"
@@ -16,7 +16,7 @@
 int debug_report_stub(char* format, ...);
 extern char g_used_fringe_bods_format[]; // "Used %i fringe bods\n"
 
-int SubgameRuntime::build_track_fringe_objects()
+void SubgameRuntime::build_track_fringe_objects()
 {
     g_game->subgame.fringe_manager.initialize_fringe_manager();
 
@@ -198,7 +198,7 @@ int SubgameRuntime::build_track_fringe_objects()
         } while (row < runtime_row_count);
     }
 
-    return debug_report_stub(
+    debug_report_stub(
         g_used_fringe_bods_format,
         g_game->subgame.fringe_manager.count);
 }

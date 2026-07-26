@@ -661,7 +661,7 @@
       "ios_symbol": "cRSubGame::FringeEdgeTrack()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android preserves the owner and method name; both walk runtime cells and allocate directional cRFringe records from cRFringeManager.",
+      "notes": "Android and iOS preserve the void cRSubGame::FringeEdgeTrack() owner; both walk runtime cells and allocate directional cRFringe records from cRFringeManager. Windows GenerateLevel discards the diagnostic call's final EAX residue, so the authored member is void.",
       "android_symbol": "cRSubGame::FringeEdgeTrack()",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -671,6 +671,7 @@
       "ios_symbol": "cRSubGame::SetFeatures()",
       "source_object": "SubGame.o",
       "confidence": "high",
+      "notes": "Android and iOS both define cRSubGame::SetFeatures() as void. Windows GenerateLevel also discards EAX, and the corrected void scratch remains byte-identical; its prior record or mode result was incidental register residue.",
       "android_symbol": "cRSubGame::SetFeatures()",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -2144,7 +2145,7 @@
       "android_symbol": "cRSubRing::Init(int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All three arm one ring effect and preserve the 0x20-byte inline cRSubRingStar owner. Windows initializes ten children; iOS and Android initialize eight, so the child capacity is platform-specific rather than part of the shared method identity."
+      "notes": "All three arm one ring effect and preserve the 0x20-byte inline cRSubRingStar owner. Windows initializes ten children; iOS and Android initialize eight, so the child capacity is platform-specific rather than part of the shared method identity. Both mobile definitions and all recovered callers establish a void result; Windows' terminal EAX value is incidental."
     },
     {
       "address": "0x43e690",

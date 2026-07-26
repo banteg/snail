@@ -3,12 +3,12 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_ring_or_special_effect_particles @ 0x43e470 */
 
-0043e47b        int32_t i_1 = 0
+0043e47b        int32_t var_14 = 0
 0043e47f        ring->state = SUB_RING_STATE_ACTIVE
 0043e489        ring->star_shower_counter = 0
 0043e492        struct SubRingStar* particle = &ring->particles
-0043e677        int32_t i
-0043e4a9        particle->base_position.x:0xc.d = fconvert.s(float.t(i_1) * fconvert.t(0.628318548f))
+0043e677        bool cond:0_1
+0043e4a9        particle->base_position.x:0xc.d = fconvert.s(float.t(var_14) * fconvert.t(0.628318548f))
 0043e4bb        particle->base_position.x:0x10.d = fconvert.s(fconvert.t(ring->rate_source->subgame_rate) * fconvert.t(0.104719758f))
 0043e4be        particle->base_position.x.12.x:-4.d = ring
 0043e4c3        particle->base_position.x = ring->body.transform.position.x
@@ -60,7 +60,7 @@
 0043e64d        particle->sprite->facing_angle_step = fconvert.s(fneg(fconvert.t(particle->base_position.x:0x10.d)))
 0043e663        update_ring_or_special_effect_particle(particle)
 0043e66c        particle = &particle[1]
-0043e66f        i = i_1 + 1
-0043e673        i_1 = i
-0043e677        do while (i s< 0xa)
-0043e684        return i
+0043e670        cond:0_1 = var_14 + 1 s< 0xa
+0043e673        var_14 += 1
+0043e677        do while (cond:0_1)
+0043e684        return

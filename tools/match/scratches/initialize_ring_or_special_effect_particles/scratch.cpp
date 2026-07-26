@@ -1,11 +1,11 @@
-// initialize_ring_or_special_effect_particles @ 0x43e470 (thiscall, ret 0x4)
+// initialize_ring_or_special_effect_particles @ 0x43e470 (thiscall, void, ret 0x4)
 
 #include "player.h"
 #include "ring_special_effect_types.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 
-int SubRing::initialize_ring_or_special_effect_particles(int)
+void SubRing::initialize_ring_or_special_effect_particles(int)
 {
     int i = 0;
     state = SUB_RING_STATE_ACTIVE;
@@ -78,5 +78,4 @@ int SubRing::initialize_ring_or_special_effect_particles(int)
         i++;
     } while (i < SUB_RING_PARTICLE_COUNT);
 
-    return i;
 }

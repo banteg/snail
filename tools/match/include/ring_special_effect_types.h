@@ -58,7 +58,7 @@ typedef char SubRingStar_must_be_0x20[(sizeof(SubRingStar) == 0x20) ? 1 : -1];
 class SubRing : public RenderableBod {
 public:
     SubRing* initialize_track_ring_or_special_effect_runtime(); // @ 0x408570
-    int initialize_ring_or_special_effect_particles(int unused_lives_snapshot); // @ 0x43e470
+    void initialize_ring_or_special_effect_particles(int unused_lives_snapshot); // @ 0x43e470
     void update_ring_or_special_effect_parent(); // @ 0x43e830
 
     SubRingState state; // +0x80

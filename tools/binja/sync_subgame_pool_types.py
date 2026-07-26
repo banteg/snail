@@ -219,7 +219,7 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_ring_or_special_effect_particles",
-        "int32_t __thiscall initialize_ring_or_special_effect_particles(SubRing* ring, int32_t unused_lives_snapshot)",
+        "void __thiscall initialize_ring_or_special_effect_particles(SubRing* ring, int32_t unused_lives_snapshot)",
     ),
     (
         "emit_ring_star_shower",

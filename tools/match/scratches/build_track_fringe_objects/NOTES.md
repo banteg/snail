@@ -247,3 +247,22 @@ catalog. No matcher source changed. Focused matching remains honestly partial
 at 60.39%, 492 candidate / 495 target instructions, prefix 3, with all 48
 operands clean; the remaining difference is the documented VC6 register
 scheduling, so no register-shaped source construct is introduced.
+
+## 2026-07-26 cross-port result ABI
+
+Android and iOS both preserve this exact owner as
+`void cRSubGame::FringeEdgeTrack()`. Their bodies end with the same diagnostic
+call, while the Windows `cRSubGame::GenerateLevel(int)` caller discards EAX
+and immediately begins the skirt-color/render-cache pass. The former integer
+signature described the release-stripped debug helper's incidental return,
+not the authored member contract.
+
+Changing the matcher method to `void` while retaining the diagnostic call is
+codegen-neutral: focused matching remains at the honest 60.39%, 492/495
+instructions, prefix 3, with 48 clean and 6 unaudited operands. No residual
+register scheduling was forced.
+
+The guarded Binary Ninja ABI repair now reuses the canonical builder-lifetime
+catalog rather than maintaining a second list. Recreating the function to
+correct its result type therefore preserves all recovered row/cell selectors,
+directional colors, and borrowed `Fringe*` values.

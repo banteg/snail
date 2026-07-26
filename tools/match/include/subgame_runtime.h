@@ -79,7 +79,7 @@ enum SubgameRuntimeFlagPreset {
 class SubgameRuntime {
 public:
     SubgameRuntime* initialize_runtime_pools_and_path_template_bank(); // @ 0x408060
-    int set_subgame_features(); // @ 0x435df0
+    void set_subgame_features(); // @ 0x435df0
     bool switch_track_mirror(); // @ 0x435e60
     void populate_runtime_track_cells_from_segments(); // @ 0x435eb0
     void initialize_subgame(); // @ 0x4374b0
@@ -127,7 +127,7 @@ public:
     void harmonize_center_lane_floor_slide_variants();
     void merge_track_tile_runs();
     void mark_track_warning_zones();
-    int build_track_fringe_objects();
+    void build_track_fringe_objects();
     bool is_neighbor_cell_solid(SubLoc* cell, int dx, int dz); // cRSubGame::TestLoc
     char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
 

@@ -1,13 +1,13 @@
-// set_subgame_features @ 0x435df0 (thiscall, ret)
+// set_subgame_features @ 0x435df0 (thiscall, void)
 
 #include "subgame_runtime.h"
 
-int SubgameRuntime::set_subgame_features()
+void SubgameRuntime::set_subgame_features()
 {
     if (selected_level_record_active != 0) {
         SubSolution* record = selected_level_record;
         runtime_flags = record->runtime_build_flags;
-        return (int)record;
+        return;
     }
 
     int mode = level_mode;
@@ -29,5 +29,4 @@ int SubgameRuntime::set_subgame_features()
     } else {
         runtime_flags = SUBGAME_RUNTIME_FLAGS_ENGINE_DEFAULT;
     }
-    return mode;
 }

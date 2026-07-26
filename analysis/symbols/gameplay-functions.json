@@ -2222,7 +2222,7 @@
     {
       "address": "0x434be0",
       "name": "build_track_fringe_objects",
-      "description": "Windows `cRSubGame::FringeEdgeTrack()`: allocates directional `Fringe` objects around runtime SubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android preserves the owner and method name."
+      "description": "Windows `void cRSubGame::FringeEdgeTrack()`: allocates directional `Fringe` objects around runtime SubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android and iOS preserve the owner, method name, and void contract."
     },
     {
       "address": "0x435180",
@@ -2257,7 +2257,7 @@
     {
       "address": "0x435df0",
       "name": "set_subgame_features",
-      "description": "Derives the active subgame feature flags from the current mode, level, and challenge setup before runtime rows and pickups are built. Cross-port iOS symbols match this helper to `cRSubGame::SetFeatures()` in `SubGame.o`."
+      "description": "Windows `void cRSubGame::SetFeatures()`: derives the active subgame feature flags from the current mode, level, and challenge setup before runtime rows and pickups are built. Android and iOS preserve the owner and void contract."
     },
     {
       "address": "0x435e60",
@@ -2524,7 +2524,7 @@
     {
       "address": "0x43e470",
       "name": "initialize_ring_or_special_effect_particles",
-      "description": "Windows `cRSubRing::Init(int)`: arms one SubRing and initializes its ten inline 0x20-byte SubRingStar children, mapping authored effect kinds onto the ParticleRing, ParticleExplode, and ParticleSlow sprite families. The function is exact at 153 instructions."
+      "description": "Windows `void cRSubRing::Init(int)`: arms one SubRing and initializes its ten inline 0x20-byte SubRingStar children, mapping authored effect kinds onto the ParticleRing, ParticleExplode, and ParticleSlow sprite families. Android and iOS preserve the void contract; the function is exact at 153 instructions."
     },
     {
       "address": "0x43e690",

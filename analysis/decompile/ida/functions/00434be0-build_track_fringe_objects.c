@@ -3,7 +3,7 @@
 /* selector: build_track_fringe_objects */
 
 // Windows `cRSubGame::FringeEdgeTrack()`: allocates directional `Fringe` objects around runtime SubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android preserves the owner and method name.
-int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)
+void __thiscall build_track_fringe_objects(SubgameRuntime *game)
 {
   SubgameRuntime *v1; // ebp
   int v2; // ebx
@@ -25,18 +25,18 @@ int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)
   Fringe *fringe_right; // eax
   Fringe *fringe_left; // eax
   bool v20; // cc
-  int v23; // [esp+Ch] [ebp-4Ch]
-  int v24; // [esp+10h] [ebp-48h]
+  int i; // [esp+Ch] [ebp-4Ch]
+  int v23; // [esp+10h] [ebp-48h]
   SubRow *row_cursor; // [esp+14h] [ebp-44h]
   tColour out; // [esp+18h] [ebp-40h] BYREF
-  tColour v27; // [esp+28h] [ebp-30h] BYREF
-  tColour v28; // [esp+38h] [ebp-20h] BYREF
-  tColour v29; // [esp+48h] [ebp-10h] BYREF
+  tColour v26; // [esp+28h] [ebp-30h] BYREF
+  tColour v27; // [esp+38h] [ebp-20h] BYREF
+  tColour v28; // [esp+48h] [ebp-10h] BYREF
 
   v1 = game;
   initialize_fringe_manager(&g_game_base->subgame.fringe_manager);
   v2 = 0;
-  v24 = 0;
+  v23 = 0;
   if ( v1->runtime_row_count > 0 )
   {
     row = v1->runtime_rows;
@@ -44,8 +44,7 @@ int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)
     row_cursor = v1->runtime_rows;
     do
     {
-      v23 = 8;
-      do
+      for ( i = 8; i != 0; --i )
       {
         open_edge_mask = cell->open_edge_mask;
         v6 = 0;
@@ -62,6 +61,8 @@ int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)
             break;
           case 6u:
             v6 = 4;
+            break;
+          default:
             break;
         }
         tile_id = cell->tile_id;
@@ -87,7 +88,7 @@ int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)
           v6 = 7;
         }
         if ( (row->flags & 4) != 0
-          || !open_edge_mask
+          || open_edge_mask == 0
           || tile_id == SUBLOC_TILE_FLOOR_HASH_MARKER
           || (g_runtime_config.render_flags & 0x20) == 0 )
         {
@@ -144,7 +145,7 @@ LABEL_64:
           cell->fringe_right->bod.position = cell->anchor_position;
           v1 = game;
           v2 = 0;
-          cell->fringe_right->bod.color = *get_track_skirt_color(&g_game_base->subgame, &v27);
+          cell->fringe_right->bod.color = *get_track_skirt_color(&g_game_base->subgame, &v26);
         }
         if ( is_neighbor_cell_solid(v1, cell, -1, 0) )
         {
@@ -167,7 +168,7 @@ LABEL_64:
           cell->fringe_left->bod.position = cell->anchor_position;
           v1 = game;
           v2 = 0;
-          cell->fringe_left->bod.color = *get_track_skirt_color(&g_game_base->subgame, &v28);
+          cell->fringe_left->bod.color = *get_track_skirt_color(&g_game_base->subgame, &v27);
         }
         if ( is_neighbor_cell_solid(v1, cell, 0, -1) )
           goto LABEL_64;
@@ -186,33 +187,31 @@ LABEL_64:
         cell->fringe_back->bod.position = cell->anchor_position;
         v1 = game;
         v2 = 0;
-        cell->fringe_back->bod.color = *get_track_skirt_color(&g_game_base->subgame, &v29);
+        cell->fringe_back->bod.color = *get_track_skirt_color(&g_game_base->subgame, &v28);
 LABEL_65:
         row = row_cursor;
         if ( (row_cursor->flags & 4) != 0 )
         {
           fringe_front = cell->fringe_front;
-          if ( fringe_front )
+          if ( fringe_front != nullptr )
             fringe_front->bod.bod.list_flags &= ~0x20u;
           fringe_back = cell->fringe_back;
-          if ( fringe_back )
+          if ( fringe_back != nullptr )
             fringe_back->bod.bod.list_flags &= ~0x20u;
           fringe_right = cell->fringe_right;
-          if ( fringe_right )
+          if ( fringe_right != nullptr )
             fringe_right->bod.bod.list_flags &= ~0x20u;
           fringe_left = cell->fringe_left;
-          if ( fringe_left )
+          if ( fringe_left != nullptr )
             fringe_left->bod.bod.list_flags &= ~0x20u;
         }
         ++cell;
-        --v23;
       }
-      while ( v23 );
       row = row_cursor + 1;
-      v20 = ++v24 < v1->runtime_row_count;
+      v20 = ++v23 < v1->runtime_row_count;
       ++row_cursor;
     }
     while ( v20 );
   }
-  return debug_report_stub();
+  debug_report_stub("Used %i fringe bods\n", g_game_base->subgame.fringe_manager.count);
 }

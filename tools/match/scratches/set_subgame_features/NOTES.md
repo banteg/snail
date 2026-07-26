@@ -30,3 +30,12 @@ byte, and the borrowed `SubSolution* selected_level_record`. This preserves the
 native distinction between the embedded working record and the optional
 borrowed replay/level record while keeping the scratch exact at 19/19 with
 three clean operands.
+
+## 2026-07-26 cross-port result ABI
+
+Android and iOS both preserve the exact `cRSubGame::SetFeatures()` symbol and
+decompile it as `void`. The Windows caller in
+`cRSubGame::GenerateLevel(int)` also discards EAX before the next independent
+call. Removing the synthetic record/mode returns leaves the VC6 output
+byte-identical at 19/19 instructions: the apparent Windows result was only the
+last value naturally loaded into EAX.

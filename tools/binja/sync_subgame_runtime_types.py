@@ -477,7 +477,7 @@ PROTO_UPDATES = (
         "append_subgame_contact_target",
         "void __thiscall append_subgame_contact_target(EnemyManager* manager, const Vec3* position, float radius, int32_t kind, ContactTargetObject* object)",
     ),
-    ("set_subgame_features", "int32_t __thiscall set_subgame_features(SubgameRuntime* runtime)"),
+    ("set_subgame_features", "void __thiscall set_subgame_features(SubgameRuntime* runtime)"),
     ("switch_track_mirror", "bool __thiscall switch_track_mirror(SubgameRuntime* runtime)"),
     (
         "normalize_segment_glyph_for_track_flags",

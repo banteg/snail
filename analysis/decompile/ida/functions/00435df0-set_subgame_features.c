@@ -3,21 +3,20 @@
 /* selector: set_subgame_features */
 
 // Derives the active subgame feature flags from the current mode, level, and challenge setup before runtime rows and pickups are built. Cross-port iOS symbols match this helper to `cRSubGame::SetFeatures()` in `SubGame.o`.
-int32_t __thiscall set_subgame_features(SubgameRuntime *runtime)
+void __thiscall set_subgame_features(SubgameRuntime *runtime)
 {
-  int32_t result; // eax
+  int32_t level_mode; // eax
 
-  if ( runtime->selected_level_record_active )
+  if ( runtime->selected_level_record_active != 0 )
   {
-    result = (int32_t)runtime->selected_level_record;
-    runtime->runtime_flags = *(_DWORD *)(result + 56);
+    runtime->runtime_flags = runtime->selected_level_record->runtime_build_flags;
   }
   else
   {
-    result = runtime->level_mode;
+    level_mode = runtime->level_mode;
     runtime->runtime_flags = 1156;
     runtime->runtime_flags = (uint32_t)&unk_600484;
-    switch ( result )
+    switch ( level_mode )
     {
       case 0:
       case 1:
@@ -30,8 +29,7 @@ int32_t __thiscall set_subgame_features(SubgameRuntime *runtime)
         runtime->runtime_flags = 14995455;
         break;
       default:
-        return result;
+        return;
     }
   }
-  return result;
 }

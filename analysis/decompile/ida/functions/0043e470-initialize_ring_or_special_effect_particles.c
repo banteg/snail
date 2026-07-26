@@ -3,7 +3,7 @@
 /* selector: initialize_ring_or_special_effect_particles */
 
 // Windows `cRSubRing::Init(int)`: arms one SubRing and initializes its ten inline 0x20-byte SubRingStar children, mapping authored effect kinds onto the ParticleRing, ParticleExplode, and ParticleSlow sprite families. The function is exact at 153 instructions.
-int32_t __thiscall initialize_ring_or_special_effect_particles(SubRing *ring, int32_t unused_lives_snapshot)
+void __thiscall initialize_ring_or_special_effect_particles(SubRing *ring, int32_t unused_lives_snapshot)
 {
   Vec3 *p_position; // ebp
   SubRingStar *particles; // esi
@@ -11,18 +11,17 @@ int32_t __thiscall initialize_ring_or_special_effect_particles(SubRing *ring, in
   SpriteFlag flags; // ecx
   Vec3 *v7; // edx
   SubRingKind v8; // eax
-  int32_t result; // eax
-  int v10; // [esp+10h] [ebp-14h]
+  int v9; // [esp+10h] [ebp-14h]
   Color4f color; // [esp+14h] [ebp-10h] BYREF
 
-  v10 = 0;
+  v9 = 0;
   ring->state = SUB_RING_STATE_ACTIVE;
   ring->star_shower_counter = 0;
   p_position = &ring->body.transform.position;
   particles = ring->particles;
   do
   {
-    particles->phase = (double)v10 * 0.62831855;
+    particles->phase = (double)v9 * 0.62831855;
     particles->phase_step = ring->rate_source->subgame_rate * 0.10471976;
     particles->parent = ring;
     particles->base_position.x = p_position->x;
@@ -51,6 +50,8 @@ int32_t __thiscall initialize_ring_or_special_effect_particles(SubRing *ring, in
         ring->star_sprite_id = 134;
         particles->sprite->draw_mode = 13;
         break;
+      default:
+        break;
     }
     particles->sprite->color = *set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.80000001);
     flags = particles->sprite->flags;
@@ -72,8 +73,7 @@ int32_t __thiscall initialize_ring_or_special_effect_particles(SubRing *ring, in
     else
       particles->sprite->facing_angle_step = -particles->phase_step;
     update_ring_or_special_effect_particle(particles++);
-    result = ++v10;
+    ++v9;
   }
-  while ( v10 < 10 );
-  return result;
+  while ( v9 < 10 );
 }

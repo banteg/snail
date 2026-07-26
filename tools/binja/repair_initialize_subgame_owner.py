@@ -8,11 +8,48 @@ import sys
 
 from _narrow_sync import run_bn
 from _target import DEFAULT_TARGET
+from sync_track_fringe_builder_lifetimes import (
+    TRACK_FRINGE_BUILDER_USER_VAR_UPDATES,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SUBGAME_RUNTIME_SIZE = 0x1272838
 PATH_SIZE = 0xA8
+
+
+_FRINGE_REPAIR_TYPE_NAMES = {
+    "SubgameRuntime*": "struct SubgameRuntime*",
+    "SubRow*": "struct SubRow*",
+    "TrackRowCell*": "struct TrackRowCell*",
+    "Fringe*": "struct Fringe*",
+    "tColour": "struct tColour",
+}
+
+
+def _fringe_builder_repair_variables() -> tuple[dict[str, object], ...]:
+    variables = []
+    for (
+        function_name,
+        source_type,
+        index,
+        storage,
+        name,
+        type_name,
+    ) in TRACK_FRINGE_BUILDER_USER_VAR_UPDATES:
+        if function_name != "build_track_fringe_objects":
+            raise ValueError(f"unexpected fringe-builder selector: {function_name}")
+        variables.append(
+            {
+                "source_type": f"VariableSourceType.{source_type}",
+                "index": index,
+                "storage": storage,
+                "name": name,
+                "type": _FRINGE_REPAIR_TYPE_NAMES.get(type_name, type_name),
+            }
+        )
+    return tuple(variables)
+
 
 FUNCTION_SPECS = {
     "initialize_subgame": {
@@ -211,15 +248,18 @@ FUNCTION_SPECS = {
     },
     "build_track_fringe_objects": {
         "address": 0x434BE0,
-        "expected_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
-        "stale_prototype": "int32_t __thiscall(struct Game* game)",
+        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "legacy_prototypes": (
+            "int32_t __thiscall(struct Game* game)",
+        ),
         # Binary Ninja derives this address tag from the function's mismatched
         # incoming stack states. It is analyzer-owned evidence, not a user
         # annotation. The guarded recreation preserves it through mutation so
         # fresh analysis, rather than the repair itself, decides whether it remains.
         "allowed_auto_tag_types": ("Unresolved Stack Pointer Value",),
         "declaration": (
-            "int32_t __thiscall build_track_fringe_objects(SubgameRuntime* game)"
+            "void __thiscall build_track_fringe_objects(SubgameRuntime* game)"
         ),
         "parameter_count": 1,
         "variables": (
@@ -230,6 +270,7 @@ FUNCTION_SPECS = {
                 "name": "game",
                 "type": "struct SubgameRuntime*",
             },
+            *_fringe_builder_repair_variables(),
         ),
     },
     "promote_track_tiles_to_fringe_variants": {

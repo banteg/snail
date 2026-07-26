@@ -8,7 +8,8 @@
 00434bf6        initialize_fringe_manager(&g_game_base->subgame.fringe_manager)
 00434bfe        int32_t edge_variant_a = 0
 00434c02        int32_t row_index = 0
-00434c06        if (runtime->runtime_row_count s> 0)
+00434c06        if (runtime->runtime_row_count s<= 0)
+00434c06        return
 00434c0c        struct SubRow* row = &runtime->runtime_rows
 00434c14        struct TrackRowCell* cell = &runtime->runtime_cells
 00434c1a        struct SubRow* row_cursor = row
@@ -197,4 +198,4 @@
 00435144        row_index += 1
 00435148        row_cursor = row
 0043514c        do while (cond:2_1)
-00435173        return 0
+00435173        return

@@ -3257,6 +3257,12 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert '"legacy_prototypes": (' in repair_source
     assert '"struct SubRow* __thiscall("' in repair_source
     assert '"SubRow* __thiscall "' in repair_source
+    assert "from sync_track_fringe_builder_lifetimes import (" in repair_source
+    assert "TRACK_FRINGE_BUILDER_USER_VAR_UPDATES" in repair_source
+    fringe_repair_spec = repair_source.split(
+        '"build_track_fringe_objects": {', 1
+    )[1].split("\n    },", 1)[0]
+    assert "*_fringe_builder_repair_variables()" in fringe_repair_spec
     assert (
         '"SubRow* __thiscall get_track_runtime_cell_at_world_z('
         'SubgameRuntime* game, Vec3* position)"'
@@ -9295,7 +9301,7 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
     assert '(0x437B10, "reset_subgame")' in ida_runtime_sync
     assert "0x437B10,  # reset_subgame" in ida_runtime_sync
     assert (
-        "int32_t __thiscall set_subgame_features(SubgameRuntime* runtime);"
+        "void __thiscall set_subgame_features(SubgameRuntime* runtime);"
         in ida_runtime_sync
     )
     assert (
@@ -9589,7 +9595,7 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     for prototype in (
         "SubRing* __thiscall initialize_track_ring_or_special_effect_runtime",
         "void __thiscall spawn_track_ring_or_special_effect",
-        "int32_t __thiscall initialize_ring_or_special_effect_particles",
+        "void __thiscall initialize_ring_or_special_effect_particles",
         "void __thiscall emit_ring_star_shower",
         "void __thiscall update_ring_or_special_effect_particle",
         "void __thiscall update_ring_or_special_effect_parent",

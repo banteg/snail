@@ -3947,7 +3947,7 @@ DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
     ("remove_subgame_bods", "void __thiscall remove_subgame_bods(SubgameRuntime* game)"),
     (
         "build_track_fringe_objects",
-        "int32_t __thiscall build_track_fringe_objects(SubgameRuntime* game)",
+        "void __thiscall build_track_fringe_objects(SubgameRuntime* game)",
     ),
     (
         "get_track_grid_cell_at_world_position",

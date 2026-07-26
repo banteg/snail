@@ -4,9 +4,8 @@
 /* function: set_subgame_features @ 0x435df0 */
 
 00435df8        if (runtime->selected_level_record_active != 0)
-00435dfa        struct SubSolution* selected_level_record = runtime->selected_level_record
-00435e03        runtime->runtime_flags = selected_level_record->runtime_build_flags
-00435e06        return selected_level_record
+00435e03        runtime->runtime_flags = runtime->selected_level_record->runtime_build_flags
+00435e06        return
 00435e07        int32_t level_mode = runtime->level_mode
 00435e0a        runtime->runtime_flags = 0x484
 00435e14        runtime->runtime_flags = &data_600484
@@ -17,4 +16,4 @@
 00435e2c        runtime->runtime_flags = &g_font_queue[0x10d].v0:3
 00435e34        case 7
 00435e34        runtime->runtime_flags = 0xe4cfff
-00435e3b        return level_mode
+00435e3b        return

@@ -157,3 +157,12 @@ The shared matcher constant therefore remains the proved Windows capacity of
 ten. Cross-port symbols establish class and method identity, not a universal
 array extent. The former crosswalk wording that claimed ten children on both
 ports has been corrected.
+
+## 2026-07-26 cross-port result ABI
+
+Android and iOS both define `cRSubRing::Init(int)` as `void`, and every
+recovered AddRing/spawner caller continues without consuming a result. Removing
+the synthetic loop-count return from the Windows scratch is byte-identical:
+the native EAX residue comes from the terminal child update, not an authored
+integer return. The corrected method remains exact at 153/153 instructions
+with ten clean operands.

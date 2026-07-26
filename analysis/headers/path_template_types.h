@@ -2830,7 +2830,7 @@ void __thiscall spawn_track_ring_or_special_effect(
     int32_t requested_kind,
     Player* player,
     float ring_speed);
-int32_t __thiscall initialize_ring_or_special_effect_particles(
+void __thiscall initialize_ring_or_special_effect_particles(
     SubRing* ring,
     int32_t unused_lives_snapshot);
 void __thiscall emit_ring_star_shower(SubRingStar* particle, Player* owner);

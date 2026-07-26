@@ -3012,7 +3012,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "build_track_fringe_objects",
-        "int32_t __thiscall build_track_fringe_objects(SubgameRuntime* game);",
+        "void __thiscall build_track_fringe_objects(SubgameRuntime* game);",
     ),
     (
         "update_subgame_camera",

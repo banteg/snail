@@ -9297,7 +9297,7 @@
       "name": "ida_subring_particle_initializer_owner",
       "artifact": "analysis/decompile/ida/functions/0043e470-initialize_ring_or_special_effect_particles.c",
       "required_substrings": [
-        "int32_t __thiscall initialize_ring_or_special_effect_particles(SubRing *ring",
+        "void __thiscall initialize_ring_or_special_effect_particles(SubRing *ring",
         "SubRingStar *particles",
         "ring->state = SUB_RING_STATE_ACTIVE",
         "ring->rate_source->subgame_rate",
@@ -9684,7 +9684,7 @@
       "name": "ida_build_track_fringe_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/00434be0-build_track_fringe_objects.c",
       "required_substrings": [
-        "int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)",
+        "void __thiscall build_track_fringe_objects(SubgameRuntime *game)",
         "v1->runtime_row_count",
         "SubRow *row;",
         "TrackRowCell *cell;",
@@ -20488,8 +20488,7 @@
       "artifact": "analysis/decompile/binja/functions/00435df0-set_subgame_features.c",
       "required_substrings": [
         "runtime->selected_level_record_active",
-        "struct SubSolution* selected_level_record = runtime->selected_level_record",
-        "selected_level_record->runtime_build_flags",
+        "runtime->selected_level_record->runtime_build_flags",
         "runtime->level_mode",
         "runtime->runtime_flags"
       ],
@@ -20503,7 +20502,7 @@
       "name": "ida_subgame_feature_selected_record_owner_abi",
       "artifact": "analysis/decompile/ida/functions/00435df0-set_subgame_features.c",
       "required_substrings": [
-        "int32_t __thiscall set_subgame_features(SubgameRuntime *runtime)",
+        "void __thiscall set_subgame_features(SubgameRuntime *runtime)",
         "runtime->selected_level_record_active",
         "runtime->selected_level_record",
         "runtime->level_mode",
