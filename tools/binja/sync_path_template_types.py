@@ -213,6 +213,7 @@ SYMBOL_UPDATES = (
     ("0x442e40", "release_snail_weapons"),
     ("0x444600", "dispatch_cutscene_animation"),
     ("0x4446e0", "set_weapon_animation"),
+    ("0x444960", "initialize_squidge"),
     ("0x445cd0", "build_snail_world_hotspots"),
     ("0x445d50", "extract_snail_local_hotspots"),
     ("0x4ac5c8", "g_default_tip_message"),
@@ -3661,8 +3662,8 @@ PROTO_UPDATES = (
         "void __thiscall initialize_subgoldy_death(Player* player)",
     ),
     (
-        "initialize_score_stats",
-        "void __thiscall initialize_score_stats(Squidge* squidge)",
+        "initialize_squidge",
+        "void __thiscall initialize_squidge(Squidge* squidge)",
     ),
     (
         "start_squidge_y",

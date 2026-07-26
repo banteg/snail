@@ -50,7 +50,7 @@ void Player::initialize_subgoldy(int player_slot)
     this->presentation.invincible_shell.cutscene_roll_step = 0.0166666675f;
     this->slow_commentary_timer = 0.0f;
     this->slow_commentary_step = 0.0166666675f;
-    this->squidge.initialize_score_stats();
+    this->squidge.initialize_squidge();
     this->presentation.invincible_shell.initialize_invincible_shell();
     this->startup_voice_step = 0.0555555522f;
     this->startup_voice_timer = 0.0555555522f;

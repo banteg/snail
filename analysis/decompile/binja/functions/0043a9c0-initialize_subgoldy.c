@@ -31,7 +31,7 @@
 0043aa8c        player->presentation.invincible_shell.cutscene_roll_step = 0.0166666675f
 0043aa92        player->slow_commentary_timer = 0f
 0043aa9e        player->slow_commentary_step = 0.0166666675f
-0043aaa4        initialize_score_stats(&player->squidge)
+0043aaa4        initialize_squidge(&player->squidge)
 0043aaaf        initialize_invincible_shell(&player->presentation.invincible_shell)
 0043aabe        player->startup_voice_step = 0.0555555522f
 0043aac4        player->startup_voice_timer = 0.0555555522f

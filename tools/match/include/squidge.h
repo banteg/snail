@@ -4,8 +4,7 @@
 
 class Squidge {
 public:
-    // Stable Windows harness name; cross-port source name is cRSquidge::Init.
-    void initialize_score_stats(); // @ 0x444960
+    void initialize_squidge(); // @ 0x444960, cRSquidge::Init
     void start_squidge_y(float amount); // @ 0x444980, cRSquidge::StartY
     void start_squidge_z(float amount); // @ 0x4449a0, cRSquidge::StartZ
     void update_squidge(); // @ 0x4449c0, cRSquidge::AI

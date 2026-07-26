@@ -445,7 +445,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | project_position_onto_track_attachment | 0x4444b0 | 333 | 106/106 | 100.00% | 106/106 | 5 ok |  |
 | ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | update_anim_manager | 0x4447d0 | 399 | 134/134 | 100.00% | 134/134 | 13 ok |  |
-| ✅ | initialize_score_stats | 0x444960 | 20 | 8/8 | 100.00% | 8/8 | - |  |
+| ✅ | initialize_squidge | 0x444960 | 20 | 8/8 | 100.00% | 8/8 | - |  |
 | ✅ | start_squidge_y | 0x444980 | 23 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | start_squidge_z | 0x4449a0 | 23 | 6/6 | 100.00% | 6/6 | 1 ok |  |
 | ✅ | update_squidge | 0x4449c0 | 253 | 80/80 | 100.00% | 80/80 | 14 ok |  |

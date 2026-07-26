@@ -89,6 +89,7 @@ TRUSTED_NAMES = [
     (0x442E40, "release_snail_weapons"),
     (0x444600, "dispatch_cutscene_animation"),
     (0x4446E0, "set_weapon_animation"),
+    (0x444960, "initialize_squidge"),
     (0x445CD0, "build_snail_world_hotspots"),
     (0x445D50, "extract_snail_local_hotspots"),
     (0x447090, "initialize_fringe_manager"),
@@ -2350,8 +2351,8 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_salt_hazard(Salt* salt);",
     ),
     (
-        "initialize_score_stats",
-        "void __thiscall initialize_score_stats(Squidge* squidge);",
+        "initialize_squidge",
+        "void __thiscall initialize_squidge(Squidge* squidge);",
     ),
     (
         "start_squidge_y",

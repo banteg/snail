@@ -102,7 +102,8 @@ nuke progress +0x374/8, handoff timer +0x444/8 + gates +0x44c/d/e.
 The scratch now uses the shared exact `Squidge` owner directly. Cross-port
 symbols and Android bodies identify the four helpers as
 `cRSquidge::{Init,StartY,StartZ,AI}`; the old Windows
-`initialize_score_stats` name is only a stable harness identifier.
+`initialize_score_stats` name is retained only as a compatibility alias for
+the canonical `initialize_squidge`.
 
 2026-07-12 nested ClickStart ownership: the former flat movement-state lane is
 the state at `+0x80` inside the exact 0xac-byte `ClickStart` child embedded at

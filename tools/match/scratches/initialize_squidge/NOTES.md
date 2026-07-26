@@ -1,8 +1,8 @@
-# initialize_score_stats
+# initialize_squidge
 
 Exact `cRSquidge::Init` helper at `0x444960`. The Windows function name is
-retained as a stable match-harness identifier, but it was a historical
-misidentification: this function does not own or initialize score storage.
+now ownership-canonical; the historical `initialize_score_stats` name remains
+an alias only because this function does not own or initialize score storage.
 
 Ownership proof:
 
@@ -22,3 +22,9 @@ The helper clears the six floats in native Windows store order: `+0x04`,
 `void`; the zero left in `eax` is only the register used for the stores.
 
 Focused Wibo remains exact: 100.00%, 8/8 instructions, no masked operands.
+
+2026-07-26 ownership correction: Android supplies the exact method body and
+iOS independently supplies the authored symbol. Together with the sole Windows
+receiver at `Player + 0x4344`, this is sufficient to make
+`initialize_squidge` canonical without assigning the distinct mobile
+`cRSubGoldy::ScoreStatsInit()` to any unproven Windows function.

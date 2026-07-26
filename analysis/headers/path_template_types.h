@@ -2807,7 +2807,7 @@ void __thiscall build_track_fringe_supertramp_mesh(
 tColour* __thiscall set_color_rgba(tColour* color, float r, float g, float b, float a);
 void __thiscall set_color_alpha(tColour* color, float alpha);
 void __thiscall set_color_grayscale(tColour* color, float intensity);
-void __thiscall initialize_score_stats(Squidge* squidge);
+void __thiscall initialize_squidge(Squidge* squidge);
 void __thiscall start_squidge_y(Squidge* squidge, float value);
 void __thiscall start_squidge_z(Squidge* squidge, float value);
 void __thiscall update_squidge(Squidge* squidge);

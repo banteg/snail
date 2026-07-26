@@ -1,8 +1,8 @@
-// initialize_score_stats @ 0x444960 (thiscall, ret)
+// initialize_squidge @ 0x444960 (thiscall, ret)
 
 #include "squidge.h"
 
-void Squidge::initialize_score_stats()
+void Squidge::initialize_squidge()
 {
     y_velocity = 0.0f;
     y_phase = 0.0f;

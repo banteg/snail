@@ -3614,11 +3614,13 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "initialize_score_stats",
+      "selector": "initialize_squidge",
       "address": "0x444960",
-      "name": "initialize_score_stats",
-      "artifact": "analysis/decompile/ida/functions/00444960-initialize_score_stats.c",
-      "removed_stale_artifacts": []
+      "name": "initialize_squidge",
+      "artifact": "analysis/decompile/ida/functions/00444960-initialize_squidge.c",
+      "removed_stale_artifacts": [
+        "analysis/decompile/ida/functions/00444960-initialize_score_stats.c"
+      ]
     },
     {
       "selector": "start_squidge_y",

@@ -20312,7 +20312,7 @@
     },
     {
       "name": "bn_squidge_initializer_owner",
-      "artifact": "analysis/decompile/binja/functions/00444960-initialize_score_stats.c",
+      "artifact": "analysis/decompile/binja/functions/00444960-initialize_squidge.c",
       "required_substrings": [
         "__builtin_memset(squidge, 0, 0x18)"
       ],
@@ -20324,9 +20324,9 @@
     },
     {
       "name": "ida_squidge_initializer_owner_abi",
-      "artifact": "analysis/decompile/ida/functions/00444960-initialize_score_stats.c",
+      "artifact": "analysis/decompile/ida/functions/00444960-initialize_squidge.c",
       "required_substrings": [
-        "void __thiscall initialize_score_stats(Squidge *squidge)",
+        "void __thiscall initialize_squidge(Squidge *squidge)",
         "squidge->y_output = 0.0",
         "squidge->y_velocity = 0.0",
         "squidge->z_output = 0.0",

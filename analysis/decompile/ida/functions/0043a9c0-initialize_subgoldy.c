@@ -44,7 +44,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   player->presentation.invincible_shell.cutscene_roll_step = 0.016666668;
   player->slow_commentary_timer = 0.0;
   player->slow_commentary_step = 0.016666668;
-  initialize_score_stats(&player->squidge);
+  initialize_squidge(&player->squidge);
   initialize_invincible_shell(&player->presentation.invincible_shell);
   player->startup_voice_step = 0.055555552;
   player->startup_voice_timer = 0.055555552;

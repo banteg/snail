@@ -23200,7 +23200,7 @@
     },
     {
       "address": "0x444960",
-      "windows_name": "initialize_score_stats",
+      "windows_name": "initialize_squidge",
       "windows_size": 32,
       "status": "verified",
       "android_symbol": "cRSquidge::Init()",
