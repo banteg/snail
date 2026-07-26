@@ -88,3 +88,19 @@ vertex, and the two face records. Their fields now render directly through
 expressions. A tenth candidate, the pre-biased curved-sample cursor, was
 rejected because typing it created three backward `__offset` accesses. Focused
 matching remains 51.70% (616/680) with 43 clean masked operands.
+
+## 2026-07-26 mesh-vector ownership
+
+Raw native assembly at `0x427ca8..0x427d76` confirms the same four aggregate
+owners recovered in Turnover. Both vertex branches first own a lateral-offset
+vector and then a generated position. The terminal branch reaches the previous
+sample through the current row cursor and separately materializes an endpoint
+whose Z lane is extended by `1.0f`.
+
+Recovering that shared source shape changes focused matching from 51.70%
+(616/680) to 50.79% (655/680), improves the masked audit from 43 to 44 clean
+operands, and leaves no unresolved or mismatched masks. The candidate now has
+the native `0x50` frame and a 15-instruction exact prefix; the prior scalar
+writer used a `0x2c` frame and had no exact prefix. As in Turnover, the small
+fuzzy regression is retained because the native owner graph, row cursor,
+instruction count, frame, and prefix all move toward the target together.

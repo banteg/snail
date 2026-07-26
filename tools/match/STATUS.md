@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **76.63%**.
+**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **76.62%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -765,7 +765,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 529/552 | 51.62% | 15/552 | 32 ok |  |
 | 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 603/610 | 60.84% | 0/610 | 31 ok |  |
 | 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 651/671 | 51.89% | 15/671 | 39 ok |  |
-| 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 616/680 | 51.70% | 0/680 | 43 ok |  |
+| 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 655/680 | 50.79% | 15/680 | 44 ok |  |
 | 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 591/608 | 58.72% | 0/608 | 35 ok |  |
 | 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 592/600 | 50.00% | 0/600 | 31 ok |  |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 800/796 | 67.54% | 10/796 | 62 ok |  |
