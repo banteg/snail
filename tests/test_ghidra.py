@@ -82,3 +82,19 @@ def test_install_corpus_replaces_tree_atomically(tmp_path: Path) -> None:
     assert not (tmp_path / ".android.previous").exists()
     assert not (output / "old.txt").exists()
     assert (output / "index.json").read_text(encoding="utf-8") == "{}\n"
+
+
+def test_failure_lines_include_only_failed_symbols() -> None:
+    failure_lines = _batch_namespace()["failure_lines"]
+    index = {
+        "functions": [
+            {"mangled": "_ZN2OkEv", "status": "ok"},
+            {
+                "mangled": "_ZN4HugeEv",
+                "status": "error",
+                "error": "process: timeout",
+            },
+        ]
+    }
+
+    assert failure_lines(index) == ["_ZN4HugeEv: process: timeout"]

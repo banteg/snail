@@ -61,8 +61,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--decompile-timeout",
         type=int,
-        default=60,
-        help="per-function decompile timeout in seconds (default: 60)",
+        default=300,
+        help="per-function decompile timeout in seconds (default: 300)",
+    )
+    parser.add_argument(
+        "--max-payload-mb",
+        type=int,
+        default=256,
+        help="maximum decompiler response size in MiB (default: 256)",
     )
     parser.add_argument(
         "--contains",
@@ -200,6 +206,14 @@ def install_corpus(staged: Path, output: Path) -> None:
         shutil.rmtree(backup)
 
 
+def failure_lines(index: dict) -> list[str]:
+    return [
+        f"{function['mangled']}: {function.get('error', 'unknown error')}"
+        for function in index.get("functions", ())
+        if function.get("status") != "ok"
+    ]
+
+
 def main() -> int:
     args = parse_args()
     binary = args.binary.resolve()
@@ -211,8 +225,12 @@ def main() -> int:
         raise SystemExit(f"missing Ghidra headless launcher: {headless}")
     if args.limit is not None and args.limit < 1:
         raise SystemExit("--limit must be positive")
-    if args.analysis_timeout < 1 or args.decompile_timeout < 1:
-        raise SystemExit("timeouts must be positive")
+    if (
+        args.analysis_timeout < 1
+        or args.decompile_timeout < 1
+        or args.max_payload_mb < 1
+    ):
+        raise SystemExit("timeouts and --max-payload-mb must be positive")
 
     symbols = collect_symbols(binary, nm=args.nm, cxxfilt=args.cxxfilt)
     if args.contains:
@@ -265,6 +283,7 @@ def main() -> int:
             str(manifest),
             str(staged),
             str(args.decompile_timeout),
+            str(args.max_payload_mb),
             "-deleteProject",
         )
         completed = subprocess.run(
@@ -306,6 +325,8 @@ def main() -> int:
                 "the previous corpus was preserved",
                 file=sys.stderr,
             )
+            for line in failure_lines(index):
+                print(f"  {line}", file=sys.stderr)
             return 1
 
         install_corpus(staged, output)
@@ -315,6 +336,8 @@ def main() -> int:
         )
         if failed:
             print(f"failed functions recorded in index: {failed}")
+            for line in failure_lines(index):
+                print(f"  {line}")
         return 0
 
 

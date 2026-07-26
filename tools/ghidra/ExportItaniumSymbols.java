@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ghidra.app.decompiler.DecompInterface;
+import ghidra.app.decompiler.DecompileOptions;
 import ghidra.app.decompiler.DecompileResults;
 import ghidra.app.script.GhidraScript;
 import ghidra.framework.Application;
@@ -32,6 +33,7 @@ public class ExportItaniumSymbols extends GhidraScript {
         String address;
         long size;
         List<String> params = new ArrayList<>();
+        List<String> ghidra_params = new ArrayList<>();
         String prototype;
         String path;
         String status;
@@ -42,6 +44,8 @@ public class ExportItaniumSymbols extends GhidraScript {
         String ghidra_version;
         String program;
         String executable_sha256;
+        int decompile_timeout_seconds;
+        int max_payload_mb;
         int symbol_count;
         int exported_count;
         int failed_count;
@@ -51,16 +55,19 @@ public class ExportItaniumSymbols extends GhidraScript {
     @Override
     public void run() throws Exception {
         String[] args = getScriptArgs();
-        if (args.length != 3) {
+        if (args.length != 4) {
             throw new IllegalArgumentException(
-                "expected a symbol manifest, output directory, and timeout");
+                "expected a symbol manifest, output directory, timeout, "
+                + "and maximum payload size");
         }
 
         Path manifestPath = Path.of(args[0]);
         Path outputRoot = Path.of(args[1]);
         int timeoutSeconds = Integer.parseInt(args[2]);
-        if (timeoutSeconds < 1) {
-            throw new IllegalArgumentException("timeout must be positive");
+        int maxPayloadMBytes = Integer.parseInt(args[3]);
+        if (timeoutSeconds < 1 || maxPayloadMBytes < 1) {
+            throw new IllegalArgumentException(
+                "timeout and maximum payload size must be positive");
         }
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -74,11 +81,19 @@ public class ExportItaniumSymbols extends GhidraScript {
         index.ghidra_version = Application.getApplicationVersion();
         index.program = currentProgram.getName();
         index.executable_sha256 = currentProgram.getExecutableSHA256();
+        index.decompile_timeout_seconds = timeoutSeconds;
+        index.max_payload_mb = maxPayloadMBytes;
         index.symbol_count = requested.length;
 
         DecompInterface decompiler = new DecompInterface();
         decompiler.toggleCCode(true);
         decompiler.toggleSyntaxTree(true);
+        DecompileOptions options = new DecompileOptions();
+        options.grabFromProgram(currentProgram);
+        options.setMaxPayloadMBytes(maxPayloadMBytes);
+        if (!decompiler.setOptions(options)) {
+            throw new IllegalStateException(decompiler.getLastMessage());
+        }
         if (!decompiler.openProgram(currentProgram)) {
             throw new IllegalStateException(decompiler.getLastMessage());
         }
@@ -110,6 +125,7 @@ public class ExportItaniumSymbols extends GhidraScript {
         exported.mangled = request.mangled;
         exported.binary_symbol = request.binarySymbol;
         exported.demangled = request.demangled;
+        exported.params = parameterTypes(request.demangled);
 
         try {
             Function function = resolveFunction(request);
@@ -123,7 +139,7 @@ public class ExportItaniumSymbols extends GhidraScript {
             exported.prototype = function.getPrototypeString(
                 true, true);
             for (Parameter parameter : function.getParameters()) {
-                exported.params.add(
+                exported.ghidra_params.add(
                     parameter.getDataType().getDisplayName());
             }
 
@@ -219,22 +235,32 @@ public class ExportItaniumSymbols extends GhidraScript {
     }
 
     private String qualifiedName(String demangled) {
-        int open = demangled.indexOf('(');
+        int open = parameterOpen(demangled);
         return open < 0 ? demangled : demangled.substring(0, open);
     }
 
     private int parameterCount(String demangled) {
-        int open = demangled.indexOf('(');
+        int open = parameterOpen(demangled);
         int close = demangled.lastIndexOf(')');
         if (open < 0 || close < open) {
             return -1;
         }
+        return parameterTypes(demangled).size();
+    }
+
+    private List<String> parameterTypes(String demangled) {
+        List<String> result = new ArrayList<>();
+        int open = parameterOpen(demangled);
+        int close = demangled.lastIndexOf(')');
+        if (open < 0 || close < open) {
+            return result;
+        }
         String parameters = demangled.substring(open + 1, close).trim();
         if (parameters.isEmpty() || "void".equals(parameters)) {
-            return 0;
+            return result;
         }
-        int count = 1;
         int depth = 0;
+        int start = 0;
         for (int index = 0; index < parameters.length(); index++) {
             char current = parameters.charAt(index);
             if (current == '<' || current == '(' || current == '[') {
@@ -243,10 +269,32 @@ public class ExportItaniumSymbols extends GhidraScript {
                     current == '>' || current == ')' || current == ']') {
                 depth--;
             } else if (current == ',' && depth == 0) {
-                count++;
+                result.add(parameters.substring(start, index).trim());
+                start = index + 1;
             }
         }
-        return count;
+        result.add(parameters.substring(start).trim());
+        return result;
+    }
+
+    private int parameterOpen(String demangled) {
+        int close = demangled.lastIndexOf(')');
+        if (close < 0) {
+            return -1;
+        }
+        int depth = 0;
+        for (int index = close; index >= 0; index--) {
+            char current = demangled.charAt(index);
+            if (current == ')') {
+                depth++;
+            } else if (current == '(') {
+                depth--;
+                if (depth == 0) {
+                    return index;
+                }
+            }
+        }
+        return -1;
     }
 
     private String makeFilename(String address, String mangled)

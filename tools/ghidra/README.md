@@ -29,7 +29,9 @@ Use `--contains BuildSlalom` or `--limit 5` for a bounded smoke export. A run is
 staged next to the requested corpus and only replaces the prior tree after
 Ghidra writes a structurally complete index. Without `--strict`, individual
 decompiler failures are recorded in the index and successful functions are
-still installed.
+still installed. The default 300-second timeout and 256 MiB response budget
+cover giant mobile functions such as `cRGame::LoadPaths()`; both are
+configurable.
 
 ## One-function probe
 
