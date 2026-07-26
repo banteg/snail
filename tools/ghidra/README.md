@@ -1,4 +1,37 @@
-# Ghidra symbol probe
+# Ghidra mobile decompile tools
+
+## Batch corpus export
+
+`export_itanium_symbols.py` exports every nested Itanium C++ function selected
+from the binary symbol table in one headless analysis run. The index keeps the
+mangled and demangled names, Ghidra entry point, function size, parameter types,
+prototype, output path, and per-function status.
+
+```sh
+uv run tools/ghidra/export_itanium_symbols.py \
+  artifacts/android/unpacked/com.sandlotgames.snailmail.1/lib/armeabi-v7a/libsnailmail.so \
+  analysis/decompile/android \
+  --strict
+
+uv run tools/ghidra/export_itanium_symbols.py \
+  "artifacts/ios/unpacked/Snail Mail/Payload/iSM.app/iSM" \
+  analysis/decompile/ios \
+  --strict
+```
+
+Selection is keyed by the binary's mangled symbol-table entries. The Ghidra
+script resolves the imported symbol object rather than treating the `nm`
+address as a Ghidra function entry, which avoids ARM Thumb-bit address
+ambiguity. Mach-O's extra leading underscore is normalized in `mangled` while
+the original spelling is retained in `binary_symbol`.
+
+Use `--contains BuildSlalom` or `--limit 5` for a bounded smoke export. A run is
+staged next to the requested corpus and only replaces the prior tree after
+Ghidra writes a structurally complete index. Without `--strict`, individual
+decompiler failures are recorded in the index and successful functions are
+still installed.
+
+## One-function probe
 
 `decompile_symbol.py` is the bounded second-opinion path for Android, iOS, or
 Windows functions. It currently defaults to Ghidra 12.1.2 and creates both the
