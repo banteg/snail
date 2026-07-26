@@ -1,6 +1,6 @@
-# update_sprite_facing_angle
+# build_sprite_tail
 
-Near-match for Sprite facing-angle refresh at `0x44e410`.
+Near-match for Windows `cRSprite::BuildTail(tMatrix*)` at `0x44e410`.
 
 - `SPRITE_FLAG_THROTTLE_FACING_REFRESH` enables throttled facing refresh
   through `+0x8c/+0x90`.
@@ -44,7 +44,7 @@ refresh fields `+0x8c/+0x90` remain the right shared names.
 
 2026-06-18 prototype sync: BN's old `int16_t` return was another condition-code
 artifact from the final progress comparison. The live prototype is
-`void __thiscall update_sprite_facing_angle(Sprite*, const TransformMatrix*)`,
+`void __thiscall build_sprite_tail(Sprite*, const TransformMatrix*)`,
 which resolves the same Sprite fields in BN and removes the synthetic `result`.
 The exact-match residual is unchanged: only the dead rotated-Z spill slot differs.
 
@@ -88,3 +88,16 @@ The mobile bodies can reuse their input delta directly, but applying that
 shorter lifetime to Windows regressed focused matching to 78.75% (`74/86`).
 The two Windows branch-local delta-source copies are therefore retained as a
 real port/compiler difference rather than removed for visual symmetry.
+
+## 2026-07-26 authored mobile owner
+
+Android and iOS independently export this exact body as
+`cRSprite::BuildTail(tMatrix*)`; both ports preserve one corresponding body,
+and Windows has one call from `cRGame::Render` immediately before drawing an
+orientation-to-motion sprite. The canonical Windows owner is therefore
+`build_sprite_tail`, with `update_sprite_facing_angle` retained only as a
+compatibility alias.
+
+The mobile symbols recover the method owner and authored name, not additional
+member names. The conservative `facing_angle` and refresh-field labels remain
+unchanged, and focused Windows matching remains honestly at 97.67%.

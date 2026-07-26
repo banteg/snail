@@ -370,7 +370,7 @@ LABEL_64:
             {
               sprite = v52->sprite;
               if ( (sprite->flags & 2) != 0 )
-                update_sprite_facing_angle(sprite, (const struct TransformMatrix *)(*((_DWORD *)v18 + 373) + 128));
+                build_sprite_tail(sprite, (const struct TransformMatrix *)(*((_DWORD *)v18 + 373) + 128));
               draw_sprite_quad((Vec3 *)&v52->position, v52->sprite);
               v52 = v52->next;
             }

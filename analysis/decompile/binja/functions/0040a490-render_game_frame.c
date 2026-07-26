@@ -196,7 +196,7 @@
 0040a8c8        if (next_1 != 0)
 0040a8ca        struct Sprite* sprite = next_1->sprite
 0040a8d1        if ((sprite->flags.b & 2) != 0)
-0040a8e0        update_sprite_facing_angle(sprite, *(ebp_1 + 0x5d4) + 0x80)
+0040a8e0        build_sprite_tail(sprite, *(ebp_1 + 0x5d4) + 0x80)
 0040a8ed        draw_sprite_quad(&next_1->position, next_1->sprite)
 0040a8f2        next_1 = next_1->next
 0040a8f9        do while (next_1 != 0)

@@ -39,7 +39,7 @@ Recovered relationships:
 - Sprite rendering uses `g_sprite_active_heads[camera_index]`, checks the
   sprite and camera high render-mask bytes, depth-sorts visible sprites into
   the `data_4f7050` bucket heads with nodes from `data_4e5510`, then calls
-  `update_sprite_facing_angle` for `SPRITE_FLAG_ORIENT_TO_MOTION` sprites before
+  `build_sprite_tail` for `SPRITE_FLAG_ORIENT_TO_MOTION` sprites before
   `draw_sprite_quad`.
 - The renderer admits only `SPRITE_FLAG_ACTIVE | SPRITE_FLAG_RENDER_ENABLED`
   sprites and excludes `SPRITE_FLAG_DELAYED_RENDER`; exact initialization and
@@ -230,7 +230,7 @@ the same 256-head array and its local `sprite` is the `Sprite*` borrowed from
 `SpriteDepthNode::sprite`. The exact 100% `draw_sprite_quad` scratch proves the
 `int __cdecl draw_sprite_quad(Vec3*, Sprite*)` helper ABI, while the sprite
 member declaration and call convention prove
-`void __thiscall update_sprite_facing_angle(Sprite*, const TransformMatrix*)`.
+`void __thiscall build_sprite_tail(Sprite*, const TransformMatrix*)`.
 These are ownership replays only: no matcher source or operand exception was
 changed. The pre-biased camera-pass register remains intentionally unclaimed;
 the distinct stack-backed `camera_order_cursor` is recovered below.

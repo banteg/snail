@@ -29,7 +29,7 @@ TRUSTED_NAMES = [
     (0x44E200, "kill_sprite"),
     (0x44E2A0, "allocate_sprite"),
     (0x44E3D0, "kill_game_sprites"),
-    (0x44E410, "update_sprite_facing_angle"),
+    (0x44E410, "build_sprite_tail"),
     (0x44E540, "set_sprite_manager_paused"),
     (0x44E550, "set_sprite_texture_ref"),
     (0x44E570, "get_sprite_texture"),
@@ -76,8 +76,8 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall kill_game_sprites(SpriteManager *manager);",
     ),
     (
-        "update_sprite_facing_angle",
-        "void __thiscall update_sprite_facing_angle(Sprite *sprite, const struct TransformMatrix *matrix);",
+        "build_sprite_tail",
+        "void __thiscall build_sprite_tail(Sprite *sprite, const struct TransformMatrix *matrix);",
     ),
     (
         "set_sprite_manager_paused",

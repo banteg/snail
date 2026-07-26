@@ -27,7 +27,7 @@ MATRIX_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 
 FUNCTION_SYMBOL_UPDATES = (
-    ("0x44e410", "update_sprite_facing_angle"),
+    ("0x44e410", "build_sprite_tail"),
     ("0x44e580", "get_sprite_tga"),
     ("0x44e800", "initialize_texture_list"),
     ("0x44e810", "get_or_create_texture_ref"),
@@ -177,8 +177,8 @@ PROTO_UPDATES = (
     ),
     ("kill_game_sprites", "void __thiscall kill_game_sprites(SpriteManager* manager)"),
     (
-        "update_sprite_facing_angle",
-        "void __thiscall update_sprite_facing_angle(Sprite* sprite, const TransformMatrix* matrix)",
+        "build_sprite_tail",
+        "void __thiscall build_sprite_tail(Sprite* sprite, const TransformMatrix* matrix)",
     ),
     (
         "set_sprite_manager_paused",

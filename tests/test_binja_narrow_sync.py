@@ -871,7 +871,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     for selector in (
         "configure_sprite_render_state",
         "draw_sprite_quad",
-        "update_sprite_facing_angle",
+        "build_sprite_tail",
         "render_game_frame",
     ):
         assert f'"{selector}",' in frame_sync
@@ -2407,7 +2407,7 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert '("0x24", "object", "Object*")' in source
     assert 'required_structs=("TransformMatrix",)' in source
     assert "matrix_size != 0x40" in source
-    assert '("0x44e410", "update_sprite_facing_angle")' in source
+    assert '("0x44e410", "build_sprite_tail")' in source
     assert '("0x44e800", "initialize_texture_list")' in source
     assert '("0x44e810", "get_or_create_texture_ref")' in source
     assert '("0x4b7790", "g_texture_refs")' in source
@@ -2453,8 +2453,8 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
             "TgaImageView *__thiscall get_sprite_tga(SpriteManager *manager, int32_t texture_id);",
         ),
         (
-            "void __thiscall update_sprite_facing_angle(Sprite* sprite, const TransformMatrix* matrix)",
-            "void __thiscall update_sprite_facing_angle("
+            "void __thiscall build_sprite_tail(Sprite* sprite, const TransformMatrix* matrix)",
+            "void __thiscall build_sprite_tail("
             "Sprite *sprite, const struct TransformMatrix *matrix);",
         ),
     ):
@@ -2464,7 +2464,7 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "TextureRef* __stdcall get_sprite_texture" not in source
     assert "TRUSTED_NAMES" in ida_source
     assert '(0x44DF30, "update_sprite")' in ida_source
-    assert '(0x44E410, "update_sprite_facing_angle")' in ida_source
+    assert '(0x44E410, "build_sprite_tail")' in ida_source
     assert '(0x44E800, "initialize_texture_list")' in ida_source
     assert '(0x44E810, "get_or_create_texture_ref")' in ida_source
     assert '(0x4B7790, "g_texture_refs")' in ida_source
@@ -2509,7 +2509,7 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "struct TransformMatrix;" in star_analysis_header
     assert "typedef struct Object Object;" in star_analysis_header
     assert "Object* object;" in star_analysis_header
-    assert "void __thiscall update_sprite_facing_angle(" in star_analysis_header
+    assert "void __thiscall build_sprite_tail(" in star_analysis_header
     assert "const struct TransformMatrix* matrix" in star_analysis_header
     assert "typedef struct TransformMatrix TransformMatrix;" not in star_analysis_header
     assert "#define TEXTURE_REF_LIST_CAPACITY 500" in star_analysis_header
@@ -4953,13 +4953,13 @@ def test_frame_replays_preserve_window_bootstrap_abi() -> None:
     symbol_update = binja_source.index("updates=FUNCTION_SYMBOL_UPDATES")
     prototype_update = binja_source.index("proto_updates=resolved_proto_updates")
     assert symbol_update < prototype_update
-    assert '("0x44e410", "update_sprite_facing_angle")' in binja_source
+    assert '("0x44e410", "build_sprite_tail")' in binja_source
     assert 'OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"' in binja_source
     assert 'SPRITE_HEADER_PATH = REPO_ROOT / "analysis/headers/star_manager_types.h"' in binja_source
     assert '"RenderableBod"' in binja_source
     assert '"Sprite"' in binja_source
     assert '"star_manager_types.h"' in ida_source
-    assert '"update_sprite_facing_angle",' in ida_source
+    assert '"build_sprite_tail",' in ida_source
     assert 're.sub(r"\\b(?:struct|union|enum)\\s+", "", normalized)' in ida_source
 
 
@@ -11666,7 +11666,7 @@ def test_sprite_and_texture_ownership_stays_aligned() -> None:
     consumers = {
         "initialize_sprite": "SPRITE_FLAG_RENDER_ENABLED",
         "update_sprite": "SPRITE_FLAG_ANIMATION_PING_PONG",
-        "update_sprite_facing_angle": "SPRITE_FLAG_THROTTLE_FACING_REFRESH",
+        "build_sprite_tail": "SPRITE_FLAG_THROTTLE_FACING_REFRESH",
         "draw_sprite_quad": "SPRITE_FLAG_FORCE_OPAQUE",
         "get_or_create_texture_ref": "TEXTURE_REF_DISABLE_PATH_REUSE",
         "load_registered_texture_ref": "TEXTURE_REF_SKIP_RUNTIME_LOAD",

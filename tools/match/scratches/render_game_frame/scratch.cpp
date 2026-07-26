@@ -236,7 +236,7 @@ void GameRoot::render_game_frame()
                 SpriteDepthNode* node = g_sprite_depth_buckets[bucket];
                 while (node != 0) {
                     if ((node->sprite->flags & SPRITE_FLAG_ORIENT_TO_MOTION) != 0) {
-                        node->sprite->update_sprite_facing_angle(
+                        node->sprite->build_sprite_tail(
                             &viewports[camera_index].camera->view_matrix);
                     }
                     draw_sprite_quad(&node->position, node->sprite);

@@ -81,7 +81,7 @@ TRUSTED_NAMES = [
     (0x4107D0, "update_frontend_state_machine"),
     (0x4137F0, "draw_sprite_quad"),
     (0x413670, "configure_sprite_render_state"),
-    (0x44E410, "update_sprite_facing_angle"),
+    (0x44E410, "build_sprite_tail"),
     (0x4119C0, "initialize_game_window_and_input_wrapper"),
     (0x4119D0, "initialize_game_window_and_input"),
     (0x44BC20, "resolve_uncaptured_cursor_sensitivity_scale"),
@@ -248,8 +248,8 @@ TRUSTED_FUNCTION_DECLARATIONS = [
         "int __cdecl configure_sprite_render_state(Sprite *sprite);",
     ),
     (
-        "update_sprite_facing_angle",
-        "void __thiscall update_sprite_facing_angle("
+        "build_sprite_tail",
+        "void __thiscall build_sprite_tail("
         "Sprite *sprite, const struct TransformMatrix *matrix);",
     ),
     (
@@ -1062,7 +1062,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "activate_landscape_entry",
             "configure_sprite_render_state",
             "draw_sprite_quad",
-            "update_sprite_facing_angle",
+            "build_sprite_tail",
             "render_game_frame",
             "attach_render_camera_source",
             "initialize_render_camera_slot",

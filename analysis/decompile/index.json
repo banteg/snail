@@ -18,8 +18,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "calc_path_length_z",
-      "address": "0x42c600"
+      "name": "build_sprite_tail",
+      "address": "0x44e410"
     }
   ],
   "health_check_count": 1059,

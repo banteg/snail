@@ -3873,8 +3873,12 @@
     },
     {
       "address": "0x44e410",
-      "name": "update_sprite_facing_angle",
-      "description": "Refreshes the sprite angle lane at `+0x7c` from motion delta in camera space, with the optional smoothing timer carried in `+0x8c/+0x90`. iOS RSprite.o names the matrix-driven tail/facing family `cRSprite::BuildTail(tMatrix*)`."
+      "name": "build_sprite_tail",
+      "aliases": [
+        "update_sprite_facing_angle",
+        "BuildTail"
+      ],
+      "description": "Windows `cRSprite::BuildTail(tMatrix*)`: derives the sprite tail/facing angle at `+0x7c` from its camera-space motion delta, optionally throttled by the refresh timer at `+0x8c/+0x90`. Android and iOS independently preserve the exact authored owner, symbol, and corresponding body; the former `update_sprite_facing_angle` label remains a compatibility alias."
     },
     {
       "address": "0x44e540",

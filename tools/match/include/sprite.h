@@ -2,7 +2,7 @@
 // iOS RSprite.o names these owners cRSprite and cRSpriteManager.
 // Layout is cross-checked by initialize_sprite, update_sprite, texture helpers,
 // allocate_sprite, kill_sprite, kill_game_sprites, draw_sprite_quad,
-// update_sprite_facing_angle, and exact allocation callers.
+// build_sprite_tail, and exact allocation callers.
 #ifndef SPRITE_H
 #define SPRITE_H
 
@@ -121,7 +121,7 @@ public:
     void initialize_sprite(); // @ 0x44de90
     void update_sprite();     // @ 0x44df30
     void kill_sprite();       // @ 0x44e200
-    void update_sprite_facing_angle(const TransformMatrix* matrix); // @ 0x44e410
+    void build_sprite_tail(const TransformMatrix* matrix); // @ 0x44e410
     TextureRef* set_sprite_texture_ref(int texture_id, int frame); // @ 0x44e550
 
     void* object_ref; // +0x00, initialized to sentinel -1

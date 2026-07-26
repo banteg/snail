@@ -201,7 +201,7 @@ void __thiscall initialize_sprite(Sprite* sprite);
 void __thiscall update_sprite(Sprite* sprite);
 void __thiscall kill_sprite(Sprite* sprite);
 void __thiscall kill_game_sprites(SpriteManager* manager);
-void __thiscall update_sprite_facing_angle(Sprite* sprite, const TransformMatrix* matrix);
+void __thiscall build_sprite_tail(Sprite* sprite, const TransformMatrix* matrix);
 uint8_t __thiscall set_sprite_manager_paused(SpriteManager* manager, uint8_t paused);
 TextureRef* __thiscall get_sprite_texture(SpriteManager* manager, int32_t texture_id);
 

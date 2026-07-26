@@ -31014,14 +31014,14 @@
     },
     {
       "address": "0x44e410",
-      "windows_name": "update_sprite_facing_angle",
+      "windows_name": "build_sprite_tail",
       "windows_size": 304,
       "status": "verified",
       "android_symbol": "cRSprite::BuildTail(tMatrix*)",
       "android_symbol_evidence": "exact-demangled-symbol",
       "ios_symbol": "cRSprite::BuildTail(tMatrix*)",
       "source_object": "RSprite.o",
-      "confidence": "medium",
+      "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
     },

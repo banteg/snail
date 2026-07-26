@@ -1,9 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: update_sprite_facing_angle @ 0x44e410 */
-/* selector: update_sprite_facing_angle */
+/* function: build_sprite_tail @ 0x44e410 */
+/* selector: build_sprite_tail */
 
-// Refreshes the sprite angle lane at `+0x7c` from motion delta in camera space, with the optional smoothing timer carried in `+0x8c/+0x90`. iOS RSprite.o names the matrix-driven tail/facing family `cRSprite::BuildTail(tMatrix*)`.
-void __thiscall update_sprite_facing_angle(Sprite *sprite, const struct TransformMatrix *matrix)
+// Windows `cRSprite::BuildTail(tMatrix*)`: derives the sprite tail/facing angle at `+0x7c` from its camera-space motion delta, optionally throttled by the refresh timer at `+0x8c/+0x90`. Android and iOS independently preserve the exact authored owner, symbol, and corresponding body; the former `update_sprite_facing_angle` label remains a compatibility alias.
+void __thiscall build_sprite_tail(Sprite *sprite, const struct TransformMatrix *matrix)
 {
   double v3; // st7
   double v4; // st7

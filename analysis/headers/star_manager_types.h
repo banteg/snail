@@ -183,7 +183,7 @@ typedef struct StarManager {
     float fade_step;
 } StarManager;
 
-void __thiscall update_sprite_facing_angle(
+void __thiscall build_sprite_tail(
     Sprite* sprite,
     const struct TransformMatrix* matrix
 );

@@ -3513,11 +3513,11 @@
     },
     {
       "address": "0x44e410",
-      "windows_name": "update_sprite_facing_angle",
+      "windows_name": "build_sprite_tail",
       "ios_symbol": "cRSprite::BuildTail(tMatrix*)",
       "source_object": "RSprite.o",
-      "confidence": "medium",
-      "notes": "The iOS name confirms the matrix-driven facing/tail family; Windows keeps the narrower facing-angle helper name.",
+      "confidence": "high",
+      "notes": "Android and iOS independently preserve the exact `cRSprite::BuildTail(tMatrix*)` symbol and corresponding 304-byte owner body. The old descriptive Windows label `update_sprite_facing_angle` remains a compatibility alias.",
       "android_symbol": "cRSprite::BuildTail(tMatrix*)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },

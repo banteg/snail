@@ -1196,7 +1196,7 @@ fn lightStreakQuadLocalPoints(
     stretch: f32,
 ) [4]rl.Vector2 {
     // `render_game_frame` transforms sprite current and previous positions into
-    // scene space, negates scene x/z, then `update_sprite_facing_angle` derives
+    // scene space, negates scene x/z, then `build_sprite_tail` derives
     // the draw angle from that scene-space motion delta.
     const scene_x = motion_delta_scene.x;
     const scene_y = motion_delta_scene.y;

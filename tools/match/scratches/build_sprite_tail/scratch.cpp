@@ -1,11 +1,11 @@
-// update_sprite_facing_angle @ 0x44e410 (thiscall)
+// build_sprite_tail @ 0x44e410 (thiscall)
 
 #include "sprite.h"
 #include "transform_matrix.h"
 
 float atan2_positive(float y, float x);
 
-void Sprite::update_sprite_facing_angle(const TransformMatrix* matrix)
+void Sprite::build_sprite_tail(const TransformMatrix* matrix)
 {
     Vector3 rotated;
     if ((flags & SPRITE_FLAG_THROTTLE_FACING_REFRESH) != 0) {

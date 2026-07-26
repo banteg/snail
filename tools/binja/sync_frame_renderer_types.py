@@ -91,7 +91,7 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x44c3b0", "is_mouse_captured"),
     ("0x44c3c0", "capture_mouse_cursor"),
     ("0x44c400", "release_mouse_cursor"),
-    ("0x44e410", "update_sprite_facing_angle"),
+    ("0x44e410", "build_sprite_tail"),
     ("0x44e580", "get_sprite_tga"),
     ("0x44e900", "attach_render_camera_source"),
     ("0x44e920", "initialize_render_camera_slot"),
@@ -210,8 +210,8 @@ PROTO_UPDATES = (
         "int32_t __cdecl configure_sprite_render_state(Sprite* sprite)",
     ),
     (
-        "update_sprite_facing_angle",
-        "void __thiscall update_sprite_facing_angle("
+        "build_sprite_tail",
+        "void __thiscall build_sprite_tail("
         "Sprite* sprite, const TransformMatrix* matrix)",
     ),
     (
