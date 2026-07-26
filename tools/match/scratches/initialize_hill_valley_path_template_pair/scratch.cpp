@@ -14,46 +14,58 @@ typedef AttachmentSample PathTemplateSample;
 static __forceinline void initialize_secondary_hill(
     Path* path, int index, float phase, float height)
 {
-    PathTemplateSample* primary = &path->primary_samples[index];
-    PathTemplateSample* secondary = &path->secondary_samples[index];
-
-    set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = primary->center_x;
+    set_matrix_identity(&path->secondary_samples[index].transform);
+    path->secondary_samples[index].transform.position.x =
+        path->primary_samples[index].center_x;
     float y = (1.0f - cosine(phase)) * 0.5f * height;
-    secondary->transform.position.y = y + 0.49000001f;
-    secondary->transform.position.z = primary->transform.position.z;
+    path->secondary_samples[index].transform.position.y = y + 0.49000001f;
+    path->secondary_samples[index].transform.position.z =
+        path->primary_samples[index].transform.position.z;
 }
 
 static __forceinline void orient_previous_hill_pair(Path* path, int current_index)
 {
-    PathTemplateSample* primary = &path->primary_samples[current_index - 1];
-    PathTemplateSample* primary_next = &path->primary_samples[current_index];
-    PathTemplateSample* secondary = &path->secondary_samples[current_index - 1];
-    PathTemplateSample* secondary_next = &path->secondary_samples[current_index];
+    if (current_index > 1) {
+        path->primary_samples[current_index - 1].transform.basis_right =
+            Vector3(1.0f, 0.0f, 0.0f);
+        path->primary_samples[current_index - 1].transform.basis_forward = Vector3(
+            path->primary_samples[current_index].transform.position.x -
+                path->primary_samples[current_index - 1].transform.position.x,
+            path->primary_samples[current_index].transform.position.y -
+                path->primary_samples[current_index - 1].transform.position.y,
+            path->primary_samples[current_index].transform.position.z -
+                path->primary_samples[current_index - 1].transform.position.z);
+        path->primary_samples[current_index - 1]
+            .transform.basis_forward.normalize_vector();
+        path->primary_samples[current_index - 1].transform.basis_up.cross_vectors(
+            &path->primary_samples[current_index - 1].transform.basis_forward,
+            &path->primary_samples[current_index - 1].transform.basis_right);
 
-    if (current_index <= 1) {
-        primary->transform.set_matrix_rotation_identity();
-        secondary->transform.set_matrix_rotation_identity();
-        return;
+        path->secondary_samples[current_index - 1].transform.basis_right =
+            Vector3(1.0f, 0.0f, 0.0f);
+        path->secondary_samples[current_index - 1].transform.basis_forward =
+            Vector3(
+                path->secondary_samples[current_index].transform.position.x -
+                    path->secondary_samples[current_index - 1]
+                        .transform.position.x,
+                path->secondary_samples[current_index].transform.position.y -
+                    path->secondary_samples[current_index - 1]
+                        .transform.position.y,
+                path->secondary_samples[current_index].transform.position.z -
+                    path->secondary_samples[current_index - 1]
+                        .transform.position.z);
+        path->secondary_samples[current_index - 1]
+            .transform.basis_forward.normalize_vector();
+        path->secondary_samples[current_index - 1].transform.basis_up.cross_vectors(
+            &path->secondary_samples[current_index - 1]
+                 .transform.basis_forward,
+            &path->secondary_samples[current_index - 1].transform.basis_right);
+    } else {
+        path->primary_samples[current_index - 1]
+            .transform.set_matrix_rotation_identity();
+        path->secondary_samples[current_index - 1]
+            .transform.set_matrix_rotation_identity();
     }
-
-    primary->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
-    primary->transform.basis_forward = Vector3(
-        primary_next->transform.position.x - primary->transform.position.x,
-        primary_next->transform.position.y - primary->transform.position.y,
-        primary_next->transform.position.z - primary->transform.position.z);
-    primary->transform.basis_forward.normalize_vector();
-    primary->transform.basis_up.cross_vectors(
-        &primary->transform.basis_forward, &primary->transform.basis_right);
-
-    secondary->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
-    secondary->transform.basis_forward = Vector3(
-        secondary_next->transform.position.x - secondary->transform.position.x,
-        secondary_next->transform.position.y - secondary->transform.position.y,
-        secondary_next->transform.position.z - secondary->transform.position.z);
-    secondary->transform.basis_forward.normalize_vector();
-    secondary->transform.basis_up.cross_vectors(
-        &secondary->transform.basis_forward, &secondary->transform.basis_right);
 }
 
 static __forceinline void compute_path_deltas(Path* path)

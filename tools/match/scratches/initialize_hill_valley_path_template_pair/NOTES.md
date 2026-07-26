@@ -136,3 +136,21 @@ that removed the separate lateral-offset and endpoint owners regressed to
 33.71% (643/668), lost the exact frame with a `0x3c` allocation, and was
 rejected. The final source therefore follows the native spill and pointer
 lifetime evidence rather than selecting the smallest expression tree.
+
+## 2026-07-26 interior lane and orientation ownership
+
+Native `0x42d7f3..0x42d9b6` carries the sample-array index through the complete
+secondary initialization and both preceding-sample orientation bodies. The
+secondary lane owns its transform directly and reads only the corresponding
+primary `center_x` and Z. When the index is greater than one, the preceding
+primary and secondary samples directly own their right, forward, and up
+vectors; the first iteration reaches the two rotation-identity calls in the
+trailing `else` block.
+
+Replacing the scratch-only four-pointer orientation model first raises focused
+matching from 42.42% (671/668) to 47.43% (673/668). Removing the secondary
+initializer's two pointer aliases then reaches 51.04% (676/668), restores the
+19-instruction exact prefix, retains the exact native `0x48` frame, and keeps
+all 33 masked operands clean. The direct array owners agree with the raw
+addressing throughout the native loop; no synthetic scheduling or padding is
+introduced.
