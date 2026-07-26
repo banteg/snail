@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,8 +18,20 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "noop_runtime_ai",
-      "address": "0x407b50"
+      "name": "shuffle_voice_set",
+      "address": "0x448e60"
+    },
+    {
+      "name": "update_voice_set",
+      "address": "0x449360"
+    },
+    {
+      "name": "play_voice_set",
+      "address": "0x449390"
+    },
+    {
+      "name": "is_voice_playing",
+      "address": "0x449410"
     }
   ],
   "health_check_count": 1085,

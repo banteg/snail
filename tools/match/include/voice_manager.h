@@ -32,10 +32,10 @@ enum VoicePlayMode {
 
 class VoiceSet {
 public:
-    void initialize_voice_set(int count); // @ 0x448df0
-    void shuffle_voice_set(); // @ 0x448e60
-    bool play_voice_set(int sample_override); // @ 0x449390
-    void update_voice_set(); // @ 0x449360
+    void initialize_voice_set(int count); // @ 0x448df0, Android cRVoiceSet::Init(int)
+    void shuffle_voice_set(); // @ 0x448e60, Android cRVoiceSet::Shuffle()
+    bool play_voice_set(int sample_override); // @ 0x449390, Android cRVoiceSet::Play(int)
+    void update_voice_set(); // @ 0x449360, Android cRVoiceSet::AI()
 
     int sample_count;          // +0x00
     int next_index;            // +0x04
@@ -52,7 +52,7 @@ public:
     void update_voice_manager(); // @ 0x4492a0
     bool play_voice_manager(
         int set_id, unsigned int mode, int sample_override); // @ 0x4492d0
-    int is_voice_playing(); // @ 0x449410
+    int is_voice_playing(); // @ 0x449410, Android cRVoiceManager::IsPlaying()
 
     VoiceSet sets[VOICE_SET_COUNT]; // +0x000
     float global_progress;           // +0x180

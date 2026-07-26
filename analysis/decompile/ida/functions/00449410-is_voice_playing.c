@@ -2,6 +2,7 @@
 /* function: is_voice_playing @ 0x449410 */
 /* selector: is_voice_playing */
 
+// Exact cRVoiceManager::IsPlaying() member: scans all 16 inline VoiceSets and returns the first currently playing registered sample, or -1. Android preserves the authored owner and name but stubs its platform body to -1.
 int32_t __thiscall is_voice_playing(VoiceManager *manager)
 {
   int v2; // ebx

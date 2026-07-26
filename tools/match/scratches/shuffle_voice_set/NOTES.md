@@ -15,3 +15,11 @@ Ninja and IDA.
   `34/34` instructions with all six audited operands clean.
 - The paired replay keeps the shuffle on `VoiceSet*`, so playlist indexing no
   longer degrades into anonymous dword arithmetic in either tracked decompile.
+
+## 2026-07-26 Android owner verification
+
+Android independently retains `void cRVoiceSet::Shuffle()` and the same
+100-iteration random playlist swap. Its extra bounds diagnostic is
+platform-specific; the shared owner, playlist relationship, and void contract
+map directly to Windows. Focused Windows matching remains exact at 34/34
+instructions with six clean masked operands.

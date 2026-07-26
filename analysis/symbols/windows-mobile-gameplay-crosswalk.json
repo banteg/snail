@@ -13,11 +13,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 490,
-    "unverified_entries": 295,
-    "verified_android_symbols": 487,
+    "verified_entries": 494,
+    "unverified_entries": 291,
+    "verified_android_symbols": 491,
     "verified_ios_symbols": 408,
-    "available_android_mappings": 487,
+    "available_android_mappings": 491,
     "available_ios_mappings": 370
   },
   "entries": [
@@ -22741,39 +22741,11 @@
       "address": "0x448e60",
       "windows_name": "shuffle_voice_set",
       "windows_size": 96,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRVoiceSet::Shuffle()",
-          "score": 0.8182,
-          "name_score": 1.0,
-          "size_score": 0.5455
-        },
-        {
-          "symbol": "cRSubGoldy::ShowLives()",
-          "score": 0.7,
-          "name_score": 0.5,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellVoicePlay(int, float, float, float)",
-          "score": 0.6892,
-          "name_score": 0.5333,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "cRObject::ScaleVertices(float)",
-          "score": 0.6762,
-          "name_score": 0.5714,
-          "size_score": 0.8333
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.6697,
-          "name_score": 0.6,
-          "size_score": 0.7742
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRVoiceSet::Shuffle()",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRBod::cRBod()",
@@ -22863,39 +22835,11 @@
       "address": "0x449360",
       "windows_name": "update_voice_set",
       "windows_size": 48,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRVoiceSet::AI()",
-          "score": 0.9692,
-          "name_score": 1.0,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "cRDuplicateVertices::Init(int)",
-          "score": 0.7409,
-          "name_score": 0.6194,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "cRVoiceManager::AI()",
-          "score": 0.7029,
-          "name_score": 0.6,
-          "size_score": 0.8571
-        },
-        {
-          "symbol": "cRSlug::VoiceAI()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRViewport::cRViewport()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRVoiceSet::AI()",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRDuplicateVertices::Init(int)",
@@ -22933,39 +22877,11 @@
       "address": "0x449390",
       "windows_name": "play_voice_set",
       "windows_size": 128,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRVoiceSet::Play(int)",
-          "score": 0.9282,
-          "name_score": 1.0,
-          "size_score": 0.8205
-        },
-        {
-          "symbol": "cRVoiceSet::Init(int)",
-          "score": 0.7808,
-          "name_score": 0.768,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.7475,
-          "name_score": 0.6,
-          "size_score": 0.9688
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.7475,
-          "name_score": 0.6,
-          "size_score": 0.9688
-        },
-        {
-          "symbol": "cRVoiceSet::Shuffle()",
-          "score": 0.7421,
-          "name_score": 0.752,
-          "size_score": 0.7273
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRVoiceSet::Play(int)",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "RShellVoicePlay(int, float, float, float)",
@@ -23003,39 +22919,11 @@
       "address": "0x449410",
       "windows_name": "is_voice_playing",
       "windows_size": 80,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "RShellVoicePlay(int, float, float, float)",
-          "score": 0.7215,
-          "name_score": 0.6897,
-          "size_score": 0.7692
-        },
-        {
-          "symbol": "cRSlug::VoicePlay(int)",
-          "score": 0.6858,
-          "name_score": 0.7826,
-          "size_score": 0.5405
-        },
-        {
-          "symbol": "cRViewport::cRViewport()",
-          "score": 0.66,
-          "name_score": 0.6,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRViewport::cRViewport()",
-          "score": 0.66,
-          "name_score": 0.6,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRParcelManager::New()",
-          "score": 0.656,
-          "name_score": 0.4267,
-          "size_score": 1.0
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRVoiceManager::IsPlaying()",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRObject::cRObject()",

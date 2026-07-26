@@ -4349,6 +4349,38 @@
       "notes": "Windows and Android allocate the cRVoiceSet playlist and sample banks, seed the order, and shuffle it. Their incompatible incidental return-register residues plus value-agnostic callers prove the void member contract."
     },
     {
+      "address": "0x448e60",
+      "windows_name": "shuffle_voice_set",
+      "android_symbol": "cRVoiceSet::Shuffle()",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "notes": "Windows and Android perform 100 random in-place swaps over the cRVoiceSet playlist. Android adds a bounds diagnostic, but preserves the authored owner and void method contract."
+    },
+    {
+      "address": "0x449360",
+      "windows_name": "update_voice_set",
+      "android_symbol": "cRVoiceSet::AI()",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "notes": "Windows and Android advance the cRVoiceSet cooldown at +0x10 by its step at +0x14 and clear it after one normalized interval. The exact Windows member and Android export share the void contract."
+    },
+    {
+      "address": "0x449390",
+      "windows_name": "play_voice_set",
+      "android_symbol": "cRVoiceSet::Play(int)",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "notes": "Windows and Android gate on the per-set cooldown, accept an override or select the next shuffled bite, advance the playlist cursor, and return a boolean success value. Android stores 0x8c-byte VoiceBite records where Windows stores registered sample IDs, so only ownership and control-flow transfer across ports."
+    },
+    {
+      "address": "0x449410",
+      "windows_name": "is_voice_playing",
+      "android_symbol": "cRVoiceManager::IsPlaying()",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "notes": "Android preserves the authored cRVoiceManager method name but stubs the platform body to -1. Windows retains the richer 16-set registered-sample scan; this mapping transfers owner and contract only, not implementation."
+    },
+    {
       "address": "0x44c890",
       "windows_name": "convert_math_type32_to_16",
       "android_symbol": "MathType32to16(float, float)",

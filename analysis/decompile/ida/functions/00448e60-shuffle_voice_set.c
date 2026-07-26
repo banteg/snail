@@ -2,6 +2,7 @@
 /* function: shuffle_voice_set @ 0x448e60 */
 /* selector: shuffle_voice_set */
 
+// Exact void cRVoiceSet::Shuffle() member: performs 100 in-place random playlist swaps. Android preserves the same owner, method, and loop role; its only caller discards the platform-specific incidental return-register residue.
 void __thiscall shuffle_voice_set(VoiceSet *set)
 {
   int v2; // ebx
@@ -20,5 +21,5 @@ void __thiscall shuffle_voice_set(VoiceSet *set)
     playlist[v3] = playlist[(_DWORD)v4];
     set->playlist[v4] = HIDWORD(v4);
   }
-  while ( v2 );
+  while ( v2 != 0 );
 }
