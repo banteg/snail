@@ -7,9 +7,9 @@ float atan2_positive(float y, float x);
 
 void Sprite::update_sprite_facing_angle(const TransformMatrix* matrix)
 {
+    Vector3 rotated;
     if ((flags & SPRITE_FLAG_THROTTLE_FACING_REFRESH) != 0) {
         if (facing_refresh_progress == 0.0f) {
-            Vector3 rotated;
             Vector3 delta_source;
             Vector3 delta;
             delta_source.x = position.x - previous_position.x;
@@ -26,7 +26,6 @@ void Sprite::update_sprite_facing_angle(const TransformMatrix* matrix)
             facing_refresh_progress = 0.0f;
         }
     } else {
-        Vector3 rotated;
         Vector3 delta_source;
         Vector3 delta;
         delta_source.x = position.x - previous_position.x;

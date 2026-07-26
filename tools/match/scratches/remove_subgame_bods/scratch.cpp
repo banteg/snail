@@ -27,13 +27,6 @@ int report_errorf(char* format, ...);
         list->remove_bod((node_expr));                           \
     } while (0)
 
-#define REMOVE_INLINE_BOD_NODE_IF_LINKED(node_expr)               \
-    do {                                                          \
-        BodNode* node = (node_expr);                              \
-        if ((node->list_flags & BOD_FLAG_LINKED) != 0)           \
-            REMOVE_INLINE_BOD_NODE(node);                         \
-    } while (0)
-
 void SubgameRuntime::remove_subgame_bods()
 {
     TrackRowCell* cell = &runtime_cells[0][0];
@@ -59,23 +52,26 @@ void SubgameRuntime::remove_subgame_bods()
     BodNode** health_next = &health_pickups[0].list_next;
     int health_count = sizeof(health_pickups) / sizeof(health_pickups[0]);
     do {
-        if ((BOD_NEXT_LINK_FLAGS(health_next) & BOD_FLAG_LINKED) != 0)
+        if ((BOD_NEXT_LINK_FLAGS(health_next) & BOD_FLAG_LINKED) != 0) {
             REMOVE_BOD_NODE_FROM_NEXT_LINK(health_next);
-        ((SubHealth*)BOD_NODE_FROM_NEXT_LINK(health_next))->state =
-            TRACK_PICKUP_STATE_INACTIVE;
+            ((SubHealth*)BOD_NODE_FROM_NEXT_LINK(health_next))->state =
+                TRACK_PICKUP_STATE_INACTIVE;
+        }
         health_next = (BodNode**)((char*)health_next + sizeof(SubHealth));
         --health_count;
     } while (health_count != 0);
 
     BodNode* speedup = &speedup_pickup;
-    if ((speedup->list_flags & BOD_FLAG_LINKED) != 0)
+    if ((speedup->list_flags & BOD_FLAG_LINKED) != 0) {
         REMOVE_INLINE_BOD_NODE(speedup);
-    speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
+        speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
+    }
 
     BodNode* jetpack = &jetpack_pickup;
-    if ((jetpack->list_flags & BOD_FLAG_LINKED) != 0)
+    if ((jetpack->list_flags & BOD_FLAG_LINKED) != 0) {
         REMOVE_INLINE_BOD_NODE(jetpack);
-    jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
+        jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
+    }
 
     BodNode** garbage_next = &garbage_hazards.slots[0].list_next;
     int garbage_count =
@@ -108,32 +104,38 @@ void SubgameRuntime::remove_subgame_bods()
         if (((SubRing*)BOD_NODE_FROM_NEXT_LINK(ring_next))->state
             != SUB_RING_STATE_INACTIVE) {
             REMOVE_BOD_NODE_FROM_NEXT_LINK(ring_next);
-            ((SubRing*)BOD_NODE_FROM_NEXT_LINK(ring_next))->state =
-                SUB_RING_STATE_INACTIVE;
         }
+        ((SubRing*)BOD_NODE_FROM_NEXT_LINK(ring_next))->state =
+            SUB_RING_STATE_INACTIVE;
         ring_next = (BodNode**)((char*)ring_next + sizeof(SubRing));
         --ring_count;
     } while (ring_count != 0);
 
-    REMOVE_INLINE_BOD_NODE_IF_LINKED((BodNode*)embedded_player());
-    REMOVE_INLINE_BOD_NODE(
-        (BodNode*)&embedded_player()->presentation);
-    REMOVE_INLINE_BOD_NODE(
-        &embedded_player()->presentation.jetpack_channel);
-    REMOVE_INLINE_BOD_NODE(
-        &embedded_player()->presentation.weapon_channels[0]);
+    {
+        Player& player_owner = player;
+        if ((((BodNode*)&player_owner)->list_flags & BOD_FLAG_LINKED) != 0) {
+            REMOVE_INLINE_BOD_NODE((BodNode*)&player_owner);
+            REMOVE_INLINE_BOD_NODE(
+                (BodNode*)&player_owner.presentation);
+            REMOVE_INLINE_BOD_NODE(
+                &player_owner.presentation.jetpack_channel);
+            REMOVE_INLINE_BOD_NODE(
+                &player_owner.presentation.weapon_channels[0]);
 
-    BodList* list = &g_game->active_bod_list;
-    list->recycle_bod_to_free_list(
-        &embedded_player()->presentation.weapon_channels[1]);
-    g_game->active_bod_list.recycle_bod_to_free_list(
-        &embedded_player()->presentation.weapon_channels[2]);
-    g_game->active_bod_list.recycle_bod_to_free_list(
-        (BodNode*)&embedded_player()->presentation.invincible_shell);
+            BodList* list = &g_game->active_bod_list;
+            list->recycle_bod_to_free_list(
+                &player_owner.presentation.weapon_channels[1]);
+            g_game->active_bod_list.recycle_bod_to_free_list(
+                &player_owner.presentation.weapon_channels[2]);
+            g_game->active_bod_list.recycle_bod_to_free_list(
+                (BodNode*)&player_owner.presentation.invincible_shell);
 
-    player.movement_mode_selector = 0;
-    // The Windows cRSubGoldy teardown hook folds to the shared one-byte stub.
-    ((RuntimeSlot*)embedded_player())->noop_runtime_ai();
+            player_owner.movement_mode_selector = 0;
+            // Windows folds the cRSubGoldy teardown hook to the shared
+            // one-byte stub.
+            ((RuntimeSlot*)&player_owner)->noop_runtime_ai();
+        }
+    }
 
     GolbShot* shot = player.golb_shots;
     for (int m = 0;
@@ -144,10 +146,10 @@ void SubgameRuntime::remove_subgame_bods()
         ++shot;
     }
 
-    if ((player.click_start.list_flags & BOD_FLAG_LINKED) != 0)
+    if ((player.click_start.list_flags & BOD_FLAG_LINKED) != 0) {
         g_game->active_bod_list.recycle_bod_to_free_list(
             (BodNode*)&player.click_start);
-
-    player.click_start.state = CLICK_START_STATE_INACTIVE;
+        player.click_start.state = CLICK_START_STATE_INACTIVE;
+    }
     g_sprite_manager.kill_game_sprites();
 }

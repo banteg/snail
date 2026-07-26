@@ -206,10 +206,12 @@ void SubgameRuntime::build_subgame_level(int level_index)
     *(int*)&banners.slots[1].position.y = zero;
     *(int*)&banners.slots[1].position.x = zero;
     unsigned int completion_flags = banners.slots[1].list_flags;
-    banners.slots[1].owner_player = embedded_player();
-    banners.slots[1].position.z = (float)completion_row_start;
+    float completion_z = (float)completion_row_start;
+    Player* player_owner = embedded_player();
     ((unsigned char*)&completion_flags)[0] &= 0xdf;
+    banners.slots[1].owner_player = player_owner;
     banners.slots[1].list_flags = completion_flags;
+    banners.slots[1].position.z = completion_z;
     *(int*)&banners.slots[1].color.a = row_alpha;
 
     track_state_latch = (unsigned char)zero;
@@ -348,7 +350,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         node->list_flags |= BOD_FLAG_LINKED;
     }
 
-    BodNode* player_node = (BodNode*)embedded_player();
+    BodNode* player_node = (BodNode*)player_owner;
     if ((player_node->list_flags & BOD_FLAG_LINKED) != zero) {
         report_errorf("List ADD");
     } else {
@@ -382,7 +384,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
             barrier_node->list_next->list_prev = barrier_node;
         barrier_node->list_flags |= BOD_FLAG_LINKED;
     }
-    barrier.owner_player = embedded_player();
+    barrier.owner_player = player_owner;
 
     if (level_mode == zero) {
         sprintf(lives_text_widget->text_buffer,

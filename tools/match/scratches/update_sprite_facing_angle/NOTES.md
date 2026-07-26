@@ -75,3 +75,16 @@ order. IDA proves the source-level `g_sprite_active_heads` view is the
 longer attempts to create an overlapping global symbol there. Focused matching
 remains honestly unchanged at 97.67%, 86/86 instructions, with eight clean
 operands and only the dead returned-`z` spill slot differing.
+
+## 2026-07-26 cross-port rotate-result lifetime
+
+Both mobile `cRSprite::BuildTail` bodies and Windows IDA use one rotate-result
+vector across the throttled and immediate refresh branches. Hoisting the
+scratch's `rotated` owner to that shared scope is byte-identical at 97.67%,
+`86/86`, with eight clean operands; the only residual remains the dead
+returned-Z spill slot.
+
+The mobile bodies can reuse their input delta directly, but applying that
+shorter lifetime to Windows regressed focused matching to 78.75% (`74/86`).
+The two Windows branch-local delta-source copies are therefore retained as a
+real port/compiler difference rather than removed for visual symmetry.

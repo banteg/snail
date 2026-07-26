@@ -313,3 +313,30 @@ claiming ownership for the intrusive-list membership.
 No matcher source changed. Focused output remains the honest 67.67%,
 495/501-instruction frontier with 64 clean operands and the existing
 string-order mismatch.
+
+## 2026-07-26 mobile lifecycle-scope recovery
+
+The complete Android and iOS `cRSubGame::RemoveBods()` bodies expose the
+authored lifecycle guards that were lost in the earlier Windows
+reconstruction. Windows IDA independently confirms each scope:
+
+- health, speedup, and JetPack owners return to their inactive state only when
+  their inherited BOD node was linked and removed;
+- each ring owner returns to the inactive state after its optional unlink;
+- the Player body guard owns the entire presentation-bank teardown, the three
+  out-of-line recycler calls, the movement-mode clear, and `cRSubGoldy`
+  teardown hook; and
+- ClickStart returns to its inactive state only inside its linked-body branch.
+
+The Player block now borrows one scoped reference to the embedded
+`SubgameRuntime::player`, matching the single `cRSubGoldy` owner visible in
+both mobile ports. The projectile bank and ClickStart tail remain separately
+rooted at the same owning member because extending the temporary reference
+through them regressed focused matching to 67.46%.
+
+These are behavioral scope corrections, not register shaping. Focused Wibo
+rises from 67.67% (`495/501`) to **70.58%** (`505/501`), with 66 aligned
+masked operands, no unresolved or mismatched references, and eight
+alignment-only unaudited references. The remaining first mismatch is still the
+opening EDI/EBX row-cell cursor allocation; it is left visible rather than
+forced.

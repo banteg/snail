@@ -497,3 +497,19 @@ and the neighboring full-width list operations, so no synthetic overlay was
 added merely to improve the display. Matcher source remains untouched at the
 honest 77.67%, 560/555-instruction frontier, prefix 177/555, with all 101
 masked operands clean. No fakematch was introduced.
+
+## 2026-07-26 cross-port Player lifetime
+
+Android and iOS `cRSubGame::StartLevel(int)` both materialize one
+`cRSubGoldy` owner and reuse it for the completion-banner backlink and Player
+lifecycle work. Windows IDA shows the same owned Player lifetime beginning in
+the completion-row setup and continuing through Player-body insertion and the
+barrier backlink.
+
+The scratch now names that borrowed `Player*` once and preserves the
+completion-row Z conversion as its own value before the flag and backlink
+stores. The focused frontier remains 77.67%, `560/555`, prefix 177, with 106
+aligned masked operands, no unresolved or mismatched references, and four
+alignment-only unaudited references. Preinitializing the landscape selector
+from `level_index`, another superficially mobile-like spelling, regressed to
+76.98% and changed the Windows switch lowering, so it was rejected.
