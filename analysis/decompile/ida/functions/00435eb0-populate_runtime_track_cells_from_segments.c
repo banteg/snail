@@ -124,7 +124,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   char edge_rowa; // [esp+40h] [ebp-1Ch]
   tColour out; // [esp+4Ch] [ebp-10h] BYREF
 
-  if ( game->selected_level_record_active )
+  if ( game->selected_level_record_active != 0 )
   {
     runtime_build_seed = game->selected_level_record->runtime_build_seed;
   }
@@ -137,10 +137,10 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
       runtime_build_seed = (__int64)random_float_below(32768.0);
   }
   v4 = game->level_mode;
-  if ( v4 )
+  if ( v4 != 0 )
   {
     v5 = v4 - 1;
-    if ( v5 )
+    if ( v5 != 0 )
     {
       if ( v5 == 3 )
         initialize_high_score_entry(
@@ -190,7 +190,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   set_math_random_seed(runtime_build_seed);
   select_level_track_texture_set(&g_game_base->track, game->level_definition.track_texture_set);
   v7 = game->level_mode;
-  if ( !v7 || v7 == 7 || v7 == 4 || v7 == 1 )
+  if ( v7 == 0 || v7 == 7 || v7 == 4 || v7 == 1 )
   {
     game->first_block_row_count = game->level_definition.first_segment.row_count;
     edge_row = game->level_definition.random_length;
@@ -198,7 +198,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
     if ( v7 == 1 )
       game->runtime_row_count = (__int64)((game->challenge_difficulty_scalar * 0.64999998 + 0.34999999)
                                         * (double)edge_row);
-    if ( !game->level_definition.random_enabled )
+    if ( game->level_definition.random_enabled == 0 )
     {
       v10 = 0;
       game->runtime_row_count = game->level_definition.first_segment.row_count
@@ -232,7 +232,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
       --v8;
       game->runtime_row_count = v9;
     }
-    while ( v8 );
+    while ( v8 != 0 );
     segment_cursor = 0;
     game->completion_row_start = v9 - game->level_definition.last_segment.row_count;
     game->completion_row_start = v9 - game->level_definition.last_segment.row_count;
@@ -245,8 +245,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   game->player.follow_state.flag_3c = 0;
   row_fringe_front_cursor = (TrackRowCellFringeFrontStrideCursor *)&game->runtime_cells[0][0].fringe_front;
   parcel_spawn_y_cursor = (SubRowParcelSpawnYStrideCursor *)&game->runtime_rows[0].parcel_spawn_position.y;
-  rows_remaining = 3200;
-  do
+  for ( rows_remaining = 3200; rows_remaining != 0; --rows_remaining )
   {
     cell_lanes_remaining = 8;
     *(_DWORD *)parcel_spawn_y_cursor[-1]._stride_tail = 0;
@@ -277,7 +276,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
       ++lane_and_flags_cursor;
       --cell_lanes_remaining;
     }
-    while ( cell_lanes_remaining );
+    while ( cell_lanes_remaining != 0 );
     next_row_fringe_front_cursor = row_fringe_front_cursor;
     remaining_cell_lanes = 8;
     do
@@ -289,12 +288,10 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
       cell_fringe_front_cursor->fringe_left = nullptr;
       cell_fringe_front_cursor->fringe_back = nullptr;
     }
-    while ( remaining_cell_lanes );
+    while ( remaining_cell_lanes != 0 );
     row_fringe_front_cursor = next_row_fringe_front_cursor;
     ++parcel_spawn_y_cursor;
-    --rows_remaining;
   }
-  while ( rows_remaining );
   if ( game->level_definition.random_enabled == 1 )
   {
     visited_segment_index = 0;
@@ -317,10 +314,10 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
     build_runtime_owner = game;
     do
     {
-      if ( runtime_row_index )
+      if ( runtime_row_index != 0 )
       {
         if ( runtime_row_index != build_runtime_owner->completion_row_start
-          || build_runtime_owner->level_definition.random_enabled )
+          || build_runtime_owner->level_definition.random_enabled != 0 )
         {
           build_runtime_owner->base_subgame_rate = 1.0;
           if ( build_runtime_owner->level_definition.random_enabled == 1 )
@@ -383,7 +380,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
           }
           else
           {
-            if ( !v29
+            if ( v29 == 0
               || v29 == 4
               || v29 == 1
               || v29 == 7
@@ -409,7 +406,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               if ( active_segment != &build_runtime_owner->level_definition_scratch.segment_slots[1]
                 && active_segment != &build_runtime_owner->level_definition_scratch.segment_slots[3]
                 && active_segment != &build_runtime_owner->level_definition_scratch.segment_slots[4]
-                && (!v29 || v29 == 4 || v29 == 1 || v29 == 7 || v29 == 3)
+                && (v29 == 0 || v29 == 4 || v29 == 1 || v29 == 7 || v29 == 3)
                 && active_segment != &build_runtime_owner->level_definition.last_segment )
               {
                 runtime_row_count = build_runtime_owner->runtime_row_count;
@@ -419,7 +416,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               }
             }
           }
-          if ( build_runtime_owner->track_mirror_enabled )
+          if ( build_runtime_owner->track_mirror_enabled != 0 )
             build_runtime_owner->runtime_rows[runtime_row_index].flags |= 0x20u;
           segment_row_anchor = (SubSegmentRowStrideAnchor *)((char *)source_segment + 56 * segment_row_index);
           if ( (segment_row_anchor->row.flags & 0x100) != 0 )
@@ -500,7 +497,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
           *((_DWORD *)&build_runtime_owner->runtime_rows[0].ring_speed + 60 * runtime_row_index + runtime_row_index) = segment_row_anchor->row.ring_speed.bits;
           do
           {
-            if ( game->track_mirror_enabled )
+            if ( game->track_mirror_enabled != 0 )
               v46 = 7 - lane;
             else
               v46 = lane;
@@ -625,7 +622,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                   runtime_row_anchor->row.parcel_spawn_position.x = (double)lane - 4.0 + 0.5;
                   runtime_row_anchor->row.parcel_spawn_position.y = runtime_cell_anchor->cell.anchor_position.y;
                   runtime_row_anchor->row.parcel_spawn_position.z = (double)build_row + 0.5;
-                  if ( game->track_mirror_enabled )
+                  if ( game->track_mirror_enabled != 0 )
                     runtime_row_anchor->row.parcel_spawn_position.x = runtime_row_anchor->row.parcel_spawn_position.x
                                                                     * -1.0;
                 }
@@ -747,13 +744,13 @@ LABEL_173:
                   runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_PATH_ENTRY_LOWERCASE;
                 }
                 attachment_template_index = runtime_row_anchor->row.attachment_template_index;
-                if ( game->track_mirror_enabled )
+                if ( game->track_mirror_enabled != 0 )
                   selected_attachment_path = &game->path_pairs[attachment_template_index].secondary;
                 else
                   selected_attachment_path = &game->path_pairs[attachment_template_index].primary;
                 runtime_cell_anchor->cell.attachment_template_record = selected_attachment_path;
                 runtime_cell_anchor->cell.bod.list_flags &= ~0x20u;
-                if ( !attachment_entry_installed )
+                if ( attachment_entry_installed == 0 )
                 {
                   attachment_entry_installed = 1;
                   set_bod_object(
@@ -973,11 +970,10 @@ LABEL_174:
               runtime_cell_anchor->cell.anchor_position.z = v115;
             }
             fringe_slot = &runtime_cell_anchor->cell.fringe_front;
-            remaining_fringe_slots = 4;
-            do
+            for ( remaining_fringe_slots = 4; remaining_fringe_slots != 0; --remaining_fringe_slots )
             {
               fringe_object = *fringe_slot;
-              if ( *fringe_slot )
+              if ( *fringe_slot != nullptr )
               {
                 fringe_object->bod.position.z = 0.0;
                 fringe_object->bod.position.y = 0.0;
@@ -988,9 +984,7 @@ LABEL_174:
                 fringe_position->z = runtime_cell_anchor->cell.anchor_position.z;
               }
               ++fringe_slot;
-              --remaining_fringe_slots;
             }
-            while ( remaining_fringe_slots );
             ++lane;
           }
           while ( lane < 8 );
@@ -1001,7 +995,7 @@ LABEL_174:
         }
         while ( v102 );
       }
-      if ( build_runtime_owner->level_mode != 3 || !first_or_last_row )
+      if ( build_runtime_owner->level_mode != 3 || first_or_last_row == 0 )
         ++row_event_owner;
     }
     while ( runtime_row_index < build_runtime_owner->runtime_row_count );

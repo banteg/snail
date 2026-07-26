@@ -453,6 +453,25 @@
       "notes": "The exact Windows helper computes the same widget bounds through the Galaxy member surface."
     },
     {
+      "address": "0x40a1b0",
+      "windows_name": "update_overlay",
+      "ios_symbol": "cROverlay::AI()",
+      "android_symbol": "cROverlay::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both mobile bodies preserve the authored void cROverlay owner, angular wrap, local-Z transform rebuild, owned camera transform copy, and inverse-view update found in the exact Windows member. Platform object offsets differ but the nested transform and camera ownership agree.",
+      "android_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
+      "address": "0x40a240",
+      "windows_name": "initialize_overlay",
+      "android_symbol": "cROverlay::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the exact cROverlay lifecycle role and constants: zero rotation, the 0.00036547193 step, identity parent and camera transforms, 38-degree FOV, and inverse-view initialization. No matching iOS Init export is present.",
+      "android_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
       "address": "0x40a2a0",
       "windows_name": "run_frame_update",
       "ios_symbol": "cRGame::AI()",
@@ -759,6 +778,15 @@
       "confidence": "high",
       "notes": "Android and iOS both define cRSubGame::SetFeatures() as void. Windows GenerateLevel also discards EAX, and the corrected void scratch remains byte-identical; its prior record or mode result was incidental register residue.",
       "android_symbol": "cRSubGame::SetFeatures()",
+      "android_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
+      "address": "0x435e60",
+      "windows_name": "switch_track_mirror",
+      "android_symbol": "cRSubGame::SwitchMirror()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android preserves the cRSubGame owner, strict random-greater-than-0.5 selection, repeat counter, and forced inversion after four repeats. Its exits retain RAND's float bits in R0 rather than the selected mirror byte, while both Windows call sites immediately overwrite or ignore EAX, proving the authored member is void.",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
@@ -4082,6 +4110,15 @@
       "confidence": "high",
       "notes": "The exact Windows initializer operates on the 8-byte DuplicateVertices owner embedded at DirectXLoader +0x5e08 and allocates count times 10 bytes for its records.",
       "android_symbol": "cRDuplicateVertices::Init(int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
+      "address": "0x419f80",
+      "windows_name": "clean_duplicate_vertices",
+      "android_symbol": "cRDuplicateVertices::Clean(int)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "notes": "Android preserves the same 8-byte cRDuplicateVertices owner, 10-byte record stride, outer compare-vertex selection, and inner source-vertex/live-flag cleanup. Its empty exit leaves this in R0 while its populated exit leaves a compared short, independently proving that the authored member is void; the sole Windows caller also ignores its incidental final active-count value.",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {

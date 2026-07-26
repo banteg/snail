@@ -284,6 +284,10 @@ HELP_REANALYSIS_FUNCTIONS = (
     "update_help_screen",
 )
 
+TRACK_MIRROR_REANALYSIS_FUNCTIONS = (
+    "populate_runtime_track_cells_from_segments",
+)
+
 GALAXY_DATA_SYMBOL_UPDATES = (
     ("0x4a1c4c", "g_galaxy_group_points"),
     ("0x4a1d14", "g_galaxy_route_points"),
@@ -337,7 +341,7 @@ SUBGAME_FIELD_UPDATES = (
 # them when present instead of letting the intentionally sparse bootstrap
 # header flatten their ranges back into byte arrays.
 SUBGAME_BOD_FIELD_UPDATES = (
-    ("0x355bd4", "sub_lazer_list_head", "BodBase"),
+    ("0x355bd4", "barrier_sub_lazer_list_head", "BodBase"),
     ("0x355c0c", "salt_hazard_list_head", "BodBase"),
 )
 
@@ -478,7 +482,7 @@ PROTO_UPDATES = (
         "void __thiscall append_subgame_contact_target(EnemyManager* manager, const Vec3* position, float radius, int32_t kind, ContactTargetObject* object)",
     ),
     ("set_subgame_features", "void __thiscall set_subgame_features(SubgameRuntime* runtime)"),
-    ("switch_track_mirror", "bool __thiscall switch_track_mirror(SubgameRuntime* runtime)"),
+    ("switch_track_mirror", "void __thiscall switch_track_mirror(SubgameRuntime* runtime)"),
     (
         "normalize_segment_glyph_for_track_flags",
         "char __thiscall normalize_segment_glyph_for_track_flags(SubgameRuntime* runtime, char glyph, int32_t row, char edge_row)",
@@ -1003,6 +1007,7 @@ def main() -> int:
             identifiers=(
                 *COMPLETION_REANALYSIS_FUNCTIONS,
                 *HELP_REANALYSIS_FUNCTIONS,
+                *TRACK_MIRROR_REANALYSIS_FUNCTIONS,
             ),
         )
     )

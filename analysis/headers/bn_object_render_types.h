@@ -560,7 +560,7 @@ void __thiscall load_x_animation_clip(
     DirectXLoader* loader, char* mesh_name, Object* object);
 void* __thiscall initialize_duplicate_vertices(
     DuplicateVertices* duplicate_vertices, int32_t count);
-int32_t __thiscall clean_duplicate_vertices(
+void __thiscall clean_duplicate_vertices(
     DuplicateVertices* duplicate_vertices, int32_t unused);
 
 void __thiscall calc_object_bounding_box(Object* object);

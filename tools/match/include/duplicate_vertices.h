@@ -11,7 +11,7 @@ struct DuplicateVertexRecord {
 class DuplicateVertices {
 public:
     void* initialize_duplicate_vertices(int count); // @ 0x419f50
-    int clean_duplicate_vertices(int unused); // @ 0x419f80
+    void clean_duplicate_vertices(int unused); // @ 0x419f80; mobile cRDuplicateVertices::Clean(int)
 
     int active_count; // +0x00
     DuplicateVertexRecord* records; // +0x04

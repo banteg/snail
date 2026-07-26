@@ -6,7 +6,7 @@
 
 float random_float_below(float maximum, const char* tag); // @ 0x44dc90, cdecl
 
-bool SubgameRuntime::switch_track_mirror()
+void SubgameRuntime::switch_track_mirror()
 {
     bool mirror_enabled = random_float_below(1.0f, "Mirror") > 0.5f;
     if (mirror_enabled == track_mirror_enabled)
@@ -15,10 +15,9 @@ bool SubgameRuntime::switch_track_mirror()
         track_mirror_repeat_count = 0;
     if (track_mirror_repeat_count < 4) {
         track_mirror_enabled = mirror_enabled;
-        return mirror_enabled;
+        return;
     }
     track_mirror_repeat_count = 0;
     mirror_enabled = !mirror_enabled;
     track_mirror_enabled = mirror_enabled;
-    return mirror_enabled;
 }

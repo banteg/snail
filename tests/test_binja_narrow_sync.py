@@ -20864,3 +20864,98 @@ def test_segment_import_cursor_lifetimes_replay_cross_decompiler() -> None:
             "path_name_cursor",
         ):
             assert any(marker in item for item in required)
+
+
+def test_mobile_utility_abis_and_overlay_owners_are_persisted() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_object_sync = (
+        BINJA_DIR / "sync_object_render_types.py"
+    ).read_text(encoding="utf-8")
+    ida_object_sync = (
+        IDA_DIR / "apply_object_render_types.py"
+    ).read_text(encoding="utf-8")
+    binja_subgame_sync = (
+        BINJA_DIR / "sync_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    ida_subgame_sync = (
+        IDA_DIR / "apply_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    ida_frame_sync = (
+        IDA_DIR / "apply_frame_renderer_types.py"
+    ).read_text(encoding="utf-8")
+
+    object_headers = (
+        (HEADER_DIR / "bn_object_render_types.h").read_text(
+            encoding="utf-8"
+        ),
+        (HEADER_DIR / "object_render_types.h").read_text(
+            encoding="utf-8"
+        ),
+    )
+    frame_headers = (
+        (HEADER_DIR / "bn_frame_renderer_types.h").read_text(
+            encoding="utf-8"
+        ),
+        (HEADER_DIR / "frame_renderer_types.h").read_text(
+            encoding="utf-8"
+        ),
+    )
+    matcher_duplicate_header = (
+        repo_root / "tools/match/include/duplicate_vertices.h"
+    ).read_text(encoding="utf-8")
+    matcher_subgame_header = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+
+    clean_prototype = (
+        "void __thiscall clean_duplicate_vertices("
+        "DuplicateVertices* duplicate_vertices, int32_t unused)"
+    )
+    assert clean_prototype in binja_object_sync
+    assert (
+        "void __thiscall clean_duplicate_vertices("
+        "DuplicateVertices* duplicate_vertices, int unused);"
+    ) in ida_object_sync
+    for header in object_headers:
+        assert "void __thiscall clean_duplicate_vertices(" in header
+        assert (
+            "DuplicateVertices* duplicate_vertices, int32_t unused);"
+            in header
+        )
+    assert "void clean_duplicate_vertices(int unused);" in (
+        matcher_duplicate_header
+    )
+
+    switch_prototype = (
+        "void __thiscall switch_track_mirror("
+        "SubgameRuntime* runtime)"
+    )
+    assert switch_prototype in binja_subgame_sync
+    assert switch_prototype + ";" in ida_subgame_sync
+    assert "void switch_track_mirror();" in matcher_subgame_header
+    assert "TRACK_MIRROR_REANALYSIS_FUNCTIONS" in binja_subgame_sync
+    assert (
+        '"populate_runtime_track_cells_from_segments",'
+        in binja_subgame_sync
+    )
+    assert (
+        '("0x355bd4", "barrier_sub_lazer_list_head", "BodBase")'
+        in binja_subgame_sync
+    )
+    assert (
+        '("0x355bd4", "sub_lazer_list_head", "BodBase")'
+        not in binja_subgame_sync
+    )
+
+    for address, function_name in (
+        ("0x40A1B0", "update_overlay"),
+        ("0x40A240", "initialize_overlay"),
+    ):
+        assert f'({address}, "{function_name}")' in ida_frame_sync
+        assert (
+            f"void __thiscall {function_name}(FrameOverlay *overlay);"
+            in ida_frame_sync
+        )
+    for header in frame_headers:
+        assert "uint32_t render_mask;" in header
+        assert "float overlay_rotation_angle;" in header

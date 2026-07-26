@@ -1,37 +1,41 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 5,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 4,
-  "ida_exported": 4,
+  "bn_exported": 5,
+  "ida_exported": 5,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "binja_analysis_refreshed": true,
+  "binja_analysis_refreshed": false,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "kill_golb",
-      "address": "0x414670"
+      "name": "update_overlay",
+      "address": "0x40a1b0"
     },
     {
-      "name": "update_golb_ai",
-      "address": "0x414820"
+      "name": "initialize_overlay",
+      "address": "0x40a240"
     },
     {
-      "name": "spawn_golb_smoke",
-      "address": "0x415c60"
+      "name": "clean_duplicate_vertices",
+      "address": "0x419f80"
     },
     {
-      "name": "spawn_golb_impact_sprite",
-      "address": "0x415d80"
+      "name": "switch_track_mirror",
+      "address": "0x435e60"
+    },
+    {
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
     }
   ],
   "health_check_count": 1089,

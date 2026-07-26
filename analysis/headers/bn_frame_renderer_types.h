@@ -151,7 +151,10 @@ typedef struct FrameRenderCamera {
     FrameRenderableBod body;
     FrameTransformMatrix view_matrix;
     float fov_degrees;
-    uint32_t render_mask;
+    union {
+        uint32_t render_mask; // ordinary cRCamera scene mask
+        float overlay_rotation_angle; // cROverlay camera reuses this lane
+    };
 } FrameRenderCamera;
 
 typedef struct FrameOverlay {

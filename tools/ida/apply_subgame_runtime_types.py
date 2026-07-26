@@ -469,7 +469,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "switch_track_mirror",
-        "bool __thiscall switch_track_mirror(SubgameRuntime* runtime);",
+        "void __thiscall switch_track_mirror(SubgameRuntime* runtime);",
     ),
     (
         "normalize_segment_glyph_for_track_flags",

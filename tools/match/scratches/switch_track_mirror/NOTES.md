@@ -39,3 +39,24 @@ and cold temporary result locals, and boolean-expression inversion all compile
 to the same 91.23% object. VC6 continues to cross-jump-merge the identical
 `track_mirror_enabled = mirror_enabled; return` tails, leaving the native
 duplicated hot return tail unrecovered.
+
+## 2026-07-27 Android owner and void ABI
+
+Android retains the authored name `cRSubGame::SwitchMirror()` and the same
+strict `RAND(1.0f, "Mirror") > 0.5f` choice, repeat counter, and forced
+inversion after four repeats. Its raw ARM exits leave RAND's float bits in
+`r0`, not the selected mirror byte. The two Windows call sites likewise
+overwrite EAX immediately or jump away without consuming it, proving the
+member is void.
+
+Projecting that real ABI into the natural scratch preserves the honest 91.23%
+result, 27/30 instructions, and the same three-instruction VC6 tail-folding
+residual. No source was distorted to imitate the duplicated native return
+tail.
+
+Binary Ninja's durable prototype replay now reanalyzes
+`populate_runtime_track_cells_from_segments`, and readback confirms a `void`
+callee. Its first HLIL call nevertheless assigns the caller-clobbered EAX
+residue into a temporary phi seed; raw x86 immediately overwrites EAX with
+`selected_segment->row_count`, while IDA 9.4 renders the call as a plain
+statement. That decompiler artifact is not evidence for a return contract.

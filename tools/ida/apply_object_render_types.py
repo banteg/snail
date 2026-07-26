@@ -201,7 +201,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "clean_duplicate_vertices",
-        "int __thiscall clean_duplicate_vertices(DuplicateVertices* duplicate_vertices, int unused);",
+        "void __thiscall clean_duplicate_vertices(DuplicateVertices* duplicate_vertices, int unused);",
     ),
     (
         "calc_object_bounding_box",

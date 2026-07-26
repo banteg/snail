@@ -640,11 +640,13 @@
     },
     {
       "address": "0x40a1b0",
-      "name": "update_overlay"
+      "name": "update_overlay",
+      "description": "Exact void Windows `cROverlay::AI()`: wraps the owned camera rotation, rebuilds the parent local-Z transform, copies it into the embedded camera, and refreshes the inverse view. Android and iOS preserve the same owner and operation."
     },
     {
       "address": "0x40a240",
-      "name": "initialize_overlay"
+      "name": "initialize_overlay",
+      "description": "Exact void Windows `cROverlay::Init()`: initializes the parent transform, embedded camera, 38-degree FOV, zero rotation, and fixed rotation step. Android preserves the same owner, constants, and lifecycle role."
     },
     {
       "address": "0x40a290",
@@ -1266,7 +1268,7 @@
     {
       "address": "0x419f80",
       "name": "clean_duplicate_vertices",
-      "description": "Exact Windows cleanup pass on the same authored cRDuplicateVertices owner; scans its 10-byte records and clears later live flags for duplicate vertex pairs while retaining the otherwise-unused stack argument proven by `retn 4`."
+      "description": "Exact void Windows `cRDuplicateVertices::Clean(int)`: scans the owner's 10-byte records and clears later live flags for duplicate vertex pairs while retaining the otherwise-unused stack argument proven by `retn 4`. Android preserves the owner and algorithm; its incompatible empty and populated R0 residues prove the result is incidental."
     },
     {
       "address": "0x419fd0",
@@ -2265,7 +2267,8 @@
     },
     {
       "address": "0x435e60",
-      "name": "switch_track_mirror"
+      "name": "switch_track_mirror",
+      "description": "Windows `void cRSubGame::SwitchMirror()`: selects a row-mirror state from a strict random > 0.5 test, counts repeated choices, and forces an inversion after four repeats. Android preserves the owner and algorithm while leaving RAND's float bits in R0; both Windows call sites ignore EAX."
     },
     {
       "address": "0x435eb0",

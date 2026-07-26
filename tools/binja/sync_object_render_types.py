@@ -421,7 +421,7 @@ PROTO_UPDATES = (
     ),
     (
         "clean_duplicate_vertices",
-        "int32_t __thiscall clean_duplicate_vertices(DuplicateVertices* duplicate_vertices, int32_t unused)",
+        "void __thiscall clean_duplicate_vertices(DuplicateVertices* duplicate_vertices, int32_t unused)",
     ),
     (
         "calc_object_bounding_box",

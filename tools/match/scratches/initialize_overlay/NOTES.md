@@ -14,3 +14,8 @@ camera starts at `38.0f` FOV.
 Focused match: 100%, 17/17 instructions, with three clean masked operands.
 The `Overlay` layout is shared in `include/overlay.h`; its narrow Binary Ninja
 companion exposes the same nested fields in the live decompile.
+
+Android retains the lifecycle member as `void cROverlay::Init()` with the same
+zero rotation, `0.00036547193f` step, identity transforms, 38-degree FOV, and
+inverse-view initialization. No matching iOS Init export survives, so Android
+confirms the Windows owner without transferring its platform layout.

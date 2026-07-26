@@ -11,3 +11,8 @@ upper wrap is strict (`rotation_angle > 2*pi`), which matches the native
 `initialize_overlay` in `include/overlay.h`. The constructor and root viewport
 bindings independently prove that the `+0x80..+0x147` region is an owned
 `RenderCamera`, not three unrelated matrices and scalar fields.
+
+Android and iOS independently retain this method as the void
+`cROverlay::AI()`. Both preserve the angular wrap, local-Z transform rebuild,
+owned camera transform copy, and inverse-view update. Their platform offsets
+differ, so only the owner graph and operation transfer to Windows.

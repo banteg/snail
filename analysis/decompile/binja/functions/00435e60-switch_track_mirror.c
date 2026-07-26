@@ -16,8 +16,8 @@
 00435e8f        runtime->track_mirror_repeat_count += 1
 00435e9b        if (runtime->track_mirror_repeat_count s< 4)
 00435e9d        runtime->track_mirror_enabled = eax_1.b
-00435ea1        return eax_1.b
+00435ea1        return
 00435ea4        runtime->track_mirror_repeat_count = 0
 00435ea7        eax_1.b = eax_1.b == 0
 00435eaa        runtime->track_mirror_enabled = eax_1.b
-00435eae        return eax_1.b
+00435eae        return

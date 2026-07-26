@@ -13,7 +13,18 @@ through `tools/match/include/duplicate_vertices.h`.
 The iOS symbol table preserves the containing owner as
 `cRDuplicateVertices::Init(int)` in `ObjectProc.o`. Windows embeds the exact
 8-byte owner at `DirectXLoader +0x5e08`, and this cleanup method consumes the
-same receiver. No corresponding mobile cleanup symbol survives, so the stable
-Windows helper name and its `int` result remain unchanged rather than inventing
-an authored method name or return contract. The native `retn 4` proves the
-otherwise-unused stack argument remains part of the Windows ABI.
+same receiver. The native `retn 4` proves the otherwise-unused stack argument
+remains part of the Windows ABI.
+
+## 2026-07-27 Android Clean owner and void ABI
+
+The expanded Android corpus now retains
+`cRDuplicateVertices::Clean(int)`. Its body preserves the same 8-byte owner,
+10-byte record stride, outer compare-vertex selection, and inner
+source-vertex/live-flag cleanup as Windows.
+
+Raw ARM disassembly also closes the return contract: the empty path returns
+with `r0` still holding `this`, while the populated path returns with `r0`
+holding the last compared signed short. Those incompatible residues cannot be
+one authored result. The sole Windows caller also ignores EAX, and the natural
+void scratch remains exactly 33/33 instructions with no masked operands.

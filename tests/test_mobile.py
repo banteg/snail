@@ -174,6 +174,42 @@ def test_verified_mobile_symbols_resolve_to_tracked_bodies() -> None:
                 assert corpus_function_path(root, function).is_file()
 
 
+def test_mobile_utility_owner_mappings_are_exact_and_verified() -> None:
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    expected = {
+        "update_overlay": (
+            "cROverlay::AI()",
+            "cROverlay::AI()",
+        ),
+        "initialize_overlay": (
+            "cROverlay::Init()",
+            None,
+        ),
+        "clean_duplicate_vertices": (
+            "cRDuplicateVertices::Clean(int)",
+            None,
+        ),
+        "switch_track_mirror": (
+            "cRSubGame::SwitchMirror()",
+            None,
+        ),
+    }
+
+    for windows_name, (android_symbol, ios_symbol) in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == android_symbol
+        assert entry["android_symbol_evidence"] == (
+            "exact-demangled-symbol"
+        )
+        assert entry.get("ios_symbol") == ios_symbol
+
+
 def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     result = main(
         [

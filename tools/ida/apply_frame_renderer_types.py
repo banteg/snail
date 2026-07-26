@@ -75,6 +75,8 @@ TRUSTED_NAMES = [
     (0x404360, "apply_all_border_visibility_mode"),
     (0x404580, "border_mouse_test"),
     (0x408000, "initialize_game_player"),
+    (0x40A1B0, "update_overlay"),
+    (0x40A240, "initialize_overlay"),
     (0x40AB00, "initialize_frontend_overlay_color_lerp"),
     (0x40AB40, "draw_frontend_overlay_color_lerp"),
     (0x40ABC0, "begin_frontend_fade_out"),
@@ -177,6 +179,14 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     (
         "initialize_game_player",
         "GamePlayer *__thiscall initialize_game_player(GamePlayer *player);",
+    ),
+    (
+        "update_overlay",
+        "void __thiscall update_overlay(FrameOverlay *overlay);",
+    ),
+    (
+        "initialize_overlay",
+        "void __thiscall initialize_overlay(FrameOverlay *overlay);",
     ),
     (
         "initialize_frontend_overlay_color_lerp",
@@ -1068,6 +1078,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for selector in (
             "construct_game_runtime",
             "initialize_game_assets_and_world",
+            "update_overlay",
+            "initialize_overlay",
             "initialize_frontend_overlay_color_lerp",
             "draw_frontend_overlay_color_lerp",
             "begin_frontend_fade_out",

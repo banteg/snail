@@ -3,15 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_overlay @ 0x40a1b0 */
 
-0040a1b0        int32_t ebx
-0040a1b0        int32_t var_4 = ebx
-0040a1b3        int32_t ebp
-0040a1b3        int32_t var_8 = ebp
-0040a1b4        int32_t esi
-0040a1b4        int32_t var_c = esi
 0040a1bb        long double x87_r7_1 = fconvert.t(overlay->rotation_step) + fconvert.t(overlay->camera.tail.overlay_rotation_angle)
-0040a1c1        int32_t edi
-0040a1c1        int32_t var_10 = edi
 0040a1c2        long double temp0 = fconvert.t(6.28318548f)
 0040a1c2        x87_r7_1 - temp0
 0040a1c8        overlay->camera.tail.overlay_rotation_angle = fconvert.s(x87_r7_1)
@@ -23,8 +15,7 @@
 0040a1f6        overlay->camera.tail.overlay_rotation_angle = fconvert.s(x87_r7_1 + fconvert.t(6.28318548f))
 0040a1db        overlay->camera.tail.overlay_rotation_angle = fconvert.s(x87_r7_1 - fconvert.t(6.28318548f))
 0040a205        set_matrix_identity(&overlay->bod.transform)
-0040a213        struct TransformMatrix* source = rotate_matrix_world_z(&overlay->bod.transform, overlay->camera.tail.overlay_rotation_angle)
-0040a225        struct TransformMatrix* var_14_1 = &overlay->bod.transform
+0040a213        rotate_matrix_local_z(&overlay->bod.transform, overlay->camera.tail.overlay_rotation_angle)
 0040a226        __builtin_memcpy(&overlay->camera.bod.transform, &overlay->bod.transform, 0x40)
-0040a22e        invert_matrix_from_source(&overlay->camera.view_matrix, source)
+0040a22e        invert_matrix_from_source(&overlay->camera.view_matrix, &overlay->bod.transform)
 0040a237        return

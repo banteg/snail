@@ -2,42 +2,41 @@
 /* function: clean_duplicate_vertices @ 0x419f80 */
 /* selector: clean_duplicate_vertices */
 
-int __thiscall sub_419F80(int *this, int a2)
+// Exact void Windows `cRDuplicateVertices::Clean(int)`: scans the owner's 10-byte records and clears later live flags for duplicate vertex pairs while retaining the otherwise-unused stack argument proven by `retn 4`. Android preserves the owner and algorithm; its incompatible empty and populated R0 residues prove the result is incidental.
+void __thiscall clean_duplicate_vertices(DuplicateVertices *duplicate_vertices, int32_t unused)
 {
-  int result; // eax
-  int v3; // ebx
+  int32_t active_count; // eax
+  int32_t v3; // ebx
   int v4; // edi
-  int v5; // esi
+  int32_t v5; // esi
   int v6; // edx
-  int v7; // eax
+  DuplicateVertexRecord *records; // eax
 
-  result = *this;
+  active_count = duplicate_vertices->active_count;
   v3 = 0;
-  if ( *this > 0 )
+  if ( duplicate_vertices->active_count > 0 )
   {
     v4 = 0;
     do
     {
       v5 = v3;
-      if ( v3 < result )
+      if ( v3 < active_count )
       {
-        v6 = v4;
+        v6 = v4 * 10;
         do
         {
-          v7 = *(this + 1);
-          if ( *(_WORD *)(v6 + v7) == *(_WORD *)(v4 + v7 + 2) )
-            *(_WORD *)(v6 + v7 + 8) = 0;
+          records = duplicate_vertices->records;
+          if ( *(uint16_t *)((char *)&records->source_vertex + v6) == records[v4].compare_vertex )
+            *(_WORD *)&records->_pad_04[v6 + 4] = 0;
           ++v5;
           v6 += 10;
         }
-        while ( v5 < *this );
+        while ( v5 < duplicate_vertices->active_count );
       }
-      result = *this;
+      active_count = duplicate_vertices->active_count;
       ++v3;
-      v4 += 10;
+      ++v4;
     }
-    while ( v3 < *this );
+    while ( v3 < duplicate_vertices->active_count );
   }
-  return result;
 }
-

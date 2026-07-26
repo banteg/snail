@@ -2,15 +2,16 @@
 /* function: initialize_overlay @ 0x40a240 */
 /* selector: initialize_overlay */
 
-TransformMatrix *__thiscall initialize_overlay(int this)
+// Exact void Windows `cROverlay::Init()`: initializes the parent transform, embedded camera, 38-degree FOV, zero rotation, and fixed rotation step. Android preserves the same owner, constants, and lifecycle role.
+void __thiscall initialize_overlay(FrameOverlay *overlay)
 {
-  TransformMatrix *v2; // edx
+  FrameTransformMatrix *p_transform; // edi
 
-  *(_DWORD *)(this + 324) = 0;
-  *(_DWORD *)(this + 328) = 968858832;
-  set_matrix_identity((TransformMatrix *)(this + 56));
-  *(_DWORD *)(this + 320) = 1108869120;
-  set_matrix_identity((TransformMatrix *)(this + 184));
-  return invert_matrix_from_source((TransformMatrix *)(this + 256), v2);
+  p_transform = &overlay->bod.transform;
+  overlay->camera.render_mask = 0;
+  overlay->rotation_step = 0.00036547193;
+  set_matrix_identity((TransformMatrix *)&overlay->bod.transform);
+  overlay->camera.fov_degrees = 38.0;
+  set_matrix_identity((TransformMatrix *)&overlay->camera.body.transform);
+  invert_matrix_from_source((TransformMatrix *)&overlay->camera.view_matrix, (const TransformMatrix *)p_transform);
 }
-

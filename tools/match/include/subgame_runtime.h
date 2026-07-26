@@ -80,7 +80,7 @@ class SubgameRuntime {
 public:
     SubgameRuntime* initialize_runtime_pools_and_path_template_bank(); // @ 0x408060
     void set_subgame_features(); // @ 0x435df0
-    bool switch_track_mirror(); // @ 0x435e60
+    void switch_track_mirror(); // @ 0x435e60; mobile cRSubGame::SwitchMirror()
     void populate_runtime_track_cells_from_segments(); // @ 0x435eb0
     void initialize_subgame(); // @ 0x4374b0
     void reset_subgame(); // @ 0x437b10
