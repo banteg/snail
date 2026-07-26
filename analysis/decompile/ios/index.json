@@ -4,10 +4,3380 @@
   "executable_sha256": "a05daa22f4349f8da209371edd40e78700594d9211d30b1d4fc2d139de6fac58",
   "decompile_timeout_seconds": 300,
   "max_payload_mb": 256,
-  "symbol_count": 772,
-  "exported_count": 772,
+  "symbol_count": 970,
+  "exported_count": 970,
   "failed_count": 0,
   "functions": [
+    {
+      "mangled": "_Z10EndElementPvPKhS1_S1_",
+      "binary_symbol": "__Z10EndElementPvPKhS1_S1_",
+      "demangled": "EndElement(void*, unsigned char const*, unsigned char const*, unsigned char const*)",
+      "address": "000d5190",
+      "size": 28,
+      "params": [
+        "void*",
+        "unsigned char const*",
+        "unsigned char const*",
+        "unsigned char const*"
+      ],
+      "ghidra_params": [
+        "void *",
+        "uchar *",
+        "uchar *",
+        "uchar *"
+      ],
+      "prototype": "undefined __stdcall EndElement(void * param_1, uchar * param_2, uchar * param_3, uchar * param_4)",
+      "path": "functions/000d5190-_Z10EndElementPvPKhS1_S1_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z10FontMake3Ds",
+      "binary_symbol": "__Z10FontMake3Ds",
+      "demangled": "FontMake3D(short)",
+      "address": "0000eb4c",
+      "size": 544,
+      "params": [
+        "short"
+      ],
+      "ghidra_params": [
+        "short"
+      ],
+      "prototype": "undefined __stdcall FontMake3D(short param_1)",
+      "path": "functions/0000eb4c-_Z10FontMake3Ds.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z10G0SetBlendi",
+      "binary_symbol": "__Z10G0SetBlendi",
+      "demangled": "G0SetBlend(int)",
+      "address": "0006eb94",
+      "size": 236,
+      "params": [
+        "int"
+      ],
+      "ghidra_params": [
+        "int"
+      ],
+      "prototype": "undefined __stdcall G0SetBlend(int param_1)",
+      "path": "functions/0006eb94-_Z10G0SetBlendi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z10KeyboardAIv",
+      "binary_symbol": "__Z10KeyboardAIv",
+      "demangled": "KeyboardAI()",
+      "address": "0000e748",
+      "size": 60,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined KeyboardAI(void)",
+      "path": "functions/0000e748-_Z10KeyboardAIv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z10MacOFStatev",
+      "binary_symbol": "__Z10MacOFStatev",
+      "demangled": "MacOFState()",
+      "address": "000076e4",
+      "size": 12,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacOFState(void)",
+      "path": "functions/000076e4-_Z10MacOFStatev.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z10MacVibratev",
+      "binary_symbol": "__Z10MacVibratev",
+      "demangled": "MacVibrate()",
+      "address": "00074f5c",
+      "size": 20,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacVibrate(void)",
+      "path": "functions/00074f5c-_Z10MacVibratev.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z10OSDPrintUViffffffffffi7tColourffffif",
+      "binary_symbol": "__Z10OSDPrintUViffffffffffi7tColourffffif",
+      "demangled": "OSDPrintUV(int, float, float, float, float, float, float, float, float, float, float, int, tColour, float, float, float, float, int, float)",
+      "address": "0000ed80",
+      "size": 252,
+      "params": [
+        "int",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "int",
+        "tColour",
+        "float",
+        "float",
+        "float",
+        "float",
+        "int",
+        "float"
+      ],
+      "ghidra_params": [
+        "int",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "int",
+        "tColour",
+        "float",
+        "float",
+        "float",
+        "float",
+        "int",
+        "float"
+      ],
+      "prototype": "undefined __stdcall OSDPrintUV(int param_1, float param_2, float param_3, float param_4, float param_5, float param_6, float param_7, float param_8, float param_9, float param_10, float param_11, int param_12, tColour param_13, float param_14, float param_15, float param_16, float param_17, int param_18, float param_19)",
+      "path": "functions/0000ed80-_Z10OSDPrintUViffffffffffi7tColourffffif.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z10OSDPrintUViffffi7tColourffffif",
+      "binary_symbol": "__Z10OSDPrintUViffffi7tColourffffif",
+      "demangled": "OSDPrintUV(int, float, float, float, float, int, tColour, float, float, float, float, int, float)",
+      "address": "0000ee8c",
+      "size": 224,
+      "params": [
+        "int",
+        "float",
+        "float",
+        "float",
+        "float",
+        "int",
+        "tColour",
+        "float",
+        "float",
+        "float",
+        "float",
+        "int",
+        "float"
+      ],
+      "ghidra_params": [
+        "int",
+        "float",
+        "float",
+        "float",
+        "float",
+        "int",
+        "tColour",
+        "float",
+        "float",
+        "float",
+        "float",
+        "int",
+        "float"
+      ],
+      "prototype": "undefined __stdcall OSDPrintUV(int param_1, float param_2, float param_3, float param_4, float param_5, int param_6, tColour param_7, float param_8, float param_9, float param_10, float param_11, int param_12, float param_13)",
+      "path": "functions/0000ee8c-_Z10OSDPrintUViffffi7tColourffffif.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z10RShellInitv",
+      "binary_symbol": "__Z10RShellInitv",
+      "demangled": "RShellInit()",
+      "address": "0000db30",
+      "size": 200,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined RShellInit(void)",
+      "path": "functions/0000db30-_Z10RShellInitv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z10SHA1UpdateP8SHA1_CTXPhj",
+      "binary_symbol": "__Z10SHA1UpdateP8SHA1_CTXPhj",
+      "demangled": "SHA1Update(SHA1_CTX*, unsigned char*, unsigned int)",
+      "address": "00108194",
+      "size": 216,
+      "params": [
+        "SHA1_CTX*",
+        "unsigned char*",
+        "unsigned int"
+      ],
+      "ghidra_params": [
+        "SHA1_CTX *",
+        "uchar *",
+        "uint"
+      ],
+      "prototype": "undefined __stdcall SHA1Update(SHA1_CTX * param_1, uchar * param_2, uint param_3)",
+      "path": "functions/00108194-_Z10SHA1UpdateP8SHA1_CTXPhj.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z11G0RenderEndv",
+      "binary_symbol": "__Z11G0RenderEndv",
+      "demangled": "G0RenderEnd()",
+      "address": "0006ddac",
+      "size": 4,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined G0RenderEnd(void)",
+      "path": "functions/0006ddac-_Z11G0RenderEndv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z11GLObjectVBOP8cRObject",
+      "binary_symbol": "__Z11GLObjectVBOP8cRObject",
+      "demangled": "GLObjectVBO(cRObject*)",
+      "address": "0006de14",
+      "size": 612,
+      "params": [
+        "cRObject*"
+      ],
+      "ghidra_params": [
+        "cRObject *"
+      ],
+      "prototype": "undefined __stdcall GLObjectVBO(cRObject * param_1)",
+      "path": "functions/0006de14-_Z11GLObjectVBOP8cRObject.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z11MacFindFilePc",
+      "binary_symbol": "__Z11MacFindFilePc",
+      "demangled": "MacFindFile(char*)",
+      "address": "0007526c",
+      "size": 36,
+      "params": [
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall MacFindFile(char * param_1)",
+      "path": "functions/0007526c-_Z11MacFindFilePc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z11MacLoadFilePcPvPi",
+      "binary_symbol": "__Z11MacLoadFilePcPvPi",
+      "demangled": "MacLoadFile(char*, void*, int*)",
+      "address": "00075298",
+      "size": 56,
+      "params": [
+        "char*",
+        "void*",
+        "int*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "void *",
+        "int *"
+      ],
+      "prototype": "undefined __stdcall MacLoadFile(char * param_1, void * param_2, int * param_3)",
+      "path": "functions/00075298-_Z11MacLoadFilePcPvPi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z11MacSaveFilePcPvi",
+      "binary_symbol": "__Z11MacSaveFilePcPvi",
+      "demangled": "MacSaveFile(char*, void*, int)",
+      "address": "00075304",
+      "size": 56,
+      "params": [
+        "char*",
+        "void*",
+        "int"
+      ],
+      "ghidra_params": [
+        "char *",
+        "void *",
+        "int"
+      ],
+      "prototype": "undefined __stdcall MacSaveFile(char * param_1, void * param_2, int param_3)",
+      "path": "functions/00075304-_Z11MacSaveFilePcPvi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z11RShellErrorPcz",
+      "binary_symbol": "__Z11RShellErrorPcz",
+      "demangled": "RShellError(char*, ...)",
+      "address": "0000cedc",
+      "size": 104,
+      "params": [
+        "char*",
+        "..."
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellError(char * param_1, ...)",
+      "path": "functions/0000cedc-_Z11RShellErrorPcz.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z11RShellInkeyv",
+      "binary_symbol": "__Z11RShellInkeyv",
+      "demangled": "RShellInkey()",
+      "address": "0000c778",
+      "size": 932,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined RShellInkey(void)",
+      "path": "functions/0000c778-_Z11RShellInkeyv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z11RTextAppendPcS_",
+      "binary_symbol": "__Z11RTextAppendPcS_",
+      "demangled": "RTextAppend(char*, char*)",
+      "address": "0000bd58",
+      "size": 64,
+      "params": [
+        "char*",
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RTextAppend(char * param_1, char * param_2)",
+      "path": "functions/0000bd58-_Z11RTextAppendPcS_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z11RstrnewlinePc",
+      "binary_symbol": "__Z11RstrnewlinePc",
+      "demangled": "Rstrnewline(char*)",
+      "address": "0000dd0c",
+      "size": 84,
+      "params": [
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall Rstrnewline(char * param_1)",
+      "path": "functions/0000dd0c-_Z11RstrnewlinePc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z11gRMathRand2v",
+      "binary_symbol": "__Z11gRMathRand2v",
+      "demangled": "gRMathRand2()",
+      "address": "00009de4",
+      "size": 60,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined gRMathRand2(void)",
+      "path": "functions/00009de4-_Z11gRMathRand2v.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z11tryLoadViewP8NSStringP8NSObjectS0_",
+      "binary_symbol": "__Z11tryLoadViewP8NSStringP8NSObjectS0_",
+      "demangled": "tryLoadView(NSString*, NSObject*, NSString*)",
+      "address": "000e5860",
+      "size": 248,
+      "params": [
+        "NSString*",
+        "NSObject*",
+        "NSString*"
+      ],
+      "ghidra_params": [
+        "NSString *",
+        "NSObject *",
+        "NSString *"
+      ],
+      "prototype": "undefined __stdcall tryLoadView(NSString * param_1, NSObject * param_2, NSString * param_3)",
+      "path": "functions/000e5860-_Z11tryLoadViewP8NSStringP8NSObjectS0_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z12G0RenderFontP9cRTextureffffffffffffffR7tColourif",
+      "binary_symbol": "__Z12G0RenderFontP9cRTextureffffffffffffffR7tColourif",
+      "demangled": "G0RenderFont(cRTexture*, float, float, float, float, float, float, float, float, float, float, float, float, float, float, tColour\u0026, int, float)",
+      "address": "0006fce8",
+      "size": 1292,
+      "params": [
+        "cRTexture*",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "tColour\u0026",
+        "int",
+        "float"
+      ],
+      "ghidra_params": [
+        "cRTexture *",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "tColour *",
+        "int",
+        "float"
+      ],
+      "prototype": "undefined __stdcall G0RenderFont(cRTexture * param_1, float param_2, float param_3, float param_4, float param_5, float param_6, float param_7, float param_8, float param_9, float param_10, float param_11, float param_12, float param_13, float param_14, float param_15, tColour * param_16, int param_17, float param_18)",
+      "path": "functions/0006fce8-_Z12G0RenderFontP9cRTextureffffffffffffffR7tColourif.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z12G0RenderToonP8cRObjectP7tMatrix",
+      "binary_symbol": "__Z12G0RenderToonP8cRObjectP7tMatrix",
+      "demangled": "G0RenderToon(cRObject*, tMatrix*)",
+      "address": "0006f190",
+      "size": 856,
+      "params": [
+        "cRObject*",
+        "tMatrix*"
+      ],
+      "ghidra_params": [
+        "cRObject *",
+        "tMatrix *"
+      ],
+      "prototype": "undefined __stdcall G0RenderToon(cRObject * param_1, tMatrix * param_2)",
+      "path": "functions/0006f190-_Z12G0RenderToonP8cRObjectP7tMatrix.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z12KeyboardInitv",
+      "binary_symbol": "__Z12KeyboardInitv",
+      "demangled": "KeyboardInit()",
+      "address": "0000e70c",
+      "size": 52,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined KeyboardInit(void)",
+      "path": "functions/0000e70c-_Z12KeyboardInitv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z12MacAudioInitv",
+      "binary_symbol": "__Z12MacAudioInitv",
+      "demangled": "MacAudioInit()",
+      "address": "00074f74",
+      "size": 96,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacAudioInit(void)",
+      "path": "functions/00074f74-_Z12MacAudioInitv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z12ParsingErrorP12tagXMLPARSER",
+      "binary_symbol": "__Z12ParsingErrorP12tagXMLPARSER",
+      "demangled": "ParsingError(tagXMLPARSER*)",
+      "address": "000d50f0",
+      "size": 4,
+      "params": [
+        "tagXMLPARSER*"
+      ],
+      "ghidra_params": [
+        "tagXMLPARSER *"
+      ],
+      "prototype": "undefined __stdcall ParsingError(tagXMLPARSER * param_1)",
+      "path": "functions/000d50f0-_Z12ParsingErrorP12tagXMLPARSER.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z12PngLoadImagePcPS_PiS1_S1_",
+      "binary_symbol": "__Z12PngLoadImagePcPS_PiS1_S1_",
+      "demangled": "PngLoadImage(char*, char**, int*, int*, int*)",
+      "address": "00009c00",
+      "size": 336,
+      "params": [
+        "char*",
+        "char**",
+        "int*",
+        "int*",
+        "int*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "char * *",
+        "int *",
+        "int *",
+        "int *"
+      ],
+      "prototype": "undefined __stdcall PngLoadImage(char * param_1, char * * param_2, int * param_3, int * param_4, int * param_5)",
+      "path": "functions/00009c00-_Z12PngLoadImagePcPS_PiS1_S1_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z12RTextNewLinePPc",
+      "binary_symbol": "__Z12RTextNewLinePPc",
+      "demangled": "RTextNewLine(char**)",
+      "address": "0000bd20",
+      "size": 56,
+      "params": [
+        "char**"
+      ],
+      "ghidra_params": [
+        "char * *"
+      ],
+      "prototype": "undefined __stdcall RTextNewLine(char * * param_1)",
+      "path": "functions/0000bd20-_Z12RTextNewLinePPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z12SetGameStateiiii",
+      "binary_symbol": "__Z12SetGameStateiiii",
+      "demangled": "SetGameState(int, int, int, int)",
+      "address": "00076e90",
+      "size": 220,
+      "params": [
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "ghidra_params": [
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "prototype": "undefined __stdcall SetGameState(int param_1, int param_2, int param_3, int param_4)",
+      "path": "functions/00076e90-_Z12SetGameStateiiii.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z12StartElementPvPKhS1_S1_P12tagXMLVECTOR",
+      "binary_symbol": "__Z12StartElementPvPKhS1_S1_P12tagXMLVECTOR",
+      "demangled": "StartElement(void*, unsigned char const*, unsigned char const*, unsigned char const*, tagXMLVECTOR*)",
+      "address": "000d59c4",
+      "size": 560,
+      "params": [
+        "void*",
+        "unsigned char const*",
+        "unsigned char const*",
+        "unsigned char const*",
+        "tagXMLVECTOR*"
+      ],
+      "ghidra_params": [
+        "void *",
+        "uchar *",
+        "uchar *",
+        "uchar *",
+        "tagXMLVECTOR *"
+      ],
+      "prototype": "undefined __stdcall StartElement(void * param_1, uchar * param_2, uchar * param_3, uchar * param_4, tagXMLVECTOR * param_5)",
+      "path": "functions/000d59c4-_Z12StartElementPvPKhS1_S1_P12tagXMLVECTOR.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z13FontPrintRealP16cFontPrintBuffer",
+      "binary_symbol": "__Z13FontPrintRealP16cFontPrintBuffer",
+      "demangled": "FontPrintReal(cFontPrintBuffer*)",
+      "address": "0000fb8c",
+      "size": 3044,
+      "params": [
+        "cFontPrintBuffer*"
+      ],
+      "ghidra_params": [
+        "cFontPrintBuffer *"
+      ],
+      "prototype": "undefined __stdcall FontPrintReal(cFontPrintBuffer * param_1)",
+      "path": "functions/0000fb8c-_Z13FontPrintRealP16cFontPrintBuffer.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z13G0BackdropVBOPjiPt",
+      "binary_symbol": "__Z13G0BackdropVBOPjiPt",
+      "demangled": "G0BackdropVBO(unsigned int*, int, unsigned short*)",
+      "address": "0006ddb0",
+      "size": 92,
+      "params": [
+        "unsigned int*",
+        "int",
+        "unsigned short*"
+      ],
+      "ghidra_params": [
+        "uint *",
+        "int",
+        "ushort *"
+      ],
+      "prototype": "undefined __stdcall G0BackdropVBO(uint * param_1, int param_2, ushort * param_3)",
+      "path": "functions/0006ddb0-_Z13G0BackdropVBOPjiPt.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z13G0BindTexturei",
+      "binary_symbol": "__Z13G0BindTexturei",
+      "demangled": "G0BindTexture(int)",
+      "address": "0006e358",
+      "size": 184,
+      "params": [
+        "int"
+      ],
+      "ghidra_params": [
+        "int"
+      ],
+      "prototype": "undefined __stdcall G0BindTexture(int param_1)",
+      "path": "functions/0006e358-_Z13G0BindTexturei.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z13G0RenderStartv",
+      "binary_symbol": "__Z13G0RenderStartv",
+      "demangled": "G0RenderStart()",
+      "address": "0006dd8c",
+      "size": 24,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined G0RenderStart(void)",
+      "path": "functions/0006dd8c-_Z13G0RenderStartv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z13G0TextureLoadii",
+      "binary_symbol": "__Z13G0TextureLoadii",
+      "demangled": "G0TextureLoad(int, int)",
+      "address": "0006e434",
+      "size": 1424,
+      "params": [
+        "int",
+        "int"
+      ],
+      "ghidra_params": [
+        "int",
+        "int"
+      ],
+      "prototype": "undefined __stdcall G0TextureLoad(int param_1, int param_2)",
+      "path": "functions/0006e434-_Z13G0TextureLoadii.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z13MacDeleteFilePc",
+      "binary_symbol": "__Z13MacDeleteFilePc",
+      "demangled": "MacDeleteFile(char*)",
+      "address": "000752d8",
+      "size": 36,
+      "params": [
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall MacDeleteFile(char * param_1)",
+      "path": "functions/000752d8-_Z13MacDeleteFilePc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z13RShellDatInitPc",
+      "binary_symbol": "__Z13RShellDatInitPc",
+      "demangled": "RShellDatInit(char*)",
+      "address": "0000d98c",
+      "size": 408,
+      "params": [
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellDatInit(char * param_1)",
+      "path": "functions/0000d98c-_Z13RShellDatInitPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z13RShellWarningPcz",
+      "binary_symbol": "__Z13RShellWarningPcz",
+      "demangled": "RShellWarning(char*, ...)",
+      "address": "0000ce68",
+      "size": 104,
+      "params": [
+        "char*",
+        "..."
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellWarning(char * param_1, ...)",
+      "path": "functions/0000ce68-_Z13RShellWarningPcz.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z13SHA1TransformPmPh",
+      "binary_symbol": "__Z13SHA1TransformPmPh",
+      "demangled": "SHA1Transform(unsigned long*, unsigned char*)",
+      "address": "00106b30",
+      "size": 5636,
+      "params": [
+        "unsigned long*",
+        "unsigned char*"
+      ],
+      "ghidra_params": [
+        "ulong *",
+        "uchar *"
+      ],
+      "prototype": "undefined __stdcall SHA1Transform(ulong * param_1, uchar * param_2)",
+      "path": "functions/00106b30-_Z13SHA1TransformPmPh.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14FontASCIIRemapc",
+      "binary_symbol": "__Z14FontASCIIRemapc",
+      "demangled": "FontASCIIRemap(char)",
+      "address": "0000e94c",
+      "size": 508,
+      "params": [
+        "char"
+      ],
+      "ghidra_params": [
+        "char"
+      ],
+      "prototype": "undefined __stdcall FontASCIIRemap(char param_1)",
+      "path": "functions/0000e94c-_Z14FontASCIIRemapc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14G0MemoryValuesv",
+      "binary_symbol": "__Z14G0MemoryValuesv",
+      "demangled": "G0MemoryValues()",
+      "address": "000081cc",
+      "size": 1752,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined G0MemoryValues(void)",
+      "path": "functions/000081cc-_Z14G0MemoryValuesv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14G0RenderCamerafffffP7tMatrixS0_bbff",
+      "binary_symbol": "__Z14G0RenderCamerafffffP7tMatrixS0_bbff",
+      "demangled": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
+      "address": "0006ed30",
+      "size": 808,
+      "params": [
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "tMatrix*",
+        "tMatrix*",
+        "bool",
+        "bool",
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "tMatrix *",
+        "tMatrix *",
+        "bool",
+        "bool",
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall G0RenderCamera(float param_1, float param_2, float param_3, float param_4, float param_5, tMatrix * param_6, tMatrix * param_7, bool param_8, bool param_9, float param_10, float param_11)",
+      "path": "functions/0006ed30-_Z14G0RenderCamerafffffP7tMatrixS0_bbff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14G0RenderObjectP8cRObjectP7tMatrixffP12tColourSmallb",
+      "binary_symbol": "__Z14G0RenderObjectP8cRObjectP7tMatrixffP12tColourSmallb",
+      "demangled": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
+      "address": "0006f51c",
+      "size": 1928,
+      "params": [
+        "cRObject*",
+        "tMatrix*",
+        "float",
+        "float",
+        "tColourSmall*",
+        "bool"
+      ],
+      "ghidra_params": [
+        "cRObject *",
+        "tMatrix *",
+        "float",
+        "float",
+        "tColourSmall *",
+        "bool"
+      ],
+      "prototype": "undefined __stdcall G0RenderObject(cRObject * param_1, tMatrix * param_2, float param_3, float param_4, tColourSmall * param_5, bool param_6)",
+      "path": "functions/0006f51c-_Z14G0RenderObjectP8cRObjectP7tMatrixffP12tColourSmallb.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14MacGetFileNamePcS_",
+      "binary_symbol": "__Z14MacGetFileNamePcS_",
+      "demangled": "MacGetFileName(char*, char*)",
+      "address": "0007523c",
+      "size": 40,
+      "params": [
+        "char*",
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall MacGetFileName(char * param_1, char * param_2)",
+      "path": "functions/0007523c-_Z14MacGetFileNamePcS_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14MacOFAddArcadei",
+      "binary_symbol": "__Z14MacOFAddArcadei",
+      "demangled": "MacOFAddArcade(int)",
+      "address": "00007f08",
+      "size": 288,
+      "params": [
+        "int"
+      ],
+      "ghidra_params": [
+        "int"
+      ],
+      "prototype": "undefined __stdcall MacOFAddArcade(int param_1)",
+      "path": "functions/00007f08-_Z14MacOFAddArcadei.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14MacSwapBuffersv",
+      "binary_symbol": "__Z14MacSwapBuffersv",
+      "demangled": "MacSwapBuffers()",
+      "address": "00007844",
+      "size": 56,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacSwapBuffers(void)",
+      "path": "functions/00007844-_Z14MacSwapBuffersv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14MathType16to32sf",
+      "binary_symbol": "__Z14MathType16to32sf",
+      "demangled": "MathType16to32(short, float)",
+      "address": "00009dbc",
+      "size": 36,
+      "params": [
+        "short",
+        "float"
+      ],
+      "ghidra_params": [
+        "short",
+        "float"
+      ],
+      "prototype": "undefined __stdcall MathType16to32(short param_1, float param_2)",
+      "path": "functions/00009dbc-_Z14MathType16to32sf.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14MathType32to16ff",
+      "binary_symbol": "__Z14MathType32to16ff",
+      "demangled": "MathType32to16(float, float)",
+      "address": "00009d94",
+      "size": 36,
+      "params": [
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall MathType32to16(float param_1, float param_2)",
+      "path": "functions/00009d94-_Z14MathType32to16ff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14MouseCalcScalef",
+      "binary_symbol": "__Z14MouseCalcScalef",
+      "demangled": "MouseCalcScale(float)",
+      "address": "0000e12c",
+      "size": 8,
+      "params": [
+        "float"
+      ],
+      "ghidra_params": [
+        "float"
+      ],
+      "prototype": "undefined __stdcall MouseCalcScale(float param_1)",
+      "path": "functions/0000e12c-_Z14MouseCalcScalef.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14OFGetHighScorev",
+      "binary_symbol": "__Z14OFGetHighScorev",
+      "demangled": "OFGetHighScore()",
+      "address": "00175dd4",
+      "size": 356,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined OFGetHighScore(void)",
+      "path": "functions/00175dd4-_Z14OFGetHighScorev.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14OFSetHighScorev",
+      "binary_symbol": "__Z14OFSetHighScorev",
+      "demangled": "OFSetHighScore()",
+      "address": "00175c74",
+      "size": 320,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined OFSetHighScore(void)",
+      "path": "functions/00175c74-_Z14OFSetHighScorev.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14ObjectProcNullP8cRObject",
+      "binary_symbol": "__Z14ObjectProcNullP8cRObject",
+      "demangled": "ObjectProcNull(cRObject*)",
+      "address": "00015634",
+      "size": 16,
+      "params": [
+        "cRObject*"
+      ],
+      "ghidra_params": [
+        "cRObject *"
+      ],
+      "prototype": "undefined __stdcall ObjectProcNull(cRObject * param_1)",
+      "path": "functions/00015634-_Z14ObjectProcNullP8cRObject.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14ObjectTextLoadPcP8cRObject",
+      "binary_symbol": "__Z14ObjectTextLoadPcP8cRObject",
+      "demangled": "ObjectTextLoad(char*, cRObject*)",
+      "address": "00016b78",
+      "size": 1016,
+      "params": [
+        "char*",
+        "cRObject*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "cRObject *"
+      ],
+      "prototype": "undefined __stdcall ObjectTextLoad(char * param_1, cRObject * param_2)",
+      "path": "functions/00016b78-_Z14ObjectTextLoadPcP8cRObject.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14RShellFindFilePcb",
+      "binary_symbol": "__Z14RShellFindFilePcb",
+      "demangled": "RShellFindFile(char*, bool)",
+      "address": "0000d518",
+      "size": 332,
+      "params": [
+        "char*",
+        "bool"
+      ],
+      "ghidra_params": [
+        "char *",
+        "bool"
+      ],
+      "prototype": "undefined __stdcall RShellFindFile(char * param_1, bool param_2)",
+      "path": "functions/0000d518-_Z14RShellFindFilePcb.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14RShellFontLoadPciff",
+      "binary_symbol": "__Z14RShellFontLoadPciff",
+      "demangled": "RShellFontLoad(char*, int, float, float)",
+      "address": "0000c2d0",
+      "size": 16,
+      "params": [
+        "char*",
+        "int",
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "char *",
+        "int",
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall RShellFontLoad(char * param_1, int param_2, float param_3, float param_4)",
+      "path": "functions/0000c2d0-_Z14RShellFontLoadPciff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14RShellLoadFilePcPi",
+      "binary_symbol": "__Z14RShellLoadFilePcPi",
+      "demangled": "RShellLoadFile(char*, int*)",
+      "address": "0000d400",
+      "size": 12,
+      "params": [
+        "char*",
+        "int*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "int *"
+      ],
+      "prototype": "undefined __stdcall RShellLoadFile(char * param_1, int * param_2)",
+      "path": "functions/0000d400-_Z14RShellLoadFilePcPi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14RShellLoadFilePcPvPi",
+      "binary_symbol": "__Z14RShellLoadFilePcPvPi",
+      "demangled": "RShellLoadFile(char*, void*, int*)",
+      "address": "0000d090",
+      "size": 860,
+      "params": [
+        "char*",
+        "void*",
+        "int*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "void *",
+        "int *"
+      ],
+      "prototype": "undefined __stdcall RShellLoadFile(char * param_1, void * param_2, int * param_3)",
+      "path": "functions/0000d090-_Z14RShellLoadFilePcPvPi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14RShellSaveFilePcPvi",
+      "binary_symbol": "__Z14RShellSaveFilePcPvi",
+      "demangled": "RShellSaveFile(char*, void*, int)",
+      "address": "0000d070",
+      "size": 16,
+      "params": [
+        "char*",
+        "void*",
+        "int"
+      ],
+      "ghidra_params": [
+        "char *",
+        "void *",
+        "int"
+      ],
+      "prototype": "undefined __stdcall RShellSaveFile(char * param_1, void * param_2, int param_3)",
+      "path": "functions/0000d070-_Z14RShellSaveFilePcPvi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14RShellSetMouseiff",
+      "binary_symbol": "__Z14RShellSetMouseiff",
+      "demangled": "RShellSetMouse(int, float, float)",
+      "address": "0000cb1c",
+      "size": 164,
+      "params": [
+        "int",
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "int",
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall RShellSetMouse(int param_1, float param_2, float param_3)",
+      "path": "functions/0000cb1c-_Z14RShellSetMouseiff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z14RTextCompStartPcS_",
+      "binary_symbol": "__Z14RTextCompStartPcS_",
+      "demangled": "RTextCompStart(char*, char*)",
+      "address": "0000bc68",
+      "size": 184,
+      "params": [
+        "char*",
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RTextCompStart(char * param_1, char * param_2)",
+      "path": "functions/0000bc68-_Z14RTextCompStartPcS_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z15CharactersFoundPvPKhi",
+      "binary_symbol": "__Z15CharactersFoundPvPKhi",
+      "demangled": "CharactersFound(void*, unsigned char const*, int)",
+      "address": "000d533c",
+      "size": 208,
+      "params": [
+        "void*",
+        "unsigned char const*",
+        "int"
+      ],
+      "ghidra_params": [
+        "void *",
+        "uchar *",
+        "int"
+      ],
+      "prototype": "undefined __stdcall CharactersFound(void * param_1, uchar * param_2, int param_3)",
+      "path": "functions/000d533c-_Z15CharactersFoundPvPKhi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z15FontPrintRenderi",
+      "binary_symbol": "__Z15FontPrintRenderi",
+      "demangled": "FontPrintRender(int)",
+      "address": "000107ac",
+      "size": 312,
+      "params": [
+        "int"
+      ],
+      "ghidra_params": [
+        "int"
+      ],
+      "prototype": "undefined __stdcall FontPrintRender(int param_1)",
+      "path": "functions/000107ac-_Z15FontPrintRenderi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z15G0FontRenderEndv",
+      "binary_symbol": "__Z15G0FontRenderEndv",
+      "demangled": "G0FontRenderEnd()",
+      "address": "0006f0cc",
+      "size": 168,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined G0FontRenderEnd(void)",
+      "path": "functions/0006f0cc-_Z15G0FontRenderEndv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z15G0TextureReLoadiPc",
+      "binary_symbol": "__Z15G0TextureReLoadiPc",
+      "demangled": "G0TextureReLoad(int, char*)",
+      "address": "0006eb10",
+      "size": 124,
+      "params": [
+        "int",
+        "char*"
+      ],
+      "ghidra_params": [
+        "int",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall G0TextureReLoad(int param_1, char * param_2)",
+      "path": "functions/0006eb10-_Z15G0TextureReLoadiPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z15HideWindowMouseb",
+      "binary_symbol": "__Z15HideWindowMouseb",
+      "demangled": "HideWindowMouse(bool)",
+      "address": "0000e134",
+      "size": 12,
+      "params": [
+        "bool"
+      ],
+      "ghidra_params": [
+        "bool"
+      ],
+      "prototype": "undefined __stdcall HideWindowMouse(bool param_1)",
+      "path": "functions/0000e134-_Z15HideWindowMouseb.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z15RShellMusicPlayPciS_",
+      "binary_symbol": "__Z15RShellMusicPlayPciS_",
+      "demangled": "RShellMusicPlay(char*, int, char*)",
+      "address": "0000c2c0",
+      "size": 16,
+      "params": [
+        "char*",
+        "int",
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "int",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellMusicPlay(char * param_1, int param_2, char * param_3)",
+      "path": "functions/0000c2c0-_Z15RShellMusicPlayPciS_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z15RShellPrintTextPcz",
+      "binary_symbol": "__Z15RShellPrintTextPcz",
+      "demangled": "RShellPrintText(char*, ...)",
+      "address": "0000ce0c",
+      "size": 88,
+      "params": [
+        "char*",
+        "..."
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellPrintText(char * param_1, ...)",
+      "path": "functions/0000ce0c-_Z15RShellPrintTextPcz.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z15RShellSoundPlayifff",
+      "binary_symbol": "__Z15RShellSoundPlayifff",
+      "demangled": "RShellSoundPlay(int, float, float, float)",
+      "address": "0000c1d8",
+      "size": 156,
+      "params": [
+        "int",
+        "float",
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "int",
+        "float",
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall RShellSoundPlay(int param_1, float param_2, float param_3, float param_4)",
+      "path": "functions/0000c1d8-_Z15RShellSoundPlayifff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z15RShellVoicePlayifff",
+      "binary_symbol": "__Z15RShellVoicePlayifff",
+      "demangled": "RShellVoicePlay(int, float, float, float)",
+      "address": "0000c130",
+      "size": 156,
+      "params": [
+        "int",
+        "float",
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "int",
+        "float",
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall RShellVoicePlay(int param_1, float param_2, float param_3, float param_4)",
+      "path": "functions/0000c130-_Z15RShellVoicePlayifff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z15RTextExtractIntPPc",
+      "binary_symbol": "__Z15RTextExtractIntPPc",
+      "demangled": "RTextExtractInt(char**)",
+      "address": "0000be00",
+      "size": 156,
+      "params": [
+        "char**"
+      ],
+      "ghidra_params": [
+        "char * *"
+      ],
+      "prototype": "undefined __stdcall RTextExtractInt(char * * param_1)",
+      "path": "functions/0000be00-_Z15RTextExtractIntPPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z15startConsoleWiniiiiPc",
+      "binary_symbol": "__Z15startConsoleWiniiiiPc",
+      "demangled": "startConsoleWin(int, int, int, int, char*)",
+      "address": "0000dc50",
+      "size": 4,
+      "params": [
+        "int",
+        "int",
+        "int",
+        "int",
+        "char*"
+      ],
+      "ghidra_params": [
+        "int",
+        "int",
+        "int",
+        "int",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall startConsoleWin(int param_1, int param_2, int param_3, int param_4, char * param_5)",
+      "path": "functions/0000dc50-_Z15startConsoleWiniiiiPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16Base64EncodeDataPKvmPcPm",
+      "binary_symbol": "__Z16Base64EncodeDataPKvmPcPm",
+      "demangled": "Base64EncodeData(void const*, unsigned long, char*, unsigned long*)",
+      "address": "001066f0",
+      "size": 724,
+      "params": [
+        "void const*",
+        "unsigned long",
+        "char*",
+        "unsigned long*"
+      ],
+      "ghidra_params": [
+        "void *",
+        "ulong",
+        "char *",
+        "ulong *"
+      ],
+      "prototype": "undefined __stdcall Base64EncodeData(void * param_1, ulong param_2, char * param_3, ulong * param_4)",
+      "path": "functions/001066f0-_Z16Base64EncodeDataPKvmPcPm.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16G0RenderBackdropP11cGLVertexUVjiP9cRTexture",
+      "binary_symbol": "__Z16G0RenderBackdropP11cGLVertexUVjiP9cRTexture",
+      "demangled": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
+      "address": "00070480",
+      "size": 268,
+      "params": [
+        "cGLVertexUV*",
+        "unsigned int",
+        "int",
+        "cRTexture*"
+      ],
+      "ghidra_params": [
+        "cGLVertexUV *",
+        "uint",
+        "int",
+        "cRTexture *"
+      ],
+      "prototype": "undefined __stdcall G0RenderBackdrop(cGLVertexUV * param_1, uint param_2, int param_3, cRTexture * param_4)",
+      "path": "functions/00070480-_Z16G0RenderBackdropP11cGLVertexUVjiP9cRTexture.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16G0RenderSprite3DP7tVectorP8cRSprite",
+      "binary_symbol": "__Z16G0RenderSprite3DP7tVectorP8cRSprite",
+      "demangled": "G0RenderSprite3D(tVector*, cRSprite*)",
+      "address": "000705ac",
+      "size": 1056,
+      "params": [
+        "tVector*",
+        "cRSprite*"
+      ],
+      "ghidra_params": [
+        "tVector *",
+        "cRSprite *"
+      ],
+      "prototype": "undefined __stdcall G0RenderSprite3D(tVector * param_1, cRSprite * param_2)",
+      "path": "functions/000705ac-_Z16G0RenderSprite3DP7tVectorP8cRSprite.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16G0TextureSetLoadi",
+      "binary_symbol": "__Z16G0TextureSetLoadi",
+      "demangled": "G0TextureSetLoad(int)",
+      "address": "0006ea28",
+      "size": 200,
+      "params": [
+        "int"
+      ],
+      "ghidra_params": [
+        "int"
+      ],
+      "prototype": "undefined __stdcall G0TextureSetLoad(int param_1)",
+      "path": "functions/0006ea28-_Z16G0TextureSetLoadi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16LoadFileDataInfoPKcRP17OpaqueAudioFileIDR27AudioStreamBasicDescriptionRy",
+      "binary_symbol": "__Z16LoadFileDataInfoPKcRP17OpaqueAudioFileIDR27AudioStreamBasicDescriptionRy",
+      "demangled": "LoadFileDataInfo(char const*, OpaqueAudioFileID*\u0026, AudioStreamBasicDescription\u0026, unsigned long long\u0026)",
+      "address": "00070d14",
+      "size": 184,
+      "params": [
+        "char const*",
+        "OpaqueAudioFileID*\u0026",
+        "AudioStreamBasicDescription\u0026",
+        "unsigned long long\u0026"
+      ],
+      "ghidra_params": [
+        "char *",
+        "OpaqueAudioFileID * *",
+        "AudioStreamBasicDescription *",
+        "ulonglong *"
+      ],
+      "prototype": "undefined __stdcall LoadFileDataInfo(char * param_1, OpaqueAudioFileID * * param_2, AudioStreamBasicDescription * param_3, ulonglong * param_4)",
+      "path": "functions/00070d14-_Z16LoadFileDataInfoPKcRP17OpaqueAudioFileIDR27AudioStreamBasicDescriptionRy.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16MacOFOrientationv",
+      "binary_symbol": "__Z16MacOFOrientationv",
+      "demangled": "MacOFOrientation()",
+      "address": "00007738",
+      "size": 180,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacOFOrientation(void)",
+      "path": "functions/00007738-_Z16MacOFOrientationv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16OFInitHighScoresv",
+      "binary_symbol": "__Z16OFInitHighScoresv",
+      "demangled": "OFInitHighScores()",
+      "address": "00175b58",
+      "size": 56,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined OFInitHighScores(void)",
+      "path": "functions/00175b58-_Z16OFInitHighScoresv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16OFLoadHighScoresv",
+      "binary_symbol": "__Z16OFLoadHighScoresv",
+      "demangled": "OFLoadHighScores()",
+      "address": "001759a8",
+      "size": 396,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined OFLoadHighScores(void)",
+      "path": "functions/001759a8-_Z16OFLoadHighScoresv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16OFSaveHighScoresv",
+      "binary_symbol": "__Z16OFSaveHighScoresv",
+      "demangled": "OFSaveHighScores()",
+      "address": "00175b98",
+      "size": 192,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined OFSaveHighScores(void)",
+      "path": "functions/00175b98-_Z16OFSaveHighScoresv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16ObjectProcFringeP8cRObjectiiiiPc",
+      "binary_symbol": "__Z16ObjectProcFringeP8cRObjectiiiiPc",
+      "demangled": "ObjectProcFringe(cRObject*, int, int, int, int, char*)",
+      "address": "00015b94",
+      "size": 2660,
+      "params": [
+        "cRObject*",
+        "int",
+        "int",
+        "int",
+        "int",
+        "char*"
+      ],
+      "ghidra_params": [
+        "cRObject *",
+        "int",
+        "int",
+        "int",
+        "int",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall ObjectProcFringe(cRObject * param_1, int param_2, int param_3, int param_4, int param_5, char * param_6)",
+      "path": "functions/00015b94-_Z16ObjectProcFringeP8cRObjectiiiiPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16RShellDeleteFilePc",
+      "binary_symbol": "__Z16RShellDeleteFilePc",
+      "demangled": "RShellDeleteFile(char*)",
+      "address": "0000d080",
+      "size": 16,
+      "params": [
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellDeleteFile(char * param_1)",
+      "path": "functions/0000d080-_Z16RShellDeleteFilePc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16RShellFindSamplePc",
+      "binary_symbol": "__Z16RShellFindSamplePc",
+      "demangled": "RShellFindSample(char*)",
+      "address": "0000cf50",
+      "size": 116,
+      "params": [
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellFindSample(char * param_1)",
+      "path": "functions/0000cf50-_Z16RShellFindSamplePc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16RShellInkeyInputv",
+      "binary_symbol": "__Z16RShellInkeyInputv",
+      "demangled": "RShellInkeyInput()",
+      "address": "0000c2e0",
+      "size": 1148,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined RShellInkeyInput(void)",
+      "path": "functions/0000c2e0-_Z16RShellInkeyInputv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z16RShellMemoryFreePv",
+      "binary_symbol": "__Z16RShellMemoryFreePv",
+      "demangled": "RShellMemoryFree(void*)",
+      "address": "0000d050",
+      "size": 16,
+      "params": [
+        "void*"
+      ],
+      "ghidra_params": [
+        "void *"
+      ],
+      "prototype": "undefined __stdcall RShellMemoryFree(void * param_1)",
+      "path": "functions/0000d050-_Z16RShellMemoryFreePv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17G0FontRenderStartv",
+      "binary_symbol": "__Z17G0FontRenderStartv",
+      "demangled": "G0FontRenderStart()",
+      "address": "00070234",
+      "size": 496,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined G0FontRenderStart(void)",
+      "path": "functions/00070234-_Z17G0FontRenderStartv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17MacAudioNormalizefff",
+      "binary_symbol": "__Z17MacAudioNormalizefff",
+      "demangled": "MacAudioNormalize(float, float, float)",
+      "address": "00074da0",
+      "size": 28,
+      "params": [
+        "float",
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "float",
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall MacAudioNormalize(float param_1, float param_2, float param_3)",
+      "path": "functions/00074da0-_Z17MacAudioNormalizefff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17MacAudioPlayMusicPc",
+      "binary_symbol": "__Z17MacAudioPlayMusicPc",
+      "demangled": "MacAudioPlayMusic(char*)",
+      "address": "00074ff0",
+      "size": 464,
+      "params": [
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall MacAudioPlayMusic(char * param_1)",
+      "path": "functions/00074ff0-_Z17MacAudioPlayMusicPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17MacAudioStopMusicv",
+      "binary_symbol": "__Z17MacAudioStopMusicv",
+      "demangled": "MacAudioStopMusic()",
+      "address": "00074dd8",
+      "size": 52,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacAudioStopMusic(void)",
+      "path": "functions/00074dd8-_Z17MacAudioStopMusicv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17MacOFAddArcadeProi",
+      "binary_symbol": "__Z17MacOFAddArcadeProi",
+      "demangled": "MacOFAddArcadePro(int)",
+      "address": "00007d7c",
+      "size": 292,
+      "params": [
+        "int"
+      ],
+      "ghidra_params": [
+        "int"
+      ],
+      "prototype": "undefined __stdcall MacOFAddArcadePro(int param_1)",
+      "path": "functions/00007d7c-_Z17MacOFAddArcadeProi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17MacOFAddChallengei",
+      "binary_symbol": "__Z17MacOFAddChallengei",
+      "demangled": "MacOFAddChallenge(int)",
+      "address": "00007bf0",
+      "size": 292,
+      "params": [
+        "int"
+      ],
+      "ghidra_params": [
+        "int"
+      ],
+      "prototype": "undefined __stdcall MacOFAddChallenge(int param_1)",
+      "path": "functions/00007bf0-_Z17MacOFAddChallengei.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17MacOFAddTimeTrialiiii",
+      "binary_symbol": "__Z17MacOFAddTimeTrialiiii",
+      "demangled": "MacOFAddTimeTrial(int, int, int, int)",
+      "address": "000079f4",
+      "size": 396,
+      "params": [
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "ghidra_params": [
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "prototype": "undefined __stdcall MacOFAddTimeTrial(int param_1, int param_2, int param_3, int param_4)",
+      "path": "functions/000079f4-_Z17MacOFAddTimeTrialiiii.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17MacOFGetHighScorev",
+      "binary_symbol": "__Z17MacOFGetHighScorev",
+      "demangled": "MacOFGetHighScore()",
+      "address": "00007704",
+      "size": 16,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacOFGetHighScore(void)",
+      "path": "functions/00007704-_Z17MacOFGetHighScorev.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17MacOFSetHighScorev",
+      "binary_symbol": "__Z17MacOFSetHighScorev",
+      "demangled": "MacOFSetHighScore()",
+      "address": "000076f4",
+      "size": 16,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacOFSetHighScore(void)",
+      "path": "functions/000076f4-_Z17MacOFSetHighScorev.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17RTextExtractFloatPPc",
+      "binary_symbol": "__Z17RTextExtractFloatPPc",
+      "demangled": "RTextExtractFloat(char**)",
+      "address": "0000be9c",
+      "size": 332,
+      "params": [
+        "char**"
+      ],
+      "ghidra_params": [
+        "char * *"
+      ],
+      "prototype": "undefined __stdcall RTextExtractFloat(char * * param_1)",
+      "path": "functions/0000be9c-_Z17RTextExtractFloatPPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17gRegisterLoadFilePcPv",
+      "binary_symbol": "__Z17gRegisterLoadFilePcPv",
+      "demangled": "gRegisterLoadFile(char*, void*)",
+      "address": "00009d78",
+      "size": 28,
+      "params": [
+        "char*",
+        "void*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "void *"
+      ],
+      "prototype": "undefined __stdcall gRegisterLoadFile(char * param_1, void * param_2)",
+      "path": "functions/00009d78-_Z17gRegisterLoadFilePcPv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17gRegisterSaveFilePcPvi",
+      "binary_symbol": "__Z17gRegisterSaveFilePcPvi",
+      "demangled": "gRegisterSaveFile(char*, void*, int)",
+      "address": "00009d68",
+      "size": 16,
+      "params": [
+        "char*",
+        "void*",
+        "int"
+      ],
+      "ghidra_params": [
+        "char *",
+        "void *",
+        "int"
+      ],
+      "prototype": "undefined __stdcall gRegisterSaveFile(char * param_1, void * param_2, int param_3)",
+      "path": "functions/00009d68-_Z17gRegisterSaveFilePcPvi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17loadObjectFromNibI15UITableViewCellEPT_P8NSStringP11objc_object",
+      "binary_symbol": "__Z17loadObjectFromNibI15UITableViewCellEPT_P8NSStringP11objc_object",
+      "demangled": "UITableViewCell* loadObjectFromNib\u003cUITableViewCell\u003e(NSString*, objc_object*)",
+      "address": "000e5638",
+      "size": 244,
+      "params": [
+        "NSString*",
+        "objc_object*"
+      ],
+      "ghidra_params": [
+        "NSString *",
+        "objc_object *"
+      ],
+      "prototype": "UITableViewCell * __stdcall loadObjectFromNib\u003cUITableViewCell\u003e(NSString * param_1, objc_object * param_2)",
+      "path": "functions/000e5638-_Z17loadObjectFromNibI15UITableViewCellEPT_P8NSStringP11objc_object.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17loadObjectFromNibI16UIViewControllerEPT_P8NSStringP11objc_object",
+      "binary_symbol": "__Z17loadObjectFromNibI16UIViewControllerEPT_P8NSStringP11objc_object",
+      "demangled": "UIViewController* loadObjectFromNib\u003cUIViewController\u003e(NSString*, objc_object*)",
+      "address": "000e5520",
+      "size": 244,
+      "params": [
+        "NSString*",
+        "objc_object*"
+      ],
+      "ghidra_params": [
+        "NSString *",
+        "objc_object *"
+      ],
+      "prototype": "UIViewController * __stdcall loadObjectFromNib\u003cUIViewController\u003e(NSString * param_1, objc_object * param_2)",
+      "path": "functions/000e5520-_Z17loadObjectFromNibI16UIViewControllerEPT_P8NSStringP11objc_object.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z17loadObjectFromNibI6UIViewEPT_P8NSStringP11objc_object",
+      "binary_symbol": "__Z17loadObjectFromNibI6UIViewEPT_P8NSStringP11objc_object",
+      "demangled": "UIView* loadObjectFromNib\u003cUIView\u003e(NSString*, objc_object*)",
+      "address": "000e5408",
+      "size": 244,
+      "params": [
+        "NSString*",
+        "objc_object*"
+      ],
+      "ghidra_params": [
+        "NSString *",
+        "objc_object *"
+      ],
+      "prototype": "UIView * __stdcall loadObjectFromNib\u003cUIView\u003e(NSString * param_1, objc_object * param_2)",
+      "path": "functions/000e5408-_Z17loadObjectFromNibI6UIViewEPT_P8NSStringP11objc_object.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z18MacAudioLoadSamplePc",
+      "binary_symbol": "__Z18MacAudioLoadSamplePc",
+      "demangled": "MacAudioLoadSample(char*)",
+      "address": "00074e88",
+      "size": 176,
+      "params": [
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall MacAudioLoadSample(char * param_1)",
+      "path": "functions/00074e88-_Z18MacAudioLoadSamplePc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z18MacAudioPlaySampleifff",
+      "binary_symbol": "__Z18MacAudioPlaySampleifff",
+      "demangled": "MacAudioPlaySample(int, float, float, float)",
+      "address": "00074e24",
+      "size": 92,
+      "params": [
+        "int",
+        "float",
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "int",
+        "float",
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall MacAudioPlaySample(int param_1, float param_2, float param_3, float param_4)",
+      "path": "functions/00074e24-_Z18MacAudioPlaySampleifff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z18MacAudioStartMusicv",
+      "binary_symbol": "__Z18MacAudioStartMusicv",
+      "demangled": "MacAudioStartMusic()",
+      "address": "000751f8",
+      "size": 56,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacAudioStartMusic(void)",
+      "path": "functions/000751f8-_Z18MacAudioStartMusicv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z18ObjectProcTileFastP8cRObjectPcf",
+      "binary_symbol": "__Z18ObjectProcTileFastP8cRObjectPcf",
+      "demangled": "ObjectProcTileFast(cRObject*, char*, float)",
+      "address": "00015a90",
+      "size": 248,
+      "params": [
+        "cRObject*",
+        "char*",
+        "float"
+      ],
+      "ghidra_params": [
+        "cRObject *",
+        "char *",
+        "float"
+      ],
+      "prototype": "undefined __stdcall ObjectProcTileFast(cRObject * param_1, char * param_2, float param_3)",
+      "path": "functions/00015a90-_Z18ObjectProcTileFastP8cRObjectPcf.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z18RShellMemoryMallociPc",
+      "binary_symbol": "__Z18RShellMemoryMallociPc",
+      "demangled": "RShellMemoryMalloc(int, char*)",
+      "address": "0000d060",
+      "size": 16,
+      "params": [
+        "int",
+        "char*"
+      ],
+      "ghidra_params": [
+        "int",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellMemoryMalloc(int param_1, char * param_2)",
+      "path": "functions/0000d060-_Z18RShellMemoryMallociPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z18RTextExtractStringPPcS_",
+      "binary_symbol": "__Z18RTextExtractStringPPcS_",
+      "demangled": "RTextExtractString(char**, char*)",
+      "address": "0000bd98",
+      "size": 104,
+      "params": [
+        "char**",
+        "char*"
+      ],
+      "ghidra_params": [
+        "char * *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RTextExtractString(char * * param_1, char * param_2)",
+      "path": "functions/0000bd98-_Z18RTextExtractStringPPcS_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z18getHardwareVersionv",
+      "binary_symbol": "__Z18getHardwareVersionv",
+      "demangled": "getHardwareVersion()",
+      "address": "000f7c74",
+      "size": 132,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined getHardwareVersion(void)",
+      "path": "functions/000f7c74-_Z18getHardwareVersionv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z19G0RenderSprite3DEndv",
+      "binary_symbol": "__Z19G0RenderSprite3DEndv",
+      "demangled": "G0RenderSprite3DEnd()",
+      "address": "0006ecc0",
+      "size": 92,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined G0RenderSprite3DEnd(void)",
+      "path": "functions/0006ecc0-_Z19G0RenderSprite3DEndv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z19MacOFAddAchievementi",
+      "binary_symbol": "__Z19MacOFAddAchievementi",
+      "demangled": "MacOFAddAchievement(int)",
+      "address": "0000788c",
+      "size": 256,
+      "params": [
+        "int"
+      ],
+      "ghidra_params": [
+        "int"
+      ],
+      "prototype": "undefined __stdcall MacOFAddAchievement(int param_1)",
+      "path": "functions/0000788c-_Z19MacOFAddAchievementi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z19MacOFSaveHighScoresv",
+      "binary_symbol": "__Z19MacOFSaveHighScoresv",
+      "demangled": "MacOFSaveHighScores()",
+      "address": "00007714",
+      "size": 32,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacOFSaveHighScores(void)",
+      "path": "functions/00007714-_Z19MacOFSaveHighScoresv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z19RShellInputRetrieveiPiPfS0_S0_S0_S0_S0_S0_S0_S0_",
+      "binary_symbol": "__Z19RShellInputRetrieveiPiPfS0_S0_S0_S0_S0_S0_S0_S0_",
+      "demangled": "RShellInputRetrieve(int, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*)",
+      "address": "0000c010",
+      "size": 200,
+      "params": [
+        "int",
+        "int*",
+        "float*",
+        "float*",
+        "float*",
+        "float*",
+        "float*",
+        "float*",
+        "float*",
+        "float*",
+        "float*"
+      ],
+      "ghidra_params": [
+        "int",
+        "int *",
+        "float *",
+        "float *",
+        "float *",
+        "float *",
+        "float *",
+        "float *",
+        "float *",
+        "float *",
+        "float *"
+      ],
+      "prototype": "undefined __stdcall RShellInputRetrieve(int param_1, int * param_2, float * param_3, float * param_4, float * param_5, float * param_6, float * param_7, float * param_8, float * param_9, float * param_10, float * param_11)",
+      "path": "functions/0000c010-_Z19RShellInputRetrieveiPiPfS0_S0_S0_S0_S0_S0_S0_S0_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z19RShellLoadDirectoryPcPiPA128_c",
+      "binary_symbol": "__Z19RShellLoadDirectoryPcPiPA128_c",
+      "demangled": "RShellLoadDirectory(char*, int*, char (*) [128])",
+      "address": "0000d40c",
+      "size": 148,
+      "params": [
+        "char*",
+        "int*",
+        "char (*) [128]"
+      ],
+      "ghidra_params": [
+        "char *",
+        "int *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellLoadDirectory(char * param_1, int * param_2, char * param_3)",
+      "path": "functions/0000d40c-_Z19RShellLoadDirectoryPcPiPA128_c.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z19RShellMemoryScratchv",
+      "binary_symbol": "__Z19RShellMemoryScratchv",
+      "demangled": "RShellMemoryScratch()",
+      "address": "0000bc18",
+      "size": 12,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined RShellMemoryScratch(void)",
+      "path": "functions/0000bc18-_Z19RShellMemoryScratchv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z19RShellReadDirectoryPcS_PiPA128_c",
+      "binary_symbol": "__Z19RShellReadDirectoryPcS_PiPA128_c",
+      "demangled": "RShellReadDirectory(char*, char*, int*, char (*) [128])",
+      "address": "0000bc14",
+      "size": 4,
+      "params": [
+        "char*",
+        "char*",
+        "int*",
+        "char (*) [128]"
+      ],
+      "ghidra_params": [
+        "char *",
+        "char *",
+        "int *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellReadDirectory(char * param_1, char * param_2, int * param_3, char * param_4)",
+      "path": "functions/0000bc14-_Z19RShellReadDirectoryPcS_PiPA128_c.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z19RShellSaveDirectoryPciPA128_c",
+      "binary_symbol": "__Z19RShellSaveDirectoryPciPA128_c",
+      "demangled": "RShellSaveDirectory(char*, int, char (*) [128])",
+      "address": "0000d4a0",
+      "size": 116,
+      "params": [
+        "char*",
+        "int",
+        "char (*) [128]"
+      ],
+      "ghidra_params": [
+        "char *",
+        "int",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellSaveDirectory(char * param_1, int param_2, char * param_3)",
+      "path": "functions/0000d4a0-_Z19RShellSaveDirectoryPciPA128_c.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z19RShellSoundRegisterPci",
+      "binary_symbol": "__Z19RShellSoundRegisterPci",
+      "demangled": "RShellSoundRegister(char*, int)",
+      "address": "0000cfd0",
+      "size": 112,
+      "params": [
+        "char*",
+        "int"
+      ],
+      "ghidra_params": [
+        "char *",
+        "int"
+      ],
+      "prototype": "undefined __stdcall RShellSoundRegister(char * param_1, int param_2)",
+      "path": "functions/0000cfd0-_Z19RShellSoundRegisterPci.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z20RShellGetScreenWidthv",
+      "binary_symbol": "__Z20RShellGetScreenWidthv",
+      "demangled": "RShellGetScreenWidth()",
+      "address": "0000c108",
+      "size": 16,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined RShellGetScreenWidth(void)",
+      "path": "functions/0000c108-_Z20RShellGetScreenWidthv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z20RShellLoadFileHeaderPcPvi",
+      "binary_symbol": "__Z20RShellLoadFileHeaderPcPvi",
+      "demangled": "RShellLoadFileHeader(char*, void*, int)",
+      "address": "0000d66c",
+      "size": 780,
+      "params": [
+        "char*",
+        "void*",
+        "int"
+      ],
+      "ghidra_params": [
+        "char *",
+        "void *",
+        "int"
+      ],
+      "prototype": "undefined __stdcall RShellLoadFileHeader(char * param_1, void * param_2, int param_3)",
+      "path": "functions/0000d66c-_Z20RShellLoadFileHeaderPcPvi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z20RShellMemoryBookmarkv",
+      "binary_symbol": "__Z20RShellMemoryBookmarkv",
+      "demangled": "RShellMemoryBookmark()",
+      "address": "0000bc3c",
+      "size": 16,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined RShellMemoryBookmark(void)",
+      "path": "functions/0000bc3c-_Z20RShellMemoryBookmarkv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z20RShellMemoryScratch2v",
+      "binary_symbol": "__Z20RShellMemoryScratch2v",
+      "demangled": "RShellMemoryScratch2()",
+      "address": "0000bc28",
+      "size": 16,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined RShellMemoryScratch2(void)",
+      "path": "functions/0000bc28-_Z20RShellMemoryScratch2v.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z21G0RenderSprite3DStartv",
+      "binary_symbol": "__Z21G0RenderSprite3DStartv",
+      "demangled": "G0RenderSprite3DStart()",
+      "address": "00070a0c",
+      "size": 204,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined G0RenderSprite3DStart(void)",
+      "path": "functions/00070a0c-_Z21G0RenderSprite3DStartv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z21ParsifalInputCallbackPhiPiPv",
+      "binary_symbol": "__Z21ParsifalInputCallbackPhiPiPv",
+      "demangled": "ParsifalInputCallback(unsigned char*, int, int*, void*)",
+      "address": "000d51b0",
+      "size": 132,
+      "params": [
+        "unsigned char*",
+        "int",
+        "int*",
+        "void*"
+      ],
+      "ghidra_params": [
+        "uchar *",
+        "int",
+        "int *",
+        "void *"
+      ],
+      "prototype": "undefined __stdcall ParsifalInputCallback(uchar * param_1, int param_2, int * param_3, void * param_4)",
+      "path": "functions/000d51b0-_Z21ParsifalInputCallbackPhiPiPv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z21RShellConvertFileNamePcS_",
+      "binary_symbol": "__Z21RShellConvertFileNamePcS_",
+      "demangled": "RShellConvertFileName(char*, char*)",
+      "address": "0000bbb0",
+      "size": 100,
+      "params": [
+        "char*",
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RShellConvertFileName(char * param_1, char * param_2)",
+      "path": "functions/0000bbb0-_Z21RShellConvertFileNamePcS_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z21RShellGetScreenHeightv",
+      "binary_symbol": "__Z21RShellGetScreenHeightv",
+      "demangled": "RShellGetScreenHeight()",
+      "address": "0000c11c",
+      "size": 16,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined RShellGetScreenHeight(void)",
+      "path": "functions/0000c11c-_Z21RShellGetScreenHeightv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z21RShellSoundPlayLoopedi",
+      "binary_symbol": "__Z21RShellSoundPlayLoopedi",
+      "demangled": "RShellSoundPlayLooped(int)",
+      "address": "0000c2a0",
+      "size": 28,
+      "params": [
+        "int"
+      ],
+      "ghidra_params": [
+        "int"
+      ],
+      "prototype": "undefined __stdcall RShellSoundPlayLooped(int param_1)",
+      "path": "functions/0000c2a0-_Z21RShellSoundPlayLoopedi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z21RShellSoundStopLoopedi",
+      "binary_symbol": "__Z21RShellSoundStopLoopedi",
+      "demangled": "RShellSoundStopLooped(int)",
+      "address": "0000c280",
+      "size": 28,
+      "params": [
+        "int"
+      ],
+      "ghidra_params": [
+        "int"
+      ],
+      "prototype": "undefined __stdcall RShellSoundStopLooped(int param_1)",
+      "path": "functions/0000c280-_Z21RShellSoundStopLoopedi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z22MacAudioSetMusicVolumef",
+      "binary_symbol": "__Z22MacAudioSetMusicVolumef",
+      "demangled": "MacAudioSetMusicVolume(float)",
+      "address": "00074e14",
+      "size": 16,
+      "params": [
+        "float"
+      ],
+      "ghidra_params": [
+        "float"
+      ],
+      "prototype": "undefined __stdcall MacAudioSetMusicVolume(float param_1)",
+      "path": "functions/00074e14-_Z22MacAudioSetMusicVolumef.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z22ObjectProcJoinTexturesP8cRObject",
+      "binary_symbol": "__Z22ObjectProcJoinTexturesP8cRObject",
+      "demangled": "ObjectProcJoinTextures(cRObject*)",
+      "address": "000154f4",
+      "size": 320,
+      "params": [
+        "cRObject*"
+      ],
+      "ghidra_params": [
+        "cRObject *"
+      ],
+      "prototype": "undefined __stdcall ObjectProcJoinTextures(cRObject * param_1)",
+      "path": "functions/000154f4-_Z22ObjectProcJoinTexturesP8cRObject.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z22ObjectProcTileFastRampiP8cRObject",
+      "binary_symbol": "__Z22ObjectProcTileFastRampiP8cRObject",
+      "demangled": "ObjectProcTileFastRamp(int, cRObject*)",
+      "address": "00015644",
+      "size": 108,
+      "params": [
+        "int",
+        "cRObject*"
+      ],
+      "ghidra_params": [
+        "int",
+        "cRObject *"
+      ],
+      "prototype": "undefined __stdcall ObjectProcTileFastRamp(int param_1, cRObject * param_2)",
+      "path": "functions/00015644-_Z22ObjectProcTileFastRampiP8cRObject.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z23MacAudioSetSampleVolumef",
+      "binary_symbol": "__Z23MacAudioSetSampleVolumef",
+      "demangled": "MacAudioSetSampleVolume(float)",
+      "address": "00074dc8",
+      "size": 12,
+      "params": [
+        "float"
+      ],
+      "ghidra_params": [
+        "float"
+      ],
+      "prototype": "undefined __stdcall MacAudioSetSampleVolume(float param_1)",
+      "path": "functions/00074dc8-_Z23MacAudioSetSampleVolumef.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z23MacOFAddParcelDeliveredv",
+      "binary_symbol": "__Z23MacOFAddParcelDeliveredv",
+      "demangled": "MacOFAddParcelDelivered()",
+      "address": "000080a0",
+      "size": 128,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacOFAddParcelDelivered(void)",
+      "path": "functions/000080a0-_Z23MacOFAddParcelDeliveredv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z23ObjectProcSimplifyFacesP8cRObject",
+      "binary_symbol": "__Z23ObjectProcSimplifyFacesP8cRObject",
+      "demangled": "ObjectProcSimplifyFaces(cRObject*)",
+      "address": "000166c0",
+      "size": 732,
+      "params": [
+        "cRObject*"
+      ],
+      "ghidra_params": [
+        "cRObject *"
+      ],
+      "prototype": "undefined __stdcall ObjectProcSimplifyFaces(cRObject * param_1)",
+      "path": "functions/000166c0-_Z23ObjectProcSimplifyFacesP8cRObject.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z23ObjectProcTileFloorFastP8cRObjectPcf",
+      "binary_symbol": "__Z23ObjectProcTileFloorFastP8cRObjectPcf",
+      "demangled": "ObjectProcTileFloorFast(cRObject*, char*, float)",
+      "address": "000158dc",
+      "size": 264,
+      "params": [
+        "cRObject*",
+        "char*",
+        "float"
+      ],
+      "ghidra_params": [
+        "cRObject *",
+        "char *",
+        "float"
+      ],
+      "prototype": "undefined __stdcall ObjectProcTileFloorFast(cRObject * param_1, char * param_2, float param_3)",
+      "path": "functions/000158dc-_Z23ObjectProcTileFloorFastP8cRObjectPcf.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z23ObjectProcVertexComparePKvS0_",
+      "binary_symbol": "__Z23ObjectProcVertexComparePKvS0_",
+      "demangled": "ObjectProcVertexCompare(void const*, void const*)",
+      "address": "000154e4",
+      "size": 16,
+      "params": [
+        "void const*",
+        "void const*"
+      ],
+      "ghidra_params": [
+        "void *",
+        "void *"
+      ],
+      "prototype": "undefined __stdcall ObjectProcVertexCompare(void * param_1, void * param_2)",
+      "path": "functions/000154e4-_Z23ObjectProcVertexComparePKvS0_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z23is2PointOhSystemVersionv",
+      "binary_symbol": "__Z23is2PointOhSystemVersionv",
+      "demangled": "is2PointOhSystemVersion()",
+      "address": "000f7bbc",
+      "size": 144,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined is2PointOhSystemVersion(void)",
+      "path": "functions/000f7bbc-_Z23is2PointOhSystemVersionv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z23is3PointOhSystemVersionv",
+      "binary_symbol": "__Z23is3PointOhSystemVersionv",
+      "demangled": "is3PointOhSystemVersion()",
+      "address": "000f7b04",
+      "size": 144,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined is3PointOhSystemVersion(void)",
+      "path": "functions/000f7b04-_Z23is3PointOhSystemVersionv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z24RShellInputRegisterMouseiiiiiiiibbbbb",
+      "binary_symbol": "__Z24RShellInputRegisterMouseiiiiiiiibbbbb",
+      "demangled": "RShellInputRegisterMouse(int, int, int, int, int, int, int, int, bool, bool, bool, bool, bool)",
+      "address": "0000cbdc",
+      "size": 528,
+      "params": [
+        "int",
+        "int",
+        "int",
+        "int",
+        "int",
+        "int",
+        "int",
+        "int",
+        "bool",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+      ],
+      "ghidra_params": [
+        "int",
+        "int",
+        "int",
+        "int",
+        "int",
+        "int",
+        "int",
+        "int",
+        "bool",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+      ],
+      "prototype": "undefined __stdcall RShellInputRegisterMouse(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7, int param_8, bool param_9, bool param_10, bool param_11, bool param_12, bool param_13)",
+      "path": "functions/0000cbdc-_Z24RShellInputRegisterMouseiiiiiiiibbbbb.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z25ObjectProcLandScapeUpdateP8cRObjectffP9cRTextureb",
+      "binary_symbol": "__Z25ObjectProcLandScapeUpdateP8cRObjectffP9cRTextureb",
+      "demangled": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
+      "address": "000156b8",
+      "size": 504,
+      "params": [
+        "cRObject*",
+        "float",
+        "float",
+        "cRTexture*",
+        "bool"
+      ],
+      "ghidra_params": [
+        "cRObject *",
+        "float",
+        "float",
+        "cRTexture *",
+        "bool"
+      ],
+      "prototype": "undefined __stdcall ObjectProcLandScapeUpdate(cRObject * param_1, float param_2, float param_3, cRTexture * param_4, bool param_5)",
+      "path": "functions/000156b8-_Z25ObjectProcLandScapeUpdateP8cRObjectffP9cRTextureb.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z27RShellInputRegisterKeyboardiff",
+      "binary_symbol": "__Z27RShellInputRegisterKeyboardiff",
+      "demangled": "RShellInputRegisterKeyboard(int, float, float)",
+      "address": "0000bff8",
+      "size": 20,
+      "params": [
+        "int",
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "int",
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall RShellInputRegisterKeyboard(int param_1, float param_2, float param_3)",
+      "path": "functions/0000bff8-_Z27RShellInputRegisterKeyboardiff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z29ObjectProcTileFloorCornerFastiP8cRObjectPc",
+      "binary_symbol": "__Z29ObjectProcTileFloorCornerFastiP8cRObjectPc",
+      "demangled": "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
+      "address": "000159f8",
+      "size": 140,
+      "params": [
+        "int",
+        "cRObject*",
+        "char*"
+      ],
+      "ghidra_params": [
+        "int",
+        "cRObject *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall ObjectProcTileFloorCornerFast(int param_1, cRObject * param_2, char * param_3)",
+      "path": "functions/000159f8-_Z29ObjectProcTileFloorCornerFastiP8cRObjectPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z29RShellInputRegisterMouseExtraff",
+      "binary_symbol": "__Z29RShellInputRegisterMouseExtraff",
+      "demangled": "RShellInputRegisterMouseExtra(float, float)",
+      "address": "0000c0f4",
+      "size": 16,
+      "params": [
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall RShellInputRegisterMouseExtra(float param_1, float param_2)",
+      "path": "functions/0000c0f4-_Z29RShellInputRegisterMouseExtraff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z33RShellInputRegisterMouseClickOnlyv",
+      "binary_symbol": "__Z33RShellInputRegisterMouseClickOnlyv",
+      "demangled": "RShellInputRegisterMouseClickOnly()",
+      "address": "0000c0dc",
+      "size": 20,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined RShellInputRegisterMouseClickOnly(void)",
+      "path": "functions/0000c0dc-_Z33RShellInputRegisterMouseClickOnlyv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z3Cosf",
+      "binary_symbol": "__Z3Cosf",
+      "demangled": "Cos(float)",
+      "address": "00009e2c",
+      "size": 56,
+      "params": [
+        "float"
+      ],
+      "ghidra_params": [
+        "float"
+      ],
+      "prototype": "undefined __stdcall Cos(float param_1)",
+      "path": "functions/00009e2c-_Z3Cosf.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z3Sinf",
+      "binary_symbol": "__Z3Sinf",
+      "demangled": "Sin(float)",
+      "address": "00009e74",
+      "size": 56,
+      "params": [
+        "float"
+      ],
+      "ghidra_params": [
+        "float"
+      ],
+      "prototype": "undefined __stdcall Sin(float param_1)",
+      "path": "functions/00009e74-_Z3Sinf.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z41__static_initialization_and_destruction_0ii",
+      "binary_symbol": "__Z41__static_initialization_and_destruction_0ii",
+      "demangled": "__static_initialization_and_destruction_0(int, int)",
+      "address": "00002c60",
+      "size": 248,
+      "params": [
+        "int",
+        "int"
+      ],
+      "ghidra_params": [
+        "int",
+        "int"
+      ],
+      "prototype": "undefined __stdcall __static_initialization_and_destruction_0(int param_1, int param_2)",
+      "path": "functions/00002c60-_Z41__static_initialization_and_destruction_0ii.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z4ACosf",
+      "binary_symbol": "__Z4ACosf",
+      "demangled": "ACos(float)",
+      "address": "0000aa94",
+      "size": 16,
+      "params": [
+        "float"
+      ],
+      "ghidra_params": [
+        "float"
+      ],
+      "prototype": "undefined __stdcall ACos(float param_1)",
+      "path": "functions/0000aa94-_Z4ACosf.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z4ATanff",
+      "binary_symbol": "__Z4ATanff",
+      "demangled": "ATan(float, float)",
+      "address": "0000a960",
+      "size": 160,
+      "params": [
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall ATan(float param_1, float param_2)",
+      "path": "functions/0000a960-_Z4ATanff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z4RANDfPc",
+      "binary_symbol": "__Z4RANDfPc",
+      "demangled": "RAND(float, char*)",
+      "address": "0000ac14",
+      "size": 68,
+      "params": [
+        "float",
+        "char*"
+      ],
+      "ghidra_params": [
+        "float",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RAND(float param_1, char * param_2)",
+      "path": "functions/0000ac14-_Z4RANDfPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z4Sqrtf",
+      "binary_symbol": "__Z4Sqrtf",
+      "demangled": "Sqrt(float)",
+      "address": "0000a950",
+      "size": 16,
+      "params": [
+        "float"
+      ],
+      "ghidra_params": [
+        "float"
+      ],
+      "prototype": "undefined __stdcall Sqrt(float param_1)",
+      "path": "functions/0000a950-_Z4Sqrtf.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z5KeyOnh",
+      "binary_symbol": "__Z5KeyOnh",
+      "demangled": "KeyOn(unsigned char)",
+      "address": "0000e7dc",
+      "size": 28,
+      "params": [
+        "unsigned char"
+      ],
+      "ghidra_params": [
+        "uchar"
+      ],
+      "prototype": "undefined __stdcall KeyOn(uchar param_1)",
+      "path": "functions/0000e7dc-_Z5KeyOnh.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z5SRANDfPc",
+      "binary_symbol": "__Z5SRANDfPc",
+      "demangled": "SRAND(float, char*)",
+      "address": "0000abbc",
+      "size": 76,
+      "params": [
+        "float",
+        "char*"
+      ],
+      "ghidra_params": [
+        "float",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall SRAND(float param_1, char * param_2)",
+      "path": "functions/0000abbc-_Z5SRANDfPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z6FontAIv",
+      "binary_symbol": "__Z6FontAIv",
+      "demangled": "FontAI()",
+      "address": "0000e85c",
+      "size": 188,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined FontAI(void)",
+      "path": "functions/0000e85c-_Z6FontAIv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z6InitGLv",
+      "binary_symbol": "__Z6InitGLv",
+      "demangled": "InitGL()",
+      "address": "0006e084",
+      "size": 252,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined InitGL(void)",
+      "path": "functions/0006e084-_Z6InitGLv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z6KeySeth",
+      "binary_symbol": "__Z6KeySeth",
+      "demangled": "KeySet(unsigned char)",
+      "address": "0000e7fc",
+      "size": 20,
+      "params": [
+        "unsigned char"
+      ],
+      "ghidra_params": [
+        "uchar"
+      ],
+      "prototype": "undefined __stdcall KeySet(uchar param_1)",
+      "path": "functions/0000e7fc-_Z6KeySeth.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z7KeyTesth",
+      "binary_symbol": "__Z7KeyTesth",
+      "demangled": "KeyTest(unsigned char)",
+      "address": "0000e78c",
+      "size": 24,
+      "params": [
+        "unsigned char"
+      ],
+      "ghidra_params": [
+        "uchar"
+      ],
+      "prototype": "undefined __stdcall KeyTest(uchar param_1)",
+      "path": "functions/0000e78c-_Z7KeyTesth.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z7MacInitv",
+      "binary_symbol": "__Z7MacInitv",
+      "demangled": "MacInit()",
+      "address": "00008a14",
+      "size": 388,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacInit(void)",
+      "path": "functions/00008a14-_Z7MacInitv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z7MacOFOnv",
+      "binary_symbol": "__Z7MacOFOnv",
+      "demangled": "MacOFOn()",
+      "address": "000076bc",
+      "size": 16,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacOFOn(void)",
+      "path": "functions/000076bc-_Z7MacOFOnv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z7RstrASCc",
+      "binary_symbol": "__Z7RstrASCc",
+      "demangled": "RstrASC(char)",
+      "address": "0000dcac",
+      "size": 36,
+      "params": [
+        "char"
+      ],
+      "ghidra_params": [
+        "char"
+      ],
+      "prototype": "undefined __stdcall RstrASC(char param_1)",
+      "path": "functions/0000dcac-_Z7RstrASCc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z7RstrcmpPcS_",
+      "binary_symbol": "__Z7RstrcmpPcS_",
+      "demangled": "Rstrcmp(char*, char*)",
+      "address": "0000dd60",
+      "size": 108,
+      "params": [
+        "char*",
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall Rstrcmp(char * param_1, char * param_2)",
+      "path": "functions/0000dd60-_Z7RstrcmpPcS_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z7RstrcpyPcPKc",
+      "binary_symbol": "__Z7RstrcpyPcPKc",
+      "demangled": "Rstrcpy(char*, char const*)",
+      "address": "0000dffc",
+      "size": 104,
+      "params": [
+        "char*",
+        "char const*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall Rstrcpy(char * param_1, char * param_2)",
+      "path": "functions/0000dffc-_Z7RstrcpyPcPKc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z7RstrintPPc",
+      "binary_symbol": "__Z7RstrintPPc",
+      "demangled": "Rstrint(char**)",
+      "address": "0000ddcc",
+      "size": 212,
+      "params": [
+        "char**"
+      ],
+      "ghidra_params": [
+        "char * *"
+      ],
+      "prototype": "undefined __stdcall Rstrint(char * * param_1)",
+      "path": "functions/0000ddcc-_Z7RstrintPPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z7wprintfPcz",
+      "binary_symbol": "__Z7wprintfPcz",
+      "demangled": "wprintf(char*, ...)",
+      "address": "0000dc54",
+      "size": 88,
+      "params": [
+        "char*",
+        "..."
+      ],
+      "ghidra_params": [
+        "char *"
+      ],
+      "prototype": "undefined __stdcall wprintf(char * param_1, ...)",
+      "path": "functions/0000dc54-_Z7wprintfPcz.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8DatBuildv",
+      "binary_symbol": "__Z8DatBuildv",
+      "demangled": "DatBuild()",
+      "address": "0000986c",
+      "size": 856,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined DatBuild(void)",
+      "path": "functions/0000986c-_Z8DatBuildv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8FontInitv",
+      "binary_symbol": "__Z8FontInitv",
+      "demangled": "FontInit()",
+      "address": "0000e814",
+      "size": 48,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined FontInit(void)",
+      "path": "functions/0000e814-_Z8FontInitv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8FontLoadPciff",
+      "binary_symbol": "__Z8FontLoadPciff",
+      "demangled": "FontLoad(char*, int, float, float)",
+      "address": "0000f09c",
+      "size": 904,
+      "params": [
+        "char*",
+        "int",
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "char *",
+        "int",
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall FontLoad(char * param_1, int param_2, float param_3, float param_4)",
+      "path": "functions/0000f09c-_Z8FontLoadPciff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8FontTypePcifffPfS0_S0_S0_fbifi7tColourbb",
+      "binary_symbol": "__Z8FontTypePcifffPfS0_S0_S0_fbifi7tColourbb",
+      "demangled": "FontType(char*, int, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)",
+      "address": "0000f444",
+      "size": 1808,
+      "params": [
+        "char*",
+        "int",
+        "float",
+        "float",
+        "float",
+        "float*",
+        "float*",
+        "float*",
+        "float*",
+        "float",
+        "bool",
+        "int",
+        "float",
+        "int",
+        "tColour",
+        "bool",
+        "bool"
+      ],
+      "ghidra_params": [
+        "char *",
+        "int",
+        "float",
+        "float",
+        "float",
+        "float *",
+        "float *",
+        "float *",
+        "float *",
+        "float",
+        "bool",
+        "int",
+        "float",
+        "int",
+        "tColour",
+        "bool",
+        "bool"
+      ],
+      "prototype": "undefined __stdcall FontType(char * param_1, int param_2, float param_3, float param_4, float param_5, float * param_6, float * param_7, float * param_8, float * param_9, float param_10, bool param_11, int param_12, float param_13, int param_14, tColour param_15, bool param_16, bool param_17)",
+      "path": "functions/0000f444-_Z8FontTypePcifffPfS0_S0_S0_fbifi7tColourbb.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8G0Renderv",
+      "binary_symbol": "__Z8G0Renderv",
+      "demangled": "G0Render()",
+      "address": "0006e1a8",
+      "size": 116,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined G0Render(void)",
+      "path": "functions/0006e1a8-_Z8G0Renderv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8KeyPressh",
+      "binary_symbol": "__Z8KeyPressh",
+      "demangled": "KeyPress(unsigned char)",
+      "address": "0000e7a8",
+      "size": 44,
+      "params": [
+        "unsigned char"
+      ],
+      "ghidra_params": [
+        "uchar"
+      ],
+      "prototype": "undefined __stdcall KeyPress(uchar param_1)",
+      "path": "functions/0000e7a8-_Z8KeyPressh.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8LoadFilePcPvPi",
+      "binary_symbol": "__Z8LoadFilePcPvPi",
+      "demangled": "LoadFile(char*, void*, int*)",
+      "address": "00009790",
+      "size": 212,
+      "params": [
+        "char*",
+        "void*",
+        "int*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "void *",
+        "int *"
+      ],
+      "prototype": "undefined __stdcall LoadFile(char * param_1, void * param_2, int * param_3)",
+      "path": "functions/00009790-_Z8LoadFilePcPvPi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8MacInit2v",
+      "binary_symbol": "__Z8MacInit2v",
+      "demangled": "MacInit2()",
+      "address": "00008128",
+      "size": 128,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacInit2(void)",
+      "path": "functions/00008128-_Z8MacInit2v.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8MacOFOffv",
+      "binary_symbol": "__Z8MacOFOffv",
+      "demangled": "MacOFOff()",
+      "address": "000076d0",
+      "size": 16,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacOFOff(void)",
+      "path": "functions/000076d0-_Z8MacOFOffv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8MouseSetiii",
+      "binary_symbol": "__Z8MouseSetiii",
+      "demangled": "MouseSet(int, int, int)",
+      "address": "0000e144",
+      "size": 112,
+      "params": [
+        "int",
+        "int",
+        "int"
+      ],
+      "ghidra_params": [
+        "int",
+        "int",
+        "int"
+      ],
+      "prototype": "undefined __stdcall MouseSet(int param_1, int param_2, int param_3)",
+      "path": "functions/0000e144-_Z8MouseSetiii.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8OFGetIDsv",
+      "binary_symbol": "__Z8OFGetIDsv",
+      "demangled": "OFGetIDs()",
+      "address": "00175f58",
+      "size": 208,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined OFGetIDs(void)",
+      "path": "functions/00175f58-_Z8OFGetIDsv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8OSDPrintiffffi7tColouri",
+      "binary_symbol": "__Z8OSDPrintiffffi7tColouri",
+      "demangled": "OSDPrint(int, float, float, float, float, int, tColour, int)",
+      "address": "0000ef7c",
+      "size": 264,
+      "params": [
+        "int",
+        "float",
+        "float",
+        "float",
+        "float",
+        "int",
+        "tColour",
+        "int"
+      ],
+      "ghidra_params": [
+        "int",
+        "float",
+        "float",
+        "float",
+        "float",
+        "int",
+        "tColour",
+        "int"
+      ],
+      "prototype": "undefined __stdcall OSDPrint(int param_1, float param_2, float param_3, float param_4, float param_5, int param_6, tColour param_7, int param_8)",
+      "path": "functions/0000ef7c-_Z8OSDPrintiffffi7tColouri.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8OpenFilePKcRP17OpaqueAudioFileID",
+      "binary_symbol": "__Z8OpenFilePKcRP17OpaqueAudioFileID",
+      "demangled": "OpenFile(char const*, OpaqueAudioFileID*\u0026)",
+      "address": "00070c84",
+      "size": 132,
+      "params": [
+        "char const*",
+        "OpaqueAudioFileID*\u0026"
+      ],
+      "ghidra_params": [
+        "char *",
+        "OpaqueAudioFileID * *"
+      ],
+      "prototype": "undefined __stdcall OpenFile(char * param_1, OpaqueAudioFileID * * param_2)",
+      "path": "functions/00070c84-_Z8OpenFilePKcRP17OpaqueAudioFileID.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8RandSeedi",
+      "binary_symbol": "__Z8RandSeedi",
+      "demangled": "RandSeed(int)",
+      "address": "0000aaa4",
+      "size": 16,
+      "params": [
+        "int"
+      ],
+      "ghidra_params": [
+        "int"
+      ],
+      "prototype": "undefined __stdcall RandSeed(int param_1)",
+      "path": "functions/0000aaa4-_Z8RandSeedi.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8RstrfindPcS_",
+      "binary_symbol": "__Z8RstrfindPcS_",
+      "demangled": "Rstrfind(char*, char*)",
+      "address": "0000e068",
+      "size": 196,
+      "params": [
+        "char*",
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall Rstrfind(char * param_1, char * param_2)",
+      "path": "functions/0000e068-_Z8RstrfindPcS_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8RstrscanPcc",
+      "binary_symbol": "__Z8RstrscanPcc",
+      "demangled": "Rstrscan(char*, char)",
+      "address": "0000dcd0",
+      "size": 60,
+      "params": [
+        "char*",
+        "char"
+      ],
+      "ghidra_params": [
+        "char *",
+        "char"
+      ],
+      "prototype": "undefined __stdcall Rstrscan(char * param_1, char param_2)",
+      "path": "functions/0000dcd0-_Z8RstrscanPcc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8SHA1InitP8SHA1_CTX",
+      "binary_symbol": "__Z8SHA1InitP8SHA1_CTX",
+      "demangled": "SHA1Init(SHA1_CTX*)",
+      "address": "00108148",
+      "size": 56,
+      "params": [
+        "SHA1_CTX*"
+      ],
+      "ghidra_params": [
+        "SHA1_CTX *"
+      ],
+      "prototype": "undefined __stdcall SHA1Init(SHA1_CTX * param_1)",
+      "path": "functions/00108148-_Z8SHA1InitP8SHA1_CTX.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z8SaveFilePcPvib",
+      "binary_symbol": "__Z8SaveFilePcPvib",
+      "demangled": "SaveFile(char*, void*, int, bool)",
+      "address": "000096bc",
+      "size": 200,
+      "params": [
+        "char*",
+        "void*",
+        "int",
+        "bool"
+      ],
+      "ghidra_params": [
+        "char *",
+        "void *",
+        "int",
+        "bool"
+      ],
+      "prototype": "undefined __stdcall SaveFile(char * param_1, void * param_2, int param_3, bool param_4)",
+      "path": "functions/000096bc-_Z8SaveFilePcPvib.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z9MacFinishv",
+      "binary_symbol": "__Z9MacFinishv",
+      "demangled": "MacFinish()",
+      "address": "00008090",
+      "size": 16,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacFinish(void)",
+      "path": "functions/00008090-_Z9MacFinishv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z9MacOFOpenv",
+      "binary_symbol": "__Z9MacOFOpenv",
+      "demangled": "MacOFOpen()",
+      "address": "000077fc",
+      "size": 56,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined MacOFOpen(void)",
+      "path": "functions/000077fc-_Z9MacOFOpenv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z9RMathInitv",
+      "binary_symbol": "__Z9RMathInitv",
+      "demangled": "RMathInit()",
+      "address": "0000ac60",
+      "size": 228,
+      "params": [],
+      "ghidra_params": [],
+      "prototype": "undefined RMathInit(void)",
+      "path": "functions/0000ac60-_Z9RMathInitv.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z9RTextCopyPcS_",
+      "binary_symbol": "__Z9RTextCopyPcS_",
+      "demangled": "RTextCopy(char*, char*)",
+      "address": "0000bc50",
+      "size": 24,
+      "params": [
+        "char*",
+        "char*"
+      ],
+      "ghidra_params": [
+        "char *",
+        "char *"
+      ],
+      "prototype": "undefined __stdcall RTextCopy(char * param_1, char * param_2)",
+      "path": "functions/0000bc50-_Z9RTextCopyPcS_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z9RstrfloatPPc",
+      "binary_symbol": "__Z9RstrfloatPPc",
+      "demangled": "Rstrfloat(char**)",
+      "address": "0000dea0",
+      "size": 332,
+      "params": [
+        "char**"
+      ],
+      "ghidra_params": [
+        "char * *"
+      ],
+      "prototype": "undefined __stdcall Rstrfloat(char * * param_1)",
+      "path": "functions/0000dea0-_Z9RstrfloatPPc.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z9SHA1FinalPhP8SHA1_CTX",
+      "binary_symbol": "__Z9SHA1FinalPhP8SHA1_CTX",
+      "demangled": "SHA1Final(unsigned char*, SHA1_CTX*)",
+      "address": "0010826c",
+      "size": 264,
+      "params": [
+        "unsigned char*",
+        "SHA1_CTX*"
+      ],
+      "ghidra_params": [
+        "uchar *",
+        "SHA1_CTX *"
+      ],
+      "prototype": "undefined __stdcall SHA1Final(uchar * param_1, SHA1_CTX * param_2)",
+      "path": "functions/0010826c-_Z9SHA1FinalPhP8SHA1_CTX.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z9gluLookAtfffffffff",
+      "binary_symbol": "__Z9gluLookAtfffffffff",
+      "demangled": "gluLookAt(float, float, float, float, float, float, float, float, float)",
+      "address": "0006e224",
+      "size": 308,
+      "params": [
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float"
+      ],
+      "ghidra_params": [
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float",
+        "float"
+      ],
+      "prototype": "undefined __stdcall gluLookAt(float param_1, float param_2, float param_3, float param_4, float param_5, float param_6, float param_7, float param_8, float param_9)",
+      "path": "functions/0006e224-_Z9gluLookAtfffffffff.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_Z9hmac_sha1PKhiPhjS1_",
+      "binary_symbol": "__Z9hmac_sha1PKhiPhjS1_",
+      "demangled": "hmac_sha1(unsigned char const*, int, unsigned char*, unsigned int, unsigned char*)",
+      "address": "001069dc",
+      "size": 340,
+      "params": [
+        "unsigned char const*",
+        "int",
+        "unsigned char*",
+        "unsigned int",
+        "unsigned char*"
+      ],
+      "ghidra_params": [
+        "uchar *",
+        "int",
+        "uchar *",
+        "uint",
+        "uchar *"
+      ],
+      "prototype": "undefined __stdcall hmac_sha1(uchar * param_1, int param_2, uchar * param_3, uint param_4, uchar * param_5)",
+      "path": "functions/001069dc-_Z9hmac_sha1PKhiPhjS1_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_ZL11tryLoadCellP8NSStringP8NSObjectS0_S0_",
+      "binary_symbol": "__ZL11tryLoadCellP8NSStringP8NSObjectS0_S0_",
+      "demangled": "tryLoadCell(NSString*, NSObject*, NSString*, NSString*)",
+      "address": "000e5d04",
+      "size": 396,
+      "params": [
+        "NSString*",
+        "NSObject*",
+        "NSString*",
+        "NSString*"
+      ],
+      "ghidra_params": [
+        "NSString *",
+        "NSObject *",
+        "NSString *",
+        "NSString *"
+      ],
+      "prototype": "undefined __stdcall tryLoadCell(NSString * param_1, NSObject * param_2, NSString * param_3, NSString * param_4)",
+      "path": "functions/000e5d04-_ZL11tryLoadCellP8NSStringP8NSObjectS0_S0_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_ZL17tryLoadControllerP8NSStringP8NSObjectS0_S0_",
+      "binary_symbol": "__ZL17tryLoadControllerP8NSStringP8NSObjectS0_S0_",
+      "demangled": "tryLoadController(NSString*, NSObject*, NSString*, NSString*)",
+      "address": "000e5b1c",
+      "size": 332,
+      "params": [
+        "NSString*",
+        "NSObject*",
+        "NSString*",
+        "NSString*"
+      ],
+      "ghidra_params": [
+        "NSString *",
+        "NSObject *",
+        "NSString *",
+        "NSString *"
+      ],
+      "prototype": "undefined __stdcall tryLoadController(NSString * param_1, NSObject * param_2, NSString * param_3, NSString * param_4)",
+      "path": "functions/000e5b1c-_ZL17tryLoadControllerP8NSStringP8NSObjectS0_S0_.c",
+      "status": "ok"
+    },
     {
       "mangled": "_ZN10OFDelegateC1EP8NSObjectP13objc_selector",
       "binary_symbol": "__ZN10OFDelegateC1EP8NSObjectP13objc_selector",
@@ -12722,6 +16092,140 @@
       ],
       "prototype": "undefined __thiscall _M_insert(_Rb_tree_node_base * param_1, _Rb_tree_node_base * param_2, pair * param_3)",
       "path": "functions/00073508-_ZNSt8_Rb_treeImSt4pairIKmP17SoundEngineEffectESt10_Select1stIS4_ESt4lessIjESaIS4_EE9_M_insertEPSt18_Rb_tree_node_baseSC_RKS4_.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_ZSt6__findIN9__gnu_cxx17__normal_iteratorIPKN17OFResourceDataMap16FieldDescriptionESt6vectorIS3_SaIS3_EEEEP8NSStringET_SC_SC_RKT0_St26random_access_iterator_tag",
+      "binary_symbol": "__ZSt6__findIN9__gnu_cxx17__normal_iteratorIPKN17OFResourceDataMap16FieldDescriptionESt6vectorIS3_SaIS3_EEEEP8NSStringET_SC_SC_RKT0_St26random_access_iterator_tag",
+      "demangled": "__gnu_cxx::__normal_iterator\u003cOFResourceDataMap::FieldDescription const*, std::vector\u003cOFResourceDataMap::FieldDescription, std::allocator\u003cOFResourceDataMap::FieldDescription\u003e\u003e\u003e std::__find\u003c__gnu_cxx::__normal_iterator\u003cOFResourceDataMap::FieldDescription const*, std::vector\u003cOFResourceDataMap::FieldDescription, std::allocator\u003cOFResourceDataMap::FieldDescription\u003e\u003e\u003e, NSString*\u003e(__gnu_cxx::__normal_iterator\u003cOFResourceDataMap::FieldDescription const*, std::vector\u003cOFResourceDataMap::FieldDescription, std::allocator\u003cOFResourceDataMap::FieldDescription\u003e\u003e\u003e, __gnu_cxx::__normal_iterator\u003cOFResourceDataMap::FieldDescription const*, std::vector\u003cOFResourceDataMap::FieldDescription, std::allocator\u003cOFResourceDataMap::FieldDescription\u003e\u003e\u003e, NSString* const\u0026, std::random_access_iterator_tag)",
+      "address": "000faf84",
+      "size": 356,
+      "params": [
+        "__gnu_cxx::__normal_iterator\u003cOFResourceDataMap::FieldDescription const*, std::vector\u003cOFResourceDataMap::FieldDescription, std::allocator\u003cOFResourceDataMap::FieldDescription\u003e\u003e\u003e",
+        "__gnu_cxx::__normal_iterator\u003cOFResourceDataMap::FieldDescription const*, std::vector\u003cOFResourceDataMap::FieldDescription, std::allocator\u003cOFResourceDataMap::FieldDescription\u003e\u003e\u003e",
+        "NSString* const\u0026",
+        "std::random_access_iterator_tag"
+      ],
+      "ghidra_params": [
+        "__normal_iterator",
+        "__normal_iterator",
+        "NSString * *",
+        "random_access_iterator_tag"
+      ],
+      "prototype": "__normal_iterator __find\u003c__gnu_cxx::__normal_iterator\u003cOFResourceDataMap::FieldDescription_const*,std::vector\u003cOFResourceDataMap::FieldDescription,std::allocator\u003cOFResourceDataMap::FieldDescription\u003e\u003e\u003e,NSString*\u003e(__normal_iterator param_1, __normal_iterator param_2, NSString * * param_3, random_access_iterator_tag param_4)",
+      "path": "functions/000faf84-_ZSt6__findIN9__gnu_cxx17__normal_iteratorIPKN17OFResourceDataMap16FieldDescriptionESt6vectorIS3_SaIS3_EEEEP8NSStringET_SC_SC_RKT0_St26rando-3d6f14951add.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_ZSt6__findIN9__gnu_cxx17__normal_iteratorIPKN17OFResourceNameMap19ResourceDescriptionESt6vectorIS3_SaIS3_EEEEP8NSStringET_SC_SC_RKT0_St26random_access_iterator_tag",
+      "binary_symbol": "__ZSt6__findIN9__gnu_cxx17__normal_iteratorIPKN17OFResourceNameMap19ResourceDescriptionESt6vectorIS3_SaIS3_EEEEP8NSStringET_SC_SC_RKT0_St26random_access_iterator_tag",
+      "demangled": "__gnu_cxx::__normal_iterator\u003cOFResourceNameMap::ResourceDescription const*, std::vector\u003cOFResourceNameMap::ResourceDescription, std::allocator\u003cOFResourceNameMap::ResourceDescription\u003e\u003e\u003e std::__find\u003c__gnu_cxx::__normal_iterator\u003cOFResourceNameMap::ResourceDescription const*, std::vector\u003cOFResourceNameMap::ResourceDescription, std::allocator\u003cOFResourceNameMap::ResourceDescription\u003e\u003e\u003e, NSString*\u003e(__gnu_cxx::__normal_iterator\u003cOFResourceNameMap::ResourceDescription const*, std::vector\u003cOFResourceNameMap::ResourceDescription, std::allocator\u003cOFResourceNameMap::ResourceDescription\u003e\u003e\u003e, __gnu_cxx::__normal_iterator\u003cOFResourceNameMap::ResourceDescription const*, std::vector\u003cOFResourceNameMap::ResourceDescription, std::allocator\u003cOFResourceNameMap::ResourceDescription\u003e\u003e\u003e, NSString* const\u0026, std::random_access_iterator_tag)",
+      "address": "000fbb20",
+      "size": 340,
+      "params": [
+        "__gnu_cxx::__normal_iterator\u003cOFResourceNameMap::ResourceDescription const*, std::vector\u003cOFResourceNameMap::ResourceDescription, std::allocator\u003cOFResourceNameMap::ResourceDescription\u003e\u003e\u003e",
+        "__gnu_cxx::__normal_iterator\u003cOFResourceNameMap::ResourceDescription const*, std::vector\u003cOFResourceNameMap::ResourceDescription, std::allocator\u003cOFResourceNameMap::ResourceDescription\u003e\u003e\u003e",
+        "NSString* const\u0026",
+        "std::random_access_iterator_tag"
+      ],
+      "ghidra_params": [
+        "__normal_iterator",
+        "__normal_iterator",
+        "NSString * *",
+        "random_access_iterator_tag"
+      ],
+      "prototype": "__normal_iterator __find\u003c__gnu_cxx::__normal_iterator\u003cOFResourceNameMap::ResourceDescription_const*,std::vector\u003cOFResourceNameMap::ResourceDescription,std::allocator\u003cOFResourceNameMap::ResourceDescription\u003e\u003e\u003e,NSString*\u003e(__normal_iterator param_1, __normal_iterator param_2, NSString * * param_3, random_access_iterator_tag param_4)",
+      "path": "functions/000fbb20-_ZSt6__findIN9__gnu_cxx17__normal_iteratorIPKN17OFResourceNameMap19ResourceDescriptionESt6vectorIS3_SaIS3_EEEEP8NSStringET_SC_SC_RKT0_St26ra-e373124bb4ec.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_ZThn4_N22OFReachabilityObserverD0Ev",
+      "binary_symbol": "__ZThn4_N22OFReachabilityObserverD0Ev",
+      "demangled": "non-virtual thunk to OFReachabilityObserver::~OFReachabilityObserver()",
+      "address": "000b16a4",
+      "size": 8,
+      "params": [],
+      "ghidra_params": [
+        "OFReachabilityObserver *"
+      ],
+      "prototype": "undefined __thiscall ~OFReachabilityObserver(void)",
+      "path": "functions/000b16a4-_ZThn4_N22OFReachabilityObserverD0Ev.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_ZThn4_N22OFReachabilityObserverD1Ev",
+      "binary_symbol": "__ZThn4_N22OFReachabilityObserverD1Ev",
+      "demangled": "non-virtual thunk to OFReachabilityObserver::~OFReachabilityObserver()",
+      "address": "000b1924",
+      "size": 8,
+      "params": [],
+      "ghidra_params": [
+        "OFReachabilityObserver *"
+      ],
+      "prototype": "undefined __thiscall ~OFReachabilityObserver(void)",
+      "path": "functions/000b1924-_ZThn4_N22OFReachabilityObserverD1Ev.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_ZThn8_N13OFHttpService19onFailedDownloadingEP13OFHttpRequest",
+      "binary_symbol": "__ZThn8_N13OFHttpService19onFailedDownloadingEP13OFHttpRequest",
+      "demangled": "non-virtual thunk to OFHttpService::onFailedDownloading(OFHttpRequest*)",
+      "address": "000cff44",
+      "size": 8,
+      "params": [
+        "OFHttpRequest*"
+      ],
+      "ghidra_params": [
+        "OFHttpService *",
+        "OFHttpRequest *"
+      ],
+      "prototype": "undefined __thiscall onFailedDownloading(OFHttpRequest * param_1)",
+      "path": "functions/000cff44-_ZThn8_N13OFHttpService19onFailedDownloadingEP13OFHttpRequest.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_ZThn8_N13OFHttpService21onFinishedDownloadingEP13OFHttpRequest",
+      "binary_symbol": "__ZThn8_N13OFHttpService21onFinishedDownloadingEP13OFHttpRequest",
+      "demangled": "non-virtual thunk to OFHttpService::onFinishedDownloading(OFHttpRequest*)",
+      "address": "000d0308",
+      "size": 8,
+      "params": [
+        "OFHttpRequest*"
+      ],
+      "ghidra_params": [
+        "OFHttpService *",
+        "OFHttpRequest *"
+      ],
+      "prototype": "undefined __thiscall onFinishedDownloading(OFHttpRequest * param_1)",
+      "path": "functions/000d0308-_ZThn8_N13OFHttpService21onFinishedDownloadingEP13OFHttpRequest.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_ZThn8_N13OFHttpServiceD0Ev",
+      "binary_symbol": "__ZThn8_N13OFHttpServiceD0Ev",
+      "demangled": "non-virtual thunk to OFHttpService::~OFHttpService()",
+      "address": "000d1644",
+      "size": 8,
+      "params": [],
+      "ghidra_params": [
+        "OFHttpService *"
+      ],
+      "prototype": "undefined __thiscall ~OFHttpService(void)",
+      "path": "functions/000d1644-_ZThn8_N13OFHttpServiceD0Ev.c",
+      "status": "ok"
+    },
+    {
+      "mangled": "_ZThn8_N13OFHttpServiceD1Ev",
+      "binary_symbol": "__ZThn8_N13OFHttpServiceD1Ev",
+      "demangled": "non-virtual thunk to OFHttpService::~OFHttpService()",
+      "address": "000d0f30",
+      "size": 8,
+      "params": [],
+      "ghidra_params": [
+        "OFHttpService *"
+      ],
+      "prototype": "undefined __thiscall ~OFHttpService(void)",
+      "path": "functions/000d0f30-_ZThn8_N13OFHttpServiceD1Ev.c",
       "status": "ok"
     }
   ]
