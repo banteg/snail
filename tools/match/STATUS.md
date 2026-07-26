@@ -416,7 +416,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_sub_lazer_pool | 0x441650 | 26 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 100.00% | 63/63 | 6 ok |  |
 | ✅ | deactivate_sub_lazer_projectile | 0x441740 | 140 | 43/43 | 100.00% | 43/43 | 5 ok |  |
-| ✅ | shoot_subgoldy | 0x441ad0 | 154 | 48/48 | 100.00% | 48/48 | 4 ok |  |
+| ✅ | shoot_sub_lazer_pool | 0x441ad0 | 154 | 48/48 | 100.00% | 48/48 | 4 ok |  |
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | 8/8 | - |  |
 | ✅ | advance_timer_counters | 0x441b90 | 116 | 38/38 | 100.00% | 38/38 | 7 ok |  |
 | ✅ | update_salt_hazard | 0x441c10 | 301 | 83/83 | 100.00% | 83/83 | 12 ok |  |

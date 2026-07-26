@@ -26,31 +26,40 @@
 00439edb        game_base_1 = g_game_base
 00439dbb        float x = cell->anchor_position.x
 00439dbe        var_34.y = 0
+00439dc9        long double x87_r7_4 = fconvert.t(cell->anchor_position.y) + fconvert.t(8f)
 00439dd1        float z = cell->anchor_position.z
 00439dd4        struct Vec3 origin
 00439dd4        origin.x = x
+00439dde        float var_18_1 = fconvert.s(x87_r7_4)
 00439de9        var_34.x = cell->lane_and_flags u>> 8 & 0xf
 00439df5        char* __saved_edi_2 = "Wall2"
 00439dff        float z_1 = z
-00439e03        origin.y = fconvert.s(fconvert.t(cell->anchor_position.y) + fconvert.t(8f))
-00439e0d        origin.z = z
-00439e15        origin.x = fconvert.s(float.t(var_34.x.q) * fconvert.t(0.5f) + fconvert.t(x))
+00439e15        origin = struct Vec3 {
+    .y = var_18_1
+    .z = z
+    .x = fconvert.s(float.t(var_34.x.q) * fconvert.t(0.5f) + fconvert.t(x))
+}
 00439e19        long double st0_2 = random_signed_float_below(3f)
 00439e1e        game_base_1 = g_game_base
+00439e33        float y = game_base_1->subgame.player.body.transform.position.y
+00439e39        long double x87_r7_10 = st0_2 + fconvert.t(8f) + fconvert.t(game_base_1->subgame.player.body.transform.position.z)
 00439e3f        out.r = game_base_1->subgame.player.body.transform.position.x
-00439e43        out.g = game_base_1->subgame.player.body.transform.position.y
+00439e43        out.g = y
+00439e57        long double x87_r6_4 = fconvert.t(out.g) - fconvert.t(origin.y)
 00439e5f        var_34.x = fconvert.s(fconvert.t(out.r) - fconvert.t(origin.x))
-00439e6b        long double x87_r7_11 = st0_2 + fconvert.t(8f) + fconvert.t(game_base_1->subgame.player.body.transform.position.z) - fconvert.t(origin.z)
-00439e6f        var_34.y = fconvert.s(fconvert.t(out.g) - fconvert.t(origin.y))
+00439e6b        long double x87_r7_11 = x87_r7_10 - fconvert.t(origin.z)
+00439e6f        var_34.y = fconvert.s(x87_r6_4)
 00439e77        long double temp4_1 = fconvert.t(-4f)
 00439e77        x87_r7_11 - temp4_1
 00439e81        var_34.z = fconvert.s(x87_r7_11)
 00439e8a        if ((((x87_r7_11 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_11, temp4_1) ? 1 : 0) << 0xa | (x87_r7_11 == temp4_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00439e90        normalize_vector(&var_34)
-00439eb6        var_34.x = fconvert.s(fconvert.t(var_34.x) * fconvert.t(0.400000006f))
-00439ec4        var_34.y = fconvert.s(fconvert.t(var_34.y) * fconvert.t(0.400000006f))
-00439ed2        var_34.z = fconvert.s(fconvert.t(var_34.z) * fconvert.t(0.400000006f))
-00439ed6        shoot_subgoldy(&g_game_base->subgame.sub_lazers, &origin, &var_34)
+00439ed2        var_34 = struct Vec3 {
+    .x = fconvert.s(fconvert.t(var_34.x) * fconvert.t(0.400000006f))
+    .y = fconvert.s(fconvert.t(var_34.y) * fconvert.t(0.400000006f))
+    .z = fconvert.s(fconvert.t(var_34.z) * fconvert.t(0.400000006f))
+}
+00439ed6        shoot_sub_lazer_pool(&g_game_base->subgame.sub_lazers, &origin, &var_34)
 00439edb        game_base_1 = g_game_base
 00439ee1        long double x87_r7_20 = fconvert.t(cell->anchor_position.z)
 00439ee4        long double temp2_1 = fconvert.t(game_base_1->subgame.player.interaction_max_z)

@@ -1525,7 +1525,8 @@ only; live receivers and manager arrays use `SubLazer` and `Salt`.
   writes active, and AI consumes recycle-pending after bob expiry or collision
 - `spawn_sub_lazer_projectile` is the slot-level authored `Shoot`, while
   `deactivate_sub_lazer_projectile` is `cRSubLazer::Kill()`; the manager-level
-  `shoot_subgoldy` scans the same inline array
+  `shoot_sub_lazer_pool` scans the same inline array (`shoot_subgoldy` is only
+  its former compatibility alias)
 - `initialize_salt_hazard_runtime` constructs the same inherited owner and
   installs the table at `0x497340`; its callback is the exact
   `cRSalt::AI()` at `update_salt_hazard`

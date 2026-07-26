@@ -23,9 +23,7 @@
     "snapshot_saved": false,
     "unresolved": []
   },
-  "removed_stale_artifacts": [
-    "analysis/decompile/binja/functions/00444960-initialize_score_stats.c"
-  ],
+  "removed_stale_artifacts": [],
   "exports": [
     {
       "address": "0x401000",
@@ -2489,8 +2487,8 @@
     },
     {
       "address": "0x441ad0",
-      "name": "shoot_subgoldy",
-      "artifact": "analysis/decompile/binja/functions/00441ad0-shoot_subgoldy.c"
+      "name": "shoot_sub_lazer_pool",
+      "artifact": "analysis/decompile/binja/functions/00441ad0-shoot_sub_lazer_pool.c"
     },
     {
       "address": "0x441b70",

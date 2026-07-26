@@ -7856,10 +7856,10 @@
     },
     {
       "name": "bn_sub_lazer_manager_state_scan",
-      "artifact": "analysis/decompile/binja/functions/00441ad0-shoot_subgoldy.c",
+      "artifact": "analysis/decompile/binja/functions/00441ad0-shoot_sub_lazer_pool.c",
       "required_substrings": [
         "enum SubLazerState* ecx = &manager->slots[0].state",
-        "slots[0].state == SUB_LAZER_STATE_INACTIVE",
+        "if (*ecx == SUB_LAZER_STATE_INACTIVE)",
         "spawn_sub_lazer_projectile(&manager->slots[i], &origin_1, direction)",
         "play_sound_effect_at_position(&g_sound_effect_manager, 0xf, origin)"
       ],
@@ -7873,11 +7873,11 @@
     },
     {
       "name": "ida_sub_lazer_manager_state_scan",
-      "artifact": "analysis/decompile/ida/functions/00441ad0-shoot_subgoldy.c",
+      "artifact": "analysis/decompile/ida/functions/00441ad0-shoot_sub_lazer_pool.c",
       "required_substrings": [
-        "void __thiscall shoot_subgoldy(SubLazerManager *manager, Vec3 *origin, const Vec3 *direction)",
+        "void __thiscall shoot_sub_lazer_pool(SubLazerManager *manager, Vec3 *origin, const Vec3 *direction)",
         "SubLazerState *i;",
-        "for ( i = &manager->slots[0].state; *i; i += 44 )",
+        "for ( i = &manager->slots[0].state; *i != SUB_LAZER_STATE_INACTIVE; i += 44 )",
         "spawn_sub_lazer_projectile(&manager->slots[v4], &v8, direction);",
         "play_sound_effect_at_position(&g_sound_effect_manager, 15, origin);"
       ],

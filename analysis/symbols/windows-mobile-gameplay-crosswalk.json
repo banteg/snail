@@ -22354,7 +22354,7 @@
     },
     {
       "address": "0x441ad0",
-      "windows_name": "shoot_subgoldy",
+      "windows_name": "shoot_sub_lazer_pool",
       "windows_size": 160,
       "status": "verified",
       "android_symbol": "cRSubLazerManager::Shoot(tVector, tVector)",

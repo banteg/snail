@@ -83,3 +83,10 @@ the authored manager-owned 20-slot extent visible without changing the exact
 through the 20 inline actors and compare against
 `SUB_LAZER_STATE_INACTIVE`. This closes the manager-to-actor lifecycle owner
 without changing the exact 48/48-instruction implementation.
+
+2026-07-26 canonical owner correction: Android and iOS independently preserve
+this exact method as `cRSubLazerManager::Shoot(tVector, tVector)`. The Windows
+receiver is likewise `SubgameRuntime::sub_lazers`, the exact 20-slot manager
+owner. The scratch and manifest therefore use `shoot_sub_lazer_pool`;
+`shoot_subgoldy` remains an alias only. Matching stays exact at 48/48 with all
+four operands clean.

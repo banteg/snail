@@ -3376,10 +3376,10 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "shoot_subgoldy",
+      "selector": "shoot_sub_lazer_pool",
       "address": "0x441ad0",
-      "name": "shoot_subgoldy",
-      "artifact": "analysis/decompile/ida/functions/00441ad0-shoot_subgoldy.c",
+      "name": "shoot_sub_lazer_pool",
+      "artifact": "analysis/decompile/ida/functions/00441ad0-shoot_sub_lazer_pool.c",
       "removed_stale_artifacts": []
     },
     {

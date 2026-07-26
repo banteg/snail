@@ -17,12 +17,12 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_subgoldy",
-      "address": "0x43a9c0"
+      "name": "update_sub_loc",
+      "address": "0x439d50"
     },
     {
-      "name": "initialize_squidge",
-      "address": "0x444960"
+      "name": "shoot_sub_lazer_pool",
+      "address": "0x441ad0"
     }
   ],
   "health_check_count": 1059,

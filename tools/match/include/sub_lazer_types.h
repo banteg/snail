@@ -44,7 +44,7 @@ typedef char SubLazer_must_be_0xb0[(sizeof(SubLazer) == 0xb0) ? 1 : -1];
 class SubLazerManager {
 public:
     void initialize_sub_lazer_pool(); // @ 0x441650
-    void shoot_subgoldy(Vector3* origin, const Vector3* direction); // @ 0x441ad0
+    void shoot_sub_lazer_pool(Vector3* origin, const Vector3* direction); // @ 0x441ad0, cRSubLazerManager::Shoot
 
     SubLazer slots[SUB_LAZER_SLOT_CAPACITY]; // owned storage
 };

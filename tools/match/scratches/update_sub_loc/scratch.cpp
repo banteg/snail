@@ -39,7 +39,7 @@ void SubLoc::update_sub_loc()
             direction.x *= 0.40000001f;
             direction.y *= 0.40000001f;
             direction.z *= 0.40000001f;
-            g_game->subgame.sub_lazers.shoot_subgoldy(&spawn, &direction);
+            g_game->subgame.sub_lazers.shoot_sub_lazer_pool(&spawn, &direction);
         }
 cull_check:
         if (position.z < g_game->subgame.embedded_player()->interaction_max_z)

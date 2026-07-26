@@ -15,16 +15,15 @@ void __thiscall update_sub_loc(SubLoc *cell)
   double v9; // st7
   double v10; // st7
   tColour *track_skirt_color; // edi
-  tColour *p_color; // ecx
   Vec3 vector; // [esp+4h] [ebp-34h] BYREF
   Vec3 origin; // [esp+10h] [ebp-28h] BYREF
-  Vec3 v15; // [esp+1Ch] [ebp-1Ch]
+  Vec3 v14; // [esp+1Ch] [ebp-1Ch]
   tColour out; // [esp+28h] [ebp-10h] BYREF
 
   if ( (cell->lane_and_flags & 0x2000) != 0 )
   {
     v2 = g_game_base;
-    if ( !g_game_base->subgame.subgame_pause_gate )
+    if ( g_game_base->subgame.subgame_pause_gate == 0 )
     {
       tile_id = cell->tile_id;
       switch ( tile_id )
@@ -38,11 +37,11 @@ void __thiscall update_sub_loc(SubLoc *cell)
             z = cell->anchor_position.z;
             origin.x = cell->anchor_position.x;
             v6 = cell->lane_and_flags >> 8;
-            v15.y = v4;
-            v15.x = origin.x;
+            v14.y = v4;
+            v14.x = origin.x;
             *(_QWORD *)&vector.x = v6 & 0xF;
-            v15.z = z;
-            origin.y = v15.y;
+            v14.z = z;
+            origin.y = v14.y;
             origin.z = z;
             origin.x = (double)*(__int64 *)&vector.x * 0.5 + origin.x;
             v7 = random_signed_float_below(3.0);
@@ -51,18 +50,18 @@ void __thiscall update_sub_loc(SubLoc *cell)
             v9 = v7 + 8.0 + g_game_base->subgame.player.body.transform.position.z;
             out.r = g_game_base->subgame.player.body.transform.position.x;
             out.g = y;
-            v15.x = out.r - origin.x;
-            v15.y = y - v15.y;
+            v14.x = out.r - origin.x;
+            v14.y = y - v14.y;
             v10 = v9 - origin.z;
-            v15.z = v10;
-            vector = v15;
+            v14.z = v10;
+            vector = v14;
             if ( v10 >= -4.0 )
               goto LABEL_9;
             normalize_vector(&vector);
             vector.x = vector.x * 0.40000001;
             vector.y = vector.y * 0.40000001;
             vector.z = vector.z * 0.40000001;
-            shoot_subgoldy(&g_game_base->subgame.sub_lazers, &origin, &vector);
+            shoot_sub_lazer_pool(&g_game_base->subgame.sub_lazers, &origin, &vector);
           }
           v2 = g_game_base;
 LABEL_9:
@@ -82,11 +81,7 @@ LABEL_9:
             v2 = g_game_base;
           }
           track_skirt_color = get_track_skirt_color(&v2->subgame, &out);
-          p_color = &g_game_base->subgame.runtime_rows[get_track_cell_row_index(cell)].attachment_body.color;
-          p_color->r = track_skirt_color->r;
-          p_color->g = track_skirt_color->g;
-          p_color->b = track_skirt_color->b;
-          p_color->a = track_skirt_color->a;
+          g_game_base->subgame.runtime_rows[get_track_cell_row_index(cell)].attachment_body.color = *track_skirt_color;
           if ( g_game_base->subgame.player.interaction_max_z
              - ((double)(int)cell->attachment_template_record->row_span_count
               + 5.0) > cell->anchor_position.z )

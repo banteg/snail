@@ -2648,8 +2648,11 @@
     },
     {
       "address": "0x441ad0",
-      "name": "shoot_subgoldy",
-      "description": "Exact `cRSubLazerManager::Shoot(tVector, tVector)`: scans the manager's 20 inline actors for SUB_LAZER_STATE_INACTIVE, dispatches that actor's Shoot method, and plays the positional fire cue. Cross-port iOS v1.5 preserves the manager signature."
+      "name": "shoot_sub_lazer_pool",
+      "aliases": [
+        "shoot_subgoldy"
+      ],
+      "description": "Exact `cRSubLazerManager::Shoot(tVector, tVector)`: scans the manager's 20 inline actors for SUB_LAZER_STATE_INACTIVE, dispatches that actor's Shoot method, and plays the positional fire cue. Android and iOS independently preserve the manager owner and signature; the former `shoot_subgoldy` name is retained only as an alias."
     },
     {
       "address": "0x441b70",

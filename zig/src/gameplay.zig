@@ -112,7 +112,7 @@ const garbage_damage_delta: f32 = 0.04;
 // `cRSalt @ game+0x3578c0` pool's collision branch). The previous `0.02`
 // value was a port conflation with the `cRSubLazerManager @ game+0x356b00`
 // SubLazer projectile pool which applies its own separate `+0.02f` damage
-// delta when the Wall2 AI fires a sublazer via `shoot_subgoldy`.
+// delta when the Wall2 AI fires a sublazer via `shoot_sub_lazer_pool`.
 const salt_damage_delta: f32 = 0.15;
 const slug_damage_delta: f32 = 1.0;
 const garbage_distance_threshold: f32 = 0.98;

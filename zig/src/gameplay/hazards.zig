@@ -54,9 +54,9 @@ pub const native_sub_lazer_phase_step_factor: f32 = 0.0055555557;
 // (`analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c:93-98`).
 // It is not the live body position sampled by `handle_subgoldy_collisions`.
 pub const native_sub_lazer_bob_amplitude: f32 = 0.30000001;
-// PORT(verified): `shoot_subgoldy` adjusts each successive slot's spawn Y by
+// PORT(verified): `shoot_sub_lazer_pool` adjusts each successive slot's spawn Y by
 // `-0.01 * slot_index` so stacked lazers vertically separate
-// (`artifacts/ida/functions/00441ad0-shoot_subgoldy.c:22`).
+// (`analysis/decompile/ida/functions/00441ad0-shoot_sub_lazer_pool.c:22`).
 pub const native_sub_lazer_stack_y_step: f32 = -0.0099999998;
 
 pub const max_active_health_pickups: usize = 8;
@@ -408,8 +408,8 @@ pub const SubLazerPool = struct {
         return allocation.slot;
     }
 
-    // PORT(verified): `shoot_subgoldy`
-    // (`artifacts/ida/functions/00441ad0-shoot_subgoldy.c`). Walks the pool
+    // PORT(verified): `shoot_sub_lazer_pool`
+    // (`analysis/decompile/ida/functions/00441ad0-shoot_sub_lazer_pool.c`). Walks the pool
     // for the first inactive slot, adjusts spawn Y by
     // `-0.01 * slot_index` so stacked shots don't co-locate vertically,
     // then delegates to `spawn`. The native `sfx 15` call lives after the

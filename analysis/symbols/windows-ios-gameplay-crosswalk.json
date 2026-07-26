@@ -1932,12 +1932,12 @@
     },
     {
       "address": "0x441ad0",
-      "windows_name": "shoot_subgoldy",
+      "windows_name": "shoot_sub_lazer_pool",
       "ios_symbol": "cRSubLazerManager::Shoot(tVector, tVector)",
       "android_symbol": "cRSubLazerManager::Shoot(tVector, tVector)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All ports scan the manager's 20 owned SubLazer actors for SUB_LAZER_STATE_INACTIVE, dispatch the actor-level Shoot method, and play the positional fire cue."
+      "notes": "All ports scan the manager's 20 owned SubLazer actors for SUB_LAZER_STATE_INACTIVE, dispatch the actor-level Shoot method, and play the positional fire cue. The former shoot_subgoldy Windows name remains an alias only; the receiver is the SubLazer pool, not a Goldy."
     },
     {
       "address": "0x441b70",

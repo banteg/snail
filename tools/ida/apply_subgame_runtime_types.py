@@ -31,6 +31,7 @@ TRUSTED_NAMES = (
     (0x440600, "uninit_pause_menu"),
     (0x440660, "initialize_pause_menu"),
     (0x4407A0, "update_pause_menu"),
+    (0x441AD0, "shoot_sub_lazer_pool"),
     (0x443130, "update_track_parcels"),
     (0x443160, "initialize_track_parcel_slots"),
     (0x443190, "allocate_track_parcel_slot"),
@@ -379,8 +380,8 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_sub_lazer_projectile(SubLazer* sub_lazer);",
     ),
     (
-        "shoot_subgoldy",
-        "void __thiscall shoot_subgoldy(SubLazerManager* manager, Vec3* origin, const Vec3* direction);",
+        "shoot_sub_lazer_pool",
+        "void __thiscall shoot_sub_lazer_pool(SubLazerManager* manager, Vec3* origin, const Vec3* direction);",
     ),
     (
         "initialize_salt_hazard_runtime",
@@ -665,7 +666,7 @@ REANALYSIS_FUNCTIONS = (
     0x441670,  # spawn_sub_lazer_projectile
     0x441740,  # deactivate_sub_lazer_projectile
     0x4417D0,  # update_sub_lazer_projectile
-    0x441AD0,  # shoot_subgoldy
+    0x441AD0,  # shoot_sub_lazer_pool
     0x443130,  # update_track_parcels
     0x443160,  # initialize_track_parcel_slots
     0x443190,  # allocate_track_parcel_slot

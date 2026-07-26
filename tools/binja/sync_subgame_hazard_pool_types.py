@@ -9,6 +9,7 @@ import sys
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
+    apply_symbol_updates,
     apply_user_var_updates,
     current_enum_members,
     emit_summary,
@@ -19,6 +20,8 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_hazard_pool_types.h"
+
+SYMBOL_UPDATES = (("0x441ad0", "shoot_sub_lazer_pool"),)
 
 FRAME_SUBGAME_FIELD_UPDATES = (
     ("0x355b64", "fringe_attachment_list_head", "FrameBodBase"),
@@ -148,8 +151,8 @@ PROTO_UPDATES = (
         "void __thiscall update_sub_lazer_projectile(SubLazer* sub_lazer)",
     ),
     (
-        "shoot_subgoldy",
-        "void __thiscall shoot_subgoldy(SubLazerManager* manager, Vec3* origin, const Vec3* direction)",
+        "shoot_sub_lazer_pool",
+        "void __thiscall shoot_sub_lazer_pool(SubLazerManager* manager, Vec3* origin, const Vec3* direction)",
     ),
     (
         "spawn_salt_hazard",
@@ -288,6 +291,11 @@ def main() -> int:
         type_operation,
         hazard_state_operation,
         hazard_cursor_operation,
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SYMBOL_UPDATES,
+        ),
         *apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,

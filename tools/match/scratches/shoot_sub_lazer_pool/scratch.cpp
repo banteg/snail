@@ -1,11 +1,11 @@
-// shoot_subgoldy @ 0x441ad0 (thiscall, ret 0x8)
+// shoot_sub_lazer_pool @ 0x441ad0 (thiscall, ret 0x8)
 // Free-scan the 20-slot sub-lazer pool, stagger the spawn y down by
 // index * 0.01, route through the matched spawn, positional fire cue.
 
 #include "sub_lazer_types.h"
 #include "sound_effect_manager.h"
 
-void SubLazerManager::shoot_subgoldy(Vector3* origin, const Vector3* direction)
+void SubLazerManager::shoot_sub_lazer_pool(Vector3* origin, const Vector3* direction)
 {
     int index = 0;
     SubLazer* scan = slots;

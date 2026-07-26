@@ -46,7 +46,7 @@ Rejected source-shape probes:
   `distance > magnitude` regresses to 81.54% by forcing a spilled magnitude and
   reversed x87 compare. Keep the current two-vector source and treat the missing
   initial distance store plus magnitude-temp spill as x87/local-lifetime debt.
-- 2026-06-21 helper surface audit: `shoot_subgoldy` now matches exactly only
+- 2026-06-21 helper surface audit: `shoot_sub_lazer_pool` now matches exactly only
   when this helper is called as `SoundEffectManager::play_sound_effect_at_position`.
   Promoting this scratch body to the same member signature is codegen-neutral at
   83.72%, confirming that the receiver is unused in the helper body while the
@@ -86,7 +86,7 @@ Rejected source-shape probes:
   `Game +0x22c` is precisely player 0 camera `+0x68`, the inherited transform
   position, rather than a standalone root listener vector.
 - iOS independently names this overload `cRSound::Play(int, tVector&)`, so the
-  Windows surface now takes a typed `Vector3&`. The exact `shoot_subgoldy`
+  Windows surface now takes a typed `Vector3&`. The exact `shoot_sub_lazer_pool`
   caller remains 48/48 after passing its unstaggered origin by reference.
 
 ## 2026-07-17 paired owner replay
