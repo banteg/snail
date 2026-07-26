@@ -127,3 +127,18 @@ Recovering that source shape raises focused matching from 48.06% (628/687) to
 closer to the target. All 41 masked operands remain clean, with no unresolved
 or mismatched masks. The remaining candidate `0x3c` versus native `0x54` stack
 frame gap belongs to other constructor lifetimes.
+
+## 2026-07-26 complete mesh-vector ownership
+
+The Turnover sibling recovery identifies the two aggregate owners that the
+initial Turnunder rewrite still collapsed. At `0x428650..0x42872d`, the ordinary
+branch first owns a lateral-offset vector before its generated position. The
+terminal branch reaches the previous sample through the current row cursor and
+separately owns an endpoint vector whose Z lane is extended by `1.0f`.
+
+Adding those owners completes the four-vector mesh model. Focused matching
+rises from 48.15% (663/687) to 50.55% (670/687), the masked audit improves from
+41 to 42 clean operands with no unresolved or mismatched masks, and the
+candidate now uses the exact native `0x54` frame with a six-instruction exact
+prefix. The earlier `0x3c` frame gap was therefore mesh-vector ownership, not a
+separate constructor lifetime.
