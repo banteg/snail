@@ -106,3 +106,18 @@ and no unresolved or mismatched masks.
 An aggregate secondary-position offset was rejected. Although locally
 plausible, it regressed the combined result to 39.57% and changed unrelated
 register lifetimes; the native scalar additions remain the retained spelling.
+
+## 2026-07-26 complete mesh-vector ownership
+
+The completed family model identifies two owners still collapsed by the
+initial SBend rewrite. Native `0x42e3e2..0x42e4b0` first materializes a
+lateral-offset vector for the ordinary branch before its generated position.
+The terminal branch separately owns an endpoint derived through the current
+row cursor from the previous sample, with its Z lane extended by `1.0f`.
+
+Adding those owners raises focused matching from 41.24% (546/579) to 44.99%
+(559/579), improves the masked audit from 37 to 38 clean operands with no
+unresolved or mismatched masks, and recovers the exact native `0x48` frame plus
+a seven-instruction exact prefix. The face initializer also now names the
+owning 16-bit `header_word` proven by the native word clear; that field-width
+correction is score-neutral.
