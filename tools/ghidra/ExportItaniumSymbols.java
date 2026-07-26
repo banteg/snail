@@ -136,6 +136,9 @@ public class ExportItaniumSymbols extends GhidraScript {
             String filename = makeFilename(
                 exported.address, request.mangled);
             exported.path = "functions/" + filename;
+            String decompiled = result.getDecompiledFunction().getC()
+                .replaceAll("[ \\t]+(?=\\R|$)", "")
+                .stripTrailing();
             String output =
                 "/*\n"
                 + " * mangled: " + request.mangled + "\n"
@@ -143,7 +146,7 @@ public class ExportItaniumSymbols extends GhidraScript {
                 + " * address: " + exported.address + "\n"
                 + " * size: " + exported.size + "\n"
                 + " */\n"
-                + result.getDecompiledFunction().getC()
+                + decompiled
                 + "\n";
             Files.writeString(
                 functionsRoot.resolve(filename),
