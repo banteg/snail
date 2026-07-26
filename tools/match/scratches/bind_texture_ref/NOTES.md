@@ -26,3 +26,14 @@ binding helper after installing the shared renderer and texture owners. IDA
 therefore exposes `TextureRef::slot_index`, `TextureRef::flags`, the current
 texture and slot-bank globals, the bind counter, and every device call through
 `g_direct3d_renderer.device`. The exact 62/62 scratch is unchanged.
+
+## 2026-07-26 mobile G0 owner and platform ABI
+
+Android and iOS retain this helper as the void `G0BindTexture(int)` owner.
+Their bodies preserve `gBindTextureRefLast`, `gBindCount`, the `0x1000` wrap
+flag, and the same redundant-bind suppression before selecting wrap versus
+clamp state. Mobile passes a texture-list index; Windows passes the
+corresponding `TextureRef*` and resolves its Direct3D slot internally. The
+stable Windows pointer prototype is therefore retained while the authored
+function and global names are recorded as aliases. Focused matching remains
+exact at 62/62 instructions with all 11 operands clean.

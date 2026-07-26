@@ -585,12 +585,12 @@ void __cdecl refresh_object_vertex_buffer(Object* object);
 tColourSmall* __thiscall pack_color_rgba_u8(
     tColourSmall* out, tColour* color);
 void __cdecl set_object_color(Object* object, tColour color);
-int32_t __cdecl render_object_toon(
+void __cdecl render_object_toon(
     Object* object, TransformMatrix* matrix);
-int32_t __cdecl render_object(
+void __cdecl render_object(
     Object* object, TransformMatrix* matrix, float texture_u,
     float texture_v, tColour* color, char after_sprites);
-TransformMatrix* __cdecl render_camera(
+void __cdecl render_camera(
     float viewport_x, float viewport_y, float viewport_width,
     float viewport_height, float fov_degrees, TransformMatrix* camera_matrix,
     TransformMatrix* view_matrix, char draw_world, char post_sprite_pass);

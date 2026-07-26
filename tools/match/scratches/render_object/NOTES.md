@@ -148,3 +148,19 @@ The replay helper was broadened from
 `sync_object_texture_group_lifetimes.py` so its producer-to-consumer scope is
 explicit. No matcher source changed; focused output remains exact at 196/196
 instructions with all 25 operands clean.
+
+## 2026-07-26 mobile G0 owner and void ABI
+
+Android and iOS retain this entry point as
+`G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)`.
+Across the platform renderer rewrite, all three bodies preserve the object and
+world-matrix owner, float texture offsets, `G0AfterSprites` split,
+render-disabled and empty-object gates, cull/tint policy, texture binding,
+indexed submission, and optional `G0RenderToon` tail.
+
+The fifth argument is deliberately platform-specific: mobile consumes packed
+`tColourSmall*`, while Windows independently proves a borrowed float
+`tColour*`. The mobile signature is ownership evidence, not permission to
+replace the Windows tint ABI. Both Windows callsites discard EAX, and both
+mobile bodies are void. Removing the synthetic flags/count/toon result remains
+exact at 196/196 instructions with all 25 operands clean.

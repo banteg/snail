@@ -1391,6 +1391,42 @@
       "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x411fa0",
+      "windows_name": "render_camera",
+      "ios_symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
+      "android_symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "All ports configure the viewport, projection and view transforms, depth and fog state, then publish G0Camera, G0CameraInv, G0AfterSprites, and gBindTextureRefLast. The mobile OpenGL ABI adds roll and projection-shift floats after the shared camera flags; Windows remains independently proved as a nine-argument Direct3D ABI. Both Windows callers overwrite or ignore EAX, and the natural void transcription remains exact at 180/180 instructions."
+    },
+    {
+      "address": "0x4123e0",
+      "windows_name": "render_object_toon",
+      "ios_symbol": "G0RenderToon(cRObject*, tMatrix*)",
+      "android_symbol": "G0RenderToon(cRObject*, tMatrix*)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "All ports borrow one cRObject and world matrix, subtract G0Camera, invert and rotate into object space, classify boundary or silhouette edges from paired face normals with the 0.01 dot-product threshold, and submit line indices through the platform renderer. The sole Windows caller discards EAX, and the natural void transcription remains exact at 219/219 instructions."
+    },
+    {
+      "address": "0x4126c0",
+      "windows_name": "render_object",
+      "ios_symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
+      "android_symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "All ports share the cRObject/world-matrix owner, float texture offsets, G0AfterSprites split, render-disabled and empty-object gates, cull and tint policy, texture binding, indexed submission, and optional G0RenderToon tail. Mobile passes a packed tColourSmall pointer where Windows passes its float tColour pointer, so this is a semantic owner mapping rather than a claim of ABI-identical tint storage. Both Windows callers discard EAX, and the natural void transcription remains exact at 196/196 instructions."
+    },
+    {
+      "address": "0x414500",
+      "windows_name": "bind_texture_ref",
+      "ios_symbol": "G0BindTexture(int)",
+      "android_symbol": "G0BindTexture(int)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "All ports skip the cached gBindTextureRefLast value, increment gBindCount, bind the selected platform texture, and choose wrap versus clamp from flag 0x1000. Mobile passes a texture-list index while Windows passes a TextureRef pointer, so the stable Windows prototype is intentionally retained. Every implementation is void."
+    },
+    {
       "address": "0x412d00",
       "windows_name": "set_blend_mode",
       "ios_symbol": "G0SetBlend(int)",

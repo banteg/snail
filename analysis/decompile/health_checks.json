@@ -13136,7 +13136,7 @@
       "name": "bn_render_object_toon_owners",
       "artifact": "analysis/decompile/binja/functions/004123e0-render_object_toon.c",
       "required_substrings": [
-        "enum ObjectFlag flags = object->flags",
+        "object->flags",
         "struct TransformMatrix projection",
         "g_render_camera_source_matrix",
         "matrix->position.x",
@@ -13158,7 +13158,8 @@
         "struct Vec3* vertex",
         "struct Vec3 edge_delta",
         "toon_indices[1]",
-        "edge_byte_offset += 0x24"
+        "edge_byte_offset += 0x24",
+        "return"
       ],
       "forbidden_substrings": [
         "void matrix_1",
@@ -13172,9 +13173,73 @@
         "int32_t ebp_1",
         "int32_t esi_2",
         "int32_t var_a0_1",
+        "return flags",
+        "return device",
         "arg1",
         "arg2",
         "analysis skipped",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_render_object_toon_void_abi",
+      "artifact": "analysis/decompile/ida/functions/004123e0-render_object_toon.c",
+      "required_substrings": [
+        "void __cdecl render_object_toon(Object *object, TransformMatrix *matrix)",
+        "g_render_camera_source_matrix->position.x",
+        "object->toon_index_buffer->buffer",
+        "object->facequad_normals",
+        "render_triangle_count",
+        "g_draw_primitive_call_count"
+      ],
+      "forbidden_substrings": [
+        "int __cdecl render_object_toon(",
+        "return result",
+        "return flags",
+        "sub_4123E0",
+        "MEMORY[",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_render_object_void_abi",
+      "artifact": "analysis/decompile/binja/functions/004126c0-render_object.c",
+      "required_substrings": [
+        "enum ObjectFlag flags = object->flags",
+        "g_object_render_pass_filter",
+        "g_object_texture_transform_matrix.basis_forward.x = texture_u",
+        "color->a",
+        "object->group_texture_refs",
+        "render_object_toon(object, matrix)",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "int32_t result",
+        "return flags",
+        "return render_object_toon",
+        "arg1",
+        "arg2",
+        "analysis skipped",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_render_object_void_abi",
+      "artifact": "analysis/decompile/ida/functions/004126c0-render_object.c",
+      "required_substrings": [
+        "void __cdecl render_object(",
+        "float texture_u",
+        "float texture_v",
+        "tColour *color",
+        "char after_sprites",
+        "g_object_render_pass_filter",
+        "render_object_toon(object, matrix);"
+      ],
+      "forbidden_substrings": [
+        "int __cdecl render_object(",
+        "return result",
+        "sub_4126C0",
+        "MEMORY[",
         "unimplemented"
       ]
     },
@@ -20488,13 +20553,14 @@
         "g_game_base->fog_density",
         "g_render_camera_source_matrix = camera_matrix",
         "g_render_camera_view_matrix = view_matrix",
-        "return view_matrix"
+        "return"
       ],
       "forbidden_substrings": [
         "arg1",
         "data_5031b8",
         "data_503218",
         "*(camera_matrix +",
+        "return view_matrix",
         "unimplemented"
       ]
     },
@@ -20502,7 +20568,7 @@
       "name": "ida_render_camera_pipeline_owner_abi",
       "artifact": "analysis/decompile/ida/functions/00411fa0-render_camera.c",
       "required_substrings": [
-        "TransformMatrix *__cdecl render_camera(",
+        "void __cdecl render_camera(",
         "float fov_degrees",
         "TransformMatrix *camera_matrix",
         "TransformMatrix *view_matrix",
@@ -20511,17 +20577,54 @@
         "g_render_projection_param_a = fov_degrees",
         "g_object_render_pass_filter = post_sprite_pass;",
         "camera_matrix->basis_forward.x",
-        "if ( draw_world && g_game_base->fog_enabled )",
+        "if ( draw_world != 0 && g_game_base->fog_enabled != 0 )",
         "g_render_camera_source_matrix = camera_matrix;",
-        "g_render_camera_view_matrix = view_matrix;",
-        "return view_matrix;"
+        "g_render_camera_view_matrix = view_matrix;"
       ],
       "forbidden_substrings": [
+        "TransformMatrix *__cdecl render_camera(",
+        "return view_matrix;",
         "__usercall",
         "sub_411FA0",
         "MEMORY[",
         "data_5031b8",
         "data_503218",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_bind_texture_g0_owner",
+      "artifact": "analysis/decompile/binja/functions/00414500-bind_texture_ref.c",
+      "required_substrings": [
+        "texture == g_current_texture_ref",
+        "g_current_texture_ref = texture",
+        "g_texture_bind_call_count += 1",
+        "texture->slot_index",
+        "texture->flags",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_503174",
+        "data_5031c0",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_bind_texture_g0_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00414500-bind_texture_ref.c",
+      "required_substrings": [
+        "void __cdecl bind_texture_ref(TextureRef *texture)",
+        "g_current_texture_ref = texture;",
+        "g_texture_bind_call_count",
+        "g_d3d_texture_slots[texture->slot_index]",
+        "texture->flags & 0x1000"
+      ],
+      "forbidden_substrings": [
+        "int __cdecl bind_texture_ref(",
+        "return result",
+        "sub_414500",
+        "MEMORY[",
         "unimplemented"
       ]
     },

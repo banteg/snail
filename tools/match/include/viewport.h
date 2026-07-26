@@ -41,7 +41,7 @@ public:
 
 typedef char Viewport_must_be_0x28[(sizeof(Viewport) == 0x28) ? 1 : -1];
 
-TransformMatrix* render_camera(
+void render_camera(
     float viewport_x,
     float viewport_y,
     float viewport_width,
@@ -50,6 +50,6 @@ TransformMatrix* render_camera(
     TransformMatrix* camera_matrix,
     TransformMatrix* view_matrix,
     char draw_world,
-    char post_sprite_pass); // @ 0x411fa0
+    char post_sprite_pass); // @ 0x411fa0, G0RenderCamera
 
 #endif

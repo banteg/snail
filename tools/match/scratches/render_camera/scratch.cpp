@@ -21,7 +21,7 @@ TransformMatrix* __stdcall build_camera_view_matrix(
     const Vector3* target,
     const Vector3* up); // @ 0x451ad9
 
-TransformMatrix* render_camera(
+void render_camera(
     float viewport_x,
     float viewport_y,
     float viewport_width,
@@ -102,5 +102,4 @@ TransformMatrix* render_camera(
     g_render_camera_source_matrix = camera_matrix;
     g_render_camera_view_matrix = view_matrix;
     g_current_texture_ref = 0;
-    return view_matrix;
 }

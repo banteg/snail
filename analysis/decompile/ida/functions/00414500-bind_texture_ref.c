@@ -16,7 +16,7 @@ void __cdecl bind_texture_ref(TextureRef *texture)
            0,
            g_d3d_texture_slots[texture->slot_index]);
     ++g_texture_bind_call_count;
-    if ( v1 )
+    if ( v1 != 0 )
     {
       report_errorf("SetTexture Failed %s", texture->name);
     }

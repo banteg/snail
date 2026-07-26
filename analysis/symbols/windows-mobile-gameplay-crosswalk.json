@@ -13,12 +13,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 445,
-    "unverified_entries": 340,
-    "verified_android_symbols": 442,
-    "verified_ios_symbols": 379,
-    "available_android_mappings": 442,
-    "available_ios_mappings": 342
+    "verified_entries": 449,
+    "unverified_entries": 336,
+    "verified_android_symbols": 446,
+    "verified_ios_symbols": 383,
+    "available_android_mappings": 446,
+    "available_ios_mappings": 346
   },
   "entries": [
     {
@@ -9068,71 +9068,13 @@
       "address": "0x411fa0",
       "windows_name": "render_camera",
       "windows_size": 688,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
-          "score": 0.918,
-          "name_score": 0.9,
-          "size_score": 0.9451
-        },
-        {
-          "symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
-          "score": 0.7808,
-          "name_score": 0.75,
-          "size_score": 0.8269
-        },
-        {
-          "symbol": "G0RenderToon(cRObject*, tMatrix*)",
-          "score": 0.7374,
-          "name_score": 0.675,
-          "size_score": 0.8309
-        },
-        {
-          "symbol": "G0RenderFont(cRTexture*, float, float, float, float, float, float, float, float, float, float, float, float, float, float, tColour&, int, float)",
-          "score": 0.6978,
-          "name_score": 0.675,
-          "size_score": 0.7319
-        },
-        {
-          "symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
-          "score": 0.6912,
-          "name_score": 0.9,
-          "size_score": 0.378
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
-          "score": 0.8806,
-          "name_score": 0.9,
-          "size_score": 0.8515
-        },
-        {
-          "symbol": "G0RenderToon(cRObject*, tMatrix*)",
-          "score": 0.7265,
-          "name_score": 0.675,
-          "size_score": 0.8037
-        },
-        {
-          "symbol": "cRBorderManager::Kill(cRBorder*)",
-          "score": 0.7202,
-          "name_score": 0.5376,
-          "size_score": 0.9942
-        },
-        {
-          "symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
-          "score": 0.7106,
-          "name_score": 0.75,
-          "size_score": 0.6515
-        },
-        {
-          "symbol": "cRBorderManager::CentreRow(cRBorder*, bool, float)",
-          "score": 0.7045,
-          "name_score": 0.5264,
-          "size_score": 0.9718
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
+      "ios_symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x412250",
@@ -9208,141 +9150,25 @@
       "address": "0x4123e0",
       "windows_name": "render_object_toon",
       "windows_size": 736,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "G0RenderToon(cRObject*, tMatrix*)",
-          "score": 0.9556,
-          "name_score": 1.0,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
-          "score": 0.9357,
-          "name_score": 0.9,
-          "size_score": 0.9891
-        },
-        {
-          "symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
-          "score": 0.8938,
-          "name_score": 0.9,
-          "size_score": 0.8846
-        },
-        {
-          "symbol": "cRGame::cRGame()",
-          "score": 0.7394,
-          "name_score": 0.6,
-          "size_score": 0.9485
-        },
-        {
-          "symbol": "G0TextureLoad(int, int)",
-          "score": 0.7246,
-          "name_score": 0.675,
-          "size_score": 0.7989
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "G0RenderToon(cRObject*, tMatrix*)",
-          "score": 0.9439,
-          "name_score": 1.0,
-          "size_score": 0.8598
-        },
-        {
-          "symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
-          "score": 0.9044,
-          "name_score": 0.9,
-          "size_score": 0.9109
-        },
-        {
-          "symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
-          "score": 0.8188,
-          "name_score": 0.9,
-          "size_score": 0.697
-        },
-        {
-          "symbol": "tMatrix::Interpolate(float)",
-          "score": 0.7173,
-          "name_score": 0.6,
-          "size_score": 0.8932
-        },
-        {
-          "symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
-          "score": 0.6927,
-          "name_score": 0.9,
-          "size_score": 0.3817
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "G0RenderToon(cRObject*, tMatrix*)",
+      "ios_symbol": "G0RenderToon(cRObject*, tMatrix*)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x4126c0",
       "windows_name": "render_object",
       "windows_size": 640,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "G0RenderToon(cRObject*, tMatrix*)",
-          "score": 0.8492,
-          "name_score": 0.9,
-          "size_score": 0.7729
-        },
-        {
-          "symbol": "G0TextureLoad(int, int)",
-          "score": 0.7725,
-          "name_score": 0.675,
-          "size_score": 0.9187
-        },
-        {
-          "symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
-          "score": 0.7577,
-          "name_score": 0.75,
-          "size_score": 0.7692
-        },
-        {
-          "symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
-          "score": 0.7566,
-          "name_score": 0.675,
-          "size_score": 0.8791
-        },
-        {
-          "symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
-          "score": 0.7407,
-          "name_score": 1.0,
-          "size_score": 0.3516
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "G0RenderToon(cRObject*, tMatrix*)",
-          "score": 0.8391,
-          "name_score": 0.9,
-          "size_score": 0.7477
-        },
-        {
-          "symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
-          "score": 0.7328,
-          "name_score": 1.0,
-          "size_score": 0.332
-        },
-        {
-          "symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
-          "score": 0.7218,
-          "name_score": 0.675,
-          "size_score": 0.7921
-        },
-        {
-          "symbol": "cRObject::AddEdge(int, int, int)",
-          "score": 0.721,
-          "name_score": 0.6267,
-          "size_score": 0.8625
-        },
-        {
-          "symbol": "cRBorder::MouseTest()",
-          "score": 0.6987,
-          "name_score": 0.4978,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
+      "ios_symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x412940",
@@ -10490,71 +10316,13 @@
       "address": "0x414500",
       "windows_name": "bind_texture_ref",
       "windows_size": 192,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "G0BindTexture(int)",
-          "score": 0.975,
-          "name_score": 1.0,
-          "size_score": 0.9375
-        },
-        {
-          "symbol": "G0TextureSetReLoad()",
-          "score": 0.7737,
-          "name_score": 0.72,
-          "size_score": 0.8542
-        },
-        {
-          "symbol": "G0TextureSetLoad(int)",
-          "score": 0.7143,
-          "name_score": 0.6087,
-          "size_score": 0.8727
-        },
-        {
-          "symbol": "cRBorder::SetTextNumber(int)",
-          "score": 0.7,
-          "name_score": 0.5833,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRBorder::InputTextInit(int, char*, int)",
-          "score": 0.697,
-          "name_score": 0.5217,
-          "size_score": 0.96
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "G0BindTexture(int)",
-          "score": 0.9833,
-          "name_score": 1.0,
-          "size_score": 0.9583
-        },
-        {
-          "symbol": "G0TextureSetLoad(int)",
-          "score": 0.7492,
-          "name_score": 0.6087,
-          "size_score": 0.96
-        },
-        {
-          "symbol": "G0TextureReLoad(int, char*)",
-          "score": 0.6903,
-          "name_score": 0.72,
-          "size_score": 0.6458
-        },
-        {
-          "symbol": "std::_Rb_tree<OFSdbmHashedString, std::pair<OFSdbmHashedString const, OFRTTI const*>, std::_Select1st<std::pair<OFSdbmHashedString const, OFRTTI const*>>, std::less<OFSdbmHashedString>, std::allocator<std::pair<OFSdbmHashedString const, OFRTTI const*>>>::_M_insert_unique(std::pair<OFSdbmHashedString const, OFRTTI const*> const&)",
-          "score": 0.6431,
-          "name_score": 0.4444,
-          "size_score": 0.9412
-        },
-        {
-          "symbol": "tMatrix::Invert(tMatrix const&)",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "G0BindTexture(int)",
+      "ios_symbol": "G0BindTexture(int)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x4145c0",

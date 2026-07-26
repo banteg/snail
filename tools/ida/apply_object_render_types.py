@@ -281,15 +281,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "render_object_toon",
-        "int __cdecl render_object_toon(Object* object, TransformMatrix* matrix);",
+        "void __cdecl render_object_toon(Object* object, TransformMatrix* matrix);",
     ),
     (
         "render_object",
-        "int __cdecl render_object(Object* object, TransformMatrix* matrix, float texture_u, float texture_v, tColour* color, char after_sprites);",
+        "void __cdecl render_object(Object* object, TransformMatrix* matrix, float texture_u, float texture_v, tColour* color, char after_sprites);",
     ),
     (
         "render_camera",
-        "TransformMatrix* __cdecl render_camera(float viewport_x, float viewport_y, float viewport_width, float viewport_height, float fov_degrees, TransformMatrix* camera_matrix, TransformMatrix* view_matrix, char draw_world, char post_sprite_pass);",
+        "void __cdecl render_camera(float viewport_x, float viewport_y, float viewport_width, float viewport_height, float fov_degrees, TransformMatrix* camera_matrix, TransformMatrix* view_matrix, char draw_world, char post_sprite_pass);",
     ),
     (
         "build_perspective_projection_matrix",
@@ -487,7 +487,7 @@ REQUIRED_OWNER_MARKERS = (
     "ObjectRenderBuffers* __thiscall create_vertex_buffer(",
     "ObjectIndexBuffer* __thiscall create_index_buffer(",
     "void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object);",
-    "TransformMatrix* __cdecl render_camera(",
+    "void __cdecl render_camera(",
     "extern TransformMatrix* g_render_camera_source_matrix;",
     "extern TransformMatrix* g_render_camera_view_matrix;",
     "extern uint8_t g_object_render_pass_filter;",

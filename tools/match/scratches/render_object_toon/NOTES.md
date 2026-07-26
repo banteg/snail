@@ -80,3 +80,17 @@ independent integers, and only the post-addition borrow is typed
 per-edge delta, normal A/B, source vertex, and reloaded index-buffer
 lifetimes. No matcher source changed; focused output remains exact at 219/219
 instructions with all 31 operands clean.
+
+## 2026-07-26 mobile G0 owner and void ABI
+
+Android and iOS retain the exact two-argument owner as
+`G0RenderToon(cRObject*, tMatrix*)`. Their OpenGL bodies independently preserve
+the active `G0Camera` subtraction, matrix inversion and object-space rotation,
+boundary-edge flag, paired face-normal dot products, `0.01` silhouette
+threshold, and line-index submission. Backend buffers and draw calls differ,
+but the source owner and edge topology do not.
+
+The sole Windows caller at `0x412930` adjusts the stack and immediately tears
+down its frame without consuming EAX. Both mobile bodies are void. Replacing
+the synthetic early flags and final SetTransform results with a natural void
+body remains exact at 219/219 instructions with all 31 operands clean.

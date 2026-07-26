@@ -18,23 +18,23 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "set_input_controller_slot0_button_axes",
-      "address": "0x431fd0"
+      "name": "render_camera",
+      "address": "0x411fa0"
     },
     {
-      "name": "update_input_controller_slot_button_axes",
-      "address": "0x431ff0"
+      "name": "render_object_toon",
+      "address": "0x4123e0"
     },
     {
-      "name": "copy_active_input_controller_state",
-      "address": "0x4320f0"
+      "name": "render_object",
+      "address": "0x4126c0"
     },
     {
-      "name": "update_input_controller_pointer_region",
-      "address": "0x4321c0"
+      "name": "bind_texture_ref",
+      "address": "0x414500"
     }
   ],
-  "health_check_count": 1061,
+  "health_check_count": 1066,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

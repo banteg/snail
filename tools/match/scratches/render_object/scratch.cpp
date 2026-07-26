@@ -9,9 +9,9 @@ int set_cull_mode(char cull_front); // @ 0x4129f0
 void set_blend_mode(int blend_mode); // @ 0x412d00
 void set_object_color(Object* object, tColour color); // @ 0x4141d0
 void bind_texture_ref(TextureRef* texture); // @ 0x414500
-int render_object_toon(Object* object, TransformMatrix* matrix); // @ 0x4123e0
+void render_object_toon(Object* object, TransformMatrix* matrix); // @ 0x4123e0
 
-int render_object(
+void render_object(
     Object* object,
     TransformMatrix* matrix,
     float texture_u,
@@ -94,8 +94,7 @@ int render_object(
                 ++g_draw_primitive_call_count;
             }
 
-            result = render_object_toon(object, matrix);
+            render_object_toon(object, matrix);
         }
     }
-    return result;
 }

@@ -248,8 +248,8 @@ int get_or_append_object_texture_group_vertex(
 void build_object_texture_group_buffers(Object* object); // @ 0x413d50
 void sort_object_faces_by_texture_group(Object* object); // @ 0x419fd0
 void refresh_object_vertex_buffer(Object* object); // @ 0x412250
-int render_object(Object* object, TransformMatrix* matrix, float texture_u,
-    float texture_v, tColour* color, char after_sprites); // @ 0x4126c0
+void render_object(Object* object, TransformMatrix* matrix, float texture_u,
+    float texture_v, tColour* color, char after_sprites); // @ 0x4126c0, G0RenderObject
 
 extern ObjectList g_object_list; // data_4b7648
 extern int g_object_grouped_vertex_cursor; // data_5031bc

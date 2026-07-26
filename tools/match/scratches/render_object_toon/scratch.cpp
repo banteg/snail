@@ -10,11 +10,11 @@ TransformMatrix* __stdcall build_perspective_projection_matrix(
     TransformMatrix* matrix, float arg2, float arg3, float near_z, float far_z); // @ 0x450314
 void bind_texture_ref(TextureRef* texture); // @ 0x414500
 
-int render_object_toon(Object* object, TransformMatrix* matrix)
+void render_object_toon(Object* object, TransformMatrix* matrix)
 {
     unsigned int flags = object->flags;
     if ((flags & OBJECT_FLAG_TOON_ENABLED) == 0) {
-        return flags;
+        return;
     }
 
     TransformMatrix projection;
@@ -105,5 +105,5 @@ int render_object_toon(Object* object, TransformMatrix* matrix)
         g_render_projection_param_b,
         g_render_projection_near_z,
         g_render_projection_far_z);
-    return g_d3d_device->vtbl->SetTransform(g_d3d_device, 3, &projection);
+    g_d3d_device->vtbl->SetTransform(g_d3d_device, 3, &projection);
 }

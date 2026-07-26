@@ -859,7 +859,10 @@
     {
       "address": "0x411fa0",
       "name": "render_camera",
-      "description": "Nine-argument cdecl camera pipeline owner: configures one 3D scene viewport, projection, view transform, depth and root-owned fog state, then publishes the active source/view matrices and after-sprites object lane before world objects render. Cross-port Android symbols match this helper to `G0RenderCamera`."
+      "aliases": [
+        "G0RenderCamera"
+      ],
+      "description": "Windows `G0RenderCamera`: a nine-argument cdecl camera pipeline owner that configures one 3D scene viewport, projection, view transform, depth and root-owned fog state, then publishes the active source/view matrices and after-sprites object lane before world objects render. Android and iOS retain the authored G0 name, the same camera/view and pass globals, and a platform-specific eleven-argument OpenGL ABI. Both Windows callers discard EAX, and the natural void source remains instruction-exact."
     },
     {
       "address": "0x412250",
@@ -869,12 +872,18 @@
     {
       "address": "0x4123e0",
       "name": "render_object_toon",
-      "description": "Draws one object's optional toon edge pass by transforming the camera delta into object space, selecting boundary or silhouette edges against their two face normals, and submitting the selected vertex pairs as line primitives. The pass uses the global sprite manager for its line texture and the global D3D device for drawing. Cross-port Android symbols match this helper to `G0RenderToon(cRObject*, tMatrix*)`."
+      "aliases": [
+        "G0RenderToon"
+      ],
+      "description": "Windows `G0RenderToon(cRObject*, tMatrix*)`: draws one object's optional toon edge pass by transforming the shared G0Camera delta into object space, selecting boundary or silhouette edges against their two face normals, and submitting the selected vertex pairs as line primitives. Android and iOS preserve the same two-argument void owner, edge records, camera transform, dot-product silhouette test, and 0.01 threshold across their OpenGL backends. The sole Windows caller discards EAX, and the natural void source remains instruction-exact."
     },
     {
       "address": "0x4126c0",
       "name": "render_object",
-      "description": "Renders one built object through the grouped Direct3D path: refreshes animated vertices, sets world transform and cull mode, binds each texture group, applies the blend preset and tint, submits indexed primitives, and optionally dispatches the toon edge pass. Its third and fourth arguments are the float texture-U and texture-V values forwarded from `BodBase +0x1c/+0x20`. Cross-port Android symbols match this helper to `G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)`."
+      "aliases": [
+        "G0RenderObject"
+      ],
+      "description": "Windows `G0RenderObject`: renders one built object through the grouped Direct3D path, applies the shared G0AfterSprites pass split, texture offsets, cull and tint policy, and optionally dispatches G0RenderToon. Android and iOS retain `G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)` and the same semantic gates in their larger OpenGL implementation; Windows instead borrows a float `tColour*` tint in the fifth slot. Both Windows callers discard EAX, and the natural void source remains instruction-exact."
     },
     {
       "address": "0x412940",
@@ -979,7 +988,10 @@
     {
       "address": "0x414500",
       "name": "bind_texture_ref",
-      "description": "Binds one texture ref, skips redundant binds through the cached current-texture lane, and applies the texture-stage wrap-vs-clamp state from the ref flags. Cross-port Android symbols match this helper to `G0BindTexture(int)`."
+      "aliases": [
+        "G0BindTexture"
+      ],
+      "description": "Windows `G0BindTexture`: binds one TextureRef pointer, skips redundant binds through the cached gBindTextureRefLast lane, and applies texture-stage wrap-vs-clamp state from the ref flags. Android and iOS preserve the authored void owner, gBindCount, gBindTextureRefLast, and 0x1000 wrap flag while their OpenGL ABI passes a texture-list index instead of a Windows TextureRef pointer."
     },
     {
       "address": "0x4145c0",

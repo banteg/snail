@@ -36,18 +36,26 @@
 00412074        struct Direct3DDevice8* device_1 = g_direct3d_renderer.device
 00412083        device_1->vtbl->SetTransform(device_1, 3, &matrix)
 00412097        g_object_render_pass_filter = post_sprite_pass
+0041209f        long double x87_r7_11 = fconvert.t(camera_matrix->basis_forward.x) + fconvert.t(camera_matrix->position.x)
+004120a5        float y = camera_matrix->position.y
+004120a8        float z = camera_matrix->position.z
 004120ab        struct Vec3 eye
 004120ab        eye.x = camera_matrix->position.x
-004120b2        eye.y = camera_matrix->position.y
+004120af        float x = camera_matrix->basis_up.x
+004120b2        eye.y = y
 004120b6        struct Vec3 target
-004120b6        target.x = fconvert.s(fconvert.t(camera_matrix->basis_forward.x) + fconvert.t(camera_matrix->position.x))
-004120c3        eye.z = camera_matrix->position.z
+004120b6        target.x = fconvert.s(x87_r7_11)
+004120bd        long double x87_r7_13 = fconvert.t(camera_matrix->basis_forward.y) + fconvert.t(camera_matrix->position.y)
+004120c0        float y_1 = camera_matrix->basis_up.y
+004120c3        eye.z = z
+004120c7        float z_1 = camera_matrix->basis_up.z
 004120ca        struct Vec3 up
-004120ca        up.x = camera_matrix->basis_up.x
-004120ce        up.y = camera_matrix->basis_up.y
-004120d6        target.y = fconvert.s(fconvert.t(camera_matrix->basis_forward.y) + fconvert.t(camera_matrix->position.y))
-004120e0        up.z = camera_matrix->basis_up.z
-004120f5        target.z = fconvert.s(fconvert.t(camera_matrix->basis_forward.z) + fconvert.t(camera_matrix->position.z))
+004120ca        up.x = x
+004120ce        up.y = y_1
+004120d6        target.y = fconvert.s(x87_r7_13)
+004120dd        long double x87_r7_15 = fconvert.t(camera_matrix->basis_forward.z) + fconvert.t(camera_matrix->position.z)
+004120e0        up.z = z_1
+004120f5        target.z = fconvert.s(x87_r7_15)
 004120fb        struct TransformMatrix matrix_1
 004120fb        build_camera_view_matrix(&matrix_1, &eye, &target, &up)
 00412100        struct Direct3DDevice8* device_2 = g_direct3d_renderer.device
@@ -97,4 +105,4 @@
 00412230        g_render_camera_source_matrix = camera_matrix
 00412236        g_render_camera_view_matrix = view_matrix
 0041223b        g_current_texture_ref = nullptr
-0041224c        return view_matrix
+0041224c        return

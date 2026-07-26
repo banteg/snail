@@ -6312,17 +6312,25 @@ def test_object_policy_flags_keep_producers_and_consumers_aligned() -> None:
     for header in analysis_headers:
         assert "ObjectToonEdgeFlag flags;" in header
         assert (
-            "int32_t __cdecl render_object_toon(\n"
+            "void __cdecl render_object_toon(\n"
             "    Object* object, TransformMatrix* matrix);"
         ) in header
 
     assert (
-        "int32_t __cdecl render_object_toon(Object* object, "
+        "void __cdecl render_object_toon(Object* object, "
         "TransformMatrix* matrix)"
     ) in binja_sync
     assert (
-        "int __cdecl render_object_toon(Object* object, "
+        "void __cdecl render_object_toon(Object* object, "
         "TransformMatrix* matrix);"
+    ) in ida_sync
+    assert (
+        "void __cdecl render_object(Object* object, TransformMatrix* matrix, "
+        "float texture_u, float texture_v, tColour* color, char after_sprites)"
+    ) in binja_sync
+    assert (
+        "void __cdecl render_object(Object* object, TransformMatrix* matrix, "
+        "float texture_u, float texture_v, tColour* color, char after_sprites);"
     ) in ida_sync
 
     scratch_root = repo_root / "tools/match/scratches"
@@ -6755,6 +6763,7 @@ def test_vertex_buffer_factory_lifetime_replay_stays_guarded() -> None:
 
 
 def test_render_camera_replay_owns_pipeline_without_splitting_device_alias() -> None:
+    repo_root = Path(__file__).parents[1]
     binja_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
         encoding="utf-8"
     )
@@ -6767,7 +6776,7 @@ def test_render_camera_replay_owns_pipeline_without_splitting_device_alias() -> 
     ]
 
     camera_prototype = (
-        "TransformMatrix* __cdecl render_camera(float viewport_x, float viewport_y, "
+        "void __cdecl render_camera(float viewport_x, float viewport_y, "
         "float viewport_width, float viewport_height, float fov_degrees, "
         "TransformMatrix* camera_matrix, TransformMatrix* view_matrix, "
         "char draw_world, char post_sprite_pass)"
@@ -6814,7 +6823,7 @@ def test_render_camera_replay_owns_pipeline_without_splitting_device_alias() -> 
             assert name in header
 
     for header in analysis_headers:
-        assert "TransformMatrix* __cdecl render_camera(" in header
+        assert "void __cdecl render_camera(" in header
         assert (
             "TransformMatrix* __stdcall build_perspective_projection_matrix("
             in header
@@ -6824,6 +6833,57 @@ def test_render_camera_replay_owns_pipeline_without_splitting_device_alias() -> 
 
     assert '("0x502fec",' not in binja_sync
     assert '(0x502FEC,' not in ida_sync
+
+    references = json.loads(
+        (repo_root / "analysis/symbols/gameplay-references.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    aliases_by_address = {
+        entry["address"]: set(entry.get("aliases", []))
+        for entry in references["symbols"]
+    }
+    for address, alias in (
+        ("0x5031b8", "G0Camera"),
+        ("0x503218", "G0CameraInv"),
+        ("0x503260", "G0AfterSprites"),
+        ("0x503174", "gBindTextureRefLast"),
+        ("0x5031c0", "gBindCount"),
+    ):
+        assert alias in aliases_by_address[address]
+
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    entries_by_address = {
+        entry["address"]: entry for entry in crosswalk["entries"]
+    }
+    for address, symbol in (
+        ("0x411fa0", "G0RenderCamera("),
+        ("0x4123e0", "G0RenderToon("),
+        ("0x4126c0", "G0RenderObject("),
+        ("0x414500", "G0BindTexture("),
+    ):
+        assert entries_by_address[address]["android_symbol"].startswith(symbol)
+        assert entries_by_address[address]["ios_symbol"].startswith(symbol)
+
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    functions_by_address = {
+        entry["address"]: entry for entry in functions["functions"]
+    }
+    for address, alias in (
+        ("0x411fa0", "G0RenderCamera"),
+        ("0x4123e0", "G0RenderToon"),
+        ("0x4126c0", "G0RenderObject"),
+        ("0x414500", "G0BindTexture"),
+    ):
+        assert alias in functions_by_address[address]["aliases"]
 
 
 def test_main_loop_replay_keeps_winmain_and_byte_fullscreen_abis() -> None:

@@ -3871,10 +3871,11 @@
       "name": "g_render_camera_source_matrix",
       "kind": "global",
       "aliases": [
-        "data_5031b8"
+        "data_5031b8",
+        "G0Camera"
       ],
       "size": "0x4",
-      "description": "Pointer to the active render-camera source matrix; render_object_toon subtracts its position from the object matrix before rotating the view vector into object space."
+      "description": "Windows pointer to the active render-camera source matrix. Android and iOS preserve its authored name as G0Camera; every G0RenderToon body subtracts its position from the object matrix before rotating the view vector into object space."
     },
     {
       "address": "0x5031cc",
@@ -3921,20 +3922,22 @@
       "name": "g_render_camera_view_matrix",
       "kind": "global",
       "aliases": [
-        "data_503218"
+        "data_503218",
+        "G0CameraInv"
       ],
       "size": "0x4",
-      "description": "Pointer to the active render-camera view matrix stored by render_camera after Direct3D view setup."
+      "description": "Windows pointer to the active render-camera view matrix stored by G0RenderCamera after Direct3D view setup. Android and iOS preserve the corresponding authored global as G0CameraInv."
     },
     {
       "address": "0x503260",
       "name": "g_object_render_pass_filter",
       "kind": "global",
       "aliases": [
-        "data_503260"
+        "data_503260",
+        "G0AfterSprites"
       ],
       "size": "0x1",
-      "description": "Object render pass/filter byte checked by render_object against its after-sprites argument and texture flags before drawing each texture group."
+      "description": "Authored G0AfterSprites render-pass byte: G0RenderCamera publishes it and G0RenderObject compares it with the per-object after-sprites argument before drawing. Android and iOS preserve the same producer/consumer ownership."
     },
     {
       "address": "0x503300",
@@ -3961,10 +3964,11 @@
       "name": "g_current_texture_ref",
       "kind": "global",
       "aliases": [
-        "data_503174"
+        "data_503174",
+        "gBindTextureRefLast"
       ],
       "size": "0x4",
-      "description": "Last TextureRef bound through bind_texture_ref, used to skip redundant Direct3D SetTexture calls."
+      "description": "Windows TextureRef pointer last bound through G0BindTexture, used to skip redundant Direct3D SetTexture calls. Android and iOS preserve the authored gBindTextureRefLast name but store their platform texture-list index instead."
     },
     {
       "address": "0x503178",
@@ -3981,9 +3985,10 @@
       "name": "g_texture_bind_call_count",
       "kind": "global",
       "aliases": [
-        "data_5031c0"
+        "data_5031c0",
+        "gBindCount"
       ],
-      "description": "Per-frame SetTexture/bind counter incremented by bind_texture_ref and cleared by reset_render_counters."
+      "description": "Authored gBindCount per-frame texture-bind counter, incremented by G0BindTexture and cleared by reset_render_counters. Both mobile ports preserve the name and producer."
     },
     {
       "address": "0x5031c8",

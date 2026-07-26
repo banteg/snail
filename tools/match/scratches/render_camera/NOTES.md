@@ -86,3 +86,18 @@ final fog `SetRenderState` consumed 8 instead of 12. That shifted every camera
 argument after the viewport call by one slot even after the textual prototype
 was corrected. Replay now repairs only that witnessed pair behind strict stale
 value guards, restoring the native parameter flow without a broad frame reset.
+
+## 2026-07-26 mobile G0 owner and void ABI
+
+Android and iOS retain this renderer entry point as
+`G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool,
+bool, float, float)`. All three ports configure the viewport, projection and
+view transforms, depth and fog state, then publish the same authored globals:
+`G0Camera`, `G0CameraInv`, `G0AfterSprites`, and `gBindTextureRefLast`.
+
+The mobile OpenGL ABI adds roll and projection-shift floats after the shared
+camera flags. Windows remains independently proved as a nine-argument
+Direct3D ABI; those mobile-only parameters are not projected into it. Both
+Windows callsites overwrite or ignore EAX immediately after the call. Removing
+the synthetic `view_matrix` result therefore recovers the void contract while
+remaining exact at 180/180 instructions with all 37 operands clean.
