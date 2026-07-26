@@ -1954,7 +1954,10 @@
     {
       "address": "0x4323a0",
       "name": "set_input_controller_pointer_authored_xy",
-      "description": "Seeds one global input-controller slot to an authored 640x480 pointer position, updates its normalized coordinates from the stored region bounds, and warps the backing OS cursor through click_mouse_screen."
+      "description": "Exact void `RShellSetMouse(int, float, float)`: seeds one global input-controller slot to an authored 640x480 pointer position, converts it through the stored region bounds, and forwards the screen coordinates to the authored `MouseSet` helper. Android and iOS preserve the same RShell.o owner and void call chain.",
+      "aliases": [
+        "RShellSetMouse"
+      ]
     },
     {
       "address": "0x432440",
@@ -3140,7 +3143,7 @@
     {
       "address": "0x447290",
       "name": "recycle_bod_to_free_list",
-      "description": "Exact emitted `cLinkedList<cRBod>::Remove` helper: unlinks one active BOD, moves it onto the shared free-list head, and diagnoses invalid ownership or active-iteration removal. The same owned `BodList` body is inlined by pickup AI teardown paths."
+      "description": "Exact void `cLinkedList<cRBod>::Remove(cRBod*)`: unlinks one active BOD, moves it onto the shared free-list head, and diagnoses invalid ownership or active-iteration removal. Android preserves the authored template member and incompatible success-path register residue, while all Windows callers ignore EAX; the same owned body is inlined by pickup AI teardown paths."
     },
     {
       "address": "0x447300",
@@ -3499,27 +3502,42 @@
     {
       "address": "0x44b7d0",
       "name": "initialize_keyboard_input",
-      "description": "Initializes the DirectInput keyboard device, sets its data format/cooperative level, acquires it, and clears the previous/current key-state buffers."
+      "description": "Windows `KeyboardInit`: initializes the DirectInput keyboard device, sets its data format/cooperative level, acquires it, and clears the process-owned previous/current key-state buffers. Android and iOS preserve the authored global and the same two 256-byte buffers, but omit the desktop device setup.",
+      "aliases": [
+        "KeyboardInit"
+      ]
     },
     {
       "address": "0x44b870",
       "name": "update_keyboard_input",
-      "description": "Polls the DirectInput keyboard device into the current and previous 0x100-byte key-state tables, retries reacquisition on transient failures, and publishes the derived digital input flags and directional axes into the shared input-controller lanes."
+      "description": "Windows `KeyboardAI`: advances the process-owned previous/current 256-byte key-state tables, polls DirectInput with guarded reacquisition, and publishes derived button flags and axes into the shared input-controller lanes. Android and iOS retain the authored global and table lifetime while feeding platform key events instead of DirectInput.",
+      "aliases": [
+        "KeyboardAI"
+      ]
     },
     {
       "address": "0x44bb10",
       "name": "is_key_pressed_edge",
-      "description": "Returns true when the supplied keyboard scancode is down in the current DirectInput key-state table and was up in the previous frame's table."
+      "description": "Exact `KeyPress(unsigned char)`: returns true when the supplied keyboard scancode is down in the current DirectInput key-state table and was up in the previous frame's table. Android and iOS preserve the authored byte argument and identical two-table test.",
+      "aliases": [
+        "KeyPress"
+      ]
     },
     {
       "address": "0x44bb40",
       "name": "is_key_down",
-      "description": "Returns true when the supplied keyboard scancode is down in the current DirectInput key-state table."
+      "description": "Exact `KeyOn(unsigned char)`: returns true when the supplied keyboard scancode is down in the current DirectInput key-state table. Android and iOS preserve the authored byte argument and identical current-table test.",
+      "aliases": [
+        "KeyOn"
+      ]
     },
     {
       "address": "0x44bb60",
       "name": "release_keyboard_input",
-      "description": "Releases the DirectInput keyboard device and its shared DirectInput interface, clearing the global keyboard-input handles."
+      "description": "Void `FreeDirectInputKeyboard()`: unacquires and releases the Windows DirectInput keyboard device and parent interface, then clears both process-owned handles. Android preserves the authored global as a platform no-op stub; its arbitrary R0 and two value-agnostic Windows callers prove the side-effect-only contract.",
+      "aliases": [
+        "FreeDirectInputKeyboard"
+      ]
     },
     {
       "address": "0x44bbb0",
@@ -3549,7 +3567,10 @@
     {
       "address": "0x44c060",
       "name": "click_mouse_screen",
-      "description": "Optionally forwards a cursor position to SetCursorPos when the window is active and captured, then stores raw/live mouse coordinates for the selected slot and publishes authored x/y through player zero's borrowed cRGameInput owner."
+      "description": "Exact void `MouseSet(int, int, int)`: optionally forwards a cursor position to SetCursorPos when the Windows window is active and captured, then stores raw/live coordinates for the selected slot and publishes authored x/y through player zero's borrowed cRGameInput owner. Android and iOS preserve the authored global and incompatible incidental return-register residues.",
+      "aliases": [
+        "MouseSet"
+      ]
     },
     {
       "address": "0x44c100",

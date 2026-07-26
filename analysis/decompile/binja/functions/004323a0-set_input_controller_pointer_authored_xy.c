@@ -12,4 +12,5 @@
 004323fe        int16_t x87control
 004323fe        int16_t x87control_1
 004323fe        y, x87control_1 = ftol(x87control, float.t(ecx_1 - eax_3) * fconvert.t(authored_y) * fconvert.t(0.00208333344f) + float.t(eax_3))
-00432437        return click_mouse_screen(slot, ftol(x87control_1, float.t(g_input_region_right[slot] - edi) * fconvert.t(authored_x) * fconvert.t(0.00156250002f) + float.t(edi)), y)
+0043242a        click_mouse_screen(slot, ftol(x87control_1, float.t(g_input_region_right[slot] - edi) * fconvert.t(authored_x) * fconvert.t(0.00156250002f) + float.t(edi)), y)
+00432437        return

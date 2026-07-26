@@ -6,10 +6,10 @@
 00447294        uint16_t list_flags_1 = (node->list_flags).w
 0044729a        if ((list_flags_1:1.b & 2) == 0)
 004472a1        report_errorf("List remove")
-004472a9        return 0
+004472a9        return
 004472af        if ((list_flags_1.b & 0x40) != 0)
 004472b6        report_errorf("List remove NEXTBOD")
-004472be        return 0
+004472be        return
 004472c1        struct BodNode* list_next = node->list_next
 004472c7        if (list_next != 0)
 004472cc        list_next->list_prev = node->list_prev
@@ -22,4 +22,4 @@
 004472ee        uint32_t list_flags = node->list_flags
 004472f1        list_flags:1.b &= 0xfd
 004472f4        node->list_flags = list_flags
-004472f7        return node
+004472f7        return

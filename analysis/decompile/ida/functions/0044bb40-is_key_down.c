@@ -3,8 +3,7 @@
 /* selector: is_key_down */
 
 // Returns true when the supplied keyboard scancode is down in the current DirectInput key-state table.
-bool __cdecl sub_44BB40(unsigned __int8 a1)
+uint8_t __cdecl is_key_down(uint8_t key_code)
 {
-  return MEMORY[0x777C4C][a1] == (char)0x80;
+  return g_keyboard_current_state[key_code] == 0x80;
 }
-

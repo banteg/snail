@@ -143,6 +143,8 @@ struct IDirectInput8A {
 typedef enum InputButtonFlag {
     INPUT_BUTTON_PRIMARY = 0x4000,
     INPUT_BUTTON_SECONDARY = 0x8000,
+    INPUT_BUTTON_UNRESOLVED_00400000 = 0x00400000,
+    INPUT_BUTTON_UNRESOLVED_00800000 = 0x00800000,
 } InputButtonFlag;
 
 typedef struct InputControllerSlot {
@@ -204,6 +206,10 @@ typedef struct Point {
 
 char __cdecl read_pressed_text_input_key_code(void);
 char __cdecl read_repeating_text_input_key_code(void);
+uint8_t __cdecl is_key_pressed_edge(uint8_t key_code);
+uint8_t __cdecl is_key_down(uint8_t key_code);
+void __cdecl release_keyboard_input(void);
+void __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y);
 
 extern float g_text_input_repeat_step;
 extern float g_text_input_repeat_accumulator;
@@ -213,6 +219,10 @@ extern int32_t g_input_region_top[2];
 extern int32_t g_input_region_bottom[2];
 extern int32_t g_input_region_left[2];
 extern int32_t g_input_region_right[2];
+extern uint8_t g_keyboard_previous_state[256];
+extern uint8_t g_keyboard_current_state[256];
+extern IDirectInput8A* g_keyboard_input;
+extern IDirectInputDevice8A* g_keyboard_device;
 
 void __cdecl set_input_controller_slot0_button_axes(
     InputButtonFlag buttons,
@@ -247,7 +257,7 @@ void __cdecl update_input_controller_pointer_region(
     char button_c,
     char capture_when_outside,
     char force_clamp);
-void* __cdecl set_input_controller_pointer_authored_xy(
+void __cdecl set_input_controller_pointer_authored_xy(
     int32_t slot,
     float authored_x,
     float authored_y);

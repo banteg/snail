@@ -2,11 +2,10 @@
 
 #include "direct_input_view.h"
 
-unsigned char is_key_pressed_edge(int key_code)
+unsigned char is_key_pressed_edge(unsigned char key_code)
 {
-    int index = key_code & 0xff;
-    if (g_keyboard_current_state[index] == 0x80
-            && g_keyboard_previous_state[index] == 0)
+    if (g_keyboard_current_state[key_code] == 0x80
+            && g_keyboard_previous_state[key_code] == 0)
         return 1;
     return 0;
 }

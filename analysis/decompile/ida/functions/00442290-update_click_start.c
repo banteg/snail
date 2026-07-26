@@ -14,10 +14,10 @@ void __thiscall update_click_start(ClickStart *click_start)
   struct BodNode *list_prev; // eax
   uint32_t v9; // eax
 
-  if ( !g_game_base->subgame.subgame_pause_gate )
+  if ( g_game_base->subgame.subgame_pause_gate == 0 )
   {
     prompt = click_start->prompt;
-    if ( click_start->hide_prompt )
+    if ( click_start->hide_prompt != 0 )
       hide_border_init(prompt);
     else
       unhide_border_init(prompt);
@@ -31,18 +31,18 @@ void __thiscall update_click_start(ClickStart *click_start)
           g_game_base->subgame.replay_update_cursor = 8;
           v3 = g_game_base;
         }
-        if ( v3->subgame.selected_level_record_active )
+        if ( v3->subgame.selected_level_record_active != 0 )
         {
           if ( (v3->subgame.selected_level_record->run_records[v3->subgame.replay_update_cursor].flags & 0x20) == 0 )
             return;
         }
-        else if ( click_start->hide_prompt || (v3->players[0].game_input->input.pressed_buttons & 0x4000) == 0 )
+        else if ( click_start->hide_prompt != 0 || (v3->players[0].game_input->input.pressed_buttons & 0x4000) == 0 )
         {
           return;
         }
         click_start->owner_player->startup_track_index = v3->subgame.replay_update_cursor;
         click_start->state = CLICK_START_STATE_START_PENDING;
-        if ( !g_game_base->subgame.selected_level_record_active )
+        if ( g_game_base->subgame.selected_level_record_active == 0 )
         {
           LOBYTE(g_game_base->subgame.current_high_score_record.run_records[g_game_base->subgame.replay_update_cursor].flags) |= 0x20u;
           g_game_base->subgame.current_high_score_record.run_records[g_game_base->subgame.replay_update_cursor].flags &= ~1u;
@@ -77,10 +77,10 @@ LABEL_17:
           else
           {
             list_next = click_start->bod.bod.bod.list_next;
-            if ( list_next )
+            if ( list_next != nullptr )
               list_next->list_prev = click_start->bod.bod.bod.list_prev;
             list_prev = click_start->bod.bod.bod.list_prev;
-            if ( list_prev )
+            if ( list_prev != nullptr )
               list_prev->list_next = click_start->bod.bod.bod.list_next;
             else
               p_active_bod_list->first = click_start->bod.bod.bod.list_next;

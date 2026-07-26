@@ -51,6 +51,8 @@ typedef struct FrontendFade {
 typedef enum InputButtonFlag {
     INPUT_BUTTON_PRIMARY = 0x4000,
     INPUT_BUTTON_SECONDARY = 0x8000,
+    INPUT_BUTTON_UNRESOLVED_00400000 = 0x00400000,
+    INPUT_BUTTON_UNRESOLVED_00800000 = 0x00800000,
 } InputButtonFlag;
 
 typedef struct InputState {

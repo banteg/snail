@@ -4,9 +4,6 @@ Updates the two-slot mouse coordinate caches. In non-fullscreen captured mode,
 slot 0 also forwards to `SetCursorPos` when the main window is active and the
 window-deactivation latch is clear.
 
-The final `g_game_base` reload is source-shaped as a `result` local so VC6
-reuses `eax` for both the owner `mouse_y` store and the return value.
-
 2026-07-11 input-owner pass: root initialization proves the pointer at player
 `+0x168` borrows the corresponding root-owned `GameInput` record. The final
 stores are therefore `game_input->input.authored_x/y`, not an anonymous mouse
@@ -27,3 +24,13 @@ the final `InputState::authored_x/y` stores through those owners instead of
 raw root `+0x290`, pointer `+0x28c`, and child `+0x60/+0x64` arithmetic.
 Fail-closed sync and health checks preserve the graph without changing the
 exact 43/43 source.
+
+## 2026-07-27 mobile ABI correction
+
+Android and iOS both retain this global as the authored void
+`MouseSet(int, int, int)`. Their bodies update the same raw/live X/Y banks and
+publish the same authored coordinates through the game-input owner. The three
+ports leave incompatible incidental values in their return registers, while
+callers do not consume a result. Removing the synthetic pointer result is
+therefore an ABI correction rather than a match tactic; VC6 naturally leaves
+the final `g_game` reload in `eax` and preserves the exact 43/43 body.

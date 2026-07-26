@@ -5521,6 +5521,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     matcher_controller_header = (
         repo_root / "tools/match/include/input_controller_state.h"
     ).read_text(encoding="utf-8")
+    matcher_button_header = (
+        repo_root / "tools/match/include/input_buttons.h"
+    ).read_text(encoding="utf-8")
 
     assert "InputControllerSlot_must_be_0x20" in matcher_controller_header
     assert "INPUT_CONTROLLER_SLOT_STRIDE = 0x38" in matcher_controller_header
@@ -5551,8 +5554,19 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         assert "typedef enum InputButtonFlag {" in header
         assert "INPUT_BUTTON_PRIMARY = 0x4000" in header
         assert "INPUT_BUTTON_SECONDARY = 0x8000" in header
+        assert "INPUT_BUTTON_UNRESOLVED_00400000 = 0x00400000" in header
+        assert "INPUT_BUTTON_UNRESOLVED_00800000 = 0x00800000" in header
         assert "InputButtonFlag pressed_buttons;" in header
         assert "InputButtonFlag current_buttons;" in header
+
+    assert (
+        "INPUT_BUTTON_UNRESOLVED_00400000 = 0x00400000"
+        in matcher_button_header
+    )
+    assert (
+        "INPUT_BUTTON_UNRESOLVED_00800000 = 0x00800000"
+        in matcher_button_header
+    )
 
     for header in headers:
         assert "typedef struct InputControllerSlot {" in header
@@ -5574,7 +5588,15 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         "void __cdecl update_input_controller_slot_button_axes(",
         "void __cdecl copy_active_input_controller_state(",
         "void __cdecl update_input_controller_pointer_region(",
-        "void* __cdecl set_input_controller_pointer_authored_xy(",
+        "void __cdecl set_input_controller_pointer_authored_xy(",
+        "uint8_t __cdecl is_key_pressed_edge(uint8_t key_code);",
+        "uint8_t __cdecl is_key_down(uint8_t key_code);",
+        "void __cdecl release_keyboard_input(void);",
+        "void __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y);",
+        "extern uint8_t g_keyboard_previous_state[256];",
+        "extern uint8_t g_keyboard_current_state[256];",
+        "extern IDirectInput8A* g_keyboard_input;",
+        "extern IDirectInputDevice8A* g_keyboard_device;",
         "void __thiscall initialize_input(InputState* state);",
         "void __thiscall update_input(InputState* state);",
         "void __thiscall update_game_input(GameInput* game_input);",
@@ -5616,7 +5638,25 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '"void __cdecl update_input_controller_slot_button_axes(int32_t slot, InputButtonFlag buttons, float axis_x, float axis_y)"',
         '"void __cdecl copy_active_input_controller_state(int32_t controller_slot, InputButtonFlag* out_buttons, float* out_axis_x, float* out_axis_y, float* out_authored_x, float* out_authored_y, float* out_pointer_value, float* out_pointer_x, float* out_pointer_y)"',
         '"void __cdecl update_input_controller_pointer_region(int32_t slot, int32_t left, int32_t top, int32_t right, int32_t bottom, int32_t x, int32_t y, int32_t pointer_value, char button_a, char button_b, char button_c, char capture_when_outside, char force_clamp)"',
-        '"void* __cdecl set_input_controller_pointer_authored_xy(int32_t slot, float authored_x, float authored_y)"',
+        '"void __cdecl set_input_controller_pointer_authored_xy(int32_t slot, float authored_x, float authored_y)"',
+        '"void __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)"',
+        '"uint8_t __cdecl is_key_pressed_edge(uint8_t key_code)"',
+        '"uint8_t __cdecl is_key_down(uint8_t key_code)"',
+        '"void __cdecl release_keyboard_input()"',
+        "KEYBOARD_DATA_SYMBOL_UPDATES",
+        "KEYBOARD_DATA_VAR_UPDATES",
+        "KEYBOARD_FUNCTION_SYMBOL_UPDATES",
+        "KEYBOARD_FLAG_INT_DISPLAY_UPDATES",
+        "apply_int_display_updates",
+        '"81 ce 00 00 40 00"',
+        '"81 ce 00 00 80 00"',
+        '"buttons |= &__dos_header"',
+        '"buttons |= &data_800000"',
+        '("0x777b4c", "uint8_t[256]")',
+        '("0x777c4c", "uint8_t[256]")',
+        '("0x777d4c", "IDirectInput8A*")',
+        '("0x777d50", "IDirectInputDevice8A*")',
+        '"--target"',
     ):
         assert marker in binja_source
 
@@ -5657,7 +5697,22 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '"void __cdecl update_input_controller_slot_button_axes(int slot, InputButtonFlag buttons, float axis_x, float axis_y);"',
         '"void __cdecl copy_active_input_controller_state(int controller_slot, InputButtonFlag *out_buttons, float *out_axis_x, float *out_axis_y, float *out_authored_x, float *out_authored_y, float *out_pointer_value, float *out_pointer_x, float *out_pointer_y);"',
         '"void __cdecl update_input_controller_pointer_region(int slot, int left, int top, int right, int bottom, int x, int y, int pointer_value, char button_a, char button_b, char button_c, char capture_when_outside, char force_clamp);"',
-        '"void *__cdecl set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);"',
+        '"void __cdecl set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);"',
+        '"void __cdecl click_mouse_screen(int slot, int x, int y);"',
+        '"uint8_t __cdecl is_key_pressed_edge(uint8_t key_code);"',
+        '"uint8_t __cdecl is_key_down(uint8_t key_code);"',
+        '"void __cdecl release_keyboard_input();"',
+        '"uint8_t g_keyboard_previous_state[256];"',
+        '"uint8_t g_keyboard_current_state[256];"',
+        '"IDirectInput8A *g_keyboard_input;"',
+        '"IDirectInputDevice8A *g_keyboard_device;"',
+        "KEYBOARD_FLAG_NUMERIC_OPERANDS",
+        "_normalize_keyboard_flag_numeric_operands",
+        '"81 ce 00 00 40 00"',
+        '"81 ce 00 00 80 00"',
+        '"keyboard_flag_numeric_operands"',
+        "(0x777B4C, 256)",
+        "(0x777C4C, 256)",
     ):
         assert marker in ida_source
 
@@ -5723,6 +5778,51 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         entries_by_address["0x4327e0"]["ios_symbol"]
         == "RShellInkeyInput()"
     )
+    for address, android_symbol, ios_symbol in (
+        (
+            "0x4323a0",
+            "RShellSetMouse(int, float, float)",
+            "RShellSetMouse(int, float, float)",
+        ),
+        (
+            "0x447290",
+            "cLinkedList<cRBod>::Remove(cRBod*)",
+            None,
+        ),
+        (
+            "0x44b7d0",
+            "KeyboardInit()",
+            "KeyboardInit()",
+        ),
+        (
+            "0x44b870",
+            "KeyboardAI()",
+            "KeyboardAI()",
+        ),
+        (
+            "0x44bb10",
+            "KeyPress(unsigned char)",
+            "KeyPress(unsigned char)",
+        ),
+        (
+            "0x44bb40",
+            "KeyOn(unsigned char)",
+            "KeyOn(unsigned char)",
+        ),
+        (
+            "0x44bb60",
+            "FreeDirectInputKeyboard()",
+            None,
+        ),
+        (
+            "0x44c060",
+            "MouseSet(int, int, int)",
+            "MouseSet(int, int, int)",
+        ),
+    ):
+        assert entries_by_address[address]["android_symbol"] == android_symbol
+        assert entries_by_address[address].get("ios_symbol") == ios_symbol
+        assert entries_by_address[address]["confidence"] == "high"
 
     functions = json.loads(
         (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
@@ -5736,6 +5836,36 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     assert "RShellInputRegister" in functions_by_address["0x431ff0"]["aliases"]
     assert "RShellInputRetrieve" in functions_by_address["0x4320f0"]["aliases"]
     assert "RShellInputRegisterMouse" in functions_by_address["0x4321c0"]["aliases"]
+    assert "RShellSetMouse" in functions_by_address["0x4323a0"]["aliases"]
+    assert "KeyboardInit" in functions_by_address["0x44b7d0"]["aliases"]
+    assert "KeyboardAI" in functions_by_address["0x44b870"]["aliases"]
+    assert "KeyPress" in functions_by_address["0x44bb10"]["aliases"]
+    assert "KeyOn" in functions_by_address["0x44bb40"]["aliases"]
+    assert (
+        "FreeDirectInputKeyboard"
+        in functions_by_address["0x44bb60"]["aliases"]
+    )
+    assert "MouseSet" in functions_by_address["0x44c060"]["aliases"]
+
+    health = json.loads(
+        (repo_root / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    check_names = {check["name"] for check in health["checks"]}
+    for name in (
+        "bn_keyboard_directinput_owner_graph",
+        "ida_keyboard_directinput_owner_graph",
+        "bn_keyboard_flag_immediate_ownership",
+        "ida_keyboard_flag_immediate_ownership",
+        "bn_keypress_mobile_argument_and_state_ownership",
+        "ida_keypress_mobile_argument_and_state_ownership",
+        "bn_keyon_mobile_argument_and_state_ownership",
+        "ida_keyon_mobile_argument_and_state_ownership",
+        "bn_keyboard_teardown_void_owner",
+        "ida_keyboard_teardown_void_owner",
+    ):
+        assert name in check_names
 
 
 def test_ida_lvar_inspector_reports_stable_local_identity() -> None:
@@ -6039,7 +6169,7 @@ def test_bod_intrusive_list_lifecycle_replay_owns_shared_layout() -> None:
         "int32_t __thiscall set_bod_object(BodBase* bod, Object* object)",
         "BodBase* __thiscall initialize_bod_base(BodBase* bod)",
         "Object* __thiscall apply_bod_position(BodBase* bod, TransformMatrix* matrix)",
-        "int32_t __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node)",
+        "void __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node)",
     )
     for declaration in declarations:
         assert declaration in path_sync
@@ -6059,7 +6189,7 @@ def test_bod_intrusive_list_lifecycle_replay_owns_shared_layout() -> None:
 
     assert "void add_bod_to_front(BodNode* node);" in bod_list_header
     assert "void append_bod_to_end(BodNode* node);" in bod_list_header
-    assert "int recycle_bod_to_free_list(BodNode* node);" in bod_list_header
+    assert "void recycle_bod_to_free_list(BodNode* node);" in bod_list_header
     assert "bool is_bod_after_sprites();" in bod_types_header
     assert "int set_bod_object(Object* object);" in bod_types_header
     assert "Object* apply_bod_position(TransformMatrix* matrix);" in bod_types_header

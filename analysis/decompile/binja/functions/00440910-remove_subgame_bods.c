@@ -180,7 +180,7 @@
 00440c5d        i_3 = slug_remaining
 00440c5d        slug_remaining -= 1
 00440c5e        do while (i_3 != 1)
-00440c60        struct BodNode** ring_list_next_cursor = &game->ring_effects.slots[0].bod.list_next
+00440c60        struct BodNode** ring_list_next_cursor = &game->ring_effects.slots[0].body.bod.bod.list_next
 00440c66        int32_t ring_remaining = 2
 00440ce3        int32_t i_4
 00440c6e        if (ring_list_next_cursor[0x1d] != 0)

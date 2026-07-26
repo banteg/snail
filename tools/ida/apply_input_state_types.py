@@ -26,6 +26,11 @@ TRUSTED_NAMES = [
     (0x4327E0, "read_repeating_text_input_key_code"),
     (0x4321C0, "update_input_controller_pointer_region"),
     (0x4323A0, "set_input_controller_pointer_authored_xy"),
+    (0x44B7D0, "initialize_keyboard_input"),
+    (0x44B870, "update_keyboard_input"),
+    (0x44BB10, "is_key_pressed_edge"),
+    (0x44BB40, "is_key_down"),
+    (0x44BB60, "release_keyboard_input"),
     (0x50339C, "g_text_input_repeat_step"),
     (0x5108B8, "g_text_input_repeat_accumulator"),
     (0x53C7F5, "g_text_input_last_repeat_code"),
@@ -50,6 +55,10 @@ TRUSTED_NAMES = [
     (0x777B2C, "g_joystick_count"),
     (0x777B30, "g_joystick_input"),
     (0x777B34, "g_joystick_devices"),
+    (0x777B4C, "g_keyboard_previous_state"),
+    (0x777C4C, "g_keyboard_current_state"),
+    (0x777D4C, "g_keyboard_input"),
+    (0x777D50, "g_keyboard_device"),
     (0x777D58, "g_mouse_live_x"),
     (0x777D60, "g_mouse_live_y"),
     (0x777D68, "g_mouse_screen_to_authored_y_scale"),
@@ -82,7 +91,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_input_controller_pointer_authored_xy",
-        "void *__cdecl set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);",
+        "void __cdecl set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);",
     ),
     (
         "read_pressed_text_input_key_code",
@@ -126,7 +135,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "click_mouse_screen",
-        "void *__cdecl click_mouse_screen(int slot, int x, int y);",
+        "void __cdecl click_mouse_screen(int slot, int x, int y);",
+    ),
+    (
+        "is_key_pressed_edge",
+        "uint8_t __cdecl is_key_pressed_edge(uint8_t key_code);",
+    ),
+    (
+        "is_key_down",
+        "uint8_t __cdecl is_key_down(uint8_t key_code);",
+    ),
+    (
+        "release_keyboard_input",
+        "void __cdecl release_keyboard_input();",
     ),
     (
         "convert_mouse_screen_xy",
@@ -206,6 +227,22 @@ TRUSTED_DATA_DECLARATIONS = [
         "g_joystick_devices",
         "IDirectInputDevice8A *g_joystick_devices[4];",
     ),
+    (
+        0x777B4C,
+        "g_keyboard_previous_state",
+        "uint8_t g_keyboard_previous_state[256];",
+    ),
+    (
+        0x777C4C,
+        "g_keyboard_current_state",
+        "uint8_t g_keyboard_current_state[256];",
+    ),
+    (0x777D4C, "g_keyboard_input", "IDirectInput8A *g_keyboard_input;"),
+    (
+        0x777D50,
+        "g_keyboard_device",
+        "IDirectInputDevice8A *g_keyboard_device;",
+    ),
 ]
 
 TRUSTED_DATA_ITEMS = [
@@ -230,6 +267,10 @@ TRUSTED_DATA_ITEMS = [
     (0x777B2C, 4),
     (0x777B30, 4),
     (0x777B34, 16),
+    (0x777B4C, 256),
+    (0x777C4C, 256),
+    (0x777D4C, 4),
+    (0x777D50, 4),
 ]
 
 STALE_DATA_ITEM_SPECS = [
@@ -261,6 +302,17 @@ INPUT_CONTROLLER_DIRTY_FUNCTIONS = (
     0x4320F0,
     0x4321C0,
     0x4323A0,
+    0x44B7D0,
+    0x44B870,
+    0x44BB10,
+    0x44BB40,
+    0x44BB60,
+    0x44C060,
+)
+
+KEYBOARD_FLAG_NUMERIC_OPERANDS = (
+    (0x44BA7D, 1, 0x400000, "81 ce 00 00 40 00"),
+    (0x44BAB9, 1, 0x800000, "81 ce 00 00 80 00"),
 )
 
 TRUSTED_STRUCT_LVARS = (
@@ -442,6 +494,65 @@ def _clear_input_controller_interior_name(
         "address": hex(address),
         "removed_name": observed_name,
     }
+
+
+def _normalize_keyboard_flag_numeric_operands() -> list[dict[str, object]]:
+    results = []
+    for address, operand_index, expected_value, expected_hex in (
+        KEYBOARD_FLAG_NUMERIC_OPERANDS
+    ):
+        expected_bytes = bytes.fromhex(expected_hex)
+        observed_bytes = ida_bytes.get_bytes(address, len(expected_bytes))
+        if observed_bytes != expected_bytes:
+            results.append(
+                {
+                    "status": "failed",
+                    "reason": "unexpected_keyboard_flag_instruction",
+                    "address": hex(address),
+                    "observed_bytes": (
+                        None if observed_bytes is None else observed_bytes.hex()
+                    ),
+                }
+            )
+            continue
+
+        before_operand = idc.print_operand(address, operand_index)
+        idc.op_num(address, operand_index)
+        after_operand = idc.print_operand(address, operand_index)
+        observed_value = idc.get_operand_value(address, operand_index)
+        expected_text = f"{expected_value:X}H"
+        if (
+            observed_value != expected_value
+            or expected_text not in after_operand.upper()
+        ):
+            results.append(
+                {
+                    "status": "failed",
+                    "reason": "keyboard_flag_numeric_readback_failed",
+                    "address": hex(address),
+                    "expected_value": hex(expected_value),
+                    "observed_value": hex(observed_value),
+                    "before_operand": before_operand,
+                    "after_operand": after_operand,
+                }
+            )
+            continue
+
+        results.append(
+            {
+                "status": (
+                    "unchanged"
+                    if before_operand == after_operand
+                    else "applied"
+                ),
+                "address": hex(address),
+                "operand_index": operand_index,
+                "value": hex(expected_value),
+                "before_operand": before_operand,
+                "after_operand": after_operand,
+            }
+        )
+    return results
 
 
 def _sync_struct_lvar(
@@ -718,6 +829,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if result.get("status") == "failed"
     )
 
+    keyboard_flag_numeric_operands = (
+        _normalize_keyboard_flag_numeric_operands()
+    )
+    failed.extend(
+        {"keyboard_flag_numeric_operand": result}
+        for result in keyboard_flag_numeric_operands
+        if result.get("status") == "failed"
+    )
+
     for address in INPUT_CONTROLLER_DIRTY_FUNCTIONS:
         if ida_funcs.get_func(address) is not None:
             ida_hexrays.mark_cfunc_dirty(address, True)
@@ -738,6 +858,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "data_items": data_items,
                 "struct_lvars": struct_lvars,
                 "input_controller_interior_names": input_controller_interior_names,
+                "keyboard_flag_numeric_operands": keyboard_flag_numeric_operands,
                 "missing": missing,
                 "failed": failed,
             },

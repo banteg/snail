@@ -13,12 +13,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 515,
-    "unverified_entries": 270,
-    "verified_android_symbols": 512,
-    "verified_ios_symbols": 416,
-    "available_android_mappings": 512,
-    "available_ios_mappings": 378
+    "verified_entries": 523,
+    "unverified_entries": 262,
+    "verified_android_symbols": 520,
+    "verified_ios_symbols": 422,
+    "available_android_mappings": 520,
+    "available_ios_mappings": 384
   },
   "entries": [
     {
@@ -14841,71 +14841,13 @@
       "address": "0x4323a0",
       "windows_name": "set_input_controller_pointer_authored_xy",
       "windows_size": 160,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "tVector::operator*(tMatrix const&) const",
-          "score": 0.6765,
-          "name_score": 0.4608,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellPrintText(char*, ...)",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRMouse::ClickScreen(bool, float, float)",
-          "score": 0.63,
-          "name_score": 0.9,
-          "size_score": 0.225
-        },
-        {
-          "symbol": "tVector::operator*=(tMatrix)",
-          "score": 0.6265,
-          "name_score": 0.4608,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "tMatrix::LinearInterpolate(tMatrix const&, tMatrix const&, float)",
-          "score": 0.6239,
-          "name_score": 0.4231,
-          "size_score": 0.925
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "tVector::operator*(tMatrix const&) const",
-          "score": 0.6665,
-          "name_score": 0.4608,
-          "size_score": 0.975
-        },
-        {
-          "symbol": "OFControllerLoader::getControllerClass(NSString*)",
-          "score": 0.6644,
-          "name_score": 0.4906,
-          "size_score": 0.925
-        },
-        {
-          "symbol": "cRMouse::ClickScreen(bool, float, float)",
-          "score": 0.66,
-          "name_score": 0.9,
-          "size_score": 0.3
-        },
-        {
-          "symbol": "OFControllerLoader::getViewClass(NSString*)",
-          "score": 0.6467,
-          "name_score": 0.4611,
-          "size_score": 0.925
-        },
-        {
-          "symbol": "tVector::operator*=(tMatrix)",
-          "score": 0.6165,
-          "name_score": 0.4608,
-          "size_score": 0.85
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RShellSetMouse(int, float, float)",
+      "ios_symbol": "RShellSetMouse(int, float, float)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x432440",
@@ -21551,39 +21493,11 @@
       "address": "0x447290",
       "windows_name": "recycle_bod_to_free_list",
       "windows_size": 112,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cLinkedList<cRBod>::Remove(cRBod*)",
-          "score": 0.9257,
-          "name_score": 0.9,
-          "size_score": 0.9643
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.9013,
-          "name_score": 0.9,
-          "size_score": 0.9032
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.9013,
-          "name_score": 0.9,
-          "size_score": 0.9032
-        },
-        {
-          "symbol": "cLinkedList<cRBod>::AddBefore(cRBod&, cRBod&)",
-          "score": 0.7429,
-          "name_score": 0.6429,
-          "size_score": 0.8929
-        },
-        {
-          "symbol": "cLinkedList<cRBod>::Add(cRBod&)",
-          "score": 0.7357,
-          "name_score": 0.75,
-          "size_score": 0.7143
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cLinkedList<cRBod>::Remove(cRBod*)",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRBod::cRBod()",
@@ -21610,10 +21524,10 @@
           "size_score": 0.9032
         },
         {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.6457,
-          "name_score": 0.6,
-          "size_score": 0.7143
+          "symbol": "RShellSoundRegister(char*, int)",
+          "score": 0.67,
+          "name_score": 0.45,
+          "size_score": 1.0
         }
       ]
     },
@@ -24650,319 +24564,59 @@
       "address": "0x44b7d0",
       "windows_name": "initialize_keyboard_input",
       "windows_size": 160,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "tMatrix::LinearInterpolate(tMatrix const&, tMatrix const&, float)",
-          "score": 0.6876,
-          "name_score": 0.5294,
-          "size_score": 0.925
-        },
-        {
-          "symbol": "tMatrix::LinearInterpolateSmooth(tMatrix const&, tMatrix const&, float, float)",
-          "score": 0.65,
-          "name_score": 0.45,
-          "size_score": 0.95
-        },
-        {
-          "symbol": "KeyboardAI()",
-          "score": 0.644,
-          "name_score": 0.64,
-          "size_score": 0.65
-        },
-        {
-          "symbol": "cRBorder::InputTextInit(int, char*, int)",
-          "score": 0.644,
-          "name_score": 0.54,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRGameInput::AI()",
-          "score": 0.6259,
-          "name_score": 0.4431,
-          "size_score": 0.9
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "OFBinaryKeyedWriter::OFBinaryKeyedWriter(bool)",
-          "score": 0.6666,
-          "name_score": 0.4444,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRGameInput::AI()",
-          "score": 0.6295,
-          "name_score": 0.4431,
-          "size_score": 0.9091
-        },
-        {
-          "symbol": "cRBorderManager::HideBorders()",
-          "score": 0.6208,
-          "name_score": 0.4286,
-          "size_score": 0.9091
-        },
-        {
-          "symbol": "OFBlobDownloadObserver::invokeFailure(OFHttpServiceRequestContainer*)",
-          "score": 0.62,
-          "name_score": 0.4,
-          "size_score": 0.95
-        },
-        {
-          "symbol": "OFBinaryKeyedWriter::nviIo(OFISerializerKey*, float&)",
-          "score": 0.6007,
-          "name_score": 0.4178,
-          "size_score": 0.875
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "KeyboardInit()",
+      "ios_symbol": "KeyboardInit()",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x44b870",
       "windows_name": "update_keyboard_input",
       "windows_size": 672,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRDirectX::Export(cRObject*, char*)",
-          "score": 0.7252,
-          "name_score": 0.6,
-          "size_score": 0.913
-        },
-        {
-          "symbol": "tQuaternian::tQuaternian(tMatrix const&)",
-          "score": 0.6376,
-          "name_score": 0.4,
-          "size_score": 0.9941
-        },
-        {
-          "symbol": "tQuaternian::tQuaternian(tMatrix const&)",
-          "score": 0.6376,
-          "name_score": 0.4,
-          "size_score": 0.9941
-        },
-        {
-          "symbol": "cRLoadingBar::ScriptAI()",
-          "score": 0.5917,
-          "name_score": 0.384,
-          "size_score": 0.9032
-        },
-        {
-          "symbol": "cRSubTracks::ImportSegment(char*, cRSubSegment*)",
-          "score": 0.5732,
-          "name_score": 0.375,
-          "size_score": 0.8705
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBorder::InputTextInit(int, char*, int)",
-          "score": 0.6454,
-          "name_score": 0.5082,
-          "size_score": 0.8512
-        },
-        {
-          "symbol": "cRDirectX::LoadAnim(char*, cRObject*)",
-          "score": 0.6077,
-          "name_score": 0.45,
-          "size_score": 0.8442
-        },
-        {
-          "symbol": "tQuaternian::tQuaternian(tMatrix const&)",
-          "score": 0.6067,
-          "name_score": 0.4,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "OFHttpNestedQueryStringWriter::storeInnerStreamOfType(OFISerializer*, OFRTTI const*)",
-          "score": 0.6022,
-          "name_score": 0.3525,
-          "size_score": 0.9767
-        },
-        {
-          "symbol": "cRSubTracks::ImportSegment(char*, cRSubSegment*)",
-          "score": 0.5942,
-          "name_score": 0.375,
-          "size_score": 0.9231
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "KeyboardAI()",
+      "ios_symbol": "KeyboardAI()",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x44bb10",
       "windows_name": "is_key_pressed_edge",
       "windows_size": 48,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "KeyPress(unsigned char)",
-          "score": 0.7429,
-          "name_score": 0.6667,
-          "size_score": 0.8571
-        },
-        {
-          "symbol": "cRFade::FadeIn()",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorder::SpriteExtend(int, int, int, bool)",
-          "score": 0.6572,
-          "name_score": 0.4286,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "G0RenderSprite3DEnd()",
-          "score": 0.6563,
-          "name_score": 0.4828,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "cRInput::Update()",
-          "score": 0.6392,
-          "name_score": 0.45,
-          "size_score": 0.9231
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "KeyPress(unsigned char)",
-          "score": 0.7667,
-          "name_score": 0.6667,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "cRFade::FadeIn()",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "KeyboardInit()",
-          "score": 0.6392,
-          "name_score": 0.45,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "cRSubGame::HideScores()",
-          "score": 0.6308,
-          "name_score": 0.3846,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRMouse::ClickScreen(bool, float, float)",
-          "score": 0.6222,
-          "name_score": 0.3704,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "KeyPress(unsigned char)",
+      "ios_symbol": "KeyPress(unsigned char)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x44bb40",
       "windows_name": "is_key_down",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "KeyOn(unsigned char)",
-          "score": 0.7841,
-          "name_score": 0.7143,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "KeyTest(unsigned char)",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRMouse::ClickOn()",
-          "score": 0.65,
-          "name_score": 0.5,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRSubGoldy::Passed()",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSure::UnInit()",
-          "score": 0.6304,
-          "name_score": 0.384,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "KeyOn(unsigned char)",
-          "score": 0.7786,
-          "name_score": 0.7143,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRMouse::ClickOn()",
-          "score": 0.65,
-          "name_score": 0.5,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "OFDelegate::isValid() const",
-          "score": 0.625,
-          "name_score": 0.375,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFISerializer::StringKey::~StringKey()",
-          "score": 0.6222,
-          "name_score": 0.4444,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "OFBinarySdbmKeyedWriter::~OFBinarySdbmKeyedWriter()",
-          "score": 0.6181,
-          "name_score": 0.4375,
-          "size_score": 0.8889
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "KeyOn(unsigned char)",
+      "ios_symbol": "KeyOn(unsigned char)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x44bb60",
       "windows_name": "release_keyboard_input",
       "windows_size": 80,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "KeyboardAI()",
-          "score": 0.6633,
-          "name_score": 0.5926,
-          "size_score": 0.7692
-        },
-        {
-          "symbol": "KeyboardInit()",
-          "score": 0.6356,
-          "name_score": 0.5926,
-          "size_score": 0.7
-        },
-        {
-          "symbol": "cLinkedList<cRBod>::Add(cRBod&)",
-          "score": 0.6304,
-          "name_score": 0.384,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorderManager::ActivateBorders()",
-          "score": 0.628,
-          "name_score": 0.4118,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "cRBorder::XLeft()",
-          "score": 0.592,
-          "name_score": 0.32,
-          "size_score": 1.0
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "FreeDirectInputKeyboard()",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "KeyboardAI()",
@@ -25350,71 +25004,13 @@
       "address": "0x44c060",
       "windows_name": "click_mouse_screen",
       "windows_size": 160,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "MouseSet(int, int, int)",
-          "score": 0.85,
-          "name_score": 0.9,
-          "size_score": 0.775
-        },
-        {
-          "symbol": "cRMouse::SetActive()",
-          "score": 0.77,
-          "name_score": 0.9,
-          "size_score": 0.575
-        },
-        {
-          "symbol": "RShellSetMouse(int, float, float)",
-          "score": 0.7528,
-          "name_score": 0.675,
-          "size_score": 0.8696
-        },
-        {
-          "symbol": "SetGameState(int, int, int, int)",
-          "score": 0.741,
-          "name_score": 0.6,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "cRGameInput::AI()",
-          "score": 0.72,
-          "name_score": 0.6,
-          "size_score": 0.9
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRMouse::SetActive()",
-          "score": 0.93,
-          "name_score": 0.9,
-          "size_score": 0.975
-        },
-        {
-          "symbol": "MouseSet(int, int, int)",
-          "score": 0.82,
-          "name_score": 0.9,
-          "size_score": 0.7
-        },
-        {
-          "symbol": "RShellSetMouse(int, float, float)",
-          "score": 0.7952,
-          "name_score": 0.675,
-          "size_score": 0.9756
-        },
-        {
-          "symbol": "cRGameInput::AI()",
-          "score": 0.7236,
-          "name_score": 0.6,
-          "size_score": 0.9091
-        },
-        {
-          "symbol": "cRMouse::ClickScreen(bool, float, float)",
-          "score": 0.72,
-          "name_score": 1.0,
-          "size_score": 0.3
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "MouseSet(int, int, int)",
+      "ios_symbol": "MouseSet(int, int, int)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x44c100",

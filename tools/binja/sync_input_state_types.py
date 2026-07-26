@@ -1,24 +1,24 @@
 from __future__ import annotations
 
-from pathlib import Path
+import argparse
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
+    apply_int_display_updates,
     apply_proto_updates,
-    apply_symbol_removals,
     apply_struct_field_updates,
+    apply_symbol_removals,
     apply_symbol_updates,
     apply_user_var_updates,
     emit_summary,
     types_declare_if_changed,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/bn_input_state_types.h"
-TARGET = DEFAULT_TARGET
 
 GAME_INPUT_DATA_SYMBOL_UPDATES = (
     ("0x4972f0", "g_game_input_callback_table"),
@@ -134,6 +134,51 @@ MOUSE_FUNCTION_SYMBOL_UPDATES = (
     ("0x44c310", "initialize_mouse_input"),
 )
 
+KEYBOARD_DATA_SYMBOL_UPDATES = (
+    ("0x777b4c", "g_keyboard_previous_state"),
+    ("0x777c4c", "g_keyboard_current_state"),
+    ("0x777d4c", "g_keyboard_input"),
+    ("0x777d50", "g_keyboard_device"),
+)
+
+KEYBOARD_DATA_VAR_UPDATES = (
+    ("0x777b4c", "uint8_t[256]"),
+    ("0x777c4c", "uint8_t[256]"),
+    ("0x777d4c", "IDirectInput8A*"),
+    ("0x777d50", "IDirectInputDevice8A*"),
+)
+
+KEYBOARD_FUNCTION_SYMBOL_UPDATES = (
+    ("0x44b7d0", "initialize_keyboard_input"),
+    ("0x44b870", "update_keyboard_input"),
+    ("0x44bb10", "is_key_pressed_edge"),
+    ("0x44bb40", "is_key_down"),
+    ("0x44bb60", "release_keyboard_input"),
+)
+
+KEYBOARD_FLAG_INT_DISPLAY_UPDATES = (
+    (
+        "update_keyboard_input",
+        "0x44ba7d",
+        "81 ce 00 00 40 00",
+        0x400000,
+        0xFFFFFFFF,
+        "UnsignedHexadecimalDisplayType",
+        "buttons |= INPUT_BUTTON_UNRESOLVED_00400000",
+        "buttons |= &__dos_header",
+    ),
+    (
+        "update_keyboard_input",
+        "0x44bab9",
+        "81 ce 00 00 80 00",
+        0x800000,
+        0xFFFFFFFF,
+        "UnsignedHexadecimalDisplayType",
+        "buttons |= INPUT_BUTTON_UNRESOLVED_00800000",
+        "buttons |= &data_800000",
+    ),
+)
+
 CONTROLLER_DATA_SYMBOL_UPDATES = (
     ("0x777b2c", "g_joystick_count"),
     ("0x777b30", "g_joystick_input"),
@@ -209,7 +254,7 @@ INPUT_POINTER_REGION_PROTO_UPDATES = (
     ),
     (
         "set_input_controller_pointer_authored_xy",
-        "void* __cdecl set_input_controller_pointer_authored_xy(int32_t slot, float authored_x, float authored_y)",
+        "void __cdecl set_input_controller_pointer_authored_xy(int32_t slot, float authored_x, float authored_y)",
     ),
 )
 
@@ -232,10 +277,13 @@ PROTO_UPDATES = (
     ("0x44bc20", "float __cdecl resolve_uncaptured_cursor_sensitivity_scale(float scale)"),
     ("0x44bc50", "int32_t __cdecl update_mouse(int32_t window_handle)"),
     ("0x44c050", "char __cdecl set_hide_system_cursor_flag(char hidden)"),
-    ("0x44c060", "void* __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)"),
+    ("0x44c060", "void __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)"),
     ("0x44c100", "void __cdecl convert_mouse_screen_xy(int32_t sensitivity_slot, float* x, float* y)"),
     ("0x44c2c0", "int32_t __cdecl release_mouse_input()"),
     ("0x44c310", "int32_t __cdecl initialize_mouse_input(int32_t window_handle)"),
+    ("0x44bb10", "uint8_t __cdecl is_key_pressed_edge(uint8_t key_code)"),
+    ("0x44bb40", "uint8_t __cdecl is_key_down(uint8_t key_code)"),
+    ("0x44bb60", "void __cdecl release_keyboard_input()"),
     (
         "0x44b3c0",
         "int32_t __cdecl enumerate_input_controllers(int32_t window_handle, int32_t* out_count)",
@@ -272,148 +320,183 @@ CONTROLLER_USER_VAR_UPDATES = (
 )
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Replay the recovered input-state ownership into Binary Ninja."
+    )
+    parser.add_argument(
+        "--target",
+        default=DEFAULT_TARGET,
+        help="Binary Ninja target selector.",
+    )
+    return parser.parse_args()
+
+
 def main() -> int:
+    target = parse_args().target
     operations = [
         types_declare_if_changed(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             header_path=HEADER_PATH,
         ),
         *apply_struct_field_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             struct_name="InputState",
             updates=INPUT_STATE_FIELDS,
         ),
         *apply_struct_field_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             struct_name="InputControllerSlot",
             updates=INPUT_CONTROLLER_SLOT_FIELDS,
         ),
         *apply_struct_field_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             struct_name="GameInput",
             updates=GAME_INPUT_FIELDS,
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=GAME_INPUT_DATA_SYMBOL_UPDATES,
             kind="data",
         ),
         *apply_data_var_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=GAME_INPUT_DATA_VAR_UPDATES,
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=GAME_INPUT_FUNCTION_SYMBOL_UPDATES,
             kind="function",
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=INPUT_CONTROLLER_DATA_SYMBOL_UPDATES,
             kind="data",
         ),
         *apply_symbol_removals(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             removals=INPUT_CONTROLLER_INTERIOR_SYMBOL_REMOVALS,
         ),
         *apply_data_var_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=INPUT_CONTROLLER_DATA_VAR_UPDATES,
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=RSHELL_INPUT_FUNCTION_SYMBOL_UPDATES,
             kind="function",
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=INPUT_POINTER_REGION_FUNCTION_SYMBOL_UPDATES,
             kind="function",
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=INPUT_POINTER_REGION_DATA_SYMBOL_UPDATES,
             kind="data",
         ),
         *apply_data_var_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=INPUT_POINTER_REGION_DATA_VAR_UPDATES,
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=TEXT_INPUT_DATA_SYMBOL_UPDATES,
             kind="data",
         ),
         *apply_data_var_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=TEXT_INPUT_DATA_VAR_UPDATES,
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=TEXT_INPUT_FUNCTION_SYMBOL_UPDATES,
             kind="function",
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
+            updates=KEYBOARD_DATA_SYMBOL_UPDATES,
+            kind="data",
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=target,
+            updates=KEYBOARD_DATA_VAR_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=target,
+            updates=KEYBOARD_FUNCTION_SYMBOL_UPDATES,
+            kind="function",
+        ),
+        *apply_int_display_updates(
+            REPO_ROOT,
+            target=target,
+            updates=KEYBOARD_FLAG_INT_DISPLAY_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=target,
             updates=MOUSE_DATA_SYMBOL_UPDATES,
             kind="data",
         ),
         *apply_data_var_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=MOUSE_DATA_VAR_UPDATES,
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=MOUSE_FUNCTION_SYMBOL_UPDATES,
             kind="function",
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=CONTROLLER_DATA_SYMBOL_UPDATES,
             kind="data",
         ),
         *apply_data_var_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=CONTROLLER_DATA_VAR_UPDATES,
         ),
         *apply_symbol_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=CONTROLLER_FUNCTION_SYMBOL_UPDATES,
             kind="function",
         ),
-        *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
+        *apply_proto_updates(REPO_ROOT, target=target, updates=PROTO_UPDATES),
         *apply_user_var_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=target,
             updates=CONTROLLER_USER_VAR_UPDATES,
         ),
     ]
     return emit_summary(
         repo_root=REPO_ROOT,
-        target=TARGET,
+        target=target,
         header_path=HEADER_PATH,
         operations=operations,
     )

@@ -22,3 +22,11 @@ coordinates as `float`, matching every caller and both decompilers; only the
 VC6 matcher scratch uses integer parameter spelling to reproduce the native
 raw-bit stores. The tracked BN and IDA artifacts now agree on the same owner
 graph, and the focused row remains exact at 40/40 with 11 clean operands.
+
+## 2026-07-27 mobile ABI correction
+
+Android and iOS preserve the corresponding authored function as void
+`RShellSetMouse(int, float, float)` and tail it through void
+`MouseSet(int, int, int)`. The Windows callers likewise ignore the incidental
+`eax` residue. Correcting both declarations to void retains the exact 40/40
+Windows body while removing a synthetic pointer-return chain.

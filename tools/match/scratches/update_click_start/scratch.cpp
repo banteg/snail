@@ -7,7 +7,7 @@
 
 
 void set_math_random_seed(int seed);
-void* set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);
+void set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);
 
 void ClickStart::update_click_start()
 {

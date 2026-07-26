@@ -5800,6 +5800,7 @@
       "name": "ida_mouse_coordinate_globals",
       "artifact": "analysis/decompile/ida/functions/0044c060-click_mouse_screen.c",
       "required_substrings": [
+        "void __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)",
         "g_mouse_screen_x[slot]",
         "g_mouse_screen_y[slot]",
         "g_mouse_live_x[slot]",
@@ -5816,6 +5817,7 @@
         "*((_DWORD *)g_game_base + 163)",
         "+ 96)",
         "+ 100)",
+        "return result",
         "__asm",
         "_ET1"
       ]
@@ -5878,6 +5880,7 @@
         "arg1",
         "data_5088",
         "sub_4323a0",
+        "return click_mouse_screen",
         "__asm",
         "_ET1"
       ]
@@ -5886,7 +5889,7 @@
       "name": "ida_input_pointer_authored_xy_owner",
       "artifact": "analysis/decompile/ida/functions/004323a0-set_input_controller_pointer_authored_xy.c",
       "required_substrings": [
-        "void *__cdecl set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y)",
+        "void __cdecl set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y)",
         "g_input_region_left[slot]",
         "g_input_region_top[slot]",
         "g_input_region_right[slot]",
@@ -8084,7 +8087,7 @@
         "&game->runtime_cells",
         "&game->runtime_rows[0].row_model.body.bod.bod.list_next",
         "&game->health_pickups[0].bod.bod.list_next",
-        "&game->ring_effects.slots[0].bod.list_next",
+        "&game->ring_effects.slots[0].body.bod.bod.list_next",
         "game->player.body.bod.bod.list_flags",
         "struct TrackRowCell* runtime_cell_cursor",
         "struct BodNode** row_list_next_cursor",
@@ -20589,7 +20592,7 @@
       "name": "ida_bod_list_recycle_owner_abi",
       "artifact": "analysis/decompile/ida/functions/00447290-recycle_bod_to_free_list.c",
       "required_substrings": [
-        "int32_t __thiscall recycle_bod_to_free_list(BodList *list, BodNode *node)",
+        "void __thiscall recycle_bod_to_free_list(BodList *list, BodNode *node)",
         "list_next = node->list_next;",
         "list->first = node->list_next;",
         "node->list_next = list->free_top;",
@@ -20599,6 +20602,7 @@
         "sub_447290",
         "_DWORD *this",
         "_DWORD *a2",
+        "return result",
         "unimplemented"
       ]
     },
@@ -22118,6 +22122,157 @@
         "char *__cdecl sub_44E600",
         "char *a1",
         "char *a2"
+      ]
+    },
+    {
+      "name": "bn_keyboard_directinput_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/0044b7d0-initialize_keyboard_input.c",
+      "required_substrings": [
+        "struct IDirectInput8A* keyboard_input_1 = g_keyboard_input",
+        "keyboard_input_1->lpVtbl->CreateDevice",
+        "struct IDirectInputDevice8A* keyboard_device_1 = g_keyboard_device",
+        "keyboard_device_1->lpVtbl->SetDataFormat",
+        "__builtin_memset(&g_keyboard_previous_state, 0, 0x100)",
+        "__builtin_memset(&g_keyboard_current_state, 0, 0x100)"
+      ],
+      "forbidden_substrings": [
+        "int32_t* eax_1 = g_keyboard_input",
+        "data_777b",
+        "data_777d",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_keyboard_directinput_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/0044b7d0-initialize_keyboard_input.c",
+      "required_substrings": [
+        "g_keyboard_input->lpVtbl->CreateDevice",
+        "g_keyboard_device->lpVtbl->SetDataFormat",
+        "g_keyboard_device->lpVtbl->SetCooperativeLevel",
+        "sizeof(g_keyboard_previous_state)",
+        "sizeof(g_keyboard_current_state)"
+      ],
+      "forbidden_substrings": [
+        "dword_777B",
+        "dword_777D",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_keyboard_flag_immediate_ownership",
+      "artifact": "analysis/decompile/binja/functions/0044b870-update_keyboard_input.c",
+      "required_substrings": [
+        "buttons |= INPUT_BUTTON_UNRESOLVED_00400000",
+        "buttons |= INPUT_BUTTON_UNRESOLVED_00800000"
+      ],
+      "forbidden_substrings": [
+        "&__dos_header",
+        "&data_800000",
+        "&g_sprite_manager",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_keyboard_flag_immediate_ownership",
+      "artifact": "analysis/decompile/ida/functions/0044b870-update_keyboard_input.c",
+      "required_substrings": [
+        "v2 |= 0x400000u",
+        "v2 |= 0x800000u"
+      ],
+      "forbidden_substrings": [
+        "&g_sprite_manager",
+        "unk_800000",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_keypress_mobile_argument_and_state_ownership",
+      "artifact": "analysis/decompile/binja/functions/0044bb10-is_key_pressed_edge.c",
+      "required_substrings": [
+        "g_keyboard_current_state[key_code_1] == 0x80",
+        "g_keyboard_previous_state[key_code_1] == 0"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "0x777c4c",
+        "0x777b4c",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_keypress_mobile_argument_and_state_ownership",
+      "artifact": "analysis/decompile/ida/functions/0044bb10-is_key_pressed_edge.c",
+      "required_substrings": [
+        "uint8_t __cdecl is_key_pressed_edge(uint8_t key_code)",
+        "g_keyboard_current_state[key_code] == 0x80",
+        "g_keyboard_previous_state[key_code] == 0"
+      ],
+      "forbidden_substrings": [
+        "sub_44BB10",
+        "MEMORY[0x777",
+        "unsigned __int8 a1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_keyon_mobile_argument_and_state_ownership",
+      "artifact": "analysis/decompile/binja/functions/0044bb40-is_key_down.c",
+      "required_substrings": [
+        "g_keyboard_current_state[zx.d(key_code)] == 0x80"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "0x777c4c",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_keyon_mobile_argument_and_state_ownership",
+      "artifact": "analysis/decompile/ida/functions/0044bb40-is_key_down.c",
+      "required_substrings": [
+        "uint8_t __cdecl is_key_down(uint8_t key_code)",
+        "g_keyboard_current_state[key_code] == 0x80"
+      ],
+      "forbidden_substrings": [
+        "sub_44BB40",
+        "MEMORY[0x777",
+        "unsigned __int8 a1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_keyboard_teardown_void_owner",
+      "artifact": "analysis/decompile/binja/functions/0044bb60-release_keyboard_input.c",
+      "required_substrings": [
+        "struct IDirectInputDevice8A* keyboard_device_2 = g_keyboard_device",
+        "keyboard_device_2->lpVtbl->Unacquire",
+        "keyboard_device_1->lpVtbl->Release",
+        "g_keyboard_device = nullptr",
+        "keyboard_input_1->lpVtbl->Release",
+        "g_keyboard_input = nullptr",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "return keyboard_input_1",
+        "data_777d",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_keyboard_teardown_void_owner",
+      "artifact": "analysis/decompile/ida/functions/0044bb60-release_keyboard_input.c",
+      "required_substrings": [
+        "void __cdecl release_keyboard_input()",
+        "g_keyboard_device->lpVtbl->Unacquire",
+        "g_keyboard_device->lpVtbl->Release",
+        "g_keyboard_device = nullptr",
+        "g_keyboard_input->lpVtbl->Release",
+        "g_keyboard_input = nullptr"
+      ],
+      "forbidden_substrings": [
+        "return result",
+        "dword_777",
+        "unimplemented"
       ]
     }
   ]

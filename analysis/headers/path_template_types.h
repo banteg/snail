@@ -2760,7 +2760,7 @@ Object* __thiscall apply_bod_position(
     BodBase* bod,
     TransformMatrix* matrix
 );
-int32_t __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node);
+void __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node);
 RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body);
 TrackRenderCacheSlot* __thiscall initialize_active_bod(TrackRenderCacheSlot* slot);
 void __thiscall update_active_bod(TrackRenderCacheSlot* slot);

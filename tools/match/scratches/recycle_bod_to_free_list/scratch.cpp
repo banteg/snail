@@ -4,7 +4,7 @@
 
 int report_errorf(char* format, ...);
 
-int BodList::recycle_bod_to_free_list(BodNode* node)
+void BodList::recycle_bod_to_free_list(BodNode* node)
 {
-    return remove_bod(node);
+    remove_bod(node);
 }

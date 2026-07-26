@@ -224,7 +224,7 @@ BOD_CORE_OWNER_MARKERS = (
     "void __thiscall add_bod_to_front(BodList* list, BodNode* node);",
     "void __thiscall append_bod_to_end(BodList* list, BodNode* node);",
     "bool __thiscall is_bod_after_sprites(BodBase* bod);",
-    "int32_t __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node);",
+    "void __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node);",
 )
 
 BOD_CORE_OWNER_SIZES = {
@@ -1848,7 +1848,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "recycle_bod_to_free_list",
-        "int32_t __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node);",
+        "void __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node);",
     ),
     (
         "initialize_active_bod",

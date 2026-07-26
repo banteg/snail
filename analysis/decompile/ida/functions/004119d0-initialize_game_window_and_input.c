@@ -56,7 +56,7 @@ LABEL_7:
   }
   v4 = g_game_window_instance;
   g_fullscreen_active = 0;
-  if ( !g_game_window_instance )
+  if ( g_game_window_instance == 0 )
   {
     v4 = ((int (__stdcall *)(_DWORD))GetModuleHandleA)(0);
     g_game_window_instance = v4;
@@ -69,9 +69,9 @@ LABEL_7:
   window_class.icon = ((int (__stdcall *)(int, int))LoadIconA)(v4, 103);
   memset(&window_class.cursor, 0, 12);
   window_class.class_name = (char *)szClass;
-  if ( !(unsigned __int16)((int (__stdcall *)(struct WndClassA *))RegisterClassA)(&window_class) )
+  if ( (unsigned __int16)((int (__stdcall *)(struct WndClassA *))RegisterClassA)(&window_class) == 0 )
     abort_startup_with_3d_error();
-  if ( !g_fullscreen_active )
+  if ( g_fullscreen_active == 0 )
     goto LABEL_15;
   memset(&display_mode, 0, sizeof(display_mode));
   display_mode.size = 156;
@@ -79,7 +79,7 @@ LABEL_7:
   display_mode.pels_height = v3;
   display_mode.bits_per_pel = v1;
   display_mode.fields = 1835008;
-  if ( ((int (__stdcall *)(struct DevModeA *, int))ChangeDisplaySettingsA)(&display_mode, 4) )
+  if ( ((int (__stdcall *)(struct DevModeA *, int))ChangeDisplaySettingsA)(&display_mode, 4) != 0 )
   {
     g_fullscreen_active = 0;
 LABEL_15:
@@ -91,11 +91,11 @@ LABEL_15:
     v3 = 480;
     goto LABEL_16;
   }
-  if ( !g_fullscreen_active )
+  if ( g_fullscreen_active == 0 )
     goto LABEL_15;
   v5 = 0x40000;
   v6 = 0x80000000;
-  ShowCursor(0);
+  ShowCursor(false);
   X = 0;
   Y = 0;
   authored_height = (float)v3;
@@ -120,13 +120,13 @@ LABEL_16:
          g_game_window_instance,
          0);
   g_main_window = v7;
-  if ( !v7 )
+  if ( v7 == 0 )
   {
     release_global_direct3d_renderer_resources();
     abort_startup_with_3d_error();
   }
   g_main_window_dc = GetDC(v7);
-  if ( !g_main_window_dc )
+  if ( g_main_window_dc == 0 )
   {
     release_global_direct3d_renderer_resources();
     abort_startup_with_3d_error();
@@ -134,7 +134,7 @@ LABEL_16:
   ShowWindow(g_main_window, 5);
   SetForegroundWindow(g_main_window);
   SetFocus(g_main_window);
-  if ( !initialize_direct3d_renderer() )
+  if ( initialize_direct3d_renderer() == 0 )
   {
     release_global_direct3d_renderer_resources();
     abort_startup_with_3d_error();

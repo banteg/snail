@@ -48,7 +48,7 @@ class BodList {
 public:
     void add_bod_to_front(BodNode* node); // @ 0x4113b0
     void append_bod_to_end(BodNode* node); // @ 0x411420
-    int recycle_bod_to_free_list(BodNode* node); // @ 0x447290
+    void recycle_bod_to_free_list(BodNode* node); // @ 0x447290
 
     // Inlined cLinkedList<cRBod>::Add used by pickup allocators.
     void add_bod(BodNode* node)
@@ -71,14 +71,17 @@ public:
     }
 
     // Inlined cLinkedList<cRBod>::Remove; 0x447290 is its exact emitted copy.
-    int remove_bod(BodNode* node)
+    void remove_bod(BodNode* node)
     {
-        int result = (int)node;
         unsigned int flags = node->list_flags;
-        if ((flags & BOD_FLAG_LINKED) == 0)
-            return report_errorf("List remove");
-        if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0)
-            return report_errorf("List remove NEXTBOD");
+        if ((flags & BOD_FLAG_LINKED) == 0) {
+            report_errorf("List remove");
+            return;
+        }
+        if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
+            report_errorf("List remove NEXTBOD");
+            return;
+        }
 
         BodNode* next = node->list_next;
         if (next != 0)
@@ -93,7 +96,6 @@ public:
         node->list_next = free_top;
         free_top = node;
         node->list_flags &= ~BOD_FLAG_LINKED;
-        return result;
     }
 
     int unknown_00;

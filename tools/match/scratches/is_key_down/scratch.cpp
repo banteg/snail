@@ -2,9 +2,9 @@
 
 #include "direct_input_view.h"
 
-unsigned char is_key_down(int key_code)
+unsigned char is_key_down(unsigned char key_code)
 {
-    if (g_keyboard_current_state[key_code & 0xff] == 0x80)
+    if (g_keyboard_current_state[key_code] == 0x80)
         return 1;
     return 0;
 }

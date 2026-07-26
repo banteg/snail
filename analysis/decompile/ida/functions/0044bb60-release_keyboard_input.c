@@ -3,25 +3,20 @@
 /* selector: release_keyboard_input */
 
 // Releases the DirectInput keyboard device and its shared DirectInput interface, clearing the global keyboard-input handles.
-int release_mouse_input()
+void __cdecl release_keyboard_input()
 {
-  int result; // eax
-
-  if ( dword_777B2C[137] )
+  if ( g_keyboard_device != nullptr )
   {
-    (*(void (__stdcall **)(int))(*(_DWORD *)dword_777B2C[137] + 32))(dword_777B2C[137]);
-    if ( dword_777B2C[137] )
+    g_keyboard_device->lpVtbl->Unacquire(g_keyboard_device);
+    if ( g_keyboard_device != nullptr )
     {
-      (*(void (__stdcall **)(int))(*(_DWORD *)dword_777B2C[137] + 8))(dword_777B2C[137]);
-      dword_777B2C[137] = 0;
+      g_keyboard_device->lpVtbl->Release(g_keyboard_device);
+      g_keyboard_device = nullptr;
     }
   }
-  result = dword_777B2C[136];
-  if ( dword_777B2C[136] )
+  if ( g_keyboard_input != nullptr )
   {
-    result = (*(int (__stdcall **)(int))(*(_DWORD *)dword_777B2C[136] + 8))(dword_777B2C[136]);
-    dword_777B2C[136] = 0;
+    g_keyboard_input->lpVtbl->Release(g_keyboard_input);
+    g_keyboard_input = nullptr;
   }
-  return result;
 }
-

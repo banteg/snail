@@ -7,14 +7,14 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
 {
   TrackRowCell *runtime_cell_cursor; // edi
   BodNode **row_list_next_cursor; // esi
-  int v3; // ebp
+  int i; // ebp
   BodList *p_active_bod_list; // ecx
   int v5; // eax
   int v6; // eax
   BodNode *v7; // eax
-  int v8; // ebx
+  int j; // ebx
   BodNode **health_list_next_cursor; // esi
-  int v10; // edi
+  int k; // edi
   int v11; // eax
   BodList *v12; // ecx
   int v13; // eax
@@ -30,19 +30,19 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
   struct BodNode *v23; // ecx
   uint32_t v24; // ecx
   BodNode **garbage_list_next_cursor; // esi
-  int v26; // edi
+  int m; // edi
   int v27; // eax
   BodList *v28; // ecx
   int v29; // eax
   BodNode *v30; // eax
   BodNode **slug_list_next_cursor; // esi
-  int v32; // edi
+  int n; // edi
   int v33; // eax
   BodList *v34; // ecx
   int v35; // eax
   BodNode *v36; // eax
   BodNode **ring_list_next_cursor; // esi
-  int v38; // edi
+  int ii; // edi
   int v39; // eax
   BodList *v40; // ecx
   int v41; // eax
@@ -68,12 +68,11 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
   struct BodNode *v61; // ecx
   uint32_t v62; // ecx
   GolbShot *golb_shot_cursor; // esi
-  int v64; // edi
+  int jj; // edi
 
   runtime_cell_cursor = game->runtime_cells[0];
   row_list_next_cursor = &game->runtime_rows[0].row_model.body.bod.bod.list_next;
-  v3 = 3200;
-  do
+  for ( i = 3200; i != 0; --i )
   {
     if ( (((unsigned __int16)*(row_list_next_cursor - 2) >> 8) & 2) != 0 )
     {
@@ -87,10 +86,10 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         }
         else
         {
-          if ( *row_list_next_cursor )
+          if ( *row_list_next_cursor != nullptr )
             (*row_list_next_cursor)->list_prev = *(row_list_next_cursor - 1);
           v6 = (int)*(row_list_next_cursor - 1);
-          if ( v6 )
+          if ( v6 != 0 )
             *(_DWORD *)(v6 + 12) = *row_list_next_cursor;
           else
             p_active_bod_list->first = *row_list_next_cursor;
@@ -106,21 +105,13 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         report_errorf(aListRemove);
       }
     }
-    v8 = 8;
-    do
-    {
+    for ( j = 8; j != 0; --j )
       remove_sub_loc(runtime_cell_cursor++);
-      --v8;
-    }
-    while ( v8 );
     row_list_next_cursor += 61;
-    --v3;
   }
-  while ( v3 );
   remove_track_render_cache_bods(&game->segment_cache);
   health_list_next_cursor = &game->health_pickups[0].bod.bod.list_next;
-  v10 = 8;
-  do
+  for ( k = 8; k != 0; --k )
   {
     v11 = (int)*(health_list_next_cursor - 2);
     if ( (v11 & 0x200) != 0 )
@@ -132,10 +123,10 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       }
       else
       {
-        if ( *health_list_next_cursor )
+        if ( *health_list_next_cursor != nullptr )
           (*health_list_next_cursor)->list_prev = *(health_list_next_cursor - 1);
         v13 = (int)*(health_list_next_cursor - 1);
-        if ( v13 )
+        if ( v13 != 0 )
           *(_DWORD *)(v13 + 12) = *health_list_next_cursor;
         else
           v12->first = *health_list_next_cursor;
@@ -148,9 +139,7 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       health_list_next_cursor[11] = nullptr;
     }
     health_list_next_cursor += 29;
-    --v10;
   }
-  while ( v10 );
   if ( (game->speedup_pickup.body.bod.bod.list_flags & 0x200) != 0 )
   {
     v15 = &g_game_base->active_bod_list;
@@ -164,10 +153,10 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       else
       {
         list_next = game->speedup_pickup.body.bod.bod.list_next;
-        if ( list_next )
+        if ( list_next != nullptr )
           list_next->list_prev = game->speedup_pickup.body.bod.bod.list_prev;
         list_prev = game->speedup_pickup.body.bod.bod.list_prev;
-        if ( list_prev )
+        if ( list_prev != nullptr )
           list_prev->list_next = game->speedup_pickup.body.bod.bod.list_next;
         else
           v15->first = game->speedup_pickup.body.bod.bod.list_next;
@@ -197,10 +186,10 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       else
       {
         v22 = game->jetpack_pickup.bod.bod.list_next;
-        if ( v22 )
+        if ( v22 != nullptr )
           v22->list_prev = game->jetpack_pickup.bod.bod.list_prev;
         v23 = game->jetpack_pickup.bod.bod.list_prev;
-        if ( v23 )
+        if ( v23 != nullptr )
           v23->list_next = game->jetpack_pickup.bod.bod.list_next;
         else
           v21->first = game->jetpack_pickup.bod.bod.list_next;
@@ -218,8 +207,7 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
     game->jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
   }
   garbage_list_next_cursor = &game->garbage_hazards.slots[0].body.bod.bod.list_next;
-  v26 = 50;
-  do
+  for ( m = 50; m != 0; --m )
   {
     if ( (((unsigned __int16)*(garbage_list_next_cursor - 2) >> 8) & 2) != 0 )
     {
@@ -234,10 +222,10 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         }
         else
         {
-          if ( *garbage_list_next_cursor )
+          if ( *garbage_list_next_cursor != nullptr )
             (*garbage_list_next_cursor)->list_prev = *(garbage_list_next_cursor - 1);
           v29 = (int)*(garbage_list_next_cursor - 1);
-          if ( v29 )
+          if ( v29 != 0 )
             *(_DWORD *)(v29 + 12) = *garbage_list_next_cursor;
           else
             v28->first = *garbage_list_next_cursor;
@@ -254,12 +242,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       }
     }
     garbage_list_next_cursor += 49;
-    --v26;
   }
-  while ( v26 );
   slug_list_next_cursor = &game->slug_hazards.slots[0].body.bod.bod.list_next;
-  v32 = 8;
-  do
+  for ( n = 8; n != 0; --n )
   {
     if ( (((unsigned __int16)*(slug_list_next_cursor - 2) >> 8) & 2) != 0 )
     {
@@ -274,10 +259,10 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         }
         else
         {
-          if ( *slug_list_next_cursor )
+          if ( *slug_list_next_cursor != nullptr )
             (*slug_list_next_cursor)->list_prev = *(slug_list_next_cursor - 1);
           v35 = (int)*(slug_list_next_cursor - 1);
-          if ( v35 )
+          if ( v35 != 0 )
             *(_DWORD *)(v35 + 12) = *slug_list_next_cursor;
           else
             v34->first = *slug_list_next_cursor;
@@ -294,14 +279,11 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       }
     }
     slug_list_next_cursor += 59;
-    --v32;
   }
-  while ( v32 );
   ring_list_next_cursor = &game->ring_effects.slots[0].body.bod.bod.list_next;
-  v38 = 2;
-  do
+  for ( ii = 2; ii != 0; --ii )
   {
-    if ( ring_list_next_cursor[29] )
+    if ( ring_list_next_cursor[29] != nullptr )
     {
       v39 = (int)*(ring_list_next_cursor - 2);
       v40 = &g_game_base->active_bod_list;
@@ -313,10 +295,10 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         }
         else
         {
-          if ( *ring_list_next_cursor )
+          if ( *ring_list_next_cursor != nullptr )
             (*ring_list_next_cursor)->list_prev = *(ring_list_next_cursor - 1);
           v41 = (int)*(ring_list_next_cursor - 1);
-          if ( v41 )
+          if ( v41 != 0 )
             *(_DWORD *)(v41 + 12) = *ring_list_next_cursor;
           else
             v40->first = *ring_list_next_cursor;
@@ -334,9 +316,7 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
     }
     ring_list_next_cursor[29] = nullptr;
     ring_list_next_cursor += 126;
-    --v38;
   }
-  while ( v38 );
   if ( (game->player.body.bod.bod.list_flags & 0x200) != 0 )
   {
     v43 = game->player.body.bod.bod.list_flags;
@@ -350,10 +330,10 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       else
       {
         v45 = game->player.body.bod.bod.list_next;
-        if ( v45 )
+        if ( v45 != nullptr )
           v45->list_prev = game->player.body.bod.bod.list_prev;
         v46 = game->player.body.bod.bod.list_prev;
-        if ( v46 )
+        if ( v46 != nullptr )
           v46->list_next = game->player.body.bod.bod.list_next;
         else
           v44->first = game->player.body.bod.bod.list_next;
@@ -379,10 +359,10 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       else
       {
         v50 = game->player.presentation.body.bod.bod.list_next;
-        if ( v50 )
+        if ( v50 != nullptr )
           v50->list_prev = game->player.presentation.body.bod.bod.list_prev;
         v51 = game->player.presentation.body.bod.bod.list_prev;
-        if ( v51 )
+        if ( v51 != nullptr )
           v51->list_next = game->player.presentation.body.bod.bod.list_next;
         else
           v48->first = game->player.presentation.body.bod.bod.list_next;
@@ -408,10 +388,10 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       else
       {
         v55 = game->player.presentation.jetpack_channel.body.bod.bod.list_next;
-        if ( v55 )
+        if ( v55 != nullptr )
           v55->list_prev = game->player.presentation.jetpack_channel.body.bod.bod.list_prev;
         v56 = game->player.presentation.jetpack_channel.body.bod.bod.list_prev;
-        if ( v56 )
+        if ( v56 != nullptr )
           v56->list_next = game->player.presentation.jetpack_channel.body.bod.bod.list_next;
         else
           v54->first = game->player.presentation.jetpack_channel.body.bod.bod.list_next;
@@ -437,10 +417,10 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       else
       {
         v60 = game->player.presentation.weapon_channels[0].body.bod.bod.list_next;
-        if ( v60 )
+        if ( v60 != nullptr )
           v60->list_prev = game->player.presentation.weapon_channels[0].body.bod.bod.list_prev;
         v61 = game->player.presentation.weapon_channels[0].body.bod.bod.list_prev;
-        if ( v61 )
+        if ( v61 != nullptr )
           v61->list_next = game->player.presentation.weapon_channels[0].body.bod.bod.list_next;
         else
           v59->first = game->player.presentation.weapon_channels[0].body.bod.bod.list_next;
@@ -462,15 +442,12 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
     noop_runtime_ai();
   }
   golb_shot_cursor = game->player.golb_shots;
-  v64 = 12;
-  do
+  for ( jj = 12; jj != 0; --jj )
   {
     if ( golb_shot_cursor->state == 1 )
       kill_golb(golb_shot_cursor);
     ++golb_shot_cursor;
-    --v64;
   }
-  while ( v64 );
   if ( (game->player.click_start.bod.bod.bod.list_flags & 0x200) != 0 )
   {
     recycle_bod_to_free_list(&g_game_base->active_bod_list, &game->player.click_start.bod.bod.bod);

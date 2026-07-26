@@ -3174,7 +3174,7 @@ BOD_CORE_PROTO_UPDATES = (
     ),
     (
         "recycle_bod_to_free_list",
-        "int32_t __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node)",
+        "void __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node)",
     ),
 )
 

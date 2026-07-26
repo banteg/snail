@@ -177,7 +177,7 @@ PROTO_UPDATES = (
     ),
     (
         "click_mouse_screen",
-        "void* __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)",
+        "void __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)",
     ),
     (
         "is_mouse_captured",

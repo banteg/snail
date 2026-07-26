@@ -18,3 +18,11 @@ process-owned globals in `direct_input_view.h`. Both buffers have the proven
 256-key SDK extent, so initialization derives its two clear sizes from the
 owners instead of repeating `0x100`. The function remains exact at 55/55
 instructions with all 15 operands clean.
+
+## 2026-07-27 mobile owner confirmation
+
+Android and iOS retain the authored global as `KeyboardInit()` and clear the
+same process-owned current/previous 256-byte state tables. Their platform
+bodies omit the Windows DirectInput creation and acquisition path, so the
+crosswalk recovers the owner and buffer lifetime without changing the
+Windows-specific return contract or claiming an identical implementation.
