@@ -26,10 +26,7 @@ typedef Vector3 Vec3;
 
 float __fastcall normalize_vector(Vec3* vector);
 int next_math_random_value();
-void noop_runtime_ai();
 int sprintf(char* buffer, const char* format, ...);
-
-extern char g_parcel_format[];
 
 void Player::handle_subgoldy_collisions()
 {
@@ -129,10 +126,10 @@ void Player::handle_subgoldy_collisions()
                         velocity.z = velocity.z - probe_b.z * velocity.z * 0.1f;
                     }
                     garbage->state = SUB_GARBAGE_STATE_BURST_PENDING;
-                    if (probe_b.x >= 0.0f)
-                        garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
-                    else
+                    if (probe_b.x < 0.0f)
                         garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
+                    else
+                        garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
                     add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
                     damage_gauge.apply_damage_gauge_delta(0.039999999f, 0);
                     g_sound_effect_manager.play_sound_effect(
@@ -141,16 +138,19 @@ void Player::handle_subgoldy_collisions()
                 }
             }
         }
-        for (int m = 0;
-             m < (int)sizeof(game->slug_hazards.slots);
-             m += (int)sizeof(Slug)) {
-            Slug* slug = (Slug*)((char*)game->slug_hazards.slots + m);
-            SubSlugState state = slug->state;
+        for (int m = 0; m < SUB_SLUG_SLOT_CAPACITY; ++m) {
+            SubSlugState state = game->slug_hazards.slots[m].state;
             if (state == SUB_SLUG_STATE_ACTIVE
                 || state == SUB_SLUG_STATE_LATERAL_ACTIVE) {
-                delta.x = slug->transform.position.x - cached_camera_target_world.x;
-                delta.y = slug->transform.position.y - cached_camera_target_world.y;
-                delta.z = slug->transform.position.z - cached_camera_target_world.z;
+                delta.x =
+                    game->slug_hazards.slots[m].transform.position.x
+                    - cached_camera_target_world.x;
+                delta.y =
+                    game->slug_hazards.slots[m].transform.position.y
+                    - cached_camera_target_world.y;
+                delta.z =
+                    game->slug_hazards.slots[m].transform.position.z
+                    - cached_camera_target_world.z;
                 probe_b = delta;
                 if (delta.z < 2.0f) {
                     float distance = normalize_vector(&probe_b);
@@ -166,8 +166,9 @@ void Player::handle_subgoldy_collisions()
                                 begin_post_follow_carryover();
                                 presentation.cutscene.state =
                                     CUT_SCENE_STATE_DEATH_PENDING;
-                                slug->player_encounter_latched = 1;
-                                slug->play_slug_voice(
+                                game->slug_hazards.slots[m]
+                                    .player_encounter_latched = 1;
+                                game->slug_hazards.slots[m].play_slug_voice(
                                     34 - (int)((float)next_math_random_value()
                                         * -0.000061035156f));
                                 float half = distance * 0.5f;
@@ -189,52 +190,56 @@ void Player::handle_subgoldy_collisions()
                                 damage_gauge.apply_damage_gauge_delta(1.0f, 0);
                             }
                         } else {
-                            slug->kill_slug_hazard();
+                            game->slug_hazards.slots[m].kill_slug_hazard();
                         }
                     }
                 }
             }
         }
-        for (int n = 0;
-             n < (int)sizeof(game->parcel_manager.slots);
-             n += (int)sizeof(Parcel)) {
-            Parcel* parcel =
-                (Parcel*)((char*)game->parcel_manager.slots + n);
-            if (parcel->state == PARCEL_STATE_TRACK_ACTIVE) {
-                probe_salt.x = parcel->position.x - cached_camera_target_world.x;
-                probe_salt.y = parcel->position.y - cached_camera_target_world.y;
-                probe_salt.z = parcel->position.z - cached_camera_target_world.z;
+        for (int n = 0; n < 50; ++n) {
+            if (game->parcel_manager.slots[n].state
+                == PARCEL_STATE_TRACK_ACTIVE) {
+                probe_salt.x =
+                    game->parcel_manager.slots[n].position.x
+                    - cached_camera_target_world.x;
+                probe_salt.y =
+                    game->parcel_manager.slots[n].position.y
+                    - cached_camera_target_world.y;
+                probe_salt.z =
+                    game->parcel_manager.slots[n].position.z
+                    - cached_camera_target_world.z;
                 probe_rings = probe_salt;
                 if (probe_salt.z < 1.0f && normalize_vector(&probe_rings) < 1.24f) {
                     add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_COLLECT, 0);
                     g_voice_manager.play_voice_manager(
                         VOICE_SET_PACKAGE, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
                     g_sound_effect_manager.play_sound_effect(27);
-                    parcel->state = PARCEL_STATE_COLLECT_PENDING;
+                    game->parcel_manager.slots[n].state =
+                        PARCEL_STATE_COLLECT_PENDING;
                     SubgameRuntime* parcel_game = game;
-                    int collected = parcels_collected + 1;
-                    parcels_collected = collected;
+                    int collected = ++parcels_collected;
                     if (!parcel_game->level_mode)
                         sprintf(
                             parcel_game->lives_text_widget->text_buffer,
-                            g_parcel_format,
+                            "%i/%i",
                             collected,
                             parcel_game->level_definition.parcel_count);
                 }
             }
         }
     }
-    for (int ii = 0;
-         ii < (int)sizeof(game->health_pickups);
-         ii += (int)sizeof(SubHealth)) {
-        SubHealth* pickup = (SubHealth*)((char*)game->health_pickups + ii);
-        if (pickup->state == TRACK_PICKUP_STATE_ACTIVE) {
-            probe_b.x = pickup->position.x - cached_camera_target_world.x;
-            probe_b.y = pickup->position.y - cached_camera_target_world.y;
-            probe_c.x = probe_b.x;
-            probe_c.y = probe_b.y;
-            probe_b.z = pickup->position.z - cached_camera_target_world.z;
-            probe_c.z = probe_b.z;
+    for (int ii = 0; ii < 8; ++ii) {
+        if (game->health_pickups[ii].state == TRACK_PICKUP_STATE_ACTIVE) {
+            probe_b.x =
+                game->health_pickups[ii].position.x
+                - cached_camera_target_world.x;
+            probe_b.y =
+                game->health_pickups[ii].position.y
+                - cached_camera_target_world.y;
+            probe_b.z =
+                game->health_pickups[ii].position.z
+                - cached_camera_target_world.z;
+            probe_c = probe_b;
             if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f) {
                 float pickup_y;
                 if (probe_b.y < 0.0f)
@@ -244,21 +249,25 @@ void Player::handle_subgoldy_collisions()
                 if (pickup_y < 0.40000001f
                     && normalize_vector(&probe_c) < 0.98000002f) {
                     g_sound_effect_manager.play_sound_effect(14);
-                    pickup->state = TRACK_PICKUP_STATE_TEARDOWN_PENDING;
-                    health_collect_particles(pickup);
+                    game->health_pickups[ii].state =
+                        TRACK_PICKUP_STATE_TEARDOWN_PENDING;
+                    health_collect_particles(&game->health_pickups[ii]);
                     damage_gauge.apply_damage_gauge_delta(-0.5f, 0);
                 }
             }
         }
     }
-    SubSpeedUp* speedup = &game->speedup_pickup;
-    if (speedup->state == TRACK_PICKUP_STATE_ACTIVE) {
-        probe_b.x = speedup->transform.position.x - cached_camera_target_world.x;
-        probe_b.y = speedup->transform.position.y - cached_camera_target_world.y;
-        probe_c.x = probe_b.x;
-        probe_c.y = probe_b.y;
-        probe_b.z = speedup->transform.position.z - cached_camera_target_world.z;
-        probe_c.z = probe_b.z;
+    if (game->speedup_pickup.state == TRACK_PICKUP_STATE_ACTIVE) {
+        probe_b.x =
+            game->speedup_pickup.transform.position.x
+            - cached_camera_target_world.x;
+        probe_b.y =
+            game->speedup_pickup.transform.position.y
+            - cached_camera_target_world.y;
+        probe_b.z =
+            game->speedup_pickup.transform.position.z
+            - cached_camera_target_world.z;
+        probe_c = probe_b;
         if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f) {
             float pickup_y;
             if (probe_b.y < 0.0f)
@@ -267,40 +276,46 @@ void Player::handle_subgoldy_collisions()
                 pickup_y = probe_b.y;
             if (pickup_y < 0.40000001f
                 && normalize_vector(&probe_c) < 0.98000002f) {
-                speedup->state = TRACK_PICKUP_STATE_TEARDOWN_PENDING;
+                game->speedup_pickup.state =
+                    TRACK_PICKUP_STATE_TEARDOWN_PENDING;
                 noop_runtime_ai();
                 velocity.z = game->subgame_rate * 0.5f;
             }
         }
     }
-    JetPack* jetpack = &game->jetpack_pickup;
-    if (jetpack->state == TRACK_PICKUP_STATE_ACTIVE) {
-        probe_b.x = jetpack->position.x - cached_camera_target_world.x;
-        probe_b.y = jetpack->position.y - cached_camera_target_world.y;
-        probe_c.x = probe_b.x;
-        probe_c.y = probe_b.y;
-        probe_b.z = jetpack->position.z - cached_camera_target_world.z;
-        probe_c.z = probe_b.z;
+    if (game->jetpack_pickup.state == TRACK_PICKUP_STATE_ACTIVE) {
+        probe_b.x =
+            game->jetpack_pickup.position.x - cached_camera_target_world.x;
+        probe_b.y =
+            game->jetpack_pickup.position.y - cached_camera_target_world.y;
+        probe_b.z =
+            game->jetpack_pickup.position.z - cached_camera_target_world.z;
+        probe_c = probe_b;
         if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f && normalize_vector(&probe_c) < 3.0f) {
-            jetpack->state = TRACK_PICKUP_STATE_TEARDOWN_PENDING;
+            game->jetpack_pickup.state =
+                TRACK_PICKUP_STATE_TEARDOWN_PENDING;
             sub_hover.arm_jetpack_gauge();
         }
     }
-    for (int jj = 0;
-         jj < (int)sizeof(game->ring_effects.slots);
-         jj += (int)sizeof(SubRing)) {
-        SubRing* effect = (SubRing*)((char*)game->ring_effects.slots + jj);
-        if (effect->state == SUB_RING_STATE_ACTIVE) {
-            probe_salt.x = effect->transform.position.x - cached_camera_target_world.x;
-            probe_salt.y = effect->transform.position.y - cached_camera_target_world.y;
-            probe_salt.z = effect->transform.position.z - cached_camera_target_world.z;
+    for (int jj = 0; jj < SUB_RING_POOL_CAPACITY; ++jj) {
+        if (game->ring_effects.slots[jj].state == SUB_RING_STATE_ACTIVE) {
+            probe_salt.x =
+                game->ring_effects.slots[jj].transform.position.x
+                - cached_camera_target_world.x;
+            probe_salt.y =
+                game->ring_effects.slots[jj].transform.position.y
+                - cached_camera_target_world.y;
+            probe_salt.z =
+                game->ring_effects.slots[jj].transform.position.z
+                - cached_camera_target_world.z;
             probe_fx = probe_salt;
             if (probe_salt.z < 1.0f) {
                 if (normalize_vector(&probe_fx) < 0.98000002f) {
-                    effect->state = SUB_RING_STATE_COLLECT_PENDING;
+                    game->ring_effects.slots[jj].state =
+                        SUB_RING_STATE_COLLECT_PENDING;
                     if (!completion_handoff_active) {
                         SubgameRuntime* effect_game = game;
-                        SubRingKind kind = effect->kind;
+                        SubRingKind kind = game->ring_effects.slots[jj].kind;
                         if (kind == SUB_RING_KIND_SLOW_DEFAULT
                             || kind == SUB_RING_KIND_SLOW_AUTHORED) {
                             velocity.z = -0.1f;
@@ -310,7 +325,8 @@ void Player::handle_subgoldy_collisions()
                         }
                     }
                     SubgameRuntime* ladder_game = game;
-                    SubRingKind effect_kind = effect->kind;
+                    SubRingKind effect_kind =
+                        game->ring_effects.slots[jj].kind;
                     if (effect_kind == SUB_RING_KIND_NORMAL_DEFAULT
                         || effect_kind == SUB_RING_KIND_NORMAL_AUTHORED) {
                         int current_lives = lives;
@@ -326,11 +342,10 @@ void Player::handle_subgoldy_collisions()
                                 -1);
                         }
                         int tier = shooting_tier;
-                        if (tier >= 8) {
-                            if (tier == 8)
-                                shooting_tier = 7;
-                        } else {
+                        if (tier < 8) {
                             shooting_tier = tier + 1;
+                        } else if (tier == 8) {
+                            shooting_tier = 7;
                         }
                         int effect_index = shooting_tier - 1;
                         if (effect_index > 6)
@@ -341,11 +356,10 @@ void Player::handle_subgoldy_collisions()
                     }
                     if (effect_kind == SUB_RING_KIND_POWER_UP_AUTHORED) {
                         int tier = shooting_tier;
-                        if (tier >= 8) {
-                            if (tier == 8)
-                                shooting_tier = 7;
-                        } else {
+                        if (tier < 8) {
                             shooting_tier = tier + 1;
+                        } else if (tier == 8) {
+                            shooting_tier = 7;
                         }
                         int effect_index = shooting_tier - 1;
                         if (effect_index > 6)

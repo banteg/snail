@@ -9388,7 +9388,11 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
         repo_root
         / "tools/match/scratches/handle_subgoldy_collisions/scratch.cpp"
     ).read_text(encoding="utf-8")
-    assert "SubSlugState state = slug->state;" in collision_scratch
+    assert (
+        "SubSlugState state = game->slug_hazards.slots[m].state;"
+        in collision_scratch
+    )
+    assert "Slug* slug =" not in collision_scratch
     assert "int state;" not in matcher_header
     assert "int death_toss_direction;" not in matcher_header
 

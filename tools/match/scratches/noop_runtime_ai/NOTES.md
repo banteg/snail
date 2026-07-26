@@ -20,3 +20,11 @@ Player +0x3f0. Android independently calls the one-instruction
 `ProgressBar::noop_runtime_ai()` while the stable shared function identifier
 remains unchanged for unrelated folded no-op owners. The body stays exact at
 1/1 instruction.
+
+2026-07-26 mobile collision ownership recovery: Windows collision callsite
+0x445536 passes the enclosing Player in `ecx` before calling this folded body.
+The iOS symbol corpus names the same authored operation
+`cRSubGoldy::SpeedUpCollect()`, and Android calls `SpeedUpCollect()` in the
+corresponding pickup branch. `Player::noop_runtime_ai()` now preserves that
+receiver-typed call surface while retaining the stable Windows identifier for
+the folded address. This is a Player method borrow, not a free global callback.

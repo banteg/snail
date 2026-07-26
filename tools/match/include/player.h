@@ -139,6 +139,10 @@ public:
     void display_score_stats();            // @ 0x4403c0
     void handle_subgoldy_collisions();      // @ 0x444cf0
     void health_collect_particles(SubHealth* pickup); // @ 0x43a010
+    // Authored cRSubGoldy::SpeedUpCollect() folds into the shared one-byte
+    // noop_runtime_ai body at 0x407b50; the collision callsite still passes
+    // this Player receiver in ecx.
+    void noop_runtime_ai();
     void initialize_subgoldy(int player_slot); // @ 0x43a9c0, cRSubGoldy::Init
     void initialize_subgoldy_ghost(int owner); // @ 0x43d230
     void initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0

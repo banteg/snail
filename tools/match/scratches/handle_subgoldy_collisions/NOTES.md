@@ -1,7 +1,37 @@
-# WIP scratch — 54.23%, 651/673 insns (2026-07-19 collision-state pass)
+# WIP scratch — 75.06%, 670/673 insns (2026-07-26 mobile ownership pass)
 
 Structure complete: all eight pool sweeps in order with asm-verified
-offsets. The low ratio is systematic small deltas, leads for next pass:
+offsets. The remaining debt is systematic local-stack and register allocation:
+
+2026-07-26 Android/iOS ownership and source-shape pass: the mobile bodies
+confirm that slug, parcel, health, ring, speedup, and jetpack collision entries
+are short borrows from fixed banks owned by `SubgameRuntime`, rather than
+durable per-slot pointer owners. Direct element indexing restores the Windows
+VC6 base-plus-element cursor lifetimes for those six banks. Salt and sub-lazer
+remain the two genuine Windows-specific game-relative byte cursors: typed
+element retries regressed, so their canonical owners stay explicit through
+`offsetof` without falsifying the native source shape.
+
+The Windows IDA 9.4 stack map and both mobile bodies also support copying the
+complete pickup delta vector only after its z component is assigned. Replacing
+the component-at-a-time copy with `probe_c = probe_b` restores the target x87
+schedule across health, speedup, and jetpack. Mobile's literal parcel format
+clears the last unaudited operand, the negative-first garbage-side branch and
+the less-than-first shooting-tier ladders recover native block order, and
+`int collected = ++parcels_collected` recovers the parcel counter's native
+`ebx` lifetime.
+
+The folded call at Windows 0x445536 passes Player in `ecx`; iOS names it
+`cRSubGoldy::SpeedUpCollect()` and Android calls `SpeedUpCollect()` in the same
+branch. The scratch therefore uses a receiver-typed `Player::noop_runtime_ai()`
+view of the shared one-byte Windows body instead of a misleading free call.
+
+Focused matching rises from `54.23%` (`651/673`) to `75.06%` (`670/673`),
+prefix `8/673`, with a fully clean `89 ok / 0 unresolved / 0 mismatch / 0
+unaudited` operand audit. Rejected probes include typed salt/sub-lazer sweeps,
+declaration-only stack permutations, and direct scalar slug-firework
+expressions; the latter collapsed the honest `0x74` frame to `0x68`. No inline
+assembly, padding, fake globals, or other fakematching is retained.
 
 2026-07-19 collision pickup-state pass: the byte-strided parcel and health
 walks each retain their state load in a physical ECX lifetime separate from

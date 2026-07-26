@@ -440,7 +440,7 @@
     {
       "address": "0x407b50",
       "name": "noop_runtime_ai",
-      "description": "Shared one-byte empty method body folded across runtime owners. Receiver-typed calls at Player +0x3f0 and SubgameRuntime +0x3bbb54 recover `cRProgressBar::Init()` specifically; other callsites remain distinct no-op AI or lifecycle methods."
+      "description": "Shared one-byte empty method body folded across runtime owners. Receiver-typed calls at Player +0x3f0 and SubgameRuntime +0x3bbb54 recover `cRProgressBar::Init()` specifically; the Player receiver at collision callsite 0x445536 recovers mobile-authored `cRSubGoldy::SpeedUpCollect()`. Other callsites remain distinct no-op AI or lifecycle methods."
     },
     {
       "address": "0x407b60",
