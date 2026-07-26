@@ -802,7 +802,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | create_golb | 0x415280 | 2349 | 459/582 | 34.77% | 1/582 | 10 unaudited, 41 ok |  |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 646/655 | 48.89% | 20/655 | 37 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 646/685 | 48.53% | 6/685 | 2 unaudited, 38 ok |  |
-| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 657/696 | 32.08% | 1/696 | 12 unaudited, 34 ok |  |
+| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 654/696 | 32.15% | 1/696 | 12 unaudited, 34 ok |  |
 | 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 653/696 | 33.80% | 2/696 | 10 unaudited, 35 ok |  |
 | 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 615/652 | 35.67% | 5/652 | 37 ok |  |
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 620/652 | 33.49% | 5/652 | 40 ok |  |

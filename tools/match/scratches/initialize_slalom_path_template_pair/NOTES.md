@@ -136,3 +136,20 @@ and grows the candidate from 629 to **657/696** instructions. It closes the
 candidate `0x44` frame to the native `0x50` and establishes a one-instruction
 exact prefix. The masked audit remains proof-clean at 26 accepted, 0 unresolved,
 and 0 mismatched operands.
+
+## 2026-07-26 mobile first-sample guard
+
+The exact Android and iOS `cRPath::BuildSlalom(int, int, bool, char*, char*)`
+corpora both branch on the curved-loop induction variable: iteration zero
+resets the preceding sample frames, while later iterations normalize, cross,
+and roll them. Expressing the Windows guard as `i == 0`, instead of deriving
+the same condition from `sample_index <= 4`, raises focused matching from
+32.08% to **32.15%** and shrinks the candidate from 657 to **654/696**
+instructions. The exact prefix remains one instruction and the audit remains
+clean at 34 accepted, 0 unresolved, and 0 mismatched operands, with 12
+unaligned operands still marked unaudited.
+
+The adjacent ARM spellings were tested independently and rejected on Windows:
+folding the two falloff owners regressed to 30.79%, a lead-in `do/while`
+reached only 32.10%, and spelling the lead-out bound directly regressed to
+30.67%. Only the cross-port-supported induction guard is retained.

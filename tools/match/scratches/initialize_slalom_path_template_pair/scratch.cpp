@@ -549,7 +549,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                 0.49000001f,
                 (float)(i + 4),
                 0);
-            if (sample_index <= 4) {
+            if (i == 0) {
                 primary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
                 secondary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
             } else {
