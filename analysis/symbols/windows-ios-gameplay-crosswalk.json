@@ -6,7 +6,8 @@
     "Use this as provenance for ownership and original C++ vocabulary, not as an address-based rename map.",
     "The Windows function names remain the stable match harness identifiers.",
     "source_object is from the v1.5 iPhone STABS-style object markers when available; v1.9-only symbols often lack an object file.",
-    "Android-only mappings use android_symbol instead of ios_symbol; their notes identify whether the body or only the exported name was compared."
+    "Android-only mappings use android_symbol instead of ios_symbol; their notes identify whether the body or only the exported name was compared.",
+    "android_symbol_evidence or ios_symbol_evidence set to exact-demangled-symbol means the other verified port name was found verbatim in that corpus; it is a name transfer, not a new semantic mapping."
   ],
   "entries": [
     {
@@ -15,7 +16,9 @@
       "android_symbol": "cRBorder::HideInit()",
       "source_object": "Border.o",
       "confidence": "high",
-      "notes": "Android preserves the same flag guard, hide-blend clear, and tail call into the owned cRToolTip reset. Every Windows caller discards EAX, and the void member remains exact at 9/9 instructions."
+      "notes": "Android preserves the same flag guard, hide-blend clear, and tail call into the owned cRToolTip reset. Every Windows caller discards EAX, and the void member remains exact at 9/9 instructions.",
+      "ios_symbol": "cRBorder::HideInit()",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x401110",
@@ -23,7 +26,9 @@
       "android_symbol": "cRBorder::UnHideInit()",
       "source_object": "Border.o",
       "confidence": "high",
-      "notes": "Android preserves the same hide-blend restore and 0x1000 flag clear. Every Windows caller discards EAX, and the void member remains exact at 5/5 instructions."
+      "notes": "Android preserves the same hide-blend restore and 0x1000 flag clear. Every Windows caller discards EAX, and the void member remains exact at 5/5 instructions.",
+      "ios_symbol": "cRBorder::UnHideInit()",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x401130",
@@ -58,7 +63,9 @@
       "android_symbol": "cRBorder::SetKeyLeft(int)",
       "source_object": "Border.o",
       "confidence": "high",
-      "notes": "Android preserves the same shortcut store and flag set as a void member. All five Windows callers discard EAX, and the corrected member remains exact at 6/6 instructions."
+      "notes": "Android preserves the same shortcut store and flag set as a void member. All five Windows callers discard EAX, and the corrected member remains exact at 6/6 instructions.",
+      "ios_symbol": "cRBorder::SetKeyLeft(int)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4027b0",
@@ -66,7 +73,9 @@
       "android_symbol": "cRBorder::SetBelow(cRBorder*)",
       "source_object": "Border.o",
       "confidence": "high",
-      "notes": "Android preserves the same anchor stores and tail-calls void RePosition. All 36 Windows callers discard EAX, and the corrected member remains exact at 9/9 instructions."
+      "notes": "Android preserves the same anchor stores and tail-calls void RePosition. All 36 Windows callers discard EAX, and the corrected member remains exact at 9/9 instructions.",
+      "ios_symbol": "cRBorder::SetBelow(cRBorder*)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4027e0",
@@ -99,7 +108,9 @@
       "ios_symbol": "cRBorderManager::GetBorder()",
       "source_object": "Border.o",
       "confidence": "high",
-      "notes": "The exact Windows allocator scans the manager-owned 150-record cRBorder pool, stamps the chosen slot from GameRoot::frame_counter, and returns that record through the FrontendWidget/cRBorder view."
+      "notes": "The exact Windows allocator scans the manager-owned 150-record cRBorder pool, stamps the chosen slot from GameRoot::frame_counter, and returns that record through the FrontendWidget/cRBorder view.",
+      "android_symbol": "cRBorderManager::GetBorder()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x403360",
@@ -107,7 +118,9 @@
       "ios_symbol": "cRBorderManager::Kill(cRBorder*)",
       "source_object": "Border.o",
       "confidence": "high",
-      "notes": "The exact Windows helper marks one manager-owned cRBorder for teardown and recursively visits its three child widgets. Every audited caller discards EAX, while the native exits leave incompatible incidental values. A direct VC6 void transcription tail-recurses the final child, so the exact matcher keeps a documented result-shaped compiler harness pending a natural authored source shape."
+      "notes": "The exact Windows helper marks one manager-owned cRBorder for teardown and recursively visits its three child widgets. Every audited caller discards EAX, while the native exits leave incompatible incidental values. A direct VC6 void transcription tail-recurses the final child, so the exact matcher keeps a documented result-shaped compiler harness pending a natural authored source shape.",
+      "android_symbol": "cRBorderManager::Kill(cRBorder*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4033c0",
@@ -115,7 +128,9 @@
       "ios_symbol": "cRBorderManager::KillBorders()",
       "source_object": "Border.o",
       "confidence": "high",
-      "notes": "The exact Windows pool walk shares the authored BorderManager lifecycle role. All three Windows callers discard EAX, proving the final flags value is loop residue and the member contract is void."
+      "notes": "The exact Windows pool walk shares the authored BorderManager lifecycle role. All three Windows callers discard EAX, proving the final flags value is loop residue and the member contract is void.",
+      "android_symbol": "cRBorderManager::KillBorders()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x403410",
@@ -123,7 +138,9 @@
       "android_symbol": "cRBorder::InputTextInit(int, char*, int)",
       "source_object": "Border.o",
       "confidence": "high",
-      "notes": "Android preserves the same text copy, cursor/length scan, marker append, blink/filter/capacity stores, RePosition call, and conditional cRInputOK initialization. Both Windows callers discard EAX, and the corrected void member remains exact at 46/46 instructions."
+      "notes": "Android preserves the same text copy, cursor/length scan, marker append, blink/filter/capacity stores, RePosition call, and conditional cRInputOK initialization. Both Windows callers discard EAX, and the corrected void member remains exact at 46/46 instructions.",
+      "ios_symbol": "cRBorder::InputTextInit(int, char*, int)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x403560",
@@ -199,7 +216,9 @@
       "ios_symbol": "cRBorder::MouseTest()",
       "source_object": "Border.o",
       "confidence": "high",
-      "notes": "The exact Windows helper is a FrontendWidget method over the cRBorder layout; it tests either the padded layout bounds or the widget's authored texture-hit mask against player zero's saved cursor position."
+      "notes": "The exact Windows helper is a FrontendWidget method over the cRBorder layout; it tests either the padded layout bounds or the widget's authored texture-hit mask against player zero's saved cursor position.",
+      "android_symbol": "cRBorder::MouseTest()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x404730",
@@ -207,7 +226,9 @@
       "ios_symbol": "cRBorderManager::SetJustifyCentre(float)",
       "source_object": "Border.o",
       "confidence": "high",
-      "notes": "All ten Windows callers discard EAX and pass only 0.0f or 25.0f. The natural void(float) member remains exact at 3/3 instructions, proving that the argument bits left in EAX are compiler residue and that BorderManager +0x435b0 is the authored float field."
+      "notes": "All ten Windows callers discard EAX and pass only 0.0f or 25.0f. The natural void(float) member remains exact at 3/3 instructions, proving that the argument bits left in EAX are compiler residue and that BorderManager +0x435b0 is the authored float field.",
+      "android_symbol": "cRBorderManager::SetJustifyCentre(float)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x404830",
@@ -251,7 +272,9 @@
       "ios_symbol": "cRDirectX::Load(char*, cRObject*, int)",
       "source_object": "DirectX.o",
       "confidence": "high",
-      "notes": "The Windows thiscall uses the root-owned DirectXLoader and an owned Object. Its option tests consume the low byte of the authored 32-bit formal without changing the cross-port contract."
+      "notes": "The Windows thiscall uses the root-owned DirectXLoader and an owned Object. Its option tests consume the low byte of the authored 32-bit formal without changing the cross-port contract.",
+      "android_symbol": "cRDirectX::Load(char*, cRObject*, int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x405c90",
@@ -259,7 +282,9 @@
       "ios_symbol": "cRDirectX::Init()",
       "source_object": "DirectX.o",
       "confidence": "high",
-      "notes": "The exact Windows member initializes the 0x5e10-byte root-owned DirectX loader, including its fixed mesh cache and embedded duplicate-vertex workspace."
+      "notes": "The exact Windows member initializes the 0x5e10-byte root-owned DirectX loader, including its fixed mesh cache and embedded duplicate-vertex workspace.",
+      "android_symbol": "cRDirectX::Init()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x405cc0",
@@ -267,7 +292,9 @@
       "ios_symbol": "cRDirectX::ModelAdd(char*)",
       "source_object": "DirectX.o",
       "confidence": "high",
-      "notes": "The exact Windows member searches or appends one entry in the DirectXLoader-owned fixed X-mesh cache and returns its slot index."
+      "notes": "The exact Windows member searches or appends one entry in the DirectXLoader-owned fixed X-mesh cache and returns its slot index.",
+      "android_symbol": "cRDirectX::ModelAdd(char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x405d60",
@@ -371,7 +398,9 @@
       "ios_symbol": "cRGame::AI()",
       "source_object": "Game.o",
       "confidence": "high",
-      "notes": "The Windows cRGame root method advances fade, audio, cheats, voices, cursor presentation, active BODs, both cRPlayer callbacks, sprites, and the per-frame contact registry before returning the root quit request."
+      "notes": "The Windows cRGame root method advances fade, audio, cheats, voices, cursor presentation, active BODs, both cRPlayer callbacks, sprites, and the per-frame contact registry before returning the root quit request.",
+      "android_symbol": "cRGame::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x40a490",
@@ -379,7 +408,9 @@
       "ios_symbol": "cRGame::Render()",
       "source_object": "Game.o",
       "confidence": "high",
-      "notes": "The Windows caller ignores the result and both skip and common-tail exits preserve no meaningful return value, confirming the cross-port void method ABI. Android independently preserves the flagged cRBod -> borrowed cRAnimManager progress -> cRObjectAnim progress synchronization with port-specific offsets."
+      "notes": "The Windows caller ignores the result and both skip and common-tail exits preserve no meaningful return value, confirming the cross-port void method ABI. Android independently preserves the flagged cRBod -> borrowed cRAnimManager progress -> cRObjectAnim progress synchronization with port-specific offsets.",
+      "android_symbol": "cRGame::Render()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x40aa50",
@@ -403,7 +434,9 @@
       "ios_symbol": "cRGameInput::AI()",
       "source_object": "Game.o",
       "confidence": "high",
-      "notes": "Both methods sample one controller slot into the same button-edge, axis, pointer, and authored-coordinate lanes before clearing the current button word. Windows owns two consecutive 0x70-byte cRGameInput records at GameRoot +0x44; each inherits the 0x38-byte cRBod-compatible base and installs the one-entry update_game_input table at 0x4972f0."
+      "notes": "Both methods sample one controller slot into the same button-edge, axis, pointer, and authored-coordinate lanes before clearing the current button word. Windows owns two consecutive 0x70-byte cRGameInput records at GameRoot +0x44; each inherits the 0x38-byte cRBod-compatible base and installs the one-entry update_game_input table at 0x4972f0.",
+      "android_symbol": "cRGameInput::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x40ab00",
@@ -462,7 +495,9 @@
       "ios_symbol": "cRBackdrop::SetZoom(float)",
       "source_object": "Game.o",
       "confidence": "high",
-      "notes": "Both are one-store cRBackdrop members. Windows writes the normalized live track position to the owned float at +0x6c8; the stable Windows harness name is retained while shared source uses the authored zoom vocabulary."
+      "notes": "Both are one-store cRBackdrop members. Windows writes the normalized live track position to the owned float at +0x6c8; the stable Windows harness name is retained while shared source uses the authored zoom vocabulary.",
+      "android_symbol": "cRBackdrop::SetZoom(float)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x410c40",
@@ -505,7 +540,9 @@
       "ios_symbol": "cRSubGolb::Create(cRSubGoldy*, int, int)",
       "source_object": "Golb.o",
       "confidence": "high",
-      "notes": "The sole Windows caller discards EAX. The independent iOS body invokes the actor's slot-zero AI callback and returns without establishing a result, proving the shared void contract."
+      "notes": "The sole Windows caller discards EAX. The independent iOS body invokes the actor's slot-zero AI callback and returns without establishing a result, proving the shared void contract.",
+      "android_symbol": "cRSubGolb::Create(cRSubGoldy*, int, int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x415e20",
@@ -513,7 +550,9 @@
       "ios_symbol": "cREnemyManager::Init()",
       "source_object": "Golb.o",
       "confidence": "high",
-      "notes": "The Windows receiver is the 0x1804-byte EnemyManager embedded at SubgameRuntime +0x1270fd4. Its one-store body is also identical-code-folded with an unrelated tracked-allocation stack initializer."
+      "notes": "The Windows receiver is the 0x1804-byte EnemyManager embedded at SubgameRuntime +0x1270fd4. Its one-store body is also identical-code-folded with an unrelated tracked-allocation stack initializer.",
+      "android_symbol": "cREnemyManager::Init()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x415ef0",
@@ -521,7 +560,9 @@
       "ios_symbol": "cREnemyManager::Register(tVector&, float, int, cRBodPos*)",
       "source_object": "Golb.o",
       "confidence": "high",
-      "notes": "Both ports register a position, radius, kind, and cRBodPos-compatible owner in the fixed per-frame EnemyManager."
+      "notes": "Both ports register a position, radius, kind, and cRBodPos-compatible owner in the fixed per-frame EnemyManager.",
+      "android_symbol": "cREnemyManager::Register(tVector&, float, int, cRBodPos*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x435180",
@@ -538,7 +579,9 @@
       "ios_symbol": "cRSubGame::WarnTrack()",
       "source_object": null,
       "confidence": "cross-port-neighborhood",
-      "notes": "Android carried this name first; the iOS SubGame.o grouping brackets the same track-normalization family. Windows stamps the owned SubLoc grid and has a void contract: its sole caller discards EAX, while the empty and populated exits leave incompatible incidental values."
+      "notes": "Android carried this name first; the iOS SubGame.o grouping brackets the same track-normalization family. Windows stamps the owned SubLoc grid and has a void contract: its sole caller discards EAX, while the empty and populated exits leave incompatible incidental values.",
+      "android_symbol": "cRSubGame::WarnTrack()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4356f0",
@@ -546,7 +589,9 @@
       "ios_symbol": "cRSubGame::SlideSmoothTrack()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The sole Windows caller discards EAX and immediately restores ECX for the next mutator. The source-shaped Windows transcription and independent mobile body are both side-effect-only; the empty and populated paths leave loop temporaries rather than an authored result, proving the void contract."
+      "notes": "The sole Windows caller discards EAX and immediately restores ECX for the next mutator. The source-shaped Windows transcription and independent mobile body are both side-effect-only; the empty and populated paths leave loop temporaries rather than an authored result, proving the void contract.",
+      "android_symbol": "cRSubGame::SlideSmoothTrack()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x435a80",
@@ -554,7 +599,9 @@
       "ios_symbol": "cRSubGame::SmoothTrack()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The sole Windows caller discards EAX and immediately restores ECX for the next mutator. The exact 220/220 void transcription reproduces the native body, whose exits leave incompatible receiver and row-count temporaries rather than an authored result."
+      "notes": "The sole Windows caller discards EAX and immediately restores ECX for the next mutator. The exact 220/220 void transcription reproduces the native body, whose exits leave incompatible receiver and row-count temporaries rather than an authored result.",
+      "android_symbol": "cRSubGame::SmoothTrack()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x435d40",
@@ -562,7 +609,9 @@
       "ios_symbol": "cRSubGame::BuildColours()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "Android and iOS preserve the ten original gLocColourLookup* globals. Their shared 13-call order maps the Windows storage views to CheckBlack, Floor, Slide-0, Slide-1, Wall, Trampoline, Ramp, Empty, Path, PathWorm twice, and PathWarp twice. Mobile aliases both Slide calls to one gLocColourLookupSlide owner; Windows has two distinct 51-entry Slide banks, so the analysis retains that physical split rather than collapsing the addresses."
+      "notes": "Android and iOS preserve the ten original gLocColourLookup* globals. Their shared 13-call order maps the Windows storage views to CheckBlack, Floor, Slide-0, Slide-1, Wall, Trampoline, Ramp, Empty, Path, PathWorm twice, and PathWarp twice. Mobile aliases both Slide calls to one gLocColourLookupSlide owner; Windows has two distinct 51-entry Slide banks, so the analysis retains that physical split rather than collapsing the addresses.",
+      "android_symbol": "cRSubGame::BuildColours()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x434b60",
@@ -578,14 +627,18 @@
       "ios_symbol": "cRSubGame::FringeEdgeTrack()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android preserves the owner and method name; both walk runtime cells and allocate directional cRFringe records from cRFringeManager."
+      "notes": "Android preserves the owner and method name; both walk runtime cells and allocate directional cRFringe records from cRFringeManager.",
+      "android_symbol": "cRSubGame::FringeEdgeTrack()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x435df0",
       "windows_name": "set_subgame_features",
       "ios_symbol": "cRSubGame::SetFeatures()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSubGame::SetFeatures()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x435eb0",
@@ -601,7 +654,9 @@
       "windows_name": "initialize_subgame",
       "ios_symbol": "cRSubGame::Init()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSubGame::Init()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x437c40",
@@ -644,14 +699,18 @@
       "windows_name": "destroy_subgame",
       "ios_symbol": "cRSubGame::UnInit()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSubGame::UnInit()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x438b90",
       "windows_name": "update_subgame",
       "ios_symbol": "cRSubGame::AI()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSubGame::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x439a40",
@@ -659,7 +718,9 @@
       "ios_symbol": "cRSubLoc::IsFloor()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android body accepts the identical tile set 1/20/21/33/34/27; the Windows harness now follows the authored owner and method."
+      "notes": "Android body accepts the identical tile set 1/20/21/33/34/27; the Windows harness now follows the authored owner and method.",
+      "android_symbol": "cRSubLoc::IsFloor()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x439a70",
@@ -667,7 +728,9 @@
       "ios_symbol": "cRSubLoc::IsRamp()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android body accepts the identical authored ramp family 2 through 13."
+      "notes": "Android body accepts the identical authored ramp family 2 through 13.",
+      "android_symbol": "cRSubLoc::IsRamp()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x439ab0",
@@ -675,7 +738,9 @@
       "ios_symbol": "cRSubLoc::IsEmpty()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android body accepts the identical tile set 0/28/35/14/29."
+      "notes": "Android body accepts the identical tile set 0/28/35/14/29.",
+      "android_symbol": "cRSubLoc::IsEmpty()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x439ad0",
@@ -707,7 +772,9 @@
       "ios_symbol": "cRSubLoc::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Windows SubLoc constructor table points directly to this helper; its tile dispatch, attachment-template backlink, and Yi/Remove siblings independently agree with the cross-port owner."
+      "notes": "The Windows SubLoc constructor table points directly to this helper; its tile dispatch, attachment-template backlink, and Yi/Remove siblings independently agree with the cross-port owner.",
+      "android_symbol": "cRSubLoc::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x43a010",
@@ -862,7 +929,9 @@
       "ios_symbol": "cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The sole direct Windows call overwrites EAX immediately, and the exact void reconstruction preserves all 143 instructions. The pool scan selects `SUB_GARBAGE_STATE_INACTIVE` from the 50 owned slots before activation. Android leaves unrelated sprite or warning results in r0 on its success and exhaustion paths, confirming those values are incidental rather than a stable return contract."
+      "notes": "The sole direct Windows call overwrites EAX immediately, and the exact void reconstruction preserves all 143 instructions. The pool scan selects `SUB_GARBAGE_STATE_INACTIVE` from the 50 owned slots before activation. Android leaves unrelated sprite or warning results in r0 on its success and exhaustion paths, confirming those values are incidental rather than a stable return contract.",
+      "android_symbol": "cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x43dc80",
@@ -904,7 +973,9 @@
       "windows_name": "set_subgame_rate",
       "ios_symbol": "cRSubGame::SetRate(float)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSubGame::SetRate(float)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x440600",
@@ -938,7 +1009,9 @@
       "windows_name": "remove_subgame_bods",
       "ios_symbol": "cRSubGame::RemoveBods()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSubGame::RemoveBods()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x440f80",
@@ -946,14 +1019,18 @@
       "ios_symbol": "cRBarrier::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The exact void Windows callback is the sole slot in g_barrier_actor_callback_table. Its embedded 0x3c-byte owner borrows Player* at +0x38 and follows the live player z position; residual EAX is only the borrowed pointer used by the final field read."
+      "notes": "The exact void Windows callback is the sole slot in g_barrier_actor_callback_table. Its embedded 0x3c-byte owner borrows Player* at +0x38 and follows the live player z position; residual EAX is only the borrowed pointer used by the final field read.",
+      "android_symbol": "cRBarrier::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x442120",
       "windows_name": "get_track_skirt_color",
       "ios_symbol": "cRSubGame::GetSkirtColour(tColourSmall*)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSubGame::GetSkirtColour(tColourSmall*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x442170",
@@ -979,7 +1056,9 @@
       "ios_symbol": "cRRowModel::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Windows callback table at 0x497330 points directly to this exact helper. Its receiver is the 0x8c-byte RowModel embedded at SubRow +0x04, with velocity at model +0x80."
+      "notes": "The Windows callback table at 0x497330 points directly to this exact helper. Its receiver is the 0x8c-byte RowModel embedded at SubRow +0x04, with velocity at model +0x80.",
+      "android_symbol": "cRRowModel::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x443130",
@@ -1012,7 +1091,9 @@
       "ios_symbol": "cRSubTracks::Load(int, int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "Both dispatch the gameplay mode and level index into a local level path and then invoke the same owner's text-level parser. The authored member is void; every Windows caller discards the value incidentally forwarded from the parser in EAX."
+      "notes": "Both dispatch the gameplay mode and level index into a local level path and then invoke the same owner's text-level parser. The authored member is void; every Windows caller discards the value incidentally forwarded from the parser in EAX.",
+      "android_symbol": "cRSubTracks::Load(int, int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x443730",
@@ -1056,7 +1137,9 @@
       "ios_symbol": "cRSubGame::CameraAI()",
       "source_object": "SubGame.o",
       "confidence": "medium",
-      "notes": "The specific CameraAI spelling comes from cross-port evidence; iOS confirms cRCameraman and cRSubGame ownership in the same object group."
+      "notes": "The specific CameraAI spelling comes from cross-port evidence; iOS confirms cRCameraman and cRSubGame ownership in the same object group.",
+      "android_symbol": "cRSubGame::CameraAI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x447040",
@@ -1064,7 +1147,9 @@
       "ios_symbol": "cRSubLoc::Yi()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "Both mask the receiver's low three lane bits, recover lane zero, subtract the runtime-cell slab base, divide by the platform cell stride, and divide by eight lanes. iOS uses a 0x44-byte cell; the exact Windows helper uses 0x54."
+      "notes": "Both mask the receiver's low three lane bits, recover lane zero, subtract the runtime-cell slab base, divide by the platform cell stride, and divide by eight lanes. iOS uses a 0x44-byte cell; the exact Windows helper uses 0x54.",
+      "android_symbol": "cRSubLoc::Yi()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x447090",
@@ -1114,7 +1199,9 @@
       "ios_symbol": "cRSubTracks::ImportSegment(char*, cRSubSegment*)",
       "source_object": "Subtrack.o",
       "confidence": "high",
-      "notes": "The row-grid transpose and authored metadata copy agree. All three Windows callers load the SubTracks owner into ECX and pass two stack arguments before the callee returns with ret 8, proving the same void thiscall member despite its unused receiver. Windows reads the source through the root SMTracks owner, and its destination cRSubSegment is a 0x4220-byte inline payload rather than the compact later-port layout."
+      "notes": "The row-grid transpose and authored metadata copy agree. All three Windows callers load the SubTracks owner into ECX and pass two stack arguments before the callee returns with ret 8, proving the same void thiscall member despite its unused receiver. Windows reads the source through the root SMTracks owner, and its destination cRSubSegment is a 0x4220-byte inline payload rather than the compact later-port layout.",
+      "android_symbol": "cRSubTracks::ImportSegment(char*, cRSubSegment*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x447480",
@@ -1122,7 +1209,9 @@
       "ios_symbol": "cRSubTracks::Init(char*)",
       "source_object": "Subtrack.o",
       "confidence": "high",
-      "notes": "The parser, field order, and ImportSegment calls agree. The authored member is void; its Windows success and error paths leave unrelated cursor or diagnostic values in EAX, and all callers discard them."
+      "notes": "The parser, field order, and ImportSegment calls agree. The authored member is void; its Windows success and error paths leave unrelated cursor or diagnostic values in EAX, and all callers discard them.",
+      "android_symbol": "cRSubTracks::Init(char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x448060",
@@ -1130,7 +1219,9 @@
       "ios_symbol": "cRSubTracks::Init(cRSubSegmentRaw**)",
       "source_object": "Subtrack.o",
       "confidence": "high",
-      "notes": "The Windows raw input record is 0x48 bytes and feeds inline 0x4220-byte slots. Its inconsistent incidental return register plus discarded callsites prove a void Init contract; iOS later uses compact destination segments with separately allocated glyph storage."
+      "notes": "The Windows raw input record is 0x48 bytes and feeds inline 0x4220-byte slots. Its inconsistent incidental return register plus discarded callsites prove a void Init contract; iOS later uses compact destination segments with separately allocated glyph storage.",
+      "android_symbol": "cRSubTracks::Init(cRSubSegmentRaw**)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x448160",
@@ -1138,7 +1229,9 @@
       "ios_symbol": "cRSMTracks::Import()",
       "source_object": "Subtrack.o",
       "confidence": "high",
-      "notes": "Both parse segment text into the SMTracks owner with the same Name, Data, 3DModel, Velocity, Parcel, Path, ring, RingSpeed, NoFall, and JetPack metadata. Their common epilogues are value-agnostic and callers discard the result, proving the void contract."
+      "notes": "Both parse segment text into the SMTracks owner with the same Name, Data, 3DModel, Velocity, Parcel, Path, ring, RingSpeed, NoFall, and JetPack metadata. Their common epilogues are value-agnostic and callers discard the result, proving the void contract.",
+      "android_symbol": "cRSMTracks::Import()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x448900",
@@ -1146,7 +1239,9 @@
       "ios_symbol": "cRSMTracks::OpenLevels()",
       "source_object": "Subtrack.o",
       "confidence": "high",
-      "notes": "Both enumerate authored level filenames through the same SMTracks owner and hand each name to the SubTracks text parser; neither returns a semantic value."
+      "notes": "Both enumerate authored level filenames through the same SMTracks owner and hand each name to the SubTracks text parser; neither returns a semantic value.",
+      "android_symbol": "cRSMTracks::OpenLevels()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x448a40",
@@ -1154,7 +1249,9 @@
       "ios_symbol": "cRTip::Init(cRTipData*, bool)",
       "source_object": "Tips.o",
       "confidence": "high",
-      "notes": "The 0x20-byte Tip and 0x14-byte TipData field order agrees across ports. Windows reads the hide-disable-button formal as a full 32-bit stack argument, while iOS v1.5 names it bool and v1.9 names it signed char, so the Windows declaration intentionally retains int32_t."
+      "notes": "The 0x20-byte Tip and 0x14-byte TipData field order agrees across ports. Windows reads the hide-disable-button formal as a full 32-bit stack argument, while iOS v1.5 names it bool and v1.9 names it signed char, so the Windows declaration intentionally retains int32_t.",
+      "android_symbol": "cRTip::Init(cRTipData*, bool)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x448c40",
@@ -1162,7 +1259,9 @@
       "ios_symbol": "cRTip::AI()",
       "source_object": "Tips.o",
       "confidence": "high",
-      "notes": "The exact Windows member drives the same Tip-owned widgets, authored TipData flags, dismiss progress, and frontend-owner restoration path."
+      "notes": "The exact Windows member drives the same Tip-owned widgets, authored TipData flags, dismiss progress, and frontend-owner restoration path.",
+      "android_symbol": "cRTip::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x448cf0",
@@ -1170,7 +1269,9 @@
       "ios_symbol": "cRTipManager::Init()",
       "source_object": "Tips.o",
       "confidence": "high",
-      "notes": "Both initialize the manager's three inline 0x20-byte Tips. Their array begins at Windows +0x38 and iOS +0x2c because the port-specific BodBase prefixes differ."
+      "notes": "Both initialize the manager's three inline 0x20-byte Tips. Their array begins at Windows +0x38 and iOS +0x2c because the port-specific BodBase prefixes differ.",
+      "android_symbol": "cRTipManager::Init()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x448d10",
@@ -1178,7 +1279,9 @@
       "ios_symbol": "cRTipManager::UnInitTips()",
       "source_object": "Tips.o",
       "confidence": "high",
-      "notes": "Both walk the three inline Tips and tear down any active Tip-owned widgets."
+      "notes": "Both walk the three inline Tips and tear down any active Tip-owned widgets.",
+      "android_symbol": "cRTipManager::UnInitTips()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x448d30",
@@ -1186,7 +1289,9 @@
       "ios_symbol": "cRTipManager::TipNew(cRTipData*, bool)",
       "source_object": "Tips.o",
       "confidence": "high",
-      "notes": "The exact Windows member selects the first inactive inline Tip, initializes it from TipData, and returns that Tip. As with cRTip::Init, Windows retains the observed 32-bit hide-disable-button formal while later iOS changes the mobile spelling from bool to signed char."
+      "notes": "The exact Windows member selects the first inactive inline Tip, initializes it from TipData, and returns that Tip. As with cRTip::Init, Windows retains the observed 32-bit hide-disable-button formal while later iOS changes the mobile spelling from bool to signed char.",
+      "android_symbol": "cRTipManager::TipNew(cRTipData*, bool)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x448d80",
@@ -1194,7 +1299,9 @@
       "ios_symbol": "cRTipManager::AI()",
       "source_object": "Tips.o",
       "confidence": "high",
-      "notes": "Both walk the same three inline Tips and call AI only for active entries."
+      "notes": "Both walk the same three inline Tips and call AI only for active entries.",
+      "android_symbol": "cRTipManager::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x448da0",
@@ -1229,7 +1336,9 @@
       "ios_symbol": "cRVoiceManager::ReSet()",
       "source_object": "Voice.o",
       "confidence": "high",
-      "notes": "Both clear global voice progress and the cooldown fields of the 16 inline VoiceSets. The Windows member is exact."
+      "notes": "Both clear global voice progress and the cooldown fields of the 16 inline VoiceSets. The Windows member is exact.",
+      "android_symbol": "cRVoiceManager::ReSet()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x448ee0",
@@ -1237,7 +1346,9 @@
       "ios_symbol": "cRVoiceManager::Init()",
       "source_object": "Voice.o",
       "confidence": "high",
-      "notes": "Both parse the same 16 named VoiceSets at a 0x18-byte stride, register their authored samples, read normalization and frequency settings, and return void."
+      "notes": "Both parse the same 16 named VoiceSets at a 0x18-byte stride, register their authored samples, read normalization and frequency settings, and return void.",
+      "android_symbol": "cRVoiceManager::Init()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4492a0",
@@ -1245,7 +1356,9 @@
       "ios_symbol": "cRVoiceManager::AI()",
       "source_object": "Voice.o",
       "confidence": "high",
-      "notes": "Both update all 16 inline VoiceSets and advance the manager-wide voice timer. The Windows member is exact."
+      "notes": "Both update all 16 inline VoiceSets and advance the manager-wide voice timer. The Windows member is exact.",
+      "android_symbol": "cRVoiceManager::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4492d0",
@@ -1253,7 +1366,9 @@
       "ios_symbol": "cRVoiceManager::Play(int, int, int)",
       "source_object": "Voice.o",
       "confidence": "high",
-      "notes": "Both gate playback by the current voice and global frequency, optionally stop the active sample, and dispatch through the selected inline VoiceSet. The Windows member is exact; its recovered mode formal remains unsigned because that spelling preserves the observed Windows comparison."
+      "notes": "Both gate playback by the current voice and global frequency, optionally stop the active sample, and dispatch through the selected inline VoiceSet. The Windows member is exact; its recovered mode formal remains unsigned because that spelling preserves the observed Windows comparison.",
+      "android_symbol": "cRVoiceManager::Play(int, int, int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x449c70",
@@ -1261,7 +1376,9 @@
       "android_symbol": "FontInit()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android preserves the same two zeroed font-wave phases and two fixed phase increments. The exact Windows routine is void."
+      "notes": "Android preserves the same two zeroed font-wave phases and two fixed phase increments. The exact Windows routine is void.",
+      "ios_symbol": "FontInit()",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x413030",
@@ -1269,7 +1386,9 @@
       "android_symbol": "G0RenderFont(cRTexture*, float, float, float, float, float, float, float, float, float, float, float, float, float, float, tColour&, int, float)",
       "source_object": null,
       "confidence": "high",
-      "notes": "Both build and submit one immediate textured UI quad from explicit corners, axis-aligned dimensions, or a rotation angle. All three Windows callsites discard EAX, and the 98.34% Windows reconstruction already has a void body."
+      "notes": "Both build and submit one immediate textured UI quad from explicit corners, axis-aligned dimensions, or a rotation angle. All three Windows callsites discard EAX, and the 98.34% Windows reconstruction already has a void body.",
+      "ios_symbol": "G0RenderFont(cRTexture*, float, float, float, float, float, float, float, float, float, float, float, float, float, float, tColour&, int, float)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x412d00",
@@ -1295,7 +1414,9 @@
       "android_symbol": "FontAI()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Both reset the font text cursor and queue counters, advance the two wave phases, and wrap them at 2pi. Both Android callers and the sole Windows caller discard the incidental result, and the exact Windows routine remains void."
+      "notes": "Both reset the font text cursor and queue counters, advance the two wave phases, and wrap them at 2pi. Both Android callers and the sole Windows caller discard the incidental result, and the exact Windows routine remains void.",
+      "ios_symbol": "FontAI()",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x449d20",
@@ -1303,7 +1424,9 @@
       "android_symbol": "FontASCIIRemap(char)",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android preserves the authored font remapper name and the same alphabet, digit, punctuation, icon-token, and fallback slot families."
+      "notes": "Android preserves the authored font remapper name and the same alphabet, digit, punctuation, icon-token, and fallback slot families.",
+      "ios_symbol": "FontASCIIRemap(char)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x449e90",
@@ -1319,7 +1442,9 @@
       "android_symbol": "FontLoad(char*, int, float, float)",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android preserves the atlas registrar, per-glyph delimiter scan, font count, scale parameters, and returned post-increment font index; texture container details differ by platform."
+      "notes": "Android preserves the atlas registrar, per-glyph delimiter scan, font count, scale parameters, and returned post-increment font index; texture container details differ by platform.",
+      "ios_symbol": "FontLoad(char*, int, float, float)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44a360",
@@ -1327,7 +1452,9 @@
       "android_symbol": "FontPrintReal(cFontPrintBuffer*)",
       "source_object": null,
       "confidence": "high",
-      "notes": "The mangled Android signature independently recovers cFontPrintBuffer ownership. Both bodies align text, map glyphs, apply wave offsets, and submit atlas quads; their queue drains discard the incidental terminating-byte result, proving a void source contract."
+      "notes": "The mangled Android signature independently recovers cFontPrintBuffer ownership. Both bodies align text, map glyphs, apply wave offsets, and submit atlas quads; their queue drains discard the incidental terminating-byte result, proving a void source contract.",
+      "ios_symbol": "FontPrintReal(cFontPrintBuffer*)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44a6d0",
@@ -1343,7 +1470,9 @@
       "android_symbol": "FontPrintRender(int)",
       "source_object": null,
       "confidence": "high",
-      "notes": "Both walk the cFontPrintBuffer queue backward, filter high-byte render flags, and dispatch text versus explicit-quad entries. The sole Windows caller discards EAX, and the exact routine remains void."
+      "notes": "Both walk the cFontPrintBuffer queue backward, filter high-byte render flags, and dispatch text versus explicit-quad entries. The sole Windows caller discards EAX, and the exact routine remains void.",
+      "ios_symbol": "FontPrintRender(int)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44a790",
@@ -1386,7 +1515,9 @@
       "android_symbol": "FontType(char*, int, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)",
       "source_object": null,
       "confidence": "high",
-      "notes": "Both split authored text into line runs, measure and optionally queue each run, apply alignment, and publish the block origin and bounds through four output floats."
+      "notes": "Both split authored text into line runs, measure and optionally queue each run, apply alignment, and publish the block origin and bounds through four output floats.",
+      "ios_symbol": "FontType(char*, int, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44ae10",
@@ -1394,7 +1525,9 @@
       "android_symbol": "FontMake3D(short)",
       "source_object": null,
       "confidence": "high",
-      "notes": "Both materialize one 3D object per registered glyph from the font atlas and cache its width scale. Windows callers discard EAX and the recovered routine is void."
+      "notes": "Both materialize one 3D object per registered glyph from the font atlas and cache its width scale. Windows callers discard EAX and the recovered routine is void.",
+      "ios_symbol": "FontMake3D(short)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x43a9c0",
@@ -1420,7 +1553,9 @@
       "ios_symbol": "cRSubGoldy::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "Windows installs this method in the main SubGoldy callback table and run_frame_update invokes that slot through the shared void BodAiDispatch ABI. Its multiple returns preserve unrelated call or store registers rather than a coherent result, confirming the authored AI contract is void."
+      "notes": "Windows installs this method in the main SubGoldy callback table and run_frame_update invokes that slot through the shared void BodAiDispatch ABI. Its multiple returns preserve unrelated call or store registers rather than a coherent result, confirming the authored AI contract is void.",
+      "android_symbol": "cRSubGoldy::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x43d230",
@@ -1436,7 +1571,9 @@
       "ios_symbol": "cRSubGoldy::ScoreAdd(int, int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All 14 direct Windows callsites discard EAX; the authored score mutation contract is void."
+      "notes": "All 14 direct Windows callsites discard EAX; the authored score mutation contract is void.",
+      "android_symbol": "cRSubGoldy::ScoreAdd(int, int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4403c0",
@@ -1444,7 +1581,9 @@
       "ios_symbol": "cRSubGoldy::ScoreStatsDisplay()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The sole Windows caller discards EAX and the terminal value is only the final debug-report call residue, proving the authored display contract is void."
+      "notes": "The sole Windows caller discards EAX and the terminal value is only the final debug-report call residue, proving the authored display contract is void.",
+      "android_symbol": "cRSubGoldy::ScoreStatsDisplay()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x441fa0",
@@ -1452,7 +1591,9 @@
       "ios_symbol": "cRSubGoldy::RessurectInit(int)",
       "source_object": null,
       "confidence": "high",
-      "notes": "v1.9-only spelling preserves the shipped typo. Windows DeathInit tail-forwards into this helper, but both external death callers discard the selector residue; the recovered contract is void."
+      "notes": "v1.9-only spelling preserves the shipped typo. Windows DeathInit tail-forwards into this helper, but both external death callers discard the selector residue; the recovered contract is void.",
+      "android_symbol": "cRSubGoldy::RessurectInit(int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x441fd0",
@@ -1460,7 +1601,9 @@
       "ios_symbol": "cRSubGoldy::RessurectAI()",
       "source_object": null,
       "confidence": "high",
-      "notes": "v1.9-only spelling preserves the shipped typo. The sole Windows caller loads Player* in ECX and consumes no result, proving the void thiscall member contract."
+      "notes": "v1.9-only spelling preserves the shipped typo. The sole Windows caller loads Player* in ECX and consumes no result, proving the void thiscall member contract.",
+      "android_symbol": "cRSubGoldy::RessurectAI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4447c0",
@@ -1548,7 +1691,9 @@
       "ios_symbol": "cRSubGoldy::Collision()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The sole Windows caller ignores EAX and the terminal register value is incidental to the last score-helper call, so the recovered source contract is void."
+      "notes": "The sole Windows caller ignores EAX and the terminal register value is incidental to the last score-helper call, so the recovered source contract is void.",
+      "android_symbol": "cRSubGoldy::Collision()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x446e30",
@@ -1556,7 +1701,9 @@
       "ios_symbol": "cRSubGoldy::DeathInit()",
       "source_object": null,
       "confidence": "high",
-      "notes": "v1.9-only signature. Both direct Windows callers discard EAX, and every tail path only preserves RessurectInit's incidental selector residue, proving the authored contract is void."
+      "notes": "v1.9-only signature. Both direct Windows callers discard EAX, and every tail path only preserves RessurectInit's incidental selector residue, proving the authored contract is void.",
+      "android_symbol": "cRSubGoldy::DeathInit()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x446e80",
@@ -1727,7 +1874,9 @@
       "ios_symbol": "cRSalt::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Windows cRSalt constructor table at 0x497340 points directly to this exact helper."
+      "notes": "The Windows cRSalt constructor table at 0x497340 points directly to this exact helper.",
+      "android_symbol": "cRSalt::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x441d40",
@@ -2040,63 +2189,81 @@
       "windows_name": "initialize_looptheloop_path_template_pair",
       "ios_symbol": "cRPath::BuildLoopTheLoop(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildLoopTheLoop(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x41bb40",
       "windows_name": "initialize_looptheloopw_path_template_pair",
       "ios_symbol": "cRPath::BuildLoopTheLoopW(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildLoopTheLoopW(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x41c5f0",
       "windows_name": "initialize_loopout_path_template_pair",
       "ios_symbol": "cRPath::BuildLoopOut(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildLoopOut(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x41d030",
       "windows_name": "initialize_hump_path_template_pair",
       "ios_symbol": "cRPath::BuildHump(float, float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildHump(float, float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x41da30",
       "windows_name": "initialize_dump_path_template_pair",
       "ios_symbol": "cRPath::BuildDump(float, float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildDump(float, float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x41e440",
       "windows_name": "initialize_dip_path_template_pair",
       "ios_symbol": "cRPath::BuildDip(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildDip(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x41eda0",
       "windows_name": "initialize_screw_path_template_pair",
       "ios_symbol": "cRPath::BuildScrew(int, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildScrew(int, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x41f760",
       "windows_name": "initialize_slalom_path_template_pair",
       "ios_symbol": "cRPath::BuildSlalom(int, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildSlalom(int, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x420170",
       "windows_name": "initialize_worm_path_template_pair",
       "ios_symbol": "cRPath::BuildWorm(char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildWorm(char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x420c40",
@@ -2104,7 +2271,9 @@
       "ios_symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "The byte-identical Windows helper is a void initializer on the Player-embedded FollowState. Its sole caller ignores EAX; the final Path-shaped register value is incidental, not a return contract."
+      "notes": "The byte-identical Windows helper is a void initializer on the Player-embedded FollowState. Its sole caller ignores EAX; the final Path-shaped register value is incidental, not a return contract.",
+      "android_symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x420cb0",
@@ -2112,14 +2281,18 @@
       "ios_symbol": "cRPathFollowGoldy::Traverse(float, tVector&, tVector*)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "Both builds store the interpolated matrix up basis as one owned FollowState vector. Both also retain the unreachable voice-4 guard at sample_index == segment_count * 2 even though traversal terminates at segment_count."
+      "notes": "Both builds store the interpolated matrix up basis as one owned FollowState vector. Both also retain the unreachable voice-4 guard at sample_index == segment_count * 2 even though traversal terminates at segment_count.",
+      "android_symbol": "cRPathFollowGoldy::Traverse(float, tVector&, tVector*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x421770",
       "windows_name": "initialize_path_follow_golb",
       "ios_symbol": "cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4217b0",
@@ -2127,105 +2300,135 @@
       "ios_symbol": "cRPathFollowGolb::Traverse(float, tVector&, tVector*)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "This Windows helper advances the Golb follow state; the similarly named no-argument `cRPath::CalcLengthZ()` maps to `finalize_path_template`."
+      "notes": "This Windows helper advances the Golb follow state; the similarly named no-argument `cRPath::CalcLengthZ()` maps to `finalize_path_template`.",
+      "android_symbol": "cRPathFollowGolb::Traverse(float, tVector&, tVector*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x421dc0",
       "windows_name": "mirror_path_template_pair_x",
       "ios_symbol": "cRPath::Mirror(cRPath*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::Mirror(cRPath*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4221f0",
       "windows_name": "initialize_slalombig_path_template_pair",
       "ios_symbol": "cRPath::BuildSlalomBig(int, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildSlalomBig(int, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x422c00",
       "windows_name": "initialize_sweep_path_template_pair",
       "ios_symbol": "cRPath::BuildSweep(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildSweep(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x423580",
       "windows_name": "initialize_snake_path_template_pair",
       "ios_symbol": "cRPath::BuildSnake(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildSnake(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x423f10",
       "windows_name": "initialize_supertramp_path_template_pair",
       "ios_symbol": "cRPath::BuildSuperTramp(float, float, int, bool, char*, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildSuperTramp(float, float, int, bool, char*, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4246a0",
       "windows_name": "build_track_fringe_mesh",
       "ios_symbol": "cRPath::BuildFringe(char*, float)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildFringe(char*, float)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x424ad0",
       "windows_name": "build_track_fringe_supertramp_mesh",
       "ios_symbol": "cRPath::BuildFringeSuperTramp(char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildFringeSuperTramp(char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x425050",
       "windows_name": "initialize_slalomdouble_path_template_pair",
       "ios_symbol": "cRPath::BuildSlalomDouble(int, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildSlalomDouble(int, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x425a40",
       "windows_name": "initialize_p_path_template_pair",
       "ios_symbol": "cRPath::BuildP(int, float, int, float, float, int, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildP(int, float, int, float, float, int, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x426400",
       "windows_name": "initialize_start_path_template_pair",
       "ios_symbol": "cRPath::BuildStart(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildStart(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x426cb0",
       "windows_name": "initialize_turnover_path_template_pair",
       "ios_symbol": "cRPath::BuildTurnover(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildTurnover(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x427640",
       "windows_name": "initialize_turnoverdouble_path_template_pair",
       "ios_symbol": "cRPath::BuildTurnoverDouble(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildTurnoverDouble(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x427fe0",
       "windows_name": "initialize_turnunder_path_template_pair",
       "ios_symbol": "cRPath::BuildTurnunder(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildTurnunder(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4289a0",
       "windows_name": "initialize_wibble_path_template_pair",
       "ios_symbol": "cRPath::BuildWibble(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildWibble(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x429250",
@@ -2233,7 +2436,9 @@
       "ios_symbol": "cRPath::BuildInvert(float, int, bool, char*, char*)",
       "source_object": "Path.o",
       "confidence": "medium",
-      "notes": "iOS also exposes `cRPath::BuildInvert1(...)`; this row preserves the known Windows family without asserting which original split survived the port."
+      "notes": "iOS also exposes `cRPath::BuildInvert1(...)`; this row preserves the known Windows family without asserting which original split survived the port.",
+      "android_symbol": "cRPath::BuildInvert(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x429ae0",
@@ -2241,7 +2446,9 @@
       "ios_symbol": "cRPathManager::NameCode(char*)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "Both linearly search the authored Path name table and return its index or -1. Windows stores the otherwise-empty PathManager at SubgameRuntime +0xff2910; the unused receiver makes its machine ABI indistinguishable from the prior stdcall presentation."
+      "notes": "Both linearly search the authored Path name table and return its index or -1. Windows stores the otherwise-empty PathManager at SubgameRuntime +0xff2910; the unused receiver makes its machine ABI indistinguishable from the prior stdcall presentation.",
+      "android_symbol": "cRPathManager::NameCode(char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x429b20",
@@ -2249,21 +2456,27 @@
       "ios_symbol": "cRPath::BuildHalfPipe(float, int, bool, char*, char*)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "The direct Windows world-init call constructs public authored slot 42 (HALFPIPE); Android independently supplies the matching BuildHalfPipe name."
+      "notes": "The direct Windows world-init call constructs public authored slot 42 (HALFPIPE); Android independently supplies the matching BuildHalfPipe name.",
+      "android_symbol": "cRPath::BuildHalfPipe(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42a540",
       "windows_name": "initialize_twister_path_template_pair",
       "ios_symbol": "cRPath::BuildTwisterA(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildTwisterA(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42af30",
       "windows_name": "initialize_twister2_path_template_pair",
       "ios_symbol": "cRPath::BuildTwister2A(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildTwister2A(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42b920",
@@ -2271,7 +2484,9 @@
       "ios_symbol": "cRPath::HalfPipePos(float, float, float, tMatrix&, float&)",
       "source_object": "Path.o",
       "confidence": "medium",
-      "notes": "The iOS symbol confirms the nonlinear kind-42 transform family; Windows keeps the neutral helper name until HalfPipe/HalfPole splits are fully resolved."
+      "notes": "The iOS symbol confirms the nonlinear kind-42 transform family; Windows keeps the neutral helper name until HalfPipe/HalfPole splits are fully resolved.",
+      "android_symbol": "cRPath::HalfPipePos(float, float, float, tMatrix&, float&)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42b9c0",
@@ -2279,14 +2494,18 @@
       "ios_symbol": "cRPath::GetPos(tVector&, int, int, tVector&)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "Both Windows callsites discard EAX; the byte-identical VC6 candidate remains exact as a void method and naturally leaves the final z bits in EAX, so no synthetic scalar return is owned."
+      "notes": "Both Windows callsites discard EAX; the byte-identical VC6 candidate remains exact as a void method and naturally leaves the final z bits in EAX, so no synthetic scalar return is owned.",
+      "android_symbol": "cRPath::GetPos(tVector&, int, int, tVector&)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42ba80",
       "windows_name": "initialize_loopbow_path_template_pair",
       "ios_symbol": "cRPath::BuildLoopBow(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildLoopBow(float, int, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42c600",
@@ -2294,7 +2513,9 @@
       "ios_symbol": "cRPath::CalcLengthZ()",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "No-argument iOS method aligns with the template finalization pass that recomputes derived length scalars."
+      "notes": "No-argument iOS method aligns with the template finalization pass that recomputes derived length scalars.",
+      "android_symbol": "cRPath::CalcLengthZ()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42c770",
@@ -2302,7 +2523,9 @@
       "ios_symbol": "cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)",
       "source_object": "Path.o",
       "confidence": "medium",
-      "notes": "The iOS name describes the same swept-search responsibility. Windows retains a Path receiver and seven stack dwords for position, sweep, and a borrowed SubLoc; accepted entry seeds the Player-embedded FollowState and clears the Player-owned exit-pending gate."
+      "notes": "The iOS name describes the same swept-search responsibility. Windows retains a Path receiver and seven stack dwords for position, sweep, and a borrowed SubLoc; accepted entry seeds the Player-embedded FollowState and clears the Player-owned exit-pending gate.",
+      "android_symbol": "cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42ca90",
@@ -2310,14 +2533,18 @@
       "ios_symbol": "cRPath::SearchPos(tVector, tVector, cRSubLoc*)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "Android retains the SearchPos name and evaluates the local probe subtraction in the same vector-expression order. The byte-identical Windows candidate confirms the two by-value vectors, borrowed TrackRowCell pointer, bool return, and Path ownership; the second vector remains ABI-owned but unused in this platform split."
+      "notes": "Android retains the SearchPos name and evaluates the local probe subtraction in the same vector-expression order. The byte-identical Windows candidate confirms the two by-value vectors, borrowed TrackRowCell pointer, bool return, and Path ownership; the second vector remains ABI-owned but unused in this platform split.",
+      "android_symbol": "cRPath::SearchPos(tVector, tVector, cRSubLoc*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42cbf0",
       "windows_name": "initialize_toad_path_template_pair",
       "ios_symbol": "cRPath::BuildToad(bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildToad(bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42d570",
@@ -2325,147 +2552,189 @@
       "ios_symbol": "cRPath::BuildHill(int, float, float, bool, char*, char*)",
       "source_object": "Path.o",
       "confidence": "medium",
-      "notes": "Windows helper name keeps the recovered hill/valley role while iOS exposes the BuildHill spelling."
+      "notes": "Windows helper name keeps the recovered hill/valley role while iOS exposes the BuildHill spelling.",
+      "android_symbol": "cRPath::BuildHill(int, float, float, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42df00",
       "windows_name": "initialize_sbend_path_template_pair",
       "ios_symbol": "cRPath::BuildSBend(int, float, float, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildSBend(int, float, float, bool, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42e720",
       "windows_name": "initialize_cage2_path_template_pair",
       "ios_symbol": "cRPath::BuildCage2(int, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRPath::BuildCage2(int, char*, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x413d50",
       "windows_name": "build_object_texture_group_buffers",
       "ios_symbol": "cRObject::BuildGLVertexArray()",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObject::BuildGLVertexArray()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42f5c0",
       "windows_name": "is_bod_after_sprites",
       "ios_symbol": "cRBod::IsAfterSprites()",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRBod::IsAfterSprites()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42f5d0",
       "windows_name": "set_bod_object",
       "ios_symbol": "cRBod::SetObject(cRObject*)",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRBod::SetObject(cRObject*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42f5f0",
       "windows_name": "initialize_bod_base",
       "ios_symbol": "cRBod::cRBod()",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRBod::cRBod()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42f650",
       "windows_name": "initialize_renderable_bod",
       "ios_symbol": "cRBodPos::cRBodPos()",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRBodPos::cRBodPos()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42f680",
       "windows_name": "apply_bod_position",
       "ios_symbol": "cRBod::ApplyPos(tMatrix&)",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRBod::ApplyPos(tMatrix&)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42f6f0",
       "windows_name": "initialize_object",
       "ios_symbol": "cRObject::cRObject()",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObject::cRObject()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42f710",
       "windows_name": "request_object_vertices",
       "ios_symbol": "cRObject::RequestVertices(int)",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObject::RequestVertices(int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42f7d0",
       "windows_name": "request_object_vertices_copy",
       "ios_symbol": "cRObject::RequestVerticesCopy()",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObject::RequestVerticesCopy()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42f8c0",
       "windows_name": "request_object_facequads",
       "ios_symbol": "cRObject::RequestFaceQuads(int)",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObject::RequestFaceQuads(int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42f990",
       "windows_name": "initialize_object_list",
       "ios_symbol": "cRObjects::Init(int)",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObjects::Init(int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42f9e0",
       "windows_name": "build_all_objects",
       "ios_symbol": "cRObjects::BuildObjects()",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObjects::BuildObjects()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42fa80",
       "windows_name": "apply_object_toon",
       "ios_symbol": "cRObject::ApplyToon(int)",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObject::ApplyToon(int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42fad0",
       "windows_name": "add_object_to_list",
       "ios_symbol": "cRObjects::Add()",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObjects::Add()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x42fcb0",
       "windows_name": "calc_object_facequad_normals",
       "ios_symbol": "cRObject::CalcFaceQuadNormals()",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObject::CalcFaceQuadNormals()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4303f0",
       "windows_name": "calc_object_texture_groups",
       "ios_symbol": "cRObject::CalcTextureGroups()",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObject::CalcTextureGroups()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4305a0",
       "windows_name": "add_object_edge",
       "ios_symbol": "cRObject::AddEdge(int, int, int)",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObject::AddEdge(int, int, int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4308b0",
       "windows_name": "calc_object_edges",
       "ios_symbol": "cRObject::CalcEdges()",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRObject::CalcEdges()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x430a70",
@@ -2490,7 +2759,9 @@
       "ios_symbol": "RShellInit()",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "Both initialize the global RShell state, DAT index, scratch and music buffers, registered-sound count, input slots, and key-repeat state. The platform ports use different scratch sizes but preserve the same ownership."
+      "notes": "Both initialize the global RShell state, DAT index, scratch and music buffers, registered-sound count, input slots, and key-repeat state. The platform ports use different scratch sizes but preserve the same ownership.",
+      "android_symbol": "RShellInit()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x430fd0",
@@ -2498,7 +2769,9 @@
       "ios_symbol": "RShellFindFile(char*, bool)",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "Both prefer the loaded DAT index unless the boolean formal forces a direct filesystem probe."
+      "notes": "Both prefer the loaded DAT index unless the boolean formal forces a direct filesystem probe.",
+      "android_symbol": "RShellFindFile(char*, bool)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431030",
@@ -2506,7 +2779,9 @@
       "ios_symbol": "RShellLoadFileHeader(char*, void*, int)",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "The ports share the caller-sized archive or filesystem read contract, including the DAT data-offset sentinel and caller-owned destination buffer."
+      "notes": "The ports share the caller-sized archive or filesystem read contract, including the DAT data-offset sentinel and caller-owned destination buffer.",
+      "android_symbol": "RShellLoadFileHeader(char*, void*, int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4312d0",
@@ -2514,7 +2789,9 @@
       "ios_symbol": "RShellLoadFile(char*, void*, int*)",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "The variable-size RShell loader reports the selected byte count, reads through the loaded DAT stream when possible, and otherwise owns the filesystem fallback allocation."
+      "notes": "The variable-size RShell loader reports the selected byte count, reads through the loaded DAT stream when possible, and otherwise owns the filesystem fallback allocation.",
+      "android_symbol": "RShellLoadFile(char*, void*, int*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431520",
@@ -2522,7 +2799,9 @@
       "ios_symbol": "RShellLoadFile(char*, int*)",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "The exact Windows wrapper supplies a null destination to the three-argument RShellLoadFile overload."
+      "notes": "The exact Windows wrapper supplies a null destination to the three-argument RShellLoadFile overload.",
+      "android_symbol": "RShellLoadFile(char*, int*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431540",
@@ -2530,7 +2809,9 @@
       "ios_symbol": "RShellDeleteFile(char*)",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "The Windows implementation walks intermediate directories before deleting the final component; iOS delegates the same public RShell contract to MacDeleteFile."
+      "notes": "The Windows implementation walks intermediate directories before deleting the final component; iOS delegates the same public RShell contract to MacDeleteFile.",
+      "android_symbol": "RShellDeleteFile(char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431650",
@@ -2538,7 +2819,9 @@
       "ios_symbol": "RShellSaveFile(char*, void*, int)",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "The Windows implementation creates intermediate path context and writes the caller-owned byte range; iOS delegates the same public RShell contract to MacSaveFile."
+      "notes": "The Windows implementation creates intermediate path context and writes the caller-owned byte range; iOS delegates the same public RShell contract to MacSaveFile.",
+      "android_symbol": "RShellSaveFile(char*, void*, int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431740",
@@ -2546,7 +2829,9 @@
       "ios_symbol": "RShellReadDirectory(char*, char*, int*, char (*) [128])",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "The exact four-formal signature names the caller-owned 128-byte filename records. Windows implements DAT/filesystem enumeration locally; the iOS RShell entry is an empty platform stub."
+      "notes": "The exact four-formal signature names the caller-owned 128-byte filename records. Windows implements DAT/filesystem enumeration locally; the iOS RShell entry is an empty platform stub.",
+      "android_symbol": "RShellReadDirectory(char*, char*, int*, char (*) [128])",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4319c0",
@@ -2554,7 +2839,9 @@
       "ios_symbol": "RShellDatInit(char*)",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "Both decode the DAT header and full index, rebase each 12-byte entry path against the installed index owner, and retain an open backing stream."
+      "notes": "Both decode the DAT header and full index, rebase each 12-byte entry path against the installed index owner, and retain an open backing stream.",
+      "android_symbol": "RShellDatInit(char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431a90",
@@ -2562,7 +2849,9 @@
       "ios_symbol": "RShellMemoryScratch()",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "This returns the global RShell scratch workspace, not DAT payload ownership; Windows allocates a 4 MiB workspace while iOS allocates 5 MiB."
+      "notes": "This returns the global RShell scratch workspace, not DAT payload ownership; Windows allocates a 4 MiB workspace while iOS allocates 5 MiB.",
+      "android_symbol": "RShellMemoryScratch()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431aa0",
@@ -2570,7 +2859,9 @@
       "ios_symbol": "RShellMemoryScratch2()",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "This returns the second RShell scratch region rather than an end sentinel: Windows adds 0x200000 to its 4 MiB workspace, while iOS adds 0x280000 to its 5 MiB workspace."
+      "notes": "This returns the second RShell scratch region rather than an end sentinel: Windows adds 0x200000 to its 4 MiB workspace, while iOS adds 0x280000 to its 5 MiB workspace.",
+      "android_symbol": "RShellMemoryScratch2()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431b60",
@@ -2578,7 +2869,9 @@
       "ios_symbol": "RShellMemoryMalloc(int, char*)",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "Windows adds guarded sentinels and tracked-stack accounting around the RShell allocation; iOS retains the public size and label contract while delegating to malloc."
+      "notes": "Windows adds guarded sentinels and tracked-stack accounting around the RShell allocation; iOS retains the public size and label contract while delegating to malloc.",
+      "android_symbol": "RShellMemoryMalloc(int, char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431bf0",
@@ -2586,7 +2879,9 @@
       "ios_symbol": "RShellMemoryFree(void*)",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "Windows validates and removes a guarded tracked allocation; iOS retains the public pointer contract while delegating to free."
+      "notes": "Windows validates and removes a guarded tracked allocation; iOS retains the public pointer contract while delegating to free.",
+      "android_symbol": "RShellMemoryFree(void*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431c70",
@@ -2594,7 +2889,9 @@
       "ios_symbol": "RShellMemoryUnBookmark()",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "Both void lifecycle procedures unwind top allocation records until the active depth reaches the saved bookmark. The Android body does not produce a return value, confirming that Windows EAX is incidental."
+      "notes": "Both void lifecycle procedures unwind top allocation records until the active depth reaches the saved bookmark. The Android body does not produce a return value, confirming that Windows EAX is incidental.",
+      "android_symbol": "RShellMemoryUnBookmark()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431cb0",
@@ -2602,28 +2899,36 @@
       "ios_symbol": "RShellMemoryBookmark()",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "Both void lifecycle procedures snapshot the current RShell allocation depth for a later unwind; the saved-field offset differs between the platform-specific allocation-stack layouts. The Android body never produces r0, confirming that Windows EAX is incidental."
+      "notes": "Both void lifecycle procedures snapshot the current RShell allocation depth for a later unwind; the saved-field offset differs between the platform-specific allocation-stack layouts. The Android body never produces r0, confirming that Windows EAX is incidental.",
+      "android_symbol": "RShellMemoryBookmark()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431cc0",
       "windows_name": "report_errorf",
       "ios_symbol": "RShellError(char*, ...)",
       "source_object": "RShell.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "RShellError(char*, ...)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431d10",
       "windows_name": "report_warningf",
       "ios_symbol": "RShellWarning(char*, ...)",
       "source_object": "RShell.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "RShellWarning(char*, ...)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431d60",
       "windows_name": "report_messagef",
       "ios_symbol": "RShellPrintText(char*, ...)",
       "source_object": "RShell.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "RShellPrintText(char*, ...)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x431dc0",
@@ -2737,7 +3042,9 @@
       "ios_symbol": "cRMouse::IsActive()",
       "source_object": "Mouse.o",
       "confidence": "high",
-      "notes": "Both methods return byte zero of the player-owned mouse subobject. Windows stores that cRMouse-compatible prefix at GamePlayer +0x16c."
+      "notes": "Both methods return byte zero of the player-owned mouse subobject. Windows stores that cRMouse-compatible prefix at GamePlayer +0x16c.",
+      "android_symbol": "cRMouse::IsActive()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44c3c0",
@@ -2745,7 +3052,9 @@
       "ios_symbol": "cRMouse::SetActive()",
       "source_object": "Mouse.o",
       "confidence": "high",
-      "notes": "Both methods snapshot live x/y into +0x0c/+0x10 before enabling byte zero; the platform-specific cursor bridge differs after the shared prefix."
+      "notes": "Both methods snapshot live x/y into +0x0c/+0x10 before enabling byte zero; the platform-specific cursor bridge differs after the shared prefix.",
+      "android_symbol": "cRMouse::SetActive()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44c400",
@@ -2753,7 +3062,9 @@
       "ios_symbol": "cRMouse::SetInActive()",
       "source_object": "Mouse.o",
       "confidence": "high",
-      "notes": "The iPhone ARM and Windows x86 bodies share the same active guard, saved-to-live x/y restore at +0x0c/+0x10 to +0x04/+0x08, and byte-zero clear."
+      "notes": "The iPhone ARM and Windows x86 bodies share the same active guard, saved-to-live x/y restore at +0x0c/+0x10 to +0x04/+0x08, and byte-zero clear.",
+      "android_symbol": "cRMouse::SetInActive()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44c420",
@@ -2761,7 +3072,9 @@
       "ios_symbol": "cRObject::Load(char*)",
       "source_object": "RObject.o",
       "confidence": "high",
-      "notes": "Both populate the borrowed Object/cRObject slot. The iOS epilogue establishes no return value and every Windows caller discards EAX, proving the Windows cdecl helper is a staticized void load rather than a cursor-returning API."
+      "notes": "Both populate the borrowed Object/cRObject slot. The iOS epilogue establishes no return value and every Windows caller discards EAX, proving the Windows cdecl helper is a staticized void load rather than a cursor-returning API.",
+      "android_symbol": "cRObject::Load(char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44cac0",
@@ -2989,7 +3302,9 @@
       "android_symbol": "tAxis::operator=(tQuaternian const&)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "The exact 30/30 Windows body and its sole Interpolate callsite match void AxisAngle::operator=(const Quaternion&). Android retains the same operator name; the Itanium symbol does not encode its return type, while Windows establishes no EAX result."
+      "notes": "The exact 30/30 Windows body and its sole Interpolate callsite match void AxisAngle::operator=(const Quaternion&). Android retains the same operator name; the Itanium symbol does not encode its return type, while Windows establishes no EAX result.",
+      "ios_symbol": "tAxis::operator=(tQuaternian const&)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44d5d0",
@@ -2997,7 +3312,9 @@
       "android_symbol": "tQuaternian::tQuaternian(tMatrix const&)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "The typed Windows const-reference constructor remains an honest 92.47% match with 186/186 instruction parity, a 42-instruction prefix, and 23 clean operands. The remaining differences are fallback branch layout, not ownership or ABI uncertainty."
+      "notes": "The typed Windows const-reference constructor remains an honest 92.47% match with 186/186 instruction parity, a 42-instruction prefix, and 23 clean operands. The remaining differences are fallback branch layout, not ownership or ABI uncertainty.",
+      "ios_symbol": "tQuaternian::tQuaternian(tMatrix const&)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44d820",
@@ -3031,7 +3348,9 @@
       "android_symbol": "tColour::Set(float, float, float, float)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "Both bodies store the four float lanes at +0/+4/+8/+12. Windows additionally establishes eax as the receiver before the stores; the pointer-returning tColour method remains exact at 10/10 instructions and is consumed directly by many callsites."
+      "notes": "Both bodies store the four float lanes at +0/+4/+8/+12. Windows additionally establishes eax as the receiver before the stores; the pointer-returning tColour method remains exact at 10/10 instructions and is consumed directly by many callsites.",
+      "ios_symbol": "tColour::Set(float, float, float, float)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44db80",
@@ -3047,7 +3366,9 @@
       "android_symbol": "tColour::Grey(float)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "Windows and Android store one intensity into r/g/b and force alpha to 1.0f. The exact 7/7 Windows helper is void; callers do not consume the incidental argument bits left in eax."
+      "notes": "Windows and Android store one intensity into r/g/b and force alpha to 1.0f. The exact 7/7 Windows helper is void; callers do not consume the incidental argument bits left in eax.",
+      "ios_symbol": "tColour::Grey(float)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44dbb0",
@@ -3055,7 +3376,9 @@
       "android_symbol": "tColour::tColour(float, float, float, float)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "This is the stable Windows harness name for the four-float constructor role. Both implementations write RGBA at +0/+4/+8/+12; the exact 9/9 Windows source is a void write and all covered callers ignore the final component register."
+      "notes": "This is the stable Windows harness name for the four-float constructor role. Both implementations write RGBA at +0/+4/+8/+12; the exact 9/9 Windows source is a void write and all covered callers ignore the final component register.",
+      "ios_symbol": "tColour::tColour(float, float, float, float)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44dbd0",
@@ -3063,7 +3386,9 @@
       "android_symbol": "tColour::Set(float, float, float)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "The exact 7/7 Windows body and Android overload store r/g/b at +0/+4/+8 while preserving alpha. The sole Windows caller uses it as a void mutator."
+      "notes": "The exact 7/7 Windows body and Android overload store r/g/b at +0/+4/+8 while preserving alpha. The sole Windows caller uses it as a void mutator.",
+      "ios_symbol": "tColour::Set(float, float, float)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44dc50",
@@ -3071,7 +3396,9 @@
       "android_symbol": "tColour::White()",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "Both ports implement White through the grayscale helper with 1.0f. The Windows wrapper is exact at 3/3 instructions with its call target resolved."
+      "notes": "Both ports implement White through the grayscale helper with 1.0f. The Windows wrapper is exact at 3/3 instructions with its call target resolved.",
+      "ios_symbol": "tColour::White()",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44dc60",
@@ -3079,7 +3406,9 @@
       "android_symbol": "tColour::Black()",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "Both ports implement Black through the grayscale helper with 0.0f. The Windows wrapper is exact at 3/3 instructions with its call target resolved."
+      "notes": "Both ports implement Black through the grayscale helper with 0.0f. The Windows wrapper is exact at 3/3 instructions with its call target resolved.",
+      "ios_symbol": "tColour::Black()",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44dcb0",
@@ -3087,28 +3416,36 @@
       "ios_symbol": "cRSound::Init(cRSoundBank*)",
       "source_object": "RSound.o",
       "confidence": "high",
-      "notes": "Windows and Android both walk 12-byte path/sample-id/normalization records until an empty path. Android additionally names the corresponding global gSFXBank and stores its address in gRSound."
+      "notes": "Windows and Android both walk 12-byte path/sample-id/normalization records until an empty path. Android additionally names the corresponding global gSFXBank and stores its address in gRSound.",
+      "android_symbol": "cRSound::Init(cRSoundBank*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44dce0",
       "windows_name": "play_sound_effect_at_position",
       "ios_symbol": "cRSound::Play(int, tVector&)",
       "source_object": "RSound.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSound::Play(int, tVector&)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44dde0",
       "windows_name": "play_sound_effect",
       "ios_symbol": "cRSound::Play(int)",
       "source_object": "RSound.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSound::Play(int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44de00",
       "windows_name": "play_sound_effect_scaled",
       "ios_symbol": "cRSound::PlayVolume(int, float)",
       "source_object": "RSound.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSound::PlayVolume(int, float)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44de90",
@@ -3123,7 +3460,9 @@
       "windows_name": "update_sprite",
       "ios_symbol": "cRSprite::AI()",
       "source_object": "RSprite.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSprite::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44e0f0",
@@ -3131,35 +3470,45 @@
       "ios_symbol": "cRSpriteManager::Load(char*, int, int)",
       "source_object": "RSprite.o",
       "confidence": "medium",
-      "notes": "iOS also exposes `cRSpriteManager::LoadSet(char*, int, int)`; Windows texture registration is the direct single-texture split."
+      "notes": "iOS also exposes `cRSpriteManager::LoadSet(char*, int, int)`; Windows texture registration is the direct single-texture split.",
+      "android_symbol": "cRSpriteManager::Load(char*, int, int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44e160",
       "windows_name": "initialize_sprite_manager",
       "ios_symbol": "cRSpriteManager::Init()",
       "source_object": "RSprite.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSpriteManager::Init()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44e200",
       "windows_name": "kill_sprite",
       "ios_symbol": "cRSprite::Kill()",
       "source_object": "RSprite.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSprite::Kill()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44e2a0",
       "windows_name": "allocate_sprite",
       "ios_symbol": "cRSpriteManager::New(int, int, int, int)",
       "source_object": "RSprite.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSpriteManager::New(int, int, int, int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44e3d0",
       "windows_name": "kill_game_sprites",
       "ios_symbol": "cRSpriteManager::KillGame()",
       "source_object": "RSprite.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSpriteManager::KillGame()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44e410",
@@ -3167,28 +3516,36 @@
       "ios_symbol": "cRSprite::BuildTail(tMatrix*)",
       "source_object": "RSprite.o",
       "confidence": "medium",
-      "notes": "The iOS name confirms the matrix-driven facing/tail family; Windows keeps the narrower facing-angle helper name."
+      "notes": "The iOS name confirms the matrix-driven facing/tail family; Windows keeps the narrower facing-angle helper name.",
+      "android_symbol": "cRSprite::BuildTail(tMatrix*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44e540",
       "windows_name": "set_sprite_manager_paused",
       "ios_symbol": "cRSpriteManager::Pause(bool)",
       "source_object": "RSprite.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSpriteManager::Pause(bool)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44e550",
       "windows_name": "set_sprite_texture_ref",
       "ios_symbol": "cRSprite::SetTextureRef(int, int)",
       "source_object": "RSprite.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSprite::SetTextureRef(int, int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44e570",
       "windows_name": "get_sprite_texture",
       "ios_symbol": "cRSpriteManager::GetTexture(int)",
       "source_object": "RSprite.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRSpriteManager::GetTexture(int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44e580",
@@ -3249,14 +3606,18 @@
       "windows_name": "attach_render_camera_source",
       "ios_symbol": "cRViewport::SetCamera(cRCamera*)",
       "source_object": "Viewport.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRViewport::SetCamera(cRCamera*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x44e920",
       "windows_name": "initialize_render_camera_slot",
       "ios_symbol": "cRViewport::cRViewport()",
       "source_object": "Viewport.o",
-      "confidence": "high"
+      "confidence": "high",
+      "android_symbol": "cRViewport::cRViewport()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x417bc0",
@@ -3264,7 +3625,9 @@
       "ios_symbol": "cRIntro::Init()",
       "source_object": "Intro.o",
       "confidence": "high",
-      "notes": "Both build the mode-selection front end with Tutorial, Postal Adventure or Postal Mode, Time Trial, Challenge Mode, Help, and Back after the same fade, menu music, Menubg backdrop, and centered border setup. The mobile port also exposes a Pro-Challenge button, so its widget tail is one pointer larger than the exact 0x48-byte Windows owner."
+      "notes": "Both build the mode-selection front end with Tutorial, Postal Adventure or Postal Mode, Time Trial, Challenge Mode, Help, and Back after the same fade, menu music, Menubg backdrop, and centered border setup. The mobile port also exposes a Pro-Challenge button, so its widget tail is one pointer larger than the exact 0x48-byte Windows owner.",
+      "android_symbol": "cRIntro::Init()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x417eb0",
@@ -3272,7 +3635,9 @@
       "ios_symbol": "cRIntro::AI()",
       "source_object": "Intro.o",
       "confidence": "high",
-      "notes": "Both dispatch the same mode/help/back widgets and run the owner-local random replay-attract controller through the shared front-end and subgame handoff. Windows omits the mobile-only Pro-Challenge branch."
+      "notes": "Both dispatch the same mode/help/back widgets and run the owner-local random replay-attract controller through the shared front-end and subgame handoff. Windows omits the mobile-only Pro-Challenge branch.",
+      "android_symbol": "cRIntro::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x418b50",
@@ -3306,7 +3671,9 @@
       "ios_symbol": "cRLogo::Open()",
       "source_object": "Logo.o",
       "confidence": "high",
-      "notes": "Both initialize the cRLogo-owned row or image-object bank before any text script is opened. Windows keeps 32 fixed 0x90-byte image donors; iOS v1.5 initializes 100 port-specific cRLogoRows."
+      "notes": "Both initialize the cRLogo-owned row or image-object bank before any text script is opened. Windows keeps 32 fixed 0x90-byte image donors; iOS v1.5 initializes 100 port-specific cRLogoRows.",
+      "android_symbol": "cRLogo::Open()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4191e0",
@@ -3314,7 +3681,9 @@
       "ios_symbol": "cRLogo::Init(char*)",
       "source_object": "Logo.o",
       "confidence": "high",
-      "notes": "The symbol-bearing ARM body independently performs the same fade, IntroText music, SpaceRed backdrop, star unhide, script load, Text Start/Text End parse, glyph and image construction, Duration velocity assignment, and final RShellMemoryFree. The no-argument cRIntro::Init is a distinct border-heavy screen and was the previous incorrect mapping."
+      "notes": "The symbol-bearing ARM body independently performs the same fade, IntroText music, SpaceRed backdrop, star unhide, script load, Text Start/Text End parse, glyph and image construction, Duration velocity assignment, and final RShellMemoryFree. The no-argument cRIntro::Init is a distinct border-heavy screen and was the previous incorrect mapping.",
+      "android_symbol": "cRLogo::Init(char*)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x419920",
@@ -3322,7 +3691,9 @@
       "ios_symbol": "cRLogo::UnInit()",
       "source_object": null,
       "confidence": "high",
-      "notes": "iOS v1.9 preserves the authored UnInit symbol; the v1.5 cRLogo::AI body inlines the same active-letter list teardown visible in the exact Windows helper. The sole Windows caller discards the final count, proving the UnInit contract is void."
+      "notes": "iOS v1.9 preserves the authored UnInit symbol; the v1.5 cRLogo::AI body inlines the same active-letter list teardown visible in the exact Windows helper. The sole Windows caller discards the final count, proving the UnInit contract is void.",
+      "android_symbol": "cRLogo::UnInit()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x4199e0",
@@ -3330,7 +3701,9 @@
       "ios_symbol": "cRLogo::AI()",
       "source_object": "Logo.o",
       "confidence": "high",
-      "notes": "Both handle skip input, fade completion, normalized crawl progress, and cRLogo-owned letter teardown. The Windows body factors UnInit into destroy_intro_screen."
+      "notes": "Both handle skip input, fade completion, normalized crawl progress, and cRLogo-owned letter teardown. The Windows body factors UnInit into destroy_intro_screen.",
+      "android_symbol": "cRLogo::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x419a90",
@@ -3338,7 +3711,9 @@
       "ios_symbol": "cRLogoLetter::AI()",
       "source_object": "Logo.o",
       "confidence": "high",
-      "notes": "The exact Windows 0x90-byte record and the port-specific cRLogoLetter both integrate velocity, fade alpha across the same z window, dirty the borrowed object, and toggle visibility. Mobile cRLogoRow::AI retains the same update body for its row records."
+      "notes": "The exact Windows 0x90-byte record and the port-specific cRLogoLetter both integrate velocity, fade alpha across the same z window, dirty the borrowed object, and toggle visibility. Mobile cRLogoRow::AI retains the same update body for its row records.",
+      "android_symbol": "cRLogoLetter::AI()",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x419f50",
@@ -3346,7 +3721,9 @@
       "ios_symbol": "cRDuplicateVertices::Init(int)",
       "source_object": "ObjectProc.o",
       "confidence": "high",
-      "notes": "The exact Windows initializer operates on the 8-byte DuplicateVertices owner embedded at DirectXLoader +0x5e08 and allocates count times 10 bytes for its records."
+      "notes": "The exact Windows initializer operates on the 8-byte DuplicateVertices owner embedded at DirectXLoader +0x5e08 and allocates count times 10 bytes for its records.",
+      "android_symbol": "cRDuplicateVertices::Init(int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x41ace0",
@@ -3539,7 +3916,9 @@
       "ios_symbol": "cRSubHighScore::MiniSave(int)",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "Windows serializes the embedded postal, survival, and time-trial banks selected by one integer mask before saving the shared config blob. All five callers discard EAX, and the exact natural void transcription leaves only the final save_config_file residue."
+      "notes": "Windows serializes the embedded postal, survival, and time-trial banks selected by one integer mask before saving the shared config blob. All five callers discard EAX, and the exact natural void transcription leaves only the final save_config_file residue.",
+      "android_symbol": "cRSubHighScore::MiniSave(int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x417a70",
@@ -3556,7 +3935,9 @@
       "ios_symbol": "cRSubHighScore::MiniDelete(int)",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "The Windows thiscall receiver is the embedded SubHighScore/cRSubHighScore owner; the only caller is the Cancel branch of cRHighScore::AI()."
+      "notes": "The Windows thiscall receiver is the embedded SubHighScore/cRSubHighScore owner; the only caller is the Cancel branch of cRHighScore::AI().",
+      "android_symbol": "cRSubHighScore::MiniDelete(int)",
+      "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
       "address": "0x440020",
@@ -3633,7 +4014,9 @@
       "android_symbol": "tColourSmall::operator=(tColour const&)",
       "source_object": null,
       "confidence": "high",
-      "notes": "The bodies agree exactly on the class layout and conversion role: float RGBA is multiplied by 255 and stored at byte offsets +2, +1, +0, and +3. Android G0SetColour reads the same record as red, green, blue, and alpha, proving the shared four-byte BGRA owner; the Windows harness keeps its stable descriptive function name."
+      "notes": "The bodies agree exactly on the class layout and conversion role: float RGBA is multiplied by 255 and stored at byte offsets +2, +1, +0, and +3. Android G0SetColour reads the same record as red, green, blue, and alpha, proving the shared four-byte BGRA owner; the Windows harness keeps its stable descriptive function name.",
+      "ios_symbol": "tColourSmall::operator=(tColour const&)",
+      "ios_symbol_evidence": "exact-demangled-symbol"
     }
   ]
 }

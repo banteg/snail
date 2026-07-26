@@ -75,6 +75,15 @@ tail duplication, register pinning) turned out to be a source idiom.
 
 Useful analysis helpers:
 
+- `uv run snail match mobile <function>` prints the Binary Ninja Windows
+  decompile followed by the verified Android and iOS source bodies. Pass
+  `--windows-tool ida` to use the IDA corpus or `--paths-only` to print just
+  the artifact paths. When a port has no verified mapping, the command labels
+  its mechanically ranked names as **unverified candidates** instead of
+  silently treating the best score as provenance. Refresh the complete
+  785-function coverage file and exact cross-port name transfers with
+  `uv run tools/sync_mobile_crosswalk.py`; `--check` verifies that both tracked
+  crosswalk files are current.
 - `uv run snail match diff <obj> <function> --regions` prints localized
   mismatch regions before the normal diff, so large functions can be worked by
   block instead of by the whole SequenceMatcher score.

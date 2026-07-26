@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import argparse
-import sys
-from collections import defaultdict
 import difflib
 import json
+import sys
+from collections import defaultdict
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 import msgspec
 
@@ -16,11 +16,11 @@ from .match import (
     DEFAULT_MATCH_JOBS,
     IDIOM_CASES,
     IDIOM_CASES_BY_NAME,
-    compile_idiom_case,
     collect_masked_operand_issues,
-    lint_extern_declarations,
     collect_scratch_statuses,
+    compile_idiom_case,
     diff_regions,
+    lint_extern_declarations,
     manifest_cluster_totals,
     render_status_markdown,
     render_status_table,
@@ -28,6 +28,15 @@ from .match import (
     run_match_dump,
     run_scratch_match,
     type_consolidation_findings,
+)
+from .mobile import (
+    DEFAULT_ANDROID_CORPUS_ROOT,
+    DEFAULT_IOS_CORPUS_ROOT,
+    DEFAULT_MOBILE_CROSSWALK_PATH,
+    corpus_function_path,
+    load_json,
+    resolve_corpus_symbols,
+    windows_decompile_path,
 )
 from .recon import inspect_path, sha256_bytes
 from .reflexive import decrypt_reflexive_wrapper_config, unwrap_reflexive_executable
@@ -103,10 +112,11 @@ def _print_masked_audit_issues(issues, *, limit: int | None = None) -> None:
         f"{len({issue.config.function for issue in issues})} scratches, "
         f"{len(grouped)} grouped reference pair(s)"
     )
-    printed = 0
-    for (_status, _target, _candidate), group in sorted(
-        grouped.items(),
-        key=lambda item: (-len(item[1]), item[0]),
+    for printed, ((_status, _target, _candidate), group) in enumerate(
+        sorted(
+            grouped.items(),
+            key=lambda item: (-len(item[1]), item[0]),
+        )
     ):
         if limit is not None and printed >= limit:
             remaining = len(grouped) - printed
@@ -134,7 +144,6 @@ def _print_masked_audit_issues(issues, *, limit: int | None = None) -> None:
             )
         if len(group) > 5:
             print(f"  ... {len(group) - 5} more")
-        printed += 1
 
 
 def _print_masked_operand_audit(audit) -> None:
@@ -175,6 +184,33 @@ def _positive_int(value: str) -> int:
     if parsed < 1:
         raise argparse.ArgumentTypeError("must be a positive integer")
     return parsed
+
+
+def _display_repo_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def _print_source_section(
+    title: str,
+    path: Path,
+    *,
+    paths_only: bool,
+    metadata: Sequence[str] = (),
+) -> bool:
+    print(f"== {title} ==")
+    print(f"path: {_display_repo_path(path)}")
+    for line in metadata:
+        print(line)
+    if not path.is_file():
+        print("status: unavailable")
+        return False
+    if not paths_only:
+        print()
+        print(path.read_text(encoding="utf-8").rstrip())
+    return True
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -428,6 +464,62 @@ def build_parser() -> argparse.ArgumentParser:
         help="Matching-islands workflow: diff scratches against the original image.",
     )
     match_subparsers = match_parser.add_subparsers(dest="match_command", required=True)
+
+    match_mobile_parser = match_subparsers.add_parser(
+        "mobile",
+        help="Show one Windows decompile beside verified mobile source bodies.",
+    )
+    match_mobile_parser.add_argument(
+        "function",
+        help="Curated Windows function name or alias from the symbol manifest.",
+    )
+    match_mobile_parser.add_argument(
+        "--port",
+        choices=("both", "android", "ios"),
+        default="both",
+        help="Mobile port to show (default: both).",
+    )
+    match_mobile_parser.add_argument(
+        "--windows-tool",
+        choices=("binja", "ida", "none"),
+        default="binja",
+        help="Windows decompile corpus to show (default: binja).",
+    )
+    match_mobile_parser.add_argument(
+        "--paths-only",
+        action="store_true",
+        help="Print source paths without dumping decompiler output.",
+    )
+    match_mobile_parser.add_argument(
+        "--candidate-limit",
+        type=_positive_int,
+        default=5,
+        help="Maximum unverified mobile candidates to list (default: 5).",
+    )
+    match_mobile_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_mobile_parser.add_argument(
+        "--crosswalk",
+        type=Path,
+        default=DEFAULT_MOBILE_CROSSWALK_PATH,
+        help="Path to the generated complete mobile crosswalk.",
+    )
+    match_mobile_parser.add_argument(
+        "--android-index",
+        type=Path,
+        default=DEFAULT_ANDROID_CORPUS_ROOT / "index.json",
+        help="Path to the Android decompile corpus index.",
+    )
+    match_mobile_parser.add_argument(
+        "--ios-index",
+        type=Path,
+        default=DEFAULT_IOS_CORPUS_ROOT / "index.json",
+        help="Path to the iOS decompile corpus index.",
+    )
 
     match_scratch_parser = match_subparsers.add_parser(
         "scratch",
@@ -851,6 +943,123 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.write.write_text(text + "\n", encoding="utf-8")
         print(text)
         return 0
+
+    if args.command == "match" and args.match_command == "mobile":
+        manifest = load_function_symbol_manifest(args.manifest)
+        function = next(
+            (
+                candidate
+                for candidate in manifest.functions
+                if args.function == candidate.name
+                or args.function in candidate.aliases
+            ),
+            None,
+        )
+        if function is None:
+            parser.error(f"unknown curated function or alias: {args.function}")
+
+        crosswalk = load_json(args.crosswalk)
+        entry = next(
+            (
+                candidate
+                for candidate in crosswalk.get("entries", ())
+                if candidate.get("windows_name") == function.name
+            ),
+            None,
+        )
+        if entry is None:
+            parser.error(
+                f"complete mobile crosswalk has no entry for {function.name}; "
+                "run tools/sync_mobile_crosswalk.py"
+            )
+
+        print(f"function: {function.name} ({function.address_hex})")
+        print(f"mapping: {entry['status']}")
+        if entry.get("confidence"):
+            print(f"confidence: {entry['confidence']}")
+
+        if args.windows_tool != "none":
+            print()
+            windows_path = windows_decompile_path(
+                tool=args.windows_tool,
+                address=function.address,
+                windows_name=function.name,
+            )
+            _print_source_section(
+                f"windows/{args.windows_tool}",
+                windows_path,
+                paths_only=args.paths_only,
+            )
+
+        port_indexes = {
+            "android": args.android_index,
+            "ios": args.ios_index,
+        }
+        ports = (
+            ("android", "ios")
+            if args.port == "both"
+            else (args.port,)
+        )
+        missing_verified_body = False
+        for port in ports:
+            print()
+            symbol = entry.get(f"{port}_symbol")
+            if not symbol:
+                print(f"== {port}: no verified mapping ==")
+                candidates = entry.get(f"{port}_candidates", ())
+                if not candidates:
+                    print("unverified candidates: none")
+                    continue
+                print("unverified candidates:")
+                for candidate in candidates[: args.candidate_limit]:
+                    print(
+                        f"  {candidate['score']:.4f} "
+                        f"{candidate['symbol']}"
+                    )
+                continue
+
+            index_path = port_indexes[port]
+            index = load_json(index_path)
+            resolved_functions = resolve_corpus_symbols(index, symbol)
+            evidence = entry.get(f"{port}_symbol_evidence")
+            if not resolved_functions:
+                print(f"== {port}: verified mapping unavailable ==")
+                print(f"symbol: {symbol}")
+                if evidence:
+                    print(f"evidence: {evidence}")
+                print(f"index: {_display_repo_path(index_path)}")
+                missing_verified_body = True
+                continue
+
+            for variant, resolved in enumerate(
+                resolved_functions,
+                start=1,
+            ):
+                if variant > 1:
+                    print()
+                title = f"{port}: verified"
+                if len(resolved_functions) > 1:
+                    title += (
+                        f" variant {variant}/{len(resolved_functions)}"
+                    )
+                mobile_path = corpus_function_path(
+                    index_path.parent,
+                    resolved,
+                )
+                metadata = [
+                    f"symbol: {resolved['demangled']}",
+                    f"mangled: {resolved['mangled']}",
+                ]
+                if evidence:
+                    metadata.append(f"evidence: {evidence}")
+                _print_source_section(
+                    title,
+                    mobile_path,
+                    paths_only=args.paths_only,
+                    metadata=metadata,
+                )
+
+        return 1 if missing_verified_body else 0
 
     if args.command == "match" and args.match_command == "status":
         manifest = load_function_symbol_manifest(args.manifest)
