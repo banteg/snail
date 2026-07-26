@@ -111,3 +111,26 @@ vertex, and both face records. Their accesses now render through
 16 existing fixed-index `__offset` occurrences for samples 30/31, but the
 replay adds none. Focused matching remains 55.68% (545/608) with 35 clean
 masked operands.
+
+## 2026-07-26 mesh ownership
+
+Raw native assembly at `0x428f0b..0x428fdb` proves that the vertex-column loop
+owns branch-local aggregate positions. Ordinary rows materialize a generated
+position from the current primary sample. The terminal row keeps the current
+sample cursor, addresses its previous sample, materializes a separate lateral
+offset, adds the terminal `+1.0f` Z extension, and then writes the generated
+position to the mesh vertex.
+
+That vertex ownership alone moves the candidate from 545 to 563 of 608 target
+instructions and grows its frame from `0x30` to `0x3c` against the native
+`0x54`. The temporary focused score falls from 55.68% to 54.14% because the
+larger frame reschedules the remaining face tail; the source-proven aggregate
+owners are retained.
+
+Native `0x42908e..0x429202` and the guarded lifetime replay independently prove
+two distinct complete `ObjectFaceQuad*` owners, indexed as
+`face_index + 2 * (row * width_cells + column)`. Each branch owns its full
+header, vertices, texture reference, and UV record, including redundant parity
+arms that select the same branch texture. Recovering those records resolves the
+tail rescheduling: focused matching reaches 58.72% (591/608), with 35 clean
+masked operands and no unresolved or mismatched masks.
