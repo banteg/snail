@@ -108,3 +108,27 @@ vertex, and the two face records. Their fields now render directly through
 expressions. A tenth candidate, the pre-biased curved-sample cursor, was
 rejected because typing it created two backward `__offset` accesses. Focused
 matching remains 52.22% (612/671) with 36 clean masked operands.
+
+## 2026-07-26 mesh-vector ownership
+
+Raw native assembly at `0x4272f9..0x4273c7` proves more source ownership than
+the earlier generic terminal/nonterminal probe captured. Both branches own a
+separate lateral-offset vector before constructing their generated position.
+The terminal branch addresses the previous sample through the current row
+cursor and separately owns an endpoint vector whose Z lane is extended by
+`1.0f`.
+
+Recovering all four aggregates together supersedes the earlier rejected split.
+Focused matching changes from 52.22% (612/671) to 51.89% (651/671), while the
+masked audit improves from 36 to 39 clean operands with no unresolved or
+mismatched masks. More importantly, the candidate now has the exact native
+`0x54` frame and a 15-instruction exact prefix; the previous scalar writer used
+a `0x30` frame and had no exact prefix. The small fuzzy regression is retained
+because the native aggregate owners, row-cursor relationship, frame, and
+prefix all agree.
+
+The adjacent face records remain deferred. Replaying their distinct native
+lifetimes before the remaining earlier cursor debt is resolved destabilizes
+both Turnover and the already-aggregated Turnunder tail, so the source keeps
+the current face loop boundary rather than treating a lower fuzzy result as a
+complete ownership recovery.

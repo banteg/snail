@@ -764,7 +764,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 416/425 | 71.82% | 32/425 | 7 ok |  |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 529/552 | 51.62% | 15/552 | 32 ok |  |
 | 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 603/610 | 60.84% | 0/610 | 31 ok |  |
-| 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 612/671 | 52.22% | 0/671 | 36 ok |  |
+| 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 651/671 | 51.89% | 15/671 | 39 ok |  |
 | 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 616/680 | 51.70% | 0/680 | 43 ok |  |
 | 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 591/608 | 58.72% | 0/608 | 35 ok |  |
 | 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 592/600 | 50.00% | 0/600 | 31 ok |  |
