@@ -150,3 +150,19 @@ owners raises the final result to 48.72% (653/677) with a 94-instruction exact
 prefix. The audit is 39 clean operands and one shifted orientation-call
 pairing; that earlier call region is unchanged, so the source-backed mesh
 owners are retained rather than optimized back into a shared pointer.
+
+## 2026-07-26 previous-sample orientation ownership
+
+Raw native assembly at `0x42a80d..0x42a9e0` carries the sample-array index
+through every primary and secondary orientation access. The complete preceding
+samples own their up, forward, and right vectors directly; scratch-only
+`primary`, `primary_next`, `secondary`, and `secondary_next` pointer aliases
+collapsed those array owners and changed the VC6 schedule.
+
+Expressing both preceding samples directly raises focused matching from 48.72%
+(653/677) to 57.97% (672/677), preserves the 94-instruction prefix, and clears
+the audit from 39 clean plus one mismatched call to 45 clean operands. Native
+lays out the full orientation body under `current_index > 1`, followed by the
+two first-sample identity calls in the `else` block. An early-return spelling
+scored 59.75% but retained the wrong block order and one mismatched call, so it
+was rejected in favor of the proved control-flow ownership.

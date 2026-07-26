@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **77.69%**.
+**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **77.84%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -739,7 +739,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (46)
+## Mid Progress (50-79.99%) (48)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -770,6 +770,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 670/687 | 50.55% | 6/687 | 42 ok |  |
 | 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 604/608 | 60.73% | 85/608 | 36 ok |  |
 | 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 599/600 | 51.71% | 7/600 | 31 ok |  |
+| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 672/677 | 57.97% | 94/677 | 45 ok |  |
+| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 672/677 | 57.97% | 94/677 | 45 ok |  |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 800/796 | 67.54% | 10/796 | 62 ok |  |
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 629/648 | 58.10% | 0/648 | 41 ok |  |
 | 🚧 | add_object_edge | 0x4305a0 | 772 | 231/227 | 73.36% | 1/227 | 29 ok |  |
@@ -790,7 +792,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 1 mismatch, 88 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
 
-## Early Progress (>0-49.99%) (18)
+## Early Progress (>0-49.99%) (16)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -805,8 +807,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 608/683 | 36.41% | 0/683 | 35 ok |  |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 678/679 | 41.27% | 0/679 | 31 ok |  |
 | 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 687/707 | 41.32% | 0/707 | 47 ok |  |
-| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 653/677 | 48.72% | 94/677 | 1 mismatch, 39 ok |  |
-| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 653/677 | 48.72% | 94/677 | 1 mismatch, 39 ok |  |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 635/663 | 47.92% | 15/663 | 27 ok |  |
 | 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 671/668 | 42.42% | 19/668 | 33 ok |  |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 559/579 | 44.99% | 7/579 | 38 ok |  |

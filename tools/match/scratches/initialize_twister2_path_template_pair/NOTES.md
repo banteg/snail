@@ -147,3 +147,18 @@ owners raises the final result to 48.72% (653/677) with a 94-instruction exact
 prefix. The audit is 39 clean operands and one shifted orientation-call
 pairing; that earlier call region is unchanged, so the source-backed mesh
 owners are retained rather than optimized back into a shared pointer.
+
+## 2026-07-26 previous-sample orientation ownership
+
+Raw native assembly at `0x42b1fd..0x42b3d0` proves the same array-indexed
+primary and secondary orientation lifetimes as the first twister. Both
+preceding samples directly own their up, forward, and right vectors; the
+scratch-only four-pointer helper model obscured those owners and changed the
+VC6 schedule.
+
+Recovering the direct owners raises focused matching from 48.72% (653/677) to
+57.97% (672/677), preserves the 94-instruction prefix, and clears the audit
+from 39 clean plus one mismatched call to 45 clean operands. The native
+`current_index > 1` body and trailing first-sample `else` are retained. The
+semantically equivalent early-return spelling reached 59.75% but inverted the
+native block layout and left one call mismatch, so it was rejected.
