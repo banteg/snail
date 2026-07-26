@@ -158,24 +158,35 @@ void Path::initialize_cage2_path_template_pair(
             float lateral = (float)column - (float)width_cells * 0.5f;
             TransformMatrix* transform =
                 (TransformMatrix*)((char*)&primary_samples[0].transform + mesh_cursor);
-            Vector3* vertex = &vertices[column + row * (width_cells + 1)];
-            if (row == segment_count) {
+            if (row != segment_count) {
+                Vector3 lateral_offset(
+                    lateral * transform->basis_right.x,
+                    lateral * transform->basis_right.y,
+                    lateral * transform->basis_right.z);
+                Vector3 generated_position(
+                    transform->position.x + lateral_offset.x,
+                    transform->position.y + lateral_offset.y,
+                    transform->position.z + lateral_offset.z);
+                Vector3* vertex =
+                    &vertices[column + row * (width_cells + 1)];
+                *vertex = generated_position;
+            } else {
                 TransformMatrix* previous =
                     (TransformMatrix*)((char*)transform - sizeof(AttachmentSample));
                 Vector3 lateral_offset(
                     lateral * previous->basis_right.x,
                     lateral * previous->basis_right.y,
                     lateral * previous->basis_right.z);
+                Vector3 endpoint(
+                    previous->position.x,
+                    previous->position.y,
+                    previous->position.z + 1.0f);
                 Vector3 generated_position(
-                    previous->position.x + lateral_offset.x,
-                    previous->position.y + lateral_offset.y,
-                    previous->position.z + 1.0f + lateral_offset.z);
-                *vertex = generated_position;
-            } else {
-                Vector3 generated_position(
-                    transform->position.x + lateral * transform->basis_right.x,
-                    transform->position.y + lateral * transform->basis_right.y,
-                    transform->position.z + lateral * transform->basis_right.z);
+                    endpoint.x + lateral_offset.x,
+                    endpoint.y + lateral_offset.y,
+                    endpoint.z + lateral_offset.z);
+                Vector3* vertex =
+                    &vertices[column + row * (width_cells + 1)];
                 *vertex = generated_position;
             }
         }
@@ -194,11 +205,11 @@ void Path::initialize_cage2_path_template_pair(
                 float u0 = (float)mesh_column * 0.125f;
                 float u1 = (float)(mesh_column + 1) * 0.125f;
                 for (int face_index = 0; face_index < 2; ++face_index) {
-                    ObjectFaceQuad* face =
-                        &facequads[2 * mesh_column
-                            + 2 * mesh_cursor * width_cells + face_index];
-                    face->header_word = 0;
                     if (face_index == 0) {
+                        ObjectFaceQuad* face =
+                            &facequads[2 * mesh_column
+                                + 2 * mesh_cursor * width_cells + face_index];
+                        face->header_word = 0;
                         face->vertex_0 = mesh_column
                             + mesh_cursor * ((unsigned short)width_cells + 1);
                         face->vertex_1 = mesh_cursor
@@ -220,7 +231,12 @@ void Path::initialize_cage2_path_template_pair(
                         face->uv[2].u = u1;
                         face->uv[2].v = v1;
                         face->uv[3].u = u0;
+                        face->uv[3].v = v1;
                     } else {
+                        ObjectFaceQuad* face =
+                            &facequads[2 * mesh_column
+                                + 2 * mesh_cursor * width_cells + face_index];
+                        face->header_word = 0;
                         face->vertex_0 = mesh_cursor
                             * ((unsigned short)width_cells + 1) + mesh_column + 1;
                         face->vertex_1 = mesh_column
@@ -242,8 +258,8 @@ void Path::initialize_cage2_path_template_pair(
                         face->uv[2].u = u0;
                         face->uv[2].v = v1;
                         face->uv[3].u = u1;
+                        face->uv[3].v = v1;
                     }
-                    face->uv[3].v = v1;
                 }
                 mesh_column = next_column;
             } while (next_column < width_cells);

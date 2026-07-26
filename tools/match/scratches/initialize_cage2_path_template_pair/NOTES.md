@@ -229,3 +229,19 @@ instruction counts. The masked audit is now completely clean: **41 accepted,
 0 unresolved, 0 mismatched**. Retesting the derived-basis-first branch order
 after this recovery still regressed to 37.59%, so the accepted source retains
 the identity-first spelling and leaves that ordinary layout residual visible.
+
+## 2026-07-26 complete mesh ownership
+
+The native mesh block at `0x42ed5e..0x42ee30` shares the coupled ownership
+pattern independently recovered in Sweep and Snake. Cage2 previously modeled
+only a terminal lateral offset and branch result. It now preserves the ordinary
+lateral offset and generated position, the terminal lateral offset, raised
+endpoint and generated position, and each branch's late destination vertex.
+The two native face records are likewise branch-local and each owns its final
+UV write.
+
+The complete replay raises focused matching from 58.10% to **59.43%**, grows
+the candidate from 629 to **651/648** instructions, moves the prefix from 0 to
+**7**, and closes the documented `0x48` candidate frame to the exact native
+`0x54`. The masked audit remains clean at 40 accepted, 0 unresolved, 0
+mismatched operands. No padding or unused source state is involved.

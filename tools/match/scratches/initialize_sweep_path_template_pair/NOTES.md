@@ -126,3 +126,19 @@ cursor and previous-row cursor remain automatic because typing their negative
 byte-relative addressing made the output less exact. This is analysis-only:
 focused Wibo remains 33.20% (565/652), with 34 clean masked operands and no
 unresolved or mismatched operands.
+
+## 2026-07-26 coupled mesh ownership
+
+Raw native instructions at `0x42323c..0x423310` prove the complete mesh value
+graph that earlier isolated aggregate probes missed. The ordinary branch owns
+a lateral offset, generated position, and late destination vertex. The
+terminal branch separately owns a lateral offset, raised endpoint, generated
+position, and late destination vertex. Native decompilation also exposes
+independent first and second face records, each including its final UV write.
+
+Replaying the complete dependent owner set raises focused matching from 33.20%
+to **35.67%**, grows the candidate from 565 to **615/652** instructions, moves
+the prefix from 0 to **5**, and recovers the exact native `0x54` frame. The
+masked audit remains clean at 33 accepted, 0 unresolved, 0 mismatched operands.
+The native equal-texture parity branches remain deliberately absent: adding
+them would not recover behavior or ownership.

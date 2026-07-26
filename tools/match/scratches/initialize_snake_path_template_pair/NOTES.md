@@ -164,3 +164,19 @@ field offset is `24 * 0xa8 + 0x90 == 0x1050`; there is no distinct pointer
 lifetime to rename or type. No synthetic array view is introduced.
 This is analysis-only: focused Wibo remains 30.61% (570/652), with 37 clean
 masked operands and no unresolved or mismatched operands.
+
+## 2026-07-26 coupled mesh ownership
+
+Snake's raw mesh block at `0x423bc4..0x423c98` is instruction-for-instruction
+parallel to Sweep's. It proves separate ordinary lateral-offset and generated
+position owners, plus terminal lateral-offset, raised-endpoint, and generated
+position owners. Each branch materializes its destination vertex only after
+those values are complete. Native decompilation also proves independent first
+and second face records with complete UV tails.
+
+Recovering that coupled set raises focused matching from 30.61% to **33.49%**,
+grows the candidate from 570 to **620/652** instructions, moves the prefix from
+0 to **5**, and recovers the exact native `0x54` frame. The masked audit remains
+clean at 36 accepted, 0 unresolved, 0 mismatched operands. As with Sweep, the
+equal-texture parity branches remain absent rather than being synthesized for
+code shape.

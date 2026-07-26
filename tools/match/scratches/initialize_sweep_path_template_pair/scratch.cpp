@@ -51,23 +51,36 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     for (row = 0; row <= path->segment_count; ++row) {
         for (column = 0; column <= path->width_cells; ++column) {
             float lateral = (float)column - (float)path->width_cells * 0.5f;
-            Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            if (row == path->segment_count) {
-                PathTemplateSample* previous = &path->primary_samples[row - 1];
-                vertex->x = previous->transform.position.x
-                    + lateral * previous->transform.basis_right.x;
-                vertex->y = previous->transform.position.y
-                    + lateral * previous->transform.basis_right.y;
-                vertex->z = previous->transform.position.z + 1.0f
-                    + lateral * previous->transform.basis_right.z;
-            } else {
+            if (row != path->segment_count) {
                 PathTemplateSample* sample = &path->primary_samples[row];
-                vertex->x = sample->transform.position.x
-                    + lateral * sample->transform.basis_right.x;
-                vertex->y = sample->transform.position.y
-                    + lateral * sample->transform.basis_right.y;
-                vertex->z = sample->transform.position.z
-                    + lateral * sample->transform.basis_right.z;
+                Vector3 lateral_offset(
+                    lateral * sample->transform.basis_right.x,
+                    lateral * sample->transform.basis_right.y,
+                    lateral * sample->transform.basis_right.z);
+                Vector3 generated_position(
+                    sample->transform.position.x + lateral_offset.x,
+                    sample->transform.position.y + lateral_offset.y,
+                    sample->transform.position.z + lateral_offset.z);
+                Vector3* vertex =
+                    &vertices[column + row * (path->width_cells + 1)];
+                *vertex = generated_position;
+            } else {
+                PathTemplateSample* previous = &path->primary_samples[row - 1];
+                Vector3 lateral_offset(
+                    lateral * previous->transform.basis_right.x,
+                    lateral * previous->transform.basis_right.y,
+                    lateral * previous->transform.basis_right.z);
+                Vector3 endpoint(
+                    previous->transform.position.x,
+                    previous->transform.position.y,
+                    previous->transform.position.z + 1.0f);
+                Vector3 generated_position(
+                    endpoint.x + lateral_offset.x,
+                    endpoint.y + lateral_offset.y,
+                    endpoint.z + lateral_offset.z);
+                Vector3* vertex =
+                    &vertices[column + row * (path->width_cells + 1)];
+                *vertex = generated_position;
             }
         }
     }
@@ -84,10 +97,11 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                 float u1 = (float)(column + 1) * 0.125f;
                 int face_index;
                 for (face_index = 0; face_index < 2; ++face_index) {
-                    ObjectFaceQuad* face =
-                        &facequads[2 * column + 2 * row * path->width_cells + face_index];
-                    face->header_word = 0;
                     if (face_index == 0) {
+                        ObjectFaceQuad* face =
+                            &facequads[2 * column
+                                + 2 * row * path->width_cells + face_index];
+                        face->header_word = 0;
                         face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
                         face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
                         face->vertex_2 =
@@ -103,7 +117,12 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                         face->uv[2].u = u1;
                         face->uv[2].v = v1;
                         face->uv[3].u = u0;
+                        face->uv[3].v = v1;
                     } else {
+                        ObjectFaceQuad* face =
+                            &facequads[2 * column
+                                + 2 * row * path->width_cells + face_index];
+                        face->header_word = 0;
                         face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
                         face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
                         face->vertex_2 =
@@ -119,8 +138,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                         face->uv[2].u = u0;
                         face->uv[2].v = v1;
                         face->uv[3].u = u1;
+                        face->uv[3].v = v1;
                     }
-                    face->uv[3].v = v1;
                 }
                 column = next_column;
             } while (next_column < path->width_cells);
