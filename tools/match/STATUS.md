@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **77.24%**.
+**631/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **103838/317040** bytes (**32.75%**) are proof-grade, and overall fuzzy is **77.40%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -739,7 +739,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (45)
+## Mid Progress (50-79.99%) (46)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -759,6 +759,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 706/721 | 64.47% | 9/721 | 46 ok |  |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 728/745 | 63.27% | 10/745 | 51 ok |  |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 702/718 | 55.77% | 0/718 | 45 ok |  |
+| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 683/690 | 51.86% | 18/690 | 36 ok |  |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 727/736 | 72.32% | 0/736 | 37 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 698/726 | 72.89% | 122/726 | 63 ok |  |
 | 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 416/425 | 71.82% | 32/425 | 7 ok |  |
@@ -789,13 +790,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 1 mismatch, 88 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
 
-## Early Progress (>0-49.99%) (19)
+## Early Progress (>0-49.99%) (18)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | create_golb | 0x415280 | 2349 | 459/582 | 34.77% | 1/582 | 35 ok |  |
-| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 640/685 | 40.91% | 0/685 | 35 ok |  |
-| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 641/690 | 40.57% | 0/690 | 34 ok |  |
+| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 680/685 | 48.79% | 18/685 | 36 ok |  |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 600/655 | 34.74% | 0/655 | 26 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 619/685 | 39.88% | 0/685 | 32 ok |  |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 627/696 | 28.42% | 0/696 | 27 ok |  |

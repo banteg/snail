@@ -633,24 +633,35 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     for (mesh_row = 0; mesh_row <= segment_count; ++mesh_row) {
         for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {
             float lateral = (float)mesh_column - (float)width_cells * 0.5f;
-            Vector3* vertex = &vertices[mesh_column + mesh_row * (width_cells + 1)];
-            if (mesh_row == segment_count) {
-                PathAttachmentSample* previous = &primary_samples[mesh_row - 1];
-                vertex->x = previous->transform.position.x
-                    + lateral * previous->transform.basis_right.x;
-                vertex->y = previous->transform.position.y
-                    + lateral * previous->transform.basis_right.y;
-                vertex->z = previous->transform.position.z + 1.0f
-                    + lateral * previous->transform.basis_right.z;
-            } else {
+            if (mesh_row != segment_count) {
                 PathAttachmentSample* sample = &primary_samples[mesh_row];
+                Vector3 lateral_offset(
+                    lateral * sample->transform.basis_right.x,
+                    lateral * sample->transform.basis_right.y,
+                    lateral * sample->transform.basis_right.z);
                 Vector3 generated_position(
-                    sample->transform.position.x
-                        + lateral * sample->transform.basis_right.x,
-                    sample->transform.position.y
-                        + lateral * sample->transform.basis_right.y,
-                    sample->transform.position.z
-                        + lateral * sample->transform.basis_right.z);
+                    sample->transform.position.x + lateral_offset.x,
+                    sample->transform.position.y + lateral_offset.y,
+                    sample->transform.position.z + lateral_offset.z);
+                Vector3* vertex =
+                    &vertices[mesh_column + mesh_row * (width_cells + 1)];
+                *vertex = generated_position;
+            } else {
+                PathAttachmentSample* previous = &primary_samples[mesh_row - 1];
+                Vector3 lateral_offset(
+                    lateral * previous->transform.basis_right.x,
+                    lateral * previous->transform.basis_right.y,
+                    lateral * previous->transform.basis_right.z);
+                Vector3 endpoint(
+                    previous->transform.position.x,
+                    previous->transform.position.y,
+                    previous->transform.position.z + 1.0f);
+                Vector3 generated_position(
+                    endpoint.x + lateral_offset.x,
+                    endpoint.y + lateral_offset.y,
+                    endpoint.z + lateral_offset.z);
+                Vector3* vertex =
+                    &vertices[mesh_column + mesh_row * (width_cells + 1)];
                 *vertex = generated_position;
             }
         }
@@ -667,10 +678,11 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                 float u0 = (float)face_column * 0.125f;
                 float u1 = (float)(face_column + 1) * 0.125f;
                 for (face_index = 0; face_index < 2; ++face_index) {
-                    ObjectFaceQuad* face =
-                        &facequads[2 * face_column + 2 * face_row * width_cells + face_index];
-                    face->header_word = 0;
                     if (face_index == 0) {
+                        ObjectFaceQuad* face = &facequads[
+                            face_index
+                            + 2 * (face_row * width_cells + face_column)];
+                        face->header_word = 0;
                         face->vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);
                         face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
                         face->vertex_2 =
@@ -690,7 +702,12 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                         face->uv[2].u = u1;
                         face->uv[2].v = v1;
                         face->uv[3].u = u0;
+                        face->uv[3].v = v1;
                     } else {
+                        ObjectFaceQuad* face = &facequads[
+                            face_index
+                            + 2 * (face_row * width_cells + face_column)];
+                        face->header_word = 0;
                         face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
                         face->vertex_1 = face_column + face_row * ((unsigned short)width_cells + 1);
                         face->vertex_2 =
@@ -710,8 +727,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                         face->uv[2].u = u0;
                         face->uv[2].v = v1;
                         face->uv[3].u = u1;
+                        face->uv[3].v = v1;
                     }
-                    face->uv[3].v = v1;
                 }
                 face_column = next_column;
             } while (next_column < width_cells);

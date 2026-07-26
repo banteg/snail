@@ -157,3 +157,29 @@ The narrower replay retains nine proven lifetimes with no such regression.
 Matcher source and bytes remain unchanged at the honest 40.91% frontier
 (640/685 instructions, 35 clean masked operands); this is ownership recovery
 only, with no source-shaped coercion.
+
+## 2026-07-26 coupled mesh ownership
+
+Live decompilation and raw instructions at `0x41d6f1..0x41d7c3` show that the
+ordinary and terminal vertex branches own separate lateral offsets and
+generated positions; the terminal branch additionally owns its endpoint.
+Each branch materializes its destination vertex only after those values are
+complete. The face tail likewise proves independent records at `0x41d88d` and
+`0x41d940`, including separate word headers and complete UV writes.
+
+Recovering only the face owners temporarily regressed focused matching from
+40.91% to 37.73%. Retrying the previously isolated vector evidence together
+with its dependent branch-local vertex lifetimes resolves that partial-state
+regression:
+
+```text
+match: 48.79%
+target: 685 insns, candidate: 680 insns
+prefix: 18/685 target insns
+masked operands: 36 ok, 0 unresolved, 0 mismatch
+```
+
+The candidate now has the native `0x4c` stack frame. This supersedes the older
+rejected terminal-only probes: the complete coupled owner set is directly
+evidenced and improves the focused result by 7.88 points without padding or
+dummy uses.

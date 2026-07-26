@@ -141,3 +141,28 @@ zero negative `__offset` expressions. The two earlier current-sample views were
 explicitly rejected. Matcher source and bytes remain unchanged at the honest
 40.57% frontier (641/690 instructions, 34 clean masked operands); no
 fakematching is involved.
+
+## 2026-07-26 coupled mesh ownership
+
+The dump mesh is the hump mesh with the documented ten-identity shift. Native
+instructions at `0x41e0fb..0x41e1cd` prove separate ordinary and terminal
+lateral-offset/generated-position owners, a terminal endpoint, and
+branch-local vertex materialization. Independent face records begin at
+`0x41e297` and `0x41e34a`; both own a word header, their indices, redundant
+parity-selected texture lookup, and all four UV pairs.
+
+The two face owners alone move focused matching slightly from 40.57% to 40.24%.
+Completing the coupled vector and vertex lifetimes produces the retained
+result:
+
+```text
+match: 51.86%
+target: 690 insns, candidate: 683 insns
+prefix: 18/690 target insns
+masked operands: 36 ok, 0 unresolved, 0 mismatch
+```
+
+The candidate now exactly matches the native `0x4c` frame and gains 11.29
+focused points. The older isolated terminal probes remain correctly rejected;
+their now-recovered ownership only becomes faithful when the dependent face
+and ordinary-branch lifetimes are present as a complete set.
