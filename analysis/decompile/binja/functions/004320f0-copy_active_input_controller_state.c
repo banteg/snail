@@ -12,7 +12,7 @@
 004321a3        *out_pointer_value = fconvert.s(fconvert.t(g_input_controller_slot1.pointer_value))
 004321ab        *out_pointer_x = fconvert.s(fconvert.t(g_input_controller_slot1.pointer_x))
 004321b3        *out_pointer_y = fconvert.s(fconvert.t(g_input_controller_slot1.pointer_y))
-004321b5        return out_pointer_value
+004321b5        return
 00432106        *out_buttons = g_input_controller_slot0.buttons
 00432116        *out_axis_x = fconvert.s(fconvert.t(g_input_controller_slot0.axis_x))
 00432122        *out_axis_y = fconvert.s(fconvert.t(g_input_controller_slot0.axis_y))
@@ -21,4 +21,4 @@
 00432146        *out_pointer_value = fconvert.s(fconvert.t(g_input_controller_slot0.pointer_value))
 0043214e        *out_pointer_x = fconvert.s(fconvert.t(g_input_controller_slot0.pointer_x))
 00432156        *out_pointer_y = fconvert.s(fconvert.t(g_input_controller_slot0.pointer_y))
-00432158        return out_pointer_value
+00432158        return

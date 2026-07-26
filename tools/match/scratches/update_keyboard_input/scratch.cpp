@@ -7,7 +7,7 @@ extern "C" void* memcpy(void* destination, const void* source, unsigned int coun
 extern "C" void* memset(void* destination, int value, unsigned int count);
 
 unsigned char is_key_down(int key_code);
-int set_input_controller_slot0_button_axes(int buttons, float axis_x, float axis_y);
+void set_input_controller_slot0_button_axes(int buttons, float axis_x, float axis_y);
 
 int update_keyboard_input(HWND)
 {

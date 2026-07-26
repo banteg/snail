@@ -48,6 +48,12 @@ INPUT_CONTROLLER_DATA_VAR_UPDATES = (
     ("0x503374", "InputControllerSlot"),
 )
 
+RSHELL_INPUT_FUNCTION_SYMBOL_UPDATES = (
+    ("0x431fd0", "set_input_controller_slot0_button_axes"),
+    ("0x431ff0", "update_input_controller_slot_button_axes"),
+    ("0x4320f0", "copy_active_input_controller_state"),
+)
+
 INPUT_POINTER_REGION_FUNCTION_SYMBOL_UPDATES = (
     ("0x4321c0", "update_input_controller_pointer_region"),
     ("0x4323a0", "set_input_controller_pointer_authored_xy"),
@@ -175,6 +181,21 @@ GAME_INPUT_FIELDS = (
     ("0x38", "input", "InputState"),
 )
 
+RSHELL_INPUT_PROTO_UPDATES = (
+    (
+        "set_input_controller_slot0_button_axes",
+        "void __cdecl set_input_controller_slot0_button_axes(InputButtonFlag buttons, float axis_x, float axis_y)",
+    ),
+    (
+        "update_input_controller_slot_button_axes",
+        "void __cdecl update_input_controller_slot_button_axes(int32_t slot, InputButtonFlag buttons, float axis_x, float axis_y)",
+    ),
+    (
+        "copy_active_input_controller_state",
+        "void __cdecl copy_active_input_controller_state(int32_t controller_slot, InputButtonFlag* out_buttons, float* out_axis_x, float* out_axis_y, float* out_authored_x, float* out_authored_y, float* out_pointer_value, float* out_pointer_x, float* out_pointer_y)",
+    ),
+)
+
 INPUT_POINTER_REGION_PROTO_UPDATES = (
     (
         "update_input_controller_pointer_region",
@@ -187,6 +208,7 @@ INPUT_POINTER_REGION_PROTO_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    *RSHELL_INPUT_PROTO_UPDATES,
     *INPUT_POINTER_REGION_PROTO_UPDATES,
     (
         "0x432440",
@@ -199,10 +221,6 @@ PROTO_UPDATES = (
     ("initialize_input", "void __thiscall initialize_input(InputState* state)"),
     ("update_input", "void __thiscall update_input(InputState* state)"),
     ("update_game_input", "void __thiscall update_game_input(GameInput* game_input)"),
-    (
-        "copy_active_input_controller_state",
-        "float* __cdecl copy_active_input_controller_state(int32_t controller_slot, InputButtonFlag* out_buttons, float* out_axis_x, float* out_axis_y, float* out_authored_x, float* out_authored_y, float* out_pointer_value, float* out_pointer_x, float* out_pointer_y)",
-    ),
     ("0x44bbb0", "int32_t __cdecl initialize_mouse_authored_scale_from_clip_rect()"),
     ("0x44bbd0", "int32_t __cdecl update_mouse_authored_scale(float authored_width, float authored_height)"),
     ("0x44bc20", "float __cdecl resolve_uncaptured_cursor_sensitivity_scale(float scale)"),
@@ -299,6 +317,12 @@ def main() -> int:
             REPO_ROOT,
             target=TARGET,
             updates=INPUT_CONTROLLER_DATA_VAR_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=RSHELL_INPUT_FUNCTION_SYMBOL_UPDATES,
+            kind="function",
         ),
         *apply_symbol_updates(
             REPO_ROOT,

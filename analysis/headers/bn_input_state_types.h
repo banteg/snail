@@ -214,6 +214,25 @@ extern int32_t g_input_region_bottom[2];
 extern int32_t g_input_region_left[2];
 extern int32_t g_input_region_right[2];
 
+void __cdecl set_input_controller_slot0_button_axes(
+    InputButtonFlag buttons,
+    float axis_x,
+    float axis_y);
+void __cdecl update_input_controller_slot_button_axes(
+    int32_t slot,
+    InputButtonFlag buttons,
+    float axis_x,
+    float axis_y);
+void __cdecl copy_active_input_controller_state(
+    int32_t controller_slot,
+    InputButtonFlag* out_buttons,
+    float* out_axis_x,
+    float* out_axis_y,
+    float* out_authored_x,
+    float* out_authored_y,
+    float* out_pointer_value,
+    float* out_pointer_x,
+    float* out_pointer_y);
 void __cdecl update_input_controller_pointer_region(
     int32_t slot,
     int32_t left,

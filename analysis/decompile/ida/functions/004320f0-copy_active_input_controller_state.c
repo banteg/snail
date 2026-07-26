@@ -3,7 +3,7 @@
 /* selector: copy_active_input_controller_state */
 
 // Copies one of the two global input-controller slots into the caller-owned runtime buffer, including button flags, normalized pointer coordinates, and the per-slot authored cursor lanes used by gameplay input.
-float *__cdecl copy_active_input_controller_state(
+void __cdecl copy_active_input_controller_state(
         int controller_slot,
         InputButtonFlag *out_buttons,
         float *out_axis_x,
@@ -14,7 +14,7 @@ float *__cdecl copy_active_input_controller_state(
         float *out_pointer_x,
         float *out_pointer_y)
 {
-  if ( controller_slot )
+  if ( controller_slot != 0 )
   {
     *out_buttons = g_input_controller_slot1.buttons;
     *out_axis_x = g_input_controller_slot1.axis_x;
@@ -24,7 +24,6 @@ float *__cdecl copy_active_input_controller_state(
     *out_pointer_value = g_input_controller_slot1.pointer_value;
     *out_pointer_x = g_input_controller_slot1.pointer_x;
     *out_pointer_y = g_input_controller_slot1.pointer_y;
-    return out_pointer_value;
   }
   else
   {
@@ -36,6 +35,5 @@ float *__cdecl copy_active_input_controller_state(
     *out_pointer_value = g_input_controller_slot0.pointer_value;
     *out_pointer_x = g_input_controller_slot0.pointer_x;
     *out_pointer_y = g_input_controller_slot0.pointer_y;
-    return out_pointer_value;
   }
 }

@@ -5248,6 +5248,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     assert "g_input_controller_slot1" in matcher_controller_header
     assert "g_input_controller_slots[" not in matcher_controller_header
     assert "unknown_20" not in matcher_controller_header
+    assert "void set_input_controller_slot0_button_axes(" in matcher_controller_header
+    assert "void update_input_controller_slot_button_axes(" in matcher_controller_header
+    assert "void copy_active_input_controller_state(" in matcher_controller_header
     assert "void update_input_controller_pointer_region(" in matcher_controller_header
     assert "types_declare_if_changed" in binja_source
     assert "types_declare(" not in binja_source
@@ -5287,6 +5290,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         "extern int32_t g_input_region_bottom[2];",
         "extern int32_t g_input_region_left[2];",
         "extern int32_t g_input_region_right[2];",
+        "void __cdecl set_input_controller_slot0_button_axes(",
+        "void __cdecl update_input_controller_slot_button_axes(",
+        "void __cdecl copy_active_input_controller_state(",
         "void __cdecl update_input_controller_pointer_region(",
         "void* __cdecl set_input_controller_pointer_authored_xy(",
     ):
@@ -5307,6 +5313,11 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '"void __thiscall update_input(InputState* state)"',
         '"char __cdecl read_pressed_text_input_key_code()"',
         '"char __cdecl read_repeating_text_input_key_code()"',
+        "RSHELL_INPUT_FUNCTION_SYMBOL_UPDATES",
+        "RSHELL_INPUT_PROTO_UPDATES",
+        '("0x431fd0", "set_input_controller_slot0_button_axes")',
+        '("0x431ff0", "update_input_controller_slot_button_axes")',
+        '("0x4320f0", "copy_active_input_controller_state")',
         "INPUT_POINTER_REGION_FUNCTION_SYMBOL_UPDATES",
         "INPUT_POINTER_REGION_DATA_SYMBOL_UPDATES",
         "INPUT_POINTER_REGION_DATA_VAR_UPDATES",
@@ -5314,6 +5325,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '("0x508898", "int32_t[2]")',
         '("0x5088a0", "int32_t[2]")',
         '("0x5088a8", "int32_t[2]")',
+        '"void __cdecl set_input_controller_slot0_button_axes(InputButtonFlag buttons, float axis_x, float axis_y)"',
+        '"void __cdecl update_input_controller_slot_button_axes(int32_t slot, InputButtonFlag buttons, float axis_x, float axis_y)"',
+        '"void __cdecl copy_active_input_controller_state(int32_t controller_slot, InputButtonFlag* out_buttons, float* out_axis_x, float* out_axis_y, float* out_authored_x, float* out_authored_y, float* out_pointer_value, float* out_pointer_x, float* out_pointer_y)"',
         '"void __cdecl update_input_controller_pointer_region(int32_t slot, int32_t left, int32_t top, int32_t right, int32_t bottom, int32_t x, int32_t y, int32_t pointer_value, char button_a, char button_b, char button_c, char capture_when_outside, char force_clamp)"',
         '"void* __cdecl set_input_controller_pointer_authored_xy(int32_t slot, float authored_x, float authored_y)"',
     ):
@@ -5349,6 +5363,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '"int g_input_region_bottom[2];"',
         '"int g_input_region_left[2];"',
         '"int g_input_region_right[2];"',
+        '"void __cdecl set_input_controller_slot0_button_axes(InputButtonFlag buttons, float axis_x, float axis_y);"',
+        '"void __cdecl update_input_controller_slot_button_axes(int slot, InputButtonFlag buttons, float axis_x, float axis_y);"',
+        '"void __cdecl copy_active_input_controller_state(int controller_slot, InputButtonFlag *out_buttons, float *out_axis_x, float *out_axis_y, float *out_authored_x, float *out_authored_y, float *out_pointer_value, float *out_pointer_x, float *out_pointer_y);"',
         '"void __cdecl update_input_controller_pointer_region(int slot, int left, int top, int right, int bottom, int x, int y, int pointer_value, char button_a, char button_b, char button_c, char capture_when_outside, char force_clamp);"',
         '"void *__cdecl set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);"',
     ):
@@ -5375,6 +5392,10 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     assert references_by_address["0x503340"]["kind"] == "offset"
     assert references_by_address["0x50339c"]["kind"] == "global"
     assert "RShellInput" in aliases_by_address["0x50333c"]
+    assert "gMouseWY0" in aliases_by_address["0x508890"]
+    assert "gMouseWY1" in aliases_by_address["0x508898"]
+    assert "gMouseWX0" in aliases_by_address["0x5088a0"]
+    assert "gMouseWX1" in aliases_by_address["0x5088a8"]
     assert "gRShellKeyRepeatLifeRate" in aliases_by_address["0x50339c"]
     assert "gRShellKeyRepeatLife" in aliases_by_address["0x5108b8"]
     assert "gRShellOldKey" in aliases_by_address["0x53c7f5"]
@@ -5387,11 +5408,44 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     entries_by_address = {
         entry["address"]: entry for entry in crosswalk["entries"]
     }
+    assert (
+        entries_by_address["0x431fd0"]["android_symbol"]
+        == "RShellInputRegisterKeyboard(int, float, float)"
+    )
+    assert (
+        entries_by_address["0x431ff0"]["android_symbol"]
+        == "RShellInputRegister(int, int, float, float)"
+    )
+    assert entries_by_address["0x4320f0"]["android_symbol"].startswith(
+        "RShellInputRetrieve("
+    )
+    assert entries_by_address["0x4320f0"]["ios_symbol"].startswith(
+        "RShellInputRetrieve("
+    )
+    assert entries_by_address["0x4321c0"]["android_symbol"].startswith(
+        "RShellInputRegisterMouse("
+    )
+    assert entries_by_address["0x4321c0"]["ios_symbol"].startswith(
+        "RShellInputRegisterMouse("
+    )
     assert entries_by_address["0x432440"]["ios_symbol"] == "RShellInkey()"
     assert (
         entries_by_address["0x4327e0"]["ios_symbol"]
         == "RShellInkeyInput()"
     )
+
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    functions_by_address = {
+        entry["address"]: entry for entry in functions["functions"]
+    }
+    assert "RShellInputRegisterKeyboard" in functions_by_address["0x431fd0"]["aliases"]
+    assert "RShellInputRegister" in functions_by_address["0x431ff0"]["aliases"]
+    assert "RShellInputRetrieve" in functions_by_address["0x4320f0"]["aliases"]
+    assert "RShellInputRegisterMouse" in functions_by_address["0x4321c0"]["aliases"]
 
 
 def test_ida_lvar_inspector_reports_stable_local_identity() -> None:

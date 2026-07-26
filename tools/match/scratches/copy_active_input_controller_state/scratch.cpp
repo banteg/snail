@@ -1,8 +1,8 @@
-// copy_active_input_controller_state @ 0x4320f0 (cdecl, ret)
+// copy_active_input_controller_state @ 0x4320f0 (cdecl)
 
 #include "input_controller_state.h"
 
-float* copy_active_input_controller_state(
+void copy_active_input_controller_state(
     int slot_index,
     int* out_buttons,
     float* out_axis_x,
@@ -22,7 +22,6 @@ float* copy_active_input_controller_state(
         *out_pointer_value = g_input_controller_slot0.pointer_value;
         *out_pointer_x = g_input_controller_slot0.pointer_x;
         *out_pointer_y = g_input_controller_slot0.pointer_y;
-        return out_pointer_value;
     } else {
         *out_buttons = g_input_controller_slot1.buttons;
         *out_axis_x = g_input_controller_slot1.axis_x;
@@ -33,5 +32,4 @@ float* copy_active_input_controller_state(
         *out_pointer_x = g_input_controller_slot1.pointer_x;
         *out_pointer_y = g_input_controller_slot1.pointer_y;
     }
-    return out_pointer_value;
 }

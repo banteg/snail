@@ -33,7 +33,7 @@ void __cdecl update_input_controller_pointer_region(
   g_input_region_bottom[slot] = bottom;
   if ( x < left || x >= right || y < top || y >= bottom )
   {
-    if ( !capture_when_outside || force_clamp )
+    if ( capture_when_outside == 0 || force_clamp != 0 )
     {
       if ( x < left )
         v14 = left;
@@ -59,19 +59,19 @@ void __cdecl update_input_controller_pointer_region(
   *(float *)(v15 + 5256016) = (double)(640 * (v14 - left)) / (double)(right - left);
   *(float *)(v15 + 5256020) = (double)(480 * (v13 - top)) / (double)(bottom - top);
   *(float *)(v15 + 5256024) = (float)pointer_value;
-  if ( button_a )
+  if ( button_a != 0 )
   {
     v16 = *((_DWORD *)&g_input_controller_slot0.buttons + 14 * slot);
     BYTE1(v16) |= 0x40u;
     *((_DWORD *)&g_input_controller_slot0.buttons + 14 * slot) = v16;
   }
-  if ( button_b )
+  if ( button_b != 0 )
   {
     v17 = *((_DWORD *)&g_input_controller_slot0.buttons + 14 * slot);
     BYTE1(v17) |= 0x80u;
     *((_DWORD *)&g_input_controller_slot0.buttons + 14 * slot) = v17;
   }
-  if ( button_c )
+  if ( button_c != 0 )
     *((_DWORD *)&g_input_controller_slot0.buttons + 14 * slot) |= 0x100000u;
   if ( *(&g_input_controller_slot0.authored_x + 14 * slot) >= 1.0 )
   {

@@ -4,7 +4,7 @@
 #include "input_state.h"
 
 
-float* copy_active_input_controller_state(
+void copy_active_input_controller_state(
     int controller_slot,
     int* buttons,
     float* axis_x,

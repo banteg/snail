@@ -13,12 +13,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 441,
-    "unverified_entries": 344,
-    "verified_android_symbols": 438,
-    "verified_ios_symbols": 376,
-    "available_android_mappings": 438,
-    "available_ios_mappings": 339
+    "verified_entries": 445,
+    "unverified_entries": 340,
+    "verified_android_symbols": 442,
+    "verified_ios_symbols": 379,
+    "available_android_mappings": 442,
+    "available_ios_mappings": 342
   },
   "entries": [
     {
@@ -16563,110 +16563,36 @@
       "address": "0x431fd0",
       "windows_name": "set_input_controller_slot0_button_axes",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "RShellInputRegisterMouseClickOnly()",
-          "score": 0.6276,
-          "name_score": 0.3793,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellInputRegisterKeyboard(int, float, float)",
-          "score": 0.616,
-          "name_score": 0.36,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellDatTest()",
-          "score": 0.6087,
-          "name_score": 0.3478,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellInputRegisterMouseExtra(float, float)",
-          "score": 0.5944,
-          "name_score": 0.4074,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRSubLazerManager::Init()",
-          "score": 0.592,
-          "name_score": 0.32,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRSubGame::GetSkirtColourRandomOpen()",
-          "score": 0.6316,
-          "name_score": 0.386,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFISerializer::StringKey::equals(OFISerializerKey const*) const",
-          "score": 0.6051,
-          "name_score": 0.3418,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRTutorial::AI()",
-          "score": 0.5686,
-          "name_score": 0.281,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFISerializer::Scope::Scope(OFISerializer*, char const*, bool)",
-          "score": 0.5613,
-          "name_score": 0.3429,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "OFISerializer::StringKey::~StringKey()",
-          "score": 0.5606,
-          "name_score": 0.3418,
-          "size_score": 0.8889
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RShellInputRegisterKeyboard(int, float, float)",
+      "ios_symbol": "RShellInputRegisterKeyboard(int, float, float)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x431ff0",
       "windows_name": "update_input_controller_slot_button_axes",
       "windows_size": 256,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "gRegisterEncryptKeyInfoToKey(char*, int)",
-          "score": 0.5785,
-          "name_score": 0.3273,
-          "size_score": 0.9552
-        },
+      "status": "verified",
+      "android_symbol": "RShellInputRegister(int, int, float, float)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_candidates": [
         {
           "symbol": "RShellInputRetrieve(int, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*)",
-          "score": 0.566,
-          "name_score": 0.3704,
-          "size_score": 0.8594
+          "score": 0.7175,
+          "name_score": 0.675,
+          "size_score": 0.7812
         },
         {
-          "symbol": "cRMouse::ConvertScreenXY(float, float, float*, float*)",
-          "score": 0.565,
-          "name_score": 0.3491,
-          "size_score": 0.8889
+          "symbol": "RShellInit()",
+          "score": 0.6725,
+          "name_score": 0.6,
+          "size_score": 0.7812
         },
-        {
-          "symbol": "cRSubTrampRingManager::AddRing(cRSubLoc*)",
-          "score": 0.5589,
-          "name_score": 0.2648,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcTileFast(cRObject*, char*, float)",
-          "score": 0.5585,
-          "name_score": 0.2642,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
         {
           "symbol": "OFResourceControllerMap::~OFResourceControllerMap()",
           "score": 0.669,
@@ -16684,18 +16610,6 @@
           "score": 0.6565,
           "name_score": 0.4483,
           "size_score": 0.9688
-        },
-        {
-          "symbol": "OFResourceControllerMap::getControllerName(objc_class*) const",
-          "score": 0.6546,
-          "name_score": 0.5769,
-          "size_score": 0.7711
-        },
-        {
-          "symbol": "OFControllerLoader::loadCell(NSString*, NSObject*)",
-          "score": 0.6304,
-          "name_score": 0.4966,
-          "size_score": 0.8312
         }
       ]
     },
@@ -16703,141 +16617,25 @@
       "address": "0x4320f0",
       "windows_name": "copy_active_input_controller_state",
       "windows_size": 208,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBorder::InputTextInit(int, char*, int)",
-          "score": 0.6438,
-          "name_score": 0.432,
-          "size_score": 0.9615
-        },
-        {
-          "symbol": "ObjectProcIntroFloor(cRObject*, char*)",
-          "score": 0.6316,
-          "name_score": 0.4444,
-          "size_score": 0.9123
-        },
-        {
-          "symbol": "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
-          "score": 0.6296,
-          "name_score": 0.4074,
-          "size_score": 0.963
-        },
-        {
-          "symbol": "RShellInputRetrieve(int, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*)",
-          "score": 0.6236,
-          "name_score": 0.4091,
-          "size_score": 0.9455
-        },
-        {
-          "symbol": "ObjectProcTileHole(cRObject*, char*)",
-          "score": 0.6161,
-          "name_score": 0.4186,
-          "size_score": 0.9123
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "OFInputSerializer::~OFInputSerializer()",
-          "score": 0.6955,
-          "name_score": 0.6,
-          "size_score": 0.8387
-        },
-        {
-          "symbol": "OFInputSerializer::~OFInputSerializer()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "OFResourceControllerMap::~OFResourceControllerMap()",
-          "score": 0.6355,
-          "name_score": 0.5,
-          "size_score": 0.8387
-        },
-        {
-          "symbol": "RShellInputRetrieve(int, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*)",
-          "score": 0.6301,
-          "name_score": 0.4091,
-          "size_score": 0.9615
-        },
-        {
-          "symbol": "OFResourceControllerMap::~OFResourceControllerMap()",
-          "score": 0.625,
-          "name_score": 0.5,
-          "size_score": 0.8125
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RShellInputRetrieve(int, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*)",
+      "ios_symbol": "RShellInputRetrieve(int, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x4321c0",
       "windows_name": "update_input_controller_pointer_region",
       "windows_size": 480,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "RShellInputRegisterMouse(int, int, int, int, int, int, int, int, bool, bool, bool, bool, bool)",
-          "score": 0.6398,
-          "name_score": 0.54,
-          "size_score": 0.7895
-        },
-        {
-          "symbol": "RShellInputRegister(int, int, float, float)",
-          "score": 0.595,
-          "name_score": 0.675,
-          "size_score": 0.475
-        },
-        {
-          "symbol": "cRBorderManager::CentreRow(cRBorder*, bool, float)",
-          "score": 0.5897,
-          "name_score": 0.3429,
-          "size_score": 0.96
-        },
-        {
-          "symbol": "RShellInputRetrieve(int, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*)",
-          "score": 0.5883,
-          "name_score": 0.675,
-          "size_score": 0.4583
-        },
-        {
-          "symbol": "cRSubGame::TrampolineJoin()",
-          "score": 0.575,
-          "name_score": 0.2917,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "RShellInputRegisterMouse(int, int, int, int, int, int, int, int, bool, bool, bool, bool, bool)",
-          "score": 0.6876,
-          "name_score": 0.54,
-          "size_score": 0.9091
-        },
-        {
-          "symbol": "OFViewHelper::setAsDelegateForAllTextFields(objc_object*, UIView*)",
-          "score": 0.6134,
-          "name_score": 0.3667,
-          "size_score": 0.9833
-        },
-        {
-          "symbol": "RShellDatInit(char*)",
-          "score": 0.61,
-          "name_score": 0.45,
-          "size_score": 0.85
-        },
-        {
-          "symbol": "OFResourceControllerMap::getControllerName(objc_class*) const",
-          "score": 0.6061,
-          "name_score": 0.549,
-          "size_score": 0.6917
-        },
-        {
-          "symbol": "cRSubGame::CalcRealPos(tVector&, float&)",
-          "score": 0.5991,
-          "name_score": 0.3985,
-          "size_score": 0.9
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RShellInputRegisterMouse(int, int, int, int, int, int, int, int, bool, bool, bool, bool, bool)",
+      "ios_symbol": "RShellInputRegisterMouse(int, int, int, int, int, int, int, int, bool, bool, bool, bool, bool)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x4323a0",

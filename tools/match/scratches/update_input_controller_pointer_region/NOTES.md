@@ -100,3 +100,20 @@ incidental comparison residue in `eax`; no caller consumes a result. Four
 strict BN/IDA health checks now guard the sidecar arrays, parameter ownership,
 and void ABI. Focused matching remains 98.51%, 134/134, prefix 131/134, with
 all 30 masked operands clean.
+
+## 2026-07-26 mobile RShell owner and sidecar names
+
+Android and iOS retain the exact 13-argument API as
+`RShellInputRegisterMouse(...)` in `RShell.o`. Both bodies independently
+preserve all four region stores, the outside-region capture/clamp decision,
+platform mouse warp and cursor-hide calls, 640x480 projection, the
+`0x4000`/`0x8000`/`0x100000` button masks, and the final
+`x=[1,632]`, `y=[1,472]` clamps.
+
+The mobile exports also recover the original region-sidecar vocabulary:
+`gMouseWX0` is left, `gMouseWY0` is top, `gMouseWX1` is right, and
+`gMouseWY1` is bottom. Their `RShellInput` records use a platform-specific
+`0x40` stride, while Windows remains independently proved at `0x38`; no
+mobile-only tail fields are assigned to the xref-free Windows gap. This is a
+high-confidence source-owner/API mapping across real platform layout and mouse
+adapter differences, not a byte-identical-body claim.

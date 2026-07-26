@@ -17858,18 +17858,21 @@
         "g_input_controller_slot0.buttons",
         "g_input_controller_slot0.pointer_y",
         "g_input_controller_slot1.buttons",
-        "g_input_controller_slot1.pointer_y"
+        "g_input_controller_slot1.pointer_y",
+        "return"
       ],
       "forbidden_substrings": [
         "g_input_controller_slots",
         "data_503",
-        "unk_503"
+        "unk_503",
+        "return out_pointer_value"
       ]
     },
     {
       "name": "ida_input_controller_payload_owners",
       "artifact": "analysis/decompile/ida/functions/004320f0-copy_active_input_controller_state.c",
       "required_substrings": [
+        "void __cdecl copy_active_input_controller_state(",
         "InputButtonFlag *out_buttons",
         "g_input_controller_slot0.buttons",
         "g_input_controller_slot0.pointer_y",
@@ -17879,29 +17882,66 @@
       "forbidden_substrings": [
         "g_input_controller_slots",
         "MEMORY[",
-        "unk_503"
+        "unk_503",
+        "return out_pointer_value"
+      ]
+    },
+    {
+      "name": "bn_input_register_keyboard_void_abi",
+      "artifact": "analysis/decompile/binja/functions/00431fd0-set_input_controller_slot0_button_axes.c",
+      "required_substrings": [
+        "g_input_controller_slot0.buttons = buttons",
+        "g_input_controller_slot0.axis_x = axis_x",
+        "g_input_controller_slot0.axis_y = axis_y",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "return buttons"
+      ]
+    },
+    {
+      "name": "ida_input_register_keyboard_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00431fd0-set_input_controller_slot0_button_axes.c",
+      "required_substrings": [
+        "void __cdecl set_input_controller_slot0_button_axes(InputButtonFlag buttons, float axis_x, float axis_y)",
+        "g_input_controller_slot0.buttons = buttons",
+        "g_input_controller_slot0.axis_x = axis_x",
+        "g_input_controller_slot0.axis_y = axis_y"
+      ],
+      "forbidden_substrings": [
+        "return buttons",
+        "return a1"
       ]
     },
     {
       "name": "bn_input_controller_slot_producers",
       "artifact": "analysis/decompile/binja/functions/00431ff0-update_input_controller_slot_button_axes.c",
       "required_substrings": [
+        "if (slot != 0)",
+        "buttons",
+        "axis_x",
+        "axis_y",
         "g_input_controller_slot0.buttons",
         "g_input_controller_slot0.axis_x",
         "g_input_controller_slot1.buttons",
-        "g_input_controller_slot1.authored_x"
+        "g_input_controller_slot1.authored_x",
+        "return"
       ],
       "forbidden_substrings": [
         "g_input_controller_slots",
         "data_503",
-        "unk_503"
+        "unk_503",
+        "return buttons"
       ]
     },
     {
       "name": "ida_input_controller_slot_producers",
       "artifact": "analysis/decompile/ida/functions/00431ff0-update_input_controller_slot_button_axes.c",
       "required_substrings": [
-        "InputButtonFlag a2",
+        "void __cdecl update_input_controller_slot_button_axes(int slot, InputButtonFlag buttons, float axis_x, float axis_y)",
         "g_input_controller_slot0.buttons",
         "g_input_controller_slot0.axis_x",
         "g_input_controller_slot1.buttons",
@@ -17910,7 +17950,8 @@
       "forbidden_substrings": [
         "g_input_controller_slots",
         "MEMORY[",
-        "unk_503"
+        "unk_503",
+        "return buttons"
       ]
     },
     {

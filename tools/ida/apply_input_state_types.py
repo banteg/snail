@@ -16,6 +16,9 @@ TRUSTED_NAMES = [
     (0x4972F0, "g_game_input_callback_table"),
     (0x50333C, "g_input_controller_slot0"),
     (0x503374, "g_input_controller_slot1"),
+    (0x431FD0, "set_input_controller_slot0_button_axes"),
+    (0x431FF0, "update_input_controller_slot_button_axes"),
+    (0x4320F0, "copy_active_input_controller_state"),
     (0x432440, "read_pressed_text_input_key_code"),
     (0x4327E0, "read_repeating_text_input_key_code"),
     (0x4321C0, "update_input_controller_pointer_region"),
@@ -59,6 +62,18 @@ TRUSTED_NAMES = [
 
 TRUSTED_DECLARATIONS = [
     (
+        "set_input_controller_slot0_button_axes",
+        "void __cdecl set_input_controller_slot0_button_axes(InputButtonFlag buttons, float axis_x, float axis_y);",
+    ),
+    (
+        "update_input_controller_slot_button_axes",
+        "void __cdecl update_input_controller_slot_button_axes(int slot, InputButtonFlag buttons, float axis_x, float axis_y);",
+    ),
+    (
+        "copy_active_input_controller_state",
+        "void __cdecl copy_active_input_controller_state(int controller_slot, InputButtonFlag *out_buttons, float *out_axis_x, float *out_axis_y, float *out_authored_x, float *out_authored_y, float *out_pointer_value, float *out_pointer_x, float *out_pointer_y);",
+    ),
+    (
         "update_input_controller_pointer_region",
         "void __cdecl update_input_controller_pointer_region(int slot, int left, int top, int right, int bottom, int x, int y, int pointer_value, char button_a, char button_b, char button_c, char capture_when_outside, char force_clamp);",
     ),
@@ -85,10 +100,6 @@ TRUSTED_DECLARATIONS = [
     (
         "update_game_input",
         "void __thiscall update_game_input(GameInput *game_input);",
-    ),
-    (
-        "copy_active_input_controller_state",
-        "float *__cdecl copy_active_input_controller_state(int controller_slot, InputButtonFlag *out_buttons, float *out_axis_x, float *out_axis_y, float *out_authored_x, float *out_authored_y, float *out_pointer_value, float *out_pointer_x, float *out_pointer_y);",
     ),
     (
         "initialize_mouse_authored_scale_from_clip_rect",

@@ -50,6 +50,25 @@ extern int g_input_region_bottom[INPUT_CONTROLLER_SLOT_COUNT]; // data_508898
 extern int g_input_region_left[INPUT_CONTROLLER_SLOT_COUNT];   // data_5088a0
 extern int g_input_region_right[INPUT_CONTROLLER_SLOT_COUNT];  // data_5088a8
 
+void set_input_controller_slot0_button_axes(
+    int buttons,
+    float axis_x,
+    float axis_y); // @ 0x431fd0, RShellInputRegisterKeyboard
+void update_input_controller_slot_button_axes(
+    int slot,
+    int buttons,
+    float axis_x,
+    float axis_y); // @ 0x431ff0, RShellInputRegister
+void copy_active_input_controller_state(
+    int slot,
+    int* out_buttons,
+    float* out_axis_x,
+    float* out_axis_y,
+    float* out_authored_x,
+    float* out_authored_y,
+    float* out_pointer_value,
+    float* out_pointer_x,
+    float* out_pointer_y); // @ 0x4320f0, RShellInputRetrieve
 void update_input_controller_pointer_region(
     int slot,
     int left,
@@ -63,6 +82,6 @@ void update_input_controller_pointer_region(
     char button_b,
     char button_c,
     char capture_when_outside,
-    char force_clamp); // @ 0x4321c0
+    char force_clamp); // @ 0x4321c0, RShellInputRegisterMouse
 
 #endif

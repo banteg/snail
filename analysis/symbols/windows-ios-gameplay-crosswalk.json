@@ -2951,6 +2951,41 @@
       "notes": "All ports scan to a sign, dot, or digit, advance the caller-owned cursor, accumulate decimal digits and scale, and return a float; the recovered Windows source is instruction-exact."
     },
     {
+      "address": "0x431fd0",
+      "windows_name": "set_input_controller_slot0_button_axes",
+      "ios_symbol": "RShellInputRegisterKeyboard(int, float, float)",
+      "android_symbol": "RShellInputRegisterKeyboard(int, float, float)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Both mobile ports preserve the authored void API and the same slot-0 button, X-axis, and Y-axis stores. The sole Windows caller immediately zeroes EAX after the call, proving that its copied button value is incidental compiler residue; the natural void transcription remains exact at 7/7 instructions."
+    },
+    {
+      "address": "0x431ff0",
+      "windows_name": "update_input_controller_slot_button_axes",
+      "android_symbol": "RShellInputRegister(int, int, float, float)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Android preserves the slot-0 merge and fill-empty-axis branch, selected nonzero-slot stores, 0.15 deadzone projection into authored X, and 0x4000 primary-button bridge. Both Windows callsites discard the exit flags residue, and the recovered void source remains exact at 61/61 instructions."
+    },
+    {
+      "address": "0x4320f0",
+      "windows_name": "copy_active_input_controller_state",
+      "ios_symbol": "RShellInputRetrieve(int, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*)",
+      "android_symbol": "RShellInputRetrieve(int, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "All ports select one RShellInput slot and copy buttons, two axes, authored X/Y, pointer value, and raw pointer X/Y in the same order. Mobile adds two final mouse-extra outputs and uses a 0x40 stride; the Windows ABI ends after the shared eight fields, and its xref-free gap must not be absorbed into the 0x20-byte payload. The sole Windows caller ignores EAX, while the natural void transcription remains exact at 52/52 instructions."
+    },
+    {
+      "address": "0x4321c0",
+      "windows_name": "update_input_controller_pointer_region",
+      "ios_symbol": "RShellInputRegisterMouse(int, int, int, int, int, int, int, int, bool, bool, bool, bool, bool)",
+      "android_symbol": "RShellInputRegisterMouse(int, int, int, int, int, int, int, int, bool, bool, bool, bool, bool)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Both mobile bodies preserve the exact 13-argument API, gMouseWX0/WY0/WX1/WY1 sidecar stores, outside-region capture and clamp branches, 640x480 projection, 0x4000/0x8000/0x100000 button masks, and 1..632 / 1..472 clamps. Windows differs only in platform mouse adapters and its proved 0x38 RShellInput stride; this is a source owner and API mapping, not a claim that platform bodies are byte-identical."
+    },
+    {
       "address": "0x432440",
       "windows_name": "read_pressed_text_input_key_code",
       "ios_symbol": "RShellInkey()",
