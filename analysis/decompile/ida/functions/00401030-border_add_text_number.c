@@ -2,63 +2,72 @@
 /* function: border_add_text_number @ 0x401030 */
 /* selector: border_add_text_number */
 
-char __thiscall sub_401030(_BYTE *this, int a2)
+// Exact authored `cRBorder::AddTextNumber(int)` member: appends a positive decimal value to the border's text buffer, inserts comma separators at the million and thousand boundaries, and handles zero as `0`. Android and iOS preserve the owner and algorithm while using their own cRBorder layout.
+void __thiscall border_add_text_number(FrontendWidget *border, int32_t value)
 {
-  unsigned int v2; // eax
-  _BYTE *i; // ecx
-  int v4; // ebx
-  char v5; // al
-  int v6; // esi
-  int v7; // eax
-  char j; // [esp+4h] [ebp+4h]
+  uint8_t v2; // al
+  FrontendWidgetTextBuffer *p_text_buffer; // ecx
+  uint8_t v4; // al
+  int32_t v5; // ebx
+  char v6; // al
+  int v7; // esi
+  int v8; // eax
+  char valuea; // [esp+4h] [ebp+4h]
 
-  LOBYTE(v2) = *(this + 716);
-  for ( i = this + 716; (_BYTE)v2; ++i )
-    LOBYTE(v2) = i[1];
-  v4 = a2;
-  if ( a2 )
+  v2 = border->text_buffer.raw[0];
+  p_text_buffer = &border->text_buffer;
+  if ( v2 != 0 )
   {
-    v5 = 0;
-    v6 = 10000000;
-    for ( j = 0; ; v5 = j )
+    do
     {
-      if ( v5 && (v6 == 100 || v6 == 100000) )
-        *i++ = 44;
-      if ( v4 >= v6 || v5 )
-        break;
-LABEL_21:
-      v4 %= v6;
-      v2 = (unsigned int)((unsigned __int64)(1717986919LL * v6) >> 32) >> 31;
-      v6 /= 10;
-      if ( !v6 )
-      {
-        *i = 0;
-        return v2;
-      }
+      v4 = p_text_buffer->raw[1];
+      p_text_buffer = (FrontendWidgetTextBuffer *)((char *)p_text_buffer + 1);
     }
-    if ( v6 == 1 )
-    {
-      LOBYTE(v7) = v4;
-    }
-    else
-    {
-      v7 = v4 / v6;
-      if ( !(v4 / v6) )
-      {
-        if ( !j )
-          goto LABEL_21;
-        *i = 48;
-        goto LABEL_20;
-      }
-      j = 1;
-    }
-    *i = v7 + 48;
-LABEL_20:
-    ++i;
-    goto LABEL_21;
+    while ( v4 != 0 );
   }
-  *i = 48;
-  i[1] = 0;
-  return v2;
+  v5 = value;
+  if ( value == 0 )
+  {
+    p_text_buffer->raw[0] = 48;
+    p_text_buffer->raw[1] = 0;
+    return;
+  }
+  v6 = 0;
+  v7 = 10000000;
+  for ( valuea = 0; ; v6 = valuea )
+  {
+    if ( v6 != 0 && (v7 == 100 || v7 == 100000) )
+    {
+      p_text_buffer->raw[0] = 44;
+      p_text_buffer = (FrontendWidgetTextBuffer *)((char *)p_text_buffer + 1);
+    }
+    if ( v5 >= v7 || v6 != 0 )
+    {
+      if ( v7 == 1 )
+      {
+        LOBYTE(v8) = v5;
+      }
+      else
+      {
+        v8 = v5 / v7;
+        if ( v5 / v7 == 0 )
+        {
+          if ( valuea == 0 )
+            goto LABEL_21;
+          p_text_buffer->raw[0] = 48;
+          goto LABEL_20;
+        }
+        valuea = 1;
+      }
+      p_text_buffer->raw[0] = v8 + 48;
+LABEL_20:
+      p_text_buffer = (FrontendWidgetTextBuffer *)((char *)p_text_buffer + 1);
+    }
+LABEL_21:
+    v5 %= v7;
+    v7 /= 10;
+    if ( v7 == 0 )
+      break;
+  }
+  p_text_buffer->raw[0] = 0;
 }
-

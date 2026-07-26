@@ -13,12 +13,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 501,
-    "unverified_entries": 284,
-    "verified_android_symbols": 498,
-    "verified_ios_symbols": 409,
-    "available_android_mappings": 498,
-    "available_ios_mappings": 371
+    "verified_entries": 507,
+    "unverified_entries": 278,
+    "verified_android_symbols": 504,
+    "verified_ios_symbols": 413,
+    "available_android_mappings": 504,
+    "available_ios_mappings": 375
   },
   "entries": [
     {
@@ -95,71 +95,13 @@
       "address": "0x401030",
       "windows_name": "border_add_text_number",
       "windows_size": 176,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBorder::SetTextNumber(int)",
-          "score": 0.9084,
-          "name_score": 0.8777,
-          "size_score": 0.9545
-        },
-        {
-          "symbol": "cRBorder::AddTextNumber(int)",
-          "score": 0.806,
-          "name_score": 0.8777,
-          "size_score": 0.6984
-        },
-        {
-          "symbol": "cRBorderManager::DelayClick(cRBorder*, int)",
-          "score": 0.7525,
-          "name_score": 0.5875,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorderManager::AI()",
-          "score": 0.6921,
-          "name_score": 0.6,
-          "size_score": 0.8302
-        },
-        {
-          "symbol": "G0BindTexture(int)",
-          "score": 0.6911,
-          "name_score": 0.5,
-          "size_score": 0.9778
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBorderManager::HideBorders()",
-          "score": 0.7525,
-          "name_score": 0.5875,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "G0BindTexture(int)",
-          "score": 0.6826,
-          "name_score": 0.5,
-          "size_score": 0.9565
-        },
-        {
-          "symbol": "cGLVertexArray::WorldFlatten()",
-          "score": 0.6621,
-          "name_score": 0.4516,
-          "size_score": 0.9778
-        },
-        {
-          "symbol": "cRBorderManager::AI()",
-          "score": 0.66,
-          "name_score": 0.6,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRBorderManager::UnHideBorders()",
-          "score": 0.6559,
-          "name_score": 0.5875,
-          "size_score": 0.7586
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRBorder::AddTextNumber(int)",
+      "ios_symbol": "cRBorder::AddTextNumber(int)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x4010e0",
@@ -432,69 +374,41 @@
       "address": "0x403300",
       "windows_name": "activate_all_borders",
       "windows_size": 96,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBorderManager::ActivateBorders()",
-          "score": 0.8955,
-          "name_score": 0.9091,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRBorderManager::DeActivateOtherBorders(cRBorder*)",
-          "score": 0.8192,
-          "name_score": 0.75,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "cRBorderManager::DeActivateBorders()",
-          "score": 0.7976,
-          "name_score": 0.8571,
-          "size_score": 0.7083
-        },
-        {
-          "symbol": "cRBorderManager::DeActivateOtherBorders(cRBorder*, cRBorder*)",
-          "score": 0.7929,
-          "name_score": 0.75,
-          "size_score": 0.8571
-        },
-        {
-          "symbol": "cRBorderManager::DeActivateOtherBorders(cRBorder*, cRBorder*, cRBorder*)",
-          "score": 0.77,
-          "name_score": 0.75,
-          "size_score": 0.8
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRBorderManager::ActivateBorders()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
+        {
+          "symbol": "cRBod::cRBod()",
+          "score": 0.744,
+          "name_score": 0.6,
+          "size_score": 0.96
+        },
+        {
+          "symbol": "cRBod::cRBod()",
+          "score": 0.744,
+          "name_score": 0.6,
+          "size_score": 0.96
+        },
+        {
+          "symbol": "cRBorderManager::KillBorders()",
+          "score": 0.705,
+          "name_score": 0.675,
+          "size_score": 0.75
+        },
+        {
+          "symbol": "cRObject::cRObject()",
+          "score": 0.6933,
+          "name_score": 0.6,
+          "size_score": 0.8333
+        },
         {
           "symbol": "cRBorder::HideInit()",
           "score": 0.6512,
           "name_score": 0.47,
           "size_score": 0.9231
-        },
-        {
-          "symbol": "OFControllerLoader::load(NSString*, NSObject*)",
-          "score": 0.6394,
-          "name_score": 0.4267,
-          "size_score": 0.9583
-        },
-        {
-          "symbol": "cRBorderManager::KillBorders()",
-          "score": 0.636,
-          "name_score": 0.56,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRTipManager::AI()",
-          "score": 0.6161,
-          "name_score": 0.4114,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "OFStringUtility::convertToValidParameter(OFRetainedPtr<NSString>)",
-          "score": 0.6049,
-          "name_score": 0.3415,
-          "size_score": 1.0
         }
       ]
     },
@@ -528,141 +442,25 @@
       "address": "0x4033f0",
       "windows_name": "hide_all_borders",
       "windows_size": 16,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBorderManager::HideBorders()",
-          "score": 0.9,
-          "name_score": 1.0,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRBorderManager::UnHideBorders()",
-          "score": 0.7889,
-          "name_score": 0.8148,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRBorderStack::Init()",
-          "score": 0.76,
-          "name_score": 0.6,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBorderStack::Init()",
-          "score": 0.76,
-          "name_score": 0.6,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellMemoryFree(void*)",
-          "score": 0.68,
-          "name_score": 0.4667,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ACos(float)",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorder::SetKeyLeft(int)",
-          "score": 0.6584,
-          "name_score": 0.564,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "OFISerializer::serialize(char const*, char const*, std::vector<OFRetainedPtr<NSString>, std::allocator<OFRetainedPtr<NSString>>>&)",
-          "score": 0.656,
-          "name_score": 0.4267,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRBorderManager::HideBorders()",
+      "ios_symbol": "cRBorderManager::HideBorders()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x403400",
       "windows_name": "unhide_all_borders",
       "windows_size": 16,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBorderManager::UnHideBorders()",
-          "score": 0.9,
-          "name_score": 1.0,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRBorderManager::HideBorders()",
-          "score": 0.84,
-          "name_score": 0.9,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRBorderStack::Init()",
-          "score": 0.76,
-          "name_score": 0.6,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorder::UnHighlight()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBorderStack::Init()",
-          "score": 0.76,
-          "name_score": 0.6,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorder::UnHideInit()",
-          "score": 0.6717,
-          "name_score": 0.675,
-          "size_score": 0.6667
-        },
-        {
-          "symbol": "RShellMemoryFree(void*)",
-          "score": 0.6625,
-          "name_score": 0.4375,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFXmlReader::endDecodeType()",
-          "score": 0.6483,
-          "name_score": 0.4138,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFISerializer::serialize(char const*, char const*, std::vector<OFRetainedPtr<NSString>, std::allocator<OFRetainedPtr<NSString>>>&)",
-          "score": 0.6383,
-          "name_score": 0.3972,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRBorderManager::UnHideBorders()",
+      "ios_symbol": "cRBorderManager::UnHideBorders()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x403410",
@@ -929,71 +727,13 @@
       "address": "0x403fc0",
       "windows_name": "update_border_manager",
       "windows_size": 112,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBorderManager::DeActivateOtherBorders(cRBorder*, cRBorder*)",
-          "score": 0.8582,
-          "name_score": 0.7637,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorderManager::DeActivateOtherBorders(cRBorder*, cRBorder*, cRBorder*)",
-          "score": 0.8316,
-          "name_score": 0.7637,
-          "size_score": 0.9333
-        },
-        {
-          "symbol": "cRBorderManager::DeActivateOtherBorders(cRBorder*)",
-          "score": 0.8296,
-          "name_score": 0.7637,
-          "size_score": 0.9286
-        },
-        {
-          "symbol": "cRBorderManager::GetBorder()",
-          "score": 0.8082,
-          "name_score": 0.7637,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRBorderManager::DeActivateOtherBorders(cRBorder*, cRBorder*, cRBorder*, cRBorder*)",
-          "score": 0.7976,
-          "name_score": 0.7637,
-          "size_score": 0.8485
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBorderManager::AI()",
-          "score": 0.8074,
-          "name_score": 0.78,
-          "size_score": 0.8485
-        },
-        {
-          "symbol": "cRBorderManager::GetBorder()",
-          "score": 0.7976,
-          "name_score": 0.7637,
-          "size_score": 0.8485
-        },
-        {
-          "symbol": "cRBorderManager::KillBorders()",
-          "score": 0.7154,
-          "name_score": 0.7637,
-          "size_score": 0.6429
-        },
-        {
-          "symbol": "cRBorderManager::HideBorders()",
-          "score": 0.7128,
-          "name_score": 0.7637,
-          "size_score": 0.6364
-        },
-        {
-          "symbol": "cRTipManager::TipNew(cRTipData*, bool)",
-          "score": 0.7112,
-          "name_score": 0.5186,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRBorderManager::AI()",
+      "ios_symbol": "cRBorderManager::AI()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x404030",
@@ -1107,39 +847,11 @@
       "address": "0x404360",
       "windows_name": "apply_all_border_visibility_mode",
       "windows_size": 480,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBorderManager::CentreRow(cRBorder*, bool, float)",
-          "score": 0.654,
-          "name_score": 0.45,
-          "size_score": 0.96
-        },
-        {
-          "symbol": "cRBorder::SetRight(cRBorder*)",
-          "score": 0.6196,
-          "name_score": 0.3938,
-          "size_score": 0.9583
-        },
-        {
-          "symbol": "cKeyPad::ConvertCode(char)",
-          "score": 0.6056,
-          "name_score": 0.359,
-          "size_score": 0.9756
-        },
-        {
-          "symbol": "cRBorder::SetLeft(cRBorder*)",
-          "score": 0.6007,
-          "name_score": 0.4042,
-          "size_score": 0.8955
-        },
-        {
-          "symbol": "ObjectProcTileWallCornerFast(int, cRObject*, char*, char*, char*)",
-          "score": 0.5887,
-          "name_score": 0.3929,
-          "size_score": 0.8824
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRBorderStack::Perform(int)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRBorderManager::Kill(cRBorder*)",

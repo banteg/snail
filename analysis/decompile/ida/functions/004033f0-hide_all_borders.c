@@ -2,8 +2,8 @@
 /* function: hide_all_borders @ 0x4033f0 */
 /* selector: hide_all_borders */
 
-// Exact void cRBorderManager::HideBorders() wrapper that pushes a nested 0x1000 visibility transition through the embedded BorderStack.
+// Exact void `cRBorderManager::HideBorders()` wrapper that pushes a nested hidden-state transition through the embedded `cRBorderStack`. Android calls `Perform(0)` directly; iOS inlines the same operation over its pointer-backed border pool.
 void __thiscall hide_all_borders(BorderManager *manager)
 {
-  apply_all_border_visibility_mode(&manager->border_stack.generation, 0);
+  apply_all_border_visibility_mode(&manager->border_stack, 0);
 }

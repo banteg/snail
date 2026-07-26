@@ -1,4 +1,4 @@
-// apply_all_border_visibility_mode @ 0x404360 (thiscall, ret 4)
+// cRBorderStack::Perform(int) / apply_all_border_visibility_mode @ 0x404360
 
 #include "border_manager.h"
 

@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,19 +18,31 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_backdrop_tile_quad",
-      "address": "0x41a4d0"
+      "name": "border_add_text_number",
+      "address": "0x401030"
     },
     {
-      "name": "apply_distort_to_object",
-      "address": "0x41aa50"
+      "name": "activate_all_borders",
+      "address": "0x403300"
     },
     {
-      "name": "rotate_object_facequad_uv_pairs",
-      "address": "0x430a30"
+      "name": "hide_all_borders",
+      "address": "0x4033f0"
+    },
+    {
+      "name": "unhide_all_borders",
+      "address": "0x403400"
+    },
+    {
+      "name": "update_border_manager",
+      "address": "0x403fc0"
+    },
+    {
+      "name": "apply_all_border_visibility_mode",
+      "address": "0x404360"
     }
   ],
-  "health_check_count": 1085,
+  "health_check_count": 1089,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

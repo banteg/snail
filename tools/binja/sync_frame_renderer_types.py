@@ -74,7 +74,9 @@ SYMBOL_UPDATES = (
 )
 
 FUNCTION_SYMBOL_UPDATES = (
+    ("0x401030", "border_add_text_number"),
     ("0x404350", "initialize_border_stack"),
+    ("0x404360", "apply_all_border_visibility_mode"),
     ("0x404580", "border_mouse_test"),
     ("0x408000", "initialize_game_player"),
     ("0x40ab00", "initialize_frontend_overlay_color_lerp"),
@@ -125,8 +127,18 @@ PROTO_UPDATES = (
         "GamePlayer* __thiscall initialize_game_player(GamePlayer* player)",
     ),
     (
+        "border_add_text_number",
+        "void __thiscall border_add_text_number("
+        "FrontendWidget* border, int32_t value)",
+    ),
+    (
         "initialize_border_stack",
         "void __thiscall initialize_border_stack(BorderStack* stack)",
+    ),
+    (
+        "apply_all_border_visibility_mode",
+        "void __thiscall apply_all_border_visibility_mode("
+        "BorderStack* stack, int32_t mode)",
     ),
     (
         "border_mouse_test",
@@ -221,7 +233,9 @@ PROTO_UPDATES = (
 )
 
 BORDER_KILL_REANALYSIS_FUNCTIONS = (
+    "border_add_text_number",
     "initialize_border_stack",
+    "apply_all_border_visibility_mode",
     "kill_border",
     "queue_frontend_widget_flag_after_delay",
     "border_input_text",

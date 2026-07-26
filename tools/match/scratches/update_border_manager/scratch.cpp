@@ -1,4 +1,4 @@
-// update_border_manager @ 0x403fc0 (thiscall)
+// cRBorderManager::AI() / update_border_manager @ 0x403fc0
 
 #include "border_manager.h"
 #include "game_root.h"

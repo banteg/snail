@@ -2,13 +2,14 @@
 /* function: update_border_manager @ 0x403fc0 */
 /* selector: update_border_manager */
 
+// Exact authored `cRBorderManager::AI()` member: advances the delayed-widget transition, clamps it after one normalized interval, waits for root fade state 4 when required, applies the queued flags to the borrowed cRBorder, and clears the active lane. Android and iOS confirm the owner and field order without transferring platform offsets.
 void __thiscall update_border_manager(BorderManager *manager)
 {
   double v1; // st7
   FrontendWidget *delayed_widget; // eax
   FrontendWidgetFlag widget_flags; // edx
 
-  if ( manager->delayed_widget_active )
+  if ( manager->delayed_widget_active != 0 )
   {
     v1 = manager->delayed_widget_progress_step + manager->delayed_widget_progress;
     manager->delayed_widget_progress = v1;

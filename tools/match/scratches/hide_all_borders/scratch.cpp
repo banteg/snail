@@ -1,4 +1,4 @@
-// hide_all_borders @ 0x4033f0 (thiscall, ret)
+// cRBorderManager::HideBorders() / hide_all_borders @ 0x4033f0
 
 #include "border_manager.h"
 

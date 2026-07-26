@@ -44,14 +44,18 @@ public:
     // The backing storage is BorderRecord-sized, but frontend callers use the
     // returned record through the FrontendWidget view.
     FrontendWidget* allocate_border(); // @ 0x4032a0
-    void activate_all_borders(); // @ 0x403300
+    void activate_all_borders(); // @ 0x403300,
+        // Android cRBorderManager::ActivateBorders()
     void kill_all_borders(); // @ 0x4033c0, cRBorderManager::KillBorders
-    void hide_all_borders(); // @ 0x4033f0, iOS cRBorderManager::HideBorders()
-    void unhide_all_borders(); // @ 0x403400, iOS cRBorderManager::UnHideBorders()
+    void hide_all_borders(); // @ 0x4033f0,
+        // iOS/Android cRBorderManager::HideBorders()
+    void unhide_all_borders(); // @ 0x403400,
+        // iOS/Android cRBorderManager::UnHideBorders()
     int kill_border(FrontendWidget* border);
     void queue_frontend_widget_flag_after_delay(
         FrontendWidget* widget, int queued_flags); // @ 0x403f60
-    void update_border_manager(); // @ 0x403fc0
+    void update_border_manager(); // @ 0x403fc0,
+        // iOS/Android cRBorderManager::AI()
     void set_border_justify_centre(
         float justify_centre); // @ 0x404730, cRBorderManager::SetJustifyCentre
 

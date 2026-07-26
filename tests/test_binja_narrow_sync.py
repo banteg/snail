@@ -5266,7 +5266,9 @@ def test_frontend_fade_and_color_overlay_owners_are_replayed_cross_decompiler() 
     ida_joined_literals = ida_source.replace('"\n        "', "")
 
     functions = (
+        ("0x401030", "0x401030", "border_add_text_number"),
         ("0x404350", "0x404350", "initialize_border_stack"),
+        ("0x404360", "0x404360", "apply_all_border_visibility_mode"),
         ("0x40ab00", "0x40AB00", "initialize_frontend_overlay_color_lerp"),
         ("0x40ab40", "0x40AB40", "draw_frontend_overlay_color_lerp"),
         ("0x40abc0", "0x40ABC0", "begin_frontend_fade_out"),
@@ -5281,8 +5283,20 @@ def test_frontend_fade_and_color_overlay_owners_are_replayed_cross_decompiler() 
 
     for binja_prototype, ida_prototype in (
         (
+            "void __thiscall border_add_text_number("
+            "FrontendWidget* border, int32_t value)",
+            "void __thiscall border_add_text_number("
+            "FrontendWidget *border, int32_t value);",
+        ),
+        (
             "void __thiscall initialize_border_stack(BorderStack* stack)",
             "void __thiscall initialize_border_stack(BorderStack *stack);",
+        ),
+        (
+            "void __thiscall apply_all_border_visibility_mode("
+            "BorderStack* stack, int32_t mode)",
+            "void __thiscall apply_all_border_visibility_mode("
+            "BorderStack *stack, int32_t mode);",
         ),
         (
             "void __thiscall initialize_frontend_overlay_color_lerp("
@@ -12471,6 +12485,14 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
         assert "FrameTransformMatrix completion_handoff_transform;" in header
         assert "typedef struct BorderStackEntry" in header
         assert "BorderStackEntry entries[200];" in header
+        assert (
+            "void __thiscall border_add_text_number(\n"
+            "    FrontendWidget* border, int32_t value);"
+        ) in header
+        assert (
+            "void __thiscall apply_all_border_visibility_mode(\n"
+            "    BorderStack* stack, int32_t mode);"
+        ) in header
         assert "typedef struct BorderRecord" in header
         assert "tColour color_06c;" in header
         assert "int32_t created_time;" in header
@@ -17530,10 +17552,12 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     assert "void __thiscall set_border_justify_centre" in ida_frame_sync
     assert "float justify_centre" in ida_frame_sync
     for function_name in (
+        "border_add_text_number",
         "allocate_border",
         "activate_all_borders",
         "hide_all_borders",
         "unhide_all_borders",
+        "apply_all_border_visibility_mode",
         "queue_frontend_widget_flag_after_delay",
         "update_border_manager",
         "initialize_border_record",

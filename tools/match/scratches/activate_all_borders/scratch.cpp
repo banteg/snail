@@ -1,4 +1,4 @@
-// activate_all_borders @ 0x403300 (thiscall, ret)
+// cRBorderManager::ActivateBorders() / activate_all_borders @ 0x403300
 
 #include "border_manager.h"
 

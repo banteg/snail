@@ -1,4 +1,4 @@
-// unhide_all_borders @ 0x403400 (thiscall, ret)
+// cRBorderManager::UnHideBorders() / unhide_all_borders @ 0x403400
 
 #include "border_manager.h"
 

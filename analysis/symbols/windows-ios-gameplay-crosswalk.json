@@ -11,6 +11,15 @@
   ],
   "entries": [
     {
+      "address": "0x401030",
+      "windows_name": "border_add_text_number",
+      "ios_symbol": "cRBorder::AddTextNumber(int)",
+      "android_symbol": "cRBorder::AddTextNumber(int)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Both mobile bodies preserve the authored cRBorder owner and the Windows decimal append algorithm: scan to the text terminator, special-case zero, walk divisors from 10,000,000 to 1, insert comma separators at the million and thousand boundaries, and terminate the result. The ports place the text buffer at +0x2c4 while Windows uses its own +0x2cc layout."
+    },
+    {
       "address": "0x4010e0",
       "windows_name": "hide_border_init",
       "android_symbol": "cRBorder::HideInit()",
@@ -113,6 +122,14 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x403300",
+      "windows_name": "activate_all_borders",
+      "android_symbol": "cRBorderManager::ActivateBorders()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the authored cRBorderManager owner and the same 150-record pool walk: restore DISABLED only when DISABLED_BEFORE_DEACTIVATION is clear, then clear that saved-state bit, reset both padding lanes to idle, and clear the hover target. Windows keeps the pool inline while mobile reaches it through its platform manager layout."
+    },
+    {
       "address": "0x403360",
       "windows_name": "kill_border",
       "ios_symbol": "cRBorderManager::Kill(cRBorder*)",
@@ -131,6 +148,24 @@
       "notes": "The exact Windows pool walk shares the authored BorderManager lifecycle role. All three Windows callers discard EAX, proving the final flags value is loop residue and the member contract is void.",
       "android_symbol": "cRBorderManager::KillBorders()",
       "android_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
+      "address": "0x4033f0",
+      "windows_name": "hide_all_borders",
+      "ios_symbol": "cRBorderManager::HideBorders()",
+      "android_symbol": "cRBorderManager::HideBorders()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "All ports preserve the authored void manager operation. Android delegates to cRBorderStack::Perform(0), matching the exact Windows wrapper; iOS inlines that same case over its pointer-backed pool. No mobile pool offset transfers to Windows."
+    },
+    {
+      "address": "0x403400",
+      "windows_name": "unhide_all_borders",
+      "ios_symbol": "cRBorderManager::UnHideBorders()",
+      "android_symbol": "cRBorderManager::UnHideBorders()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "All ports preserve the authored void manager operation. Android delegates to cRBorderStack::Perform(1), matching the exact Windows wrapper; iOS inlines the same newest-generation unwind, including hidden-bit clearing and padding/hover restoration."
     },
     {
       "address": "0x403410",
@@ -177,6 +212,15 @@
       "notes": "Both mobile ports preserve the three-state hover-delay, tooltip allocation/layout, and release machine. The sole Windows caller immediately reloads widget flags, and the authored void member remains exact at 218/218 instructions with 23 clean operands."
     },
     {
+      "address": "0x403fc0",
+      "windows_name": "update_border_manager",
+      "ios_symbol": "cRBorderManager::AI()",
+      "android_symbol": "cRBorderManager::AI()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Both mobile bodies preserve the authored cRBorderManager AI owner and the Windows delayed-widget lane: advance and clamp normalized progress, wait for fade state 4 only when the target carries FADE_BEFORE_ACTION, OR the queued flags into the borrowed cRBorder, and clear the active byte. Platform offsets differ but the field order and ownership agree."
+    },
+    {
       "address": "0x404030",
       "windows_name": "update_twinkle_manager",
       "android_symbol": "cRTwinkleManager::AI()",
@@ -201,6 +245,14 @@
       "source_object": "Border.o",
       "confidence": "high",
       "notes": "Windows linker-folds cRBorderStack::Init with the root-owned cRFade::Init projection at the same two-zero-store body. Android independently retains both functions and proves that the alias resets cRFade state and alpha."
+    },
+    {
+      "address": "0x404360",
+      "windows_name": "apply_all_border_visibility_mode",
+      "android_symbol": "cRBorderStack::Perform(int)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the authored cRBorderStack owner and all four Windows modes: push hidden or disabled transitions over the 150-record manager pool, or unwind only the newest generation and clear the matching bit. Mode 1 also restores idle padding and hover state. The stack borrows cRBorder handles; it neither owns nor allocates them."
     },
     {
       "address": "0x404540",

@@ -1,4 +1,4 @@
-// border_add_text_number @ 0x401030 (thiscall, ret 0x4)
+// cRBorder::AddTextNumber(int) / border_add_text_number @ 0x401030
 
 #include "frontend_widget.h"
 

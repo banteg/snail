@@ -15295,6 +15295,37 @@
       ]
     },
     {
+      "name": "bn_border_text_number_owner",
+      "artifact": "analysis/decompile/binja/functions/00401030-border_add_text_number.c",
+      "required_substrings": [
+        "border->text_buffer.raw[0]",
+        "int32_t value_1 = value",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "int32_t result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_border_text_number_owner",
+      "artifact": "analysis/decompile/ida/functions/00401030-border_add_text_number.c",
+      "required_substrings": [
+        "void __thiscall border_add_text_number(FrontendWidget *border, int32_t value)",
+        "border->text_buffer.raw[0]",
+        "p_text_buffer = &border->text_buffer"
+      ],
+      "forbidden_substrings": [
+        "sub_401030",
+        "_BYTE *this",
+        "char __thiscall border_add_text_number",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_border_manager_kill_all_void_owner",
       "artifact": "analysis/decompile/binja/functions/004033c0-kill_all_borders.c",
       "required_substrings": [
@@ -15422,6 +15453,46 @@
         "sub_404350",
         "??_FMemBlock",
         "int __thiscall initialize_border_stack",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_border_stack_transition_owner",
+      "artifact": "analysis/decompile/binja/functions/00404360-apply_all_border_visibility_mode.c",
+      "required_substrings": [
+        "switch (mode)",
+        "stack->owner",
+        "stack->entries[stack->entry_count].widget",
+        "stack->entries[stack->entry_count].generation = stack->generation",
+        "stack->generation += 1",
+        "stack->entry_count += 1",
+        "widget->hover_blend_target",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return eax",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_border_stack_transition_owner",
+      "artifact": "analysis/decompile/ida/functions/00404360-apply_all_border_visibility_mode.c",
+      "required_substrings": [
+        "void __thiscall apply_all_border_visibility_mode(BorderStack *stack, int32_t mode)",
+        "stack->owner->borders[i].flags",
+        "stack->entries[stack->entry_count].widget",
+        "stack->entries[stack->entry_count++].generation = stack->generation",
+        "++stack->generation",
+        "widget->target_padding = widget->idle_padding",
+        "widget->hover_blend_target = 0.0"
+      ],
+      "forbidden_substrings": [
+        "sub_404360",
+        "int __thiscall apply_all_border_visibility_mode",
+        "int *this",
+        "return result",
         "unimplemented"
       ]
     },

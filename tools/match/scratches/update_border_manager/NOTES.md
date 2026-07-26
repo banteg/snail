@@ -22,3 +22,15 @@ matching remains exact at 28/28 instructions with two clean operands.
 2026-07-15 canonical manager replay: BN and IDA now preserve every delayed
 transition field and the borrowed widget's `widget_flags` through their real
 owners. The source remains exact at 28/28 with two clean operands.
+
+## 2026-07-26 cross-port AI owner
+
+Android and iOS both retain `cRBorderManager::AI()` with the same delayed
+transition lane as Windows. Each body advances and clamps the normalized
+progress, checks the target border's `FADE_BEFORE_ACTION` bit, waits for root
+fade state 4 only when necessary, ORs the queued flags into the borrowed
+border, and clears the active byte.
+
+The mobile manager and cRBorder offsets differ, but the field order and
+borrowed lifetime agree. The exact Windows owner remains 28/28 instructions
+with two clean operands.

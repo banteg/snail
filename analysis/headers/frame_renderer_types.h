@@ -225,6 +225,9 @@ typedef struct Track {
 typedef struct FrontendWidget FrontendWidget;
 typedef struct BorderManager BorderManager;
 
+void __thiscall border_add_text_number(
+    FrontendWidget* border, int32_t value);
+
 typedef struct BorderStackEntry {
     int32_t generation;
     FrontendWidget* widget;
@@ -236,6 +239,10 @@ typedef struct BorderStack {
     BorderStackEntry entries[200];
     BorderManager* owner;
 } BorderStack;
+
+void __thiscall initialize_border_stack(BorderStack* stack);
+void __thiscall apply_all_border_visibility_mode(
+    BorderStack* stack, int32_t mode);
 
 /*
  * Exact backing record for the manager's fixed pool. Front-end consumers cast

@@ -2,6 +2,7 @@
 /* function: activate_all_borders @ 0x403300 */
 /* selector: activate_all_borders */
 
+// Exact authored `cRBorderManager::ActivateBorders()` member: walks the fixed 150-record pool, restores each border's pre-deactivation disabled state, clears the saved-state bit, resets both padding lanes to idle, and clears the hover target. Android confirms the owner and lifecycle over its platform layout.
 void __thiscall activate_all_borders(BorderManager *manager)
 {
   int32_t *p_flags; // eax
@@ -27,5 +28,5 @@ void __thiscall activate_all_borders(BorderManager *manager)
     *(p_flags - 425) = *(p_flags - 428);
     *(p_flags - 430) = 0;
   }
-  while ( v2 );
+  while ( v2 != 0 );
 }

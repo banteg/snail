@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 739,
-  "function_count": 739,
+  "selected_count": 740,
+  "function_count": 740,
   "mismatch_count": 0,
   "mismatches": [],
   "analysis_refreshed": true,
@@ -179,6 +179,11 @@
       "address": "0x404350",
       "name": "initialize_border_stack",
       "artifact": "analysis/decompile/binja/functions/00404350-initialize_border_stack.c"
+    },
+    {
+      "address": "0x404360",
+      "name": "apply_all_border_visibility_mode",
+      "artifact": "analysis/decompile/binja/functions/00404360-apply_all_border_visibility_mode.c"
     },
     {
       "address": "0x404540",

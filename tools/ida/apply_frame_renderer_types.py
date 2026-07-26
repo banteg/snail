@@ -70,7 +70,9 @@ DEPENDENCY_HEADER_NAMES = (
 
 TRUSTED_NAMES = [
     (0x48BA3F, "operator_new"),
+    (0x401030, "border_add_text_number"),
     (0x404350, "initialize_border_stack"),
+    (0x404360, "apply_all_border_visibility_mode"),
     (0x404580, "border_mouse_test"),
     (0x408000, "initialize_game_player"),
     (0x40AB00, "initialize_frontend_overlay_color_lerp"),
@@ -112,8 +114,18 @@ TRUSTED_FUNCTION_DECLARATIONS = [
         "int __cdecl initialize_game_window_and_input(char *window_name);",
     ),
     (
+        "border_add_text_number",
+        "void __thiscall border_add_text_number("
+        "FrontendWidget *border, int32_t value);",
+    ),
+    (
         "initialize_border_stack",
         "void __thiscall initialize_border_stack(BorderStack *stack);",
+    ),
+    (
+        "apply_all_border_visibility_mode",
+        "void __thiscall apply_all_border_visibility_mode("
+        "BorderStack *stack, int32_t mode);",
     ),
     (
         "border_mouse_test",
@@ -259,7 +271,9 @@ TRUSTED_FUNCTION_DECLARATIONS = [
 ]
 
 BORDER_KILL_REANALYSIS_FUNCTIONS = (
+    "border_add_text_number",
     "initialize_border_stack",
+    "apply_all_border_visibility_mode",
     "kill_border",
     "queue_frontend_widget_flag_after_delay",
     "border_input_text",

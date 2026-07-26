@@ -12,7 +12,8 @@
     },
     {
       "address": "0x401030",
-      "name": "border_add_text_number"
+      "name": "border_add_text_number",
+      "description": "Exact authored `cRBorder::AddTextNumber(int)` member: appends a positive decimal value to the border's text buffer, inserts comma separators at the million and thousand boundaries, and handles zero as `0`. Android and iOS preserve the owner and algorithm while using their own cRBorder layout."
     },
     {
       "address": "0x4010e0",
@@ -76,7 +77,8 @@
     },
     {
       "address": "0x403300",
-      "name": "activate_all_borders"
+      "name": "activate_all_borders",
+      "description": "Exact authored `cRBorderManager::ActivateBorders()` member: walks the fixed 150-record pool, restores each border's pre-deactivation disabled state, clears the saved-state bit, resets both padding lanes to idle, and clears the hover target. Android confirms the owner and lifecycle over its platform layout."
     },
     {
       "address": "0x403360",
@@ -91,12 +93,12 @@
     {
       "address": "0x4033f0",
       "name": "hide_all_borders",
-      "description": "Exact void cRBorderManager::HideBorders() wrapper that pushes a nested 0x1000 visibility transition through the embedded BorderStack."
+      "description": "Exact void `cRBorderManager::HideBorders()` wrapper that pushes a nested hidden-state transition through the embedded `cRBorderStack`. Android calls `Perform(0)` directly; iOS inlines the same operation over its pointer-backed border pool."
     },
     {
       "address": "0x403400",
       "name": "unhide_all_borders",
-      "description": "Exact void cRBorderManager::UnHideBorders() wrapper that unwinds the newest 0x1000 visibility transition through the embedded BorderStack."
+      "description": "Exact void `cRBorderManager::UnHideBorders()` wrapper that unwinds the newest hidden-state transition through the embedded `cRBorderStack`, restoring idle padding and hover state. Android calls `Perform(1)` directly; iOS inlines the same operation."
     },
     {
       "address": "0x403410",
@@ -135,7 +137,8 @@
     },
     {
       "address": "0x403fc0",
-      "name": "update_border_manager"
+      "name": "update_border_manager",
+      "description": "Exact authored `cRBorderManager::AI()` member: advances the delayed-widget transition, clamps it after one normalized interval, waits for root fade state 4 when required, applies the queued flags to the borrowed cRBorder, and clears the active lane. Android and iOS confirm the owner and field order without transferring platform offsets."
     },
     {
       "address": "0x404030",
@@ -163,7 +166,7 @@
     {
       "address": "0x404360",
       "name": "apply_all_border_visibility_mode",
-      "description": "Applies one of four nested visibility transitions to the BorderManager-owned 150-record pool, recording borrowed FrontendWidget handles by generation so hide and disabled-state bits can be unwound in LIFO batches."
+      "description": "Exact authored `cRBorderStack::Perform(int)` member: applies one of four nested hidden/disabled transitions to the BorderManager-owned 150-record pool, recording borrowed cRBorder handles by generation so only the newest batch is unwound. Android confirms the owner, four-mode contract, and non-owning handle stack."
     },
     {
       "address": "0x404540",
