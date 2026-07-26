@@ -166,3 +166,18 @@ The candidate now exactly matches the native `0x4c` frame and gains 11.29
 focused points. The older isolated terminal probes remain correctly rejected;
 their now-recovered ownership only becomes faithful when the dependent face
 and ordinary-branch lifetimes are present as a complete set.
+
+## 2026-07-26 shared header order
+
+Dump has the same native header/allocation schedule as Hump: the
+`width_or_scale` member write precedes materialization of the
+`curve_count + 7` departure boundary. Recovering that shared statement order
+moves focused matching from 51.86% to 52.00%, extends the exact prefix from 18
+to 20 instructions, and retains 683/690 candidate instructions with 36 clean
+masked operands.
+
+Ghidra 12.1.2 independently confirms the iOS `cRPath::BuildDump` family shape,
+including the grouped negative cosine profile. Its optimized ARM output cannot
+distinguish a source alias from the input itself; the Windows build can.
+Removing the retained height-scale owner regressed focused matching to 49.85%
+and shortened the candidate by one instruction, so that cleanup is rejected.

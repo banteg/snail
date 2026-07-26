@@ -183,3 +183,28 @@ The candidate now has the native `0x4c` stack frame. This supersedes the older
 rejected terminal-only probes: the complete coupled owner set is directly
 evidenced and improves the focused result by 7.88 points without padding or
 dummy uses.
+
+## 2026-07-26 shared header order
+
+Hump and Dump have the same native header/allocation schedule: after converting
+the curve count, each writes `width_or_scale`, then materializes the
+`curve_count + 7` departure boundary. Moving that member write before the local
+declaration recovers the two missing instructions at the first divergence:
+
+```text
+match: 48.94%
+target: 685 insns, candidate: 680 insns
+prefix: 20/685 target insns
+masked operands: 36 ok, 0 unresolved, 0 mismatch
+```
+
+This is up from 48.79% with an 18-instruction prefix. Ghidra 12.1.2 independently
+shows the iOS `cRPath::BuildHump` counterpart computing one curve count, one
+radius, and using the height input in the cosine profile.
+
+The remaining x86 radius slot is compiler coalescing, not evidence for rewriting
+the input. Assigning the derived radius back to `curve_source` regressed to
+48.64% before the retained order change and 48.79% after it. Reusing the general
+loop index for departure reached 48.50%, and rewriting the phases through the
+`width_cells_` input reached 48.06%. Those ownership probes are rejected; no
+parameter mutation or artificial lifetime is retained.

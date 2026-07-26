@@ -303,8 +303,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     side_exit_mode = 0;
     width_cells = width_cells_;
     curve_count = (int)(curve_source * 4.0f);
-    int departure_index = curve_count + 7;
     width_or_scale = 1.0f;
+    int departure_index = curve_count + 7;
     segment_count = departure_index + 7;
     segment_count_f = (float)(departure_index + 7);
     float curve_count_f = (float)curve_count;

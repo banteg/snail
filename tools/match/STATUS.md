@@ -759,7 +759,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 725/721 | 69.43% | 9/721 | 47 ok |  |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 746/745 | 65.73% | 10/745 | 52 ok |  |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 722/718 | 58.89% | 0/718 | 46 ok |  |
-| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 683/690 | 51.86% | 18/690 | 36 ok |  |
+| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 683/690 | 52.00% | 20/690 | 36 ok |  |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 728/736 | 72.81% | 0/736 | 37 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 698/726 | 72.89% | 122/726 | 63 ok |  |
 | 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 416/425 | 71.82% | 32/425 | 7 ok |  |
@@ -799,7 +799,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | create_golb | 0x415280 | 2349 | 459/582 | 34.77% | 1/582 | 35 ok |  |
-| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 680/685 | 48.79% | 18/685 | 36 ok |  |
+| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 680/685 | 48.94% | 20/685 | 36 ok |  |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 644/655 | 38.95% | 8/655 | 30 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 646/685 | 48.53% | 6/685 | 34 ok |  |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 657/696 | 32.08% | 1/696 | 26 ok |  |
