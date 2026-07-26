@@ -2,7 +2,7 @@
 /* function: sample_track_floor_height_at_position @ 0x43d4d0 */
 /* selector: sample_track_floor_height_at_position */
 
-// Evaluates the runtime floor-height sampler for the current gameplay-grid cell, including ramp tiles and the special cell-stored height used by tile 0x16.
+// Exact Windows `cRSubGame::GetY(tVector)`: samples the current `SubLoc`, returns flat, ramp, raised-ramp, trampoline-stored, or sentinel floor height, and uses the authored 0.4, 0.5, and -100 constants. Android preserves the full method body and iOS independently preserves the exact demangled symbol.
 double __thiscall sample_track_floor_height_at_position(SubgameRuntime *game, Vec3 *position)
 {
   TrackRowCell *track_grid_cell_at_world_position; // eax
@@ -32,6 +32,8 @@ double __thiscall sample_track_floor_height_at_position(SubgameRuntime *game, Ve
       return (position->z - (double)(int)(__int64)position->z) * 0.40000001 + 0.5;
     case SUBLOC_TILE_TRAMPOLINE:
       return track_grid_cell_at_world_position->anchor_position.y;
+    default:
+      break;
   }
   return -100.0;
 }

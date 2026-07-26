@@ -2,7 +2,7 @@
 /* function: kill_subgoldy @ 0x445840 */
 /* selector: kill_subgoldy */
 
-// Void `Player` member that hides both cached ghost sprites and clears Goldy's active render flag. Its sole `update_times_up` caller discards the final flag-clear residue.
+// Exact void Windows `cRSubGoldy::Kill()`: begins the post-follow/falling carryover and moves Goldy's body to y = -8. Android preserves the same authored method as `FallingInit(this)` followed by the identical -8 body-height store.
 void __thiscall kill_subgoldy(Player *player)
 {
   begin_post_follow_carryover(player);

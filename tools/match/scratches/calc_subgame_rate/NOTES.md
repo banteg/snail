@@ -1,5 +1,13 @@
 # calc_subgame_rate
 
+## 2026-07-26 authored CalcRate method
+
+Android `cRSubGame::CalcRate()` preserves the same base-versus-active state
+split, clamped track-progress ramp, mode-dependent rate selection, Goldy
+damage-gauge envelope, and hover bonus. Some coefficients and offsets are
+port-specific, so the evidence transfers the owner and control graph without
+pretending the binaries are identical.
+
 Initial scratch for the per-frame subgame rate calculator.
 
 Recovered relationships:

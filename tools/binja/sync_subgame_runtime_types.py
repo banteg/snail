@@ -105,6 +105,12 @@ SUBGAME_FUNCTION_SYMBOL_UPDATES = (
     ("0x4168c0", "destroy_help_screen"),
     ("0x4168d0", "update_help_screen"),
     ("0x435df0", "set_subgame_features"),
+    ("0x437e80", "calc_slider_to_rate"),
+    ("0x4404d0", "calc_subgame_rate"),
+    ("0x4408a0", "advance_blink_random"),
+    ("0x4408c0", "initialize_blink_random"),
+    ("0x445f10", "hide_gameplay_scores"),
+    ("0x445f40", "unhide_gameplay_scores"),
 )
 
 HELP_EXPECTED_SIZE = 0x04
@@ -481,10 +487,19 @@ PROTO_UPDATES = (
         "rebuild_track_runtime_from_segments",
         "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* runtime, int32_t level_index)",
     ),
+    (
+        "calc_slider_to_rate",
+        "float __thiscall calc_slider_to_rate(SubgameRuntime* runtime, float slider)",
+    ),
     ("set_subgame_rate", "void __thiscall set_subgame_rate(SubgameRuntime* runtime, float rate)"),
     ("calc_subgame_rate", "void __thiscall calc_subgame_rate(SubgameRuntime* runtime)"),
     ("advance_blink_random", "double __thiscall advance_blink_random(SubgameRuntime* runtime)"),
-    ("initialize_blink_random", "int32_t __thiscall initialize_blink_random(SubgameRuntime* runtime)"),
+    ("initialize_blink_random", "void __thiscall initialize_blink_random(SubgameRuntime* runtime)"),
+    ("hide_gameplay_scores", "void __thiscall hide_gameplay_scores(SubgameRuntime* runtime)"),
+    (
+        "unhide_gameplay_scores",
+        "void __thiscall unhide_gameplay_scores(SubgameRuntime* runtime)",
+    ),
     ("complete_subgame", "void __thiscall complete_subgame(SubgameRuntime* runtime, uint8_t completed)"),
     (
         "initialize_track_parcel_runtime",

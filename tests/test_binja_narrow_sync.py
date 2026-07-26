@@ -228,6 +228,176 @@ def test_mobile_galaxy_and_backdrop_evidence_preserves_windows_abi_boundaries() 
     assert "int queue_textured_quad_corners(" in font_header
 
 
+def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    functions_by_address = {
+        entry["address"]: entry for entry in functions["functions"]
+    }
+    crosswalk_by_address = {
+        entry["address"]: entry for entry in crosswalk["entries"]
+    }
+
+    expected = (
+        (
+            "0x437e80",
+            "cRSubGame_CalcSliderToRate",
+            "cRSubGame::CalcSliderToRate(float)",
+            None,
+        ),
+        (
+            "0x43af10",
+            "cRSubGoldy_ShowLives",
+            "cRSubGoldy::ShowLives()",
+            None,
+        ),
+        (
+            "0x43d3d0",
+            "cRSubGoldy_GhostDraw",
+            "cRSubGoldy::GhostDraw(float)",
+            None,
+        ),
+        (
+            "0x43d410",
+            "cRSubGame_LocFromPos",
+            "cRSubGame::LocFromPos(tVector)",
+            "cRSubGame::LocFromPos(tVector)",
+        ),
+        (
+            "0x43d480",
+            "cRSubGame_RowFromPos",
+            "cRSubGame::RowFromPos(tVector)",
+            None,
+        ),
+        (
+            "0x43d4d0",
+            "cRSubGame_GetY",
+            "cRSubGame::GetY(tVector)",
+            "cRSubGame::GetY(tVector)",
+        ),
+        (
+            "0x4403a0",
+            "cRSubGoldy_ScoreStatsInit",
+            "cRSubGoldy::ScoreStatsInit()",
+            "cRSubGoldy::ScoreStatsInit()",
+        ),
+        (
+            "0x4404d0",
+            "cRSubGame_CalcRate",
+            "cRSubGame::CalcRate()",
+            None,
+        ),
+        (
+            "0x4408a0",
+            "cRSubGame_BlinkRand",
+            "cRSubGame::BlinkRand()",
+            None,
+        ),
+        (
+            "0x4408c0",
+            "cRSubGame_BlinkRandInit",
+            "cRSubGame::BlinkRandInit()",
+            "cRSubGame::BlinkRandInit()",
+        ),
+        (
+            "0x445840",
+            "cRSubGoldy_Kill",
+            "cRSubGoldy::Kill()",
+            None,
+        ),
+        (
+            "0x445f10",
+            "cRSubGame_HideScores",
+            "cRSubGame::HideScores()",
+            "cRSubGame::HideScores()",
+        ),
+        (
+            "0x445f40",
+            "cRSubGame_UnHideScores",
+            "cRSubGame::UnHideScores()",
+            None,
+        ),
+    )
+    for address, alias, android_symbol, ios_symbol in expected:
+        assert (
+            sum(entry["address"] == address for entry in crosswalk["entries"]) == 1
+        )
+        assert alias in functions_by_address[address]["aliases"]
+        assert crosswalk_by_address[address]["android_symbol"] == android_symbol
+        if ios_symbol is None:
+            assert "ios_symbol" not in crosswalk_by_address[address]
+        else:
+            assert crosswalk_by_address[address]["ios_symbol"] == ios_symbol
+
+    assert (
+        "initialize_score_stats"
+        in functions_by_address["0x4403a0"]["aliases"]
+    )
+    assert (
+        "initialize_score_stats"
+        not in functions_by_address["0x444960"]["aliases"]
+    )
+    assert "cRSquidge_Init" in functions_by_address["0x444960"]["aliases"]
+    kill_description = functions_by_address["0x445840"]["description"]
+    assert "cRSubGoldy::Kill()" in kill_description
+    assert "y = -8" in kill_description
+    assert "ghost" not in kill_description.lower()
+
+    matcher_header = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+    blink_source = (
+        repo_root / "tools/match/scratches/initialize_blink_random/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+    assert "void initialize_blink_random();" in matcher_header
+    assert "void SubgameRuntime::initialize_blink_random()" in blink_source
+    assert "return result;" not in blink_source
+    assert '"00440909        return"' in health_checks
+    assert '"return result"' in health_checks
+    for health_check_name in (
+        "ida_mobile_calc_slider_owner_abi",
+        "ida_blink_random_void_owner_abi",
+        "ida_hide_gameplay_scores_owner",
+        "ida_unhide_gameplay_scores_owner",
+    ):
+        assert f'"name": "{health_check_name}"' in health_checks
+
+    for source_path in (
+        BINJA_DIR / "sync_subgame_runtime_types.py",
+        BINJA_DIR / "sync_path_template_types.py",
+        IDA_DIR / "apply_subgame_runtime_types.py",
+        IDA_DIR / "apply_path_template_types.py",
+        HEADER_DIR / "path_template_types.h",
+    ):
+        source = source_path.read_text(encoding="utf-8")
+        assert (
+            "float __thiscall calc_slider_to_rate(SubgameRuntime*" in source
+        )
+        assert (
+            "void __thiscall initialize_blink_random(SubgameRuntime*" in source
+        )
+        assert "void __thiscall hide_gameplay_scores(SubgameRuntime*" in source
+        assert (
+            "void __thiscall unhide_gameplay_scores(SubgameRuntime*" in source
+        )
+        assert (
+            "int32_t __thiscall initialize_blink_random(SubgameRuntime*"
+            not in source
+        )
+
+
 def test_galaxy_layout_lifetime_replay_preserves_borrowed_cursors() -> None:
     repo_root = Path(__file__).parents[1]
     source = (BINJA_DIR / "sync_galaxy_layout_lifetimes.py").read_text(
@@ -3734,7 +3904,7 @@ def test_blink_random_replay_preserves_sample_borrow() -> None:
     ):
         assert expected in source
     for fragment in (
-        "float* blink_sample_cursor = &runtime->blink_random_samples",
+        "float* blink_sample_cursor = &game->blink_random_samples",
         "blink_sample_cursor = &blink_sample_cursor[1]",
         "blink_sample_cursor[-1] =",
         '"float (*"',

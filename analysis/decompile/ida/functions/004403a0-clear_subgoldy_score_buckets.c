@@ -2,7 +2,7 @@
 /* function: clear_subgoldy_score_buckets @ 0x4403a0 */
 /* selector: clear_subgoldy_score_buckets */
 
-// Void `Player` member that clears the six per-type score buckets shared by `add_subgoldy_score` and `display_score_stats`, without touching total score or life state. Both callers discard the final zero-register residue.
+// Exact void Windows `cRSubGoldy::ScoreStatsInit()`: clears the per-event score-stat block shared by `add_subgoldy_score` and `display_score_stats`, without touching total score or life state. Windows has six buckets while Android and iOS clear seven in their port-specific Goldy layout; the owner and initialization role are otherwise exact.
 void __thiscall clear_subgoldy_score_buckets(Player *player)
 {
   memset(player->score_buckets, 0, sizeof(player->score_buckets));

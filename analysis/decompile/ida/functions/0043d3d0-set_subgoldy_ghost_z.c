@@ -2,7 +2,7 @@
 /* function: set_subgoldy_ghost_z @ 0x43d3d0 */
 /* selector: set_subgoldy_ghost_z */
 
-// Void `Player` member that marks the two cached SubGoldy ghost sprites visible with flag 0x40 and writes the supplied ghost z into each `Sprite::position.z` lane. `update_subgoldy` immediately reloads its own game/root values after the call, proving the residual second-sprite pointer is not a result.
+// Exact void Windows `cRSubGoldy::GhostDraw(float)`: marks the two cached Goldy ghost sprites visible with flag 0x40 and writes the supplied z into each `Sprite::position.z` lane. Android preserves the same two borrowed sprite slots, flag updates, and z stores.
 void __thiscall set_subgoldy_ghost_z(Player *player, float ghost_z)
 {
   player->ghost_sprite_a->flags |= 0x40u;

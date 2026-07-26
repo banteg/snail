@@ -2,16 +2,16 @@
 /* function: hide_gameplay_scores @ 0x445f10 */
 /* selector: hide_gameplay_scores */
 
-void __thiscall sub_445F10(_DWORD *this)
+// Exact void Windows `cRSubGame::HideScores()`: null-checks and hides the two gameplay score widgets owned by SubgameRuntime. Android and iOS preserve the same two-widget method and guard order.
+void __thiscall hide_gameplay_scores(SubgameRuntime *game)
 {
-  _DWORD *v2; // ecx
-  _DWORD *v3; // ecx
+  FrontendWidget *bottom_score_widget; // ecx
+  FrontendWidget *top_score_widget; // ecx
 
-  v2 = (_DWORD *)*(this + 880355);
-  if ( v2 )
-    hide_border_init(v2);
-  v3 = (_DWORD *)*(this + 880354);
-  if ( v3 )
-    hide_border_init(v3);
+  bottom_score_widget = game->bottom_score_widget;
+  if ( bottom_score_widget != nullptr )
+    hide_border_init(bottom_score_widget);
+  top_score_widget = game->top_score_widget;
+  if ( top_score_widget != nullptr )
+    hide_border_init(top_score_widget);
 }
-

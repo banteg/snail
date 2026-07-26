@@ -2,7 +2,7 @@
 /* function: show_subgoldy_lives @ 0x43af10 */
 /* selector: show_subgoldy_lives */
 
-// Void `Player` member that refreshes the nine-slot Goldy life display by showing the first `current_lives` widgets and hiding the rest. Windows `update_subgoldy` discards its incidental terminal widget-flag value and only calls it for gameplay mode 0, matching the mode-gated `cRSubGoldy::ShowLives()` helper in the Android and iOS ports.
+// Exact void Windows `cRSubGoldy::ShowLives()`: refreshes the nine-slot Goldy life display by showing the first `visible_life_stock` widgets and hiding the rest. Android preserves the same nine-widget loop and Player-owned life count; no iOS symbol was found.
 void __thiscall show_subgoldy_lives(Player *player)
 {
   int32_t v2; // edi

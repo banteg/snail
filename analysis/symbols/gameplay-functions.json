@@ -2296,7 +2296,10 @@
     {
       "address": "0x437e80",
       "name": "calc_slider_to_rate",
-      "description": "SubgameRuntime method that maps a normalized challenge-speed slider to its gameplay rate, with the authored maximum slider receiving the special 1.1 rate."
+      "aliases": [
+        "cRSubGame_CalcSliderToRate"
+      ],
+      "description": "Exact Windows `cRSubGame::CalcSliderToRate(float)`: maps a normalized challenge-speed slider through `x * 0.90000004 + 0.2`, with the authored maximum slider receiving the special 1.1 rate. Android preserves the same receiver, branch, and constants."
     },
     {
       "address": "0x437eb0",
@@ -2419,7 +2422,10 @@
     {
       "address": "0x43af10",
       "name": "show_subgoldy_lives",
-      "description": "Void `Player` member that refreshes the nine-slot Goldy life display by showing the first `current_lives` widgets and hiding the rest. Windows `update_subgoldy` discards its incidental terminal widget-flag value and only calls it for gameplay mode 0, matching the mode-gated `cRSubGoldy::ShowLives()` helper in the Android and iOS ports."
+      "aliases": [
+        "cRSubGoldy_ShowLives"
+      ],
+      "description": "Exact void Windows `cRSubGoldy::ShowLives()`: refreshes the nine-slot Goldy life display by showing the first `visible_life_stock` widgets and hiding the rest. Android preserves the same nine-widget loop and Player-owned life count; no iOS symbol was found."
     },
     {
       "address": "0x43af60",
@@ -2448,22 +2454,34 @@
     {
       "address": "0x43d3d0",
       "name": "set_subgoldy_ghost_z",
-      "description": "Void `Player` member that marks the two cached SubGoldy ghost sprites visible with flag 0x40 and writes the supplied ghost z into each `Sprite::position.z` lane. `update_subgoldy` immediately reloads its own game/root values after the call, proving the residual second-sprite pointer is not a result."
+      "aliases": [
+        "cRSubGoldy_GhostDraw"
+      ],
+      "description": "Exact void Windows `cRSubGoldy::GhostDraw(float)`: marks the two cached Goldy ghost sprites visible with flag 0x40 and writes the supplied z into each `Sprite::position.z` lane. Android preserves the same two borrowed sprite slots, flag updates, and z stores."
     },
     {
       "address": "0x43d410",
       "name": "get_track_grid_cell_at_world_position",
-      "description": "Clamps world-space x and z into the 8-lane gameplay grid and returns the compact 0x54-byte runtime cell."
+      "aliases": [
+        "cRSubGame_LocFromPos"
+      ],
+      "description": "Exact Windows `cRSubGame::LocFromPos(tVector)`: clamps world-space x and z into the eight-lane gameplay grid and returns the owned compact 0x54-byte `SubLoc` runtime cell. Android and iOS preserve the same lane/row clamp and row-major ownership with port-specific capacities and strides."
     },
     {
       "address": "0x43d480",
       "name": "get_track_runtime_cell_at_world_z",
-      "description": "Clamps world z into the generated row array and returns the authored `SubRow` runtime record. The exact 0xf4 stride and 3200-row slab agree with the Windows constructor ledger's `Size of cRSubRow` total of 0xbea00 bytes."
+      "aliases": [
+        "cRSubGame_RowFromPos"
+      ],
+      "description": "Exact Windows `cRSubGame::RowFromPos(tVector)`: clamps world z into the generated row array and returns the authored `SubRow` runtime record. Android preserves the same owned-row lookup with a port-specific capacity and stride; the Windows 0xf4 stride and 3200-row slab agree with the constructor ledger's `Size of cRSubRow` total of 0xbea00 bytes."
     },
     {
       "address": "0x43d4d0",
       "name": "sample_track_floor_height_at_position",
-      "description": "Evaluates the runtime floor-height sampler for the current gameplay-grid cell, including ramp tiles and the special cell-stored height used by tile 0x16."
+      "aliases": [
+        "cRSubGame_GetY"
+      ],
+      "description": "Exact Windows `cRSubGame::GetY(tVector)`: samples the current `SubLoc`, returns flat, ramp, raised-ramp, trampoline-stored, or sentinel floor height, and uses the authored 0.4, 0.5, and -100 constants. Android preserves the full method body and iOS independently preserves the exact demangled symbol."
     },
     {
       "address": "0x43d5a0",
@@ -2606,7 +2624,11 @@
     {
       "address": "0x4403a0",
       "name": "clear_subgoldy_score_buckets",
-      "description": "Void `Player` member that clears the six per-type score buckets shared by `add_subgoldy_score` and `display_score_stats`, without touching total score or life state. Both callers discard the final zero-register residue."
+      "aliases": [
+        "initialize_score_stats",
+        "cRSubGoldy_ScoreStatsInit"
+      ],
+      "description": "Exact void Windows `cRSubGoldy::ScoreStatsInit()`: clears the per-event score-stat block shared by `add_subgoldy_score` and `display_score_stats`, without touching total score or life state. Windows has six buckets while Android and iOS clear seven in their port-specific Goldy layout; the owner and initialization role are otherwise exact."
     },
     {
       "address": "0x4403c0",
@@ -2621,7 +2643,10 @@
     {
       "address": "0x4404d0",
       "name": "calc_subgame_rate",
-      "description": "Recomputes the live subgame rate from the base speed and current runtime modifiers. The owning object is the leaked iOS `cRSubGame` in `SubGame.o`."
+      "aliases": [
+        "cRSubGame_CalcRate"
+      ],
+      "description": "Exact void Windows `cRSubGame::CalcRate()`: recomputes the live subgame rate from base speed, active-state track progress, mode-specific ramps, Goldy's damage-gauge envelope, and hover bonus. Android preserves the same owner and control graph with port-specific constants and layout."
     },
     {
       "address": "0x440600",
@@ -2640,11 +2665,19 @@
     },
     {
       "address": "0x4408a0",
-      "name": "advance_blink_random"
+      "name": "advance_blink_random",
+      "aliases": [
+        "cRSubGame_BlinkRand"
+      ],
+      "description": "Exact Windows `cRSubGame::BlinkRand()`: advances the owned cursor modulo 24 and returns the selected blink-cadence sample. Android preserves the same method and table cardinality."
     },
     {
       "address": "0x4408c0",
-      "name": "initialize_blink_random"
+      "name": "initialize_blink_random",
+      "aliases": [
+        "cRSubGame_BlinkRandInit"
+      ],
+      "description": "Exact void Windows `cRSubGame::BlinkRandInit()`: resets the owned cursor and fills 24 blink-cadence samples with `1 / (((rand / 32768) + 1) * 60)`. Android and iOS preserve the same owner, table cardinality, formula, and void contract."
     },
     {
       "address": "0x440910",
@@ -2888,9 +2921,9 @@
       "address": "0x444960",
       "name": "initialize_squidge",
       "aliases": [
-        "initialize_score_stats"
+        "cRSquidge_Init"
       ],
-      "description": "Exact Windows `cRSquidge::Init()`. The sole caller passes the inline `Player + 0x4344` Squidge owner, and the helper clears its six Y/Z spring floats; Goldy's score buckets are separate at `Player + 0x310`, while mobile `cRSubGoldy::ScoreStatsInit()` remains a distinct symbol without a proven Windows mapping."
+      "description": "Exact Windows `cRSquidge::Init()`. The sole caller passes the inline `Player + 0x4344` Squidge owner, and the helper clears its six Y/Z spring floats. The historical `initialize_score_stats` alias is retired here and assigned to the actual Goldy score-stat initializer at 0x4403a0."
     },
     {
       "address": "0x444980",
@@ -2930,7 +2963,10 @@
     {
       "address": "0x445840",
       "name": "kill_subgoldy",
-      "description": "Void `Player` member that hides both cached ghost sprites and clears Goldy's active render flag. Its sole `update_times_up` caller discards the final flag-clear residue."
+      "aliases": [
+        "cRSubGoldy_Kill"
+      ],
+      "description": "Exact void Windows `cRSubGoldy::Kill()`: begins the post-follow/falling carryover and moves Goldy's body to y = -8. Android preserves the same authored method as `FallingInit(this)` followed by the identical -8 body-height store."
     },
     {
       "address": "0x445860",
@@ -2975,11 +3011,19 @@
     },
     {
       "address": "0x445f10",
-      "name": "hide_gameplay_scores"
+      "name": "hide_gameplay_scores",
+      "aliases": [
+        "cRSubGame_HideScores"
+      ],
+      "description": "Exact void Windows `cRSubGame::HideScores()`: null-checks and hides the two gameplay score widgets owned by SubgameRuntime. Android and iOS preserve the same two-widget method and guard order."
     },
     {
       "address": "0x445f40",
-      "name": "unhide_gameplay_scores"
+      "name": "unhide_gameplay_scores",
+      "aliases": [
+        "cRSubGame_UnHideScores"
+      ],
+      "description": "Exact void Windows `cRSubGame::UnHideScores()`: unhides the two gameplay score widgets owned by SubgameRuntime. Android preserves the same two calls; no iOS symbol was found."
     },
     {
       "address": "0x445f60",

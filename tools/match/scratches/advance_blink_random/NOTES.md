@@ -1,5 +1,11 @@
 # advance_blink_random @ 0x4408a0
 
+## 2026-07-26 authored BlinkRand method
+
+Android `cRSubGame::BlinkRand()` advances its owned cursor modulo `0x18`,
+stores it, and returns the indexed sample from the adjacent table. This exact
+method body confirms both the SubGame receiver and the 24-sample ownership.
+
 Exact match: 100.00%, 10/10 instructions.
 
 This helper advances the 24-entry blink cadence table index at `+0x3bb700`

@@ -217,11 +217,22 @@ SYMBOL_UPDATES = (
     ("0x43b120", "update_subgoldy"),
     ("0x43d230", "initialize_subgoldy_ghost"),
     ("0x43d3d0", "set_subgoldy_ghost_z"),
+    ("0x437e80", "calc_slider_to_rate"),
+    ("0x43d410", "get_track_grid_cell_at_world_position"),
+    ("0x43d480", "get_track_runtime_cell_at_world_z"),
+    ("0x43d4d0", "sample_track_floor_height_at_position"),
+    ("0x4403a0", "clear_subgoldy_score_buckets"),
+    ("0x4404d0", "calc_subgame_rate"),
+    ("0x4408a0", "advance_blink_random"),
+    ("0x4408c0", "initialize_blink_random"),
     ("0x4428d0", "update_snail_presentation"),
     ("0x442e40", "release_snail_weapons"),
     ("0x444600", "dispatch_cutscene_animation"),
     ("0x4446e0", "set_weapon_animation"),
     ("0x444960", "initialize_squidge"),
+    ("0x445840", "kill_subgoldy"),
+    ("0x445f10", "hide_gameplay_scores"),
+    ("0x445f40", "unhide_gameplay_scores"),
     ("0x445cd0", "build_snail_world_hotspots"),
     ("0x445d50", "extract_snail_local_hotspots"),
     ("0x4ac5c8", "g_default_tip_message"),
@@ -3850,6 +3861,30 @@ PROTO_UPDATES = (
 # prototypes are replayed through the direct verified batch because older BN
 # analysis can otherwise restore an inferred but ABI-equivalent fastcall label.
 CORE_SUBGAME_PROTO_UPDATES = (
+    (
+        "calc_slider_to_rate",
+        "float __thiscall calc_slider_to_rate(SubgameRuntime* game, float slider)",
+    ),
+    (
+        "calc_subgame_rate",
+        "void __thiscall calc_subgame_rate(SubgameRuntime* game)",
+    ),
+    (
+        "advance_blink_random",
+        "double __thiscall advance_blink_random(SubgameRuntime* game)",
+    ),
+    (
+        "initialize_blink_random",
+        "void __thiscall initialize_blink_random(SubgameRuntime* game)",
+    ),
+    (
+        "hide_gameplay_scores",
+        "void __thiscall hide_gameplay_scores(SubgameRuntime* game)",
+    ),
+    (
+        "unhide_gameplay_scores",
+        "void __thiscall unhide_gameplay_scores(SubgameRuntime* game)",
+    ),
     (
         "update_subgoldy_resurrect",
         "void __thiscall update_subgoldy_resurrect(Player* player)",

@@ -105,7 +105,7 @@ public:
     void set_subgame_rate(float rate); // @ 0x4404c0
     void calc_subgame_rate(); // @ 0x4404d0
     double advance_blink_random(); // @ 0x4408a0
-    int initialize_blink_random(); // @ 0x4408c0
+    void initialize_blink_random(); // @ 0x4408c0
     void remove_subgame_bods(); // @ 0x440910
     void hide_gameplay_scores(); // @ 0x445f10
     void unhide_gameplay_scores(); // @ 0x445f40

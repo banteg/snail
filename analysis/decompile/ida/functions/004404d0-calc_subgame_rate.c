@@ -2,23 +2,24 @@
 /* function: calc_subgame_rate @ 0x4404d0 */
 /* selector: calc_subgame_rate */
 
-void __thiscall calc_subgame_rate(Game *game)
+// Exact void Windows `cRSubGame::CalcRate()`: recomputes the live subgame rate from base speed, active-state track progress, mode-specific ramps, Goldy's damage-gauge envelope, and hover bonus. Android preserves the same owner and control graph with port-specific constants and layout.
+void __thiscall calc_subgame_rate(SubgameRuntime *game)
 {
   double v2; // st7
   int32_t level_mode; // eax
   double v4; // st7
   double v5; // st7
-  int v6; // edx
+  DamageGuageState state; // edx
   double v7; // st7
   float v8; // [esp+0h] [ebp-Ch]
   float v9; // [esp+8h] [ebp-4h]
 
   if ( game->subgame_state != 2 )
   {
-    game->subgame_rate = *(float *)&game->_pad_00[48];
+    LODWORD(game->subgame_rate) = game->rate_or_level_arg.level_arg_tail;
     return;
   }
-  v2 = *(float *)&game->_pad_74622[3436978] / (double)game->completion_row_start;
+  v2 = game->player.body.transform.position.z / (double)game->completion_row_start;
   if ( v2 >= 0.0 )
   {
     if ( v2 > 1.0 )
@@ -38,20 +39,20 @@ void __thiscall calc_subgame_rate(Game *game)
   {
     v5 = v2 * 0.2;
 LABEL_12:
-    v4 = v5 + *(float *)&game->_pad_00[48];
+    v4 = v5 + game->rate_or_level_arg.base_rate;
     goto LABEL_13;
   }
-  v4 = v2 * 0.40000001 + *(float *)&game->_pad_00[48] + 0.2;
+  v4 = v2 * 0.40000001 + game->rate_or_level_arg.base_rate + 0.2;
 LABEL_13:
-  v6 = *(_DWORD *)&game->_pad_74622[3437830];
+  state = game->player.damage_gauge.state;
   game->subgame_rate = v4;
-  if ( v6 == 2 )
+  if ( state == DAMAGE_GUAGE_STATE_DRAINING )
   {
     if ( level_mode == 1 || (v9 = 0.60000002, level_mode == 4) )
       v9 = 0.40000001;
-    if ( *(float *)&game->_pad_74622[3437862] < 0.25 || *(float *)&game->_pad_74622[3437862] > 0.75 )
+    if ( game->player.damage_gauge.display_fill < 0.25 || game->player.damage_gauge.display_fill > 0.75 )
     {
-      v8 = *(float *)&game->_pad_74622[3437862] * 12.566371 + 1.5707964;
+      v8 = game->player.damage_gauge.display_fill * 12.566371 + 1.5707964;
       v7 = (1.0 - sine(v8)) * 0.5 * v9;
     }
     else
@@ -60,7 +61,6 @@ LABEL_13:
     }
     game->subgame_rate = v7 + game->subgame_rate;
   }
-  if ( *(_DWORD *)&game->_pad_74622[3446942] == 1 )
-    game->subgame_rate = *(float *)&game->_pad_74622[3447454] * 0.5 + game->subgame_rate;
+  if ( game->player.sub_hover.state == SUB_HOVER_STATE_ACTIVE )
+    game->subgame_rate = game->player.sub_hover.warning_intensity_latch * 0.5 + game->subgame_rate;
 }
-

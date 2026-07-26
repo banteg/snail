@@ -2,7 +2,7 @@
 /* function: get_track_grid_cell_at_world_position @ 0x43d410 */
 /* selector: get_track_grid_cell_at_world_position */
 
-// Clamps world-space x and z into the 8-lane gameplay grid and returns the compact 0x54-byte runtime cell.
+// Exact Windows `cRSubGame::LocFromPos(tVector)`: clamps world-space x and z into the eight-lane gameplay grid and returns the owned compact 0x54-byte `SubLoc` runtime cell. Android and iOS preserve the same lane/row clamp and row-major ownership with port-specific capacities and strides.
 TrackRowCell *__thiscall get_track_grid_cell_at_world_position(SubgameRuntime *game, Vec3 *position)
 {
   int v2; // esi

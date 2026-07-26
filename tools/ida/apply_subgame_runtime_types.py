@@ -28,15 +28,21 @@ TRUSTED_NAMES = (
     (0x4168D0, "update_help_screen"),
     (0x435DF0, "set_subgame_features"),
     (0x437B10, "reset_subgame"),
+    (0x437E80, "calc_slider_to_rate"),
+    (0x4404D0, "calc_subgame_rate"),
     (0x440600, "uninit_pause_menu"),
     (0x440660, "initialize_pause_menu"),
     (0x4407A0, "update_pause_menu"),
+    (0x4408A0, "advance_blink_random"),
+    (0x4408C0, "initialize_blink_random"),
     (0x441AD0, "shoot_sub_lazer_pool"),
     (0x443130, "update_track_parcels"),
     (0x443160, "initialize_track_parcel_slots"),
     (0x443190, "allocate_track_parcel_slot"),
     (0x4431D0, "update_track_parcel"),
     (0x443730, "spawn_track_parcel"),
+    (0x445F10, "hide_gameplay_scores"),
+    (0x445F40, "unhide_gameplay_scores"),
 )
 
 SALT_OWNER_EXPECTED_SIZE = 0x98
@@ -474,12 +480,32 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);",
     ),
     (
+        "calc_slider_to_rate",
+        "float __thiscall calc_slider_to_rate(SubgameRuntime* game, float slider);",
+    ),
+    (
         "set_subgame_rate",
         "void __thiscall set_subgame_rate(SubgameRuntime* runtime, float rate);",
     ),
     (
         "calc_subgame_rate",
         "void __thiscall calc_subgame_rate(SubgameRuntime* game);",
+    ),
+    (
+        "advance_blink_random",
+        "double __thiscall advance_blink_random(SubgameRuntime* game);",
+    ),
+    (
+        "initialize_blink_random",
+        "void __thiscall initialize_blink_random(SubgameRuntime* game);",
+    ),
+    (
+        "hide_gameplay_scores",
+        "void __thiscall hide_gameplay_scores(SubgameRuntime* game);",
+    ),
+    (
+        "unhide_gameplay_scores",
+        "void __thiscall unhide_gameplay_scores(SubgameRuntime* game);",
     ),
     (
         "reset_subgame",

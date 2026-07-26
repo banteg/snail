@@ -2923,6 +2923,12 @@ void __thiscall update_progress_bar(ProgressBar* progress_bar);
 void __thiscall initialize_nuke(Nuke* nuke);
 void __thiscall update_nuke(Nuke* nuke);
 void __thiscall uninit_nuke(Nuke* nuke);
+float __thiscall calc_slider_to_rate(SubgameRuntime* game, float slider);
+void __thiscall calc_subgame_rate(SubgameRuntime* game);
+double __thiscall advance_blink_random(SubgameRuntime* game);
+void __thiscall initialize_blink_random(SubgameRuntime* game);
+void __thiscall hide_gameplay_scores(SubgameRuntime* game);
+void __thiscall unhide_gameplay_scores(SubgameRuntime* game);
 TrackRowCell* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position);
 SubRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);
 void __thiscall project_position_onto_track_attachment(

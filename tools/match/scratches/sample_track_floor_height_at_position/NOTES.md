@@ -1,5 +1,13 @@
 # sample_track_floor_height_at_position
 
+## 2026-07-26 authored GetY method
+
+Android `cRSubGame::GetY(tVector)` calls `LocFromPos` and preserves the same
+flat/ramp/raised-ramp/stored-height ladder with exact `0.4`, `0.5`, and
+`-100.0` constants. iOS independently exports the exact demangled method name.
+Together they pin this Windows floor sampler as authored `GetY` without
+assuming identical port layouts.
+
 Exact helper: returns the flat/ramp/slope/attachment floor height for the
 runtime track cell under the supplied world position.
 

@@ -1,5 +1,13 @@
 # show_subgoldy_lives
 
+## 2026-07-26 cRSubGoldy owner
+
+Android `cRSubGoldy::ShowLives()` walks exactly nine life widgets and compares
+the index against Goldy's owned visible-life count before hiding or unhiding
+each widget. That body maps directly to this exact Windows helper. No iOS
+symbol was found, correcting the older manifest claim that both mobile ports
+exported it.
+
 Current match: 100.00%, 23/23 instructions, with two clean masked operands.
 
 Type cleanup: the raw `game + 0x35bb98` loop is now represented as

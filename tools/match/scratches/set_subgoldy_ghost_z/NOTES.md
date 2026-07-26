@@ -1,5 +1,12 @@
 # set_subgoldy_ghost_z @ 0x43d3d0
 
+## 2026-07-26 cRSubGoldy owner
+
+Android `cRSubGoldy::GhostDraw(float)` borrows the same two ghost sprites,
+sets flag `0x40` on both, and writes the supplied float into both
+`Sprite::position.z` lanes. This exact body correspondence pins the authored
+method name without relying on an offset-only guess.
+
 The helper is semantically pinned: it sets `SPRITE_FLAG_RENDER_ENABLED` on the
 two cached SubGoldy ghost sprites at player offsets `+0x98` and `+0x9c`, then
 writes the same ghost z into each sprite's `position.z` lane (`+0x50`). The

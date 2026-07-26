@@ -1,5 +1,13 @@
 # get_track_grid_cell_at_world_position @ 0x43d410
 
+## 2026-07-26 cRSubLoc provenance
+
+Android and iOS `cRSubGame::LocFromPos(tVector)` preserve the same `x + 4`
+lane conversion, 0..7 lane clamp, non-negative row clamp, and row-major return
+from the SubGame-owned cell slab. Port capacities and cell strides differ, as
+expected. This gives the Windows `SubLoc` return and SubGame receiver authored
+names, not just layout-derived aliases.
+
 Exact helper: clamps world x to lane `0..7`, clamps world z to runtime row
 `0..3199`, and returns the `TrackRowCell` at `game + 0x3bfac8` with stride
 `0x54`.

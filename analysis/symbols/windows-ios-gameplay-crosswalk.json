@@ -1676,6 +1676,116 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x437e80",
+      "windows_name": "calc_slider_to_rate",
+      "android_symbol": "cRSubGame::CalcSliderToRate(float)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Windows and Android bodies have the same cRSubGame receiver, exact x == 1.0 special case, 1.1 result, and x * 0.90000004 + 0.2 fallback. No iOS symbol was found."
+    },
+    {
+      "address": "0x43af10",
+      "windows_name": "show_subgoldy_lives",
+      "android_symbol": "cRSubGoldy::ShowLives()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both implementations walk exactly nine borrowed life widgets, unhide the prefix below Goldy's visible-life count, and hide the remainder. No iOS symbol was found."
+    },
+    {
+      "address": "0x43d3d0",
+      "windows_name": "set_subgoldy_ghost_z",
+      "android_symbol": "cRSubGoldy::GhostDraw(float)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both void methods borrow the two Goldy ghost sprites, set render flag 0x40 on each, and store the supplied float into both Sprite position.z lanes. No iOS symbol was found."
+    },
+    {
+      "address": "0x43d410",
+      "windows_name": "get_track_grid_cell_at_world_position",
+      "ios_symbol": "cRSubGame::LocFromPos(tVector)",
+      "android_symbol": "cRSubGame::LocFromPos(tVector)",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "All three ports add 4 to world x, clamp the lane to 0..7, clamp world z to the port's row capacity, and return the row-major owned cRSubLoc cell. Cell size and row capacity are port-specific."
+    },
+    {
+      "address": "0x43d480",
+      "windows_name": "get_track_runtime_cell_at_world_z",
+      "android_symbol": "cRSubGame::RowFromPos(tVector)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Windows and Android clamp world z to the port's runtime-row capacity and return the owned cRSubRow at the corresponding port-specific stride. No iOS symbol was found."
+    },
+    {
+      "address": "0x43d4d0",
+      "windows_name": "sample_track_floor_height_at_position",
+      "ios_symbol": "cRSubGame::GetY(tVector)",
+      "ios_symbol_evidence": "exact-demangled-symbol",
+      "android_symbol": "cRSubGame::GetY(tVector)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Windows and Android call LocFromPos and preserve the same flat, ramp, raised-ramp, stored-height, and -100 sentinel ladder with exact 0.4 and 0.5 constants. iOS independently preserves the exact demangled method name."
+    },
+    {
+      "address": "0x4403a0",
+      "windows_name": "clear_subgoldy_score_buckets",
+      "ios_symbol": "cRSubGoldy::ScoreStatsInit()",
+      "android_symbol": "cRSubGoldy::ScoreStatsInit()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "All three are void cRSubGoldy initializers for the per-event score-stat block consumed by ScoreAdd and ScoreStatsDisplay. Windows clears six buckets; the mobile layout clears seven, so the owner and method are proven without claiming an identical port layout."
+    },
+    {
+      "address": "0x4404d0",
+      "windows_name": "calc_subgame_rate",
+      "android_symbol": "cRSubGame::CalcRate()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both void methods select base versus active rate, clamp track progress, apply mode-dependent ramps, then add the Goldy damage-gauge envelope and hover lane. Layout and some coefficients vary by port; the owner and control graph agree. No iOS symbol was found."
+    },
+    {
+      "address": "0x4408a0",
+      "windows_name": "advance_blink_random",
+      "android_symbol": "cRSubGame::BlinkRand()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both methods advance an owned cursor modulo 24, store it, and return the selected float from the adjacent blink-cadence sample bank. No iOS symbol was found."
+    },
+    {
+      "address": "0x4408c0",
+      "windows_name": "initialize_blink_random",
+      "ios_symbol": "cRSubGame::BlinkRandInit()",
+      "android_symbol": "cRSubGame::BlinkRandInit()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "All three void methods reset the owned cursor and fill 24 samples with reciprocal random intervals derived from 1 / (((rand / 32768) + 1) * 60). This cross-port evidence rejects the stale Windows integer-return inference."
+    },
+    {
+      "address": "0x445840",
+      "windows_name": "kill_subgoldy",
+      "android_symbol": "cRSubGoldy::Kill()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android calls the authored FallingInit and stores -8.0 into Goldy's body Y. Windows calls the corresponding post-follow/falling carryover initializer and performs the identical -8.0 body-height store. No iOS symbol was found."
+    },
+    {
+      "address": "0x445f10",
+      "windows_name": "hide_gameplay_scores",
+      "ios_symbol": "cRSubGame::HideScores()",
+      "android_symbol": "cRSubGame::HideScores()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "All three void methods null-check and hide the same pair of SubgameRuntime-owned score widgets in the same order."
+    },
+    {
+      "address": "0x445f40",
+      "windows_name": "unhide_gameplay_scores",
+      "android_symbol": "cRSubGame::UnHideScores()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Windows and Android unhide the same two SubgameRuntime-owned score widgets in order. No iOS symbol was found."
+    },
+    {
       "address": "0x4447c0",
       "windows_name": "initialize_anim_manager",
       "ios_symbol": "cRAnimManager::Init()",
@@ -1700,7 +1810,7 @@
       "android_symbol": "cRSquidge::Init()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Its sole Windows caller passes Player +0x4344, and the Windows and Android bodies clear the same six-float Squidge layout; iOS exports the matching authored family. The former initialize_score_stats name remains an alias only. The real score buckets are at Player +0x310, and cRSubGoldy::ScoreStatsInit() remains a distinct mobile symbol without a proven Windows mapping."
+      "notes": "Its sole Windows caller passes Player +0x4344, and the Windows and Android bodies clear the same six-float Squidge layout; iOS exports the matching authored family. The stale initialize_score_stats alias is retired from this owner and assigned to the actual cRSubGoldy::ScoreStatsInit() mapping at 0x4403a0."
     },
     {
       "address": "0x444980",

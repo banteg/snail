@@ -2584,6 +2584,20 @@
       ]
     },
     {
+      "name": "bn_kill_subgoldy_carryover_owner",
+      "artifact": "analysis/decompile/binja/functions/00445840-kill_subgoldy.c",
+      "required_substrings": [
+        "begin_post_follow_carryover(player)",
+        "player->body.transform.position.y = -8f",
+        "00445850        return"
+      ],
+      "forbidden_substrings": [
+        "ghost_sprite_a",
+        "ghost_sprite_b",
+        "SPRITE_FLAG_RENDER_ENABLED"
+      ]
+    },
+    {
       "name": "bn_nested_subgame_collision_owner",
       "artifact": "analysis/decompile/binja/functions/00444cf0-handle_subgoldy_collisions.c",
       "required_substrings": [
@@ -2917,12 +2931,27 @@
       "name": "bn_nested_subgame_rate_owner",
       "artifact": "analysis/decompile/binja/functions/004404d0-calc_subgame_rate.c",
       "required_substrings": [
-        "struct SubgameRuntime* runtime_1",
-        "runtime->player.body.transform.position.z",
-        "runtime->subgame_rate"
+        "struct SubgameRuntime* game_1",
+        "game->player.body.transform.position.z",
+        "game->subgame_rate"
       ],
       "forbidden_substrings": [
         "struct Game*"
+      ]
+    },
+    {
+      "name": "ida_mobile_calc_slider_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00437e80-calc_slider_to_rate.c",
+      "required_substrings": [
+        "float __thiscall calc_slider_to_rate(SubgameRuntime *game, float slider)",
+        "slider == 1.0",
+        "return 1.1;",
+        "return slider * 0.90000004 + 0.2;"
+      ],
+      "forbidden_substrings": [
+        "double __thiscall calc_slider_to_rate",
+        "__stdcall calc_slider_to_rate",
+        "sub_437E80"
       ]
     },
     {
@@ -7989,18 +8018,63 @@
       "name": "bn_blink_random_sample_borrow",
       "artifact": "analysis/decompile/binja/functions/004408c0-initialize_blink_random.c",
       "required_substrings": [
-        "struct SubgameRuntime* runtime_1 = runtime",
-        "runtime->blink_random_index = 0",
-        "float* blink_sample_cursor = &runtime->blink_random_samples",
+        "struct SubgameRuntime* game_1 = game",
+        "game->blink_random_index = 0",
+        "float* blink_sample_cursor = &game->blink_random_samples",
         "blink_sample_cursor = &blink_sample_cursor[1]",
         "blink_sample_cursor[-1] =",
-        "return result"
+        "00440909        return"
       ],
       "forbidden_substrings": [
         "float (*",
         "(blink_sample_cursor - 0x3bb704)",
         "(esi - 0x3bb704)",
-        "arg1"
+        "arg1",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_blink_random_void_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/004408c0-initialize_blink_random.c",
+      "required_substrings": [
+        "void __thiscall initialize_blink_random(SubgameRuntime *game)",
+        "game->blink_random_index = 0;",
+        "blink_random_samples = game->blink_random_samples;",
+        "for ( i = 24; i != 0; --i )",
+        "next_math_random_value()"
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall initialize_blink_random",
+        "return result",
+        "sub_4408C0"
+      ]
+    },
+    {
+      "name": "ida_hide_gameplay_scores_owner",
+      "artifact": "analysis/decompile/ida/functions/00445f10-hide_gameplay_scores.c",
+      "required_substrings": [
+        "void __thiscall hide_gameplay_scores(SubgameRuntime *game)",
+        "bottom_score_widget = game->bottom_score_widget;",
+        "top_score_widget = game->top_score_widget;",
+        "hide_border_init(bottom_score_widget);",
+        "hide_border_init(top_score_widget);"
+      ],
+      "forbidden_substrings": [
+        "struct Game *game",
+        "sub_445F10"
+      ]
+    },
+    {
+      "name": "ida_unhide_gameplay_scores_owner",
+      "artifact": "analysis/decompile/ida/functions/00445f40-unhide_gameplay_scores.c",
+      "required_substrings": [
+        "void __thiscall unhide_gameplay_scores(SubgameRuntime *game)",
+        "unhide_border_init(game->bottom_score_widget);",
+        "unhide_border_init(game->top_score_widget);"
+      ],
+      "forbidden_substrings": [
+        "struct Game *game",
+        "sub_445F40"
       ]
     },
     {

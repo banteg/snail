@@ -1,5 +1,13 @@
 # get_track_runtime_cell_at_world_z @ 0x43d480
 
+## 2026-07-26 cRSubRow provenance
+
+Android `cRSubGame::RowFromPos(tVector)` performs the same non-negative and
+upper row clamp and returns the corresponding record from the SubGame-owned
+row slab. Its port-specific capacity and 0xdc stride differ from Windows'
+3200-row, 0xf4-byte layout, while independently confirming the `SubRow`
+ownership already recovered from Windows.
+
 Exact helper: clamps world z to runtime row `0..3199` and returns the
 `SubRow` at `game + 0x5ccac8` with stride `0xf4`.
 

@@ -4,19 +4,16 @@
 
 int next_math_random_value();
 
-int SubgameRuntime::initialize_blink_random()
+void SubgameRuntime::initialize_blink_random()
 {
     blink_random_index = 0;
     float* sample = blink_random_samples;
     int remaining = 24;
-    int result;
 
     do {
-        result = next_math_random_value();
+        int result = next_math_random_value();
         --remaining;
         *sample = 1.0f / (((float)result * 0.000030517578f + 1.0f) * 60.0f);
         ++sample;
     } while (remaining);
-
-    return result;
 }

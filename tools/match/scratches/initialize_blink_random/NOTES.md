@@ -1,5 +1,14 @@
 # initialize_blink_random @ 0x4408c0
 
+## 2026-07-26 void ABI and authored owner
+
+Android and iOS `cRSubGame::BlinkRandInit()` both reset the owned cursor and
+fill exactly 24 samples with reciprocal random intervals derived from
+`1 / (((rand / 32768) + 1) * 60)`. Both mobile bodies return void. Removing the
+stale Windows integer return preserves the exact 21/21 instruction match while
+recovering the authored ABI instead of treating the final random residue as a
+result.
+
 Exact match: 100.00%, 21/21 instructions.
 
 This helper resets the blink cadence index at `+0x3bb700` and fills the
