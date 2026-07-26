@@ -248,3 +248,25 @@ and globally rotated the register plan; and a guarded delta `do/while` reached
 only 53.15%. The target arithmetic does not prove those source lifetimes. No
 dummy use, parameter mutation, equal-arm texture rewrite, or dead relocation
 was introduced.
+
+## 2026-07-26 parameter-slot ownership follow-up
+
+The earlier radius/input experiment predated the coupled curved-record and mesh
+ownership above, so its register-pressure result was no longer conclusive.
+Retesting against the corrected source layout changes the outcome. Hump's
+`0x4c` prologue writes the derived radius to the dead `curve_source` input slot
+at `0x41d08e`, and the curved body reads the independent `height_scale` input
+directly. Spelling those two observable owners removes the local height alias,
+reuses `curve_source` after its count conversion, and produces:
+
+```text
+match: 60.00%
+target: 685 insns, candidate: 695 insns
+prefix: 20/685 target insns
+masked operands: 36 ok, 0 unresolved, 0 mismatch
+```
+
+This is a 0.72-point gain over the 59.28% curved/mesh frontier and restores four
+exact prefix instructions. The change supersedes the 48.79% isolated result
+documented above: it only becomes faithful once current samples, preceding
+orientation records, and the mesh cursor have their native owners.

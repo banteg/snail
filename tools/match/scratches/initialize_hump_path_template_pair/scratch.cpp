@@ -102,7 +102,6 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
 #else
     int curve_count = PATH_CURVE_COUNT;
 #endif
-    float height_scale_value = PATH_HEIGHT_SCALE;
     int i;
 
 #if PATH_VARIANT != 3 && PATH_VARIANT != 4
@@ -308,7 +307,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     segment_count = departure_index + 7;
     segment_count_f = (float)(departure_index + 7);
     float curve_count_f = (float)curve_count;
-    float hump_radius = curve_count_f * 0.095492966f;
+    curve_source = curve_count_f * 0.095492966f;
     allocate_path_template_samples();
     has_entry_mesh_transition = 0;
 
@@ -374,7 +373,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                     ->center_x;
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
                 ->transform.position.y =
-                (1.0f - cosine(angle)) * hump_radius * height_scale_value;
+                (1.0f - cosine(angle)) * curve_source * PATH_HEIGHT_SCALE;
             float z = (float)sample_index;
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
                 ->transform.position.z = z;
@@ -386,7 +385,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                     ->center_x;
             ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
                 ->transform.position.y =
-                (1.0f - cosine(angle)) * hump_radius * height_scale_value + 0.49000001f;
+                (1.0f - cosine(angle)) * curve_source * PATH_HEIGHT_SCALE + 0.49000001f;
             ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
                 ->transform.position.z = z;
             if (sample_offset <= 7 * (int)sizeof(PathAttachmentSample)) {
