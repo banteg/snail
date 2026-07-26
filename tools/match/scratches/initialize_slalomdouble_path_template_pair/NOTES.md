@@ -130,3 +130,17 @@ branch and completes each record inside the selected arm. Native stores at
 Recovering those writes raises focused matching from 33.98% to 36.41%, grows
 the candidate from 606 to 608 instructions, and expands the clean operand audit
 from 33 to 35 with no unresolved or mismatched operands.
+
+## 2026-07-26 complete mesh-vector ownership
+
+Raw native instructions at `0x425704..0x4257e1` prove that Double Slalom shares
+the slalom family's five-value vertex graph. Ordinary rows own a lateral offset
+and generated position. The terminal row separately owns a lateral offset,
+raised endpoint, and generated position, then materializes its destination
+vertex. The face builder remains one shared record, as independently proved by
+the UV completion above.
+
+Recovering the complete graph raises focused matching from 36.41% to **39.22%**
+and grows the candidate from 608 to **643/683** instructions. It recovers the
+exact native `0x54` frame and a five-instruction exact prefix. The masked audit
+remains clean at 34 accepted, 0 unresolved, and 0 mismatched operands.

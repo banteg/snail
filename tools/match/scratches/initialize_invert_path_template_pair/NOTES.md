@@ -134,3 +134,17 @@ Adding those owners raises focused matching from 50.00% (592/600) to 51.71%
 masks, and recovers the exact native `0x54` frame plus a seven-instruction exact
 prefix. The candidate is now one instruction shorter than the target. Its first
 residual is an ESI/EDI owner swap after the prologue, not missing mesh dataflow.
+
+## 2026-07-26 secondary offset ownership
+
+The native interior-copy tail at `0x42953c..0x42959b` computes all three
+primary up-vector products before updating any secondary position lane. Those
+products form one `Vector3` offset, and the destination position is a separate
+borrowed `Vector3*`; the prior scratch expressed three unrelated scalar
+updates.
+
+Recovering both owners raises focused matching from 51.71% to **52.92%**.
+The candidate is 598/600 instructions, retains the exact `0x54` frame and
+seven-instruction prefix, and expands the clean masked audit from 31 to **33**
+operands with no unresolved or mismatched masks. The prologue register-owner
+swap remains, so no register coercion is introduced.

@@ -278,13 +278,16 @@ void Path::initialize_invert_path_template_pair(
 
         secondary_samples[sample_index].transform =
             primary_samples[sample_index].transform;
+        Vector3 secondary_offset(
+            primary_samples[sample_index].transform.basis_up.x * 0.49000001f,
+            primary_samples[sample_index].transform.basis_up.y * 0.49000001f,
+            primary_samples[sample_index].transform.basis_up.z * 0.49000001f);
+        Vector3* secondary_position =
+            &secondary_samples[sample_index].transform.position;
         ++local_index;
-        secondary_samples[sample_index].transform.position.x +=
-            primary_samples[sample_index].transform.basis_up.x * 0.49000001f;
-        secondary_samples[sample_index].transform.position.y +=
-            primary_samples[sample_index].transform.basis_up.y * 0.49000001f;
-        secondary_samples[sample_index].transform.position.z +=
-            primary_samples[sample_index].transform.basis_up.z * 0.49000001f;
+        secondary_position->x += secondary_offset.x;
+        secondary_position->y += secondary_offset.y;
+        secondary_position->z += secondary_offset.z;
         ++sample_index;
     } while (sample_index < 33);
 

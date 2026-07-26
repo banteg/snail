@@ -140,3 +140,18 @@ The native header clear is a 16-bit store. Replacing the old byte-sized
 `face->flags = 0` view with the shared `face->header_word = 0` owner is
 code-generation neutral at that improved result and prevents the scratch from
 misstating the record boundary.
+
+## 2026-07-26 complete mesh-vector ownership
+
+SlalomBig's native vertex block at `0x4228bd..0x4229a1` is instruction-identical
+in ownership to Slalom's. Ordinary rows own a lateral-offset vector and
+generated position; the terminal row separately owns its lateral offset,
+raised endpoint, and generated position. The destination vertex is branch-local
+and late. Its face builder remains the distinct shared-record shape documented
+above.
+
+Recovering those five vector owners raises focused matching from 31.64% to
+**33.80%**, grows the candidate from 625 to **653/696** instructions, closes
+the `0x44` candidate frame to the native `0x50`, and creates a two-instruction
+exact prefix. The masked audit remains clean at 29 accepted, 0 unresolved, and
+0 mismatched operands.

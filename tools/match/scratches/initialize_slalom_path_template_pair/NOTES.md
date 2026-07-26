@@ -121,3 +121,18 @@ builders, whose analysis owns two separate face records. Moving only their
 final V stores regressed Sweep to 31.83% and Snake to 29.25%; splitting the
 entire Sweep record without its still-unrecovered surrounding control shape
 also regressed to 31.22%. All three probes were reverted.
+
+## 2026-07-26 complete mesh-vector ownership
+
+Raw native instructions at `0x41fe2d..0x41ff11` prove the same five-value
+vertex graph independently visible in SlalomBig and SlalomDouble. The ordinary
+branch owns a lateral-offset vector and generated position. The terminal branch
+owns its own lateral offset, a raised endpoint, and a generated position. Each
+branch materializes the destination vertex only after those values are complete.
+The adjacent face lifetime remains the already-proven shared record.
+
+Recovering that owner graph raises focused matching from 30.79% to **32.08%**
+and grows the candidate from 629 to **657/696** instructions. It closes the
+candidate `0x44` frame to the native `0x50` and establishes a one-instruction
+exact prefix. The masked audit remains proof-clean at 26 accepted, 0 unresolved,
+and 0 mismatched operands.
