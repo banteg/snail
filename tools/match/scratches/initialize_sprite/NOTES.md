@@ -34,3 +34,20 @@ zero-store at `+0x98`.
 2026-06-18 audit: tracked Sprite callsites now use `size_start`/`size_end`.
 Remaining `scale_x`/`scale_y` hits are unrelated local scale factors or notes
 about rejected drafts, not `Sprite +0x60/+0x64` field names.
+
+## 2026-07-27 mobile ownership recovery
+
+Android now supplies the direct authored symbol `cRSprite::Init()`. Its
+`cRSpriteManager::Init()` and `cRSpriteManager::New()` call that method on
+individual pool slots, matching the two Windows callers
+`initialize_sprite_manager` and `allocate_sprite`. Both initializers set flags
+`0x49`, white color, gravity `-0.013`, the progress/lifetime/facing lanes,
+unit corner scale, depth `-500`, null texture refs, zero velocity and animation
+state, object sentinel `-1`, and frame step `1`.
+
+This is owner/method evidence, not a layout transplant. Android's sprite stride
+is `0xb0` while Windows is `0xb4`, and Android initializes its `+0x28` lane to
+`1` where Windows stores `0`. iOS v1.5 corroborates the same mobile defaults
+inside an inlined `cRSpriteManager::Init()` loop but exposes no standalone
+`cRSprite::Init()` body, so the crosswalk records Android only rather than a
+synthetic iOS symbol.

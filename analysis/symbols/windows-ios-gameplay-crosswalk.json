@@ -1781,10 +1781,11 @@
     {
       "address": "0x43d230",
       "windows_name": "initialize_subgoldy_ghost",
-      "ios_symbol": "cRSubGoldy::GhostInit(...)",
+      "ios_symbol": "cRSubGoldy::GhostInit(int)",
+      "android_symbol": "cRSubGoldy::GhostInit(int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "v1.5 has GhostInit(int); v1.9 has GhostInit(int, int). The sole Windows caller discards EAX, whose terminal value is only the second sprite's cleared visibility flags, so the recovered Windows contract is void."
+      "notes": "Android and iOS v1.5 retain the exact GhostInit(int) symbol and the same two-sprite allocation, progress/gravity reset, white RGBA, half-scale, +/-4.5 placement, and initial visibility clear. Texture IDs and layouts differ by port (mobile texture 138 and owner slots +0x8c/+0x90; Windows texture 159 and owner slots +0x98/+0x9c), so only ownership and behavior transfer. iOS v1.9 separately has GhostInit(int, int). The sole Windows caller discards EAX, whose terminal value is only the second sprite's cleared visibility flags, proving the recovered contract is void."
     },
     {
       "address": "0x4402c0",
@@ -3894,10 +3895,10 @@
     {
       "address": "0x44de90",
       "windows_name": "initialize_sprite",
-      "ios_symbol": "cRSprite slot initializer",
+      "android_symbol": "cRSprite::Init()",
       "source_object": "RSprite.o",
-      "confidence": "medium",
-      "notes": "iOS exposes the cRSprite owner family but not a direct constructor symbol."
+      "confidence": "high",
+      "notes": "Android retains the exact cRSprite::Init() method and calls it from cRSpriteManager::Init() and New(). iOS v1.5 folds the homologous initializer stores into cRSpriteManager::Init() rather than exporting a standalone method, so no iOS symbol is manufactured here. The mobile sprite stride is 0xb0 and its +0x28 default is 1, while Windows is 0xb4 and initializes +0x28 to 0; ownership transfers, offsets and defaults do not."
     },
     {
       "address": "0x44df30",

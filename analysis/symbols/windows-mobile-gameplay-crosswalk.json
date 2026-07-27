@@ -16,9 +16,9 @@
     "manifest_functions": 785,
     "verified_entries": 550,
     "unverified_entries": 235,
-    "verified_android_symbols": 542,
-    "verified_ios_symbols": 441,
-    "available_android_mappings": 542,
+    "verified_android_symbols": 544,
+    "verified_ios_symbols": 440,
+    "available_android_mappings": 544,
     "available_ios_mappings": 403
   },
   "entries": [
@@ -18106,41 +18106,11 @@
       "windows_name": "initialize_subgoldy_ghost",
       "windows_size": 416,
       "status": "verified",
-      "ios_symbol": "cRSubGoldy::GhostInit(...)",
+      "android_symbol": "cRSubGoldy::GhostInit(int)",
+      "ios_symbol": "cRSubGoldy::GhostInit(int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "android_candidates": [
-        {
-          "symbol": "cRSubGoldy::GhostInit(int)",
-          "score": 0.9231,
-          "name_score": 1.0,
-          "size_score": 0.8077
-        },
-        {
-          "symbol": "cRSubGoldy::cRSubGoldy()",
-          "score": 0.8552,
-          "name_score": 0.9,
-          "size_score": 0.7879
-        },
-        {
-          "symbol": "cRSubGoldy::HealthCollect(cRSubHealth*)",
-          "score": 0.7379,
-          "name_score": 0.6016,
-          "size_score": 0.9423
-        },
-        {
-          "symbol": "cRSubGoldy::PlayShootSfx()",
-          "score": 0.7263,
-          "name_score": 0.6016,
-          "size_score": 0.9135
-        },
-        {
-          "symbol": "cRSubGoldy::RessurectAI()",
-          "score": 0.7263,
-          "name_score": 0.6016,
-          "size_score": 0.9135
-        }
-      ],
+      "android_body_count": 1,
       "ios_body_count": 1
     },
     {
@@ -26183,42 +26153,42 @@
       "windows_name": "initialize_sprite",
       "windows_size": 160,
       "status": "verified",
-      "ios_symbol": "cRSprite slot initializer",
+      "android_symbol": "cRSprite::Init()",
       "source_object": "RSprite.o",
-      "confidence": "medium",
-      "android_candidates": [
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_candidates": [
         {
-          "symbol": "cRSprite::Init()",
-          "score": 0.98,
+          "symbol": "cRSpriteManager::Init()",
+          "score": 0.7839,
           "name_score": 1.0,
-          "size_score": 0.95
-        },
-        {
-          "symbol": "FontPrintRender(int)",
-          "score": 0.729,
-          "name_score": 0.6316,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "OSDPrintReal(cFontPrintBuffer*)",
-          "score": 0.6909,
-          "name_score": 0.5455,
-          "size_score": 0.9091
+          "size_score": 0.4598
         },
         {
           "symbol": "cRSprite::Kill()",
-          "score": 0.6901,
+          "score": 0.752,
           "name_score": 0.72,
-          "size_score": 0.6452
+          "size_score": 0.8
         },
         {
-          "symbol": "RShellPrintText(char*, ...)",
-          "score": 0.688,
-          "name_score": 0.48,
-          "size_score": 1.0
+          "symbol": "cRSpriteManager::New(int, int, int, int)",
+          "score": 0.7198,
+          "name_score": 0.9,
+          "size_score": 0.4494
+        },
+        {
+          "symbol": "RShellInit()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
+        },
+        {
+          "symbol": "cRLandscapeManager::Init(int)",
+          "score": 0.6737,
+          "name_score": 0.6,
+          "size_score": 0.7843
         }
-      ],
-      "ios_body_count": 0
+      ]
     },
     {
       "address": "0x44df30",

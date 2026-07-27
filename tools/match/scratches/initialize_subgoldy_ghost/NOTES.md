@@ -27,3 +27,18 @@ two Player-owned sprite pointers and their color, progress, gravity, scale,
 position, and visibility lifecycles; raw Player offsets and incidental return
 inference are guarded out. Matching remains exact at 108/108 with all six
 operands clean.
+
+## 2026-07-27 Android/iOS ownership recovery
+
+Both current mobile corpora expose the exact authored symbol
+`cRSubGoldy::GhostInit(int)`. Their bodies preserve the same semantic sequence
+as Windows: allocate two owned ghost sprites, set gameplay flag `0x800`, clear
+progress/progress-step/gravity, copy white RGBA, set both size lanes to `0.5`,
+place the pair at X `+4.5`/`-4.5`, Y `1`, Z `0`, and clear the initial visible
+flag on both.
+
+Port-local values remain quarantined. Android/iOS use sprite texture `138`,
+mobile cRSubGoldy slots `+0x8c/+0x90`, and their own cRSprite layout; Windows
+uses texture `159`, Player slots `+0x98/+0x9c`, and the recovered `0xb4`-byte
+Sprite. The mobile bodies therefore recover the `cRSubGoldy` owner and
+`GhostInit(int)` method name without changing any exact Windows offsets.

@@ -2552,7 +2552,10 @@
     {
       "address": "0x43d230",
       "name": "initialize_subgoldy_ghost",
-      "description": "Void `Player` member that initializes Goldy's paired ghost sprites for the active player slot. Its sole caller discards EAX and the terminal value is only the second sprite's cleared visibility flags. Cross-port iOS symbols match this helper to `cRSubGoldy::GhostInit(int)` in v1.5 and `cRSubGoldy::GhostInit(int, int)` in v1.9."
+      "aliases": [
+        "cRSubGoldy_GhostInit"
+      ],
+      "description": "Exact void Windows cRSubGoldy::GhostInit(int): initializes Goldy's paired ghost sprites for the active player slot. Android and iOS v1.5 preserve the authored symbol and the same two-sprite allocation, progress/gravity reset, white color, half-scale, +/-4.5 placement, and initial visibility clear. The mobile ports use a different texture ID and owner/Sprite layouts, so their offsets are provenance only. Windows' sole caller discards EAX and the terminal value is only the second sprite's cleared visibility flags; iOS v1.9 separately exposes the evolved GhostInit(int, int) overload."
     },
     {
       "address": "0x43d3d0",
@@ -4088,7 +4091,10 @@
     {
       "address": "0x44de90",
       "name": "initialize_sprite",
-      "description": "Initializes one sprite slot in the `cRSprite` runtime family before manager allocation links it into active/free lists."
+      "aliases": [
+        "cRSprite_Init"
+      ],
+      "description": "Exact Windows cRSprite::Init() default initializer. Android preserves the direct authored method and cRSpriteManager::Init/New call it for each slot; iOS v1.5 inlines the homologous stores into cRSpriteManager::Init(). Mobile's 0xb0-byte Sprite stride, its differing +0x28 default, and Windows' 0xb4-byte layout remain port-local."
     },
     {
       "address": "0x44df30",

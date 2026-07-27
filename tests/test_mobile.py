@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from snail.cli import main
 from snail.mobile import (
     DEFAULT_ANDROID_CORPUS_ROOT,
@@ -312,6 +314,59 @@ def test_mobile_utility_owner_mappings_are_exact_and_verified() -> None:
     assert input_ok["android_symbol"] == "cRInputOK::AI()"
     assert "android_symbol_evidence" not in input_ok
     assert "ios_symbol" not in input_ok
+
+
+def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    verified = load_json(
+        repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+    )
+    verified_entries = {
+        entry["windows_name"]: entry
+        for entry in verified["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    sprite = entries["initialize_sprite"]
+    assert sprite["status"] == "verified"
+    assert sprite["confidence"] == "high"
+    assert sprite["android_symbol"] == "cRSprite::Init()"
+    assert sprite["android_body_count"] == 1
+    assert "ios_symbol" not in sprite
+    assert "0xb0" in verified_entries["initialize_sprite"]["notes"]
+    assert "0xb4" in verified_entries["initialize_sprite"]["notes"]
+    assert "cRSprite_Init" in functions_by_name["initialize_sprite"]["aliases"]
+
+    ghost = entries["initialize_subgoldy_ghost"]
+    assert ghost["status"] == "verified"
+    assert ghost["confidence"] == "high"
+    assert ghost["android_symbol"] == "cRSubGoldy::GhostInit(int)"
+    assert ghost["ios_symbol"] == "cRSubGoldy::GhostInit(int)"
+    assert ghost["android_body_count"] == 1
+    assert ghost["ios_body_count"] == 1
+    assert "cRSubGoldy_GhostInit" in (
+        functions_by_name["initialize_subgoldy_ghost"]["aliases"]
+    )
+
+    sprite_header = (
+        repo_root / "tools/match/include/sprite.h"
+    ).read_text(encoding="utf-8")
+    player_header = (
+        repo_root / "tools/match/include/player.h"
+    ).read_text(encoding="utf-8")
+    assert "typedef Sprite cRSprite;" in sprite_header
+    assert "typedef Player cRSubGoldy;" in player_header
 
 
 def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:

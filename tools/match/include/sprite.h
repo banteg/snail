@@ -1,5 +1,6 @@
 // Sprite runtime structures, partial.
-// iOS RSprite.o names these owners cRSprite and cRSpriteManager.
+// Android retains cRSprite::Init directly; iOS RSprite.o names these owners
+// cRSprite and cRSpriteManager but folds that initializer into manager Init.
 // Layout is cross-checked by initialize_sprite, update_sprite, texture helpers,
 // allocate_sprite, kill_sprite, kill_game_sprites, draw_sprite_quad,
 // build_sprite_tail, and exact allocation callers.
@@ -124,7 +125,7 @@ typedef TextureRefList cRTextures;
 
 class Sprite {
 public:
-    void initialize_sprite(); // @ 0x44de90
+    void initialize_sprite(); // @ 0x44de90, Android cRSprite::Init()
     void update_sprite();     // @ 0x44df30
     void kill_sprite();       // @ 0x44e200
     void build_sprite_tail(const TransformMatrix* matrix); // @ 0x44e410
@@ -170,6 +171,10 @@ public:
 
 typedef char Sprite_must_be_0xb4[
     (sizeof(Sprite) == 0xb4) ? 1 : -1];
+
+// Authored cross-port owner. Mobile uses a distinct 0xb0-byte layout, so this
+// alias names the Windows owner without importing mobile field offsets.
+typedef Sprite cRSprite;
 
 int configure_sprite_render_state(Sprite* sprite); // @ 0x413670
 

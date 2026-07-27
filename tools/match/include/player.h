@@ -146,7 +146,7 @@ public:
     // this Player receiver in ecx.
     void noop_runtime_ai();
     void initialize_subgoldy(int player_slot); // @ 0x43a9c0, cRSubGoldy::Init
-    void initialize_subgoldy_ghost(int owner); // @ 0x43d230
+    void initialize_subgoldy_ghost(int owner); // @ 0x43d230, cRSubGoldy::GhostInit(int)
     void initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
     void update_subgoldy_resurrect();      // @ 0x441fd0
     void initialize_subgoldy_death();      // @ 0x446e30
@@ -285,6 +285,10 @@ public:
 };
 
 typedef char Player_must_be_0x4364[(sizeof(Player) == 0x4364) ? 1 : -1];
+
+// Authored cross-port owner. Android/iOS corroborate behavior but use their
+// own cRSubGoldy and cRSprite layouts, so no mobile offsets transfer here.
+typedef Player cRSubGoldy;
 
 inline TransformMatrix* Player::live_transform()
 {
