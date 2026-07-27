@@ -449,3 +449,26 @@ the final attachment row-index call likewise reproduces the native argument
 evaluation order locally but destroys the stronger runtime-row cursor
 alignment. Neither regression is retained, and no synthetic stack padding or
 register forcing was introduced.
+
+## Exact affine zero-bank references (2026-07-27)
+
+The remaining audited zero-bank ambiguity was address arithmetic, not shared
+ownership. In the glyph digit-0 path Windows adds the complete `0x20c`
+`ParcelBucket` stride to its byte offset before finishing the current bucket.
+VC6 consequently relocates the remaining current-bucket accesses against
+`g_zero_parcel_buckets` with exact addends `-0x208`, `-0x204`, `-0x200`,
+`-0xc`, and `-0x8`. After the already-incremented index participates in the
+effective address, those land on the current candidate position,
+`candidate_count`, and `set_id` fields. Android's named `gGroup0` continues to
+prove that the bank itself is global scratch storage.
+
+Numerically, the five relocation bases fall inside the preceding Windows
+`g_loc_colour_lookup_wall` extent. The reference manifest now records only
+those exact permitted pre-base offsets, and the matcher renders their COFF
+addends as signed values. It does not treat the intervening colour-bank range
+as parcel storage, and an unlisted pre-base addend remains unresolved.
+
+No scratch source changed. Focused Wibo stays at 40.92% and 627/639
+instructions, while the operand audit improves from 50 clean, one unresolved,
+and 98 unaudited references to 56 clean, zero unresolved, and 88 unaudited
+references, with no mismatch.

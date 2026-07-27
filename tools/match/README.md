@@ -132,7 +132,10 @@ Useful analysis helpers:
   by their four bytes, not by MSVC's generated `real@...` symbol spelling.
   Add `"size"` only for recovered object extents; the audit uses it to keep
   `symbol+offset` and end-pointer operands distinct from the next global at the
-  same address.
+  same address. An `"allowed_prebase_offsets"` list may name exact byte
+  displacements when compiler-generated affine indexing deliberately relocates
+  against addresses before that recovered object. It requires `"size"` and
+  permits only the listed offsets, never the intervening range.
 - Use a gameplay function entry's `aliases` list when one native range has
   multiple stable source-level names, such as compiler-folded methods or an
   older scratch name retained during an ownership rename. Aliases resolve

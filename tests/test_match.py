@@ -252,6 +252,13 @@ def test_default_reference_symbol_manifest_loads_curated_gameplay_refs() -> None
     assert by_name["g_player_block"].size == 0x4364
     assert by_name["g_math_random_table"].size == 0x7FFC
     assert by_name["g_math_random_table"].allow_one_past is True
+    assert by_name["g_zero_parcel_buckets"].allowed_prebase_offsets == (
+        0x8,
+        0xC,
+        0x200,
+        0x204,
+        0x208,
+    )
 
 
 def test_reference_symbol_manifest_allows_duplicate_addresses(tmp_path: Path) -> None:
@@ -416,6 +423,30 @@ def test_reference_symbol_manifest_rejects_one_past_without_size(tmp_path: Path)
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="allow_one_past requires size"):
+        load_reference_symbol_manifest(manifest_path)
+
+
+def test_reference_symbol_manifest_rejects_prebase_offsets_without_size(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "references.json"
+    manifest_path.write_text(
+        """
+{
+  "name": "invalid prebase references",
+  "symbols": [
+    {
+      "address": "0x402000",
+      "name": "g_table",
+      "kind": "global",
+      "allowed_prebase_offsets": ["0xc"]
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="allowed_prebase_offsets requires size"):
         load_reference_symbol_manifest(manifest_path)
 
 
@@ -839,6 +870,32 @@ def test_extract_object_function_preserves_reference_symbol_addends() -> None:
     assert reference.addend == 0x8
     assert reference.text == "sym:g_table+0x8"
     assert reference.key == "ref:g_table+0x8"
+    assert reference.explained
+
+
+def test_extract_object_function_formats_allowed_prebase_addend() -> None:
+    code = bytes.fromhex("b8f4ffffffc3")
+    obj = parse_coff_object(build_object(code, [("_foo", 0), ("_g_table", 0)], [(1, 1)]))
+    function = extract_object_function(
+        obj,
+        "foo",
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="g_table",
+                    kind="global",
+                    size=0x10,
+                    allowed_prebase_offsets=(0xC,),
+                ),
+            ),
+        ),
+    )
+    reference = function.relocation_references[0]
+    assert reference.addend == 0xFFFFFFF4
+    assert reference.text == "sym:g_table-0xc"
+    assert reference.key == "ref:g_table-0xc"
     assert reference.explained
 
 
@@ -1582,6 +1639,109 @@ def test_masked_operand_audit_accepts_explicit_one_past_reference() -> None:
     assert reference.alternate_keys == ("ref:g_table+0x10",)
     assert result.masked_operand_audit.ok_count == 1
     assert result.masked_operand_audit.problem_count == 0
+
+
+def test_masked_operand_audit_accepts_explicit_prebase_reference() -> None:
+    target = bytes.fromhex("a1f41f4000c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("a1f4ffffffc3"),
+        relocation_offsets=frozenset({1}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=1,
+                symbol_name="_g_table",
+                text="sym:g_table-0xc",
+                key="ref:g_table-0xc",
+                explained=True,
+                addend=0xFFFFFFF4,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(
+            mapped=b"\x00" * 0x3000,
+            image_base=0x400000,
+            size_of_image=0x3000,
+        ),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x401F00,
+                    name="g_previous",
+                    kind="global",
+                    size=0x100,
+                ),
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="g_table",
+                    kind="global",
+                    size=0x10,
+                    allowed_prebase_offsets=(0xC,),
+                ),
+            ),
+        ),
+    )
+    reference = result.masked_operand_audit.entries[0].target_references[0]
+    assert reference.key == "ref:g_previous+0xf4"
+    assert reference.alternate_keys == ("ref:g_table-0xc",)
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+
+
+def test_masked_operand_audit_rejects_unlisted_prebase_reference() -> None:
+    target = bytes.fromhex("a1f01f4000c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("a1f0ffffffc3"),
+        relocation_offsets=frozenset({1}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=1,
+                symbol_name="_g_table",
+                text="sym:g_table-0x10",
+                key="ref:g_table-0x10",
+                explained=False,
+                addend=0xFFFFFFF0,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(
+            mapped=b"\x00" * 0x3000,
+            image_base=0x400000,
+            size_of_image=0x3000,
+        ),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x401F00,
+                    name="g_previous",
+                    kind="global",
+                    size=0x100,
+                ),
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="g_table",
+                    kind="global",
+                    size=0x10,
+                    allowed_prebase_offsets=(0xC,),
+                ),
+            ),
+        ),
+    )
+    reference = result.masked_operand_audit.entries[0].target_references[0]
+    assert reference.alternate_keys == ()
+    assert result.masked_operand_audit.unresolved_count == 1
+    assert result.masked_operand_audit.problem_count == 1
 
 
 def test_masked_operand_audit_does_not_treat_sized_reference_base_as_end() -> None:

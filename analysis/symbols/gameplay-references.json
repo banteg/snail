@@ -4366,7 +4366,14 @@
         "data_53d190"
       ],
       "size": "0x106000",
-      "description": "0x800-bucket digit-0 fallback parcel pool initialized by initialize_zero_parcel_bucket_pool; Android preserves the original global symbol gGroup0."
+      "allowed_prebase_offsets": [
+        "0x8",
+        "0xc",
+        "0x200",
+        "0x204",
+        "0x208"
+      ],
+      "description": "0x800-bucket digit-0 fallback parcel pool initialized by initialize_zero_parcel_bucket_pool; Android preserves the original global symbol gGroup0. PlaceParcels advances its 0x20c-byte bucket cursor before completing the current entry, so VC6 emits the exact pre-base displacements listed here for that affine access without transferring storage ownership to the preceding colour bank."
     },
     {
       "address": "0x641184",

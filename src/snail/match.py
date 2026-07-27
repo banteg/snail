@@ -95,6 +95,7 @@ class ReferenceSymbol:
     description: str | None = None
     size: int | None = None
     allow_one_past: bool = False
+    allowed_prebase_offsets: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -159,6 +160,30 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
             raise ValueError(f"symbols[{index}].allow_one_past must be a boolean")
         if allow_one_past and size is None:
             raise ValueError(f"symbols[{index}].allow_one_past requires size")
+        prebase_offsets_value = raw_symbol.get("allowed_prebase_offsets", [])
+        if not isinstance(prebase_offsets_value, list):
+            raise ValueError(
+                f"symbols[{index}].allowed_prebase_offsets must be a list"
+            )
+        prebase_offsets = tuple(
+            _parse_hex_or_int(
+                offset,
+                field_name=f"symbols[{index}].allowed_prebase_offsets",
+            )
+            for offset in prebase_offsets_value
+        )
+        if any(offset <= 0 for offset in prebase_offsets):
+            raise ValueError(
+                f"symbols[{index}].allowed_prebase_offsets must be positive"
+            )
+        if len(set(prebase_offsets)) != len(prebase_offsets):
+            raise ValueError(
+                f"symbols[{index}].allowed_prebase_offsets must be unique"
+            )
+        if prebase_offsets and size is None:
+            raise ValueError(
+                f"symbols[{index}].allowed_prebase_offsets requires size"
+            )
         for raw_name in (name_value, *aliases_value):
             checked_names = {raw_name}
             # A fully decorated C++ name carries its overload signature. Its
@@ -194,6 +219,7 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
                 description=description,
                 size=size,
                 allow_one_past=allow_one_past,
+                allowed_prebase_offsets=prebase_offsets,
             )
         )
     return ReferenceSymbolManifest(name=name, symbols=tuple(symbols))
@@ -608,7 +634,12 @@ def _reference_symbol_for_local_label(
 def _format_addend_suffix(addend: int) -> str:
     if addend == 0:
         return ""
-    return f"+0x{addend:x}"
+    sign = "+" if addend > 0 else "-"
+    return f"{sign}0x{abs(addend):x}"
+
+
+def _signed_u32(value: int) -> int:
+    return value - 0x100000000 if value & 0x80000000 else value
 
 
 def _format_reference_key(symbol: ReferenceSymbol, addend: int = 0) -> str:
@@ -631,8 +662,13 @@ def _reference_offsets_for_address(
         if symbol.size is None:
             continue
         offset = value - symbol.address
-        if 0 < offset < symbol.size or (
-            symbol.allow_one_past and offset == symbol.size
+        if (
+            0 < offset < symbol.size
+            or (symbol.allow_one_past and offset == symbol.size)
+            or (
+                offset < 0
+                and -offset in symbol.allowed_prebase_offsets
+            )
         ):
             matches.append((symbol, offset))
     return tuple(matches)
@@ -719,7 +755,7 @@ def _resolve_object_relocation(
             text, _key = _format_symbol_reference(symbol.name)
             return text, _format_reference_key(local_reference_symbol), True
     if reference_symbol is not None:
-        offset = addend or 0
+        offset = _signed_u32(addend) if addend is not None else 0
         text, key = _format_symbol_reference(symbol.name, offset)
         explained = offset == 0 or (
             reference_symbol.size is not None and 0 <= offset < reference_symbol.size
@@ -727,6 +763,10 @@ def _resolve_object_relocation(
             reference_symbol.size is not None
             and reference_symbol.allow_one_past
             and offset == reference_symbol.size
+        ) or (
+            reference_symbol.size is not None
+            and offset < 0
+            and -offset in reference_symbol.allowed_prebase_offsets
         )
         if offset != 0:
             key = _format_reference_key(reference_symbol, offset)
