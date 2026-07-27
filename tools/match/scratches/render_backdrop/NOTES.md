@@ -70,3 +70,21 @@ authored `void __thiscall` contract, while `draw_split_backdrop` and Windows'
 folded `update_backdrop` retain their observed `int32_t` results. This removes
 scalar fastcall views without pretending the Windows update result is void.
 No matcher source changed; the honest 86.61% render result remains visible.
+
+## 2026-07-27 dual-mobile Render boundary
+
+Android `cRBackdrop::Render()` at `0x0003e194` and iOS
+`cRBackdrop::Render()` at `0x00041350` close the authored identity of Windows
+`0x00411040`; the manifest now exposes `cRBackdrop_Render` as an exact alias.
+Both ports independently confirm the void member ABI, the Backdrop-owned
+distortion grid, the nested grid traversal, and the flip-controlled UV lane.
+
+The platform render boundary is intentionally different. Android and iOS fill
+their own `cGLVertexUV` buffers and submit them once through
+`G0RenderBackdrop`; Windows traverses its fixed 8x8 distortion-cell grid and
+queues each of the 7x7 quads through `queue_textured_quad_corners`. Mobile
+loop bounds, vertex strides, field offsets, and the final renderer call
+therefore do not transfer to Windows. No matcher source or mask changed: the
+focused Windows receipt remains 86.61%, 189/192 candidate instructions,
+prefix 12/192, with 27 clean operands, no unresolved or mismatched operands,
+and three explicitly unaudited constant loads.
