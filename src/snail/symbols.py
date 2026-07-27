@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
-from pathlib import Path
 import re
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Literal
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH = (
@@ -22,12 +21,19 @@ FunctionMatchScope = Literal["gameplay", "reference-only"]
 
 
 @dataclass(frozen=True, slots=True)
+class MobileCandidateRejection:
+    symbol: str
+    reason: str
+
+
+@dataclass(frozen=True, slots=True)
 class FunctionSymbol:
     address: int
     name: str
     description: str | None = None
     aliases: tuple[str, ...] = ()
     match_scope: FunctionMatchScope = "gameplay"
+    mobile_candidate_rejections: tuple[MobileCandidateRejection, ...] = ()
 
     @property
     def address_hex(self) -> str:
@@ -79,7 +85,7 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
 
     for index, raw_symbol in enumerate(raw_symbols):
         if not isinstance(raw_symbol, dict):
-            raise ValueError(f"function entry {index} must be an object")
+            raise TypeError(f"function entry {index} must be an object")
 
         address = _parse_hex_int(
             raw_symbol.get("address"),
@@ -98,6 +104,43 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
             raise ValueError(
                 f"functions[{index}].aliases must be a list of curated identifier-like names"
             )
+        mobile_candidate_rejections_value = raw_symbol.get(
+            "mobile_candidate_rejections",
+            [],
+        )
+        if not isinstance(mobile_candidate_rejections_value, list):
+            raise TypeError(
+                f"functions[{index}].mobile_candidate_rejections must be a list"
+            )
+        mobile_candidate_rejections: list[MobileCandidateRejection] = []
+        rejected_mobile_symbols: set[str] = set()
+        for rejection_index, rejection in enumerate(
+            mobile_candidate_rejections_value
+        ):
+            field = (
+                f"functions[{index}].mobile_candidate_rejections"
+                f"[{rejection_index}]"
+            )
+            if not isinstance(rejection, dict):
+                raise TypeError(f"{field} must be an object")
+            rejected_symbol = rejection.get("symbol")
+            reason = rejection.get("reason")
+            if not isinstance(rejected_symbol, str) or not rejected_symbol.strip():
+                raise ValueError(f"{field}.symbol must be a non-empty string")
+            if not isinstance(reason, str) or not reason.strip():
+                raise ValueError(f"{field}.reason must be a non-empty string")
+            rejected_symbol = rejected_symbol.strip()
+            if rejected_symbol in rejected_mobile_symbols:
+                raise ValueError(
+                    f"duplicate mobile candidate rejection: {rejected_symbol}"
+                )
+            mobile_candidate_rejections.append(
+                MobileCandidateRejection(
+                    symbol=rejected_symbol,
+                    reason=reason.strip(),
+                )
+            )
+            rejected_mobile_symbols.add(rejected_symbol)
         names = (name, *aliases_value)
         if len(set(names)) != len(names):
             raise ValueError(f"duplicate function name or alias: {name}")
@@ -129,6 +172,9 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
                 description=description,
                 aliases=tuple(aliases_value),
                 match_scope=match_scope,
+                mobile_candidate_rejections=tuple(
+                    mobile_candidate_rejections
+                ),
             )
         )
         seen_addresses.add(address)
@@ -159,7 +205,7 @@ def validate_function_symbol_manifest(
 def load_function_symbol_manifest(path: Path) -> FunctionSymbolManifest:
     raw = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(raw, dict):
-        raise ValueError("symbol manifest must be a JSON object")
+        raise TypeError("symbol manifest must be a JSON object")
 
     source_database = raw.get("source_database")
     if source_database is not None and not isinstance(source_database, str):
@@ -206,7 +252,7 @@ def normalize_function_symbol_manifest(
         "unwrapped_sha256": manifest.unwrapped_sha256,
         "functions": [
             {
-                **{"address": function.address_hex, "name": function.name},
+                "address": function.address_hex, "name": function.name,
                 **({"aliases": list(function.aliases)} if function.aliases else {}),
                 **(
                     {"match_scope": function.match_scope}
@@ -216,6 +262,19 @@ def normalize_function_symbol_manifest(
                 **(
                     {"description": function.description}
                     if function.description is not None
+                    else {}
+                ),
+                **(
+                    {
+                        "mobile_candidate_rejections": [
+                            {
+                                "symbol": rejection.symbol,
+                                "reason": rejection.reason,
+                            }
+                            for rejection in function.mobile_candidate_rejections
+                        ]
+                    }
+                    if function.mobile_candidate_rejections
                     else {}
                 ),
             }
@@ -259,6 +318,10 @@ def summarize_function_symbol_manifest(
             1 for function in manifest.functions if function.description is not None
         ),
         "alias_count": sum(len(function.aliases) for function in manifest.functions),
+        "mobile_candidate_rejection_count": sum(
+            len(function.mobile_candidate_rejections)
+            for function in manifest.functions
+        ),
         "image_base": f"0x{manifest.image_base:x}",
         "address_range": {
             "start": first.address_hex,
@@ -269,7 +332,7 @@ def summarize_function_symbol_manifest(
         "unwrapped_sha256": manifest.unwrapped_sha256,
         "preview": [
             {
-                **{"address": symbol.address_hex, "name": symbol.name},
+                "address": symbol.address_hex, "name": symbol.name,
                 **({"aliases": list(symbol.aliases)} if symbol.aliases else {}),
                 **(
                     {"match_scope": symbol.match_scope}

@@ -9,7 +9,8 @@
     "verified entries come from the hand-audited source crosswalk.",
     "body_count records how many matching exports exist in this corpus version.",
     "windows_size is the distance to the next curated manifest start and can include gaps.",
-    "unverified candidate scores blend curated names and aliases with size similarity; an exact curated alias outranks platform-stub size drift, but candidates are not mappings."
+    "unverified candidate scores blend curated names and aliases with size similarity; an exact curated alias outranks platform-stub size drift, but candidates are not mappings.",
+    "mobile_candidate_rejections preserve audited negative evidence and exclude only the exact demangled symbols listed by the Windows manifest."
   ],
   "counts": {
     "manifest_functions": 785,
@@ -6430,44 +6431,84 @@
       "windows_name": "initialize_game_assets_and_world",
       "windows_size": 23072,
       "status": "unverified",
-      "android_candidates": [
+      "mobile_candidate_rejections": [
+        {
+          "symbol": "cRGame::cRGame()",
+          "reason": "The mobile constructor is already mapped to the inlined constructor region inside construct_game_runtime at 0x407b60, not this later bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init0()",
+          "reason": "This is only the first split mobile phase, while the Windows function contains the complete Init0-through-Init5 bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init1()",
+          "reason": "This is only the renderer, segment, and landscape split phase, not the complete Windows bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init2()",
+          "reason": "This is only the GUI, viewport, font, and sprite split phase, not the complete Windows bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init3()",
+          "reason": "This is only the world-mesh split phase, not the complete Windows bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init4()",
+          "reason": "This is only the player, score, tip, star, and front-end split phase, not the complete Windows bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init5()",
+          "reason": "This is only the final object-build, backdrop, mouse, and selector split phase, not the complete Windows bootstrap."
+        },
         {
           "symbol": "cRGame::LoadPaths()",
-          "score": 0.5149,
-          "name_score": 0.3716,
-          "size_score": 0.7298
+          "reason": "The Android and iOS bodies are void path-only interior phases, while the Windows function also performs the Init0-through-Init5 bootstrap and returns a success byte."
+        }
+      ],
+      "android_candidates": [
+        {
+          "symbol": "cRDirectX::Load(char*, cRObject*, int)",
+          "score": 0.5779,
+          "name_score": 0.9,
+          "size_score": 0.0948
+        },
+        {
+          "symbol": "cRWorld::Init(int, int, int, int)",
+          "score": 0.5521,
+          "name_score": 0.9,
+          "size_score": 0.0303
+        },
+        {
+          "symbol": "cRDirectX::Init()",
+          "score": 0.5411,
+          "name_score": 0.9,
+          "size_score": 0.0028
+        },
+        {
+          "symbol": "cRSubGame::cRSubGame()",
+          "score": 0.43,
+          "name_score": 0.675,
+          "size_score": 0.0624
         },
         {
           "symbol": "cRPath::BuildLoopTheLoop(float, int, bool, char*, char*)",
           "score": 0.428,
           "name_score": 0.675,
           "size_score": 0.0576
-        },
-        {
-          "symbol": "cRDirectX::Load(char*, cRObject*, int)",
-          "score": 0.3979,
-          "name_score": 0.6,
-          "size_score": 0.0948
-        },
-        {
-          "symbol": "cRGame::Init2()",
-          "score": 0.3938,
-          "name_score": 0.6,
-          "size_score": 0.0844
-        },
-        {
-          "symbol": "cRPath::BuildInvert(float, int, bool, char*, char*)",
-          "score": 0.3784,
-          "name_score": 0.6,
-          "size_score": 0.0459
         }
       ],
       "ios_candidates": [
         {
-          "symbol": "cRGame::LoadPaths()",
-          "score": 0.5901,
-          "name_score": 0.3716,
-          "size_score": 0.9179
+          "symbol": "cRDirectX::Load(char*, cRObject*, int)",
+          "score": 0.5729,
+          "name_score": 0.9,
+          "size_score": 0.0824
+        },
+        {
+          "symbol": "cRWorld::Init(int, int, int)",
+          "score": 0.5558,
+          "name_score": 0.9,
+          "size_score": 0.0395
         },
         {
           "symbol": "cRSubGoldy::AI()",
@@ -6476,22 +6517,16 @@
           "size_score": 0.9845
         },
         {
-          "symbol": "cRPath::BuildLoopTheLoop(float, int, bool, char*, char*)",
-          "score": 0.4381,
+          "symbol": "cRDirectX::Init()",
+          "score": 0.5409,
+          "name_score": 0.9,
+          "size_score": 0.0023
+        },
+        {
+          "symbol": "cRSubGame::cRSubGame()",
+          "score": 0.4502,
           "name_score": 0.675,
-          "size_score": 0.0827
-        },
-        {
-          "symbol": "cRDirectX::Load(char*, cRObject*, int)",
-          "score": 0.3929,
-          "name_score": 0.6,
-          "size_score": 0.0824
-        },
-        {
-          "symbol": "cRGame::Init2()",
-          "score": 0.3912,
-          "name_score": 0.6,
-          "size_score": 0.078
+          "size_score": 0.113
         }
       ]
     },

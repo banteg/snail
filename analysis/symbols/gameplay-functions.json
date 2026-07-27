@@ -720,7 +720,41 @@
     {
       "address": "0x40acf0",
       "name": "initialize_game_assets_and_world",
-      "description": "Bootstraps the shared app world, front-end managers, score tables, star field, and the embedded 63-pair path-template bank. Public Path= slots 0..50 are constructed in place at GameRoot+0x1066f2c; slots 51..62 own transition meshes for flagged loop/invert families, HALFPIPE is the direct slot-42 constructor call, and WARP slot 30 remains unbuilt."
+      "description": "Monolithic Windows cRGame bootstrap for the shared app world, front-end managers, score tables, star field, and embedded 63-pair path-template bank. Android and iOS split the equivalent ordered responsibilities across cRGame::Init0() through Init5(), with cRGame::LoadPaths() only an interior path-building phase called by Init0(), so no one-to-one mobile function mapping is currently verified. Public Path= slots 0..50 are constructed in place at GameRoot+0x1066f2c; slots 51..62 own transition meshes for flagged loop/invert families, HALFPIPE is the direct slot-42 constructor call, and WARP slot 30 remains unbuilt.",
+      "mobile_candidate_rejections": [
+        {
+          "symbol": "cRGame::cRGame()",
+          "reason": "The mobile constructor is already mapped to the inlined constructor region inside construct_game_runtime at 0x407b60, not this later bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init0()",
+          "reason": "This is only the first split mobile phase, while the Windows function contains the complete Init0-through-Init5 bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init1()",
+          "reason": "This is only the renderer, segment, and landscape split phase, not the complete Windows bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init2()",
+          "reason": "This is only the GUI, viewport, font, and sprite split phase, not the complete Windows bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init3()",
+          "reason": "This is only the world-mesh split phase, not the complete Windows bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init4()",
+          "reason": "This is only the player, score, tip, star, and front-end split phase, not the complete Windows bootstrap."
+        },
+        {
+          "symbol": "cRGame::Init5()",
+          "reason": "This is only the final object-build, backdrop, mouse, and selector split phase, not the complete Windows bootstrap."
+        },
+        {
+          "symbol": "cRGame::LoadPaths()",
+          "reason": "The Android and iOS bodies are void path-only interior phases, while the Windows function also performs the Init0-through-Init5 bootstrap and returns a success byte."
+        }
+      ]
     },
     {
       "address": "0x410710",

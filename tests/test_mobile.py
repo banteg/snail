@@ -116,36 +116,49 @@ def test_rank_mobile_symbols_uses_exact_method_owner_identity() -> None:
     assert ranked[0].name_score == 1.0
 
 
-def test_rank_mobile_symbols_uses_size_for_giant_initializers() -> None:
+def test_rank_mobile_symbols_uses_size_when_names_are_ambiguous() -> None:
     index = {
         "functions": [
             {
-                "demangled": (
-                    "cRPath::BuildLoopTheLoop("
-                    "float, int, bool, char*, char*)"
-                ),
+                "demangled": "cRAlpha::LoadArchive()",
                 "size": 1400,
                 "status": "ok",
             },
             {
-                "demangled": "cRGame::LoadPaths()",
-                "size": 25136,
+                "demangled": "cRBeta::LoadArchive()",
+                "size": 23072,
                 "status": "ok",
             },
         ]
     }
 
     ranked = rank_mobile_symbols(
-        "initialize_game_assets_and_world",
-        (
-            "Bootstraps the shared app world and the embedded "
-            "path-template bank."
-        ),
+        "initialize_archive",
+        None,
         index,
         windows_size=23072,
     )
 
-    assert ranked[0].symbol == "cRGame::LoadPaths()"
+    assert ranked[0].symbol == "cRBeta::LoadArchive()"
+
+
+def test_rank_mobile_symbols_excludes_only_exact_audited_rejections() -> None:
+    index = _index(
+        "cRGame::LoadPaths()",
+        "cRGame::LoadPaths(char*)",
+        "cRGame::Init0()",
+    )
+
+    ranked = rank_mobile_symbols(
+        "initialize_game_assets_and_world",
+        None,
+        index,
+        rejected_symbols=("cRGame::LoadPaths()",),
+    )
+
+    symbols = {candidate.symbol for candidate in ranked}
+    assert "cRGame::LoadPaths()" not in symbols
+    assert "cRGame::LoadPaths(char*)" in symbols
 
 
 def test_rank_mobile_symbols_prefers_exact_alias_over_platform_stub_size() -> None:
@@ -214,6 +227,31 @@ def test_complete_crosswalk_covers_manifest_once() -> None:
 
     assert len(names) == len(set(names))
     assert set(names) == {function.name for function in manifest.functions}
+    game_init = next(
+        entry
+        for entry in crosswalk["entries"]
+        if entry["windows_name"] == "initialize_game_assets_and_world"
+    )
+    assert game_init["status"] == "unverified"
+    rejected = {
+        rejection["symbol"]
+        for rejection in game_init["mobile_candidate_rejections"]
+    }
+    assert rejected == {
+        "cRGame::cRGame()",
+        "cRGame::Init0()",
+        "cRGame::Init1()",
+        "cRGame::Init2()",
+        "cRGame::Init3()",
+        "cRGame::Init4()",
+        "cRGame::Init5()",
+        "cRGame::LoadPaths()",
+    }
+    for port in ("android", "ios"):
+        assert all(
+            candidate["symbol"] not in rejected
+            for candidate in game_init[f"{port}_candidates"]
+        )
 
 
 def test_verified_mobile_symbols_resolve_to_tracked_bodies() -> None:

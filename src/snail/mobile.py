@@ -251,16 +251,20 @@ def rank_mobile_symbols(
     index: dict[str, Any],
     *,
     windows_aliases: Iterable[str] = (),
+    rejected_symbols: Iterable[str] = (),
     limit: int = 5,
     minimum_score: float = 0.35,
     windows_size: int | None = None,
 ) -> list[MobileCandidate]:
     aliases = tuple(windows_aliases)
+    rejected = frozenset(rejected_symbols)
     candidates = []
     for function in index.get("functions", ()):
         if function.get("status") != "ok" or not function.get("demangled"):
             continue
         symbol = function["demangled"]
+        if symbol in rejected:
+            continue
         name_score = score_mobile_symbol(
             windows_name,
             description,
@@ -396,12 +400,28 @@ def build_complete_mobile_crosswalk(
                 if key in verified:
                     entry[key] = verified[key]
         description = function.get("description")
+        mobile_candidate_rejections = function.get(
+            "mobile_candidate_rejections",
+            [],
+        )
+        rejected_symbols = {
+            rejection["symbol"]
+            for rejection in mobile_candidate_rejections
+        }
+        if mobile_candidate_rejections:
+            entry["mobile_candidate_rejections"] = (
+                mobile_candidate_rejections
+            )
         for port, index in (
             ("android", android_index),
             ("ios", ios_index),
         ):
             symbol = entry.get(f"{port}_symbol")
             if symbol:
+                if symbol in rejected_symbols:
+                    raise ValueError(
+                        f"{windows_name} both verifies and rejects {symbol}"
+                    )
                 entry[f"{port}_body_count"] = len(
                     resolve_corpus_symbols(index, symbol)
                 )
@@ -411,6 +431,7 @@ def build_complete_mobile_crosswalk(
                 description,
                 index,
                 windows_aliases=function.get("aliases", ()),
+                rejected_symbols=rejected_symbols,
                 limit=candidate_limit,
                 windows_size=windows_size,
             )
@@ -440,6 +461,7 @@ def build_complete_mobile_crosswalk(
             "body_count records how many matching exports exist in this corpus version.",
             "windows_size is the distance to the next curated manifest start and can include gaps.",
             "unverified candidate scores blend curated names and aliases with size similarity; an exact curated alias outranks platform-stub size drift, but candidates are not mappings.",
+            "mobile_candidate_rejections preserve audited negative evidence and exclude only the exact demangled symbols listed by the Windows manifest.",
         ],
         "counts": {
             "manifest_functions": len(manifest["functions"]),

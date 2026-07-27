@@ -137,6 +137,10 @@ public:
     TrackFringeBodCatalog* track_fringe_bod_catalog();
 };
 
+// Android and iOS retain this exact process owner as cRGame. GameRoot remains
+// the descriptive Windows spelling used by the matching and analysis sources.
+typedef GameRoot cRGame;
+
 typedef char GameRoot_must_be_0x12e6ff4[
     (sizeof(GameRoot) == 0x12e6ff4) ? 1 : -1];
 

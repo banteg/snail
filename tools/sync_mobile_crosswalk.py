@@ -16,7 +16,11 @@ from snail.mobile import (
     exact_cross_port_backfills,
     load_json,
 )
-from snail.symbols import DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH
+from snail.symbols import (
+    DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+    load_function_symbol_manifest,
+    normalize_function_symbol_manifest,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -68,7 +72,9 @@ def write_or_check(path: Path, text: str, *, check: bool) -> bool:
 
 def main() -> int:
     args = parse_args()
-    manifest = load_json(args.manifest)
+    manifest = normalize_function_symbol_manifest(
+        load_function_symbol_manifest(args.manifest)
+    )
     verified = load_json(args.verified)
     android_index = load_json(args.android_index)
     ios_index = load_json(args.ios_index)

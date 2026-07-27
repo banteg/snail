@@ -1384,3 +1384,35 @@ This is analysis-only: no matcher source changed, and the honest
 world-initializer frontier remains 80.50% (5,392/5,411 instructions) with the
 existing 36 broad-alignment mismatches. No pointer arithmetic, padding, or
 score-only scaffolding was added.
+
+## 2026-07-27 mobile cRGame phase ownership
+
+Android and iOS preserve the root owner as `cRGame`, but they do not preserve
+this Windows bootstrap as one exported function. Both ports split the same
+broad initialization pipeline across `cRGame::Init0()` through `Init5()`:
+
+- `Init0` seeds root defaults and calls `cRGame::LoadPaths()`;
+- `Init1` initializes the renderer, segment catalog, and landscapes;
+- `Init2` initializes GUI, camera, options, viewports, fonts, and sprites;
+- `Init3` constructs the world-mesh catalog;
+- `Init4` initializes players, high scores, tips, stars, backdrop, and border
+  state; and
+- `Init5` builds objects, opens the backdrop, centers the mouse, and selects
+  the initial subgame.
+
+The Windows function performs those responsibilities as one monolith and its
+sole caller tests the returned success byte. In contrast, both mobile
+`cRGame::LoadPaths()` bodies return void, begin and end inside the path-building
+phase, and contain none of the renderer, actor, score, UI, or final-selector
+work. `LoadPaths()` is therefore an interior provenance source, not a valid
+one-to-one match for `0x40acf0`.
+
+The matcher header now records `cRGame` as an authored alias of the exact
+Windows `GameRoot` owner. The manifest deliberately leaves the function
+unverified and records the mobile constructor, six split `Init` exports, and
+`LoadPaths()` as audited rejected whole-function candidates. The constructor is
+already mapped to the inlined constructor region inside
+`construct_game_runtime`; the seven phase exports are only interior provenance
+sources here. The generated crosswalk excludes only those exact demangled
+symbols while retaining the negative evidence and reasons. No Windows method
+name, mobile layout offset, phase boundary, or return contract was transferred.

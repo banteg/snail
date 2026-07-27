@@ -32,10 +32,25 @@ def test_default_function_symbol_manifest_loads() -> None:
     assert summary["reference_only_function_count"] == 3
     assert summary["described_function_count"] >= 1
     assert summary["alias_count"] >= 2
+    assert summary["mobile_candidate_rejection_count"] >= 1
     assert summary["address_range"]["start"] == f"0x{min_address:x}"
     by_name = {function.name: function for function in manifest.functions}
     assert by_name["update_intro_logo_renderable"].aliases == ("update_logo_row",)
     assert by_name["initialize_translation_matrix"].match_scope == "reference-only"
+    game_init = by_name["initialize_game_assets_and_world"]
+    assert {
+        rejection.symbol
+        for rejection in game_init.mobile_candidate_rejections
+    } == {
+        "cRGame::cRGame()",
+        "cRGame::Init0()",
+        "cRGame::Init1()",
+        "cRGame::Init2()",
+        "cRGame::Init3()",
+        "cRGame::Init4()",
+        "cRGame::Init5()",
+        "cRGame::LoadPaths()",
+    }
 
 
 def test_write_function_symbol_manifest_preserves_normalized_shape(tmp_path: Path) -> None:
@@ -59,6 +74,24 @@ def test_write_function_symbol_manifest_preserves_normalized_shape(tmp_path: Pat
     )
     assert reference_only["match_scope"] == "reference-only"
     assert "match_scope" not in raw["functions"][0]
+    game_init = next(
+        function
+        for function in raw["functions"]
+        if function["name"] == "initialize_game_assets_and_world"
+    )
+    assert {
+        rejection["symbol"]
+        for rejection in game_init["mobile_candidate_rejections"]
+    } == {
+        "cRGame::cRGame()",
+        "cRGame::Init0()",
+        "cRGame::Init1()",
+        "cRGame::Init2()",
+        "cRGame::Init3()",
+        "cRGame::Init4()",
+        "cRGame::Init5()",
+        "cRGame::LoadPaths()",
+    }
 
 
 def test_unknown_function_match_scope_is_rejected(tmp_path: Path) -> None:
