@@ -196,10 +196,17 @@ intentional.
     verification of the two helper ABIs and four two-slot bound arrays; it
     avoids traversing the unrelated mouse, text-input, and joystick inventory.
 - `path_template_types.h`
-- `uv run python tools/binja/sync_path_template_types.py`
-  - Owns the canonical `SubSolution` replay record and nested `Player` layout.
-    The older selected-level sync was retired because it recreated a parallel
-    `Game` owner and flattened overlapping player fields.
+- `uv run python tools/binja/sync_path_template_types.py --target SnailMail_unwrapped.exe.bndb`
+- `uv run python tools/binja/sync_path_template_kind.py --target SnailMail_unwrapped.exe.bndb`
+  - Owns the accumulated canonical `Path`, mesh, and gameplay graph, including
+    the `SubSolution` replay record and nested `Player` layout. The older
+    selected-level sync was retired because it recreated a parallel `Game`
+    owner and flattened overlapping player fields.
+  - The focused kind replay parses the header without mutation, accepts only
+    the exact legacy or paired-mobile enum map, previews the replacement
+    transaction, reanalyzes only the three constructors and their Subgoldy
+    consumer, and reads back the authored Cage2, Dip, and SlalomDouble labels
+    before saving the database.
 - `bn_garbage_hazard_types.h`
 - `uv run python tools/binja/sync_garbage_hazard_types.py --target SnailMail_unwrapped.exe.bndb`
   - Promotes the exact `SubGarbage` / `SubGarbagePool` owner pair, preserving

@@ -2469,6 +2469,117 @@ def test_current_enum_members_batches_exact_readback(monkeypatch) -> None:
     assert "int(member.value) & value_mask" in calls[0][-1]
 
 
+def test_header_enum_members_previews_without_live_mutation(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        return {
+            "result": {
+                "PathTemplateKind": [
+                    ["PATH_TEMPLATE_KIND_CAGE2", 0x0F],
+                    ["PATH_TEMPLATE_KIND_DIP", 0x14],
+                    ["PATH_TEMPLATE_KIND_SLALOMDOUBLE", 0x20],
+                ]
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    assert _narrow_sync.header_enum_members(
+        Path("."),
+        target="snail-mail.exe",
+        header_path=Path("path_template_types.h"),
+        enum_names=("PathTemplateKind",),
+    ) == {
+        "PathTemplateKind": (
+            ("PATH_TEMPLATE_KIND_CAGE2", 0x0F),
+            ("PATH_TEMPLATE_KIND_DIP", 0x14),
+            ("PATH_TEMPLATE_KIND_SLALOMDOUBLE", 0x20),
+        )
+    }
+    assert len(calls) == 1
+    assert calls[0][:2] == ("py", "exec")
+    assert "parse_types_from_source" in calls[0][-1]
+    assert "define_user_type" not in calls[0][-1]
+
+
+def test_path_template_kind_replay_tracks_paired_mobile_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+    replay = (BINJA_DIR / "sync_path_template_kind.py").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+    runtime_notes = (
+        repo_root / "analysis/runtime/path-template-typing-2026-03-26.md"
+    ).read_text(encoding="utf-8")
+    crosswalk = json.loads(
+        (
+            repo_root / "analysis/symbols/windows-mobile-gameplay-crosswalk.json"
+        ).read_text(encoding="utf-8")
+    )
+    crosswalk_entries = {
+        entry["windows_name"]: entry for entry in crosswalk["entries"]
+    }
+
+    expected = (
+        ("PATH_TEMPLATE_KIND_CAGE2", "0x0f", "0x0F"),
+        ("PATH_TEMPLATE_KIND_DIP", "0x14", "0x14"),
+        ("PATH_TEMPLATE_KIND_SLALOMDOUBLE", "0x20", "0x20"),
+    )
+    for name, header_value, replay_value in expected:
+        assert f"{name} = {header_value}" in header
+        assert f'("{name}", {replay_value})' in replay
+        assert f"self->kind = {name}" in health_checks
+        assert name in runtime_notes
+
+    for windows_name, address, mobile_symbol in (
+        (
+            "initialize_cage2_path_template_pair",
+            "0x42e720",
+            "cRPath::BuildCage2(int, char*, char*)",
+        ),
+        (
+            "initialize_dip_path_template_pair",
+            "0x41e440",
+            "cRPath::BuildDip(float, int, bool, char*, char*)",
+        ),
+        (
+            "initialize_slalomdouble_path_template_pair",
+            "0x425050",
+            "cRPath::BuildSlalomDouble(int, int, bool, char*, char*)",
+        ),
+    ):
+        evidence = crosswalk_entries[windows_name]
+        assert evidence["address"] == address
+        assert evidence["status"] == "verified"
+        assert evidence["confidence"] == "high"
+        assert evidence["source_object"] == "Path.o"
+        assert evidence["android_symbol_evidence"] == "exact-demangled-symbol"
+        assert evidence["android_symbol"] == mobile_symbol
+        assert evidence["ios_symbol"] == mobile_symbol
+        assert evidence["android_body_count"] == 1
+        assert evidence["ios_body_count"] == 1
+
+    assert "header_enum_members" in replay
+    assert "LEGACY_ENUM_MEMBERS" in replay
+    assert "EXPECTED_ENUM_MEMBERS" in replay
+    assert "types_declare_missing_only" in replay
+    assert "current_enum_members" in replay
+    assert "reanalyze_functions" in replay
+    for selector in (
+        "initialize_cage2_path_template_pair",
+        "initialize_dip_path_template_pair",
+        "initialize_slalomdouble_path_template_pair",
+        "update_subgoldy",
+    ):
+        assert f'"{selector}"' in replay
+    assert "PATH_TEMPLATE_KIND_DETOUR =" not in header
+
+
 def test_current_struct_fields_batch_reads_all_layouts(monkeypatch) -> None:
     calls = []
 
@@ -21249,6 +21360,31 @@ def test_cage2_replay_splits_terminal_scalar_and_preserves_mesh_owners() -> None
     assert '0x90: ("center_x", "float")' in replay
     for rejected_index in (659, 880, 1685):
         assert f"({rejected_index}, 66," not in replay
+
+    health = json.loads(
+        (Path(__file__).parents[1] / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    check = next(
+        check
+        for check in health["checks"]
+        if check["name"] == "bn_cage2_path_full_owner_abi"
+    )
+    regexes = check["required_regexes"]
+    for address in ("0042e9a2", "0042ea7f", "0042ec8d", "0042ecd4"):
+        matching_regex = next(
+            pattern for pattern in regexes if pattern.startswith(address)
+        )
+        for component in (r"\.x =", r"\.y =", r"\.z ="):
+            assert component in matching_regex
+    for rendered_alias in (
+        "struct Vec3* primary_up",
+        "struct Vec3* secondary_up",
+        "struct Vec3* primary_terminal_delta",
+        "struct Vec3* secondary_terminal_delta",
+    ):
+        assert rendered_alias not in check["required_substrings"]
 
 
 def test_loopbow_replay_preserves_staged_basis_and_mesh_owners() -> None:

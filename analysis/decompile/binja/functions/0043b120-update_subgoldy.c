@@ -773,7 +773,7 @@
 0043c34b        begin_post_follow_carryover(player)
 0043b9a6        switch (update_track_attachment_follow_state(&player->follow_state, player->velocity.z, p_position, &player->velocity))
 0043b9cc        case 0
-0043b9cc        if (player->follow_state.template_record->kind != PATH_TEMPLATE_KIND_DETOUR)
+0043b9cc        if (player->follow_state.template_record->kind != PATH_TEMPLATE_KIND_CAGE2)
 0043b9d4        unimplemented  {fld st0, dword [ecx+0x38]}
 0043b9d7        unimplemented  {fld st0, st0}
 0043b9d9        unimplemented  {fmul st0, st1}

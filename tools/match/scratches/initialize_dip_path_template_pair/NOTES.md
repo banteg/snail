@@ -155,3 +155,10 @@ all recovered owners still current.
 The focused Windows build remains honestly neutral at **48.89%**, **646/655**
 candidate instructions, a 20-instruction exact prefix, and a clean masked
 audit with 37 accepted operands. No source expression changed.
+
+The same paired body also corrects the shared enum identity. Windows writes
+kind `0x14` and both mobile siblings write their platform-specific Dip kind
+`0x18`; the stale Windows label `CAGE2` was inherited from the function's
+superseded pre-mobile name. The canonical label is now
+`PATH_TEMPLATE_KIND_DIP`, with guarded Binary Ninja replay and IDA header
+reimport carrying the correction without changing matcher source.

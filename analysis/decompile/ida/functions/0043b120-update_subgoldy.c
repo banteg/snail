@@ -302,7 +302,7 @@ LABEL_94:
                      &player->velocity) )
           {
             case 0:
-              if ( player->follow_state.template_record->kind != PATH_TEMPLATE_KIND_DETOUR )
+              if ( player->follow_state.template_record->kind != PATH_TEMPLATE_KIND_CAGE2 )
               {
                 v36 = player->game->subgame_rate;
                 player->velocity.z = v36 * v36 * 0.0040000002 + v36 * v36 * 0.0040000002 + player->velocity.z;

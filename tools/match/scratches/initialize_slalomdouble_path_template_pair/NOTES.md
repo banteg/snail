@@ -159,3 +159,10 @@ accepted and 10 unaudited operands with no unresolved or mismatched operands.
 Both mobile bodies stop after sample/delta construction and `CalcLengthZ`;
 Windows owns the cap-texture and mesh-building tail. Binary Ninja preview,
 apply, readback, and lifetime replay kept every recovered owner current.
+
+The exact body pair also corrects the shared enum identity. Windows writes kind
+`0x20`, while Android and iOS write their platform-specific SlalomDouble kind
+`0x28`. The stale Windows label `DIP` came from this function's superseded
+pre-mobile name; the canonical label is now
+`PATH_TEMPLATE_KIND_SLALOMDOUBLE`. This ownership change is analysis-only and
+does not alter the accepted 39.55% matcher source.

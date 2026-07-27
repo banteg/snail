@@ -1664,12 +1664,17 @@ kind:
 - `PATH_TEMPLATE_KIND_FAMILY_11 = 0x11`
 - `PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY = 0x27`
 
-This is intentionally more conservative than the public constructor symbols.
-The current Windows caller-table audit supports public-family constructor names
-like `initialize_hump_path_template_pair`, `initialize_dump_path_template_pair`,
-`initialize_dip_path_template_pair`, `initialize_slalomdouble_path_template_pair`,
-and `initialize_cage2_path_template_pair`, but those constructors do not map
-1:1 to the runtime `PathTemplate.kind` buckets they write into the record.
+Exact Android and iOS `Path.o` symbols resolve three labels that had retained
+superseded Windows constructor names:
+
+- `PATH_TEMPLATE_KIND_CAGE2 = 0x0f`
+- `PATH_TEMPLATE_KIND_DIP = 0x14`
+- `PATH_TEMPLATE_KIND_SLALOMDOUBLE = 0x20`
+
+The Windows Cage2 value is still consumed by detour-specific follow logic; that
+describes a behavior of the Cage2 path, not a separate constructor owner. The
+remaining family labels stay conservative where multiple builders genuinely
+share one native value.
 
 High-confidence `ObjectFaceQuad` fields:
 

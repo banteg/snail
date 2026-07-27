@@ -245,3 +245,34 @@ the candidate from 629 to **651/648** instructions, moves the prefix from 0 to
 **7**, and closes the documented `0x48` candidate frame to the exact native
 `0x54`. The masked audit remains clean at 40 accepted, 0 unresolved, 0
 mismatched operands. No padding or unused source state is involved.
+
+## 2026-07-27 paired-mobile identity and invariant
+
+The exact Android and iOS `cRPath::BuildCage2(int, char*, char*)` symbols close
+the authored constructor identity independently of the Windows caller table.
+Both mobile bodies write mobile kind `0x13`, while this Windows sibling writes
+its platform-specific kind `0x0f`. The old Windows enum label `DETOUR` came
+from the superseded pre-mobile function name; it is now correctly
+`PATH_TEMPLATE_KIND_CAGE2`. Kind `0x0f` still triggers detour-specific follow
+behavior in `update_subgoldy`, but that consumer behavior does not create a
+second constructor owner.
+
+The paired bodies also explain two honest port differences. Mobile uses 30
+samples with 28 interior points; Windows uses 22 with 20 interior points. In
+both cases the center and roll angles are respectively `3*pi/(count - 2)` and
+`2*pi/(count - 2)`. Naming those formulas in the Windows matcher changed VC6's
+x87 schedule and regressed the score, so the proven precomputed literals remain
+in source and the invariant stays documented here. Mobile stops after sample
+and delta construction plus `CalcLengthZ`; Windows alone owns the strip mesh
+and its unused fourth `vertical_texture` ABI slot.
+
+The ownership correction is analysis-only. The focused Windows source remains
+at **59.43%**, **651/648** instructions, a seven-instruction exact prefix, and
+40 clean accepted operands.
+
+Reanalysis after the enum correction also clarified four complete `Vec3`
+owners. MLIL retains the proved `primary_up`, `secondary_up`, and paired
+terminal-delta aliases, while HLIL now folds each three-scalar write into a
+typed aggregate at `0x42e9a2`, `0x42ea7f`, `0x42ec8d`, and `0x42ecd4`. The
+health contract follows the stronger aggregate rendering without discarding
+the useful lower-level names.

@@ -11710,21 +11710,12 @@
       "name": "bn_cage2_path_full_owner_abi",
       "artifact": "analysis/decompile/binja/functions/0042e720-initialize_cage2_path_template_pair.c",
       "required_substrings": [
-        "self->kind = PATH_TEMPLATE_KIND_DETOUR",
+        "self->kind = PATH_TEMPLATE_KIND_CAGE2",
         "self->width_cells = width_cells_",
         "get_path_nodes(self)",
         "float terminal_center_x",
-        "struct Vec3* primary_up",
-        "primary_up->x",
-        "primary_up->y",
-        "primary_up->z",
         "struct PathTemplateSample* primary_sample_cursor_reloaded",
-        "struct Vec3* secondary_up",
         "struct PathTemplateSample* secondary_sample_cursor_reloaded",
-        "struct Vec3* primary_terminal_delta",
-        "primary_terminal_delta->z",
-        "struct Vec3* secondary_terminal_delta",
-        "secondary_terminal_delta->z",
         "struct PathTemplateSample* primary_mesh_sample",
         "primary_mesh_sample->transform.basis_right.x",
         "struct Vec3* vertex",
@@ -11738,6 +11729,12 @@
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
         "calc_path_length_z(self)"
+      ],
+      "required_regexes": [
+        "0042e9a2[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "0042ea7f[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "0042ec8d[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "0042ecd4[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -11971,7 +11968,7 @@
       "name": "bn_dip_path_full_owner_abi",
       "artifact": "analysis/decompile/binja/functions/0041e440-initialize_dip_path_template_pair.c",
       "required_substrings": [
-        "self->kind = PATH_TEMPLATE_KIND_CAGE2",
+        "self->kind = PATH_TEMPLATE_KIND_DIP",
         "self->width_cells = width_cells_",
         "fconvert.t(curve_source)",
         "get_path_nodes(self)",
@@ -12224,7 +12221,7 @@
       "name": "bn_slalomdouble_path_full_owner_abi",
       "artifact": "analysis/decompile/binja/functions/00425050-initialize_slalomdouble_path_template_pair.c",
       "required_substrings": [
-        "self->kind = PATH_TEMPLATE_KIND_DIP",
+        "self->kind = PATH_TEMPLATE_KIND_SLALOMDOUBLE",
         "self->width_cells = width_cells_",
         "self->segment_count = 0x46",
         "get_path_nodes(self)",

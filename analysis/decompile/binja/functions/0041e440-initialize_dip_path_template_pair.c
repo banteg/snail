@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_dip_path_template_pair @ 0x41e440 */
 
-0041e459        self->kind = PATH_TEMPLATE_KIND_CAGE2
+0041e459        self->kind = PATH_TEMPLATE_KIND_DIP
 0041e460        self->is_mirrored_x = 0
 0041e464        self->side_exit_mode = 0
 0041e467        self->width_cells = width_cells_

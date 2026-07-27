@@ -1591,6 +1591,89 @@ for name in names:
     return result
 
 
+def header_enum_members(
+    repo_root: Path,
+    *,
+    target: str,
+    header_path: Path,
+    enum_names: Iterable[str],
+) -> dict[str, tuple[tuple[str, int], ...] | None]:
+    """Parse enum members from a header without mutating the live database."""
+    names = tuple(enum_names)
+    code = f"""
+import binaryninja
+
+header_path = {json.dumps(str(header_path))}
+names = {json.dumps(names)}
+with open(header_path, "r", encoding="utf-8") as header_file:
+    header = header_file.read()
+parsed, errors = binaryninja.TypeParser.default.parse_types_from_source(
+    header,
+    header_path,
+    bv.platform,
+    None,
+)
+if parsed is None or errors:
+    raise RuntimeError("; ".join(str(error) for error in errors))
+
+parsed_types = {{
+    str(parsed_type.name): parsed_type.type
+    for parsed_type in parsed.types
+}}
+result = {{}}
+for name in names:
+    parsed_type = parsed_types.get(name)
+    if parsed_type is None:
+        result[name] = None
+        continue
+    try:
+        width = int(parsed_type.width)
+        if width <= 0:
+            raise ValueError("enum width must be positive")
+        value_mask = (1 << (width * 8)) - 1
+        result[name] = [
+            [str(member.name), int(member.value) & value_mask]
+            for member in parsed_type.members
+        ]
+    except (AttributeError, ValueError):
+        result[name] = None
+"""
+    response = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(payload, dict):
+        return {name: None for name in names}
+
+    result: dict[str, tuple[tuple[str, int], ...] | None] = {}
+    for name in names:
+        members = payload.get(name)
+        if not isinstance(members, list):
+            result[name] = None
+            continue
+        normalized: list[tuple[str, int]] = []
+        for member in members:
+            if (
+                not isinstance(member, list)
+                or len(member) != 2
+                or not isinstance(member[0], str)
+                or not isinstance(member[1], int)
+            ):
+                normalized = []
+                break
+            normalized.append((member[0], member[1]))
+        result[name] = tuple(normalized) if len(normalized) == len(members) else None
+    return result
+
+
 def struct_exists(repo_root: Path, *, target: str, struct_name: str) -> bool:
     # Binary Ninja reports a forward declaration as a zero-sized struct. It is
     # not sufficient for replay: treating it as present causes the authoritative

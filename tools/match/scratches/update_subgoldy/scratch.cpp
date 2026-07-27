@@ -55,7 +55,7 @@ enum {
 // the same fields and callee address with a scalar spelling.
 struct SubgoldyPathView {
     char unknown_00[0x38];
-    int kind; // +0x38: 15 DETOUR, 24 WORM
+    int kind; // +0x38: 15 CAGE2 (detour follow behavior), 24 WORM
     char unknown_3c[0x44 - 0x3c];
     int segment_count; // +0x44
     char unknown_48[0x58 - 0x48];

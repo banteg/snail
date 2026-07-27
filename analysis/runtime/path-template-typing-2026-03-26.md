@@ -90,7 +90,25 @@ One correction from the wider caller-table audit:
   - `0x41e440`: `DIP`
   - `0x425050`: `SLALOMDOUBLE`
   - `0x42e720`: `CAGE2`
-- those public constructor names do not always match the runtime `PathTemplate.kind` bucket written into the record, so the checked-in enum stays deliberately more conservative than the function symbols
+
+2026-07-27 paired-mobile correction: the final three enum labels above had not
+followed that constructor correction. They were inherited verbatim from the
+superseded Windows names (`DETOUR`, `CAGE2`, and `DIP`). The exact Android and
+iOS `Path.o` symbols and paired bodies close the intended identities:
+
+- Windows `0x42e720` and mobile `cRPath::BuildCage2(...)` write their
+  platform-specific Cage2 kind values, so Windows `0x0f` is
+  `PATH_TEMPLATE_KIND_CAGE2`;
+- Windows `0x41e440` and mobile `cRPath::BuildDip(...)` write their Dip kind
+  values, so Windows `0x14` is `PATH_TEMPLATE_KIND_DIP`; and
+- Windows `0x425050` and mobile `cRPath::BuildSlalomDouble(...)` write their
+  SlalomDouble kind values, so Windows `0x20` is
+  `PATH_TEMPLATE_KIND_SLALOMDOUBLE`.
+
+The Windows Cage2 kind still selects detour-specific follow behavior in
+`update_subgoldy`; that is a consumer behavior, not the constructor owner's
+name. The genuinely shared `0x00`, `0x10`, `0x11`, and `0x27` buckets remain
+conservative.
 
 Recovered `PathTemplateSample` shape:
 

@@ -4,7 +4,7 @@
 /* function: initialize_slalomdouble_path_template_pair @ 0x425050 */
 
 0042505c        int32_t i_4 = 0
-00425064        self->kind = PATH_TEMPLATE_KIND_DIP
+00425064        self->kind = PATH_TEMPLATE_KIND_SLALOMDOUBLE
 0042506b        self->is_mirrored_x = 0
 0042506f        self->side_exit_mode = 0
 00425072        self->width_cells = width_cells_
