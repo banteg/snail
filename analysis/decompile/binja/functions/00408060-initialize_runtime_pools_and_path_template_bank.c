@@ -101,7 +101,7 @@
 00408363        initialize_array_with_constructor(&game->landscape_manager.scripts, 0x124, 0x80, initialize_landscape_script_record)
 00408370        initialize_bod_base(&game->smtrack_heightfield)
 00408378        initialize_object_constructor_thunk(&game->smtrack_heightfield.frame_sequence)
-00408393        game->smtrack_heightfield.bod.bod.vtable = &g_smtracks_callback_table
+00408393        game->smtrack_heightfield.bod.bod.vtable = &g_face_callback_table
 00408399        initialize_array_with_constructor(&game->sm_tracks.entries, 0x4088, 0x96, noop_runtime_slot_constructor)
 004083b1        initialize_array_with_constructor(&game->parcel_manager, 0x8c, 0x32, initialize_track_parcel_runtime)
 004083c9        initialize_array_with_constructor(&game->galaxy.route_slots, 0x2a0, 0x65, noop_runtime_slot_constructor)

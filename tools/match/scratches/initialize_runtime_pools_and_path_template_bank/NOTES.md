@@ -169,7 +169,7 @@ the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
   retiring the overlapping `ActiveLandscapePool` and `LandscapeScriptBank`
   views.
 
-## 2026-07-11 SMTrack height-field animator boundary
+## 2026-07-11 cRFace height-field boundary
 
 - The constructed object at `SubgameRuntime +0x10013a4` is one `0x38`-byte
   `BodBase` followed by a `0xf0`-byte `FrameSequence` at `+0x38`.
@@ -177,6 +177,12 @@ the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
   entire post-landscape gap without padding.
 - The typed local receiver retains the native `edi` owner and leaves this
   constructor exact at 227/227 with all 72 operands clean.
+
+The 2026-07-27 dual-mobile `cRFace::AI()` mapping supplies the authored class
+name for this previously descriptive owner. Renaming the Windows type to
+`Face` and the table at `0x4972f8` to `g_face_callback_table` is
+codegen-neutral: this constructor remains exact at 227/227 instructions with
+all 72 operands clean.
 
 ## 2026-07-11 cRGalaxy arrays
 

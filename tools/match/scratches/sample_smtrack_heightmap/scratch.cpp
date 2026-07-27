@@ -8,7 +8,7 @@ void __cdecl sample_smtrack_heightmap(
     float base,
     float scale,
     TextureRef* replacement,
-    char cubic)
+    bool cubic)
 {
     TgaImageView* image = (TgaImageView*)replacement->texture_ref;
     float sample_count_float = (float)source->heightmap_sample_count;

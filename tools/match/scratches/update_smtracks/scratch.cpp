@@ -2,7 +2,7 @@
 
 #include "smtracks.h"
 
-void SmtrackHeightfieldAnimator::update_smtracks()
+void Face::update_smtracks()
 {
     frame_sequence.advance_frame_sequence();
     object->facequads[0].texture_ref = frame_sequence.current_texture_ref;

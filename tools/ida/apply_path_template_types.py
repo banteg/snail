@@ -140,6 +140,7 @@ TRUSTED_NAMES = [
     (0x453467, "d3dx_create_texture_from_file"),
     (0x4AC5C8, "g_default_tip_message"),
     (0x4972B0, "g_noop_runtime_callback_table"),
+    (0x4972F8, "g_face_callback_table"),
     (0x497314, "g_sub_speed_up_vtable"),
     (0x497318, "g_jet_pack_vtable"),
     (0x49731C, "g_vapour_vtable"),
@@ -168,6 +169,7 @@ TRUSTED_DATA_DECLARATIONS = [
         "g_noop_runtime_callback_table",
         "void *g_noop_runtime_callback_table;",
     ),
+    (0x4972F8, "g_face_callback_table", "void *g_face_callback_table;"),
     (0x497314, "g_sub_speed_up_vtable", "void *g_sub_speed_up_vtable;"),
     (0x497318, "g_jet_pack_vtable", "void *g_jet_pack_vtable;"),
     (0x49731C, "g_vapour_vtable", "void *g_vapour_vtable;"),
@@ -2420,11 +2422,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "update_smtracks",
-        "void __thiscall update_smtracks(SmtrackHeightfieldAnimator* animator);",
+        "void __thiscall update_smtracks(Face* face);",
     ),
     (
         "sample_smtrack_heightmap",
-        "void __cdecl sample_smtrack_heightmap(Object* source, float base, float scale, TextureRef* replacement, char cubic);",
+        "void __cdecl sample_smtrack_heightmap(Object* source, float base, float scale, TextureRef* replacement, bool cubic);",
     ),
     (
         "deserialize_compact_high_score_record",

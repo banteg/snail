@@ -2,8 +2,8 @@
 /* function: sample_smtrack_heightmap @ 0x41a360 */
 /* selector: sample_smtrack_heightmap */
 
-// Samples retained TGA bytes from a replacement `TextureRef` into the active SMTrack object's vertex-y grid, using the object's sample-count/aspect metadata, independently converting and averaging RGB channels, applying the optional cubic curve, and scaling the result.
-void __cdecl sample_smtrack_heightmap(Object *source, float base, float scale, TextureRef *replacement, char cubic)
+// Windows `ObjectProcLandScapeUpdate`: samples retained TGA bytes from a replacement `TextureRef` into the active `cRFace` mesh's vertex-y grid, using the object's sample-count/aspect metadata, independently converting and averaging RGB channels, applying the optional cubic curve, and scaling the result.
+void __cdecl sample_smtrack_heightmap(Object *source, float base, float scale, TextureRef *replacement, bool cubic)
 {
   unsigned __int16 *texture_ref; // esi
   double heightmap_sample_count; // st7

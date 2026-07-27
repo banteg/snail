@@ -1298,10 +1298,11 @@ typedef struct FrameSequence {
     TextureRef* current_texture_ref;
 } FrameSequence;
 
-typedef struct SmtrackHeightfieldAnimator {
+/* Windows layout of the authored cRFace animated height-field owner. */
+typedef struct Face {
     BodBase bod;
     FrameSequence frame_sequence;
-} SmtrackHeightfieldAnimator;
+} Face;
 
 typedef struct SegmentCatalogEntry {
     char display_name[0x40];
@@ -2614,7 +2615,7 @@ typedef struct SubgameRuntime {
     PathPair path_pairs[63];
     BarrierActor barrier;
     LandscapeManager landscape_manager;
-    SmtrackHeightfieldAnimator smtrack_heightfield;
+    Face smtrack_heightfield;
     SMTracks sm_tracks;
     ParcelManager parcel_manager;
     float garbage_frequency;
@@ -2853,13 +2854,13 @@ void __thiscall extract_snail_local_hotspots(Snail* snail);
 void __thiscall initialize_anim_manager(AnimManager* manager);
 void __thiscall update_anim_manager(AnimManager* manager);
 void __thiscall advance_frame_sequence(FrameSequence* sequence);
-void __thiscall update_smtracks(SmtrackHeightfieldAnimator* animator);
+void __thiscall update_smtracks(Face* face);
 void __cdecl sample_smtrack_heightmap(
     Object* source,
     float base,
     float scale,
     TextureRef* replacement,
-    char cubic);
+    bool cubic);
 uint8_t __thiscall deserialize_compact_high_score_record(
     SubSolution* record,
     CompactHighScoreRecord* compact);

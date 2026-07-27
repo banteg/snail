@@ -74,11 +74,12 @@ first facequad/vertices, then sets `Object::blend_mode` at `+0x14` to `1`. The
 former font-local view called that field `ready`; the shared renderer consumer
 proves the ownership-neutral assignment is a blend-mode selection instead.
 
-The SMTrack height-field animator is another borrower of an `Object` slot. Its
-sampler consumes the grid metadata at `Object +0x1c/+0x24/+0x28` as the
-inclusive column bound and row-aspect ratio, reads retained TGA bytes through
-the active frame's `TextureRef`, and writes only the y lane of the borrowed
-`Object::vertices` array.
+The authored `cRFace` height-field animator is another borrower of an `Object`
+slot. Its cross-port `ObjectProcLandScapeUpdate` sampler consumes the grid
+metadata at `Object +0x1c/+0x24/+0x28` as the inclusive column bound and
+row-aspect ratio, reads retained TGA bytes through the active frame's
+`TextureRef`, and writes only the y lane of the borrowed `Object::vertices`
+array.
 
 `apply_distort_to_object` also borrows vertex storage rather than owning a
 fourth buffer. Each active Z-wave, Y-squash, or XYZ-scale pass carries an

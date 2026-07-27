@@ -23,7 +23,7 @@
 0041a3dd        x87_r6_4 - temp0
 0041a3e6        if ((((x87_r6_4 < temp0 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_4, temp0) ? 1 : 0) << 0xa | (x87_r6_4 == temp0 ? 1 : 0) << 0xe | 0x3800):1.b & 0x41) == 0)
 0041a3e6        return
-0041a3ed        char cubic_1 = cubic
+0041a3ed        bool cubic_1 = cubic
 0041a4bc        long double temp2_1
 0041a3f1        long double x87_r6_5 = fconvert.t(0f)
 0041a3f7        long double x87_r5_1 = fconvert.t(0f)

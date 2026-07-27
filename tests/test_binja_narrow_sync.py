@@ -8485,9 +8485,10 @@ def test_frame_sequence_ownership_stays_aligned_across_replay_lanes() -> None:
         assert "FrameSequence* sequence" in source
     for source in (binja_path_sync, ida_path_sync):
         assert "update_smtracks" in source
-        assert "SmtrackHeightfieldAnimator* animator" in source
+        assert "Face* face" in source
         assert "sample_smtrack_heightmap" in source
         assert "TextureRef* replacement" in source
+        assert "bool cubic" in source
 
     for header in (*analysis_headers, path_header, matcher_header):
         assert "FRAME_SEQUENCE_COMPLETE = 0x01" in header

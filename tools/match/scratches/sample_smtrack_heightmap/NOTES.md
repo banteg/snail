@@ -82,3 +82,19 @@ instruction shape, and all 12 clean operands.
 Matcher source and bytes are untouched. Focused matching remains the honest
 60.36% result at 113/109 candidate/target instructions with all 12 masked
 operands clean; the residual is still VC6 frame and register scheduling.
+
+## 2026-07-27 ObjectProcLandScapeUpdate contract
+
+Android and iOS both export the exact free-function signature
+`ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)`. Their
+bodies independently preserve the Windows lifecycle: derive the inclusive
+grid dimensions from Object sample-count/aspect fields, read a bottom-up RGB
+texel from the texture's retained TGA image, normalize and average its three
+channels, optionally cube the value, then write `base + scale * value` into
+each borrowed vertex y lane.
+
+This closes the authored function name and corrects the fifth parameter from a
+generic byte to `bool`. It does not transfer mobile object or texture offsets;
+Windows retains its independently proved 0xdc-byte Object and retained-image
+layout. The bool spelling is byte-identical, so the honest focused result stays
+60.36%, 113/109 instructions, with all 13 currently audited operands clean.

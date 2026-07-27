@@ -166,6 +166,7 @@ SYMBOL_UPDATES = (
     ("0x4340c0", "uninit_thanks_screen"),
     ("0x4340f0", "update_thanks_for_playing_screen"),
     ("0x4972b0", "g_noop_runtime_callback_table"),
+    ("0x4972f8", "g_face_callback_table"),
     ("0x497314", "g_sub_speed_up_vtable"),
     ("0x497318", "g_jet_pack_vtable"),
     ("0x49731c", "g_vapour_vtable"),
@@ -479,7 +480,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Fringe",
     "FringeManager",
     "SMTracks",
-    "SmtrackHeightfieldAnimator",
+    "Face",
     "AuthoredSegmentRowFlag",
     "AuthoredSegmentRowPositionCursorView",
     "FringeVertexRowCursorView",
@@ -2744,7 +2745,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0xff2914", "path_pairs", "PathPair[63]"),
     ("0xff7bc4", "barrier", "BarrierActor"),
     ("0xff7c00", "landscape_manager", "LandscapeManager"),
-    ("0x10013a4", "smtrack_heightfield", "SmtrackHeightfieldAnimator"),
+    ("0x10013a4", "smtrack_heightfield", "Face"),
     ("0x10014cc", "sm_tracks", "SMTracks"),
     ("0x125ffd8", "garbage_frequency", "float"),
     ("0x125ffdc", "salt_frequency", "float"),
@@ -3015,6 +3016,7 @@ TRACK_RENDER_CACHE_DATA_VAR_UPDATES = (
 
 DATA_VAR_UPDATES = (
     ("0x4972b0", "void*"),
+    ("0x4972f8", "void*"),
     ("0x497314", "void*"),
     ("0x497318", "void*"),
     ("0x49731c", "void*"),
@@ -3575,11 +3577,11 @@ PROTO_UPDATES = (
     ),
     (
         "update_smtracks",
-        "void __thiscall update_smtracks(SmtrackHeightfieldAnimator* animator)",
+        "void __thiscall update_smtracks(Face* face)",
     ),
     (
         "sample_smtrack_heightmap",
-        "void __cdecl sample_smtrack_heightmap(Object* source, float base, float scale, TextureRef* replacement, char cubic)",
+        "void __cdecl sample_smtrack_heightmap(Object* source, float base, float scale, TextureRef* replacement, bool cubic)",
     ),
     (
         "deserialize_compact_high_score_record",

@@ -1478,7 +1478,10 @@
     {
       "address": "0x41a360",
       "name": "sample_smtrack_heightmap",
-      "description": "Samples retained TGA bytes from a replacement `TextureRef` into the active SMTrack object's vertex-y grid, using the object's sample-count/aspect metadata, independently converting and averaging RGB channels, applying the optional cubic curve, and scaling the result."
+      "description": "Windows `ObjectProcLandScapeUpdate`: samples retained TGA bytes from a replacement `TextureRef` into the active `cRFace` mesh's vertex-y grid, using the object's sample-count/aspect metadata, independently converting and averaging RGB channels, applying the optional cubic curve, and scaling the result.",
+      "aliases": [
+        "ObjectProcLandScapeUpdate"
+      ]
     },
     {
       "address": "0x41a4d0",
@@ -3044,7 +3047,10 @@
     {
       "address": "0x441f60",
       "name": "update_smtracks",
-      "description": "Advances the embedded 0x128-byte SMTrack height-field animator, installs the current sequence `TextureRef*` on its borrowed mesh, and resamples that texture's retained TGA bytes into the mesh vertex-y grid."
+      "description": "Exact Windows `cRFace::AI()`: advances the embedded 0x128-byte Face owner's `FrameSequence`, installs its current `TextureRef*` on the borrowed mesh's first facequad, and invokes `ObjectProcLandScapeUpdate` to resample the retained image into the mesh vertex-y grid. The callback table at `0x4972f8` points directly here.",
+      "aliases": [
+        "cRFace_AI"
+      ]
     },
     {
       "address": "0x441fa0",

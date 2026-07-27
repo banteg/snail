@@ -2130,14 +2130,15 @@
     },
     {
       "address": "0x4972f8",
-      "name": "g_smtracks_callback_table",
+      "name": "g_face_callback_table",
       "kind": "vtable",
       "aliases": [
+        "g_smtracks_callback_table",
         "off_4972f8",
         "data_4972f8",
         "g_smtracks_vtable"
       ],
-      "description": "SMTrack height-field animator BOD callback table installed at subgame offset `0x10013a4`; first entry is `update_smtracks`."
+      "description": "Windows `cRFace` BOD callback table installed on the 0x128-byte animated height-field owner at SubgameRuntime +0x10013a4; its first entry is `update_smtracks`, the exact cross-port `cRFace::AI()`."
     },
     {
       "address": "0x4972fc",

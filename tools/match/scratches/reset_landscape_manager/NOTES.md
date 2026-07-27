@@ -12,7 +12,7 @@ Focused match: 100%, 2/2 instructions, with no masked operands.
 
 The 2026-07-13 owner-boundary pass now embeds this manager directly at
 `SubgameRuntime +0xff7c00`. Its exact `0x97a4` extent ends at
-`SmtrackHeightfieldAnimator +0x10013a4`; a previewed Binary Ninja declaration
+the authored `Face` owner at `+0x10013a4`; a previewed Binary Ninja declaration
 confirmed that boundary without changing the live database. This ownership
 promotion is codegen-neutral at the exact focused baseline.
 

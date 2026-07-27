@@ -17228,30 +17228,36 @@
       ]
     },
     {
-      "name": "bn_smtrack_animator_owner",
+      "name": "bn_face_heightmap_owner",
       "artifact": "analysis/decompile/binja/functions/00441f60-update_smtracks.c",
       "required_substrings": [
-        "advance_frame_sequence(&animator->frame_sequence)",
-        "animator->bod.object->facequads->texture_ref",
-        "animator->frame_sequence.current_texture_ref",
-        "sample_smtrack_heightmap(animator->bod.object"
+        "advance_frame_sequence(&face->frame_sequence)",
+        "face->bod.object->facequads->texture_ref",
+        "face->frame_sequence.current_texture_ref",
+        "sample_smtrack_heightmap(face->bod.object",
+        "false"
       ],
       "forbidden_substrings": [
+        "animator->",
+        "SmtrackHeightfieldAnimator",
         "arg1 + 0x38",
         "arg1 + 0x124",
         "return sample_smtrack_heightmap"
       ]
     },
     {
-      "name": "ida_smtrack_animator_owner",
+      "name": "ida_face_heightmap_owner",
       "artifact": "analysis/decompile/ida/functions/00441f60-update_smtracks.c",
       "required_substrings": [
-        "void __thiscall update_smtracks(SmtrackHeightfieldAnimator *animator)",
-        "advance_frame_sequence(&animator->frame_sequence)",
-        "animator->bod.object->facequads->texture_ref",
-        "animator->frame_sequence.current_texture_ref"
+        "void __thiscall update_smtracks(Face *face)",
+        "advance_frame_sequence(&face->frame_sequence)",
+        "face->bod.object->facequads->texture_ref",
+        "face->frame_sequence.current_texture_ref",
+        "false"
       ],
       "forbidden_substrings": [
+        "SmtrackHeightfieldAnimator",
+        "animator->",
         "update_smtracks(int *this)",
         "frame_sequence._storage",
         "sample_smtrack_heightmap((int)"
@@ -17285,13 +17291,14 @@
       "name": "ida_smtrack_heightmap_object_fields",
       "artifact": "analysis/decompile/ida/functions/0041a360-sample_smtrack_heightmap.c",
       "required_substrings": [
-        "void __cdecl sample_smtrack_heightmap(Object *source, float base, float scale, TextureRef *replacement, char cubic)",
+        "void __cdecl sample_smtrack_heightmap(Object *source, float base, float scale, TextureRef *replacement, bool cubic)",
         "source->heightmap_sample_count",
         "source->heightmap_sample_scale",
         "source->heightmap_sample_divisor",
         "source->vertices"
       ],
       "forbidden_substrings": [
+        "char cubic",
         "source->_pad_1c",
         "void *__cdecl sample_smtrack_heightmap"
       ]
@@ -19608,9 +19615,11 @@
         "initialize_track_row_runtime(row)",
         "struct Path* path_template_cursor = &game->path_pairs",
         "path_template_cursor = &path_template_cursor[1]",
-        "initialize_object_constructor_thunk(&game->smtrack_heightfield.frame_sequence)"
+        "initialize_object_constructor_thunk(&game->smtrack_heightfield.frame_sequence)",
+        "game->smtrack_heightfield.bod.bod.vtable = &g_face_callback_table"
       ],
       "forbidden_substrings": [
+        "g_smtracks_callback_table",
         "arg1",
         "byte_5CCAC8",
         "struct SubHealth (*",
@@ -19636,9 +19645,11 @@
         "runtime_rows = game->runtime_rows",
         "initialize_track_row_runtime(runtime_rows++)",
         "path_pairs = game->path_pairs",
-        "initialize_object_constructor_thunk((Object *)&game->smtrack_heightfield.frame_sequence)"
+        "initialize_object_constructor_thunk((Object *)&game->smtrack_heightfield.frame_sequence)",
+        "game->smtrack_heightfield.bod.bod.vtable = &g_face_callback_table"
       ],
       "forbidden_substrings": [
+        "g_smtracks_callback_table",
         "byte_5CCAC8",
         "int this",
         "sub_408060"

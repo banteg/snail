@@ -10,7 +10,7 @@
 extern void* g_banner_callback_table;        // data_497304
 extern void* g_subgoldy_callback_table;      // data_497300
 extern void* g_barrier_actor_callback_table; // data_4972fc
-extern void* g_smtracks_callback_table;      // data_4972f8
+extern void* g_face_callback_table;          // data_4972f8
 
 SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank()
 {
@@ -196,10 +196,10 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         sizeof(landscape_manager.scripts) / sizeof(landscape_manager.scripts[0]),
         &RuntimeSlot::initialize_landscape_script_record);
 
-    SmtrackHeightfieldAnimator* smtracks_owner = &smtrack_heightfield;
-    smtracks_owner->initialize_bod_base();
-    smtracks_owner->frame_sequence.initialize_object_constructor_thunk();
-    smtracks_owner->vtable = &g_smtracks_callback_table;
+    Face* face = &smtrack_heightfield;
+    face->initialize_bod_base();
+    face->frame_sequence.initialize_object_constructor_thunk();
+    face->vtable = &g_face_callback_table;
 
     initialize_array_with_constructor(
         (RuntimeSlot*)sm_tracks.entries,

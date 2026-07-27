@@ -804,3 +804,60 @@ def test_mobile_object_vertex_dedup_preserves_platform_layout_boundary() -> None
     ).read_text(encoding="utf-8")
     assert "0x14-byte position/UV record" in notes
     assert "0x1c-byte `ObjectGroupedVertex`" in notes
+
+
+def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_address = {
+        entry["address"]: entry
+        for entry in references["symbols"]
+    }
+
+    sampler = entries["sample_smtrack_heightmap"]
+    assert sampler["status"] == "verified"
+    assert sampler["confidence"] == "high"
+    assert sampler["android_symbol"] == (
+        "ObjectProcLandScapeUpdate("
+        "cRObject*, float, float, cRTexture*, bool)"
+    )
+    assert sampler["ios_symbol"] == sampler["android_symbol"]
+    assert sampler["android_body_count"] == 1
+    assert sampler["ios_body_count"] == 1
+
+    face_ai = entries["update_smtracks"]
+    assert face_ai["status"] == "verified"
+    assert face_ai["android_symbol"] == "cRFace::AI()"
+    assert face_ai["ios_symbol"] == "cRFace::AI()"
+    assert face_ai["source_object"] == "SubGame.o"
+    assert face_ai["android_body_count"] == 1
+    assert face_ai["ios_body_count"] == 1
+
+    assert "ObjectProcLandScapeUpdate" in (
+        functions_by_name["sample_smtrack_heightmap"]["aliases"]
+    )
+    assert "cRFace_AI" in functions_by_name["update_smtracks"]["aliases"]
+    callback_table = references_by_address["0x4972f8"]
+    assert callback_table["name"] == "g_face_callback_table"
+    assert "g_smtracks_callback_table" in callback_table["aliases"]
+
+    matcher_header = (
+        repo_root / "tools/match/include/smtracks.h"
+    ).read_text(encoding="utf-8")
+    assert "class Face : public BodBase" in matcher_header
+    assert "bool cubic" in matcher_header
+    assert "SmtrackHeightfieldAnimator" not in matcher_header

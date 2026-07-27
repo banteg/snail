@@ -5126,6 +5126,24 @@
       "source_object": null,
       "confidence": "high",
       "notes": "This mapping applies to the inlined cRGame constructor region inside the larger Windows allocation/reporting wrapper, not to the wrapper's outer authored name. Both ports install the root callback owner and construct the same major embedded families: the border manager with 150 records, 128 cached object slots, Backdrop, StarManager, large logo banks, cRSubGame, and TipManager. Android uses smaller Bod-derived layouts and different secondary-logo capacity; Windows additionally emits its size ledger, operator new call, exception cleanup, global publication, and allocation counters."
+    },
+    {
+      "address": "0x41a360",
+      "windows_name": "sample_smtrack_heightmap",
+      "android_symbol": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
+      "ios_symbol": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "All three ports derive an inclusive vertex grid from cRObject sample-count/aspect fields, sample bottom-up retained TGA RGB bytes through the supplied texture, optionally cube the normalized average, and write base plus scale times that value into each borrowed vertex y lane. Android and iOS preserve the exact free-function name and bool parameter. Their cRObject/cRTexture layouts differ from Windows, so only the authored contract and ownership transfer."
+    },
+    {
+      "address": "0x441f60",
+      "windows_name": "update_smtracks",
+      "android_symbol": "cRFace::AI()",
+      "ios_symbol": "cRFace::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android and iOS advance the cRFace-owned cRMovie sequence, install its current texture on the borrowed object's first face, and call ObjectProcLandScapeUpdate with 0.0, 5.0, that texture, and false. Windows performs the same lifecycle exactly through its 0x128-byte Face owner and callback table at 0x4972f8. Mobile Bod/Movie offsets are platform-specific and do not replace the independently exact Windows BodBase plus FrameSequence layout."
     }
   ]
 }

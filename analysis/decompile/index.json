@@ -1,37 +1,33 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 4,
-  "ida_exported": 4,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "binja_analysis_refreshed": true,
+  "binja_analysis_refreshed": false,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_dip_path_template_pair",
-      "address": "0x41e440"
+      "name": "initialize_runtime_pools_and_path_template_bank",
+      "address": "0x408060"
     },
     {
-      "name": "initialize_slalomdouble_path_template_pair",
-      "address": "0x425050"
+      "name": "sample_smtrack_heightmap",
+      "address": "0x41a360"
     },
     {
-      "name": "initialize_cage2_path_template_pair",
-      "address": "0x42e720"
-    },
-    {
-      "name": "update_subgoldy",
-      "address": "0x43b120"
+      "name": "update_smtracks",
+      "address": "0x441f60"
     }
   ],
   "health_check_count": 1137,

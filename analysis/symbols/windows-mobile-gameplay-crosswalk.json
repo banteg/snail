@@ -14,12 +14,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 564,
-    "unverified_entries": 221,
-    "verified_android_symbols": 558,
-    "verified_ios_symbols": 453,
-    "available_android_mappings": 558,
-    "available_ios_mappings": 416
+    "verified_entries": 566,
+    "unverified_entries": 219,
+    "verified_android_symbols": 560,
+    "verified_ios_symbols": 455,
+    "available_android_mappings": 560,
+    "available_ios_mappings": 418
   },
   "entries": [
     {
@@ -10607,71 +10607,13 @@
       "address": "0x41a360",
       "windows_name": "sample_smtrack_heightmap",
       "windows_size": 368,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRSnail::ExtractHotSpots()",
-          "score": 0.6626,
-          "name_score": 0.5029,
-          "size_score": 0.9022
-        },
-        {
-          "symbol": "cRSubGame::DeSaltTrack()",
-          "score": 0.6387,
-          "name_score": 0.4848,
-          "size_score": 0.8696
-        },
-        {
-          "symbol": "cRSubGame::CalcRate()",
-          "score": 0.6357,
-          "name_score": 0.4073,
-          "size_score": 0.9783
-        },
-        {
-          "symbol": "cRObject::CalcTextureGroups()",
-          "score": 0.6352,
-          "name_score": 0.45,
-          "size_score": 0.913
-        },
-        {
-          "symbol": "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
-          "score": 0.6137,
-          "name_score": 0.384,
-          "size_score": 0.9583
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRSnail::ExtractHotSpots()",
-          "score": 0.6104,
-          "name_score": 0.5029,
-          "size_score": 0.7717
-        },
-        {
-          "symbol": "cRCompletion::UnInit()",
-          "score": 0.6072,
-          "name_score": 0.3525,
-          "size_score": 0.9892
-        },
-        {
-          "symbol": "OFResourceDataMap::addNestedResourceArrayField(NSString*, objc_selector*, objc_selector*)",
-          "score": 0.5981,
-          "name_score": 0.3374,
-          "size_score": 0.9892
-        },
-        {
-          "symbol": "cRObject::CalcTextureGroups()",
-          "score": 0.5957,
-          "name_score": 0.45,
-          "size_score": 0.8142
-        },
-        {
-          "symbol": "OFResourceDataMap::addField(NSString*, objc_selector*, objc_selector*)",
-          "score": 0.5939,
-          "name_score": 0.3374,
-          "size_score": 0.9787
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
+      "ios_symbol": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x41a4d0",
@@ -18709,71 +18651,13 @@
       "address": "0x441f60",
       "windows_name": "update_smtracks",
       "windows_size": 64,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRSubTracks::UnHide(cRSubSegmentRaw**)",
-          "score": 0.7198,
-          "name_score": 0.5722,
-          "size_score": 0.9412
-        },
-        {
-          "symbol": "cRBorder::X0()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cLinkedList<cRBod>::AddAfter(cRBod&, cRBod&)",
-          "score": 0.6527,
-          "name_score": 0.4211,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "G0RenderSprite3DStart()",
-          "score": 0.6483,
-          "name_score": 0.4138,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRTime::Faster(int, int, int)",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRSprite::SetTextureRef(int, int)",
-          "score": 0.645,
-          "name_score": 0.45,
-          "size_score": 0.9375
-        },
-        {
-          "symbol": "OFViewDataGetter::OFViewDataGetter(UIView*, OFViewDataMap*)",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFHttpAsciiParameter::getAsUrlParameter() const",
-          "score": 0.6073,
-          "name_score": 0.3871,
-          "size_score": 0.9375
-        },
-        {
-          "symbol": "Rstrscan(char*, char)",
-          "score": 0.5932,
-          "name_score": 0.3636,
-          "size_score": 0.9375
-        },
-        {
-          "symbol": "RTextAppend(char*, char*)",
-          "score": 0.5895,
-          "name_score": 0.3158,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRFace::AI()",
+      "ios_symbol": "cRFace::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x441fa0",

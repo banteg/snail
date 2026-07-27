@@ -2,10 +2,10 @@
 /* function: update_smtracks @ 0x441f60 */
 /* selector: update_smtracks */
 
-// Advances the embedded 0x128-byte SMTrack height-field animator, installs the current sequence `TextureRef*` on its borrowed mesh, and resamples that texture's retained TGA bytes into the mesh vertex-y grid.
-void __thiscall update_smtracks(SmtrackHeightfieldAnimator *animator)
+// Exact Windows `cRFace::AI()`: advances the embedded 0x128-byte Face owner's `FrameSequence`, installs its current `TextureRef*` on the borrowed mesh's first facequad, and invokes `ObjectProcLandScapeUpdate` to resample the retained image into the mesh vertex-y grid. The callback table at `0x4972f8` points directly here.
+void __thiscall update_smtracks(Face *face)
 {
-  advance_frame_sequence(&animator->frame_sequence);
-  animator->bod.object->facequads->texture_ref = animator->frame_sequence.current_texture_ref;
-  sample_smtrack_heightmap(animator->bod.object, 0.0, 5.0, animator->frame_sequence.current_texture_ref, 0);
+  advance_frame_sequence(&face->frame_sequence);
+  face->bod.object->facequads->texture_ref = face->frame_sequence.current_texture_ref;
+  sample_smtrack_heightmap(face->bod.object, 0.0, 5.0, face->frame_sequence.current_texture_ref, false);
 }
