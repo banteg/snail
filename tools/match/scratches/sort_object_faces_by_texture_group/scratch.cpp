@@ -1,4 +1,5 @@
 // sort_object_faces_by_texture_group @ 0x419fd0 (cdecl)
+// Authored name: ObjectProcJoinTextures(cRObject*)
 
 #include "object_render_types.h"
 

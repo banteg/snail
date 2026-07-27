@@ -5145,6 +5145,15 @@
       "notes": "All three ports derive an inclusive vertex grid from cRObject sample-count/aspect fields, sample bottom-up retained TGA RGB bytes through the supplied texture, optionally cube the normalized average, and write base plus scale times that value into each borrowed vertex y lane. Android and iOS preserve the exact free-function name and bool parameter. Their cRObject/cRTexture layouts differ from Windows, so only the authored contract and ownership transfer."
     },
     {
+      "address": "0x419fd0",
+      "windows_name": "sort_object_faces_by_texture_group",
+      "android_symbol": "ObjectProcJoinTextures(cRObject*)",
+      "ios_symbol": "ObjectProcJoinTextures(cRObject*)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "notes": "All three ports group one cRObject face bank into contiguous texture runs by scanning forward from each base face and swapping a matching 0x30-byte face into the current insertion slot. Android and iOS preserve the authored ObjectProcJoinTextures free-function name; Windows is already instruction-exact with independent scan and insertion cursors."
+    },
+    {
       "address": "0x430470",
       "windows_name": "advance_frame_sequence",
       "android_symbol": "cRMovie::AI()",

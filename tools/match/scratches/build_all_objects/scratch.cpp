@@ -3,8 +3,6 @@
 #include "loading_bar.h"
 #include "object_render_types.h"
 
-void sort_object_faces_by_texture_group(Object* object); // @ 0x419fd0
-
 void ObjectList::build_all_objects()
 {
     int index = 0;

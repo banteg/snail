@@ -862,6 +862,47 @@ def test_mobile_object_vertex_dedup_preserves_platform_layout_boundary() -> None
     assert "0x1c-byte `ObjectGroupedVertex`" in notes
 
 
+def test_mobile_object_texture_join_recovers_authored_free_function() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    texture_join = entries["sort_object_faces_by_texture_group"]
+    assert texture_join["status"] == "verified"
+    assert texture_join["confidence"] == "high"
+    assert texture_join["source_object"] == "ObjectProc.o"
+    assert texture_join["android_symbol"] == (
+        "ObjectProcJoinTextures(cRObject*)"
+    )
+    assert texture_join["ios_symbol"] == texture_join["android_symbol"]
+    assert texture_join["android_body_count"] == 1
+    assert texture_join["ios_body_count"] == 1
+    assert "ObjectProcJoinTextures" in (
+        functions_by_name["sort_object_faces_by_texture_group"]["aliases"]
+    )
+
+    notes = (
+        repo_root
+        / "tools/match/scratches"
+        / "sort_object_faces_by_texture_group"
+        / "NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "`ObjectProcJoinTextures(cRObject*)`" in notes
+    assert "authored alias" in notes
+    assert "does not turn the" in notes
+    assert "operation into a `cRObject` member" in notes
+
+
 def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

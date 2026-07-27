@@ -57,3 +57,19 @@ and `Object` (0xdc) layouts before mutation, saves and reads back every
 annotation, and is fully idempotent on a second run. The exact matcher source
 is intentionally unchanged at 100.00%, 75/75 instructions, prefix 75/75, with
 no masked operands.
+
+## 2026-07-27 authored ObjectProc identity
+
+The expanded Android and iOS corpora retain this exact algorithm as the free
+function `ObjectProcJoinTextures(cRObject*)`. Both bodies walk the object-owned
+face bank, use each base face's `TextureRef*` as the grouping key, advance
+independent scan and insertion cursors, and swap the complete 0x30-byte face
+records when a matching texture is out of place.
+
+That cross-port agreement replaces the merely semantic Windows label with an
+authored alias and pins the function to `ObjectProc.o`; it does not turn the
+operation into a `cRObject` member. The stable Windows harness name remains in
+the matcher and analysis database, while the original source identity is
+recorded in the symbol manifest and mobile crosswalk. Matcher source remains
+instruction-exact at 100.00%, 75/75 instructions, full prefix, with no masked
+operands.

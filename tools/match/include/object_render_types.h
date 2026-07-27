@@ -247,6 +247,7 @@ void load_object_definition(char* path, Object* object); // @ 0x44c420
 int get_or_append_object_texture_group_vertex(
     Object* object, int vertex_index, float u, float v); // @ 0x413bb0
 void build_object_texture_group_buffers(Object* object); // @ 0x413d50
+// Authored ObjectProcJoinTextures(cRObject*) free function.
 void sort_object_faces_by_texture_group(Object* object); // @ 0x419fd0
 void refresh_object_vertex_buffer(Object* object); // @ 0x412250
 void render_object(Object* object, TransformMatrix* matrix, float texture_u,

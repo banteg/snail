@@ -1448,7 +1448,10 @@
     {
       "address": "0x419fd0",
       "name": "sort_object_faces_by_texture_group",
-      "description": "Sorts one Object's 0x30-byte face records into contiguous texture runs using independent scan and insertion cursors, swapping whole ObjectFaceQuad records so calc_object_texture_groups can retain cumulative run ends."
+      "aliases": [
+        "ObjectProcJoinTextures"
+      ],
+      "description": "Exact Windows `ObjectProcJoinTextures(cRObject*)`: sorts one Object's 0x30-byte face records into contiguous texture runs using independent scan and insertion cursors, swapping whole ObjectFaceQuad records so calc_object_texture_groups can retain cumulative run ends. Android and iOS preserve the authored free-function name and the same face-bank algorithm."
     },
     {
       "address": "0x41a0a0",
