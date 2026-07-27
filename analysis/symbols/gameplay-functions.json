@@ -4187,7 +4187,10 @@
     {
       "address": "0x44d1e0",
       "name": "premultiply_matrix_in_place",
-      "description": "Exact void `TransformMatrix::premultiply_matrix_in_place(const TransformMatrix&)` member: snapshots its receiver and writes `this = lhs * saved_this`. The core's incidental EAX points at the dead stack snapshot, proving no meaningful return contract."
+      "aliases": [
+        "tMatrix_PreMultiply"
+      ],
+      "description": "Exact authored void `tMatrix::PreMultiply(const tMatrix&)` member: snapshots its receiver and writes `this = lhs * saved_this`. Android preserves the standalone symbol and identical resolved body behind a four-byte entry veneer; the core's incidental EAX points at the dead stack snapshot, proving no meaningful return contract."
     },
     {
       "address": "0x44d210",

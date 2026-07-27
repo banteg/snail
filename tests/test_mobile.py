@@ -541,6 +541,55 @@ def test_mobile_delay_click_recovers_border_manager_owner() -> None:
     assert "iOS independently inlines" in notes
 
 
+def test_mobile_matrix_premultiply_recovers_authored_member() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    premultiply = entries["premultiply_matrix_in_place"]
+    assert premultiply["status"] == "verified"
+    assert premultiply["confidence"] == "high"
+    assert premultiply["source_object"] == "RMaths.o"
+    assert premultiply["android_symbol"] == (
+        "tMatrix::PreMultiply(tMatrix const&)"
+    )
+    assert premultiply["android_body_count"] == 1
+    assert "ios_symbol" not in premultiply
+    assert "tMatrix_PreMultiply" in (
+        functions_by_name["premultiply_matrix_in_place"]["aliases"]
+    )
+
+    android_body = (
+        repo_root
+        / (
+            "analysis/decompile/android/functions/"
+            "000276f8-_ZN7tMatrix11PreMultiplyERKS_.c"
+        )
+    ).read_text(encoding="utf-8")
+    assert android_body.count("= *(undefined4 *)") == 16
+    assert "Multiply(this,param_1,(tMatrix *)&uStack_50)" in android_body
+
+    notes = (
+        repo_root
+        / "tools/match/scratches"
+        / "premultiply_matrix_in_place"
+        / "NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "standalone authored" in notes
+    assert "four-byte" in notes
+    assert "no standalone `PreMultiply` export" in notes
+
+
 def test_mobile_rng_pair_recovers_authored_contract() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

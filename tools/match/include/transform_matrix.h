@@ -26,7 +26,8 @@ struct TransformMatrix {
         float m30, float m31, float m32, float m33); // @ 0x44cfe0
     void operator*=(const TransformMatrix& rhs); // @ 0x44d1a0, tMatrix::operator*=
     void multiply_matrix(const TransformMatrix& rhs); // @ 0x44d1d0, tMatrix::Multiply
-    void premultiply_matrix_in_place(const TransformMatrix& lhs); // @ 0x44d1e0
+    void premultiply_matrix_in_place(
+        const TransformMatrix& lhs); // @ 0x44d1e0, tMatrix::PreMultiply
     void multiply_matrices(
         const TransformMatrix& lhs,
         const TransformMatrix& rhs); // @ 0x44d060

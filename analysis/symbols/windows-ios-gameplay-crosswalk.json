@@ -3796,6 +3796,14 @@
       "notes": "The exact 4/4 Windows member forwards its rhs reference to multiply_matrix_assign. Android implements the same authored Multiply entry as a direct branch to operator*=, while both Android and iOS BuildLoopBow call Multiply at the two corresponding composition sites."
     },
     {
+      "address": "0x44d1e0",
+      "windows_name": "premultiply_matrix_in_place",
+      "android_symbol": "tMatrix::PreMultiply(tMatrix const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "Android preserves the exact authored tMatrix::PreMultiply name. Its four-byte entry veneer resolves to the same body as Windows: copy all 16 receiver words to one local tMatrix, then call the two-input Multiply core as this = lhs * saved_this. The Windows caller discards EAX and the exact void source remains 18/18 instructions. iOS has no standalone PreMultiply export, so no iOS symbol is claimed."
+    },
+    {
       "address": "0x44d210",
       "windows_name": "set_matrix_identity",
       "ios_symbol": "tMatrix::Identity()",

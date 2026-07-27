@@ -14,11 +14,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 576,
-    "unverified_entries": 209,
-    "verified_android_symbols": 570,
+    "verified_entries": 577,
+    "unverified_entries": 208,
+    "verified_android_symbols": 571,
     "verified_ios_symbols": 462,
-    "available_android_mappings": 570,
+    "available_android_mappings": 571,
     "available_ios_mappings": 426
   },
   "entries": [
@@ -23836,45 +23836,29 @@
       "address": "0x44d1e0",
       "windows_name": "premultiply_matrix_in_place",
       "windows_size": 48,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRFade::FadeIn()",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRTimeTrial::Init()",
-          "score": 0.611,
-          "name_score": 0.4073,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "cRObject::RequestStrip(int)",
-          "score": 0.6095,
-          "name_score": 0.4444,
-          "size_score": 0.8571
-        },
-        {
-          "symbol": "cRResourceManager::RenderSplash()",
-          "score": 0.5996,
-          "name_score": 0.384,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "tMatrix::tMatrix(float*)",
-          "score": 0.591,
-          "name_score": 0.4516,
-          "size_score": 0.8
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "tMatrix::PreMultiply(tMatrix const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
-          "symbol": "cRFade::FadeIn()",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
+          "symbol": "tMatrix::tMatrix(float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float)",
+          "score": 0.7,
+          "name_score": 0.9,
+          "size_score": 0.4
+        },
+        {
+          "symbol": "tMatrix::Identity()",
+          "score": 0.6126,
+          "name_score": 0.6,
+          "size_score": 0.6316
+        },
+        {
+          "symbol": "tMatrix::Multiply(tMatrix const&)",
+          "score": 0.5952,
+          "name_score": 0.9,
+          "size_score": 0.1379
         },
         {
           "symbol": "cRMainMenu::UnInit()",
@@ -23883,21 +23867,9 @@
           "size_score": 1.0
         },
         {
-          "symbol": "cRDuplicateVertices::Init(int)",
-          "score": 0.5686,
-          "name_score": 0.281,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RTextNewLine(char**)",
-          "score": 0.561,
-          "name_score": 0.3636,
-          "size_score": 0.8571
-        },
-        {
           "symbol": "tMatrix::RotIdentity()",
-          "score": 0.5547,
-          "name_score": 0.4245,
+          "score": 0.57,
+          "name_score": 0.45,
           "size_score": 0.75
         }
       ]
