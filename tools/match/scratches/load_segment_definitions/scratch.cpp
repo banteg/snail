@@ -1,6 +1,7 @@
 // load_segment_definitions @ 0x448160 (thiscall)
 
 #include "game_root.h"
+#include "rtext.h"
 #include "segment_catalog_types.h"
 
 
@@ -15,7 +16,6 @@ int load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out_s
 char* find_case_insensitive_substring(char* needle, char* haystack);
 char* advance_to_next_crlf_line(char* cursor); // @ 0x44e690
 int parse_next_signed_int(char** cursor);
-float parse_next_float32(char** cursor);
 
 void SMTracks::load_segment_definitions()
 {

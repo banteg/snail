@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "directx_loader.h"
+#include "rtext.h"
 #include "sprite.h"
 
 char* get_archive_data_base(); // @ 0x431a90
@@ -11,7 +12,6 @@ char is_archive_index_loaded(); // @ 0x431a80
 char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size);
 char* find_case_insensitive_substring(char* needle, char* haystack); // @ 0x44e600
 int parse_next_signed_int(char** cursor); // @ 0x44e710
-float parse_next_float32(char** cursor); // @ 0x431f20
 void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
 void free_tracked_memory(void* pointer); // @ 0x431bf0 / RShellMemoryFree(void*)
 int report_errorf(char* format, ...); // @ 0x431cc0

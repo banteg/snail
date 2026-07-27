@@ -7,17 +7,17 @@
 00405d81        char path_pattern[0x100]
 00405d81        sprintf(&path_pattern, "%s", mesh_name_1)
 00405d9a        char* cursor = &path_pattern
-00405da3        char* cursor_1 = &find_case_insensitive_substring("-", &path_pattern)[1]
-00405daa        cursor = cursor_1
-00405db6        char* cursor_2 = &find_case_insensitive_substring("-", cursor_1)[1]
-00405db7        cursor = cursor_2
-00405dbb        *cursor_2 = 0x2a
-00405dc2        char* cursor_3 = &cursor[1]
-00405dc3        cursor = cursor_3
-00405dc7        *cursor_3 = 0x2e
-00405dce        char* cursor_4 = &cursor[1]
-00405dcf        cursor = cursor_4
-00405dd3        *cursor_4 = 0x78
+00405da3        char* searched = &find_case_insensitive_substring("-", &path_pattern)[1]
+00405daa        cursor = searched
+00405db6        char* cursor_1 = &find_case_insensitive_substring("-", searched)[1]
+00405db7        cursor = cursor_1
+00405dbb        *cursor_1 = 0x2a
+00405dc2        char* cursor_2 = &cursor[1]
+00405dc3        cursor = cursor_2
+00405dc7        *cursor_2 = 0x2e
+00405dce        char* cursor_3 = &cursor[1]
+00405dcf        cursor = cursor_3
+00405dd3        *cursor_3 = 0x78
 00405ddb        cursor = &cursor[1]
 00405de6        if (is_archive_index_loaded() != 0)
 00405dec        *cursor = 0x32
@@ -36,9 +36,9 @@
 00405e67        set_bod_object(&frame_number_cursor[-0x1f], add_object_to_list(&g_object_list))
 00405e75        load_x_mesh(loader, mesh_path, frame_number_cursor[-0x16], 0)
 00405e80        cursor = mesh_path
-00405e89        char* cursor_5 = &find_case_insensitive_substring("-", mesh_path)[1]
-00405e90        cursor = cursor_5
-00405e9a        cursor = &find_case_insensitive_substring("-", cursor_5)[1]
+00405e89        char* searched_1 = &find_case_insensitive_substring("-", mesh_path)[1]
+00405e90        cursor = searched_1
+00405e9a        cursor = &find_case_insensitive_substring("-", searched_1)[1]
 00405eab        *frame_number_cursor = parse_next_signed_int(&cursor)
 00405ead        loop_keyframe_count = keyframe_count
 00405eb1        keyframe_index += 1
@@ -65,24 +65,24 @@
 00405f54        return
 00405f57        char ecx_11 = *animation_end
 00405f63        *animation_end = 0
-00405f66        char* cursor_6 = find_case_insensitive_substring("Duration:", animation_block)
-00405f6e        cursor = cursor_6
-00405f74        if (cursor_6 == 0)
+00405f66        char* searched_2 = find_case_insensitive_substring("Duration:", animation_block)
+00405f6e        cursor = searched_2
+00405f74        if (searched_2 == 0)
 00405fa5        progress_step = 0.0166666675f
-00405f87        cursor = &find_case_insensitive_substring(":", cursor_6)[1]
+00405f87        cursor = &find_case_insensitive_substring(":", searched_2)[1]
 00405f9f        progress_step = fconvert.s(fconvert.t(1f) / (parse_next_float32(&cursor) * fconvert.t(60f)))
 00405fb3        mode_flags = 0
-00405fb5        char* cursor_7 = find_case_insensitive_substring("Mode:Loop", animation_block)
-00405fbd        cursor = cursor_7
-00405fc3        if (cursor_7 != 0)
+00405fb5        char* cursor_4 = find_case_insensitive_substring("Mode:Loop", animation_block)
+00405fbd        cursor = cursor_4
+00405fc3        if (cursor_4 != 0)
 00405fc5        mode_flags = 1
-00405fd0        char* cursor_8 = find_case_insensitive_substring("Mode:Once", animation_block)
-00405fd8        cursor = cursor_8
-00405fde        if (cursor_8 != 0)
+00405fd0        char* cursor_5 = find_case_insensitive_substring("Mode:Once", animation_block)
+00405fd8        cursor = cursor_5
+00405fde        if (cursor_5 != 0)
 00405fe0        mode_flags |= 4
-00405fe9        char* cursor_9 = find_case_insensitive_substring("Mode:Pingpong", animation_block)
-00405ff1        cursor = cursor_9
-00405ff7        if (cursor_9 != 0)
+00405fe9        char* cursor_6 = find_case_insensitive_substring("Mode:Pingpong", animation_block)
+00405ff1        cursor = cursor_6
+00405ff7        if (cursor_6 != 0)
 00405ff9        mode_flags |= 2
 00406000        *animation_end = ecx_11
 00406021        int32_t keyframe_count_1 = keyframe_count

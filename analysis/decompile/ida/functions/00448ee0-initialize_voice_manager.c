@@ -99,7 +99,7 @@ LABEL_20:
     }
     case_insensitive_substring = find_case_insensitive_substring(ArgList, buffer);
     cursor = case_insensitive_substring;
-    if ( !case_insensitive_substring )
+    if ( case_insensitive_substring == nullptr )
       break;
     cursor = find_case_insensitive_substring(asc_4A1568, case_insensitive_substring);
     v4 = find_case_insensitive_substring(asc_4AC1BC, cursor);

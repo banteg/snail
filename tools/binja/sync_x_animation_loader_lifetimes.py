@@ -3,18 +3,18 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
     apply_direct_proto_update,
+    apply_split_user_var_update,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
@@ -183,6 +183,30 @@ X_ANIMATION_LOADER_USER_VAR_UPDATES = (
     ),
 )
 
+# The mobile-proven float32 RText ABI removes one conversion from this
+# function's lifted call graph. That exposes fresh EAX temporaries before the
+# existing ESI/EBX borrowed-pointer lifetimes; merge each definition chain so
+# HLIL retains the semantic animation block and delimiter owners.
+ANIMATION_BLOCK_SPLIT_DEFINITIONS = (
+    ("0x405f16", "mlil", "RegisterVariableSourceType", 438, 66),
+    ("0x405f1b", "mlil", "RegisterVariableSourceType", 443, 72),
+)
+ANIMATION_BLOCK_TARGET_VAR = (
+    "RegisterVariableSourceType",
+    443,
+    72,
+)
+
+ANIMATION_END_SPLIT_DEFINITIONS = (
+    ("0x405f2e", "mlil", "RegisterVariableSourceType", 462, 66),
+    ("0x405f33", "mlil", "RegisterVariableSourceType", 467, 69),
+)
+ANIMATION_END_TARGET_VAR = (
+    "RegisterVariableSourceType",
+    467,
+    69,
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -258,6 +282,24 @@ def main() -> int:
             target=args.target,
             identifier="load_x_animation_clip",
             prototype=X_ANIMATION_LOADER_PROTOTYPE,
+        ),
+        *apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="load_x_animation_clip",
+            definitions=ANIMATION_BLOCK_SPLIT_DEFINITIONS,
+            target_var=ANIMATION_BLOCK_TARGET_VAR,
+            variable_name="animation_block",
+            variable_type="char*",
+        ),
+        *apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="load_x_animation_clip",
+            definitions=ANIMATION_END_SPLIT_DEFINITIONS,
+            target_var=ANIMATION_END_TARGET_VAR,
+            variable_name="animation_end",
+            variable_type="char*",
         ),
         *apply_user_var_updates(
             REPO_ROOT,

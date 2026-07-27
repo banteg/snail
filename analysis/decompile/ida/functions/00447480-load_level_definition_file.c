@@ -75,7 +75,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
 
   g_current_level_definition_name = filename;
   sprintf(level_path, "Levels/%s", filename);
-  if ( !load_file_bytes_from_archive_or_fs(level_path, g_level_file_text_buffer, nullptr) )
+  if ( load_file_bytes_from_archive_or_fs(level_path, g_level_file_text_buffer, nullptr) == nullptr )
   {
     report_errorf("Cannot find %s reverting to default.txt", level_path);
     sprintf(level_path, aLevelsDefaultT);
@@ -83,7 +83,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
   }
   case_insensitive_substring = find_case_insensitive_substring(aName, g_level_file_text_buffer);
   cursor = case_insensitive_substring;
-  if ( !case_insensitive_substring )
+  if ( case_insensitive_substring == nullptr )
   {
     report_errorf("Cannot find Name:' in %s", level_path);
     case_insensitive_substring = nullptr;
@@ -99,26 +99,26 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
     cursor = ++v4;
   }
   *level_display_name_cursor = 0;
-  if ( !g_game_base->subgame.galaxy.active )
+  if ( g_game_base->subgame.galaxy.active == 0 )
   {
     v7 = find_case_insensitive_substring(aArcade, filename);
     cursor = v7;
-    if ( v7 )
+    if ( v7 != nullptr )
     {
       cursor = find_case_insensitive_substring(aE, v7) + 1;
       v8 = parse_next_signed_int(&cursor);
       sprintf(g_game_base->subgame.galaxy.route_slots[v8].record.detail_text, "%s", tracks->level_display_name);
       v9 = find_case_insensitive_substring(aGalaxytext, g_level_file_text_buffer);
       cursor = v9;
-      if ( v9 )
+      if ( v9 != nullptr )
       {
         v10 = find_case_insensitive_substring(asc_4A1568, v9);
         cursor = v10;
-        if ( v10 )
+        if ( v10 != nullptr )
         {
           cursor = (char *)advance_to_next_crlf_line(v10);
           v11 = find_case_insensitive_substring(asc_4AC1BC, cursor);
-          if ( v11 )
+          if ( v11 != nullptr )
           {
             v12 = (unsigned int)(v11 - 2);
             description_text = g_game_base->subgame.galaxy.route_slots[v8].record.description_text;
@@ -163,12 +163,12 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
     }
   }
   cursor = find_case_insensitive_substring(aRandomYes, g_level_file_text_buffer);
-  if ( cursor )
+  if ( cursor != nullptr )
   {
     tracks->random_enabled = 1;
     v15 = find_case_insensitive_substring(aLength, g_level_file_text_buffer);
     cursor = v15;
-    if ( !v15 )
+    if ( v15 == nullptr )
     {
       report_errorf("Cannot Length: in %s", level_path);
       return;
@@ -199,7 +199,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
   }
   v19 = find_case_insensitive_substring(aBackground, g_level_file_text_buffer);
   cursor = v19;
-  if ( !v19 )
+  if ( v19 == nullptr )
   {
     report_errorf("No Background: in %s", level_path);
     return;
@@ -222,7 +222,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
   tracks->landscape_script_index = load_landscape_script_by_name(&v24->subgame.landscape_manager, script_name);
   v25 = find_case_insensitive_substring(aFringe, g_level_file_text_buffer);
   cursor = v25;
-  if ( v25 )
+  if ( v25 != nullptr )
   {
     cursor = find_case_insensitive_substring(asc_4A1644, v25) + 1;
     parsed_int = parse_next_signed_int(&cursor);
@@ -239,7 +239,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
   }
   v26 = find_case_insensitive_substring(aTrack, g_level_file_text_buffer);
   cursor = v26;
-  if ( v26 )
+  if ( v26 != nullptr )
   {
     cursor = find_case_insensitive_substring(asc_4A1644, v26) + 1;
     v27 = *cursor;
@@ -263,6 +263,8 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
         case 'r':
           tracks->track_texture_set = 5;
           break;
+        default:
+          break;
       }
     }
   }
@@ -273,7 +275,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
   }
   v28 = find_case_insensitive_substring(aParcels, g_level_file_text_buffer);
   cursor = v28;
-  if ( !v28 )
+  if ( v28 == nullptr )
   {
     tracks->parcel_count = 0;
     report_errorf("No Parcel: in %s", level_path);
@@ -283,7 +285,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
   tracks->parcel_count = parse_next_signed_int(&cursor);
   v29 = find_case_insensitive_substring(aQuota, g_level_file_text_buffer);
   cursor = v29;
-  if ( !v29 )
+  if ( v29 == nullptr )
   {
     tracks->parcel_quota = 0;
     report_errorf("No Quota: in %s", level_path);
@@ -292,7 +294,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
   cursor = find_case_insensitive_substring(asc_4A1644, v29);
   tracks->parcel_quota = parse_next_signed_int(&cursor);
   cursor = find_case_insensitive_substring(aSpeedSelect, g_level_file_text_buffer);
-  if ( cursor )
+  if ( cursor != nullptr )
   {
     tracks->selected_speed.bits = -1082130432;
   }
@@ -300,7 +302,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
   {
     v30 = find_case_insensitive_substring(aSpeed, g_level_file_text_buffer);
     cursor = v30;
-    if ( v30 )
+    if ( v30 != nullptr )
     {
       cursor = find_case_insensitive_substring(asc_4A1644, v30) + 1;
       tracks->selected_speed.value = parse_next_float32(&cursor);
@@ -312,46 +314,46 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
     }
   }
   cursor = find_case_insensitive_substring(aGarbage, g_level_file_text_buffer);
-  if ( cursor )
+  if ( cursor != nullptr )
     tracks->garbage_frequency = parse_next_float32(&cursor);
   else
     tracks->garbage_frequency = -1.0;
   cursor = find_case_insensitive_substring(aSalt, g_level_file_text_buffer);
-  if ( cursor )
+  if ( cursor != nullptr )
     tracks->salt_frequency = parse_next_float32(&cursor);
   else
     tracks->salt_frequency = -1.0;
   tracks->segment_count = 0;
   cursor = find_case_insensitive_substring(aSegmentsBegin, g_level_file_text_buffer);
-  if ( !cursor )
+  if ( cursor == nullptr )
   {
     report_errorf("Cannot find Segments Begin: in %s", level_path);
     return;
   }
   v31 = find_case_insensitive_substring(aSegmentsEnd, g_level_file_text_buffer);
   segments_end = v31;
-  if ( !v31 )
+  if ( v31 == nullptr )
   {
     report_errorf("Cannot find Segments End: in %s", level_path);
     return;
   }
   crlf_line = (char *)advance_to_next_crlf_line(cursor);
   cursor = crlf_line;
-  if ( !crlf_line )
+  if ( crlf_line == nullptr )
     goto LABEL_105;
   if ( crlf_line >= v31 )
   {
 LABEL_94:
     v50 = find_case_insensitive_substring(aFirst, g_level_file_text_buffer);
     cursor = v50;
-    if ( !v50 )
+    if ( v50 == nullptr )
     {
       report_errorf("Cannot find 'First:' in %s", level_path);
       return;
     }
     v51 = (char *)advance_to_next_crlf_line(v50);
     cursor = v51;
-    if ( v51 )
+    if ( v51 != nullptr )
     {
       v52 = *v51;
       for ( first_segment_name_cursor = segment_name; *v51 != 46; v52 = *v51 )
@@ -368,14 +370,14 @@ LABEL_94:
       copy_segment_definition_to_level_slot(tracks, segment_name, &tracks->first_segment);
       v55 = find_case_insensitive_substring(aLast, g_level_file_text_buffer);
       cursor = v55;
-      if ( !v55 )
+      if ( v55 == nullptr )
       {
         report_errorf("Cannot find 'Last:' in %s", level_path);
         return;
       }
       v56 = (char *)advance_to_next_crlf_line(v55);
       cursor = v56;
-      if ( v56 )
+      if ( v56 != nullptr )
       {
         v57 = *v56;
         for ( last_segment_name_cursor = segment_name; *v56 != 46; v57 = *v56 )
@@ -430,7 +432,7 @@ LABEL_105:
     *line_options_cursor = 0;
     v40 = find_case_insensitive_substring(aAngle, line_options);
     line_cursor = v40;
-    if ( v40 )
+    if ( v40 != nullptr )
     {
       line_cursor = find_case_insensitive_substring(asc_4A2094, v40);
       parsed_int = parse_next_signed_int(&line_cursor);
@@ -443,7 +445,7 @@ LABEL_105:
     tracks->segment_slots[tracks->segment_count].message_text[0] = 0;
     v41 = find_case_insensitive_substring(aMessage, line_options);
     line_cursor = v41;
-    if ( v41 )
+    if ( v41 != nullptr )
     {
       v42 = find_case_insensitive_substring(asc_4A2094, v41) + 1;
       line_cursor = v42;
@@ -474,14 +476,14 @@ LABEL_105:
       *message_text = 0;
       line_cursor = find_case_insensitive_substring(aDuration_0, line_options);
       tracks->segment_slots[tracks->segment_count].message_duration.bits = 1082130432;
-      if ( line_cursor )
+      if ( line_cursor != nullptr )
       {
         line_cursor = find_case_insensitive_substring(asc_4A2094, line_cursor) + 1;
         tracks->segment_slots[tracks->segment_count].message_duration.value = parse_next_float32(&line_cursor);
       }
       line_cursor = find_case_insensitive_substring(aSample, line_options);
       tracks->segment_slots[tracks->segment_count].message_sample_id = -1;
-      if ( line_cursor )
+      if ( line_cursor != nullptr )
       {
         v47 = find_case_insensitive_substring(asc_4A2094, line_cursor) + 2;
         line_cursor = v47;
@@ -501,7 +503,7 @@ LABEL_105:
     ++tracks->segment_count;
     crlf_line = (char *)advance_to_next_crlf_line(v60);
     cursor = crlf_line;
-    if ( !crlf_line )
+    if ( crlf_line == nullptr )
       break;
     if ( crlf_line >= segments_end )
       goto LABEL_94;

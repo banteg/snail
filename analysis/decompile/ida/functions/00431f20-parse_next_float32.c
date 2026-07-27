@@ -2,8 +2,8 @@
 /* function: parse_next_float32 @ 0x431f20 */
 /* selector: parse_next_float32 */
 
-// Parses the next signed decimal float from the caller-owned text cursor, consuming digits and one decimal point before returning the float32 value.
-double __cdecl parse_next_float32(char **cursor)
+// Exact Windows `RTextExtractFloat(char**)`: advances the caller-owned cursor to a signed decimal token, consumes digits and one decimal point, and returns the parsed float32 value. Mobile also retains a later code-equivalent RString.o `Rstrfloat` sibling, but the complete adjacent RText sequence resolves the canonical Windows owner.
+float __cdecl parse_next_float32(char **cursor)
 {
   char *v1; // edx
   char v2; // al
@@ -58,4 +58,3 @@ double __cdecl parse_next_float32(char **cursor)
     v5 = 1.0;
   return v3 * (v5 * v4);
 }
-

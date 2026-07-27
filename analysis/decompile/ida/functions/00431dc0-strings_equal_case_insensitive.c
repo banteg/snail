@@ -2,8 +2,8 @@
 /* function: strings_equal_case_insensitive @ 0x431dc0 */
 /* selector: strings_equal_case_insensitive */
 
-// Windows `Rstrcmp(char*, char*)`: compares two strings case-insensitively and returns true when the right-hand string terminates after matching, preserving the prefix-friendly termination contract also present in Android and iOS `RString.o`.
-bool __cdecl strings_equal_case_insensitive(char *left, char *right)
+// Windows `RTextCompStart(char*, char*)`: compares ASCII case-insensitively and returns true when the prefix argument terminates after matching. Mobile `Rstrcmp` is strict equality instead; the contiguous RShell.o RText sequence and ObjectTextLoad call graph resolve the owner.
+bool __cdecl strings_equal_case_insensitive(char *left, char *prefix)
 {
   char *v2; // esi
   char *v3; // edi
@@ -12,10 +12,10 @@ bool __cdecl strings_equal_case_insensitive(char *left, char *right)
   char v6; // al
   char v7; // bl
 
-  v2 = right;
+  v2 = prefix;
   v3 = left;
-  v4 = *right;
-  v5 = *right;
+  v4 = *prefix;
+  v5 = *prefix;
   v6 = *left;
   if ( *left >= 97 && v6 <= 122 )
     v6 -= 32;

@@ -18,11 +18,10 @@
 00431ef4        if (**cursor s>= 0x30)
 00431f11        char* esi_3
 00431ef6        esi_3 = *cursor
-00431ef8        char* edx
-00431ef8        edx.b = *esi_3
-00431efd        if (edx.b s> 0x39)
+00431ef8        char edx_1 = *esi_3
+00431efd        if (edx_1 s> 0x39)
 00431efd        break
-00431f05        eax_4 = sx.d(edx.b) + eax_4 * 0xa - 0x30
+00431f05        eax_4 = sx.d(edx_1) + eax_4 * 0xa - 0x30
 00431f0c        *cursor = &esi_3[1]
 00431f11        do while (esi_3[1] s>= 0x30)
 00431f18        return eax_4 * edi

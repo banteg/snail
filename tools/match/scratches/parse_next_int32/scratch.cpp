@@ -1,5 +1,7 @@
 // parse_next_int32 @ 0x431ec0 (cdecl)
 
+#include "rtext.h"
+
 int __cdecl parse_next_int32(char** cursor)
 {
     if (**cursor == ' ') {

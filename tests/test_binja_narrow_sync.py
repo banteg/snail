@@ -2162,8 +2162,16 @@ def test_x_animation_loader_replay_keeps_keyframes_and_parser_lifetimes() -> Non
         assert fragment in replay
         assert fragment in header
     assert "apply_direct_proto_update(" in replay
+    assert "apply_split_user_var_update(" in replay
     assert "apply_user_var_updates(" in replay
     assert "verify_x_animation_loader_owner_layouts" in replay
+    for definition in (
+        '("0x405f16", "mlil", "RegisterVariableSourceType", 438, 66)',
+        '("0x405f1b", "mlil", "RegisterVariableSourceType", 443, 72)',
+        '("0x405f2e", "mlil", "RegisterVariableSourceType", 462, 66)',
+        '("0x405f33", "mlil", "RegisterVariableSourceType", 467, 69)',
+    ):
+        assert definition in replay
     for index, storage, name, variable_type in (
         (0, -404, "cursor", "char*"),
         (511, -397, "saved_end_char", "char"),
@@ -4952,7 +4960,7 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "char* __cdecl xor_decode_buffer_with_index(char* bytes, int32_t byte_count)",
         "int32_t __cdecl write_file_bytes(char* path, void* bytes, int32_t byte_count)",
         "char* __cdecl save_config_file(char* path, void* bytes, int32_t byte_count)",
-        "bool __cdecl strings_equal_case_insensitive(char* left, char* right)",
+        "bool __cdecl strings_equal_case_insensitive(char* left, char* prefix)",
         "char* __cdecl find_case_insensitive_substring(char* pattern, char* searched)",
     )
     ida_declarations = (
@@ -4962,7 +4970,7 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "char* __cdecl xor_decode_buffer_with_index(char* bytes, int byte_count);",
         "int __cdecl write_file_bytes(char* path, void* bytes, int byte_count);",
         "char* __cdecl save_config_file(char* path, void* bytes, int byte_count);",
-        "bool __cdecl strings_equal_case_insensitive(char* left, char* right);",
+        "bool __cdecl strings_equal_case_insensitive(char* left, char* prefix);",
         "char* __cdecl find_case_insensitive_substring(char* pattern, char* searched);",
     )
     for declaration in binja_declarations:
@@ -8524,6 +8532,15 @@ def test_level_definition_parser_frame_ownership_stays_aligned() -> None:
     }
 
     assert "LEVEL_PARSER_USER_VAR_UPDATES" in binja_sync
+    assert "LEVEL_SEGMENTS_END_SPLIT_DEFINITIONS" in binja_sync
+    assert "LEVEL_SEGMENTS_END_TARGET_VAR" in binja_sync
+    assert "apply_split_user_var_update(" in binja_sync
+    for definition in (
+        '("0x447b72", "mlil", "RegisterVariableSourceType", 1778, 66)',
+        '("0x447b77", "mlil", "RegisterVariableSourceType", 1783, 73)',
+        '("0x447b7e", "mlil", "StackVariableSourceType", 1790, -1796)',
+    ):
+        assert definition in binja_sync
     for source_type, index, storage, name, variable_type in (
         ("RegisterVariableSourceType", 182, 71, "level_display_name_begin", "char*"),
         (
@@ -19343,11 +19360,35 @@ def test_mobile_backed_owner_health_guards_are_registered() -> None:
     expected = {
         "bn_input_update_mobile_owner_contract": "0040aa80-update_input.c",
         "ida_input_update_mobile_owner_contract": "0040aa80-update_input.c",
-        "bn_rstrcmp_mobile_argument_ownership": (
+        "bn_rtext_copy_mobile_contract": "00431da0-copy_c_string.c",
+        "ida_rtext_copy_mobile_contract": "00431da0-copy_c_string.c",
+        "bn_rtext_comp_start_mobile_contract": (
             "00431dc0-strings_equal_case_insensitive.c"
         ),
-        "ida_rstrcmp_mobile_argument_ownership": (
+        "ida_rtext_comp_start_mobile_contract": (
             "00431dc0-strings_equal_case_insensitive.c"
+        ),
+        "bn_rtext_new_line_mobile_contract": "00431e30-skip_to_next_line.c",
+        "ida_rtext_new_line_mobile_contract": "00431e30-skip_to_next_line.c",
+        "bn_rtext_append_mobile_contract": "00431e50-append_c_string.c",
+        "ida_rtext_append_mobile_contract": "00431e50-append_c_string.c",
+        "bn_rtext_extract_string_mobile_contract": (
+            "00431e80-parse_next_space_delimited_token.c"
+        ),
+        "ida_rtext_extract_string_mobile_contract": (
+            "00431e80-parse_next_space_delimited_token.c"
+        ),
+        "bn_rtext_extract_int_mobile_contract": (
+            "00431ec0-parse_next_int32.c"
+        ),
+        "ida_rtext_extract_int_mobile_contract": (
+            "00431ec0-parse_next_int32.c"
+        ),
+        "bn_rtext_extract_float_mobile_contract": (
+            "00431f20-parse_next_float32.c"
+        ),
+        "ida_rtext_extract_float_mobile_contract": (
+            "00431f20-parse_next_float32.c"
         ),
         "bn_snail_jetpack_mobile_state_ownership": (
             "00445860-set_snail_jetpack.c"
@@ -19374,8 +19415,16 @@ def test_mobile_backed_owner_health_guards_are_registered() -> None:
         ]
     )
     assert (
-        "return *right_1 == 0"
-        in checks["bn_rstrcmp_mobile_argument_ownership"]["required_substrings"]
+        "return *prefix_1 == 0"
+        in checks["bn_rtext_comp_start_mobile_contract"][
+            "required_substrings"
+        ]
+    )
+    assert (
+        "return (x87_r7 * x87_r5 * x87_r6).d"
+        in checks["bn_rtext_extract_float_mobile_contract"][
+            "required_substrings"
+        ]
     )
     assert (
         "char* pattern_1 = pattern"

@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
     apply_proto_updates,
@@ -16,7 +15,7 @@ from _narrow_sync import (
     emit_summary,
     types_declare_if_changed,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/segment_catalog_types.h"
@@ -623,6 +622,20 @@ BUILTIN_GRID_OFFSET_TARGET_VAR = (
     4,
 )
 
+# Correcting RTextExtractFloat to float32 exposes the EAX/EDI copies that feed
+# this persistent stack owner. Merge the complete definition chain so HLIL
+# keeps the segment-loop bound as `segments_end` instead of an auto register.
+LEVEL_SEGMENTS_END_SPLIT_DEFINITIONS = (
+    ("0x447b72", "mlil", "RegisterVariableSourceType", 1778, 66),
+    ("0x447b77", "mlil", "RegisterVariableSourceType", 1783, 73),
+    ("0x447b7e", "mlil", "StackVariableSourceType", 1790, -1796),
+)
+LEVEL_SEGMENTS_END_TARGET_VAR = (
+    "StackVariableSourceType",
+    1790,
+    -1796,
+)
+
 PROTO_UPDATES = (
     (
         "load_frontend_level_by_mode_and_index",
@@ -707,6 +720,15 @@ def main() -> int:
                 target_var=BUILTIN_GRID_OFFSET_TARGET_VAR,
                 variable_name="grid_offset",
                 variable_type="int32_t",
+            ),
+            *apply_split_user_var_update(
+                REPO_ROOT,
+                target=TARGET,
+                identifier="load_level_definition_file",
+                definitions=LEVEL_SEGMENTS_END_SPLIT_DEFINITIONS,
+                target_var=LEVEL_SEGMENTS_END_TARGET_VAR,
+                variable_name="segments_end",
+                variable_type="char*",
             ),
             *apply_split_user_var_update(
                 REPO_ROOT,

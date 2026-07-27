@@ -23,21 +23,23 @@ Observed payoff:
 - `update_tooltip` now cleanly reads against `FrontendWidgetTooltip*` with `state`, `mode_flags`, `delay_progress`, `delay_step`, `owner_widget`, and `tooltip_widget`
 - the tracked BN/IDA exports for the five widget helpers are refreshed and no longer depend on ephemeral GUI typing
 
-### 2. Parser helper prototype drift
+### 2. RText helper prototype drift
 
-Closed in the follow-up parser-helper prototype pass.
+Closed and corrected by the 2026-07-27 mobile-ownership pass.
 
-Evidence:
-- tracked BN had drifted on the cursor-parsing helper family, especially [`parse_next_float32`](../decompile/binja/functions/00431f20-parse_next_float32.c).
-- the stable live-replay fix is:
-  - `int32_t __cdecl parse_next_int32(char** cursor)`
-  - `char** __cdecl parse_next_space_delimited_token(char** cursor, char* out)`
-  - `double __cdecl parse_next_float32(char** cursor)`
-- the `double` return is a Binary Ninja/x87 stability compromise, not a stronger semantic claim than the underlying native helper warrants.
+Android/iOS symbol order and `ObjectTextLoad` callsites resolve the complete
+seven-function `RShell.o` family from `RTextCopy` through
+`RTextExtractFloat`. The current live-replay boundaries are:
 
-Current read:
-- the cursor side of the drift is now closed and persisted through narrow BN plus IDA sync lanes
-- parser-driven callers such as [`initialize_intro_screen`](../decompile/binja/functions/004191e0-initialize_intro_screen.c) and [`load_x_mesh`](../decompile/binja/functions/00405640-load_x_mesh.c) are still x87-heavy, but no longer rely on ephemeral GUI-only helper typing
+- void copy, newline, append, and string extraction
+- `RTextCompStart(char* left, char* prefix)`, not strict `Rstrcmp`
+- `int RTextExtractInt(char**)`
+- `float RTextExtractFloat(char**)`
+
+The earlier `char**` token return and `double` float return were analyzer
+compromises, not authored contracts. Current Binary Ninja and IDA 9.4 verify
+the real mobile-proven types through the focused RText replay lane, and broad
+path/archive lanes carry the same corrected declarations.
 
 ### 3. Track fringe / render-cache owner typing
 

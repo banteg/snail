@@ -1,18 +1,12 @@
 // load_object_definition @ 0x44c420 (cdecl)
 
 #include "object_render_types.h"
+#include "rtext.h"
 #include "sprite.h"
 
 char* get_archive_data_base();
 char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size);
 int sprintf(char* buffer, char* format, ...);
-unsigned char strings_equal_case_insensitive(char* left, char* right);
-char* skip_to_next_line(char** cursor);
-int parse_next_int32(char** cursor);
-float parse_next_float32(char** cursor);
-char** parse_next_space_delimited_token(char** cursor, char* out);
-unsigned char* copy_c_string(unsigned char* destination, unsigned char* source);
-unsigned char* append_c_string(unsigned char* destination, unsigned char* source);
 
 void load_object_definition(char* path, Object* object)
 {
@@ -96,10 +90,10 @@ void load_object_definition(char* path, Object* object)
                         float v3 = parse_next_float32(&line_cursor);
 
                         parse_next_space_delimited_token(&line_cursor, texture_name);
-                        append_c_string((unsigned char*)texture_name, (unsigned char*)".tga");
-                        copy_c_string((unsigned char*)texture_path, (unsigned char*)path);
-                        append_c_string((unsigned char*)texture_path, (unsigned char*)"/");
-                        append_c_string((unsigned char*)texture_path, (unsigned char*)texture_name);
+                        append_c_string(texture_name, ".tga");
+                        copy_c_string(texture_path, path);
+                        append_c_string(texture_path, "/");
+                        append_c_string(texture_path, texture_name);
 
                         object->facequads[face_index].texture_ref =
                             g_texture_refs.get_or_create_texture_ref(

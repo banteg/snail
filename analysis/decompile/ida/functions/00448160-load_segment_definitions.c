@@ -99,7 +99,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
         sprintf(file_path, "Segments/%s", segment_file_name);
         load_file_bytes_from_archive_or_fs(file_path, file_buffer, nullptr);
         case_insensitive_substring = find_case_insensitive_substring(aId, file_buffer);
-        if ( case_insensitive_substring )
+        if ( case_insensitive_substring != nullptr )
         {
           v6 = case_insensitive_substring[3];
           v7 = case_insensitive_substring + 3;
@@ -120,7 +120,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
           *((_DWORD *)entry_filename_cursor + 16) = v8;
           sprintf(entry_filename_cursor, "%s", segment_file_name);
           v10 = find_case_insensitive_substring(aName, file_buffer);
-          if ( v10 )
+          if ( v10 != nullptr )
           {
             v11 = find_case_insensitive_substring(asc_4AC244, v10);
             v12 = v11[1];
@@ -136,14 +136,14 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
               while ( v12 != 39 );
             }
             v15 = find_case_insensitive_substring(aData, file_buffer);
-            if ( v15 )
+            if ( v15 != nullptr )
             {
               crlf_line = (_BYTE *)advance_to_next_crlf_line(v15);
-              if ( crlf_line )
+              if ( crlf_line != nullptr )
               {
                 v17 = (char *)advance_to_next_crlf_line(crlf_line);
                 data_line_cursor = v17;
-                if ( v17 )
+                if ( v17 != nullptr )
                 {
                   if ( *v17 == 64 )
                   {
@@ -189,7 +189,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                       *option_out_cursor = 0;
                       v30 = find_case_insensitive_substring(a3dmodel, option_text);
                       parse_cursor = v30;
-                      if ( v30 )
+                      if ( v30 != nullptr )
                       {
                         model_value_cursor = find_case_insensitive_substring(asc_4A2094, v30) + 1;
                         parse_cursor = model_value_cursor;
@@ -214,7 +214,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                         row_stride_anchor->row.object_position.z = parse_next_float32(&parse_cursor);
                         v37 = find_case_insensitive_substring(aVelocity, option_text);
                         parse_cursor = v37;
-                        if ( v37 )
+                        if ( v37 != nullptr )
                         {
                           v38 = find_case_insensitive_substring(asc_4A2094, v37);
                           v39 = row_stride_anchor->row.flags | 8;
@@ -228,7 +228,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                       }
                       v40 = find_case_insensitive_substring(aParcel, option_text);
                       parse_cursor = v40;
-                      if ( v40 )
+                      if ( v40 != nullptr )
                       {
                         row_stride_anchor->row.flags |= 1u;
                         parse_cursor = find_case_insensitive_substring(asc_4A2094, v40) + 1;
@@ -242,7 +242,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                       }
                       v43 = find_case_insensitive_substring(aPath, option_text);
                       parse_cursor = v43;
-                      if ( v43 )
+                      if ( v43 != nullptr )
                       {
                         path_value_cursor = find_case_insensitive_substring(asc_4A2094, v43) + 1;
                         parse_cursor = path_value_cursor;
@@ -268,42 +268,42 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                         }
                       }
                       parse_cursor = find_case_insensitive_substring(aNofall, option_text);
-                      if ( parse_cursor )
+                      if ( parse_cursor != nullptr )
                       {
                         v50 = row_stride_anchor->row.flags;
                         BYTE1(v50) |= 1u;
                         row_stride_anchor->row.flags = v50;
                       }
                       parse_cursor = find_case_insensitive_substring(aRingNone, option_text);
-                      if ( parse_cursor )
+                      if ( parse_cursor != nullptr )
                       {
                         v51 = row_stride_anchor->row.flags;
                         BYTE1(v51) |= 2u;
                         row_stride_anchor->row.flags = v51;
                       }
                       parse_cursor = find_case_insensitive_substring(aRingNormal, option_text);
-                      if ( parse_cursor )
+                      if ( parse_cursor != nullptr )
                       {
                         v52 = row_stride_anchor->row.flags;
                         BYTE1(v52) |= 4u;
                         row_stride_anchor->row.flags = v52;
                       }
                       parse_cursor = find_case_insensitive_substring(aRingPowerup, option_text);
-                      if ( parse_cursor )
+                      if ( parse_cursor != nullptr )
                       {
                         v53 = row_stride_anchor->row.flags;
                         BYTE1(v53) |= 0x20u;
                         row_stride_anchor->row.flags = v53;
                       }
                       parse_cursor = find_case_insensitive_substring(aRingExplode, option_text);
-                      if ( parse_cursor )
+                      if ( parse_cursor != nullptr )
                       {
                         v54 = row_stride_anchor->row.flags;
                         BYTE1(v54) |= 8u;
                         row_stride_anchor->row.flags = v54;
                       }
                       parse_cursor = find_case_insensitive_substring(aRingSlow, option_text);
-                      if ( parse_cursor )
+                      if ( parse_cursor != nullptr )
                       {
                         v55 = row_stride_anchor->row.flags;
                         BYTE1(v55) |= 0x10u;
@@ -311,7 +311,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                       }
                       v56 = find_case_insensitive_substring(aRingspeed, option_text);
                       parse_cursor = v56;
-                      if ( v56 )
+                      if ( v56 != nullptr )
                       {
                         parse_cursor = find_case_insensitive_substring(asc_4A2094, v56) + 1;
                         v57 = parse_next_float32(&parse_cursor);
@@ -322,14 +322,14 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                         tracks_after_stack_probe->entries[0].rows[flattened_row_index].ring_speed.bits = 0;
                       }
                       parse_cursor = find_case_insensitive_substring(aJetpackOff, option_text);
-                      if ( parse_cursor )
+                      if ( parse_cursor != nullptr )
                       {
                         v58 = row_stride_anchor->row.flags;
                         BYTE1(v58) |= 0x80u;
                         row_stride_anchor->row.flags = v58;
                       }
                       data_line_cursor = (char *)advance_to_next_crlf_line(option_cursor);
-                      if ( !data_line_cursor )
+                      if ( data_line_cursor == nullptr )
                       {
                         v60 = segment_files[segment_index_spill];
                         goto LABEL_71;

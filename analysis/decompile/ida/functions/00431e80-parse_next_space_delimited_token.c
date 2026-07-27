@@ -2,38 +2,34 @@
 /* function: parse_next_space_delimited_token @ 0x431e80 */
 /* selector: parse_next_space_delimited_token */
 
-// Skips leading spaces, copies the next space-delimited token from the caller-owned text cursor into the destination buffer, and advances the cursor.
-char **__cdecl parse_next_space_delimited_token(char **cursor, char *out)
+// Void Windows `RTextExtractString(char**, char*)`: skips leading spaces, copies the next space- or CR-delimited token from the caller-owned text cursor into the destination buffer, and advances the cursor.
+void __cdecl parse_next_space_delimited_token(char **cursor, char *out)
 {
-  char **result; // eax
-  char *v3; // ecx
-  char v5; // cl
-  char *v6; // ecx
+  char *v2; // ecx
+  char v4; // cl
+  char *v5; // ecx
 
-  result = cursor;
   if ( **cursor == 32 )
   {
     do
     {
-      v3 = *cursor + 1;
-      *cursor = v3;
+      v2 = *cursor + 1;
+      *cursor = v2;
     }
-    while ( *v3 == 32 );
+    while ( *v2 == 32 );
   }
   if ( **cursor != 32 )
   {
     do
     {
-      v5 = **cursor;
-      if ( v5 == 13 )
+      v4 = **cursor;
+      if ( v4 == 13 )
         break;
-      *out++ = v5;
-      v6 = *cursor + 1;
-      *cursor = v6;
+      *out++ = v4;
+      v5 = *cursor + 1;
+      *cursor = v5;
     }
-    while ( *v6 != 32 );
+    while ( *v5 != 32 );
   }
   *out = 0;
-  return result;
 }
-

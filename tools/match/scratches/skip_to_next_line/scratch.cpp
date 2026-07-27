@@ -1,8 +1,10 @@
 // skip_to_next_line @ 0x431e30 (cdecl)
 
-unsigned char* __cdecl skip_to_next_line(unsigned char** cursor)
+#include "rtext.h"
+
+void __cdecl skip_to_next_line(char** cursor)
 {
-    unsigned char* result = *cursor;
+    char* result = *cursor;
     while (*result != '\0') {
         result = *cursor;
         if (*result == '\n') {
@@ -12,5 +14,4 @@ unsigned char* __cdecl skip_to_next_line(unsigned char** cursor)
         *cursor = result;
     }
     *cursor = *cursor + 1;
-    return result;
 }

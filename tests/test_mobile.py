@@ -488,6 +488,94 @@ def test_mobile_rng_pair_recovers_authored_contract() -> None:
     assert "void __cdecl initialize_math_random_table();" in random_header
     assert "void __cdecl initialize_trigonometry_tables();" in random_header
 
+
+def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    expected = {
+        "copy_c_string": "RTextCopy(char*, char*)",
+        "strings_equal_case_insensitive": "RTextCompStart(char*, char*)",
+        "skip_to_next_line": "RTextNewLine(char**)",
+        "append_c_string": "RTextAppend(char*, char*)",
+        "parse_next_space_delimited_token": (
+            "RTextExtractString(char**, char*)"
+        ),
+        "parse_next_int32": "RTextExtractInt(char**)",
+        "parse_next_float32": "RTextExtractFloat(char**)",
+    }
+    for windows_name, mobile_symbol in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "RShell.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert mobile_symbol.split("(", 1)[0] in (
+            functions_by_name[windows_name]["aliases"]
+        )
+
+    assert "`Rstrcmp` is strict equality" in (
+        functions_by_name["strings_equal_case_insensitive"]["description"]
+    )
+    assert "code-equivalent" in (
+        functions_by_name["parse_next_float32"]["description"]
+    )
+
+    rtext_header = (
+        repo_root / "tools/match/include/rtext.h"
+    ).read_text(encoding="utf-8")
+    for declaration in (
+        "void __cdecl copy_c_string(char* destination, char* source);",
+        "char* left, char* prefix",
+        "void __cdecl skip_to_next_line(char** cursor);",
+        "void __cdecl append_c_string(char* destination, char* source);",
+        "void __cdecl parse_next_space_delimited_token(",
+        "int __cdecl parse_next_int32(char** cursor);",
+        "float __cdecl parse_next_float32(char** cursor);",
+    ):
+        assert declaration in rtext_header
+
+    binja_replay = (
+        repo_root / "tools/binja/sync_rtext_types.py"
+    ).read_text(encoding="utf-8")
+    ida_replay = (
+        repo_root / "tools/ida/apply_rtext_types.py"
+    ).read_text(encoding="utf-8")
+    assert "double __cdecl parse_next_float32" not in binja_replay
+    assert "double __cdecl parse_next_float32" not in ida_replay
+    assert "float __cdecl parse_next_float32" in binja_replay
+    assert "float __cdecl parse_next_float32" in ida_replay
+    for string_name in (
+        "g_object_text_definition_path_format",
+        "g_object_text_vertex_start",
+        "g_object_text_vertex_end",
+        "g_object_text_facequad_start",
+        "g_object_text_facequad_end",
+        "g_object_text_tga_extension",
+        "g_object_text_path_separator",
+    ):
+        assert string_name in ida_replay
+    assert not (
+        repo_root / "tools/binja/sync_parse_helper_prototypes.py"
+    ).exists()
+    assert not (
+        repo_root / "analysis/headers/bn_parse_helper_prototypes.h"
+    ).exists()
+
     binja_sync = (
         repo_root / "tools/binja/sync_rmath_types.py"
     ).read_text(encoding="utf-8")

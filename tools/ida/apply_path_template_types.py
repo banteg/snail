@@ -2260,11 +2260,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "parse_next_space_delimited_token",
-        "char** __cdecl parse_next_space_delimited_token(char** cursor, char* out);",
+        "void __cdecl parse_next_space_delimited_token(char** cursor, char* out);",
     ),
     (
         "parse_next_float32",
-        "double __cdecl parse_next_float32(char** cursor);",
+        "float __cdecl parse_next_float32(char** cursor);",
     ),
     (
         "initialize_track_render_cache_manager",

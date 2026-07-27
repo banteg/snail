@@ -1,8 +1,10 @@
 // strings_equal_case_insensitive @ 0x431dc0 (cdecl)
 
-bool __cdecl strings_equal_case_insensitive(char* left, char* right)
+#include "rtext.h"
+
+bool __cdecl strings_equal_case_insensitive(char* left, char* prefix)
 {
-    char right_upper = *right;
+    char right_upper = *prefix;
     char left_upper = *left;
     char right_value = right_upper;
     char left_value = left_upper;
@@ -19,8 +21,8 @@ bool __cdecl strings_equal_case_insensitive(char* left, char* right)
             break;
 
         ++left;
-        ++right;
-        right_upper = *right;
+        ++prefix;
+        right_upper = *prefix;
         left_upper = *left;
         right_value = right_upper;
         left_value = left_upper;
@@ -31,7 +33,7 @@ bool __cdecl strings_equal_case_insensitive(char* left, char* right)
             right_upper -= 0x20;
     }
 
-    if (*right == 0)
+    if (*prefix == 0)
         return true;
     return false;
 }

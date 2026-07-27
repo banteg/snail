@@ -2,27 +2,27 @@
 /* function: append_c_string @ 0x431e50 */
 /* selector: append_c_string */
 
-// Advances to the destination string's trailing NUL and appends the source string in place.
-_BYTE *__cdecl sub_431E50(_BYTE *a1, _BYTE *a2)
+// Void Windows `RTextAppend(char*, char*)`: advances to the destination string's trailing NUL and appends the source string in place.
+void __cdecl append_c_string(char *destination, char *source)
 {
-  _BYTE *result; // eax
-  _BYTE *v4; // edx
+  char *v2; // eax
+  char v3; // cl
+  char *v4; // edx
   char i; // cl
 
-  result = a1;
-  if ( *a1 )
+  v2 = destination;
+  if ( *destination != 0 )
   {
-    while ( *++result )
-      ;
+    do
+      v3 = *++v2;
+    while ( v3 != 0 );
   }
-  v4 = a2;
-  for ( i = *a2; i; ++v4 )
+  v4 = source;
+  for ( i = *source; i != 0; ++v4 )
   {
-    *result = i;
+    *v2 = i;
     i = v4[1];
-    ++result;
+    ++v2;
   }
-  *result = 0;
-  return result;
+  *v2 = 0;
 }
-

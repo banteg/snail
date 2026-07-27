@@ -14,12 +14,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 557,
-    "unverified_entries": 228,
-    "verified_android_symbols": 551,
-    "verified_ios_symbols": 447,
-    "available_android_mappings": 551,
-    "available_ios_mappings": 410
+    "verified_entries": 562,
+    "unverified_entries": 223,
+    "verified_android_symbols": 556,
+    "verified_ios_symbols": 452,
+    "available_android_mappings": 556,
+    "available_ios_mappings": 415
   },
   "entries": [
     {
@@ -13674,80 +13674,22 @@
       "address": "0x431da0",
       "windows_name": "copy_c_string",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRContinue::UnInit()",
-          "score": 0.6968,
-          "name_score": 0.4947,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRWarning::Start()",
-          "score": 0.6507,
-          "name_score": 0.4178,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RTextCopy(char*, char*)",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::GetTextureRef(int)",
-          "score": 0.635,
-          "name_score": 0.3917,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::GetTga(int)",
-          "score": 0.635,
-          "name_score": 0.3917,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "OFISerializer::StringKey::~StringKey()",
-          "score": 0.7156,
-          "name_score": 0.6,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "OFISerializer::StringKey::~StringKey()",
-          "score": 0.66,
-          "name_score": 0.6,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "OFISerializer::StringKey::equals(OFISerializerKey const*) const",
-          "score": 0.6393,
-          "name_score": 0.3988,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRGUI::Open()",
-          "score": 0.59,
-          "name_score": 0.4,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRSplash::Open()",
-          "score": 0.59,
-          "name_score": 0.4,
-          "size_score": 0.875
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RTextCopy(char*, char*)",
+      "ios_symbol": "RTextCopy(char*, char*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x431dc0",
       "windows_name": "strings_equal_case_insensitive",
       "windows_size": 112,
       "status": "verified",
-      "android_symbol": "Rstrcmp(char*, char*)",
-      "ios_symbol": "Rstrcmp(char*, char*)",
-      "source_object": "RString.o",
+      "android_symbol": "RTextCompStart(char*, char*)",
+      "ios_symbol": "RTextCompStart(char*, char*)",
+      "source_object": "RShell.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -13756,290 +13698,58 @@
       "address": "0x431e30",
       "windows_name": "skip_to_next_line",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRContinue::UnInit()",
-          "score": 0.7076,
-          "name_score": 0.5127,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "tVector::PointLine(tVector&, tVector&)",
-          "score": 0.6652,
-          "name_score": 0.6087,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "G0RemoveTexture(cRTexture*)",
-          "score": 0.6609,
-          "name_score": 0.4348,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RTextNewLine(char**)",
-          "score": 0.646,
-          "name_score": 0.6957,
-          "size_score": 0.5714
-        },
-        {
-          "symbol": "cRSpriteManager::GetTextureRef(int)",
-          "score": 0.6304,
-          "name_score": 0.384,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "RTextNewLine(char**)",
-          "score": 0.646,
-          "name_score": 0.6957,
-          "size_score": 0.5714
-        },
-        {
-          "symbol": "OFSmartObject::~OFSmartObject()",
-          "score": 0.6222,
-          "name_score": 0.3704,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "KeyOn(unsigned char)",
-          "score": 0.62,
-          "name_score": 0.45,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "OFISerializer::StringKey::~StringKey()",
-          "score": 0.6164,
-          "name_score": 0.4348,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "OFSmartObject::Release()",
-          "score": 0.6134,
-          "name_score": 0.3556,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RTextNewLine(char**)",
+      "ios_symbol": "RTextNewLine(char**)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x431e50",
       "windows_name": "append_c_string",
       "windows_size": 48,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRFade::FadeIn()",
-          "score": 0.7,
-          "name_score": 0.5,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRStarManager::ResetStars()",
-          "score": 0.6378,
-          "name_score": 0.4476,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "cRTime::AddFraction(float, float)",
-          "score": 0.6334,
-          "name_score": 0.5556,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRWarning::UnInit()",
-          "score": 0.6317,
-          "name_score": 0.5529,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "JAVAMusicRestart()",
-          "score": 0.6308,
-          "name_score": 0.3846,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRFade::FadeIn()",
-          "score": 0.7,
-          "name_score": 0.5,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFISerializer::StringKey::~StringKey()",
-          "score": 0.679,
-          "name_score": 0.6316,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRMouse::ClickScreen(bool, float, float)",
-          "score": 0.6286,
-          "name_score": 0.381,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "Sin(float)",
-          "score": 0.6198,
-          "name_score": 0.4615,
-          "size_score": 0.8571
-        },
-        {
-          "symbol": "MacAudioStartMusic()",
-          "score": 0.6,
-          "name_score": 0.4286,
-          "size_score": 0.8571
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RTextAppend(char*, char*)",
+      "ios_symbol": "RTextAppend(char*, char*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x431e80",
       "windows_name": "parse_next_space_delimited_token",
       "windows_size": 64,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "JAVAOpenFeintIsOnline()",
-          "score": 0.6204,
-          "name_score": 0.3673,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRResourceManager::Invalidate()",
-          "score": 0.5956,
-          "name_score": 0.326,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "G0RenderSprite3DStart()",
-          "score": 0.5954,
-          "name_score": 0.3256,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGame::GetSkirtColour(tColourSmall*)",
-          "score": 0.5881,
-          "name_score": 0.3135,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "gRegisterSearchEncryptList(int*, int)",
-          "score": 0.5852,
-          "name_score": 0.3478,
-          "size_score": 0.9412
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "OFResourceNameMap::getTypeNamed(NSString*) const",
-          "score": 0.6021,
-          "name_score": 0.3368,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFBinaryKeyedWriter::onScopePushed(OFISerializerKey*)",
-          "score": 0.592,
-          "name_score": 0.32,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "tMatrix::RotIdentity()",
-          "score": 0.5846,
-          "name_score": 0.3077,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSprite::SetTextureRef(int, int)",
-          "score": 0.5845,
-          "name_score": 0.3491,
-          "size_score": 0.9375
-        },
-        {
-          "symbol": "RTextAppend(char*, char*)",
-          "score": 0.58,
-          "name_score": 0.3,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RTextExtractString(char**, char*)",
+      "ios_symbol": "RTextExtractString(char**, char*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x431ec0",
       "windows_name": "parse_next_int32",
       "windows_size": 96,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "Rstrnewline(char*)",
-          "score": 0.688,
-          "name_score": 0.48,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRResourceManager::CalcPercent()",
-          "score": 0.655,
-          "name_score": 0.4762,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "cRSubPause::UnInit()",
-          "score": 0.624,
-          "name_score": 0.4,
-          "size_score": 0.96
-        },
-        {
-          "symbol": "RShellDatFind(char*)",
-          "score": 0.6166,
-          "name_score": 0.4444,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRParcelManager::AI()",
-          "score": 0.606,
-          "name_score": 0.4267,
-          "size_score": 0.875
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "RShellPrintText(char*, ...)",
-          "score": 0.6563,
-          "name_score": 0.4828,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "wprintf(char*, ...)",
-          "score": 0.6524,
-          "name_score": 0.4762,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "Rstrnewline(char*)",
-          "score": 0.638,
-          "name_score": 0.48,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRSubPause::UnInit()",
-          "score": 0.6067,
-          "name_score": 0.4,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "tMatrix::Identity()",
-          "score": 0.5947,
-          "name_score": 0.4634,
-          "size_score": 0.7917
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RTextExtractInt(char**)",
+      "ios_symbol": "RTextExtractInt(char**)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x431f20",
       "windows_name": "parse_next_float32",
       "windows_size": 176,
       "status": "verified",
-      "android_symbol": "Rstrfloat(char**)",
-      "ios_symbol": "Rstrfloat(char**)",
-      "source_object": "RString.o",
+      "android_symbol": "RTextExtractFloat(char**)",
+      "ios_symbol": "RTextExtractFloat(char**)",
+      "source_object": "RShell.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1

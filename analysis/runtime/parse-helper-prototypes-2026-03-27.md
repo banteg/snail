@@ -1,38 +1,61 @@
-# Parse Helper Prototypes 2026-03-27
+# RText Helper Prototypes
 
-This pass closes the parser-helper cursor drift with the conservative signatures that verify live in the Binary Ninja bridge and persist cleanly into the tracked BN/IDA lanes.
+The original 2026-03-27 pass stabilized three anonymous parser prototypes.
+Android/iOS evidence added in July now resolves the complete authored
+`RShell.o` family and supersedes two conservative analyzer-only return types.
 
 ## Closed signatures
 
-- [`parse_next_int32`](../decompile/binja/functions/004320f0-parse_next_int32.c):
-  `int32_t __cdecl parse_next_int32(char** cursor)`
-- [`parse_next_space_delimited_token`](../decompile/binja/functions/00431ed0-parse_next_space_delimited_token.c):
-  `char** __cdecl parse_next_space_delimited_token(char** cursor, char* out)`
-- [`parse_next_float32`](../decompile/binja/functions/00431f20-parse_next_float32.c):
-  `double __cdecl parse_next_float32(char** cursor)`
+- `void __cdecl copy_c_string(char* destination, char* source)`
+  (`RTextCopy`)
+- `bool __cdecl strings_equal_case_insensitive(char* left, char* prefix)`
+  (`RTextCompStart`)
+- `void __cdecl skip_to_next_line(char** cursor)` (`RTextNewLine`)
+- `void __cdecl append_c_string(char* destination, char* source)`
+  (`RTextAppend`)
+- `void __cdecl parse_next_space_delimited_token(char** cursor, char* out)`
+  (`RTextExtractString`)
+- `int __cdecl parse_next_int32(char** cursor)` (`RTextExtractInt`)
+- `float __cdecl parse_next_float32(char** cursor)` (`RTextExtractFloat`)
 
-## Why `double` for `parse_next_float32`
+The matcher keeps stable Windows harness names; the parenthesized mobile names
+record original source vocabulary.
 
-The helper parses a decimal token into an x87 result and returns through the FPU stack. Binary Ninja preview accepted a narrower `float(char** cursor)` spelling, but live verification was brittle there and repeatedly canonicalized the helper back to a wider floating return. `double(char** cursor)` is the stable live spelling that:
+## 2026-07-27 ownership correction
 
-- preserves the recovered `char** cursor` semantics
-- survives Binary Ninja live verification
-- avoids another x87-driven prototype regression in tracked exports
+Windows places these seven bodies contiguously from `0x431da0` through
+`0x431f20`, in exactly the Android/iOS symbol order. Mobile
+`ObjectTextLoad` invokes the family in the same section-marker, vertex, face,
+texture-token, and texture-path roles as Windows `load_object_definition`.
 
-This is a decompiler-facing compromise, not a claim that the native helper is semantically a high-level IEEE `double` API.
+That evidence corrects two earlier assignments:
 
-## Refreshed callers
+- the prefix-friendly comparator is `RTextCompStart`, not strict `Rstrcmp`
+- the canonical adjacent float parser is `RTextExtractFloat`, not the later
+  code-equivalent `Rstrfloat` sibling in `RString.o`
 
-The immediate readability payoff is in the parser-driven callers:
+Mobile bodies and Windows callsite use also prove that copy, newline, append,
+and string extraction return `void`. The first three natural void
+transcriptions remain instruction-exact. `parse_next_space_delimited_token`
+retains a documented result-shaped matcher harness because removing it changes
+VC6 register allocation; the analyzer databases still use the real void API.
 
-- [`initialize_intro_screen`](../decompile/binja/functions/004191e0-initialize_intro_screen.c)
-- [`load_level_definition_file`](../decompile/binja/functions/00447480-load_level_definition_file.c)
-- [`load_landscape_script_by_name`](../decompile/binja/functions/00432b20-load_landscape_script_by_name.c)
-- [`load_segment_definitions`](../decompile/binja/functions/00431a50-load_segment_definitions.c)
-- [`load_x_mesh`](../decompile/binja/functions/00405640-load_x_mesh.c)
+## Retired `double` compromise
 
-The x87-heavy float consumers are still noisy, but the helper calls now consistently expose cursor ownership instead of raw `char* arg1` drift.
+The 2026-03-27 Binary Ninja bridge repeatedly widened the x87 return of
+`parse_next_float32` to `double`, so the old narrow lane recorded that stable
+spelling as an analyzer compromise. Current Binary Ninja accepts and verifies
+the mobile-proven `float(char**)` contract. The old `double` declaration and
+standalone `bn_parse_helper_prototypes.h` are retired so broad replay lanes
+cannot reintroduce the stale type.
 
-## Tooling note
+## Replay
 
-Binary Ninja bridge verification is stricter than preview for these helpers. Parser/helper prototype changes should therefore be replayed through the narrow sync lane in [`tools/binja/sync_parse_helper_prototypes.py`](../../tools/binja/sync_parse_helper_prototypes.py) instead of only previewing them in the GUI.
+Use the focused scripts:
+
+- [`tools/binja/sync_rtext_types.py`](../../tools/binja/sync_rtext_types.py)
+- [`tools/ida/sync_rtext_types.py`](../../tools/ida/sync_rtext_types.py)
+
+Both replay all seven owners and refresh the parser-driven callers. The
+canonical declaration source is
+[`tools/match/include/rtext.h`](../../tools/match/include/rtext.h).

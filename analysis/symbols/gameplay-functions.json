@@ -1983,37 +1983,58 @@
     {
       "address": "0x431da0",
       "name": "copy_c_string",
-      "description": "Copies one NUL-terminated C string into the destination buffer and returns the advanced source pointer."
+      "aliases": [
+        "RTextCopy"
+      ],
+      "description": "Void Windows `RTextCopy(char*, char*)`: copies one NUL-terminated C string into the destination buffer. Android and iOS preserve the authored RShell.o name, body, and placement at the head of the contiguous RText helper family."
     },
     {
       "address": "0x431dc0",
       "name": "strings_equal_case_insensitive",
-      "description": "Windows `Rstrcmp(char*, char*)`: compares two strings case-insensitively and returns true when the right-hand string terminates after matching, preserving the prefix-friendly termination contract also present in Android and iOS `RString.o`."
+      "aliases": [
+        "RTextCompStart"
+      ],
+      "description": "Windows `RTextCompStart(char*, char*)`: compares ASCII case-insensitively and returns true when the prefix argument terminates after matching. Mobile `Rstrcmp` is strict equality instead; the contiguous RShell.o RText sequence and ObjectTextLoad call graph resolve the owner."
     },
     {
       "address": "0x431e30",
       "name": "skip_to_next_line",
-      "description": "Advances the caller-owned text cursor to the next line break and then steps once more so the cursor starts on the following line."
+      "aliases": [
+        "RTextNewLine"
+      ],
+      "description": "Void Windows `RTextNewLine(char**)`: advances the caller-owned text cursor to the next line break or NUL and then steps once more so the cursor starts on the following line."
     },
     {
       "address": "0x431e50",
       "name": "append_c_string",
-      "description": "Advances to the destination string's trailing NUL and appends the source string in place."
+      "aliases": [
+        "RTextAppend"
+      ],
+      "description": "Void Windows `RTextAppend(char*, char*)`: advances to the destination string's trailing NUL and appends the source string in place."
     },
     {
       "address": "0x431e80",
       "name": "parse_next_space_delimited_token",
-      "description": "Skips leading spaces, copies the next space-delimited token from the caller-owned text cursor into the destination buffer, and advances the cursor."
+      "aliases": [
+        "RTextExtractString"
+      ],
+      "description": "Void Windows `RTextExtractString(char**, char*)`: skips leading spaces, copies the next space- or CR-delimited token from the caller-owned text cursor into the destination buffer, and advances the cursor."
     },
     {
       "address": "0x431ec0",
       "name": "parse_next_int32",
-      "description": "Parses the next signed decimal integer from the caller-owned text cursor, skipping leading spaces and advancing the cursor past the consumed digits."
+      "aliases": [
+        "RTextExtractInt"
+      ],
+      "description": "Exact Windows `RTextExtractInt(char**)`: parses the next signed decimal integer from the caller-owned text cursor, skipping leading spaces and advancing the cursor past the consumed digits."
     },
     {
       "address": "0x431f20",
       "name": "parse_next_float32",
-      "description": "Exact Windows `Rstrfloat(char**)`: advances the caller-owned cursor to a signed decimal token, consumes digits and one decimal point, and returns the parsed float32 value."
+      "aliases": [
+        "RTextExtractFloat"
+      ],
+      "description": "Exact Windows `RTextExtractFloat(char**)`: advances the caller-owned cursor to a signed decimal token, consumes digits and one decimal point, and returns the parsed float32 value. Mobile also retains a later code-equivalent RString.o `Rstrfloat` sibling, but the complete adjacent RText sequence resolves the canonical Windows owner."
     },
     {
       "address": "0x431fd0",

@@ -6,7 +6,7 @@
 void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
 {
   int32_t v2; // ebx
-  int landscape_script_by_name; // eax
+  int32_t landscape_script_by_name; // eax
   char *v5; // esi
   char *case_insensitive_substring; // eax
   char *v7; // eax
@@ -26,7 +26,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
   struct BodNode *list_prev; // edx
   float v22; // esi
   int32_t v23; // eax
-  Vec4 *p_position; // ecx
+  Vec3 *p_position; // ecx
   double v25; // st7
   float v26; // edx
   double v27; // st7
@@ -46,7 +46,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
   uint32_t v41; // eax
   int v42; // eax
   double v43; // st7
-  Vec4 *v44; // eax
+  Vec3 *v44; // eax
   int v45; // edx
   float v46; // ecx
   Vec3 *v47; // eax
@@ -78,9 +78,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
 
   v2 = 0;
   cache_music_file(aMusicIntrotext, 0, (char *)g_blank_text);
-  landscape_script_by_name = load_landscape_script_by_name(
-                               (char *)&g_game_base->subgame.landscape_manager,
-                               aSpaceredTxt);
+  landscape_script_by_name = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, aSpaceredTxt);
   change_backdrop(&g_game_base->backdrop, &g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name], 0);
   set_border_justify_centre(&g_game_base->border_manager, 0.0);
   unhide_star_field(&g_game_base->star_manager);
@@ -160,7 +158,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
         {
           p_first = &g_game_base->active_bod_list.first;
           first = g_game_base->active_bod_list.first;
-          if ( first )
+          if ( first != nullptr )
           {
             first->list_prev = &v18->renderable.bod.bod;
             (*p_first)->list_prev->list_next = *p_first;
@@ -181,7 +179,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
         logo->letters[logo->renderable_count].renderable.bod.object->facequads->texture_ref = get_or_create_texture_ref(
                                                                                                 &g_texture_refs,
                                                                                                 Buffer,
-                                                                                                0,
+                                                                                                nullptr,
                                                                                                 0);
         set_matrix_identity(&logo->letters[logo->renderable_count].renderable.transform);
         v23 = logo->renderable_count;
@@ -225,7 +223,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
         ++logo->renderable_count;
         v33 = *v8;
         v59 = v32;
-        if ( v33 )
+        if ( v33 != 0 )
         {
           do
           {
@@ -234,10 +232,10 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
             cursor = ++v8;
             v33 = *v8;
           }
-          while ( *v8 );
+          while ( *v8 != 0 );
         }
       }
-      else if ( v9 )
+      else if ( v9 != 0 )
       {
         do
         {
@@ -250,7 +248,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
           v9 = *v8;
           v61 = v34;
         }
-        while ( v9 );
+        while ( v9 != 0 );
         if ( SLODWORD(v10) > 0 )
         {
           v62 = 0.0;
@@ -271,7 +269,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
             {
               v38 = &g_game_base->active_bod_list.first;
               v39 = g_game_base->active_bod_list.first;
-              if ( v39 )
+              if ( v39 != nullptr )
               {
                 v39->list_prev = &v37->renderable.bod.bod;
                 (*v38)->list_prev->list_next = *v38;

@@ -18,7 +18,7 @@ SYNC_FAILURE_SENTINEL = "ARCHIVE_SHELL_SYNC_FAILED"
 TRUSTED_DECLARATIONS = [
     (
         "strings_equal_case_insensitive",
-        "bool __cdecl strings_equal_case_insensitive(char* left, char* right);",
+        "bool __cdecl strings_equal_case_insensitive(char* left, char* prefix);",
     ),
     (
         "find_case_insensitive_substring",

@@ -1,18 +1,20 @@
 // append_c_string @ 0x431e50 (cdecl)
 
-unsigned char* __cdecl append_c_string(unsigned char* destination, unsigned char* source)
+#include "rtext.h"
+
+void __cdecl append_c_string(char* destination, char* source)
 {
-    unsigned char* result = destination;
+    char* result = destination;
     if (*result != '\0') {
-        unsigned char value;
+        char value;
         do {
             value = result[1];
             ++result;
         } while (value != '\0');
     }
 
-    unsigned char* cursor = source;
-    unsigned char value = *source;
+    char* cursor = source;
+    char value = *source;
     while (value != '\0') {
         *result = value;
         ++result;
@@ -20,5 +22,4 @@ unsigned char* __cdecl append_c_string(unsigned char* destination, unsigned char
         value = *cursor;
     }
     *result = '\0';
-    return result;
 }

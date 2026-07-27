@@ -189,7 +189,7 @@ LEGACY_AUDIO_BACKEND_SYMBOL_REMOVALS = (
 PROTO_UPDATES = (
     (
         "strings_equal_case_insensitive",
-        "bool __cdecl strings_equal_case_insensitive(char* left, char* right)",
+        "bool __cdecl strings_equal_case_insensitive(char* left, char* prefix)",
     ),
     (
         "find_case_insensitive_substring",

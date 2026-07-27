@@ -14,9 +14,9 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
   int v10; // ebx
   int32_t v11; // esi
   char *v12; // eax
-  float *tracked_memory; // eax
-  float *v14; // ebp
-  float *v15; // ebx
+  ObjectUv *tracked_memory; // eax
+  ObjectUv *v14; // ebp
+  float *p_u; // ebx
   int v16; // ebx
   int v17; // esi
   int v18; // ebx
@@ -33,7 +33,7 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
   TextureRef **v29; // ebx
   char *v30; // eax
   char *v31; // eax
-  char i; // cl
+  char k; // cl
   _BYTE *v33; // eax
   TextureRef *v34; // eax
   TextureRefFlags v35; // ecx
@@ -42,15 +42,15 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
   int v38; // esi
   __int16 v39; // ax
   char *v40; // [esp+10h] [ebp-234h] BYREF
-  int v41; // [esp+14h] [ebp-230h]
+  int j; // [esp+14h] [ebp-230h]
   char *v42; // [esp+18h] [ebp-22Ch] BYREF
-  int v43; // [esp+1Ch] [ebp-228h]
+  int i; // [esp+1Ch] [ebp-228h]
   char *cursor; // [esp+20h] [ebp-224h] BYREF
   void *v45; // [esp+24h] [ebp-220h]
   char *v46; // [esp+28h] [ebp-21Ch] BYREF
   char *v47; // [esp+2Ch] [ebp-218h] BYREF
   int v48; // [esp+30h] [ebp-214h]
-  char *v49; // [esp+34h] [ebp-210h]
+  char *searched; // [esp+34h] [ebp-210h]
   int v50; // [esp+38h] [ebp-20Ch]
   void *pointer; // [esp+3Ch] [ebp-208h]
   int out_size; // [esp+40h] [ebp-204h] BYREF
@@ -59,7 +59,7 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
   char v55; // [esp+146h] [ebp-FEh] BYREF
 
   archive_data_base = (char *)get_archive_data_base();
-  if ( !is_archive_index_loaded() || mesh_path[strlen(mesh_path) - 1] == 50 )
+  if ( is_archive_index_loaded() == 0 || mesh_path[strlen(mesh_path) - 1] == 50 )
     sprintf(Buffer, "X/%s", mesh_path);
   else
     sprintf(Buffer, "X/%s2", mesh_path);
@@ -67,12 +67,12 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
   archive_data_base[out_size - 2] = 0;
   case_insensitive_substring = find_case_insensitive_substring(aFrame, archive_data_base);
   v6 = case_insensitive_substring;
-  v49 = case_insensitive_substring;
-  if ( case_insensitive_substring )
+  searched = case_insensitive_substring;
+  if ( case_insensitive_substring != nullptr )
   {
     v7 = find_case_insensitive_substring(aMesh, case_insensitive_substring);
     v47 = v7;
-    if ( !v7 )
+    if ( v7 == nullptr )
     {
       report_errorf("No 'VertexDuplicationIndices 'Data in %s", Buffer);
       v7 = nullptr;
@@ -80,7 +80,7 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
     v47 = find_case_insensitive_substring(asc_4A1568, v7);
     v8 = find_case_insensitive_substring(aMesh, v6);
     v40 = v8;
-    if ( !v8 )
+    if ( v8 == nullptr )
     {
       report_errorf("No 'Mesh 'Data in %s", Buffer);
       v8 = nullptr;
@@ -88,7 +88,7 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
     v40 = find_case_insensitive_substring(asc_4A1568, v8);
     v9 = find_case_insensitive_substring(aMeshmaterialli, v6);
     v46 = v9;
-    if ( !v9 )
+    if ( v9 == nullptr )
     {
       report_errorf("No 'MeshMaterialList 'Data in %s", Buffer);
       v9 = nullptr;
@@ -96,14 +96,14 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
     v46 = find_case_insensitive_substring(asc_4A1568, v9);
     parse_next_signed_int(&v46);
     LOWORD(v10) = parse_next_signed_int(&v46);
-    v41 = parse_next_signed_int(&v47);
-    v11 = (__int16)v41;
+    j = parse_next_signed_int(&v47);
+    v11 = (__int16)j;
     if ( v11 != parse_next_signed_int(&v40) )
       report_errorf("Mesh vertices count does not match vertext duplicate vertices count in %s", Buffer);
     parse_next_signed_int(&v47);
     v12 = find_case_insensitive_substring(aMeshtexturecoo, v6);
     cursor = v12;
-    if ( !v12 )
+    if ( v12 == nullptr )
     {
       report_errorf("No 'Mesh 'Data in %s", Buffer);
       v12 = cursor;
@@ -116,23 +116,20 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
     request_object_facequads(object, (__int16)v10);
     request_object_vertices(object, v11);
     pointer = allocate_tracked_memory(4 * v11, name);
-    tracked_memory = (float *)allocate_tracked_memory(8 * v11, aMeshTextureCoo_0);
+    tracked_memory = (ObjectUv *)allocate_tracked_memory(8 * v11, aMeshTextureCoo_0);
     v14 = tracked_memory;
     if ( v11 > 0 )
     {
-      v15 = tracked_memory;
-      v43 = v11;
-      do
+      p_u = &tracked_memory->u;
+      for ( i = v11; i != 0; --i )
       {
-        *v15 = parse_next_float32(&cursor);
-        v15[1] = parse_next_float32(&cursor);
-        v15 += 2;
-        --v43;
+        *p_u = parse_next_float32(&cursor);
+        p_u[1] = parse_next_float32(&cursor);
+        p_u += 2;
       }
-      while ( v43 );
       v10 = v48;
     }
-    if ( (__int16)v41 > 0 )
+    if ( (__int16)j > 0 )
     {
       v16 = 0;
       do
@@ -142,7 +139,7 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
         object->vertices[v16++].z = parse_next_float32(&v40);
         --v11;
       }
-      while ( v11 );
+      while ( v11 != 0 );
       v10 = v48;
     }
     if ( v10 != parse_next_signed_int(&v40) )
@@ -150,13 +147,12 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
     if ( v10 > 0 )
     {
       v17 = 0;
-      v41 = v10;
-      do
+      for ( j = v10; j != 0; --j )
       {
         object->facequads[v17].header_word = 0;
         v18 = parse_next_signed_int(&v40);
         v50 = parse_next_signed_int(&v40);
-        v43 = parse_next_signed_int(&v40);
+        i = parse_next_signed_int(&v40);
         v19 = (void *)parse_next_signed_int(&v40);
         v45 = v19;
         if ( v18 == 4 )
@@ -169,61 +165,57 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
           v20 = 0;
           object->facequads[v17].flags |= 0x80u;
         }
-        object->facequads[v17].uv[2].u = v14[2 * v50];
-        object->facequads[v17].uv[2].v = v14[2 * v50 + 1];
-        object->facequads[v17].uv[1].u = v14[2 * v43];
-        object->facequads[v17].uv[1].v = v14[2 * v43 + 1];
-        object->facequads[v17].uv[0].u = v14[2 * (_DWORD)v19];
-        object->facequads[v17].uv[0].v = v14[2 * (_DWORD)v19 + 1];
-        object->facequads[v17].uv[3].u = v14[2 * v20];
-        object->facequads[v17++].uv[3].v = v14[2 * v20 + 1];
-        object->facequads[v17 - 1].texture_ref = get_or_create_texture_ref(&g_texture_refs, ::texture_path, 0, 0);
+        object->facequads[v17].uv[2].u = v14[v50].u;
+        object->facequads[v17].uv[2].v = v14[v50].v;
+        object->facequads[v17].uv[1].u = v14[i].u;
+        object->facequads[v17].uv[1].v = v14[i].v;
+        object->facequads[v17].uv[0] = v14[(_DWORD)v19];
+        object->facequads[v17++].uv[3] = v14[v20];
+        object->facequads[v17 - 1].texture_ref = get_or_create_texture_ref(&g_texture_refs, ::texture_path, nullptr, 0);
         v21 = v50;
         texture_ref = object->facequads[v17 - 1].texture_ref;
         flags = texture_ref->flags;
         BYTE1(flags) = ((unsigned __int16)texture_ref->flags >> 8) | 0x10;
         texture_ref->flags = flags;
         object->facequads[v17 - 1].vertex_2 = v21;
-        object->facequads[v17 - 1].vertex_1 = v43;
+        object->facequads[v17 - 1].vertex_1 = i;
         object->facequads[v17 - 1].vertex_0 = (unsigned __int16)v45;
         object->facequads[v17 - 1].vertex_3 = v20;
-        --v41;
       }
-      while ( v41 );
       v10 = v48;
     }
     object->flags |= 0x100000u;
     free_tracked_memory(v14);
     free_tracked_memory(pointer);
-    v24 = find_case_insensitive_substring(aMeshmaterialli_0, v49);
+    v24 = find_case_insensitive_substring(aMeshmaterialli_0, searched);
     v42 = v24;
-    if ( v24 )
+    if ( v24 != nullptr )
     {
       v42 = find_case_insensitive_substring(asc_4A1568, v24);
       v25 = parse_next_signed_int(&v42);
-      v41 = v25;
-      v49 = (char *)parse_next_signed_int(&v42);
-      if ( v49 == (char *)v10 )
+      j = v25;
+      searched = (char *)parse_next_signed_int(&v42);
+      if ( searched == (char *)v10 )
       {
         v26 = allocate_tracked_memory(4 * v25, aDirectXMateria);
         v27 = v42;
         v28 = 0;
         v45 = v26;
-        if ( v41 > 0 )
+        if ( j > 0 )
         {
           v29 = (TextureRef **)v26;
           do
           {
             v30 = find_case_insensitive_substring(aTexturefilenam, v27);
-            if ( v30 )
+            if ( v30 != nullptr )
             {
               v27 = find_case_insensitive_substring(asc_4A1314, v30) + 1;
               qmemcpy(texture_path, "X/", sizeof(texture_path));
               v31 = &v55;
-              for ( i = *v27; i != 46; ++v27 )
+              for ( k = *v27; k != 46; ++v27 )
               {
-                *v31 = i;
-                i = v27[1];
+                *v31 = k;
+                k = v27[1];
                 ++v31;
               }
               *v31 = 46;
@@ -232,7 +224,7 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
               *v33++ = 103;
               *v33 = 97;
               v33[1] = 0;
-              v34 = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0);
+              v34 = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, 0);
               *v29 = v34;
               v35 = v34->flags;
               BYTE1(v35) = ((unsigned __int16)v34->flags >> 8) | 0x10;
@@ -248,16 +240,16 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
             {
               if ( (options_flags & 2) == 0 )
                 report_warningf("No TextureFilename for Material %i in %s", v28, Buffer);
-              *v29 = get_or_create_texture_ref(&g_texture_refs, aSpritesDebugTg_0, 0, 0);
+              *v29 = get_or_create_texture_ref(&g_texture_refs, aSpritesDebugTg_0, nullptr, 0);
               v27 = v42;
             }
             ++v28;
             ++v29;
           }
-          while ( v28 < v41 );
+          while ( v28 < j );
         }
-        v37 = v49;
-        if ( (int)v49 > 0 )
+        v37 = searched;
+        if ( (int)searched > 0 )
         {
           v38 = 0;
           do
@@ -267,7 +259,7 @@ void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *obje
             --v37;
             object->facequads[v38 - 1].texture_ref = *((TextureRef **)v45 + v39);
           }
-          while ( v37 );
+          while ( v37 != nullptr );
         }
         free_tracked_memory(v45);
       }

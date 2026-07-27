@@ -1,6 +1,7 @@
 // initialize_voice_manager @ 0x448ee0 (thiscall, ret)
 
 #include "audio_system.h"
+#include "rtext.h"
 #include "voice_manager.h"
 
 #include <string.h>
@@ -10,7 +11,6 @@ char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, int* out_
 char* find_case_insensitive_substring(char* needle, char* haystack);
 char* advance_to_next_crlf_line(char* cursor);
 int parse_next_signed_int(char** cursor);
-float parse_next_float32(char** cursor);
 void rstrcpy_checked_ascii(char* destination, char* source);
 int register_sound_sample(char* path, int normalization_class);
 int report_errorf(char* format, ...);

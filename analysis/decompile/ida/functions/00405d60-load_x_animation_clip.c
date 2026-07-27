@@ -25,7 +25,7 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
   float progress_step; // [esp+18h] [ebp-18Ch]
   int unused; // [esp+1Ch] [ebp-188h] BYREF
   XAnimationKeyframe *keyframes; // [esp+20h] [ebp-184h]
-  char v24[128]; // [esp+24h] [ebp-180h] BYREF
+  char pattern[128]; // [esp+24h] [ebp-180h] BYREF
   char Buffer[256]; // [esp+A4h] [ebp-100h] BYREF
 
   v3 = mesh_name;
@@ -35,7 +35,7 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
   *cursor++ = 42;
   *cursor++ = 46;
   *cursor++ = 120;
-  if ( is_archive_index_loaded() )
+  if ( is_archive_index_loaded() != 0 )
     *cursor++ = 50;
   *cursor++ = 0;
   enumerate_matching_archive_or_fs_entries(directory, Buffer, &unused, g_animation_directory);
@@ -70,14 +70,14 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
   load_x_mesh(loader, g_animation_directory[0], object, 0);
   request_object_vertices_copy(object);
   object->flags |= (unsigned int)&g_sprite_manager.sprites[2527];
-  sprintf(v24, "Anim:%s", v3);
-  v13 = find_case_insensitive_substring(v24, loader->animation_bytes);
+  sprintf(pattern, "Anim:%s", v3);
+  v13 = find_case_insensitive_substring(pattern, loader->animation_bytes);
   v14 = v13;
-  if ( v13 )
+  if ( v13 != nullptr )
   {
     v15 = find_case_insensitive_substring(aAnimend, v13);
     v16 = v15;
-    if ( !v15 )
+    if ( v15 == nullptr )
     {
       report_errorf("Cannot find AnimEnd: for %s \n", v3);
       return;
@@ -86,7 +86,7 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
     *v15 = 0;
     v17 = find_case_insensitive_substring(aDuration, v14);
     cursor = v17;
-    if ( v17 )
+    if ( v17 != nullptr )
     {
       cursor = find_case_insensitive_substring(asc_4A1644, v17) + 1;
       progress_step = 1.0 / (parse_next_float32(&cursor) * 60.0);
@@ -98,10 +98,10 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
     cursor = find_case_insensitive_substring(aModeLoop, v14);
     v18 = cursor != nullptr;
     cursor = find_case_insensitive_substring(aModeOnce, v14);
-    if ( cursor )
+    if ( cursor != nullptr )
       v18 |= 4u;
     cursor = find_case_insensitive_substring(aModePingpong, v14);
-    if ( cursor )
+    if ( cursor != nullptr )
       v18 |= 2u;
     *v16 = v20;
   }

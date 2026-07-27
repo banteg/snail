@@ -2,8 +2,8 @@
 /* function: parse_next_int32 @ 0x431ec0 */
 /* selector: parse_next_int32 */
 
-// Parses the next signed decimal integer from the caller-owned text cursor, skipping leading spaces and advancing the cursor past the consumed digits.
-int32_t __cdecl parse_next_int32(char **cursor)
+// Exact Windows `RTextExtractInt(char**)`: parses the next signed decimal integer from the caller-owned text cursor, skipping leading spaces and advancing the cursor past the consumed digits.
+int __cdecl parse_next_int32(char **cursor)
 {
   char *v1; // eax
   int v2; // edi
@@ -45,4 +45,3 @@ int32_t __cdecl parse_next_int32(char **cursor)
   }
   return v2 * v3;
 }
-

@@ -1,10 +1,9 @@
 // get_or_create_texture_ref @ 0x44e810 (thiscall, ret 0xc)
 
 #include "sprite.h"
+#include "rtext.h"
 
 void report_errorf(char* format, ...);
-void copy_c_string(char* destination, char* source);
-unsigned char strings_equal_case_insensitive(char* left, char* right); // @ 0x431dc0
 
 TextureRef* TextureRefList::get_or_create_texture_ref(
     char* texture_path, void* payload, int flags)

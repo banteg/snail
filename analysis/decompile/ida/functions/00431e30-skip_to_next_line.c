@@ -2,18 +2,21 @@
 /* function: skip_to_next_line @ 0x431e30 */
 /* selector: skip_to_next_line */
 
-// Advances the caller-owned text cursor to the next line break and then steps once more so the cursor starts on the following line.
-_BYTE *__cdecl sub_431E30(_BYTE **a1)
+// Void Windows `RTextNewLine(char**)`: advances the caller-owned text cursor to the next line break or NUL and then steps once more so the cursor starts on the following line.
+void __cdecl skip_to_next_line(char **cursor)
 {
-  _BYTE *result; // eax
+  char *v1; // eax
 
-  for ( result = *a1; *result; *a1 = ++result )
+  if ( **cursor != 0 )
   {
-    result = *a1;
-    if ( **a1 == 10 )
-      break;
+    do
+    {
+      if ( **cursor == 10 )
+        break;
+      v1 = *cursor + 1;
+      *cursor = v1;
+    }
+    while ( *v1 != 0 );
   }
-  ++*a1;
-  return result;
+  ++*cursor;
 }
-

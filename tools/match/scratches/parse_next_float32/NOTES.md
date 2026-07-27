@@ -67,10 +67,10 @@ semantic pre-scan branch.
 
 ## 2026-07-12 exact parser source recovery
 
-The preserved iOS and Android symbol is `Rstrfloat(char**)`, and the Android
-body confirms the same sign/dot/digit scan, decimal accumulator, scale, and
-caller-owned cursor contract. The Windows parser uses the same authored
-pre-scan shape as the already-exact signed-integer parser: a
+The preserved iOS and Android bodies confirm the same sign/dot/digit scan,
+decimal accumulator, scale, and caller-owned cursor contract. The Windows
+parser uses the same authored pre-scan shape as the already-exact
+signed-integer parser: a
 `while (**cursor != '-')` loop whose classifier byte comes from the scoped
 current pointer. Expressing the decimal body as a real `digit-or-dot` loop
 condition then preserves native's range checks and shared dot body instead of
@@ -87,3 +87,16 @@ fold away the distinct leading-minus test. A combined rejection expression
 for non-digits and non-dots also duplicated the dot body; neither form is
 retained. The exact source has no volatile locals, dummy branches, or other
 code-generation coercions.
+
+## 2026-07-27 corrected RText ownership
+
+Mobile retains two code-equivalent copies: `RTextExtractFloat(char**)` in
+`RShell.o` and the later `Rstrfloat(char**)` in `RString.o`. Windows places its
+body immediately after `RTextExtractInt`, completing the same seven-function
+RText sequence, while mobile `ObjectTextLoad` calls `RTextExtractFloat` in the
+same vertex and face fields as Windows `load_object_definition`.
+
+That sequence and call-graph evidence resolves the canonical Windows owner as
+`RTextExtractFloat`; byte equivalence alone could not distinguish the later
+`Rstrfloat` sibling. The real return remains `float`, and the Windows matcher
+stays exact at 64/64 instructions with nine clean relocation masks.

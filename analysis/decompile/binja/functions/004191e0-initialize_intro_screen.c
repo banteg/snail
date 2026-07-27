@@ -23,36 +23,36 @@
 004192e9        logo->state = 0
 004192f2        float var_16c = 0.200000003f
 004192fa        logo->renderable_count = 0
-004192fd        char* cursor_1 = find_case_insensitive_substring("Text Start:", script_bytes)
-00419308        char* cursor = cursor_1
-00419312        cursor = &find_case_insensitive_substring(":", cursor_1)[1]
+004192fd        char* searched = find_case_insensitive_substring("Text Start:", script_bytes)
+00419308        char* cursor = searched
+00419312        cursor = &find_case_insensitive_substring(":", searched)[1]
 0041931c        char* eax_7 = find_case_insensitive_substring("Text End:", script_bytes)
-00419321        char* cursor_3 = cursor
+00419321        char* cursor_1 = cursor
 0041932a        char* var_144 = eax_7
-0041932e        if (cursor_3 u< eax_7)
+0041932e        if (cursor_1 u< eax_7)
 0041933a        struct Object** var_168_1 = &logo->image_donors[0].renderable.bod.object
-0041933e        eax_7.b = *cursor_3
+0041933e        eax_7.b = *cursor_1
 00419340        char* edi_1 = nullptr
 00419344        float var_164_1 = 0f
-00419348        char* cursor_5 = cursor_3
+00419348        char* cursor_3 = cursor_1
 0041934a        if (eax_7.b == 0x2a)
-00419350        char* cursor_4 = &cursor_3[1]
+00419350        char* cursor_2 = &cursor_1[1]
 00419351        char image_name[0x80]
 00419351        char* image_name_write = &image_name
-00419358        cursor = cursor_4
-0041935c        char i = *cursor_4
+00419358        cursor = cursor_2
+0041935c        char i = *cursor_2
 00419361        while (i != 0x2e)
 00419363        *image_name_write = i
 00419365        image_name_write = &image_name_write[1]
-00419366        cursor_4 = &cursor_4[1]
-00419367        cursor = cursor_4
-0041936b        i = *cursor_4
+00419366        cursor_2 = &cursor_2[1]
+00419367        cursor = cursor_2
+0041936b        i = *cursor_2
 00419372        *image_name_write = 0x2e
 00419376        image_name_write[1] = 0x74
 0041937a        image_name_write[2] = 0x67
 0041937f        image_name_write[3] = 0x61
 00419382        image_name_write[4] = 0
-00419389        cursor = &cursor_4[1]
+00419389        cursor = &cursor_2[1]
 00419393        float var_170_1 = fconvert.s(parse_next_float32(&cursor))
 004193a1        float var_174_1 = fconvert.s(parse_next_float32(&cursor))
 004193ba        char texture_path[0x80]
@@ -77,10 +77,11 @@
 00419462        logo->letters[logo->renderable_count].renderable.bod.object->facequads->texture_ref = get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)
 00419472        set_matrix_identity(&logo->letters[logo->renderable_count].renderable.transform)
 00419477        int32_t renderable_count = logo->renderable_count
+00419491        int32_t var_148_1 = 0
 004194b1        logo->letters[renderable_count].renderable.transform.position.x = 0
 004194b7        logo->letters[renderable_count].renderable.transform.position.y = 0xc0800000
 004194ba        float var_168_2 = fconvert.s(fconvert.t(var_174_1) * fconvert.t(0.5f))
-004194c2        logo->letters[renderable_count].renderable.transform.position.z = 0
+004194c2        logo->letters[renderable_count].renderable.transform.position.z = var_148_1
 004194c5        logo->renderable_count
 004194e0        logo->letters[logo->:0x14.d].renderable.transform.position.z = fconvert.s(fconvert.t(var_16c) - fconvert.t(var_168_2) + fconvert.t(logo->letters[logo->:0x14.d].renderable.transform.position.z))
 004194ef        set_color_white(&logo->letters[logo->renderable_count].renderable.bod.color)
@@ -103,16 +104,16 @@
 004195ee        logo->letters[renderable_count_1].velocity.y = 0
 004195f1        logo->letters[renderable_count_1].velocity.x = 0
 00419604        eax_7 = (*logo->letters[logo->renderable_count].renderable.bod.bod.vtable)()
-0041960a        cursor_3 = cursor
+0041960a        cursor_1 = cursor
 00419618        var_168_1 = &var_168_1[0x24]
 00419620        logo->renderable_count += 1
-00419623        eax_7.b = *cursor_3
+00419623        eax_7.b = *cursor_1
 00419625        var_16c = fconvert.s(fconvert.t(var_16c) - fconvert.t(var_174_1))
 0041962b        if (eax_7.b != 0)
 00419633        while (eax_7.b != 0xd)
-00419639        cursor_3 = &cursor_3[1]
-0041963a        cursor = cursor_3
-0041963e        eax_7.b = *cursor_3
+00419639        cursor_1 = &cursor_1[1]
+0041963a        cursor = cursor_1
+0041963e        eax_7.b = *cursor_1
 00419642        if (eax_7.b == 0)
 00419642        break
 0041964b        if (eax_7.b != 0)
@@ -120,9 +121,9 @@
 00419656        eax_7 = font_slot_index_for_char(eax_7.b)
 00419666        long double x87_r7_13 = fconvert.t(var_164_1) + fconvert.t(g_font3d_scales[eax_7])
 0041966d        edi_1 = &edi_1[1]
-0041966e        cursor_3 = &cursor[1]
-0041966f        cursor = cursor_3
-00419673        eax_7.b = *cursor_3
+0041966e        cursor_1 = &cursor[1]
+0041966f        cursor = cursor_1
+00419673        eax_7.b = *cursor_1
 00419675        var_164_1 = fconvert.s(x87_r7_13)
 0041967b        if (eax_7.b == 0)
 0041967b        break
@@ -152,7 +153,7 @@
 00419714        renderable:1.b |= 2
 00419717        logo->letters[logo->:0x14.d].renderable.__offset(0x4).d = renderable
 004196d0        renderable = report_errorf("List ADD")
-0041971a        renderable.b = *cursor_5
+0041971a        renderable.b = *cursor_3
 0041971d        int32_t eax_56 = font_slot_index_for_char(renderable.b)
 00419743        set_bod_object(&logo->letters[logo->renderable_count], g_font3d_bods[eax_56].object)
 00419755        set_matrix_identity(&logo->letters[logo->renderable_count].renderable.transform)
@@ -170,26 +171,26 @@
 004197eb        logo->letters[renderable_count_3].velocity.z = 0
 004197ee        logo->letters[renderable_count_3].velocity.y = 0
 004197f1        logo->letters[renderable_count_3].velocity.x = 0
-004197fe        logo->letters[logo->renderable_count].glyph = *cursor_5
+004197fe        logo->letters[logo->renderable_count].glyph = *cursor_3
 00419816        (*logo->letters[logo->renderable_count].renderable.bod.bod.vtable)()
-00419827        long double x87_r7_22 = fconvert.t(g_font3d_scales[font_slot_index_for_char(*cursor_5)]) * fconvert.t(0.800000012f)
-00419833        cursor_5 = &cursor_5[1]
+00419827        long double x87_r7_22 = fconvert.t(g_font3d_scales[font_slot_index_for_char(*cursor_3)]) * fconvert.t(0.800000012f)
+00419833        cursor_3 = &cursor_3[1]
 00419839        logo->renderable_count += 1
 0041983c        var_174_2 = fconvert.s(fconvert.t(var_174_2) - x87_r7_22)
 00419844        eax_7 = var_170_3 - 1
 00419844        cond:3_1 = var_170_3 != 1
 00419845        var_170_3 = eax_7
 00419849        do while (cond:3_1)
-0041984f        cursor_3 = cursor
-00419856        if (*cursor_3 == 0xd)
-00419862        cursor_3 = &cursor_3[2]
-00419865        cursor = cursor_3
+0041984f        cursor_1 = cursor
+00419856        if (*cursor_1 == 0xd)
+00419862        cursor_1 = &cursor_1[2]
+00419865        cursor = cursor_1
 00419869        var_16c = fconvert.s(fconvert.t(var_16c) - fconvert.t(1f))
-00419871        do while (cursor_3 u< var_144)
+00419871        do while (cursor_1 u< var_144)
 00419877        script_bytes = loaded_script_bytes
-00419881        char* cursor_2 = find_case_insensitive_substring("Duration:", script_bytes)
-0041988c        cursor = cursor_2
-00419899        cursor = find_case_insensitive_substring(":", cursor_2)
+00419881        char* searched_1 = find_case_insensitive_substring("Duration:", script_bytes)
+0041988c        cursor = searched_1
+00419899        cursor = find_case_insensitive_substring(":", searched_1)
 0041989e        long double st0_3 = parse_next_float32(&cursor)
 004198a3        logo->duration_seconds = fconvert.s(st0_3)
 004198b4        int32_t var_160_2 = 0
@@ -199,9 +200,11 @@
 004198ea        struct Vec3* current_velocity = velocity_cursor
 004198ec        i_1 += 1
 004198ed        velocity_cursor = &velocity_cursor[1]
-004198f2        current_velocity->x = var_160_2
-004198f8        current_velocity->y = 0f
-004198fb        current_velocity->z = var_158_2
+004198fb        *current_velocity = struct Vec3 {
+    .x = var_160_2
+    .y = 0f
+    .z = var_158_2
+}
 00419903        do while (i_1 s< logo->renderable_count)
 00419906        free_tracked_memory(script_bytes)
 00419918        return

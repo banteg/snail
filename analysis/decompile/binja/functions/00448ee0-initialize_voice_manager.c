@@ -3,14 +3,14 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_voice_manager @ 0x448ee0 */
 
-00448ef0        char var_200 = 0
-00448ef4        void* buffer = get_archive_data_base()
-00448f04        load_file_bytes_from_archive_or_fs("Voice/_Voice.txt", buffer, nullptr)
+00448ef0        char pattern = 0
+00448ef4        char* eax = get_archive_data_base()
+00448f04        load_file_bytes_from_archive_or_fs("Voice/_Voice.txt", eax, nullptr)
 00448f0c        int32_t ebp = 0
 00448f0e        int32_t var_20c = 0
 00448f22        char* cursor
 00448f22        while (true)
-00448f22        rstrcpy_checked_ascii(&var_200, "Set:")
+00448f22        rstrcpy_checked_ascii(&pattern, "Set:")
 00448f2d        if (ebp u<= 0xf)
 00448f33        char* edi_1
 00448f33        switch (ebp)
@@ -54,7 +54,7 @@
 00448ff9        if (not(cond:2_1))
 00448ff9        break
 00448ffb        int32_t ecx = not.d(i)
-00449001        char* edi_3 = &var_200
+00449001        char* edi_3 = &pattern
 00449005        int32_t i_1 = 0xffffffff
 00449008        while (i_1 != 0)
 00449008        bool cond:3_1 = 0 != *edi_3
@@ -66,18 +66,18 @@
 00449010        int32_t edi_5
 00449010        edi_5, esi_2 = __builtin_memcpy(edi_3 - 1, edi_1 - ecx, ecx & 0xfffffffc)
 00449017        __builtin_memcpy(edi_5, esi_2, ecx & 3)
-00449023        char* cursor_1 = find_case_insensitive_substring(&var_200, buffer)
-0044902d        cursor = cursor_1
-00449031        if (cursor_1 == 0)
-0044924b        report_errorf("Cannot find %s in _Voice.txt", &var_200)
+00449023        char* searched = find_case_insensitive_substring(&pattern, eax)
+0044902d        cursor = searched
+00449031        if (searched == 0)
+0044924b        report_errorf("Cannot find %s in _Voice.txt", &pattern)
 0044925d        return
-0044903d        char* cursor_2 = find_case_insensitive_substring("{", cursor_1)
-00449048        cursor = cursor_2
-0044904c        char* eax_1 = find_case_insensitive_substring("}", cursor_2)
+0044903d        char* searched_1 = find_case_insensitive_substring("{", searched)
+00449048        cursor = searched_1
+0044904c        char* eax_2 = find_case_insensitive_substring("}", searched_1)
 00449058        char* i_2 = advance_to_next_crlf_line(cursor)
 00449060        int32_t count = 0
 00449064        cursor = i_2
-00449068        while (i_2 u< eax_1)
+00449068        while (i_2 u< eax_2)
 0044906b        count += 1
 0044906c        i_2 = advance_to_next_crlf_line(i_2)
 00449081        struct VoiceSet* set = &manager->sets[ebp]
@@ -85,26 +85,26 @@
 0044908b        int32_t esi_4 = 0
 0044908f        if (count s> 0)
 00449099        while (true)
-00449099        char eax_3 = *cursor
-004490a1        if (eax_3 != 9 && eax_3 != 0x20)
+00449099        char eax_4 = *cursor
+004490a1        if (eax_4 != 9 && eax_4 != 0x20)
 004490b6        void path
 004490b6        rstrcpy_checked_ascii(&path, "Voice/")
-004490bb        char* cursor_7 = cursor
+004490bb        char* cursor_1 = cursor
 004490c2        void var_fa
-004490c2        char* eax_4 = &var_fa
-004490c9        char i_3 = *cursor_7
+004490c2        char* eax_5 = &var_fa
+004490c9        char i_3 = *cursor_1
 004490ce        while (i_3 != 0x2e)
-004490d0        *eax_4 = i_3
-004490d2        eax_4 = &eax_4[1]
-004490d3        cursor_7 = &cursor_7[1]
-004490d4        cursor = cursor_7
-004490d8        i_3 = *cursor_7
-004490df        *eax_4 = 0x2e
-004490e4        eax_4[1] = 0x6f
-004490e8        eax_4[2] = 0x67
-004490ec        eax_4[3] = 0x67
-004490ef        eax_4[4] = 0
-00449101        cursor = advance_to_next_crlf_line(cursor_7)
+004490d0        *eax_5 = i_3
+004490d2        eax_5 = &eax_5[1]
+004490d3        cursor_1 = &cursor_1[1]
+004490d4        cursor = cursor_1
+004490d8        i_3 = *cursor_1
+004490df        *eax_5 = 0x2e
+004490e4        eax_5[1] = 0x6f
+004490e8        eax_5[2] = 0x67
+004490ec        eax_5[3] = 0x67
+004490ef        eax_5[4] = 0
+00449101        cursor = advance_to_next_crlf_line(cursor_1)
 00449110        set->bites[esi_4] = register_sound_sample(&path, 1)
 00449113        esi_4 += 1
 00449116        if (esi_4 s>= count)
@@ -116,21 +116,21 @@
 00449128        if (not(cond:4_1))
 00449128        break
 00448f14        ebp = var_20c
-00449138        char* cursor_3 = find_case_insensitive_substring("NormalizeMusic:", buffer)
-00449143        cursor = cursor_3
-00449150        cursor = find_case_insensitive_substring(":", cursor_3)
+00449138        char* searched_2 = find_case_insensitive_substring("NormalizeMusic:", eax)
+00449143        cursor = searched_2
+00449150        cursor = find_case_insensitive_substring(":", searched_2)
 0044916e        float music_scale = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00999999978f))
-00449172        char* cursor_4 = find_case_insensitive_substring("NormalizeSfx:", buffer)
-0044917d        cursor = cursor_4
-0044918a        cursor = find_case_insensitive_substring(":", cursor_4)
+00449172        char* searched_3 = find_case_insensitive_substring("NormalizeSfx:", eax)
+0044917d        cursor = searched_3
+0044918a        cursor = find_case_insensitive_substring(":", searched_3)
 004491a8        float sfx_scale = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00999999978f))
-004491ac        char* cursor_5 = find_case_insensitive_substring("NormalizeVoice:", buffer)
-004491b7        cursor = cursor_5
-004491c0        cursor = find_case_insensitive_substring(":", cursor_5)
+004491ac        char* searched_4 = find_case_insensitive_substring("NormalizeVoice:", eax)
+004491b7        cursor = searched_4
+004491c0        cursor = find_case_insensitive_substring(":", searched_4)
 004491f7        set_audio_normalization_scales(&g_audio_backend, music_scale, sfx_scale, fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00999999978f)))
-00449202        char* cursor_6 = find_case_insensitive_substring("Frequency:", buffer)
-0044920d        cursor = cursor_6
-0044921a        cursor = find_case_insensitive_substring(":", cursor_6)
+00449202        char* searched_5 = find_case_insensitive_substring("Frequency:", eax)
+0044920d        cursor = searched_5
+0044921a        cursor = find_case_insensitive_substring(":", searched_5)
 0044922b        manager->global_frequency_seconds = fconvert.s(parse_next_float32(&cursor))
 00449231        reset_voice_manager(manager)
 00449240        return

@@ -84,24 +84,30 @@ extra instructions or different fold arithmetic. `register` annotations are
 neutral at 84.00%. Keep the current folded-byte-first source despite the
 remaining `dl`/`bl` raw-lane ownership mismatch.
 
-## 2026-07-12 authored RString provenance
+## 2026-07-27 corrected RText provenance
 
-iOS preserves this global as `Rstrcmp(char*, char*)` in `RString.o`, and the
-Android body independently confirms the same ASCII-only fold and asymmetric
-termination rule: matching succeeds when the right argument reaches NUL, even
-if the left argument continues. This rules out both CRT `stricmp` ownership and
-the later strict path comparator at `0x44e6c0`.
+The complete Android/iOS evidence corrects the earlier `Rstrcmp` assignment.
+Mobile `Rstrcmp(char*, char*)` requires both strings to terminate and therefore
+does not have the Windows helper's asymmetric success rule. The adjacent
+`RShell.o` symbol `RTextCompStart(char*, char*)` does: matching succeeds when
+its prefix argument reaches NUL even if the searched text continues.
+
+Windows places this body between `RTextCopy` and `RTextNewLine`, exactly
+mirroring the seven-function mobile sequence, and mobile `ObjectTextLoad` calls
+it at the same section-marker sites as Windows `load_object_definition`. This
+rules out both strict `Rstrcmp` ownership and the later strict path comparator
+at `0x44e6c0`.
 
 The provenance does not explain Windows' remaining raw/fold byte-register
 allocation, so focused matching stays honestly pinned at 84.00%, 50/50
 instructions. No source change is made to chase that compiler-only residual.
 
-## 2026-07-26 analyzer replay closure
+## 2026-07-27 analyzer replay correction
 
-The focused RShell replay now applies the mobile-authored
-`Rstrcmp(char* left, char* right)` argument roles to Binary Ninja and IDA 9.4.
-Durable health checks preserve the asymmetric right-terminator success rule and
-reject anonymous `arg1`/`arg2` or `a1`/`a2` regressions.
+The focused RText replay applies
+`RTextCompStart(char* left, char* prefix)` to Binary Ninja and IDA 9.4.
+Durable health checks preserve the asymmetric prefix-terminator success rule
+and reject anonymous or misleading strict-equality argument roles.
 
 This is an ownership-only improvement: the honest Windows scratch remains
 84.00%, 50/50 instructions, with the same raw/fold byte-register allocation

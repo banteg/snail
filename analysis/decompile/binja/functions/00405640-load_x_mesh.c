@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: load_x_mesh @ 0x405640 */
 
-0040564a        void* buffer_1 = get_archive_data_base()
+0040564a        char* eax = get_archive_data_base()
 0040565f        char* buffer
 0040565f        char* format
 0040565f        char* mesh_path_1
@@ -28,30 +28,30 @@
 00405692        buffer = &mesh_file_path
 00405693        sprintf(buffer, format, mesh_path_1)
 004056a6        int32_t byte_count
-004056a6        load_file_bytes_from_archive_or_fs(&mesh_file_path, buffer_1, &byte_count)
-004056b5        *(byte_count + buffer_1 - 2) = 0
-004056ba        char* eax_2 = find_case_insensitive_substring("Frame ", buffer_1)
-004056ca        if (eax_2 == 0)
+004056a6        load_file_bytes_from_archive_or_fs(&mesh_file_path, eax, &byte_count)
+004056b5        eax[byte_count - 2] = 0
+004056ba        char* searched = find_case_insensitive_substring("Frame ", eax)
+004056ca        if (searched == 0)
 004056d6        report_errorf("No 'Frame ' Data in %s", &mesh_file_path)
 004056e8        return
-004056f1        char* duplicate_cursor_1 = find_case_insensitive_substring("Mesh ", eax_2)
-004056f9        char* duplicate_cursor = duplicate_cursor_1
-004056ff        if (duplicate_cursor_1 == 0)
+004056f1        char* searched_1 = find_case_insensitive_substring("Mesh ", searched)
+004056f9        char* duplicate_cursor = searched_1
+004056ff        if (searched_1 == 0)
 0040570b        report_errorf("No 'VertexDuplicationIndices 'Data in %s", &mesh_file_path)
-00405710        duplicate_cursor_1 = duplicate_cursor
-00405728        duplicate_cursor = find_case_insensitive_substring("{", duplicate_cursor_1)
-0040572c        char* mesh_cursor_1 = find_case_insensitive_substring("Mesh ", eax_2)
-00405734        char* mesh_cursor = mesh_cursor_1
-0040573a        if (mesh_cursor_1 == 0)
+00405710        searched_1 = duplicate_cursor
+00405728        duplicate_cursor = find_case_insensitive_substring("{", searched_1)
+0040572c        char* searched_2 = find_case_insensitive_substring("Mesh ", searched)
+00405734        char* mesh_cursor = searched_2
+0040573a        if (searched_2 == 0)
 00405746        report_errorf("No 'Mesh 'Data in %s", &mesh_file_path)
-0040574b        mesh_cursor_1 = mesh_cursor
-00405763        mesh_cursor = find_case_insensitive_substring("{", mesh_cursor_1)
-00405767        char* material_header_cursor_1 = find_case_insensitive_substring("MeshMaterialList ", eax_2)
-0040576f        char* material_header_cursor = material_header_cursor_1
-00405775        if (material_header_cursor_1 == 0)
+0040574b        searched_2 = mesh_cursor
+00405763        mesh_cursor = find_case_insensitive_substring("{", searched_2)
+00405767        char* searched_3 = find_case_insensitive_substring("MeshMaterialList ", searched)
+0040576f        char* material_header_cursor = searched_3
+00405775        if (searched_3 == 0)
 00405781        report_errorf("No 'MeshMaterialList 'Data in %s", &mesh_file_path)
-00405786        material_header_cursor_1 = material_header_cursor
-0040579c        material_header_cursor = find_case_insensitive_substring("{", material_header_cursor_1)
+00405786        searched_3 = material_header_cursor
+0040579c        material_header_cursor = find_case_insensitive_substring("{", searched_3)
 004057a1        parse_next_signed_int(&material_header_cursor)
 004057ab        int16_t facequad_count_3 = parse_next_signed_int(&material_header_cursor)
 004057b7        int16_t vertex_count_2 = parse_next_signed_int(&duplicate_cursor)
@@ -59,12 +59,12 @@
 004057d2        if (vertex_count != parse_next_signed_int(&mesh_cursor))
 004057de        report_errorf("Mesh vertices count does not match vertext duplicate vertices count in %s", &mesh_file_path)
 004057eb        parse_next_signed_int(&duplicate_cursor)
-004057f6        char* texcoord_cursor_1 = find_case_insensitive_substring("MeshTextureCoords ", eax_2)
-004057fe        char* texcoord_cursor = texcoord_cursor_1
-00405804        if (texcoord_cursor_1 == 0)
+004057f6        char* searched_4 = find_case_insensitive_substring("MeshTextureCoords ", searched)
+004057fe        char* texcoord_cursor = searched_4
+00405804        if (searched_4 == 0)
 00405810        report_errorf("No 'Mesh 'Data in %s", &mesh_file_path)
-00405815        texcoord_cursor_1 = texcoord_cursor
-00405827        texcoord_cursor = find_case_insensitive_substring("{", texcoord_cursor_1)
+00405815        searched_4 = texcoord_cursor
+00405827        texcoord_cursor = find_case_insensitive_substring("{", searched_4)
 0040583a        if (vertex_count != parse_next_signed_int(&texcoord_cursor))
 00405846        report_errorf("Mesh texture coords number does not match mesh vertext count in %s", &mesh_file_path)
 00405855        int32_t facequad_count = sx.d(facequad_count_3)
@@ -139,53 +139,53 @@
 00405a92        object->flags |= OBJECT_FLAG_DISABLE_CULLING
 00405a95        free_tracked_memory(pointer_1)
 00405a9f        free_tracked_memory(pointer)
-00405aae        char* material_cursor_1 = find_case_insensitive_substring("MeshMaterialList", eax_2)
-00405ab6        char* material_cursor = material_cursor_1
-00405abc        if (material_cursor_1 == 0)
+00405aae        char* searched_5 = find_case_insensitive_substring("MeshMaterialList", searched)
+00405ab6        char* material_cursor = searched_5
+00405abc        if (searched_5 == 0)
 00405ac8        report_errorf("No MeshMaterialList { in %s", &mesh_file_path)
 00405ada        return
-00405aec        material_cursor = find_case_insensitive_substring("{", material_cursor_1)
+00405aec        material_cursor = find_case_insensitive_substring("{", searched_5)
 00405af1        int32_t eax_29 = parse_next_signed_int(&material_cursor)
 00405b01        int32_t i_5 = parse_next_signed_int(&material_cursor)
 00405b0f        if (i_5 != facequad_count)
 00405b1b        report_errorf("No MeshMaterialList face number is not equal to Mesh face number in %s", &mesh_file_path)
 00405b2d        return
 00405b3d        struct TextureRef** pointer_2 = allocate_tracked_memory(eax_29 << 2, "Direct X Materiallist")
-00405b46        char* material_cursor_2 = material_cursor
+00405b46        char* searched_7 = material_cursor
 00405b4d        int32_t ebp_1 = 0
 00405b55        if (eax_29 s> 0)
 00405b5b        struct TextureRef** pointer_4 = pointer_2
-00405b63        char* eax_30 = find_case_insensitive_substring("TextureFilename ", material_cursor_2)
-00405b6d        if (eax_30 != 0)
-00405bba        material_cursor_2 = &find_case_insensitive_substring(""", eax_30)[1]
+00405b63        char* searched_6 = find_case_insensitive_substring("TextureFilename ", searched_7)
+00405b6d        if (searched_6 != 0)
+00405bba        searched_7 = &find_case_insensitive_substring(""", searched_6)[1]
 00405bbb        char texture_path[0x100]
 00405bbb        __builtin_strncpy(&texture_path, "X/", 2)
-00405bcb        char* eax_33 = &texture_path[2]
-00405bd2        char i_2 = *material_cursor_2
+00405bcb        char* eax_32 = &texture_path[2]
+00405bd2        char i_2 = *searched_7
 00405bd7        while (i_2 != 0x2e)
-00405bd9        *eax_33 = i_2
-00405bdb        i_2 = material_cursor_2[1]
-00405bde        eax_33 = &eax_33[1]
-00405bdf        material_cursor_2 = &material_cursor_2[1]
-00405be5        *eax_33 = 0x2e
-00405bed        eax_33[1] = 0x74
-00405bf6        eax_33[2] = 0x67
-00405bfa        eax_33[3] = 0x61
-00405bfd        eax_33[4] = 0
-00405c09        struct TextureRef* eax_37 = get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)
-00405c0e        *pointer_4 = eax_37
-00405c10        enum TextureRefFlags flags = eax_37->flags
+00405bd9        *eax_32 = i_2
+00405bdb        i_2 = searched_7[1]
+00405bde        eax_32 = &eax_32[1]
+00405bdf        searched_7 = &searched_7[1]
+00405be5        *eax_32 = 0x2e
+00405bed        eax_32[1] = 0x74
+00405bf6        eax_32[2] = 0x67
+00405bfa        eax_32[3] = 0x61
+00405bfd        eax_32[4] = 0
+00405c09        struct TextureRef* eax_36 = get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)
+00405c0e        *pointer_4 = eax_36
+00405c10        enum TextureRefFlags flags = eax_36->flags
 00405c12        flags:1.b |= 0x10
-00405c15        eax_37->flags = flags
+00405c15        eax_36->flags = flags
 00405c20        if ((options_flags.b & 2) != 0)
-00405c22        struct TextureRef* eax_39 = *pointer_4
-00405c24        enum TextureRefFlags flags_1 = eax_39->flags
+00405c22        struct TextureRef* eax_38 = *pointer_4
+00405c24        enum TextureRefFlags flags_1 = eax_38->flags
 00405c26        flags_1:1.b |= 0x80
-00405c29        eax_39->flags = flags_1
+00405c29        eax_38->flags = flags_1
 00405b77        if ((options_flags.b & 2) == 0)
 00405b84        report_warningf("No TextureFilename for Material %i in %s", ebp_1, &mesh_file_path)
 00405b9f        *pointer_4 = get_or_create_texture_ref(&g_texture_refs, "Sprites/debug.tga", nullptr, 0)
-00405ba1        material_cursor_2 = material_cursor
+00405ba1        searched_7 = material_cursor
 00405c2f        ebp_1 += 1
 00405c30        pointer_4 = &pointer_4[1]
 00405c35        do while (ebp_1 s< eax_29)

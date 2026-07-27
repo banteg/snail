@@ -10,9 +10,9 @@ void __cdecl load_object_definition(char *path, Object *object)
   char *v4; // eax
   char v5; // cl
   int32_t v6; // ebp
-  int32_t v7; // esi
-  int32_t v8; // eax
-  int32_t v9; // esi
+  int v7; // esi
+  int v8; // eax
+  int v9; // esi
   uint16_t v10; // bp
   uint16_t v11; // bx
   double v12; // st7
@@ -48,7 +48,7 @@ void __cdecl load_object_definition(char *path, Object *object)
   v6 = 0;
   v20 = 0;
   v19 = 0;
-  if ( v5 )
+  if ( v5 != 0 )
   {
     while ( 1 )
     {
@@ -62,24 +62,24 @@ void __cdecl load_object_definition(char *path, Object *object)
       }
       if ( *v4 != 91 )
         goto LABEL_18;
-      if ( strings_equal_case_insensitive(v4, aVertexStart) )
+      if ( strings_equal_case_insensitive(v4, g_object_text_vertex_start) )
         break;
-      if ( strings_equal_case_insensitive(cursor, aFacequadStart) )
+      if ( strings_equal_case_insensitive(cursor, g_object_text_facequad_start) )
       {
         skip_to_next_line(&cursor);
         line_cursor = cursor;
-        if ( !strings_equal_case_insensitive(cursor, aFacequadEnd) )
+        if ( !strings_equal_case_insensitive(cursor, g_object_text_facequad_end) )
         {
           do
           {
             ++v3;
             skip_to_next_line(&line_cursor);
           }
-          while ( !strings_equal_case_insensitive(line_cursor, aFacequadEnd) );
+          while ( !strings_equal_case_insensitive(line_cursor, g_object_text_facequad_end) );
           v20 = v3;
         }
         request_object_facequads(object, v3);
-        if ( !strings_equal_case_insensitive(cursor, aFacequadEnd) )
+        if ( !strings_equal_case_insensitive(cursor, g_object_text_facequad_end) )
         {
           do
           {
@@ -98,9 +98,9 @@ void __cdecl load_object_definition(char *path, Object *object)
             v23 = parse_next_float32(&line_cursor);
             v25 = parse_next_float32(&line_cursor);
             parse_next_space_delimited_token(&line_cursor, texture_name);
-            append_c_string(texture_name, aTga_0);
+            append_c_string(texture_name, g_object_text_tga_extension);
             copy_c_string(texture_path, path);
-            append_c_string(texture_path, asc_4ACCE0);
+            append_c_string(texture_path, g_object_text_path_separator);
             append_c_string(texture_path, texture_name);
             v9 *= 48;
             *(_DWORD *)&object->facequads->_pad_0a[v9 + 2] = get_or_create_texture_ref(
@@ -125,7 +125,7 @@ void __cdecl load_object_definition(char *path, Object *object)
             *(float *)((char *)&object->facequads->uv[3].u + v9) = v23;
             *(float *)((char *)&object->facequads->uv[3].v + v9) = v25;
           }
-          while ( !strings_equal_case_insensitive(cursor, aFacequadEnd) );
+          while ( !strings_equal_case_insensitive(cursor, g_object_text_facequad_end) );
           v3 = v20;
           v6 = v19;
         }
@@ -134,23 +134,23 @@ void __cdecl load_object_definition(char *path, Object *object)
 LABEL_19:
       v4 = cursor;
 LABEL_20:
-      if ( !*v4 )
+      if ( *v4 == 0 )
         return;
     }
     skip_to_next_line(&cursor);
     line_cursor = cursor;
-    if ( !strings_equal_case_insensitive(cursor, aVertexEnd) )
+    if ( !strings_equal_case_insensitive(cursor, g_object_text_vertex_end) )
     {
       do
       {
         ++v6;
         skip_to_next_line(&line_cursor);
       }
-      while ( !strings_equal_case_insensitive(line_cursor, aVertexEnd) );
+      while ( !strings_equal_case_insensitive(line_cursor, g_object_text_vertex_end) );
       v19 = v6;
     }
     request_object_vertices(object, v6);
-    for ( ; !strings_equal_case_insensitive(cursor, aVertexEnd); object->vertices[v8].z = v16 )
+    for ( ; !strings_equal_case_insensitive(cursor, g_object_text_vertex_end); object->vertices[v8].z = v16 )
     {
       line_cursor = cursor;
       v7 = parse_next_int32(&line_cursor);

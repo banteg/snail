@@ -2,21 +2,17 @@
 /* function: copy_c_string @ 0x431da0 */
 /* selector: copy_c_string */
 
-// Copies one NUL-terminated C string into the destination buffer and returns the advanced source pointer.
-_BYTE *__cdecl sub_431DA0(_BYTE *a1, _BYTE *a2)
+// Void Windows `RTextCopy(char*, char*)`: copies one NUL-terminated C string into the destination buffer. Android and iOS preserve the authored RShell.o name, body, and placement at the head of the contiguous RText helper family.
+void __cdecl copy_c_string(char *destination, char *source)
 {
-  _BYTE *result; // eax
   char v4; // dl
 
-  result = a2;
   do
   {
-    *a1 = *result;
-    v4 = *result;
-    ++a1;
-    ++result;
+    *destination = *source;
+    v4 = *source;
+    ++destination;
+    ++source;
   }
-  while ( v4 );
-  return result;
+  while ( v4 != 0 );
 }
-

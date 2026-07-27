@@ -10,6 +10,7 @@
 #include "landscape_manager.h"
 #include "mouse_cursor_state.h"
 #include "object_render_types.h"
+#include "rtext.h"
 #include "runtime_config.h"
 #include "sprite.h"
 #include "star_manager.h"
@@ -21,7 +22,6 @@ extern char g_blank_text[]; // data_4dfb08
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 char* load_file_bytes(char* file_name, int* out_size);
 char* find_case_insensitive_substring(char* needle, char* haystack);
-float parse_next_float32(char** cursor);
 int sprintf(char* buffer, const char* format, ...);
 void free_tracked_memory(void* ptr);
 int report_errorf(char* format, ...);

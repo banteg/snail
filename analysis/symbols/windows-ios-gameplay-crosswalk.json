@@ -3359,22 +3359,67 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x431da0",
+      "windows_name": "copy_c_string",
+      "ios_symbol": "RTextCopy(char*, char*)",
+      "android_symbol": "RTextCopy(char*, char*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Both mobile bodies preserve the authored void copy loop. Windows, Android, and iOS place it first in the same contiguous seven-function RText sequence, and mobile ObjectTextLoad uses it in the same path-building role as Windows load_object_definition."
+    },
+    {
       "address": "0x431dc0",
       "windows_name": "strings_equal_case_insensitive",
-      "ios_symbol": "Rstrcmp(char*, char*)",
-      "android_symbol": "Rstrcmp(char*, char*)",
-      "source_object": "RString.o",
+      "ios_symbol": "RTextCompStart(char*, char*)",
+      "android_symbol": "RTextCompStart(char*, char*)",
+      "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "The Android body has the same ASCII fold and right-terminator success contract as Windows, including the prefix-friendly case where the right argument ends first."
+      "notes": "Both mobile RTextCompStart bodies have Windows' ASCII fold and asymmetric prefix-terminator success rule. Mobile Rstrcmp instead requires both strings to terminate, rejecting the previous RString.o assignment; sequence placement and ObjectTextLoad calls independently resolve the RShell.o owner."
+    },
+    {
+      "address": "0x431e30",
+      "windows_name": "skip_to_next_line",
+      "ios_symbol": "RTextNewLine(char**)",
+      "android_symbol": "RTextNewLine(char**)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "All three bodies advance a caller-owned cursor through LF or NUL and then step once. Both mobile ports preserve the authored void return, and Windows callsites discard EAX."
+    },
+    {
+      "address": "0x431e50",
+      "windows_name": "append_c_string",
+      "ios_symbol": "RTextAppend(char*, char*)",
+      "android_symbol": "RTextAppend(char*, char*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "All three bodies scan to the destination NUL, copy the source through its terminator, and return void at the authored API boundary. Mobile ObjectTextLoad uses it in the same three path-building calls as Windows load_object_definition."
+    },
+    {
+      "address": "0x431e80",
+      "windows_name": "parse_next_space_delimited_token",
+      "ios_symbol": "RTextExtractString(char**, char*)",
+      "android_symbol": "RTextExtractString(char**, char*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "All three bodies skip spaces, copy until space or CR, terminate the output, and advance the caller-owned cursor. Mobile proves the API is void; the exact Windows matcher retains a documented result-shaped VC6 harness because natural void transcriptions recolor registers."
+    },
+    {
+      "address": "0x431ec0",
+      "windows_name": "parse_next_int32",
+      "ios_symbol": "RTextExtractInt(char**)",
+      "android_symbol": "RTextExtractInt(char**)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "All three bodies skip spaces, consume an optional minus sign, accumulate decimal digits, advance the caller-owned cursor, and return the signed integer. The recovered Windows source is instruction-exact."
     },
     {
       "address": "0x431f20",
       "windows_name": "parse_next_float32",
-      "ios_symbol": "Rstrfloat(char**)",
-      "android_symbol": "Rstrfloat(char**)",
-      "source_object": "RString.o",
+      "ios_symbol": "RTextExtractFloat(char**)",
+      "android_symbol": "RTextExtractFloat(char**)",
+      "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "All ports scan to a sign, dot, or digit, advance the caller-owned cursor, accumulate decimal digits and scale, and return a float; the recovered Windows source is instruction-exact."
+      "notes": "All ports scan to a sign, dot, or digit, advance the caller-owned cursor, accumulate decimal digits and scale, and return a float; the recovered Windows source is instruction-exact. Mobile Rstrfloat is a later code-equivalent duplicate, but only RTextExtractFloat completes the adjacent RShell.o helper sequence used by ObjectTextLoad."
     },
     {
       "address": "0x431fd0",

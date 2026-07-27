@@ -16471,7 +16471,7 @@
         "manager->scripts[manager->script_count].object_index",
         "manager->scripts[manager->script_count].distort",
         "load_or_reuse_cached_x_mesh(",
-        "&v23->directx_loader"
+        "->directx_loader"
       ],
       "forbidden_substrings": [
         "char *this",
@@ -16602,12 +16602,12 @@
         "char script_name[0x200]",
         "char* script_name_cursor = &script_name",
         "*script_name_cursor = i_3",
-        "char* segments_end = segments_end_1",
+        "char* segments_end = find_case_insensitive_substring(\"Segments End:\", &g_level_file_text_buffer)",
         "char segment_name[0x200]",
         "char* segment_name_cursor = &segment_name",
         "char line_options[0x80]",
         "char* line_options_cursor = &line_options",
-        "char* line_cursor = line_cursor_8",
+        "char* line_cursor =",
         "char sample_name[0x80]",
         "char* sample_name_cursor = &sample_name",
         "char* first_segment_name_cursor = &segment_name",
@@ -21581,9 +21581,10 @@
         "struct LogoLetterVelocityCursor* velocity_cursor = &logo->letters[0].velocity",
         "struct Vec3* current_velocity = velocity_cursor",
         "velocity_cursor = &velocity_cursor[1]",
-        "current_velocity->x =",
-        "current_velocity->y = 0f",
-        "current_velocity->z =",
+        "*current_velocity = struct Vec3 {",
+        ".x = var_160_2",
+        ".y = 0f",
+        ".z = var_158_2",
         "free_tracked_memory(script_bytes)"
       ],
       "forbidden_substrings": [
@@ -21677,6 +21678,10 @@
         "char texture_name[0x80]",
         "char texture_path[0x80]",
         "parse_next_space_delimited_token(&line_cursor, &texture_name)",
+        "append_c_string(&texture_name, \".tga\")",
+        "copy_c_string(&texture_path, path)",
+        "append_c_string(&texture_path, \"/\")",
+        "append_c_string(&texture_path, &texture_name)",
         "request_object_vertices(object, vertex_count)",
         "request_object_facequads(object, facequad_count)",
         "get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)"
@@ -21689,6 +21694,9 @@
         "var_100",
         "char* load_object_definition(",
         "int32_t load_object_definition()",
+        " = parse_next_space_delimited_token",
+        "append_c_string(eax_",
+        "copy_c_string(eax_",
         "sub_48b32c",
         "unimplemented"
       ]
@@ -21706,7 +21714,13 @@
         "char object_file_path[256]",
         "sprintf(object_file_path, \"%s/_Object.txt\", path)",
         "load_file_bytes_from_archive_or_fs(object_file_path, archive_data_base, &byte_count)",
+        "strings_equal_case_insensitive(v4, g_object_text_vertex_start)",
+        "strings_equal_case_insensitive(cursor, g_object_text_facequad_start)",
         "parse_next_space_delimited_token(&line_cursor, texture_name)",
+        "append_c_string(texture_name, g_object_text_tga_extension)",
+        "copy_c_string(texture_path, path)",
+        "append_c_string(texture_path, g_object_text_path_separator)",
+        "append_c_string(texture_path, texture_name)",
         "request_object_vertices(object",
         "request_object_facequads(object",
         "object->vertices",
@@ -21719,6 +21733,8 @@
         "int *a2",
         "char *result",
         "return result",
+        "strings_equal_case_insensitive(v4, prefix)",
+        "append_c_string(texture_name, source)",
         "out_size",
         "char out[",
         "Buffer",
@@ -22098,33 +22114,211 @@
       ]
     },
     {
-      "name": "bn_rstrcmp_mobile_argument_ownership",
-      "artifact": "analysis/decompile/binja/functions/00431dc0-strings_equal_case_insensitive.c",
+      "name": "bn_rtext_copy_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/00431da0-copy_c_string.c",
       "required_substrings": [
-        "char* right_1 = right",
-        "char* left_1 = left",
-        "char i = *right_1",
-        "char ebx = *left_1",
-        "return *right_1 == 0"
+        "char* source_1 = source",
+        "char* destination_1 = destination",
+        "*destination_1 = *source_1",
+        "return"
       ],
       "forbidden_substrings": [
         "arg1",
-        "arg2"
+        "arg2",
+        "return source",
+        "return destination"
       ]
     },
     {
-      "name": "ida_rstrcmp_mobile_argument_ownership",
+      "name": "ida_rtext_copy_mobile_contract",
+      "artifact": "analysis/decompile/ida/functions/00431da0-copy_c_string.c",
+      "required_substrings": [
+        "void __cdecl copy_c_string(char *destination, char *source)",
+        "*destination = *source",
+        "while ( v4 != 0 )"
+      ],
+      "forbidden_substrings": [
+        "char *__cdecl copy_c_string",
+        "char *a1",
+        "char *a2",
+        "return source",
+        "return destination"
+      ]
+    },
+    {
+      "name": "bn_rtext_comp_start_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/00431dc0-strings_equal_case_insensitive.c",
+      "required_substrings": [
+        "char* prefix_1 = prefix",
+        "char* left_1 = left",
+        "char i = *prefix_1",
+        "char ebx = *left_1",
+        "return *prefix_1 == 0"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "right_1",
+        "return *left_1 == 0"
+      ]
+    },
+    {
+      "name": "ida_rtext_comp_start_mobile_contract",
       "artifact": "analysis/decompile/ida/functions/00431dc0-strings_equal_case_insensitive.c",
       "required_substrings": [
-        "bool __cdecl strings_equal_case_insensitive(char *left, char *right)",
-        "v2 = right",
+        "bool __cdecl strings_equal_case_insensitive(char *left, char *prefix)",
+        "v2 = prefix",
         "v3 = left",
         "return *v2 == 0"
       ],
       "forbidden_substrings": [
         "bool __cdecl sub_431DC0",
         "char *a1",
-        "_BYTE *a2"
+        "_BYTE *a2",
+        "char *right"
+      ]
+    },
+    {
+      "name": "bn_rtext_new_line_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/00431e30-skip_to_next_line.c",
+      "required_substrings": [
+        "if (**cursor != 0)",
+        "*cursor = &eax_1[1]",
+        "*cursor = &(*cursor)[1]",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return cursor"
+      ]
+    },
+    {
+      "name": "ida_rtext_new_line_mobile_contract",
+      "artifact": "analysis/decompile/ida/functions/00431e30-skip_to_next_line.c",
+      "required_substrings": [
+        "void __cdecl skip_to_next_line(char **cursor)",
+        "*cursor = v1",
+        "++*cursor"
+      ],
+      "forbidden_substrings": [
+        "char **__cdecl skip_to_next_line",
+        "char **a1",
+        "return cursor"
+      ]
+    },
+    {
+      "name": "bn_rtext_append_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/00431e50-append_c_string.c",
+      "required_substrings": [
+        "char* destination_1 = destination",
+        "char* source_1 = source",
+        "*destination_1 = 0",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg4",
+        "arg5",
+        "return destination_1"
+      ]
+    },
+    {
+      "name": "ida_rtext_append_mobile_contract",
+      "artifact": "analysis/decompile/ida/functions/00431e50-append_c_string.c",
+      "required_substrings": [
+        "void __cdecl append_c_string(char *destination, char *source)",
+        "v4 = source",
+        "*v2 = 0"
+      ],
+      "forbidden_substrings": [
+        "char *__cdecl append_c_string",
+        "char *a1",
+        "char *a2",
+        "return destination"
+      ]
+    },
+    {
+      "name": "bn_rtext_extract_string_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/00431e80-parse_next_space_delimited_token.c",
+      "required_substrings": [
+        "if (**cursor == 0x20)",
+        "char* out_1 = out",
+        "*out_1 = 0",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return out"
+      ]
+    },
+    {
+      "name": "ida_rtext_extract_string_mobile_contract",
+      "artifact": "analysis/decompile/ida/functions/00431e80-parse_next_space_delimited_token.c",
+      "required_substrings": [
+        "void __cdecl parse_next_space_delimited_token(char **cursor, char *out)",
+        "*out++ = v4",
+        "*out = 0"
+      ],
+      "forbidden_substrings": [
+        "char **__cdecl parse_next_space_delimited_token",
+        "char **a1",
+        "char *a2",
+        "return out"
+      ]
+    },
+    {
+      "name": "bn_rtext_extract_int_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/00431ec0-parse_next_int32.c",
+      "required_substrings": [
+        "int32_t eax_4 = 0",
+        "eax_4 = sx.d(edx_1) + eax_4 * 0xa - 0x30",
+        "return eax_4 * edi"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return cursor"
+      ]
+    },
+    {
+      "name": "ida_rtext_extract_int_mobile_contract",
+      "artifact": "analysis/decompile/ida/functions/00431ec0-parse_next_int32.c",
+      "required_substrings": [
+        "int __cdecl parse_next_int32(char **cursor)",
+        "v3 = v5 + 10 * v3 - 48",
+        "return v2 * v3"
+      ],
+      "forbidden_substrings": [
+        "void __cdecl parse_next_int32",
+        "char **a1",
+        "return cursor"
+      ]
+    },
+    {
+      "name": "bn_rtext_extract_float_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/00431f20-parse_next_float32.c",
+      "required_substrings": [
+        "long double x87_r7",
+        "x87_r5 = x87_r5 * fconvert.t(0.100000001f)",
+        "return (x87_r7 * x87_r5 * x87_r6).d"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return (x87_r7 * x87_r5 * x87_r6).q"
+      ]
+    },
+    {
+      "name": "ida_rtext_extract_float_mobile_contract",
+      "artifact": "analysis/decompile/ida/functions/00431f20-parse_next_float32.c",
+      "required_substrings": [
+        "float __cdecl parse_next_float32(char **cursor)",
+        "v5 = v5 * 0.1",
+        "return v3 * (v5 * v4)"
+      ],
+      "forbidden_substrings": [
+        "double __cdecl parse_next_float32",
+        "char **a1",
+        "return cursor"
       ]
     },
     {
