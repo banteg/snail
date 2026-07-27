@@ -177,3 +177,26 @@ database, then to the tracked database. No matcher source, operands, control
 flow, or masks changed: focused matching remains honestly at 82.27%,
 941/926 instructions, prefix 20/926, with 178 clean operands and no unresolved
 or mismatched references.
+
+## 2026-07-27 paired-mobile parser source recovery
+
+Android `cRSubTracks::Init(char*)` at `0x850d4` and iOS
+`cRSubTracks::Init(char*)` at `0x36fc4` independently preserve two useful
+source-level invariants from the shared parser:
+
+- `GalaxyText:` is copied with one borrowed input cursor. A control byte emits
+  `>` and advances that same cursor to the next printable byte; there is no
+  second text-cursor owner. Removing the synthetic alias from the Windows
+  scratch is codegen-identical.
+- After importing one authored segment row, the parser advances the owning
+  line cursor, tests it for end-of-file, and only then compares it with the
+  borrowed `Segments End:` sentinel. Expressing that as one compound loop
+  condition and a post-loop diagnostic gives VC6 the closer cold-exit shape.
+
+The ports also establish a strict boundary: their `Mode:*`, `ArcadePro`,
+padding segment, and extra message/sample fields are mobile-only and were not
+transplanted into the Windows layout. The focused Windows match rises from
+82.27% to 82.50%: 943/926 candidate/target instructions, prefix 20/926, with
+183 clean masked operands, no unresolved or mismatched references, and two
+honestly unaudited candidate-only instructions in the still-unmatched cold
+EOF diagnostic.

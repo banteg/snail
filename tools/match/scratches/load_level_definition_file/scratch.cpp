@@ -107,21 +107,13 @@ void SubTracks::load_level_definition_file(char* filename)
                         char* text_out =
                             g_game->subgame.galaxy.route_slots[0].record.description_text
                                 + galaxy_route_offset;
-                        char* text_cursor = cursor;
                         while (cursor < text_end) {
-                            if (*text_cursor < 32) {
+                            if (*cursor < 32) {
                                 *text_out++ = '>';
-                                text_cursor = cursor;
-                                if (*cursor < 32) {
-                                    do {
-                                        text_cursor++;
-                                        cursor = text_cursor;
-                                    } while (*text_cursor < 32);
-                                }
+                                while (*cursor < 32)
+                                    cursor++;
                             }
-                            *text_out++ = *text_cursor;
-                            text_cursor = cursor + 1;
-                            cursor = text_cursor;
+                            *text_out++ = *cursor++;
                         }
                         *text_out = 0;
                     }
@@ -364,11 +356,11 @@ void SubTracks::load_level_definition_file(char* filename)
 
             segment_count++;
             cursor = advance_to_next_crlf_line(cursor);
-            if (cursor == 0) {
-                report_errorf("Unexpected end of file in %s", filename);
-                return;
-            }
-        } while (cursor < segments_end);
+        } while (cursor != 0 && cursor < segments_end);
+        if (cursor == 0) {
+            report_errorf("Unexpected end of file in %s", filename);
+            return;
+        }
     }
 
     cursor = find_case_insensitive_substring("First:", LEVEL_FILE_BUFFER);
