@@ -28,7 +28,8 @@ void SaltManager::spawn_salt_hazard(const Vector3* position)
     *spawn_position = *position;
     live_matrix->set_matrix_rotation_identity();
     live_matrix->rotate_matrix_local_y(
-        ((float)next_math_random_value() - 16384.0f) * 0.0001917476f);
+        ((float)next_math_random_value() - 16384.0f)
+        * 0.0000610351562f * 3.1415927f);
     slot->collision_armed = 1;
     int* list_flags = &slot->list_flags;
     BodNode* head = &g_game->subgame.salt_hazard_list_head;

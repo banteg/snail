@@ -54,3 +54,16 @@ Spelling the four non-border tests as an `interior` predicate then restored the
 native randomized-first block order and reached an exact 100.00% match
 (`73/73`, prefix `73/73`, 14 clean operands). No volatile state, dummy calls,
 or other code-generation-only constructs are present.
+
+## 2026-07-28 mobile random-range provenance
+
+Android `cRBackdrop::SetDistort` at `0x3e46c` and iOS at `0x41630` preserve
+the random seed hierarchy that Windows had folded: phase is
+`rand * (1 / 32768) * 2pi`, the phase-rate denominator uses a normalized draw
+with range `2` and base `3`, and both offsets apply the signed
+`(rand - 16384) * (1 / 16384)` sample before the distortion amplitude.
+
+The mobile amplitude adjustment is platform-specific and is not imported.
+Factoring only the shared Windows constants and operation hierarchy is
+byte-identical; this method remains exact at 73/73 instructions, full prefix,
+with all 14 masks clean.

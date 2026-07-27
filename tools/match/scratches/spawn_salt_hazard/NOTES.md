@@ -129,3 +129,17 @@ by 38 integers. The selected slot remains the real manager-owned `Salt*`.
 Binary Ninja replay declares this cursor separately from the canonical hazard
 owners; adding one analysis view therefore no longer attempts to replace the
 existing `Salt` and `SubLazer` definitions.
+
+## 2026-07-28 mobile random-angle provenance
+
+iOS `cRSaltManager::Add(tVector&)` at `0x1dcf8` explicitly retains the
+spawn rotation as `(rand - 16384) * (1 / 16384) * pi`. Android at `0x72600`
+corroborates it at instruction level: the two consecutive VFP multiplies load
+`0x38800000` (`1 / 16384`) and `0x40490fdb` (pi) after subtracting
+`0x46800000` (`16384`). The decompiler's missing Android angle operand is
+therefore an analysis loss, not a platform difference.
+
+Restoring that hierarchy compiles byte-identically. The honest mobile-proven
+void Windows source remains at 88.55%, 64/67 instructions, prefix 4, with all
+10 masks clean; the residual is still solely the authored-void versus native
+residue-sensitive exit shape, not the angle expression.

@@ -23,21 +23,21 @@ void Backdrop::set_backdrop_distort(float distort)
                 j != 0 && i != 0 && j != GRID_LAST_COLUMN && i != GRID_LAST_ROW;
             if (interior) {
                 distort_grid[i][j].phase =
-                    (float)next_math_random_value() * 0.000191747604f;
+                    (float)next_math_random_value() * 0.0000305175781f
+                    * 6.28318548f;
                 distort_grid[i][j].phase_step =
                     (1.0f /
-                        (((float)next_math_random_value() * 0.00006103515625f +
-                             3.0f) *
+                        (((float)next_math_random_value() * 0.0000305175781f
+                                 * 2.0f
+                             + 3.0f) *
                             60.0f)) *
                     6.28318548f;
                 distort_grid[i][j].x_offset =
-                    ((float)next_math_random_value() - 16384.0f) *
-                    distort *
-                    0.00006103515625f;
+                    ((float)next_math_random_value() - 16384.0f)
+                    * 0.0000610351562f * distort;
                 distort_grid[i][j].y_offset =
-                    ((float)next_math_random_value() - 16384.0f) *
-                    distort *
-                    0.00006103515625f;
+                    ((float)next_math_random_value() - 16384.0f)
+                    * 0.0000610351562f * distort;
             } else {
                 distort_grid[i][j].phase = 0.0f;
                 distort_grid[i][j].phase_step = 0.0f;

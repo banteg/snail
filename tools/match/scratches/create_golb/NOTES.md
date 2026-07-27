@@ -366,3 +366,16 @@ fully structured `else if` ladder with direct `Vector3(...)` assignments
 long-lived `Vapour*` local (56.51%), and staging only the final default launch
 copy (53.18%). These were useful compiler-lifetime probes, not candidates for
 score-only retention.
+
+## 2026-07-28 mobile random-angle provenance
+
+Android `cRSubGolb::Create` at `0x62d2c` and iOS at `0x3f9a4`
+independently preserve the kind-zero Sprite angle as
+`(rand - 16384) * (1 / 16384) * pi`. The Windows compiler folded the two
+constant factors into `0.0001917476`; restoring the semantic signed-unit
+normalizer and half-turn range is byte-identical at the honest 77.98%,
+549/582-instruction frontier, prefix 81, with 47 clean masks and the one
+documented unaudited target operand.
+
+The mobile Sprite offsets and rate source remain platform-specific. Only the
+corroborated random-expression hierarchy is transferred to the Windows source.

@@ -185,3 +185,15 @@ in `ebx`/`ebp`, spills the inner column latch, and retains the scaled velocity
 in the three native stack slots. The resulting scratch is exact at 100.00%,
 181/181 instructions, prefix 181/181, with all 17 masked operands resolved and
 no unresolved or mismatched operands.
+
+## 2026-07-28 mobile random-range provenance
+
+Android `cRSubHover::Jets()` at `0x72000` and iOS at `0x18d24` both preserve
+the two leading draws as unit-random normalization followed by a `0.05` range:
+the forward scale is `rand * (1 / 32768) * 0.05 + 0.4`, and the size scale is
+the same draw shape plus `0.12`. The prior Windows literal
+`0.00000152587893` was the compiler-folded product.
+
+Restoring the two factors is byte-identical. This ownership-complete updater
+remains exact at 181/181 instructions, full prefix, with all 17 masks clean;
+the platform-specific animation and hotspot offsets are not transferred.

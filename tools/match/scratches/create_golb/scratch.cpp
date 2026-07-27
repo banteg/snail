@@ -271,7 +271,8 @@ after_shoot_flag_source:
             Vec3* sprite_position = (Vec3*)&render_sprite->position;
             *sprite_position = *position;
             render_sprite->facing_angle =
-                ((float)next_math_random_value() - 16384.0f) * 0.0001917476f;
+                ((float)next_math_random_value() - 16384.0f)
+                * 0.0000610351562f * 3.1415927f;
             render_sprite->facing_angle_step =
                 game->subgame_rate * 0.58177644f;
             this->emitter_index = emitter_index;

@@ -21,9 +21,11 @@ void SubHover::update_jet_particles()
     }
 
     float forward_scale =
-        (float)next_math_random_value() * 0.00000152587893f + 0.400000006f;
+        (float)next_math_random_value() * 0.0000305175781f * 0.05f
+        + 0.400000006f;
     float size_scale =
-        (float)next_math_random_value() * 0.00000152587893f + 0.119999997f;
+        (float)next_math_random_value() * 0.0000305175781f * 0.05f
+        + 0.119999997f;
     int row = 0;
 
     for (; row < JET_PARTICLE_ROW_COUNT; ++row) {
