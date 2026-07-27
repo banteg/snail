@@ -131,7 +131,7 @@ typedef Snail cRSnail;
 
 class Player : public RenderableBod {
 public:
-    void update_subgoldy();              // @ 0x43b120, cRSubGoldy::Update
+    void update_subgoldy();              // @ 0x43b120, cRSubGoldy::AI()
     void begin_post_follow_carryover();   // @ 0x43af60
     void SetShootFlags();                  // @ 0x43a1a0, cRSubGoldy::SetShootFlags()
     void Shoot(Player* player);                   // @ 0x43a300, cRSubGoldy::Shoot(cRSubGoldy*)

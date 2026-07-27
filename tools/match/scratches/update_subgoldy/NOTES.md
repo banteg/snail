@@ -1,11 +1,43 @@
-# update_subgoldy @ 0x43b120 — 80.64%, 2072/2087 insns, structure complete
+# update_subgoldy @ 0x43b120 — 82.67%, 2086/2087 insns, structure complete
 
 The boss of bosses (2087 normalized instructions, 8456 bytes) has a full
 scratch: every block of the function is transcribed and the diff is dominated
 by register-allocation residuals, not semantics. The track-mode slice
 (steering, replay record/playback, completion handoff, ghost marking,
-emitters) is pinned, and the mobile-preserved follow scalar lifetime now
-aligns the native follow switch.
+emitters) is pinned. Dual-mobile evidence now aligns the native follow scalar,
+both cruise-window speed snapshots, and the complete Windows wall-probe value
+copy.
+
+## 2026-07-27 cruise and wall-value lifetime pass
+
+Both mobile bodies retain two instances of the completion/cruise clamp with
+the current z velocity held in one scalar while the `rate * 0.17` and
+`rate * 0.5` bounds are formed. Giving each Windows clamp the same scoped
+`speed` snapshot raises the focused result from 80.64% to 81.88%, with
+2,080/2,087 candidate instructions. The ordinary cruise snapshot contributes
+the first 1.08 points and the handoff-entry snapshot a further 0.16 points.
+
+The wall-14 probe supplies a stronger aggregate fact. Android constructs
+three adjacent `local_54/local_50/local_4c` lanes and passes that value to
+`cRSubGame::LocFromPos(tVector)`. iOS first constructs
+`local_70/fStack_6c/local_68`, then copies all three lanes to
+`local_4c/local_48/local_44` at the lookup boundary. Windows independently
+shows the same two records: it writes x/y/z at stack +0x14, copies them to
++0x20, and passes the second record to the exact pointer-ABI helper.
+
+Spelling those as scoped `wall_probe` and `wall_lookup` values, with the
+source probe formed by adjusting z before copying x/y, recovers the entire
+Windows instruction sequence from the z load through the lookup call exactly.
+The overall focused receipt rises to 82.67%, with 2,086/2,087 candidate
+instructions, prefix 12/2,087, 314 clean masked operands, no unresolved
+operands, no mismatches, and three visible unaudited global loads. The
+standalone Windows helper remains a pointer call; a probe that changed its
+signature to the mobile by-value ABI regressed and was rejected.
+
+A direct one-expression transliteration of the mobile steering lerp also
+regressed the focused score and reintroduced a jump-table mismatch, so it was
+rejected. The retained changes recover cross-port value lifetimes and preserve
+the clean operand audit; none are register-only source scheduling.
 
 ## 2026-07-27 mobile scalar lifetime pass
 

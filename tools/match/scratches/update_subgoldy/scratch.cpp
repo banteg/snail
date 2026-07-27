@@ -1,4 +1,4 @@
-// update_subgoldy @ 0x43b120 (thiscall, ret) — cRSubGoldy::Update()
+// update_subgoldy @ 0x43b120 (thiscall, ret) — cRSubGoldy::AI()
 // The per-frame player step: pause early-out, follow lateral response,
 // squidge, replay playback vs mouse steering + replay recording, row
 // events/tips, attachment begin, velocity shaping, follow-vs-free motion
@@ -645,12 +645,12 @@ steering_stored:
 
     {
         Vector3 wall_probe;
-        float probe_y;
-        float probe_z;
+        Vector3 wall_lookup;
         if (boost_one_tick || follow_state.active
-            || (probe_y = p_position->y, probe_z = p_position->z + 0.49000001f,
-                wall_probe.x = p_position->x, wall_probe.z = probe_z, wall_probe.y = probe_y,
-                game->get_track_grid_cell_at_world_position(&wall_probe)->tile_id
+            || (wall_probe.z = p_position->z + 0.49000001f,
+                wall_probe.x = p_position->x, wall_probe.y = p_position->y,
+                wall_lookup = wall_probe,
+                game->get_track_grid_cell_at_world_position(&wall_lookup)->tile_id
                     != SUBLOC_TILE_WALL2)
             || transform.position.y >= 6.5f) {
             barrier_hold_progress = 0.0f;
@@ -718,11 +718,12 @@ steering_stored:
     float completion_start = (float)completion_game->completion_row_start;
     if (transform.position.z < completion_start || attachment_exit_pending) {
         if (!boost_one_tick && !control_override_active) {
+            float speed = velocity.z;
             float window = completion_game->subgame_rate * 0.17f;
-            if (velocity.z >= window) {
+            if (speed >= window) {
                 window = completion_game->subgame_rate * 0.5f;
-                if (velocity.z <= window)
-                    window = velocity.z;
+                if (speed <= window)
+                    window = speed;
             }
             velocity.z = window;
         }
@@ -738,11 +739,12 @@ steering_stored:
             completion_handoff_timer = 0.0f;
             completion_handoff_timer_step = 0.016666668f;
             completion_handoff_voice_gate = 0;
+            float speed = velocity.z;
             float window = handoff_game->subgame_rate * 0.17f;
-            if (velocity.z >= window) {
+            if (speed >= window) {
                 window = handoff_game->subgame_rate * 0.5f;
-                if (velocity.z <= window)
-                    window = velocity.z;
+                if (speed <= window)
+                    window = speed;
             }
             velocity.z = window;
             g_voice_manager.reset_voice_manager();
