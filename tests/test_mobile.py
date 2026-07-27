@@ -480,6 +480,67 @@ def test_mobile_sprite_renderer_recovers_gl_owner_and_void_boundaries() -> None:
     assert "typedef FrontendWidget cRBorder;" in frontend_header
 
 
+def test_mobile_delay_click_recovers_border_manager_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    delay_click = entries["queue_frontend_widget_flag_after_delay"]
+    assert delay_click["status"] == "verified"
+    assert delay_click["confidence"] == "high"
+    assert delay_click["source_object"] == "Border.o"
+    assert delay_click["android_symbol"] == (
+        "cRBorderManager::DelayClick(cRBorder*, int)"
+    )
+    assert delay_click["android_body_count"] == 1
+    assert "ios_symbol" not in delay_click
+    assert "cRBorderManager_DelayClick" in (
+        functions_by_name[
+            "queue_frontend_widget_flag_after_delay"
+        ]["aliases"]
+    )
+
+    android_body = (
+        repo_root
+        / (
+            "analysis/decompile/android/functions/"
+            "0005d05c-_ZN15cRBorderManager10DelayClickEP8cRBorderi.c"
+        )
+    ).read_text(encoding="utf-8")
+    assert "0x40000000" in android_body
+    assert "cRFade::Start" in android_body
+    assert "0x3daaaaab" in android_body
+
+    ios_border_ai = (
+        repo_root
+        / (
+            "analysis/decompile/ios/functions/"
+            "0003c410-_ZN8cRBorder2AIEv.c"
+        )
+    ).read_text(encoding="utf-8")
+    assert ios_border_ai.count("cRFade::Start") == 3
+    assert ios_border_ai.count("0x3daaaaab") == 3
+
+    notes = (
+        repo_root
+        / "tools/match/scratches"
+        / "queue_frontend_widget_flag_after_delay"
+        / "NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "standalone authored" in notes
+    assert "iOS independently inlines" in notes
+
+
 def test_mobile_rng_pair_recovers_authored_contract() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

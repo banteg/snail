@@ -25,3 +25,14 @@ The old scratch only consumed the incidental zero left by the nested fade
 start. Once iOS and Android identified that callee as void
 `cRFade::Start(void (*)())`, the delayed-action helper also compiled exactly
 as a natural void member: 22/22 instructions with the same two clean operands.
+
+2026-07-27 mobile ownership recovery: Android preserves this function as the
+standalone authored
+`cRBorderManager::DelayClick(cRBorder*, int)` in `Border.o`. Its body has the
+same active-request gate, `0x40000000` fade gate, borrowed border, queued flag,
+zero progress, and `0x3daaaaab` (`1/12`) step as Windows. Android
+`cRBorder::AI()` calls it with `0x20`, `0x20`, and `0x80` in the same three
+interaction branches as the Windows caller. iOS independently inlines that
+same lane three times in `cRBorder::AI()`, including the fade call and fixed
+step, so it corroborates the body but does not justify a standalone iOS
+symbol. The mobile field offsets remain platform-local.

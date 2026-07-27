@@ -53,7 +53,9 @@ public:
         // iOS/Android cRBorderManager::UnHideBorders()
     int kill_border(FrontendWidget* border);
     void queue_frontend_widget_flag_after_delay(
-        FrontendWidget* widget, int queued_flags); // @ 0x403f60
+        FrontendWidget* widget,
+        int queued_flags); // @ 0x403f60,
+        // Android cRBorderManager::DelayClick(cRBorder*, int)
     void update_border_manager(); // @ 0x403fc0,
         // iOS/Android cRBorderManager::AI()
     void set_border_justify_centre(

@@ -229,6 +229,14 @@
       "notes": "Both mobile ports preserve the three-state hover-delay, tooltip allocation/layout, and release machine. The sole Windows caller immediately reloads widget flags, and the authored void member remains exact at 218/218 instructions with 23 clean operands."
     },
     {
+      "address": "0x403f60",
+      "windows_name": "queue_frontend_widget_flag_after_delay",
+      "android_symbol": "cRBorderManager::DelayClick(cRBorder*, int)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the exact authored cRBorderManager::DelayClick owner and the same delayed-border lane: reject a second request while active; start cRFade when the borrowed cRBorder carries 0x40000000; store queued 0x20/0x80 flags, active byte, zero progress, fixed 1/12 step, and the borrowed border. Its cRBorder::AI callsites use 0x20, 0x20, and 0x80 in the same three interaction branches as Windows. iOS inlines the same lane three times, so it supplies independent body evidence but no standalone symbol. Platform offsets do not transfer."
+    },
+    {
       "address": "0x403fc0",
       "windows_name": "update_border_manager",
       "ios_symbol": "cRBorderManager::AI()",

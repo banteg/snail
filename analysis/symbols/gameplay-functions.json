@@ -139,7 +139,10 @@
     {
       "address": "0x403f60",
       "name": "queue_frontend_widget_flag_after_delay",
-      "description": "Exact void BorderManager delayed-action helper: stores the destination widget and flag mask, starts the fixed `1/12` step timer, and optionally calls the root-owned cRFade::Start-compatible lane. All three Windows callers discard EAX; removing the synthetic result dependency leaves the natural void source exact at 22/22 instructions."
+      "description": "Exact authored void `cRBorderManager::DelayClick(cRBorder*, int)` member: rejects a second delayed action while active, optionally starts the root-owned cRFade lane, then stores the borrowed border, queued flags, active byte, zero progress, and fixed `1/12` step. Android preserves the standalone method and all three matching cRBorder::AI callsites; iOS independently inlines the same lane three times.",
+      "aliases": [
+        "cRBorderManager_DelayClick"
+      ]
     },
     {
       "address": "0x403fc0",
