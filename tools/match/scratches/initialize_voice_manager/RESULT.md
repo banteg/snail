@@ -4,24 +4,14 @@
 
 | Metric | Final |
 |---|---:|
-| Match | **88.68%** |
+| Match | **100.00%** |
 | Target instructions | 269 |
-| Candidate instructions | 270 |
-| Common prefix | 99 / 269 |
+| Candidate instructions | 269 |
+| Common prefix | 269 / 269 |
 | Masked operands | 62 clean, 0 unresolved, 0 mismatched |
 
-The first remaining mismatch is the whitespace-loop exit label, displaced by
-the candidate's one extra cursor-store instruction:
-
-```text
-target[99]    je L361
-candidate[99] je L362
-```
-
-The native increments the spilled parser cursor in place. The candidate uses
-`inc ecx` followed by a store back to the same slot. The remaining tail is
-register rotation and local scheduling; all calls, data references, strings,
-and the 16-entry set-name jump table now audit cleanly.
+The candidate is instruction-for-instruction exact. All calls, data
+references, strings, and the 16-entry set-name jump table audit cleanly.
 
 ## Accepted Source Shape
 
@@ -35,6 +25,10 @@ and the 16-entry set-name jump table now audit cleanly.
 - Uses a header-increment `for` loop for the 16-set sweep. Other loop-bound
   spellings compile equivalently after the improvement, while the original
   do-while spelling leaves the lower 61.78% shape.
+- Uses a header-increment `for` loop for the per-entry whitespace skip. The
+  Android and iOS `cRVoiceManager::Init()` bodies independently preserve this
+  parser stage and a single mutable cursor. This source shape emits the native
+  in-place cursor increment and removes the final scheduling residual.
 - Recovers one function-lifetime parser cursor and all 16 explicit voice-set
   switch cases, moving the exact prefix from 4 to 99 instructions.
 - Content-audits target table `0x449260` against candidate `$L816`; all 16

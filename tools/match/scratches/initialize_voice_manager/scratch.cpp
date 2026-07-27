@@ -102,8 +102,7 @@ void VoiceManager::initialize_voice_manager()
 
         int entry_index = 0;
         while (entry_index < entry_count) {
-            while (*cursor == '\t' || *cursor == ' ') {
-                ++cursor;
+            for (; *cursor == '\t' || *cursor == ' '; ++cursor) {
             }
 
             rstrcpy_checked_ascii(voice_path, "Voice/");

@@ -96,3 +96,16 @@ Source-shape details retained:
   `99/269`, 62 clean operands). This slice improves durable ownership and
   source-lifetime evidence only; it does not fakematch the remaining compiler
   scheduling differences.
+
+## 2026-07-27 mobile-authored whitespace loop
+
+- Android and iOS `cRVoiceManager::Init()` independently retain the same
+  per-entry whitespace stage and mutate the function-lifetime parser cursor
+  before copying the voice path. That makes the loop increment part of the
+  authored parser shape rather than a Windows-only scheduling guess.
+- Expressing the skip as an empty-body, header-increment `for` loop emits the
+  native `inc dword [cursor]` directly. It removes the candidate's former
+  `inc ecx` plus spill-back pair without casts, volatile locals, register
+  forcing, or any semantic change.
+- The focused match is now proof-grade: 100.00% (`269/269`, prefix `269/269`)
+  with all 62 masked operands clean and no unresolved or mismatched operands.
