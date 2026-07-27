@@ -36,10 +36,13 @@ void FireWork::firework_shoot(
         sprite->size_end = 0.100000001f;
 
         Vector3 velocity(
-            ((float)next_math_random_value() - 16384.0f) * 0.0000122070314f,
-            ((float)next_math_random_value() - 16384.0f) * 0.0000183105476f
+            ((float)next_math_random_value() - 16384.0f)
+                * 0.0000610351562f * 0.2f,
+            ((float)next_math_random_value() - 16384.0f)
+                    * 0.0000610351562f * 0.3f
                 + 0.100000001f,
-            ((float)next_math_random_value() - 16384.0f) * 0.0000122070314f);
+            ((float)next_math_random_value() - 16384.0f)
+                * 0.0000610351562f * 0.2f);
 
         sprite->depth_offset = 0.0f;
         sprite->velocity = velocity;

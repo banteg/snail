@@ -34,8 +34,8 @@ void StarManager::initialize_star_field()
                 entries->alpha_scale = 0.400000006f;
             } else {
                 entries[index].alpha_scale =
-                    ((float)next_math_random_value() - 16384.0f) *
-                        0.00000610351572f +
+                    ((float)next_math_random_value() - 16384.0f)
+                        * 0.0000610351562f * 0.1f +
                     0.400000006f;
             }
 
@@ -51,13 +51,14 @@ void StarManager::initialize_star_field()
             entries[index].velocity.normalize_vector();
 
             float velocity_scale =
-                (float)next_math_random_value() * 0.0000183105476f + 0.300000012f;
+                (float)next_math_random_value() * 0.0000305175781f * 0.6f
+                    + 0.300000012f;
             entries[index].velocity *= velocity_scale;
             entries[index].velocity.z = 0.0f;
 
             entries[index].speed = entries[index].velocity.vector_magnitude();
             entries[index].travel_distance =
-                (float)next_math_random_value() * 0.00106811523f;
+                (float)next_math_random_value() * 0.0000305175781f * 35.0f;
 
             entries[index].position =
                 entries[index].velocity * entries[index].travel_distance /

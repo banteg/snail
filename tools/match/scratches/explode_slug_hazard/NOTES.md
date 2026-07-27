@@ -131,3 +131,15 @@ typed flags, progress, color, size, gravity, velocity, and position. The two
 intermediate vectors also render as `Vec3` values. This improves the tracked
 analysis artifact only: focused matching remains the honest 97.61%, 146/147,
 prefix 79, with all 32 operands clean and the documented x87 scheduling gap.
+
+## 2026-07-28 mobile RNG range provenance
+
+iOS explicitly preserves unit-random normalization followed by semantic range
+scales, and Android corroborates the same normalizer/range family. The Windows
+values remain platform-specific: spread `0.2`, progress variation `0.5`,
+grayscale variation `0.3`, and position scale `10`. Expressing those products
+from `1 / 32768` compiles byte-identically at 97.61%, 146/147 instructions,
+prefix 79, with all 32 masks clean.
+
+The platform-specific particle count, texture, and range values remain
+untouched; mobile supplies source provenance rather than replacement constants.

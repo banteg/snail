@@ -93,3 +93,17 @@ do not move ownership into `StarManagerEntry`. The EDI induction remains an
 automatic byte offset for the previously documented reason. The replay now
 guards nineteen stable definitions and remains idempotent. Matching source and
 the honest 97.57%, 247/247-instruction, 25-clean-operand result are unchanged.
+
+## 2026-07-28 mobile RNG range provenance
+
+Android and iOS preserve the authored random-range hierarchy in
+`cRStarManager::Init`: alpha is
+`(rand - 16384) * (1 / 16384) * 0.1 + 0.4`, speed is
+`rand * (1 / 32768) * 0.6 + 0.3`, and travel is
+`rand * (1 / 32768) * 35`. The Windows compiler folded those products into
+single literals; restoring the normalized factors compiles byte-identically
+at 97.57%, 247/247 instructions, prefix 126, with all 26 masks clean.
+
+The mobile sine/cosine direction construction is deliberately not transferred:
+Windows proves independent x and y random draws, so that platform-specific
+source shape remains authoritative.

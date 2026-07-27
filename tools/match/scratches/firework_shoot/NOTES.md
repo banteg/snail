@@ -130,3 +130,14 @@ The real aggregate constructor is codegen-neutral at the honest 94.17%,
 103/103-instruction frontier with all 21 masks clean. The remaining difference
 is still only VC6's placement of `add esi, 0x48` relative to the final multiply;
 it is not evidence for a scalar velocity layout.
+
+## 2026-07-28 mobile RNG range provenance
+
+Both mobile `cRFireWork::Shoot` bodies preserve a shared signed random
+normalizer followed by the semantic ranges: x and z use `0.2`, while y uses
+`0.3` followed by `+0.1`. The previous Windows literals were the compiler's
+folded products. Restoring the factorization is byte-identical at the honest
+94.17%, 103/103-instruction frontier, prefix 78, with all 21 masks clean.
+
+Mobile ABI and by-value position differences are not transferred to the
+Windows body; only the corroborated expression hierarchy is retained.
