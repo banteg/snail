@@ -3,17 +3,18 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
+    apply_split_away_user_var_update,
+    apply_split_user_var_update,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -61,6 +62,44 @@ TOAD_PATH_LIFETIME_SPECS = (
     (2187, 73, "face_second", "ObjectFaceQuad*"),
 )
 
+# Android and iOS preserve these four branch-selected values in
+# cRPath::BuildToad. The Windows stack lifetimes prove the same roles. Keep the
+# late sample-bank reload separate so correcting the integer lead count cannot
+# flatten its genuine PathTemplateSample owner.
+TOAD_CONTROL_LIFETIME_SPECS = (
+    ("StackVariableSourceType", 61, -84, "lead_count", "int32_t"),
+    ("StackVariableSourceType", 45, -80, "start_x", "float"),
+    ("StackVariableSourceType", 65, -76, "tail_count", "int32_t"),
+    ("StackVariableSourceType", 53, -72, "turn_sign", "float"),
+)
+
+# ECX is joined with the lead-count carrier through the seed loops, then reloads
+# the real primary sample bank for the curved secondary-position offset. Split
+# only that reload before typing it so neither physical lifetime infects the
+# other.
+TOAD_PRIMARY_SAMPLE_BANK_DEFINITIONS = (
+    ("0x42cfd1", "mlil", "RegisterVariableSourceType", 993, 67),
+)
+
+TOAD_PRIMARY_SAMPLE_BANK_VAR = (
+    "RegisterVariableSourceType",
+    993,
+    67,
+)
+
+# GetNodes is void but clobbers the same ECX physical lane later reloaded with
+# lead_count. Detach the call definition before naming that loop-bound lifetime
+# so the decompiler does not invent a return value for GetNodes.
+TOAD_LEAD_BOUND_DETACHED_DEFINITIONS = (
+    ("0x42cc7f", "mlil", "RegisterVariableSourceType", 143, 67),
+)
+
+TOAD_LEAD_BOUND_VAR = (
+    "RegisterVariableSourceType",
+    343,
+    67,
+)
+
 HILL_VALLEY_PATH_LIFETIME_SPECS = (
     (173, 66, "primary_seed_sample", "PathTemplateSample*"),
     (753, 66, "primary_right", "Vec3*"),
@@ -88,6 +127,18 @@ SBEND_PATH_LIFETIME_SPECS = (
 
 TOAD_HILL_SBEND_PATH_USER_VAR_UPDATES = tuple(
     (
+        "initialize_toad_path_template_pair",
+        source_type,
+        index,
+        storage,
+        variable_name,
+        variable_type,
+    )
+    for source_type, index, storage, variable_name, variable_type in (
+        TOAD_CONTROL_LIFETIME_SPECS
+    )
+) + tuple(
+    (
         function_name,
         "RegisterVariableSourceType",
         index,
@@ -110,8 +161,9 @@ TOAD_HILL_SBEND_PATH_USER_VAR_UPDATES = tuple(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the proved sample, vector, mesh-vertex, and facequad "
-            "lifetimes in the toad, hill/valley, and s-bend constructors."
+            "Replay the proved control, sample, vector, mesh-vertex, and "
+            "facequad lifetimes in the toad, hill/valley, and s-bend "
+            "constructors."
         )
     )
     parser.add_argument(
@@ -174,14 +226,36 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"path ownership header not found: {header_path}")
 
-    operations = [
-        verify_owner_layouts(args.target),
-        *apply_user_var_updates(
+    operations = [verify_owner_layouts(args.target)]
+    operations.extend(
+        apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
             updates=TOAD_HILL_SBEND_PATH_USER_VAR_UPDATES,
-        ),
-    ]
+        )
+    )
+    operations.extend(
+        apply_split_away_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="initialize_toad_path_template_pair",
+            detached_definitions=TOAD_LEAD_BOUND_DETACHED_DEFINITIONS,
+            residual_var=TOAD_LEAD_BOUND_VAR,
+            variable_name="lead_count_bound",
+            variable_type="int32_t",
+        )
+    )
+    operations.extend(
+        apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="initialize_toad_path_template_pair",
+            definitions=TOAD_PRIMARY_SAMPLE_BANK_DEFINITIONS,
+            target_var=TOAD_PRIMARY_SAMPLE_BANK_VAR,
+            variable_name="primary_sample_bank",
+            variable_type="PathTemplateSample*",
+        )
+    )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,

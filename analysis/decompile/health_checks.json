@@ -11755,7 +11755,14 @@
       "required_substrings": [
         "self->kind = PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY",
         "if (turn_left == 0)",
+        "int32_t lead_count",
+        "float start_x",
+        "int32_t tail_count",
+        "float turn_sign",
         "get_path_nodes(self)",
+        "int32_t lead_count_bound",
+        "struct PathTemplateSample* primary_sample_bank",
+        "primary_sample_bank->transform.basis_up",
         "struct Vec3* primary_right",
         "cross_vectors(primary_right",
         "struct Vec3* secondary_position",
@@ -11779,6 +11786,9 @@
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "arg2",
+        "struct PathTemplateSample* primary_samples_5",
+        "struct PathTemplateSample* primary_samples_6",
+        "= get_path_nodes(self)",
         "__offset",
         "return calc_path_length_z"
       ]

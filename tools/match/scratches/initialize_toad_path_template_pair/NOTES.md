@@ -142,3 +142,24 @@ The matcher declaration, authoritative analysis header, and Binary Ninja/IDA
 replay specifications now agree on the boolean selector. VC6 emits the same
 47.92% candidate (635/663), with its 15-instruction prefix and 33 clean masked
 operands, so this is an ownership correction rather than a score claim.
+
+## 2026-07-28 mobile-authored phase and control ownership
+
+Both mobile `cRPath::BuildToad` bodies preserve the authored curved-section
+phase as `k * 6.2831855f / 26.0f` and the turn angle as
+`(1 - cos(phase)) * 0.5f * turn_sign * 3.1415927f * 0.5f`. Restoring that
+hierarchy in the Windows scratch is byte-identical: VC6 folds it to the same
+`0.241660982f` and `1.57079637f` operands, retaining the honest 47.92% result,
+635/663 instructions, 15-instruction prefix, and all 33 masked operands clean.
+
+The two ports also corroborate the Windows branch-selected lead count, tail
+count, starting X, and turn sign. Binary Ninja had inferred the lead-count
+stack lifetime as `PathTemplateSample*`, which turned integer additions into
+false matrix-field expressions. The guarded replay now pins those four scalar
+owners, splits the void `get_path_nodes` call clobber away from the later
+lead-count bound, and separately splits the genuine primary-sample-bank reload
+used by the curved secondary-position offset. Readback keeps `get_path_nodes`
+void, exposes `lead_count`, `tail_count`, `start_x`, `turn_sign`, and
+`lead_count_bound` as scalars, and retains `primary_sample_bank` as a borrowed
+`PathTemplateSample*` only for its real lifetime. No mobile layout or
+Windows-only mesh-tail statement is transferred.

@@ -20896,6 +20896,29 @@ def test_toad_hill_sbend_replay_preserves_mesh_owner_lifetimes() -> None:
     ):
         assert f'"{function_name}"' in replay
 
+    for source_type, index, storage, name, variable_type in (
+        ("StackVariableSourceType", 61, -84, "lead_count", "int32_t"),
+        ("StackVariableSourceType", 45, -80, "start_x", "float"),
+        ("StackVariableSourceType", 65, -76, "tail_count", "int32_t"),
+        ("StackVariableSourceType", 53, -72, "turn_sign", "float"),
+    ):
+        assert (
+            f'("{source_type}", {index}, {storage}, "{name}", "{variable_type}"),'
+            in replay
+        )
+
+    assert (
+        '("0x42cfd1", "mlil", "RegisterVariableSourceType", 993, 67),'
+        in replay
+    )
+    assert (
+        '("0x42cc7f", "mlil", "RegisterVariableSourceType", 143, 67),'
+        in replay
+    )
+    assert '"lead_count_bound"' in replay
+    assert '"primary_sample_bank"' in replay
+    assert 'variable_type="PathTemplateSample*"' in replay
+
     for index, storage, name, variable_type in (
         (949, 67, "primary_right", "Vec3*"),
         (1036, 66, "secondary_position", "Vec3*"),
@@ -20932,6 +20955,8 @@ def test_toad_hill_sbend_replay_preserves_mesh_owner_lifetimes() -> None:
     assert "TOAD_HILL_SBEND_PATH_USER_VAR_UPDATES" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert "apply_split_away_user_var_update" in replay
+    assert "apply_split_user_var_update" in replay
     assert "apply_user_var_updates" in replay
     assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
     assert '0x8C: ("delta_length", "float")' in replay

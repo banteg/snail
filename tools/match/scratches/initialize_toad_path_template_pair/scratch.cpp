@@ -206,9 +206,9 @@ void Path::initialize_toad_path_template_pair(
 
     for (int k = 0; k < 26; ++k) {
         int index = lead_count + k;
-        float phase = (float)k * 0.24166098f;
+        float phase = (float)k * 6.2831855f / 26.0f;
         float angle = (1.0f - cosine(phase)) * 0.5f;
-        angle = angle * turn_sign * 1.5707964f;
+        angle = angle * turn_sign * 3.1415927f * 0.5f;
 
         primary_samples[index].center_x = start_x;
         primary_samples[index].rotation_scalar_98 = 0.0f;
