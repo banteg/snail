@@ -4614,6 +4614,7 @@
       "name": "ida_track_warning_grid_owner_and_void_abi",
       "artifact": "analysis/decompile/ida/functions/004354f0-mark_track_warning_zones.c",
       "required_substrings": [
+        "cRSubGame::DeSaltTrack()",
         "void __thiscall mark_track_warning_zones(SubgameRuntime *game)",
         "game->runtime_row_count",
         "game->runtime_cells[0][0].tile_id",
@@ -9868,6 +9869,7 @@
       "name": "ida_promote_track_tiles_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/004355f0-promote_track_tiles_to_fringe_variants.c",
       "required_substrings": [
+        "cRSubGame::WarnTrack()",
         "void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime *game)",
         "game->runtime_row_count",
         "&game->runtime_cells[0][0].object",

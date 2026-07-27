@@ -2505,12 +2505,18 @@
     {
       "address": "0x4354f0",
       "name": "mark_track_warning_zones",
-      "description": "Void Windows `cRSubGame::WarnTrack()`: stamps each hazard tile's six-row by two-lane warning footprint through the owned `SubLoc` runtime grid before fringe and cache construction. The source-shaped transcription is 98.99% at 99/99 instructions."
+      "aliases": [
+        "DeSaltTrack"
+      ],
+      "description": "Void Windows `cRSubGame::DeSaltTrack()`: stamps the exact hazard tile set's six-row by two-lane salt-and-garbage suppression footprint through the owned `SubLoc` runtime grid after `CondenseTrack()` and before fringe construction. Android preserves the tile set, bounds, 0x18 flag update, and dispatcher position. The source-shaped transcription is 98.99% at 99/99 instructions."
     },
     {
       "address": "0x4355f0",
       "name": "promote_track_tiles_to_fringe_variants",
-      "description": "Void cRSubGame normalization pass that promotes floor/slide runtime cells to their warning-fringe object variants when the same lane in the next row is open. Its sole caller consumes only the grid mutation; the count-derived EAX residue is incidental."
+      "aliases": [
+        "WarnTrack"
+      ],
+      "description": "Void Windows `cRSubGame::WarnTrack()`: promotes floor and slide runtime cells to their warning object variants when the same lane in the next row is empty. Android preserves the two object-family scans, replacement banks, 0x20 marker, and dispatcher position between `SmoothTrack()` and `SlideSmoothTrack()`. Its sole Windows caller consumes only the grid mutation; the count-derived EAX residue is incidental."
     },
     {
       "address": "0x4356f0",

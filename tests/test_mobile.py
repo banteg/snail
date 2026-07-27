@@ -316,6 +316,62 @@ def test_mobile_utility_owner_mappings_are_exact_and_verified() -> None:
     assert "ios_symbol" not in input_ok
 
 
+def test_mobile_track_pipeline_keeps_warn_and_desalt_owners_distinct() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    warn = entries["promote_track_tiles_to_fringe_variants"]
+    assert warn["status"] == "verified"
+    assert warn["confidence"] == "high"
+    assert warn["android_symbol"] == "cRSubGame::WarnTrack()"
+    assert warn["android_body_count"] == 1
+    assert "ios_symbol" not in warn
+    assert "WarnTrack" in (
+        functions_by_name["promote_track_tiles_to_fringe_variants"][
+            "aliases"
+        ]
+    )
+
+    desalt = entries["mark_track_warning_zones"]
+    assert desalt["status"] == "verified"
+    assert desalt["confidence"] == "high"
+    assert desalt["android_symbol"] == "cRSubGame::DeSaltTrack()"
+    assert desalt["android_body_count"] == 1
+    assert "ios_symbol" not in desalt
+    assert "DeSaltTrack" in (
+        functions_by_name["mark_track_warning_zones"]["aliases"]
+    )
+
+    generate_level = (
+        repo_root
+        / (
+            "analysis/decompile/android/functions/"
+            "00081744-_ZN9cRSubGame13GenerateLevelEi.c"
+        )
+    ).read_text(encoding="utf-8")
+    ordered_calls = (
+        "SmoothTrack(this);",
+        "WarnTrack(this);",
+        "SlideSmoothTrack(this);",
+        "CondenseTrack(this);",
+        "DeSaltTrack(this);",
+        "FringeEdgeTrack(this);",
+    )
+    call_offsets = [generate_level.index(call) for call in ordered_calls]
+    assert call_offsets == sorted(call_offsets)
+
+
 def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

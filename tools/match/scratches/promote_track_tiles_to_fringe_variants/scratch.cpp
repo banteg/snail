@@ -1,4 +1,6 @@
 // promote_track_tiles_to_fringe_variants @ 0x4355f0 (thiscall)
+// Authored cRSubGame::WarnTrack(): promotes floor/slide cells to warning
+// variants when the same lane in the next generated row is empty.
 
 #include "bod_types.h"
 #include "game_root.h"

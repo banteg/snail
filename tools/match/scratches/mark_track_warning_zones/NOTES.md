@@ -67,7 +67,7 @@ stride without pretending the tile-byte view owns separate storage.
   `runtime_row_count - 1`, while the populated exit leaves the advanced cell
   pointer, so those incompatible incidental values cannot form a semantic
   result. The shared method contract is therefore the cross-port
-  `void cRSubGame::WarnTrack()` mutator.
+  `void cRSubGame::DeSaltTrack()` mutator.
 
 2026-07-17 bounded reload-order retest: moving the cell increment from the
 `for` iteration expression into the body and reversing the two ordinary
@@ -97,3 +97,13 @@ flag fields, the `0x1272838` runtime extent, and all three SSA identities before
 mutation; a second run is idempotent. Matching source remains unchanged at the
 honest 98.99%, 99/99-instruction frontier with no masked operands. The sole
 residual remains the independent reload order documented above.
+
+## 2026-07-27 mobile pipeline correction
+
+The Android body and dispatcher order correct the earlier name-only
+association with `WarnTrack()`. Android `DeSaltTrack()` recognizes the same
+tile-id set `{2..14, 23, 25, 33}`, walks the same six rows backward over
+lanes `{column-1, column}`, performs the same bounds checks, and ORs the same
+`0x18` suppression flags. It also follows `CondenseTrack()` immediately in
+`GenerateLevel()`, matching this Windows call site exactly. `WarnTrack()` is
+the preceding floor/slide-to-warning object promotion pass at `0x4355f0`.

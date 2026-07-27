@@ -18,16 +18,16 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_runtime_pools_and_path_template_bank",
-      "address": "0x408060"
+      "name": "mark_track_warning_zones",
+      "address": "0x4354f0"
     },
     {
-      "name": "advance_frame_sequence",
-      "address": "0x430470"
+      "name": "promote_track_tiles_to_fringe_variants",
+      "address": "0x4355f0"
     },
     {
-      "name": "update_smtracks",
-      "address": "0x441f60"
+      "name": "rebuild_track_runtime_from_segments",
+      "address": "0x437de0"
     }
   ],
   "health_check_count": 1137,

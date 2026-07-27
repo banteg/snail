@@ -14,11 +14,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 567,
-    "unverified_entries": 218,
-    "verified_android_symbols": 561,
-    "verified_ios_symbols": 456,
-    "available_android_mappings": 561,
+    "verified_entries": 568,
+    "unverified_entries": 217,
+    "verified_android_symbols": 562,
+    "verified_ios_symbols": 455,
+    "available_android_mappings": 562,
     "available_ios_mappings": 419
   },
   "entries": [
@@ -16412,57 +16412,72 @@
       "windows_name": "mark_track_warning_zones",
       "windows_size": 256,
       "status": "verified",
-      "android_symbol": "cRSubGame::WarnTrack()",
+      "android_symbol": "cRSubGame::DeSaltTrack()",
       "android_symbol_evidence": "exact-demangled-symbol",
-      "ios_symbol": "cRSubGame::WarnTrack()",
-      "source_object": null,
-      "confidence": "cross-port-neighborhood",
+      "source_object": "SubGame.o",
+      "confidence": "high",
       "android_body_count": 1,
-      "ios_body_count": 0
+      "ios_candidates": [
+        {
+          "symbol": "cRSalt::AI()",
+          "score": 0.8859,
+          "name_score": 0.9,
+          "size_score": 0.8649
+        },
+        {
+          "symbol": "SetGameState(int, int, int, int)",
+          "score": 0.7037,
+          "name_score": 0.6,
+          "size_score": 0.8594
+        },
+        {
+          "symbol": "cRLogoRow::AI()",
+          "score": 0.6663,
+          "name_score": 0.6,
+          "size_score": 0.7656
+        },
+        {
+          "symbol": "cRRowModel::AI()",
+          "score": 0.6663,
+          "name_score": 0.6,
+          "size_score": 0.7656
+        },
+        {
+          "symbol": "cRSubSpeedUp::AI()",
+          "score": 0.6513,
+          "name_score": 0.45,
+          "size_score": 0.9531
+        }
+      ]
     },
     {
       "address": "0x4355f0",
       "windows_name": "promote_track_tiles_to_fringe_variants",
       "windows_size": 256,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRGame::cRGame()",
-          "score": 0.672,
-          "name_score": 0.9,
-          "size_score": 0.3299
-        },
-        {
-          "symbol": "RShellWarning(char*, ...)",
-          "score": 0.6475,
-          "name_score": 0.6,
-          "size_score": 0.7188
-        },
-        {
-          "symbol": "cRWarning::AI()",
-          "score": 0.6357,
-          "name_score": 0.45,
-          "size_score": 0.9143
-        },
-        {
-          "symbol": "ObjectProcTileFast(cRObject*, char*, float)",
-          "score": 0.6348,
-          "name_score": 0.3913,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcIntroFloor(cRObject*, char*)",
-          "score": 0.6262,
-          "name_score": 0.45,
-          "size_score": 0.8906
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRSubGame::WarnTrack()",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRObject::cRObject()",
           "score": 0.665,
           "name_score": 0.9,
           "size_score": 0.3125
+        },
+        {
+          "symbol": "cRGame::Init0()",
+          "score": 0.6444,
+          "name_score": 0.6,
+          "size_score": 0.7111
+        },
+        {
+          "symbol": "cRTrack::Change(int)",
+          "score": 0.6325,
+          "name_score": 0.45,
+          "size_score": 0.9062
         },
         {
           "symbol": "ObjectProcTileFast(cRObject*, char*, float)",
@@ -16475,18 +16490,6 @@
           "score": 0.6182,
           "name_score": 0.3636,
           "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::KillGame()",
-          "score": 0.6139,
-          "name_score": 0.3668,
-          "size_score": 0.9846
-        },
-        {
-          "symbol": "OFHttpNestedQueryStringWriter::getCurrentScope()",
-          "score": 0.6114,
-          "name_score": 0.3628,
-          "size_score": 0.9844
         }
       ]
     },

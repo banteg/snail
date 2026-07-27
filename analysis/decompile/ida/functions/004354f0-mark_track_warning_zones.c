@@ -2,18 +2,18 @@
 /* function: mark_track_warning_zones @ 0x4354f0 */
 /* selector: mark_track_warning_zones */
 
-// Void Windows `cRSubGame::WarnTrack()`: stamps each hazard tile's six-row by two-lane warning footprint through the owned `SubLoc` runtime grid before fringe and cache construction. The source-shaped transcription is 98.99% at 99/99 instructions.
+// Void Windows `cRSubGame::DeSaltTrack()`: stamps the exact hazard tile set's six-row by two-lane salt-and-garbage suppression footprint through the owned `SubLoc` runtime grid after `CondenseTrack()` and before fringe construction. Android preserves the tile set, bounds, 0x18 flag update, and dispatcher position. The source-shaped transcription is 98.99% at 99/99 instructions.
 void __thiscall mark_track_warning_zones(SubgameRuntime *game)
 {
   int v1; // ebx
-  uint8_t *p_tile_id; // eax
-  uint8_t *v3; // edx
+  SubLocTileId *p_tile_id; // eax
+  SubLocTileId *v3; // edx
   int v4; // ebp
-  uint8_t v5; // al
+  SubLocTileId v5; // al
   int v6; // edi
   int v7; // esi
-  int v8; // [esp+4h] [ebp-Ch]
-  uint8_t *v9; // [esp+8h] [ebp-8h]
+  int i; // [esp+4h] [ebp-Ch]
+  SubLocTileId *v9; // [esp+8h] [ebp-8h]
   int v10; // [esp+Ch] [ebp-4h]
 
   v1 = 0;
@@ -29,26 +29,25 @@ void __thiscall mark_track_warning_zones(SubgameRuntime *game)
       do
       {
         v5 = *v3;
-        if ( *v3 == 2
-          || v5 == 3
-          || v5 == 4
-          || v5 == 5
-          || v5 == 6
-          || v5 == 7
-          || v5 == 8
-          || v5 == 9
-          || v5 == 10
-          || v5 == 11
-          || v5 == 12
-          || v5 == 13
-          || v5 == 14
-          || v5 == 23
-          || v5 == 25
-          || v5 == 33 )
+        if ( *v3 == SUBLOC_TILE_RAMP_LEFT_BRACE
+          || v5 == SUBLOC_TILE_RAMP_GREATER
+          || v5 == SUBLOC_TILE_RAMP_RIGHT_BRACE
+          || v5 == SUBLOC_TILE_RAMP_LEFT_BRACKET
+          || v5 == SUBLOC_TILE_RAMP_LESS
+          || v5 == SUBLOC_TILE_RAMP_RIGHT_BRACKET
+          || v5 == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
+          || v5 == SUBLOC_TILE_RAMP_GREATER_RAISED
+          || v5 == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
+          || v5 == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH
+          || v5 == SUBLOC_TILE_RAMP_GREATER_BACKPATCH
+          || v5 == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH
+          || v5 == SUBLOC_TILE_WALL2
+          || v5 == SUBLOC_TILE_HEALTH_PICKUP
+          || v5 == SUBLOC_TILE_JETPACK_PICKUP
+          || v5 == SUBLOC_TILE_GARBAGE_HAZARD )
         {
           v6 = v4 + 8 * v1;
-          v8 = 6;
-          do
+          for ( i = 6; i != 0; --i )
           {
             v7 = -1;
             do
@@ -60,9 +59,7 @@ void __thiscall mark_track_warning_zones(SubgameRuntime *game)
             while ( v7 < 1 );
             --v1;
             v6 -= 8;
-            --v8;
           }
-          while ( v8 );
           v3 = v9;
           v1 = v10;
         }
@@ -77,4 +74,3 @@ void __thiscall mark_track_warning_zones(SubgameRuntime *game)
     while ( v1 < game->runtime_row_count - 1 );
   }
 }
-

@@ -1,5 +1,5 @@
 // mark_track_warning_zones @ 0x4354f0 (thiscall, ret)
-// cRSubGame::WarnTrack() per Android symbols: stamps a 6-row x 2-col
+// cRSubGame::DeSaltTrack() per Android symbols: stamps a 6-row x 2-col
 // warning footprint behind every hazard-bearing tile, suppressing both random
 // salt and garbage spawns in the approach corridor.
 

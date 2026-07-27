@@ -732,11 +732,19 @@
     {
       "address": "0x4354f0",
       "windows_name": "mark_track_warning_zones",
-      "ios_symbol": "cRSubGame::WarnTrack()",
-      "source_object": null,
-      "confidence": "cross-port-neighborhood",
-      "notes": "Android carried this name first; the iOS SubGame.o grouping brackets the same track-normalization family. Windows stamps the owned SubLoc grid and has a void contract: its sole caller discards EAX, while the empty and populated exits leave incompatible incidental values.",
+      "android_symbol": "cRSubGame::DeSaltTrack()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android DeSaltTrack and Windows both recognize the exact tile-id set 2..14, 23, 25, and 33, then walk six rows backward and lanes {column-1, column}, bounds-checking the generated eight-lane SubLoc grid before ORing 0x18 into its packed flags. GenerateLevel places this pass after CondenseTrack and immediately before FringeEdgeTrack, exactly where Windows calls it. No iOS DeSaltTrack body or symbol was exported, so the mapping remains Android-backed rather than manufacturing a second-port body.",
+      "android_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
+      "address": "0x4355f0",
+      "windows_name": "promote_track_tiles_to_fringe_variants",
       "android_symbol": "cRSubGame::WarnTrack()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android WarnTrack and Windows both clear the current SubLoc warning-family bit, require the same lane in the next generated row to be empty, scan the same eight slice and four corner object families, replace floor/slide objects with warning variants, and restore the 0x20 marker. GenerateLevel calls this pass between SmoothTrack and SlideSmoothTrack in both builds. No iOS WarnTrack body was exported, so the mapping remains Android-backed rather than transferring mobile layout or inventing a second-port body.",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
@@ -848,7 +856,7 @@
       "android_symbol": "cRSubGame::GenerateLevel(int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The mobile dispatcher stores the level argument and calls SetFeatures, BuildColours, BuildLevel, PlaceParcels, SmoothTrack, WarnTrack, SlideSmoothTrack, CondenseTrack, and FringeEdgeTrack in the same nested rebuild order. Windows adds its platform-specific promotion and render-cache passes. Both StartLevel callers immediately continue from unrelated state, so Android's final cRWorld::ReSet value and Windows' final cache-builder value are incidental: the authored member is void."
+      "notes": "The mobile dispatcher stores the level argument and calls SetFeatures, BuildColours, BuildLevel, PlaceParcels, SmoothTrack, WarnTrack, SlideSmoothTrack, CondenseTrack, DeSaltTrack, and FringeEdgeTrack in the same nested rebuild order as Windows. Windows then performs its platform-specific render-cache build, while Android resets its cRWorld. Both StartLevel callers immediately continue from unrelated state, so those final callee values are incidental: the authored member is void."
     },
     {
       "address": "0x437eb0",

@@ -106,3 +106,14 @@ honest 81.33%, 75/75 form because the source-level object-slot form triggers
 the already measured VC6 CSE/register-allocation regression. The analysis
 annotation therefore removes a fabricated giant `SubgameRuntime` rebase while
 preserving every matcher byte and all six clean operand constraints.
+
+## 2026-07-27 authored WarnTrack owner
+
+Android `cRSubGame::WarnTrack()` is this pass, not the later footprint
+stamper. Both bodies clear the current cell's `0x20` warning-family bit,
+require the same lane in the next row to be empty, scan the same eight slice
+and four corner object families, replace floor/slide objects with warning
+variants, and restore `0x20`. In both `GenerateLevel()` dispatchers the call
+sits between `SmoothTrack()` and `SlideSmoothTrack()`. The Android layout and
+compiler scheduling remain platform-specific; this transfers authored
+ownership and source intent, not offsets or a score-shaped rewrite.

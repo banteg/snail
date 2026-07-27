@@ -47,7 +47,7 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# WarnTrack holds one EAX row cursor, one EDX current-cell cursor, and a saved
+# DeSaltTrack holds one EAX row cursor, one EDX current-cell cursor, and a saved
 # stack copy. All three point at TrackRowCell::tile_id (+0x3c) and advance by
 # the full 0x54 cell stride. The overlapping field-first view records that
 # physical borrow without rebasing any cursor to a false TrackRowCell owner.
@@ -93,7 +93,7 @@ TRACK_TILE_EDGE_USER_VAR_UPDATES = (
     ),
 )
 
-# This pass carries ESI at TrackRowCell::object (+0x24) and advances it by the
+# WarnTrack carries ESI at TrackRowCell::object (+0x24) and advances it by the
 # complete 0x54 cell stride. Preserve that borrowed field identity instead of
 # letting BN fabricate a SubgameRuntime owner by subtracting the runtime-grid
 # base from the cursor.
