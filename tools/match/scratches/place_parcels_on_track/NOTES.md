@@ -472,3 +472,27 @@ No scratch source changed. Focused Wibo stays at 40.92% and 627/639
 instructions, while the operand audit improves from 50 clean, one unresolved,
 and 98 unaudited references to 56 clean, zero unresolved, and 88 unaudited
 references, with no mismatch.
+
+## Branch-local projection outputs (2026-07-27)
+
+The final attachment pass now limits its `TransformMatrix` and angle output to
+the nonlinear-path branch that actually borrows them. Android and iOS likewise
+allocate their projection outputs only for the half-pipe/half-pole calls, and
+the Windows survival placement method preserves the same branch-local source
+shape. Neither output escapes the helper call; only the resulting matrix
+position is copied back into the owned runtime row.
+
+That lifetime lets VC6 reuse the dead scalar slot at native `esp+0x18` for the
+angle output. Focused Wibo improves from 40.92% to 41.07%, remains 627/639
+instructions, and retains 56 clean masked operands with zero unresolved or
+mismatched references. The candidate frame contracts from `0x200` to `0x1fc`;
+the native `0x214` frame still includes two catalog-only glyph temporaries that
+the current source cannot yet reproduce without a larger regression.
+
+Two bounded glyph probes were rejected. Inline `Vector3(...)` assignment
+temporaries recover the native construction timing and full 12-byte copies,
+but produce a `0x218` frame and regress the global comparison to 39.22%
+(641 instructions). Named branch locals are worse at 37.43% with a `0x21c`
+frame. Moving the matrix or angle declaration outside the branch does not
+change the accepted codegen, so no artificial padding or forced lifetime is
+kept.

@@ -97,7 +97,7 @@ void SubgameRuntime::place_parcels_on_track()
                                 .candidates[g_zero_parcel_buckets[zero_entry_count]
                                                 .candidate_count]
                                 .position.x =
-                                (float)lane - 4.0f + 0.5f;
+                                    (float)lane - 4.0f + 0.5f;
                             g_zero_parcel_buckets[zero_entry_count]
                                 .candidates[g_zero_parcel_buckets[zero_entry_count]
                                                 .candidate_count]
@@ -121,7 +121,7 @@ void SubgameRuntime::place_parcels_on_track()
                                 .candidates[g_parcel_set_buckets[set_entry_count]
                                                 .candidate_count]
                                 .position.x =
-                                (float)lane - 4.0f + 0.5f;
+                                    (float)lane - 4.0f + 0.5f;
                             g_parcel_set_buckets[set_entry_count]
                                 .candidates[g_parcel_set_buckets[set_entry_count]
                                                 .candidate_count]
@@ -274,8 +274,6 @@ void SubgameRuntime::place_parcels_on_track()
     }
     level_definition.parcel_count = placed;
 
-    TransformMatrix transform;
-    float out_angle;
     SubRow* row_record = runtime_rows;
     for (int row = 0; row < runtime_row_count; ++row, ++row_record) {
         if ((row_record->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0
@@ -289,6 +287,8 @@ void SubgameRuntime::place_parcels_on_track()
             TrackRowCell* live_cell = row_record->primary_attachment_cell;
             Path* template_record = live_cell->attachment_template_record;
             if (template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
+                TransformMatrix transform;
+                float out_angle;
                 template_record->compute_kind42_attachment_transform(
                     template_record->primary_samples[node].special_scalar,
                     row_record->parcel_spawn_position.x,
