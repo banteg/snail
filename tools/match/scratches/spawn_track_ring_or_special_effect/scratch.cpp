@@ -55,10 +55,8 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
 
         switch (requested_kind) {
         case SUB_RING_KIND_UNKNOWN_0: {
-            Vector3 staged_position;
-            staged_position.x = cell->position.x;
-            staged_position.y = cell->position.y + 2.5f;
-            staged_position.z = cell->position.z + 6.0f;
+            Vector3 staged_position =
+                cell->position + Vector3(0.0f, 2.5f, 6.0f);
             slot_cursor->ring.transform.position = staged_position;
             float random_x = random_float_below(1.0f, "RR") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
@@ -68,10 +66,8 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             break;
         }
         case SUB_RING_KIND_UNKNOWN_1: {
-            Vector3 staged_position;
-            staged_position.x = cell->position.x;
-            staged_position.y = cell->position.y + 2.5f;
-            staged_position.z = cell->position.z + 6.0f;
+            Vector3 staged_position =
+                cell->position + Vector3(0.0f, 2.5f, 6.0f);
             slot_cursor->ring.transform.position = staged_position;
             float random_x = random_float_below(1.0f, "RR2") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
@@ -81,10 +77,8 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             break;
         }
         case SUB_RING_KIND_EXPLODE_RAMP: {
-            Vector3 staged_position;
-            staged_position.x = cell->position.x;
-            staged_position.y = cell->position.y + 3.5f;
-            staged_position.z = cell->position.z + 17.0f;
+            Vector3 staged_position =
+                cell->position + Vector3(0.0f, 3.5f, 17.0f);
             slot_cursor->ring.transform.position = staged_position;
             float random_x = random_float_below(1.0f, "RR4") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
@@ -94,10 +88,8 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             break;
         }
         case SUB_RING_KIND_SLOW_DEFAULT: {
-            Vector3 staged_position;
-            staged_position.x = cell->position.x;
-            staged_position.y = cell->position.y + 2.5f;
-            staged_position.z = cell->position.z + 6.0f;
+            Vector3 staged_position =
+                cell->position + Vector3(0.0f, 2.5f, 6.0f);
             slot_cursor->ring.transform.position = staged_position;
             float random_x = random_float_below(1.0f, "RR6") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
@@ -108,10 +100,8 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             break;
         }
         case SUB_RING_KIND_NORMAL_DEFAULT: {
-            Vector3 staged_position;
-            staged_position.x = cell->position.x;
-            staged_position.y = cell->position.y + 2.5f;
-            staged_position.z = cell->position.z + 6.0f;
+            Vector3 staged_position =
+                cell->position + Vector3(0.0f, 2.5f, 6.0f);
             slot_cursor->ring.transform.position = staged_position;
             float random_x = random_float_below(1.0f, "RR8") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
@@ -122,10 +112,8 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             break;
         }
         case SUB_RING_KIND_NORMAL_AUTHORED: {
-            Vector3 staged_position;
-            staged_position.x = cell->position.x;
-            staged_position.y = cell->position.y + 2.5f;
-            staged_position.z = cell->position.z;
+            Vector3 staged_position =
+                cell->position + Vector3(0.0f, 2.5f, 0.0f);
             slot_cursor->ring.transform.position = staged_position;
             slot_cursor->ring.active_phase =
                 random_float_below(1.0f, "RR10") * 6.28318548f;
@@ -134,10 +122,8 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             break;
         }
         case SUB_RING_KIND_POWER_UP_AUTHORED: {
-            Vector3 staged_position;
-            staged_position.x = cell->position.x;
-            staged_position.y = cell->position.y + 2.5f;
-            staged_position.z = cell->position.z;
+            Vector3 staged_position =
+                cell->position + Vector3(0.0f, 2.5f, 0.0f);
             slot_cursor->ring.transform.position = staged_position;
             slot_cursor->ring.active_phase =
                 random_float_below(1.0f, "RR11") * 6.28318548f;
@@ -146,10 +132,8 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             break;
         }
         case SUB_RING_KIND_EXPLODE_AUTHORED: {
-            Vector3 staged_position;
-            staged_position.x = cell->position.x;
-            staged_position.y = cell->position.y + 2.5f;
-            staged_position.z = cell->position.z;
+            Vector3 staged_position =
+                cell->position + Vector3(0.0f, 2.5f, 0.0f);
             slot_cursor->ring.transform.position = staged_position;
             slot_cursor->ring.active_phase =
                 random_float_below(1.0f, "RR12") * 6.28318548f;
@@ -158,10 +142,8 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             break;
         }
         case SUB_RING_KIND_SLOW_AUTHORED: {
-            Vector3 staged_position;
-            staged_position.x = cell->position.x;
-            staged_position.y = cell->position.y + 2.5f;
-            staged_position.z = cell->position.z;
+            Vector3 staged_position =
+                cell->position + Vector3(0.0f, 2.5f, 0.0f);
             slot_cursor->ring.transform.position = staged_position;
             slot_cursor->ring.active_phase =
                 random_float_below(1.0f, "RR13") * 6.28318548f;

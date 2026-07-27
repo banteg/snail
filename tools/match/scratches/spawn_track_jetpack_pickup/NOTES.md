@@ -186,3 +186,12 @@ The allocator's `233/EAX` lifetime is the borrowed address of
 list membership does not create or transfer a JetPack owner. Focused matching
 remains honestly unchanged at `84.72%`, `144/144` instructions, prefix `7/144`,
 with nine clean masked operands.
+
+## 2026-07-28 mobile-backed placement expression
+
+Both mobile `cRSubGame::AddJetPack` bodies retain the complete
+`cell position + (0, 1.5, 0)` placement before the Windows-only neighboring
+lane correction. The scratch now represents that placement as one owned
+`Vector3` result rather than separate x/y/z assignments. VC6 emits the same
+144-instruction candidate, so the honest 84.72% score and all nine clean
+references are unchanged.

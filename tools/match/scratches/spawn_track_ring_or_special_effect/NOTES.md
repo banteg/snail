@@ -382,3 +382,13 @@ A scan-pointer source probe expanded the scheduling difference and regressed
 focused Wibo to 73.82%, so it was removed. The retained source remains at
 99.71%, 347/347 instructions, with all 75 masked operands clean and no forced
 ordering.
+
+## 2026-07-28 mobile-backed placement expressions
+
+Android and iOS `cRSubGame::AddRing` preserve all three authored placement
+tuples across the nine kind arms: `(0, 2.5, 6)`, `(0, 3.5, 17)`, and
+`(0, 2.5, 0)`. Each Windows arm now stages the corresponding
+`cell->position + Vector3(...)` value instead of reconstructing its components
+manually. VC6 emits the same 347 instructions and switch graph, retaining the
+99.71% score, 294-instruction prefix, and all 75 clean references. The sole
+state-versus-lives store-order residual remains independent.

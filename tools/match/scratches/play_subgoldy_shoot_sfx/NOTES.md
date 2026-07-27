@@ -91,3 +91,20 @@ source also adopts the mobile-preserved `distance / -60.0f + 1.0f`
 attenuation spelling. VC6 emits the same 96-instruction candidate, so the
 honest 89.13% result, 26/88 prefix, and unresolved lower-clamp tail remain
 unchanged.
+
+## 2026-07-28 dual-mobile vector expression
+
+Android and iOS both build one local vector from the presentation-player
+position minus Goldy's inherited transform position before normalizing a copy.
+The Windows source now expresses that subtraction through the shared
+`Vector3::operator-` instead of three hand-written component assignments.
+VC6 emits the same 96-instruction candidate, preserving the honest 89.13%
+result and the same 19 clean audited references; the two candidate-only
+duplicated-tail references remain explicitly unaudited.
+
+The iOS negative-volume branch also motivated a direct portable control-flow
+probe: call scaled playback with literal zero in the negative branch, otherwise
+clamp the upper bound and call with the local volume. VC6 duplicated that call
+and epilogue and regressed to 89.01%, 94/88 instructions. It was removed; the
+Windows target's shared lower-clamp tail is still an optimizer residual rather
+than evidence for platform control flow.

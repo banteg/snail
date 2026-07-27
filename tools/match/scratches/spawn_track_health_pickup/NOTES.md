@@ -238,3 +238,13 @@ honest zero-offset `SubHealth -> BodBase -> BodNode` conversion. IDA already
 renders the same `BodNode **p_first` chain. Focused matching remains honestly
 unchanged at `90.08%`, `120/122` instructions, prefix `6/122`, with seven clean
 masked operands.
+
+## 2026-07-28 mobile-backed placement expression
+
+Android and iOS `cRSubGame::AddHealth` independently preserve the full
+cell-position offset `(0, 0.60000002, 0)`, including the otherwise redundant
+zero-valued x and z lanes. The Windows scratch now owns that as one
+`cell->position + Vector3(...)` result before copying it into the selected
+`SubHealth` position. This removes scalar reconstruction from the source while
+remaining byte-identical at the honest 90.08%, 120/122-instruction baseline
+with all seven references clean.

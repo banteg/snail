@@ -34,9 +34,8 @@ void Player::PlayShootSfx()
             Vector3 vector;
             Vector3 normalized_vector;
 
-            vector.x = g_game->players[0].transform.position.x - transform.position.x;
-            vector.y = g_game->players[0].transform.position.y - transform.position.y;
-            vector.z = g_game->players[0].transform.position.z - transform.position.z;
+            vector =
+                g_game->players[0].transform.position - transform.position;
 
             normalized_vector = vector;
             float distance = (float)normalize_vector(&normalized_vector);

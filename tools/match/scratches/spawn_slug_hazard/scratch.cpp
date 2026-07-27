@@ -36,10 +36,8 @@ void SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
     *player_ref = owner_player;
     slug_hazards.slots[slot_index].transform.set_matrix_identity();
 
-    Vector3 staged_position;
-    staged_position.y = cell->position.y + 1.7f;
-    staged_position.x = cell->position.x;
-    staged_position.z = cell->position.z;
+    Vector3 staged_position =
+        cell->position + Vector3(0.0f, 1.7f, 0.0f);
     Vector3* live_position =
         &slug_hazards.slots[slot_index].transform.position;
     *live_position = staged_position;

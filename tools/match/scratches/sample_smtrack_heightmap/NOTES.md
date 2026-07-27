@@ -98,3 +98,17 @@ generic byte to `bool`. It does not transfer mobile object or texture offsets;
 Windows retains its independently proved 0xdc-byte Object and retained-image
 layout. The bool spelling is byte-identical, so the honest focused result stays
 60.36%, 113/109 instructions, with all 13 currently audited operands clean.
+
+## 2026-07-28 mobile-backed texel and cursor expressions
+
+Both mobile bodies preserve the complete bottom-up texel equation, including
+the image-width row stride and bytes-per-pixel multiplier. The Windows source
+now carries that equation directly rather than as five scalar index
+mutations. It also spells the native physical output cursor as
+`++sample; sample[-1].y = ...`, matching the checked Windows EBP traversal
+without claiming a y-only pointer owner.
+
+Both changes are codegen-neutral at 60.36%, 113/109 instructions, with all 13
+references clean. Moving the cursor declaration earlier to try to reserve EBP
+regressed register ownership and was removed; the remaining frame/register
+delta is not forced.

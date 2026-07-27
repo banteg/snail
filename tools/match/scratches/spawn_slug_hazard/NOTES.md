@@ -218,3 +218,13 @@ same 18 clean masked operands. VC6 no longer emits the direct full-pool return
 epilogue or the final EAX-preserving tail instruction. Those two native
 instructions remain a documented compiler/source-shape residual; they are not
 reintroduced with a fake return value.
+
+## 2026-07-28 mobile-backed placement expression
+
+Android and iOS `cRSubGame::AddSlug` both preserve the complete
+`cell position + (0, 1.7, 0)` source tuple before path projection. The Windows
+scratch now stages that ordinary `Vector3` sum, complementing the already
+mobile-proved `(0, 0, -0.2) * subgame_rate` velocity expression. Codegen is
+unchanged at the honest void 94.34%, 158/160-instruction baseline with all 18
+references clean; the two missing epilogue instructions remain deliberately
+unfaked.

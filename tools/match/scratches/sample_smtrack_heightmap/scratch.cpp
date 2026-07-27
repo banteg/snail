@@ -16,24 +16,18 @@ void __cdecl sample_smtrack_heightmap(
         (int)(sample_count_float * source->heightmap_sample_scale /
             source->heightmap_sample_divisor);
     float row_count_float = (float)row_count;
-    int image_width = image->width;
-    int image_height = image->height;
-    float x_step = (float)image_width / (sample_count_float + 1.0f);
-    float y_step = (float)image_height / (row_count_float + 1.0f);
+    float x_step = (float)image->width / (sample_count_float + 1.0f);
+    float y_step = (float)image->height / (row_count_float + 1.0f);
     Vector3* sample = source->vertices;
 
     for (float row = 0.0f; row <= row_count_float; row += 1.0f) {
         for (float column = 0.0f; column <= sample_count_float; column += 1.0f) {
             int y = (int)(row * y_step);
             int x = (int)(column * x_step);
-            int pixel_index = x;
-            int row_index = image->height;
-            row_index -= y;
-            --row_index;
-            row_index *= image->width;
-            pixel_index += row_index;
-            int bytes_per_pixel = image->bits_per_pixel >> 3;
-            unsigned char* pixel = image->pixels + pixel_index * bytes_per_pixel;
+            int pixel_index =
+                ((image->height - y - 1) * image->width + x)
+                * (image->bits_per_pixel >> 3);
+            unsigned char* pixel = image->pixels + pixel_index;
             float red = (float)pixel[2];
             float green = (float)pixel[1];
             float blue = (float)pixel[0];
@@ -46,8 +40,8 @@ void __cdecl sample_smtrack_heightmap(
             if (cubic)
                 value = value * value * value;
 
-            sample->y = value * scale + base;
             ++sample;
+            sample[-1].y = value * scale + base;
         }
     }
 }
