@@ -144,8 +144,8 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     Player* subgoldy = &player;
     subgoldy->initialize_renderable_bod();
     subgoldy->click_start.initialize_click_start_controller_runtime();
-    ((RuntimeSlot*)&subgoldy->cameraman)->noop_runtime_slot_constructor();
-    ((RuntimeSlot*)&subgoldy->follow_state)->noop_runtime_slot_constructor();
+    subgoldy->cameraman.noop_runtime_slot_constructor();
+    subgoldy->follow_state.noop_runtime_slot_constructor();
     initialize_array_with_constructor(
         (RuntimeSlot*)subgoldy->golb_shots,
         sizeof(GolbShot),

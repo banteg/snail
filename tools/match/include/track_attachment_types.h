@@ -404,6 +404,9 @@ typedef char SubRow_must_be_0xf4[(sizeof(SubRow) == 0xf4) ? 1 : -1];
 
 class FollowState {
 public:
+    // VC6 folds this empty owner constructor into the shared body at
+    // 0x408600. The cRSubGame constructor passes Player::follow_state exactly.
+    FollowState* noop_runtime_slot_constructor();
     void begin_track_attachment_follow_state(
         SubLoc* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
     int update_track_attachment_follow_state(
@@ -432,5 +435,6 @@ public:
 
 typedef char FollowState_must_be_0x40[
     (sizeof(FollowState) == 0x40) ? 1 : -1];
+typedef FollowState cRPathFollowGoldy;
 
 #endif

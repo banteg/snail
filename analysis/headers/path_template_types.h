@@ -1799,6 +1799,7 @@ typedef struct Cameraman {
     float attachment_lift_envelope;
     float smoothed_attachment_lift_envelope;
 } Cameraman;
+typedef Cameraman cRCameraman;
 
 typedef enum DamageGuageState {
     DAMAGE_GUAGE_STATE_MONITORING = 0,
@@ -2340,6 +2341,7 @@ typedef struct FollowState {
     uint8_t flag_3c;
     uint8_t _pad_3d[0x3];
 } FollowState;
+typedef FollowState cRPathFollowGoldy;
 
 typedef struct GolbPathFollowState {
     uint8_t active;

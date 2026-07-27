@@ -130,3 +130,18 @@ complete `Snail` receiver. Its sole entry is folded
 four-byte `cRSnail::AI()` method and cRSnail vtable. The shared header now
 exposes the authored `cRSnail` alias while retaining `Snail` as the stable
 Windows matcher type.
+
+## 2026-07-27 Android constructor topology
+
+The newly expanded Android `cRSubGoldy::cRSubGoldy()` body supplies a second,
+symbol-backed view of the presentation boundary. Its vtable relocations resolve
+the sequence as the enclosing cRSubGoldy, cRClickStart, twelve cRSubGolb
+records each containing cRVapour and cRGolbRocket children, then cRSnail, four
+cRWeapon children, and cRInvincible. In particular, the cRSnail vptr begins at
+mobile `cRSubGoldy +0x2800`; its four cRWeapon vptrs occur at `+0x2dc8`,
+`+0x315c`, `+0x34f0`, and `+0x3884`, and cRInvincible begins at `+0x3ed8`.
+
+Those are mobile offsets and are not copied into Windows. Their owner order,
+cardinality, and nested vtable identities independently agree with the exact
+Windows `Player::presentation +0x2984` graph recovered here: one Snail, three
+weapon channels plus one jetpack Weapon, and its Invincible child.

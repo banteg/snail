@@ -538,7 +538,11 @@
     {
       "address": "0x408600",
       "name": "noop_runtime_slot_constructor",
-      "description": "No-op thiscall constructor callback (`mov eax, ecx; ret`) shared by POD-like runtime slot arrays, parcel buckets, and opaque Snail presentation-channel subobjects. The body proves trivial construction only; it does not establish an iostream owner."
+      "description": "No-op thiscall constructor callback (`mov eax, ecx; ret`) shared by POD-like runtime slot arrays, parcel buckets, and opaque Snail presentation-channel subobjects. Two direct calls in the exact cRSubGame constructor additionally pass the complete `Player::cameraman` and `Player::follow_state` owners; Android/iOS preserve those classes as cRCameraman and cRPathFollowGoldy. The body proves trivial construction only; it does not establish an iostream owner.",
+      "aliases": [
+        "cRCameraman_ctor",
+        "cRPathFollowGoldy_ctor"
+      ]
     },
     {
       "address": "0x408610",

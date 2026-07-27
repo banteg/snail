@@ -9,6 +9,9 @@ class SubgameRuntime;
 
 class Cameraman {
 public:
+    // VC6 folds this empty owner constructor into the shared body at
+    // 0x408600. The cRSubGame constructor passes Player::cameraman exactly.
+    Cameraman* noop_runtime_slot_constructor();
     void initialize_cameraman(); // @ 0x446160, cRCameraman::Init
     void update_cameraman(); // @ 0x4461d0, cRCameraman::AI
 
@@ -25,5 +28,6 @@ public:
 };
 
 typedef char Cameraman_must_be_0xd8[(sizeof(Cameraman) == 0xd8) ? 1 : -1];
+typedef Cameraman cRCameraman;
 
 #endif

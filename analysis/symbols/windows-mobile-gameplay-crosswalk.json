@@ -4897,33 +4897,33 @@
       "status": "unverified",
       "android_candidates": [
         {
-          "symbol": "tColour::Set(float, float, float)",
-          "score": 0.5772,
-          "name_score": 0.2954,
-          "size_score": 1.0
+          "symbol": "cRObject::cRObject()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
         },
         {
-          "symbol": "ObjectProcWorldReset(cRObject*)",
-          "score": 0.5765,
-          "name_score": 0.2941,
-          "size_score": 1.0
+          "symbol": "cRObject::cRObject()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
         },
         {
-          "symbol": "ObjectProcVertexCompare(void const*, void const*)",
-          "score": 0.5714,
-          "name_score": 0.2857,
-          "size_score": 1.0
+          "symbol": "cRSubGoldy::Kill()",
+          "score": 0.6267,
+          "name_score": 0.6,
+          "size_score": 0.6667
         },
         {
-          "symbol": "cRBorderStack::Init()",
-          "score": 0.5536,
-          "name_score": 0.256,
-          "size_score": 1.0
+          "symbol": "cRSubGoldy::SameViewport(int, int)",
+          "score": 0.59,
+          "name_score": 0.45,
+          "size_score": 0.8
         },
         {
-          "symbol": "cRObject::GLVBO()",
-          "score": 0.5536,
-          "name_score": 0.256,
+          "symbol": "cAccelerometer::Input(float, float, float)",
+          "score": 0.58,
+          "name_score": 0.3,
           "size_score": 1.0
         }
       ],

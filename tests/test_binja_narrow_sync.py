@@ -5603,6 +5603,62 @@ def test_mobile_noop_vtables_recover_distinct_folded_owners() -> None:
     assert "cRGolbRocket tertiary_body;" in analysis_header
 
 
+def test_mobile_subgoldy_layout_recovers_folded_constructor_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    constructor = (
+        repo_root
+        / "tools/match/scratches/"
+        "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    cameraman_header = (
+        repo_root / "tools/match/include/cameraman.h"
+    ).read_text(encoding="utf-8")
+    attachment_header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    analysis_header = (
+        repo_root / "analysis/headers/path_template_types.h"
+    ).read_text(encoding="utf-8")
+    android_init = (
+        repo_root
+        / "analysis/decompile/android/functions/"
+        "00079da8-_ZN10cRSubGoldy4InitEi.c"
+    ).read_text(encoding="utf-8")
+    android_ai = (
+        repo_root
+        / "analysis/decompile/android/functions/"
+        "0007ac54-_ZN10cRSubGoldy2AIEv.c"
+    ).read_text(encoding="utf-8")
+    ios_ai = (
+        repo_root
+        / "analysis/decompile/ios/functions/"
+        "000277f8-_ZN10cRSubGoldy2AIEv.c"
+    ).read_text(encoding="utf-8")
+
+    noop = next(
+        entry for entry in functions["functions"] if entry["address"] == "0x408600"
+    )
+    assert "cRCameraman_ctor" in noop["aliases"]
+    assert "cRPathFollowGoldy_ctor" in noop["aliases"]
+    assert "subgoldy->cameraman.noop_runtime_slot_constructor();" in constructor
+    assert "subgoldy->follow_state.noop_runtime_slot_constructor();" in constructor
+    assert "typedef Cameraman cRCameraman;" in cameraman_header
+    assert "typedef FollowState cRPathFollowGoldy;" in attachment_header
+    assert "typedef Cameraman cRCameraman;" in analysis_header
+    assert "typedef FollowState cRPathFollowGoldy;" in analysis_header
+
+    # Port-specific offsets are evidence for the class identities only. The
+    # Windows scratch continues to derive its own +0x200/+0x384 layout.
+    assert "cRCameraman::Init((cRCameraman *)(this + 0x1e8));" in android_init
+    assert "(cRPathFollowGoldy *)(in_r0 + 0x374)" in android_ai
+    assert "(cRPathFollowGoldy *)(this + 0x374)" in ios_ai
+
+
 def test_archive_shell_replays_preserve_audio_backend_member_abi() -> None:
     binja_source = (BINJA_DIR / "sync_archive_shell_types.py").read_text(
         encoding="utf-8"
