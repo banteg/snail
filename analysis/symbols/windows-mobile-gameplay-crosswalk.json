@@ -14,12 +14,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 569,
-    "unverified_entries": 216,
-    "verified_android_symbols": 563,
-    "verified_ios_symbols": 456,
-    "available_android_mappings": 563,
-    "available_ios_mappings": 420
+    "verified_entries": 570,
+    "unverified_entries": 215,
+    "verified_android_symbols": 564,
+    "verified_ios_symbols": 457,
+    "available_android_mappings": 564,
+    "available_ios_mappings": 421
   },
   "entries": [
     {
@@ -10199,71 +10199,13 @@
       "address": "0x41a0a0",
       "windows_name": "disable_object_rendering",
       "windows_size": 16,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cAccelerometer::Input(float, float, float)",
-          "score": 0.681,
-          "name_score": 0.4683,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBod::SetObject(cRObject*)",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRObject::GLVBO()",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcNull(cRObject*)",
-          "score": 0.6666,
-          "name_score": 0.4444,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcWorldReset(cRObject*)",
-          "score": 0.6594,
-          "name_score": 0.4324,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBod::SetObject(cRObject*)",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "RShellGetScreenHeight()",
-          "score": 0.6791,
-          "name_score": 0.4651,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBod::IsAfterSprites()",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcNull(cRObject*)",
-          "score": 0.6666,
-          "name_score": 0.4444,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellGetScreenWidth()",
-          "score": 0.6286,
-          "name_score": 0.381,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "ObjectProcNull(cRObject*)",
+      "ios_symbol": "ObjectProcNull(cRObject*)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x41a0b0",

@@ -1456,7 +1456,10 @@
     {
       "address": "0x41a0a0",
       "name": "disable_object_rendering",
-      "description": "Marks one Object with the 0x40000 render-suppression flag checked by render_object; startup applies it to selected backdrop objects after binding them into their BodBase owners."
+      "aliases": [
+        "ObjectProcNull"
+      ],
+      "description": "Exact Windows `ObjectProcNull(cRObject*)`: sets the Object's 0x40000 render-suppression flag checked by render_object. Android and iOS preserve the authored free-function name and the same two cRGame::LoadPaths callsites immediately after binding the selected path objects into their BodBase owners."
     },
     {
       "address": "0x41a0b0",

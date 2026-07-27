@@ -903,6 +903,44 @@ def test_mobile_object_texture_join_recovers_authored_free_function() -> None:
     assert "operation into a `cRObject` member" in notes
 
 
+def test_mobile_object_null_recovers_authored_free_function() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    object_null = entries["disable_object_rendering"]
+    assert object_null["status"] == "verified"
+    assert object_null["confidence"] == "high"
+    assert object_null["source_object"] == "ObjectProc.o"
+    assert object_null["android_symbol"] == "ObjectProcNull(cRObject*)"
+    assert object_null["ios_symbol"] == object_null["android_symbol"]
+    assert object_null["android_body_count"] == 1
+    assert object_null["ios_body_count"] == 1
+    assert "ObjectProcNull" in (
+        functions_by_name["disable_object_rendering"]["aliases"]
+    )
+
+    notes = (
+        repo_root
+        / "tools/match/scratches"
+        / "disable_object_rendering"
+        / "NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "`ObjectProcNull(cRObject*)`" in notes
+    assert "same pair of newly bound path objects" in notes
+    assert "without importing a false field" in notes
+
+
 def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

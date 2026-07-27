@@ -130,6 +130,7 @@ typedef char ObjectToonEdge_must_be_0x24[
 struct ObjectIndexBufferResource;
 struct Object;
 
+// Authored ObjectProcNull(cRObject*) free function in Android and iOS.
 void disable_object_rendering(Object* object); // @ 0x41a0a0
 
 struct ObjectDistort {

@@ -5154,6 +5154,15 @@
       "notes": "All three ports group one cRObject face bank into contiguous texture runs by scanning forward from each base face and swapping a matching 0x30-byte face into the current insertion slot. Android and iOS preserve the authored ObjectProcJoinTextures free-function name; Windows is already instruction-exact with independent scan and insertion cursors."
     },
     {
+      "address": "0x41a0a0",
+      "windows_name": "disable_object_rendering",
+      "android_symbol": "ObjectProcNull(cRObject*)",
+      "ios_symbol": "ObjectProcNull(cRObject*)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "notes": "All three ports set the same cRObject 0x40000 render-suppression flag. More decisively, Android and iOS cRGame::LoadPaths call ObjectProcNull on the same pair of newly bound path objects and in the same order as the two Windows callsites. The mobile layouts place flags at cRObject +0x00 while Windows places them at +0x10, so the semantic owner transfers but the field offset does not."
+    },
+    {
       "address": "0x430470",
       "windows_name": "advance_frame_sequence",
       "android_symbol": "cRMovie::AI()",
