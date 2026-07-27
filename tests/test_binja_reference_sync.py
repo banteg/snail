@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
-from pathlib import Path
 import sys
-
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BINJA_DIR = REPO_ROOT / "tools/binja"
@@ -33,7 +32,9 @@ def table_symbol(
     }
 
 
-def test_load_references_includes_functions_and_compiler_tables(tmp_path: Path) -> None:
+def test_load_references_includes_functions_globals_and_compiler_tables(
+    tmp_path: Path,
+) -> None:
     manifest = tmp_path / "references.json"
     manifest.write_text(
         json.dumps(
@@ -72,9 +73,11 @@ def test_load_references_includes_functions_and_compiler_tables(tmp_path: Path) 
         "initialize_array",
         "widget_jump_table",
         "widget_lookup_table",
+        "g_game",
     ]
     assert [reference["bn_kind"] for reference in references] == [
         "function",
+        "data",
         "data",
         "data",
     ]
@@ -97,7 +100,7 @@ def test_reference_sync_defaults_to_functions_scope(monkeypatch) -> None:
     assert args.scope == "functions"
 
 
-def test_load_live_table_symbols_uses_one_read_only_bn_query(monkeypatch) -> None:
+def test_load_live_data_symbols_uses_one_read_only_bn_query(monkeypatch) -> None:
     calls: list[list[str]] = []
 
     def run_bn(args: list[str]) -> dict[str, object]:
@@ -107,6 +110,11 @@ def test_load_live_table_symbols_uses_one_read_only_bn_query(monkeypatch) -> Non
                 {
                     "address": "0x402484",
                     "name": "jump_table_402484",
+                    "symbol_type": "SymbolType.DataSymbol",
+                },
+                {
+                    "address": "0x4df904",
+                    "name": "data_4df904",
                     "symbol_type": "SymbolType.DataSymbol",
                 }
             ]
@@ -119,14 +127,20 @@ def test_load_live_table_symbols_uses_one_read_only_bn_query(monkeypatch) -> Non
             "kind": "function",
         },
         table_symbol(),
+        {
+            "address": 0x4DF904,
+            "kind": "global",
+        },
     ]
 
-    live = SYNC_REFERENCES._load_live_table_symbols("snail.bndb", symbols)
+    live = SYNC_REFERENCES._load_live_data_symbols("snail.bndb", symbols)
 
     assert live[0x402484]["name"] == "jump_table_402484"
+    assert live[0x4DF904]["name"] == "data_4df904"
     assert len(calls) == 1
     assert calls[0][:5] == ["py", "exec", "--target", "snail.bndb", "--code"]
     assert "4203652" in calls[0][5]
+    assert "5110020" in calls[0][5]
     assert "4198400" not in calls[0][5]
 
 
@@ -170,6 +184,47 @@ def test_sync_table_reference_uses_data_symbol_and_address_comment(monkeypatch) 
             "0x402484",
             "Compiler-emitted state table.",
         ],
+    ]
+
+
+def test_sync_global_reference_accepts_tracked_alias(monkeypatch) -> None:
+    calls: list[list[str]] = []
+
+    def run_bn(args: list[str]) -> dict[str, bool]:
+        calls.append(args)
+        return {"success": True}
+
+    monkeypatch.setattr(SYNC_REFERENCES, "_run_bn_json", run_bn)
+    symbol = {
+        "address": 0x4DF958,
+        "name": "g_challenge_speed_percent",
+        "kind": "global",
+        "bn_kind": "data",
+        "aliases": ["g_completion_bonus_x_source"],
+        "description": None,
+    }
+
+    result = SYNC_REFERENCES._sync_reference(
+        symbol=symbol,
+        current_name="g_completion_bonus_x_source",
+        target="snail.bndb",
+        dry_run=False,
+        replace_existing=False,
+        skip_comments=False,
+    )
+
+    assert result["status"] == "synced"
+    assert calls == [
+        [
+            "symbol",
+            "rename",
+            "--target",
+            "snail.bndb",
+            "--kind",
+            "data",
+            "0x4df958",
+            "g_challenge_speed_percent",
+        ]
     ]
 
 

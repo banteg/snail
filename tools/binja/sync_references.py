@@ -3,32 +3,32 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 import re
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 from typing import Any
 
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-from snail.symbols import is_auto_function_name  # noqa: E402
-
+from snail.symbols import is_auto_function_name
 
 DEFAULT_MANIFEST_PATH = REPO_ROOT / "analysis/symbols/gameplay-references.json"
 SYNCED_REFERENCE_KINDS = {
     "function": "function",
+    "global": "data",
     "jump_table": "data",
     "lookup_table": "data",
 }
 TABLE_REFERENCE_KINDS = frozenset(("jump_table", "lookup_table"))
-REFERENCE_SCOPES = frozenset(("functions", "tables", "all"))
+DATA_REFERENCE_KINDS = frozenset(("global", *TABLE_REFERENCE_KINDS))
+REFERENCE_SCOPES = frozenset(("functions", "globals", "tables", "all"))
 
 
 def _parse_address(value: object) -> int:
@@ -117,13 +117,13 @@ def _load_live_functions(target: str) -> dict[int, dict[str, Any]]:
     return live
 
 
-def _load_live_table_symbols(
+def _load_live_data_symbols(
     target: str, symbols: list[dict[str, Any]]
 ) -> dict[int, dict[str, Any]]:
     addresses = [
         int(symbol["address"])
         for symbol in symbols
-        if symbol["kind"] in TABLE_REFERENCE_KINDS
+        if symbol["kind"] in DATA_REFERENCE_KINDS
     ]
     if not addresses:
         return {}
@@ -259,7 +259,7 @@ def _save_snapshot(target: str) -> Any:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Apply tracked Snail Mail function and compiler-table references "
+            "Apply tracked Snail Mail function and data references "
             "to an open Binary Ninja database."
         )
     )
@@ -280,7 +280,7 @@ def parse_args() -> argparse.Namespace:
         default="functions",
         help=(
             "Reference kinds to synchronize: functions (the backward-compatible "
-            "default), compiler tables, or all supported references."
+            "default), globals, compiler tables, or all supported references."
         ),
     )
     parser.add_argument(
@@ -312,6 +312,8 @@ def main() -> int:
     symbols = _load_references(manifest_path)
     if args.scope == "functions":
         symbols = [symbol for symbol in symbols if symbol["kind"] == "function"]
+    elif args.scope == "globals":
+        symbols = [symbol for symbol in symbols if symbol["kind"] == "global"]
     elif args.scope == "tables":
         symbols = [
             symbol for symbol in symbols if symbol["kind"] in TABLE_REFERENCE_KINDS
@@ -321,7 +323,7 @@ def main() -> int:
         if any(symbol["kind"] == "function" for symbol in symbols)
         else {}
     )
-    live_tables = _load_live_table_symbols(args.target, symbols)
+    live_data = _load_live_data_symbols(args.target, symbols)
 
     entries: list[dict[str, Any]] = []
     missing: list[dict[str, str]] = []
@@ -332,7 +334,7 @@ def main() -> int:
         live = (
             live_functions.get(address)
             if symbol["bn_kind"] == "function"
-            else live_tables.get(address)
+            else live_data.get(address)
         )
         if live is None:
             missing.append(
@@ -412,6 +414,9 @@ def main() -> int:
         "reference_count": len(symbols),
         "function_reference_count": sum(
             symbol["kind"] == "function" for symbol in symbols
+        ),
+        "global_reference_count": sum(
+            symbol["kind"] == "global" for symbol in symbols
         ),
         "table_reference_count": sum(
             symbol["kind"] in TABLE_REFERENCE_KINDS for symbol in symbols
