@@ -181,18 +181,25 @@ update_after_input:
     layout_frontend_widget();
 
     if ((widget_flags & FRONTEND_WIDGET_FLAG_HIDDEN) == 0) {
-        float cold = 1.0f - hover_blend_current;
         current_fill_color.store_color4f(
-            hover_blend_current * hot_fill_color.r + cold * idle_fill_color.r,
-            hover_blend_current * hot_fill_color.g + cold * idle_fill_color.g,
-            hover_blend_current * hot_fill_color.b + cold * idle_fill_color.b,
-            hover_blend_current * hot_fill_color.a + cold * idle_fill_color.a);
+            hover_blend_current * hot_fill_color.r
+                + (1.0f - hover_blend_current) * idle_fill_color.r,
+            hover_blend_current * hot_fill_color.g
+                + (1.0f - hover_blend_current) * idle_fill_color.g,
+            hover_blend_current * hot_fill_color.b
+                + (1.0f - hover_blend_current) * idle_fill_color.b,
+            hover_blend_current * hot_fill_color.a
+                + (1.0f - hover_blend_current) * idle_fill_color.a);
 
         current_text_color.store_color4f(
-            hover_blend_current * hot_text_color.r + cold * idle_text_color.r,
-            hover_blend_current * hot_text_color.g + cold * idle_text_color.g,
-            hover_blend_current * hot_text_color.b + cold * idle_text_color.b,
-            hover_blend_current * hot_text_color.a + cold * idle_text_color.a);
+            hover_blend_current * hot_text_color.r
+                + (1.0f - hover_blend_current) * idle_text_color.r,
+            hover_blend_current * hot_text_color.g
+                + (1.0f - hover_blend_current) * idle_text_color.g,
+            hover_blend_current * hot_text_color.b
+                + (1.0f - hover_blend_current) * idle_text_color.b,
+            hover_blend_current * hot_text_color.a
+                + (1.0f - hover_blend_current) * idle_text_color.a);
 
         if ((widget_flags & FRONTEND_WIDGET_FLAG_DISABLED) != 0) {
             current_text_color.r *= 0.5f;

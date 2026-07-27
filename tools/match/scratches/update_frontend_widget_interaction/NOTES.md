@@ -284,3 +284,14 @@ Preserving the native byte in a local before the rectangle branch restores the
 exact 647-instruction topology. Focused Wibo improves from 68.32% to 75.73%,
 and the operand audit improves from 93 to 95 clean operands with no unresolved
 or mismatched masks.
+
+## 2026-07-27 mobile-authored color interpolation
+
+iOS `cRBorder::AI()` explicitly recomputes the cold interpolation weight
+around its separate fill-color and text-color writes; Android preserves those
+same two calls, although its decompiler loses their argument expressions. The
+Windows x87 body independently forms `1.0f - hover_blend_current` before each
+four-lane color call rather than preserving one C++ local across both calls.
+Removing that false shared lifetime raises the focused match from 75.73% to
+77.07%. The candidate remains an honest 648 instructions against the
+647-instruction target, and all 96 masked operands are now audited cleanly.

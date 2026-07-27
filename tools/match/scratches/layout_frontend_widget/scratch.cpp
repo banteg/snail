@@ -24,16 +24,12 @@ void FrontendWidget::layout_frontend_widget()
             *(int*)&widget->layout_anchor_x = left_bits;
             *(int*)&widget->layout_anchor_y = top_bits;
         } else if ((result & FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT) != 0) {
-            result = *(int*)&widget->frame_x;
-            int authored_top = *(int*)&widget->frame_y;
             layout_left_ptr = &widget->layout_x;
             layout_top_ptr = &widget->layout_y;
-            *(int*)layout_left_ptr = result;
-            int authored_width = *(int*)&widget->frame_width;
-            *(int*)&widget->layout_width = authored_width;
-            result = *(int*)&widget->frame_height;
-            *(int*)layout_top_ptr = authored_top;
-            *(int*)&widget->layout_height = result;
+            widget->layout_x = widget->frame_x;
+            widget->layout_y = widget->frame_y;
+            widget->layout_width = widget->frame_width;
+            widget->layout_height = widget->frame_height;
         } else {
             layout_top_ptr = &widget->layout_y;
             layout_left_ptr = &widget->layout_x;

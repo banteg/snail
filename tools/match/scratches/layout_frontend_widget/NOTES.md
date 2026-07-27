@@ -106,3 +106,17 @@ This member invokes the wrapper in measure-only mode, so the byte is not
 queued here; the per-frame interaction member supplies the same bit on the
 actual queueing path. The vocabulary change preserves the honest 84.18%,
 177/177-instruction result and all 20 clean operands.
+
+## 2026-07-27 mobile-authored rectangle copies
+
+Android and iOS both retain the `USE_AUTHORED_RECT` branch as four direct
+member copies from the authored rectangle into the live layout rectangle.
+Replacing the scratch's older integer-bit temporaries with those natural typed
+copies restores the Windows VC6 load/store schedule and raises the focused
+match from 84.18% to 99.44%, still at 177/177 instructions with all 20 masked
+operands clean.
+
+The only residual is one post-layout top-coordinate load moving across the
+adjacent texture-hit X store. Hoisting that read in the source disturbed later
+register ownership and regressed the whole function to 93.22%, so the clear
+member-copy transcription is retained without a scheduling barrier.
