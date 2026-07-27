@@ -37,8 +37,8 @@ void SMTracks::load_segment_definitions()
         return;
 
     char* segment_file_name = segment_files[0];
+    int* row_count = &entries[0].row_count;
     do {
-        SegmentCatalogEntry* entry = &entries[segment_index];
         // The authored call passes the text buffer as an unused fourth vararg;
         // the same source bug survives in the symbol-rich iOS build.
         sprintf(file_path, "Segments/%s", segment_file_name, file_buffer);
@@ -61,8 +61,8 @@ void SMTracks::load_segment_definitions()
             value = *id_cursor;
         }
 
-        entry->id = id;
-        sprintf(entry->filename, "%s", segment_file_name);
+        entries[segment_index].id = id;
+        sprintf(entries[segment_index].filename, "%s", segment_file_name);
 
         char* name_cursor = find_case_insensitive_substring("Name:'", file_buffer);
         if (name_cursor == 0) {
@@ -71,7 +71,7 @@ void SMTracks::load_segment_definitions()
         }
 
         name_cursor = find_case_insensitive_substring("'", name_cursor) + 1;
-        char* display_out = entry->display_name;
+        char* display_out = entries[segment_index].display_name;
         if (*name_cursor != '\'') {
             do {
                 *display_out++ = *name_cursor;
@@ -103,7 +103,7 @@ void SMTracks::load_segment_definitions()
         }
 
         short row_index = 0;
-        entry->row_count = 0;
+        *row_count = 0;
         while (data_cursor[0] != '@' || data_cursor[1] != '@' || data_cursor[2] != '@') {
             AuthoredSegmentRow* row = &entries[segment_index].rows[row_index];
             char* glyph_cursor = data_cursor + 1;
@@ -113,7 +113,7 @@ void SMTracks::load_segment_definitions()
             do {
                 char glyph = *glyph_cursor++;
                 entries[segment_index]
-                    .glyph_columns[entry->row_count][lane] = glyph;
+                    .glyph_columns[*row_count][lane] = glyph;
                 ++lane;
             } while (lane < 8);
 
@@ -125,7 +125,7 @@ void SMTracks::load_segment_definitions()
             }
 
             char* option_cursor = glyph_cursor + 1;
-            ++entry->row_count;
+            ++*row_count;
 
             if (*option_cursor == '*')
                 row->flags |= AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER;
@@ -250,6 +250,7 @@ void SMTracks::load_segment_definitions()
         }
 
         ++segment_index;
+        row_count = &entries[segment_index].row_count;
         segment_file_name += 0x80;
     } while (segment_index < count);
 }

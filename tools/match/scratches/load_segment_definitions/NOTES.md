@@ -236,3 +236,28 @@ forms. This is analysis-only ownership recovery: no matcher source or operand
 shape changed, so the honest focused result remains 62.24%, 573/571
 instructions, prefix 5/571, with 88 clean operands and the one shifted call
 mismatch.
+
+## 2026-07-27 cross-port member-cursor recovery
+
+Android and iOS independently keep one advancing `cRSMTracks` entry owner
+through `Import()`. Windows cannot copy their allocated glyph/row banks because
+its entries instead own fixed inline storage, but the native outer loop exposes
+the corresponding durable member cursor: it starts at the first entry's
+`row_count`, advances by the exact `0x4088` entry stride, and derives the
+current header and row banks from the same enclosing `SMTracks`.
+
+Keeping that `row_count` borrow across the outer loop, while spelling the
+header fields through their containing entry and retaining the typed
+`AuthoredSegmentRow*` inside the row loop, substantially shrinks and realigns
+the candidate's divergent peeled file-load tail. The focused result rises from
+62.24% to 65.79%,
+575/571 candidate/target instructions, and the exact prefix grows from 5 to 7;
+all 91 resolved masked operands remain clean.
+
+Two mobile/source-shape probes were rejected rather than imported blindly.
+The mobile empty-option fast path adds five Windows instructions and regresses
+to 61.62%; Windows demonstrably performs the first metadata search immediately
+after terminating `option_text`. Writing `RingSpeed` through a fresh containing
+array expression also expands the exact stack frame and regresses below 55%.
+Those differences remain visible instead of being hidden with a cast or a
+synthetic spill.
