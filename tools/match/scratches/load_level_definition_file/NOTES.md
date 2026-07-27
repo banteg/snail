@@ -200,3 +200,23 @@ transplanted into the Windows layout. The focused Windows match rises from
 183 clean masked operands, no unresolved or mismatched references, and two
 honestly unaudited candidate-only instructions in the still-unmatched cold
 EOF diagnostic.
+
+## 2026-07-27 mobile-supported cursor lifetimes
+
+Android `cRSubTracks::Init(char*)` at `0x850d4` and iOS at `0x36fc4`
+independently preserve the same two parser invariants as the Windows CFG:
+
+- `Length:` is a pre-tested decimal scan. The lower bound controls the loop,
+  while the upper bound exits from its head; the cursor and cached character
+  advance together. Expressing that natural source shape removes VC6's
+  duplicated tail upper-bound comparison.
+- The `GalaxyText:` closing brace is a borrowed end sentinel whose only
+  remaining use is the copy bound two bytes earlier. Narrowing that pointer in
+  place, rather than introducing a second derived owner, restores the native
+  EAX end-sentinel lifetime and the target's ECX input / EDX output copy loop.
+
+These are source and ownership recoveries, not synthetic scheduling hints.
+Focused matching rises from 82.50% to 84.63%: candidate instructions fall from
+943 to 941 against 926 target instructions, all 183 masked operands remain
+clean, and the only two unaudited operands remain the honest candidate-only
+cold EOF diagnostic.

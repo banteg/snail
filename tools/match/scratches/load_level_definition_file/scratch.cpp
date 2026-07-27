@@ -103,11 +103,11 @@ void SubTracks::load_level_definition_file(char* filename)
                                 + galaxy_route_offset,
                             "TEXT ERROR } MISSING");
                     } else {
-                        char* text_end = close_brace - 2;
+                        close_brace -= 2;
                         char* text_out =
                             g_game->subgame.galaxy.route_slots[0].record.description_text
                                 + galaxy_route_offset;
-                        while (cursor < text_end) {
+                        while (cursor < close_brace) {
                             if (*cursor < 32) {
                                 *text_out++ = '>';
                                 while (*cursor < 32)
@@ -133,14 +133,14 @@ void SubTracks::load_level_definition_file(char* filename)
         cursor = find_case_insensitive_substring(":", cursor) + 1;
         random_length = 0;
         ch = *cursor;
-        if (ch != 'a' && ch != 'A' && ch >= '0') {
-            do {
+        if (ch != 'a' && ch != 'A') {
+            while (ch >= '0') {
                 if (ch > '9')
                     break;
                 cursor++;
                 random_length = ch + 10 * random_length - '0';
                 ch = *cursor;
-            } while (*cursor >= '0');
+            }
         }
     } else {
         random_enabled = 0;
