@@ -23058,10 +23058,9 @@
       "windows_name": "load_object_definition",
       "windows_size": 1104,
       "status": "verified",
-      "android_symbol": "cRObject::Load(char*)",
-      "android_symbol_evidence": "exact-demangled-symbol",
-      "ios_symbol": "cRObject::Load(char*)",
-      "source_object": "RObject.o",
+      "android_symbol": "ObjectTextLoad(char*, cRObject*)",
+      "ios_symbol": "ObjectTextLoad(char*, cRObject*)",
+      "source_object": "ObjectProc.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1

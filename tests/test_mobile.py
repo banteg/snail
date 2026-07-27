@@ -590,6 +590,68 @@ def test_mobile_matrix_premultiply_recovers_authored_member() -> None:
     assert "no standalone `PreMultiply` export" in notes
 
 
+def test_mobile_object_text_loader_rejects_binary_object_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    loader = entries["load_object_definition"]
+    assert loader["status"] == "verified"
+    assert loader["confidence"] == "high"
+    assert loader["source_object"] == "ObjectProc.o"
+    assert loader["android_symbol"] == (
+        "ObjectTextLoad(char*, cRObject*)"
+    )
+    assert loader["ios_symbol"] == loader["android_symbol"]
+    assert loader["android_body_count"] == 1
+    assert loader["ios_body_count"] == 1
+    assert "ObjectTextLoad" in (
+        functions_by_name["load_object_definition"]["aliases"]
+    )
+    assert "separate binary object loader" in (
+        functions_by_name["load_object_definition"]["description"]
+    )
+
+    for port, path in (
+        (
+            "android",
+            (
+                "analysis/decompile/android/functions/"
+                "0003c7ec-_Z14ObjectTextLoadPcP8cRObject.c"
+            ),
+        ),
+        (
+            "ios",
+            (
+                "analysis/decompile/ios/functions/"
+                "00016b78-_Z14ObjectTextLoadPcP8cRObject.c"
+            ),
+        ),
+    ):
+        body = (repo_root / path).read_text(encoding="utf-8")
+        assert "%s/_Object.txt" in body, port
+        assert "[VERTEX START]" in body, port
+        assert "[FACEQUAD START]" in body, port
+        assert "RTextExtractFloat" in body, port
+
+    notes = (
+        repo_root
+        / "tools/match/scratches/load_object_definition/NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "`cRObject::Load(char*)` is a different" in notes
+    assert "`ObjectProc.o` ownership" in notes
+
+
 def test_mobile_rng_pair_recovers_authored_contract() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

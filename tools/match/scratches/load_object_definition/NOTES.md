@@ -91,12 +91,12 @@ were introduced to conceal that residual.
   51.33% to 54.77%, extends the exact prefix from 27 to 30 instructions, and
   improves the masked audit from 33 clean / 14 mismatched to 36 clean / 12
   alignment-dependent mismatches, while retaining the exact `0x23c` frame.
-- The symbol-preserving iOS method is `cRObject::Load(char*)`. Its epilogue at
-  `0x13f3c` restores registers and returns without establishing `r0`, while
-  every Windows caller discards `eax`. The Windows cdecl helper is therefore a
-  staticized void load into the borrowed `Object*`; the final text cursor left
-  in `eax` is incidental. Promoting the checked-in declarations and scratch to
-  `void` is codegen-neutral at the retained 54.77% score.
+- The expanded Android and iOS corpora preserve the real global owner as
+  `ObjectTextLoad(char*, cRObject*)`. Both mobile epilogues return without an
+  authored result, while every Windows caller discards `eax`. The Windows cdecl
+  helper is therefore a void load into the borrowed `Object*`; the final text
+  cursor left in `eax` is incidental. Promoting the checked-in declarations and
+  scratch to `void` is codegen-neutral at the retained 54.77% score.
 - A previewed live Binary Ninja prototype update still read back as the stale
   `int32_t()` and was reverted by the bridge. The checked-in Binary Ninja
   header now carries the correct void declaration, but the repeatable sync
@@ -159,3 +159,21 @@ The refreshed IDA artifact now exposes the authored void cdecl ABI, installs
 vertices and facequads through the canonical borrowed `Object*`, and resolves
 textures through the shared registry. This replaces the stale `char*`/`int*`
 parameters and incidental return without changing the exact matcher source.
+
+## 2026-07-27 mobile owner correction
+
+The expanded Android and iOS decompile corpora disambiguate two previously
+conflated loaders:
+
+- `ObjectTextLoad(char*, cRObject*)` is the direct cross-port counterpart of
+  Windows `load_object_definition`. All three load `%s/_Object.txt`, parse the
+  same `[VERTEX START]` and `[FACEQUAD START]` sections through the RText helper
+  family, allocate geometry on the borrowed object, and resolve texture paths.
+- `cRObject::Load(char*)` is a different, much larger binary object loader. It
+  consumes typed binary records, installs animation and render buffers, and
+  does not parse `_Object.txt`.
+
+In both mobile link layouts, `ObjectTextLoad` follows the ObjectProc function
+family and precedes the next source family, recovering `ObjectProc.o` ownership.
+The verified crosswalk and gameplay alias now record the global
+`ObjectTextLoad` identity; no Windows code or ABI changed.

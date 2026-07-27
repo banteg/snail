@@ -3639,12 +3639,11 @@
     {
       "address": "0x44c420",
       "windows_name": "load_object_definition",
-      "ios_symbol": "cRObject::Load(char*)",
-      "source_object": "RObject.o",
+      "ios_symbol": "ObjectTextLoad(char*, cRObject*)",
+      "source_object": "ObjectProc.o",
       "confidence": "high",
-      "notes": "Both populate the borrowed Object/cRObject slot. The iOS epilogue establishes no return value and every Windows caller discards EAX, proving the Windows cdecl helper is a staticized void load rather than a cursor-returning API.",
-      "android_symbol": "cRObject::Load(char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "notes": "Android and iOS both preserve the exact global ObjectTextLoad owner immediately after their ObjectProc families: it loads %s/_Object.txt, parses the VERTEX and FACEQUAD sections through the RText helpers, and populates the borrowed cRObject slot. Mobile cRObject::Load(char*) is a distinct binary object loader and is not the Windows counterpart.",
+      "android_symbol": "ObjectTextLoad(char*, cRObject*)"
     },
     {
       "address": "0x44cac0",
