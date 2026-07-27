@@ -138,3 +138,30 @@ blend mode instead of reverting to integer low-word aliases and repeated
 This is an analysis ownership correction only. The matching source remains at
 the honest 67.28%, 694/712-instruction frontier with all 61 operands clean;
 no return-shaped source dependency or register coercion was introduced.
+
+## 2026-07-27 mobile renderer source-shape recovery
+
+The Android and iOS `cRBorder::Draw()` bodies preserve the same blend gate,
+slider, sprite, shadow, nine-slice, and delayed-glow ordering as Windows. They
+also bound where the ports genuinely differ: mobile slider UVs come from the
+platform `gSpriteReference` table, while the Windows function itself proves
+hard-coded `0..slider` and `slider..1` UV spans. No mobile-only table or
+synthetic Windows owner was introduced.
+
+Three cross-checked lifetime changes recover native Windows code shape:
+
+- one branch-assigned blend value is copied after the render-mode gate for the
+  longer nine-slice lifetime, explaining the native stack value and register
+  reload without register directives;
+- the highlighted extended-sprite path keeps authored `if`/`else` queue calls,
+  allowing VC6 to share argument setup and select the texture immediately
+  before the call;
+- the optional shadow owns a newly computed half-edge after the first sprite
+  queue call, as both mobile decompilers show, rather than borrowing the
+  earlier padding value across an external call.
+
+Together these changes move the focused result from 67.28%, 694/712
+instructions, prefix 3/712, with 65 clean and four unaudited operands to
+85.13%, 707/712 instructions, prefix 16/712, with all 68 masked operands
+audited and clean. Direct member-only slider experiments and declaration-order
+changes regressed the global schedule and were rejected.

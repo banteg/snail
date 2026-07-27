@@ -42,16 +42,14 @@ void FrontendWidget::draw_frontend_widget()
         return;
 
     int blend_mode;
-    int glow_blend_mode;
     if ((g_runtime_config.render_flags & 0x80) == 0) {
         blend_mode = 0;
         white.a = 1.0f;
         reserved_color_0.a = 1.0f;
-        glow_blend_mode = blend_mode;
     } else {
-        glow_blend_mode = 3;
-        blend_mode = glow_blend_mode;
+        blend_mode = 3;
     }
+    int glow_blend_mode = blend_mode;
 
     float width = layout_width;
     float height = layout_height;
@@ -105,25 +103,38 @@ void FrontendWidget::draw_frontend_widget()
                 wobble = wobble * -1.0f;
         }
 
-        int texture = texture_id;
-        if ((widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0)
-            texture = sprite_hot_texture_id;
-
         float pad = border_edge * 0.5f;
-        queue_axis_aligned_textured_quad_uv(
-            texture,
-            texture_hit_x + wobble - pad,
-            texture_hit_y - pad,
-            texture_hit_width + border_edge,
-            texture_hit_height + border_edge,
-            0x1000000,
-            &current_text_color,
-            0.0f,
-            0.0f,
-            1.0f,
-            1.0f,
-            texture_layer,
-            0);
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0) {
+            queue_axis_aligned_textured_quad_uv(
+                sprite_hot_texture_id,
+                texture_hit_x + wobble - pad,
+                texture_hit_y - pad,
+                texture_hit_width + border_edge,
+                texture_hit_height + border_edge,
+                0x1000000,
+                &current_text_color,
+                0.0f,
+                0.0f,
+                1.0f,
+                1.0f,
+                texture_layer,
+                0);
+        } else {
+            queue_axis_aligned_textured_quad_uv(
+                texture_id,
+                texture_hit_x + wobble - pad,
+                texture_hit_y - pad,
+                texture_hit_width + border_edge,
+                texture_hit_height + border_edge,
+                0x1000000,
+                &current_text_color,
+                0.0f,
+                0.0f,
+                1.0f,
+                1.0f,
+                texture_layer,
+                0);
+        }
         return;
     }
 
@@ -146,10 +157,11 @@ void FrontendWidget::draw_frontend_widget()
 
         if (sprite_shadow_offset > 0.0f) {
             tColour shadow_color;
+            float shadow_pad = border_edge * 0.5f;
             queue_axis_aligned_textured_quad_uv(
                 texture_id,
-                texture_hit_x + sprite_shadow_offset - pad,
-                texture_hit_y + sprite_shadow_offset - pad,
+                texture_hit_x + sprite_shadow_offset - shadow_pad,
+                texture_hit_y + sprite_shadow_offset - shadow_pad,
                 texture_hit_width + border_edge,
                 texture_hit_height + border_edge,
                 0x1000000,
