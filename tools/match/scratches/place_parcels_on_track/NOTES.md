@@ -496,3 +496,33 @@ but produce a `0x218` frame and regress the global comparison to 39.22%
 frame. Moving the matrix or angle declaration outside the branch does not
 change the accepted codegen, so no artificial padding or forced lifetime is
 kept.
+
+## Mobile-backed glyph staging and catalog-target lifetime (2026-07-27)
+
+The verified Android and iOS `cRSubGame::PlaceParcels()` bodies close the
+remaining glyph value semantics: a matching digit contributes a `tVector`
+whose lateral coordinate is `(float)lane - 4.0f + 0.5f` and whose other two
+lanes are zero, then publishes that value to `gGroup0` for digit 0 or `gGroup`
+for a positive set. Windows preserves those same values but, unlike the mobile
+ports, materializes one branch-specific `tVector` at `esp+0x3c` and another at
+`esp+0x48` before the complete three-dword copies into the global banks.
+
+The earlier inline-vector probe was incomplete because it treated the catalog
+set index and the later 80-percent placement target as independent source
+locals. Windows reuses the `esp+0x24` scalar: it counts set IDs from 0 through
+9 during catalog construction, then receives
+`80 * parcel_count / 100 - final_segment_max_set_size` before the selection
+loop. IDA exposes that exact dual role as `v73`. Keeping one honest
+`set_or_target` lifetime lets the two normal `Vector3(...)` assignments occupy
+exactly the native 24 bytes without padding or forced register choices.
+
+Focused Wibo improves from 41.07% to 43.59%. The candidate is 641/639
+instructions, the exact `0x214` native frame and both glyph temporary offsets
+are recovered, the exact prefix grows from 0 to 7 instructions, and the
+masked-reference audit improves from 56 clean / 88 unaudited to
+62 clean / 70 unaudited with no unresolved or mismatched references. The
+remaining catalog residual is the surrounding EBX/EBP/EDI rotation and broader
+scan source shape, not missing vector ownership. A separately named pair of
+branch locals remains rejected at 37.43%; an explicit outer segment cursor was
+also score-neutral and emitted its borrow before the native zero-segment gate,
+so neither spelling is retained.

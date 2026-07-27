@@ -3,7 +3,8 @@
 // records + character grid into two candidate banks (digit 1-9 sets, digit-0
 // singles), then randomly place sets until 80% of the requirement, digit-0
 // singles for the rest, compacting the banks per draw, and finally project
-// flagged rows onto their attachments.
+// flagged rows onto their attachments. The catalog set index is reused as the
+// post-scan set-placement target, matching the native scalar lifetime.
 
 #include <stddef.h>
 
@@ -41,6 +42,7 @@ void SubgameRuntime::place_parcels_on_track()
     int zero_entry_count = 0;
     int zero_candidate_total = 0;
     int set_entry_count = 0;
+    int set_or_target;
     int last_segment_max_set_size;
 
     for (int segment = 0; segment < level_definition.segment_count; ++segment) {
@@ -49,12 +51,12 @@ void SubgameRuntime::place_parcels_on_track()
             (SubSegmentParcelScanAnchor*)
                 &level_definition.segment_slots[segment].row_count;
         min_set_sizes[segment] = 10000;
-        for (int set = 0; set < 10; ++set) {
+        for (set_or_target = 0; set_or_target < 10; ++set_or_target) {
             for (int row = 0; row < record->row_count; ++row) {
                 AuthoredSegmentRow* authored = &record->rows[row];
                 if ((authored->flags & AUTHORED_SEGMENT_ROW_FLAG_PARCEL) != 0
-                    && authored->parcel_set_id == set) {
-                    if (set == 0) {
+                    && authored->parcel_set_id == set_or_target) {
+                    if (set_or_target == 0) {
                         g_zero_parcel_buckets[zero_entry_count].segment_index =
                             segment;
                         g_zero_parcel_buckets[zero_entry_count]
@@ -80,13 +82,14 @@ void SubgameRuntime::place_parcels_on_track()
                             .candidates[g_parcel_set_buckets[set_entry_count]
                                             .candidate_count]
                             .position = *authored->parcel_position();
-                        g_parcel_set_buckets[set_entry_count].set_id = set;
+                        g_parcel_set_buckets[set_entry_count].set_id =
+                            set_or_target;
                         ++g_parcel_set_buckets[set_entry_count].candidate_count;
                     }
                 }
                 for (int lane = 0; lane < 8; ++lane) {
-                    if (record->glyph_rows[lane][row] == set + 48) {
-                        if (set == 0) {
+                    if (record->glyph_rows[lane][row] == set_or_target + 48) {
+                        if (set_or_target == 0) {
                             g_zero_parcel_buckets[zero_entry_count].segment_index =
                                 segment;
                             g_zero_parcel_buckets[zero_entry_count]
@@ -96,16 +99,8 @@ void SubgameRuntime::place_parcels_on_track()
                             g_zero_parcel_buckets[zero_entry_count]
                                 .candidates[g_zero_parcel_buckets[zero_entry_count]
                                                 .candidate_count]
-                                .position.x =
-                                    (float)lane - 4.0f + 0.5f;
-                            g_zero_parcel_buckets[zero_entry_count]
-                                .candidates[g_zero_parcel_buckets[zero_entry_count]
-                                                .candidate_count]
-                                .position.y = 0.0f;
-                            g_zero_parcel_buckets[zero_entry_count]
-                                .candidates[g_zero_parcel_buckets[zero_entry_count]
-                                                .candidate_count]
-                                .position.z = 0.0f;
+                                .position = Vector3(
+                                    (float)lane - 4.0f + 0.5f, 0.0f, 0.0f);
                             g_zero_parcel_buckets[zero_entry_count].set_id = 0;
                             ++g_zero_parcel_buckets[zero_entry_count].candidate_count;
                             ++zero_entry_count;
@@ -120,17 +115,10 @@ void SubgameRuntime::place_parcels_on_track()
                             g_parcel_set_buckets[set_entry_count]
                                 .candidates[g_parcel_set_buckets[set_entry_count]
                                                 .candidate_count]
-                                .position.x =
-                                    (float)lane - 4.0f + 0.5f;
-                            g_parcel_set_buckets[set_entry_count]
-                                .candidates[g_parcel_set_buckets[set_entry_count]
-                                                .candidate_count]
-                                .position.y = 0.0f;
-                            g_parcel_set_buckets[set_entry_count]
-                                .candidates[g_parcel_set_buckets[set_entry_count]
-                                                .candidate_count]
-                                .position.z = 0.0f;
-                            g_parcel_set_buckets[set_entry_count].set_id = set;
+                                .position = Vector3(
+                                    (float)lane - 4.0f + 0.5f, 0.0f, 0.0f);
+                            g_parcel_set_buckets[set_entry_count].set_id =
+                                set_or_target;
                             ++g_parcel_set_buckets[set_entry_count].candidate_count;
                         }
                     }
@@ -152,7 +140,7 @@ void SubgameRuntime::place_parcels_on_track()
     }
 
     int required = level_definition.parcel_count;
-    int set_target = 80 * required / 100 - last_segment_max_set_size;
+    set_or_target = 80 * required / 100 - last_segment_max_set_size;
     int reachable = zero_candidate_total;
     for (int check = 0; check < level_definition.segment_count; ++check) {
         if (min_set_sizes[check] != 10000)
@@ -161,12 +149,12 @@ void SubgameRuntime::place_parcels_on_track()
     if (reachable < required)
         report_errorf("Parcel Allocation could fail in %s.  Add more parcel Sets",
                       level_definition.level_display_name);
-    if (level_definition.parcel_count - set_target > zero_candidate_total)
+    if (level_definition.parcel_count - set_or_target > zero_candidate_total)
         report_errorf("Parcel Allocation could fail in %s. Add more 0 parcels ",
                       level_definition.level_display_name);
 
     int placed = 0;
-    if (set_target > 0) {
+    if (set_or_target > 0) {
         while (set_entry_count > 0) {
             int picked = (int)random_float_below((float)set_entry_count, "P1");
             placed += g_parcel_set_buckets[picked].candidate_count;
@@ -219,7 +207,7 @@ void SubgameRuntime::place_parcels_on_track()
                     --scan;
                 }
             }
-            if (placed >= set_target)
+            if (placed >= set_or_target)
                 break;
         }
     }

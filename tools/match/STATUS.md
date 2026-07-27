@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**532/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93897/294937** bytes (**31.84%**) are proof-grade, and overall fuzzy is **78.59%**.
+**532/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93897/294937** bytes (**31.84%**) are proof-grade, and overall fuzzy is **78.61%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -691,7 +691,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 635/663 | 47.92% | 15/663 | 33 ok |  | core |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 559/579 | 44.99% | 7/579 | 39 ok |  | core |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1228/1245 | 31.70% | 0/1245 | 1 mismatch, 115 unaudited, 78 ok |  | core |
-| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 627/639 | 41.07% | 0/639 | 88 unaudited, 56 ok |  | core |
+| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 641/639 | 43.59% | 7/639 | 70 unaudited, 62 ok |  | core |
 
 ## Excluded: Replaceable Platform (120)
 
