@@ -306,6 +306,13 @@ def test_mobile_utility_owner_mappings_are_exact_and_verified() -> None:
         )
         assert entry.get("ios_symbol") == ios_symbol
 
+    input_ok = entries["update_input_ok"]
+    assert input_ok["status"] == "verified"
+    assert input_ok["confidence"] == "high"
+    assert input_ok["android_symbol"] == "cRInputOK::AI()"
+    assert "android_symbol_evidence" not in input_ok
+    assert "ios_symbol" not in input_ok
+
 
 def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     result = main(

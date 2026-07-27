@@ -108,7 +108,10 @@
     {
       "address": "0x4034d0",
       "name": "update_input_ok",
-      "description": "Exact void layout helper for the 0x24-byte InputOkState overlay reused at FrontendWidget::tooltip +0x1c. It borrows the source and manager-owned OK widgets at +0x1c/+0x20; both native callers ignore EAX, whose final source-widget value is incidental."
+      "aliases": [
+        "cRInputOK_AI"
+      ],
+      "description": "Exact void Windows cRInputOK::AI() layout method for the 0x24-byte owner reused at FrontendWidget::tooltip +0x1c. Android preserves the same borrowed source/OK widget pair at +0x1c/+0x20, flag-4/flag-8 placement formulas, and top/anchor copies; cRInputOK::Init() calls AI directly. Both Windows callers ignore EAX, whose final source-widget value is incidental."
     },
     {
       "address": "0x403560",

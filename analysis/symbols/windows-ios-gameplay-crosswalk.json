@@ -178,6 +178,14 @@
       "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x4034d0",
+      "windows_name": "update_input_ok",
+      "android_symbol": "cRInputOK::AI()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the exact 0x24-byte cRInputOK owner with borrowed source and OK widgets at +0x1c/+0x20, the same flag-4 right and flag-8 left placement formulas, and the same top and anchor copies. cRInputOK::Init() directly calls AI. No iOS cRInputOK export survives, so no iOS mapping or cRBorder field offsets transfer."
+    },
+    {
       "address": "0x403560",
       "windows_name": "initialize_input_ok",
       "android_symbol": "cRInputOK::Init()",

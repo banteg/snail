@@ -14,11 +14,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 549,
-    "unverified_entries": 236,
-    "verified_android_symbols": 541,
+    "verified_entries": 550,
+    "unverified_entries": 235,
+    "verified_android_symbols": 542,
     "verified_ios_symbols": 441,
-    "available_android_mappings": 541,
+    "available_android_mappings": 542,
     "available_ios_mappings": 403
   },
   "entries": [
@@ -480,39 +480,11 @@
       "address": "0x4034d0",
       "windows_name": "update_input_ok",
       "windows_size": 144,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRInputOK::AI()",
-          "score": 0.9349,
-          "name_score": 1.0,
-          "size_score": 0.8372
-        },
-        {
-          "symbol": "cRInputOK::Init()",
-          "score": 0.7921,
-          "name_score": 0.672,
-          "size_score": 0.9722
-        },
-        {
-          "symbol": "cRGameInput::AI()",
-          "score": 0.7665,
-          "name_score": 0.6109,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cROverlay::AI()",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellInputPost(int, int*, float*, float*, float*, float*, float*, float*, float*)",
-          "score": 0.6667,
-          "name_score": 0.5,
-          "size_score": 0.9167
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRInputOK::AI()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRGameInput::AI()",
@@ -533,16 +505,16 @@
           "size_score": 0.9167
         },
         {
-          "symbol": "OFSqlQuery::getInt(char const*)",
-          "score": 0.6304,
-          "name_score": 0.4211,
-          "size_score": 0.9444
+          "symbol": "RShellInit()",
+          "score": 0.648,
+          "name_score": 0.6,
+          "size_score": 0.72
         },
         {
-          "symbol": "OFDelegate::operator=(OFDelegate const&)",
-          "score": 0.6293,
-          "name_score": 0.4335,
-          "size_score": 0.9231
+          "symbol": "cRHelp::Init()",
+          "score": 0.6478,
+          "name_score": 0.45,
+          "size_score": 0.9444
         }
       ]
     },
