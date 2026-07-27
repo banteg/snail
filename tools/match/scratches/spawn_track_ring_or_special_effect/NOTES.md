@@ -369,3 +369,16 @@ activation likewise materialized the `SubRing*` base too early and regressed to
 owner-lives-snapshot store order; naming either value explicitly compiles
 identically, while reversing the source statements perturbs argument scheduling.
 No artificial sequencing is retained.
+
+## 2026-07-27 cross-port activation order
+
+Android and iOS independently preserve the authored AddRing lifecycle:
+dispatch the selected kind, seed the owner-lives snapshot, and activate the
+chosen parent. Their bodies support the existing `SubRing` owner and field
+meanings, but platform register schedules do not resolve Windows' final
+independent state-versus-lives store ordering.
+
+A scan-pointer source probe expanded the scheduling difference and regressed
+focused Wibo to 73.82%, so it was removed. The retained source remains at
+99.71%, 347/347 instructions, with all 75 masked operands clean and no forced
+ordering.

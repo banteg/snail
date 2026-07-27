@@ -522,7 +522,13 @@
     {
       "address": "0x408410",
       "name": "initialize_border_record",
-      "description": "Constructs one 0x724-byte front-end border/widget pool record by seeding the shared BOD header, no-op-constructing the constructor-proven color/style blocks, and installing the front-end widget callback table. `construct_game_runtime` uses it for the 150-entry `BorderManager::borders` pool at `game + 0x11d0`."
+      "description": "Constructs one 0x724-byte front-end border/widget pool record by seeding the shared BOD header, no-op-constructing the constructor-proven color/style blocks, and installing the front-end widget callback table. `construct_game_runtime` uses it for the 150-entry `BorderManager::borders` pool at `game + 0x11d0`.",
+      "mobile_candidate_rejections": [
+        {
+          "symbol": "cRBorder::X0()",
+          "reason": "The Android body computes one floating-point border coordinate; it is not the Windows 0x724-byte per-record constructor."
+        }
+      ]
     },
     {
       "address": "0x408470",
@@ -591,12 +597,28 @@
     {
       "address": "0x408610",
       "name": "initialize_sub_lazer_runtime",
-      "description": "Exact constructor wrapper for one authored `SubLazer` (`cRSubLazer` cross-port): constructs the renderable-body prefix, installs the table whose entry is update_sub_lazer_projectile, and returns the receiver. The 20 inline 0xb0-byte records owned by SubLazerManager total the native 0xdc0 size ledger."
+      "description": "Exact constructor wrapper for one authored `SubLazer` (`cRSubLazer` cross-port): constructs the renderable-body prefix, installs the table whose entry is update_sub_lazer_projectile, and returns the receiver. The 20 inline 0xb0-byte records owned by SubLazerManager total the native 0xdc0 size ledger.",
+      "mobile_candidate_rejections": [
+        {
+          "symbol": "cRSubLazerManager::Init()",
+          "reason": "The Android manager reset clears all 20 actor states and maps to initialize_sub_lazer_pool at 0x441650, not this per-record constructor."
+        }
+      ]
     },
     {
       "address": "0x408630",
       "name": "initialize_salt_hazard_runtime",
-      "description": "Exact constructor wrapper for one authored `Salt` (`cRSalt` cross-port): constructs the renderable-body prefix, installs the table whose entry is update_salt_hazard, and returns the receiver. SaltManager owns 40 inline 0x98-byte records whose 0x17c0 total matches the native ledger."
+      "description": "Exact constructor wrapper for one authored `Salt` (`cRSalt` cross-port): constructs the renderable-body prefix, installs the table whose entry is update_salt_hazard, and returns the receiver. SaltManager owns 40 inline 0x98-byte records whose 0x17c0 total matches the native ledger.",
+      "mobile_candidate_rejections": [
+        {
+          "symbol": "cRSaltManager::Init()",
+          "reason": "The Android manager reset clears all 40 hazard states and maps to initialize_salt_hazard_pool at 0x441540, not this per-record constructor."
+        },
+        {
+          "symbol": "cRSubLazerManager::Init()",
+          "reason": "This is the different SubLazer manager reset already mapped to initialize_sub_lazer_pool at 0x441650."
+        }
+      ]
     },
     {
       "address": "0x408650",
@@ -1323,7 +1345,7 @@
     {
       "address": "0x417af0",
       "name": "mini_delete_high_score_entry",
-      "description": "Deletes a canceled pending top-ten row by shifting later records upward through the active bank. Cross-port iOS symbols match this owner method to `cRSubHighScore::MiniDelete(int)`."
+      "description": "Windows `cRSubHighScore::MiniDelete(int)` deletes a canceled pending top-ten row by shifting later 0x1fac0-byte `SubSolution` records upward through the active bank. Android and iOS retain the exact class and method name but delete a per-entry file and clear a compact platform record instead, so they establish the owner vocabulary rather than the Windows storage algorithm."
     },
     {
       "address": "0x417b50",
@@ -2740,7 +2762,13 @@
     {
       "address": "0x43af60",
       "name": "begin_post_follow_carryover",
-      "description": "Begins Goldy's pending post-follow carryover window. If the active follow byte is still set, it copies `follow_state.orientation_b` into `post_follow_exit_roll` and the live attachment record's installed-heading bits into `post_follow_heading_carryover`, clears `follow_state.active`, sets `attachment_exit_pending`, latches player z into `attachment_exit_anchor_z`, and zeroes the exit-progress and gate bytes. Windows `cdb` confirmed this helper can also run after the active follow byte has already been cleared, so it is one real exit lane but not the only attachment-retirement path."
+      "description": "Begins Goldy's pending post-follow carryover window. If the active follow byte is still set, it copies `follow_state.orientation_b` into `post_follow_exit_roll` and the live attachment record's installed-heading bits into `post_follow_heading_carryover`, clears `follow_state.active`, sets `attachment_exit_pending`, latches player z into `attachment_exit_anchor_z`, and zeroes the exit-progress and gate bytes. Windows `cdb` confirmed this helper can also run after the active follow byte has already been cleared, so it is one real exit lane but not the only attachment-retirement path.",
+      "mobile_candidate_rejections": [
+        {
+          "symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
+          "reason": "Both mobile bodies initialize a new attachment-follow session and map exactly to begin_track_attachment_follow_state at 0x420c40, not this later carryover helper."
+        }
+      ]
     },
     {
       "address": "0x43afd0",

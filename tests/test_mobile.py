@@ -254,6 +254,16 @@ def test_complete_crosswalk_covers_manifest_once() -> None:
             candidate["symbol"] not in rejected
             for candidate in game_init[f"{port}_candidates"]
         )
+    for entry in crosswalk["entries"]:
+        rejected = {
+            rejection["symbol"]
+            for rejection in entry.get("mobile_candidate_rejections", ())
+        }
+        for port in ("android", "ios"):
+            assert all(
+                candidate["symbol"] not in rejected
+                for candidate in entry.get(f"{port}_candidates", ())
+            )
 
 
 def test_verified_mobile_symbols_resolve_to_tracked_bodies() -> None:

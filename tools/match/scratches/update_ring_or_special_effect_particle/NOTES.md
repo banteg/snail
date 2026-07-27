@@ -177,3 +177,12 @@ tracked guard accepts that honest folded rendering instead of asserting false
 direct-field recovery.
 The matcher source and bytes remain untouched at the honest 96.36%; the sole
 residual is still the documented VC6 address-materialization schedule.
+
+## 2026-07-27 mobile child-owner confirmation
+
+Android's ring-child updater independently preserves the borrowed parent,
+inherited parent transform position, orbit phase/radius lanes, sprite-backed
+child position, and stationary slow-effect exception. It supports the current
+`SubRingStar -> SubRing` ownership graph but not Windows' final address
+materialization order. Direct-write source probes regressed the focused match,
+so the honest 96.36%, 55/55-instruction source remains unchanged.

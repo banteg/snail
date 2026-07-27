@@ -571,3 +571,18 @@ The replay now splits the pointer-producing definition at `0x4399b8`
 exact source without falsely retyping the sibling integer. This is
 analysis-only; the honest 79.75%, 1036/1033 frontier and its two jump-table
 identity mismatches remain unchanged.
+
+## 2026-07-27 dual-mobile ring dispatch
+
+Android and iOS `cRSubGame::AI()` preserve the same four-bit absence ladder as
+the Windows row-event path. The first available bit wins in this order:
+normal ring -> kind 5, power-up ring -> kind 8, explode ring -> kind 6, and
+slow ring -> kind 7. iOS selects one kind before one shared AddRing call;
+Android converges four branches on its call. Together they prove the authored
+ring-kind semantics and priority without transferring either port's compiler
+layout.
+
+Two natural Windows probes were measured and removed. Selecting a shared kind
+before one spawner call regressed focused Wibo from 79.94% to 58.14%; spelling
+the priority as an explicit nested absence ladder reached only 78.40%. The
+retained Windows source is therefore still the best honest VC6 shape.

@@ -225,3 +225,15 @@ arguments in IDA instead of collapsing the merged call to
 matcher declaration is aligned with it and remains byte-stable at **97.25%**,
 218/218 instructions, prefix 82/218, with all 24 references clean; the only
 residuals remain the three documented commutative x87 add orderings.
+
+## 2026-07-27 dual-mobile integration audit
+
+Android and iOS `cRSubLazer::AI()` preserve the same active-state motion,
+primary/secondary path probes, Kill lifecycle, and manager-owned actor
+semantics. They also confirm that the three remaining Windows differences are
+commutative vector integration schedules rather than missing behavior.
+
+Natural `Vector3::operator+` and direct scalar-integration probes changed VC6
+register and x87 scheduling without improving the match, so both were removed.
+The honest Windows baseline remains 97.25%, 218/218 instructions, prefix
+82/218, and all 24 masked operands clean.

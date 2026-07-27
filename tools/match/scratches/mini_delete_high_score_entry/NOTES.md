@@ -79,3 +79,17 @@ Match status: 84.85% (33/33 instructions, 15/33 exact prefix).
 - No matching-source change is justified. Focused matching remains honestly at
   84.85%, 33/33 instructions, prefix 15/33, with no masked operands; the
   remaining address-folding/register-allocation residual stays visible.
+
+## 2026-07-27 cross-port version drift
+
+Android and iOS both export the exact
+`cRSubHighScore::MiniDelete(int)` symbol, so the class and method ownership are
+real. Their bodies are not source templates for Windows: Android derives a
+per-entry filename, deletes it, and clears a compact roughly 0x38-byte record;
+iOS selects `HS_`, `TT_`, or `SL_` filenames, deletes the file, and clears its
+compact record. Windows instead shifts later 0x1fac0-byte `SubSolution` values
+through the borrowed active bank.
+
+The crosswalk now records this as a verified owner identity with
+version-specific storage semantics. No mobile size, offset, file-deletion
+sequence, or record-clearing algorithm is claimed for the Windows source.

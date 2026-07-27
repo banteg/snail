@@ -4577,7 +4577,7 @@
       "ios_symbol": "cRSubHighScore::MiniDelete(int)",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "The Windows thiscall receiver is the embedded SubHighScore/cRSubHighScore owner; the only caller is the Cancel branch of cRHighScore::AI().",
+      "notes": "The exact symbol verifies the embedded SubHighScore/cRSubHighScore owner and MiniDelete method identity; the only Windows caller is the Cancel branch of cRHighScore::AI(). The implementation is version-specific: Windows shifts later 0x1fac0-byte SubSolution records through its active bank, while Android and iOS delete a per-entry file and clear a compact platform record. No mobile record size, offset, or deletion algorithm transfers to Windows.",
       "android_symbol": "cRSubHighScore::MiniDelete(int)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },

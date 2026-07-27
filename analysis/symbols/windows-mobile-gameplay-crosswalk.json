@@ -3942,13 +3942,13 @@
       "windows_name": "initialize_border_record",
       "windows_size": 96,
       "status": "unverified",
-      "android_candidates": [
+      "mobile_candidate_rejections": [
         {
           "symbol": "cRBorder::X0()",
-          "score": 0.8733,
-          "name_score": 0.9,
-          "size_score": 0.8333
-        },
+          "reason": "The Android body computes one floating-point border coordinate; it is not the Windows 0x724-byte per-record constructor."
+        }
+      ],
+      "android_candidates": [
         {
           "symbol": "cRBorderManager::ActivateBorders()",
           "score": 0.755,
@@ -3972,6 +3972,12 @@
           "score": 0.705,
           "name_score": 0.675,
           "size_score": 0.75
+        },
+        {
+          "symbol": "cRBorder::XLeft()",
+          "score": 0.6933,
+          "name_score": 0.6,
+          "size_score": 0.8333
         }
       ],
       "ios_candidates": [
@@ -4852,13 +4858,13 @@
       "windows_name": "initialize_sub_lazer_runtime",
       "windows_size": 32,
       "status": "unverified",
-      "android_candidates": [
+      "mobile_candidate_rejections": [
         {
           "symbol": "cRSubLazerManager::Init()",
-          "score": 0.805,
-          "name_score": 0.675,
-          "size_score": 1.0
-        },
+          "reason": "The Android manager reset clears all 20 actor states and maps to initialize_sub_lazer_pool at 0x441650, not this per-record constructor."
+        }
+      ],
+      "android_candidates": [
         {
           "symbol": "cRSubLazer::Kill()",
           "score": 0.707,
@@ -4882,6 +4888,12 @@
           "score": 0.6659,
           "name_score": 0.4431,
           "size_score": 1.0
+        },
+        {
+          "symbol": "cRSubGame::UnHideScores()",
+          "score": 0.6524,
+          "name_score": 0.4947,
+          "size_score": 0.8889
         }
       ],
       "ios_candidates": [
@@ -4922,23 +4934,21 @@
       "windows_name": "initialize_salt_hazard_runtime",
       "windows_size": 32,
       "status": "unverified",
-      "android_candidates": [
+      "mobile_candidate_rejections": [
         {
           "symbol": "cRSaltManager::Init()",
-          "score": 0.76,
-          "name_score": 0.6,
-          "size_score": 1.0
+          "reason": "The Android manager reset clears all 40 hazard states and maps to initialize_salt_hazard_pool at 0x441540, not this per-record constructor."
         },
+        {
+          "symbol": "cRSubLazerManager::Init()",
+          "reason": "This is the different SubLazer manager reset already mapped to initialize_sub_lazer_pool at 0x441650."
+        }
+      ],
+      "android_candidates": [
         {
           "symbol": "tVector::MagnitudeSquared() const",
           "score": 0.68,
           "name_score": 0.4667,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubLazerManager::Init()",
-          "score": 0.6383,
-          "name_score": 0.3972,
           "size_score": 1.0
         },
         {
@@ -4952,6 +4962,18 @@
           "score": 0.62,
           "name_score": 0.45,
           "size_score": 0.875
+        },
+        {
+          "symbol": "RShellInputRegisterKeyboard(int, float, float)",
+          "score": 0.6182,
+          "name_score": 0.3636,
+          "size_score": 1.0
+        },
+        {
+          "symbol": "cRObject::cRObject()",
+          "score": 0.61,
+          "name_score": 0.6,
+          "size_score": 0.625
         }
       ],
       "ios_candidates": [
@@ -16914,13 +16936,13 @@
       "windows_name": "begin_post_follow_carryover",
       "windows_size": 112,
       "status": "unverified",
-      "android_candidates": [
+      "mobile_candidate_rejections": [
         {
           "symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
-          "score": 0.7444,
-          "name_score": 0.675,
-          "size_score": 0.8485
-        },
+          "reason": "Both mobile bodies initialize a new attachment-follow session and map exactly to begin_track_attachment_follow_state at 0x420c40, not this later carryover helper."
+        }
+      ],
+      "android_candidates": [
         {
           "symbol": "cRMouse::SetActive()",
           "score": 0.6886,
@@ -16944,15 +16966,15 @@
           "score": 0.6267,
           "name_score": 0.6,
           "size_score": 0.6667
+        },
+        {
+          "symbol": "cRSubGame::SwitchMirror()",
+          "score": 0.6024,
+          "name_score": 0.4019,
+          "size_score": 0.9032
         }
       ],
       "ios_candidates": [
-        {
-          "symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
-          "score": 0.7444,
-          "name_score": 0.675,
-          "size_score": 0.8485
-        },
         {
           "symbol": "MouseSet(int, int, int)",
           "score": 0.67,
@@ -16976,6 +16998,12 @@
           "score": 0.5961,
           "name_score": 0.3268,
           "size_score": 1.0
+        },
+        {
+          "symbol": "OFHttpBinaryParameter::getAsMPURLRequestParameter() const",
+          "score": 0.5867,
+          "name_score": 0.3342,
+          "size_score": 0.9655
         }
       ]
     },

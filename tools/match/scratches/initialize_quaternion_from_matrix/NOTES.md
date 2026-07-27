@@ -67,3 +67,17 @@ aligned and have clean masked operands.
 dominant-diagonal arms. This strengthens the ownership record but does not
 change the honest 92.47% matcher result or justify forcing the remaining
 branch-layout mismatch.
+
+## 2026-07-27 exact mobile constructor tree
+
+Android and iOS retain `tQuaternian::tQuaternian(tMatrix const&)` with the same
+trace-positive fast path, dominant-diagonal X/Y/Z decision tree, radicand
+formulas, and the Windows `"ERROR:sqrt"` versus `"ERROR:sqt"` diagnostic typo
+split. This verifies the constructor owner and semantics independently of the
+Windows decompilers.
+
+Transcribing the nested mobile tree literally made VC6 place the arms
+differently and regressed focused Wibo from 92.47% to 68.63%, with 187
+candidate instructions and four unaudited references. That probe was removed;
+the 186/186 Windows source and its honest compiler-specific branch-layout
+residual remain.
