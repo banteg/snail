@@ -8048,50 +8048,86 @@
       "windows_name": "refresh_object_vertex_buffer",
       "windows_size": 400,
       "status": "unverified",
-      "android_candidates": [
+      "mobile_candidate_rejections": [
+        {
+          "symbol": "cRObject::ReGLVBO()",
+          "reason": "The Android thunk rebuilds a static OpenGL VBO from cRObjects::ReBuildObjects(); it is not the per-render animation and dynamic-vertex Direct3D lock/copy path, and no iOS export exists."
+        },
+        {
+          "symbol": "GLObjectVBO(cRObject*)",
+          "reason": "This allocates and uploads the mobile object's static OpenGL buffers during object building; it does not select animation frames or refresh a locked render stream."
+        },
         {
           "symbol": "cRObject::CalcTextureGroups()",
-          "score": 0.6502,
-          "name_score": 0.5236,
-          "size_score": 0.84
+          "reason": "This object-build preprocessing member is already mapped to calc_object_texture_groups at 0x4303f0 and does not perform per-render vertex refresh."
         },
         {
           "symbol": "cRObject::AddEdge(int, int, int)",
-          "score": 0.6473,
-          "name_score": 0.4389,
-          "size_score": 0.96
+          "reason": "This appends one toon silhouette-edge record during object building and has no animation-frame or render-stream ownership."
         },
         {
           "symbol": "cRObject::ApplyUVPath(float, float, float)",
-          "score": 0.621,
-          "name_score": 0.675,
-          "size_score": 0.54
+          "reason": "This mutates authored UV coordinates along a path; it is not the grouped position and UV upload performed immediately before rendering."
         },
         {
-          "symbol": "ObjectProcAtmosphere(cRObject*, int, float, float, char*)",
-          "score": 0.6,
-          "name_score": 0.4,
-          "size_score": 0.9
+          "symbol": "ObjectProcJoinTextures(cRObject*)",
+          "reason": "This merges texture groups during the static object-build pipeline and is not the dynamic per-render upload helper."
         },
         {
-          "symbol": "ObjectProcSkirt(cRObject*, int, float, float, char*)",
-          "score": 0.6,
-          "name_score": 0.4,
-          "size_score": 0.9
+          "symbol": "cRObjects::BuildObjects()",
+          "reason": "This batch builder is already mapped to build_all_objects at 0x42f9e0; both mobile bodies build static draw data and omit the Windows Direct3D refresh pass."
+        }
+      ],
+      "android_candidates": [
+        {
+          "symbol": "G0Render()",
+          "score": 0.684,
+          "name_score": 0.9,
+          "size_score": 0.36
+        },
+        {
+          "symbol": "G0FontRenderStart()",
+          "score": 0.6688,
+          "name_score": 0.54,
+          "size_score": 0.8621
+        },
+        {
+          "symbol": "FontMake3D(short)",
+          "score": 0.666,
+          "name_score": 0.45,
+          "size_score": 0.99
+        },
+        {
+          "symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
+          "score": 0.6423,
+          "name_score": 0.75,
+          "size_score": 0.4808
+        },
+        {
+          "symbol": "InitGL()",
+          "score": 0.638,
+          "name_score": 0.45,
+          "size_score": 0.92
         }
       ],
       "ios_candidates": [
         {
-          "symbol": "cRObject::CalcTextureGroups()",
-          "score": 0.6681,
-          "name_score": 0.5236,
-          "size_score": 0.885
+          "symbol": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
+          "score": 0.673,
+          "name_score": 0.675,
+          "size_score": 0.67
         },
         {
-          "symbol": "ObjectProcJoinTextures(cRObject*)",
-          "score": 0.6264,
-          "name_score": 0.5106,
-          "size_score": 0.8
+          "symbol": "G0Render()",
+          "score": 0.656,
+          "name_score": 0.9,
+          "size_score": 0.29
+        },
+        {
+          "symbol": "G0FontRenderStart()",
+          "score": 0.6466,
+          "name_score": 0.54,
+          "size_score": 0.8065
         },
         {
           "symbol": "OFResourceDataMap::addNestedResourceField(NSString*, objc_selector*, objc_selector*, objc_class*)",
@@ -8100,16 +8136,10 @@
           "size_score": 0.95
         },
         {
-          "symbol": "cRObjects::BuildObjects()",
-          "score": 0.6246,
-          "name_score": 0.3938,
-          "size_score": 0.9709
-        },
-        {
-          "symbol": "cRObject::ApplyUVPath(float, float, float)",
-          "score": 0.621,
-          "name_score": 0.675,
-          "size_score": 0.54
+          "symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
+          "score": 0.623,
+          "name_score": 0.9,
+          "size_score": 0.2075
         }
       ]
     },
@@ -11871,25 +11901,33 @@
       "windows_name": "calc_object_bounding_box",
       "windows_size": 416,
       "status": "unverified",
-      "android_candidates": [
+      "mobile_candidate_rejections": [
         {
-          "symbol": "cRObject::AddEdge(int, int, int)",
-          "score": 0.6665,
-          "name_score": 0.4955,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "GLObjectVBO(cRObject*)",
-          "score": 0.6346,
-          "name_score": 0.5625,
-          "size_score": 0.7429
+          "symbol": "cRObjects::BuildObjects()",
+          "reason": "This batch builder is already mapped to the Windows caller build_all_objects at 0x42f9e0; both mobile bodies omit the bounds pass rather than inline it."
         },
         {
           "symbol": "cRObject::CalcEdges()",
-          "score": 0.6318,
-          "name_score": 0.48,
-          "size_score": 0.8595
+          "reason": "This builds toon silhouette-edge topology and is already mapped to calc_object_edges at 0x4308b0; it does not update object bounds."
         },
+        {
+          "symbol": "cRObject::AddEdge(int, int, int)",
+          "reason": "This appends one edge record using vertex and face-normal indices; it does not scan positions or write min/max bounds."
+        },
+        {
+          "symbol": "GLObjectVBO(cRObject*)",
+          "reason": "This allocates and uploads static OpenGL buffers and does not compute geometric bounds."
+        },
+        {
+          "symbol": "cRObject::CalcTextureGroups()",
+          "reason": "This groups faces by texture and is already mapped to calc_object_texture_groups at 0x4303f0; it does not compute geometric bounds."
+        },
+        {
+          "symbol": "cRObject::cRObject()",
+          "reason": "The object constructor initializes the mobile record; it is not the later per-object bounds scan."
+        }
+      ],
+      "android_candidates": [
         {
           "symbol": "cRCompletion::UnInit()",
           "score": 0.629,
@@ -11901,21 +11939,27 @@
           "score": 0.624,
           "name_score": 0.4118,
           "size_score": 0.9423
+        },
+        {
+          "symbol": "ObjectProcSkirt(cRObject*, int, float, float, char*)",
+          "score": 0.6128,
+          "name_score": 0.4444,
+          "size_score": 0.8654
+        },
+        {
+          "symbol": "ObjectProcClickStart(cRObject*, int, float, float, char*)",
+          "score": 0.6123,
+          "name_score": 0.3902,
+          "size_score": 0.9455
+        },
+        {
+          "symbol": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
+          "score": 0.611,
+          "name_score": 0.45,
+          "size_score": 0.8525
         }
       ],
       "ios_candidates": [
-        {
-          "symbol": "cRObjects::BuildObjects()",
-          "score": 0.6533,
-          "name_score": 0.4286,
-          "size_score": 0.9904
-        },
-        {
-          "symbol": "cRObject::CalcEdges()",
-          "score": 0.6347,
-          "name_score": 0.48,
-          "size_score": 0.8667
-        },
         {
           "symbol": "cRSubGoldy::HealthCollect(cRSubHealth*)",
           "score": 0.6317,
@@ -11923,16 +11967,28 @@
           "size_score": 0.9615
         },
         {
-          "symbol": "cRObject::CalcTextureGroups()",
-          "score": 0.6188,
-          "name_score": 0.4178,
-          "size_score": 0.9204
+          "symbol": "cRSubGame::CalcRealPos(tVector&, float&)",
+          "score": 0.6033,
+          "name_score": 0.3636,
+          "size_score": 0.963
         },
         {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.6169,
-          "name_score": 0.9,
-          "size_score": 0.1923
+          "symbol": "cRCompletion::UnInit()",
+          "score": 0.6021,
+          "name_score": 0.4073,
+          "size_score": 0.8942
+        },
+        {
+          "symbol": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
+          "score": 0.6002,
+          "name_score": 0.45,
+          "size_score": 0.8254
+        },
+        {
+          "symbol": "ObjectProcJoinTextures(cRObject*)",
+          "score": 0.5868,
+          "name_score": 0.4651,
+          "size_score": 0.7692
         }
       ]
     },

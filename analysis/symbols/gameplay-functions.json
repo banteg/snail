@@ -1029,7 +1029,37 @@
       "address": "0x412250",
       "name": "refresh_object_vertex_buffer",
       "port_scope": "boundary",
-      "description": "Refreshes one built object's grouped vertex buffer from the current animated or distorted vertex source, preserving the authored UV lanes for the grouped draw path."
+      "description": "Refreshes one built object's grouped Direct3D vertex buffer from the current animated or distorted vertex source, preserving the authored UV lanes for the grouped draw path. Android and iOS keep the animation-frame active-view selection inside G0RenderObject(), then bind OpenGL arrays or VBOs directly, so the mobile render bodies are interior ownership provenance rather than a standalone function mapping.",
+      "mobile_candidate_rejections": [
+        {
+          "symbol": "cRObject::ReGLVBO()",
+          "reason": "The Android thunk rebuilds a static OpenGL VBO from cRObjects::ReBuildObjects(); it is not the per-render animation and dynamic-vertex Direct3D lock/copy path, and no iOS export exists."
+        },
+        {
+          "symbol": "GLObjectVBO(cRObject*)",
+          "reason": "This allocates and uploads the mobile object's static OpenGL buffers during object building; it does not select animation frames or refresh a locked render stream."
+        },
+        {
+          "symbol": "cRObject::CalcTextureGroups()",
+          "reason": "This object-build preprocessing member is already mapped to calc_object_texture_groups at 0x4303f0 and does not perform per-render vertex refresh."
+        },
+        {
+          "symbol": "cRObject::AddEdge(int, int, int)",
+          "reason": "This appends one toon silhouette-edge record during object building and has no animation-frame or render-stream ownership."
+        },
+        {
+          "symbol": "cRObject::ApplyUVPath(float, float, float)",
+          "reason": "This mutates authored UV coordinates along a path; it is not the grouped position and UV upload performed immediately before rendering."
+        },
+        {
+          "symbol": "ObjectProcJoinTextures(cRObject*)",
+          "reason": "This merges texture groups during the static object-build pipeline and is not the dynamic per-render upload helper."
+        },
+        {
+          "symbol": "cRObjects::BuildObjects()",
+          "reason": "This batch builder is already mapped to build_all_objects at 0x42f9e0; both mobile bodies build static draw data and omit the Windows Direct3D refresh pass."
+        }
+      ]
     },
     {
       "address": "0x4123e0",
@@ -1921,7 +1951,33 @@
     {
       "address": "0x42fb10",
       "name": "calc_object_bounding_box",
-      "description": "Recomputes one cRObject's min/max bounds and maximum vertex magnitude in place. Its sole native caller discards EAX, confirming this is a void object mutator rather than the decompiler-derived count-returning helper."
+      "description": "Recomputes one cRObject's min/max bounds and maximum vertex magnitude in place. Its sole native caller discards EAX, confirming this is a void object mutator rather than the decompiler-derived count-returning helper. Android and iOS retain the surrounding cRObjects::BuildObjects() owner but omit both a call and an inline equivalent of this Windows-only bounds pass.",
+      "mobile_candidate_rejections": [
+        {
+          "symbol": "cRObjects::BuildObjects()",
+          "reason": "This batch builder is already mapped to the Windows caller build_all_objects at 0x42f9e0; both mobile bodies omit the bounds pass rather than inline it."
+        },
+        {
+          "symbol": "cRObject::CalcEdges()",
+          "reason": "This builds toon silhouette-edge topology and is already mapped to calc_object_edges at 0x4308b0; it does not update object bounds."
+        },
+        {
+          "symbol": "cRObject::AddEdge(int, int, int)",
+          "reason": "This appends one edge record using vertex and face-normal indices; it does not scan positions or write min/max bounds."
+        },
+        {
+          "symbol": "GLObjectVBO(cRObject*)",
+          "reason": "This allocates and uploads static OpenGL buffers and does not compute geometric bounds."
+        },
+        {
+          "symbol": "cRObject::CalcTextureGroups()",
+          "reason": "This groups faces by texture and is already mapped to calc_object_texture_groups at 0x4303f0; it does not compute geometric bounds."
+        },
+        {
+          "symbol": "cRObject::cRObject()",
+          "reason": "The object constructor initializes the mobile record; it is not the later per-object bounds scan."
+        }
+      ]
     },
     {
       "address": "0x42fcb0",

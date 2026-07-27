@@ -116,3 +116,20 @@ check now rejects the old `_DWORD* this`, raw offsets, and incidental return.
 No matcher source changed. Focused Wibo remains `99.16%`, exactly `119/119`
 instructions, prefix `28`, with one clean mask; only the independent radius
 zero-store scheduling remains.
+
+## 2026-07-27 mobile negative evidence
+
+Android and iOS both export `cRObjects::BuildObjects()`, the authored owner
+already mapped to the Windows caller at `0x42f9e0`. Both mobile bodies preserve
+the surrounding object-build sequence—texture joining, texture-group and GL
+vertex-array construction, optional toon normals/edges, save, and static VBO
+handling—but neither calls nor inlines a position min/max or radius scan.
+
+Neither mobile symbol inventory exports a separate object-bounds member.
+The scorer's nearby `cRObject::AddEdge`, `CalcEdges`, `CalcTextureGroups`,
+`GLObjectVBO`, and constructor candidates have distinct build-time owners and
+were explicitly rejected. This is therefore a Windows-only pass inside the
+shared `cRObjects::BuildObjects()` lifecycle, not a missing one-to-one mobile
+mapping. Mobile layout offsets and scheduling provide no further matching
+claim; focused Wibo honestly remains `99.16%` with the single independent
+zero-store scheduling residual.

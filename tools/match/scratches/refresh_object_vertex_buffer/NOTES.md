@@ -143,3 +143,21 @@ lifetimes, and a second run skipped all ten as already current.
 
 No matcher source changed. Focused Wibo remains `90.58%`, `137/139`, prefix
 `7`, with four clean masks and the same two scheduling residuals.
+
+## 2026-07-27 mobile render-boundary provenance
+
+Android and iOS keep the shared animation-frame ownership at the start of
+`G0RenderObject()`: the active frame selects the live vertex view, facequad
+normal view, and mobile GL vertex-array position stream from the same animation
+record. The mobile renderers then bind client arrays or static VBOs directly,
+so neither port needs the Windows-only Direct3D lock-and-copy helper.
+
+That makes the mobile `G0RenderObject()` bodies valid interior provenance for
+the active animation views, but not standalone mappings for this function.
+`cRObject::ReGLVBO()` is an Android static-VBO rebuild thunk called from
+`cRObjects::ReBuildObjects()`, while `GLObjectVBO`, `CalcTextureGroups`,
+`AddEdge`, `ApplyUVPath`, `ObjectProcJoinTextures`, and `BuildObjects` all own
+different build-time work. Those candidates are explicitly rejected rather
+than transferred across renderer architectures. Focused Wibo remains the
+honest `90.58%`, `137/139` result with two address-formation scheduling
+residuals.
