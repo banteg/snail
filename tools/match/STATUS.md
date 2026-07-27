@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**531/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93767/294937** bytes (**31.79%**) are proof-grade, and overall fuzzy is **78.54%**.
+**531/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93767/294937** bytes (**31.79%**) are proof-grade, and overall fuzzy is **78.56%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -672,7 +672,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.94% | 9/1033 | 12 unaudited, 123 ok |  | core |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 505/501 | 70.58% | 6/501 | 8 unaudited, 66 ok |  | core |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 670/673 | 75.06% | 8/673 | 89 ok |  | core |
-| 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 68.29% | 1/248 | 1 mismatch, 23 ok |  | core |
+| 🚧 | set_snail_weapon | 0x445920 | 940 | 245/248 | 73.02% | 1/248 | 1 mismatch, 23 ok |  | core |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 5 unaudited, 91 ok |  | core |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 4 unaudited, 54 ok |  | boundary |
 

@@ -57,6 +57,7 @@ void Snail::set_snail_weapon(int shoot_flags)
     selected_state = weapon_channels[0].selected_state;
     transition_immediate = 1;
     if (selected_state != target_channel_0_state) {
+        Weapon& channel = weapon_channels[0];
         switch (selected_state) {
         case 1:
             weapon_channels[0].set_weapon_animation(
@@ -72,21 +73,21 @@ void Snail::set_snail_weapon(int shoot_flags)
 
         switch (target_channel_0_state) {
         case 0:
-            weapon_channels[0].set_weapon_animation(
+            channel.set_weapon_animation(
                 ANIM_MANAGER_HIDE_ANIMATION_ID,
                 0,
                 OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         case 1:
-            weapon_channels[0].set_weapon_animation(
+            channel.set_weapon_animation(
                 1, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
-            weapon_channels[0].set_weapon_animation(
+            channel.set_weapon_animation(
                 0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         case 2:
-            weapon_channels[0].set_weapon_animation(
+            channel.set_weapon_animation(
                 4, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
-            weapon_channels[0].set_weapon_animation(
+            channel.set_weapon_animation(
                 3, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         }

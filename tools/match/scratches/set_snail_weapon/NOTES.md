@@ -18,7 +18,7 @@ The default arm only assigns the first two target states from
 source-shaped local seen in both decompilers. In normal gameplay the producer
 (`set_subgoldy_shoot_flags`) only emits the handled values above.
 
-Focused Wibo result: 68.29%, 244/248 candidate/target instructions, with 23
+Focused Wibo result: 73.02%, 245/248 candidate/target instructions, with 23
 clean masked operands. The calls hit channel bases `+0x64c`, `+0xa28`, and
 `+0xe04`, and selected states at channel `+0x104` (`+0x750`, `+0xb2c`,
 `+0xf08` in the presentation owner).
@@ -37,12 +37,11 @@ the already-selected sound check after the update paths, and Android preserves
 the same relationship.
 
 Main residual: native keeps state0 in `edi`, state1 in `ebp`, state2 on the
-stack, and uses `ebx` as a channel pointer in the first transition block. VC6
-currently keeps state1 in `ebx`, saves `ebp` only around the first block, and
-therefore shifts later stack offsets. An explicit channel pointer scores higher
-but materializes `weapon_channels[0]` before the movement dispatcher, unlike
-native, so it is rejected. Do not add dummy aliasing or a volatile parameter
-reload to force the remaining register ownership.
+stack, and uses `ebx` as a channel pointer in the first transition block. The
+retained channel-0 reference makes VC6 reserve the same four saved-register
+lanes but rotates their assignments: state0 moves to `ebp`, state1 stays in
+`ebx`, and the channel receiver uses `edi`. Do not add dummy aliasing or a
+volatile parameter reload to force the remaining register ownership.
 
 The sparse movement dispatch names
 `set_snail_weapon_movement_jump_table` at `0x445bf0` and
@@ -86,3 +85,19 @@ clean masks and compiler-local jump-table mismatch. An explicit reusable
 `Weapon*` was also tested because it could have explained native register
 allocation, but it moved the receiver and target-state lifetimes away from the
 binary and regressed to 64.91%; no synthetic pointer lifetime is retained.
+
+## 2026-07-27 channel-0 receiver lifetime
+
+Both mobile bodies keep every outgoing and incoming transition for the first
+weapon lane on the same authored `cRWeapon` subobject. Windows independently
+uses the one `Snail +0x64c` receiver throughout that changed-channel block.
+Naming that borrowed subobject as a branch-scoped `Weapon&` therefore records
+real ownership without changing the ABI, state map, calls, or exits.
+
+The narrower lifetime improves focused Wibo from 68.29% (`244/248`) to 73.02%
+(`245/248`) with all 23 runtime references still clean. It is distinct from
+the rejected reusable pointer above: the reference cannot escape channel 0
+and is not shared across the three channel blocks. Applying the same source
+shape to channel 1 regresses to 67.35% by displacing the long-lived `Snail*`
+receiver, so that probe is reverted. The remaining mask mismatch is still only
+VC6's compiler-local sparse-switch table symbol.
