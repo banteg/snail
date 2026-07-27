@@ -22,7 +22,7 @@ enum {
 class Tip {
 public:
     void initialize_tip(TipData* definition, int hide_disable_button); // @ 0x448a40, cRTip::Init
-    void kill_tip_widgets(); // @ 0x4489e0
+    void kill_tip_widgets(); // @ 0x4489e0, cRTip::UnInit
     void update_tip(); // @ 0x448c40, cRTip::AI
 
     int active;                         // +0x00

@@ -288,6 +288,70 @@ def test_mobile_landscape_evidence_recovers_authored_lifecycle() -> None:
     )
 
 
+def test_mobile_finalizer_high_score_and_tip_lifecycles_are_persisted() -> None:
+    repo_root = Path(__file__).parents[1]
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    functions_by_address = {
+        entry["address"]: entry for entry in functions["functions"]
+    }
+    crosswalk_by_address = {
+        entry["address"]: entry for entry in crosswalk["entries"]
+    }
+
+    for address, alias, symbol, source_object in (
+        ("0x410720", "cRGame_InitLast", "cRGame::InitLast()", "Game.o"),
+        (
+            "0x417540",
+            "cRSubHighScore_Init",
+            "cRSubHighScore::Init()",
+            "HighScore.o",
+        ),
+        ("0x4489e0", "cRTip_UnInit", "cRTip::UnInit()", None),
+    ):
+        assert alias in functions_by_address[address]["aliases"]
+        assert crosswalk_by_address[address]["android_symbol"] == symbol
+        assert crosswalk_by_address[address]["source_object"] == source_object
+        assert crosswalk_by_address[address]["confidence"] == "high"
+
+    assert (
+        crosswalk_by_address["0x410720"]["ios_symbol"]
+        == "cRGame::InitLast()"
+    )
+    assert (
+        crosswalk_by_address["0x417540"]["ios_symbol"]
+        == "cRSubHighScore::Init()"
+    )
+    assert "ios_symbol" not in crosswalk_by_address["0x4489e0"]
+    assert "deliberately not mapped" in (
+        crosswalk_by_address["0x417540"]["notes"]
+    )
+    assert "same cRTip field offsets" in (
+        crosswalk_by_address["0x4489e0"]["notes"]
+    )
+
+    game_root_header = (repo_root / "tools/match/include/game_root.h").read_text(
+        encoding="utf-8"
+    )
+    sub_high_score_header = (
+        repo_root / "tools/match/include/sub_high_score.h"
+    ).read_text(encoding="utf-8")
+    tip_header = (repo_root / "tools/match/include/tip_manager.h").read_text(
+        encoding="utf-8"
+    )
+    assert "cRGame::InitLast" in game_root_header
+    assert "cRSubHighScore::Init" in sub_high_score_header
+    assert "cRTip::UnInit" in tip_header
+
+
 def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
     repo_root = Path(__file__).parents[1]
     functions = json.loads(

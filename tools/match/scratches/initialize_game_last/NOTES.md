@@ -26,3 +26,17 @@ reanalyze both the wrapper and `game_startup_and_main_loop`; the startup caller
 therefore passes `g_game_base` without a `char*` cast. Paired health canaries
 guard the member owner and caller edge. Matcher source remains unchanged and
 exact at 100.00%, 4/4 instructions, with the call operand clean.
+
+## 2026-07-27 mobile authored owner
+
+Android and iOS retain this final root-startup lifecycle as
+`cRGame::InitLast()` from `Game.o`. Their platform bootstrap functions invoke
+it in the same phase as Windows: after the staged asset/texture initialization
+and before the loading screen is finished and the opening fade begins.
+
+Android contains the exact `cRBackdrop::Init(backdrop, 1)` operation that is
+the complete Windows body, surrounded by mobile-only keypad, online-service,
+options, and initialization-flag work. iOS preserves the method and lifecycle
+but uses a different mobile backdrop finalization sequence. This evidence
+recovers the authored owner and method name without importing either mobile
+body into the four-instruction desktop projection.

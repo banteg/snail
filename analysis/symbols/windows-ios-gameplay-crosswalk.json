@@ -4823,6 +4823,32 @@
       "source_object": "Landscape.o",
       "confidence": "high",
       "notes": "Android cRSubGame::UnInit calls warning teardown, cRLandscapeManager::UnInit, times-up teardown, then RemoveBods, exactly matching the Windows destroy_subgame sequence around this helper. Both mobile UnInit bodies are empty because those ports omit Windows' ten repeated DirectX landscape entries; Windows must clear and unlink that platform-specific pool."
+    },
+    {
+      "address": "0x410720",
+      "windows_name": "initialize_game_last",
+      "android_symbol": "cRGame::InitLast()",
+      "ios_symbol": "cRGame::InitLast()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "The sole Windows caller invokes this root method in the final startup phase after asset initialization and registered texture loading. Android and iOS platform bootstrap code invokes the preserved cRGame::InitLast method at the equivalent phase. Android includes the exact cRBackdrop::Init(..., 1) call that forms the complete Windows body; both mobile ports add platform-only keypad, service, options, and final render-state work."
+    },
+    {
+      "address": "0x417540",
+      "windows_name": "initialize_high_score_tables",
+      "android_symbol": "cRSubHighScore::Init()",
+      "ios_symbol": "cRSubHighScore::Init()",
+      "source_object": "HighScore.o",
+      "confidence": "high",
+      "notes": "Windows cRGame startup calls this method after player initialization and before loading ScoreA.dat, ScoreB.dat, and ScoreC.dat. Android and iOS cRGame::Init4 call cRSubHighScore::Init at the same boundary; it is a platform no-op immediately followed by the separate cRSubHighScore::MiniInit compact-score initializer. MiniInit owns 85 mobile 0x38-byte records and one mini-data load, so it is deliberately not mapped to the Windows desktop table initializer or file-loader boundary."
+    },
+    {
+      "address": "0x4489e0",
+      "windows_name": "kill_tip_widgets",
+      "android_symbol": "cRTip::UnInit()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android and Windows use the same cRTip field offsets: active at +0x00 and main, OK, and Disable border pointers at +0x0c, +0x10, and +0x14. Both unconditionally kill the main border, conditionally kill the two optional borders through the root BorderManager, then clear active. No cRTip::UnInit export survives in the iOS corpus, so this is intentionally Android-only evidence."
     }
   ]
 }

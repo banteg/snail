@@ -13,12 +13,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 532,
-    "unverified_entries": 253,
-    "verified_android_symbols": 529,
-    "verified_ios_symbols": 430,
-    "available_android_mappings": 529,
-    "available_ios_mappings": 392
+    "verified_entries": 535,
+    "unverified_entries": 250,
+    "verified_android_symbols": 532,
+    "verified_ios_symbols": 432,
+    "available_android_mappings": 532,
+    "available_ios_mappings": 394
   },
   "entries": [
     {
@@ -6597,71 +6597,13 @@
       "address": "0x410720",
       "windows_name": "initialize_game_last",
       "windows_size": 16,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRWarning::Stop()",
-          "score": 0.6504,
-          "name_score": 0.4174,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRFringeManager::Init()",
-          "score": 0.6304,
-          "name_score": 0.384,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cAccelerometer::Input(float, float, float)",
-          "score": 0.6117,
-          "name_score": 0.3529,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGame::SetRate(float)",
-          "score": 0.6005,
-          "name_score": 0.5009,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRViewport::SetCamera(cRCamera*)",
-          "score": 0.5866,
-          "name_score": 0.4444,
-          "size_score": 0.8
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBod::IsAfterSprites()",
-          "score": 0.6308,
-          "name_score": 0.3846,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "MacFinish()",
-          "score": 0.6286,
-          "name_score": 0.381,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFReachability::isGameServerReachable()",
-          "score": 0.6182,
-          "name_score": 0.3636,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGame::SetRate(float)",
-          "score": 0.6005,
-          "name_score": 0.5009,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRLoadingBar::Finish()",
-          "score": 0.5866,
-          "name_score": 0.4444,
-          "size_score": 0.8
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRGame::InitLast()",
+      "ios_symbol": "cRGame::InitLast()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x410730",
@@ -10075,71 +10017,13 @@
       "address": "0x417540",
       "windows_name": "initialize_high_score_tables",
       "windows_size": 160,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRHighScore::Exit()",
-          "score": 0.7181,
-          "name_score": 0.6043,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "cRSubHighScore::MiniDelete(int)",
-          "score": 0.7084,
-          "name_score": 0.5458,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "cRHighScore::SetExitNextPos()",
-          "score": 0.6891,
-          "name_score": 0.6043,
-          "size_score": 0.8163
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.67,
-          "name_score": 0.6,
-          "size_score": 0.775
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.67,
-          "name_score": 0.6,
-          "size_score": 0.775
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRHighScore::SetExitNextPos()",
-          "score": 0.7347,
-          "name_score": 0.6043,
-          "size_score": 0.9302
-        },
-        {
-          "symbol": "OFSaveHighScores()",
-          "score": 0.7205,
-          "name_score": 0.6452,
-          "size_score": 0.8333
-        },
-        {
-          "symbol": "OFHighScoreBatchEntry::OFHighScoreBatchEntry(OFISerializer*)",
-          "score": 0.711,
-          "name_score": 0.55,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "void OFISerializer::serialize<OFHighScoreBatchEntry>(char const*, OFHighScoreBatchEntry&)",
-          "score": 0.711,
-          "name_score": 0.55,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "cRSubHighScore::MiniInit()",
-          "score": 0.7084,
-          "name_score": 0.5458,
-          "size_score": 0.9524
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRSubHighScore::Init()",
+      "ios_symbol": "cRSubHighScore::Init()",
+      "source_object": "HighScore.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x4175e0",
@@ -21264,39 +21148,11 @@
       "address": "0x4489e0",
       "windows_name": "kill_tip_widgets",
       "windows_size": 96,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRObject::RequestEdges(int)",
-          "score": 0.6928,
-          "name_score": 0.5714,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.6697,
-          "name_score": 0.6,
-          "size_score": 0.7742
-        },
-        {
-          "symbol": "cRBod::cRBod()",
-          "score": 0.6697,
-          "name_score": 0.6,
-          "size_score": 0.7742
-        },
-        {
-          "symbol": "RShellConvertFileName(char*, char*)",
-          "score": 0.6434,
-          "name_score": 0.4324,
-          "size_score": 0.96
-        },
-        {
-          "symbol": "cRTipManager::UnInitTips()",
-          "score": 0.636,
-          "name_score": 0.42,
-          "size_score": 0.96
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRTip::UnInit()",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRBod::cRBod()",
@@ -21311,22 +21167,22 @@
           "size_score": 0.96
         },
         {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.6933,
+          "symbol": "cAccelerometer::Init()",
+          "score": 0.7433,
           "name_score": 0.6,
-          "size_score": 0.8333
-        },
-        {
-          "symbol": "OFViewDataGetter::writeValueUISwitch(UIView*, NSString*, OFOutputSerializer*) const",
-          "score": 0.6657,
-          "name_score": 0.4706,
           "size_score": 0.9583
         },
         {
-          "symbol": "RShellConvertFileName(char*, char*)",
-          "score": 0.6434,
-          "name_score": 0.4324,
-          "size_score": 0.96
+          "symbol": "cRBorder::HideInit()",
+          "score": 0.7292,
+          "name_score": 0.6,
+          "size_score": 0.9231
+        },
+        {
+          "symbol": "cRTipManager::AI()",
+          "score": 0.7292,
+          "name_score": 0.6,
+          "size_score": 0.9231
         }
       ]
     },

@@ -49,3 +49,20 @@ The focused replay fails closed unless `SubSolution == 0x1fac0`,
 `SubHighScore == 0x947648`, and the enclosing `SubgameRuntime == 0x1272838`.
 This is analysis-only ownership recovery; the exact matcher source and all
 58/58 instructions remain unchanged.
+
+## 2026-07-27 mobile authored lifecycle
+
+Android and iOS preserve the boundary as `cRSubHighScore::Init()` from
+`HighScore.o`. In both mobile `cRGame::Init4()` bodies it appears immediately
+after player initialization and immediately before
+`cRSubHighScore::MiniInit()`, then TipManager initialization. Windows reaches
+the same phase after its player loop, calls this function, loads `ScoreA.dat`,
+`ScoreB.dat`, and `ScoreC.dat`, and then initializes TipManager.
+
+The mobile `Init()` bodies are empty because their separate `MiniInit()` owns
+85 compact 0x38-byte records and calls one mobile mini-data loader. Windows
+instead seeds 75 full 0x1fac0-byte `cRSubSolution` records here before three
+desktop bank overlays are loaded. `MiniInit()` and the Windows
+`load_high_scores_from_file` helper are therefore explicitly not cross-mapped;
+the evidence recovers the common `Init()` owner and phase, not a false shared
+record layout or function boundary.

@@ -13,7 +13,7 @@ const int SUB_HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT = 51;
 
 class SubHighScore {
 public:
-    void initialize_high_score_tables(); // @ 0x417540
+    void initialize_high_score_tables(); // @ 0x417540, cRSubHighScore::Init
     void load_high_scores_from_file(char* file_name); // @ 0x4175e0
     void add_arcade_high_score(
         SubSolution* record,

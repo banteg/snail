@@ -716,7 +716,10 @@
     {
       "address": "0x410720",
       "name": "initialize_game_last",
-      "description": "Exact void GameRoot member wrapper that completes root startup by initializing the embedded Backdrop at +0x4ec10 in last-mode 1."
+      "description": "Exact Windows `cRGame::InitLast()` projection: completes root startup by initializing the embedded Backdrop at +0x4ec10 in last-mode 1. Android preserves that same call inside its larger platform finalizer; iOS preserves the authored lifecycle name and bootstrap call while performing a different mobile backdrop finalization sequence.",
+      "aliases": [
+        "cRGame_InitLast"
+      ]
     },
     {
       "address": "0x410730",
@@ -1122,7 +1125,10 @@
     {
       "address": "0x417540",
       "name": "initialize_high_score_tables",
-      "description": "Seeds the cRSubHighScore owner’s postal, challenge, and completion arrays with blank cRSubSolution entries before ScoreA/B/C overlays are loaded."
+      "description": "Windows `cRSubHighScore::Init()`: seeds the owner’s postal, challenge, time-trial, and completion arrays with blank cRSubSolution entries before ScoreA/B/C overlays are loaded. Android and iOS retain the same Init phase as a no-op immediately before their separate MiniInit routine initializes and loads the compact mobile-only score bank.",
+      "aliases": [
+        "cRSubHighScore_Init"
+      ]
     },
     {
       "address": "0x4175e0",
@@ -3196,7 +3202,10 @@
     {
       "address": "0x4489e0",
       "name": "kill_tip_widgets",
-      "description": "Tip-owned helper that kills the live border widgets for one cRTip, including the main body and any optional OK or Disable buttons, then clears Tip::active."
+      "description": "Exact Windows `cRTip::UnInit()`: kills the live main border and optional OK or Disable buttons, then clears Tip::active. Android preserves the same method, owner offsets, three BorderManager::Kill calls, and final active-state clear.",
+      "aliases": [
+        "cRTip_UnInit"
+      ]
     },
     {
       "address": "0x448a40",
