@@ -32,7 +32,8 @@ void Cameraman::update_cameraman()
         else if (ramp > 1.0f)
             ramp = 1.0f;
         float inverse_ramp = 1.0f - ramp;
-        float lifted = (1.0f - ramp) * ramp_player->cached_camera_target_world.y * 1.15f
+        float lifted = inverse_ramp * 1.15f
+            * ramp_player->cached_camera_target_world.y
             + desired_matrix.position.y;
         desired_matrix.position.y = lifted;
         desired_matrix.position.y = ramp * 0.34999999f * ramp_player->cached_camera_target_world.y + lifted;

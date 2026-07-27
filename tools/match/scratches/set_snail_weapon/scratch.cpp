@@ -97,47 +97,45 @@ void Snail::set_snail_weapon(int shoot_flags)
 
     selected_state = weapon_channels[1].selected_state;
     transition_immediate = 1;
-    if (selected_state == target_channel_1_state)
-        goto channel2;
+    if (selected_state != target_channel_1_state) {
+        switch (selected_state) {
+        case 1:
+            weapon_channels[1].set_weapon_animation(
+                1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
+            transition_immediate = 0;
+            break;
+        case 2:
+            weapon_channels[1].set_weapon_animation(
+                4, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
+            transition_immediate = 0;
+            break;
+        }
 
-    switch (selected_state) {
-    case 1:
-        weapon_channels[1].set_weapon_animation(
-            1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
-        transition_immediate = 0;
-        break;
-    case 2:
-        weapon_channels[1].set_weapon_animation(
-            4, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
-        transition_immediate = 0;
-        break;
+        switch (target_channel_1_state) {
+        case 0:
+            weapon_channels[1].set_weapon_animation(
+                ANIM_MANAGER_HIDE_ANIMATION_ID,
+                0,
+                OBJECT_ANIMATION_MODE_UNCHANGED);
+            break;
+        case 1:
+            weapon_channels[1].set_weapon_animation(
+                1, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
+            weapon_channels[1].set_weapon_animation(
+                0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
+            break;
+        case 2:
+            weapon_channels[1].set_weapon_animation(
+                4, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
+            weapon_channels[1].set_weapon_animation(
+                3, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
+            break;
+        }
+
+        weapon_channels[1].selected_state = target_channel_1_state;
+        any_channel_changed = 1;
     }
 
-    switch (target_channel_1_state) {
-    case 0:
-        weapon_channels[1].set_weapon_animation(
-            ANIM_MANAGER_HIDE_ANIMATION_ID,
-            0,
-            OBJECT_ANIMATION_MODE_UNCHANGED);
-        break;
-    case 1:
-        weapon_channels[1].set_weapon_animation(
-            1, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
-        weapon_channels[1].set_weapon_animation(
-            0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
-        break;
-    case 2:
-        weapon_channels[1].set_weapon_animation(
-            4, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
-        weapon_channels[1].set_weapon_animation(
-            3, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
-        break;
-    }
-
-    weapon_channels[1].selected_state = target_channel_1_state;
-    any_channel_changed = 1;
-
-channel2:
     selected_state = weapon_channels[2].selected_state;
     transition_immediate = 1;
     if (selected_state != target_channel_2_state) {

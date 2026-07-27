@@ -186,3 +186,14 @@ symbols prove that this full body is `tMatrix::operator*=`, while authored
 `tMatrix::Multiply` is the forwarder represented by Windows `0x44d1d0`.
 Spelling this site as `desired_matrix *= transform` preserves the honest
 92.55%, 322/322 result and all 73 clean operands.
+
+## 2026-07-27 cross-port ramp lifetime
+
+Android and iOS both preserve one clamped ramp and its complementary
+`1.0f - ramp` value across the 1.15 lift and 0.87249994 pitch terms. The
+Windows scratch now reuses its existing `inverse_ramp` local for the lift
+instead of recomputing the complement inline. This makes the shared lifetime
+explicit without imposing a scheduler dependency.
+
+Focused output is unchanged at 92.55%, 322/322 instructions, prefix 36, with
+all 76 currently audited operands clean.

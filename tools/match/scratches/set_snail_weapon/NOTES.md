@@ -72,3 +72,17 @@ selected states, the prior-channel change latch, and those transition flags
 without pointer casts or parameter-byte aliases. The matcher source only gains
 the same ownership names: focused code remains at the honest 68.29%, 244/248,
 with 23 clean masks and the lone compiler-local jump-table mismatch.
+
+## 2026-07-27 Android-authored channel guard
+
+Android preserves channel 1 as the same ordinary
+`selected_state != target_state` update guard used by the other channels.
+The former Windows scratch expressed its unchanged path with a source-level
+`goto`; replacing that decompiler-shaped jump with the cross-port structured
+guard recovers the more plausible authored control flow.
+
+This cleanup is byte-neutral at 68.29%, 244/248 instructions, with the same 23
+clean masks and compiler-local jump-table mismatch. An explicit reusable
+`Weapon*` was also tested because it could have explained native register
+allocation, but it moved the receiver and target-state lifetimes away from the
+binary and regressed to 64.91%; no synthetic pointer lifetime is retained.

@@ -2262,7 +2262,7 @@
       "android_symbol": "cRFireWork::Shoot(tVector, int, int, int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All ports use the empty cRFireWork child embedded in cRSubGoldy/Player and emit the same randomized sprite burst. Windows passes its position by pointer and returns with ret 0x10; the mobile builds expose a by-value tVector signature."
+      "notes": "All ports use the empty cRFireWork child embedded in cRSubGoldy/Player and emit the same randomized sprite burst. The mobile bodies preserve one authored tVector velocity constructed from three consecutive x/y/z RNG expressions; VC6's right-to-left constructor-argument evaluation explains the Windows z/y/x call order without scalarizing the value. Windows passes its position by pointer and returns with ret 0x10; the mobile builds expose a by-value tVector signature."
     },
     {
       "address": "0x441650",
@@ -2437,7 +2437,8 @@
       "ios_symbol": "cRSnail::SetWeapon(int)",
       "android_symbol": "cRSnail::SetWeapon(int)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Android preserves all three selected-state guards as ordinary target-state mismatch branches, the three authored channel maps and their channel order, and the shared sound-25 tail. This supports structured Windows channel guards while leaving the remaining VC6 register-allocation and jump-table residuals visible."
     },
     {
       "address": "0x445cd0",
@@ -2532,7 +2533,7 @@
       "android_symbol": "cRCameraman::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "Android cRSubGame::CameraAI() calls this method through the same cRCameraman owner and consumes the identical +0xc0..+0xd4 state window."
+      "notes": "Android cRSubGame::CameraAI() calls this method through the same cRCameraman owner and consumes the identical +0xc0..+0xd4 state window. Both mobile bodies preserve the clamped first-block ramp and its complementary 1.0f - ramp lifetime across the 1.15 vertical lift and 0.87249994 pitch terms."
     },
     {
       "address": "0x4428d0",

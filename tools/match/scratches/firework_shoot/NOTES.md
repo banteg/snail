@@ -116,3 +116,17 @@ layout.
 This is analysis-only ownership recovery. The focused scratch remains 94.17%
 (103/103 instructions, prefix 78/103, 21 clean masked operands), and no
 source-shape change was made to chase the known compiler scheduling residual.
+
+## 2026-07-27 dual-mobile constructor recovery
+
+Both mobile bodies preserve one authored `tVector` velocity value whose x, y,
+and z components are supplied by three consecutive RNG expressions. Spelling
+the Windows source as the corresponding `Vector3(x, y, z)` construction is
+important evidence: VC6 evaluates those constructor arguments right-to-left,
+which explains the native z/y/x RNG call order without inventing scalar
+temporaries or changing component ownership.
+
+The real aggregate constructor is codegen-neutral at the honest 94.17%,
+103/103-instruction frontier with all 21 masks clean. The remaining difference
+is still only VC6's placement of `add esi, 0x48` relative to the final multiply;
+it is not evidence for a scalar velocity layout.

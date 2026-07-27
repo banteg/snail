@@ -16,8 +16,6 @@ void FireWork::firework_shoot(
         return;
 
     int remaining = count;
-    Vector3 velocity;
-
     do {
         Sprite* sprite = g_sprite_manager.allocate_sprite(owner, texture_id, -1, -1);
         sprite->draw_mode = 10;
@@ -37,15 +35,11 @@ void FireWork::firework_shoot(
         sprite->size_start = 0.5f;
         sprite->size_end = 0.100000001f;
 
-        float velocity_z =
-            ((float)next_math_random_value() - 16384.0f) * 0.0000122070314f;
-        float velocity_y =
+        Vector3 velocity(
+            ((float)next_math_random_value() - 16384.0f) * 0.0000122070314f,
             ((float)next_math_random_value() - 16384.0f) * 0.0000183105476f
-            + 0.100000001f;
-        velocity.x =
-            ((float)next_math_random_value() - 16384.0f) * 0.0000122070314f;
-        velocity.y = velocity_y;
-        velocity.z = velocity_z;
+                + 0.100000001f,
+            ((float)next_math_random_value() - 16384.0f) * 0.0000122070314f);
 
         sprite->depth_offset = 0.0f;
         sprite->velocity = velocity;
