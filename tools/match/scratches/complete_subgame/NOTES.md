@@ -242,3 +242,14 @@ into the unrelated `g_parcel_set_buckets` range. The canonical replay now
 normalizes only those exact operands and Hex-Rays renders all three calls
 through `&runtime->sub_high_score`; the parcel owner remains unchanged at its
 real consumers. Matcher source and the exact 88/88 result are unchanged.
+
+## 2026-07-28 challenge value identity
+
+The exact snapshot now uses the same `challenge_speed_value` and
+`challenge_difficulty_value` names on both sides of the copy. Android and iOS
+`cRSubGame::Complete(bool)` independently preserve those two adjacent runtime
+lanes and the corresponding `cRSubSolution` fields, while the setup GUI and
+level builder close their slider/config producers. The former generic
+completion-source names are retired; completion scoring is one consumer, not
+the owner identity. The Windows body remains exact at 88/88 instructions with
+all eight operands clean.

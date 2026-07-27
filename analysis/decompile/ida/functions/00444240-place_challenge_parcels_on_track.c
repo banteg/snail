@@ -28,8 +28,7 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
   int out_angle; // [esp+1Ch] [ebp-44h] BYREF
   TransformMatrix transform; // [esp+20h] [ebp-40h] BYREF
 
-  v2 = (__int64)((double)game->completion_bonus_x_source * 50.0 * 0.0099999998 + game->challenge_difficulty_scalar
-                                                                               * 50.0)
+  v2 = (__int64)((double)game->challenge_speed_value * 50.0 * 0.0099999998 + game->challenge_difficulty_scalar * 50.0)
      + 1;
   game->level_definition.parcel_count = v2;
   game->level_definition.parcel_quota = v2;

@@ -43,7 +43,7 @@ void GUI::initialize_challenge_setup_screen()
         2,
         0.0f);
     difficulty_slider->slider_value =
-        (float)g_runtime_config.completion_bonus_y_source * 0.0099999998f;
+        (float)g_runtime_config.challenge_difficulty_percent * 0.0099999998f;
     difficulty_slider->slider_target_value = difficulty_slider->slider_value;
     ((FrontendWidgetVirtualLayout*)difficulty_slider)->layout_frontend_widget();
 
@@ -59,7 +59,7 @@ void GUI::initialize_challenge_setup_screen()
         2,
         0.0f);
     speed_slider->slider_value =
-        (float)g_runtime_config.completion_bonus_x_source * 0.0099999998f;
+        (float)g_runtime_config.challenge_speed_percent * 0.0099999998f;
     speed_slider->slider_target_value = speed_slider->slider_value;
     speed_slider->stack_widget_below(difficulty_slider);
     ((FrontendWidgetVirtualLayout*)speed_slider)->layout_frontend_widget();

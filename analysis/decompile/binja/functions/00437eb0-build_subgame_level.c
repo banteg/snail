@@ -43,8 +43,8 @@
 00437fb7        if (game->selected_level_record_active != 0 || game->selected_level_record_persistent != 0)
 00438065        game->rate_or_level_arg.base_rate = game->selected_level_record->replay_speed_scalar.bits
 00438071        game->level_mode = game->selected_level_record->replay_mode_id
-0043807d        game->completion_bonus_y_source = game->selected_level_record->challenge_difficulty_value
-00438089        game->completion_bonus_x_source = game->selected_level_record->challenge_speed_value
+0043807d        game->challenge_difficulty_value = game->selected_level_record->challenge_difficulty_value
+00438089        game->challenge_speed_value = game->selected_level_record->challenge_speed_value
 0043809b        game->challenge_difficulty_scalar = fconvert.s(float.t(game->selected_level_record->challenge_difficulty_value) * fconvert.t(0.00999999978f))
 00437fbd        int32_t level_mode = game->level_mode
 00437fc3        if (level_mode == 3)
@@ -55,8 +55,8 @@
 0043803a        game->rate_or_level_arg.base_rate = fconvert.s(calc_slider_to_rate(game, 0f))
 00437fe4        if (level_mode == 1)
 00437fec        int32_t __saved_ebp_6 = __saved_ebp_14
-00437ffd        game->rate_or_level_arg.base_rate = fconvert.s(calc_slider_to_rate(game, fconvert.s(float.t(g_runtime_config.completion_bonus_x_source) * fconvert.t(0.00999999978f))))
-0043809b        game->challenge_difficulty_scalar = fconvert.s(float.t(g_runtime_config.completion_bonus_y_source) * fconvert.t(0.00999999978f))
+00437ffd        game->rate_or_level_arg.base_rate = fconvert.s(calc_slider_to_rate(game, fconvert.s(float.t(g_runtime_config.challenge_speed_percent) * fconvert.t(0.00999999978f))))
+0043809b        game->challenge_difficulty_scalar = fconvert.s(float.t(g_runtime_config.challenge_difficulty_percent) * fconvert.t(0.00999999978f))
 0043800e        if (level_mode == 2)
 00438021        game->rate_or_level_arg.base_rate = fconvert.s(calc_slider_to_rate(game, g_runtime_config.default_challenge_speed_slider))
 004380b0        if (game->selected_level_record_active != 0 || game->selected_level_record_persistent != 0)
@@ -73,8 +73,8 @@
 00438110        game->garbage_frequency = fconvert.s(fconvert.t(game->level_definition.garbage_frequency) * fconvert.t(0.00999999978f))
 00438122        game->salt_frequency = fconvert.s(fconvert.t(game->level_definition.salt_frequency) * fconvert.t(0.00999999978f))
 004380d0        if (level_mode_1 == 1)
-004380e4        game->garbage_frequency = fconvert.s(float.t(g_runtime_config.completion_bonus_y_source) * fconvert.t(0.00999999978f) * fconvert.t(0.800000012f))
-004380fc        game->salt_frequency = fconvert.s(float.t(g_runtime_config.completion_bonus_y_source) * fconvert.t(0.00999999978f) * fconvert.t(0.800000012f))
+004380e4        game->garbage_frequency = fconvert.s(float.t(g_runtime_config.challenge_difficulty_percent) * fconvert.t(0.00999999978f) * fconvert.t(0.800000012f))
+004380fc        game->salt_frequency = fconvert.s(float.t(g_runtime_config.challenge_difficulty_percent) * fconvert.t(0.00999999978f) * fconvert.t(0.800000012f))
 00438154        initialize_track_parcel_slots(&game->parcel_manager)
 00438166        if (g_game_base->intro.hide_for_replay_latch == 1)
 0043816e        hide_border_init(game->top_score_widget)

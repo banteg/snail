@@ -8,7 +8,7 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
   int32_t v3; // ecx
   int32_t score_tail; // eax
   SubSolutionScalar v5; // esi
-  int32_t completion_bonus_x_source; // ecx
+  int32_t challenge_speed_value; // ecx
   RuntimeRateOrLevelArg v7; // eax
   SubSolutionScalar v8; // esi
   int32_t level_mode; // eax
@@ -30,9 +30,9 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
       &runtime->player.stopwatch,
       sizeof(runtime->current_high_score_record.score_or_time));
     v5.bits = (int32_t)LODWORD(runtime->challenge_difficulty_scalar);
-    completion_bonus_x_source = runtime->completion_bonus_x_source;
+    challenge_speed_value = runtime->challenge_speed_value;
     runtime->current_high_score_record.score_tail = score_tail;
-    runtime->current_high_score_record.challenge_difficulty_value = runtime->completion_bonus_y_source;
+    runtime->current_high_score_record.challenge_difficulty_value = runtime->challenge_difficulty_value;
     LODWORD(v7.base_rate) = runtime->rate_or_level_arg;
     runtime->current_high_score_record.challenge_difficulty_scalar = v5;
     v8.bits = (int32_t)LODWORD(runtime->garbage_frequency);
@@ -40,18 +40,18 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
     level_mode = runtime->level_mode;
     runtime->current_high_score_record.garbage_frequency = v8;
     v10.bits = (int32_t)LODWORD(runtime->salt_frequency);
-    runtime->current_high_score_record.challenge_speed_value = completion_bonus_x_source;
+    runtime->current_high_score_record.challenge_speed_value = challenge_speed_value;
     startup_track_index = runtime->player.startup_track_index;
     runtime->current_high_score_record.salt_frequency = v10;
     runtime->current_high_score_record.active = 1;
     runtime->current_high_score_record.source_tail = startup_track_index;
     runtime->current_high_score_record.replay_mode_id = level_mode;
-    if ( (level_mode != 1 || startup_track_index) && !runtime->selected_level_record_active && completed == 1 )
+    if ( (level_mode != 1 || startup_track_index != 0) && runtime->selected_level_record_active == 0 && completed == 1 )
     {
-      if ( level_mode )
+      if ( level_mode != 0 )
       {
         v12 = level_mode - 1;
-        if ( v12 )
+        if ( v12 != 0 )
         {
           if ( v12 == 3 )
             add_time_trial_high_score(

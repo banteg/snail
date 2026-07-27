@@ -24,13 +24,14 @@ void __thiscall initialize_challenge_setup_screen(GUI *gui)
     gui->difficulty_slider = allocate_border(&g_game_base->border_manager);
     v2 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
     initialize_frontend_widget(gui->difficulty_slider, 0x100004u, aSelectDifficul, 20, 20.0, 80.0, v2, 2, 0.0);
-    gui->difficulty_slider->slider_position_target = (double)g_runtime_config.completion_bonus_y_source * 0.0099999998;
+    gui->difficulty_slider->slider_position_target = (double)g_runtime_config.challenge_difficulty_percent
+                                                   * 0.0099999998;
     gui->difficulty_slider->slider_position_current = gui->difficulty_slider->slider_position_target;
     (*(void (__thiscall **)(FrontendWidget *))gui->difficulty_slider->list_kind)(gui->difficulty_slider);
     gui->speed_slider = allocate_border(&g_game_base->border_manager);
     v3 = set_color_rgba((tColour *)&v9, 1.0, 1.0, 1.0, 1.0);
     initialize_frontend_widget(gui->speed_slider, 0x100004u, aSelectSpeed, 20, 20.0, 145.0, v3, 2, 0.0);
-    gui->speed_slider->slider_position_target = (double)g_runtime_config.completion_bonus_x_source * 0.0099999998;
+    gui->speed_slider->slider_position_target = (double)g_runtime_config.challenge_speed_percent * 0.0099999998;
     gui->speed_slider->slider_position_current = gui->speed_slider->slider_position_target;
     stack_widget_below(gui->speed_slider, gui->difficulty_slider);
     (*(void (__thiscall **)(FrontendWidget *))gui->speed_slider->list_kind)(gui->speed_slider);

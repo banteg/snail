@@ -12,7 +12,7 @@
 00415fb7        struct tColour color
 00415fb7        struct tColour* color_5 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00415fd6        initialize_frontend_widget(gui->difficulty_slider, 0x100004, "     Select Difficulty     >", 0x14, 20f, 80f, color_5, 2, 0f)
-00415fea        gui->difficulty_slider->slider_position_target = fconvert.s(float.t(g_runtime_config.completion_bonus_y_source) * fconvert.t(0.00999999978f))
+00415fea        gui->difficulty_slider->slider_position_target = fconvert.s(float.t(g_runtime_config.challenge_difficulty_percent) * fconvert.t(0.00999999978f))
 00415ff0        struct FrontendWidget* difficulty_slider = gui->difficulty_slider
 00415ff9        difficulty_slider->slider_position_current = difficulty_slider->slider_position_target
 00416004        (*gui->difficulty_slider->list_kind)()
@@ -20,7 +20,7 @@
 00416035        struct tColour color_1
 00416035        struct tColour* color_6 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 00416054        initialize_frontend_widget(gui->speed_slider, 0x100004, "       Select Speed       >", 0x14, 20f, 145f, color_6, 2, 0f)
-00416068        gui->speed_slider->slider_position_target = fconvert.s(float.t(g_runtime_config.completion_bonus_x_source) * fconvert.t(0.00999999978f))
+00416068        gui->speed_slider->slider_position_target = fconvert.s(float.t(g_runtime_config.challenge_speed_percent) * fconvert.t(0.00999999978f))
 0041606e        struct FrontendWidget* speed_slider = gui->speed_slider
 00416077        speed_slider->slider_position_current = speed_slider->slider_position_target
 00416084        stack_widget_below(gui->speed_slider, gui->difficulty_slider)

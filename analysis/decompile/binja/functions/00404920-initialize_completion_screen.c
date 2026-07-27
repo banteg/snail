@@ -12,9 +12,9 @@
 00404967        if (game_base_1->subgame.selected_level_record_active == 0)
 00404995        int32_t eax_3
 00404995        int32_t edx_5
-00404995        edx_5:eax_3 = muls.dp.d(0x66666667, g_runtime_config.completion_bonus_y_source)
+00404995        edx_5:eax_3 = muls.dp.d(0x66666667, g_runtime_config.challenge_difficulty_percent)
 00404997        int32_t edx_6 = edx_5 s>> 3
-0040499a        ecx_1 = g_runtime_config.completion_bonus_x_source
+0040499a        ecx_1 = g_runtime_config.challenge_speed_percent
 004049a7        esi_1 = edx_6 + (edx_6 u>> 0x1f)
 00404969        struct SubSolution* selected_level_record = game_base_1->subgame.selected_level_record
 00404977        ecx_1 = selected_level_record->challenge_speed_value

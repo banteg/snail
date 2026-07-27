@@ -125,9 +125,9 @@ int GUI::update_challenge_setup_screen()
             return 1;
         }
 
-        g_runtime_config.completion_bonus_x_source =
+        g_runtime_config.challenge_speed_percent =
             (int)(speed_slider->slider_value * 100.0f + 0.100000001f);
-        g_runtime_config.completion_bonus_y_source =
+        g_runtime_config.challenge_difficulty_percent =
             (int)(difficulty_slider->slider_value * 100.0f + 0.100000001f);
 
         flags = replay_button->widget_flags;

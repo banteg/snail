@@ -5,7 +5,7 @@ Target: `place_challenge_parcels_on_track @ 0x444240` (`thiscall`, 617 bytes, 17
 This is the challenge/survival-mode parcel placer called by
 `place_parcels_on_track` when `level_mode == 1`. The iOS `SubGame.o` symbol
 names the same owner `cRSubGame::PlaceParcelsSurvival()`. It computes the
-parcel quota from `completion_bonus_x_source` and
+parcel quota from `challenge_speed_value` and
 `challenge_difficulty_scalar`, clears the zero-parcel bucket count lanes,
 collects live runtime rows whose `parcel_set_id` is zero into the challenge
 row-index bank at `0x6447e8`, randomly claims rows with tag `"P3"`, reports
@@ -16,7 +16,7 @@ the same kind-42/non-kind-42 tail used by the normal parcel placer.
 
 - 2026-06-21 receiver cleanup: the scratch now defines
   `SubgameRuntime::place_challenge_parcels_on_track` directly, using the shared
-  receiver fields for `completion_bonus_x_source`,
+  receiver fields for `challenge_speed_value`,
   `challenge_difficulty_scalar`, and `runtime_row_count`. Focused Wibo remains
   44.70% at that checkpoint. This removes the local `Game` shell from the type
   census.
@@ -106,7 +106,7 @@ The Windows caller passes its live receiver unchanged, and Android/iOS both
 name this method `cRSubGame::PlaceParcelsSurvival()`. A Binary Ninja prototype
 preview then verified that replacing the stale `__fastcall(void*)` shell with
 `__thiscall(SubgameRuntime*)` preserves analysis and reveals
-`completion_bonus_x_source`, `challenge_difficulty_scalar`,
+`challenge_speed_value`, `challenge_difficulty_scalar`,
 `level_definition`, and `runtime_rows`. The canonical header, Binary Ninja
 replay, and IDA replay now carry that same receiver contract.
 

@@ -144,8 +144,8 @@ public:
     float pause_fade_step; // +0x10
     SubPause sub_pause; // +0x14, authored cRSubPause
     int runtime_row_scan_begin; int runtime_row_scan_end; // +0x20/+0x24, rolling row-window [begin, end)
-    int completion_bonus_x_source; // +0x28, raw result snapshot lane
-    int completion_bonus_y_source; // +0x2c, raw result snapshot lane
+    int challenge_speed_value; // +0x28, selected challenge speed percentage
+    int challenge_difficulty_value; // +0x2c, selected challenge difficulty percentage
     union {
         float base_rate; // +0x30, set by set_subgame_rate and used by calc_subgame_rate
         int level_arg_tail; // +0x30, raw result snapshot lane

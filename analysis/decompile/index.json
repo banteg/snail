@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 8,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 8,
+  "ida_exported": 8,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,16 +18,36 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "mark_track_warning_zones",
-      "address": "0x4354f0"
+      "name": "initialize_completion_screen",
+      "address": "0x404920"
     },
     {
-      "name": "promote_track_tiles_to_fringe_variants",
-      "address": "0x4355f0"
+      "name": "initialize_default_runtime_config",
+      "address": "0x406c20"
     },
     {
-      "name": "rebuild_track_runtime_from_segments",
-      "address": "0x437de0"
+      "name": "initialize_challenge_setup_screen",
+      "address": "0x415f50"
+    },
+    {
+      "name": "update_challenge_setup_screen",
+      "address": "0x416370"
+    },
+    {
+      "name": "build_subgame_level",
+      "address": "0x437eb0"
+    },
+    {
+      "name": "complete_subgame",
+      "address": "0x438700"
+    },
+    {
+      "name": "update_subgame",
+      "address": "0x438b90"
+    },
+    {
+      "name": "place_challenge_parcels_on_track",
+      "address": "0x444240"
     }
   ],
   "health_check_count": 1137,

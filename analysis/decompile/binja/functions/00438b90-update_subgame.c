@@ -30,8 +30,8 @@
 00438cae        label_438cae:
 00438cae        random_float_below(1f, nullptr)
 00438cb9        int32_t level_mode = game->level_mode
-00438cbc        game->completion_bonus_x_source = g_runtime_config.completion_bonus_x_source
-00438ccd        game->completion_bonus_y_source = g_runtime_config.completion_bonus_y_source
+00438cbc        game->challenge_speed_value = g_runtime_config.challenge_speed_percent
+00438ccd        game->challenge_difficulty_value = g_runtime_config.challenge_difficulty_percent
 00438cd0        if (level_mode u> 7)
 004398fa        update_subgame_camera(game)
 00439906        return

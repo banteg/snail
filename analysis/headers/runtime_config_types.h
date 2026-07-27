@@ -33,9 +33,9 @@ typedef struct RuntimeConfig {
     uint8_t unknown_32[2];
     int32_t display_mode_index;
     float steering_sensitivity[2];
-    int32_t completion_bonus_x_source;
+    int32_t challenge_speed_percent;
     float default_challenge_speed_slider;
-    int32_t completion_bonus_y_source;
+    int32_t challenge_difficulty_percent;
     uint8_t reserved_4c;
     uint8_t reserved_4d;
     uint8_t unknown_4e[2];

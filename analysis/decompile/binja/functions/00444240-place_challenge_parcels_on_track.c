@@ -6,7 +6,7 @@
 00444263        int32_t eax
 00444263        int16_t x87control
 00444263        int16_t x87control_1
-00444263        eax, x87control_1 = ftol(x87control, float.t(game->completion_bonus_x_source) * fconvert.t(50f) * fconvert.t(0.00999999978f) + fconvert.t(game->challenge_difficulty_scalar) * fconvert.t(50f))
+00444263        eax, x87control_1 = ftol(x87control, float.t(game->challenge_speed_value) * fconvert.t(50f) * fconvert.t(0.00999999978f) + fconvert.t(game->challenge_difficulty_scalar) * fconvert.t(50f))
 00444269        game->level_definition.parcel_count = eax + 1
 0044426f        game->level_definition.parcel_quota = eax + 1
 00444275        struct ParcelBucketCountLane* zero_bucket_count_lane = &g_zero_parcel_buckets.candidate_count

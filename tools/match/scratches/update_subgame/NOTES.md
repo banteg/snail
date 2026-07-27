@@ -128,9 +128,9 @@ honestly unaudited references.
 
 The state-1 snapshot copies like-named configuration lanes into like-named
 subgame lanes. Raw Windows instructions at `0x438cb3..0x438ccd` load
-`g_runtime_config +0x40` (`g_completion_bonus_x_source`) into
+`g_runtime_config +0x40` (`g_challenge_speed_percent`) into
 `SubgameRuntime +0x28`, then load `g_runtime_config +0x48`
-(`g_completion_bonus_y_source`) into `SubgameRuntime +0x2c`:
+(`g_challenge_difficulty_percent`) into `SubgameRuntime +0x2c`:
 
 ```asm
 mov ecx, dword [0x4df958]

@@ -19,8 +19,9 @@ void SubgameRuntime::complete_subgame(unsigned char completed)
         current_high_score_record.score = player.total_score;
         current_high_score_record.timer = player.stopwatch;
         current_high_score_record.score_tail = player.score_tail;
-        current_high_score_record.challenge_speed_value = completion_bonus_x_source;
-        current_high_score_record.challenge_difficulty_value = completion_bonus_y_source;
+        current_high_score_record.challenge_speed_value = challenge_speed_value;
+        current_high_score_record.challenge_difficulty_value =
+            challenge_difficulty_value;
         current_high_score_record.source_tail = player.startup_track_index;
         current_high_score_record.replay_speed_scalar = base_rate;
         current_high_score_record.replay_mode_id = level_mode;

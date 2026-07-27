@@ -21,8 +21,8 @@ void initialize_default_runtime_config()
     g_runtime_config.reserved_10 = zero;
     g_runtime_config.steering_sensitivity[0] = 0.75f;
     g_runtime_config.steering_sensitivity[1] = 0.75f;
-    g_runtime_config.completion_bonus_x_source = forty;
-    g_runtime_config.completion_bonus_y_source = forty;
+    g_runtime_config.challenge_speed_percent = forty;
+    g_runtime_config.challenge_difficulty_percent = forty;
     g_runtime_config.default_challenge_speed_slider = 0.3f;
     g_runtime_config.reserved_4c = (unsigned char)zero;
     g_runtime_config.reserved_4d = (unsigned char)zero;

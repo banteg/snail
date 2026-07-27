@@ -142,8 +142,9 @@ LABEL_38:
       v18 = play_button->widget_flags;
       if ( (v18 & 0x20) != 0 )
         goto LABEL_40;
-      g_runtime_config.completion_bonus_x_source = (__int64)(gui->speed_slider->slider_position_target * 100.0 + 0.1);
-      g_runtime_config.completion_bonus_y_source = (__int64)(gui->difficulty_slider->slider_position_target * 100.0 + 0.1);
+      g_runtime_config.challenge_speed_percent = (__int64)(gui->speed_slider->slider_position_target * 100.0 + 0.1);
+      g_runtime_config.challenge_difficulty_percent = (__int64)(gui->difficulty_slider->slider_position_target * 100.0
+                                                              + 0.1);
       v22 = gui->replay_button;
       v23 = v22->widget_flags;
       if ( (v23 & 0x20) != 0 )

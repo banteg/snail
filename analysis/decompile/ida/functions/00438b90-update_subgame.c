@@ -92,8 +92,8 @@ LABEL_21:
 LABEL_14:
       random_float_below(1.0, nullptr);
       level_mode = game->level_mode;
-      game->completion_bonus_x_source = g_runtime_config.completion_bonus_x_source;
-      game->completion_bonus_y_source = g_runtime_config.completion_bonus_y_source;
+      game->challenge_speed_value = g_runtime_config.challenge_speed_percent;
+      game->challenge_difficulty_value = g_runtime_config.challenge_difficulty_percent;
       switch ( level_mode )
       {
         case 0:

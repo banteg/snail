@@ -442,8 +442,8 @@ typedef struct SubgameRuntime {
     SubPause sub_pause;
     int32_t runtime_row_scan_begin;
     int32_t runtime_row_scan_end;
-    int32_t completion_bonus_x_source;
-    int32_t completion_bonus_y_source;
+    int32_t challenge_speed_value;
+    int32_t challenge_difficulty_value;
     RuntimeRateOrLevelArg rate_or_level_arg;
     ChallengeDifficultyOrBits challenge_difficulty;
     float subgame_rate;

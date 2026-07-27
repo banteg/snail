@@ -24,8 +24,9 @@ void Completion::initialize_completion_screen(
             difficulty_index = record->challenge_difficulty_value / 20;
             speed_source = record->challenge_speed_value;
         } else {
-            difficulty_index = g_runtime_config.completion_bonus_y_source / 20;
-            speed_source = g_runtime_config.completion_bonus_x_source;
+            difficulty_index =
+                g_runtime_config.challenge_difficulty_percent / 20;
+            speed_source = g_runtime_config.challenge_speed_percent;
         }
 
         speed_source /= 20;

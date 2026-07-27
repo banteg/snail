@@ -33,9 +33,9 @@ struct RuntimeConfig {
     unsigned char unknown_32[2];                 // +0x32
     int display_mode_index;                      // +0x34
     float steering_sensitivity[2];               // +0x38
-    int completion_bonus_x_source;               // +0x40
+    int challenge_speed_percent;                 // +0x40
     float default_challenge_speed_slider;        // +0x44
-    int completion_bonus_y_source;               // +0x48
+    int challenge_difficulty_percent;            // +0x48
     unsigned char reserved_4c;                   // +0x4c
     unsigned char reserved_4d;                   // +0x4d
     unsigned char unknown_4e[2];                 // +0x4e

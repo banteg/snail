@@ -38,8 +38,8 @@ void __thiscall initialize_completion_screen(Completion *completion, int32_t del
       }
       else
       {
-        challenge_speed_value = g_runtime_config.completion_bonus_x_source;
-        v8 = g_runtime_config.completion_bonus_y_source / 20;
+        challenge_speed_value = g_runtime_config.challenge_speed_percent;
+        v8 = g_runtime_config.challenge_difficulty_percent / 20;
       }
       v9 = challenge_speed_value / 20;
       if ( v8 >= 0 )

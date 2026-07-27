@@ -72,8 +72,8 @@
 00416657        int16_t x87control
 00416657        int16_t x87control_1
 00416657        eax_30, x87control_1 = ftol(x87control, fconvert.t(gui->speed_slider->slider_position_target) * fconvert.t(100f) + fconvert.t(0.100000001f))
-0041665c        g_runtime_config.completion_bonus_x_source = eax_30
-0041667b        g_runtime_config.completion_bonus_y_source = ftol(x87control_1, fconvert.t(gui->difficulty_slider->slider_position_target) * fconvert.t(100f) + fconvert.t(0.100000001f))
+0041665c        g_runtime_config.challenge_speed_percent = eax_30
+0041667b        g_runtime_config.challenge_difficulty_percent = ftol(x87control_1, fconvert.t(gui->difficulty_slider->slider_position_target) * fconvert.t(100f) + fconvert.t(0.100000001f))
 00416680        struct FrontendWidget* replay_button_2 = gui->replay_button
 00416683        enum FrontendWidgetFlag widget_flags_7 = replay_button_2->widget_flags
 0041668b        if ((widget_flags_7.b & 0x20) != 0)

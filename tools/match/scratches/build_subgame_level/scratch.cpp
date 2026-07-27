@@ -69,8 +69,9 @@ void SubgameRuntime::build_subgame_level(int level_index)
         || selected_level_record_persistent != zero) {
         base_rate = selected_level_record->replay_speed_scalar;
         level_mode = selected_level_record->replay_mode_id;
-        completion_bonus_y_source = selected_level_record->challenge_difficulty_value;
-        completion_bonus_x_source = selected_level_record->challenge_speed_value;
+        challenge_difficulty_value =
+            selected_level_record->challenge_difficulty_value;
+        challenge_speed_value = selected_level_record->challenge_speed_value;
         challenge_difficulty_scalar =
             (float)selected_level_record->challenge_difficulty_value * 0.00999999978f;
     } else {
@@ -87,9 +88,11 @@ void SubgameRuntime::build_subgame_level(int level_index)
             }
         } else if (mode == 1) {
             base_rate = calc_slider_to_rate(
-                (float)g_runtime_config.completion_bonus_x_source * 0.00999999978f);
+                (float)g_runtime_config.challenge_speed_percent
+                * 0.00999999978f);
             challenge_difficulty_scalar =
-                (float)g_runtime_config.completion_bonus_y_source * 0.00999999978f;
+                (float)g_runtime_config.challenge_difficulty_percent
+                * 0.00999999978f;
         } else if (mode == 2) {
             base_rate = calc_slider_to_rate(
                 g_runtime_config.default_challenge_speed_slider);
@@ -109,11 +112,13 @@ void SubgameRuntime::build_subgame_level(int level_index)
                 level_definition.salt_frequency * 0.00999999978f;
         } else if (mode == 1) {
             float normalized_garbage_difficulty =
-                (float)g_runtime_config.completion_bonus_y_source * 0.00999999978f;
+                (float)g_runtime_config.challenge_difficulty_percent
+                * 0.00999999978f;
             garbage_frequency =
                 normalized_garbage_difficulty * 0.800000012f;
             float normalized_salt_difficulty =
-                (float)g_runtime_config.completion_bonus_y_source * 0.00999999978f;
+                (float)g_runtime_config.challenge_difficulty_percent
+                * 0.00999999978f;
             salt_frequency =
                 normalized_salt_difficulty * 0.800000012f;
         }

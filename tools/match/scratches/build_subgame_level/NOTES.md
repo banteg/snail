@@ -523,3 +523,23 @@ instead of the folded `0.000122070312f` product. VC6 emits the same
 560-instruction candidate: the honest 77.67% frontier, prefix 177/555, 106
 clean aligned operands, and four alignment-only unaudited references are
 unchanged.
+
+## 2026-07-28 challenge parameter ownership
+
+The former X/Y completion-source names described only one downstream use.
+The full producer and persistence chain proves stronger ownership:
+`cRGUI::AI()` writes configuration offsets `+0x40/+0x48` from the speed and
+difficulty sliders, `cRSubGame::StartLevel(int)` scales those same percentages
+into challenge speed and difficulty state, and both mobile
+`cRSubGame::Complete(bool)` bodies copy the values into the corresponding
+`cRSubSolution` fields. Challenge parcel placement and hazard setup consume the
+same lanes before completion scoring does.
+
+The shared owners now expose `RuntimeConfig::challenge_speed_percent` /
+`challenge_difficulty_percent` and
+`SubgameRuntime::challenge_speed_value` /
+`challenge_difficulty_value`. This is a field-identity correction across the
+complete setup, runtime, and saved-solution path; offsets and Windows codegen
+are unchanged. Focused `StartLevel` remains 77.67%, 560/555 instructions,
+prefix 177/555, with 106 clean operands and four alignment-only unaudited
+references.

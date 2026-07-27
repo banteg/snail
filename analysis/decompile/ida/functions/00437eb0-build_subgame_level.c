@@ -88,8 +88,8 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   {
     game->rate_or_level_arg.level_arg_tail = game->selected_level_record->replay_speed_scalar.bits;
     game->level_mode = game->selected_level_record->replay_mode_id;
-    game->completion_bonus_y_source = game->selected_level_record->challenge_difficulty_value;
-    game->completion_bonus_x_source = game->selected_level_record->challenge_speed_value;
+    game->challenge_difficulty_value = game->selected_level_record->challenge_difficulty_value;
+    game->challenge_speed_value = game->selected_level_record->challenge_speed_value;
     challenge_difficulty_value = (double)game->selected_level_record->challenge_difficulty_value;
     goto LABEL_24;
   }
@@ -109,9 +109,9 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
                                           + 0.2;
       break;
     case 1:
-      slider = (double)g_runtime_config.completion_bonus_x_source * 0.0099999998;
+      slider = (double)g_runtime_config.challenge_speed_percent * 0.0099999998;
       game->rate_or_level_arg.base_rate = calc_slider_to_rate(game, slider);
-      challenge_difficulty_value = (double)g_runtime_config.completion_bonus_y_source;
+      challenge_difficulty_value = (double)g_runtime_config.challenge_difficulty_percent;
 LABEL_24:
       game->challenge_difficulty_scalar = challenge_difficulty_value * 0.0099999998;
       break;
@@ -136,8 +136,8 @@ LABEL_24:
     }
     else if ( v5 == 1 )
     {
-      game->garbage_frequency = (double)g_runtime_config.completion_bonus_y_source * 0.0099999998 * 0.80000001;
-      game->salt_frequency = (double)g_runtime_config.completion_bonus_y_source * 0.0099999998 * 0.80000001;
+      game->garbage_frequency = (double)g_runtime_config.challenge_difficulty_percent * 0.0099999998 * 0.80000001;
+      game->salt_frequency = (double)g_runtime_config.challenge_difficulty_percent * 0.0099999998 * 0.80000001;
     }
   }
   initialize_track_parcel_slots(&game->parcel_manager);
