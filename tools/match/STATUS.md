@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**550/694** port-relevant functions matched, **694/694** port-relevant functions have a scratch, **92255/300093** bytes (**30.74%**) are proof-grade, and overall fuzzy is **77.83%**.
+**526/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **90096/294937** bytes (**30.55%**) are proof-grade, and overall fuzzy is **77.64%**.
 
-**88** replaceable-platform functions (**16947** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
+**120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
-## Proof Grade (550)
+## Proof Grade (526)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -49,10 +49,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_stream_length_preserve_position | 0x405170 | 51 | 24/24 | 100.00% | 24/24 | 4 ok |  | boundary |
 | ✅ | load_file_bytes_allocating | 0x4051b0 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  | boundary |
 | ✅ | load_file_bytes_into_optional_buffer | 0x4051d0 | 158 | 56/56 | 100.00% | 56/56 | 9 ok | msvc6.5 /O2 /G5 /W3 /TC | boundary |
-| ✅ | scramble_archive_bytes_in_place | 0x405270 | 48 | 25/25 | 100.00% | 25/25 | - |  | boundary |
-| ✅ | save_file_bytes_with_optional_archive_scramble | 0x4052a0 | 156 | 56/56 | 100.00% | 56/56 | 10 ok | msvc6.5 /O2 /G5 /W3 /TC | boundary |
-| ✅ | delete_file_path | 0x405340 | 12 | 5/5 | 100.00% | 5/5 | 1 ok |  | boundary |
-| ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 | ✅ | load_x_mesh | 0x405640 | 1603 | 492/492 | 100.00% | 492/492 | 94 ok |  | boundary |
 | ✅ | initialize_directx_loader | 0x405c90 | 45 | 13/13 | 100.00% | 13/13 | 3 ok |  | boundary |
 | ✅ | load_or_reuse_cached_x_mesh | 0x405cc0 | 157 | 65/65 | 100.00% | 65/65 | 6 ok |  | boundary |
@@ -200,7 +196,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | compute_kind42_attachment_transform | 0x42b920 | 146 | 48/48 | 100.00% | 48/48 | 8 ok |  | core |
 | ✅ | get_path_position_at_node | 0x42b9c0 | 185 | 56/56 | 100.00% | 56/56 | - |  | core |
 | ✅ | is_point_inside_track_attachment | 0x42ca90 | 348 | 111/111 | 100.00% | 111/111 | 6 ok |  | core |
-| ✅ | load_png_image | 0x42f0a0 | 965 | 371/371 | 100.00% | 371/371 | 78 ok |  | boundary |
 | ✅ | load_config_file | 0x42f470 | 23 | 9/9 | 100.00% | 9/9 | 1 ok |  | core |
 | ✅ | load_file_bytes_from_path | 0x42f490 | 169 | 59/59 | 100.00% | 59/59 | 9 ok | msvc6.5 /O2 /G5 /W3 /TC | boundary |
 | ✅ | save_config_file | 0x42f540 | 98 | 31/31 | 100.00% | 31/31 | 5 ok |  | boundary |
@@ -230,25 +225,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | 16/16 | 2 ok |  | core |
 | ✅ | rotate_object_facequad_uv_pairs | 0x430a30 | 49 | 17/17 | 100.00% | 17/17 | - |  | core |
 | ✅ | request_object_animation | 0x430a70 | 793 | 231/231 | 100.00% | 231/231 | 17 ok |  | core |
-| ✅ | initialize_tracked_allocation_depth_thunk | 0x430e20 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  | core |
-| ✅ | initialize_tracked_allocation_depth | 0x430e30 | 11 | 2/2 | 100.00% | 2/2 | 1 ok |  | core |
-| ✅ | uninitialize_game_data_archive | 0x430ef0 | 49 | 13/13 | 100.00% | 13/13 | 6 ok |  | core |
-| ✅ | archive_or_file_exists | 0x430fd0 | 92 | 36/36 | 100.00% | 36/36 | 7 ok |  | core |
-| ✅ | load_file_bytes | 0x431520 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  | core |
-| ✅ | xor_archive_bytes_in_place | 0x431980 | 55 | 27/27 | 100.00% | 27/27 | - |  | core |
-| ✅ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  | core |
-| ✅ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | 2/2 | 1 ok |  | core |
-| ✅ | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | 3/3 | 1 ok |  | core |
-| ✅ | get_tracked_allocation_size | 0x431ab0 | 61 | 26/26 | 100.00% | 26/26 | 2 ok |  | core |
-| ✅ | push_tracked_allocation | 0x431af0 | 54 | 19/19 | 100.00% | 19/19 | 2 ok |  | core |
-| ✅ | pop_tracked_allocation | 0x431b30 | 44 | 20/20 | 100.00% | 20/20 | - |  | core |
-| ✅ | allocate_tracked_memory | 0x431b60 | 129 | 48/48 | 100.00% | 48/48 | 7 ok |  | core |
-| ✅ | free_tracked_memory | 0x431bf0 | 127 | 43/43 | 100.00% | 43/43 | 9 ok |  | core |
-| ✅ | free_tracked_allocations_to_mark | 0x431c70 | 53 | 15/15 | 100.00% | 15/15 | 6 ok |  | core |
-| ✅ | set_tracked_allocation_mark | 0x431cb0 | 11 | 3/3 | 100.00% | 3/3 | 2 ok |  | core |
-| ✅ | report_errorf | 0x431cc0 | 78 | 19/19 | 100.00% | 19/19 | 8 ok | msvc6.5 /O2 /G5 /W3 /TC | core |
-| ✅ | report_warningf | 0x431d10 | 78 | 19/19 | 100.00% | 19/19 | 8 ok | msvc6.5 /O2 /G5 /W3 /TC | core |
-| ✅ | report_messagef | 0x431d60 | 58 | 15/15 | 100.00% | 15/15 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC | core |
 | ✅ | copy_c_string | 0x431da0 | 21 | 10/10 | 100.00% | 10/10 | - |  | core |
 | ✅ | skip_to_next_line | 0x431e30 | 29 | 13/13 | 100.00% | 13/13 | - |  | core |
 | ✅ | append_c_string | 0x431e50 | 42 | 19/19 | 100.00% | 19/19 | - |  | core |
@@ -594,7 +570,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (55)
+## High Progress (80-94.99%) (51)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -617,10 +593,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 94.54% | 69/421 | 25 ok |  | core |
 | 🚧 | calc_path_length_z | 0x42c600 | 363 | 112/113 | 81.78% | 24/113 | 9 ok |  | core |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 436/437 | 90.03% | 27/437 | 22 ok |  | core |
-| 🚧 | initialize_game_data_archive | 0x430e40 | 176 | 48/47 | 94.74% | 27/47 | 2 unaudited, 19 ok |  | core |
-| 🚧 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 189/188 | 92.84% | 9/188 | 32 ok |  | core |
-| 🚧 | enumerate_matching_archive_or_fs_entries | 0x431740 | 570 | 186/182 | 81.52% | 7/182 | 26 ok | msvc6.5 /O2 /G5 /W3 /TC | boundary |
-| 🚧 | load_archive_index | 0x4319c0 | 187 | 67/67 | 92.54% | 40/67 | 2 unaudited, 13 ok | msvc6.5 /O2 /G5 /W3 /TC | core |
 | 🚧 | strings_equal_case_insensitive | 0x431dc0 | 104 | 50/50 | 84.00% | 5/50 | - |  | core |
 | 🚧 | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 75/75 | 81.33% | 11/75 | 6 ok |  | core |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  | core |
@@ -654,14 +626,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  | core |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  | core |
 
-## Mid Progress (50-79.99%) (48)
+## Mid Progress (50-79.99%) (44)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 648/647 | 77.07% | 1/647 | 96 ok |  | core |
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 442/446 | 64.64% | 2/446 | 8 ok |  | core |
-| 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 70.33% | 4/46 | - |  | boundary |
-| 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC | core |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.01% | 48/566 | 6 unaudited, 52 ok |  | core |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 430/439 | 56.16% | 6/439 | 12 unaudited, 28 ok |  | boundary |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  | boundary |
@@ -692,8 +662,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | add_object_edge | 0x4305a0 | 772 | 231/227 | 73.36% | 1/227 | 12 unaudited, 30 ok |  | core |
 | 🚧 | calc_object_edges | 0x4308b0 | 382 | 142/141 | 75.62% | 0/141 | 6 unaudited, 14 ok |  | core |
 | 🚧 | replace_object_list_texture_refs | 0x430d90 | 129 | 54/53 | 74.77% | 14/53 | 1 ok |  | core |
-| 🚧 | find_archive_entry | 0x431250 | 122 | 61/60 | 79.34% | 7/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC | core |
-| 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 208/206 | 79.23% | 10/206 | 36 ok |  | core |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  | core |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 6 unaudited, 48 ok |  | core |
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 284/276 | 67.50% | 0/276 | 12 ok |  | core |
@@ -725,10 +693,16 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1229/1245 | 29.67% | 2/1245 | 1 mismatch, 117 unaudited, 77 ok |  | core |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 627/639 | 40.92% | 0/639 | 1 unresolved, 98 unaudited, 50 ok |  | core |
 
-## Excluded: Replaceable Platform (88)
+## Excluded: Replaceable Platform (120)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
+| 🖥 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 70.33% | 4/46 | - |  | replaceable-platform |
+| 🖥 | scramble_archive_bytes_in_place | 0x405270 | 48 | 25/25 | 100.00% | 25/25 | - |  | replaceable-platform |
+| 🖥 | save_file_bytes_with_optional_archive_scramble | 0x4052a0 | 156 | 56/56 | 100.00% | 56/56 | 10 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | delete_file_path | 0x405340 | 12 | 5/5 | 100.00% | 5/5 | 1 ok |  | replaceable-platform |
+| 🖥 | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 | - |  | replaceable-platform |
+| 🖥 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | log_startup_timestamp | 0x406d30 | 58 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | game_startup_and_main_loop | 0x406dc0 | 1316 | 327/325 | 70.86% | 1/325 | 1 mismatch, 41 unaudited, 141 ok |  | replaceable-platform |
 | 🖥 | handle_game_window_activate | 0x4072f0 | 187 | 44/44 | 100.00% | 44/44 | 26 ok |  | replaceable-platform |
@@ -774,9 +748,35 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🖥 | direct3d_renderer_set_fullscreen_mode | 0x414270 | 325 | 84/84 | 100.00% | 84/84 | 29 ok |  | replaceable-platform |
 | 🖥 | restore_texture_ref_stage_states | 0x4143c0 | 315 | 110/110 | 100.00% | 110/110 | 15 ok |  | replaceable-platform |
 | 🖥 | query_direct3d_device_caps | 0x414600 | 65 | 21/21 | 100.00% | 21/21 | 4 ok |  | replaceable-platform |
+| 🖥 | load_png_image | 0x42f0a0 | 965 | 371/371 | 100.00% | 371/371 | 78 ok |  | replaceable-platform |
+| 🖥 | initialize_tracked_allocation_depth_thunk | 0x430e20 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  | replaceable-platform |
+| 🖥 | initialize_tracked_allocation_depth | 0x430e30 | 11 | 2/2 | 100.00% | 2/2 | 1 ok |  | replaceable-platform |
+| 🖥 | initialize_game_data_archive | 0x430e40 | 176 | 48/47 | 94.74% | 27/47 | 2 unaudited, 19 ok |  | replaceable-platform |
+| 🖥 | uninitialize_game_data_archive | 0x430ef0 | 49 | 13/13 | 100.00% | 13/13 | 6 ok |  | replaceable-platform |
 | 🖥 | set_current_directory_with_drive_fallback | 0x430f30 | 151 | 48/48 | 100.00% | 48/48 | 6 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | archive_or_file_exists | 0x430fd0 | 92 | 36/36 | 100.00% | 36/36 | 7 ok |  | replaceable-platform |
+| 🖥 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 189/188 | 92.84% | 9/188 | 32 ok |  | replaceable-platform |
+| 🖥 | find_archive_entry | 0x431250 | 122 | 61/60 | 79.34% | 7/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 208/206 | 79.23% | 10/206 | 36 ok |  | replaceable-platform |
+| 🖥 | load_file_bytes | 0x431520 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  | replaceable-platform |
 | 🖥 | delete_file_path_with_directory_walk | 0x431540 | 264 | 84/84 | 100.00% | 84/84 | 14 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | write_file_bytes | 0x431650 | 229 | 74/74 | 100.00% | 74/74 | 10 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | enumerate_matching_archive_or_fs_entries | 0x431740 | 570 | 186/182 | 81.52% | 7/182 | 26 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | xor_archive_bytes_in_place | 0x431980 | 55 | 27/27 | 100.00% | 27/27 | - |  | replaceable-platform |
+| 🖥 | load_archive_index | 0x4319c0 | 187 | 67/67 | 92.54% | 40/67 | 2 unaudited, 13 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  | replaceable-platform |
+| 🖥 | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | 2/2 | 1 ok |  | replaceable-platform |
+| 🖥 | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | 3/3 | 1 ok |  | replaceable-platform |
+| 🖥 | get_tracked_allocation_size | 0x431ab0 | 61 | 26/26 | 100.00% | 26/26 | 2 ok |  | replaceable-platform |
+| 🖥 | push_tracked_allocation | 0x431af0 | 54 | 19/19 | 100.00% | 19/19 | 2 ok |  | replaceable-platform |
+| 🖥 | pop_tracked_allocation | 0x431b30 | 44 | 20/20 | 100.00% | 20/20 | - |  | replaceable-platform |
+| 🖥 | allocate_tracked_memory | 0x431b60 | 129 | 48/48 | 100.00% | 48/48 | 7 ok |  | replaceable-platform |
+| 🖥 | free_tracked_memory | 0x431bf0 | 127 | 43/43 | 100.00% | 43/43 | 9 ok |  | replaceable-platform |
+| 🖥 | free_tracked_allocations_to_mark | 0x431c70 | 53 | 15/15 | 100.00% | 15/15 | 6 ok |  | replaceable-platform |
+| 🖥 | set_tracked_allocation_mark | 0x431cb0 | 11 | 3/3 | 100.00% | 3/3 | 2 ok |  | replaceable-platform |
+| 🖥 | report_errorf | 0x431cc0 | 78 | 19/19 | 100.00% | 19/19 | 8 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | report_warningf | 0x431d10 | 78 | 19/19 | 100.00% | 19/19 | 8 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | report_messagef | 0x431d60 | 58 | 15/15 | 100.00% | 15/15 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | launch_alpha72_url | 0x433050 | 16 | 3/3 | 100.00% | 3/3 | 2 ok |  | replaceable-platform |
 | 🖥 | initialize_bass_audio_backend | 0x449460 | 612 | 176/176 | 100.00% | 176/176 | 87 ok |  | replaceable-platform |
 | 🖥 | uninitialize_bass_audio_backend | 0x4496d0 | 70 | 19/19 | 100.00% | 19/19 | 10 ok |  | replaceable-platform |

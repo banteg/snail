@@ -2157,7 +2157,6 @@ def test_non_portable_scopes_stay_visible_but_do_not_affect_port_totals(
         exact_status("exact", 0x1000, 2),
         exact_status("boundary_contract", 0x1002, 2),
         exact_status("platform_body", 0x1004, 4),
-        exact_status("library_body", 0x1008, 4),
     ]
     manifest = FunctionSymbolManifest(
         name="test",
@@ -2222,7 +2221,7 @@ def test_non_portable_scopes_stay_visible_but_do_not_affect_port_totals(
     assert rows[2][0] == "🖥"
     assert rows[2][10] == "replaceable platform implementation"
     assert rows[3][0] == "📚"
-    assert rows[3][10] == "third-party implementation"
+    assert rows[3][10] == "third-party implementation; no scratch"
 
     table = render_status_table(statuses, totals, manifest=manifest, image=image)
     assert "Excluded: Replaceable Platform (1)" in table

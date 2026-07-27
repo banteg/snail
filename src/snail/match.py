@@ -3624,6 +3624,22 @@ STATUS_HEADER = (
 )
 
 
+def _excluded_port_scope_icon(port_scope: str) -> str | None:
+    if port_scope == "replaceable-platform":
+        return REPLACEABLE_PLATFORM_ICON
+    if port_scope == "third-party":
+        return THIRD_PARTY_ICON
+    return None
+
+
+def _port_scope_note(port_scope: str) -> str:
+    if port_scope == "replaceable-platform":
+        return "replaceable platform implementation"
+    if port_scope == "third-party":
+        return "third-party implementation"
+    return ""
+
+
 def _format_masked_counts(status: ScratchStatus) -> str:
     parts: list[str] = []
     if status.masked_mismatches:
@@ -3685,7 +3701,7 @@ def _missing_scratch_status_rows(
     missing_functions = {
         symbol.name
         for symbol in manifest.functions
-        if symbol.is_port_relevant and symbol.name not in scratched_functions
+        if symbol.name not in scratched_functions
     }
     if not missing_functions:
         return []
@@ -3700,9 +3716,11 @@ def _missing_scratch_status_rows(
         image,
         function_names=missing_functions,
     ):
+        port_scope = functions_by_name[name].port_scope
+        scope_note = _port_scope_note(port_scope)
         rows.append(
             (
-                MISSING_SCRATCH_ICON,
+                _excluded_port_scope_icon(port_scope) or MISSING_SCRATCH_ICON,
                 name,
                 f"0x{address:x}",
                 str(target_size),
@@ -3711,8 +3729,8 @@ def _missing_scratch_status_rows(
                 f"0/{target_instructions}",
                 "-",
                 "",
-                functions_by_name[name].port_scope,
-                "no scratch",
+                port_scope,
+                f"{scope_note}; no scratch" if scope_note else "no scratch",
             )
         )
     return rows
@@ -3744,15 +3762,10 @@ def render_status_rows(
         symbol = functions_by_name.get(status.config.function)
         port_scope = symbol.port_scope if symbol is not None else "core"
         note = status.error or ""
-        icon = STATE_ICONS[status.state]
-        if port_scope == "replaceable-platform":
-            icon = REPLACEABLE_PLATFORM_ICON
-            note = "replaceable platform implementation" + (
-                f"; {note}" if note else ""
-            )
-        elif port_scope == "third-party":
-            icon = THIRD_PARTY_ICON
-            note = "third-party implementation" + (f"; {note}" if note else "")
+        icon = _excluded_port_scope_icon(port_scope) or STATE_ICONS[status.state]
+        scope_note = _port_scope_note(port_scope)
+        if scope_note:
+            note = scope_note + (f"; {note}" if note else "")
         rows.append(
             (
                 icon,

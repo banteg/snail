@@ -163,6 +163,10 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
                     f"functions[{index}].description must be a non-empty string when present"
                 )
             description = description.strip()
+        if "match_scope" in raw_symbol:
+            raise ValueError(
+                f"functions[{index}].match_scope was replaced by port_scope"
+            )
         port_scope = raw_symbol.get("port_scope", "core")
         if port_scope not in FUNCTION_PORT_SCOPES:
             allowed = ", ".join(sorted(FUNCTION_PORT_SCOPES))

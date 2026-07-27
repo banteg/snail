@@ -227,7 +227,7 @@
     {
       "address": "0x4050c0",
       "name": "classify_archive_entry_extension",
-      "port_scope": "boundary",
+      "port_scope": "replaceable-platform",
       "description": "Copies one archive entry's filename stem before the first dot into the caller buffer and returns the shared ArchiveEntryExtensionClass: TGA, WAV, MP3, or UNKNOWN."
     },
     {
@@ -256,30 +256,31 @@
     {
       "address": "0x405270",
       "name": "scramble_archive_bytes_in_place",
-      "port_scope": "boundary",
+      "port_scope": "replaceable-platform",
       "description": "Applies the archive rebuild byte-scramble in place by XORing each byte with its index-derived polynomial mask."
     },
     {
       "address": "0x4052a0",
       "name": "save_file_bytes_with_optional_archive_scramble",
-      "port_scope": "boundary",
+      "port_scope": "replaceable-platform",
       "description": "Writes one byte buffer to the filesystem and optionally applies the archive rebuild scramble before the write."
     },
     {
       "address": "0x405340",
       "name": "delete_file_path",
-      "port_scope": "boundary",
+      "port_scope": "replaceable-platform",
       "description": "Deletes one filesystem path; used by the archive rebuild pass to remove the old archive and temporary extracted PNG."
     },
     {
       "address": "0x405350",
       "name": "toggle_archive_high_bit_in_place",
-      "port_scope": "boundary",
+      "port_scope": "replaceable-platform",
       "description": "Toggles bit 7 on each byte in place; used to decode the legacy `.dam` archive payload before rebuild."
     },
     {
       "address": "0x405370",
       "name": "rebuild_game_archive_if_needed",
+      "port_scope": "replaceable-platform",
       "description": "When `SnailMail.dat` is missing but `SnailMail.dam` exists, decodes the legacy ArchiveIndex and its 12-byte entries, repacks TGA entries through the PNG loader into typed TGA headers plus inline pixels, copies other payloads unchanged, writes the rebuilt `SnailMail.dat`, and deletes the old `.dam` plus temporary `0.png`."
     },
     {
@@ -1739,7 +1740,7 @@
     {
       "address": "0x42f0a0",
       "name": "load_png_image",
-      "port_scope": "boundary",
+      "port_scope": "replaceable-platform",
       "description": "Authored seven-argument cdecl PNG loader used only by rebuild_game_archive_if_needed. It reads through the statically linked libpng 1.2.5 API, returns an allocated pixel buffer plus dimensions and channel count, and copies an optional PNG background color to the caller."
     },
     {
@@ -1929,21 +1930,25 @@
     {
       "address": "0x430e20",
       "name": "initialize_tracked_allocation_depth_thunk",
+      "port_scope": "replaceable-platform",
       "description": "CRT constructor-table thunk that tail-forwards to the adjacent initializer for the tracked-allocation stack depth."
     },
     {
       "address": "0x430e30",
       "name": "initialize_tracked_allocation_depth",
+      "port_scope": "replaceable-platform",
       "description": "Initializes the shared tracked-allocation stack depth to zero before archive and shell startup begin using the guarded allocation helpers."
     },
     {
       "address": "0x430e40",
       "name": "initialize_game_data_archive",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellInit(): resets the global shell, tracked-allocation, key-repeat, sound, and input state; initializes the DAT index; allocates the shared RShell scratch and music workspaces; and samples the current cursor clip rectangle."
     },
     {
       "address": "0x430ef0",
       "name": "uninitialize_game_data_archive",
+      "port_scope": "replaceable-platform",
       "description": "Frees the tracked archive payload buffer, closes the loaded SnailMail.dat stream when present, and clears the global archive-index pointer."
     },
     {
@@ -1955,25 +1960,30 @@
     {
       "address": "0x430fd0",
       "name": "archive_or_file_exists",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellFindFile(char*, bool): checks the loaded DAT index unless the boolean formal forces a direct filesystem probe."
     },
     {
       "address": "0x431030",
       "name": "load_file_bytes_fixed_size_from_archive_or_fs",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellLoadFileHeader(char*, void*, int): loads exactly the caller-supplied byte count from a named archive entry or filesystem path, using ArchiveEntry data_offset for the sentinel, seek target, and XOR seed while reusing a caller buffer or allocating tracked storage."
     },
     {
       "address": "0x431250",
-      "name": "find_archive_entry"
+      "name": "find_archive_entry",
+      "port_scope": "replaceable-platform"
     },
     {
       "address": "0x4312d0",
       "name": "load_file_bytes_from_archive_or_fs",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellLoadFile(char*, void*, int*): loads variable-size bytes through the shared ArchiveIndex or filesystem fallback, using ArchiveEntry data_offset and byte_count to seek/read/XOR into a caller buffer or tracked allocation and reporting the selected size when requested."
     },
     {
       "address": "0x431520",
       "name": "load_file_bytes",
+      "port_scope": "replaceable-platform",
       "description": "Exact Windows RShellLoadFile(char*, int*) overload that delegates to the three-argument loader with a null destination buffer."
     },
     {
@@ -1991,82 +2001,97 @@
     {
       "address": "0x431740",
       "name": "enumerate_matching_archive_or_fs_entries",
-      "port_scope": "boundary",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellReadDirectory(char*, char*, int*, char (*)[128]): enumerates archive-backed or filesystem-backed filenames under the requested prefix, filters them against the caller wildcard pattern, copies each match into caller-owned 128-byte name records, and returns the match count through the out parameter. The archive path walks 12-byte ArchiveEntry records and reloads the shared ArchiveIndex owner at each loop tail; the filesystem path owns a 0x118-byte CRT FileSearchData record with name[260] at +0x14."
     },
     {
       "address": "0x431980",
       "name": "xor_archive_bytes_in_place",
+      "port_scope": "replaceable-platform",
       "description": "Applies the archive byte XOR mask in place over the requested byte span; the same transform is used to decode archive reads and to encode rebuilt archive payloads."
     },
     {
       "address": "0x4319c0",
       "name": "load_archive_index",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellDatInit(char*): decodes and parses the SnailMail.dat archive index, rebases the 12-byte entry paths against the installed ArchiveIndex owner, and opens the backing DAT stream."
     },
     {
       "address": "0x431a80",
       "name": "is_archive_index_loaded",
+      "port_scope": "replaceable-platform",
       "description": "Returns whether the global archive-index table has been initialized, so content loaders can decide between archive-backed reads and direct filesystem fallback."
     },
     {
       "address": "0x431a90",
       "name": "get_archive_data_base",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellMemoryScratch(): returns the base of the global 4 MiB RShell scratch workspace used by transient mesh, voice, object-definition, and render-buffer builders. It does not own the DAT payload."
     },
     {
       "address": "0x431aa0",
       "name": "get_archive_data_end",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellMemoryScratch2(): returns the second 2 MiB region of the global RShell scratch workspace at base +0x200000. Despite the stable harness name, this is a second workspace base rather than an end sentinel."
     },
     {
       "address": "0x431ab0",
       "name": "get_tracked_allocation_size",
+      "port_scope": "replaceable-platform",
       "description": "Looks up one tracked allocation inside the global allocation stack and returns the guarded byte size recorded for that pointer."
     },
     {
       "address": "0x431af0",
       "name": "push_tracked_allocation",
+      "port_scope": "replaceable-platform",
       "description": "Appends one `(pointer, guarded_size)` record to the global tracked-allocation stack used by the guarded resource allocator. Its caller-owned debug label argument is present in the ABI but unused by this Windows body."
     },
     {
       "address": "0x431b30",
       "name": "pop_tracked_allocation",
+      "port_scope": "replaceable-platform",
       "description": "Removes one pointer from the global tracked-allocation stack, preferring the top-of-stack fast path and falling back to a linear search when the free order differs."
     },
     {
       "address": "0x431b60",
       "name": "allocate_tracked_memory",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellMemoryMalloc(int, char*): allocates a zeroed guarded heap block, records it in the global tracked-allocation stack, writes the front and back `DE AD BA BE` sentinels, and returns the caller-visible payload pointer."
     },
     {
       "address": "0x431bf0",
       "name": "free_tracked_memory",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellMemoryFree(void*): validates a guarded tracked allocation, removes its size from the global memory tally, frees the backing block, and drops the pointer from the tracked-allocation stack."
     },
     {
       "address": "0x431c70",
       "name": "free_tracked_allocations_to_mark",
+      "port_scope": "replaceable-platform",
       "description": "Void Windows RShellMemoryUnBookmark() lifecycle helper: frees tracked allocations back down to the current saved stack mark, as used by the main loop to unwind one temporary allocation scope."
     },
     {
       "address": "0x431cb0",
       "name": "set_tracked_allocation_mark",
+      "port_scope": "replaceable-platform",
       "description": "Void Windows RShellMemoryBookmark() lifecycle helper: saves the current tracked-allocation stack depth as the active unwind mark for a later `free_tracked_allocations_to_mark` call."
     },
     {
       "address": "0x431cc0",
       "name": "report_errorf",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellError(char*, ...): formats and emits one fatal-style engine error message with a varargs payload. Runtime and content-loading paths use it for hard failures such as missing hotspot textures, parcel-pool exhaustion, and invalid track segment lengths."
     },
     {
       "address": "0x431d10",
       "name": "report_warningf",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellWarning(char*, ...): formats one warning message with the native `* WARNING *` prefix and emits it through the shared debug-output path."
     },
     {
       "address": "0x431d60",
       "name": "report_messagef",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellPrintText(char*, ...): formats and emits one plain debug message without the warning prefix; archive/file loading paths use it for missing-file notices."
     },
     {

@@ -143,8 +143,8 @@ Useful analysis helpers:
     must recover.
   - `"boundary"` is an authored content, input, audio, or rendering contract
     whose behavior still matters across the modern-engine seam.
-  - `"replaceable-platform"` is a concrete Win32, Direct3D, DirectInput, or BASS
-    implementation that the port replaces.
+  - `"replaceable-platform"` is a concrete Win32, Direct3D, DirectInput, BASS,
+    or legacy RShell/file/archive backend implementation that the port replaces.
   - `"third-party"` is a proven library body that should be linked or replaced,
     not decompiled.
   Status counts `core` and `boundary` functions in port-relevant totals and

@@ -107,8 +107,24 @@ def test_write_function_symbol_manifest_preserves_normalized_shape(tmp_path: Pat
     }
 
 
-def test_unknown_function_port_scope_is_rejected(tmp_path: Path) -> None:
-    manifest_path = tmp_path / "unknown-port-scope.json"
+@pytest.mark.parametrize(
+    ("field", "value", "error"),
+    [
+        ("port_scope", "ignore", "port_scope must be one of"),
+        (
+            "match_scope",
+            "reference-only",
+            "match_scope was replaced by port_scope",
+        ),
+    ],
+)
+def test_invalid_or_legacy_function_scope_is_rejected(
+    tmp_path: Path,
+    field: str,
+    value: str,
+    error: str,
+) -> None:
+    manifest_path = tmp_path / f"invalid-{field}.json"
     manifest_path.write_text(
         json.dumps(
             {
@@ -121,7 +137,7 @@ def test_unknown_function_port_scope_is_rejected(tmp_path: Path) -> None:
                     {
                         "address": "0x405140",
                         "name": "file_exists",
-                        "port_scope": "ignore",
+                        field: value,
                     }
                 ],
             }
@@ -129,7 +145,7 @@ def test_unknown_function_port_scope_is_rejected(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    with pytest.raises(ValueError, match="port_scope must be one of"):
+    with pytest.raises(ValueError, match=error):
         load_function_symbol_manifest(manifest_path)
 
 
