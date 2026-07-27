@@ -54,7 +54,7 @@ cull_check:
 
     if (tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE
         || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE) {
-        if (attachment_template_record->kind == 24) {
+        if (attachment_template_record->kind == PATH_TEMPLATE_KIND_WORM) {
             render_arg_20 =
                 render_arg_20 - g_game->subgame.subgame_rate * 0.033333335f;
             color.set_color_alpha(0.800000012f);

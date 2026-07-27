@@ -30,7 +30,7 @@ int GolbPathFollowState::traverse_path_follow_golb(float path_factor, Vec3* posi
             shot->flight_transform.position = output_position;
 
             Path* terminal_template = template_record;
-            if (terminal_template->kind == 31) {
+            if (terminal_template->kind == PATH_TEMPLATE_KIND_SUPERTRAMP) {
                 velocity->y = velocity->z * 0.69999999f;
                 float old_x = position->x;
                 int count = terminal_template->segment_count;
@@ -113,7 +113,7 @@ int GolbPathFollowState::traverse_path_follow_golb(float path_factor, Vec3* posi
     Vec3* motion = velocity;
     Vec3* input_position = position;
 
-    if (current_template->kind == 42) {
+    if (current_template->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
         float local_x = input_position->x - center_x;
         current_template->compute_kind42_attachment_transform(
             special_scalar,
@@ -213,7 +213,7 @@ int GolbPathFollowState::traverse_path_follow_golb(float path_factor, Vec3* posi
         return template_record->side_exit_mode == 0;
     }
 
-    if (exit_template->kind != 42)
+    if (exit_template->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
         input_position->x = input_position->x + motion->x;
     return 0;
 }

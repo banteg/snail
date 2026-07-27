@@ -45,17 +45,17 @@ void Cameraman::update_cameraman()
 
     Player* lift_player = player;
     Path* template_record;
-    int kind;
+    PathTemplateKind kind;
     if (lift_player->follow_state.active == 1
         && ((template_record = lift_player->follow_state.template_record,
              kind = template_record->kind,
-             kind == 0x10)
+             kind == PATH_TEMPLATE_KIND_FAMILY_10)
             || kind == 8
             || kind == 9
             || kind == 10
-            || kind == 0x2b
-            || kind == 0x2d
-            || kind == 0x24
+            || kind == PATH_TEMPLATE_KIND_TWISTER
+            || kind == PATH_TEMPLATE_KIND_TWISTER2
+            || kind == PATH_TEMPLATE_KIND_START
             || kind == 0xe)) {
         float phase = (lift_player->transform.position.z - lift_player->follow_state.source_cell->position.z)
             / template_record->segment_count_f;
@@ -117,7 +117,7 @@ void Cameraman::update_cameraman()
     Player* worm_player = player;
     Path* worm_template;
     float desired_fov;
-    if (worm_player->follow_state.active == 1 && (worm_template = worm_player->follow_state.template_record, worm_template->kind == 0x18)) {
+    if (worm_player->follow_state.active == 1 && (worm_template = worm_player->follow_state.template_record, worm_template->kind == PATH_TEMPLATE_KIND_WORM)) {
         float phase = (worm_player->transform.position.z - worm_player->follow_state.source_cell->position.z)
             / worm_template->segment_count_f;
         if (phase < 0.0f)

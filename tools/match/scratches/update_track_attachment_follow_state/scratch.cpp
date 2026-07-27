@@ -113,7 +113,7 @@ int FollowState::update_track_attachment_follow_state(
                 + current_template->primary_samples[current_index].special_scalar;
         }
 
-        if (current_template->kind == 42) {
+        if (current_template->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
             arg2 = out_position->x - v85;
             current_template->compute_kind42_attachment_transform(
                 arg1, arg2, 0.49000001f, &transform, &out_angle);
@@ -291,7 +291,7 @@ terminal_path:
             motion->z = 1.0f;
 
         Path* final_template = this->template_record;
-        if (final_template->kind == 31) {
+        if (final_template->kind == PATH_TEMPLATE_KIND_SUPERTRAMP) {
             motion->y = motion->z * 0.69999999f;
             Path* supertramp_template = this->template_record;
             float old_x = out_position->x;

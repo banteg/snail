@@ -208,7 +208,7 @@ void Path::initialize_twister2_path_template_pair(
     float height, int width_cells_, bool handedness,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
-    kind = 0x2d;
+    kind = PATH_TEMPLATE_KIND_TWISTER2;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;

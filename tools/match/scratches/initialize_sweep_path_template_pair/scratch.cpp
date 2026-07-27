@@ -155,7 +155,7 @@ void Path::initialize_sweep_path_template_pair(
     char* texture_b,
     char* cap_texture)
 {
-    kind = 0x1c;
+    kind = PATH_TEMPLATE_KIND_SWEEP;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;

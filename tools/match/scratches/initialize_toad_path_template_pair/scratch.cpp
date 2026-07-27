@@ -140,7 +140,7 @@ void Path::initialize_toad_path_template_pair(
     float start_x;
     float turn_sign;
 
-    kind = 0x27;
+    kind = PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = 4;

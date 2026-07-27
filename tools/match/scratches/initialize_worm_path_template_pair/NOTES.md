@@ -195,3 +195,18 @@ unchanged. The local fastcall-compatible declaration therefore remains solely
 to preserve this caller's better native source shape; it does not challenge the
 recovered callee ownership. Restoring it returns the accepted 72.81%, 728/736
 baseline with all 37 operands clean.
+
+## 2026-07-27 mobile-backed path-kind ownership
+
+The matcher now carries the guarded Windows `PathTemplateKind` enum used by the
+analysis type replay, and `Path::kind` owns that type instead of an anonymous
+integer. Exact Android/iOS `cRPath::Build*` symbols corroborate the constructor
+identities, including `cRPath::BuildWorm(char*)`; the numeric discriminants
+remain Windows-derived because the mobile ports do not share this ABI.
+
+All proven constructor stores and downstream comparisons now use the named
+Windows members. Dynamic LoopBow/P variants remain explicit enum conversions
+rather than receiving invented labels. Representative focused recompilation is
+codegen-neutral: Worm stays at 72.81% (728/736, 37 clean operands), FollowState
+at 72.89% (698/726, 63 clean operands), and the projection consumer remains
+exact at 100.00% (106/106).

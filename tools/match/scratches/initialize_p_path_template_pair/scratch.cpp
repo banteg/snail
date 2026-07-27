@@ -140,7 +140,7 @@ void Path::initialize_p_path_template_pair(
     char* texture_b,
     char* cap_texture)
 {
-    kind = variant + 0x21;
+    kind = (PathTemplateKind)(variant + 0x21);
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;

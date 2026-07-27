@@ -20,7 +20,7 @@ void Path::initialize_halfpipe_path_template_pair(
     side_exit = side_exit;
     vertical_texture = vertical_texture;
 
-    kind = 0x2a;
+    kind = PATH_TEMPLATE_KIND_NONLINEAR_42;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;

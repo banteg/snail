@@ -2536,6 +2536,9 @@ def test_header_enum_members_previews_without_live_mutation(monkeypatch) -> None
 def test_path_template_kind_replay_tracks_paired_mobile_owners() -> None:
     repo_root = Path(__file__).parents[1]
     header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+    matcher_header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
     replay = (BINJA_DIR / "sync_path_template_kind.py").read_text(
         encoding="utf-8"
     )
@@ -2554,16 +2557,59 @@ def test_path_template_kind_replay_tracks_paired_mobile_owners() -> None:
         entry["windows_name"]: entry for entry in crosswalk["entries"]
     }
 
-    expected = (
+    windows_kind_members = (
+        ("PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY", "0x00"),
+        ("PATH_TEMPLATE_KIND_LOOPTHELOOPW", "0x06"),
+        ("PATH_TEMPLATE_KIND_CAGE2", "0x0f"),
+        ("PATH_TEMPLATE_KIND_FAMILY_10", "0x10"),
+        ("PATH_TEMPLATE_KIND_FAMILY_11", "0x11"),
+        ("PATH_TEMPLATE_KIND_DIP", "0x14"),
+        ("PATH_TEMPLATE_KIND_SCREW", "0x15"),
+        ("PATH_TEMPLATE_KIND_SLALOM", "0x16"),
+        ("PATH_TEMPLATE_KIND_SLALOMBIG", "0x17"),
+        ("PATH_TEMPLATE_KIND_WORM", "0x18"),
+        ("PATH_TEMPLATE_KIND_LOOPOUT", "0x19"),
+        ("PATH_TEMPLATE_KIND_SWEEP", "0x1c"),
+        ("PATH_TEMPLATE_KIND_SNAKE", "0x1d"),
+        ("PATH_TEMPLATE_KIND_SUPERTRAMP", "0x1f"),
+        ("PATH_TEMPLATE_KIND_SLALOMDOUBLE", "0x20"),
+        ("PATH_TEMPLATE_KIND_START", "0x24"),
+        ("PATH_TEMPLATE_KIND_TURNOVER", "0x25"),
+        ("PATH_TEMPLATE_KIND_TURNOVERDOUBLE", "0x26"),
+        ("PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY", "0x27"),
+        ("PATH_TEMPLATE_KIND_WIBBLE", "0x28"),
+        ("PATH_TEMPLATE_KIND_INVERT", "0x29"),
+        ("PATH_TEMPLATE_KIND_NONLINEAR_42", "0x2a"),
+        ("PATH_TEMPLATE_KIND_TWISTER", "0x2b"),
+        ("PATH_TEMPLATE_KIND_TWISTER2", "0x2d"),
+    )
+    for name, value in windows_kind_members:
+        assert f"{name} = {value}" in header
+        assert f"{name} = {value}" in matcher_header
+    assert "PathTemplateKind kind;" in matcher_header
+
+    paired_mobile_owners = (
         ("PATH_TEMPLATE_KIND_CAGE2", "0x0f", "0x0F"),
         ("PATH_TEMPLATE_KIND_DIP", "0x14", "0x14"),
         ("PATH_TEMPLATE_KIND_SLALOMDOUBLE", "0x20", "0x20"),
     )
-    for name, header_value, replay_value in expected:
+    for name, header_value, replay_value in paired_mobile_owners:
         assert f"{name} = {header_value}" in header
         assert f'("{name}", {replay_value})' in replay
         assert f"self->kind = {name}" in health_checks
         assert name in runtime_notes
+
+    proven_consumers = {
+        "update_sub_loc": "PATH_TEMPLATE_KIND_WORM",
+        "update_subgoldy": "PATH_TEMPLATE_KIND_CAGE2",
+        "update_track_attachment_follow_state": "PATH_TEMPLATE_KIND_SUPERTRAMP",
+        "traverse_path_follow_golb": "PATH_TEMPLATE_KIND_NONLINEAR_42",
+    }
+    for scratch_name, enum_name in proven_consumers.items():
+        scratch = (
+            repo_root / "tools/match/scratches" / scratch_name / "scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert enum_name in scratch
 
     for windows_name, address, mobile_symbol in (
         (

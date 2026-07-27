@@ -55,7 +55,7 @@ enum {
 // the same fields and callee address with a scalar spelling.
 struct SubgoldyPathView {
     char unknown_00[0x38];
-    int kind; // +0x38: 15 CAGE2 (detour follow behavior), 24 WORM
+    PathTemplateKind kind; // +0x38: CAGE2 detour-follow behavior, WORM voice
     char unknown_3c[0x44 - 0x3c];
     int segment_count; // +0x44
     char unknown_48[0x58 - 0x48];
@@ -340,7 +340,7 @@ steering_stored:
             && !follow_state.active) {
             follow_state.begin_track_attachment_follow_state(
                 source_cell, p_position, this);
-            if (follow_state.template_record->kind == 24)
+            if (follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM)
                 g_voice_manager.play_voice_manager(
                     VOICE_SET_WORM_TUNNEL, VOICE_PLAY_IF_IDLE, -1);
         }
@@ -376,7 +376,7 @@ steering_stored:
                 begin_post_follow_carryover();
             break;
         case 0:
-            if (follow_state.template_record->kind != 15) {
+            if (follow_state.template_record->kind != PATH_TEMPLATE_KIND_CAGE2) {
                 float rate = game->subgame_rate;
                 float quantum = rate * rate * 0.0040000002f;
                 velocity.z = quantum + quantum + velocity.z;

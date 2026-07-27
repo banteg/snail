@@ -193,7 +193,7 @@ void Path::initialize_turnunder_path_template_pair(
     float turns, int width_cells_, bool side_exit,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
-    kind = 0x27;
+    kind = PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;

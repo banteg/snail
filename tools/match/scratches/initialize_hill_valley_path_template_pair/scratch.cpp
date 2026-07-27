@@ -210,7 +210,7 @@ void Path::initialize_hill_valley_path_template_pair(
     int width_cells_, float height, float length, bool centered,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
-    kind = 0x10;
+    kind = PATH_TEMPLATE_KIND_FAMILY_10;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;

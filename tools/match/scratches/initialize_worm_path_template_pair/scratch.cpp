@@ -7,7 +7,6 @@
 
 void __fastcall request_object_vertex_colours(Object* object);
 
-const int PATH_TEMPLATE_KIND_WORM = 24;
 const float WORM_TAU = 6.2831855f;
 const float WORM_RADIUS = 4.0f;
 const float WORM_UNDERSIDE_SCALE = 0.30000001f;

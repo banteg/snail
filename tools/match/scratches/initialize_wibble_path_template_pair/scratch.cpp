@@ -186,7 +186,7 @@ void Path::initialize_wibble_path_template_pair(
     float radius, int width_cells_, bool side_exit,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
-    kind = 0x28;
+    kind = PATH_TEMPLATE_KIND_WIBBLE;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;

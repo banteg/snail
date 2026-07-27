@@ -96,7 +96,7 @@ void SubgameRuntime::place_challenge_parcels_on_track()
                 Path* template_record =
                     runtime_rows[scan]
                         .primary_attachment_cell->attachment_template_record;
-                if (template_record->kind == 42) {
+                if (template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
                     TransformMatrix transform;
                     float out_angle;
                     template_record->compute_kind42_attachment_transform(

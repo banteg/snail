@@ -28,10 +28,10 @@ void Path::initialize_loopbow_path_template_pair(
 {
     int cell_index = 0;
     Vector3 endpoint;
-    kind = cell_index;
+    kind = (PathTemplateKind)cell_index;
     float center_offset = 0.0f;
     if (width_cells_arg == 4) {
-        kind = cell_index;
+        kind = (PathTemplateKind)cell_index;
         center_offset = 0.5f;
     }
 

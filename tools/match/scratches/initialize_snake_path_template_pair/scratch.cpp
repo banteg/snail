@@ -131,7 +131,7 @@ void Path::initialize_snake_path_template_pair(
     char* texture_b,
     char* cap_texture)
 {
-    kind = 0x1d;
+    kind = PATH_TEMPLATE_KIND_SNAKE;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;

@@ -139,7 +139,7 @@ void Path::initialize_slalomdouble_path_template_pair(
     char* texture_b,
     char* cap_texture)
 {
-    kind = 0x20;
+    kind = PATH_TEMPLATE_KIND_SLALOMDOUBLE;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;

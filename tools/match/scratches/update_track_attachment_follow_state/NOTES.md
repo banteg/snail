@@ -379,3 +379,12 @@ matrix-publication branches by owner path rather than incidental local names.
 
 No matcher source changed. Focused matching remains 72.89% (698/726
 instructions, prefix 122/726, all 63 operands clean).
+
+## 2026-07-27 path-kind owner propagation
+
+The nonlinear-transform and terminal-launch gates now compare the shared
+Windows `PathTemplateKind` members `PATH_TEMPLATE_KIND_NONLINEAR_42` and
+`PATH_TEMPLATE_KIND_SUPERTRAMP`. Mobile `cRPath::Build*` symbols support the
+authored identities, while the discriminant values remain grounded in the
+Windows executable. The focused result is unchanged at 72.89%, 698/726
+instructions, prefix 122/726, with 63 clean masked operands.

@@ -288,7 +288,7 @@ void SubgameRuntime::place_parcels_on_track()
                 node = 0;
             TrackRowCell* live_cell = row_record->primary_attachment_cell;
             Path* template_record = live_cell->attachment_template_record;
-            if (template_record->kind == 42) {
+            if (template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
                 template_record->compute_kind42_attachment_transform(
                     template_record->primary_samples[node].special_scalar,
                     row_record->parcel_spawn_position.x,

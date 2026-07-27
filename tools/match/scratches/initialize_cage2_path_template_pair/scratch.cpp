@@ -12,7 +12,7 @@ void Path::initialize_cage2_path_template_pair(
     int width_cells_, char* texture_a, char* texture_b, char* vertical_texture)
 {
     int mesh_cursor = 0;
-    kind = 0x0f;
+    kind = PATH_TEMPLATE_KIND_CAGE2;
     is_mirrored_x = 0;
     side_exit_mode = mesh_cursor;
     width_cells = width_cells_;

@@ -113,12 +113,12 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
 
 #if PATH_VARIANT == 0 || PATH_VARIANT == 1
     float loop_wiggle = 0.0f;
-    kind = 0x00;
+    kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY;
     if (width_cells_ == 4) {
 #if PATH_VARIANT == 1
-        kind = 0x06;
+        kind = PATH_TEMPLATE_KIND_LOOPTHELOOPW;
 #else
-        kind = 0x00;
+        kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY;
 #endif
         loop_wiggle = 0.30000001f;
     }
@@ -207,7 +207,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         }
     }
 #elif PATH_VARIANT == 2
-    kind = 0x19;
+    kind = PATH_TEMPLATE_KIND_LOOPOUT;
     segment_count = curve_count + 14;
     segment_count_f = (float)(curve_count + 14);
     float curve_count_f = (float)curve_count;
@@ -289,11 +289,11 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     }
 #elif PATH_VARIANT == 3 || PATH_VARIANT == 4
 #if PATH_VARIANT == 3
-    kind = 0x10;
+    kind = PATH_TEMPLATE_KIND_FAMILY_10;
     float start_center = (float)width_cells * 0.5f - 4.0f;
     float end_center = 4.0f - (float)width_cells * 0.5f;
 #else
-    kind = 0x11;
+    kind = PATH_TEMPLATE_KIND_FAMILY_11;
     float vertical_sign = -1.0f;
     float start_center = -(float)width_cells * 0.5f + 4.0f;
     float end_center = (float)width_cells * 0.5f - 4.0f;
@@ -448,7 +448,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         } while (i < curve_count);
     }
 #elif PATH_VARIANT == 5
-    kind = 0x14;
+    kind = PATH_TEMPLATE_KIND_DIP;
     segment_count = curve_count + 2;
     segment_count_f = (float)(curve_count + 2);
     float curve_count_f = (float)curve_count;
@@ -500,7 +500,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         }
     }
 #elif PATH_VARIANT == 6
-    kind = 0x15;
+    kind = PATH_TEMPLATE_KIND_SCREW;
     segment_count = curve_count + 8;
     segment_count_f = (float)(curve_count + 8);
     get_path_nodes();
@@ -570,7 +570,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         }
     }
 #elif PATH_VARIANT == 7
-    kind = 0x16;
+    kind = PATH_TEMPLATE_KIND_SLALOM;
     segment_count = curve_count + 8;
     segment_count_f = (float)(curve_count + 8);
     get_path_nodes();

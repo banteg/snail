@@ -153,7 +153,7 @@ void Path::initialize_supertramp_path_template_pair(
     char* unused_texture,
     char* cap_texture)
 {
-    kind = 0x1f;
+    kind = PATH_TEMPLATE_KIND_SUPERTRAMP;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;

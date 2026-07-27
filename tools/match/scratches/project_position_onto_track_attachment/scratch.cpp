@@ -12,7 +12,7 @@ void SubgameRuntime::project_position_onto_track_attachment(Vector3* position, f
         Path* template_record = cell->attachment_template_record;
         int sample_index = (int)position->z - cell->get_track_cell_row_index();
         AttachmentSample* sample = &template_record->primary_samples[sample_index];
-        if (template_record->kind == 42) {
+        if (template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
             TransformMatrix transform;
             template_record->compute_kind42_attachment_transform(
                 sample->special_scalar,

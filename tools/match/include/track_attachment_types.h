@@ -18,6 +18,36 @@ struct TransformMatrix;
 struct SubSegment;
 class Player;
 
+// Windows-native cRPath template discriminants. Android/iOS constructor
+// symbols corroborate the authored identities, but their numeric values are
+// not assumed to be ABI-compatible with this Windows enum.
+enum PathTemplateKind {
+    PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY = 0x00,
+    PATH_TEMPLATE_KIND_LOOPTHELOOPW = 0x06,
+    PATH_TEMPLATE_KIND_CAGE2 = 0x0f,
+    PATH_TEMPLATE_KIND_FAMILY_10 = 0x10,
+    PATH_TEMPLATE_KIND_FAMILY_11 = 0x11,
+    PATH_TEMPLATE_KIND_DIP = 0x14,
+    PATH_TEMPLATE_KIND_SCREW = 0x15,
+    PATH_TEMPLATE_KIND_SLALOM = 0x16,
+    PATH_TEMPLATE_KIND_SLALOMBIG = 0x17,
+    PATH_TEMPLATE_KIND_WORM = 0x18,
+    PATH_TEMPLATE_KIND_LOOPOUT = 0x19,
+    PATH_TEMPLATE_KIND_SWEEP = 0x1c,
+    PATH_TEMPLATE_KIND_SNAKE = 0x1d,
+    PATH_TEMPLATE_KIND_SUPERTRAMP = 0x1f,
+    PATH_TEMPLATE_KIND_SLALOMDOUBLE = 0x20,
+    PATH_TEMPLATE_KIND_START = 0x24,
+    PATH_TEMPLATE_KIND_TURNOVER = 0x25,
+    PATH_TEMPLATE_KIND_TURNOVERDOUBLE = 0x26,
+    PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY = 0x27,
+    PATH_TEMPLATE_KIND_WIBBLE = 0x28,
+    PATH_TEMPLATE_KIND_INVERT = 0x29,
+    PATH_TEMPLATE_KIND_NONLINEAR_42 = 0x2a,
+    PATH_TEMPLATE_KIND_TWISTER = 0x2b,
+    PATH_TEMPLATE_KIND_TWISTER2 = 0x2d,
+};
+
 struct Path : public BodBase {
     Path* initialize_path_template_record_pair(); // @ 0x4085c0
     void get_path_nodes(); // @ 0x41b0a0
@@ -229,7 +259,7 @@ struct Path : public BodBase {
     bool is_point_inside_track_attachment(
         Vector3 probe, Vector3 swept_motion, TrackRowCell* cell); // @ 0x42ca90, cRPath::SearchPos
 
-    int kind;                        // +0x38, after the inherited BodBase
+    PathTemplateKind kind;           // +0x38, after the inherited BodBase
     unsigned char is_mirrored_x;     // +0x3c
     char unknown_3d[0x40 - 0x3d];
     int side_exit_mode;              // +0x40
