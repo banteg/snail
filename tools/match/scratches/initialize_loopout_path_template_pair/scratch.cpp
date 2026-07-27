@@ -1,7 +1,7 @@
 // initialize_loopout_path_template_pair @ 0x41c5f0 (thiscall, ret 0x18)
 
 #define PATH_FUNCTION initialize_loopout_path_template_pair
-#define PATH_SIGNATURE float curve_source, int width_cells_, int side_exit, char* texture_a, char* texture_b, char* cap_texture
+#define PATH_SIGNATURE float curve_source, int width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture
 #define PATH_CURVE_COUNT ((int)(curve_source * 6.2831855f))
 #define PATH_HEIGHT_SCALE 1.0f
 #define PATH_VARIANT 2
@@ -306,9 +306,11 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                 Vector3(1.0f, 0.0f, 0.0f);
             primary_samples[sample_index].transform.basis_up.x = 0.0f;
             primary_samples[sample_index].transform.basis_up.y =
-                primary_samples[sample_index].transform.position.y - center_y;
+                -(center_y
+                    - primary_samples[sample_index].transform.position.y);
             primary_samples[sample_index].transform.basis_up.z =
-                primary_samples[sample_index].transform.position.z - 10.0f;
+                -(10.0f
+                    - primary_samples[sample_index].transform.position.z);
             primary_samples[sample_index].transform.basis_up.normalize_vector();
             primary_samples[sample_index].transform.basis_forward.cross_vectors(
                 &primary_samples[sample_index].transform.basis_right,
@@ -318,9 +320,11 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                 Vector3(1.0f, 0.0f, 0.0f);
             secondary_samples[sample_index].transform.basis_up.x = 0.0f;
             secondary_samples[sample_index].transform.basis_up.y =
-                secondary_samples[sample_index].transform.position.y - center_y;
+                -(center_y
+                    - secondary_samples[sample_index].transform.position.y);
             secondary_samples[sample_index].transform.basis_up.z =
-                secondary_samples[sample_index].transform.position.z - 10.0f;
+                -(10.0f
+                    - secondary_samples[sample_index].transform.position.z);
             secondary_samples[sample_index].transform.basis_up.normalize_vector();
             secondary_samples[sample_index].transform.basis_forward.cross_vectors(
                 &secondary_samples[sample_index].transform.basis_right,

@@ -3656,9 +3656,6 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "Without this flag the tool" in repair_source
     assert '"is read-only. Function recreation' in repair_source
     for declaration in (
-        "void __thiscall initialize_looptheloop_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-        "void __thiscall initialize_looptheloopw_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-        "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_dip_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
@@ -3691,19 +3688,30 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         assert declaration in deferred_path_prototypes
         assert "".join(f"{declaration};".split()) in compact_header
         assert "".join(f'"{declaration};"'.split()) in compact_ida_source
-    previous_toad_prototype = (
-        "void __thiscall initialize_toad_path_template_pair("
-        "Path* self, char turn_left, char* texture_a, char* texture_b, "
-        "char* vertical_texture)"
+    refined_prototypes = (
+        (
+            "void __thiscall initialize_looptheloop_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_looptheloop_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_looptheloopw_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_looptheloopw_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_toad_path_template_pair(Path* self, bool turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
+        ),
     )
-    desired_toad_prototype = previous_toad_prototype.replace(
-        "char turn_left", "bool turn_left"
-    )
-    assert previous_toad_prototype in refined_path_prototypes
-    assert desired_toad_prototype in refined_path_prototypes
-    assert previous_toad_prototype not in deferred_path_prototypes
-    assert "".join(f"{desired_toad_prototype};".split()) in compact_header
-    assert "".join(f'"{desired_toad_prototype};"'.split()) in compact_ida_source
+    for previous_prototype, desired_prototype in refined_prototypes:
+        assert previous_prototype in refined_path_prototypes
+        assert desired_prototype in refined_path_prototypes
+        assert previous_prototype not in deferred_path_prototypes
+        assert "".join(f"{desired_prototype};".split()) in compact_header
+        assert "".join(f'"{desired_prototype};"'.split()) in compact_ida_source
     assert "def apply_refined_owner_prototypes(" in source
     assert "elif observed_normalized == previous_normalized:" in source
     assert "updates=((identifier, desired_prototype),)" in source
@@ -20572,6 +20580,49 @@ def test_loop_family_replay_preserves_mesh_owner_lifetimes() -> None:
     assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
     assert '0x8C: ("delta_length", "float")' in replay
     assert '0x90: ("center_x", "float")' in replay
+
+    health = json.loads(
+        (Path(__file__).parents[1] / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    aggregate_addresses = {
+        "bn_looptheloop_path_full_owner_abi": (
+            "0041b51b",
+            "0041b57f",
+            "0041b709",
+            "0041b750",
+            "0041b838",
+            "0041b8b8",
+        ),
+        "bn_looptheloopw_path_full_owner_abi": (
+            "0041bfa6",
+            "0041c01b",
+            "0041c1b2",
+            "0041c1f9",
+            "0041c2e1",
+            "0041c361",
+        ),
+        "bn_loopout_path_full_owner_abi": (
+            "0041ca09",
+            "0041ca74",
+            "0041cc00",
+            "0041cc47",
+            "0041cd2f",
+            "0041cdaf",
+        ),
+    }
+    for check_name, addresses in aggregate_addresses.items():
+        check = checks[check_name]
+        regexes = check["required_regexes"]
+        for address in addresses:
+            matching_regex = next(
+                pattern for pattern in regexes if pattern.startswith(address)
+            )
+            for component in (r"\.x =", r"\.y =", r"\.z ="):
+                assert component in matching_regex
+        assert "struct Vec3* vertex" not in check["required_substrings"]
 
 
 def test_dip_screw_replay_preserves_mesh_owner_lifetimes() -> None:

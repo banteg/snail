@@ -3979,6 +3979,21 @@ DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
 
 REFINED_PATH_OWNER_PROTO_UPDATES = (
     (
+        "initialize_looptheloop_path_template_pair",
+        "void __thiscall initialize_looptheloop_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __thiscall initialize_looptheloop_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+    ),
+    (
+        "initialize_looptheloopw_path_template_pair",
+        "void __thiscall initialize_looptheloopw_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __thiscall initialize_looptheloopw_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+    ),
+    (
+        "initialize_loopout_path_template_pair",
+        "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+    ),
+    (
         "initialize_toad_path_template_pair",
         "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_toad_path_template_pair(Path* self, bool turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
@@ -3987,18 +4002,6 @@ REFINED_PATH_OWNER_PROTO_UPDATES = (
 
 
 DEFERRED_PATH_OWNER_PROTO_UPDATES = (
-    (
-        "initialize_looptheloop_path_template_pair",
-        "void __thiscall initialize_looptheloop_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-    ),
-    (
-        "initialize_looptheloopw_path_template_pair",
-        "void __thiscall initialize_looptheloopw_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-    ),
-    (
-        "initialize_loopout_path_template_pair",
-        "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-    ),
     (
         "initialize_hump_path_template_pair",
         "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",

@@ -2560,7 +2560,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildLoopTheLoop(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols recover the authored bool side-exit input. Windows retains one additional trailing texture argument in its ret-0x18 ABI; the Windows body does not consume either input."
     },
     {
       "address": "0x41bb40",
@@ -2569,7 +2570,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildLoopTheLoopW(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols recover the authored bool side-exit input. Windows retains one additional trailing texture argument in its ret-0x18 ABI; the Windows body does not consume either input."
     },
     {
       "address": "0x41c5f0",
@@ -2578,7 +2580,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildLoopOut(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols recover the authored bool side-exit input, while Windows retains one additional unused trailing texture argument in its ret-0x18 ABI. Android and iOS independently preserve the loop basis-up components as negated center-minus-position differences, matching Windows x87 subtraction and negate order."
     },
     {
       "address": "0x41d030",

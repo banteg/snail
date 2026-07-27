@@ -105,3 +105,15 @@ Recovering that coupled owner set raises focused matching from 63.27%
 (728/745) to 65.73% (746/745). The masked audit improves from 51 to 52 clean
 operands with no unresolved or mismatched entries, the ten-instruction exact
 prefix remains intact, and the candidate retains the native `0x60` frame.
+
+## 2026-07-27 authored boolean ABI
+
+The exact Android and iOS symbols independently spell the third argument as
+`bool`. The shared matcher declaration, guarded Binary Ninja refinement, IDA
+type replay, and repair fallback now agree on `bool side_exit` instead of a
+generic `int32_t`. The parameter is unused in this body, so the correction is
+code-generation neutral and focused matching remains honestly at 65.73%.
+
+Windows still cleans six stack arguments and its callers supply one trailing
+texture beyond the five-argument mobile method. That platform-specific input
+is retained rather than deleting a proven Windows ABI slot.

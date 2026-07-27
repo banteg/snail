@@ -126,3 +126,15 @@ that natural source order. Focused matching rises from 69.43% to 69.71%
 masked operands clean. An explicit `curve_count + 14` owner and the mobile
 taper-expression grouping were tested separately and rejected because they
 regressed the Windows build to 66.90% and 65.14%, respectively.
+
+## 2026-07-27 authored boolean ABI
+
+The exact Android and iOS symbols independently spell the third argument as
+`bool`. The shared matcher declaration, guarded Binary Ninja refinement, IDA
+type replay, and repair fallback now agree on `bool side_exit` instead of a
+generic `int32_t`. The parameter is unused in this body, so the correction is
+code-generation neutral and focused matching remains honestly at 69.71%.
+
+Windows still cleans six stack arguments and its callers supply one trailing
+texture beyond the five-argument mobile method. That platform-specific input
+is retained rather than deleting a proven Windows ABI slot.

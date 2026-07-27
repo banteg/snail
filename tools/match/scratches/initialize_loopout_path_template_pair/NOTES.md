@@ -105,3 +105,26 @@ Recovering those owners raises focused matching from 55.77% (702/718) to
 with no unresolved or mismatched entries. The remaining candidate `0x54`
 versus native `0x50` frame gap belongs to earlier Loopout-specific lifetimes,
 not missing mesh values.
+
+## 2026-07-27 paired-mobile basis expression
+
+Android and iOS independently preserve both curved-sample basis-up components
+as negated center-minus-position differences:
+
+```cpp
+-(center_y - sample.transform.position.y)
+-(10.0f - sample.transform.position.z)
+```
+
+That source boundary matters to VC6. The former algebraically simplified
+position-minus-center spelling emitted direct `fsub` operations; the authored
+mobile form reproduces Windows' subtract-then-`fchs` sequence for both primary
+and secondary samples. Focused matching rises from **58.89%** (`722/718`) to
+**60.11%** (`726/718`), and the masked audit improves from 50 to **52 clean
+operands** with no unresolved, mismatched, or unaudited entries.
+
+The exact mobile symbols also refine the third input from a generic integer to
+the authored `bool side_exit`. Windows retains a sixth stack argument absent
+from both ports and cleans 24 bytes at return; that trailing texture remains a
+real Windows-only ABI input even though this body consumes neither it nor
+`side_exit`.

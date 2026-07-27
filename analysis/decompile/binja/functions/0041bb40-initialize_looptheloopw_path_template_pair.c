@@ -100,10 +100,11 @@
 0041bf58        *(&self->secondary_samples->transform.position + edi_4) = *(&self->primary_samples->center_x + edi_4)
 0041bf6e        *(&self->secondary_samples->transform.position.z + edi_4) = fconvert.s(sine(var_50_1) * fconvert.t(var_48_1) + fconvert.t(7f))
 0041bf8c        *(&self->secondary_samples->transform.position.y + edi_4) = fconvert.s(fconvert.t(curve_source) - cosine(var_50_1) * fconvert.t(var_48_1))
-0041bf97        struct Vec3* primary_right = edi_4 + self->primary_samples
-0041bf9d        primary_right->x = 0x3f800000
-0041bfa3        primary_right->y = 0f
-0041bfa6        primary_right->z = 0f
+0041bfa6        *(edi_4 + self->primary_samples) = struct Vec3 {
+    .x = 0x3f800000
+    .y = 0f
+    .z = 0f
+}
 0041bfac        *(&self->primary_samples->transform.basis_up + edi_4) = 0
 0041bfb3        void* eax_29 = self->primary_samples + edi_4
 0041bfb8        *(eax_29 + 0x14) = fconvert.s(fconvert.t(curve_source) - fconvert.t(*(eax_29 + 0x34)))
@@ -113,10 +114,11 @@
 0041bfdd        struct Vec3* primary_right_reloaded = self->primary_samples + edi_4
 0041bfe9        cross_vectors(primary_right_reloaded + 0x20, primary_right_reloaded, primary_right_reloaded + 0x10)
 0041bffa        rotate_matrix_local_z(edi_4 + self->primary_samples, angle)
-0041c008        struct Vec3* secondary_right = edi_4 + self->secondary_samples
-0041c012        secondary_right->x = 0x3f800000
-0041c018        secondary_right->y = 0f
-0041c01b        secondary_right->z = 0f
+0041c01b        *(edi_4 + self->secondary_samples) = struct Vec3 {
+    .x = 0x3f800000
+    .y = 0f
+    .z = 0f
+}
 0041c021        *(&self->secondary_samples->transform.basis_up + edi_4) = 0
 0041c025        struct PathTemplateSample* secondary_samples_2 = self->secondary_samples
 0041c02f        *(&secondary_samples_2->transform.basis_up.y + edi_4) = fconvert.s(fconvert.t(curve_source) - fconvert.t(*(&secondary_samples_2->transform.position.y + edi_4)))
@@ -153,16 +155,18 @@
 0041c14a        *(&self->secondary_samples->delta_length + edi_5) = fconvert.s(normalize_vector(&self->secondary_samples->delta_dir_to_next + edi_5))
 0041c154        edi_5 += 0xa8
 0041c15d        do while (i_2 s< self->segment_count - 1)
-0041c18d        struct Vec3* primary_terminal_delta = &self->primary_samples[self->segment_count] - 0x28
-0041c1a1        primary_terminal_delta->x = 0
-0041c1af        primary_terminal_delta->y = 0f
-0041c1b2        primary_terminal_delta->z = 1f
+0041c1b2        *(&self->primary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 0041c1c4        int32_t var_28_2 = 0x3f800000
 0041c1d0        *(&self->primary_samples[self->segment_count] - 0x1c) = 0x3f800000
-0041c1e6        struct Vec3* secondary_terminal_delta = &self->secondary_samples[self->segment_count] - 0x28
-0041c1ee        secondary_terminal_delta->x = 0
-0041c1f4        secondary_terminal_delta->y = 0f
-0041c1f9        secondary_terminal_delta->z = 1f
+0041c1f9        *(&self->secondary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 0041c20e        *(&self->secondary_samples[self->segment_count] - 0x1c) = 0x3f800000
 0041c221        request_object_vertices(self->bod.object, (self->width_cells + 1) * (self->segment_count + 1))
 0041c233        request_object_facequads(self->bod.object, (self->width_cells * self->segment_count) << 1)
@@ -182,20 +186,18 @@
 0041c287        long double x87_r7_80 = float.t(curve_source) - float.t(width_cells_) * fconvert.t(0.5f)
 0041c289        if (i_3 == self->segment_count)
 0041c2e9        void* eax_69 = primary_samples_1 + edx_36
-0041c33f        float var_38_2 = fconvert.s(fconvert.t(*(eax_69 - 0x74)) + fconvert.t(fconvert.s(x87_r7_80 * fconvert.t(*(eax_69 - 0xa4)))))
-0041c347        struct Vec3* terminal_vertex = &vertices[(width_cells + 1) * i_3 i+ curve_source_1]
-0041c352        long double x87_r6_26 = fconvert.t(fconvert.s(fconvert.t(*(eax_69 - 0x70)) + fconvert.t(1f))) + x87_r7_80 * fconvert.t(*(eax_69 - 0xa0))
-0041c354        terminal_vertex->x = fconvert.s(fconvert.t(*(eax_69 - 0x78)) + fconvert.t(fconvert.s(x87_r7_80 * fconvert.t(*(eax_69 - 0xa8)))))
-0041c356        terminal_vertex->y = var_38_2
-0041c361        terminal_vertex->z = fconvert.s(x87_r6_26)
+0041c361        vertices[(width_cells + 1) * i_3 i+ curve_source_1].x.12 = struct Vec3 {
+    .x = fconvert.s(fconvert.t(*(eax_69 - 0x78)) + fconvert.t(fconvert.s(x87_r7_80 * fconvert.t(*(eax_69 - 0xa8)))))
+    .y = fconvert.s(fconvert.t(*(eax_69 - 0x74)) + fconvert.t(fconvert.s(x87_r7_80 * fconvert.t(*(eax_69 - 0xa4)))))
+    .z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(eax_69 - 0x70)) + fconvert.t(1f))) + x87_r7_80 * fconvert.t(*(eax_69 - 0xa0)))
+}
 0041c364        edx_36 = var_4c_2
 0041c28b        struct PathTemplateSample* primary_mesh_sample = primary_samples_1 + edx_36
-0041c2b3        float var_2c_2 = fconvert.s(fconvert.t(fconvert.s(x87_r7_80 * fconvert.t(primary_mesh_sample->transform.basis_right.y))) + fconvert.t(primary_mesh_sample->transform.position.y))
-0041c2c0        float var_28_3 = fconvert.s(x87_r7_80 * fconvert.t(primary_mesh_sample->transform.basis_right.z) + fconvert.t(primary_mesh_sample->transform.position.z))
-0041c2cd        struct Vec3* vertex = &vertices[(width_cells + 1) * i_3 i+ curve_source_1]
-0041c2d4        vertex->x = fconvert.s(fconvert.t(fconvert.s(x87_r7_80 * fconvert.t(primary_mesh_sample->transform.basis_right.x))) + fconvert.t(primary_mesh_sample->transform.position.x))
-0041c2da        vertex->y = var_2c_2
-0041c2e1        vertex->z = var_28_3
+0041c2e1        vertices[(width_cells + 1) * i_3 i+ curve_source_1].x.12 = struct Vec3 {
+    .x = fconvert.s(fconvert.t(fconvert.s(x87_r7_80 * fconvert.t(primary_mesh_sample->transform.basis_right.x))) + fconvert.t(primary_mesh_sample->transform.position.x))
+    .y = fconvert.s(fconvert.t(fconvert.s(x87_r7_80 * fconvert.t(primary_mesh_sample->transform.basis_right.y))) + fconvert.t(primary_mesh_sample->transform.position.y))
+    .z = fconvert.s(x87_r7_80 * fconvert.t(primary_mesh_sample->transform.basis_right.z) + fconvert.t(primary_mesh_sample->transform.position.z))
+}
 0041c36a        width_cells = self->width_cells
 0041c36d        curve_source_1 += 1
 0041c370        curve_source = curve_source_1
