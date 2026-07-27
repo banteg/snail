@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**530/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93388/294937** bytes (**31.66%**) are proof-grade, and overall fuzzy is **78.52%**.
+**531/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93767/294937** bytes (**31.79%**) are proof-grade, and overall fuzzy is **78.54%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
-## Proof Grade (530)
+## Proof Grade (531)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -414,6 +414,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | uninit_nuke | 0x4470e0 | 41 | 18/18 | 100.00% | 18/18 | 1 ok |  | core |
 | ✅ | update_nuke | 0x4471e0 | 169 | 59/59 | 100.00% | 59/59 | 8 ok |  | core |
 | ✅ | recycle_bod_to_free_list | 0x447290 | 106 | 36/36 | 100.00% | 36/36 | 4 ok |  | core |
+| ✅ | copy_segment_definition_to_level_slot | 0x447300 | 379 | 125/125 | 100.00% | 125/125 | 5 ok |  | core |
 | ✅ | load_level_definitions | 0x448900 | 96 | 30/30 | 100.00% | 30/30 | 6 ok |  | core |
 | ✅ | format_time_trial_string | 0x448960 | 113 | 36/36 | 100.00% | 36/36 | 12 ok | msvc6.5 /O2 /G5 /W3 /TC | core |
 | ✅ | kill_tip_widgets | 0x4489e0 | 81 | 24/24 | 100.00% | 24/24 | 6 ok |  | core |
@@ -573,7 +574,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (50)
+## High Progress (80-94.99%) (49)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -620,7 +621,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 76 ok |  | core |
 | 🚧 | update_cutscene | 0x4466d0 | 1888 | 503/505 | 93.25% | 0/505 | 58 ok |  | core |
 | 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 | 5 ok |  | core |
-| 🚧 | copy_segment_definition_to_level_slot | 0x447300 | 379 | 125/125 | 85.60% | 74/125 | 5 ok |  | core |
 | 🚧 | load_level_definition_file | 0x447480 | 3039 | 941/926 | 84.63% | 20/926 | 2 unaudited, 183 ok |  | core |
 | 🚧 | initialize_tip | 0x448a40 | 511 | 154/154 | 83.12% | 16/154 | 2 unaudited, 26 ok |  | core |
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 69/69 | 89.86% | 33/69 | 6 unaudited, 21 ok |  | boundary |

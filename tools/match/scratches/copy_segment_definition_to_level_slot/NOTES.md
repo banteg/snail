@@ -155,3 +155,27 @@ surrounding metadata fields as IDA while retaining the final two post-increment
 copies as explicit negative offsets. Both guarded replays are idempotent, and
 the paired focused export passes all 1039 strict decompile-health checks with
 no selector mismatch.
+
+## 2026-07-27 direct authored-row subscripts
+
+The verified Android and iOS `cRSubTracks::ImportSegment(char*,
+cRSubSegment*)` bodies retain the same authored copy sequence despite packing
+their destination rows: flags, object id, object position, parcel id, local
+position, and path template. This independently supports the Windows field
+order and rules out changing the metadata layout merely to influence register
+allocation.
+
+The Windows source now spells those copies directly through
+`slot->rows[metadata_row]` and
+`catalog->entries[index].rows[metadata_row]`, instead of introducing two
+one-iteration row-pointer aliases. This is ordinary per-element container
+source shape and leaves every owner and field unchanged. VC6 consequently
+selects the native `object_id`-relative source and destination cursors on its
+own, including the early `0x38` stride advance and the two trailing negative
+offset reads.
+
+Focused matching rises from 85.60% to an audited 100.00%: all 125 target
+instructions match, the exact prefix is 125/125, and all five masked operands
+resolve cleanly with no unresolved, mismatched, or unaudited references. This
+also supersedes the earlier conclusion that the metadata residual was
+irreducible scheduling noise; it was a recoverable source-expression lifetime.

@@ -43,16 +43,22 @@ void SubTracks::copy_segment_definition_to_level_slot(
     for (int metadata_row = 0;
          metadata_row < catalog->entries[index].row_count;
          ++metadata_row) {
-        AuthoredSegmentRow* destination = &slot->rows[metadata_row];
-        AuthoredSegmentRow* authored = &catalog->entries[index].rows[metadata_row];
-        destination->flags = authored->flags;
-        destination->object_id = authored->object_id;
-        destination->object_position = authored->object_position;
-        destination->object_velocity = authored->object_velocity;
-        destination->parcel_set_id = authored->parcel_set_id;
-        destination->local_position = authored->local_position;
-        destination->path_template_index = authored->path_template_index;
-        destination->ring_speed = authored->ring_speed;
+        slot->rows[metadata_row].flags =
+            catalog->entries[index].rows[metadata_row].flags;
+        slot->rows[metadata_row].object_id =
+            catalog->entries[index].rows[metadata_row].object_id;
+        slot->rows[metadata_row].object_position =
+            catalog->entries[index].rows[metadata_row].object_position;
+        slot->rows[metadata_row].object_velocity =
+            catalog->entries[index].rows[metadata_row].object_velocity;
+        slot->rows[metadata_row].parcel_set_id =
+            catalog->entries[index].rows[metadata_row].parcel_set_id;
+        slot->rows[metadata_row].local_position =
+            catalog->entries[index].rows[metadata_row].local_position;
+        slot->rows[metadata_row].path_template_index =
+            catalog->entries[index].rows[metadata_row].path_template_index;
+        slot->rows[metadata_row].ring_speed =
+            catalog->entries[index].rows[metadata_row].ring_speed;
     }
 
     slot->message_text[0] = 0;
