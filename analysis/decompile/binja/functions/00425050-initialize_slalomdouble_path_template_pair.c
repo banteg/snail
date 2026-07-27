@@ -90,10 +90,11 @@
 0042534a        if (i_1 s<= 0x2a0)
 004254eb        set_matrix_rotation_identity(i_1 + self->primary_samples - 0xa8)
 004254fa        set_matrix_rotation_identity(i_1 + self->secondary_samples - 0xa8)
-00425367        struct Vec3* primary_forward = i_1 + self->primary_samples - 0x98
-0042537a        primary_forward->x = 0
-00425380        primary_forward->y = 1f
-00425383        primary_forward->z = 0f
+00425383        *(i_1 + self->primary_samples - 0x98) = struct Vec3 {
+    .x = 0
+    .y = 1f
+    .z = 0f
+}
 00425389        void* eax_21 = self->primary_samples + i_1
 004253a7        float var_2c_1 = fconvert.s(fconvert.t(*(eax_21 + 0x34)) - fconvert.t(*(eax_21 - 0x74)))
 004253b1        long double x87_r7_25 = fconvert.t(*(eax_21 + 0x38)) - fconvert.t(*(eax_21 - 0x70))
@@ -105,10 +106,11 @@
 004253fa        int32_t var_68_4 = cross_vectors(primary_sample_cursor_reloaded - 0xa8, primary_sample_cursor_reloaded - 0x98, primary_sample_cursor_reloaded - 0x88)
 004253fb        void* eax_25 = self->primary_samples + i_1
 0042540f        rotate_matrix_local_z(eax_25 - 0xa8, fconvert.s(fconvert.t(*(eax_25 - 0x18)) * fconvert.t(0.261799395f)))
-0042542b        struct Vec3* secondary_forward = i_1 + self->secondary_samples - 0x98
-0042543e        secondary_forward->x = 0
-00425444        secondary_forward->y = 1f
-00425447        secondary_forward->z = 0f
+00425447        *(i_1 + self->secondary_samples - 0x98) = struct Vec3 {
+    .x = 0
+    .y = 1f
+    .z = 0f
+}
 0042544a        struct PathTemplateSample* secondary_samples = self->secondary_samples
 0042546e        float var_14_1 = fconvert.s(fconvert.t(*(&secondary_samples->transform.position.y + i_1)) - fconvert.t(*(i_1 + secondary_samples - 0x74)))
 00425478        long double x87_r7_35 = fconvert.t(*(&secondary_samples->transform.position.z + i_1)) - fconvert.t(*(i_1 + secondary_samples - 0x70))
@@ -143,16 +145,18 @@
 004255d6        *(&self->secondary_samples->delta_length + edi_1) = fconvert.s(normalize_vector(&self->secondary_samples->delta_dir_to_next + edi_1))
 004255e0        edi_1 += 0xa8
 004255e9        do while (i_2 s< self->segment_count - 1)
-00425619        struct Vec3* primary_terminal_delta = &self->primary_samples[self->segment_count] - 0x28
-0042562d        primary_terminal_delta->x = 0
-0042563b        primary_terminal_delta->y = 0f
-0042563e        primary_terminal_delta->z = 1f
+0042563e        *(&self->primary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 00425650        int32_t var_10_3 = 0x3f800000
 0042565c        *(&self->primary_samples[self->segment_count] - 0x1c) = 0x3f800000
-00425672        struct Vec3* secondary_terminal_delta = &self->secondary_samples[self->segment_count] - 0x28
-0042567a        secondary_terminal_delta->x = 0
-00425680        secondary_terminal_delta->y = 0f
-00425685        secondary_terminal_delta->z = 1f
+00425685        *(&self->secondary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 0042569a        *(&self->secondary_samples[self->segment_count] - 0x1c) = 0x3f800000
 004256ad        request_object_vertices(self->bod.object, (self->width_cells + 1) * (self->segment_count + 1))
 004256bf        request_object_facequads(self->bod.object, (self->width_cells * self->segment_count) << 1)

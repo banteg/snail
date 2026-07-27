@@ -3062,7 +3062,7 @@ void __thiscall initialize_dip_path_template_pair(
     Path* self,
     float curve_source,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture
@@ -3072,7 +3072,7 @@ void __thiscall initialize_screw_path_template_pair(
     Path* self,
     int32_t curve_source,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture
@@ -3082,7 +3082,7 @@ void __thiscall initialize_slalom_path_template_pair(
     Path* self,
     int32_t curve_source,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture
@@ -3097,7 +3097,7 @@ void __thiscall initialize_slalombig_path_template_pair(
     Path* self,
     int32_t curve_segments,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture
@@ -3107,7 +3107,7 @@ void __thiscall initialize_sweep_path_template_pair(
     Path* self,
     float scale_arg,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture
@@ -3117,7 +3117,7 @@ void __thiscall initialize_snake_path_template_pair(
     Path* self,
     float scale_arg,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture
@@ -3127,7 +3127,7 @@ void __thiscall initialize_slalomdouble_path_template_pair(
     Path* self,
     int32_t curve_segments,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture

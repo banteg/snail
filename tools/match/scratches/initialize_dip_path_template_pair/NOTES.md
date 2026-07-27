@@ -141,3 +141,17 @@ relocation. Branch-scoped preceding-sample pointers, a shared face pointer,
 explicit delta cursors, direct orientation expansion, and statement-order-only
 micro-adjustments were all measured and rejected. No dummy calls, dead
 relocations, or equal-arm texture rewrites were introduced.
+
+## 2026-07-27 paired-mobile boolean ABI
+
+The exact Android and iOS `cRPath::BuildDip(float, int, bool, char*, char*)`
+symbols prove that the third input is a boolean. Both mobile bodies stop after
+building the sample/delta data and calling `CalcLengthZ`; the Windows-only
+tail adds the cap texture and builds the mesh locally, so that boundary does
+not justify transplanting mobile source statements. The Binary Ninja type
+change was previewed, applied, read back, and followed by lifetime replay with
+all recovered owners still current.
+
+The focused Windows build remains honestly neutral at **48.89%**, **646/655**
+candidate instructions, a 20-instruction exact prefix, and a clean masked
+audit with 37 accepted operands. No source expression changed.

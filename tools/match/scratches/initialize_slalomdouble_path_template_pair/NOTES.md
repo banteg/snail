@@ -144,3 +144,18 @@ Recovering the complete graph raises focused matching from 36.41% to **39.22%**
 and grows the candidate from 608 to **643/683** instructions. It recovers the
 exact native `0x54` frame and a five-instruction exact prefix. The masked audit
 remains clean at 34 accepted, 0 unresolved, and 0 mismatched operands.
+
+## 2026-07-27 paired-mobile ownership refinement
+
+The exact Android and iOS
+`cRPath::BuildSlalomDouble(int, int, bool, char*, char*)` symbols prove the
+boolean ABI. Their paired bodies branch on the logical curve induction owner
+at zero in each lane, so both derived `i <= 4` guards are now independently
+spelled `curve_index == 0`. This raises focused matching from **39.22%** to
+**39.55%** and shrinks the candidate from 643 to **642/683** instructions,
+while preserving the five-instruction exact prefix. The masked audit has 40
+accepted and 10 unaudited operands with no unresolved or mismatched operands.
+
+Both mobile bodies stop after sample/delta construction and `CalcLengthZ`;
+Windows owns the cap-texture and mesh-building tail. Binary Ninja preview,
+apply, readback, and lifetime replay kept every recovered owner current.

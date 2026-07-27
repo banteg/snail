@@ -142,3 +142,17 @@ the prefix from 0 to **5**, and recovers the exact native `0x54` frame. The
 masked audit remains clean at 33 accepted, 0 unresolved, 0 mismatched operands.
 The native equal-texture parity branches remain deliberately absent: adding
 them would not recover behavior or ownership.
+
+## 2026-07-27 paired-mobile ownership refinement
+
+The exact Android and iOS `cRPath::BuildSweep(float, int, bool, char*, char*)`
+symbols prove the boolean ABI. Their paired bodies branch on the logical curve
+induction owner at zero, so the derived `current_index <= 3` guard is now
+spelled `curve_index == 0`. That raises focused matching from **35.67%** to
+**35.86%** and shrinks the candidate from 615 to **614/652** instructions,
+while preserving the five-instruction exact prefix and a clean 37-operand
+masked audit.
+
+Both mobile bodies stop after sample/delta construction and `CalcLengthZ`;
+Windows owns the cap-texture and mesh-building tail. Binary Ninja preview,
+apply, readback, and lifetime replay kept every recovered owner current.

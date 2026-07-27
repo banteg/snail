@@ -70,10 +70,11 @@
 0041e6ca        if (edi_3 s<= 0xa8)
 0041e82d        set_matrix_rotation_identity(self->primary_samples + edi_3 - 0xa8)
 0041e83c        set_matrix_rotation_identity(edi_3 + self->secondary_samples - 0xa8)
-0041e6e7        struct Vec3* primary_right = self->primary_samples + edi_3 - 0xa8
-0041e6fa        primary_right->x = 0x3f800000
-0041e700        primary_right->y = 0f
-0041e703        primary_right->z = 0f
+0041e703        *(self->primary_samples + edi_3 - 0xa8) = struct Vec3 {
+    .x = 0x3f800000
+    .y = 0f
+    .z = 0f
+}
 0041e706        struct PathTemplateSample* primary_samples_5 = self->primary_samples
 0041e72a        float var_2c_1 = fconvert.s(fconvert.t(*(&primary_samples_5->transform.position.y + edi_3)) - fconvert.t(*(primary_samples_5 + edi_3 - 0x74)))
 0041e734        long double x87_r7_25 = fconvert.t(*(&primary_samples_5->transform.position.z + edi_3)) - fconvert.t(*(primary_samples_5 + edi_3 - 0x70))
@@ -83,10 +84,11 @@
 0041e755        normalize_vector(self->primary_samples + edi_3 - 0x88)
 0041e75d        void* eax_23 = self->primary_samples + edi_3
 0041e775        cross_vectors(eax_23 - 0x98, eax_23 - 0x88, eax_23 - 0xa8)
-0041e791        struct Vec3* secondary_right = edi_3 + self->secondary_samples - 0xa8
-0041e7a4        secondary_right->x = 0x3f800000
-0041e7aa        secondary_right->y = 0f
-0041e7ad        secondary_right->z = 0f
+0041e7ad        *(edi_3 + self->secondary_samples - 0xa8) = struct Vec3 {
+    .x = 0x3f800000
+    .y = 0f
+    .z = 0f
+}
 0041e7b3        void* eax_26 = self->secondary_samples + edi_3
 0041e7d1        float var_14_1 = fconvert.s(fconvert.t(*(eax_26 + 0x34)) - fconvert.t(*(eax_26 - 0x74)))
 0041e7db        long double x87_r7_33 = fconvert.t(*(eax_26 + 0x38)) - fconvert.t(*(eax_26 - 0x70))
@@ -119,16 +121,18 @@
 0041e914        *(&self->secondary_samples->delta_length + edi_4) = fconvert.s(normalize_vector(&self->secondary_samples->delta_dir_to_next + edi_4))
 0041e91e        edi_4 += 0xa8
 0041e927        do while (i s< self->segment_count - 1)
-0041e957        struct Vec3* primary_terminal_delta = &self->primary_samples[self->segment_count] - 0x28
-0041e96b        primary_terminal_delta->x = 0
-0041e979        primary_terminal_delta->y = 0f
-0041e97c        primary_terminal_delta->z = 1f
+0041e97c        *(&self->primary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 0041e98e        int32_t var_10_3 = 0x3f800000
 0041e99a        *(&self->primary_samples[self->segment_count] - 0x1c) = 0x3f800000
-0041e9b0        struct Vec3* secondary_terminal_delta = &self->secondary_samples[self->segment_count] - 0x28
-0041e9b8        secondary_terminal_delta->x = 0
-0041e9be        secondary_terminal_delta->y = 0f
-0041e9c3        secondary_terminal_delta->z = 1f
+0041e9c3        *(&self->secondary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 0041e9d8        *(&self->secondary_samples[self->segment_count] - 0x1c) = 0x3f800000
 0041e9eb        request_object_vertices(self->bod.object, (self->width_cells + 1) * (self->segment_count + 1))
 0041e9fd        request_object_facequads(self->bod.object, (self->width_cells * self->segment_count) << 1)
@@ -147,19 +151,17 @@
 0041ea4d        long double x87_r7_51 = float.t(curve_source) - float.t(width_cells_) * fconvert.t(0.5f)
 0041ea4f        if (i_1 == self->segment_count)
 0041eaac        void* eax_63 = primary_samples_1 + ebx_2
-0041eb04        float var_20_2 = fconvert.s(fconvert.t(*(eax_63 - 0x74)) + fconvert.t(fconvert.s(x87_r7_51 * fconvert.t(*(eax_63 - 0xa4)))))
-0041eb0c        struct Vec3* terminal_vertex = &vertices[(width_cells + 1) * i_1 i+ curve_source_1]
-0041eb13        long double x87_r6_20 = fconvert.t(fconvert.s(fconvert.t(*(eax_63 - 0x70)) + fconvert.t(1f))) + x87_r7_51 * fconvert.t(*(eax_63 - 0xa0))
-0041eb15        terminal_vertex->x = fconvert.s(fconvert.t(*(eax_63 - 0x78)) + fconvert.t(fconvert.s(x87_r7_51 * fconvert.t(*(eax_63 - 0xa8)))))
-0041eb1b        terminal_vertex->y = var_20_2
-0041eb28        terminal_vertex->z = fconvert.s(x87_r6_20)
+0041eb28        vertices[(width_cells + 1) * i_1 i+ curve_source_1].x.12 = struct Vec3 {
+    .x = fconvert.s(fconvert.t(*(eax_63 - 0x78)) + fconvert.t(fconvert.s(x87_r7_51 * fconvert.t(*(eax_63 - 0xa8)))))
+    .y = fconvert.s(fconvert.t(*(eax_63 - 0x74)) + fconvert.t(fconvert.s(x87_r7_51 * fconvert.t(*(eax_63 - 0xa4)))))
+    .z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(eax_63 - 0x70)) + fconvert.t(1f))) + x87_r7_51 * fconvert.t(*(eax_63 - 0xa0)))
+}
 0041ea51        struct PathTemplateSample* primary_mesh_sample = primary_samples_1 + ebx_2
-0041ea79        float var_14_3 = fconvert.s(fconvert.t(fconvert.s(x87_r7_51 * fconvert.t(primary_mesh_sample->transform.basis_right.y))) + fconvert.t(primary_mesh_sample->transform.position.y))
-0041ea86        float var_10_4 = fconvert.s(x87_r7_51 * fconvert.t(primary_mesh_sample->transform.basis_right.z) + fconvert.t(primary_mesh_sample->transform.position.z))
-0041ea93        struct Vec3* vertex = &vertices[(width_cells + 1) * i_1 i+ curve_source_1]
-0041ea9a        vertex->x = fconvert.s(fconvert.t(fconvert.s(x87_r7_51 * fconvert.t(primary_mesh_sample->transform.basis_right.x))) + fconvert.t(primary_mesh_sample->transform.position.x))
-0041eaa0        vertex->y = var_14_3
-0041eaa7        vertex->z = var_10_4
+0041eaa7        vertices[(width_cells + 1) * i_1 i+ curve_source_1].x.12 = struct Vec3 {
+    .x = fconvert.s(fconvert.t(fconvert.s(x87_r7_51 * fconvert.t(primary_mesh_sample->transform.basis_right.x))) + fconvert.t(primary_mesh_sample->transform.position.x))
+    .y = fconvert.s(fconvert.t(fconvert.s(x87_r7_51 * fconvert.t(primary_mesh_sample->transform.basis_right.y))) + fconvert.t(primary_mesh_sample->transform.position.y))
+    .z = fconvert.s(x87_r7_51 * fconvert.t(primary_mesh_sample->transform.basis_right.z) + fconvert.t(primary_mesh_sample->transform.position.z))
+}
 0041eb2b        width_cells = self->width_cells
 0041eb2e        curve_source_1 += 1
 0041eb31        curve_source = curve_source_1

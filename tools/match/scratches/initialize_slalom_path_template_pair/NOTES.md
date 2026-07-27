@@ -153,3 +153,17 @@ The adjacent ARM spellings were tested independently and rejected on Windows:
 folding the two falloff owners regressed to 30.79%, a lead-in `do/while`
 reached only 32.10%, and spelling the lead-out bound directly regressed to
 30.67%. Only the cross-port-supported induction guard is retained.
+
+## 2026-07-27 paired-mobile boolean ABI
+
+The exact Android and iOS `cRPath::BuildSlalom(int, int, bool, char*, char*)`
+symbols prove that the third input is a boolean. Both mobile bodies stop after
+building the sample/delta data and calling `CalcLengthZ`; Windows owns the
+cap-texture and mesh-building tail. Binary Ninja preview, apply, readback, and
+lifetime replay kept every recovered owner current.
+
+The focused build remains honestly neutral at **32.15%**, **654/696**
+candidate instructions, and a one-instruction exact prefix. Its masked audit
+has 34 accepted and 12 unaudited operands with no unresolved or mismatched
+operands. The already-retained logical first-curve guard agrees with both
+mobile bodies; no new source expression was inferred from the ABI evidence.

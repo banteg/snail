@@ -126,7 +126,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
 void Path::initialize_snake_path_template_pair(
     float scale_arg,
     int width_cells_,
-    int side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture)
@@ -213,7 +213,7 @@ void Path::initialize_snake_path_template_pair(
         PathTemplateSample* secondary_previous = &secondary_samples[i - 1];
         PathTemplateSample* secondary_current = &secondary_samples[i];
 
-        if (i <= 6) {
+        if (curve_index == 0) {
             primary_previous->transform.set_matrix_rotation_identity();
             secondary_previous->transform.set_matrix_rotation_identity();
         } else {

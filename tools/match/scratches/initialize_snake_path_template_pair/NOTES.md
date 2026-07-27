@@ -180,3 +180,17 @@ grows the candidate from 570 to **620/652** instructions, moves the prefix from
 clean at 36 accepted, 0 unresolved, 0 mismatched operands. As with Sweep, the
 equal-texture parity branches remain absent rather than being synthesized for
 code shape.
+
+## 2026-07-27 paired-mobile ownership refinement
+
+The exact Android and iOS `cRPath::BuildSnake(float, int, bool, char*, char*)`
+symbols prove the boolean ABI. Their paired bodies branch on the logical curve
+induction owner at zero, so the derived `i <= 6` guard is now spelled
+`curve_index == 0`. That raises focused matching from **33.49%** to **33.70%**
+and shrinks the candidate from 620 to **618/652** instructions, while
+preserving the five-instruction exact prefix and a clean 40-operand masked
+audit.
+
+Both mobile bodies stop after sample/delta construction and `CalcLengthZ`;
+Windows owns the cap-texture and mesh-building tail. Binary Ninja preview,
+apply, readback, and lifetime replay kept every recovered owner current.

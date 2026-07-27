@@ -3656,14 +3656,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "Without this flag the tool" in repair_source
     assert '"is read-only. Function recreation' in repair_source
     for declaration in (
-        "void __thiscall initialize_dip_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-        "void __thiscall initialize_screw_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-        "void __thiscall initialize_slalom_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-        "void __thiscall initialize_slalombig_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-        "void __thiscall initialize_sweep_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-        "void __thiscall initialize_snake_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_supertramp_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* unused_texture, char* cap_texture)",
-        "void __thiscall initialize_slalomdouble_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_start_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_turnover_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_turnoverdouble_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
@@ -3709,6 +3702,34 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         (
             "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
             "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+        ),
+        (
+            "void __thiscall initialize_dip_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_dip_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_screw_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_screw_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_slalom_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_slalom_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_slalombig_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_slalombig_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_sweep_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_sweep_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_snake_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_snake_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_slalomdouble_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_slalomdouble_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
             "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
@@ -20183,6 +20204,10 @@ def test_slalom_path_replay_preserves_shared_owner_lifetimes() -> None:
     replay = (BINJA_DIR / "sync_slalom_path_lifetimes.py").read_text(
         encoding="utf-8"
     )
+    slalombig_scratch = (
+        Path(__file__).parents[1]
+        / "tools/match/scratches/initialize_slalombig_path_template_pair/scratch.cpp"
+    ).read_text(encoding="utf-8")
 
     for type_name, width in (
         ("Vec3", "0x0C"),
@@ -20217,12 +20242,23 @@ def test_slalom_path_replay_preserves_shared_owner_lifetimes() -> None:
     assert "apply_user_var_updates" in replay
     for rejected_index in (853, 962, 1052, 1845):
         assert f"({rejected_index}, 66," not in replay
+    assert "if (curve_index == 0)" in slalombig_scratch
+    assert "if (current_index <= 4)" not in slalombig_scratch
 
 
 def test_sweep_snake_path_replay_preserves_clean_owner_lifetimes() -> None:
     replay = (BINJA_DIR / "sync_sweep_snake_path_lifetimes.py").read_text(
         encoding="utf-8"
     )
+    repo_root = Path(__file__).parents[1]
+    sweep_scratch = (
+        repo_root
+        / "tools/match/scratches/initialize_sweep_path_template_pair/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    snake_scratch = (
+        repo_root
+        / "tools/match/scratches/initialize_snake_path_template_pair/scratch.cpp"
+    ).read_text(encoding="utf-8")
 
     for type_name, width in (
         ("Vec3", "0x0C"),
@@ -20268,12 +20304,20 @@ def test_sweep_snake_path_replay_preserves_clean_owner_lifetimes() -> None:
     assert '0x90: ("center_x", "float")' in replay
     for rejected_index in (760, 1685, 769, 1693):
         assert f"({rejected_index}, 66," not in replay
+    assert "if (curve_index == 0)" in sweep_scratch
+    assert "if (curve_index == 0)" in snake_scratch
+    assert "if (current_index <= 3)" not in sweep_scratch
+    assert "if (i <= 6)" not in snake_scratch
 
 
 def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
     replay = (BINJA_DIR / "sync_slalomdouble_p_path_lifetimes.py").read_text(
         encoding="utf-8"
     )
+    slalomdouble_scratch = (
+        Path(__file__).parents[1]
+        / "tools/match/scratches/initialize_slalomdouble_path_template_pair/scratch.cpp"
+    ).read_text(encoding="utf-8")
 
     for type_name, width in (
         ("Vec3", "0x0C"),
@@ -20317,6 +20361,8 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
     assert "apply_user_var_updates" in replay
     for rejected_index in (825, 939, 1745, 1814):
         assert f"({rejected_index}, 66," not in replay
+    assert slalomdouble_scratch.count("if (curve_index == 0)") == 2
+    assert "if (i <= 4)" not in slalomdouble_scratch
 
 
 def test_supertramp_start_path_replay_preserves_mesh_owner_lifetimes() -> None:
@@ -20739,6 +20785,114 @@ def test_dip_screw_replay_preserves_mesh_owner_lifetimes() -> None:
     assert '0x90: ("center_x", "float")' in replay
     for rejected_index in (724, 891, 842, 1061):
         assert f"({rejected_index}, 66," not in replay
+
+
+def test_curve_family_aggregate_health_stays_address_anchored() -> None:
+    health = json.loads(
+        (
+            Path(__file__).parents[1]
+            / "analysis/decompile/health_checks.json"
+        ).read_text(encoding="utf-8")
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    aggregate_addresses = {
+        "bn_dip_path_full_owner_abi": (
+            "0041e703",
+            "0041e7ad",
+            "0041e97c",
+            "0041e9c3",
+            "0041eaa7",
+            "0041eb28",
+        ),
+        "bn_screw_path_full_owner_abi": (
+            "0041f0dc",
+            "0041f194",
+            "0041f36b",
+            "0041f3b2",
+        ),
+        "bn_slalom_path_full_owner_abi": (
+            "0041faa7",
+            "0041fb6e",
+            "0041fd65",
+            "0041fdac",
+        ),
+        "bn_slalombig_path_full_owner_abi": (
+            "00422537",
+            "004225fe",
+            "004227f5",
+            "0042283c",
+        ),
+        "bn_sweep_path_full_owner_abi": (
+            "00422ef2",
+            "00422f99",
+            "0042316d",
+            "004231b4",
+        ),
+        "bn_snake_path_full_owner_abi": (
+            "00423873",
+            "0042391e",
+            "00423af5",
+            "00423b3c",
+        ),
+        "bn_slalomdouble_path_full_owner_abi": (
+            "00425383",
+            "00425447",
+            "0042563e",
+            "00425685",
+        ),
+    }
+    for check_name, addresses in aggregate_addresses.items():
+        check = checks[check_name]
+        regexes = check["required_regexes"]
+        assert len(regexes) == len(addresses)
+        for address in addresses:
+            matching_regex = next(
+                pattern for pattern in regexes if pattern.startswith(address)
+            )
+            for component in (r"\.x =", r"\.y =", r"\.z ="):
+                assert component in matching_regex
+        for rendered_alias in (
+            "struct Vec3* primary_terminal_delta",
+            "struct Vec3* secondary_terminal_delta",
+        ):
+            assert rendered_alias not in check["required_substrings"]
+
+    for check_name, rendered_aliases in {
+        "bn_dip_path_full_owner_abi": (
+            "struct Vec3* primary_right",
+            "struct Vec3* secondary_right",
+            "struct Vec3* vertex",
+            "struct Vec3* terminal_vertex",
+        ),
+        "bn_screw_path_full_owner_abi": (
+            "struct Vec3* primary_up",
+            "struct Vec3* secondary_up",
+        ),
+        "bn_slalom_path_full_owner_abi": (
+            "struct Vec3* primary_forward",
+            "struct Vec3* secondary_forward",
+        ),
+        "bn_slalombig_path_full_owner_abi": (
+            "struct Vec3* primary_forward",
+            "struct Vec3* secondary_forward",
+        ),
+        "bn_sweep_path_full_owner_abi": (
+            "struct Vec3* primary_forward",
+            "struct Vec3* secondary_forward",
+        ),
+        "bn_snake_path_full_owner_abi": (
+            "struct Vec3* primary_right",
+            "struct Vec3* secondary_right",
+        ),
+        "bn_slalomdouble_path_full_owner_abi": (
+            "struct Vec3* primary_forward",
+            "struct Vec3* secondary_forward",
+        ),
+    }.items():
+        for rendered_alias in rendered_aliases:
+            assert (
+                rendered_alias not in checks[check_name]["required_substrings"]
+            )
 
 
 def test_worm_replay_preserves_two_stage_mesh_owner_lifetimes() -> None:

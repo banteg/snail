@@ -13,12 +13,12 @@ typedef AttachmentSample PathTemplateSample;
 
 
 static __forceinline void orient_previous_with_up(
-    PathTemplateSample* samples, int current_index, int first_index, float roll_angle)
+    PathTemplateSample* samples, int current_index, int curve_index, float roll_angle)
 {
     PathTemplateSample* previous = &samples[current_index - 1];
     PathTemplateSample* current = &samples[current_index];
 
-    if (current_index <= first_index) {
+    if (curve_index == 0) {
         previous->transform.set_matrix_rotation_identity();
         return;
     }
@@ -150,7 +150,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
 void Path::initialize_sweep_path_template_pair(
     float scale_arg,
     int width_cells_,
-    int side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture)
@@ -231,8 +231,8 @@ void Path::initialize_sweep_path_template_pair(
         secondary->transform.position.x = primary->center_x;
         secondary->transform.position.y = primary->transform.position.y + 0.49000001f;
         secondary->transform.position.z = z;
-        orient_previous_with_up(primary_samples, i, 3, 0.0f);
-        orient_previous_with_up(secondary_samples, i, 3, 0.0f);
+        orient_previous_with_up(primary_samples, i, curve_index, 0.0f);
+        orient_previous_with_up(secondary_samples, i, curve_index, 0.0f);
         ++curve_index;
     }
 

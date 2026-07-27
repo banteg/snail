@@ -155,3 +155,18 @@ Recovering those five vector owners raises focused matching from 31.64% to
 the `0x44` candidate frame to the native `0x50`, and creates a two-instruction
 exact prefix. The masked audit remains clean at 29 accepted, 0 unresolved, and
 0 mismatched operands.
+
+## 2026-07-27 paired-mobile ownership refinement
+
+The exact Android and iOS
+`cRPath::BuildSlalomBig(int, int, bool, char*, char*)` symbols prove the
+boolean ABI. Their paired bodies also branch on the logical curve induction
+owner at zero, rather than on a sample index derived from it. Replacing
+`current_index <= 4` with `curve_index == 0` is byte-neutral but recovers that
+more faithful owner. Both mobile bodies stop after sample/delta construction
+and `CalcLengthZ`; Windows owns the cap-texture and mesh-building tail.
+
+Binary Ninja preview, apply, readback, and lifetime replay kept every recovered
+owner current. The focused build remains **33.80%**, **653/696** candidate
+instructions, and a two-instruction exact prefix; its masked audit has 35
+accepted and 10 unaudited operands with no unresolved or mismatched operands.

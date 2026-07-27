@@ -37,12 +37,13 @@ static __forceinline void initialize_pair_sample(
 static __forceinline void orient_previous_with_up(
     PathTemplateSample* samples,
     int current_index,
+    int curve_index,
     PathTemplateSample* roll_source)
 {
     PathTemplateSample* previous = &samples[current_index - 1];
     PathTemplateSample* current = &samples[current_index];
 
-    if (current_index <= 4) {
+    if (curve_index == 0) {
         previous->transform.set_matrix_rotation_identity();
         return;
     }
@@ -188,7 +189,7 @@ static __forceinline void build_extrapolated_strip_mesh(
 void Path::initialize_slalombig_path_template_pair(
     int curve_segments,
     int width_cells_,
-    int side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture)
@@ -261,8 +262,8 @@ void Path::initialize_slalombig_path_template_pair(
         int sample_index = i + 4;
         initialize_pair_sample(this, sample_index, center, 0.0f, (float)sample_index);
         PathTemplateSample* roll_source = &primary_samples[sample_index - 1];
-        orient_previous_with_up(primary_samples, sample_index, roll_source);
-        orient_previous_with_up(secondary_samples, sample_index, roll_source);
+        orient_previous_with_up(primary_samples, sample_index, i, roll_source);
+        orient_previous_with_up(secondary_samples, sample_index, i, roll_source);
     }
 
     compute_terminal_deltas(this);

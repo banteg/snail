@@ -134,7 +134,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
 void Path::initialize_slalomdouble_path_template_pair(
     int curve_segments,
     int width_cells_,
-    int side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture)
@@ -190,7 +190,7 @@ void Path::initialize_slalomdouble_path_template_pair(
         secondary->transform.position.z = z;
         PathTemplateSample* primary_previous = &primary_samples[i - 1];
         PathTemplateSample* primary_current = &primary_samples[i];
-        if (i <= 4) {
+        if (curve_index == 0) {
             primary_previous->transform.set_matrix_rotation_identity();
         } else {
             primary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
@@ -211,7 +211,7 @@ void Path::initialize_slalomdouble_path_template_pair(
 
         PathTemplateSample* secondary_previous = &secondary_samples[i - 1];
         PathTemplateSample* secondary_current = &secondary_samples[i];
-        if (i <= 4) {
+        if (curve_index == 0) {
             secondary_previous->transform.set_matrix_rotation_identity();
         } else {
             secondary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);

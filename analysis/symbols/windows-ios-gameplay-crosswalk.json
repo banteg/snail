@@ -2610,7 +2610,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildDip(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and both bodies stop after sample/delta construction plus CalcLengthZ. Windows retains one additional trailing cap texture in its ret-0x18 ABI and builds the generated strip mesh locally."
     },
     {
       "address": "0x41eda0",
@@ -2619,7 +2620,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildScrew(int, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and both bodies stop after sample/delta construction plus CalcLengthZ. Windows retains one additional trailing cap texture in its ret-0x18 ABI and builds the generated strip mesh locally."
     },
     {
       "address": "0x41f760",
@@ -2628,7 +2630,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildSlalom(int, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and both bodies stop after sample/delta construction plus CalcLengthZ. Their curved loop branches on the logical curve induction variable at zero; Windows retains one additional trailing cap texture and builds the generated strip mesh locally."
     },
     {
       "address": "0x420170",
@@ -2695,7 +2698,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildSlalomBig(int, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input. Their bodies share Slalom's control graph apart from the path kind and lateral amplitude, including a logical curve-index zero guard, and stop after sample/delta construction plus CalcLengthZ. Windows retains one additional trailing cap texture and builds the generated strip mesh locally."
     },
     {
       "address": "0x422c00",
@@ -2704,7 +2708,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildSweep(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and branch on the logical curve induction variable at zero before orienting the preceding samples. Both mobile bodies stop at CalcLengthZ; Windows retains one additional trailing cap texture and builds the generated strip mesh locally."
     },
     {
       "address": "0x423580",
@@ -2713,7 +2718,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildSnake(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and branch on the logical curve induction variable at zero before orienting the preceding samples. Both mobile bodies stop at CalcLengthZ; Windows retains one additional trailing cap texture and builds the generated strip mesh locally."
     },
     {
       "address": "0x423f10",
@@ -2749,7 +2755,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildSlalomDouble(int, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and guard first-sample orientation with the logical curve induction variable. Both mobile bodies stop at CalcLengthZ; Windows retains one additional trailing cap texture and builds the generated strip mesh locally."
     },
     {
       "address": "0x425a40",

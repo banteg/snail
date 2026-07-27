@@ -71,21 +71,21 @@ struct Path : public BodBase {
     void initialize_dip_path_template_pair(
         float curve_source,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);
     void initialize_screw_path_template_pair(
         int curve_source,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);
     void initialize_slalom_path_template_pair(
         int curve_source,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);
@@ -127,21 +127,21 @@ struct Path : public BodBase {
     void initialize_snake_path_template_pair(
         float scale_arg,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);
     void initialize_slalombig_path_template_pair(
         int curve_segments,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);
     void initialize_slalomdouble_path_template_pair(
         int curve_segments,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);
@@ -162,7 +162,7 @@ struct Path : public BodBase {
     void initialize_sweep_path_template_pair(
         float scale_arg,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);

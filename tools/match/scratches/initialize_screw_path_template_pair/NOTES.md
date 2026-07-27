@@ -102,3 +102,19 @@ masked operands: 34 ok, 0 unresolved, 0 mismatch
 The complete recovery gains 8.65 focused points, 27 candidate instructions,
 two clean operands, and the exact native `0x50` frame without inventing a
 second face owner.
+
+## 2026-07-27 paired-mobile boolean ABI
+
+The exact Android and iOS `cRPath::BuildScrew(int, int, bool, char*, char*)`
+symbols prove that the third input is a boolean. Both mobile bodies stop after
+building the sample/delta data and calling `CalcLengthZ`; the Windows-only
+tail adds the cap texture and builds the mesh locally. The Binary Ninja type
+change was previewed, applied, read back, and followed by lifetime replay with
+all recovered owners still current.
+
+The focused Windows build remains **48.53%**, **646/685** candidate
+instructions, and a six-instruction exact prefix; its masked audit has 38
+accepted and 2 unaudited operands with no unresolved or mismatched operands.
+Replacing the native `sample_index <= 3` spelling with the mobile logical
+`i == 0` guard was measured and rejected: it regressed matching to 46.92% and
+645 candidate instructions. Only the proved boolean ABI is retained.
