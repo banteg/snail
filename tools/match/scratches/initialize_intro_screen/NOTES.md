@@ -163,3 +163,18 @@ vtable word and must not acquire a second C++ vptr. Focused Wibo remains
 This is codegen-neutral ownership recovery: focused Wibo remains **88.31%**,
 `523/521` candidate/target instructions, prefix 88/521, with all 66 masked
 operands clean.
+
+## 2026-07-27 line-scan lifetime order
+
+Windows initializes the per-line glyph count in `EDI`, reuses that same zero
+to initialize the width accumulator, and only then snapshots the line cursor.
+Declaring those three owners in that order recovers the exact loop-entry
+sequence. The verified Android and iOS `cRLogo::Init(char*)` bodies preserve
+the same distinct count, width, and line-cursor roles even though their later
+mobile-only logo batching diverges from Windows.
+
+Focused Wibo rises from **88.31%** to **88.89%** (`523/521`, prefix `88/521`)
+with all 66 masked operands still clean. Separate image-dimension declarations
+and a wider image-position lifetime were byte-neutral and were rejected; the
+remaining two candidate instructions are still the honest parser-argument
+cleanup and final script-buffer reload residuals.

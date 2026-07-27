@@ -66,9 +66,9 @@ void Logo::initialize_intro_screen(char* file_name)
     LogoLetter* image_donor = image_donors;
 
     while (cursor < text_end) {
-        char* line = cursor;
-        float width = 0.0f;
         int count = 0;
+        float width = 0.0f;
+        char* line = cursor;
         if (*cursor == '*') {
             char image_name[128];
             char path[128];
