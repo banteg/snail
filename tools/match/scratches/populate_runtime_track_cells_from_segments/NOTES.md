@@ -911,3 +911,30 @@ untouched at the honest 29.67%, 1,229/1,245-instruction frontier with 66 clean
 operands and the same two documented mismatches. No score-shaped source,
 register coercion, dummy dependency, masked operand, or other fakematch was
 added.
+
+## 2026-07-27 mobile-authored glyph producer chain
+
+Android `cRSubGame::BuildLevel()` at `0x0007e88c`, iOS
+`cRSubGame::BuildLevel()` at `0x00021090`, and Windows at `0x00435eb0` agree
+that the two indices into the selected segment glyph slab have different
+owners: the first is the possibly mirrored authored lane, while the second is
+the row within the selected `SubSegment`. The scratch incorrectly used the
+runtime lane for both dimensions. It now reads
+`glyph_rows[authored_lane][segment_row]`.
+
+The same three builds agree on the byte producer chain. The raw byte remains
+borrowed through `glyph_ptr`; `LevelConvert` /
+`normalize_segment_glyph_for_track_flags` produces the switch value; the
+`P`/`p` arm tests that normalized value; and only the diagnostic path reads
+the raw byte again for a second conversion. Expressing those lifetimes
+directly raises focused matching from 29.67% (1,229/1,245 instructions, 77
+clean operands, 117 unaudited) to 31.70% (1,228/1,245, 78 clean, 115
+unaudited), with the one existing jump-table mismatch retained.
+
+The mobile bodies also prove that `SwitchMirror()` belongs to the common
+new-segment join, not to every generated row or only the sequential picker.
+Authored nested-loop, per-row-test, and flattened common-join probes reached
+26.58%, 27.38%, and 27.42% respectively because they disturbed the unresolved
+VC6 lifetime schedule, so none was retained. The ownership clarification is
+recorded here without a compiler barrier, dummy dependency, register
+coercion, or other fakematch.

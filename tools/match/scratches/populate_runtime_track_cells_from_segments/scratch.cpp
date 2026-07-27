@@ -553,11 +553,10 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             ((BodBase*)(cell + CELL_BOD_BASE))->set_bod_object(0);
 
             char* glyph_ptr = active_segment
-                + authored_lane * SEGMENT_GLYPH_ROW_STRIDE + lane
+                + authored_lane * SEGMENT_GLYPH_ROW_STRIDE + segment_row
                 + SEGMENT_GLYPH_ROWS_BASE;
-            char glyph = *glyph_ptr;
-            char normalized =
-                normalize_segment_glyph_for_track_flags(glyph, build_row, edge_row);
+            char normalized = normalize_segment_glyph_for_track_flags(
+                *glyph_ptr, build_row, edge_row);
             switch (normalized) {
             case ' ':
                 *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;
@@ -722,10 +721,10 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             case 'P':
             case 'p': {
                 TrackRowCell* runtime_cell = (TrackRowCell*)(cell + CELL_BOD_BASE);
-                if (glyph == 'P')
+                if (normalized == 'P')
                     *(unsigned char*)(cell + CELL_TILE_ID) =
                         SUBLOC_TILE_PATH_ENTRY_UPPERCASE;
-                if (glyph == 'p')
+                else if (normalized == 'p')
                     *(unsigned char*)(cell + CELL_TILE_ID) =
                         SUBLOC_TILE_PATH_ENTRY_LOWERCASE;
 
@@ -853,7 +852,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             default:
                 debug_report_stub(
                     "TrackError:%c in Segment %s\n",
-                    normalize_segment_glyph_for_track_flags(glyph, build_row, 1),
+                    normalize_segment_glyph_for_track_flags(
+                        *glyph_ptr, build_row, 1),
                     ((SubSegment*)active_segment)->source_name);
                 break;
             }

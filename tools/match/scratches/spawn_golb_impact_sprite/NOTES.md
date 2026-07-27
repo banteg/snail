@@ -118,3 +118,18 @@ one constructed `Vector3` plus aggregate Sprite assignment. It remains
 63.64%, with the same 43/45 instruction count and three clean masks; only the
 already documented saved-ESI/store schedule moves. The existing source is
 therefore retained instead of treating sibling codegen as proof.
+
+## 2026-07-27 cross-platform Explode ABI boundary
+
+Android and iOS preserve the authored mobile signature
+`cRSubGolb::Explode(tVector)` with the position passed by value. Windows is a
+real platform divergence: the function ends in `ret 4`, and every native
+caller passes one pointer to an existing `Vector3`. Its recovered
+`void __thiscall spawn_golb_impact_sprite(GolbShot*, Vector3*)` signature is
+therefore retained.
+
+A by-value Windows probe generated the wrong `ret 0xc`, reduced this helper
+from 63.64% to 55.17%, and reduced `update_golb_ai` from 90.41% to 52.66%.
+That probe was fully rejected. The mobile body remains valuable evidence for
+the effect's Sprite ownership and field stores, but it is not authority to
+overwrite the observed Windows ABI.
