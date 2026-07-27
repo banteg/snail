@@ -184,6 +184,12 @@ normalized instruction stream is 100%. Curated reference-manifest aliases and
 byte-verified `.rdata` constants are allowed audit explanations; scratch-local
 dummy externs are not.
 
+Local jump tables are checked as ordered destination lists. A destination is
+accepted only when its function-relative offset is exact or its instruction is
+paired by the normalized whole-function alignment; table length and case order
+must still agree. This permits honest block-size and instruction-scheduling
+shifts without treating a reordered or unproven switch as matched.
+
 Function extents come from the symbol manifest: start at the curated address,
 end at the next curated address with int3/nop padding trimmed. When uncurated
 functions sit in the gap, set `END=0x...` in `scratch.conf`. If the compiled

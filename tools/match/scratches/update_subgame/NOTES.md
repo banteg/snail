@@ -10,8 +10,8 @@ drives the 0.8..1.0 random threshold and the salt lane drives the 0.98..1.0
 threshold; `build_subgame_level` seeds both and `complete_subgame` persists
 both into the replay/high-score record. The corrected completion snapshots and
 their two semantic source locals produce a focused 79.94% result
-(`1036/1033`, `121` clean operands, `12` explicitly unaudited operands, and
-the two existing jump-table label mismatches).
+(`1036/1033`, `123` clean operands, `12` explicitly unaudited operands, and no
+unresolved or mismatched masked operands).
 
 ## Recovered control flow
 
@@ -74,13 +74,17 @@ mov eax, [esi+0x3c]
 cmp eax, 7
 ```
 
-## Remaining mismatches
+## Remaining differences
 
 Focused matcher result: 79.94%, 1036 candidate instructions versus 1033 target
-instructions, 9-instruction prefix, 121 clean masked operands, 12 explicitly
-unaudited operands, and 2 jump-table mismatches.
+instructions, 9-instruction prefix, 123 clean masked operands, 12 explicitly
+unaudited operands, and no unresolved or mismatched masked operands.
 
-The first mismatch is the destination label of the range-check `ja`; its semantics agree, but later block sizes give the normalized target and candidate labels different identities. Both switch jump-table operands are now content-audited and classified as real mismatches, not unresolved data or call targets.
+The first normalized instruction mismatch is the destination label of the
+range-check `ja`; its semantics agree, but later block sizes give the target and
+candidate labels different identities. Both switch jump-table operands are
+content-audited as ordered local destinations rather than being compared by raw
+label spelling.
 
 The semantic structure and ownership are pinned. The remaining non-proof-grade
 regions are:
@@ -88,7 +92,37 @@ regions are:
 1. state-1 galaxy setup case ordering and shared build/destroy exits;
 2. residual authored/ambient ring register scheduling;
 3. residual HUD and handoff register scheduling;
-4. residual jump-table target identities driven by the remaining block layout.
+4. residual branch-label identities driven by the remaining block layout.
+
+## 2026-07-27 mobile-proven jump-table audit
+
+Android `0x82214` and iOS `0x33a50` are exact-demangled
+`cRSubGame::AI()` bodies for this Windows function. Both preserve the outer
+state switch over `0, 1, 2, 3, 4, 7` and the nested mode switch over
+`0, 1, 4, 7`, including the shared default/camera tails. That independent
+source proves the case ownership and order; it does not justify rewriting the
+Windows source merely to reproduce local labels.
+
+The Windows and scratch tables instead differ only where surrounding blocks
+change size:
+
+- outer target: `b4,117,257,26,3f,d68,d68,4f`;
+- outer candidate: `b4,117,256,26,3f,d6e,d6e,4f`;
+- nested target: `14d,205,d68,d68,1a8,d68,d68,214`;
+- nested candidate: `14c,204,d6e,d6e,1a8,d6e,d6e,213`.
+
+For the nested table, all eight ordered destinations pair through the
+whole-function normalized instruction alignment. The outer table has seven
+such pairs; its remaining case begins at exact offset `+0x26`, where VC6 merely
+schedules the state assignment and the following field load in opposite order.
+
+The audit now evaluates each ordered destination independently: an exact
+function-relative offset is accepted directly, while a shifted destination
+must be backed by normalized instruction alignment. Equal table length and case
+order remain mandatory, so this does not waive permutations or unproven
+destinations. The source and 79.94% instruction score are unchanged; the audit
+improves from `121 ok / 2 mismatch` to `123 ok / 0 mismatch`, with the same 12
+honestly unaudited references.
 
 ## 2026-07-26 completion-snapshot ownership correction
 

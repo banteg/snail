@@ -1593,6 +1593,8 @@ def _reference_key_options(reference: MaskedReference) -> frozenset[str]:
 def _reference_status(
     target_references: tuple[MaskedReference, ...],
     candidate_references: tuple[MaskedReference, ...],
+    *,
+    aligned_instruction_offsets: frozenset[tuple[int, int]] = frozenset(),
 ) -> str:
     def is_local_jump_table(
         target: MaskedReference, candidate: MaskedReference
@@ -1633,7 +1635,25 @@ def _reference_status(
             *((candidate.jump_table_entries,) if candidate.jump_table_entries is not None else ()),
             *candidate.alternate_jump_table_entries,
         )
-        return bool(set(target_options) & set(candidate_options))
+        if set(target_options) & set(candidate_options):
+            return True
+        # Compare ordered destinations independently when surrounding source
+        # shape shifts only some case blocks. An equal function-relative
+        # offset is already the same local destination; otherwise require the
+        # destination instructions to align in the normalized function diff.
+        return any(
+            len(target_entries) == len(candidate_entries)
+            and all(
+                target_offset == candidate_offset
+                or (target_offset, candidate_offset) in aligned_instruction_offsets
+                for target_offset, candidate_offset in zip(
+                    target_entries,
+                    candidate_entries,
+                )
+            )
+            for target_entries in target_options
+            for candidate_entries in candidate_options
+        )
 
     def audited_bytes_match(
         target: MaskedReference, candidate: MaskedReference
@@ -1847,8 +1867,16 @@ def audit_masked_operands(
         b=tuple(line.text for line in candidate_disassembly),
         autojunk=False,
     )
+    text_pairs = equal_pairs(text_matcher)
+    aligned_instruction_offsets = frozenset(
+        (
+            target_disassembly[target_index].offset,
+            candidate_disassembly[candidate_index].offset,
+        )
+        for target_index, candidate_index in text_pairs
+    )
     audit_pairs = list(reference_masked_pairs)
-    for target_index, candidate_index in equal_pairs(text_matcher):
+    for target_index, candidate_index in text_pairs:
         target_line = target_disassembly[target_index]
         candidate_line = candidate_disassembly[candidate_index]
         if not target_line.masked_references and not candidate_line.masked_references:
@@ -1880,6 +1908,7 @@ def audit_masked_operands(
                 status=_reference_status(
                     target_line.masked_references,
                     candidate_line.masked_references,
+                    aligned_instruction_offsets=aligned_instruction_offsets,
                 ),
             )
         )
