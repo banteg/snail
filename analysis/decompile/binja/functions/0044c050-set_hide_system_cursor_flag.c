@@ -4,4 +4,4 @@
 /* function: set_hide_system_cursor_flag @ 0x44c050 */
 
 0044c054        g_hide_system_cursor_flag = hidden
-0044c059        return hidden
+0044c059        return

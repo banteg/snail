@@ -44,16 +44,16 @@ void __cdecl update_input_controller_pointer_region(
       if ( v13 >= bottom )
         v13 = bottom - 1;
       click_mouse_screen(slot, v14, v13);
-      set_hide_system_cursor_flag(1);
+      set_hide_system_cursor_flag(true);
     }
     else
     {
-      set_hide_system_cursor_flag(0);
+      set_hide_system_cursor_flag(false);
     }
   }
   else
   {
-    set_hide_system_cursor_flag(1);
+    set_hide_system_cursor_flag(true);
   }
   v15 = 56 * slot;
   *(float *)(v15 + 5256016) = (double)(640 * (v14 - left)) / (double)(right - left);

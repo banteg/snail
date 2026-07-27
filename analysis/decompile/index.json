@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 5,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 5,
-  "ida_exported": 5,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,28 +18,57 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_overlay",
-      "address": "0x40a1b0"
+      "name": "game_startup_and_main_loop",
+      "address": "0x406dc0"
     },
     {
-      "name": "initialize_overlay",
-      "address": "0x40a240"
+      "name": "initialize_game_window_and_input",
+      "address": "0x4119d0"
     },
     {
-      "name": "clean_duplicate_vertices",
-      "address": "0x419f80"
+      "name": "update_input_controller_pointer_region",
+      "address": "0x4321c0"
     },
     {
-      "name": "switch_track_mirror",
-      "address": "0x435e60"
+      "name": "initialize_mouse_authored_scale_from_clip_rect",
+      "address": "0x44bbb0"
     },
     {
-      "name": "populate_runtime_track_cells_from_segments",
-      "address": "0x435eb0"
+      "name": "update_mouse_authored_scale",
+      "address": "0x44bbd0"
+    },
+    {
+      "name": "set_hide_system_cursor_flag",
+      "address": "0x44c050"
     }
   ],
-  "health_check_count": 1089,
-  "health_failing_check_count": 0,
-  "health_passed": true,
-  "health_config": "analysis/decompile/health_checks.json"
+  "health_check_count": 1103,
+  "health_failing_check_count": 1,
+  "health_passed": false,
+  "health_config": "analysis/decompile/health_checks.json",
+  "failing_checks": [
+    {
+      "name": "ida_game_main_loop_scalar_owners",
+      "artifact": "analysis/decompile/ida/functions/00406dc0-game_startup_and_main_loop.c",
+      "exists": true,
+      "passed": false,
+      "failures": [
+        "missing required substring: g_mean_update_steps_per_frame = v18 / g_main_loop_frame_count;"
+      ],
+      "observed_counts": {
+        "*(float *)&g_main_loop_frame_count": 0,
+        "*(float *)&g_mean_update_steps_per_frame": 0,
+        "1139802112": 0,
+        "1142947840": 0,
+        "g_authored_view_height = 480.0;": 1,
+        "g_authored_view_width = 640.0;": 1,
+        "g_current_frame_update_steps = 0.0;": 1,
+        "g_current_frame_update_steps = g_current_frame_update_steps + 1.0;": 1,
+        "g_current_frame_update_steps[0]": 0,
+        "g_main_loop_frame_count * g_mean_update_steps_per_frame + g_current_frame_update_steps": 1,
+        "g_mean_update_steps_per_frame = v18 / g_main_loop_frame_count;": 0
+      },
+      "observed_regex_counts": {}
+    }
+  ]
 }

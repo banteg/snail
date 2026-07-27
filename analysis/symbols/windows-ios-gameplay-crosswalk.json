@@ -3424,6 +3424,24 @@
       "notes": "Windows and Android scan 128-byte RShellSoundName slots up to RShellSoundCount and return the matching index, with the same error-and-zero miss contract. Android exports the matrix at exactly 256 slots and the count as a separate four-byte scalar."
     },
     {
+      "address": "0x433030",
+      "windows_name": "get_authored_view_width",
+      "android_symbol": "RShellGetScreenWidth()",
+      "ios_symbol": "RShellGetScreenWidth()",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Both mobile ports preserve the authored RShell getter and its gG0ScreenWidth owner. Windows returns the same logical screen-width state through its float-backed 640-style authored viewport, while the later mobile ports retain an integer-backed platform dimension; this maps vocabulary and ownership without conflating the platform storage types."
+    },
+    {
+      "address": "0x433040",
+      "windows_name": "get_authored_view_height",
+      "android_symbol": "RShellGetScreenHeight()",
+      "ios_symbol": "RShellGetScreenHeight()",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Both mobile ports preserve the authored RShell getter and its gG0ScreenHeight owner. Windows returns the same logical screen-height state through its float-backed 480-style authored viewport, while the later mobile ports retain an integer-backed platform dimension; this maps vocabulary and ownership without conflating the platform storage types."
+    },
+    {
       "address": "0x44c3b0",
       "windows_name": "is_mouse_captured",
       "ios_symbol": "cRMouse::IsActive()",
@@ -4627,6 +4645,32 @@
       "source_object": null,
       "confidence": "high",
       "notes": "Android retains the authored void FreeDirectInputKeyboard global as a platform no-op stub whose R0 value is arbitrary. Windows performs the desktop DirectInput teardown, and both Windows callers ignore EAX; the natural void transcription preserves the exact 21/21 body."
+    },
+    {
+      "address": "0x44bbd0",
+      "windows_name": "update_mouse_authored_scale",
+      "android_symbol": "MouseCalcDesktopScale(float, float)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the exact authored void two-float MouseCalcDesktopScale contract as a four-byte platform no-op. Windows retains the desktop implementation that derives X/Y authored scales from the cached clip rectangle. Its direct caller ignores EAX, the clip-rectangle wrapper only propagated that residue to another value-agnostic caller, and a natural void transcription remains exact at 17/17 instructions."
+    },
+    {
+      "address": "0x44bc20",
+      "windows_name": "resolve_uncaptured_cursor_sensitivity_scale",
+      "android_symbol": "MouseCalcScale(float)",
+      "ios_symbol": "MouseCalcScale(float)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android and iOS preserve the authored float MouseCalcScale helper as a platform stub returning 1.0. More importantly, both call it from cRSubGoldy::AI with gConfig steering sensitivity at the same control-flow point where Windows calls this helper from update_subgoldy. Windows retains the desktop captured-cursor branch and uncaptured scale * 1.8 + 0.7 transform."
+    },
+    {
+      "address": "0x44c050",
+      "windows_name": "set_hide_system_cursor_flag",
+      "android_symbol": "HideWindowMouse(bool)",
+      "ios_symbol": "HideWindowMouse(bool)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "All three ports store the bool-shaped argument into the shared mouse-window visibility latch; iOS names that Mouse.o-owned global gWindowMouseState. Mobile exports the helper as void and all three Windows callers discard EAX, proving the copied argument left in AL is incidental. The natural Windows void/bool transcription remains exact at 3/3 instructions."
     },
     {
       "address": "0x44c060",

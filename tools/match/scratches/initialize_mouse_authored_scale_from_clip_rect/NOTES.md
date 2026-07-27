@@ -11,3 +11,11 @@ g_mouse_clip_rect, and update_mouse_authored_scale operands resolved.
 the shared two-slot mouse state bank as the complete 16-byte Win32 `Rect` proven
 by its producer, consumer, and manifest extent. The `GetClipCursor` ABI is typed
 accordingly; focused output remains exact at 7/7 with all three operands clean.
+
+## 2026-07-27 void contract closure
+
+Android names the downstream two-float helper
+`void MouseCalcDesktopScale(float, float)`. This wrapper's sole Windows caller
+ignores EAX, so the prior result-shaped tail call only exposed the callee's
+incidental `rect.top` register residue. Declaring both procedures void leaves
+this wrapper exact at 7/7 instructions with all three references audited clean.

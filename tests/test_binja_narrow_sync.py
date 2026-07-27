@@ -5640,6 +5640,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '"void __cdecl update_input_controller_pointer_region(int32_t slot, int32_t left, int32_t top, int32_t right, int32_t bottom, int32_t x, int32_t y, int32_t pointer_value, char button_a, char button_b, char button_c, char capture_when_outside, char force_clamp)"',
         '"void __cdecl set_input_controller_pointer_authored_xy(int32_t slot, float authored_x, float authored_y)"',
         '"void __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)"',
+        '"void __cdecl initialize_mouse_authored_scale_from_clip_rect()"',
+        '"void __cdecl update_mouse_authored_scale(float authored_width, float authored_height)"',
+        '"void __cdecl set_hide_system_cursor_flag(bool hidden)"',
         '"uint8_t __cdecl is_key_pressed_edge(uint8_t key_code)"',
         '"uint8_t __cdecl is_key_down(uint8_t key_code)"',
         '"void __cdecl release_keyboard_input()"',
@@ -5699,6 +5702,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '"void __cdecl update_input_controller_pointer_region(int slot, int left, int top, int right, int bottom, int x, int y, int pointer_value, char button_a, char button_b, char button_c, char capture_when_outside, char force_clamp);"',
         '"void __cdecl set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);"',
         '"void __cdecl click_mouse_screen(int slot, int x, int y);"',
+        '"void __cdecl initialize_mouse_authored_scale_from_clip_rect();"',
+        '"void __cdecl update_mouse_authored_scale(float authored_width, float authored_height);"',
+        '"void __cdecl set_hide_system_cursor_flag(bool hidden);"',
         '"uint8_t __cdecl is_key_pressed_edge(uint8_t key_code);"',
         '"uint8_t __cdecl is_key_down(uint8_t key_code);"',
         '"void __cdecl release_keyboard_input();"',
@@ -5744,6 +5750,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     assert "gRShellKeyRepeatLifeRate" in aliases_by_address["0x50339c"]
     assert "gRShellKeyRepeatLife" in aliases_by_address["0x5108b8"]
     assert "gRShellOldKey" in aliases_by_address["0x53c7f5"]
+    assert "gG0ScreenHeight" in aliases_by_address["0x4b7760"]
+    assert "gG0ScreenWidth" in aliases_by_address["0x4df85c"]
+    assert "gWindowMouseState" in aliases_by_address["0x777d70"]
 
     crosswalk = json.loads(
         (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
@@ -5815,6 +5824,31 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
             None,
         ),
         (
+            "0x44bbd0",
+            "MouseCalcDesktopScale(float, float)",
+            None,
+        ),
+        (
+            "0x433030",
+            "RShellGetScreenWidth()",
+            "RShellGetScreenWidth()",
+        ),
+        (
+            "0x433040",
+            "RShellGetScreenHeight()",
+            "RShellGetScreenHeight()",
+        ),
+        (
+            "0x44bc20",
+            "MouseCalcScale(float)",
+            "MouseCalcScale(float)",
+        ),
+        (
+            "0x44c050",
+            "HideWindowMouse(bool)",
+            "HideWindowMouse(bool)",
+        ),
+        (
             "0x44c060",
             "MouseSet(int, int, int)",
             "MouseSet(int, int, int)",
@@ -5845,6 +5879,11 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         "FreeDirectInputKeyboard"
         in functions_by_address["0x44bb60"]["aliases"]
     )
+    assert "RShellGetScreenWidth" in functions_by_address["0x433030"]["aliases"]
+    assert "RShellGetScreenHeight" in functions_by_address["0x433040"]["aliases"]
+    assert "MouseCalcScale" in functions_by_address["0x44bc20"]["aliases"]
+    assert "MouseCalcDesktopScale" in functions_by_address["0x44bbd0"]["aliases"]
+    assert "HideWindowMouse" in functions_by_address["0x44c050"]["aliases"]
     assert "MouseSet" in functions_by_address["0x44c060"]["aliases"]
 
     health = json.loads(
@@ -5864,6 +5903,10 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         "ida_keyon_mobile_argument_and_state_ownership",
         "bn_keyboard_teardown_void_owner",
         "ida_keyboard_teardown_void_owner",
+        "bn_hide_window_mouse_mobile_void_abi",
+        "ida_hide_window_mouse_mobile_void_abi",
+        "bn_mouse_desktop_scale_wrapper_void_abi",
+        "ida_mouse_desktop_scale_wrapper_void_abi",
     ):
         assert name in check_names
 

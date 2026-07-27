@@ -115,11 +115,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_mouse_authored_scale_from_clip_rect",
-        "int __cdecl initialize_mouse_authored_scale_from_clip_rect();",
+        "void __cdecl initialize_mouse_authored_scale_from_clip_rect();",
     ),
     (
         "update_mouse_authored_scale",
-        "int __cdecl update_mouse_authored_scale(float authored_width, float authored_height);",
+        "void __cdecl update_mouse_authored_scale(float authored_width, float authored_height);",
     ),
     (
         "resolve_uncaptured_cursor_sensitivity_scale",
@@ -131,7 +131,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_hide_system_cursor_flag",
-        "char __cdecl set_hide_system_cursor_flag(char hidden);",
+        "void __cdecl set_hide_system_cursor_flag(bool hidden);",
     ),
     (
         "click_mouse_screen",

@@ -1,9 +1,8 @@
-// set_hide_system_cursor_flag @ 0x44c050 (cdecl, ret)
+// set_hide_system_cursor_flag @ 0x44c050 (cdecl)
 
 #include "mouse_input_state.h"
 
-char set_hide_system_cursor_flag(char hidden)
+void set_hide_system_cursor_flag(bool hidden)
 {
     g_hide_system_cursor_flag = hidden;
-    return hidden;
 }

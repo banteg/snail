@@ -3,9 +3,7 @@
 /* selector: set_hide_system_cursor_flag */
 
 // Sets the shared latch that tells `update_mouse` whether to hide the OS cursor after the current pointer-region update.
-char __cdecl set_hide_system_cursor_flag(char hidden)
+void __cdecl set_hide_system_cursor_flag(bool hidden)
 {
   g_hide_system_cursor_flag = hidden;
-  return hidden;
 }
-

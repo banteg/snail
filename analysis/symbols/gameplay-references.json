@@ -3132,10 +3132,11 @@
       "name": "g_authored_view_height",
       "kind": "global",
       "aliases": [
-        "data_4b7760"
+        "data_4b7760",
+        "gG0ScreenHeight"
       ],
       "size": "0x4",
-      "description": "Authored viewport height converted during renderer default setup and used to seed mouse live Y."
+      "description": "Float-backed Windows authored viewport height returned by RShellGetScreenHeight and used to seed mouse live Y. Android and iOS preserve the logical owner as the integer-backed gG0ScreenHeight platform dimension."
     },
     {
       "address": "0x4b7764",
@@ -3234,10 +3235,11 @@
       "name": "g_authored_view_width",
       "kind": "global",
       "aliases": [
-        "data_4df85c"
+        "data_4df85c",
+        "gG0ScreenWidth"
       ],
       "size": "0x4",
-      "description": "Authored viewport width converted during renderer default setup and used to seed mouse live X."
+      "description": "Float-backed Windows authored viewport width returned by RShellGetScreenWidth and used to seed mouse live X. Android and iOS preserve the logical owner as the integer-backed gG0ScreenWidth platform dimension."
     },
     {
       "address": "0x4a16d8",
@@ -5136,9 +5138,10 @@
       "name": "g_hide_system_cursor_flag",
       "kind": "global",
       "aliases": [
-        "data_777d70"
+        "data_777d70",
+        "gWindowMouseState"
       ],
-      "description": "Global cursor-hide flag initialized by mouse input setup, read by update_mouse, and written by set_hide_system_cursor_flag."
+      "description": "Mouse.o-owned window-mouse visibility latch initialized by mouse input setup, read by update_mouse, and written by the authored void HideWindowMouse(bool) helper. Android and iOS preserve the exported gWindowMouseState name."
     },
     {
       "address": "0x777d74",

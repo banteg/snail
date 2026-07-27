@@ -2,7 +2,7 @@
 /* function: get_authored_view_height @ 0x433040 */
 /* selector: get_authored_view_height */
 
-// Returns the authored 480-style view height float used while updating display-mode view samples.
+// Exact Windows `RShellGetScreenHeight()` getter for the float-backed 480-style authored viewport height. Android and iOS preserve the RShell owner and `gG0ScreenHeight` vocabulary while using an integer-backed platform dimension.
 float __cdecl get_authored_view_height()
 {
   return g_authored_view_height;

@@ -10,7 +10,7 @@
 004321f0        g_input_region_right[slot] = right
 004321f7        g_input_region_bottom[slot] = bottom
 0043220a        if (x_1 s>= left && x_1 s< right && y_1 s>= top && y_1 s< bottom)
-0043220e        set_hide_system_cursor_flag(1)
+0043220e        set_hide_system_cursor_flag(true)
 00432224        if (capture_when_outside == 0 || force_clamp != 0)
 00432234        if (x_1 s< left)
 00432236        x_1 = left
@@ -21,8 +21,8 @@
 00432247        if (y_1 s>= bottom)
 00432249        y_1 = bottom - 1
 0043224f        click_mouse_screen(slot, x_1, y_1)
-00432256        set_hide_system_cursor_flag(1)
-00432228        set_hide_system_cursor_flag(0)
+00432256        set_hide_system_cursor_flag(true)
+00432228        set_hide_system_cursor_flag(false)
 00432277        capture_when_outside.d = (x_1 - left) * 0x280
 0043227f        long double x87_r7 = float.t(capture_when_outside.d)
 00432283        capture_when_outside.d = right - left

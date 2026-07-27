@@ -1772,8 +1772,10 @@
         "g_authored_view_height = 480.0;",
         "g_current_frame_update_steps = 0.0;",
         "g_current_frame_update_steps = g_current_frame_update_steps + 1.0;",
-        "g_main_loop_frame_count * g_mean_update_steps_per_frame + g_current_frame_update_steps",
-        "g_mean_update_steps_per_frame = v18 / g_main_loop_frame_count;"
+        "g_main_loop_frame_count * g_mean_update_steps_per_frame + g_current_frame_update_steps"
+      ],
+      "required_regexes": [
+        "g_mean_update_steps_per_frame = v[0-9]+ / g_main_loop_frame_count;"
       ],
       "forbidden_substrings": [
         "g_current_frame_update_steps[0]",
@@ -5748,6 +5750,32 @@
       ]
     },
     {
+      "name": "bn_hide_window_mouse_mobile_void_abi",
+      "artifact": "analysis/decompile/binja/functions/0044c050-set_hide_system_cursor_flag.c",
+      "required_substrings": [
+        "g_hide_system_cursor_flag = hidden",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "return hidden",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_hide_window_mouse_mobile_void_abi",
+      "artifact": "analysis/decompile/ida/functions/0044c050-set_hide_system_cursor_flag.c",
+      "required_substrings": [
+        "void __cdecl set_hide_system_cursor_flag(bool hidden)",
+        "g_hide_system_cursor_flag = hidden"
+      ],
+      "forbidden_substrings": [
+        "char __cdecl set_hide_system_cursor_flag",
+        "return hidden",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_cursor_sensitivity_owner",
       "artifact": "analysis/decompile/binja/functions/0044bc20-resolve_uncaptured_cursor_sensitivity_scale.c",
       "required_substrings": [
@@ -5833,11 +5861,15 @@
         "g_input_controller_slot0.authored_x",
         "capture_when_outside",
         "force_clamp",
+        "set_hide_system_cursor_flag(true)",
+        "set_hide_system_cursor_flag(false)",
         "return"
       ],
       "forbidden_substrings": [
         "arg1",
         "data_5088",
+        "set_hide_system_cursor_flag(1)",
+        "set_hide_system_cursor_flag(0)",
         "return result",
         "__asm",
         "_ET1"
@@ -5854,11 +5886,15 @@
         "g_input_region_bottom[slot] = bottom",
         "g_input_controller_slot0.authored_x",
         "capture_when_outside",
-        "force_clamp"
+        "force_clamp",
+        "set_hide_system_cursor_flag(true)",
+        "set_hide_system_cursor_flag(false)"
       ],
       "forbidden_substrings": [
         "sub_4321C0",
         "dword_5088",
+        "set_hide_system_cursor_flag(1)",
+        "set_hide_system_cursor_flag(0)",
         "return result",
         "__asm",
         "_ET1"
@@ -5906,6 +5942,33 @@
       ]
     },
     {
+      "name": "bn_mouse_desktop_scale_wrapper_void_abi",
+      "artifact": "analysis/decompile/binja/functions/0044bbb0-initialize_mouse_authored_scale_from_clip_rect.c",
+      "required_substrings": [
+        "GetClipCursor(&g_mouse_clip_rect)",
+        "update_mouse_authored_scale(640f, 480f)",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "return update_mouse_authored_scale",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_mouse_desktop_scale_wrapper_void_abi",
+      "artifact": "analysis/decompile/ida/functions/0044bbb0-initialize_mouse_authored_scale_from_clip_rect.c",
+      "required_substrings": [
+        "void __cdecl initialize_mouse_authored_scale_from_clip_rect()",
+        "GetClipCursor",
+        "update_mouse_authored_scale(640.0, 480.0)"
+      ],
+      "forbidden_substrings": [
+        "int __cdecl initialize_mouse_authored_scale_from_clip_rect",
+        "return update_mouse_authored_scale",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_mouse_clip_rect_globals",
       "artifact": "analysis/decompile/binja/functions/0044bbd0-update_mouse_authored_scale.c",
       "required_substrings": [
@@ -5919,6 +5982,7 @@
       "forbidden_substrings": [
         "g_joystick_count",
         "data_777d",
+        "return top",
         "__asm",
         "_ET1"
       ]
@@ -5927,6 +5991,7 @@
       "name": "ida_mouse_clip_rect_globals",
       "artifact": "analysis/decompile/ida/functions/0044bbd0-update_mouse_authored_scale.c",
       "required_substrings": [
+        "void __cdecl update_mouse_authored_scale(float authored_width, float authored_height)",
         "g_mouse_clip_rect.left",
         "g_mouse_clip_rect.top",
         "g_mouse_clip_rect.right",
@@ -5935,6 +6000,8 @@
         "g_mouse_screen_to_authored_y_scale"
       ],
       "forbidden_substrings": [
+        "int __cdecl update_mouse_authored_scale",
+        "return g_mouse_clip_rect.top",
         "g_joystick_count",
         "dword_777B2C",
         "__asm",

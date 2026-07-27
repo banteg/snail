@@ -2021,12 +2021,18 @@
     {
       "address": "0x433030",
       "name": "get_authored_view_width",
-      "description": "Returns the authored 640-style view width float used while updating display-mode view samples."
+      "description": "Exact Windows `RShellGetScreenWidth()` getter for the float-backed 640-style authored viewport width. Android and iOS preserve the RShell owner and `gG0ScreenWidth` vocabulary while using an integer-backed platform dimension.",
+      "aliases": [
+        "RShellGetScreenWidth"
+      ]
     },
     {
       "address": "0x433040",
       "name": "get_authored_view_height",
-      "description": "Returns the authored 480-style view height float used while updating display-mode view samples."
+      "description": "Exact Windows `RShellGetScreenHeight()` getter for the float-backed 480-style authored viewport height. Android and iOS preserve the RShell owner and `gG0ScreenHeight` vocabulary while using an integer-backed platform dimension.",
+      "aliases": [
+        "RShellGetScreenHeight"
+      ]
     },
     {
       "address": "0x433050",
@@ -3542,17 +3548,23 @@
     {
       "address": "0x44bbb0",
       "name": "initialize_mouse_authored_scale_from_clip_rect",
-      "description": "Caches the current clipped screen rectangle and initializes the shared mouse screen-to-authored scaling for the default 640x480 authored coordinate space."
+      "description": "Exact void desktop wrapper: caches the current clipped screen rectangle and invokes `MouseCalcDesktopScale(640.0f, 480.0f)`. Its sole caller ignores EAX, and the void callee proves the previously propagated result was incidental."
     },
     {
       "address": "0x44bbd0",
       "name": "update_mouse_authored_scale",
-      "description": "Computes the shared mouse screen-to-authored X/Y scale factors from the cached clip rectangle and the supplied authored width and height. convert_mouse_screen_xy consumes those scales."
+      "description": "Exact void Windows `MouseCalcDesktopScale(float, float)`: computes the shared mouse screen-to-authored X/Y scale factors from the cached clip rectangle. Android preserves the authored name and signature as a platform no-op.",
+      "aliases": [
+        "MouseCalcDesktopScale"
+      ]
     },
     {
       "address": "0x44bc20",
       "name": "resolve_uncaptured_cursor_sensitivity_scale",
-      "description": "Returns the cursor-delta sensitivity scale for uncaptured pointer mode: 1.0 while the cursor is captured, otherwise arg * 1.8 + 0.7."
+      "description": "Exact Windows `MouseCalcScale(float)`: returns 1.0 while the desktop cursor is captured and otherwise applies `scale * 1.8 + 0.7`. Android and iOS preserve the authored name and same cRSubGoldy steering-sensitivity callsite while stubbing their platform body to 1.0.",
+      "aliases": [
+        "MouseCalcScale"
+      ]
     },
     {
       "address": "0x44bc50",
@@ -3562,7 +3574,10 @@
     {
       "address": "0x44c050",
       "name": "set_hide_system_cursor_flag",
-      "description": "Sets the shared latch that tells `update_mouse` whether to hide the OS cursor after the current pointer-region update."
+      "description": "Exact void `HideWindowMouse(bool)`: stores the bool-shaped request in the Mouse.o-owned window-mouse latch consumed by `update_mouse`. Android and iOS preserve the authored name and `gWindowMouseState`; all Windows callers discard the incidental argument copy left in AL.",
+      "aliases": [
+        "HideWindowMouse"
+      ]
     },
     {
       "address": "0x44c060",

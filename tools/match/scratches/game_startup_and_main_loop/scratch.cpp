@@ -32,7 +32,7 @@ void* load_config_file(char* file_name, void* buffer); // @ 0x42f470
 void initialize_trigonometry_tables(); // @ 0x44c930
 char initialize_game_data_archive(); // @ 0x430e40
 int snapshot_current_display_mode(); // @ 0x407850
-int initialize_mouse_authored_scale_from_clip_rect(); // @ 0x44bbb0
+void initialize_mouse_authored_scale_from_clip_rect(); // @ 0x44bbb0
 int probe_display_mode_count(); // @ 0x407880
 int* read_current_display_resolution(int* width, int* height); // @ 0x4078b0
 int log_startup_timestamp(); // @ 0x406d30

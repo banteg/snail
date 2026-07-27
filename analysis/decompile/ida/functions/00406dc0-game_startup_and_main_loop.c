@@ -5,32 +5,30 @@
 // WinMain startup and fixed-step frame loop. It constructs and initializes the global cRGame root, drives its owned fade and render/update gates, then persists the embedded cRSubHighScore bank before releasing the root and process subsystems.
 int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, char *lpCmdLine, int nShowCmd)
 {
-  FrontendWidget *v4; // ebp
-  FrontendWidget *v5; // esi
-  int v6; // edi
-  ObjectIndexBufferResource *v8; // ecx
-  int v9; // edx
-  int v10; // esi
+  int v4; // edi
+  ObjectIndexBufferResource *v6; // ecx
+  int v7; // edx
+  int i; // esi
+  double v9; // st7
   double v11; // st7
-  double v13; // st7
-  char v14; // c0
+  char v12; // c0
   HWND ActiveWindow; // esi
-  int v16; // esi
-  int v17; // eax
-  double v18; // st7
+  int v14; // esi
+  int v15; // eax
+  double v16; // st7
   _DWORD Msg[7]; // [esp+10h] [ebp-1Ch] BYREF
 
-  v6 = 0;
-  if ( ((int (__stdcall *)(_DWORD, _DWORD, ObjectFaceQuad *, _DWORD))FindWindowExA)(0, 0, szClass, 0) )
+  v4 = 0;
+  if ( ((int (__stdcall *)(_DWORD, _DWORD, ObjectFaceQuad *, _DWORD))FindWindowExA)(0, 0, szClass, 0) != 0 )
     return 0;
   if ( query_directx_runtime_version() < 2049 )
     abort_startup_with_3d_error();
-  rebuild_game_archive_if_needed(nullptr, v4, nullptr, v5);
+  rebuild_game_archive_if_needed();
   load_config_file(nullptr, aSnailmailCfg, &g_runtime_config);
-  g_runtime_config.load_valid_flag = validate_config_tail_stub(v8);
+  g_runtime_config.load_valid_flag = validate_config_tail_stub(v6);
   g_application_instance = hInstance;
   initialize_trigonometry_tables();
-  if ( !initialize_game_data_archive() )
+  if ( initialize_game_data_archive() == 0 )
     return 0;
   snapshot_current_display_mode();
   initialize_mouse_authored_scale_from_clip_rect();
@@ -43,11 +41,11 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
   log_startup_timestamp();
   do
   {
-    while ( ((int (__stdcall *)(_DWORD *, _DWORD, _DWORD, _DWORD, int))PeekMessageA)(Msg, 0, 0, 0, 1) )
+    while ( ((int (__stdcall *)(_DWORD *, _DWORD, _DWORD, _DWORD, int))PeekMessageA)(Msg, 0, 0, 0, 1) != 0 )
     {
       if ( Msg[1] == 18 )
       {
-        v6 = 1;
+        v4 = 1;
       }
       else
       {
@@ -55,7 +53,7 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
         DispatchMessageA((const MSG *)Msg);
       }
     }
-    if ( g_game_initialization_pending )
+    if ( g_game_initialization_pending != 0 )
     {
       initialize_audio_subsystem();
       initialize_game_window_and_input_wrapper((char *)window_name);
@@ -63,22 +61,19 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
       set_fullscreen_mode(g_runtime_config.fullscreen_enabled);
       initialize_main_loop_display_state();
       initialize_loading_screen(&g_loading_bar);
-      v9 = ((int (*)(void))timeGetTime)() % 1000;
-      if ( v9 > 0 )
+      v7 = ((int (*)(void))timeGetTime)() % 1000;
+      if ( v7 > 0 )
       {
-        v10 = v9;
-        do
+        for ( i = v7; i != 0; --i )
         {
           random_float_below(1.0);
           next_math_random_value();
-          --v10;
         }
-        while ( v10 );
       }
       construct_game_runtime();
       set_tracked_allocation_mark();
-      if ( !initialize_game_assets_and_world(g_game_base) )
-        v6 = 1;
+      if ( initialize_game_assets_and_world(g_game_base) == 0 )
+        v4 = 1;
       load_registered_texture_refs();
       initialize_game_last(g_game_base);
       g_game_initialization_pending = 0;
@@ -87,33 +82,33 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
       begin_frontend_fade_in(&g_game_base->fade);
       show_and_focus_game_window();
     }
-    if ( g_frame_render_requested )
+    if ( g_frame_render_requested != 0 )
     {
       render_game_frame_scene();
-      if ( !g_game_base->render_skip_count )
+      if ( g_game_base->render_skip_count == 0 )
         present_backbuffer();
       g_frame_render_requested = 0;
     }
     do
       g_current_frame_timestamp_seconds = (double)(unsigned int)((int (*)(void))timeGetTime)() * 0.001;
     while ( g_frame_time_accumulator + g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds < 0.0008333333333333334 );
-    v11 = g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds;
+    v9 = g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds;
     g_previous_frame_timestamp_seconds = g_current_frame_timestamp_seconds;
-    g_frame_time_accumulator = v11 + g_frame_time_accumulator;
+    g_frame_time_accumulator = v9 + g_frame_time_accumulator;
     if ( g_frame_time_accumulator > 0.41666666 )
       g_frame_time_accumulator = 0.41666666;
     g_fixed_update_abort_requested = 0;
     g_current_frame_update_steps = 0.0;
     while ( g_frame_time_accumulator > 0.0 )
     {
-      if ( g_fixed_update_abort_requested || v6 )
+      if ( g_fixed_update_abort_requested != 0 || v4 != 0 )
         break;
       g_current_frame_update_steps = g_current_frame_update_steps + 1.0;
       g_frame_time_accumulator = g_frame_time_accumulator - 0.016666668;
-      v13 = g_frame_time_accumulator;
-      if ( v14 )
-        v13 = -v13;
-      if ( v13 >= 0.0000083333334 )
+      v11 = g_frame_time_accumulator;
+      if ( v12 != 0 )
+        v11 = -v11;
+      if ( v11 >= 0.0000083333334 )
       {
         g_render_queue_active = g_frame_time_accumulator <= 0.0;
       }
@@ -130,10 +125,10 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
         if ( ActiveWindow == g_main_window )
           goto LABEL_42;
       }
-      if ( g_window_deactivated )
+      if ( g_window_deactivated != 0 )
       {
 LABEL_42:
-        v16 = 0;
+        v14 = 0;
         if ( g_game_base->fixed_update_count > 0 )
         {
           while ( 1 )
@@ -142,14 +137,14 @@ LABEL_42:
             update_joystick_input();
             update_mouse(g_main_window);
             update_font_wave_state();
-            v17 = run_frame_update(g_game_base);
+            v15 = run_frame_update(g_game_base);
             g_frame_render_requested = 1;
-            if ( v17 == 1 || v17 == 2 || v17 == 3 )
+            if ( v15 == 1 || v15 == 2 || v15 == 3 )
               break;
-            if ( ++v16 >= g_game_base->fixed_update_count )
+            if ( ++v14 >= g_game_base->fixed_update_count )
               goto LABEL_49;
           }
-          v6 = 1;
+          v4 = 1;
         }
       }
       else
@@ -157,19 +152,19 @@ LABEL_42:
         ClipCursor(nullptr);
         g_render_queue_active = 1;
         g_frame_render_requested = 1;
-        if ( g_runtime_config.fullscreen_enabled )
+        if ( g_runtime_config.fullscreen_enabled != 0 )
           minimize_game_window();
       }
 LABEL_49:
       ;
     }
     g_fixed_update_abort_requested = 0;
-    v18 = g_main_loop_frame_count * g_mean_update_steps_per_frame + g_current_frame_update_steps;
+    v16 = g_main_loop_frame_count * g_mean_update_steps_per_frame + g_current_frame_update_steps;
     g_main_loop_frame_count = g_main_loop_frame_count + 1.0;
-    g_mean_update_steps_per_frame = v18 / g_main_loop_frame_count;
+    g_mean_update_steps_per_frame = v16 / g_main_loop_frame_count;
     noop_runtime_ai();
   }
-  while ( !g_main_loop_exit_requested && !v6 );
+  while ( g_main_loop_exit_requested == 0 && v4 == 0 );
   stop_audio_backend(&g_audio_backend);
   shutdown_bass_audio_window();
   save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 1u);

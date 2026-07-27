@@ -10,3 +10,12 @@ The root-owned player layout places `MouseCursorState` at
 allocation. Binary Ninja and IDA now retain that inline borrow directly, with
 health checks rejecting raw byte-offset renderings. No source or codegen
 change was needed.
+
+## 2026-07-27 mobile owner proof
+
+Android and iOS export the helper as `MouseCalcScale(float)`. Both later ports
+stub its platform body to `1.0f`, but call it from `cRSubGoldy::AI()` with the
+selected `gConfig` steering sensitivity at the same control-flow point where
+Windows `update_subgoldy` calls this helper. Windows therefore retains the
+desktop-specific captured-cursor test and uncaptured `scale * 1.8 + 0.7`
+implementation of the same authored contract.
