@@ -1,4 +1,5 @@
 // AudioBackend::play_registered_sound_sample_scaled @ 0x4499a0
+// Authored owner: cRBass::PlaySample(int, float)
 
 #include "audio_system.h"
 

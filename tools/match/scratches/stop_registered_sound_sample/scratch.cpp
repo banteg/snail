@@ -1,4 +1,5 @@
 // AudioBackend::stop_registered_sound_sample @ 0x449a20
+// Authored owner: cRBass::StopSample(int)
 
 #include "audio_system.h"
 

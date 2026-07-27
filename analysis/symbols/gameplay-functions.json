@@ -443,7 +443,10 @@
     {
       "address": "0x407b50",
       "name": "noop_runtime_ai",
-      "description": "Shared one-byte empty method body folded across runtime owners. Receiver-typed calls at Player +0x3f0 and SubgameRuntime +0x3bbb54 recover `cRProgressBar::Init()` specifically; the Player receiver at collision callsite 0x445536 recovers mobile-authored `cRSubGoldy::SpeedUpCollect()`. The dedicated table at 0x49735c points here and is installed on all four embedded Weapon owners, while Android and iOS independently retain empty `cRWeapon::AI()` bodies. Other callsites remain distinct no-op AI or lifecycle methods."
+      "description": "Shared one-byte empty method body folded across runtime owners. Receiver-typed calls at Player +0x3f0 and SubgameRuntime +0x3bbb54 recover `cRProgressBar::Init()` specifically; the Player receiver at collision callsite 0x445536 recovers mobile-authored `cRSubGoldy::SpeedUpCollect()`. The dedicated table at 0x49735c points here and is installed on all four embedded Weapon owners, while Android and iOS independently retain empty `cRWeapon::AI()` bodies. The frame loop also calls this address on g_audio_backend; iOS preserves that folded owner as `cRBass::AI()` on `gBass`. Other callsites remain distinct no-op AI or lifecycle methods.",
+      "aliases": [
+        "cRBass_AI"
+      ]
     },
     {
       "address": "0x407b60",
@@ -3355,27 +3358,42 @@
     {
       "address": "0x4499a0",
       "name": "play_registered_sound_sample_scaled",
-      "description": "AudioBackend method that plays one registered runtime sample through BASS with the supplied normalized gain scale and the default pitch and pan parameters."
+      "description": "Authored `cRBass::PlaySample(int, float)` method on the Windows gBass owner: resolves one registered sample ID, clamps its normalized gain, and plays it through BASS with default pitch and pan. Both iOS versions retain the exact owner and ABI as a platform-stubbed method.",
+      "aliases": [
+        "cRBass_PlaySample"
+      ]
     },
     {
       "address": "0x449a10",
       "name": "stop_sound_sample_handle",
-      "description": "Forwards one raw runtime sample handle directly into `BASS_SampleStop`, underneath the registered-sample and warning-owned stop wrappers."
+      "description": "Authored `cRBass::StopSampleLooped(int)` method on the Windows gBass owner: forwards the live loop handle returned by PlaySampleLooped directly into `BASS_SampleStop`. The iOS RShell wrapper independently proves the handle ABI even though the mobile method is stubbed.",
+      "aliases": [
+        "cRBass_StopSampleLooped"
+      ]
     },
     {
       "address": "0x449a20",
       "name": "stop_registered_sound_sample",
-      "description": "AudioBackend method that stops one registered runtime sample index by resolving it through the shared sound-bank table before calling BASS."
+      "description": "Authored `cRBass::StopSample(int)` method on the Windows gBass owner: stops one registered sample ID by resolving it through the shared sound-bank table before calling BASS. The iOS VoiceManager preserves the same owner and sample-ID call edge.",
+      "aliases": [
+        "cRBass_StopSample"
+      ]
     },
     {
       "address": "0x449a40",
       "name": "is_registered_sound_sample_playing",
-      "description": "AudioBackend method that reports whether one registered runtime sample index is active by querying its shared sound-bank table entry through BASS."
+      "description": "Authored `cRBass::SamplePlaying(int)` method on the Windows gBass owner: reports whether one registered sample ID is active by querying its shared sound-bank table entry through BASS. The iOS VoiceManager preserves the same owner, argument, and boolean use while its platform body returns false.",
+      "aliases": [
+        "cRBass_SamplePlaying"
+      ]
     },
     {
       "address": "0x449a60",
       "name": "play_registered_sound_sample_default",
-      "description": "Plays one registered runtime sample index through the default `BASS_SamplePlayEx` wrapper with the hard-coded playback parameters used by the warning-owned sample path."
+      "description": "Authored `cRBass::PlaySampleLooped(int)` method on the Windows gBass owner: resolves one registered sample ID and starts looped BASS playback, returning the live handle consumed by StopSampleLooped. The iOS RShell wrapper preserves the sample-ID ABI while the mobile method returns a disabled zero handle.",
+      "aliases": [
+        "cRBass_PlaySampleLooped"
+      ]
     },
     {
       "address": "0x449a80",

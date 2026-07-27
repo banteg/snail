@@ -5417,6 +5417,94 @@ def test_audio_system_header_owns_registered_audio_globals() -> None:
         assert "extern Bass" not in source
 
 
+def test_ios_bass_symbols_recover_windows_audio_owner_without_fakematching() -> None:
+    repo_root = Path(__file__).parents[1]
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    references = json.loads(
+        (repo_root / "analysis/symbols/gameplay-references.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    functions_by_address = {
+        entry["address"]: entry for entry in functions["functions"]
+    }
+    crosswalk_by_address = {
+        entry["address"]: entry for entry in crosswalk["entries"]
+    }
+
+    for address, alias, symbol in (
+        (
+            "0x4499a0",
+            "cRBass_PlaySample",
+            "cRBass::PlaySample(int, float)",
+        ),
+        (
+            "0x449a10",
+            "cRBass_StopSampleLooped",
+            "cRBass::StopSampleLooped(int)",
+        ),
+        ("0x449a20", "cRBass_StopSample", "cRBass::StopSample(int)"),
+        (
+            "0x449a40",
+            "cRBass_SamplePlaying",
+            "cRBass::SamplePlaying(int)",
+        ),
+        (
+            "0x449a60",
+            "cRBass_PlaySampleLooped",
+            "cRBass::PlaySampleLooped(int)",
+        ),
+    ):
+        assert alias in functions_by_address[address]["aliases"]
+        entry = crosswalk_by_address[address]
+        assert entry["ios_symbol"] == symbol
+        assert "android_symbol" not in entry
+        assert entry["source_object"] == "BassPlay.o"
+        assert entry["confidence"] == "high"
+
+    assert "raw-handle method" in crosswalk_by_address["0x449a10"]["notes"]
+    assert "sample-ID call edge" in crosswalk_by_address["0x449a20"]["notes"]
+    assert "disabled `mov r0, 0; bx lr`" in (
+        crosswalk_by_address["0x449a60"]["notes"]
+    )
+
+    # iOS exposes no corresponding cRBass pitch/pan overloads. Keep those
+    # renderer-specific Windows helpers out of the verified mobile crosswalk.
+    assert "0x449a80" not in crosswalk_by_address
+    assert "0x449ae0" not in crosswalk_by_address
+
+    noop = crosswalk_by_address["0x407b50"]
+    assert "cRBass::AI()" in noop["notes"]
+    assert "cRBass_AI" in functions_by_address["0x407b50"]["aliases"]
+
+    bass_global = next(
+        entry
+        for entry in references["symbols"]
+        if entry["address"] == "0x753c58"
+    )
+    assert bass_global["name"] == "g_audio_backend"
+    assert "gBass" in bass_global["aliases"]
+    assert "Authored cRBass global" in bass_global["description"]
+
+    for header_path in (
+        repo_root / "tools/match/include/audio_system.h",
+        HEADER_DIR / "bn_archive_shell_types.h",
+        HEADER_DIR / "archive_shell_types.h",
+    ):
+        assert "typedef AudioBackend cRBass;" in header_path.read_text(
+            encoding="utf-8"
+        )
+
+
 def test_archive_shell_replays_preserve_audio_backend_member_abi() -> None:
     binja_source = (BINJA_DIR / "sync_archive_shell_types.py").read_text(
         encoding="utf-8"

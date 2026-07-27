@@ -9,5 +9,7 @@ explicit native `ECX = 0x753c58` load proves the callee's member ABI.
 iOS and both Android ABIs preserve the public entry point as
 `RShellSoundStopLooped(int)` in `RShell.o`. Each Android implementation is only
 four bytes: a tail branch to `PfmAudioStopSample` with the incoming live handle.
-Windows binds `g_audio_backend` and forwards the same handle contract. The exact
-Windows scratch remains 5/5 with two masked operands.
+iOS passes the same handle to `cRBass::StopSampleLooped(int)` on `gBass`.
+Windows binds `g_audio_backend` and invokes that authored method while forwarding
+the same handle contract. The exact Windows scratch remains 5/5 with two masked
+operands.

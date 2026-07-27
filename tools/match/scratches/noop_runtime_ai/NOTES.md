@@ -36,3 +36,10 @@ jetpack Weapon. Android and iOS independently preserve empty
 `cRWeapon::AI()` bodies. The crosswalk therefore records cRWeapon as one exact
 authored owner of this folded address without collapsing the other proven
 ProgressBar and SubGoldy identities into it. The scratch remains exact at 1/1.
+
+2026-07-27 audio-owner recovery: the frame loop passes
+`g_audio_backend @ 0x753c58` in `ECX` to this same folded one-byte body. iOS
+`BassPlay.o` independently names the process global `gBass` and calls its
+four-byte empty `cRBass::AI()` method once per frame. This adds cRBass as
+another proven owner of the folded address without changing the representative
+cRWeapon crosswalk row or collapsing unrelated no-op methods.

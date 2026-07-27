@@ -1,4 +1,5 @@
 // AudioBackend::is_registered_sound_sample_playing @ 0x449a40
+// Authored owner: cRBass::SamplePlaying(int)
 
 #include "audio_system.h"
 

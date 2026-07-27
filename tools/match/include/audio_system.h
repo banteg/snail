@@ -74,11 +74,13 @@ typedef BassHandle (__stdcall* BassChannelSetSyncFn)(
 typedef int (__stdcall* BassChannelRemoveSyncFn)(
     BassHandle channel_handle, BassHandle sync_handle);
 
+// iOS BassPlay.o names this owner cRBass and its process global gBass.
+// Keep the Windows matcher name primary while exposing the authored alias.
 class AudioBackend {
 public:
     char initialize_bass_audio_backend(void* hwnd); // @ 0x449460
     void uninitialize_bass_audio_backend(); // @ 0x4496d0
-    void noop_runtime_ai();
+    void noop_runtime_ai(); // folded @ 0x407b50; cRBass::AI
     int stop_audio_backend(); // @ 0x449b90
     void stop_music_stream(); // @ 0x4498d0
     int ensure_music_stream_from_path(char* path, char play_mode); // @ 0x449720
@@ -97,15 +99,20 @@ public:
         char* bytes, int byte_count, int sample_id, int normalization_class); // @ 0x449960
 
     // Gameplay callsites spell these helpers as calls on the backend object.
-    void play_registered_sound_sample_scaled(int sample_id, float volume); // @ 0x4499a0
+    void play_registered_sound_sample_scaled(
+        int sample_id, float volume); // @ 0x4499a0; cRBass::PlaySample
     void play_registered_sound_sample_backend(
         int sample_id, float volume, float pitch); // @ 0x449a80
     void play_registered_sound_sample_scaled_panned(
         int sample_id, float volume, float pitch, float pan); // @ 0x449ae0
-    int stop_sound_sample_handle(int sample_handle); // @ 0x449a10
-    void stop_registered_sound_sample(int sample_id); // @ 0x449a20
-    bool is_registered_sound_sample_playing(int sample_id); // @ 0x449a40
-    int play_registered_sound_sample_default(int sample_id); // @ 0x449a60
+    int stop_sound_sample_handle(
+        int sample_handle); // @ 0x449a10; cRBass::StopSampleLooped
+    void stop_registered_sound_sample(
+        int sample_id); // @ 0x449a20; cRBass::StopSample
+    bool is_registered_sound_sample_playing(
+        int sample_id); // @ 0x449a40; cRBass::SamplePlaying
+    int play_registered_sound_sample_default(
+        int sample_id); // @ 0x449a60; cRBass::PlaySampleLooped
 
     unsigned char music_stream_active; // +0x00
     char unknown_01[0x04 - 0x01];
@@ -117,7 +124,9 @@ public:
     unsigned char is_paused;         // +0x18
 };
 
-extern AudioBackend g_audio_backend; // 0x753c58
+typedef AudioBackend cRBass;
+
+extern AudioBackend g_audio_backend; // 0x753c58; authored gBass
 extern char g_cached_music_path[0x100]; // data_7516a0
 extern char g_registered_sound_sample_names[RSHELL_SOUND_MAX][0x80]; // data_5088b0
 extern int g_registered_sound_sample_count; // data_5108b0

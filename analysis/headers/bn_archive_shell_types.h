@@ -135,7 +135,8 @@ typedef char CachedMusicPath[256];
 
 /*
  * Recovered 0x1c-byte AudioBackend prefix used by exact member-function
- * scratches. The replay owns this proven aggregate only; bytes beyond the
+ * scratches. iOS BassPlay.o names this authored owner cRBass and its process
+ * global gBass. The replay owns this proven aggregate only; bytes beyond the
  * is_paused padding remain unclaimed.
  */
 typedef struct AudioBackend {
@@ -148,6 +149,8 @@ typedef struct AudioBackend {
     float voice_normalization_scale;
     uint8_t is_paused;
 } AudioBackend;
+
+typedef AudioBackend cRBass;
 
 typedef uint32_t BassHandle;
 typedef unsigned __int64 BassQword;

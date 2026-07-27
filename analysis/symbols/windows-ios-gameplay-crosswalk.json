@@ -4629,6 +4629,46 @@
       "notes": "Android preserves the authored cRVoiceManager method name but stubs the platform body to -1. Windows retains the richer 16-set registered-sample scan; this mapping transfers owner and contract only, not implementation."
     },
     {
+      "address": "0x4499a0",
+      "windows_name": "play_registered_sound_sample_scaled",
+      "ios_symbol": "cRBass::PlaySample(int, float)",
+      "source_object": "BassPlay.o",
+      "confidence": "high",
+      "notes": "The Windows receiver is always g_audio_backend and the iOS receiver is the BassPlay.o global gBass. iOS cRInvincible passes a registered sample ID and normalized gain to the exact two-argument method; Windows resolves the same ID through the registered-handle bank, clamps gain to [0,1], and calls BASS_SamplePlayEx. Both iOS versions retain only a four-byte `bx lr` platform stub, so this transfers authored owner and ABI rather than backend behavior."
+    },
+    {
+      "address": "0x449a10",
+      "windows_name": "stop_sound_sample_handle",
+      "ios_symbol": "cRBass::StopSampleLooped(int)",
+      "source_object": "BassPlay.o",
+      "confidence": "high",
+      "notes": "The iOS RShellSoundStopLooped wrapper moves its incoming live handle into r1, loads gBass into r0, and calls cRBass::StopSampleLooped; Windows RShellSoundStopLooped binds g_audio_backend and forwards that same handle to BASS_SampleStop. Both iOS versions retain a four-byte `bx lr` stub, but the wrapper call edge distinguishes this raw-handle method from cRBass::StopSample(int)."
+    },
+    {
+      "address": "0x449a20",
+      "windows_name": "stop_registered_sound_sample",
+      "ios_symbol": "cRBass::StopSample(int)",
+      "source_object": "BassPlay.o",
+      "confidence": "high",
+      "notes": "Windows and iOS VoiceManager code both select a registered sample ID from a cRVoiceSet bite bank and call this method on the process audio owner. Windows resolves the ID through g_registered_sound_sample_handles before BASS_SampleStop; both iOS versions preserve the exact cRBass method as a four-byte platform stub. This sample-ID call edge is separate from StopSampleLooped's live-handle contract."
+    },
+    {
+      "address": "0x449a40",
+      "windows_name": "is_registered_sound_sample_playing",
+      "ios_symbol": "cRBass::SamplePlaying(int)",
+      "source_object": "BassPlay.o",
+      "confidence": "high",
+      "notes": "Windows and iOS VoiceManager scans both pass each cRVoiceSet registered sample ID to the process audio owner and branch on the result. Windows queries the corresponding BASS channel and returns true only for active state 1; both iOS versions preserve the exact method as `mov r0, 0; bx lr`. The owner, one-ID ABI, and boolean contract transfer while the mobile backend deliberately reports inactive."
+    },
+    {
+      "address": "0x449a60",
+      "windows_name": "play_registered_sound_sample_default",
+      "ios_symbol": "cRBass::PlaySampleLooped(int)",
+      "source_object": "BassPlay.o",
+      "confidence": "high",
+      "notes": "The iOS RShellSoundPlayLooped wrapper moves its registered sample ID into r1, loads gBass into r0, and calls cRBass::PlaySampleLooped. Windows binds g_audio_backend, resolves the same ID, starts BASS playback with loop enabled, and returns the live handle later consumed by StopSampleLooped. Both iOS versions preserve a disabled `mov r0, 0; bx lr` body, so the differing return value is platform policy rather than a different authored owner."
+    },
+    {
       "address": "0x4323a0",
       "windows_name": "set_input_controller_pointer_authored_xy",
       "android_symbol": "RShellSetMouse(int, float, float)",
@@ -4829,7 +4869,7 @@
       "ios_symbol": "cRWeapon::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "This is one representative owner of a linker-folded Windows no-op body, not a claim that every callsite is cRWeapon. The dedicated Windows table at 0x49735c contains this address and is installed on the three weapon channels plus the jetpack Weapon; Android and iOS independently retain empty cRWeapon::AI() bodies."
+      "notes": "This is one representative owner of a linker-folded Windows no-op body, not a claim that every callsite is cRWeapon. The dedicated Windows table at 0x49735c contains this address and is installed on the three weapon channels plus the jetpack Weapon; Android and iOS independently retain empty cRWeapon::AI() bodies. The Windows frame loop also calls this same folded address with g_audio_backend in ECX; iOS independently calls its four-byte `cRBass::AI()` stub on `gBass`, proving a second authored owner from BassPlay.o without collapsing the other folded identities."
     },
     {
       "address": "0x4182e0",

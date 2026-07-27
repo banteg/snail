@@ -134,8 +134,9 @@ typedef char RegisteredSoundSampleName[RSHELL_SOUND_NAME_BYTES];
 typedef char CachedMusicPath[256];
 
 /*
- * Exact 0x1c-byte AudioBackend prefix owned by g_audio_backend. Bytes after
- * the aggregate's trailing alignment padding remain deliberately unclaimed.
+ * Exact 0x1c-byte AudioBackend prefix owned by g_audio_backend. iOS BassPlay.o
+ * names the authored class cRBass and the process global gBass. Bytes after the
+ * aggregate's trailing alignment padding remain deliberately unclaimed.
  */
 typedef struct AudioBackend {
     uint8_t music_stream_active;
@@ -147,6 +148,8 @@ typedef struct AudioBackend {
     float voice_normalization_scale;
     uint8_t is_paused;
 } AudioBackend;
+
+typedef AudioBackend cRBass;
 
 typedef uint32_t BassHandle;
 typedef unsigned __int64 BassQword;

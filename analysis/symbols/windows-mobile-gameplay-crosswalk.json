@@ -13,12 +13,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 540,
-    "unverified_entries": 245,
+    "verified_entries": 545,
+    "unverified_entries": 240,
     "verified_android_symbols": 537,
-    "verified_ios_symbols": 436,
+    "verified_ios_symbols": 441,
     "available_android_mappings": 537,
-    "available_ios_mappings": 398
+    "available_ios_mappings": 403
   },
   "entries": [
     {
@@ -21984,83 +21984,70 @@
       "address": "0x4499a0",
       "windows_name": "play_registered_sound_sample_scaled",
       "windows_size": 112,
-      "status": "unverified",
+      "status": "verified",
+      "ios_symbol": "cRBass::PlaySample(int, float)",
+      "source_object": "BassPlay.o",
+      "confidence": "high",
       "android_candidates": [
         {
-          "symbol": "cRDuplicateVertices::Clean(int)",
-          "score": 0.6248,
-          "name_score": 0.3985,
-          "size_score": 0.9643
+          "symbol": "cRBod::cRBod()",
+          "score": 0.7213,
+          "name_score": 0.6,
+          "size_score": 0.9032
         },
         {
-          "symbol": "cRResourceManager::CalcPercent()",
-          "score": 0.6105,
-          "name_score": 0.3985,
-          "size_score": 0.9286
+          "symbol": "cRBod::cRBod()",
+          "score": 0.7213,
+          "name_score": 0.6,
+          "size_score": 0.9032
+        },
+        {
+          "symbol": "RShellMusicPlay(char*, int, char*)",
+          "score": 0.6562,
+          "name_score": 0.45,
+          "size_score": 0.9655
+        },
+        {
+          "symbol": "JAVAPlaySample(int, float)",
+          "score": 0.6457,
+          "name_score": 0.6,
+          "size_score": 0.7143
         },
         {
           "symbol": "RShellSoundPlay(int, float, float, float)",
-          "score": 0.6062,
-          "name_score": 0.3913,
+          "score": 0.6414,
+          "name_score": 0.45,
           "size_score": 0.9286
-        },
-        {
-          "symbol": "RShellFindSample(char*)",
-          "score": 0.6053,
-          "name_score": 0.4255,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "tMatrix::Scale(float)",
-          "score": 0.6005,
-          "name_score": 0.3572,
-          "size_score": 0.9655
         }
       ],
-      "ios_candidates": [
-        {
-          "symbol": "RShellFindSample(char*)",
-          "score": 0.6415,
-          "name_score": 0.4255,
-          "size_score": 0.9655
-        },
-        {
-          "symbol": "OFHttpBinaryParameter::getAsMPURLRequestParameter() const",
-          "score": 0.6225,
-          "name_score": 0.3938,
-          "size_score": 0.9655
-        },
-        {
-          "symbol": "OFDelegate::OFDelegate(NSObject*, objc_selector*, OFDelegate const&)",
-          "score": 0.6121,
-          "name_score": 0.3765,
-          "size_score": 0.9655
-        },
-        {
-          "symbol": "OFHttpNestedQueryStringWriter::getQueryParametersAsMPURLRequestParameters() const",
-          "score": 0.6024,
-          "name_score": 0.4384,
-          "size_score": 0.8485
-        },
-        {
-          "symbol": "tMatrix::Scale(float)",
-          "score": 0.6005,
-          "name_score": 0.3572,
-          "size_score": 0.9655
-        }
-      ]
+      "ios_body_count": 1
     },
     {
       "address": "0x449a10",
       "windows_name": "stop_sound_sample_handle",
       "windows_size": 16,
-      "status": "unverified",
+      "status": "verified",
+      "ios_symbol": "cRBass::StopSampleLooped(int)",
+      "source_object": "BassPlay.o",
+      "confidence": "high",
       "android_candidates": [
         {
-          "symbol": "cRWarning::Stop()",
-          "score": 0.94,
+          "symbol": "RShellStop()",
+          "score": 0.84,
           "name_score": 0.9,
-          "size_score": 1.0
+          "size_score": 0.75
+        },
+        {
+          "symbol": "cRObject::cRObject()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
+        },
+        {
+          "symbol": "cRObject::cRObject()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
         },
         {
           "symbol": "tColourSmall::Set(unsigned char, unsigned char, unsigned char)",
@@ -22069,62 +22056,22 @@
           "size_score": 1.0
         },
         {
-          "symbol": "cRWarning::StopSample()",
-          "score": 0.64,
-          "name_score": 0.9,
-          "size_score": 0.25
-        },
-        {
-          "symbol": "cRBorderManager::SetJustifyCentre(float)",
-          "score": 0.5991,
-          "name_score": 0.3318,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcNull(cRObject*)",
-          "score": 0.5714,
-          "name_score": 0.2857,
+          "symbol": "cRWarning::Stop()",
+          "score": 0.67,
+          "name_score": 0.45,
           "size_score": 1.0
         }
       ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBass::StopSample(int)",
-          "score": 0.64,
-          "name_score": 0.9,
-          "size_score": 0.25
-        },
-        {
-          "symbol": "cRSound::StopLooped(int)",
-          "score": 0.64,
-          "name_score": 0.5333,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRSound::PlayLooped(int)",
-          "score": 0.608,
-          "name_score": 0.48,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "RandSeed(int)",
-          "score": 0.6069,
-          "name_score": 0.3448,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellDeleteFile(char*)",
-          "score": 0.5946,
-          "name_score": 0.3243,
-          "size_score": 1.0
-        }
-      ]
+      "ios_body_count": 1
     },
     {
       "address": "0x449a20",
       "windows_name": "stop_registered_sound_sample",
       "windows_size": 32,
-      "status": "unverified",
+      "status": "verified",
+      "ios_symbol": "cRBass::StopSample(int)",
+      "source_object": "BassPlay.o",
+      "confidence": "high",
       "android_candidates": [
         {
           "symbol": "cRSpriteManager::GetTga(int)",
@@ -22133,7 +22080,7 @@
           "size_score": 1.0
         },
         {
-          "symbol": "PfmAudioPlaySample(int, float, float, float)",
+          "symbol": "KeyOn(unsigned char)",
           "score": 0.6256,
           "name_score": 0.45,
           "size_score": 0.8889
@@ -22151,53 +22098,31 @@
           "size_score": 1.0
         },
         {
-          "symbol": "cRSound::Play(int, float)",
+          "symbol": "OFOn()",
           "score": 0.62,
           "name_score": 0.45,
           "size_score": 0.875
         }
       ],
-      "ios_candidates": [
-        {
-          "symbol": "cRSound::Play(int)",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellSoundStopLooped(int)",
-          "score": 0.637,
-          "name_score": 0.4783,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRSound::PlayVolume(int, float)",
-          "score": 0.6304,
-          "name_score": 0.384,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFISerializer::isCurrentScopeASeries() const",
-          "score": 0.6164,
-          "name_score": 0.4348,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "RShellSoundPlayLooped(int)",
-          "score": 0.6109,
-          "name_score": 0.4348,
-          "size_score": 0.875
-        }
-      ]
+      "ios_body_count": 1
     },
     {
       "address": "0x449a40",
       "windows_name": "is_registered_sound_sample_playing",
       "windows_size": 32,
-      "status": "unverified",
+      "status": "verified",
+      "ios_symbol": "cRBass::SamplePlaying(int)",
+      "source_object": "BassPlay.o",
+      "confidence": "high",
       "android_candidates": [
         {
-          "symbol": "PfmAudioPlaySample(int, float, float, float)",
+          "symbol": "cRVoiceManager::IsPlaying()",
+          "score": 0.64,
+          "name_score": 0.9,
+          "size_score": 0.25
+        },
+        {
+          "symbol": "KeyOn(unsigned char)",
           "score": 0.6256,
           "name_score": 0.45,
           "size_score": 0.8889
@@ -22209,126 +22134,61 @@
           "size_score": 0.8889
         },
         {
-          "symbol": "cRSound::Play(int, float)",
+          "symbol": "OFOn()",
           "score": 0.62,
           "name_score": 0.45,
           "size_score": 0.875
         },
         {
-          "symbol": "cRSubTrampRingManager::Init()",
-          "score": 0.5881,
-          "name_score": 0.3135,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSound::PlayVolume(int, float)",
-          "score": 0.586,
-          "name_score": 0.384,
-          "size_score": 0.8889
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRSound::Play(int)",
-          "score": 0.67,
+          "symbol": "RShellSoundInit()",
+          "score": 0.62,
           "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGame::GetSkirtColourRandomOpen()",
-          "score": 0.6455,
-          "name_score": 0.4092,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSound::PlayVolume(int, float)",
-          "score": 0.6304,
-          "name_score": 0.384,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFISerializer::StringKey::equals(OFISerializerKey const*) const",
-          "score": 0.6169,
-          "name_score": 0.3615,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellSoundPlayLooped(int)",
-          "score": 0.6088,
-          "name_score": 0.4314,
           "size_score": 0.875
         }
-      ]
+      ],
+      "ios_body_count": 1
     },
     {
       "address": "0x449a60",
       "windows_name": "play_registered_sound_sample_default",
       "windows_size": 32,
-      "status": "unverified",
+      "status": "verified",
+      "ios_symbol": "cRBass::PlaySampleLooped(int)",
+      "source_object": "BassPlay.o",
+      "confidence": "high",
       "android_candidates": [
         {
-          "symbol": "cRWarning::Start()",
+          "symbol": "RShellVoicePlay(char*, float, float, float)",
+          "score": 0.725,
+          "name_score": 0.675,
+          "size_score": 0.8
+        },
+        {
+          "symbol": "RShellMusicStop()",
+          "score": 0.6959,
+          "name_score": 0.675,
+          "size_score": 0.7273
+        },
+        {
+          "symbol": "RShellStop()",
+          "score": 0.69,
+          "name_score": 0.9,
+          "size_score": 0.375
+        },
+        {
+          "symbol": "RShellDatTest()",
           "score": 0.67,
           "name_score": 0.45,
           "size_score": 1.0
         },
         {
-          "symbol": "PfmAudioPlaySample(int, float, float, float)",
+          "symbol": "ACos(float)",
           "score": 0.6256,
           "name_score": 0.45,
           "size_score": 0.8889
-        },
-        {
-          "symbol": "cRSound::Play(int)",
-          "score": 0.6256,
-          "name_score": 0.45,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "cRSound::Play(int, float)",
-          "score": 0.62,
-          "name_score": 0.45,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "tVector::Magnitude() const",
-          "score": 0.6049,
-          "name_score": 0.3415,
-          "size_score": 1.0
         }
       ],
-      "ios_candidates": [
-        {
-          "symbol": "cRSound::Play(int)",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGame::GetSkirtColourRandomOpen()",
-          "score": 0.6194,
-          "name_score": 0.3657,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSound::PlayVolume(int, float)",
-          "score": 0.6,
-          "name_score": 0.3333,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellSoundStopLooped(int)",
-          "score": 0.5991,
-          "name_score": 0.4151,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRBass::PlaySample(int, float)",
-          "score": 0.59,
-          "name_score": 0.9,
-          "size_score": 0.125
-        }
-      ]
+      "ios_body_count": 1
     },
     {
       "address": "0x449a80",
