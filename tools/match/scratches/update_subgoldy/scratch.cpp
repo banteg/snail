@@ -196,14 +196,16 @@ void Player::update_subgoldy()
         }
 steering_stored:
         if (!completion_handoff_active) {
-            float steer_target = (320.0f - track_z_offset) * 0.0125f;
+            float steer_target = track_z_offset;
+            steer_target = (320.0f - steer_target) * 0.0125f;
             if (steer_target < -3.7f)
                 steer_target = -3.7f;
             else if (steer_target > 3.7f)
                 steer_target = 3.7f;
             if (click_start.state != CLICK_START_STATE_WAITING_FOR_START) {
+                float steer_delta = steer_target;
                 float pull = game->subgame_rate * 0.2f;
-                float steer_delta = steer_target - transform.position.x;
+                steer_delta -= transform.position.x;
                 transform.position.x = pull * steer_delta + transform.position.x;
             }
         }
@@ -365,7 +367,8 @@ steering_stored:
 
     if (follow_state.active == 1) {
         Vector3* p_velocity = &velocity;
-        switch (follow_state.update_track_attachment_follow_state(velocity.z, p_position,
+        float follow_speed = velocity.z;
+        switch (follow_state.update_track_attachment_follow_state(follow_speed, p_position,
                                                                   &velocity)) {
         case 1:
         case 3:

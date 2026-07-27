@@ -1,10 +1,40 @@
-# update_subgoldy @ 0x43b120 — 74.43%, 2070/2087 insns, structure complete
+# update_subgoldy @ 0x43b120 — 80.64%, 2072/2087 insns, structure complete
 
-The boss of bosses (2091 insns, 8456 bytes) has a full scratch: every block
-of the function is transcribed and the diff is dominated by
-register-allocation residuals, not semantics. The previously-unread
-track-mode slice (steering, replay record/playback, completion handoff,
-ghost marking, emitters) is now pinned.
+The boss of bosses (2087 normalized instructions, 8456 bytes) has a full
+scratch: every block of the function is transcribed and the diff is dominated
+by register-allocation residuals, not semantics. The track-mode slice
+(steering, replay record/playback, completion handoff, ghost marking,
+emitters) is pinned, and the mobile-preserved follow scalar lifetime now
+aligns the native follow switch.
+
+## 2026-07-27 mobile scalar lifetime pass
+
+Android and iOS both retain the authored `cRSubGoldy::AI()` body. In the
+Android body the path-follow speed is carried in `fVar26` into
+`cRPathFollowGoldy::Traverse`; iOS carries the analogous velocity component
+in `local_f4`, passes that scalar to `Traverse`, and updates the same component
+in the returned-mode cases. This is evidence for a value snapshot across the
+call, not a second velocity owner or a borrowed pointer. Spelling the Windows
+source accordingly as `float follow_speed = velocity.z` before
+`update_track_attachment_follow_state` recovers VC6's native register
+allocation without importing a mobile layout.
+
+That one lifetime change raises the focused result from 74.43% at 2070/2087
+instructions to 80.36% at 2072/2087. The masked audit moves from 305 clean,
+one jump-table mismatch, and 19 unaudited operands to 313 clean, no mismatch,
+and five unaudited operands. In particular, all four ordered destinations of
+the follow-mode switch become honestly aligned.
+
+The mobile bodies also preserve the steering calculation as two semantic
+steps: form `320 - track_z_offset`, scale it, then apply
+`(target - position.x) * rate * 0.2`. Splitting the corresponding Windows
+locals at those operation boundaries recovers the native x87 subtraction
+order while leaving the computation unchanged. With both steering lifetimes,
+the final focused receipt is 80.64%, 2072/2087 instructions, prefix 12/2087,
+with 314 clean masked operands, no unresolved operands, no mismatches, and
+three unaudited global loads. Those three remain visible rather than being
+waived or inferred; no mask or matcher relaxation is part of this source
+change.
 
 2026-06-13 matcher padding rebaseline: terminal object-padding normalization
 removes untargeted bytes after final `ret` instructions. The post-rebaseline
