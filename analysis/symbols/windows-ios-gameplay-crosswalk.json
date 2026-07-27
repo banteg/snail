@@ -2774,7 +2774,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildStart(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and both bodies stop after sample/delta construction plus CalcLengthZ. Their first curved sample is guarded by the logical curve index, but the Windows VC6 body retains the sample-index spelling i <= 5: transplanting the mobile spelling regresses focused agreement from 63.70% to 44.99%. Windows also retains one trailing cap texture and builds the generated strip mesh locally."
     },
     {
       "address": "0x426cb0",
@@ -2783,7 +2784,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildTurnover(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and both bodies stop after sample/delta construction plus CalcLengthZ. Windows retains one additional trailing cap texture in its ret-0x18 ABI and builds the generated strip mesh locally."
     },
     {
       "address": "0x427640",
@@ -2792,7 +2794,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildTurnoverDouble(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and both bodies stop after sample/delta construction plus CalcLengthZ. Windows retains one additional trailing cap texture in its ret-0x18 ABI and builds the generated strip mesh locally."
     },
     {
       "address": "0x427fe0",
@@ -2801,7 +2804,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildTurnunder(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and both bodies stop after sample/delta construction plus CalcLengthZ. Windows retains one additional trailing vertical texture in its ret-0x18 ABI and builds the generated strip mesh locally."
     },
     {
       "address": "0x4289a0",

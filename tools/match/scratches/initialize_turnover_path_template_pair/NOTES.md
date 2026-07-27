@@ -132,3 +132,14 @@ lifetimes before the remaining earlier cursor debt is resolved destabilizes
 both Turnover and the already-aggregated Turnunder tail, so the source keeps
 the current face loop boundary rather than treating a lower fuzzy result as a
 complete ownership recovery.
+
+## 2026-07-27 paired mobile boolean ownership
+
+Exact Android and iOS symbols agree on
+`cRPath::BuildTurnover(float, int, bool, char*, char*)`, proving
+`bool side_exit` rather than an integer mode. Both portable bodies end at
+`CalcLengthZ`; Windows keeps its additional cap texture and local mesh builder.
+The shared declaration, replay tooling, and live Binary Ninja prototype now
+encode that platform split. The scalar refinement is byte-neutral: focused
+matching remains 51.89% (651/671), with a 15-instruction prefix and 41 clean
+masked operands.

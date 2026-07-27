@@ -3150,7 +3150,7 @@ void __thiscall initialize_start_path_template_pair(
     Path* self,
     float length,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture
@@ -3160,7 +3160,7 @@ void __thiscall initialize_turnover_path_template_pair(
     Path* self,
     float length,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture
@@ -3170,7 +3170,7 @@ void __thiscall initialize_turnoverdouble_path_template_pair(
     Path* self,
     float length,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture
@@ -3180,7 +3180,7 @@ void __thiscall initialize_turnunder_path_template_pair(
     Path* self,
     float turns,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* vertical_texture

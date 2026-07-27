@@ -183,7 +183,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
 void Path::initialize_turnoverdouble_path_template_pair(
     float length,
     int width_cells_,
-    int side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* cap_texture)

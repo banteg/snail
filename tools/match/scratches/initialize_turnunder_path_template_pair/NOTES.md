@@ -142,3 +142,14 @@ rises from 48.15% (663/687) to 50.55% (670/687), the masked audit improves from
 candidate now uses the exact native `0x54` frame with a six-instruction exact
 prefix. The earlier `0x3c` frame gap was therefore mesh-vector ownership, not a
 separate constructor lifetime.
+
+## 2026-07-27 paired mobile boolean ownership
+
+Exact Android and iOS symbols agree on
+`cRPath::BuildTurnunder(float, int, bool, char*, char*)`, proving
+`bool side_exit` rather than an integer mode. Both portable bodies end at
+`CalcLengthZ`; Windows keeps its additional vertical texture and local mesh
+builder. The shared declaration, replay tooling, and live Binary Ninja
+prototype now encode that platform split. The scalar refinement is
+byte-neutral: focused matching remains 50.55% (670/687), with a six-instruction
+prefix and 45 clean masked operands.

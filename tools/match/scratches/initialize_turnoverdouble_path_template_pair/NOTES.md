@@ -104,3 +104,14 @@ the native `0x50` frame and a 15-instruction exact prefix; the prior scalar
 writer used a `0x2c` frame and had no exact prefix. As in Turnover, the small
 fuzzy regression is retained because the native owner graph, row cursor,
 instruction count, frame, and prefix all move toward the target together.
+
+## 2026-07-27 paired mobile boolean ownership
+
+Exact Android and iOS symbols agree on
+`cRPath::BuildTurnoverDouble(float, int, bool, char*, char*)`, proving
+`bool side_exit` rather than an integer mode. Both portable bodies end at
+`CalcLengthZ`; Windows keeps its additional cap texture and local mesh builder.
+The shared declaration, replay tooling, and live Binary Ninja prototype now
+encode that platform split. The scalar refinement is byte-neutral: focused
+matching remains 50.79% (655/680), with a 15-instruction prefix and 46 clean
+masked operands.

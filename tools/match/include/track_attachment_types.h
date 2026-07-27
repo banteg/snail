@@ -113,14 +113,14 @@ struct Path : public BodBase {
     void initialize_start_path_template_pair(
         float length,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);
     void initialize_turnunder_path_template_pair(
         float turns,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);
@@ -148,14 +148,14 @@ struct Path : public BodBase {
     void initialize_turnover_path_template_pair(
         float length,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);
     void initialize_turnoverdouble_path_template_pair(
         float length,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);

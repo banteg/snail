@@ -222,3 +222,19 @@ it also disrupts the proven register schedule across the constructor. It is
 rejected rather than treating frame parity as sufficient evidence. Moving the
 mesh vertex destination below the generated-position temporary is
 byte-neutral and is likewise not retained.
+
+## 2026-07-27 paired mobile boolean ownership
+
+The exact Android and iOS symbols both name
+`cRPath::BuildStart(float, int, bool, char*, char*)`, independently proving
+that the third authored scalar is `bool side_exit`. Windows keeps the same
+four-byte stack slot and adds its trailing cap texture, so refining the source,
+shared headers, and live Binary Ninja prototype is ABI- and byte-neutral:
+focused matching remains 63.70% (605/610) with 35 clean masked operands.
+
+The mobile bodies also test the logical curve index for their first curved
+sample. That source spelling is not portable back to the VC6 build: replacing
+the native-equivalent `i <= 5` guard with `curve_index == 0` changes the frame
+and register schedule and regresses focused agreement to 44.99% (608/610).
+The probe is rejected; mobile evidence closes the boolean owner without
+overriding the independently measured Windows control shape.

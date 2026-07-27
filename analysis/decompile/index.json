@@ -1,10 +1,10 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 7,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 7,
+  "bn_exported": 4,
   "ida_exported": 730,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
@@ -12,38 +12,26 @@
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "binja_analysis_refreshed": true,
+  "binja_analysis_refreshed": false,
   "ida_refreshed": false,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_dip_path_template_pair",
-      "address": "0x41e440"
+      "name": "initialize_start_path_template_pair",
+      "address": "0x426400"
     },
     {
-      "name": "initialize_screw_path_template_pair",
-      "address": "0x41eda0"
+      "name": "initialize_turnover_path_template_pair",
+      "address": "0x426cb0"
     },
     {
-      "name": "initialize_slalom_path_template_pair",
-      "address": "0x41f760"
+      "name": "initialize_turnoverdouble_path_template_pair",
+      "address": "0x427640"
     },
     {
-      "name": "initialize_slalombig_path_template_pair",
-      "address": "0x4221f0"
-    },
-    {
-      "name": "initialize_sweep_path_template_pair",
-      "address": "0x422c00"
-    },
-    {
-      "name": "initialize_snake_path_template_pair",
-      "address": "0x423580"
-    },
-    {
-      "name": "initialize_slalomdouble_path_template_pair",
-      "address": "0x425050"
+      "name": "initialize_turnunder_path_template_pair",
+      "address": "0x427fe0"
     }
   ],
   "health_check_count": 1137,
