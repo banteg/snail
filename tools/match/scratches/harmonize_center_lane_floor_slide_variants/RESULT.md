@@ -4,21 +4,22 @@
 
 | Metric | Result |
 |---|---:|
-| Match | **58.98%** |
+| Match | **100.00%** |
 | Target instructions | 226 |
-| Candidate instructions | 225 |
-| Common prefix | 9 / 226 |
-| Masked operands | 20 clean, 0 unresolved, 4 mismatched |
+| Candidate instructions | 226 |
+| Common prefix | 226 / 226 |
+| Masked operands | 28 clean, 0 unresolved, 0 mismatched |
 
-The retained partial recovers the native `0x10` frame, saved-`this` prologue,
-`0x40` transition flag register, row/lane loop skeleton, row-modulo gates, and
-four direct promotion/reversion scans.
+The exact source recovers authored `cRSubGame::SlideSmoothTrack()` as a direct
+row/lane pass over the owned `SubLoc` runtime grid. Rows with phase 3 inspect
+the same lane in the following row; rows with phase 5 inspect the preceding
+row. The four floor/slide object-family scans and `0x40` transition flag writes
+match exactly.
 
-The remaining core mismatch is the cursor anchor. Native computes
-`(lane + row * 8) * 0x54` as a byte offset from `this`, then reaches the current
-cell at `+0x3bfac8`, the next-row cell at `+0x3bfd68`, and the previous-row cell
-at `+0x3bf828`. The retained source uses a shared `TrackRowCell*` cursor instead,
-which keeps the prologue and loop skeleton but shifts the body displacements.
+The closing source-shape change follows the Android/iOS bodies and indexes
+`runtime_cells[row][lane]` directly. That lets VC6 retain the owning
+`SubgameRuntime*` plus the flattened `(lane + row * 8) * 0x54` cursor, matching
+the native current/next/previous displacements without synthetic dependencies.
 
 ## Rejected trials
 
@@ -27,3 +28,5 @@ which keeps the prologue and loop skeleton but shifts the body displacements.
 - Explicit byte-offset cursor: recovered native-looking body displacements, but
   changed the prologue/register allocation and caused row-modulo block
   reordering. Score: 32.37%.
+- Typed `cell`/`next`/`previous` pointer aliases recovered the semantics but
+  shifted the cursor to the current cell and remained at 58.98%.

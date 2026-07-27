@@ -5,14 +5,12 @@
   `row & 7 == 5` compare against the same lane eight rows behind.
 - Promotes floor-object variants to slide-object variants, or the reverse, when
   the current/neighbor cache families match the center-lane transition shape.
-- The scratch deliberately starts from the shared `TrackRowCell`/`BodBase`
-  views. Native computes a byte offset cursor from `(lane + row * 8) * 0x54`;
-  later passes can specialize the cursor if needed for register shape.
-- Current retained shape is 58.98% with the native prologue and row/lane loop
-  skeleton recovered. The typed cell cursor shifts the core body by
-  `+0x3bfac8`; an explicit byte-offset cursor recovered the native offsets in
-  the body but destabilized the prologue/register allocation and fell to
-  32.37%, so it was rejected.
+- The exact scratch keeps the shared `TrackRowCell`/`BodBase` views while
+  indexing `runtime_cells[row][lane]` directly. VC6 consequently retains the
+  owning `SubgameRuntime*` plus `(lane + row * 8) * 0x54`, matching the native
+  base cursor instead of materializing shifted current/neighbor pointers.
+- Current retained shape is 100.00%, with 226/226 instructions, a 226/226
+  prefix, and all 28 operands audited cleanly.
 - 2026-06-20 continuation: removing the `next`/`previous` neighbor locals and
   spelling the neighbor cells inline looked closer to BN's direct-offset view,
   but regressed to 48.09%. VC6 shrank the frame to `0x0c`, moved the
@@ -121,3 +119,23 @@ The replay also exposed and fixed a tooling gap: required-type existence was
 not enough to refresh an evolved analysis view. Mutable path analysis views now
 compare exact parsed type equivalence, so a stale same-name layout is replaced
 through the normal preview/apply/readback path instead of silently surviving.
+
+## 2026-07-27 direct runtime-grid indexing
+
+Android and iOS `cRSubGame::SlideSmoothTrack()` both retain source-level
+indexing over the owned row/lane grid. In particular, the forward phase reads
+the same lane in `row + 1`, the backward phase reads `row - 1`, and every
+replacement writes the current `SubLoc` through the containing `cRSubGame`.
+
+Mirroring that ownership in Windows by using
+`runtime_cells[row][lane]` directly, rather than first materializing
+`TrackRowCell* cell`, `next`, and `previous` aliases, lets VC6 retain the native
+`SubgameRuntime* + flattened-index` cursor naturally. Rewriting only the
+forward phase raised the focused result from 58.98% to 76.55%; applying the
+same authored shape to the mirrored backward phase closes the function at
+100.00%, 226/226 instructions, a 226/226 prefix, and 28 clean masked operands.
+
+This is not a padded or register-shaped matcher view: the source now states the
+mobile-preserved owner and two-dimensional indexing directly, and the existing
+Windows `TrackRowCell[...][8]` layout produces the shipped code without
+volatile reads, dummy dependencies, or duplicated operations.

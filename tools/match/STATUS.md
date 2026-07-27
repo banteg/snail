@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**527/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **91154/294937** bytes (**30.91%**) are proof-grade, and overall fuzzy is **77.65%**.
+**528/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **92065/294937** bytes (**31.22%**) are proof-grade, and overall fuzzy is **77.78%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
-## Proof Grade (527)
+## Proof Grade (528)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -283,6 +283,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_track_colour_bank_k_thunk | 0x434b30 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  | core |
 | ✅ | initialize_track_colour_bank_k | 0x434b40 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  | core |
 | ✅ | is_neighbor_cell_solid | 0x434b60 | 127 | 47/47 | 100.00% | 47/47 | 2 ok |  | core |
+| ✅ | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 226/226 | 100.00% | 226/226 | 28 ok |  | core |
 | ✅ | select_track_tile_edge_variants | 0x435a80 | 692 | 220/220 | 100.00% | 220/220 | 18 ok |  | core |
 | ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 | 24 ok |  | core |
 | ✅ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 | 3 ok |  | core |
@@ -626,7 +627,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  | core |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  | core |
 
-## Mid Progress (50-79.99%) (44)
+## Mid Progress (50-79.99%) (43)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -665,7 +666,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  | core |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 6 unaudited, 48 ok |  | core |
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 284/276 | 67.50% | 0/276 | 12 ok |  | core |
-| 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 6 unaudited, 25 ok |  | core |
 | 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 77.67% | 177/555 | 4 unaudited, 106 ok |  | core |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.94% | 9/1033 | 2 mismatch, 12 unaudited, 121 ok |  | core |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2070/2087 | 74.43% | 12/2087 | 1 mismatch, 19 unaudited, 305 ok |  | core |
