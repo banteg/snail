@@ -14,12 +14,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 550,
-    "unverified_entries": 235,
-    "verified_android_symbols": 544,
-    "verified_ios_symbols": 440,
-    "available_android_mappings": 544,
-    "available_ios_mappings": 403
+    "verified_entries": 554,
+    "unverified_entries": 231,
+    "verified_android_symbols": 548,
+    "verified_ios_symbols": 444,
+    "available_android_mappings": 548,
+    "available_ios_mappings": 407
   },
   "entries": [
     {
@@ -146,71 +146,13 @@
       "address": "0x401a70",
       "windows_name": "initialize_frontend_sprite_button",
       "windows_size": 704,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRGame::cRGame()",
-          "score": 0.7229,
-          "name_score": 0.6,
-          "size_score": 0.9072
-        },
-        {
-          "symbol": "cRBorder::Init(int, int, float, float, tColour, float, int)",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "FontPrintReal(cFontPrintBuffer*)",
-          "score": 0.598,
-          "name_score": 0.4865,
-          "size_score": 0.7652
-        },
-        {
-          "symbol": "ObjectProcMerge(cRObject*, cRObject*, cRObject*)",
-          "score": 0.5846,
-          "name_score": 0.3077,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRLoadingBar::ScriptAI()",
-          "score": 0.5801,
-          "name_score": 0.336,
-          "size_score": 0.9462
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBorder::Init(int, int, float, float, tColour, float, int)",
-          "score": 0.659,
-          "name_score": 0.45,
-          "size_score": 0.9724
-        },
-        {
-          "symbol": "cRSprite::AI()",
-          "score": 0.6405,
-          "name_score": 0.45,
-          "size_score": 0.9261
-        },
-        {
-          "symbol": "OFControllerLoader::loadWithParamsDictionary(NSString*, NSDictionary*, NSObject*)",
-          "score": 0.6116,
-          "name_score": 0.3716,
-          "size_score": 0.9716
-        },
-        {
-          "symbol": "tMatrix::Interpolate(float)",
-          "score": 0.5817,
-          "name_score": 0.4,
-          "size_score": 0.8544
-        },
-        {
-          "symbol": "cRBorderManager::Kill(cRBorder*)",
-          "score": 0.5686,
-          "name_score": 0.3,
-          "size_score": 0.9716
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRBorder::Init(int, int, float, float, tColour, float, int)",
+      "ios_symbol": "cRBorder::Init(int, int, float, float, tColour, float, int)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x401d30",
@@ -8590,141 +8532,25 @@
       "address": "0x413540",
       "windows_name": "begin_sprite_depth_render_state",
       "windows_size": 272,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRSpriteManager::New(int, int, int, int)",
-          "score": 0.655,
-          "name_score": 0.4937,
-          "size_score": 0.8971
-        },
-        {
-          "symbol": "cRSpriteManager::Init()",
-          "score": 0.6433,
-          "name_score": 0.4937,
-          "size_score": 0.8676
-        },
-        {
-          "symbol": "cRSubRingStar::Shower(cRSubGoldy*)",
-          "score": 0.6304,
-          "name_score": 0.3938,
-          "size_score": 0.9853
-        },
-        {
-          "symbol": "ObjectProcJoinTextures(cRObject*)",
-          "score": 0.6181,
-          "name_score": 0.4091,
-          "size_score": 0.9315
-        },
-        {
-          "symbol": "cRSprite::Kill()",
-          "score": 0.6115,
-          "name_score": 0.4114,
-          "size_score": 0.9118
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "SetGameState(int, int, int, int)",
-          "score": 0.6835,
-          "name_score": 0.6,
-          "size_score": 0.8088
-        },
-        {
-          "symbol": "cRSpriteManager::KillGame()",
-          "score": 0.6724,
-          "name_score": 0.4834,
-          "size_score": 0.9559
-        },
-        {
-          "symbol": "G0RenderSprite3DStart()",
-          "score": 0.6243,
-          "name_score": 0.5405,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "OFBinaryKeyedWriter::initialize(OFPointer<OFBinarySink>)",
-          "score": 0.619,
-          "name_score": 0.3746,
-          "size_score": 0.9855
-        },
-        {
-          "symbol": "cRSpriteManager::Init()",
-          "score": 0.6089,
-          "name_score": 0.4937,
-          "size_score": 0.7816
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "G0RenderSprite3DStart()",
+      "ios_symbol": "G0RenderSprite3DStart()",
+      "source_object": "GL.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x413650",
       "windows_name": "end_sprite_depth_render_state",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRSpriteManager::GetTextureRef(int)",
-          "score": 0.7076,
-          "name_score": 0.5127,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::GetTga(int)",
-          "score": 0.7076,
-          "name_score": 0.5127,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorder::SpriteExtend(int, int, int, bool)",
-          "score": 0.6792,
-          "name_score": 0.6875,
-          "size_score": 0.6667
-        },
-        {
-          "symbol": "cRSpriteManager::GetTexture(int)",
-          "score": 0.6576,
-          "name_score": 0.5127,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "G0RenderSprite3DEnd()",
-          "score": 0.6546,
-          "name_score": 0.6061,
-          "size_score": 0.7273
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRSpriteManager::GetTextureRef(int)",
-          "score": 0.6076,
-          "name_score": 0.5127,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRSpriteManager::GetTga(int)",
-          "score": 0.6076,
-          "name_score": 0.5127,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRSprite::SetTextureRef(int, int)",
-          "score": 0.5654,
-          "name_score": 0.5867,
-          "size_score": 0.5333
-        },
-        {
-          "symbol": "OFISerializer::StringKey::lessthan(OFISerializerKey const*) const",
-          "score": 0.5643,
-          "name_score": 0.3571,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "tVector::Magnitude() const",
-          "score": 0.5624,
-          "name_score": 0.3448,
-          "size_score": 0.8889
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "G0RenderSprite3DEnd()",
+      "ios_symbol": "G0RenderSprite3DEnd()",
+      "source_object": "GL.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x413670",
@@ -8800,71 +8626,13 @@
       "address": "0x4137f0",
       "windows_name": "draw_sprite_quad",
       "windows_size": 960,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRSprite::AI()",
-          "score": 0.7433,
-          "name_score": 0.9,
-          "size_score": 0.5083
-        },
-        {
-          "symbol": "cRStarManager::Init()",
-          "score": 0.7217,
-          "name_score": 0.6,
-          "size_score": 0.9042
-        },
-        {
-          "symbol": "cRSpriteManager::LoadSet(char*, int, int)",
-          "score": 0.678,
-          "name_score": 0.4634,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "FontPrintReal(cFontPrintBuffer*)",
-          "score": 0.673,
-          "name_score": 0.4828,
-          "size_score": 0.9583
-        },
-        {
-          "symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
-          "score": 0.6698,
-          "name_score": 0.5385,
-          "size_score": 0.8667
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRSprite::AI()",
-          "score": 0.8117,
-          "name_score": 0.9,
-          "size_score": 0.6792
-        },
-        {
-          "symbol": "cRStarManager::Init()",
-          "score": 0.7365,
-          "name_score": 0.6,
-          "size_score": 0.9412
-        },
-        {
-          "symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
-          "score": 0.6867,
-          "name_score": 0.5385,
-          "size_score": 0.9091
-        },
-        {
-          "symbol": "cRTwinkle::AI()",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRCompletion::AI()",
-          "score": 0.6583,
-          "name_score": 0.45,
-          "size_score": 0.9708
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
+      "ios_symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
+      "source_object": "GL.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x413bb0",

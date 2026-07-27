@@ -100,3 +100,21 @@ The dword store at widget `+0x38` remains an explicitly padded write in both
 exports. No independent reader currently proves its meaning, so naming it
 would be fakematching; the guards preserve that bounded unknown alongside the
 recovered fields.
+
+## 2026-07-27 mobile overload identity
+
+Android and iOS now independently close this exact owner as
+`cRBorder::Init(int, int, float, float, tColour, float, int)` from their
+authored exports and bodies. Both retain the active-list insertion, tooltip and
+padding defaults, paired fill/text colours, highlighted-state branch, authored
+anchor adjustment, sprite-derived dimensions, texture id/layer, zeroed teardown
+progress, and terminal `RePosition()` call. Android's body is also 704 bytes,
+the same as Windows, but the semantic body comparison is the evidence; size
+alone is not.
+
+The portable method identity does not transfer layout or ABI. Mobile passes
+`tColour` by value and places the recovered lanes at its own offsets. Windows
+continues to borrow `tColour*` and use the independently proved 0x724-byte
+`FrontendWidget` layout, now exposed through the authored `cRBorder` alias.
+Focused Windows output remains exactly 157/157 instructions with all ten
+operands clean.

@@ -33,7 +33,10 @@
     {
       "address": "0x401a70",
       "name": "initialize_frontend_sprite_button",
-      "description": "Constructs one sprite-backed cRBorder child control, including its frame texture, optional shadow offset, authored anchor, texture/layer pair, and immediate-vs-delayed click behavior."
+      "description": "Exact Windows `cRBorder::Init(int, int, float, float, tColour, float, int)` overload: constructs one sprite-backed child control, including its frame texture, optional shadow offset, authored anchor, texture/layer pair, and immediate-vs-delayed click behavior. Android and iOS preserve the owner, overload, and field lifecycle while using their own cRBorder layouts.",
+      "aliases": [
+        "cRBorder_InitSprite"
+      ]
     },
     {
       "address": "0x401d30",
@@ -1019,12 +1022,18 @@
     {
       "address": "0x413540",
       "name": "begin_sprite_depth_render_state",
-      "description": "Saves the active Direct3D view transform, installs identity view and texture transforms, and prepares texture-stage state before render_game_frame depth-sorts sprites."
+      "description": "Exact Windows `G0RenderSprite3DStart()` platform implementation: saves the active Direct3D view transform, installs identity view and texture transforms, and prepares texture-stage state before `render_game_frame` depth-sorts sprites. Android and iOS preserve the same GL.o render-pass boundary with OpenGL state.",
+      "aliases": [
+        "G0RenderSprite3DStart"
+      ]
     },
     {
       "address": "0x413650",
       "name": "end_sprite_depth_render_state",
-      "description": "Restores the Direct3D view transform saved by begin_sprite_depth_render_state after the sprite depth bucket pass."
+      "description": "Exact Windows `G0RenderSprite3DEnd()` platform implementation: restores the Direct3D view transform saved by `G0RenderSprite3DStart()` after the sprite depth bucket pass. Android and iOS preserve the same GL.o pass terminator while flushing and dismantling their OpenGL sprite batch.",
+      "aliases": [
+        "G0RenderSprite3DEnd"
+      ]
     },
     {
       "address": "0x413670",
@@ -1034,7 +1043,10 @@
     {
       "address": "0x4137f0",
       "name": "draw_sprite_quad",
-      "description": "Builds and submits one textured sprite quad from the sprite color, scale, angle, and stretch lanes. The star-field pass at `initialize_star_field` and `update_star_positions` reaches this helper through the shared sprite renderer."
+      "description": "Exact Windows `G0RenderSprite3D(tVector*, cRSprite*)` platform implementation: builds and submits one textured sprite quad from the sprite color, scale, angle, and stretch lanes. Android and iOS preserve the same GL.o geometry, alpha, rotation, and corner-scale algorithm over their platform sprite layouts.",
+      "aliases": [
+        "G0RenderSprite3D"
+      ]
     },
     {
       "address": "0x413bb0",

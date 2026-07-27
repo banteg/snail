@@ -49,6 +49,15 @@
       "notes": "Both mobile builds retain the authored cRBorder renderer and the same slider, sprite, nine-slice, shadow, and selected-widget glow branches. The sole Windows caller invokes it on a FrontendWidget receiver and immediately overwrites EAX, proving the render helper has a void contract."
     },
     {
+      "address": "0x401a70",
+      "windows_name": "initialize_frontend_sprite_button",
+      "ios_symbol": "cRBorder::Init(int, int, float, float, tColour, float, int)",
+      "android_symbol": "cRBorder::Init(int, int, float, float, tColour, float, int)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Both mobile bodies preserve the authored sprite-backed cRBorder initializer overload: active-list insertion, tooltip and padding defaults, paired fill and white text colours, highlight-state selection, authored x/y and centre adjustment, sprite-derived dimensions, texture id/layer, zeroed teardown progress, and terminal RePosition call. Android is also exactly 704 bytes, matching the Windows extent by coincidence; ownership follows the body, not size alone. Mobile passes tColour by value and uses its own field offsets, while Windows borrows a tColour pointer and retains its independently proved 0x724-byte cRBorder layout."
+    },
+    {
       "address": "0x401d30",
       "windows_name": "initialize_frontend_widget",
       "ios_symbol": "cRBorder::Init(int, char*, int, float, float, tColour, int, float)",
@@ -1554,6 +1563,33 @@
       "notes": "Both build and submit one immediate textured UI quad from explicit corners, axis-aligned dimensions, or a rotation angle. All three Windows callsites discard EAX, and the 98.34% Windows reconstruction already has a void body.",
       "ios_symbol": "G0RenderFont(cRTexture*, float, float, float, float, float, float, float, float, float, float, float, float, float, float, tColour&, int, float)",
       "ios_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
+      "address": "0x413540",
+      "windows_name": "begin_sprite_depth_render_state",
+      "ios_symbol": "G0RenderSprite3DStart()",
+      "android_symbol": "G0RenderSprite3DStart()",
+      "source_object": "GL.o",
+      "confidence": "high",
+      "notes": "All three bodies open the same sprite-render pass immediately before their cRGame::Render sprite walk and close it through G0RenderSprite3DEnd. Windows saves the Direct3D view transform, installs identity view/texture transforms, and prepares texture-stage state; mobile pushes identity OpenGL matrices and initializes its sprite batch. Both mobile symbols are void and the sole Windows caller discards EAX, proving the final Direct3D status is incidental."
+    },
+    {
+      "address": "0x413650",
+      "windows_name": "end_sprite_depth_render_state",
+      "ios_symbol": "G0RenderSprite3DEnd()",
+      "android_symbol": "G0RenderSprite3DEnd()",
+      "source_object": "GL.o",
+      "confidence": "high",
+      "notes": "All three bodies terminate the sprite-render pass opened by G0RenderSprite3DStart after the same cRGame::Render sprite walk. Windows restores its saved Direct3D view transform; mobile flushes the sprite batch and pops its OpenGL matrix/client state. Both mobile symbols are void and the sole Windows caller discards EAX, proving the final Direct3D status is incidental."
+    },
+    {
+      "address": "0x4137f0",
+      "windows_name": "draw_sprite_quad",
+      "ios_symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
+      "android_symbol": "G0RenderSprite3D(tVector*, cRSprite*)",
+      "source_object": "GL.o",
+      "confidence": "high",
+      "notes": "All three implementations borrow one position and cRSprite, interpolate size from progress, apply the force-opaque or fading alpha policy, build the same axis-aligned or pi/4-shifted rotated quad, apply the final corner-scale lane, and submit two triangles through the platform renderer. Mobile batches OpenGL vertices and has no status result, while Windows locks a Direct3D vertex buffer and preserves its DrawPrimitive/error-report status in EAX. Every current Windows caller discards that platform-specific result, but it is retained rather than importing the mobile void contract."
     },
     {
       "address": "0x411fa0",

@@ -3,7 +3,7 @@
 #include "render_pipeline_state.h"
 #include "render_state_device.h"
 
-int begin_sprite_depth_render_state()
+void begin_sprite_depth_render_state()
 {
     RenderStateDevice* device = g_d3d_device;
 
@@ -35,5 +35,5 @@ int begin_sprite_depth_render_state()
     device = g_d3d_device;
     device->vtbl->SetTextureStageState(device, 0, 0xe, 3);
     device = g_d3d_device;
-    return device->vtbl->SetTextureStageState(device, 0, 0x18, 0);
+    device->vtbl->SetTextureStageState(device, 0, 0x18, 0);
 }

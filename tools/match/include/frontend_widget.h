@@ -212,6 +212,10 @@ public:
 typedef char FrontendWidget_must_be_0x724[
     (sizeof(FrontendWidget) == 0x724) ? 1 : -1];
 
+// Authored cross-port owner. Mobile cRBorder uses a distinct layout, so this
+// alias names the Windows owner without importing mobile field offsets.
+typedef FrontendWidget cRBorder;
+
 inline InputOkState* FrontendWidget::input_ok_state()
 {
     // Text-input widgets reuse the tooltip tail as an InputOkState. Its

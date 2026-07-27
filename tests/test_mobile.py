@@ -369,6 +369,61 @@ def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -
     assert "typedef Player cRSubGoldy;" in player_header
 
 
+def test_mobile_sprite_renderer_recovers_gl_owner_and_void_boundaries() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    expected = {
+        "begin_sprite_depth_render_state": "G0RenderSprite3DStart()",
+        "draw_sprite_quad": "G0RenderSprite3D(tVector*, cRSprite*)",
+        "end_sprite_depth_render_state": "G0RenderSprite3DEnd()",
+    }
+    for windows_name, mobile_symbol in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "GL.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+
+    border = entries["initialize_frontend_sprite_button"]
+    assert border["status"] == "verified"
+    assert border["source_object"] == "Border.o"
+    assert border["android_symbol"] == (
+        "cRBorder::Init(int, int, float, float, tColour, float, int)"
+    )
+    assert border["ios_symbol"] == border["android_symbol"]
+    assert "cRBorder_InitSprite" in (
+        functions_by_name["initialize_frontend_sprite_button"]["aliases"]
+    )
+
+    renderer_aliases = {
+        "begin_sprite_depth_render_state": "G0RenderSprite3DStart",
+        "draw_sprite_quad": "G0RenderSprite3D",
+        "end_sprite_depth_render_state": "G0RenderSprite3DEnd",
+    }
+    for windows_name, alias in renderer_aliases.items():
+        assert alias in functions_by_name[windows_name]["aliases"]
+
+    frontend_header = (
+        repo_root / "tools/match/include/frontend_widget.h"
+    ).read_text(encoding="utf-8")
+    assert "typedef FrontendWidget cRBorder;" in frontend_header
+
+
 def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     result = main(
         [

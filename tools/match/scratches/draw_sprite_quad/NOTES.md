@@ -82,3 +82,22 @@ the `Lock` output becomes a separate `float *local_1c` used for the complete
 with the typed IDA `ObjectRenderVertex *vertices` view. This confirms that the
 remaining BN `position->__offset(...)` expressions are presentation debt, not
 evidence for a wider argument owner.
+
+## 2026-07-27 authored GL.o renderer identity
+
+Android and iOS export the corresponding body as
+`G0RenderSprite3D(tVector*, cRSprite*)` from `GL.o`. Across all three ports it
+borrows one position and sprite, interpolates extent from progress, applies the
+force-opaque or fading-alpha policy, builds the same axis-aligned or rotated
+quad, applies the last-corner scale, and submits two triangles. The mobile
+ports append OpenGL batch vertices while Windows locks a Direct3D vertex
+buffer; their renderer storage and sprite offsets therefore remain
+platform-specific.
+
+Both mobile bodies are void because their OpenGL batch append has no status
+result. Windows instead preserves the `DrawPrimitive`/error-report status in
+EAX, and its exact caller compilation retains the integer declaration even
+though every current caller discards it. The Windows scratch therefore keeps
+the platform-specific integer result rather than transferring the mobile
+contract. Focused output remains byte-exact at 259/259 instructions with all
+29 operands clean.

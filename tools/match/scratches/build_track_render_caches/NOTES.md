@@ -273,3 +273,18 @@ idempotent on a second run.
 No matcher source changed. Focused output remains honestly at **99.79%**,
 475/475 instructions, prefix 90, with all 20 operands clean; the sole residual
 is still the equivalent SIB base/index encoding documented above.
+
+## 2026-07-27 mobile cRWorld phase boundary
+
+Android and iOS `cRSubGame::AI()` feed each advancing `cRSubLoc` row to
+`cRWorld::Add(cRSubLoc*)`. That mobile method incrementally builds world and
+fringe geometry, retires obsolete cell BODs, and rolls the visible row window.
+It therefore corroborates `cRWorld` as the cross-port owner of track-render
+streaming, but it is not a one-to-one implementation of this Windows helper.
+
+Windows splits the work into a prebuild phase here, which materializes all five
+families in the embedded `SegmentCache`, and
+`update_track_render_cache_rows`, which activates cached rows as the player
+advances. No mobile field offset or `cRWorld::Add` symbol is transferred to
+either Windows function. Recording the split prevents the tempting but false
+direct match while preserving the useful owner and lifecycle evidence.
