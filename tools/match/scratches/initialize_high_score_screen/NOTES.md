@@ -133,3 +133,25 @@ the postal/survival record owners without retaining those false xrefs.
 No matching source changed. Focused Wibo remains honestly 98.00%, 600/600
 instructions, prefix 80, with all 137 masked operands clean; the twelve colour
 temporary stack-slot permutations remain visible.
+
+## 2026-07-27 mobile-backed colour lifetimes
+
+Android `cRHighScore::Init(int, int)` at `0x66010` and iOS at `0x3d634`
+independently retain distinct `tColour` objects for the title, each bank's row
+background/rank/name/score/replay columns, the two alternating-row writes, and
+the footer actions. This corroborates the semantic roles of the Windows
+temporaries even though the ARM stack offsets and the ports' extra Pro bank are
+not transferable to the Windows build.
+
+The scratch now names those roles and scopes the postal-only and
+challenge-only row colours to their owning switch branches. The longer-lived
+Windows locals explicitly retain the roles VC6 shares after lifetimes end:
+the Postal title slot becomes the Challenge row background, the Challenge
+title slot becomes the Challenge rank colour, and the alternating/action
+slots are later reused by footer controls.
+
+This is codegen-neutral ownership recovery. Focused Wibo remains 98.00%,
+600/600 instructions, prefix 80, with all 137 masked operands clean. The only
+residuals are still twelve `tColour` stack-slot permutations. No aggregate,
+padding, volatile access, or other synthetic stack-shaping was introduced to
+hide them.

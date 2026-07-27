@@ -4507,7 +4507,7 @@
       "android_symbol": "cRHighScore::Init(int, int)",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "All ports build the high-score UI through the void cRHighScore lifecycle. Windows embeds it at GameRoot +0x12e6e50; five ten-handle row banks prove storage through +0xf4, while the following 0x14 root bytes remain unassigned before TipManager. All three Windows callers discard EAX."
+      "notes": "All ports build the high-score UI through the void cRHighScore lifecycle. Windows embeds it at GameRoot +0x12e6e50; five ten-handle row banks prove storage through +0xf4, while the following 0x14 root bytes remain unassigned before TipManager. Android and iOS independently preserve distinct title, per-bank row-column, alternating-row, and footer tColour lifetimes; those roles corroborate the Windows locals without transferring ARM stack offsets. All three Windows callers discard EAX."
     },
     {
       "address": "0x417220",

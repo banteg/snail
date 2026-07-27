@@ -20,18 +20,10 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
 {
     // VC6 gives the short-lived color values distinct stack objects. Several
     // slots are reused after their title or row branch has ended.
-    tColour color_43;
-    tColour color_44;
-    tColour color_45;
-    tColour color_46;
-    tColour color_47;
-    tColour color_48;
-    tColour color_49;
-    tColour color_50;
-    tColour color_51;
-    tColour color_52;
-    tColour color_53;
-    tColour color_54;
+    tColour shared_action_color;
+    tColour alternating_background_color;
+    tColour challenge_heading_rank_color;
+    tColour postal_heading_challenge_background_color;
 
     selected_bank = mode_;
     selected_rank = rank;
@@ -58,7 +50,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
     case 0:
         title_widget->initialize_frontend_widget(
             0, (char*)"Postal High Scores", 23, 0.0f, 64.0f,
-            color_44.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+            postal_heading_challenge_background_color.set_color_rgba(
+                1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
         g_game->subgame.sub_high_score.active_record_bank =
             g_game->subgame.sub_high_score.postal_records;
         g_game->subgame.sub_high_score.active_record_count =
@@ -68,7 +61,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
     case 1:
         title_widget->initialize_frontend_widget(
             0, (char*)"Challenge High Scores", 23, 0.0f, 64.0f,
-            color_45.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+            challenge_heading_rank_color.set_color_rgba(
+                1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
         g_game->subgame.sub_high_score.active_record_bank =
             g_game->subgame.sub_high_score.survival_records;
         g_game->subgame.sub_high_score.active_record_count =
@@ -93,6 +87,11 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 + record_offset))->active == 1) {
             switch (selected_bank) {
             case 0: {
+                tColour postal_background_color;
+                tColour postal_rank_color;
+                tColour postal_name_color;
+                tColour postal_score_color;
+                tColour postal_replay_color;
                 y = (float)row_index * row_step + 111.0f;
 
                 row_background_widgets[row_index] =
@@ -101,7 +100,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN,
                     (char*)"                                               ",
                     22, 0.0f, y,
-                    color_49.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                    postal_background_color.set_color_rgba(
+                        1.0f, 1.0f, 1.0f, 1.0f),
                     1, -228.0f);
 
                 rank_row_widgets[row_index] =
@@ -110,7 +110,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     | FRONTEND_WIDGET_FLAG_FRAMELESS;
                 rank_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    color_53.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                    postal_rank_color.set_color_rgba(
+                        1.0f, 1.0f, 1.0f, 1.0f),
                     1, -222.0f);
                 rank_row_widgets[row_index]->border_add_text_number(row_index + 1);
                 rank_row_widgets[row_index]->layout_frontend_widget();
@@ -122,7 +123,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->player_name,
                     22, 0.0f, y,
-                    color_51.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                    postal_name_color.set_color_rgba(
+                        1.0f, 1.0f, 1.0f, 1.0f),
                     1, -180.0f);
                 if (row_index == selected_rank) {
                     name_row_widgets[row_index]->border_input_text_init(
@@ -136,7 +138,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     g_game->border_manager.allocate_border();
                 score_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    color_48.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                    postal_score_color.set_color_rgba(
+                        1.0f, 1.0f, 1.0f, 1.0f),
                     3, 160.0f);
                 score_row_widgets[row_index]->border_add_text_number(
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
@@ -150,13 +153,17 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                         | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                         | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
                     (char*)"Replay", 22, 0.0f, y,
-                    color_50.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                    postal_replay_color.set_color_rgba(
+                        1.0f, 1.0f, 1.0f, 1.0f),
                     2, 125.0f);
                 replay_row_widgets[row_index]->hide_border_init();
                 break;
             }
 
             case 1: {
+                tColour challenge_name_color;
+                tColour challenge_score_color;
+                tColour challenge_replay_color;
                 y = (float)row_index * row_step + 111.0f;
 
                 row_background_widgets[row_index] =
@@ -165,7 +172,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN,
                     (char*)"                                           ",
                     22, 0.0f, y,
-                    color_44.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                    postal_heading_challenge_background_color.set_color_rgba(
+                        1.0f, 1.0f, 1.0f, 1.0f),
                     1, -228.0f);
 
                 rank_row_widgets[row_index] =
@@ -174,7 +182,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     | FRONTEND_WIDGET_FLAG_FRAMELESS;
                 rank_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    color_45.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                    challenge_heading_rank_color.set_color_rgba(
+                        1.0f, 1.0f, 1.0f, 1.0f),
                     1, -222.0f);
                 rank_row_widgets[row_index]->border_add_text_number(row_index + 1);
                 rank_row_widgets[row_index]->layout_frontend_widget();
@@ -186,7 +195,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->player_name,
                     22, 0.0f, y,
-                    color_52.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                    challenge_name_color.set_color_rgba(
+                        1.0f, 1.0f, 1.0f, 1.0f),
                     1, -180.0f);
                 if (row_index == selected_rank) {
                     name_row_widgets[row_index]->border_input_text_init(
@@ -200,7 +210,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     g_game->border_manager.allocate_border();
                 score_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    color_47.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                    challenge_score_color.set_color_rgba(
+                        1.0f, 1.0f, 1.0f, 1.0f),
                     3, 125.0f);
                 score_row_widgets[row_index]->border_add_text_number(
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
@@ -214,7 +225,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                         | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                         | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
                     (char*)"Replay", 22, 0.0f, y,
-                    color_54.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                    challenge_replay_color.set_color_rgba(
+                        1.0f, 1.0f, 1.0f, 1.0f),
                     2, 170.0f);
                 if (entering_name != 0)
                     replay_row_widgets[row_index]->hide_border_init();
@@ -224,10 +236,10 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
 
             if ((row_index & 1) != 0) {
                 row_background_widgets[row_index]->idle_fill_color =
-                    *color_46.set_color_rgba(
+                    *alternating_background_color.set_color_rgba(
                         0.32941177f, 0.18431373f, 0.41960785f, 0.69999999f);
                 replay_row_widgets[row_index]->idle_fill_color =
-                    *color_43.set_color_rgba(
+                    *shared_action_color.set_color_rgba(
                         0.32941177f, 0.18431373f, 0.41960785f, 0.69999999f);
             }
         }
@@ -244,7 +256,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Cancel", 23, 0.0f, y,
-            color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, -110.0f);
+            shared_action_color.set_color_rgba(
+                1.0f, 1.0f, 1.0f, 1.0f), 2, -110.0f);
         cancel_name_button->set_frontend_widget_shortcut_key(11);
 
         submit_name_button = g_game->border_manager.allocate_border();
@@ -253,7 +266,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Submit", 23, 0.0f, y,
-            color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 55.0f);
+            shared_action_color.set_color_rgba(
+                1.0f, 1.0f, 1.0f, 1.0f), 2, 55.0f);
         submit_name_button->set_frontend_widget_shortcut_key(5);
         return;
     }
@@ -264,7 +278,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_back_text, 23, 0.0f, y,
-        color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, -132.0f);
+        shared_action_color.set_color_rgba(
+            1.0f, 1.0f, 1.0f, 1.0f), 2, -132.0f);
 
     bank_toggle_button = g_game->border_manager.allocate_border();
     switch (selected_bank) {
@@ -274,7 +289,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Challenge Scores", 23, 0.0f, y,
-            color_46.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
+            alternating_background_color.set_color_rgba(
+                1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
         return;
     case 1:
         bank_toggle_button->initialize_frontend_widget(
@@ -282,7 +298,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Postal Scores", 23, 0.0f, y,
-            color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
+            shared_action_color.set_color_rgba(
+                1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
         return;
     }
 
