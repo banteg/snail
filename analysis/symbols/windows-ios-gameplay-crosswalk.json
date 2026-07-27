@@ -832,6 +832,15 @@
       "notes": "Android preserves the full seed, selected-record, row-count, segment-selection, row-copy, and glyph-construction body, including the Segdif and Negative Segment Length diagnostics seen in Windows."
     },
     {
+      "address": "0x437270",
+      "windows_name": "normalize_segment_glyph_for_track_flags",
+      "android_symbol": "cRSubGame::LevelConvert(char, int, bool)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android BuildLevel calls LevelConvert on the same cRSubGame receiver with the raw authored glyph, absolute build row, and first-or-last edge-row byte, then switches on its returned glyph exactly as Windows does. The Android method adds later feature-policy cases and iOS inlines the policy into BuildLevel, so mobile establishes the authored owner and ABI rather than byte-equivalent body behavior."
+    },
+    {
       "address": "0x4374b0",
       "windows_name": "initialize_subgame",
       "ios_symbol": "cRSubGame::Init()",

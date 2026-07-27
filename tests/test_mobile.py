@@ -306,6 +306,10 @@ def test_mobile_utility_owner_mappings_are_exact_and_verified() -> None:
             "cRSubGame::SwitchMirror()",
             None,
         ),
+        "normalize_segment_glyph_for_track_flags": (
+            "cRSubGame::LevelConvert(char, int, bool)",
+            None,
+        ),
     }
 
     for windows_name, (android_symbol, ios_symbol) in expected.items():

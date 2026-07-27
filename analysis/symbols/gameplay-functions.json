@@ -2600,7 +2600,7 @@
     {
       "address": "0x437270",
       "name": "normalize_segment_glyph_for_track_flags",
-      "description": "Exact Windows `cRSubGame` glyph normalizer. The ECX receiver owns `track_mirror_enabled` at +0x02, `runtime_flags` at +0x4c, and `completion_row_start` at +0x58; three stack arguments carry the authored glyph, build row, and edge-row flag before `populate_runtime_track_cells_from_segments` selects the runtime tile family."
+      "description": "Exact Windows implementation of authored `cRSubGame::LevelConvert(char, int, bool)`. The ECX receiver owns `track_mirror_enabled` at +0x02, `runtime_flags` at +0x4c, and `completion_row_start` at +0x58; three stack arguments carry the authored glyph, build row, and edge-row flag before `BuildLevel()` selects the runtime tile family. Android preserves the exact owner, signature, producer call, and normalized-glyph consumer while extending the feature-policy switch for its later runtime; iOS inlines the corresponding policy into `BuildLevel()` and exports no separate body."
     },
     {
       "address": "0x4374b0",

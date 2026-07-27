@@ -14,11 +14,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 577,
-    "unverified_entries": 208,
-    "verified_android_symbols": 571,
+    "verified_entries": 578,
+    "unverified_entries": 207,
+    "verified_android_symbols": 572,
     "verified_ios_symbols": 462,
-    "available_android_mappings": 571,
+    "available_android_mappings": 572,
     "available_ios_mappings": 426
   },
   "entries": [
@@ -16192,39 +16192,12 @@
       "address": "0x437270",
       "windows_name": "normalize_segment_glyph_for_track_flags",
       "windows_size": 576,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRGame::cRGame()",
-          "score": 0.8369,
-          "name_score": 0.9,
-          "size_score": 0.7423
-        },
-        {
-          "symbol": "cRSubGame::WarnTrack()",
-          "score": 0.7828,
-          "name_score": 0.675,
-          "size_score": 0.9444
-        },
-        {
-          "symbol": "cRSubGoldy::cRSubGoldy()",
-          "score": 0.7717,
-          "name_score": 0.675,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "cRSubGame::Complete(bool)",
-          "score": 0.7294,
-          "name_score": 0.6,
-          "size_score": 0.9236
-        },
-        {
-          "symbol": "cRSubGame::cRSubGame()",
-          "score": 0.7,
-          "name_score": 0.9,
-          "size_score": 0.4
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRSubGame::LevelConvert(char, int, bool)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRSubGame::Complete(bool)",
@@ -16239,22 +16212,22 @@
           "size_score": 0.9722
         },
         {
-          "symbol": "cRSubGame::cRSubGame()",
-          "score": 0.6283,
-          "name_score": 0.9,
-          "size_score": 0.2209
+          "symbol": "OFSettings::OFSettings()",
+          "score": 0.6561,
+          "name_score": 0.45,
+          "size_score": 0.9653
         },
         {
-          "symbol": "cRGame::Init0()",
-          "score": 0.61,
-          "name_score": 0.6,
-          "size_score": 0.625
+          "symbol": "OFReachability::OFReachability()",
+          "score": 0.6422,
+          "name_score": 0.45,
+          "size_score": 0.9306
         },
         {
-          "symbol": "cRGame::Init4()",
-          "score": 0.6062,
-          "name_score": 0.6,
-          "size_score": 0.6154
+          "symbol": "OFSettings::~OFSettings()",
+          "score": 0.6422,
+          "name_score": 0.45,
+          "size_score": 0.9306
         }
       ]
     },

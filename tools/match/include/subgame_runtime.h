@@ -129,6 +129,7 @@ public:
     void mark_track_warning_zones();
     void build_track_fringe_objects();
     bool is_neighbor_cell_solid(SubLoc* cell, int dx, int dz); // cRSubGame::TestLoc
+    // Authored cRSubGame::LevelConvert(char, int, bool), preserved by Android.
     char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
 
     unsigned char scan_reset; // +0x00, row scanner start-window reset

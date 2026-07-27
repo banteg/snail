@@ -43,3 +43,19 @@ The receiver reads the recovered `track_mirror_enabled` (+0x02),
 `runtime_flags` (+0x4c), and `completion_row_start` (+0x58) fields. This
 replaces Binary Ninja's residual `void*` receiver / `int32_t` return and IDA's
 raw `sub_437270(int this, ...)` view without changing the exact matcher source.
+
+## 2026-07-27 mobile-authored owner
+
+Android preserves the exact authored symbol
+`cRSubGame::LevelConvert(char, int, bool)`. Its `BuildLevel()` calls the method
+on the active `cRSubGame` with the raw segment glyph, absolute build row, and
+first-or-last edge-row byte, then dispatches the returned normalized glyph.
+That is the same producer/callee/consumer chain as Windows
+`populate_runtime_track_cells_from_segments`.
+
+The later Android body extends the feature-policy switch, and iOS inlines that
+policy into `BuildLevel()` rather than exporting a separate `LevelConvert`
+body. The cross-port evidence therefore fixes the Windows owner and method ABI
+without claiming byte-equivalent policy or transferring mobile field offsets.
+The Windows matcher remains exact at 100.00%, 160/160 instructions, full
+prefix, and two clean table operands.
