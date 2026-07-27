@@ -92,6 +92,7 @@ typedef char PresentationWobbleController_must_be_0x10[
 class Snail : public RenderableBod {
 public:
     Snail* initialize_player_presentation_controller(); // @ 0x4086d0
+    void noop_runtime_ai();                   // folded @ 0x407b50; cRSnail::AI()
     void release_snail_weapons();          // @ 0x442e40
     void set_snail_jetpack(int state);      // @ 0x445860
     void set_snail_weapon(int shoot_flags);    // @ 0x445920
@@ -126,6 +127,7 @@ public:
     CutScene cutscene;                          // +0x1958, authored cRCutScene
 };
 typedef char Snail_must_be_0x19b4[(sizeof(Snail) == 0x19b4) ? 1 : -1];
+typedef Snail cRSnail;
 
 class Player : public RenderableBod {
 public:

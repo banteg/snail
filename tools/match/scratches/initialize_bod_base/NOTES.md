@@ -48,3 +48,13 @@ remain exact.
 The shared analyzer replay now verifies `BodNode` `0x10`, `BodList` `0x0c`,
 `BodBase` `0x38`, and `RenderableBod` `0x80` before applying any lifecycle
 method ABI. This prevents a stale prefix from silently contaminating callers.
+
+## 2026-07-27 authored cRBod identity
+
+Binary Ninja reads the sole entries of `g_bod_base_vtable @ 0x4974fc` and
+`g_renderable_bod_vtable @ 0x497500` as `noop_runtime_ai @ 0x407b50`.
+Android and iOS independently retain the four-byte `cRBod::AI()` body, and the
+iOS `cRBodPos` vtable inherits that same entry. The shared headers now expose
+`cRBod` and `cRBodPos` as authored aliases of the already-proven Windows
+`BodBase` and `RenderableBod` layouts. This recovers vocabulary and virtual
+ownership without widening either exact Windows object.

@@ -4869,7 +4869,7 @@
       "ios_symbol": "cRWeapon::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "This is one representative owner of a linker-folded Windows no-op body, not a claim that every callsite is cRWeapon. The dedicated Windows table at 0x49735c contains this address and is installed on the three weapon channels plus the jetpack Weapon; Android and iOS independently retain empty cRWeapon::AI() bodies. The Windows frame loop also calls this same folded address with g_audio_backend in ECX; iOS independently calls its four-byte `cRBass::AI()` stub on `gBass`, proving a second authored owner from BassPlay.o without collapsing the other folded identities."
+      "notes": "This is one representative owner of a linker-folded Windows no-op body, not a claim that every callsite is cRWeapon. The dedicated Windows table at 0x49735c proves the four cRWeapon owners, and the frame-loop gBass receiver proves cRBass::AI(). Four additional Windows table edges now recover distinct owners: the base/renderable tables at 0x4974fc/0x497500 point to cRBod::AI(); the table at 0x4972b0 is installed on each GamePlayer cRCamera; 0x497350 is installed only on the kind-2 rocket body; and 0x497354 is installed on the enclosing cRSnail. Android and iOS retain explicit four-byte cRBod::AI(), cRCamera::AI(), cRGolbRocket::AI(), and cRSnail::AI() bodies. The aliases transfer those independently proved identities without collapsing unrelated folded lifecycle methods."
     },
     {
       "address": "0x4182e0",

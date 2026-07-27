@@ -47,3 +47,18 @@ and the tertiary `RenderableBod` at `+0x118`. The old direct matrix view at
 The checked C/C++ owners, Binary Ninja replay, and guarded IDA UDT refresh now
 agree on those four non-overlapping members. The constructor remains exact at
 17/17 instructions; no code-shape or score-only alias was introduced.
+
+## 2026-07-27 cRGolbRocket owner recovery
+
+The tertiary body is now typed as the fieldless `GolbRocket` specialization of
+`RenderableBod`. Three independent facts close that owner:
+
+- this exact constructor installs the dedicated `0x497350` table on that body;
+- asset initialization assigns it `rocket-base-000.x`, and kind-2 update paths
+  exclusively manipulate its inherited transform; and
+- Android and iOS both retain a four-byte `cRGolbRocket::AI()` body and
+  dedicated vtable in `Golb.o`.
+
+The table's sole Windows entry is folded `noop_runtime_ai @ 0x407b50`.
+`GolbRocket` adds no storage, remains exactly `0x80` bytes, and preserves the
+exact `GolbShot == 0x2e8` boundary.

@@ -386,7 +386,7 @@ GOLB_SHOT_FIELD_UPDATES = (
     ("0x000", "primary_body", "RenderableBod"),
     ("0x080", "vapour", "Vapour"),
     ("0x114", "vapour_owner_shot", "GolbShot*"),
-    ("0x118", "tertiary_body", "RenderableBod"),
+    ("0x118", "tertiary_body", "cRGolbRocket"),
     ("0x198", "homing_target_object", "ContactTargetObject*"),
     ("0x19c", "homing_target", "Vec3"),
     ("0x1a8", "rocket_owner_shot", "GolbShot*"),

@@ -2045,7 +2045,7 @@
         "off_4972b0",
         "data_4972b0"
       ],
-      "description": "Shared callback slot whose first entry is noop_runtime_ai. It is installed on passive overlay child bodies and on the embedded cRCamera body constructed inside each GamePlayer."
+      "description": "Shared callback slot whose first entry is noop_runtime_ai. It is installed on passive overlay child bodies and on the embedded cRCamera body constructed inside each GamePlayer; Android and iOS retain that exact empty owner as cRCamera::AI()."
     },
     {
       "address": "0x4972d8",
@@ -2360,9 +2360,10 @@
       "kind": "vtable",
       "aliases": [
         "off_497350",
-        "data_497350"
+        "data_497350",
+        "g_cRGolbRocket_vtable"
       ],
-      "description": "Embedded Golb shot body callback table installed by initialize_golb_shot; first entry is `noop_runtime_ai`."
+      "description": "Dedicated cRGolbRocket callback table installed on GolbShot's kind-2 rocket body by initialize_golb_shot; its sole entry is the folded `noop_runtime_ai`, while Android and iOS retain explicit cRGolbRocket::AI() stubs."
     },
     {
       "address": "0x497354",
@@ -2371,9 +2372,10 @@
       "aliases": [
         "g_enemy_manager_vtable",
         "off_497354",
-        "data_497354"
+        "data_497354",
+        "g_cRSnail_vtable"
       ],
-      "description": "Authored cRSnail callback slot installed by initialize_player_presentation_controller; its first and only callback is noop_runtime_ai."
+      "description": "Authored cRSnail callback slot installed by initialize_player_presentation_controller; its first and only callback is the folded noop_runtime_ai, matching the explicit four-byte cRSnail::AI() bodies retained by Android and iOS."
     },
     {
       "address": "0x497358",
@@ -2433,9 +2435,10 @@
       "kind": "vtable",
       "aliases": [
         "off_4974fc",
-        "data_4974fc"
+        "data_4974fc",
+        "g_cRBod_vtable"
       ],
-      "description": "Shared BOD base vtable installed by initialize_bod_base."
+      "description": "Shared BOD base vtable installed by initialize_bod_base; its sole entry points to folded noop_runtime_ai and mobile independently names the authored method cRBod::AI()."
     },
     {
       "address": "0x497500",
@@ -2443,9 +2446,10 @@
       "kind": "vtable",
       "aliases": [
         "off_497500",
-        "data_497500"
+        "data_497500",
+        "g_cRBodPos_vtable"
       ],
-      "description": "Renderable BOD vtable installed by initialize_renderable_bod."
+      "description": "Renderable cRBodPos vtable installed by initialize_renderable_bod; its sole entry inherits the same folded cRBod::AI() body as the base table, matching both mobile class vtables."
     },
     {
       "address": "0x49aff0",

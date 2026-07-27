@@ -34,3 +34,12 @@ camera sizes. The constructor and downstream frame/frontend consumers now
 resolve the inherited vtables and transforms through those nested bodies.
 The callback table at 0x4972f4 is named `g_game_player_callback_table`; the
 camera continues to use the shared `g_noop_runtime_callback_table`.
+
+## 2026-07-27 cRCamera callback identity
+
+The constructor store to the complete `GamePlayer +0xa0` camera proves that
+`g_noop_runtime_callback_table @ 0x4972b0` is one Windows
+`cRCamera::AI()` owner. Android and iOS both retain the exact class method as a
+four-byte no-op and both call it through their camera vtables. The shared table
+is still not renamed exclusively to cRCamera because passive render bodies also
+reuse it; the method alias is attached to the folded function instead.

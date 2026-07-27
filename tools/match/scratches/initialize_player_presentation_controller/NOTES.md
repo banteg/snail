@@ -121,3 +121,12 @@ The focused replay fails closed unless `PresentationAnimationSlot == 0x80`,
 `Weapon == 0x3dc`, and `Snail == 0x19b4`. This only clarifies borrows from the
 already-proven owners; it adds no new owner and leaves the exact matcher source
 unchanged at 79/79 instructions with all 27 masked operands clean.
+
+## 2026-07-27 cRSnail callback identity
+
+The final constructor store installs the dedicated table at `0x497354` on the
+complete `Snail` receiver. Its sole entry is folded
+`noop_runtime_ai @ 0x407b50`; Android and iOS independently retain the exact
+four-byte `cRSnail::AI()` method and cRSnail vtable. The shared header now
+exposes the authored `cRSnail` alias while retaining `Snail` as the stable
+Windows matcher type.

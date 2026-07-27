@@ -43,3 +43,24 @@ ProgressBar and SubGoldy identities into it. The scratch remains exact at 1/1.
 four-byte empty `cRBass::AI()` method once per frame. This adds cRBass as
 another proven owner of the folded address without changing the representative
 cRWeapon crosswalk row or collapsing unrelated no-op methods.
+
+## 2026-07-27 mobile vtable owner sweep
+
+Four dedicated Windows callback edges recover four more authored identities:
+
+- the base and renderable BOD tables at `0x4974fc` and `0x497500` both contain
+  this address; Android and iOS retain explicit four-byte `cRBod::AI()` bodies,
+  and their `cRBodPos` vtables inherit that same base method;
+- `initialize_game_player` installs the shared `0x4972b0` table on the complete
+  camera subobject at `GamePlayer +0xa0`; both mobile ports retain the empty
+  `cRCamera::AI()` method;
+- `initialize_golb_shot` installs the dedicated `0x497350` table only on the
+  kind-2 body whose model is `rocket-base-000.x`; both mobile ports retain
+  `cRGolbRocket::AI()` in `Golb.o`; and
+- `initialize_player_presentation_controller` installs `0x497354` on the
+  complete Snail owner; both mobile ports retain `cRSnail::AI()`.
+
+Each mobile body is exactly four ARM bytes. The Windows manifest therefore
+records distinct aliases on the one-byte folded body while keeping
+`noop_runtime_ai` as its stable address name. No alias is transferred to an
+unproved callsite or to either neighboring Windows audio overload.

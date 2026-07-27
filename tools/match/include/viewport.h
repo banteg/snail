@@ -8,6 +8,8 @@
 // and lends it to a Viewport; the viewport does not own it.
 class RenderCamera : public RenderableBod {
 public:
+    void noop_runtime_ai(); // folded @ 0x407b50; cRCamera::AI()
+
     TransformMatrix view_matrix; // +0x80, sprite depth/facing transform
     float fov_degrees; // +0xc0, passed through to render_camera
     union {
@@ -18,6 +20,7 @@ public:
 
 typedef char RenderCamera_must_cover_0xc8[
     (sizeof(RenderCamera) == 0xc8) ? 1 : -1];
+typedef RenderCamera cRCamera;
 
 // Android and iOS retain the original cRViewport class name for this owner.
 // Windows constructs five consecutive records at GameRoot +0x5b4.

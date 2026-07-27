@@ -1162,7 +1162,7 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
     assert "typedef struct GolbShotVapourObjectStrideCursor {" in analysis_header
     assert "Object* vapour_object;" in analysis_header
     assert "uint8_t _pad_04[0x70];" in analysis_header
-    assert "RenderableBod tertiary_body;" in analysis_header
+    assert "cRGolbRocket tertiary_body;" in analysis_header
     assert "uint8_t _stride_tail[0x1f4];" in analysis_header
     assert '"RegisterVariableSourceType",\n        1171,\n        73,' in binja_sync
     assert '"GolbShotFlightStrideCursor*"' in binja_sync
@@ -3800,13 +3800,13 @@ def test_golb_shot_nested_vapour_owner_is_replayed() -> None:
         "    RenderableBod primary_body;\n"
         "    Vapour vapour;\n"
         "    struct GolbShot* vapour_owner_shot;\n"
-        "    RenderableBod tertiary_body;"
+        "    cRGolbRocket tertiary_body;"
     )
     matcher_owner = (
         "    RenderableBod primary_body; // +0x000, projectile AI/list owner\n"
         "    Vapour vapour; // +0x080, complete kind-1 trail renderer\n"
         "    GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink\n"
-        "    RenderableBod tertiary_body; // +0x118, kind-2 rocket body"
+        "    GolbRocket tertiary_body; // +0x118, authored cRGolbRocket owner"
     )
     assert analysis_owner in analysis_header
     assert matcher_owner in matcher_header
@@ -3824,7 +3824,7 @@ def test_golb_shot_nested_vapour_owner_is_replayed() -> None:
         '("0x000", "primary_body", "RenderableBod")',
         '("0x080", "vapour", "Vapour")',
         '("0x114", "vapour_owner_shot", "GolbShot*")',
-        '("0x118", "tertiary_body", "RenderableBod")',
+        '("0x118", "tertiary_body", "cRGolbRocket")',
     ):
         assert update in binja_sync
     assert "KILL_GOLB_OWNER_USER_VAR_UPDATES" in binja_sync
@@ -5503,6 +5503,104 @@ def test_ios_bass_symbols_recover_windows_audio_owner_without_fakematching() -> 
         assert "typedef AudioBackend cRBass;" in header_path.read_text(
             encoding="utf-8"
         )
+
+
+def test_mobile_noop_vtables_recover_distinct_folded_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    references = json.loads(
+        (repo_root / "analysis/symbols/gameplay-references.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    android = json.loads(
+        (repo_root / "analysis/decompile/android/index.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    ios = json.loads(
+        (repo_root / "analysis/decompile/ios/index.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    mobile_symbols = (
+        "cRBod::AI()",
+        "cRCamera::AI()",
+        "cRGolbRocket::AI()",
+        "cRSnail::AI()",
+    )
+    for corpus in (android, ios):
+        by_symbol = {entry["demangled"]: entry for entry in corpus["functions"]}
+        for symbol in mobile_symbols:
+            assert by_symbol[symbol]["size"] == 4
+
+    noop = next(
+        entry for entry in functions["functions"] if entry["address"] == "0x407b50"
+    )
+    for alias in (
+        "cRBod_AI",
+        "cRCamera_AI",
+        "cRGolbRocket_AI",
+        "cRSnail_AI",
+        "cRWeapon_AI",
+    ):
+        assert alias in noop["aliases"]
+
+    representative = next(
+        entry for entry in crosswalk["entries"] if entry["address"] == "0x407b50"
+    )
+    assert representative["ios_symbol"] == "cRWeapon::AI()"
+    for owner in mobile_symbols:
+        assert owner in representative["notes"]
+    assert "without collapsing" in representative["notes"]
+
+    references_by_address = {
+        entry["address"]: entry for entry in references["symbols"]
+    }
+    expected_tables = {
+        "0x4972b0": "cRCamera::AI()",
+        "0x497350": "cRGolbRocket::AI()",
+        "0x497354": "cRSnail::AI()",
+        "0x4974fc": "cRBod::AI()",
+        "0x497500": "cRBod::AI()",
+    }
+    for address, owner in expected_tables.items():
+        assert owner in references_by_address[address]["description"]
+
+    bod_header = (repo_root / "tools/match/include/bod_types.h").read_text(
+        encoding="utf-8"
+    )
+    viewport_header = (repo_root / "tools/match/include/viewport.h").read_text(
+        encoding="utf-8"
+    )
+    golb_header = (repo_root / "tools/match/include/golb.h").read_text(
+        encoding="utf-8"
+    )
+    player_header = (repo_root / "tools/match/include/player.h").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (
+        repo_root / "analysis/headers/path_template_types.h"
+    ).read_text(encoding="utf-8")
+
+    assert "typedef BodBase cRBod;" in bod_header
+    assert "typedef RenderableBod cRBodPos;" in bod_header
+    assert "typedef RenderCamera cRCamera;" in viewport_header
+    assert "typedef GolbRocket cRGolbRocket;" in golb_header
+    assert "GolbRocket tertiary_body;" in golb_header
+    assert "typedef Snail cRSnail;" in player_header
+    assert "typedef RenderableBod cRGolbRocket;" in analysis_header
+    assert "cRGolbRocket tertiary_body;" in analysis_header
 
 
 def test_archive_shell_replays_preserve_audio_backend_member_abi() -> None:

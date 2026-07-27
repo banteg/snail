@@ -119,6 +119,7 @@ typedef struct BodBase {
     tColour color;
 } BodBase;
 typedef char BodBase_must_be_0x38[(sizeof(BodBase) == 0x38) ? 1 : -1];
+typedef BodBase cRBod;
 
 typedef struct AnimManager AnimManager;
 
@@ -132,6 +133,7 @@ typedef struct RenderableBod {
 typedef char RenderableBod_must_be_0x80[
     (sizeof(RenderableBod) == 0x80) ? 1 : -1
 ];
+typedef RenderableBod cRBodPos;
 
 /* Authored cRFringe BOD stored inline by the shared fringe manager. */
 typedef struct Fringe {
@@ -2018,6 +2020,7 @@ typedef struct Snail {
     SnailSkin snail_skin;
     CutScene cutscene;
 } Snail;
+typedef Snail cRSnail;
 
 enum {
     PLAYER_CONTROL_FLAG_CONFIRM = 0x4000,
@@ -2350,11 +2353,13 @@ typedef struct GolbPathFollowState {
     struct GolbShot* shot;
 } GolbPathFollowState;
 
+typedef RenderableBod cRGolbRocket;
+
 typedef struct GolbShot {
     RenderableBod primary_body;
     Vapour vapour;
     struct GolbShot* vapour_owner_shot;
-    RenderableBod tertiary_body;
+    cRGolbRocket tertiary_body;
     ContactTargetObject* homing_target_object;
     Vec3 homing_target;
     struct GolbShot* rocket_owner_shot;
@@ -2407,7 +2412,7 @@ typedef struct GolbShotFlightStrideCursor {
 typedef struct GolbShotVapourObjectStrideCursor {
     Object* vapour_object;
     uint8_t _pad_04[0x70];
-    RenderableBod tertiary_body;
+    cRGolbRocket tertiary_body;
     uint8_t _stride_tail[0x1f4];
 } GolbShotVapourObjectStrideCursor;
 

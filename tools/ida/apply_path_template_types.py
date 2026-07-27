@@ -409,7 +409,7 @@ GOLB_SHOT_PREFIX_MEMBERS = (
     (0x000, 0x080, "primary_body", "RenderableBod"),
     (0x080, 0x094, "vapour", "Vapour"),
     (0x114, 0x004, "vapour_owner_shot", "GolbShot *"),
-    (0x118, 0x080, "tertiary_body", "RenderableBod"),
+    (0x118, 0x080, "tertiary_body", "cRGolbRocket"),
 )
 PLAYER_SHOOT_EXPECTED_MEMBERS = {
     0x0308: {
@@ -448,7 +448,7 @@ GOLB_SHOT_HEADER_MARKERS = (
     "RenderableBod primary_body;",
     "Vapour vapour;",
     "struct GolbShot* vapour_owner_shot;",
-    "RenderableBod tertiary_body;",
+    "cRGolbRocket tertiary_body;",
     "typedef struct GolbShotVapourObjectStrideCursor {",
     "Object* vapour_object;",
     "uint8_t _stride_tail[0x1f4];",

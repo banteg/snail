@@ -10358,7 +10358,7 @@
       "name": "analysis_golb_shot_nested_vapour_owner",
       "artifact": "analysis/headers/path_template_types.h",
       "required_substrings": [
-        "typedef struct GolbShot {\n    RenderableBod primary_body;\n    Vapour vapour;\n    struct GolbShot* vapour_owner_shot;\n    RenderableBod tertiary_body;",
+        "typedef struct GolbShot {\n    RenderableBod primary_body;\n    Vapour vapour;\n    struct GolbShot* vapour_owner_shot;\n    cRGolbRocket tertiary_body;",
         "Sprite* render_sprite;"
       ],
       "forbidden_substrings": [

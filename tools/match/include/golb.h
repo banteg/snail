@@ -54,6 +54,16 @@ public:
 typedef char GolbPathFollowState_must_be_0x28[
     (sizeof(GolbPathFollowState) == 0x28) ? 1 : -1];
 
+// Authored cRGolbRocket is a fieldless cRBodPos specialization whose AI body
+// folds into the shared one-byte Windows no-op.
+class GolbRocket : public RenderableBod {
+public:
+    void noop_runtime_ai(); // folded @ 0x407b50; cRGolbRocket::AI()
+};
+typedef char GolbRocket_must_be_0x80[
+    (sizeof(GolbRocket) == 0x80) ? 1 : -1];
+typedef GolbRocket cRGolbRocket;
+
 // Shot sprite/list view shared by the Golb helpers. update_golb_ai still keeps
 // some raw collision lanes, but the projectile owner layout is shared here.
 class GolbShot {
@@ -71,7 +81,7 @@ public:
     RenderableBod primary_body; // +0x000, projectile AI/list owner
     Vapour vapour; // +0x080, complete kind-1 trail renderer
     GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink
-    RenderableBod tertiary_body; // +0x118, kind-2 rocket body
+    GolbRocket tertiary_body; // +0x118, authored cRGolbRocket owner
     ContactTargetObject* homing_target_object; // +0x198, reserved target owner
     Vector3 homing_target;           // +0x19c
     GolbShot* rocket_owner_shot;     // +0x1a8, kind-2 embedded-body backlink

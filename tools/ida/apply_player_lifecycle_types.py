@@ -102,7 +102,7 @@ REQUIRED_OWNER_MARKERS = (
     "TransformMatrix flight_transform;",
     "uint8_t _stride_tail[0x238];",
     "Object* vapour_object;",
-    "RenderableBod tertiary_body;",
+    "cRGolbRocket tertiary_body;",
     "uint8_t _stride_tail[0x1f4];",
     "typedef struct Player {",
     "GolbShot golb_shots[0xc];",
