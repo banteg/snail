@@ -92,7 +92,7 @@ struct Path : public BodBase {
     void initialize_loopbow_path_template_pair(
         float curve_scale,
         unsigned int width_cells_arg,
-        char mode,
+        bool mode,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);
@@ -169,7 +169,7 @@ struct Path : public BodBase {
     void initialize_supertramp_path_template_pair(
         float length,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* unused_texture,
@@ -178,7 +178,7 @@ struct Path : public BodBase {
         int width_cells_,
         float height,
         float length,
-        char centered,
+        bool centered,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);
@@ -186,7 +186,7 @@ struct Path : public BodBase {
         int width_cells_,
         float height,
         float z_amplitude,
-        char centered,
+        bool centered,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);

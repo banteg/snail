@@ -21,7 +21,7 @@ void __fastcall calc_path_length_z(Path* path);
 void Path::initialize_loopbow_path_template_pair(
     float curve_scale,
     unsigned int width_cells_arg,
-    char mode,
+    bool mode,
     char* texture_a,
     char* texture_b,
     char* vertical_texture)

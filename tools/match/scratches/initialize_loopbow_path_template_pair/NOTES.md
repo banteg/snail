@@ -17,7 +17,7 @@ The native function is a `thiscall` with six stack arguments and `ret 0x18`:
 ```cpp
 float curve_scale,
 unsigned int width_cells_arg,
-char unused_mode,
+bool mode,
 char* texture_a,
 char* texture_b,
 char* unused_texture
@@ -26,6 +26,12 @@ char* unused_texture
 The two apparently unused arguments are retained because surrounding native
 call sites push six arguments.  The earlier four-argument skeleton could not
 reproduce the native epilogue or texture argument slots.
+
+The paired Android and iOS Path.o symbol is
+`cRPath::BuildLoopBow(float, int, bool, char*, char*)`. Windows preserves that
+portable five-argument prefix and adds the final unused texture slot, proving
+that the third stack argument is an authored `bool` even though this build
+does not consume it.
 
 The recovered shared owners are intentionally narrow:
 
@@ -196,3 +202,12 @@ the previous `0xa8`-byte sample. Typing its byte-biased current-sample cursor as
 rejected rather than disguised. The matcher source remains honest and
 unchanged at 67.54% (800/796 instructions), with 60 accepted masked operands
 and the two existing multiply-thunk symbol mismatches.
+
+## 2026-07-27 mobile-authored selector type
+
+Promoting the third argument from the earlier byte-width placeholder `char` to
+`bool` is byte-identical under VC6. Focused matching remains 67.54%
+(800/796 candidate/target instructions), with a 10-instruction exact prefix
+and 63 clean masked operands. The change records exact paired Android/iOS
+symbol provenance without changing Windows' extra texture slot or imitating
+codegen.

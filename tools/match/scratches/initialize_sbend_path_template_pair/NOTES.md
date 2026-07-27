@@ -121,3 +121,15 @@ unresolved or mismatched masks, and recovers the exact native `0x48` frame plus
 a seven-instruction exact prefix. The face initializer also now names the
 owning 16-bit `header_word` proven by the native word clear; that field-width
 correction is score-neutral.
+
+## 2026-07-27 mobile-authored selector type
+
+The exact paired Android/iOS Path.o symbol,
+`cRPath::BuildSBend(int, float, float, bool, char*, char*)`, preserves the
+Windows scalar and surface-texture prefix. Windows adds only its final vertical
+texture slot, proving that the centered selector is an authored `bool`.
+
+Promoting the earlier byte placeholder from `char` to `bool` is byte-identical:
+focused matching remains 44.99% (559/579 candidate/target instructions), with
+a seven-instruction exact prefix and 39 clean masked operands. Windows' full
+seven-stack-argument ABI is unchanged.

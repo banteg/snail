@@ -154,3 +154,16 @@ initializer's two pointer aliases then reaches 51.04% (676/668), restores the
 all 33 masked operands clean. The direct array owners agree with the raw
 addressing throughout the native loop; no synthetic scheduling or padding is
 introduced.
+
+## 2026-07-27 mobile-authored selector type
+
+The exact paired Android/iOS Path.o symbol,
+`cRPath::BuildHill(int, float, float, bool, char*, char*)`, preserves the
+Windows scalar and surface-texture prefix. Windows adds only its final vertical
+texture slot, so the centered selector is an authored `bool`, not merely an
+unknown byte.
+
+The `char`-to-`bool` promotion is byte-identical under VC6. Focused matching
+remains 51.04% (676/668 candidate/target instructions), with a 19-instruction
+exact prefix, 40 clean masked operands, and the same two unpaired constant
+references. No source-shape concession was made.

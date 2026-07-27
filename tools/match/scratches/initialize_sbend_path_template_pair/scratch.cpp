@@ -133,7 +133,7 @@ static __forceinline void build_strip_mesh(
 }
 
 void Path::initialize_sbend_path_template_pair(
-    int width_cells_, float height, float z_amplitude, char centered,
+    int width_cells_, float height, float z_amplitude, bool centered,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
     kind = 0x10;

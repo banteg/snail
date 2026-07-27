@@ -96,10 +96,11 @@
 0042be81        *(&self->secondary_samples->transform.position + ebx) = *(&self->primary_samples->center_x + ebx)
 0042be98        *(&self->secondary_samples->transform.position.z + ebx) = fconvert.s(sine(var_74_1) * fconvert.t(var_90_2) + fconvert.t(7f))
 0042beb4        *(&self->secondary_samples->transform.position.y + ebx) = fconvert.s(fconvert.t(curve_scale) - cosine(var_74_1) * fconvert.t(var_90_2))
-0042bec3        struct Vec3* primary_right = ebx + self->primary_samples
-0042becc        primary_right->x = 0x3f800000
-0042bed2        primary_right->y = 0f
-0042bed5        primary_right->z = 0f
+0042bed5        *(ebx + self->primary_samples) = struct Vec3 {
+    .x = 0x3f800000
+    .y = 0f
+    .z = 0f
+}
 0042bedb        *(&self->primary_samples->transform.basis_up + ebx) = 0
 0042bee2        struct PathTemplateSample* primary_sample_cursor_first = self->primary_samples + ebx
 0042bee7        primary_sample_cursor_first->transform.basis_up.y = fconvert.s(fconvert.t(curve_scale) - fconvert.t(primary_sample_cursor_first->transform.position.y))
@@ -108,10 +109,11 @@
 0042bf04        normalize_vector(&self->primary_samples->transform.basis_up + ebx)
 0042bf0c        struct PathTemplateSample* primary_sample = self->primary_samples + ebx
 0042bf18        cross_vectors(&primary_sample->transform.basis_forward, primary_sample, &primary_sample->transform.basis_up)
-0042bf2a        struct Vec3* secondary_right = ebx + self->secondary_samples
-0042bf33        secondary_right->x = 0x3f800000
-0042bf39        secondary_right->y = 0f
-0042bf3c        secondary_right->z = 0f
+0042bf3c        *(ebx + self->secondary_samples) = struct Vec3 {
+    .x = 0x3f800000
+    .y = 0f
+    .z = 0f
+}
 0042bf42        *(&self->secondary_samples->transform.basis_up + ebx) = 0
 0042bf46        struct PathTemplateSample* secondary_samples_4 = self->secondary_samples
 0042bf50        (ebx + secondary_samples_4)->transform.basis_up.y = fconvert.s(fconvert.t(curve_scale) - fconvert.t(*(&secondary_samples_4->transform.position.y + ebx)))
@@ -170,16 +172,18 @@
 0042c165        *(&self->secondary_samples->delta_length + edi_10) = fconvert.s(normalize_vector(&self->secondary_samples->delta_dir_to_next + edi_10))
 0042c16f        edi_10 += 0xa8
 0042c178        do while (i_2 s< self->segment_count - 1)
-0042c1a8        struct Vec3* primary_terminal_delta = &self->primary_samples[self->segment_count] - 0x28
-0042c1bc        primary_terminal_delta->x = 0
-0042c1ca        primary_terminal_delta->y = 0f
-0042c1cd        primary_terminal_delta->z = 1f
+0042c1cd        *(&self->primary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 0042c1df        int32_t var_84_2 = 0x3f800000
 0042c1eb        *(&self->primary_samples[self->segment_count] - 0x1c) = 0x3f800000
-0042c201        struct Vec3* secondary_terminal_delta = &self->secondary_samples[self->segment_count] - 0x28
-0042c209        secondary_terminal_delta->x = 0
-0042c20f        secondary_terminal_delta->y = 0f
-0042c214        secondary_terminal_delta->z = 1f
+0042c214        *(&self->secondary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 0042c229        *(&self->secondary_samples[self->segment_count] - 0x1c) = 0x3f800000
 0042c23c        request_object_vertices(self->bod.object, (self->width_cells + 1) * (self->segment_count + 1))
 0042c24e        request_object_facequads(self->bod.object, (self->width_cells * self->segment_count) << 1)
@@ -200,19 +204,17 @@
 0042c2a4        if (i_3 == self->segment_count)
 0042c304        void* eax_66 = primary_samples_2 + ebx_1
 0042c315        ebx_1 = var_74_2
-0042c35e        float var_6c_2 = fconvert.s(fconvert.t(*(eax_66 - 0x74)) + fconvert.t(fconvert.s(x87_r7_88 * fconvert.t(*(eax_66 - 0xa4)))))
-0042c366        struct Vec3* terminal_vertex = &vertices[(width_cells + 1) * i_3 + edi_11]
-0042c36d        long double x87_r6_38 = fconvert.t(fconvert.s(fconvert.t(*(eax_66 - 0x70)) + fconvert.t(1f))) + x87_r7_88 * fconvert.t(*(eax_66 - 0xa0))
-0042c36f        terminal_vertex->x = fconvert.s(fconvert.t(*(eax_66 - 0x78)) + fconvert.t(fconvert.s(x87_r7_88 * fconvert.t(*(eax_66 - 0xa8)))))
-0042c375        terminal_vertex->y = var_6c_2
-0042c382        terminal_vertex->z = fconvert.s(x87_r6_38)
+0042c382        vertices[(width_cells + 1) * i_3 + edi_11].x.12 = struct Vec3 {
+    .x = fconvert.s(fconvert.t(*(eax_66 - 0x78)) + fconvert.t(fconvert.s(x87_r7_88 * fconvert.t(*(eax_66 - 0xa8)))))
+    .y = fconvert.s(fconvert.t(*(eax_66 - 0x74)) + fconvert.t(fconvert.s(x87_r7_88 * fconvert.t(*(eax_66 - 0xa4)))))
+    .z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(eax_66 - 0x70)) + fconvert.t(1f))) + x87_r7_88 * fconvert.t(*(eax_66 - 0xa0)))
+}
 0042c2a6        struct PathTemplateSample* primary_mesh_sample = primary_samples_2 + ebx_1
-0042c2ce        float var_88_2 = fconvert.s(fconvert.t(fconvert.s(x87_r7_88 * fconvert.t(primary_mesh_sample->transform.basis_right.y))) + fconvert.t(primary_mesh_sample->transform.position.y))
-0042c2db        float var_84_3 = fconvert.s(x87_r7_88 * fconvert.t(primary_mesh_sample->transform.basis_right.z) + fconvert.t(primary_mesh_sample->transform.position.z))
-0042c2e8        struct Vec3* vertex = &vertices[(width_cells + 1) * i_3 + edi_11]
-0042c2ef        vertex->x = fconvert.s(fconvert.t(fconvert.s(x87_r7_88 * fconvert.t(primary_mesh_sample->transform.basis_right.x))) + fconvert.t(primary_mesh_sample->transform.position.x))
-0042c2f5        vertex->y = var_88_2
-0042c2fc        vertex->z = var_84_3
+0042c2fc        vertices[(width_cells + 1) * i_3 + edi_11].x.12 = struct Vec3 {
+    .x = fconvert.s(fconvert.t(fconvert.s(x87_r7_88 * fconvert.t(primary_mesh_sample->transform.basis_right.x))) + fconvert.t(primary_mesh_sample->transform.position.x))
+    .y = fconvert.s(fconvert.t(fconvert.s(x87_r7_88 * fconvert.t(primary_mesh_sample->transform.basis_right.y))) + fconvert.t(primary_mesh_sample->transform.position.y))
+    .z = fconvert.s(x87_r7_88 * fconvert.t(primary_mesh_sample->transform.basis_right.z) + fconvert.t(primary_mesh_sample->transform.position.z))
+}
 0042c385        width_cells = self->width_cells
 0042c388        edi_11 += 1
 0042c38b        var_9c_2 = edi_11

@@ -12194,17 +12194,10 @@
         "texture_path = cap_texture",
         "struct PathTemplateSample* primary_seed_sample",
         "primary_seed_sample->transform.position.x = primary_seed_sample->center_x",
-        "struct Vec3* primary_right",
-        "primary_right->x = 0x3f800000",
-        "struct Vec3* secondary_right",
         "struct PathTemplateSample* secondary_curve_sample",
         "secondary_curve_sample->transform.basis_up.y",
         "struct PathTemplateSample* primary_mesh_sample",
         "primary_mesh_sample->transform.basis_right.x",
-        "struct Vec3* vertex",
-        "vertex->x",
-        "vertex->y",
-        "vertex->z",
         "struct ObjectFaceQuad* face_first",
         "face_first->vertex_0",
         "face_first->texture_ref",
@@ -12212,6 +12205,11 @@
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
         "calc_path_length_z(self)"
+      ],
+      "required_regexes": [
+        "004241a0[^\\n]*self->primary_samples[^\\n]*= struct Vec3 \\{\\n    \\.x = 0x3f800000\\n    \\.y = 0f\\n    \\.z = 0f\\n\\}",
+        "00424207[^\\n]*self->secondary_samples[^\\n]*= struct Vec3 \\{\\n    \\.x = 0x3f800000\\n    \\.y = 0f\\n    \\.z = 0f\\n\\}",
+        "00424418[^\\n]*vertices\\[eax_43\\][^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12668,28 +12666,16 @@
         "self->width_cells = width_cells_arg",
         "self->segment_count = eax_1 + 0xe",
         "get_path_nodes(self)",
-        "struct Vec3* primary_right",
-        "primary_right->x = 0x3f800000",
         "struct PathTemplateSample* primary_sample_cursor_first",
         "primary_sample_cursor_first->transform.basis_up.y",
         "struct PathTemplateSample* primary_sample",
         "&primary_sample->transform.basis_forward",
-        "struct Vec3* secondary_right",
-        "secondary_right->z = 0f",
         "struct PathTemplateSample* secondary_sample",
         "&secondary_sample->transform.basis_forward",
         "struct Vec3* secondary_position",
         "secondary_position->z",
-        "struct Vec3* primary_terminal_delta",
-        "primary_terminal_delta->z = 1f",
-        "struct Vec3* secondary_terminal_delta",
-        "secondary_terminal_delta->z = 1f",
         "struct PathTemplateSample* primary_mesh_sample",
         "primary_mesh_sample->transform.basis_right.x",
-        "struct Vec3* vertex",
-        "vertex->x",
-        "struct Vec3* terminal_vertex",
-        "terminal_vertex->z",
         "struct ObjectFaceQuad* face_first",
         "face_first->vertex_0",
         "face_first->texture_ref",
@@ -12697,6 +12683,14 @@
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
         "calc_path_length_z(self)"
+      ],
+      "required_regexes": [
+        "0042bed5[^\\n]*self->primary_samples[^\\n]*= struct Vec3 \\{\\n    \\.x = 0x3f800000\\n    \\.y = 0f\\n    \\.z = 0f\\n\\}",
+        "0042bf3c[^\\n]*self->secondary_samples[^\\n]*= struct Vec3 \\{\\n    \\.x = 0x3f800000\\n    \\.y = 0f\\n    \\.z = 0f\\n\\}",
+        "0042c1cd[^\\n]*self->primary_samples\\[self->segment_count\\][^\\n]*= struct Vec3 \\{\\n    \\.x = 0\\n    \\.y = 0f\\n    \\.z = 1f\\n\\}",
+        "0042c214[^\\n]*self->secondary_samples\\[self->segment_count\\][^\\n]*= struct Vec3 \\{\\n    \\.x = 0\\n    \\.y = 0f\\n    \\.z = 1f\\n\\}",
+        "0042c382[^\\n]*vertices[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "0042c2fc[^\\n]*vertices[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12726,14 +12720,6 @@
         "get_path_nodes(self)",
         "struct PathTemplateSample* primary_seed_sample",
         "primary_seed_sample->transform.position.x",
-        "struct Vec3* primary_right",
-        "primary_right->x",
-        "struct Vec3* secondary_right",
-        "secondary_right->x",
-        "struct Vec3* primary_terminal_delta",
-        "primary_terminal_delta->z",
-        "struct Vec3* secondary_terminal_delta",
-        "secondary_terminal_delta->z",
         "struct PathTemplateSample* primary_mesh_sample",
         "primary_mesh_sample->transform.basis_right.x",
         "struct Vec3* vertex",
@@ -12747,6 +12733,12 @@
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
         "calc_path_length_z(self)"
+      ],
+      "required_regexes": [
+        "0042d87d[^\\n]*self->primary_samples[^\\n]*= struct Vec3 \\{\\n    \\.x = 0x3f800000\\n    \\.y = 0f\\n    \\.z = 0f\\n\\}",
+        "0042d927[^\\n]*self->secondary_samples[^\\n]*= struct Vec3 \\{\\n    \\.x = 0x3f800000\\n    \\.y = 0f\\n    \\.z = 0f\\n\\}",
+        "0042daf6[^\\n]*self->primary_samples\\[self->segment_count\\][^\\n]*= struct Vec3 \\{\\n    \\.x = 0\\n    \\.y = 0f\\n    \\.z = 1f\\n\\}",
+        "0042db3d[^\\n]*self->secondary_samples\\[self->segment_count\\][^\\n]*= struct Vec3 \\{\\n    \\.x = 0\\n    \\.y = 0f\\n    \\.z = 1f\\n\\}"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12769,16 +12761,10 @@
         "get_path_nodes(self)",
         "struct PathTemplateSample* primary_seed_sample",
         "primary_seed_sample->transform.position.x",
-        "struct Vec3* primary_up",
-        "primary_up->x",
         "struct Vec3* primary_right",
         "cross_vectors(primary_right",
         "struct Vec3* secondary_position",
         "secondary_position->x",
-        "struct Vec3* primary_terminal_delta",
-        "primary_terminal_delta->z",
-        "struct Vec3* secondary_terminal_delta",
-        "secondary_terminal_delta->z",
         "struct PathTemplateSample* primary_mesh_sample",
         "primary_mesh_sample->transform.basis_right.x",
         "struct Vec3* vertex",
@@ -12792,6 +12778,11 @@
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
         "calc_path_length_z(self)"
+      ],
+      "required_regexes": [
+        "0042e104[^\\n]*self->primary_samples->transform.basis_up[^\\n]*= struct Vec3 \\{\\n    \\.x = 0x3f800000\\n    \\.y = 0f\\n    \\.z = 0f\\n\\}",
+        "0042e314[^\\n]*self->primary_samples\\[self->segment_count\\][^\\n]*= struct Vec3 \\{\\n    \\.x = 0\\n    \\.y = 0f\\n    \\.z = 1f\\n\\}",
+        "0042e354[^\\n]*self->secondary_samples\\[self->segment_count\\][^\\n]*= struct Vec3 \\{\\n    \\.x = 0\\n    \\.y = 0f\\n    \\.z = 1f\\n\\}"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12821,8 +12812,8 @@
       "name": "bn_loop_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_regexes": [
-        "initialize_looptheloop_path_template_pair\\(&game->subgame\\.path_pairs\\[0x33\\](?:\\.primary)?, 6f, 3, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_looptheloopw_path_template_pair\\(&game->subgame\\.path_pairs\\[0x39\\](?:\\.primary)?, 8f, 4, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_looptheloop_path_template_pair\\(&game->subgame\\.path_pairs\\[0x33\\](?:\\.primary)?, 6f, 3, true, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_looptheloopw_path_template_pair\\(&game->subgame\\.path_pairs\\[0x39\\](?:\\.primary)?, 8f, 4, true, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
         "initialize_loopout_path_template_pair\\(&game->subgame\\.path_pairs\\[0x19\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
       ],
       "forbidden_substrings": [
@@ -12873,8 +12864,8 @@
       "name": "bn_supertramp_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_regexes": [
-        "initialize_supertramp_path_template_pair\\(&game->subgame\\.path_pairs\\[0x1f\\](?:\\.primary)?, 6f, 2, 1, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_supertramp_path_template_pair\\(&game->subgame\\.path_pairs\\[0x1f\\]\\.secondary, 6f, 2, 1, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+        "initialize_supertramp_path_template_pair\\(&game->subgame\\.path_pairs\\[0x1f\\](?:\\.primary)?, 6f, 2, true, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_supertramp_path_template_pair\\(&game->subgame\\.path_pairs\\[0x1f\\]\\.secondary, 6f, 2, true, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
       ],
       "forbidden_substrings": [
         "initialize_supertramp_path_template_pair(&game->subgame.path_pairs[0x1f].primary.bod.bod.vtable",
@@ -12950,9 +12941,9 @@
         "initialize_p_path_template_pair\\(&game->subgame\\.path_pairs\\[0x21\\](?:\\.primary)?, 0, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
         "initialize_p_path_template_pair\\(&game->subgame\\.path_pairs\\[0x22\\](?:\\.primary)?, 1, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
         "initialize_p_path_template_pair\\(&game->subgame\\.path_pairs\\[0x23\\](?:\\.primary)?, 2, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_loopbow_path_template_pair\\(&game->subgame\\.path_pairs\\[7\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_loopbow_path_template_pair\\(&game->subgame\\.path_pairs\\[0x3a\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_sbend_path_template_pair\\(&game->subgame\\.path_pairs\\[0xe\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+        "initialize_loopbow_path_template_pair\\(&game->subgame\\.path_pairs\\[7\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, true, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_loopbow_path_template_pair\\(&game->subgame\\.path_pairs\\[0x3a\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, true, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_sbend_path_template_pair\\(&game->subgame\\.path_pairs\\[0xe\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, true, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
       ],
       "forbidden_substrings": [
         "initialize_p_path_template_pair(&game->subgame.path_pairs[0x21].primary.bod.bod.vtable",
@@ -12967,12 +12958,12 @@
       "name": "bn_hill_valley_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_regexes": [
-        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[8\\](?:\\.primary)?, 8, 4f, 20f, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[0xa\\](?:\\.primary)?, 4, 4f, 20f, 0, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[9\\](?:\\.primary)?, 4, 4f, 20f, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[0xb\\](?:\\.primary)?, 8, -4f, 20f, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[0xd\\](?:\\.primary)?, 4, -4f, 20f, 0, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[0xc\\](?:\\.primary)?, 4, -4f, 20f, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[8\\](?:\\.primary)?, 8, 4f, 20f, true, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[0xa\\](?:\\.primary)?, 4, 4f, 20f, false, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[9\\](?:\\.primary)?, 4, 4f, 20f, true, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[0xb\\](?:\\.primary)?, 8, -4f, 20f, true, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[0xd\\](?:\\.primary)?, 4, -4f, 20f, false, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_hill_valley_path_template_pair\\(&game->subgame\\.path_pairs\\[0xc\\](?:\\.primary)?, 4, -4f, 20f, true, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
       ],
       "forbidden_substrings": [
         "initialize_hill_valley_path_template_pair(&game->subgame.path_pairs[8].primary.bod.bod.vtable",

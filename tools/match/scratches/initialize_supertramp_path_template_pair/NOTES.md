@@ -189,3 +189,18 @@ below its generated-position temporary is byte-neutral. The adjacent `start`
 constructor independently confirms the duplicated UV completion but rejects
 branch-local face pointers, so the retained Supertramp owner shape is not a
 blind family transfer.
+
+## 2026-07-27 mobile-authored selector type
+
+Android and iOS both expose
+`cRPath::BuildSuperTramp(float, float, int, bool, char*, char*, char*)`.
+Their bodies identify the portable leading float as a lateral center offset,
+followed by length and width. Windows omits that leading offset, retains the
+logical Boolean side selector after width, and owns one additional unused
+texture slot before the terminal cap texture. This reconciles the platform
+ABIs without forcing the mobile argument list onto Windows.
+
+Promoting Windows `side_exit` from `int32_t` to `bool` is byte-identical:
+focused matching remains 54.53% (541/552 candidate/target instructions), with
+a 17-instruction exact prefix and 36 clean masked operands. The seven Windows
+stack arguments and all four texture owners remain unchanged.

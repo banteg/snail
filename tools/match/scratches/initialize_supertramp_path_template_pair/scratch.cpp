@@ -147,7 +147,7 @@ static __forceinline void build_direct_strip_mesh(
 void Path::initialize_supertramp_path_template_pair(
     float length,
     int width_cells_,
-    int side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* unused_texture,
