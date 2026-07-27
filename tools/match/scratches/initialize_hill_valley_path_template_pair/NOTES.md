@@ -167,3 +167,25 @@ The `char`-to-`bool` promotion is byte-identical under VC6. Focused matching
 remains 51.04% (676/668 candidate/target instructions), with a 19-instruction
 exact prefix, 40 clean masked operands, and the same two unpaired constant
 references. No source-shape concession was made.
+
+## 2026-07-28 dual-port control and stack-home ownership
+
+The exact Android and iOS `BuildHill` bodies preserve the authored control
+model independently: integer `steps`, terminal index `steps + 1`, a zero-based
+phase index, and `phase = index * 2*pi / steps`. Windows remains authoritative
+for code generation and adds its vertical texture argument, but its assembly
+also proves that VC6 reuses the dead width, height, length, and centered
+argument homes for the later mesh and UV pass.
+
+Definition-bounded Binary Ninja splits now preserve both sides of that native
+reuse. The retained decompile has distinct `phase`, `mesh_vertices`,
+`mesh_column`, `mesh_width_cells`, `face_column_for_uv`, `u0`, `u1`, `v0`, and
+`v1` owners. It no longer assigns the mesh vertex bank to `width_cells_`, the
+mesh width to `height`, UV V to `length`, or loop state through `centered.d`.
+IDA 9.4 independently shows the same stack homes as successive aliased locals.
+
+This is analysis ownership only: the matcher source and its 51.04% score are
+unchanged. A few Binary Ninja expressions still render reads from the original
+`centered` home because the dword overwrite is represented as
+`MLIL_SET_VAR_FIELD`; the replay helper was extended to recognize that
+destination safely, without changing the authored `bool` ABI.

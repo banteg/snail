@@ -2766,8 +2766,17 @@ def find_definition_variable(function, spec):
     for instruction in il.instructions:
         if int(instruction.address) != address:
             continue
-        for written in instruction.vars_written:
+        definition_outputs = list(instruction.vars_written)
+        destination = getattr(instruction, "dest", None)
+        if destination is not None:
+            definition_outputs.append(destination)
+        for written in definition_outputs:
             base_variable = written.var if hasattr(written, "var") else written
+            if not all(
+                hasattr(base_variable, attribute)
+                for attribute in ("source_type", "index", "storage")
+            ):
+                continue
             try:
                 candidate = instruction.get_split_var_for_definition(base_variable)
             except Exception:

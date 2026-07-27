@@ -133,3 +133,25 @@ Promoting the earlier byte placeholder from `char` to `bool` is byte-identical:
 focused matching remains 44.99% (559/579 candidate/target instructions), with
 a seven-instruction exact prefix and 39 clean masked operands. Windows' full
 seven-stack-argument ABI is unchanged.
+
+## 2026-07-28 dual-port control and stack-home ownership
+
+The exact Android and iOS `BuildSBend` bodies independently preserve the
+authored controls: `steps = int(height * pi)`, a zero-based sample index, and
+`phase = index * 2*pi / steps`. Windows remains the machine-code authority and
+adds the vertical texture slot. Its mesh tail proves that VC6 then reuses the
+dead width, height, Z-amplitude, and centered argument homes for unrelated
+vertex, column, and UV values.
+
+Guarded definition-bounded splits now recover `sample_index`, `phase`,
+`mesh_vertices`, `mesh_column`, `mesh_width_cells`, `face_column_for_uv`, and
+the four UV scalars `u0`, `u1`, `v0`, and `v1`. The retained decompile no
+longer routes those owners through `width_cells_`, `height`, `z_amplitude`, or
+`centered.d`. IDA 9.4 provides a second opinion by exposing the same physical
+homes as successive aliased locals.
+
+This is a provenance and ownership recovery, not a source-shape score claim:
+the matcher source remains 44.99%. Binary Ninja still prints a few reads from
+the original `centered` home because the dword counter overwrite is an
+`MLIL_SET_VAR_FIELD`; the replay helper now sees that destination and splits it
+transactionally while retaining the mobile-proven `bool` parameter.

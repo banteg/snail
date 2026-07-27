@@ -15021,6 +15021,7 @@ def test_split_user_variable_replay_previews_before_saved_apply(monkeypatch) -> 
     assert result[0]["op"] == "split_user_var_set"
     assert result[0]["status"] == "verified"
     assert "instruction.get_split_var_for_definition" in calls[0][-1]
+    assert 'getattr(instruction, "dest", None)' in calls[0][-1]
     assert "function.split_var(split_variable)" in calls[0][-1]
     assert "function.merge_vars(" in calls[0][-1]
     assert "source_keys.issubset(expected_source_keys)" in calls[0][-1]
@@ -20901,6 +20902,7 @@ def test_toad_hill_sbend_replay_preserves_mesh_owner_lifetimes() -> None:
         ("StackVariableSourceType", 45, -80, "start_x", "float"),
         ("StackVariableSourceType", 65, -76, "tail_count", "int32_t"),
         ("StackVariableSourceType", 53, -72, "turn_sign", "float"),
+        ("StackVariableSourceType", 56, -72, "steps", "int32_t"),
     ):
         assert (
             f'("{source_type}", {index}, {storage}, "{name}", "{variable_type}"),'
@@ -20918,6 +20920,49 @@ def test_toad_hill_sbend_replay_preserves_mesh_owner_lifetimes() -> None:
     assert '"lead_count_bound"' in replay
     assert '"primary_sample_bank"' in replay
     assert 'variable_type="PathTemplateSample*"' in replay
+
+    for address, index, storage, name, variable_type in (
+        ("0x42d59c", 44, 4, "steps", "int32_t"),
+        ("0x42d664", 244, 16, "last_index", "int32_t"),
+        ("0x42d6ef", 383, 16, "last_z", "float"),
+        ("0x42d79f", 559, 16, "phase", "float"),
+        ("0x42db8a", 1562, 4, "mesh_vertices", "Vec3*"),
+        ("0x42dba1", 1585, 16, "mesh_column", "int32_t"),
+        ("0x42dba5", 1589, 8, "mesh_width_cells", "int32_t"),
+        ("0x42dd01", 1937, 8, "v0", "float"),
+        ("0x42dd0f", 1951, 12, "v1", "float"),
+        ("0x42dd2a", 1978, 16, "u0", "float"),
+        ("0x42dd38", 1992, 4, "u1", "float"),
+        ("0x42df42", 66, 4, "segment_count_value", "int32_t"),
+        ("0x42dfdb", 219, 16, "sample_index", "int32_t"),
+        ("0x42e072", 370, 4, "phase", "float"),
+        ("0x42e3a7", 1191, 4, "mesh_vertices", "Vec3*"),
+        ("0x42e3ba", 1210, 16, "mesh_column", "int32_t"),
+        ("0x42e3be", 1214, 8, "mesh_width_cells", "int32_t"),
+        ("0x42e518", 1560, 8, "v0", "float"),
+        ("0x42e526", 1574, 12, "v1", "float"),
+        ("0x42e541", 1601, 16, "u0", "float"),
+        ("0x42e54f", 1615, 4, "u1", "float"),
+    ):
+        definition = (
+            f'("{address}", "mlil", "StackVariableSourceType", '
+            f"{index}, {storage})"
+        )
+        assert definition in replay
+        assert f'        "{name}",\n        "{variable_type}",' in replay
+
+    for first, second in (
+        ("0x42d726", "0x42d9c7"),
+        ("0x42dba1", "0x42dca6"),
+        ("0x42dba5", "0x42dca0"),
+        ("0x42dcd6", "0x42dece"),
+        ("0x42dfdb", "0x42e1dd"),
+        ("0x42e3ba", "0x42e4bd"),
+        ("0x42e3be", "0x42e4b7"),
+        ("0x42e4ed", "0x42e6e3"),
+    ):
+        assert first in replay
+        assert second in replay
 
     for index, storage, name, variable_type in (
         (949, 67, "primary_right", "Vec3*"),
@@ -20958,11 +21003,42 @@ def test_toad_hill_sbend_replay_preserves_mesh_owner_lifetimes() -> None:
     assert "apply_split_away_user_var_update" in replay
     assert "apply_split_user_var_update" in replay
     assert "apply_user_var_updates" in replay
+    assert "for function_name, split_specs in (" in replay
     assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
     assert '0x8C: ("delta_length", "float")' in replay
     assert '0x90: ("center_x", "float")' in replay
     for rejected_index in (798, 965, 533):
         assert f"({rejected_index}, 66," not in replay
+
+    health = json.loads(
+        (Path(__file__).parents[1] / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    for check_name in (
+        "bn_hill_valley_path_full_owner_abi",
+        "bn_sbend_path_full_owner_abi",
+    ):
+        check = checks[check_name]
+        for owner in (
+            "float phase =",
+            "struct Vec3* mesh_vertices = vertices",
+            "int32_t mesh_column = 0",
+            "int32_t mesh_width_cells = width_cells",
+            "int32_t face_column_for_uv = 0",
+            "float v0 =",
+            "float v1 =",
+            "float u0 =",
+            "float u1 =",
+        ):
+            assert owner in check["required_substrings"]
+        for leaked_home in (
+            "centered.d =",
+            "width_cells_ = vertices",
+            "height = width_cells",
+        ):
+            assert leaked_home in check["forbidden_substrings"]
 
 
 def test_loop_family_replay_preserves_mesh_owner_lifetimes() -> None:

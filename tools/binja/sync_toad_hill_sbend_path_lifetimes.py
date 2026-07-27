@@ -112,6 +112,127 @@ HILL_VALLEY_PATH_LIFETIME_SPECS = (
     (2214, 71, "face_second", "ObjectFaceQuad*"),
 )
 
+# Android and iOS keep the authored Hill controls in distinct locals. Windows
+# preserves the same values, but VC6 later reuses their dead argument homes for
+# mesh and UV temporaries. These definition-bounded splits retain both sides of
+# that ownership boundary instead of typing the whole physical stack slot.
+HILL_STACK_LIFETIME_SPLITS = (
+    (
+        (("0x42d59c", "mlil", "StackVariableSourceType", 44, 4),),
+        ("StackVariableSourceType", 44, 4),
+        "steps",
+        "int32_t",
+    ),
+    (
+        (("0x42d5ad", "mlil", "StackVariableSourceType", 61, 12),),
+        ("StackVariableSourceType", 61, 12),
+        "segment_count_value",
+        "int32_t",
+    ),
+    (
+        (("0x42d664", "mlil", "StackVariableSourceType", 244, 16),),
+        ("StackVariableSourceType", 244, 16),
+        "last_index",
+        "int32_t",
+    ),
+    (
+        (("0x42d6ef", "mlil", "StackVariableSourceType", 383, 16),),
+        ("StackVariableSourceType", 383, 16),
+        "last_z",
+        "float",
+    ),
+    (
+        (
+            ("0x42d726", "mlil", "StackVariableSourceType", 438, 16),
+            ("0x42d9c7", "mlil", "StackVariableSourceType", 1111, 16),
+        ),
+        ("StackVariableSourceType", 438, 16),
+        "phase_index",
+        "int32_t",
+    ),
+    (
+        (("0x42d74a", "mlil", "StackVariableSourceType", 474, 12),),
+        ("StackVariableSourceType", 474, 12),
+        "steps_f",
+        "float",
+    ),
+    (
+        (("0x42d79f", "mlil", "StackVariableSourceType", 559, 16),),
+        ("StackVariableSourceType", 559, 16),
+        "phase",
+        "float",
+    ),
+    (
+        (("0x42db8a", "mlil", "StackVariableSourceType", 1562, 4),),
+        ("StackVariableSourceType", 1562, 4),
+        "mesh_vertices",
+        "Vec3*",
+    ),
+    (
+        (
+            ("0x42dba1", "mlil", "StackVariableSourceType", 1585, 16),
+            ("0x42dca6", "mlil", "StackVariableSourceType", 1846, 16),
+        ),
+        ("StackVariableSourceType", 1585, 16),
+        "mesh_column",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42dba5", "mlil", "StackVariableSourceType", 1589, 8),
+            ("0x42dca0", "mlil", "StackVariableSourceType", 1840, 8),
+        ),
+        ("StackVariableSourceType", 1589, 8),
+        "mesh_width_cells",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42dcd6", "mlil", "StackVariableSourceType", 1894, 16),
+            ("0x42dece", "mlil", "StackVariableSourceType", 2398, 16),
+        ),
+        ("StackVariableSourceType", 1894, 16),
+        "face_column_for_uv",
+        "int32_t",
+    ),
+    (
+        (("0x42dcee", "mlil", "StackVariableSourceType", 1918, 8),),
+        ("StackVariableSourceType", 1918, 8),
+        "v0_index",
+        "int32_t",
+    ),
+    (
+        (("0x42dcf7", "mlil", "StackVariableSourceType", 1927, 4),),
+        ("StackVariableSourceType", 1927, 4),
+        "v1_index",
+        "int32_t",
+    ),
+    (
+        (("0x42dd01", "mlil", "StackVariableSourceType", 1937, 8),),
+        ("StackVariableSourceType", 1937, 8),
+        "v0",
+        "float",
+    ),
+    (
+        (("0x42dd0f", "mlil", "StackVariableSourceType", 1951, 12),),
+        ("StackVariableSourceType", 1951, 12),
+        "v1",
+        "float",
+    ),
+    (
+        (("0x42dd2a", "mlil", "StackVariableSourceType", 1978, 16),),
+        ("StackVariableSourceType", 1978, 16),
+        "u0",
+        "float",
+    ),
+    (
+        (("0x42dd38", "mlil", "StackVariableSourceType", 1992, 4),),
+        ("StackVariableSourceType", 1992, 4),
+        "u1",
+        "float",
+    ),
+)
+
 SBEND_PATH_LIFETIME_SPECS = (
     (179, 66, "primary_seed_sample", "PathTemplateSample*"),
     (499, 68, "primary_up", "Vec3*"),
@@ -125,36 +246,153 @@ SBEND_PATH_LIFETIME_SPECS = (
     (1836, 69, "face_second", "ObjectFaceQuad*"),
 )
 
-TOAD_HILL_SBEND_PATH_USER_VAR_UPDATES = tuple(
+SBEND_CONTROL_LIFETIME_SPECS = (
+    ("StackVariableSourceType", 56, -72, "steps", "int32_t"),
+)
+
+# The exact Android and iOS BuildSBend bodies preserve steps, sample_index, and
+# phase as authored controls. Windows then reuses the former parameter homes
+# for the mesh and UV pass, so keep each Windows definition-bounded lifetime
+# separate rather than spreading a mobile-derived type across the whole slot.
+SBEND_STACK_LIFETIME_SPLITS = (
     (
-        "initialize_toad_path_template_pair",
-        source_type,
-        index,
-        storage,
-        variable_name,
-        variable_type,
-    )
-    for source_type, index, storage, variable_name, variable_type in (
-        TOAD_CONTROL_LIFETIME_SPECS
-    )
-) + tuple(
+        (("0x42df42", "mlil", "StackVariableSourceType", 66, 4),),
+        ("StackVariableSourceType", 66, 4),
+        "segment_count_value",
+        "int32_t",
+    ),
     (
-        function_name,
-        "RegisterVariableSourceType",
-        index,
-        storage,
-        variable_name,
-        variable_type,
-    )
-    for function_name, specs in (
-        ("initialize_toad_path_template_pair", TOAD_PATH_LIFETIME_SPECS),
         (
-            "initialize_hill_valley_path_template_pair",
-            HILL_VALLEY_PATH_LIFETIME_SPECS,
+            ("0x42dfdb", "mlil", "StackVariableSourceType", 219, 16),
+            ("0x42e1dd", "mlil", "StackVariableSourceType", 733, 16),
         ),
-        ("initialize_sbend_path_template_pair", SBEND_PATH_LIFETIME_SPECS),
+        ("StackVariableSourceType", 219, 16),
+        "sample_index",
+        "int32_t",
+    ),
+    (
+        (("0x42e072", "mlil", "StackVariableSourceType", 370, 4),),
+        ("StackVariableSourceType", 370, 4),
+        "phase",
+        "float",
+    ),
+    (
+        (("0x42e3a7", "mlil", "StackVariableSourceType", 1191, 4),),
+        ("StackVariableSourceType", 1191, 4),
+        "mesh_vertices",
+        "Vec3*",
+    ),
+    (
+        (
+            ("0x42e3ba", "mlil", "StackVariableSourceType", 1210, 16),
+            ("0x42e4bd", "mlil", "StackVariableSourceType", 1469, 16),
+        ),
+        ("StackVariableSourceType", 1210, 16),
+        "mesh_column",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42e3be", "mlil", "StackVariableSourceType", 1214, 8),
+            ("0x42e4b7", "mlil", "StackVariableSourceType", 1463, 8),
+        ),
+        ("StackVariableSourceType", 1214, 8),
+        "mesh_width_cells",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42e4ed", "mlil", "StackVariableSourceType", 1517, 16),
+            ("0x42e6e3", "mlil", "StackVariableSourceType", 2019, 16),
+        ),
+        ("StackVariableSourceType", 1517, 16),
+        "face_column_for_uv",
+        "int32_t",
+    ),
+    (
+        (("0x42e505", "mlil", "StackVariableSourceType", 1541, 8),),
+        ("StackVariableSourceType", 1541, 8),
+        "v0_index",
+        "int32_t",
+    ),
+    (
+        (("0x42e50e", "mlil", "StackVariableSourceType", 1550, 4),),
+        ("StackVariableSourceType", 1550, 4),
+        "v1_index",
+        "int32_t",
+    ),
+    (
+        (("0x42e518", "mlil", "StackVariableSourceType", 1560, 8),),
+        ("StackVariableSourceType", 1560, 8),
+        "v0",
+        "float",
+    ),
+    (
+        (("0x42e526", "mlil", "StackVariableSourceType", 1574, 12),),
+        ("StackVariableSourceType", 1574, 12),
+        "v1",
+        "float",
+    ),
+    (
+        (("0x42e541", "mlil", "StackVariableSourceType", 1601, 16),),
+        ("StackVariableSourceType", 1601, 16),
+        "u0",
+        "float",
+    ),
+    (
+        (("0x42e54f", "mlil", "StackVariableSourceType", 1615, 4),),
+        ("StackVariableSourceType", 1615, 4),
+        "u1",
+        "float",
+    ),
+)
+
+TOAD_HILL_SBEND_PATH_USER_VAR_UPDATES = (
+    tuple(
+        (
+            "initialize_toad_path_template_pair",
+            source_type,
+            index,
+            storage,
+            variable_name,
+            variable_type,
+        )
+        for source_type, index, storage, variable_name, variable_type in (
+            TOAD_CONTROL_LIFETIME_SPECS
+        )
     )
-    for index, storage, variable_name, variable_type in specs
+    + tuple(
+        (
+            "initialize_sbend_path_template_pair",
+            source_type,
+            index,
+            storage,
+            variable_name,
+            variable_type,
+        )
+        for source_type, index, storage, variable_name, variable_type in (
+            SBEND_CONTROL_LIFETIME_SPECS
+        )
+    )
+    + tuple(
+        (
+            function_name,
+            "RegisterVariableSourceType",
+            index,
+            storage,
+            variable_name,
+            variable_type,
+        )
+        for function_name, specs in (
+            ("initialize_toad_path_template_pair", TOAD_PATH_LIFETIME_SPECS),
+            (
+                "initialize_hill_valley_path_template_pair",
+                HILL_VALLEY_PATH_LIFETIME_SPECS,
+            ),
+            ("initialize_sbend_path_template_pair", SBEND_PATH_LIFETIME_SPECS),
+        )
+        for index, storage, variable_name, variable_type in specs
+    )
 )
 
 
@@ -256,6 +494,28 @@ def main() -> int:
             variable_type="PathTemplateSample*",
         )
     )
+    for function_name, split_specs in (
+        (
+            "initialize_hill_valley_path_template_pair",
+            HILL_STACK_LIFETIME_SPLITS,
+        ),
+        (
+            "initialize_sbend_path_template_pair",
+            SBEND_STACK_LIFETIME_SPLITS,
+        ),
+    ):
+        for definitions, target_var, variable_name, variable_type in split_specs:
+            operations.extend(
+                apply_split_user_var_update(
+                    REPO_ROOT,
+                    target=args.target,
+                    identifier=function_name,
+                    definitions=definitions,
+                    target_var=target_var,
+                    variable_name=variable_name,
+                    variable_type=variable_type,
+                )
+            )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,
