@@ -331,6 +331,11 @@ ACTIVE_LANDSCAPE_ENTRY_FIELD_UPDATES = (
     ("0x8c", "reference_bod", "RenderableBod*"),
 )
 
+FACE_FIELD_UPDATES = (
+    ("0x00", "bod", "BodBase"),
+    ("0x38", "movie", "Movie"),
+)
+
 CUT_SCENE_FIELD_UPDATES = (
     ("0x00", "presentation", "Snail*"),
     ("0x04", "player", "Player*"),
@@ -480,6 +485,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Fringe",
     "FringeManager",
     "SMTracks",
+    "Movie",
     "Face",
     "AuthoredSegmentRowFlag",
     "AuthoredSegmentRowPositionCursorView",
@@ -3573,7 +3579,7 @@ PROTO_UPDATES = (
     ),
     (
         "advance_frame_sequence",
-        "void __thiscall advance_frame_sequence(FrameSequence* sequence)",
+        "void __thiscall advance_frame_sequence(Movie* movie)",
     ),
     (
         "update_smtracks",
@@ -4973,6 +4979,7 @@ def main() -> int:
                     "ActiveLandscapeEntry",
                     ACTIVE_LANDSCAPE_ENTRY_FIELD_UPDATES,
                 ),
+                ("Face", FACE_FIELD_UPDATES),
                 ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("Vapour", VAPOUR_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),

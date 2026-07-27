@@ -4,12 +4,12 @@
 
 void Face::update_smtracks()
 {
-    frame_sequence.advance_frame_sequence();
-    object->facequads[0].texture_ref = frame_sequence.current_texture_ref;
+    movie.advance_frame_sequence();
+    object->facequads[0].texture_ref = movie.current_texture_ref;
     sample_smtrack_heightmap(
         object,
         0.0f,
         5.0f,
-        frame_sequence.current_texture_ref,
+        movie.current_texture_ref,
         0);
 }

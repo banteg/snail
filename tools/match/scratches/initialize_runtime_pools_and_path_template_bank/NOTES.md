@@ -4,7 +4,7 @@
   constructor pass spans many unrelated pools, so a few neutral callback casts
   remain where VC6 folded distinct authored constructors to one helper.
 - The call at +0x10013dc targets the small object-constructor thunk at
-  0x42f6e0 on the embedded height-field animator's `FrameSequence`, not
+  0x42f6e0 on the embedded height-field animator's `Movie`, not
   `initialize_object` directly.
 
 ## 2026-07-25 inline pool element borrows
@@ -172,7 +172,7 @@ the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
 ## 2026-07-11 cRFace height-field boundary
 
 - The constructed object at `SubgameRuntime +0x10013a4` is one `0x38`-byte
-  `BodBase` followed by a `0xf0`-byte `FrameSequence` at `+0x38`.
+  `BodBase` followed by a `0xf0`-byte `Movie` at `+0x38`.
 - Its exact `0x128` extent ends at `SMTracks +0x10014cc`, closing the
   entire post-landscape gap without padding.
 - The typed local receiver retains the native `edi` owner and leaves this
@@ -183,6 +183,10 @@ name for this previously descriptive owner. Renaming the Windows type to
 `Face` and the table at `0x4972f8` to `g_face_callback_table` is
 codegen-neutral: this constructor remains exact at 227/227 instructions with
 all 72 operands clean.
+
+The same dual-mobile evidence names the embedded animated object `cRMovie`.
+Retiring the descriptive `FrameSequence` owner and using `Face::movie` keeps
+the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-11 cRGalaxy arrays
 

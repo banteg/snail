@@ -138,7 +138,7 @@ SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(Subga
     128,
     (void *(__thiscall *)(void *))initialize_landscape_script_record);
   initialize_bod_base(&game->smtrack_heightfield.bod);
-  initialize_object_constructor_thunk((Object *)&game->smtrack_heightfield.frame_sequence);
+  initialize_object_constructor_thunk((Object *)&game->smtrack_heightfield.movie);
   game->smtrack_heightfield.bod.bod.vtable = &g_face_callback_table;
   initialize_array_with_constructor(game->sm_tracks.entries, 16520, 150, noop_runtime_slot_constructor);
   initialize_array_with_constructor(

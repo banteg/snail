@@ -2418,7 +2418,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "advance_frame_sequence",
-        "void __thiscall advance_frame_sequence(FrameSequence* sequence);",
+        "void __thiscall advance_frame_sequence(Movie* movie);",
     ),
     (
         "update_smtracks",
@@ -3919,6 +3919,83 @@ def _named_struct_member_readback(
     return None
 
 
+def _sync_face_movie_owner() -> dict[str, object]:
+    owner = ida_typeinf.tinfo_t()
+    if not owner.get_named_type(None, "Face", ida_typeinf.BTF_STRUCT):
+        return {"status": "failed", "reason": "missing_Face_type"}
+    if owner.get_size() != 0x128:
+        return {
+            "status": "failed",
+            "reason": "owner_size_mismatch",
+            "expected": 0x128,
+            "observed": owner.get_size(),
+        }
+
+    expected = {
+        "offset": "0x38",
+        "size": 0xF0,
+        "name": "movie",
+        "type": "Movie",
+    }
+    before = _named_struct_member_readback("Face", 0x38)
+    if before == expected:
+        return {"status": "unchanged", "readback": before}
+
+    members = ida_typeinf.udt_type_data_t()
+    if not owner.get_udt_details(members):
+        return {"status": "failed", "reason": "missing_Face_members"}
+    candidates = [
+        (index, member)
+        for index, member in enumerate(members)
+        if int(member.offset) // 8 == 0x38
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_movie_member_count",
+            "readback": before,
+        }
+
+    old_index, old_member = candidates[0]
+    if int(old_member.size) // 8 != 0xF0:
+        return {
+            "status": "failed",
+            "reason": "unexpected_movie_member_size",
+            "readback": before,
+        }
+    old_name = old_member.name
+    old_type = ida_typeinf.tinfo_t(old_member.type)
+    code = owner.del_udm(old_index)
+    if code != ida_typeinf.TERR_OK:
+        return {
+            "status": "failed",
+            "reason": "delete_legacy_movie_owner_failed",
+            "error": ida_typeinf.tinfo_errstr(code),
+        }
+
+    code = owner.add_udm(ida_typeinf.udm_t("movie", "Movie", 0x38 * 8))
+    if code != ida_typeinf.TERR_OK:
+        rollback_code = owner.add_udm(
+            ida_typeinf.udm_t(old_name, old_type, 0x38 * 8)
+        )
+        return {
+            "status": "failed",
+            "reason": "add_movie_owner_failed",
+            "error": ida_typeinf.tinfo_errstr(code),
+            "rollback": ida_typeinf.tinfo_errstr(rollback_code),
+        }
+
+    after = _named_struct_member_readback("Face", 0x38)
+    if after != expected:
+        return {
+            "status": "failed",
+            "reason": "verification_failed",
+            "before": before,
+            "readback": after,
+        }
+    return {"status": "applied", "before": before, "readback": after}
+
+
 def _normalize_root_offset_operands(
     operand_specs: tuple[tuple[int, int, int], ...],
 ) -> list[dict[str, object]]:
@@ -4428,6 +4505,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
     type_changes = []
     missing = []
     failed = []
+
+    face_movie_owner = _sync_face_movie_owner()
+    if face_movie_owner.get("status") == "failed":
+        failed.append({"face_movie_owner": face_movie_owner})
 
     golb_shot_prefix_owner = _sync_golb_shot_prefix_owner(header_path)
     if golb_shot_prefix_owner.get("status") == "failed":
@@ -5120,6 +5201,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "data_applied": data_applied,
                 "data_unchanged": data_unchanged,
                 "type_changes": type_changes,
+                "face_movie_owner": face_movie_owner,
                 "golb_shot_prefix_owner": golb_shot_prefix_owner,
                 "game_root_owner_graph": game_root_owner_graph,
                 "tutorial_numeric_operands": tutorial_numeric_operands,

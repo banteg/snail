@@ -5137,13 +5137,22 @@
       "notes": "All three ports derive an inclusive vertex grid from cRObject sample-count/aspect fields, sample bottom-up retained TGA RGB bytes through the supplied texture, optionally cube the normalized average, and write base plus scale times that value into each borrowed vertex y lane. Android and iOS preserve the exact free-function name and bool parameter. Their cRObject/cRTexture layouts differ from Windows, so only the authored contract and ownership transfer."
     },
     {
+      "address": "0x430470",
+      "windows_name": "advance_frame_sequence",
+      "android_symbol": "cRMovie::AI()",
+      "ios_symbol": "cRMovie::AI()",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "notes": "Android, iOS, and Windows publish the current 0x30-byte face record's texture, gate on complete and pause bits, accumulate the fractional phase, then apply the same loop, ping-pong, and reverse transitions before publishing the selected texture again. In all three ports cRFace::AI calls this method on its embedded movie. The authored cRMovie owner transfers; mobile cRObject offsets do not replace the independently exact 0xf0-byte Windows Movie layout."
+    },
+    {
       "address": "0x441f60",
       "windows_name": "update_smtracks",
       "android_symbol": "cRFace::AI()",
       "ios_symbol": "cRFace::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "Android and iOS advance the cRFace-owned cRMovie sequence, install its current texture on the borrowed object's first face, and call ObjectProcLandScapeUpdate with 0.0, 5.0, that texture, and false. Windows performs the same lifecycle exactly through its 0x128-byte Face owner and callback table at 0x4972f8. Mobile Bod/Movie offsets are platform-specific and do not replace the independently exact Windows BodBase plus FrameSequence layout."
+      "notes": "Android and iOS advance the cRFace-owned cRMovie sequence, install its current texture on the borrowed object's first face, and call ObjectProcLandScapeUpdate with 0.0, 5.0, that texture, and false. Windows performs the same lifecycle exactly through its 0x128-byte Face owner and callback table at 0x4972f8. Mobile Bod/Movie offsets are platform-specific and do not replace the independently exact Windows BodBase plus Movie layout."
     }
   ]
 }

@@ -1898,7 +1898,10 @@
     {
       "address": "0x430470",
       "name": "advance_frame_sequence",
-      "description": "Advances one Object-derived frame sequence by its fractional step, handling wrap, restart, reverse, and ping-pong flags before publishing the current face quad's `TextureRef*`."
+      "description": "Exact Windows `cRMovie::AI()`: advances the Object-derived Movie by its fractional step, handling complete, pause, loop, reverse, and ping-pong flags before publishing the current face quad's `TextureRef*`. Android and iOS preserve the same state machine and the cRFace-owned call edge.",
+      "aliases": [
+        "cRMovie_AI"
+      ]
     },
     {
       "address": "0x430570",
@@ -3047,7 +3050,7 @@
     {
       "address": "0x441f60",
       "name": "update_smtracks",
-      "description": "Exact Windows `cRFace::AI()`: advances the embedded 0x128-byte Face owner's `FrameSequence`, installs its current `TextureRef*` on the borrowed mesh's first facequad, and invokes `ObjectProcLandScapeUpdate` to resample the retained image into the mesh vertex-y grid. The callback table at `0x4972f8` points directly here.",
+      "description": "Exact Windows `cRFace::AI()`: advances the embedded 0x128-byte Face owner's authored `Movie`, installs its current `TextureRef*` on the borrowed mesh's first facequad, and invokes `ObjectProcLandScapeUpdate` to resample the retained image into the mesh vertex-y grid. The callback table at `0x4972f8` points directly here.",
       "aliases": [
         "cRFace_AI"
       ]

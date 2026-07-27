@@ -2,8 +2,8 @@
 /* function: advance_frame_sequence @ 0x430470 */
 /* selector: advance_frame_sequence */
 
-// Advances one Object-derived frame sequence by its fractional step, handling wrap, restart, reverse, and ping-pong flags before publishing the current face quad's `TextureRef*`.
-void __thiscall advance_frame_sequence(FrameSequence *sequence)
+// Exact Windows `cRMovie::AI()`: advances the Object-derived Movie by its fractional step, handling complete, pause, loop, reverse, and ping-pong flags before publishing the current face quad's `TextureRef*`. Android and iOS preserve the same state machine and the cRFace-owned call edge.
+void __thiscall advance_frame_sequence(Movie *movie)
 {
   int32_t current_frame_index; // esi
   ObjectFaceQuad *facequads; // edi
@@ -14,58 +14,58 @@ void __thiscall advance_frame_sequence(FrameSequence *sequence)
   int32_t v8; // eax
   int32_t facequad_count; // esi
 
-  current_frame_index = sequence->current_frame_index;
-  facequads = sequence->object.facequads;
-  sequence->current_texture_ref = facequads[current_frame_index].texture_ref;
-  sequence_flags = sequence->sequence_flags;
+  current_frame_index = movie->current_frame_index;
+  facequads = movie->object.facequads;
+  movie->current_texture_ref = facequads[current_frame_index].texture_ref;
+  sequence_flags = movie->sequence_flags;
   if ( (sequence_flags & 0x11) == 0 )
   {
-    v4 = sequence->phase_step + sequence->phase;
-    sequence->phase = v4;
-    if ( !(v6 | v7) )
+    v4 = movie->phase_step + movie->phase;
+    movie->phase = v4;
+    if ( (v6 | v7) == 0 )
     {
-      sequence->phase = v4 - 1.0;
+      movie->phase = v4 - 1.0;
       if ( (sequence_flags & 8) == 0 )
       {
         v8 = current_frame_index + 1;
-        facequad_count = sequence->object.facequad_count;
-        sequence->current_frame_index = v8;
+        facequad_count = movie->object.facequad_count;
+        movie->current_frame_index = v8;
         if ( v8 != facequad_count )
           goto LABEL_15;
         if ( (sequence_flags & 4) != 0 )
         {
-          sequence->current_frame_index = facequad_count - 2;
-          sequence->sequence_flags = sequence_flags | 8;
+          movie->current_frame_index = facequad_count - 2;
+          movie->sequence_flags = sequence_flags | 8;
           goto LABEL_15;
         }
         if ( (sequence_flags & 2) != 0 )
         {
 LABEL_14:
-          sequence->current_frame_index = 0;
+          movie->current_frame_index = 0;
           goto LABEL_15;
         }
 LABEL_13:
-        sequence->sequence_flags = sequence_flags | 1;
+        movie->sequence_flags = sequence_flags | 1;
         goto LABEL_14;
       }
-      sequence->current_frame_index = current_frame_index - 1;
-      if ( !current_frame_index )
+      movie->current_frame_index = current_frame_index - 1;
+      if ( current_frame_index == 0 )
       {
         if ( (sequence_flags & 4) != 0 )
         {
-          sequence->current_frame_index = 1;
-          sequence->sequence_flags = sequence_flags & 0xFFFFFFF7;
+          movie->current_frame_index = 1;
+          movie->sequence_flags = sequence_flags & 0xFFFFFFF7;
           goto LABEL_15;
         }
         if ( (sequence_flags & 2) != 0 )
         {
-          sequence->current_frame_index = sequence->object.facequad_count - 1;
+          movie->current_frame_index = movie->object.facequad_count - 1;
           goto LABEL_15;
         }
         goto LABEL_13;
       }
     }
 LABEL_15:
-    sequence->current_texture_ref = facequads[sequence->current_frame_index].texture_ref;
+    movie->current_texture_ref = facequads[movie->current_frame_index].texture_ref;
   }
 }

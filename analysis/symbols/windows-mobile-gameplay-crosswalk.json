@@ -14,12 +14,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 566,
-    "unverified_entries": 219,
-    "verified_android_symbols": 560,
-    "verified_ios_symbols": 455,
-    "available_android_mappings": 560,
-    "available_ios_mappings": 418
+    "verified_entries": 567,
+    "unverified_entries": 218,
+    "verified_android_symbols": 561,
+    "verified_ios_symbols": 456,
+    "available_android_mappings": 561,
+    "available_ios_mappings": 419
   },
   "entries": [
     {
@@ -12448,71 +12448,13 @@
       "address": "0x430470",
       "windows_name": "advance_frame_sequence",
       "windows_size": 256,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "JAVACSaveFile(char*, void*, int)",
-          "score": 0.5819,
-          "name_score": 0.3448,
-          "size_score": 0.9375
-        },
-        {
-          "symbol": "cRSplashManager::SetBar(char*)",
-          "score": 0.5799,
-          "name_score": 0.32,
-          "size_score": 0.9697
-        },
-        {
-          "symbol": "cRObject::CalcTextureGroups()",
-          "score": 0.5748,
-          "name_score": 0.45,
-          "size_score": 0.7619
-        },
-        {
-          "symbol": "JAVAOpenFeintLastLoggedInUserID(char*, int)",
-          "score": 0.5742,
-          "name_score": 0.3529,
-          "size_score": 0.9062
-        },
-        {
-          "symbol": "ObjectProcTileFast(cRObject*, char*, float)",
-          "score": 0.5579,
-          "name_score": 0.2632,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "OFResourceNameMap::~OFResourceNameMap()",
-          "score": 0.6134,
-          "name_score": 0.3556,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::KillGame()",
-          "score": 0.6118,
-          "name_score": 0.3632,
-          "size_score": 0.9846
-        },
-        {
-          "symbol": "OFHttpNestedQueryStringWriter::getCurrentScope()",
-          "score": 0.6009,
-          "name_score": 0.3453,
-          "size_score": 0.9844
-        },
-        {
-          "symbol": "OFResourceNameMap::~OFResourceNameMap()",
-          "score": 0.6009,
-          "name_score": 0.3556,
-          "size_score": 0.9688
-        },
-        {
-          "symbol": "MacOFAddAchievement(int)",
-          "score": 0.6,
-          "name_score": 0.3333,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRMovie::AI()",
+      "ios_symbol": "cRMovie::AI()",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x430570",

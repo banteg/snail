@@ -632,9 +632,9 @@ only as historical decompiler spelling in older evidence.
     128 `0x124`-byte parsed script records at `+0x5a4`
 - `+0x10013a4`: `smtrack_heightfield`
   - exact `0x128`-byte Windows `cRFace` owner ending at `+0x10014cc`
-  - `BodBase` at `+0x00` borrows the live mesh; an Object-derived
-    `FrameSequence` at `+0x38` selects `TextureRef` frames and drives heightmap
-    resampling
+  - `BodBase` at `+0x00` borrows the live mesh; the Object-derived authored
+    `cRMovie` (`Movie`) at `+0x38` selects `TextureRef` frames and drives
+    heightmap resampling
 - `+0x10014cc`: `sm_tracks`
   - exact `0x25cfb4`-byte owner with a leading count and 150 `0x4088`-byte
     authored-segment records beginning at `+0x10014d0`

@@ -2018,13 +2018,35 @@ def test_object_loader_replay_keeps_authored_abi_and_exact_frame_owners() -> Non
     assert "apply_direct_proto_update(" in replay
     assert "apply_user_var_updates(" in replay
     assert "verify_object_loader_owner_layouts" in replay
-    for storage, definition_address, name, variable_type, ida_declaration in (
-        (-572, "0x44C4D0", "line_cursor", "char*", "char *line_cursor;"),
-        (-568, "0x44C472", "cursor", "char*", "char *cursor;"),
-        (-516, "0x44C468", "byte_count", "int32_t", "int32_t byte_count;"),
+    for (
+        storage,
+        definition_address,
+        ida_stack_offset,
+        name,
+        variable_type,
+        ida_declaration,
+    ) in (
+        (
+            -572,
+            "0x44C4D0",
+            84,
+            "line_cursor",
+            "char*",
+            "char *line_cursor;",
+        ),
+        (-568, "0x44C472", 88, "cursor", "char*", "char *cursor;"),
+        (
+            -516,
+            "0x44C468",
+            140,
+            "byte_count",
+            "int32_t",
+            "int32_t byte_count;",
+        ),
         (
             -512,
             "0x44C46E",
+            144,
             "texture_name",
             "char[0x80]",
             "char texture_name[0x80];",
@@ -2032,6 +2054,7 @@ def test_object_loader_replay_keeps_authored_abi_and_exact_frame_owners() -> Non
         (
             -384,
             "0x44C76F",
+            272,
             "texture_path",
             "char[0x80]",
             "char texture_path[0x80];",
@@ -2039,6 +2062,7 @@ def test_object_loader_replay_keeps_authored_abi_and_exact_frame_owners() -> Non
         (
             -256,
             "0x44C445",
+            400,
             "object_file_path",
             "char[0x100]",
             "char object_file_path[0x100];",
@@ -2053,9 +2077,14 @@ def test_object_loader_replay_keeps_authored_abi_and_exact_frame_owners() -> Non
         )
         assert marker in replay
         assert definition_address in ida_owner_sync
+        assert f"        {ida_stack_offset}," in ida_owner_sync
         assert f'"{name}"' in ida_owner_sync
         assert f'"{ida_declaration}"' in ida_owner_sync
     assert "_sync_object_loader_lvars()" in ida_owner_sync
+    assert "fallback_stack_offset=stack_offset" in ida_owner_sync
+    assert (
+        '"reason": "unexpected_owned_lvar_stack_candidates"' in ida_owner_sync
+    )
 
 
 def test_x_mesh_loader_replay_keeps_cache_and_parser_lifetimes() -> None:
@@ -8447,7 +8476,7 @@ def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:
         assert "ObjectAnimationFrame** frames;" in header
 
 
-def test_frame_sequence_ownership_stays_aligned_across_replay_lanes() -> None:
+def test_movie_ownership_stays_aligned_across_replay_lanes() -> None:
     repo_root = Path(__file__).parents[1]
     binja_object_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
         encoding="utf-8"
@@ -8469,10 +8498,10 @@ def test_frame_sequence_ownership_stays_aligned_across_replay_lanes() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/frame_sequence.h"
+        repo_root / "tools/match/include/movie.h"
     ).read_text(encoding="utf-8")
 
-    assert "FRAME_SEQUENCE_FIELDS = (" in binja_object_sync
+    assert "MOVIE_FIELDS = (" in binja_object_sync
     assert '("0x00", "object", "Object")' in binja_object_sync
     assert '("0xec", "current_texture_ref", "TextureRef*")' in binja_object_sync
     for source in (
@@ -8482,22 +8511,26 @@ def test_frame_sequence_ownership_stays_aligned_across_replay_lanes() -> None:
         ida_path_sync,
     ):
         assert "advance_frame_sequence" in source
-        assert "FrameSequence* sequence" in source
+        assert "Movie* movie" in source
     for source in (binja_path_sync, ida_path_sync):
         assert "update_smtracks" in source
         assert "Face* face" in source
         assert "sample_smtrack_heightmap" in source
         assert "TextureRef* replacement" in source
         assert "bool cubic" in source
+    assert '("0x38", "movie", "Movie")' in binja_path_sync
+    assert '"Movie",' in binja_path_sync
+    assert "def _sync_face_movie_owner()" in ida_path_sync
+    assert 'ida_typeinf.udm_t("movie", "Movie", 0x38 * 8)' in ida_path_sync
 
     for header in (*analysis_headers, path_header, matcher_header):
-        assert "FRAME_SEQUENCE_COMPLETE = 0x01" in header
-        assert "FRAME_SEQUENCE_LOOP = 0x02" in header
-        assert "FRAME_SEQUENCE_PING_PONG = 0x04" in header
-        assert "FRAME_SEQUENCE_REVERSE = 0x08" in header
-        assert "FRAME_SEQUENCE_PAUSED = 0x10" in header
+        assert "MOVIE_COMPLETE = 0x01" in header
+        assert "MOVIE_LOOP = 0x02" in header
+        assert "MOVIE_PING_PONG = 0x04" in header
+        assert "MOVIE_REVERSE = 0x08" in header
+        assert "MOVIE_PAUSED = 0x10" in header
     for header in analysis_headers:
-        assert "typedef struct FrameSequence" in header
+        assert "typedef struct Movie" in header
         assert "Object object;" in header
         assert "TextureRef* current_texture_ref;" in header
         assert "int32_t heightmap_sample_count;" in header
@@ -8506,11 +8539,13 @@ def test_frame_sequence_ownership_stays_aligned_across_replay_lanes() -> None:
     assert '("0x1c", "heightmap_sample_count", "int32_t")' in binja_object_sync
     assert '("0x24", "heightmap_sample_divisor", "float")' in binja_object_sync
     assert '("0x28", "heightmap_sample_scale", "float")' in binja_object_sync
-    assert "typedef struct FrameSequenceObjectView" in path_header
+    assert "typedef struct MovieObjectView" in path_header
     assert "ObjectFaceQuad* facequads;" in path_header
-    assert "FrameSequenceObjectView object;" in path_header
+    assert "MovieObjectView object;" in path_header
     assert "TextureRef* current_texture_ref;" in path_header
     assert "uint8_t _storage[0xf0];" not in path_header
+    assert "FrameSequence" not in path_header
+    assert "FrameSequence" not in matcher_header
 
 
 def test_smtrack_heightmap_replay_preserves_borrowed_image_and_sample_cursors() -> None:

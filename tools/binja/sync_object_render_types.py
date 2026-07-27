@@ -108,7 +108,7 @@ OBJECT_FIELDS = (
     ("0xd8", "toon_index_buffer", "ObjectIndexBuffer*"),
 )
 
-FRAME_SEQUENCE_FIELDS = (
+MOVIE_FIELDS = (
     ("0x00", "object", "Object"),
     ("0xdc", "sequence_flags", "int32_t"),
     ("0xe0", "current_frame_index", "int32_t"),
@@ -461,7 +461,7 @@ PROTO_UPDATES = (
     ),
     (
         "advance_frame_sequence",
-        "void __thiscall advance_frame_sequence(FrameSequence* sequence)",
+        "void __thiscall advance_frame_sequence(Movie* movie)",
     ),
     (
         "sort_object_faces_by_texture_group",
@@ -691,7 +691,7 @@ def main() -> int:
             struct_updates=(
                 ("Direct3DRenderer", DIRECT3D_RENDERER_FIELDS),
                 ("Object", OBJECT_FIELDS),
-                ("FrameSequence", FRAME_SEQUENCE_FIELDS),
+                ("Movie", MOVIE_FIELDS),
                 ("TextureRef", TEXTURE_REF_FIELDS),
                 ("ObjectList", OBJECT_LIST_FIELDS),
                 ("GameRoot", GAME_ROOT_FIELDS),

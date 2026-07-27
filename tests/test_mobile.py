@@ -847,10 +847,22 @@ def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     assert face_ai["android_body_count"] == 1
     assert face_ai["ios_body_count"] == 1
 
+    movie_ai = entries["advance_frame_sequence"]
+    assert movie_ai["status"] == "verified"
+    assert movie_ai["confidence"] == "high"
+    assert movie_ai["android_symbol"] == "cRMovie::AI()"
+    assert movie_ai["ios_symbol"] == "cRMovie::AI()"
+    assert movie_ai["source_object"] == "RObject.o"
+    assert movie_ai["android_body_count"] == 1
+    assert movie_ai["ios_body_count"] == 1
+
     assert "ObjectProcLandScapeUpdate" in (
         functions_by_name["sample_smtrack_heightmap"]["aliases"]
     )
     assert "cRFace_AI" in functions_by_name["update_smtracks"]["aliases"]
+    assert "cRMovie_AI" in (
+        functions_by_name["advance_frame_sequence"]["aliases"]
+    )
     callback_table = references_by_address["0x4972f8"]
     assert callback_table["name"] == "g_face_callback_table"
     assert "g_smtracks_callback_table" in callback_table["aliases"]
@@ -858,6 +870,12 @@ def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     matcher_header = (
         repo_root / "tools/match/include/smtracks.h"
     ).read_text(encoding="utf-8")
+    movie_header = (
+        repo_root / "tools/match/include/movie.h"
+    ).read_text(encoding="utf-8")
     assert "class Face : public BodBase" in matcher_header
+    assert "Movie movie;" in matcher_header
+    assert "class Movie : public Object" in movie_header
     assert "bool cubic" in matcher_header
     assert "SmtrackHeightfieldAnimator" not in matcher_header
+    assert "FrameSequence" not in matcher_header

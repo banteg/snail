@@ -22,8 +22,8 @@
       "address": "0x408060"
     },
     {
-      "name": "sample_smtrack_heightmap",
-      "address": "0x41a360"
+      "name": "advance_frame_sequence",
+      "address": "0x430470"
     },
     {
       "name": "update_smtracks",

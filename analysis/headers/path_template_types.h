@@ -1268,40 +1268,40 @@ typedef char LandscapeScriptStrideAnchor_must_be_0x6c8[
 ];
 
 /*
- * Bounded view of the Object prefix inherited by FrameSequence. The renderer
+ * Bounded view of the Object prefix inherited by Movie. The renderer
  * lane owns the complete Object declaration; this path/subgame lane only needs
  * the independently consumed face array and count.
  */
-typedef struct FrameSequenceObjectView {
+typedef struct MovieObjectView {
     uint8_t _pad_00[0x54];
     int32_t facequad_count;
     int32_t facequad_capacity;
     ObjectFaceQuad* facequads;
     uint8_t _pad_60[0xdc - 0x60];
-} FrameSequenceObjectView;
+} MovieObjectView;
 
-typedef enum FrameSequenceFlag {
-    FRAME_SEQUENCE_COMPLETE = 0x01,
-    FRAME_SEQUENCE_LOOP = 0x02,
-    FRAME_SEQUENCE_PING_PONG = 0x04,
-    FRAME_SEQUENCE_REVERSE = 0x08,
-    FRAME_SEQUENCE_PAUSED = 0x10,
-} FrameSequenceFlag;
+typedef enum MovieFlag {
+    MOVIE_COMPLETE = 0x01,
+    MOVIE_LOOP = 0x02,
+    MOVIE_PING_PONG = 0x04,
+    MOVIE_REVERSE = 0x08,
+    MOVIE_PAUSED = 0x10,
+} MovieFlag;
 
-/* Exact 0xf0-byte Object-derived animated texture sequence. */
-typedef struct FrameSequence {
-    FrameSequenceObjectView object;
+/* Exact 0xf0-byte Windows layout of the authored cRMovie. */
+typedef struct Movie {
+    MovieObjectView object;
     int32_t sequence_flags;
     int32_t current_frame_index;
     float phase;
     float phase_step;
     TextureRef* current_texture_ref;
-} FrameSequence;
+} Movie;
 
 /* Windows layout of the authored cRFace animated height-field owner. */
 typedef struct Face {
     BodBase bod;
-    FrameSequence frame_sequence;
+    Movie movie;
 } Face;
 
 typedef struct SegmentCatalogEntry {
@@ -2853,7 +2853,7 @@ void __thiscall build_snail_world_hotspots(Snail* snail);
 void __thiscall extract_snail_local_hotspots(Snail* snail);
 void __thiscall initialize_anim_manager(AnimManager* manager);
 void __thiscall update_anim_manager(AnimManager* manager);
-void __thiscall advance_frame_sequence(FrameSequence* sequence);
+void __thiscall advance_frame_sequence(Movie* movie);
 void __thiscall update_smtracks(Face* face);
 void __cdecl sample_smtrack_heightmap(
     Object* source,

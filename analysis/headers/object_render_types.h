@@ -306,23 +306,23 @@ typedef struct Object {
     ObjectIndexBuffer* toon_index_buffer;
 } Object;
 
-typedef enum FrameSequenceFlag {
-    FRAME_SEQUENCE_COMPLETE = 0x01,
-    FRAME_SEQUENCE_LOOP = 0x02,
-    FRAME_SEQUENCE_PING_PONG = 0x04,
-    FRAME_SEQUENCE_REVERSE = 0x08,
-    FRAME_SEQUENCE_PAUSED = 0x10,
-} FrameSequenceFlag;
+typedef enum MovieFlag {
+    MOVIE_COMPLETE = 0x01,
+    MOVIE_LOOP = 0x02,
+    MOVIE_PING_PONG = 0x04,
+    MOVIE_REVERSE = 0x08,
+    MOVIE_PAUSED = 0x10,
+} MovieFlag;
 
-/* Authored Object-derived animated texture sequence, exact size 0xf0. */
-typedef struct FrameSequence {
+/* Windows layout of the authored cRMovie, exact size 0xf0. */
+typedef struct Movie {
     Object object;
     int32_t sequence_flags;
     int32_t current_frame_index;
     float phase;
     float phase_step;
     TextureRef* current_texture_ref;
-} FrameSequence;
+} Movie;
 
 typedef struct XAnimationKeyframe {
     uint8_t _pad_00[0x24];
@@ -576,7 +576,7 @@ void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object);
 void __thiscall request_object_animation(
     Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes,
     float progress_step, int32_t flags);
-void __thiscall advance_frame_sequence(FrameSequence* sequence);
+void __thiscall advance_frame_sequence(Movie* movie);
 void __cdecl sort_object_faces_by_texture_group(Object* object);
 void __cdecl build_object_texture_group_buffers(Object* object);
 int32_t __cdecl get_or_append_object_texture_group_vertex(

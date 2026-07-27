@@ -253,7 +253,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "advance_frame_sequence",
-        "void __thiscall advance_frame_sequence(FrameSequence* sequence);",
+        "void __thiscall advance_frame_sequence(Movie* movie);",
     ),
     (
         "get_or_append_object_texture_group_vertex",
@@ -593,25 +593,50 @@ BUFFER_FACTORY_LVAR_SPECS = (
     ("create_index_buffer", 0x4115F9, "next_count", "int32_t next_count;"),
 )
 
+# Hex-Rays 9.4 moved texture_path's definition point from 0x44C76F to
+# 0x44C72C without changing its unique stack slot. Keep the older definition
+# points as the primary identities and use the proven stack locations only as
+# guarded fallbacks so replay remains compatible without accepting ambiguity.
 OBJECT_LOADER_LVAR_SPECS = (
-    ("load_object_definition", 0x44C4D0, "line_cursor", "char *line_cursor;"),
-    ("load_object_definition", 0x44C472, "cursor", "char *cursor;"),
-    ("load_object_definition", 0x44C468, "byte_count", "int32_t byte_count;"),
+    (
+        "load_object_definition",
+        0x44C4D0,
+        84,
+        "line_cursor",
+        "char *line_cursor;",
+    ),
+    (
+        "load_object_definition",
+        0x44C472,
+        88,
+        "cursor",
+        "char *cursor;",
+    ),
+    (
+        "load_object_definition",
+        0x44C468,
+        140,
+        "byte_count",
+        "int32_t byte_count;",
+    ),
     (
         "load_object_definition",
         0x44C46E,
+        144,
         "texture_name",
         "char texture_name[0x80];",
     ),
     (
         "load_object_definition",
         0x44C76F,
+        272,
         "texture_path",
         "char texture_path[0x80];",
     ),
     (
         "load_object_definition",
         0x44C445,
+        400,
         "object_file_path",
         "char object_file_path[0x100];",
     ),
@@ -911,6 +936,8 @@ def _sync_owned_lvar(
     definition_address: int,
     expected_name: str,
     declaration: str,
+    *,
+    fallback_stack_offset: int | None = None,
 ) -> dict[str, object]:
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR or ida_funcs.get_func(address) is None:
@@ -935,21 +962,57 @@ def _sync_owned_lvar(
         }
 
     cfunc = ida_hexrays.decompile(address)
-    candidates = [
+    definition_candidates = [
         lvar
         for lvar in cfunc.get_lvars()
         if not lvar.is_arg_var and lvar.defea == definition_address
     ]
-    if len(candidates) != 1:
+    if len(definition_candidates) == 1:
+        lvar = definition_candidates[0]
+        identity = "definition_address"
+        if fallback_stack_offset is not None and (
+            not lvar.is_stk_var()
+            or lvar.get_stkoff() != fallback_stack_offset
+        ):
+            return {
+                "status": "failed",
+                "reason": "owned_lvar_location_mismatch",
+                "selector": selector,
+                "definition_address": hex(definition_address),
+                "expected_stack_offset": fallback_stack_offset,
+                "observed_stack_offset": (
+                    lvar.get_stkoff() if lvar.is_stk_var() else None
+                ),
+            }
+    elif len(definition_candidates) == 0 and fallback_stack_offset is not None:
+        stack_candidates = [
+            lvar
+            for lvar in cfunc.get_lvars()
+            if not lvar.is_arg_var
+            and lvar.is_stk_var()
+            and lvar.get_stkoff() == fallback_stack_offset
+        ]
+        if len(stack_candidates) != 1:
+            return {
+                "status": "failed",
+                "reason": "unexpected_owned_lvar_stack_candidates",
+                "selector": selector,
+                "definition_address": hex(definition_address),
+                "stack_offset": fallback_stack_offset,
+                "candidate_count": len(stack_candidates),
+            }
+        lvar = stack_candidates[0]
+        identity = "stack_offset"
+    else:
         return {
             "status": "failed",
             "reason": "unexpected_owned_lvar_candidates",
             "selector": selector,
             "definition_address": hex(definition_address),
-            "candidate_count": len(candidates),
+            "candidate_count": len(definition_candidates),
         }
 
-    lvar = candidates[0]
+    observed_definition_address = lvar.defea
     expected_type = _normalize_type_text(str(local_type))
     observed_type = _normalize_type_text(str(lvar.type()))
     if lvar.name == expected_name and observed_type == expected_type:
@@ -959,6 +1022,8 @@ def _sync_owned_lvar(
             "name": expected_name,
             "type": str(local_type),
             "definition_address": hex(definition_address),
+            "observed_definition_address": hex(observed_definition_address),
+            "identity": identity,
         }
 
     before_name = lvar.name
@@ -977,6 +1042,8 @@ def _sync_owned_lvar(
             "reason": "modify_owned_lvar_failed",
             "selector": selector,
             "definition_address": hex(definition_address),
+            "observed_definition_address": hex(observed_definition_address),
+            "identity": identity,
         }
 
     ida_hexrays.mark_cfunc_dirty(address, True)
@@ -985,9 +1052,19 @@ def _sync_owned_lvar(
         candidate
         for candidate in verified_cfunc.get_lvars()
         if not candidate.is_arg_var
-        and candidate.defea == definition_address
         and candidate.name == expected_name
         and _normalize_type_text(str(candidate.type())) == expected_type
+        and (
+            (
+                fallback_stack_offset is not None
+                and candidate.is_stk_var()
+                and candidate.get_stkoff() == fallback_stack_offset
+            )
+            or (
+                fallback_stack_offset is None
+                and candidate.defea == definition_address
+            )
+        )
     ]
     if len(verified) != 1:
         return {
@@ -995,6 +1072,8 @@ def _sync_owned_lvar(
             "reason": "owned_lvar_readback_failed",
             "selector": selector,
             "definition_address": hex(definition_address),
+            "observed_definition_address": hex(observed_definition_address),
+            "identity": identity,
             "candidate_count": len(verified),
         }
 
@@ -1006,6 +1085,8 @@ def _sync_owned_lvar(
         "name": expected_name,
         "type": str(local_type),
         "definition_address": hex(definition_address),
+        "observed_definition_address": hex(observed_definition_address),
+        "identity": identity,
     }
 
 
@@ -1051,8 +1132,20 @@ def _sync_buffer_factory_lvars() -> dict[str, object]:
 
 def _sync_object_loader_lvars() -> dict[str, object]:
     results = [
-        _sync_owned_lvar(selector, definition_address, expected_name, declaration)
-        for selector, definition_address, expected_name, declaration in OBJECT_LOADER_LVAR_SPECS
+        _sync_owned_lvar(
+            selector,
+            definition_address,
+            expected_name,
+            declaration,
+            fallback_stack_offset=stack_offset,
+        )
+        for (
+            selector,
+            definition_address,
+            stack_offset,
+            expected_name,
+            declaration,
+        ) in OBJECT_LOADER_LVAR_SPECS
     ]
     failures = [result for result in results if result.get("status") == "failed"]
     return {

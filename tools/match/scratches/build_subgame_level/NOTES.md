@@ -266,7 +266,7 @@ existing `105 ok / 1 mismatch` audit.
 ## 2026-07-11 SMTrack height-field header refresh
 
 - Recovering the adjacent `0x128`-byte animator and Object-derived
-  `FrameSequence` renumbers the two unchanged COFF tables to
+  `Movie` renumbers the two unchanged COFF tables to
   `$L5054`/`$L5055`.
 - They remain at object `+0x838`/`+0x84c` with the same bounded five- and
   four-entry relocation contents. Registering these compiler-local spellings

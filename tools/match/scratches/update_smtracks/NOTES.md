@@ -6,12 +6,12 @@ The receiver is the complete `0x128`-byte Windows `Face` owner
 (`cRFace` on Android/iOS) embedded at `SubgameRuntime +0x10013a4`:
 
 - inherited `BodBase::object +0x24` borrows the active SMTrack mesh;
-- `FrameSequence +0x38` is an `Object`-derived animated texture sequence;
+- `Movie +0x38` is the `Object`-derived authored `cRMovie`;
 - the sequence publishes its current face's `TextureRef*` at outer `+0x124`;
 - that texture is installed into the active mesh's first face and its retained
   TGA bytes are resampled into the mesh vertex-y lane.
 
-`BodBase 0x38 + FrameSequence 0xf0 = 0x128`, ending exactly at the following
+`BodBase 0x38 + Movie 0xf0 = 0x128`, ending exactly at the following
 `SMTracks +0x10014cc`. The authored `Face` class stays distinct from the
 reported `0x25cfb4` native `cRSMTracks`/segment-catalog owner.
 
@@ -25,7 +25,7 @@ these two exact objects. A previewed Binary Ninja declaration preserved the
 - Both analysis databases now receive the authored
   `void Face::update_smtracks()` receiver rather than a
   raw integer base. The complete handoff reads as
-  `Face -> FrameSequence -> TextureRef -> borrowed Object`.
+  `Face -> Movie -> TextureRef -> borrowed Object`.
 - The sole sampler call proves
   `void sample_smtrack_heightmap(Object*, float, float, TextureRef*, bool)`;
   the old analysis prototype incorrectly modeled its fourth argument as a
@@ -43,7 +43,7 @@ same complete call chain as the exact Windows body.
 
 The descriptive `SmtrackHeightfieldAnimator` type is therefore retired in
 favor of the authored `Face` owner. Windows independently proves its
-`BodBase + FrameSequence` layout and exact 0x128-byte extent; the wider mobile
+`BodBase + Movie` layout and exact 0x128-byte extent; the wider mobile
 `cRBod + cRMovie` offsets are not imported. The Windows table at `0x4972f8` is
 now named `g_face_callback_table`, with the old SMTracks label retained only as
 an alias. Focused matching remains exact at 19/19 instructions with both

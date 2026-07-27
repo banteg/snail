@@ -198,7 +198,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
 
     Face* face = &smtrack_heightfield;
     face->initialize_bod_base();
-    face->frame_sequence.initialize_object_constructor_thunk();
+    face->movie.initialize_object_constructor_thunk();
     face->vtable = &g_face_callback_table;
 
     initialize_array_with_constructor(
