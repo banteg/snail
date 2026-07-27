@@ -17,32 +17,32 @@ void Completion::initialize_completion_screen(
         else
             bonus_score = 0;
     } else if (mode == 1) {
-        int x_source;
-        int y_index;
+        int speed_source;
+        int difficulty_index;
         if (g_game->subgame.replay_launch_active != 0) {
             SubSolution* record = g_game->subgame.replay_launch_record;
-            y_index = record->challenge_difficulty_value / 20;
-            x_source = record->challenge_speed_value;
+            difficulty_index = record->challenge_difficulty_value / 20;
+            speed_source = record->challenge_speed_value;
         } else {
-            y_index = g_runtime_config.completion_bonus_y_source / 20;
-            x_source = g_runtime_config.completion_bonus_x_source;
+            difficulty_index = g_runtime_config.completion_bonus_y_source / 20;
+            speed_source = g_runtime_config.completion_bonus_x_source;
         }
 
-        x_source /= 20;
-        if (y_index < 0)
-            y_index = 0;
-        else if (y_index > COMPLETION_BONUS_TABLE_CAPACITY - 1)
-            y_index = COMPLETION_BONUS_TABLE_CAPACITY - 1;
-        if (x_source < 0)
-            x_source = 0;
-        else if (x_source > COMPLETION_BONUS_TABLE_CAPACITY - 1)
-            x_source = COMPLETION_BONUS_TABLE_CAPACITY - 1;
-        if (y_index == COMPLETION_BONUS_TABLE_CAPACITY - 1
-            && x_source == COMPLETION_BONUS_TABLE_CAPACITY - 1)
+        speed_source /= 20;
+        if (difficulty_index < 0)
+            difficulty_index = 0;
+        else if (difficulty_index > COMPLETION_BONUS_TABLE_CAPACITY - 1)
+            difficulty_index = COMPLETION_BONUS_TABLE_CAPACITY - 1;
+        if (speed_source < 0)
+            speed_source = 0;
+        else if (speed_source > COMPLETION_BONUS_TABLE_CAPACITY - 1)
+            speed_source = COMPLETION_BONUS_TABLE_CAPACITY - 1;
+        if (difficulty_index == COMPLETION_BONUS_TABLE_CAPACITY - 1
+            && speed_source == COMPLETION_BONUS_TABLE_CAPACITY - 1)
             bonus_score = 500000;
         else
-            bonus_score =
-                g_completion_bonus_y_table[y_index] + g_completion_bonus_x_table[x_source];
+            bonus_score = g_completion_bonus_difficulty_table[difficulty_index]
+                + g_completion_bonus_speed_table[speed_source];
     }
 
     int bonus = bonus_score;

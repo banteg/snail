@@ -25,11 +25,11 @@ void __thiscall initialize_completion_screen(Completion *completion, int32_t del
   struct tColour color; // [esp+10h] [ebp-10h] BYREF
 
   level_mode = g_game_base->subgame.level_mode;
-  if ( level_mode )
+  if ( level_mode != 0 )
   {
     if ( level_mode == 1 )
     {
-      if ( g_game_base->subgame.selected_level_record_active )
+      if ( g_game_base->subgame.selected_level_record_active != 0 )
       {
         selected_level_record = g_game_base->subgame.selected_level_record;
         challenge_difficulty_value = selected_level_record->challenge_difficulty_value;
@@ -63,10 +63,10 @@ void __thiscall initialize_completion_screen(Completion *completion, int32_t del
       if ( v8 == 5 && v9 == 5 )
         completion->bonus_score = 500000;
       else
-        completion->bonus_score = g_completion_bonus_y_table[v8] + g_completion_bonus_x_table[v9];
+        completion->bonus_score = g_completion_bonus_difficulty_table[v8] + g_completion_bonus_speed_table[v9];
     }
   }
-  else if ( perfect_delivery )
+  else if ( perfect_delivery != 0 )
   {
     completion->bonus_score = 50000;
   }
@@ -116,7 +116,7 @@ void __thiscall initialize_completion_screen(Completion *completion, int32_t del
   completion->widget_d->sprite_shadow_offset = 0.0;
   completion->bonus_widget = allocate_border(&g_game_base->border_manager);
   v13 = g_game_base->subgame.level_mode;
-  if ( v13 )
+  if ( v13 != 0 )
   {
     if ( v13 == 1 )
     {
@@ -135,7 +135,7 @@ void __thiscall initialize_completion_screen(Completion *completion, int32_t del
   completion->bonus_blink_progress = 0.0;
   completion->bonus_blink_step = 0.041666668;
   completion->continue_widget = allocate_border(&g_game_base->border_manager);
-  if ( completion->bonus_enabled )
+  if ( completion->bonus_enabled != 0 )
   {
     v19 = set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
     initialize_frontend_widget(

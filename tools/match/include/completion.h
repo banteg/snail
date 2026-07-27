@@ -87,8 +87,8 @@ enum {
 };
 
 // cRCompletion-owned reference tables and prompt text used by Init.
-extern int g_completion_bonus_y_table[COMPLETION_BONUS_TABLE_CAPACITY]; // data_4a1194
-extern int g_completion_bonus_x_table[COMPLETION_BONUS_TABLE_CAPACITY]; // data_4a11ac
+extern int g_completion_bonus_difficulty_table[COMPLETION_BONUS_TABLE_CAPACITY]; // data_4a1194
+extern int g_completion_bonus_speed_table[COMPLETION_BONUS_TABLE_CAPACITY]; // data_4a11ac
 extern char g_click_to_continue_text[]; // aClickToContinu
 
 #endif

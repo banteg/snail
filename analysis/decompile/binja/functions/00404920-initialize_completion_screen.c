@@ -33,7 +33,7 @@
 004049d7        if (edx_10 s> 5)
 004049d9        edx_10 = 5
 004049e5        if (esi_1 != 5 || edx_10 != esi_1)
-00404a00        completion->bonus_score = *((edx_10 << 2) + &data_4a11ac) + *((esi_1 << 2) + &data_4a1194)
+00404a00        completion->bonus_score = *((edx_10 << 2) + &g_completion_bonus_speed_table) + *((esi_1 << 2) + &g_completion_bonus_difficulty_table)
 004049e7        completion->bonus_score = 0x7a120
 00404940        if (perfect_delivery == 0)
 0040494e        completion->bonus_score = 0

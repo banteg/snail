@@ -2573,25 +2573,27 @@
     },
     {
       "address": "0x4a1194",
-      "name": "g_completion_bonus_y_table",
+      "name": "g_completion_bonus_difficulty_table",
       "kind": "global",
       "aliases": [
+        "g_completion_bonus_y_table",
         "data_4a1194",
         "dword_4a1194"
       ],
       "size": "0x18",
-      "description": "Six-entry completion-screen challenge bonus table indexed by the clamped y-source value divided by 20."
+      "description": "Completion.o-owned six-entry difficulty bonus table. Windows indexes it from the clamped challenge difficulty value divided by 20; Android and iOS export the corresponding global as gBonusScoreDifficulty."
     },
     {
       "address": "0x4a11ac",
-      "name": "g_completion_bonus_x_table",
+      "name": "g_completion_bonus_speed_table",
       "kind": "global",
       "aliases": [
+        "g_completion_bonus_x_table",
         "data_4a11ac",
         "dword_4a11ac"
       ],
       "size": "0x18",
-      "description": "Six-entry completion-screen challenge bonus table indexed by the clamped x-source value divided by 20."
+      "description": "Completion.o-owned six-entry speed bonus table. Windows indexes it from the clamped challenge speed value divided by 20; Android and iOS export the corresponding global as gBonusScoreSpeed."
     },
     {
       "address": "0x4a11c4",

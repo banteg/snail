@@ -91,6 +91,22 @@ and the honest 89.89% result (`276/278`, prefix `23/278`, 44 clean operands).
 The remaining gap is still the documented x/y register allocation, not table
 layout.
 
+## 2026-07-27 mobile bonus ownership
+
+The Android and iOS `Completion.o` evidence exports the two tables as
+`gBonusScoreDifficulty` and `gBonusScoreSpeed`. Windows independently proves
+the same mapping: challenge setup writes runtime-config `+0x48` from the
+difficulty slider and `+0x40` from the speed slider, replay records preserve
+those values at `SubSolution +0x50/+0x4c`, and this initializer uses them to
+index `0x4a1194/0x4a11ac`, respectively.
+
+The Windows globals and initializer locals now carry those semantic roles.
+Their older x/y spellings remain curated aliases for analysis replay. Mobile's
+additional level-mode-4 time-trial branch is a later platform/version feature
+and is deliberately not transplanted into the Windows candidate. This is
+ownership recovery, not cross-platform fakematching; the remaining native gap
+is still the documented register allocation.
+
 ## 2026-07-14 five-widget role closure
 
 Construction fixes every pointer in the shared `Completion` owner:
