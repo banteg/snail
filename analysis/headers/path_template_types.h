@@ -3190,7 +3190,7 @@ void __thiscall initialize_wibble_path_template_pair(
     Path* self,
     float radius,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* vertical_texture
@@ -3200,7 +3200,7 @@ void __thiscall initialize_invert_path_template_pair(
     Path* self,
     float radius,
     int32_t width_cells_,
-    int32_t side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* vertical_texture
@@ -3210,7 +3210,7 @@ void __thiscall initialize_twister_path_template_pair(
     Path* self,
     float height,
     int32_t width_cells_,
-    char handedness,
+    bool handedness,
     char* texture_a,
     char* texture_b,
     char* vertical_texture
@@ -3220,7 +3220,7 @@ void __thiscall initialize_twister2_path_template_pair(
     Path* self,
     float height,
     int32_t width_cells_,
-    char handedness,
+    bool handedness,
     char* texture_a,
     char* texture_b,
     char* vertical_texture

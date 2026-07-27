@@ -12416,16 +12416,10 @@
         "get_path_nodes(self)",
         "struct PathTemplateSample* primary_seed_sample",
         "primary_seed_sample->transform.position.x",
-        "struct Vec3* primary_up",
-        "primary_up->x",
         "struct Vec3* primary_right",
         "cross_vectors(primary_right",
         "struct Vec3* secondary_position",
         "secondary_position->x",
-        "struct Vec3* primary_terminal_delta",
-        "primary_terminal_delta->z",
-        "struct Vec3* secondary_terminal_delta",
-        "secondary_terminal_delta->z",
         "struct PathTemplateSample* primary_mesh_sample",
         "primary_mesh_sample->transform.basis_right.x",
         "struct Vec3* vertex",
@@ -12439,6 +12433,11 @@
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
         "calc_path_length_z(self)"
+      ],
+      "required_regexes": [
+        "00428c34[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "00428e38[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "00428e7f[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12460,16 +12459,10 @@
         "get_path_nodes(self)",
         "struct PathTemplateSample* primary_seed_sample",
         "primary_seed_sample->transform.position.x",
-        "struct Vec3* primary_up",
-        "primary_up->x",
         "struct Vec3* primary_right",
         "cross_vectors(primary_right",
         "struct Vec3* secondary_position",
         "secondary_position->x",
-        "struct Vec3* primary_terminal_delta",
-        "primary_terminal_delta->z",
-        "struct Vec3* secondary_terminal_delta",
-        "secondary_terminal_delta->z",
         "struct PathTemplateSample* primary_mesh_sample",
         "primary_mesh_sample->transform.basis_right.x",
         "struct Vec3* vertex",
@@ -12483,6 +12476,11 @@
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
         "calc_path_length_z(self)"
+      ],
+      "required_regexes": [
+        "004294c5[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "004296c9[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "00429710[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12548,12 +12546,7 @@
         "self->segment_count = 0x22",
         "if (handedness == 0)",
         "get_path_nodes(self)",
-        "struct Vec3* primary_up",
-        "primary_up->y = 1f",
         "struct PathTemplateSample* primary_sample_cursor",
-        "struct Vec3* secondary_up",
-        "struct Vec3* primary_terminal_delta",
-        "primary_terminal_delta->z = 1f",
         "struct PathTemplateSample* primary_mesh_sample",
         "primary_mesh_sample->transform.basis_right.x",
         "struct ObjectFaceQuad* face_first",
@@ -12563,6 +12556,11 @@
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
         "calc_path_length_z(self)"
+      ],
+      "required_regexes": [
+        "0042a846[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "0042a91f[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "0042ab23[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
@@ -12592,12 +12590,7 @@
         "self->segment_count = 0x34",
         "if (handedness == 0)",
         "get_path_nodes(self)",
-        "struct Vec3* primary_up",
-        "primary_up->y = 1f",
         "struct PathTemplateSample* primary_sample_cursor",
-        "struct Vec3* secondary_up",
-        "struct Vec3* primary_terminal_delta",
-        "primary_terminal_delta->z = 1f",
         "struct PathTemplateSample* primary_mesh_sample",
         "primary_mesh_sample->transform.basis_right.x",
         "struct ObjectFaceQuad* face_first",
@@ -12607,6 +12600,11 @@
         "struct ObjectFaceQuad* face_second",
         "face_second->vertex_3",
         "calc_path_length_z(self)"
+      ],
+      "required_regexes": [
+        "0042b236[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "0042b30f[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}",
+        "0042b513[^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",

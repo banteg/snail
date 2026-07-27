@@ -2814,7 +2814,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildWibble(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and both bodies stop after sample/delta construction plus CalcLengthZ. Windows retains one additional trailing vertical texture in its ret-0x18 ABI and builds the generated strip mesh locally. The mobile phase spelling t * 6.2831855 / 30 is byte-neutral under VC6; collapsing the distinct turn/roll phase owners regresses focused agreement and is not transplanted."
     },
     {
       "address": "0x429250",
@@ -2822,7 +2823,7 @@
       "ios_symbol": "cRPath::BuildInvert(float, int, bool, char*, char*)",
       "source_object": "Path.o",
       "confidence": "medium",
-      "notes": "iOS also exposes `cRPath::BuildInvert1(...)`; this row preserves the known Windows family without asserting which original split survived the port.",
+      "notes": "Both mobile symbols prove the authored bool side-exit input and both bodies stop after sample/delta construction plus CalcLengthZ. Windows retains one additional trailing vertical texture in its ret-0x18 ABI and builds the generated strip mesh locally. iOS also exposes `cRPath::BuildInvert1(...)`; that naming split keeps the row at medium confidence but does not weaken the exact shared parameter type.",
       "android_symbol": "cRPath::BuildInvert(float, int, bool, char*, char*)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -2853,7 +2854,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildTwisterA(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool handedness selector and both bodies stop after sample/delta construction plus CalcLengthZ. The Windows mov-byte load is ABI-compatible with bool rather than evidence for authored char; Windows also retains one trailing vertical texture and builds the generated strip mesh locally."
     },
     {
       "address": "0x42af30",
@@ -2862,7 +2864,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildTwister2A(float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols prove the authored bool handedness selector and both bodies stop after sample/delta construction plus CalcLengthZ. The Windows mov-byte load is ABI-compatible with bool rather than evidence for authored char; Windows also retains one trailing vertical texture and builds the generated strip mesh locally."
     },
     {
       "address": "0x42b920",

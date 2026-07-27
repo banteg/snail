@@ -1109,7 +1109,7 @@ FUNCTION_SPECS.update(
             parameters=(
                 ("radius", "float", "int32_t"),
                 ("width_cells_", "int32_t", "char*"),
-                ("side_exit", "int32_t", "char*"),
+                ("side_exit", "bool", "char*"),
                 ("texture_a", "char*", "char*"),
                 ("texture_b", "char*", "char*"),
                 ("vertical_texture", "char*", "char*"),
@@ -1132,7 +1132,7 @@ FUNCTION_SPECS.update(
             parameters=(
                 ("radius", "float", "int32_t"),
                 ("width_cells_", "int32_t", "char*"),
-                ("side_exit", "int32_t", "char*"),
+                ("side_exit", "bool", "char*"),
                 ("texture_a", "char*", "char*"),
                 ("texture_b", "char*", "char*"),
                 ("vertical_texture", "char*", "char*"),
@@ -1180,7 +1180,7 @@ FUNCTION_SPECS.update(
             parameters=(
                 ("height", "float", "float"),
                 ("width_cells_", "int32_t", "int32_t"),
-                ("handedness", "char", "char"),
+                ("handedness", "bool", "char"),
                 ("texture_a", "char*", "char*"),
                 ("texture_b", "char*", "char*"),
                 ("vertical_texture", "char*", "char*"),
@@ -1203,7 +1203,7 @@ FUNCTION_SPECS.update(
             parameters=(
                 ("height", "float", "float"),
                 ("width_cells_", "int32_t", "int32_t"),
-                ("handedness", "char", "char"),
+                ("handedness", "bool", "char"),
                 ("texture_a", "char*", "char*"),
                 ("texture_b", "char*", "char*"),
                 ("vertical_texture", "char*", "char*"),

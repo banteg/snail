@@ -166,3 +166,18 @@ lays out the full orientation body under `current_index > 1`, followed by the
 two first-sample identity calls in the `else` block. An early-return spelling
 scored 59.75% but retained the wrong block order and one mismatched call, so it
 was rejected in favor of the proved control-flow ownership.
+
+## 2026-07-27 paired mobile boolean ownership
+
+The exact Android and iOS symbols both name
+`cRPath::BuildTwisterA(float, int, bool, char*, char*)`, proving that the third
+authored scalar is `bool handedness`. The Windows `mov al, byte [...]` reads
+the value at its natural width but is ABI-compatible with `bool`; it is not
+source evidence for the earlier conservative `char` spelling. Both mobile
+bodies end after sample/delta construction and `CalcLengthZ`, while Windows
+retains its sixth vertical-texture argument and builds the strip mesh locally.
+
+Refining the source, shared headers, and analysis prototypes is byte-neutral:
+focused matching remains 57.97% (672/677), with a 94-instruction prefix and 49
+clean masked operands. The selector name remains conservative because mobile
+symbols recover its type but not its original parameter name.

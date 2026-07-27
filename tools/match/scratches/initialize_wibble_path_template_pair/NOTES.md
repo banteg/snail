@@ -148,3 +148,21 @@ Recovering both owners raises focused matching from 58.72% (591/608) to 60.73%
 unresolved or mismatched masks, and recovers the exact native `0x54` frame.
 The exact prefix expands from zero to 85 instructions. The candidate is now
 only four instructions shorter than the target.
+
+## 2026-07-27 paired mobile boolean ownership
+
+The exact Android and iOS symbols both name
+`cRPath::BuildWibble(float, int, bool, char*, char*)`, proving that the third
+authored scalar is `bool side_exit`. Both mobile bodies end after sample/delta
+construction and `CalcLengthZ`; Windows retains its sixth stack argument for
+the vertical texture and builds the strip mesh locally. Refining the source,
+shared headers, and analysis prototypes is ABI- and byte-neutral: focused
+matching remains 60.73% (604/608), with an 85-instruction prefix and 39 clean
+masked operands.
+
+The mobile body also exposes the base-phase spelling
+`t * 6.2831855f / 30.0f`. VC6 compiles that spelling identically to the
+retained `t * 0.20943952f`. Collapsing the distinct turn and roll phase owners,
+however, changes the stack schedule and regresses focused agreement to 59.24%.
+That probe is rejected; mobile evidence closes the boolean owner without
+overriding the independently measured Windows lifetime shape.

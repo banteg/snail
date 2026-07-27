@@ -162,3 +162,18 @@ from 39 clean plus one mismatched call to 45 clean operands. The native
 `current_index > 1` body and trailing first-sample `else` are retained. The
 semantically equivalent early-return spelling reached 59.75% but inverted the
 native block layout and left one call mismatch, so it was rejected.
+
+## 2026-07-27 paired mobile boolean ownership
+
+The exact Android and iOS symbols both name
+`cRPath::BuildTwister2A(float, int, bool, char*, char*)`, proving that the
+third authored scalar is `bool handedness`. The Windows byte load is the
+natural load for that value and remains ABI-compatible with `bool`; it does not
+prove an authored `char`. Both mobile bodies end after sample/delta
+construction and `CalcLengthZ`, while Windows retains its sixth
+vertical-texture argument and builds the strip mesh locally.
+
+Refining the source, shared headers, and analysis prototypes is byte-neutral:
+focused matching remains 57.97% (672/677), with a 94-instruction prefix and 49
+clean masked operands. As with its sibling, the selector name remains
+conservative because symbols recover the type but not the parameter name.

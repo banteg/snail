@@ -4064,6 +4064,26 @@ REFINED_PATH_OWNER_PROTO_UPDATES = (
         "void __thiscall initialize_turnunder_path_template_pair(Path* self, float turns, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
     ),
     (
+        "initialize_wibble_path_template_pair",
+        "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+        "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
+        "initialize_invert_path_template_pair",
+        "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+        "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
+        "initialize_twister_path_template_pair",
+        "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+        "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
+        "initialize_twister2_path_template_pair",
+        "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+        "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
         "initialize_toad_path_template_pair",
         "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_toad_path_template_pair(Path* self, bool turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
@@ -4074,22 +4094,6 @@ DEFERRED_PATH_OWNER_PROTO_UPDATES = (
     (
         "initialize_supertramp_path_template_pair",
         "void __thiscall initialize_supertramp_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* unused_texture, char* cap_texture)",
-    ),
-    (
-        "initialize_wibble_path_template_pair",
-        "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
-    ),
-    (
-        "initialize_invert_path_template_pair",
-        "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
-    ),
-    (
-        "initialize_twister_path_template_pair",
-        "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
-    ),
-    (
-        "initialize_twister2_path_template_pair",
-        "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
     ),
     (
         "initialize_p_path_template_pair",

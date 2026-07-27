@@ -205,7 +205,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
 }
 
 void Path::initialize_twister2_path_template_pair(
-    float height, int width_cells_, char handedness,
+    float height, int width_cells_, bool handedness,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
     kind = 0x2d;

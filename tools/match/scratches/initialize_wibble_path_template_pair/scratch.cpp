@@ -183,7 +183,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
 }
 
 void Path::initialize_wibble_path_template_pair(
-    float radius, int width_cells_, int side_exit,
+    float radius, int width_cells_, bool side_exit,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
     kind = 0x28;

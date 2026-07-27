@@ -3657,10 +3657,6 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert '"is read-only. Function recreation' in repair_source
     for declaration in (
         "void __thiscall initialize_supertramp_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* unused_texture, char* cap_texture)",
-        "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
-        "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
-        "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
-        "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_p_path_template_pair(Path* self, int32_t variant, float scale_arg, int32_t width_cells_, float start_x, float end_x, int32_t curve_segments, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_loopbow_path_template_pair(Path* self, float curve_scale, uint32_t width_cells_arg, char mode, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_hill_valley_path_template_pair(Path* self, int32_t width_cells_, float height, float length, char centered, char* texture_a, char* texture_b, char* vertical_texture)",
@@ -3742,6 +3738,22 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         (
             "void __thiscall initialize_turnunder_path_template_pair(Path* self, float turns, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
             "void __thiscall initialize_turnunder_path_template_pair(Path* self, float turns, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+        ),
+        (
+            "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+        ),
+        (
+            "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+        ),
+        (
+            "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+        ),
+        (
+            "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
         (
             "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
@@ -20982,6 +20994,75 @@ def test_transition_family_aggregate_health_stays_address_anchored() -> None:
             )
 
 
+def test_wibble_twister_aggregate_health_stays_address_anchored() -> None:
+    health = json.loads(
+        (
+            Path(__file__).parents[1]
+            / "analysis/decompile/health_checks.json"
+        ).read_text(encoding="utf-8")
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    aggregate_addresses = {
+        "bn_wibble_path_full_owner_abi": (
+            "00428c34",
+            "00428e38",
+            "00428e7f",
+        ),
+        "bn_invert_path_full_owner_abi": (
+            "004294c5",
+            "004296c9",
+            "00429710",
+        ),
+        "bn_twister_path_full_owner_abi": (
+            "0042a846",
+            "0042a91f",
+            "0042ab23",
+        ),
+        "bn_twister2_path_full_owner_abi": (
+            "0042b236",
+            "0042b30f",
+            "0042b513",
+        ),
+    }
+    for check_name, addresses in aggregate_addresses.items():
+        check = checks[check_name]
+        regexes = check["required_regexes"]
+        assert len(regexes) == len(addresses)
+        for address in addresses:
+            matching_regex = next(
+                pattern for pattern in regexes if pattern.startswith(address)
+            )
+            for component in (r"\.x =", r"\.y =", r"\.z ="):
+                assert component in matching_regex
+
+    for check_name, rendered_aliases in {
+        "bn_wibble_path_full_owner_abi": (
+            "struct Vec3* primary_up",
+            "struct Vec3* primary_terminal_delta",
+            "struct Vec3* secondary_terminal_delta",
+        ),
+        "bn_invert_path_full_owner_abi": (
+            "struct Vec3* primary_up",
+            "struct Vec3* primary_terminal_delta",
+            "struct Vec3* secondary_terminal_delta",
+        ),
+        "bn_twister_path_full_owner_abi": (
+            "struct Vec3* primary_up",
+            "struct Vec3* secondary_up",
+            "struct Vec3* primary_terminal_delta",
+        ),
+        "bn_twister2_path_full_owner_abi": (
+            "struct Vec3* primary_up",
+            "struct Vec3* secondary_up",
+            "struct Vec3* primary_terminal_delta",
+        ),
+    }.items():
+        for rendered_alias in rendered_aliases:
+            assert (
+                rendered_alias not in checks[check_name]["required_substrings"]
+            )
+
+
 def test_transition_family_mobile_symbols_prove_boolean_side_exit() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = json.loads(
@@ -21016,6 +21097,54 @@ def test_transition_family_mobile_symbols_prove_boolean_side_exit() -> None:
             repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
         ).read_text(encoding="utf-8")
         assert "bool side_exit" in scratch
+
+
+def test_wibble_twister_mobile_symbols_prove_boolean_selectors() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = json.loads(
+        (
+            repo_root
+            / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+        ).read_text(encoding="utf-8")
+    )
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    expected = {
+        "initialize_wibble_path_template_pair": (
+            "cRPath::BuildWibble(float, int, bool, char*, char*)",
+            "high",
+            "bool side_exit",
+        ),
+        "initialize_invert_path_template_pair": (
+            "cRPath::BuildInvert(float, int, bool, char*, char*)",
+            "medium",
+            "bool side_exit",
+        ),
+        "initialize_twister_path_template_pair": (
+            "cRPath::BuildTwisterA(float, int, bool, char*, char*)",
+            "high",
+            "bool handedness",
+        ),
+        "initialize_twister2_path_template_pair": (
+            "cRPath::BuildTwister2A(float, int, bool, char*, char*)",
+            "high",
+            "bool handedness",
+        ),
+    }
+    for function_name, (
+        expected_symbol,
+        expected_confidence,
+        expected_declaration,
+    ) in expected.items():
+        entry = entries[function_name]
+        assert entry["android_symbol"] == expected_symbol
+        assert entry["ios_symbol"] == expected_symbol
+        assert entry["android_symbol_evidence"] == "exact-demangled-symbol"
+        assert entry["confidence"] == expected_confidence
+        assert "authored bool" in entry["notes"]
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert expected_declaration in scratch
 
 
 def test_worm_replay_preserves_two_stage_mesh_owner_lifetimes() -> None:

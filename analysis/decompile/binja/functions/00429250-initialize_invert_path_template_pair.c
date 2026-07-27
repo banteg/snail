@@ -63,11 +63,11 @@
 00429486        *(&self->primary_samples->transform.position.y + i) = 0
 0042948a        int32_t width_cells_2 = width_cells_
 00429494        width_cells_ = fconvert.s(cosine(width_cells_2))
-00429499        long double st0_2 = sine(width_cells_2)
-004294b1        struct Vec3* primary_up = &self->primary_samples->transform.basis_up + i
-004294bc        primary_up->x = fconvert.s(st0_2)
-004294c2        primary_up->y = width_cells_
-004294c5        primary_up->z = 0f
+004294c5        *(&self->primary_samples->transform.basis_up + i) = struct Vec3 {
+    .x = fconvert.s(sine(width_cells_2))
+    .y = width_cells_
+    .z = 0f
+}
 004294c8        struct PathTemplateSample* primary_samples_4 = self->primary_samples
 004294ea        float var_2c_1 = fconvert.s(fconvert.t(*(&primary_samples_4->transform.position.y + i)) - fconvert.t(*(primary_samples_4 + i - 0x74)))
 004294f1        long double x87_r7_18 = fconvert.t(*(&primary_samples_4->transform.position.z + i)) - fconvert.t(*(primary_samples_4 + i - 0x70))
@@ -110,16 +110,18 @@
 00429661        *(&self->secondary_samples->delta_length + esi_3) = fconvert.s(normalize_vector(&self->secondary_samples->delta_dir_to_next + esi_3))
 0042966b        esi_3 += 0xa8
 00429674        do while (i_1 s< self->segment_count - 1)
-004296a4        struct Vec3* primary_terminal_delta = &self->primary_samples[self->segment_count] - 0x28
-004296b8        primary_terminal_delta->x = 0
-004296c6        primary_terminal_delta->y = 0f
-004296c9        primary_terminal_delta->z = 1f
+004296c9        *(&self->primary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 004296db        int32_t var_28_3 = 0x3f800000
 004296e7        *(&self->primary_samples[self->segment_count] - 0x1c) = 0x3f800000
-004296fd        struct Vec3* secondary_terminal_delta = &self->secondary_samples[self->segment_count] - 0x28
-00429705        secondary_terminal_delta->x = 0
-0042970b        secondary_terminal_delta->y = 0f
-00429710        secondary_terminal_delta->z = 1f
+00429710        *(&self->secondary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 00429725        *(&self->secondary_samples[self->segment_count] - 0x1c) = 0x3f800000
 00429738        request_object_vertices(self->bod.object, (self->width_cells + 1) * (self->segment_count + 1))
 0042974a        request_object_facequads(self->bod.object, (self->width_cells * self->segment_count) << 1)

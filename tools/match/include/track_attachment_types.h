@@ -99,14 +99,14 @@ struct Path : public BodBase {
     void initialize_invert_path_template_pair(
         float radius,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);
     void initialize_wibble_path_template_pair(
         float radius,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);
@@ -205,14 +205,14 @@ struct Path : public BodBase {
     void initialize_twister_path_template_pair(
         float height,
         int width_cells_,
-        char handedness,
+        bool handedness,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);
     void initialize_twister2_path_template_pair(
         float height,
         int width_cells_,
-        char handedness,
+        bool handedness,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);

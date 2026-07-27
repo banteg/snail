@@ -148,3 +148,19 @@ The candidate is 598/600 instructions, retains the exact `0x54` frame and
 seven-instruction prefix, and expands the clean masked audit from 31 to **33**
 operands with no unresolved or mismatched masks. The prologue register-owner
 swap remains, so no register coercion is introduced.
+
+## 2026-07-27 paired mobile boolean ownership
+
+The exact Android and iOS symbols both name
+`cRPath::BuildInvert(float, int, bool, char*, char*)`, proving that the third
+authored scalar is `bool side_exit`. Both bodies end after sample/delta
+construction and `CalcLengthZ`; Windows retains the sixth stack argument for
+the vertical texture and builds the strip mesh locally. Refining the source,
+shared headers, and analysis prototypes is ABI- and byte-neutral: focused
+matching remains 52.92% (598/600), with a seven-instruction prefix and 35 clean
+masked operands.
+
+iOS also contains `BuildInvert1`, so the Windows-to-mobile name mapping remains
+conservatively medium confidence. That family split does not weaken the exact
+parameter type shared by the paired `BuildInvert` symbols. The residual Windows
+prologue is still an ESI/EDI owner swap; no register coercion is introduced.
