@@ -211,3 +211,19 @@ unlink through the recovered owner graph. Repeated disposable-database replays
 proved idempotent, and the live replay completed with no missing or failed
 updates. The matcher source is unchanged, so the honest result remains 91.19%
 (`130/131`, prefix `87/131`, all 17 masked operands clean).
+
+## 2026-07-27 shared linked-list owner
+
+The attachment-body and fringe teardown paths now call the shared inlined
+`BodList::remove_bod` owner directly instead of carrying a scratch-private copy
+of the full `cLinkedList<cRBod>::Remove` body. Both spellings compile
+byte-identically at 91.19%; the change makes the recovered class relationship
+explicit without perturbing the pinned register allocation.
+
+The receiver's own removal retains its smaller prechecked expansion because
+the native block intentionally omits the redundant linked-bit diagnostic after
+its outer test. Replacing that block with the general helper adds a second
+`"List remove"` path and regresses to 83.46%, so it is not accepted. Repeating
+the fringe array expression does recover the native flag reload but changes
+saved-register ownership and regresses to 71.76%; the honest local-object loop
+remains pinned.

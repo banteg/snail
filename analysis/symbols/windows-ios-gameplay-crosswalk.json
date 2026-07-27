@@ -963,7 +963,7 @@
       "android_symbol": "cRSubLoc::Remove()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android begins with Yi, handles attachment-row entry tiles, removes the cell BOD, and is called by both SubLoc::AI and SubGame::RemoveBods. Windows removes the embedded SubRow::attachment_body at row +0xb0, not the RowModel at +0x04."
+      "notes": "Android begins with Yi, handles attachment-row entry tiles, removes the cell BOD, and is called by both SubLoc::AI and SubGame::RemoveBods. Windows removes the embedded SubRow::attachment_body at row +0xb0, not the RowModel at +0x04, and its attachment/fringe paths inline the shared cLinkedList<cRBod>::Remove owner."
     },
     {
       "address": "0x439d50",
@@ -971,7 +971,7 @@
       "ios_symbol": "cRSubLoc::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Windows SubLoc constructor table points directly to this helper; its tile dispatch, attachment-template backlink, and Yi/Remove siblings independently agree with the cross-port owner.",
+      "notes": "The Windows SubLoc constructor table points directly to this helper; its tile dispatch, attachment-template backlink, and Yi/Remove siblings independently agree with the cross-port owner. Android and iOS also preserve the Wall2 source idiom as two vector additions: cell position plus (0, 8, 0), and Goldy position plus (0, 0, jitter + 8).",
       "android_symbol": "cRSubLoc::AI()",
       "android_symbol_evidence": "exact-demangled-symbol"
     },

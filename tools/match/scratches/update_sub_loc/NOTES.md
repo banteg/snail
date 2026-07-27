@@ -1,4 +1,4 @@
-# High progress — 83.20%, 188/187 insns
+# High progress — 99.47%, 187/187 insns
 
 This is the per-cell `SubLoc` update, matching the iOS
 `cRSubLoc::AI()` owner, not a pooled `FringeObject` method. The receiver's
@@ -145,3 +145,21 @@ Repeated disposable-database replays proved idempotent, and the live replay
 completed with no missing or failed updates. The matcher source is unchanged,
 so the honest result remains 83.20% (`188/187`, prefix `26/187`, all 35 masked
 operands clean).
+
+## 2026-07-27 cross-port vector source recovery
+
+Android and iOS preserve the otherwise surprising zero-valued lanes in both
+Wall2 vector expressions: the spawn origin is the cell position plus
+`(0, 8, 0)` before the merged-run x offset is applied, and the target is
+Goldy's position plus `(0, 0, jitter + 8)`. That is stronger source evidence
+than the Windows decompiler's scalar temporaries and explains why native keeps
+a returned-vector temporary before copying into the address-taken origin and
+direction locals.
+
+Restoring those two ordinary `Vector3` additions raises the focused result from
+83.20% (`188/187`, prefix `26/187`, 37 clean and 3 unaudited operands) to
+99.47% (`187/187`, prefix `55/187`, all 39 operands clean). The sole remaining
+residual is independent x87 scheduling: native adds Goldy's z before storing
+the already-loaded x/y lanes, while VC6 schedules that same add immediately
+after the two stores. No dependency or register constraint is introduced to
+force the ordering.
