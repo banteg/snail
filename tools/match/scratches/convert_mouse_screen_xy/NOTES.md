@@ -70,3 +70,15 @@ control flow, or flag changes are used.
 2026-07-16 authored-view ownership: captured and uncaptured conversion now
 borrow the canonical logical viewport pair rather than redeclaring two globals.
 This preserves the exact 115/115 result and all 35 clean operands.
+
+## 2026-07-27 authored global proof
+
+Android exports `MouseRead(int, float*, float*)` with this exact argument list
+as a four-byte platform stub. It follows `MouseSet` and precedes the `cRMouse`
+method family in the same ordered API chain as the Windows implementation.
+The unrelated Android member
+`cRMouse::ConvertScreenXY(float, float, float*, float*)` rotates touch
+coordinates for device orientation and is deliberately not mapped here despite
+its tempting similarity to the stable descriptive matcher name. This recovers
+the authored global without changing the proven Windows cdecl/void ABI or the
+exact 115/115 scratch.

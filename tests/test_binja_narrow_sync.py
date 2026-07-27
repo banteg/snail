@@ -6381,6 +6381,11 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
             None,
         ),
         (
+            "0x44bbb0",
+            "MouseGetDesktopSize()",
+            None,
+        ),
+        (
             "0x44bbd0",
             "MouseCalcDesktopScale(float, float)",
             None,
@@ -6401,6 +6406,11 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
             "MouseCalcScale(float)",
         ),
         (
+            "0x44bc50",
+            "ReadImmediateDataMouse()",
+            None,
+        ),
+        (
             "0x44c050",
             "HideWindowMouse(bool)",
             "HideWindowMouse(bool)",
@@ -6409,6 +6419,11 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
             "0x44c060",
             "MouseSet(int, int, int)",
             "MouseSet(int, int, int)",
+        ),
+        (
+            "0x44c100",
+            "MouseRead(int, float*, float*)",
+            None,
         ),
     ):
         assert entries_by_address[address]["android_symbol"] == android_symbol
@@ -6439,9 +6454,12 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     assert "RShellGetScreenWidth" in functions_by_address["0x433030"]["aliases"]
     assert "RShellGetScreenHeight" in functions_by_address["0x433040"]["aliases"]
     assert "MouseCalcScale" in functions_by_address["0x44bc20"]["aliases"]
+    assert "MouseGetDesktopSize" in functions_by_address["0x44bbb0"]["aliases"]
     assert "MouseCalcDesktopScale" in functions_by_address["0x44bbd0"]["aliases"]
+    assert "ReadImmediateDataMouse" in functions_by_address["0x44bc50"]["aliases"]
     assert "HideWindowMouse" in functions_by_address["0x44c050"]["aliases"]
     assert "MouseSet" in functions_by_address["0x44c060"]["aliases"]
+    assert "MouseRead" in functions_by_address["0x44c100"]["aliases"]
 
     health = json.loads(
         (repo_root / "analysis/decompile/health_checks.json").read_text(

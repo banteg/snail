@@ -18,9 +18,10 @@ public:
     unsigned char suppress_next_draw; // +0x14
 };
 
-// Windows cursor-position bridge used by update_mouse when the OS cursor owns
-// the live authored coordinates. The helper is side-effect-only; incidental
-// values left in eax are not a return contract.
+// Authored MouseRead global. Windows uses it as the cursor-position bridge when
+// the OS cursor owns the live coordinates; Android retains the same three
+// arguments as a platform stub. Incidental values left in eax are not a return
+// contract.
 void convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y); // @ 0x44c100
 
 #endif

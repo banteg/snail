@@ -19,3 +19,13 @@ Android names the downstream two-float helper
 ignores EAX, so the prior result-shaped tail call only exposed the callee's
 incidental `rect.top` register residue. Declaring both procedures void leaves
 this wrapper exact at 7/7 instructions with all three references audited clean.
+
+## 2026-07-27 authored global proof
+
+The expanded Android corpus preserves this wrapper's original name as
+`MouseGetDesktopSize()`, a void no-argument platform stub. This is not a
+name-only guess: Android places it immediately before `MouseCalcDesktopScale`,
+`MouseCalcScale`, `ReadImmediateDataMouse`, `HideWindowMouse`, `MouseSet`,
+`MouseRead`, and the `cRMouse` methods, matching the Windows function order and
+this body's exact desktop-size role. The stable matcher identifier remains
+unchanged and focused output remains exact at 7/7.

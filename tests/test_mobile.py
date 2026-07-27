@@ -119,6 +119,36 @@ def test_rank_mobile_symbols_uses_size_for_giant_initializers() -> None:
     assert ranked[0].symbol == "cRGame::LoadPaths()"
 
 
+def test_rank_mobile_symbols_prefers_exact_alias_over_platform_stub_size() -> None:
+    index = {
+        "functions": [
+            {
+                "demangled": (
+                    "cRMouse::ConvertScreenXY(float, float, float*, float*)"
+                ),
+                "size": 288,
+                "status": "ok",
+            },
+            {
+                "demangled": "MouseRead(int, float*, float*)",
+                "size": 4,
+                "status": "ok",
+            },
+        ]
+    }
+
+    ranked = rank_mobile_symbols(
+        "convert_mouse_screen_xy",
+        "Windows cursor-position bridge.",
+        index,
+        windows_aliases=("MouseRead",),
+        windows_size=448,
+    )
+
+    assert ranked[0].symbol == "MouseRead(int, float*, float*)"
+    assert ranked[0].score == 1.0
+
+
 def test_exact_cross_port_backfills_mark_name_evidence() -> None:
     crosswalk = {
         "entries": [

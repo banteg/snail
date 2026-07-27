@@ -3613,7 +3613,10 @@
     {
       "address": "0x44bbb0",
       "name": "initialize_mouse_authored_scale_from_clip_rect",
-      "description": "Exact void desktop wrapper: caches the current clipped screen rectangle and invokes `MouseCalcDesktopScale(640.0f, 480.0f)`. Its sole caller ignores EAX, and the void callee proves the previously propagated result was incidental."
+      "description": "Exact void Windows `MouseGetDesktopSize()`: caches the current clipped screen rectangle and invokes `MouseCalcDesktopScale(640.0f, 480.0f)`. Android preserves the authored no-argument global as a platform no-op; its position at the head of the same contiguous mouse API chain independently confirms the name.",
+      "aliases": [
+        "MouseGetDesktopSize"
+      ]
     },
     {
       "address": "0x44bbd0",
@@ -3634,7 +3637,10 @@
     {
       "address": "0x44bc50",
       "name": "update_mouse",
-      "description": "Polls the DirectInput mouse through a 20-byte DIMOUSESTATE2-compatible owner, accumulates and clamps live pointer coordinates, selects captured or uncaptured Win32 clip rectangles, and forwards wheel/button state into InputControllerSlot 0."
+      "description": "Exact Windows `ReadImmediateDataMouse` desktop poller: reads a 20-byte DIMOUSESTATE2-compatible owner, accumulates and clamps live pointer coordinates, selects captured or uncaptured Win32 clip rectangles, and forwards wheel/button state into InputControllerSlot 0. Android preserves the authored global as a no-argument platform stub.",
+      "aliases": [
+        "ReadImmediateDataMouse"
+      ]
     },
     {
       "address": "0x44c050",
@@ -3655,7 +3661,10 @@
     {
       "address": "0x44c100",
       "name": "convert_mouse_screen_xy",
-      "description": "Side-effect-only Windows cursor bridge: copies a captured OS cursor directly or converts centered cursor deltas into authored x/y, applies steering sensitivity only while uncaptured, zeros both outputs on query failure, and recenters the active main window. Native leaves incidental eax values; the helper has a void ABI."
+      "description": "Exact void Windows `MouseRead(int, float*, float*)`: copies a captured OS cursor directly or converts centered cursor deltas into authored x/y, applies steering sensitivity only while uncaptured, zeros both outputs on query failure, and recenters the active main window. Android preserves the exact argument list as a four-byte platform stub; its separate `cRMouse::ConvertScreenXY(float, float, float*, float*)` touch-rotation method is deliberately not mapped here.",
+      "aliases": [
+        "MouseRead"
+      ]
     },
     {
       "address": "0x44c2c0",

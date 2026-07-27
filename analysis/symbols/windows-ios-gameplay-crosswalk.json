@@ -4730,6 +4730,14 @@
       "notes": "Android retains the authored void FreeDirectInputKeyboard global as a platform no-op stub whose R0 value is arbitrary. Windows performs the desktop DirectInput teardown, and both Windows callers ignore EAX; the natural void transcription preserves the exact 21/21 body."
     },
     {
+      "address": "0x44bbb0",
+      "windows_name": "initialize_mouse_authored_scale_from_clip_rect",
+      "android_symbol": "MouseGetDesktopSize()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the authored void no-argument MouseGetDesktopSize global as a four-byte platform no-op. Windows retains the desktop implementation that caches GetClipCursor into the shared rectangle and calls MouseCalcDesktopScale(640, 480). This function heads the same ordered API chain in both binaries: MouseGetDesktopSize, MouseCalcDesktopScale, MouseCalcScale, ReadImmediateDataMouse, HideWindowMouse, MouseSet, MouseRead, then cRMouse methods."
+    },
+    {
       "address": "0x44bbd0",
       "windows_name": "update_mouse_authored_scale",
       "android_symbol": "MouseCalcDesktopScale(float, float)",
@@ -4745,6 +4753,14 @@
       "source_object": null,
       "confidence": "high",
       "notes": "Android and iOS preserve the authored float MouseCalcScale helper as a platform stub returning 1.0. More importantly, both call it from cRSubGoldy::AI with gConfig steering sensitivity at the same control-flow point where Windows calls this helper from update_subgoldy. Windows retains the desktop captured-cursor branch and uncaptured scale * 1.8 + 0.7 transform."
+    },
+    {
+      "address": "0x44bc50",
+      "windows_name": "update_mouse",
+      "android_symbol": "ReadImmediateDataMouse()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves ReadImmediateDataMouse as a four-byte no-argument platform stub because touch events replace desktop polling. Windows retains the exact desktop role: poll DIMOUSESTATE2, update live coordinates, maintain Win32 clip rectangles, publish button and wheel state, and return zero. The function occupies the identical slot between MouseCalcScale and HideWindowMouse in the cross-port API chain; the HWND parameter is a Windows-only ABI extension and is not transferred to Android."
     },
     {
       "address": "0x44c050",
@@ -4763,6 +4779,14 @@
       "source_object": null,
       "confidence": "high",
       "notes": "All ports update the same two-slot raw/live mouse coordinates and publish authored X/Y through the game-input owner; Windows alone gates SetCursorPos through its window state. Android exits with the slot in R0, iOS exits with an unrelated address, and Windows leaves the game pointer in EAX, proving those incompatible residues are incidental to the authored void MouseSet helper."
+    },
+    {
+      "address": "0x44c100",
+      "windows_name": "convert_mouse_screen_xy",
+      "android_symbol": "MouseRead(int, float*, float*)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the exact global MouseRead argument list as a four-byte platform stub; Windows retains the desktop implementation that reads or recenters the OS cursor and updates the two float outputs. The ordered neighbors are MouseSet immediately before it and cRMouse methods after the Windows-only DirectInput setup/teardown pair. Android's separate cRMouse::ConvertScreenXY(float, float, float*, float*) rotates touch coordinates and is deliberately rejected as a mapping despite its tempting descriptive-name score."
     },
     {
       "address": "0x44c890",

@@ -92,3 +92,14 @@ the instruction immediately after the call reloads the cursor-hide latch into
 `al`, proving the callee's incidental `eax` residue is not a return value. The
 centralized `void` prototype is byte-shape neutral here: the focused result
 remains exact at 295/295 with all 81 masked operands clean.
+
+## 2026-07-27 authored global proof
+
+Android exports `ReadImmediateDataMouse()` as a four-byte platform stub because
+touch events replace DirectInput polling. Its position between
+`MouseCalcScale` and `HideWindowMouse` matches this Windows function's position
+and role exactly: poll immediate mouse state, update live coordinates, maintain
+the Win32 clip region, and publish buttons and wheel input. Windows carries the
+extra owned `HWND` needed by that desktop implementation and returns its
+explicit zero; neither platform-specific ABI detail is projected onto Android.
+Focused Windows matching remains exact at 295/295 with all 81 operands clean.

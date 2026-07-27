@@ -3,6 +3,7 @@ from __future__ import annotations
 import difflib
 import json
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -241,19 +242,28 @@ def rank_mobile_symbols(
     description: str | None,
     index: dict[str, Any],
     *,
+    windows_aliases: Iterable[str] = (),
     limit: int = 5,
     minimum_score: float = 0.35,
     windows_size: int | None = None,
 ) -> list[MobileCandidate]:
+    aliases = tuple(windows_aliases)
     candidates = []
     for function in index.get("functions", ()):
         if function.get("status") != "ok" or not function.get("demangled"):
             continue
+        symbol = function["demangled"]
         name_score = score_mobile_symbol(
             windows_name,
             description,
-            function["demangled"],
+            symbol,
         )
+        symbol_base = signature_base(symbol)
+        exact_alias_match = any(
+            signature_base(alias) == symbol_base for alias in aliases
+        )
+        if exact_alias_match:
+            name_score = 1.0
         mobile_size = function.get("size")
         size_score = None
         if (
@@ -265,14 +275,20 @@ def rank_mobile_symbols(
                 windows_size,
                 mobile_size,
             )
-        score = (
-            name_score
-            if size_score is None
-            else name_score * 0.6 + size_score * 0.4
-        )
+        if exact_alias_match:
+            # A curated authored alias is stronger evidence than body size:
+            # platform ports routinely replace desktop-only implementations
+            # with one-instruction stubs.
+            score = 1.0
+        else:
+            score = (
+                name_score
+                if size_score is None
+                else name_score * 0.6 + size_score * 0.4
+            )
         candidates.append(
             MobileCandidate(
-                symbol=function["demangled"],
+                symbol=symbol,
                 score=round(score, 4),
                 name_score=name_score,
                 size_score=(
@@ -386,6 +402,7 @@ def build_complete_mobile_crosswalk(
                 windows_name,
                 description,
                 index,
+                windows_aliases=function.get("aliases", ()),
                 limit=candidate_limit,
                 windows_size=windows_size,
             )
@@ -414,7 +431,7 @@ def build_complete_mobile_crosswalk(
             "verified entries come from the hand-audited source crosswalk.",
             "body_count records how many matching exports exist in this corpus version.",
             "windows_size is the distance to the next curated manifest start and can include gaps.",
-            "unverified candidate scores blend name and size similarity; they are not mappings.",
+            "unverified candidate scores blend curated names and aliases with size similarity; an exact curated alias outranks platform-stub size drift, but candidates are not mappings.",
         ],
         "counts": {
             "manifest_functions": len(manifest["functions"]),

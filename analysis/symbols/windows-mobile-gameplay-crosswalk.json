@@ -9,15 +9,15 @@
     "verified entries come from the hand-audited source crosswalk.",
     "body_count records how many matching exports exist in this corpus version.",
     "windows_size is the distance to the next curated manifest start and can include gaps.",
-    "unverified candidate scores blend name and size similarity; they are not mappings."
+    "unverified candidate scores blend curated names and aliases with size similarity; an exact curated alias outranks platform-stub size drift, but candidates are not mappings."
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 545,
-    "unverified_entries": 240,
-    "verified_android_symbols": 537,
+    "verified_entries": 548,
+    "unverified_entries": 237,
+    "verified_android_symbols": 540,
     "verified_ios_symbols": 441,
-    "available_android_mappings": 537,
+    "available_android_mappings": 540,
     "available_ios_mappings": 403
   },
   "entries": [
@@ -23880,39 +23880,11 @@
       "address": "0x44bbb0",
       "windows_name": "initialize_mouse_authored_scale_from_clip_rect",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRMouse::ClickScreen(bool, float, float)",
-          "score": 0.7156,
-          "name_score": 0.6,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "cRMouse::Init()",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellInputRegisterMouseClickOnly()",
-          "score": 0.6618,
-          "name_score": 0.4364,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "MouseCalcScale(float)",
-          "score": 0.64,
-          "name_score": 0.9,
-          "size_score": 0.25
-        },
-        {
-          "symbol": "tVector::MagnitudeSquared() const",
-          "score": 0.6348,
-          "name_score": 0.3913,
-          "size_score": 1.0
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "MouseGetDesktopSize()",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "MouseCalcScale(float)",
@@ -24004,39 +23976,11 @@
       "address": "0x44bc50",
       "windows_name": "update_mouse",
       "windows_size": 1024,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRPath::BuildDetour(float, int, bool, char*, char*)",
-          "score": 0.6627,
-          "name_score": 0.5486,
-          "size_score": 0.8339
-        },
-        {
-          "symbol": "cROptions::Init()",
-          "score": 0.6466,
-          "name_score": 0.4267,
-          "size_score": 0.9766
-        },
-        {
-          "symbol": "cRPath::BuildSweep(float, int, bool, char*, char*)",
-          "score": 0.6411,
-          "name_score": 0.48,
-          "size_score": 0.8828
-        },
-        {
-          "symbol": "cRPath::BuildSlalomDouble(int, int, bool, char*, char*)",
-          "score": 0.6378,
-          "name_score": 0.4978,
-          "size_score": 0.8477
-        },
-        {
-          "symbol": "cRSubGame::UnInit()",
-          "score": 0.6179,
-          "name_score": 0.384,
-          "size_score": 0.9688
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "ReadImmediateDataMouse()",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cROptions::Init()",
@@ -24098,40 +24042,18 @@
       "address": "0x44c100",
       "windows_name": "convert_mouse_screen_xy",
       "windows_size": 448,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRMouse::ConvertScreenXY(float, float, float*, float*)",
-          "score": 0.8571,
-          "name_score": 1.0,
-          "size_score": 0.6429
-        },
-        {
-          "symbol": "cKeyPad::ConvertCode(char)",
-          "score": 0.7126,
-          "name_score": 0.5806,
-          "size_score": 0.9106
-        },
-        {
-          "symbol": "FontASCIIRemap(char)",
-          "score": 0.5971,
-          "name_score": 0.4118,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "ObjectProcAtmosphere(cRObject*, int, float, float, char*)",
-          "score": 0.5914,
-          "name_score": 0.45,
-          "size_score": 0.8036
-        },
-        {
-          "symbol": "cRBorder::MouseTest()",
-          "score": 0.5853,
-          "name_score": 0.4937,
-          "size_score": 0.7226
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "MouseRead(int, float*, float*)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
+        {
+          "symbol": "cRMouse::ClickOnly(float, float)",
+          "score": 0.6279,
+          "name_score": 0.6,
+          "size_score": 0.6696
+        },
         {
           "symbol": "FontASCIIRemap(char)",
           "score": 0.5998,
@@ -24155,12 +24077,6 @@
           "score": 0.581,
           "name_score": 0.3077,
           "size_score": 0.9911
-        },
-        {
-          "symbol": "MacAudioPlayMusic(char*)",
-          "score": 0.5808,
-          "name_score": 0.3243,
-          "size_score": 0.9655
         }
       ]
     },

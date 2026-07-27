@@ -8,6 +8,8 @@
 // still owns the argument and the caller releases all three arguments together.
 int update_keyboard_input(HWND hwnd); // @ 0x44b870
 int update_joystick_input(HWND hwnd); // @ 0x44b570
+// Authored ReadImmediateDataMouse; Windows alone carries the owned HWND needed
+// for DirectInput polling and clip-rectangle maintenance.
 int update_mouse(HWND hwnd); // @ 0x44bc50
 
 #endif
