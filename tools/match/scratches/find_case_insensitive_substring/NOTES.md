@@ -123,3 +123,25 @@ and health checks reject anonymous argument regressions in either analyzer.
 No Windows source was distorted to mimic the mobile compilers. Focused matching
 remains 85.25%, 59/63 instructions, with four clean masked operands; the
 remaining gap is still Windows control-flow scheduling.
+
+## 2026-07-27 dual-port termination closure
+
+The expanded Android and iOS bodies make the inner scan's two terminal cases
+independently visible:
+
+- if the searched string ends while the pattern still has bytes, the whole
+  search fails;
+- if both strings end at the same comparison point, the current searched
+  cursor is the match.
+
+Expressing those as two explicit compound conditions preserves the searched
+byte in the native `al` lane and recovers the repeated zero tests that VC6
+emits around the inner compare. Routing the second case and the outer
+pattern-complete case to one `found` return then restores the native
+null-before-success epilogue order.
+
+Focused matching is now **100.00%**, 63/63 instructions with a full exact
+prefix and all four operands audited cleanly. The retained branches represent
+the two distinct substring termination outcomes observed in both mobile
+implementations; no dummy state, volatile barrier, synthetic return value, or
+byte-shaped fakematch was introduced.

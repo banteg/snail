@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**531/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93767/294937** bytes (**31.79%**) are proof-grade, and overall fuzzy is **78.58%**.
+**532/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93897/294937** bytes (**31.84%**) are proof-grade, and overall fuzzy is **78.59%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
-## Proof Grade (531)
+## Proof Grade (532)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -533,6 +533,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_sprite_tga | 0x44e580 | 20 | 4/4 | 100.00% | 4/4 | 1 ok |  | core |
 | ✅ | ascii_upper_if_lowercase | 0x44e5a0 | 16 | 7/7 | 100.00% | 7/7 | - |  | core |
 | ✅ | rstrcpy_checked_ascii | 0x44e5b0 | 72 | 31/31 | 100.00% | 31/31 | 2 ok |  | core |
+| ✅ | find_case_insensitive_substring | 0x44e600 | 130 | 63/63 | 100.00% | 63/63 | 4 ok |  | core |
 | ✅ | advance_to_next_crlf_line | 0x44e690 | 47 | 22/22 | 100.00% | 22/22 | - |  | core |
 | ✅ | strings_equal_case_insensitive_path | 0x44e6c0 | 69 | 33/33 | 100.00% | 33/33 | - |  | core |
 | ✅ | parse_next_signed_int | 0x44e710 | 107 | 47/47 | 100.00% | 47/47 | - |  | core |
@@ -574,7 +575,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (49)
+## High Progress (80-94.99%) (48)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -626,7 +627,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 69/69 | 89.86% | 33/69 | 6 unaudited, 21 ok |  | boundary |
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 155/155 | 94.19% | 22/155 | 12 ok |  | boundary |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  | core |
-| 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  | core |
 
 ## Mid Progress (50-79.99%) (43)
 

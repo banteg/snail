@@ -13,18 +13,15 @@ char* __cdecl find_case_insensitive_substring(char* needle, char* haystack)
                 int delta = haystack_cursor - needle;
                 while (1) {
                     ++needle_cursor;
-                    if (needle_cursor[delta] == 0) {
-                        if (*needle_cursor != 0)
-                            return 0;
-                    }
+                    if (needle_cursor[delta] == 0 && *needle_cursor != 0)
+                        return 0;
+                    if (needle_cursor[delta] == 0 && *needle_cursor == 0)
+                        goto found;
 
-                    if (needle_cursor[delta] != 0) {
-                        char needle_upper =
-                            ascii_upper_if_lowercase(*needle_cursor);
-                        if (needle_upper == ascii_upper_if_lowercase(needle_cursor[delta]))
-                            continue;
-                    }
-
+                    char needle_upper =
+                        ascii_upper_if_lowercase(*needle_cursor);
+                    if (needle_upper == ascii_upper_if_lowercase(needle_cursor[delta]))
+                        continue;
                     goto advance_haystack;
                 }
             }
@@ -36,8 +33,11 @@ advance_haystack:
                     return 0;
                 continue;
             }
-            return haystack_cursor;
+            goto found;
         }
     }
     return 0;
+
+found:
+    return haystack_cursor;
 }
