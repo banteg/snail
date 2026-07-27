@@ -279,3 +279,19 @@ normalized rectangle, and draw-world state while borrowing one
 `RenderCamera*` at `+0x20`. This relationship-only source change preserves the
 current 56.16% renderer match and does not guess the constructor-only
 `unknown_1c` lane.
+
+## 2026-07-27 direct camera-matrix borrow
+
+The verified Android and iOS `cRGame::Render()` bodies both copy each live
+sprite position and transform it directly with the selected viewport camera's
+view matrix. The scratch now spells that same borrowed relationship directly
+instead of materializing a decompiler-invented `camera_matrix` local. The
+cross-port bodies also retain the authored `gBodZList`, `ZBuffer`, and
+`ZBufferIndex` symbols for the post-sprite stack, depth-node workspace, and
+bucket heads, independently confirming the three Windows global roles.
+
+This ownership correction is codegen-neutral under VC6: focused Windows stays
+at the honest 56.16% result (`430/439`, prefix `6/439`, 28 clean masked
+operands, 12 unaudited). The remaining renderer gap is still register
+allocation and platform-specific viewport scheduling, not an excuse to add
+aliases or synthetic locals.

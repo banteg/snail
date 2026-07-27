@@ -180,9 +180,8 @@ void GameRoot::render_game_frame()
                         (sprite_flags & SPRITE_FLAG_RENDER_ENABLED) != 0 &&
                         (sprite_flags & SPRITE_FLAG_DELAYED_RENDER) == 0) {
                         Vector3 projected = sprite->position;
-                        TransformMatrix camera_matrix =
+                        projected *=
                             viewports[camera_index].camera->view_matrix;
-                        projected *= camera_matrix;
                         projected.x = -projected.x;
                         projected.z = -projected.z;
 
