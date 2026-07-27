@@ -1177,22 +1177,34 @@
     {
       "address": "0x4182e0",
       "name": "reset_landscape_manager",
-      "description": "Exact void `LandscapeManager` reset: clears the parsed `script_count` between the ten active landscape entries and the 128-record script bank. Startup invokes it on the root-owned manager before loading the shipped Starmap, Splash, and Help landscape scripts."
+      "description": "Exact Windows `cRLandscapeManager::Open()` projection: clears the parsed `script_count` between the ten active landscape entries and the 128-record script bank. Android and iOS preserve the authored owner and invoke it before importing the same Starmap, Splash, and Help scripts, while adding a mobile-only SpaceRed backdrop resource.",
+      "aliases": [
+        "cRLandscapeManager_Open"
+      ]
     },
     {
       "address": "0x4182f0",
       "name": "load_landscape_script_by_name",
-      "description": "Loads or reuses one `Backgrounds/<name>` landscape script, parses its `ID`, `Fog`, `Picture`, `Landscape`, and `Distort` fields, registers the referenced backdrop textures, and returns the cached landscape index."
+      "description": "Windows `cRLandscapeManager::Import(char*)`: loads or reuses one `Backgrounds/<name>` script, parses its `ID`, `Fog`, `Picture`, `Landscape`, and `Distort` fields, registers the desktop backdrop and mesh resources, and returns the cached landscape index. Android and iOS preserve the owner, parser, cache, and return contract while extending their 0x1ac-byte records with mobile-only fields.",
+      "aliases": [
+        "cRLandscapeManager_Import"
+      ]
     },
     {
       "address": "0x418870",
       "name": "activate_landscape_entry",
-      "description": "Selects one cached landscape script, activates up to ten repeated 0x90-byte landscape BOD slices for its object index, chooses the backdrop variant flag, and copies the script fog color into global render state."
+      "description": "Windows `cRLandscapeManager::Init(int)`: selects one cached script, chooses the same mode-dependent backdrop variant as Android and iOS, changes the backdrop, centers the border, and copies the script fog color into root render state. Windows additionally activates ten repeated DirectX landscape BOD slices for the selected mesh.",
+      "aliases": [
+        "cRLandscapeManager_Init"
+      ]
     },
     {
       "address": "0x418a30",
       "name": "clear_active_landscape_entries",
-      "description": "Clears the active 10-slot landscape-entry runtime pool by zeroing each live slot state and unlinking it from the shared BOD active/free list. `destroy_subgame` uses it when the current landscape set is torn down."
+      "description": "Windows `cRLandscapeManager::UnInit()`: clears the active ten-slot landscape-entry runtime pool by zeroing each live slot state and unlinking it from the shared BOD active/free list. Android and iOS preserve the teardown method and call position but compile it as a no-op because their landscape renderer has no Windows-style repeated DirectX BOD pool.",
+      "aliases": [
+        "cRLandscapeManager_UnInit"
+      ]
     },
     {
       "address": "0x418ac0",

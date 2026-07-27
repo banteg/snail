@@ -42,3 +42,20 @@ existing exact `0x97a4`-byte manager, so the cache count and all parsed
 `LandscapeScriptRecord` fields render through their real owners. The narrow
 Binja replay is available through `--landscape-loader-only`; the focused match
 remains 386/386 instructions with all 63 masked operands clean.
+
+## 2026-07-27 mobile authored owner
+
+Android and iOS export this method as
+`cRLandscapeManager::Import(char*)` from `Landscape.o`. All three ports:
+
+- cache `Backgrounds/<name>` records by manager-owned name and count;
+- parse `ID:`, `Fog:`, `Picture:`, `Landscape:`, and `Distort:`;
+- release the loaded file bytes; and
+- return the cached or newly appended landscape index.
+
+The storage differences are real and intentionally retained. Windows uses the
+recovered 0x124-byte DirectX record, registers split backdrop textures, and
+loads an X mesh for repeated landscape BODs. Mobile uses a 0x1ac-byte record
+with additional `Portrait:`, `Width:`, `Height:`, and `Menu:Yes` fields. The
+cross-port evidence therefore recovers the owner and original method name, not
+a false shared struct layout.

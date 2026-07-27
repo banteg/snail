@@ -30,3 +30,17 @@ than a generic manager flag: the ten-entry active bank ends exactly at
 `load_landscape_script_by_name` is the sole non-reset writer. Focused matching
 remains exact at 2/2 instructions; this slice closes ownership without changing
 source shape.
+
+## 2026-07-27 mobile authored owner
+
+Android and iOS retain this lifecycle boundary as
+`cRLandscapeManager::Open()` in `Landscape.o`. Both methods begin by clearing
+the manager-owned script count, then add a mobile-only `SpaceRed` backdrop
+resource. Their `cRGame::Init1()` methods call `Open()` immediately before
+importing `Starmap.txt`, `Starmappro.txt`, `Splash.txt`, and `Help.txt`;
+Windows performs the same reset in its startup landscape-import phase before
+the three scripts present in the desktop build.
+
+This transfers the authored class and method name without claiming identical
+platform bodies. The exact 2/2 Windows scratch remains the complete desktop
+`Open()` projection.

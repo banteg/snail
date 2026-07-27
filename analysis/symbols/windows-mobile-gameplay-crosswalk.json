@@ -13,12 +13,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 528,
-    "unverified_entries": 257,
-    "verified_android_symbols": 525,
-    "verified_ios_symbols": 426,
-    "available_android_mappings": 525,
-    "available_ios_mappings": 388
+    "verified_entries": 532,
+    "unverified_entries": 253,
+    "verified_android_symbols": 529,
+    "verified_ios_symbols": 430,
+    "available_android_mappings": 529,
+    "available_ios_mappings": 392
   },
   "entries": [
     {
@@ -10357,281 +10357,49 @@
       "address": "0x4182e0",
       "windows_name": "reset_landscape_manager",
       "windows_size": 16,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRFringeManager::Init()",
-          "score": 0.7388,
-          "name_score": 0.5647,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorderManager::SetJustifyCentre(float)",
-          "score": 0.6986,
-          "name_score": 0.4976,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRTipManager::Init()",
-          "score": 0.6544,
-          "name_score": 0.5574,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRTwinkleManager::UnInit(cRBorder*)",
-          "score": 0.6223,
-          "name_score": 0.5371,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cREnemyManager::Init()",
-          "score": 0.6142,
-          "name_score": 0.5236,
-          "size_score": 0.75
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "RandSeed(int)",
-          "score": 0.6897,
-          "name_score": 0.4828,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRTipManager::Init()",
-          "score": 0.6544,
-          "name_score": 0.5574,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRSpriteManager::GetTexture(int)",
-          "score": 0.6517,
-          "name_score": 0.5529,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cREnemyManager::Init()",
-          "score": 0.6142,
-          "name_score": 0.5236,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "OFXmlReader::endDecodeType()",
-          "score": 0.6115,
-          "name_score": 0.3525,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRLandscapeManager::Open()",
+      "ios_symbol": "cRLandscapeManager::Open()",
+      "source_object": "Landscape.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x4182f0",
       "windows_name": "load_landscape_script_by_name",
       "windows_size": 1408,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRPath::BuildFringeSuperTramp(char*)",
-          "score": 0.6228,
-          "name_score": 0.3902,
-          "size_score": 0.9716
-        },
-        {
-          "symbol": "cRLandscapeManager::Import(char*)",
-          "score": 0.6151,
-          "name_score": 0.5502,
-          "size_score": 0.7126
-        },
-        {
-          "symbol": "cRSubGame::cRSubGame()",
-          "score": 0.6029,
-          "name_score": 0.3529,
-          "size_score": 0.9778
-        },
-        {
-          "symbol": "ObjectProcLandScape1(cRObject*, float, float, float, float, int, float, char*, char*, bool)",
-          "score": 0.6019,
-          "name_score": 0.4444,
-          "size_score": 0.8381
-        },
-        {
-          "symbol": "ObjectProcFringe(cRObject*, int, int, int, int, char*)",
-          "score": 0.5943,
-          "name_score": 0.3902,
-          "size_score": 0.9006
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRLandscapeManager::Import(char*)",
-          "score": 0.6662,
-          "name_score": 0.5502,
-          "size_score": 0.8401
-        },
-        {
-          "symbol": "cRPath::BuildSuperTramp(float, float, int, bool, char*, char*, char*)",
-          "score": 0.6059,
-          "name_score": 0.4,
-          "size_score": 0.9148
-        },
-        {
-          "symbol": "cRPath::BuildFringeSuperTramp(char*)",
-          "score": 0.6046,
-          "name_score": 0.3902,
-          "size_score": 0.9263
-        },
-        {
-          "symbol": "cRBackdrop::Open()",
-          "score": 0.5836,
-          "name_score": 0.45,
-          "size_score": 0.7841
-        },
-        {
-          "symbol": "std::vector<OFPointer<OFHighScoreBatchEntry>, std::allocator<OFPointer<OFHighScoreBatchEntry>>>::_M_fill_insert(__gnu_cxx::__normal_iterator<OFPointer<OFHighScoreBatchEntry>*, std::vector<OFPointer<OFHighScoreBatchEntry>, std::allocator<OFPointer<OFHighScoreBatchEntry>>>>, unsigned long, OFPointer<OFHighScoreBatchEntry> const&)",
-          "score": 0.5734,
-          "name_score": 0.3889,
-          "size_score": 0.8502
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRLandscapeManager::Import(char*)",
+      "ios_symbol": "cRLandscapeManager::Import(char*)",
+      "source_object": "Landscape.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x418870",
       "windows_name": "activate_landscape_entry",
       "windows_size": 448,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBackdrop::Render()",
-          "score": 0.8005,
-          "name_score": 0.9,
-          "size_score": 0.6512
-        },
-        {
-          "symbol": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
-          "score": 0.6892,
-          "name_score": 0.5366,
-          "size_score": 0.918
-        },
-        {
-          "symbol": "cRBackdrop::Open(int)",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBackdrop::AI()",
-          "score": 0.6529,
-          "name_score": 0.45,
-          "size_score": 0.9573
-        },
-        {
-          "symbol": "cRSpriteManager::Load(char*, int, int)",
-          "score": 0.6312,
-          "name_score": 0.4389,
-          "size_score": 0.9196
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBackdrop::Render()",
-          "score": 0.799,
-          "name_score": 0.9,
-          "size_score": 0.6474
-        },
-        {
-          "symbol": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
-          "score": 0.6775,
-          "name_score": 0.5366,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "cRBackdrop::AI()",
-          "score": 0.6665,
-          "name_score": 0.45,
-          "size_score": 0.9912
-        },
-        {
-          "symbol": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
-          "score": 0.6443,
-          "name_score": 0.675,
-          "size_score": 0.5982
-        },
-        {
-          "symbol": "cRSpriteManager::Load(char*, int, int)",
-          "score": 0.6383,
-          "name_score": 0.4389,
-          "size_score": 0.9375
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRLandscapeManager::Init(int)",
+      "ios_symbol": "cRLandscapeManager::Init(int)",
+      "source_object": "Landscape.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x418a30",
       "windows_name": "clear_active_landscape_entries",
       "windows_size": 144,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "SetGameState(int, int, int, int)",
-          "score": 0.7029,
-          "name_score": 0.6,
-          "size_score": 0.8571
-        },
-        {
-          "symbol": "tMatrix::LinearInterpolateSmooth(tMatrix const&, tMatrix const&, float, float)",
-          "score": 0.6429,
-          "name_score": 0.44,
-          "size_score": 0.9474
-        },
-        {
-          "symbol": "OFAddAchievement(int)",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRVoiceManager::FindSample(char*)",
-          "score": 0.6364,
-          "name_score": 0.431,
-          "size_score": 0.9444
-        },
-        {
-          "symbol": "cRObject::CopyVertices()",
-          "score": 0.6351,
-          "name_score": 0.4103,
-          "size_score": 0.9722
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRMouse::SetActive()",
-          "score": 0.7292,
-          "name_score": 0.6,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "SetGameState(int, int, int, int)",
-          "score": 0.6218,
-          "name_score": 0.6,
-          "size_score": 0.6545
-        },
-        {
-          "symbol": "OFViewHelper::findSuperviewByClass(UIView*, objc_class*)",
-          "score": 0.6109,
-          "name_score": 0.4255,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
-          "score": 0.6031,
-          "name_score": 0.3571,
-          "size_score": 0.9722
-        },
-        {
-          "symbol": "RTextExtractInt(char**)",
-          "score": 0.5978,
-          "name_score": 0.381,
-          "size_score": 0.9231
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRLandscapeManager::UnInit()",
+      "ios_symbol": "cRLandscapeManager::UnInit()",
+      "source_object": "Landscape.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x418ac0",

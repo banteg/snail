@@ -228,6 +228,66 @@ def test_mobile_galaxy_and_backdrop_evidence_preserves_windows_abi_boundaries() 
     assert "int queue_textured_quad_corners(" in font_header
 
 
+def test_mobile_landscape_evidence_recovers_authored_lifecycle() -> None:
+    repo_root = Path(__file__).parents[1]
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    functions_by_address = {
+        entry["address"]: entry for entry in functions["functions"]
+    }
+    crosswalk_by_address = {
+        entry["address"]: entry for entry in crosswalk["entries"]
+    }
+
+    expected = (
+        (
+            "0x4182e0",
+            "cRLandscapeManager_Open",
+            "cRLandscapeManager::Open()",
+        ),
+        (
+            "0x4182f0",
+            "cRLandscapeManager_Import",
+            "cRLandscapeManager::Import(char*)",
+        ),
+        (
+            "0x418870",
+            "cRLandscapeManager_Init",
+            "cRLandscapeManager::Init(int)",
+        ),
+        (
+            "0x418a30",
+            "cRLandscapeManager_UnInit",
+            "cRLandscapeManager::UnInit()",
+        ),
+    )
+    for address, alias, mobile_symbol in expected:
+        assert alias in functions_by_address[address]["aliases"]
+        assert crosswalk_by_address[address]["android_symbol"] == mobile_symbol
+        assert crosswalk_by_address[address]["ios_symbol"] == mobile_symbol
+        assert crosswalk_by_address[address]["source_object"] == "Landscape.o"
+        assert crosswalk_by_address[address]["confidence"] == "high"
+
+    assert "mobile-only SpaceRed" in crosswalk_by_address["0x4182e0"]["notes"]
+    assert "0x124-byte DirectX record" in (
+        crosswalk_by_address["0x4182f0"]["notes"]
+    )
+    assert "ten repeated DirectX BOD slices" in (
+        crosswalk_by_address["0x418870"]["notes"]
+    )
+    assert "Both mobile UnInit bodies are empty" in (
+        crosswalk_by_address["0x418a30"]["notes"]
+    )
+
+
 def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
     repo_root = Path(__file__).parents[1]
     functions = json.loads(

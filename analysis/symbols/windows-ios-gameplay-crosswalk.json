@@ -4787,6 +4787,42 @@
       "source_object": "SubGame.o",
       "confidence": "high",
       "notes": "This is one representative owner of a linker-folded Windows no-op body, not a claim that every callsite is cRWeapon. The dedicated Windows table at 0x49735c contains this address and is installed on the three weapon channels plus the jetpack Weapon; Android and iOS independently retain empty cRWeapon::AI() bodies."
+    },
+    {
+      "address": "0x4182e0",
+      "windows_name": "reset_landscape_manager",
+      "android_symbol": "cRLandscapeManager::Open()",
+      "ios_symbol": "cRLandscapeManager::Open()",
+      "source_object": "Landscape.o",
+      "confidence": "high",
+      "notes": "Windows clears only LandscapeManager::script_count. Android and iOS begin their authored Open method with the same count reset, then add a mobile-only SpaceRed texture and sprite. Their cRGame::Init1 methods call Open immediately before importing Starmap, Starmappro, Splash, and Help; Windows performs the same reset in its startup landscape-import phase before Starmap, Splash, and Help."
+    },
+    {
+      "address": "0x4182f0",
+      "windows_name": "load_landscape_script_by_name",
+      "android_symbol": "cRLandscapeManager::Import(char*)",
+      "ios_symbol": "cRLandscapeManager::Import(char*)",
+      "source_object": "Landscape.o",
+      "confidence": "high",
+      "notes": "All three ports cache Backgrounds/<name>, parse ID, Fog, Picture, Landscape, and Distort, advance the manager-owned count, release the file bytes, and return the cached or newly appended index. Windows uses a 0x124-byte DirectX record and loads split textures plus an X mesh; mobile uses a 0x1ac-byte record with Portrait, Width, Height, and Menu extensions. The shared owner and lifecycle are exact despite those platform storage and renderer differences."
+    },
+    {
+      "address": "0x418870",
+      "windows_name": "activate_landscape_entry",
+      "android_symbol": "cRLandscapeManager::Init(int)",
+      "ios_symbol": "cRLandscapeManager::Init(int)",
+      "source_object": "Landscape.o",
+      "confidence": "high",
+      "notes": "All three ports select the indexed LandscapeManager script, choose the same level-mode-dependent backdrop flip, call cRBackdrop::Change, center the border, and copy the four-channel fog color into root render state. Windows additionally materializes ten repeated DirectX BOD slices for the selected X mesh; mobile omits that renderer-specific bank."
+    },
+    {
+      "address": "0x418a30",
+      "windows_name": "clear_active_landscape_entries",
+      "android_symbol": "cRLandscapeManager::UnInit()",
+      "ios_symbol": "cRLandscapeManager::UnInit()",
+      "source_object": "Landscape.o",
+      "confidence": "high",
+      "notes": "Android cRSubGame::UnInit calls warning teardown, cRLandscapeManager::UnInit, times-up teardown, then RemoveBods, exactly matching the Windows destroy_subgame sequence around this helper. Both mobile UnInit bodies are empty because those ports omit Windows' ten repeated DirectX landscape entries; Windows must clear and unlink that platform-specific pool."
     }
   ]
 }

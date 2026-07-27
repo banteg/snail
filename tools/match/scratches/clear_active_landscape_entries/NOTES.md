@@ -31,3 +31,17 @@ The lifecycle remains exact at 49/49 with all five operands clean.
 byte-identical
 (`a663ed2ee953e6f01b4857d201b800bc443ea2d205c28751ee62c5fecbe956f0`)
 and exact at 49/49 instructions with five clean operands.
+
+## 2026-07-27 mobile authored owner
+
+Android and iOS retain the teardown boundary as
+`cRLandscapeManager::UnInit()` from `Landscape.o`, but both bodies are empty.
+This is a platform split rather than a rejected match: Android
+`cRSubGame::UnInit()` calls warning teardown, landscape `UnInit`, times-up
+teardown, and `RemoveBods` in the same order as Windows `destroy_subgame`
+calls `uninit_warning`, this helper, `uninit_times_up`, and
+`remove_subgame_bods`.
+
+The mobile renderer has no Windows-style pool of ten repeated DirectX
+landscape entries, so it has nothing to unlink. Windows' exact 49/49 body is
+the desktop implementation of the shared authored `UnInit()` lifecycle.

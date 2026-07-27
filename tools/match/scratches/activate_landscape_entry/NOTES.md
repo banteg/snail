@@ -125,3 +125,20 @@ renders the nested body while IDA retains the honest shifted integer cursor
 and now at least exposes the containing Player owner. No shifted
 `ActiveLandscapeEntry*` is invented. Matching remains at the honest 99.19%
 frontier.
+
+## 2026-07-27 mobile authored owner
+
+Android and iOS preserve this method as
+`cRLandscapeManager::Init(int)` in `Landscape.o`. Their bodies independently
+confirm the same owner and shared core:
+
+- select the indexed manager record;
+- derive the backdrop flip from level mode 7, randomized mode 1, or the
+  configured selector;
+- call `cRBackdrop::Change`;
+- center the border; and
+- copy all four fog-color channels into root render state.
+
+Windows alone activates ten repeated 0x90-byte DirectX BOD slices backed by the
+record's cached X mesh. That platform-specific prefix explains the body-size
+difference without weakening the common `Init(int)` lifecycle boundary.
