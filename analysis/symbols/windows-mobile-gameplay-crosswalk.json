@@ -13,11 +13,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 548,
-    "unverified_entries": 237,
-    "verified_android_symbols": 540,
+    "verified_entries": 549,
+    "unverified_entries": 236,
+    "verified_android_symbols": 541,
     "verified_ios_symbols": 441,
-    "available_android_mappings": 540,
+    "available_android_mappings": 541,
     "available_ios_mappings": 403
   },
   "entries": [
@@ -482,6 +482,12 @@
       "status": "unverified",
       "android_candidates": [
         {
+          "symbol": "cRInputOK::AI()",
+          "score": 0.9349,
+          "name_score": 1.0,
+          "size_score": 0.8372
+        },
+        {
           "symbol": "cRInputOK::Init()",
           "score": 0.7921,
           "name_score": 0.672,
@@ -492,12 +498,6 @@
           "score": 0.7665,
           "name_score": 0.6109,
           "size_score": 1.0
-        },
-        {
-          "symbol": "cRInputOK::AI()",
-          "score": 0.7381,
-          "name_score": 0.672,
-          "size_score": 0.8372
         },
         {
           "symbol": "cROverlay::AI()",
@@ -17343,40 +17343,18 @@
       "address": "0x437b10",
       "windows_name": "reset_subgame",
       "windows_size": 304,
-      "status": "unverified",
-      "android_candidates": [
+      "status": "verified",
+      "android_symbol": "cRSubGame::ReSet()",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_candidates": [
         {
-          "symbol": "cRSubGame::AddParcel(tVector*, cRSubGoldy*)",
-          "score": 0.7998,
-          "name_score": 0.6926,
-          "size_score": 0.9605
-        },
-        {
-          "symbol": "cRSubGame::BuildColours()",
-          "score": 0.7998,
-          "name_score": 0.6926,
-          "size_score": 0.9605
-        },
-        {
-          "symbol": "cRSubGame::DeSaltTrack()",
-          "score": 0.7956,
-          "name_score": 0.6926,
+          "symbol": "OFSetHighScore()",
+          "score": 0.785,
+          "name_score": 0.675,
           "size_score": 0.95
         },
-        {
-          "symbol": "cRSubRing::Init(int)",
-          "score": 0.7556,
-          "name_score": 0.9,
-          "size_score": 0.539
-        },
-        {
-          "symbol": "cRSubGame::CalcRate()",
-          "score": 0.7533,
-          "name_score": 0.6926,
-          "size_score": 0.8444
-        }
-      ],
-      "ios_candidates": [
         {
           "symbol": "cRSubRing::Init(int)",
           "score": 0.7511,
@@ -17400,12 +17378,6 @@
           "score": 0.687,
           "name_score": 0.6926,
           "size_score": 0.6786
-        },
-        {
-          "symbol": "cRSubGame::BuildColours()",
-          "score": 0.6735,
-          "name_score": 0.6926,
-          "size_score": 0.6447
         }
       ]
     },
@@ -23983,6 +23955,12 @@
       "android_body_count": 1,
       "ios_candidates": [
         {
+          "symbol": "cRMouse::AI()",
+          "score": 0.7359,
+          "name_score": 1.0,
+          "size_score": 0.3398
+        },
+        {
           "symbol": "cROptions::Init()",
           "score": 0.6545,
           "name_score": 0.4267,
@@ -24005,12 +23983,6 @@
           "score": 0.588,
           "name_score": 0.381,
           "size_score": 0.8984
-        },
-        {
-          "symbol": "cRSpriteManager::LoadSet(char*, int, int)",
-          "score": 0.5837,
-          "name_score": 0.4,
-          "size_score": 0.8594
         }
       ]
     },
@@ -26210,8 +26182,8 @@
       "android_candidates": [
         {
           "symbol": "cRSprite::Init()",
-          "score": 0.812,
-          "name_score": 0.72,
+          "score": 0.98,
+          "name_score": 1.0,
           "size_score": 0.95
         },
         {

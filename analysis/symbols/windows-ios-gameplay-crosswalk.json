@@ -808,6 +808,14 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x437b10",
+      "windows_name": "reset_subgame",
+      "android_symbol": "cRSubGame::ReSet()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Windows and Android clear the same authored families of inline health, speed-up, jetpack, garbage, slug, and ring actors while reinstalling borrowed cRSubGame backlinks. Both then select between restoring the saved score-and-time snapshot and clearing live score/time state, arm the two leading scan/camera bytes, clear replay launch state, and empty the active garbage head. Android cRSubGame::Init() ends in ReSet(this); all five Windows exits from initialize_subgame likewise reload the same receiver and call 0x437b10. Record strides, pool capacities, and field offsets are platform-specific and are deliberately not transferred. No exported iOS ReSet body was found."
+    },
+    {
       "address": "0x437c40",
       "windows_name": "update_progress_bar",
       "ios_symbol": "cRProgressBar::AI()",

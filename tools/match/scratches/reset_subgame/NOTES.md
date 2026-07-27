@@ -148,3 +148,26 @@ and the final scan, camera, replay, and active-garbage latches through the
 containing `SubgameRuntime`. All five callsites independently load that same
 receiver in `initialize_subgame`. The matcher remains naturally exact at
 75/75 instructions; no source or compiler scheduling was changed.
+
+## 2026-07-27 Android authored-name recovery
+
+The expanded Android corpus preserves this method as
+`void cRSubGame::ReSet()`. Its body independently clears the inline health,
+speed-up, jetpack, garbage, slug, and ring families while reinstalling the
+containing `cRSubGame*` backlinks. It then makes the same replay-mode decision:
+restore score plus the complete timer snapshot from the selected record, or
+clear the live score/time tails, before arming the two leading scan/camera
+bytes and clearing replay and active-garbage state.
+
+The lifecycle edge is exact rather than name-only evidence. Android
+`cRSubGame::Init()` ends in `ReSet(this)`, while all five native exits from
+Windows `initialize_subgame` load the same `SubgameRuntime` receiver before
+calling `0x437b10`. Android uses different record strides, capacities, and
+offsets, so none of those physical layout values transfer to Windows. No
+exported iOS `ReSet` body exists in the tracked corpus.
+
+The mobile candidate ranker previously removed lifecycle verbs before scoring,
+which hid this owner behind similarly sized `cRSubGame` methods. It now accepts
+an exact method-plus-owner identity (`ReSet` + `cRSubGame` versus
+`reset_subgame`) before removing boilerplate. The Windows scratch remains
+byte-exact at 75/75 instructions with both masked operands clean.

@@ -87,6 +87,35 @@ def test_rank_mobile_symbols_uses_owner_for_ai_methods() -> None:
     assert ranked[0].symbol == "cRSubGoldy::AI()"
 
 
+def test_rank_mobile_symbols_uses_exact_method_owner_identity() -> None:
+    index = {
+        "functions": [
+            {
+                "demangled": (
+                    "cRSubGame::AddParcel(tVector*, cRSubGoldy*)"
+                ),
+                "size": 312,
+                "status": "ok",
+            },
+            {
+                "demangled": "cRSubGame::ReSet()",
+                "size": 456,
+                "status": "ok",
+            },
+        ]
+    }
+
+    ranked = rank_mobile_symbols(
+        "reset_subgame",
+        None,
+        index,
+        windows_size=304,
+    )
+
+    assert ranked[0].symbol == "cRSubGame::ReSet()"
+    assert ranked[0].name_score == 1.0
+
+
 def test_rank_mobile_symbols_uses_size_for_giant_initializers() -> None:
     index = {
         "functions": [

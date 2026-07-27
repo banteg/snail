@@ -83,7 +83,7 @@ public:
     void switch_track_mirror(); // @ 0x435e60; mobile cRSubGame::SwitchMirror()
     void populate_runtime_track_cells_from_segments(); // @ 0x435eb0
     void initialize_subgame(); // @ 0x4374b0
-    void reset_subgame(); // @ 0x437b10
+    void reset_subgame(); // @ 0x437b10; Android cRSubGame::ReSet()
     void rebuild_track_runtime_from_segments(int level_index); // @ 0x437de0
     float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
     void build_subgame_level(int level_index); // @ 0x437eb0

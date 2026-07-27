@@ -206,6 +206,14 @@ def score_mobile_symbol(
     ]
 
     windows_compact = _compact(windows_core)
+    method_owner_compact = _compact(method_parts + owner_parts)
+    if windows_compact == method_owner_compact:
+        # Windows recovery names conventionally put the action before the
+        # owner (`reset_subgame`), while mobile C++ symbols put the owner
+        # first (`cRSubGame::ReSet`). Preserve the method verb for this exact
+        # identity check before dropping lifecycle boilerplate below.
+        return 1.0
+
     owner_compact = _compact(owner_parts)
     method_compact = _compact(method_core)
     combined_compact = _compact(owner_parts + method_core)

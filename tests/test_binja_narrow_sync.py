@@ -564,6 +564,12 @@ def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
 
     expected = (
         (
+            "0x437b10",
+            "cRSubGame_ReSet",
+            "cRSubGame::ReSet()",
+            None,
+        ),
+        (
             "0x437e80",
             "cRSubGame_CalcSliderToRate",
             "cRSubGame::CalcSliderToRate(float)",
@@ -661,6 +667,9 @@ def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
         "initialize_score_stats"
         not in functions_by_address["0x444960"]["aliases"]
     )
+    reset_notes = crosswalk_by_address["0x437b10"]["notes"]
+    assert "all five Windows exits" in reset_notes
+    assert "platform-specific" in reset_notes
     assert "cRSquidge_Init" in functions_by_address["0x444960"]["aliases"]
     kill_description = functions_by_address["0x445840"]["description"]
     assert "cRSubGoldy::Kill()" in kill_description
