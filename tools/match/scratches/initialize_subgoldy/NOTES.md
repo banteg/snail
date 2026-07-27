@@ -59,10 +59,19 @@ from the exact initializer without changing its ownership or ABI.
 2026-07-11 cRInvincible ownership closure:
 
 - The owner at `Player::presentation +0x1894` (`Player +0x4218`) is the exact
-  0xa4-byte Windows `Invincible`, backed by iOS/Android
+  0x98-byte Windows `Invincible`, backed by iOS/Android
   `cRInvincible::{Init,AI}` and Android `cRInvincible::Start`.
 - The initializer now reaches that embedded member through the recovered owner
   chain and remains exact at 279/279 instructions.
+
+2026-07-28 mobile tail-boundary correction:
+
+- Android and iOS put the roll pair and release gate at
+  `cRSnail +0x1764..+0x176c`, after the smaller mobile `cRInvincible` extent.
+  Windows has the same boundary at `Snail +0x192c`.
+- The initializer now clears and seeds those three direct `Snail` fields while
+  `cRInvincible` retains only its renderable state/fade/spin owner and the
+  cross-port trailing unknown word. Focused matching remains exact.
 
 2026-07-11 cRCutScene ownership closure:
 

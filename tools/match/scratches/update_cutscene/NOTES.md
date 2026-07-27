@@ -16,7 +16,7 @@ Recovered relationships:
   entry handoff while entering state `6`, then plays SFX `46`.
 - Death entry plays voice set `3`, releases snail weapons, and later falls back
   to voice set `11` if `initialize_subgoldy_death` does not consume the gate.
-- Completion entry writes the invincible-shell cutscene roll pair at
+- Completion entry writes the Snail-owned cutscene roll pair at
   `presentation +0x192c/+0x1930` (`cutscene_roll_progress/step`), not the
   regular wobble phase fields at `+0x15bc/+0x15c0`.
 

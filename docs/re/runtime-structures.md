@@ -197,7 +197,7 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x17b0`: `snail_hotspots_world`
     - `19`-entry `Vec3` array
   - `+0x1894`: `invincible_shell`
-    - exact 0xa4-byte authored `cRInvincible` visual owner
+    - exact 0x98-byte authored `cRInvincible` visual owner
     - `+0x28`: shell color
     - `+0x38`: live shell transform
     - `+0x80`: `state`, a complete `InvincibleState` graph:
@@ -207,9 +207,9 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x88`: `spin_phase_step`
     - `+0x8c`: `fade_progress`
     - `+0x90`: `fade_step`
-    - `+0x98/+0x9c`: cutscene roll progress/step
-    - `+0xa0`: animation-channel release-step gate
     - `initialize_invincible_shell`, `start_invincible_shell`, and `update_invincible_shell` all operate on this same embedded controller
+  - `+0x192c/+0x1930`: Snail-owned cutscene roll progress/step
+  - `+0x1934`: Snail-owned animation-channel release-step gate
   - `+0x1938`: exact 0x20-byte `snail_skin` (`cRSnailSkin`)
     - `+0x00`: `selected_slot`
     - `+0x04`: `slot_ids[3]`

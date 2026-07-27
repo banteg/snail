@@ -65,9 +65,9 @@
 00446b88        cutscene->state = CUT_SCENE_STATE_COMPLETION_BLEND
 00446b8f        cutscene->progress = 0f
 00446b96        cutscene->progress_step = 0.00833333377f
-00446b9d        presentation_2->invincible_shell.cutscene_roll_step = 0.0166666675f
+00446b9d        presentation_2->cutscene_roll_step = 0.0166666675f
 00446ba7        struct Snail* presentation_3 = cutscene->presentation
-00446bb0        presentation_3->invincible_shell.cutscene_roll_progress = presentation_3->invincible_shell.cutscene_roll_step
+00446bb0        presentation_3->cutscene_roll_progress = presentation_3->cutscene_roll_step
 00446bb6        cutscene->force_camera_update = 1
 00446bb9        struct GameRoot* game_base_1 = g_game_base
 00446bbf        int32_t level_mode = game_base_1->subgame.level_mode
@@ -92,12 +92,16 @@
 00446c32        var_c0.position.y = presentation_4->snail_hotspots_world[0xc].y
 00446c39        var_c0.position.z = presentation_4->snail_hotspots_world[0xc].z
 00446c69        float progress = cutscene->progress
+00446ca2        float var_c4_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(presentation_4->snail_hotspots_world[0x12].z) - fconvert.t(var_c0.position.z))) * fconvert.t(progress))
 00446caa        float var_e8_3 = fconvert.s((fconvert.t(presentation_4->snail_hotspots_world[0x12].x) - fconvert.t(var_c0.position.x)) * fconvert.t(progress) + fconvert.t(var_c0.position.x))
+00446cb2        long double x87_r7_43 = fconvert.t(var_c0.position.y) + fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(presentation_4->snail_hotspots_world[0x12].y) - fconvert.t(var_c0.position.y))) * fconvert.t(progress)))
 00446cba        float var_fc_12 = var_e8_3
 00446cbb        transform.position.x = var_e8_3
-00446cd2        transform.position.y = fconvert.s(fconvert.t(var_c0.position.y) + fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(presentation_4->snail_hotspots_world[0x12].y) - fconvert.t(var_c0.position.y))) * fconvert.t(progress))))
-00446cea        transform.position.z = fconvert.s(fconvert.t(var_c0.position.z) + fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(presentation_4->snail_hotspots_world[0x12].z) - fconvert.t(var_c0.position.z))) * fconvert.t(progress))))
-00446cf9        long double x87_r7_49 = sine(fconvert.s(fconvert.t(cutscene->progress) * fconvert.t(3.14159274f))) * fconvert.t(0.5f)
+00446cca        long double x87_r7_45 = fconvert.t(var_c0.position.z) + fconvert.t(var_c4_1)
+00446cd2        transform.position.y = fconvert.s(x87_r7_43)
+00446ce0        long double x87_r7_47 = fconvert.t(cutscene->progress) * fconvert.t(3.14159274f)
+00446cea        transform.position.z = fconvert.s(x87_r7_45)
+00446cf9        long double x87_r7_49 = sine(fconvert.s(x87_r7_47)) * fconvert.t(0.5f)
 00446d14        transform.position.x = fconvert.s(fconvert.t(transform.position.x) - x87_r7_49)
 00446d1b        look_at_point(&transform, &cutscene->presentation->body.transform.position)
 00446d43        int32_t var_fc_15 = __builtin_memcpy(&var_c0, &cutscene->presentation->owner_player->cameraman, 0x40)
@@ -131,13 +135,15 @@
 004467b1        g_game_base->subgame.player.click_start.hide_prompt = 0
 004467b8        cutscene->camera_mode = 1
 004467bf        set_matrix_identity(&var_c0)
+004467ca        long double x87_r7_4 = fconvert.t(cutscene->progress) * fconvert.t(3.14159274f)
 004467d0        struct Vec3* eax_5 = &cutscene->presentation->snail_hotspots_world[0x12]
 004467d5        float x = eax_5->x
 004467d7        var_c0.position.x = x
 004467db        float x_1 = x
+004467df        float var_fc_2 = fconvert.s(x87_r7_4)
 004467e2        var_c0.position.y = eax_5->y
 004467e9        var_c0.position.z = eax_5->z
-004467ed        long double st0_1 = sine(fconvert.s(fconvert.t(cutscene->progress) * fconvert.t(3.14159274f)))
+004467ed        long double st0_1 = sine(var_fc_2)
 00446806        var_c0.position.x = fconvert.s(st0_1 + st0_1 + fconvert.t(var_c0.position.x))
 0044680a        look_at_point(&var_c0, &cutscene->presentation->body.transform.position)
 00446832        int32_t var_fc_4 = __builtin_memcpy(&transform, &cutscene->presentation->owner_player->cameraman, 0x40)
@@ -145,18 +151,21 @@
 00446846        parcels_collected = &transform
 0044684b        linear_interpolate_matrix(&cutscene->live_matrix, &var_c0, parcels_collected, alpha)
 00446850        struct Snail* presentation_1 = cutscene->presentation
-00446878        struct Vec3 vector
-00446878        vector.x = fconvert.s(fconvert.t(cutscene->live_matrix.position.x) - fconvert.t(presentation_1->body.transform.position.x))
-0044687c        vector.y = fconvert.s(fconvert.t(cutscene->live_matrix.position.y) - fconvert.t(presentation_1->body.transform.position.y))
-00446888        vector.z = fconvert.s(fconvert.t(cutscene->live_matrix.position.z) - fconvert.t(presentation_1->body.transform.position.z))
+00446888        struct Vec3 vector = struct Vec3 {
+    .x = fconvert.s(fconvert.t(cutscene->live_matrix.position.x) - fconvert.t(presentation_1->body.transform.position.x))
+    .y = fconvert.s(fconvert.t(cutscene->live_matrix.position.y) - fconvert.t(presentation_1->body.transform.position.y))
+    .z = fconvert.s(fconvert.t(cutscene->live_matrix.position.z) - fconvert.t(presentation_1->body.transform.position.z))
+}
 00446890        long double st0_3 = normalize_vector(&vector)
 00446895        long double temp3_1 = fconvert.t(1.5f)
 00446895        st0_3 - temp3_1
 004468a0        if ((((st0_3 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(st0_3, temp3_1) ? 1 : 0) << 0xa | (st0_3 == temp3_1 ? 1 : 0) << 0xe | 0x3800):1.b & 1) != 0)
 004468a2        long double x87_r7_18 = fconvert.t(1.5f) - st0_3
+004468b8        float var_e4_2 = fconvert.s(fconvert.t(vector.y) * x87_r7_18)
+004468bc        long double x87_r7_19 = x87_r7_18 * fconvert.t(vector.z)
 004468c7        cutscene->live_matrix.position.x = fconvert.s(fconvert.t(fconvert.s(fconvert.t(vector.x) * x87_r7_18)) + fconvert.t(cutscene->live_matrix.position.x))
-004468d1        cutscene->live_matrix.position.y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(vector.y) * x87_r7_18)) + fconvert.t(cutscene->live_matrix.position.y))
-004468d7        cutscene->live_matrix.position.z = fconvert.s(x87_r7_18 * fconvert.t(vector.z) + fconvert.t(cutscene->live_matrix.position.z))
+004468d1        cutscene->live_matrix.position.y = fconvert.s(fconvert.t(var_e4_2) + fconvert.t(cutscene->live_matrix.position.y))
+004468d7        cutscene->live_matrix.position.z = fconvert.s(x87_r7_19 + fconvert.t(cutscene->live_matrix.position.z))
 004468e1        long double x87_r7_23 = fconvert.t(cutscene->progress) + fconvert.t(cutscene->progress_step)
 004468e4        cutscene->progress = fconvert.s(x87_r7_23)
 004468e7        long double temp6_1 = fconvert.t(1f)
@@ -186,13 +195,15 @@
 0044699c        label_44699c:
 0044699c        cutscene->camera_mode = 0xffffffff
 0044699f        set_matrix_identity(&transform)
+004469aa        long double x87_r7_25 = fconvert.t(cutscene->progress) * fconvert.t(3.14159274f)
 004469b0        struct Vec3* edx_8 = &cutscene->presentation->snail_hotspots_world[0x12]
 004469b8        transform.position.x = edx_8->x
 004469bf        float y = edx_8->y
 004469c2        float y_1 = y
 004469c3        transform.position.y = y
+004469cd        float var_fc_6 = fconvert.s(x87_r7_25)
 004469d0        transform.position.z = edx_8->z
-004469d7        long double st0_4 = sine(fconvert.s(fconvert.t(cutscene->progress) * fconvert.t(3.14159274f)))
+004469d7        long double st0_4 = sine(var_fc_6)
 004469e8        transform.position.x = fconvert.s(st0_4 + st0_4 + fconvert.t(transform.position.x))
 004469ef        long double x87_r7_29 = fconvert.t(transform.position.y)
 004469f6        long double temp1_1 = fconvert.t(0f)

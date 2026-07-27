@@ -16,7 +16,7 @@
 0043aa14        player->shoot_flags = 0
 0043aa1a        player->previous_shoot_flags = 0xffffffff
 0043aa24        player->trampoline_bounce_active = 0
-0043aa2a        player->presentation.invincible_shell.channel_release_steps_active = 0
+0043aa2a        player->presentation.channel_release_steps_active = 0
 0043aa36        player->game->completion.state = COMPLETION_STATE_INACTIVE
 0043aa3c        player->presentation.jetpack_channel.selected_state = 0
 0043aa42        player->presentation.weapon_channels[0].selected_state = 0
@@ -27,8 +27,8 @@
 0043aa6c        initialize_object_distort(&player->presentation.body.bod.object->distort)
 0043aa71        player->interaction_max_z = -19f
 0043aa7b        player->shoot_sfx_variant_sample = 0
-0043aa86        player->presentation.invincible_shell.cutscene_roll_progress = 0f
-0043aa8c        player->presentation.invincible_shell.cutscene_roll_step = 0.0166666675f
+0043aa86        player->presentation.cutscene_roll_progress = 0f
+0043aa8c        player->presentation.cutscene_roll_step = 0.0166666675f
 0043aa92        player->slow_commentary_timer = 0f
 0043aa9e        player->slow_commentary_step = 0.0166666675f
 0043aaa4        initialize_squidge(&player->squidge)

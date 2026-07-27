@@ -3343,7 +3343,7 @@
     {
       "address": "0x444ac0",
       "name": "initialize_invincible_shell",
-      "description": "Authored `cRInvincible::Init()`: resets the exact 0xa4-byte visual owner embedded at `Snail + 0x1894` (`Player + 0x4218`) and restores the normal snail skin."
+      "description": "Authored `cRInvincible::Init()`: resets the exact 0x98-byte visual owner embedded at `Snail + 0x1894` (`Player + 0x4218`) and restores the normal snail skin."
     },
     {
       "address": "0x444ae0",

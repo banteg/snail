@@ -37,7 +37,7 @@ EXPECTED_OWNER_SIZES = {
     "GolbShotFlightStrideCursor": 0x2E8,
     "GolbShotVapourObjectStrideCursor": 0x2E8,
     "Weapon": 0x3DC,
-    "Invincible": 0xA4,
+    "Invincible": 0x98,
     "Snail": 0x19B4,
     "Player": 0x4364,
     "SubgameRuntime": 0x1272838,

@@ -1988,7 +1988,7 @@ typedef enum InvincibleState {
     INVINCIBLE_STATE_FADING_OUT = 3,
 } InvincibleState;
 
-/* Authored cRInvincible, exact 0xa4-byte spinning shell visual owner. */
+/* Authored cRInvincible, exact 0x98-byte spinning shell visual owner. */
 typedef struct Invincible {
     RenderableBod body;
     InvincibleState state;
@@ -1997,10 +1997,6 @@ typedef struct Invincible {
     float fade_progress;
     float fade_step;
     uint8_t _pad_94[0x4];
-    float cutscene_roll_progress;
-    float cutscene_roll_step;
-    uint8_t channel_release_steps_active;
-    uint8_t _pad_a1[0x3];
 } Invincible;
 
 /* Authored cRSnail, exact 0x19b4-byte Player presentation owner. */
@@ -2019,6 +2015,10 @@ typedef struct Snail {
     Vec3 snail_hotspots_local[19];
     Vec3 snail_hotspots_world[19];
     Invincible invincible_shell;
+    float cutscene_roll_progress;
+    float cutscene_roll_step;
+    uint8_t channel_release_steps_active;
+    uint8_t _pad_1935[0x3];
     SnailSkin snail_skin;
     CutScene cutscene;
 } Snail;

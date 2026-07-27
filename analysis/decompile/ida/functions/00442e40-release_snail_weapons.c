@@ -31,7 +31,7 @@ void __thiscall release_snail_weapons(Snail *snail)
   float v25; // [esp+1Ch] [ebp-4h]
   float v26; // [esp+1Ch] [ebp-4h]
 
-  if ( snail->invincible_shell.channel_release_steps_active == 0 )
+  if ( snail->channel_release_steps_active == 0 )
   {
     v22 = ((double)next_math_random_value() - 16384.0) * 0.000061035156;
     v2 = random_float_below(1.0, nullptr);
@@ -72,5 +72,5 @@ void __thiscall release_snail_weapons(Snail *snail)
     snail->weapon_channels[1].release_step.z = v21;
     end_jetpack_hover(&owner_player->sub_hover);
   }
-  snail->invincible_shell.channel_release_steps_active = 1;
+  snail->channel_release_steps_active = 1;
 }

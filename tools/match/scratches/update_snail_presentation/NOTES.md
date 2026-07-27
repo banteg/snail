@@ -76,7 +76,7 @@ incidental exit register.
   matrix position from `scratch_matrix`. A named `up_y` captures that value
   lifetime and lets VC6 overlap the comparison with the independent three-word
   position copy exactly.
-- Native likewise snapshots `invincible_shell.cutscene_roll_progress` before
+- Native likewise snapshots `cutscene_roll_progress` before
   caching the inherited `transform`. The snapshot is used only for the positive gate; the
   yaw expression reloads the owned field. That distinction reproduces the
   native pop-and-reload x87 lifetime while the matrix copy fills the comparison
@@ -85,6 +85,11 @@ incidental exit register.
   Focused Wibo closes from 98.82% (339/339, prefix 110, 43 clean operands) to
   exact 100.00% (339/339, full prefix, 44 clean operands), completing the
   per-frame `Snail::AIGoldy` presentation/cutscene setup path.
+
+2026-07-28 mobile tail ownership: Android and iOS `cRSnail::AIGoldy()` access
+the roll pair and release gate directly at Snail `+0x1764..+0x176c`, after the
+mobile `cRInvincible` extent. The Windows fields at `+0x192c..+0x1934` now
+follow the same direct `Snail` ownership. The exact 339/339 body is unchanged.
 
 2026-07-14 renderable-owner closure: this exact member now reaches its primary
 matrix through inherited `Snail::transform`; the distinct Player, Cameraman,

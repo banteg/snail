@@ -33,8 +33,7 @@ void Player::initialize_subgoldy(int player_slot)
     this->shoot_flags = zero;
     this->previous_shoot_flags = -1;
     this->trampoline_bounce_active = (unsigned char)zero;
-    this->presentation.invincible_shell.channel_release_steps_active =
-        (unsigned char)zero;
+    this->presentation.channel_release_steps_active = (unsigned char)zero;
     this->game->completion.state = COMPLETION_STATE_INACTIVE;
     this->presentation.jetpack_channel.selected_state = zero;
     this->presentation.weapon_channels[0].selected_state = zero;
@@ -46,8 +45,8 @@ void Player::initialize_subgoldy(int player_slot)
     this->presentation.object->distort.initialize_object_distort();
     this->interaction_max_z = -19.0f;
     this->shoot_sfx_variant_sample = zero;
-    this->presentation.invincible_shell.cutscene_roll_progress = 0.0f;
-    this->presentation.invincible_shell.cutscene_roll_step = 0.0166666675f;
+    this->presentation.cutscene_roll_progress = 0.0f;
+    this->presentation.cutscene_roll_step = 0.0166666675f;
     this->slow_commentary_timer = 0.0f;
     this->slow_commentary_step = 0.0166666675f;
     this->squidge.initialize_squidge();

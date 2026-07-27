@@ -89,19 +89,18 @@ void Snail::update_snail_presentation()
     transform.position +=
         (transform.basis_up * lift_sine) * 0.0299999993f;
 
-    float shell_roll_progress = invincible_shell.cutscene_roll_progress;
+    float shell_roll_progress = cutscene_roll_progress;
     cached_cutscene_matrix = transform;
 
     if (shell_roll_progress > 0.0f) {
-        float shell_yaw = invincible_shell.cutscene_roll_progress * -2.09439516f;
+        float shell_yaw = cutscene_roll_progress * -2.09439516f;
         transform.rotate_matrix_local_y(shell_yaw);
-        invincible_shell.cutscene_roll_progress =
-            invincible_shell.cutscene_roll_step + invincible_shell.cutscene_roll_progress;
-        if (invincible_shell.cutscene_roll_progress > 1.0f)
-            invincible_shell.cutscene_roll_progress = 1.0f;
+        cutscene_roll_progress = cutscene_roll_step + cutscene_roll_progress;
+        if (cutscene_roll_progress > 1.0f)
+            cutscene_roll_progress = 1.0f;
     }
 
-    if (invincible_shell.channel_release_steps_active != 0) {
+    if (channel_release_steps_active != 0) {
         jetpack_channel.transform.position.x =
             jetpack_channel.release_step.x + jetpack_channel.transform.position.x;
         jetpack_channel.transform.position.y =

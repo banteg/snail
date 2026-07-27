@@ -1,4 +1,4 @@
-// Authored cRInvincible, exact 0xa4-byte spinning shell visual owner.
+// Authored cRInvincible, exact 0x98-byte spinning shell visual owner.
 #ifndef INVINCIBLE_H
 #define INVINCIBLE_H
 
@@ -26,13 +26,11 @@ public:
     float spin_phase_step; // +0x88
     float fade_progress; // +0x8c
     float fade_step; // +0x90
+    // Both mobile ports preserve the same otherwise-unread trailing word.
+    // The cRSnail-owned cutscene/release lanes begin after this extent.
     char unknown_94[0x98 - 0x94];
-    float cutscene_roll_progress; // +0x98
-    float cutscene_roll_step; // +0x9c
-    unsigned char channel_release_steps_active; // +0xa0
-    char unknown_a1[0xa4 - 0xa1];
 };
 
-typedef char Invincible_must_be_0xa4[(sizeof(Invincible) == 0xa4) ? 1 : -1];
+typedef char Invincible_must_be_0x98[(sizeof(Invincible) == 0x98) ? 1 : -1];
 
 #endif

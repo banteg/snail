@@ -2781,7 +2781,7 @@
         "snail->wobble.roll_phase_step",
         "snail->wobble.lift_phase_step",
         "snail->body.transform",
-        "snail->invincible_shell.cutscene_roll_progress",
+        "snail->cutscene_roll_progress",
         "snail->snail_hotspot_source_body.transform"
       ],
       "forbidden_substrings": [
@@ -2798,7 +2798,7 @@
         "snail->wobble.roll_phase_step",
         "snail->wobble.lift_phase_step",
         "snail->body.transform",
-        "snail->invincible_shell.cutscene_roll_progress",
+        "snail->cutscene_roll_progress",
         "snail->snail_hotspot_source_body.transform"
       ],
       "forbidden_substrings": [
@@ -20402,7 +20402,7 @@
       "name": "bn_snail_weapon_release_owner_and_void_abi",
       "artifact": "analysis/decompile/binja/functions/00442e40-release_snail_weapons.c",
       "required_substrings": [
-        "snail->invincible_shell.channel_release_steps_active",
+        "snail->channel_release_steps_active",
         "snail->jetpack_channel.release_step.x",
         "snail->weapon_channels[2].release_step.x",
         "end_jetpack_hover(&owner_player->sub_hover)",
@@ -20419,7 +20419,7 @@
       "artifact": "analysis/decompile/ida/functions/00442e40-release_snail_weapons.c",
       "required_substrings": [
         "void __thiscall release_snail_weapons(Snail *snail)",
-        "snail->invincible_shell.channel_release_steps_active",
+        "snail->channel_release_steps_active",
         "snail->weapon_channels[1].release_step.z",
         "end_jetpack_hover(&owner_player->sub_hover);"
       ],

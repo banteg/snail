@@ -118,18 +118,18 @@ void __thiscall update_snail_presentation(Snail *snail)
     snail->body.transform.position.x = v32 + snail->body.transform.position.x;
     snail->body.transform.position.y = v33 + snail->body.transform.position.y;
     snail->body.transform.position.z = v19 * 0.029999999 + snail->body.transform.position.z;
-    cutscene_roll_progress = snail->invincible_shell.cutscene_roll_progress;
+    cutscene_roll_progress = snail->cutscene_roll_progress;
     qmemcpy(&snail->cached_cutscene_matrix, v7, sizeof(snail->cached_cutscene_matrix));
     if ( cutscene_roll_progress > 0.0 )
     {
-      v28 = snail->invincible_shell.cutscene_roll_progress * -2.0943952;
+      v28 = snail->cutscene_roll_progress * -2.0943952;
       rotate_matrix_local_y(&snail->body.transform, v28);
-      v21 = snail->invincible_shell.cutscene_roll_step + snail->invincible_shell.cutscene_roll_progress;
-      snail->invincible_shell.cutscene_roll_progress = v21;
+      v21 = snail->cutscene_roll_step + snail->cutscene_roll_progress;
+      snail->cutscene_roll_progress = v21;
       if ( v21 > 1.0 )
-        snail->invincible_shell.cutscene_roll_progress = 1.0;
+        snail->cutscene_roll_progress = 1.0;
     }
-    if ( snail->invincible_shell.channel_release_steps_active != 0 )
+    if ( snail->channel_release_steps_active != 0 )
     {
       snail->jetpack_channel.body.transform.position.x = snail->jetpack_channel.release_step.x
                                                        + snail->jetpack_channel.body.transform.position.x;

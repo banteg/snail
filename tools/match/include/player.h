@@ -122,7 +122,14 @@ public:
     RenderableBod snail_hotspot_body;        // +0x164c, owns model at +0x1670 and transform at +0x1684
     Vector3 snail_hotspots_local[SNAIL_HOTSPOT_COUNT];   // +0x16cc
     Vector3 snail_hotspots_world[SNAIL_HOTSPOT_COUNT];   // +0x17b0
-    Invincible invincible_shell;                // +0x1894, authored cRInvincible
+    Invincible invincible_shell;                // +0x1894, exact 0x98-byte cRInvincible
+    // These lanes are consumed by cRSnail/cRCutScene, not cRInvincible.
+    // Android and iOS place the corresponding fields at +0x1764..+0x176c,
+    // immediately after their smaller cRInvincible renderable owner.
+    float cutscene_roll_progress;                // +0x192c
+    float cutscene_roll_step;                    // +0x1930
+    unsigned char channel_release_steps_active;  // +0x1934
+    char unknown_1935[0x1938 - 0x1935];
     SnailSkin snail_skin;                       // +0x1938, authored cRSnailSkin
     CutScene cutscene;                          // +0x1958, authored cRCutScene
 };

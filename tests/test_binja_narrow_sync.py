@@ -904,6 +904,7 @@ def test_cheat_state_replay_keeps_exact_global_owner_and_authored_abis() -> None
 
 
 def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners() -> None:
+    repo_root = Path(__file__).parents[1]
     binja_sync = (BINJA_DIR / "sync_snail_presentation_types.py").read_text(
         encoding="utf-8"
     )
@@ -923,6 +924,12 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
         encoding="utf-8"
     )
     sprite_header = (HEADER_DIR / "star_manager_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_invincible = (
+        repo_root / "tools/match/include/invincible.h"
+    ).read_text(encoding="utf-8")
+    matcher_player = (repo_root / "tools/match/include/player.h").read_text(
         encoding="utf-8"
     )
 
@@ -985,12 +992,42 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
             ('"AnimManager"', "0x48"),
             ('"SubHover"', "0x214"),
             ('"Weapon"', "0x3DC"),
-            ('"Invincible"', "0xA4"),
+            ('"Invincible"', "0x98"),
             ('"SnailSkin"', "0x20"),
             ('"Snail"', "0x19B4"),
             ('"Player"', "0x4364"),
         ):
             assert f"{owner}: {size}" in source
+
+    for offset, field_name, field_type in (
+        ("0x192c", "cutscene_roll_progress", "float"),
+        ("0x1930", "cutscene_roll_step", "float"),
+        ("0x1934", "channel_release_steps_active", "uint8_t"),
+    ):
+        assert (
+            f'("{offset}", "{field_name}", "{field_type}")'
+            in broad_binja_sync
+        )
+    invincible_updates = broad_binja_sync.split(
+        "INVINCIBLE_FIELD_UPDATES = (", maxsplit=1
+    )[1].split("\n)\n", maxsplit=1)[0]
+    for field_name in (
+        "cutscene_roll_progress",
+        "cutscene_roll_step",
+        "channel_release_steps_active",
+    ):
+        assert field_name not in invincible_updates
+        assert field_name not in matcher_invincible
+        assert field_name in matcher_player
+        assert field_name in analysis_header
+
+    for marker in (
+        "observed_invincible_size",
+        "current_struct_fields",
+        "expected_snail_boundary",
+        'replace_types=("Invincible", "Snail")',
+    ):
+        assert marker in binja_sync
 
     assert "types_declare_if_missing" in binja_sync
     assert "bn_object_render_types.h" in binja_sync
@@ -1135,7 +1172,7 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
             ('"GolbShotFlightStrideCursor"', "0x2E8"),
             ('"GolbShotVapourObjectStrideCursor"', "0x2E8"),
             ('"Weapon"', "0x3DC"),
-            ('"Invincible"', "0xA4"),
+            ('"Invincible"', "0x98"),
             ('"Snail"', "0x19B4"),
             ('"Player"', "0x4364"),
             ('"SubgameRuntime"', "0x1272838"),
@@ -18287,7 +18324,7 @@ def test_subgame_level_activation_lifetime_replay_stays_guarded() -> None:
         ("BodBase", "0x38"),
         ("RenderableBod", "0x80"),
         ("Weapon", "0x3DC"),
-        ("Invincible", "0xA4"),
+        ("Invincible", "0x98"),
         ("Snail", "0x19B4"),
         ("Player", "0x4364"),
         ("SubgameRuntime", "0x1272838"),

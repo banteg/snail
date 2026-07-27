@@ -93,20 +93,20 @@
 00442c08        snail->body.transform.position.x = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(st0_2 * fconvert.t(snail->body.transform.basis_up.x))) * fconvert.t(0.0299999993f))) + fconvert.t(snail->body.transform.position.x))
 00442c12        snail->body.transform.position.y = fconvert.s(fconvert.t(var_148_1) + fconvert.t(snail->body.transform.position.y))
 00442c18        snail->body.transform.position.z = fconvert.s(x87_r7_33 + fconvert.t(snail->body.transform.position.z))
-00442c1b        long double x87_r7_35 = fconvert.t(snail->invincible_shell.cutscene_roll_progress)
+00442c1b        long double x87_r7_35 = fconvert.t(snail->cutscene_roll_progress)
 00442c21        long double temp6_1 = fconvert.t(0f)
 00442c21        x87_r7_35 - temp6_1
 00442c27        int32_t ecx_18 = __builtin_memcpy(&snail->cached_cutscene_matrix, &snail->body.transform, 0x40)
 00442c2e        if ((((x87_r7_35 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_35, temp6_1) ? 1 : 0) << 0xa | (x87_r7_35 == temp6_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 00442c3c        int32_t var_170_12 = ecx_18
-00442c42        rotate_matrix_local_y(&snail->body.transform, fconvert.s(fconvert.t(snail->invincible_shell.cutscene_roll_progress) * fconvert.t(-2.09439516f)))
-00442c4d        long double x87_r7_39 = fconvert.t(snail->invincible_shell.cutscene_roll_step) + fconvert.t(snail->invincible_shell.cutscene_roll_progress)
-00442c53        snail->invincible_shell.cutscene_roll_progress = fconvert.s(x87_r7_39)
+00442c42        rotate_matrix_local_y(&snail->body.transform, fconvert.s(fconvert.t(snail->cutscene_roll_progress) * fconvert.t(-2.09439516f)))
+00442c4d        long double x87_r7_39 = fconvert.t(snail->cutscene_roll_step) + fconvert.t(snail->cutscene_roll_progress)
+00442c53        snail->cutscene_roll_progress = fconvert.s(x87_r7_39)
 00442c59        long double temp7_1 = fconvert.t(1f)
 00442c59        x87_r7_39 - temp7_1
 00442c64        if ((((x87_r7_39 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_39, temp7_1) ? 1 : 0) << 0xa | (x87_r7_39 == temp7_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-00442c66        snail->invincible_shell.cutscene_roll_progress = 1f
-00442c78        if (snail->invincible_shell.channel_release_steps_active == 0)
+00442c66        snail->cutscene_roll_progress = 1f
+00442c78        if (snail->channel_release_steps_active == 0)
 00442d65        __builtin_memcpy(&snail->jetpack_channel.body.transform, &snail->body.transform, 0x40)
 00442d74        __builtin_memcpy(&snail->weapon_channels[0].body.transform, &snail->body.transform, 0x40)
 00442d83        __builtin_memcpy(&snail->weapon_channels[2].body.transform, &snail->body.transform, 0x40)

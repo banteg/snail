@@ -106,11 +106,11 @@ LABEL_3:
       cutscene->state = CUT_SCENE_STATE_COMPLETION_BLEND;
       cutscene->progress = 0.0;
       cutscene->progress_step = 0.0083333338;
-      v20->invincible_shell.cutscene_roll_step = 0.016666668;
-      cutscene->presentation->invincible_shell.cutscene_roll_progress = cutscene->presentation->invincible_shell.cutscene_roll_step;
+      v20->cutscene_roll_step = 0.016666668;
+      cutscene->presentation->cutscene_roll_progress = cutscene->presentation->cutscene_roll_step;
       cutscene->force_camera_update = 1;
       level_mode = g_game_base->subgame.level_mode;
-      if ( level_mode )
+      if ( level_mode != 0 )
       {
         if ( level_mode == 1 )
           initialize_completion_screen(&g_game_base->subgame.completion, cutscene->player->parcels_collected, 1u);
@@ -151,7 +151,7 @@ LABEL_25:
       alphai = &cutscene->presentation->body.transform.position;
       to.position.x = to.position.x - v26 * 0.5;
       look_at_point(&to, alphai);
-      qmemcpy(&transform, &cutscene->presentation->owner_player->cameraman, sizeof(transform));
+      transform = cutscene->presentation->owner_player->cameraman.live_matrix;
       alphaj = cutscene->progress * 1.5707964;
       alphak = sine(alphaj);
       linear_interpolate_matrix(&cutscene->live_matrix, &transform, &to, alphak);
@@ -174,7 +174,7 @@ LABEL_25:
       cutscene->live_matrix.position.y = v28->y;
       cutscene->live_matrix.position.z = v28->z;
       look_at_point(&cutscene->live_matrix, alphal);
-      if ( !cutscene->presentation->anim_manager.queue_count )
+      if ( cutscene->presentation->anim_manager.queue_count == 0 )
         dispatch_cutscene_animation(cutscene->presentation, 9, 0, -1);
       goto LABEL_29;
     case CUT_SCENE_STATE_INTRO_RETURN_BLEND:
@@ -188,7 +188,7 @@ LABEL_25:
       alphab = &cutscene->presentation->body.transform.position;
       transform.position.x = v7 + v7 + transform.position.x;
       look_at_point(&transform, alphab);
-      qmemcpy(&to, &cutscene->presentation->owner_player->cameraman, sizeof(to));
+      to = cutscene->presentation->owner_player->cameraman.live_matrix;
       alphac = cutscene->progress * 1.5707964;
       alphad = sine(alphac);
       linear_interpolate_matrix(&cutscene->live_matrix, &transform, &to, alphad);
@@ -245,7 +245,7 @@ LABEL_11:
         to.position.y = 0.0;
       look_at_point(&to, &cutscene->presentation->body.transform.position);
       v15 = cutscene->progress;
-      qmemcpy(&transform, &cutscene->presentation->owner_player->cameraman, sizeof(transform));
+      transform = cutscene->presentation->owner_player->cameraman.live_matrix;
       alphaf = v15 * 1.5707964;
       alphag = sine(alphaf);
       linear_interpolate_matrix(&cutscene->live_matrix, &transform, &to, alphag);
@@ -270,8 +270,8 @@ LABEL_11:
         cutscene->live_matrix.position.y = 0.0;
       look_at_point(&cutscene->live_matrix, &v17->body.transform.position);
       player = cutscene->player;
-      if ( LOBYTE(player->resurrect_active)
-        || (initialize_subgoldy_death(player), cutscene->player->attachment_exit_gate_b) )
+      if ( LOBYTE(player->resurrect_active) != 0
+        || (initialize_subgoldy_death(player), cutscene->player->attachment_exit_gate_b != 0) )
       {
 LABEL_29:
         cutscene->progress = cutscene->progress_step + cutscene->progress;

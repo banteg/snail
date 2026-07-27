@@ -1,14 +1,13 @@
 # release_snail_weapons @ 0x442e40
 
 Authored `cRSnail::ReleaseWeapons()` helper that arms the Snail weapon and
-jetpack channel release steps once, then marks
-`Invincible::channel_release_steps_active`.
+jetpack channel release steps once, then marks the Snail-owned
+`channel_release_steps_active` gate.
 
 Recovered relationships:
 
-- The one-shot gate is the existing
-  `Snail::invincible_shell.channel_release_steps_active`
-  byte at `presentation +0x1934`.
+- The one-shot gate is `Snail::channel_release_steps_active` at
+  `presentation +0x1934`.
 - Release step writes target:
   - `jetpack_channel.release_step` at `+0x15b0`;
   - `weapon_channels[0].release_step` at `+0x0a1c`;
@@ -43,7 +42,7 @@ Focused match:
   source.
 
 iOS and Android retain this method on cRSnail, confirming the four animation
-channels, cRInvincible gate, and Player backlink all belong to the one exact
+channels, release gate, and Player backlink all belong to the one exact
 `Snail` at `Player +0x2984`.
 
 2026-07-09 frame campaign: dead pad floats are optimized away (still 0x10).
@@ -62,9 +61,17 @@ raw-vector locals regress to 68.80% and are not retained.
 2026-07-18 analysis replay: the Windows Binary Ninja and IDA databases now pin
 this as `void __thiscall release_snail_weapons(Snail* snail)`, replacing the
 stale `void*`/`int this` receivers. Both decompilers read the four exact embedded
-`Weapon::release_step` vectors, the `Invincible` one-shot gate, the `Player`
+`Weapon::release_step` vectors, the Snail-owned one-shot gate, the `Player`
 backlink and velocity, and `Player::sub_hover` without raw owner offsets. A
 focused replay verifies the exact `SubHover`, `Weapon`, `Invincible`, `Snail`,
 and `Player` sizes before applying either ABI. This is ownership/decompile
 recovery only: the authored matcher remains honestly at 92.80%, with no source
 padding or fakematch.
+
+2026-07-28 mobile boundary correction: Android and iOS place
+`cutscene_roll_progress`, `cutscene_roll_step`, and the release gate at
+`cRSnail +0x1764/+0x1768/+0x176c`. Their exact `cRInvincible` state machine
+ends immediately before those lanes, just as the Windows owner ends at
+`Snail +0x192c`. The three fields now belong directly to `Snail`; the Windows
+`Invincible` extent is the cross-port-consistent 0x98 bytes. This is
+codegen-neutral ownership recovery, not a matching shim.

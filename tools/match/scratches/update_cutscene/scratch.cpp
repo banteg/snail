@@ -167,9 +167,9 @@ void CutScene::update_cutscene()
         state = CUT_SCENE_STATE_COMPLETION_BLEND;
         progress = 0.0f;
         progress_step = 0.00833333377f;
-        presentation->invincible_shell.cutscene_roll_step = 0.0166666675f;
-        presentation->invincible_shell.cutscene_roll_progress =
-            presentation->invincible_shell.cutscene_roll_step;
+        presentation->cutscene_roll_step = 0.0166666675f;
+        presentation->cutscene_roll_progress =
+            presentation->cutscene_roll_step;
         force_camera_update = 1;
 
         GameRoot* game = g_game;

@@ -2,7 +2,7 @@
 
 Exact `cRInvincible::Init` helper at `0x444ac0`.
 
-The receiver is the 0xa4-byte `Invincible` visual embedded at
+The receiver is the 0x98-byte `Invincible` visual embedded at
 `Snail +0x1894` (`Player +0x4218`). It clears the
 owner's state and restores snail skin slot zero through the adjacent
 exact `cRSnailSkin` owner.
@@ -40,3 +40,9 @@ The focused Snail-presentation replay now owns this initializer together with
 type. Binary Ninja and IDA both retain the exact `Invincible*` receiver, the
 typed inactive state, and the adjacent root-owned `SnailSkin` handoff. The
 matcher remains exact at 7/7 instructions with all three operands clean.
+
+2026-07-28 mobile extent correction: both mobile ports end the corresponding
+`cRInvincible` state/fade/spin owner before the cRSnail roll/release lanes at
+`+0x1764`. Applying the same boundary to Windows yields the exact 0x98-byte
+owner ending at `Snail +0x192c`; the adjacent roll pair and release gate are
+now correctly direct `Snail` fields.

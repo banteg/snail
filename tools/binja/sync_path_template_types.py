@@ -257,6 +257,9 @@ SNAIL_FIELD_UPDATES = (
     ("0x15cc", "snail_hotspot_source_body", "RenderableBod"),
     ("0x164c", "snail_hotspot_body", "RenderableBod"),
     ("0x1894", "invincible_shell", "Invincible"),
+    ("0x192c", "cutscene_roll_progress", "float"),
+    ("0x1930", "cutscene_roll_step", "float"),
+    ("0x1934", "channel_release_steps_active", "uint8_t"),
     ("0x1938", "snail_skin", "SnailSkin"),
     ("0x1958", "cutscene", "CutScene"),
 )
@@ -294,9 +297,6 @@ INVINCIBLE_FIELD_UPDATES = (
     ("0x88", "spin_phase_step", "float"),
     ("0x8c", "fade_progress", "float"),
     ("0x90", "fade_step", "float"),
-    ("0x98", "cutscene_roll_progress", "float"),
-    ("0x9c", "cutscene_roll_step", "float"),
-    ("0xa0", "channel_release_steps_active", "uint8_t"),
 )
 
 RENDERABLE_BOD_FIELD_UPDATES = (

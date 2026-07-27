@@ -1,6 +1,6 @@
 # update_invincible_shell @ 0x444b50
 
-Exact source-shaped recovery of authored `cRInvincible::AI` on the 0xa4-byte
+Exact source-shaped recovery of authored `cRInvincible::AI` on the 0x98-byte
 `Invincible` visual embedded at `Snail +0x1894`.
 
 Recovered behavior:
@@ -54,9 +54,15 @@ clean.
 ## 2026-07-18 durable lifecycle replay
 
 The focused Snail-presentation lane now directly replays `Init`, `Start`, and
-this `AI` method after importing the exact 0xa4-byte `Invincible` owner. The
+this `AI` method after importing the exact 0x98-byte `Invincible` owner. The
 paired tracked decompiles expose enum states, the root-owned movement flag and
 `SnailSkin`, inherited colour and transform fields, and the embedded shell
 render bit; stale `InvincibleShellController`, raw root offsets, padding-field
 accesses, and the world/local rotation mislabel are rejected by strict health
 checks. Focused matching remains exact at 98/98 with all 28 operands clean.
+
+2026-07-28 mobile extent correction: Android and iOS independently end the
+state/fade/spin layout before `cRSnail +0x1764`, where Snail's cutscene roll
+pair begins. Windows now mirrors that boundary: `Invincible` ends at
+`Snail +0x192c` after 0x98 bytes, and the unrelated roll/release lanes no
+longer inflate this authored owner.

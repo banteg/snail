@@ -11,9 +11,11 @@ from _narrow_sync import (
     apply_proto_updates,
     apply_symbol_updates,
     apply_user_var_updates,
+    current_struct_fields,
     current_type_widths,
     emit_summary,
     types_declare_if_missing,
+    types_declare_missing_only,
 )
 
 
@@ -31,7 +33,7 @@ EXPECTED_OWNER_SIZES = {
     "AnimManager": 0x48,
     "SubHover": 0x214,
     "Weapon": 0x3DC,
-    "Invincible": 0xA4,
+    "Invincible": 0x98,
     "SnailSkin": 0x20,
     "Snail": 0x19B4,
     "Player": 0x4364,
@@ -261,23 +263,62 @@ def main() -> int:
             header_path=header_path,
             required_structs=EXPECTED_OWNER_SIZES,
         ),
-        *apply_symbol_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=SYMBOL_UPDATES,
-            kind="function",
-        ),
-        *apply_proto_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=PROTO_UPDATES,
-        ),
-        *apply_user_var_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=PRESENTATION_SLOT_CURSOR_USER_VAR_UPDATES,
-        ),
     ]
+
+    observed_invincible_size = current_type_widths(
+        REPO_ROOT,
+        target=args.target,
+        type_names=("Invincible",),
+    ).get("Invincible")
+    observed_snail_fields = current_struct_fields(
+        REPO_ROOT,
+        target=args.target,
+        struct_name="Snail",
+    )
+    expected_snail_boundary = {
+        0x1894: "invincible_shell",
+        0x192C: "cutscene_roll_progress",
+        0x1930: "cutscene_roll_step",
+        0x1934: "channel_release_steps_active",
+        0x1938: "snail_skin",
+    }
+    if (
+        observed_invincible_size != EXPECTED_OWNER_SIZES["Invincible"]
+        or any(
+            observed_snail_fields.get(offset, ("", ""))[0] != field_name
+            for offset, field_name in expected_snail_boundary.items()
+        )
+    ):
+        operations.append(
+            types_declare_missing_only(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                replace_types=("Invincible", "Snail"),
+                include_types=("Invincible", "Snail"),
+            )
+        )
+
+    operations.extend(
+        (
+            *apply_symbol_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=SYMBOL_UPDATES,
+                kind="function",
+            ),
+            *apply_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=PROTO_UPDATES,
+            ),
+            *apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=PRESENTATION_SLOT_CURSOR_USER_VAR_UPDATES,
+            ),
+        )
+    )
 
     observed_sizes = current_type_widths(
         REPO_ROOT,

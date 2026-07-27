@@ -24,7 +24,7 @@ EXPECTED_TYPE_WIDTHS = {
     "BodBase": 0x38,
     "RenderableBod": 0x80,
     "Weapon": 0x3DC,
-    "Invincible": 0xA4,
+    "Invincible": 0x98,
     "Snail": 0x19B4,
     "Player": 0x4364,
     "SubgameRuntime": 0x1272838,

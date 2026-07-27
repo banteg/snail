@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: release_snail_weapons @ 0x442e40 */
 
-00442e4e        if (snail->invincible_shell.channel_release_steps_active == 0)
+00442e4e        if (snail->channel_release_steps_active == 0)
 00442e74        float var_c_1 = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(6.10351562e-05f))
 00442e7d        long double x87_r7_5 = random_float_below(1f, nullptr) + fconvert.t(0.5f)
 00442e95        float var_4_1 = fconvert.s(fconvert.t(snail->owner_player->velocity.z))
@@ -31,5 +31,5 @@
     .z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(owner_player->velocity.z))) * fconvert.t(0.300000012f))
 }
 00443059        end_jetpack_hover(&owner_player->sub_hover)
-0044305e        snail->invincible_shell.channel_release_steps_active = 1
+0044305e        snail->channel_release_steps_active = 1
 00443069        return
