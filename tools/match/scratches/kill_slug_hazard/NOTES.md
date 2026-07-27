@@ -41,3 +41,15 @@ Binary Ninja and IDA now render the exact gate and stores as
 `SUB_SLUG_DEATH_TOSS_RIGHT/LEFT`. This is the existing cross-port lifecycle
 evidence carried through the real owner, not a new matching condition; focused
 Wibo remains exact at 35/35 instructions with all seven operands clean.
+
+## 2026-07-28 mobile-backed death-voice expression
+
+iOS `cRSlug::Kill()` lines 27-32 retains the death-voice selection as the sum
+of two separately scaled signed-unit terms before adding voice id 28. Android
+independently preserves the random draw immediately before `VoicePlay`, but its
+decompiler drops the float operands.
+
+The Windows scratch now uses the equivalent authored hierarchy
+`random * 0.0000305175781f * -2.0f` rather than the folded
+`random * -0.000061035156f`. VC6 emits the same target bytes: focused matching
+remains exact at 35/35 instructions with all seven masked operands clean.

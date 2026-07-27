@@ -702,3 +702,18 @@ reanalysis; a second complete replay skips all seven as already current.
 Matcher source remains untouched at the honest 54.23%, 651/673-instruction
 frontier, prefix 8/673, with all 88 operands clean and no mismatches. No
 fakematch or synthetic owner was introduced.
+
+## 2026-07-28 mobile-backed two-choice audio expressions
+
+iOS `cRSubGoldy::Collision()` preserves both remaining two-choice selections
+as the sum of two separately scaled signed-unit terms: the garbage-impact sound
+at lines 171-174 and the first-hit slug voice at lines 233-240 both use
+`random * 0.0000305175781 + random * 0.0000305175781`. Android independently
+keeps each random draw adjacent to the same sound or voice call, although its
+decompiler drops the arithmetic operands.
+
+The Windows scratch now spells the equivalent multiply chain as
+`random * 0.0000305175781f * -2.0f` instead of folding it to
+`random * -0.000061035156f`. This is the nearest VC6-compatible rendering of
+the cross-port source hierarchy and remains byte-identical: focused matching is
+75.06%, 670/673 instructions, prefix 8/673, with all 89 masked operands clean.

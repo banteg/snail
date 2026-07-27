@@ -9,7 +9,8 @@ int next_math_random_value();
 void Slug::kill_slug_hazard()
 {
     if (state == SUB_SLUG_STATE_ACTIVE) {
-        int variant = (int)((float)next_math_random_value() * -0.000061035156f);
+        int variant = (int)((float)next_math_random_value()
+            * 0.0000305175781f * -2.0f);
         play_slug_voice(28 - variant);
         float x = transform.position.x;
         state = SUB_SLUG_STATE_DEATH_TOSS_PENDING;

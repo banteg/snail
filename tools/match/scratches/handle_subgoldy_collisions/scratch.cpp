@@ -134,7 +134,7 @@ void Player::handle_subgoldy_collisions()
                     damage_gauge.apply_damage_gauge_delta(0.039999999f, 0);
                     g_sound_effect_manager.play_sound_effect(
                         39 - (int)((float)next_math_random_value()
-                            * -0.000061035156f));
+                            * 0.0000305175781f * -2.0f));
                 }
             }
         }
@@ -170,7 +170,7 @@ void Player::handle_subgoldy_collisions()
                                     .player_encounter_latched = 1;
                                 game->slug_hazards.slots[m].play_slug_voice(
                                     34 - (int)((float)next_math_random_value()
-                                        * -0.000061035156f));
+                                        * 0.0000305175781f * -2.0f));
                                 float half = distance * 0.5f;
                                 presentation.wobble.lift_phase_step = 0.0f;
                                 burst_offset = probe_b * half;
