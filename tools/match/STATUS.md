@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**531/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93767/294937** bytes (**31.79%**) are proof-grade, and overall fuzzy is **78.56%**.
+**531/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93767/294937** bytes (**31.79%**) are proof-grade, and overall fuzzy is **78.58%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -633,7 +633,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 648/647 | 77.07% | 1/647 | 96 ok |  | core |
-| 🚧 | border_input_text | 0x4035b0 | 1581 | 442/446 | 64.64% | 2/446 | 8 ok |  | core |
+| 🚧 | border_input_text | 0x4035b0 | 1581 | 444/446 | 69.44% | 2/446 | 8 ok |  | core |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.01% | 48/566 | 6 unaudited, 52 ok |  | core |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 430/439 | 56.16% | 6/439 | 12 unaudited, 28 ok |  | boundary |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  | boundary |

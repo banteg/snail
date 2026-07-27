@@ -107,3 +107,24 @@ clears the bit before committing the edited name and destroying the screen.
 The shared role is therefore named `TEXT_INPUT_COMPLETE`, distinct from the
 earlier `TEXT_INPUT_SUBMIT_REQUESTED` command bit. The constant-only rewrite is
 codegen-neutral.
+
+## 2026-07-27 paired-mobile cursor-slot lifetimes
+
+Both mobile bodies preserve key codes 3 and 4 as an in-place swap between the
+current text slot and its immediate neighbor, followed by the cursor update.
+Android exposes the pair at `cRBorder +0x2c4 + cursor` with the cursor at
+`+0x6f4`; iOS independently shows the same layout and operation. Windows has
+the corresponding lanes eight bytes later.
+
+Expressing each swap from one `current` slot pointer recovers the native load,
+address, store, and cursor-update schedule for both branches. The focused Wibo
+score rises from 64.64% to 69.44%, with 444/446 candidate/target instructions
+and all eight masked operands clean. This is a source-lifetime recovery, not a
+forced register assignment.
+
+Broader probes were rejected: retaining a whole-function input-flags snapshot
+fell to 52.22%, direct compound updates in the completion tail fell to 68.54%
+and disturbed the proven root operand, and an integer-index cleanup shift fell
+to 68.99%. The remaining mismatch is dominated by compiler register lifetime
+and shift-loop scheduling; no volatile state, dead loads, barriers, or dummy
+operations were retained.

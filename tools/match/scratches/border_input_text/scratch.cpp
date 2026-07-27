@@ -45,20 +45,22 @@ void FrontendWidget::border_input_text()
     } else if (key == 3) {
         int cursor = input_cursor;
         if (cursor > 0) {
-            char old = text_buffer[cursor];
-            char previous = text_buffer[cursor - 1];
-            text_buffer[cursor] = previous;
-            text_buffer[cursor - 1] = old;
+            char* current = &text_buffer[cursor];
+            char old = *current;
+            char previous = current[-1];
+            *current = previous;
+            current[-1] = old;
             int updated_cursor = input_cursor - 1;
             input_cursor = updated_cursor;
         }
     } else if (key == 4) {
         int cursor = input_cursor;
         if (cursor < input_length) {
-            char old = text_buffer[cursor];
-            char next = text_buffer[cursor + 1];
-            text_buffer[cursor] = next;
-            text_buffer[cursor + 1] = old;
+            char* current = &text_buffer[cursor];
+            char old = *current;
+            char next = current[1];
+            *current = next;
+            current[1] = old;
             int updated_cursor = input_cursor + 1;
             input_cursor = updated_cursor;
         }
