@@ -154,10 +154,9 @@
 00443d2a        if (esi_1 s> 0)
 00443d30        int32_t i_2 = i_6
 00443d36        while (i_2 s> 0)
-00443d40        void* var_228_3 = &data_4a3f10
 00443d45        int32_t var_22c_1 = ecx_13
 00443d51        int32_t eax_29
-00443d51        eax_29, x87control = ftol(x87control, random_float_below(fconvert.s(float.t(i_6))))
+00443d51        eax_29, x87control = ftol(x87control, random_float_below(fconvert.s(float.t(i_6)), "P1"))
 00443d58        int32_t var_214_1 = 0
 00443d6b        int32_t candidate_count = (&g_parcel_set_buckets)[eax_29].candidate_count
 00443d75        var_210_1 = ebx_25 + candidate_count
@@ -244,10 +243,9 @@
 00443f7c        int32_t parcel_count_1 = i_3 - 1
 00443f7f        int32_t parcel_count_4 = parcel_count_1
 00443f85        while (i_3 s> 0)
-00443f8f        void* var_228_5 = &data_4a3f0c
 00443f94        int32_t parcel_count_3 = parcel_count_1
 00443fa0        int32_t eax_39
-00443fa0        eax_39, x87control = ftol(x87control, random_float_below(fconvert.s(float.t(i_4))))
+00443fa0        eax_39, x87control = ftol(x87control, random_float_below(fconvert.s(float.t(i_4)), "P2"))
 00443fc4        int32_t segment_index_1 = (&g_zero_parcel_buckets)[eax_39].segment_index
 00443fcc        var_210_1 += (&g_zero_parcel_buckets)[eax_39].candidate_count
 00443fe0        out_angle = &(&g_zero_parcel_buckets)[eax_39]

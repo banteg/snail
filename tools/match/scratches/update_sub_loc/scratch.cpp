@@ -4,11 +4,10 @@
 // and the default lane cull or sync the attachment skirt color.
 
 #include "game_root.h"
+#include "rmath_random.h"
 #include "track_attachment_types.h"
 #include "vector3.h"
 
-float random_float_below(float maximum, const char* tag);
-float random_signed_float_below(float maximum, const char* tag);
 
 
 void SubLoc::update_sub_loc()

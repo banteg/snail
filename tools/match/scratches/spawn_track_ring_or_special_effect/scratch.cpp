@@ -3,6 +3,7 @@
 #include "bod_ai_dispatch.h"
 #include "game_root.h"
 #include "player.h"
+#include "rmath_random.h"
 #include "ring_special_effect_types.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
@@ -10,7 +11,6 @@
 #include <stddef.h>
 
 
-float random_float_below(float upper_bound, const char* tag);
 int report_errorf(const char* format, ...);
 
 struct SubRingSlotCursor {

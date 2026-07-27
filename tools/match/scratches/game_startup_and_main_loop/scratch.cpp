@@ -10,6 +10,7 @@
 #include "loading_bar.h"
 #include "main_loop_state.h"
 #include "runtime_config.h"
+#include "rmath_random.h"
 #include "audio_system.h"
 #include "win32_window_state.h"
 
@@ -29,7 +30,6 @@ char validate_config_tail_stub(void* config_tail); // @ 0x42f5b0
 void abort_startup_with_3d_error(); // @ 0x4088a0
 int rebuild_game_archive_if_needed(); // @ 0x405370
 void* load_config_file(char* file_name, void* buffer); // @ 0x42f470
-void initialize_trigonometry_tables(); // @ 0x44c930
 char initialize_game_data_archive(); // @ 0x430e40
 int snapshot_current_display_mode(); // @ 0x407850
 void initialize_mouse_authored_scale_from_clip_rect(); // @ 0x44bbb0
@@ -55,7 +55,6 @@ char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f
 int uninitialize_game_data_archive(); // @ 0x430ef0
 int uninitialize_input_devices(); // @ 0x411d80
 int restore_desktop_display_mode(); // @ 0x407860
-double random_float_below(float limit, int unused); // @ 0x44dc90 caller shape
 int next_math_random_value(); // @ 0x44c900
 
 int __stdcall game_startup_and_main_loop(

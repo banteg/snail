@@ -2,9 +2,8 @@
 /* function: random_float_below @ 0x44dc90 */
 /* selector: random_float_below */
 
-// Returns a uniform random float in `[0, upper_bound)` by scaling the engine RNG output with the supplied upper bound.
-double __cdecl sub_44DC90(float a1)
+// Exact Windows `RAND(float, char*)` implementation: returns a uniform random float in `[0, upper_bound)` by scaling the engine RNG output with the supplied upper bound. The release body ignores the retained debug-tag argument.
+float __cdecl random_float_below(float upper_bound, char *tag)
 {
-  return (double)j__rand() * a1 * 0.000030517578;
+  return (double)j_rand() * upper_bound * 0.000030517578;
 }
-

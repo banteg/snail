@@ -46,8 +46,7 @@
 00406f2a        if (i_3 s> 0)
 00406f2c        int32_t i_2 = i_3
 00406f44        int32_t i_1
-00406f2e        int32_t var_38_3 = 0
-00406f34        random_float_below(1f)
+00406f34        random_float_below(1f, nullptr)
 00406f3e        next_math_random_value()
 00406f43        i_1 = i_2
 00406f43        i_2 -= 1

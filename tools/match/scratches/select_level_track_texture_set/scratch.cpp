@@ -1,8 +1,8 @@
 // select_level_track_texture_set @ 0x410730 (thiscall, ret 0x4)
 
 #include "track.h"
+#include "rmath_random.h"
 
-double random_float_below(float upper_bound, int zero);
 
 void Track::Change(int texture_set)
 {

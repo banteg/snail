@@ -37,9 +37,9 @@
 00437f77        initialize_sub_lazer_pool(&game->sub_lazers)
 00437f82        initialize_salt_hazard_pool(&game->salt_hazards)
 00437f8c        reset_voice_manager(&g_voice_manager)
-00437fa0        int32_t __saved_ebp_16
+00437fa0        int32_t __saved_ebp_14
 00437fa0        int32_t edx
-00437fa0        __saved_ebp_16, edx = load_frontend_level_by_mode_and_index(&game->level_definition, game->level_mode, level_index)
+00437fa0        __saved_ebp_14, edx = load_frontend_level_by_mode_and_index(&game->level_definition, game->level_mode, level_index)
 00437fb7        if (game->selected_level_record_active != 0 || game->selected_level_record_persistent != 0)
 00438065        game->rate_or_level_arg.base_rate = game->selected_level_record->replay_speed_scalar.bits
 00438071        game->level_mode = game->selected_level_record->replay_mode_id
@@ -52,13 +52,13 @@
 00437fdf        if (level_mode == 0 || level_mode == 4 || level_mode == 7)
 00438030        if (game->level_definition.selected_speed.bits != 0xbf800000)
 00438057        game->rate_or_level_arg.base_rate = fconvert.s(fconvert.t(game->level_definition.selected_speed.bits) * fconvert.t(0.00999999978f) * fconvert.t(0.900000036f) + fconvert.t(0.200000003f))
-0043803a        game->rate_or_level_arg.base_rate = fconvert.s(calc_slider_to_rate(0f))
+0043803a        game->rate_or_level_arg.base_rate = fconvert.s(calc_slider_to_rate(game, 0f))
 00437fe4        if (level_mode == 1)
-00437fec        int32_t __saved_ebp_6 = __saved_ebp_16
-00437ffd        game->rate_or_level_arg.base_rate = fconvert.s(calc_slider_to_rate(fconvert.s(float.t(g_runtime_config.completion_bonus_x_source) * fconvert.t(0.00999999978f))))
+00437fec        int32_t __saved_ebp_6 = __saved_ebp_14
+00437ffd        game->rate_or_level_arg.base_rate = fconvert.s(calc_slider_to_rate(game, fconvert.s(float.t(g_runtime_config.completion_bonus_x_source) * fconvert.t(0.00999999978f))))
 0043809b        game->challenge_difficulty_scalar = fconvert.s(float.t(g_runtime_config.completion_bonus_y_source) * fconvert.t(0.00999999978f))
 0043800e        if (level_mode == 2)
-00438021        game->rate_or_level_arg.base_rate = fconvert.s(calc_slider_to_rate(g_runtime_config.default_challenge_speed_slider))
+00438021        game->rate_or_level_arg.base_rate = fconvert.s(calc_slider_to_rate(game, g_runtime_config.default_challenge_speed_slider))
 004380b0        if (game->selected_level_record_active != 0 || game->selected_level_record_persistent != 0)
 0043812a        struct SubSolution* selected_level_record = game->selected_level_record
 00438130        float edx_5
@@ -82,8 +82,7 @@
 00438181        int16_t x87control_1 = rebuild_track_runtime_from_segments(game, level_index)
 0043818d        if (game->level_definition.track_texture_set != 5)
 00438255        activate_landscape_entry(&game->landscape_manager, game->level_definition.landscape_script_index)
-00438193        int32_t __saved_ebp_10 = 0
-004381a1        int32_t eax_9 = ftol(x87control_1, random_float_below(4f))
+004381a1        int32_t eax_9 = ftol(x87control_1, random_float_below(4f, nullptr))
 004381a9        int32_t script_index
 004381a9        if (eax_9 u> 3)
 00438200        script_index = level_index
@@ -97,8 +96,7 @@
 004381e9        case 3
 004381f9        script_index = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceRed.txt")
 0043820b        activate_landscape_entry(&game->landscape_manager, script_index)
-00438210        int32_t __saved_ebp_13 = 0
-00438216        long double st0_5 = random_float_below(1f)
+00438216        long double st0_5 = random_float_below(1f, nullptr)
 0043821b        long double temp1_1 = fconvert.t(0.5f)
 0043821b        st0_5 - temp1_1
 00438229        if ((((st0_5 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(st0_5, temp1_1) ? 1 : 0) << 0xa | (st0_5 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
@@ -117,9 +115,11 @@
 0043829d        game->banners.slots[0].bod.position.z = 0f
 004382a3        game->banners.slots[0].bod.position.y = 0f
 004382a9        game->banners.slots[0].bod.position.x = 0
+004382af        uint32_t list_flags_2 = game->banners.slots[0].bod.bod.list_flags
+004382b5        long double x87_r7_25 = float.t(game->first_block_row_count)
 004382bf        game->banners.slots[0].owner_player = &game->player
-004382c8        game->banners.slots[0].bod.position.z = fconvert.s(float.t(game->first_block_row_count))
-004382d9        game->banners.slots[0].bod.bod.list_flags &= 0xffffffdf
+004382c8        game->banners.slots[0].bod.position.z = fconvert.s(x87_r7_25)
+004382d9        game->banners.slots[0].bod.bod.list_flags = list_flags_2 & 0xffffffdf
 004382df        game->banners.slots[0].bod.color.a = 0.999000013f
 004382ef        if ((0x200 & game->banners.slots[1].bod.bod.list_flags) == 0)
 00438300        game->banners.slots[1].bod.bod.list_prev = &game->track_body_list_head
@@ -135,10 +135,11 @@
 0043831f        game->banners.slots[1].bod.position.y = 0f
 00438325        game->banners.slots[1].bod.position.x = 0
 0043832b        uint32_t list_flags = game->banners.slots[1].bod.bod.list_flags
+00438331        long double x87_r7_26 = float.t(game->completion_row_start)
 0043833a        list_flags.b &= 0xdf
 0043833c        game->banners.slots[1].owner_player = &game->player
 00438342        game->banners.slots[1].bod.bod.list_flags = list_flags
-00438348        game->banners.slots[1].bod.position.z = fconvert.s(float.t(game->completion_row_start))
+00438348        game->banners.slots[1].bod.position.z = fconvert.s(x87_r7_26)
 0043834e        game->banners.slots[1].bod.color.a = 0.999000013f
 00438354        game->track_state_latch = 0
 0043835a        game->replay_update_cursor = 0
@@ -305,8 +306,9 @@
 00438653        list_next_2->list_prev:1.b = (&game->barrier):1.b
 00438656        game->barrier.bod.bod.list_flags |= 0x200
 00438636        report_errorf("List ADDafter")
+00438659        int32_t level_mode_2 = game->level_mode
 0043865c        game->barrier.owner_player = &game->player
-00438665        if (game->level_mode == 0)
+00438665        if (level_mode_2 == 0)
 00438680        sprintf(&game->lives_text_widget->text_buffer, "0/%i", game->level_definition.parcel_count)
 0043868e        unhide_border_init(game->lives_icon_widget)
 00438699        unhide_border_init(game->lives_text_widget)

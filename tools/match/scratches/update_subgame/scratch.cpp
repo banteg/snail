@@ -8,6 +8,7 @@
 #include "sub_solution.h"
 #include "new_game_menu.h"
 #include "player.h"
+#include "rmath_random.h"
 #include "runtime_config.h"
 #include "salt_hazard_types.h"
 #include "slug_voice_manager.h"
@@ -29,7 +30,6 @@ struct RuntimeCellSlotBase {
 };
 
 
-float random_float_below(float upper_bound, const char* tag);
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,
     float x,

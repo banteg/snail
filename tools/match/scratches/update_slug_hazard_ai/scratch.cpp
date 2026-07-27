@@ -5,6 +5,7 @@
 #include "font_system.h"
 #include "game_root.h"
 #include "player.h"
+#include "rmath_random.h"
 #include "slug_hazard_types.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
@@ -13,8 +14,6 @@
 
 int next_math_random_value();
 int report_errorf(char* format, ...);
-double random_float_below(float upper_bound, const char* tag);
-double random_signed_float_below(float upper_bound, const char* tag);
 
 void Slug::update_slug_hazard_ai()
 {

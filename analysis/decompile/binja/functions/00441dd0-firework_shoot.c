@@ -8,20 +8,18 @@
 00441dfa        int32_t remaining = count
 00441f46        bool cond:1_1
 00441e09        struct Sprite* sprite = allocate_sprite(&g_sprite_manager, owner, texture_id, 0xffffffff, 0xffffffff)
-00441e10        int32_t var_24_1 = 0
 00441e16        enum SpriteFlag flags = sprite->flags
 00441e19        sprite->draw_mode = 0xa
 00441e26        sprite->corner_scale = 4f
 00441e30        sprite->flags = flags | SPRITE_FLAG_ORIENT_TO_MOTION | SPRITE_FLAG_GAMEPLAY_OWNED
 00441e33        sprite->progress = 0f
-00441e3b        long double x87_r7_2 = random_float_below(0.5f) + fconvert.t(0.800000012f)
-00441e41        int32_t var_2c_2 = 0
+00441e3b        long double x87_r7_2 = random_float_below(0.5f, nullptr) + fconvert.t(0.800000012f)
 00441e47        sprite->lifetime = 0f
 00441e4a        sprite->lifetime_step = 0.277777791f
 00441e5d        sprite->progress_step = fconvert.s(fconvert.t(1f) / (x87_r7_2 * fconvert.t(60f)))
 00441e60        int32_t ecx_1
 00441e60        long double st0_2
-00441e60        st0_2, ecx_1 = random_float_below(0.300000012f)
+00441e60        st0_2, ecx_1 = random_float_below(0.300000012f, nullptr)
 00441e6f        int32_t var_28_1 = ecx_1
 00441e70        float red = fconvert.s(st0_2 + fconvert.t(0.699999988f))
 00441e89        set_color_rgb(&sprite->color, red, fconvert.s(fconvert.t(red) * fconvert.t(0.5f)), 0f)

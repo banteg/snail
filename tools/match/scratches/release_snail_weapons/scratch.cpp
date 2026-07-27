@@ -1,9 +1,9 @@
 // release_snail_weapons @ 0x442e40 (thiscall, ret)
 
 #include "player.h"
+#include "rmath_random.h"
 
 int next_math_random_value();
-float random_float_below(float upper_bound, int tag);
 
 void Snail::release_snail_weapons()
 {

@@ -31,10 +31,10 @@ void __thiscall release_snail_weapons(Snail *snail)
   float v25; // [esp+1Ch] [ebp-4h]
   float v26; // [esp+1Ch] [ebp-4h]
 
-  if ( !snail->invincible_shell.channel_release_steps_active )
+  if ( snail->invincible_shell.channel_release_steps_active == 0 )
   {
     v22 = ((double)next_math_random_value() - 16384.0) * 0.000061035156;
-    v2 = random_float_below(1.0);
+    v2 = random_float_below(1.0, nullptr);
     z = snail->owner_player->velocity.z;
     v10 = v22 * 0.30000001;
     snail->jetpack_channel.release_step.x = v10;
@@ -43,7 +43,7 @@ void __thiscall release_snail_weapons(Snail *snail)
     v18 = z * 0.30000001;
     snail->jetpack_channel.release_step.z = v18;
     v7 = ((double)next_math_random_value() - 16384.0) * 0.000061035156;
-    v3 = random_float_below(1.0);
+    v3 = random_float_below(1.0, nullptr);
     v24 = snail->owner_player->velocity.z;
     v11 = v7 * 0.30000001;
     snail->weapon_channels[0].release_step.x = v11;
@@ -52,7 +52,7 @@ void __thiscall release_snail_weapons(Snail *snail)
     v19 = v24 * 0.30000001;
     snail->weapon_channels[0].release_step.z = v19;
     v8 = ((double)next_math_random_value() - 16384.0) * 0.000061035156;
-    v4 = random_float_below(1.0);
+    v4 = random_float_below(1.0, nullptr);
     v25 = snail->owner_player->velocity.z;
     v12 = v8 * 0.30000001;
     snail->weapon_channels[2].release_step.x = v12;
@@ -61,7 +61,7 @@ void __thiscall release_snail_weapons(Snail *snail)
     v20 = v25 * 0.30000001;
     snail->weapon_channels[2].release_step.z = v20;
     v9 = ((double)next_math_random_value() - 16384.0) * 0.000061035156;
-    v5 = random_float_below(1.0);
+    v5 = random_float_below(1.0, nullptr);
     owner_player = snail->owner_player;
     v26 = owner_player->velocity.z;
     v13 = v9 * 0.30000001;

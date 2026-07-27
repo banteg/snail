@@ -23,7 +23,7 @@ void __thiscall select_level_track_texture_set(Track *track, int32_t texture_set
       v3 = 3;
       break;
     case 5:
-      v3 = (__int64)random_float_below(4.0);
+      v3 = (__int64)random_float_below(4.0, nullptr);
       break;
     default:
       v3 = texture_set;

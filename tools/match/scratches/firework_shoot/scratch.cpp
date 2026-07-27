@@ -1,11 +1,11 @@
 // firework_shoot @ 0x441dd0 (thiscall, ret 0x10)
 
 #include "firework.h"
+#include "rmath_random.h"
 #include "runtime_config.h"
 #include "sprite.h"
 
 
-double random_float_below(float upper_bound, int tag);
 int next_math_random_value();
 
 void FireWork::firework_shoot(

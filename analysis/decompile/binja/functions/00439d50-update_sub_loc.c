@@ -18,8 +18,7 @@
 00439d87        long double temp0_1 = fconvert.t(game_base_1->subgame.player.body.transform.position.z)
 00439d87        x87_r7_1 - temp0_1
 00439d92        if ((((x87_r7_1 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp0_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp0_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00439d98        void* __saved_edi_1 = &data_4a4dc8
-00439da2        long double st0_1 = random_float_below(100f)
+00439da2        long double st0_1 = random_float_below(100f, "W")
 00439da7        long double temp3_1 = fconvert.t(4f)
 00439da7        st0_1 - temp3_1
 00439db5        if ((((st0_1 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(st0_1, temp3_1) ? 1 : 0) << 0xa | (st0_1 == temp3_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
@@ -32,14 +31,13 @@
 00439dd4        origin.x = x
 00439dde        float var_18_1 = fconvert.s(x87_r7_4)
 00439de9        var_34.x = cell->lane_and_flags u>> 8 & 0xf
-00439df5        char* __saved_edi_2 = "Wall2"
 00439dff        float z_1 = z
 00439e15        origin = struct Vec3 {
     .y = var_18_1
     .z = z
     .x = fconvert.s(float.t(var_34.x.q) * fconvert.t(0.5f) + fconvert.t(x))
 }
-00439e19        long double st0_2 = random_signed_float_below(3f)
+00439e19        long double st0_2 = random_signed_float_below(3f, "Wall2")
 00439e1e        game_base_1 = g_game_base
 00439e33        float y = game_base_1->subgame.player.body.transform.position.y
 00439e39        long double x87_r7_10 = st0_2 + fconvert.t(8f) + fconvert.t(game_base_1->subgame.player.body.transform.position.z)

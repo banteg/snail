@@ -40,14 +40,11 @@
 0043f2b2        add_subgoldy_score(owner_player_1, 0, 0)
 0043f2cd        append_subgame_contact_target(&sub_garbage->owner_game->enemy_manager, &sub_garbage->body.transform.position, sub_garbage->radius, 0, sub_garbage)
 0043f2d2        goto label_43f4de
-0043f2d7        case SUB_GARBAGE_STATE_BURST_PENDING
-0043f2d7        void* __saved_ebp_2 = &data_4a4e6c
+0043f2e1        case SUB_GARBAGE_STATE_BURST_PENDING
 0043f2e1        sub_garbage->state = SUB_GARBAGE_STATE_BURST
-0043f2f0        float var_c_1 = fconvert.s(random_signed_float_below(0.100000001f))
-0043f2f4        int32_t var_34_2 = 0
-0043f305        int32_t var_3c_1 = 0
-0043f30b        float var_8_1 = fconvert.s(random_float_below(0.200000003f) + fconvert.t(0.100000001f))
-0043f30f        long double st0_3 = random_float_below(0.300000012f)
+0043f2f0        float var_c_1 = fconvert.s(random_signed_float_below(0.100000001f, "GDI"))
+0043f30b        float var_8_1 = fconvert.s(random_float_below(0.200000003f, nullptr) + fconvert.t(0.100000001f))
+0043f30f        long double st0_3 = random_float_below(0.300000012f, nullptr)
 0043f314        struct SubgameRuntime* owner_game = sub_garbage->owner_game
 0043f325        long double x87_r6_1 = fconvert.t(owner_game->subgame_rate)
 0043f33c        sub_garbage->velocity.x = fconvert.s(x87_r6_1 * fconvert.t(var_c_1))

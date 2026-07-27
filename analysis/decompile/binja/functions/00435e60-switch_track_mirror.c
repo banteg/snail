@@ -3,8 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: switch_track_mirror @ 0x435e60 */
 
-00435e61        char* var_8 = "Mirror"
-00435e6d        long double st0 = random_float_below(1f)
+00435e6d        long double st0 = random_float_below(1f, "Mirror")
 00435e72        long double temp0 = fconvert.t(0.5f)
 00435e72        st0 - temp0
 00435e7d        int16_t eax_1 = (st0 < temp0 ? 1 : 0) << 8 | (is_unordered.t(st0, temp0) ? 1 : 0) << 0xa | (st0 == temp0 ? 1 : 0) << 0xe

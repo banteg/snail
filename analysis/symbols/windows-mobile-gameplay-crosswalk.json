@@ -14,12 +14,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 554,
-    "unverified_entries": 231,
-    "verified_android_symbols": 548,
-    "verified_ios_symbols": 444,
-    "available_android_mappings": 548,
-    "available_ios_mappings": 407
+    "verified_entries": 557,
+    "unverified_entries": 228,
+    "verified_android_symbols": 551,
+    "verified_ios_symbols": 447,
+    "available_android_mappings": 551,
+    "available_ios_mappings": 410
   },
   "entries": [
     {
@@ -24281,71 +24281,13 @@
       "address": "0x44c930",
       "windows_name": "initialize_trigonometry_tables",
       "windows_size": 64,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "tMatrix::RotIdentity()",
-          "score": 0.6304,
-          "name_score": 0.384,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "_getTime()",
-          "score": 0.6069,
-          "name_score": 0.3448,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGame::GetSkirtColour(tColourSmall*)",
-          "score": 0.6,
-          "name_score": 0.3333,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "tMatrix::tMatrix(float*)",
-          "score": 0.599,
-          "name_score": 0.3733,
-          "size_score": 0.9375
-        },
-        {
-          "symbol": "tMatrix::tMatrix(float*)",
-          "score": 0.599,
-          "name_score": 0.3733,
-          "size_score": 0.9375
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "tMatrix::RotIdentity()",
-          "score": 0.6304,
-          "name_score": 0.384,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFBinaryKeyedWriter::onScopePushed(OFISerializerKey*)",
-          "score": 0.6134,
-          "name_score": 0.3556,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFTransactionalSaveFile::getSavePathForFile(NSString*)",
-          "score": 0.6005,
-          "name_score": 0.3342,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSprite::SetTextureRef(int, int)",
-          "score": 0.6,
-          "name_score": 0.375,
-          "size_score": 0.9375
-        },
-        {
-          "symbol": "OFHttpService::startRequest(NSString*, NSString*, NSData*, OFHttpServiceObserver*)",
-          "score": 0.5956,
-          "name_score": 0.3677,
-          "size_score": 0.9375
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RMathInit()",
+      "ios_symbol": "RMathInit()",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x44c970",
@@ -25308,141 +25250,25 @@
       "address": "0x44dc70",
       "windows_name": "random_signed_float_below",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "ACos(float)",
-          "score": 0.6256,
-          "name_score": 0.45,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "cRTime::Zero()",
-          "score": 0.6256,
-          "name_score": 0.45,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "tVector::Magnitude() const",
-          "score": 0.58,
-          "name_score": 0.3,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellDatTest()",
-          "score": 0.5714,
-          "name_score": 0.2857,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGoldy::Passed()",
-          "score": 0.5714,
-          "name_score": 0.2857,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRTime::Zero()",
-          "score": 0.6256,
-          "name_score": 0.45,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "OFViewDataSetter::setValueUILabel(UIView*, NSString*) const",
-          "score": 0.5971,
-          "name_score": 0.4118,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "OFBinaryMemorySink::getDataBuffer() const",
-          "score": 0.5891,
-          "name_score": 0.3985,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRSubGame::GetSkirtColourRandomOpen()",
-          "score": 0.5826,
-          "name_score": 0.3043,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFDelegate::isValid() const",
-          "score": 0.5772,
-          "name_score": 0.2954,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "SRAND(float, char*)",
+      "ios_symbol": "SRAND(float, char*)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x44dc90",
       "windows_name": "random_float_below",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "ACos(float)",
-          "score": 0.6256,
-          "name_score": 0.45,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "RShellDatTest()",
-          "score": 0.6069,
-          "name_score": 0.3448,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "MathType16to32(short, float)",
-          "score": 0.6,
-          "name_score": 0.3333,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubTrampRingManager::Init()",
-          "score": 0.5975,
-          "name_score": 0.3291,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::GetTextureRef(int)",
-          "score": 0.5945,
-          "name_score": 0.3241,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRSubGame::GetSkirtColourRandomOpen()",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "MacFindFile(char*)",
-          "score": 0.6222,
-          "name_score": 0.4444,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "OFDelegate::isValid() const",
-          "score": 0.6169,
-          "name_score": 0.3615,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFViewDataSetter::setValueUILabel(UIView*, NSString*) const",
-          "score": 0.6072,
-          "name_score": 0.4286,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRSound::PlayVolume(int, float)",
-          "score": 0.5858,
-          "name_score": 0.3097,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RAND(float, char*)",
+      "ios_symbol": "RAND(float, char*)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x44dcb0",

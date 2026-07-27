@@ -2,7 +2,7 @@
 /* function: place_parcels_on_track @ 0x4438e0 */
 /* selector: place_parcels_on_track */
 
-// Implements `cRSubGame::PlaceParcels()` on the verified SubgameRuntime receiver: scans the embedded SubTracks definition into two global ParcelBucket scratch banks, claims rows in the owned runtime_rows slab, and projects flagged parcel offsets onto their track attachments.
+// Implements the authored void `cRSubGame::PlaceParcels()` method on the verified SubgameRuntime receiver: borrows a row_count-rooted cursor across the embedded SubTracks segment slots, scans authored rows and glyphs into the cross-port `gGroup`/`gGroup0` global ParcelBucket scratch banks, claims rows in the owned runtime_rows slab, and projects flagged parcel offsets onto their track attachments. Mobile and Windows keep digit 0 on the natural catalog path; Windows and Android reset the maximum parcel-set size for each segment and retain only the final segment's maximum when deriving the 80-percent set target.
 void __thiscall place_parcels_on_track(SubgameRuntime *game)
 {
   int32_t level_mode; // eax
@@ -64,8 +64,8 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
   TrackRowCell *primary_attachment_cell; // ecx
   float y; // edx
   int32_t track_cell_row_index; // eax
-  float v60; // [esp+0h] [ebp-22Ch]
-  float v61; // [esp+0h] [ebp-22Ch]
+  float upper_bound; // [esp+0h] [ebp-22Ch]
+  float upper_bounda; // [esp+0h] [ebp-22Ch]
   SubSegmentParcelScanAnchor *p_row_count; // [esp+18h] [ebp-214h]
   int v63; // [esp+18h] [ebp-214h]
   int32_t v64; // [esp+18h] [ebp-214h]
@@ -101,7 +101,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
   else
   {
     v2 = 0;
-    if ( !level_mode || level_mode == 7 )
+    if ( level_mode == 0 || level_mode == 7 )
     {
       for ( i = 0; i < 2048; ++i )
       {
@@ -137,7 +137,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
               {
                 if ( (LOBYTE(authored_parcel_position[-1].y) & 1) != 0 && LODWORD(authored_parcel_position[-1].z) == v7 )
                 {
-                  if ( v7 )
+                  if ( v7 != 0 )
                   {
                     g_parcel_set_buckets[v8].segment_index = v2;
                     *(int32_t *)((char *)&g_parcel_set_buckets[0].candidates[g_parcel_set_buckets[v8].candidate_count].row
@@ -173,7 +173,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
                   if ( *v78 == v73 + 48 )
                   {
                     v15 = (double)v72;
-                    if ( v73 )
+                    if ( v73 != 0 )
                     {
                       g_parcel_set_buckets[v8].segment_index = v2;
                       *(int32_t *)((char *)&g_parcel_set_buckets[0].candidates[g_parcel_set_buckets[v8].candidate_count].row
@@ -270,7 +270,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
           ++v28;
           --v63;
         }
-        while ( v63 );
+        while ( v63 != 0 );
       }
       if ( (int)v27 < parcel_count )
         report_errorf(
@@ -289,9 +289,9 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
         {
           if ( v30 <= 0 )
             break;
-          v60 = (float)v75;
+          upper_bound = (float)v75;
           v64 = 0;
-          v31 = (__int64)random_float_below(v60);
+          v31 = (__int64)random_float_below(upper_bound, aP1);
           v32 = g_parcel_set_buckets[v31].candidate_count;
           v69 = v32 + v29;
           if ( v32 > 0 )
@@ -369,7 +369,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
                     v41 += 131;
                     --v65;
                   }
-                  while ( v65 );
+                  while ( v65 != nullptr );
                   v38 = out_angle;
                   p_candidate_count = v77;
                   p_segment_index = v76;
@@ -402,8 +402,8 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
         {
           if ( v5 <= 0 )
             break;
-          v61 = (float)v72;
-          v46 = (__int64)random_float_below(v61);
+          upper_bounda = (float)v72;
+          v46 = (__int64)random_float_below(upper_bounda, aP2);
           v47 = g_zero_parcel_buckets[v46].segment_index;
           v69 += g_zero_parcel_buckets[v46].candidate_count;
           out_angle = (Vec3 *)&g_zero_parcel_buckets[v46];
@@ -437,7 +437,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
               *(_DWORD *)(LODWORD(v49) + 516) = 0;
               LODWORD(v49) += 524;
             }
-            while ( v50 );
+            while ( v50 != nullptr );
           }
           --v5;
           v51 = v74->level_definition.parcel_count;
@@ -452,7 +452,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
       {
         report_errorf("Did not generate required Parcels(%i) in %s", v53, v74->level_definition.level_display_name);
         parcel_quota = v74->level_definition.parcel_quota;
-        if ( parcel_quota )
+        if ( parcel_quota != 0 )
           v74->level_definition.parcel_quota = v69 * v74->level_definition.parcel_count / parcel_quota;
       }
       v52->level_definition.parcel_count = v69;

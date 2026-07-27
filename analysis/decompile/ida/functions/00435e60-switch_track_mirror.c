@@ -7,7 +7,7 @@ void __thiscall switch_track_mirror(SubgameRuntime *runtime)
 {
   uint8_t v2; // al
 
-  v2 = random_float_below(1.0) > 0.5;
+  v2 = random_float_below(1.0, g_rng_tag_mirror) > 0.5;
   if ( v2 == runtime->track_mirror_enabled )
     ++runtime->track_mirror_repeat_count;
   else

@@ -424,6 +424,112 @@ def test_mobile_sprite_renderer_recovers_gl_owner_and_void_boundaries() -> None:
     assert "typedef FrontendWidget cRBorder;" in frontend_header
 
 
+def test_mobile_rng_pair_recovers_authored_contract() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    expected = {
+        "random_float_below": ("RAND(float, char*)", "RAND"),
+        "random_signed_float_below": ("SRAND(float, char*)", "SRAND"),
+    }
+    for windows_name, (mobile_symbol, alias) in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "RMaths.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert alias in functions_by_name[windows_name]["aliases"]
+
+    rmath_init = entries["initialize_trigonometry_tables"]
+    assert rmath_init["status"] == "verified"
+    assert rmath_init["source_object"] == "RMaths.o"
+    assert rmath_init["android_symbol"] == "RMathInit()"
+    assert rmath_init["ios_symbol"] == "RMathInit()"
+    assert rmath_init["android_body_count"] == 1
+    assert rmath_init["ios_body_count"] == 1
+    assert "RMathInit" in (
+        functions_by_name["initialize_trigonometry_tables"]["aliases"]
+    )
+
+    random_init = entries["initialize_math_random_table"]
+    assert random_init["status"] == "verified"
+    assert random_init["android_symbol"] == "gRMathRand2Init()"
+    assert random_init["android_body_count"] == 1
+    assert "gRMathRand2Init" in (
+        functions_by_name["initialize_math_random_table"]["aliases"]
+    )
+
+    random_header = (
+        repo_root / "tools/match/include/rmath_random.h"
+    ).read_text(encoding="utf-8")
+    assert (
+        "float __cdecl random_float_below(float upper_bound, char* tag);"
+        in random_header
+    )
+    assert (
+        "float __cdecl random_signed_float_below("
+        "float upper_bound, char* tag);"
+        in random_header
+    )
+    assert "void __cdecl initialize_math_random_table();" in random_header
+    assert "void __cdecl initialize_trigonometry_tables();" in random_header
+
+    binja_sync = (
+        repo_root / "tools/binja/sync_rmath_types.py"
+    ).read_text(encoding="utf-8")
+    ida_apply = (
+        repo_root / "tools/ida/apply_rmath_types.py"
+    ).read_text(encoding="utf-8")
+    ida_runner = (
+        repo_root / "tools/ida/sync_rmath_types.py"
+    ).read_text(encoding="utf-8")
+    for source in (binja_sync, ida_apply):
+        for address, windows_name in (
+            ("44c8d0", "initialize_math_random_table"),
+            ("44c930", "initialize_trigonometry_tables"),
+            ("44dc70", "random_signed_float_below"),
+            ("44dc90", "random_float_below"),
+        ):
+            assert address in source.lower()
+            assert windows_name in source
+        assert "float upper_bound, char" in source
+        assert "void __cdecl initialize_math_random_table()" in source
+        assert "void __cdecl initialize_trigonometry_tables()" in source
+    assert "RNG_CALLERS" in binja_sync
+    assert "DIRTY_FUNCTIONS" in ida_apply
+    assert '(0x4A4C90, "g_rng_tag_mirror")' in ida_apply
+    assert "literal `str:Mirror`" in ida_apply
+    assert "find_ida_binary(args.ida_bin)" in ida_runner
+
+    scratch_paths = (
+        repo_root / "tools/match/scratches"
+    ).glob("*/scratch.cpp")
+    random_scratches = []
+    for scratch_path in scratch_paths:
+        scratch = scratch_path.read_text(encoding="utf-8")
+        if (
+            "random_float_below(" in scratch
+            or "random_signed_float_below(" in scratch
+        ):
+            random_scratches.append(scratch_path)
+            assert '#include "rmath_random.h"' in scratch
+    assert random_scratches
+
+
 def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     result = main(
         [

@@ -2,7 +2,7 @@
 /* function: place_challenge_parcels_on_track @ 0x444240 */
 /* selector: place_challenge_parcels_on_track */
 
-// Implements `cRSubGame::PlaceParcelsSurvival()` on the verified SubgameRuntime receiver: derives the quota from owned completion/difficulty state, records eligible runtime_rows indices in the global `gParcelGroupSurvival0` scratch bank, and randomly claims rows while compacting that bank in place.
+// Implements the authored void `cRSubGame::PlaceParcelsSurvival()` method on the verified SubgameRuntime receiver: derives the quota from owned completion/difficulty state, records eligible runtime_rows indices in the global `gParcelGroupSurvival0` scratch bank, and randomly claims rows while compacting that bank in place. Cross-port path-dependent return residues are incidental and the Windows caller discards EAX.
 void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
 {
   int32_t v2; // eax
@@ -22,7 +22,7 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
   TrackRowCell *primary_attachment_cell; // ecx
   float y; // ecx
   int32_t track_cell_row_index; // eax
-  float v19; // [esp+0h] [ebp-60h]
+  float upper_bound; // [esp+0h] [ebp-60h]
   int32_t remaining_candidate_count; // [esp+18h] [ebp-48h]
   int32_t projection_scan_index; // [esp+18h] [ebp-48h]
   int out_angle; // [esp+1Ch] [ebp-44h] BYREF
@@ -49,7 +49,7 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
     parcel_set_id_cursor = &game->runtime_rows[0].parcel_set_id;
     do
     {
-      if ( (*(_BYTE *)(parcel_set_id_cursor - 39) & 1) != 0 && !*parcel_set_id_cursor )
+      if ( (*(_BYTE *)(parcel_set_id_cursor - 39) & 1) != 0 && *parcel_set_id_cursor == 0 )
       {
         *survival_row_index_write = runtime_row_index;
         ++candidate_count;
@@ -67,8 +67,8 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
     last_candidate_index = candidate_count - 1;
     while ( candidate_count > 0 )
     {
-      v19 = (float)remaining_candidate_count;
-      v10 = (__int64)random_float_below(v19);
+      upper_bound = (float)remaining_candidate_count;
+      v10 = (__int64)random_float_below(upper_bound, aP3);
       selected_row_index_entry = (int32_t *)(4 * v10 + 6572008);
       out_angle = g_parcel_group_survival_0[(_DWORD)v10];
       ++placed_count;
@@ -92,7 +92,7 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
           ++selected_row_index_entry;
           --entries_to_shift;
         }
-        while ( entries_to_shift );
+        while ( entries_to_shift != 0 );
       }
       --last_candidate_index;
       --remaining_candidate_count;
@@ -102,7 +102,7 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
     }
   }
   game->level_definition.parcel_count = placed_count;
-  debug_report_stub();
+  debug_report_stub("Challenge parcel count %i\n", placed_count);
   projection_scan_index = 0;
   if ( game->runtime_row_count > 0 )
   {

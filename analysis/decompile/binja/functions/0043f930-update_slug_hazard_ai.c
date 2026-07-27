@@ -121,14 +121,11 @@
 0043fc7c        goto label_43ffdf
 0043fc85        list_prev->list_next = slug->body.bod.bod.list_next
 0043fc88        goto label_43ffe5
-0043fe46        case SUB_SLUG_STATE_DEATH_TOSS_PENDING
-0043fe46        int32_t var_24_4 = 0
+0043fe4c        case SUB_SLUG_STATE_DEATH_TOSS_PENDING
 0043fe4c        slug->state = SUB_SLUG_STATE_TEARDOWN_PENDING
-0043fe5b        float var_10_1 = fconvert.s(random_float_below(0.300000012f))
-0043fe5f        int32_t var_2c_1 = 0
-0043fe70        void* var_34_1 = &data_4a4e70
-0043fe7a        float var_14_3 = fconvert.s(random_float_below(0.200000003f) + fconvert.t(0.100000001f))
-0043fea6        slug->velocity.x = fconvert.s(random_signed_float_below(0.100000001f))
+0043fe5b        float var_10_1 = fconvert.s(random_float_below(0.300000012f, nullptr))
+0043fe7a        float var_14_3 = fconvert.s(random_float_below(0.200000003f, nullptr) + fconvert.t(0.100000001f))
+0043fea6        slug->velocity.x = fconvert.s(random_signed_float_below(0.100000001f, "SDI"))
 0043feac        slug->velocity.y = var_14_3
 0043feb3        slug->velocity.z = var_10_1
 0043feb6        enum SubSlugDeathTossDirection death_toss_direction = slug->death_toss_direction

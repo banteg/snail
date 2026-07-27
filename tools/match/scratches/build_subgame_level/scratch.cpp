@@ -9,6 +9,7 @@
 #include "sub_tracks.h"
 #include "mouse_cursor_state.h"
 #include "progress_bar.h"
+#include "rmath_random.h"
 #include "runtime_config.h"
 #include "salt_hazard_types.h"
 #include "slug_voice_manager.h"
@@ -22,7 +23,6 @@
 extern char g_blank_text[];
 
 int next_math_random_value();
-float random_float_below(float upper_bound, const char* tag);
 char cache_music_file(char* path, int unused, char* unused_default_path);
 int report_errorf(char* format, ...);
 int sprintf(char* buffer, char* format, ...);

@@ -4,6 +4,7 @@
 /* function: select_level_track_texture_set @ 0x410730 */
 
 0041073d        int32_t texture_set_1
+0041073d        int16_t x87control
 0041073d        switch (texture_set)
 00410744        case 0
 00410744        texture_set_1 = 0
@@ -13,10 +14,8 @@
 0041074f        texture_set_1 = 2
 00410756        case 3
 00410756        texture_set_1 = 3
-0041075d        case 5
-0041075d        int32_t var_c_1 = 0
-00410771        int16_t x87control
-00410771        texture_set_1 = ftol(x87control, random_float_below(4f))
+00410771        case 5
+00410771        texture_set_1 = ftol(x87control, random_float_below(4f, nullptr))
 00410775        texture_set_1 = texture_set
 00410779        int32_t current_texture_set = track->current_texture_set
 0041077e        if (texture_set_1 == current_texture_set)

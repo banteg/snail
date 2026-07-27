@@ -5,26 +5,27 @@
 
 0043da83        int32_t eax = 0
 0043da88        enum SubGarbageState* ecx = &game->garbage_hazards.slots[0].state
-0043da91        while ((ecx - 0x3591c8)->garbage_hazards.slots[0].state != SUB_GARBAGE_STATE_INACTIVE)
+0043da91        while (*ecx != SUB_GARBAGE_STATE_INACTIVE)
 0043da93        eax += 1
 0043da94        ecx = &ecx[0x31]
 0043da9d        if (eax s>= 0x32)
 0043daa4        report_warningf("Run Out of Garbage Slots")
 0043dab0        return
 0043dac4        struct SubGarbageSlotCursor* garbage_slot_cursor = game + eax * 0xc4
-0043dad0        char* var_24 = "Gadd"
 0043dad5        garbage_slot_cursor->garbage.next_active = game->garbage_hazards.active_head
 0043dae9        game->garbage_hazards.active_head = &garbage_slot_cursor->garbage.body.bod.bod
 0043daf4        float* ebx = game + (eax + 0x45f8) * 0xc4
 0043daf7        garbage_slot_cursor->garbage.owner_player = player
-0043db1b        *ebx = fconvert.s((random_float_below(0.400000006f) + fconvert.t(1f)) * fconvert.t(0.600000024f))
+0043db1b        *ebx = fconvert.s((random_float_below(0.400000006f, "Gadd") + fconvert.t(1f)) * fconvert.t(0.600000024f))
 0043db1d        garbage_slot_cursor->garbage.state = SUB_GARBAGE_STATE_ACTIVE
 0043db27        set_matrix_identity(&garbage_slot_cursor->garbage.body.transform)
 0043db35        float x = cell->anchor_position.x
+0043db38        float z = cell->anchor_position.z
 0043db47        float x_1 = x
+0043db4b        float var_8 = fconvert.s(fconvert.t(*ebx) + fconvert.t(cell->anchor_position.y))
 0043db53        garbage_slot_cursor->garbage.body.transform.position.x = x
-0043db59        garbage_slot_cursor->garbage.body.transform.position.y = fconvert.s(fconvert.t(*ebx) + fconvert.t(cell->anchor_position.y))
-0043db64        garbage_slot_cursor->garbage.body.transform.position.z = cell->anchor_position.z
+0043db59        garbage_slot_cursor->garbage.body.transform.position.y = var_8
+0043db64        garbage_slot_cursor->garbage.body.transform.position.z = z
 0043db69        int16_t x87control = project_position_onto_track_attachment(game, &garbage_slot_cursor->garbage.body.transform.position, &garbage_slot_cursor->garbage.attachment_facing_angle)
 0043db81        struct BodList* eax_5 = &g_game_base->active_bod_list
 0043db88        if ((0x200 & garbage_slot_cursor->garbage.body.bod.bod.list_flags) == 0)

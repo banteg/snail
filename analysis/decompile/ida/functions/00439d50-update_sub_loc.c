@@ -31,7 +31,7 @@ void __thiscall update_sub_loc(SubLoc *cell)
         case SUBLOC_TILE_WALL2:
           if ( (double)g_game_base->subgame.first_block_row_count >= g_game_base->subgame.player.body.transform.position.z )
             goto LABEL_9;
-          if ( random_float_below(100.0) < 4.0 )
+          if ( random_float_below(100.0, aW) < 4.0 )
           {
             v4 = cell->anchor_position.y + 8.0;
             z = cell->anchor_position.z;
@@ -44,7 +44,7 @@ void __thiscall update_sub_loc(SubLoc *cell)
             origin.y = v14.y;
             origin.z = z;
             origin.x = (double)*(__int64 *)&vector.x * 0.5 + origin.x;
-            v7 = random_signed_float_below(3.0);
+            v7 = random_signed_float_below(3.0, aWall2);
             v2 = g_game_base;
             y = g_game_base->subgame.player.body.transform.position.y;
             v9 = v7 + 8.0 + g_game_base->subgame.player.body.transform.position.z;

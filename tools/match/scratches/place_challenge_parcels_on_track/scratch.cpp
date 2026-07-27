@@ -3,9 +3,9 @@
 #include "track_attachment.h"
 #include "transform_matrix.h"
 #include "parcel_bucket.h"
+#include "rmath_random.h"
 #include "subgame_runtime.h"
 
-double random_float_below(float upper_bound, const char* tag);
 int debug_report_stub(char* format, ...);
 
 void SubgameRuntime::place_challenge_parcels_on_track()

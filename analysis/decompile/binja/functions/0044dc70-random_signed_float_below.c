@@ -5,4 +5,4 @@
 
 0044dc70        int32_t ecx
 0044dc70        int32_t var_4_1 = ecx
-0044dc8f        return (float.t(j_sub_48bfe5()) - fconvert.t(16384f)) * fconvert.t(arg1) * fconvert.t(6.10351562e-05f)
+0044dc8f        return ((float.t(j_rand()) - fconvert.t(16384f)) * fconvert.t(upper_bound) * fconvert.t(6.10351562e-05f)).d

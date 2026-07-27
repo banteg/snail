@@ -6,11 +6,10 @@
 00435ec7        int32_t runtime_build_seed
 00435ec7        if (game->selected_level_record_active == 0)
 00435ed4        int32_t level_mode = game->level_mode
+00435edf        int16_t x87control
 00435edf        if (level_mode == 4 || level_mode == 7)
 00435efc        runtime_build_seed = 0
-00435ee1        char* var_58_1 = "Seed"
-00435ef8        int16_t x87control
-00435ef8        runtime_build_seed = ftol(x87control, random_float_below(32768f))
+00435ef8        runtime_build_seed = ftol(x87control, random_float_below(32768f, "Seed"))
 00435ecf        runtime_build_seed = game->selected_level_record->runtime_build_seed
 00435efe        int32_t level_mode_1 = game->level_mode
 00435f08        int32_t level_mode_arg
@@ -160,16 +159,17 @@
 004362a9        segment_cursor += 1
 004362ba        selected_segment = &build_runtime_owner->level_definition.segment_slots[sequential_segment_index]
 004362c1        active_segment = selected_segment
+00436236        char* tag
 00436236        long double x87_r7_9
 00436236        if (build_runtime_owner->level_mode != 1)
 00436254        x87_r7_9 = float.t(build_runtime_owner->level_definition.segment_count)
-0043625a        char* var_58_6 = "Segtra"
-00436241        char* var_58_5 = "Segdif"
+0043625a        tag = "Segtra"
+00436241        tag = "Segdif"
 0043624c        x87_r7_9 = (fconvert.t(build_runtime_owner->challenge_difficulty_scalar) * fconvert.t(0.899999976f) + fconvert.t(0.100000001f)) * float.t(build_runtime_owner->level_definition.segment_count)
 0043625f        int32_t segment_row_index_2 = segment_row_index_1
 0043626b        int32_t eax_26
 0043626b        int16_t x87control_2
-0043626b        eax_26, x87control_2 = ftol(x87control_1, random_float_below(fconvert.s(x87_r7_9)))
+0043626b        eax_26, x87control_2 = ftol(x87control_1, random_float_below(fconvert.s(x87_r7_9), tag))
 0043627b        int32_t random_segment_index
 0043627b        random_segment_index, x87control_1 = ftol(x87control_2, float.t(eax_26) * fconvert.t(build_runtime_owner->base_subgame_rate))
 0043628f        selected_segment = &build_runtime_owner->level_definition.segment_slots[random_segment_index]

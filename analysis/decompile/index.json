@@ -1,16 +1,16 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 6,
+  "function_count": 19,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 6,
-  "ida_exported": 6,
+  "bn_exported": 19,
+  "ida_exported": 19,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "binja_refreshed": true,
   "binja_analysis_refreshed": false,
   "ida_refreshed": true,
@@ -22,53 +22,80 @@
       "address": "0x406dc0"
     },
     {
-      "name": "initialize_game_window_and_input",
-      "address": "0x4119d0"
+      "name": "select_level_track_texture_set",
+      "address": "0x410730"
     },
     {
-      "name": "update_input_controller_pointer_region",
-      "address": "0x4321c0"
+      "name": "switch_track_mirror",
+      "address": "0x435e60"
     },
     {
-      "name": "initialize_mouse_authored_scale_from_clip_rect",
-      "address": "0x44bbb0"
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
     },
     {
-      "name": "update_mouse_authored_scale",
-      "address": "0x44bbd0"
+      "name": "build_subgame_level",
+      "address": "0x437eb0"
     },
     {
-      "name": "set_hide_system_cursor_flag",
-      "address": "0x44c050"
+      "name": "update_subgame",
+      "address": "0x438b90"
+    },
+    {
+      "name": "update_sub_loc",
+      "address": "0x439d50"
+    },
+    {
+      "name": "spawn_track_garbage_hazard",
+      "address": "0x43da80"
+    },
+    {
+      "name": "spawn_track_ring_or_special_effect",
+      "address": "0x43df10"
+    },
+    {
+      "name": "update_garbage_hazard",
+      "address": "0x43f200"
+    },
+    {
+      "name": "update_slug_hazard_ai",
+      "address": "0x43f930"
+    },
+    {
+      "name": "firework_shoot",
+      "address": "0x441dd0"
+    },
+    {
+      "name": "release_snail_weapons",
+      "address": "0x442e40"
+    },
+    {
+      "name": "place_parcels_on_track",
+      "address": "0x4438e0"
+    },
+    {
+      "name": "place_challenge_parcels_on_track",
+      "address": "0x444240"
+    },
+    {
+      "name": "initialize_math_random_table",
+      "address": "0x44c8d0"
+    },
+    {
+      "name": "initialize_trigonometry_tables",
+      "address": "0x44c930"
+    },
+    {
+      "name": "random_signed_float_below",
+      "address": "0x44dc70"
+    },
+    {
+      "name": "random_float_below",
+      "address": "0x44dc90"
     }
   ],
-  "health_check_count": 1103,
-  "health_failing_check_count": 1,
-  "health_passed": false,
-  "health_config": "analysis/decompile/health_checks.json",
-  "failing_checks": [
-    {
-      "name": "ida_game_main_loop_scalar_owners",
-      "artifact": "analysis/decompile/ida/functions/00406dc0-game_startup_and_main_loop.c",
-      "exists": true,
-      "passed": false,
-      "failures": [
-        "missing required substring: g_mean_update_steps_per_frame = v18 / g_main_loop_frame_count;"
-      ],
-      "observed_counts": {
-        "*(float *)&g_main_loop_frame_count": 0,
-        "*(float *)&g_mean_update_steps_per_frame": 0,
-        "1139802112": 0,
-        "1142947840": 0,
-        "g_authored_view_height = 480.0;": 1,
-        "g_authored_view_width = 640.0;": 1,
-        "g_current_frame_update_steps = 0.0;": 1,
-        "g_current_frame_update_steps = g_current_frame_update_steps + 1.0;": 1,
-        "g_current_frame_update_steps[0]": 0,
-        "g_main_loop_frame_count * g_mean_update_steps_per_frame + g_current_frame_update_steps": 1,
-        "g_mean_update_steps_per_frame = v18 / g_main_loop_frame_count;": 0
-      },
-      "observed_regex_counts": {}
-    }
-  ]
+  "health_check_count": 1115,
+  "health_failing_check_count": 0,
+  "health_passed": true,
+  "health_config": "analysis/decompile/health_checks.json"
 }

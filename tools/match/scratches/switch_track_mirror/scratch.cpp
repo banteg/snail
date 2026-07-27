@@ -3,8 +3,8 @@
 // repeats the same state more than 4 times in a row.
 
 #include "subgame_runtime.h"
+#include "rmath_random.h"
 
-float random_float_below(float maximum, const char* tag); // @ 0x44dc90, cdecl
 
 void SubgameRuntime::switch_track_mirror()
 {

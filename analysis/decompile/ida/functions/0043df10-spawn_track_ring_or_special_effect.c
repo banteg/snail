@@ -21,27 +21,41 @@ void __thiscall spawn_track_ring_or_special_effect(
   double v14; // st7
   double v15; // st7
   double v16; // st7
+  double v17; // st7
+  double v18; // st7
+  double v19; // st7
+  double v20; // st7
+  double v21; // st7
+  double v22; // st7
+  double v23; // st7
+  double v24; // st7
   uint32_t list_flags; // eax
   SubRing *selected_ring; // esi
   BodNode **active_head; // eax
   BodNode *active_first; // ecx
   BodNode *promoted_head; // ecx
   float default_phase_step; // [esp+10h] [ebp-10h]
-  float v23; // [esp+18h] [ebp-8h]
-  float v24; // [esp+18h] [ebp-8h]
-  float v25; // [esp+18h] [ebp-8h]
-  float v26; // [esp+18h] [ebp-8h]
-  float v27; // [esp+18h] [ebp-8h]
-  float v28; // [esp+18h] [ebp-8h]
-  float v29; // [esp+1Ch] [ebp-4h]
-  float v30; // [esp+1Ch] [ebp-4h]
-  float v31; // [esp+1Ch] [ebp-4h]
+  float v31; // [esp+18h] [ebp-8h]
+  float v32; // [esp+18h] [ebp-8h]
+  float v33; // [esp+18h] [ebp-8h]
+  float v34; // [esp+18h] [ebp-8h]
+  float v35; // [esp+18h] [ebp-8h]
+  float v36; // [esp+18h] [ebp-8h]
+  float v37; // [esp+18h] [ebp-8h]
+  float v38; // [esp+18h] [ebp-8h]
+  float v39; // [esp+18h] [ebp-8h]
+  float v40; // [esp+1Ch] [ebp-4h]
+  float v41; // [esp+1Ch] [ebp-4h]
+  float v42; // [esp+1Ch] [ebp-4h]
+  float v43; // [esp+1Ch] [ebp-4h]
+  float v44; // [esp+1Ch] [ebp-4h]
   float z; // [esp+1Ch] [ebp-4h]
-  float v33; // [esp+1Ch] [ebp-4h]
-  float v34; // [esp+1Ch] [ebp-4h]
+  float v46; // [esp+1Ch] [ebp-4h]
+  float v47; // [esp+1Ch] [ebp-4h]
+  float v48; // [esp+1Ch] [ebp-4h]
 
   slot_index = 0;
-  for ( state_cursor = &game->ring_effects.slots[0].state; *state_cursor; state_cursor += 126 )
+  for ( state_cursor = &game->ring_effects.slots[0].state; *state_cursor != SUB_RING_STATE_INACTIVE; state_cursor += 126 )
   {
     if ( ++slot_index >= 2 )
       return;
@@ -58,71 +72,108 @@ void __thiscall spawn_track_ring_or_special_effect(
   effective_kind = requested_kind;
   slot_cursor->ring.owner_player = player;
   if ( requested_kind == 4
-    && (random_float_below(1.0) > 0.93000001 || random_float_below(1.0) > 0.5 && game->level_mode == 4) )
+    && (random_float_below(1.0, aRt) > 0.93000001 || random_float_below(1.0, aRt2) > 0.5 && game->level_mode == 4) )
   {
     effective_kind = 3;
   }
   switch ( effective_kind )
   {
     case 0:
-    case 4:
-      v25 = cell->anchor_position.y + 2.5;
-      v14 = cell->anchor_position.z + 6.0;
+      v31 = cell->anchor_position.y + 2.5;
+      v10 = cell->anchor_position.z + 6.0;
       slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
-      v31 = v14;
-      slot_cursor->ring.body.transform.position.y = v25;
-      slot_cursor->ring.body.transform.position.z = v31;
-      v15 = random_float_below(1.0);
-      slot_cursor->ring.body.transform.position.x = (v15 - 0.5 + v15 - 0.5) * 3.0;
-      goto LABEL_13;
-    case 1:
-    case 3:
-      v24 = cell->anchor_position.y + 2.5;
-      v12 = cell->anchor_position.z + 6.0;
-      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
-      v30 = v12;
-      slot_cursor->ring.body.transform.position.y = v24;
-      slot_cursor->ring.body.transform.position.z = v30;
-      v13 = random_float_below(1.0);
-      slot_cursor->ring.body.transform.position.x = (v13 - 0.5 + v13 - 0.5) * 3.0;
-      goto LABEL_13;
-    case 2:
-      v23 = cell->anchor_position.y + 3.5;
-      v10 = cell->anchor_position.z + 17.0;
-      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
-      v29 = v10;
-      slot_cursor->ring.body.transform.position.y = v23;
-      slot_cursor->ring.body.transform.position.z = v29;
-      v11 = random_float_below(1.0);
+      v40 = v10;
+      slot_cursor->ring.body.transform.position.y = v31;
+      slot_cursor->ring.body.transform.position.z = v40;
+      v11 = random_float_below(1.0, aRr);
       slot_cursor->ring.body.transform.position.x = (v11 - 0.5 + v11 - 0.5) * 3.0;
-LABEL_13:
-      slot_cursor->ring.active_phase = random_float_below(1.0) * 6.2831855;
+      v12 = random_float_below(1.0, aRr1);
+      goto LABEL_17;
+    case 1:
+      v32 = cell->anchor_position.y + 2.5;
+      v13 = cell->anchor_position.z + 6.0;
+      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
+      v41 = v13;
+      slot_cursor->ring.body.transform.position.y = v32;
+      slot_cursor->ring.body.transform.position.z = v41;
+      v14 = random_float_below(1.0, aRr2);
+      slot_cursor->ring.body.transform.position.x = (v14 - 0.5 + v14 - 0.5) * 3.0;
+      v15 = random_float_below(1.0, aRr3);
+      goto LABEL_15;
+    case 2:
+      v33 = cell->anchor_position.y + 3.5;
+      v16 = cell->anchor_position.z + 17.0;
+      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
+      v42 = v16;
+      slot_cursor->ring.body.transform.position.y = v33;
+      slot_cursor->ring.body.transform.position.z = v42;
+      v17 = random_float_below(1.0, aRr4);
+      slot_cursor->ring.body.transform.position.x = (v17 - 0.5 + v17 - 0.5) * 3.0;
+      v12 = random_float_below(1.0, aRr5);
+      goto LABEL_17;
+    case 3:
+      v34 = cell->anchor_position.y + 2.5;
+      v18 = cell->anchor_position.z + 6.0;
+      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
+      v43 = v18;
+      slot_cursor->ring.body.transform.position.y = v34;
+      slot_cursor->ring.body.transform.position.z = v43;
+      v19 = random_float_below(1.0, aRr6);
+      slot_cursor->ring.body.transform.position.x = (v19 - 0.5 + v19 - 0.5) * 3.0;
+      v15 = random_float_below(1.0, aRr7);
+LABEL_15:
+      slot_cursor->ring.active_phase = v15 * 6.2831855;
+      slot_cursor->ring.active_phase_step = default_phase_step;
+      break;
+    case 4:
+      v35 = cell->anchor_position.y + 2.5;
+      v20 = cell->anchor_position.z + 6.0;
+      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
+      v44 = v20;
+      slot_cursor->ring.body.transform.position.y = v35;
+      slot_cursor->ring.body.transform.position.z = v44;
+      v21 = random_float_below(1.0, aRr8);
+      slot_cursor->ring.body.transform.position.x = (v21 - 0.5 + v21 - 0.5) * 3.0;
+      v12 = random_float_below(1.0, aRr9);
+LABEL_17:
+      slot_cursor->ring.active_phase = v12 * 6.2831855;
       slot_cursor->ring.active_phase_step = default_phase_step;
       break;
     case 5:
       z = cell->anchor_position.z;
-      v26 = cell->anchor_position.y + 2.5;
+      v36 = cell->anchor_position.y + 2.5;
       slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
-      slot_cursor->ring.body.transform.position.y = v26;
+      slot_cursor->ring.body.transform.position.y = v36;
       slot_cursor->ring.body.transform.position.z = z;
-      goto LABEL_19;
+      v22 = random_float_below(1.0, aRr10);
+      goto LABEL_22;
     case 6:
-      v33 = cell->anchor_position.z;
-      v27 = cell->anchor_position.y + 2.5;
+      v47 = cell->anchor_position.z;
+      v38 = cell->anchor_position.y + 2.5;
       slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
-      slot_cursor->ring.body.transform.position.y = v27;
-      slot_cursor->ring.body.transform.position.z = v33;
-      goto LABEL_19;
+      slot_cursor->ring.body.transform.position.y = v38;
+      slot_cursor->ring.body.transform.position.z = v47;
+      v22 = random_float_below(1.0, aRr12);
+      goto LABEL_22;
     case 7:
-    case 8:
-      v16 = cell->anchor_position.y + 2.5;
-      v34 = cell->anchor_position.z;
+      v24 = cell->anchor_position.y + 2.5;
+      v48 = cell->anchor_position.z;
       slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
-      v28 = v16;
-      slot_cursor->ring.body.transform.position.y = v28;
-      slot_cursor->ring.body.transform.position.z = v34;
-LABEL_19:
-      slot_cursor->ring.active_phase = random_float_below(1.0) * 6.2831855;
+      v39 = v24;
+      slot_cursor->ring.body.transform.position.y = v39;
+      slot_cursor->ring.body.transform.position.z = v48;
+      v22 = random_float_below(1.0, aRr13);
+      goto LABEL_22;
+    case 8:
+      v23 = cell->anchor_position.y + 2.5;
+      v46 = cell->anchor_position.z;
+      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
+      v37 = v23;
+      slot_cursor->ring.body.transform.position.y = v37;
+      slot_cursor->ring.body.transform.position.z = v46;
+      v22 = random_float_below(1.0, aRr11);
+LABEL_22:
+      slot_cursor->ring.active_phase = v22 * 6.2831855;
       slot_cursor->ring.active_phase_step = 1.0 / (ring_speed * 60.0) * game->subgame_rate * 6.2831855;
       break;
     default:
@@ -133,7 +184,7 @@ LABEL_19:
     slot_cursor->ring.kind = effective_kind;
     slot_cursor->ring.owner_lives_snapshot = player->lives;
     slot_cursor->ring.state = SUB_RING_STATE_ACTIVE;
-    if ( random_float_below(1.0) > 0.5 )
+    if ( random_float_below(1.0, aRt1) > 0.5 )
       slot_cursor->ring.active_phase_step = slot_cursor->ring.active_phase_step * -1.0;
     list_flags = slot_cursor->ring.body.bod.bod.list_flags;
     selected_ring = &slot_cursor->ring;
@@ -145,7 +196,7 @@ LABEL_19:
     {
       active_head = &g_game_base->active_bod_list.first;
       active_first = g_game_base->active_bod_list.first;
-      if ( active_first )
+      if ( active_first != nullptr )
       {
         active_first->list_prev = &selected_ring->body.bod.bod;
         (*active_head)->list_prev->list_next = *active_head;

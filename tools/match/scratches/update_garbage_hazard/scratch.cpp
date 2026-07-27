@@ -4,10 +4,9 @@
 
 #include "garbage_hazard_slot.h"
 #include "player.h"
+#include "rmath_random.h"
 #include "subgame_runtime.h"
 
-double random_signed_float_below(float upper_bound, const char* tag);
-double random_float_below(float upper_bound, const char* tag);
 
 void SubGarbage::update_garbage_hazard()
 {

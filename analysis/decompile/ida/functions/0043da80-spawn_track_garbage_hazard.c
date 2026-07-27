@@ -15,12 +15,11 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
   __int64 v11; // rax
   Sprite *sprite; // eax
   SpriteFlag flags; // edx
-  Vec3 *p_position; // eax
-  float v15; // [esp+Ch] [ebp-8h]
+  float v14; // [esp+Ch] [ebp-8h]
   float z; // [esp+10h] [ebp-4h]
 
   v3 = 0;
-  for ( i = &game->garbage_hazards.slots[0].state; *i; i += 49 )
+  for ( i = &game->garbage_hazards.slots[0].state; *i != SUB_GARBAGE_STATE_INACTIVE; i += 49 )
   {
     if ( ++v3 >= 50 )
     {
@@ -34,17 +33,17 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
   game->garbage_hazards.active_head = &garbage_slot_cursor->garbage;
   p_radius = &game->garbage_hazards.slots[v3].radius;
   garbage_slot_cursor->garbage.owner_player = player;
-  *p_radius = (random_float_below(0.40000001) + 1.0) * 0.60000002;
+  *p_radius = (random_float_below(0.40000001, aGadd) + 1.0) * 0.60000002;
   garbage_slot_cursor->garbage.state = SUB_GARBAGE_STATE_ACTIVE;
   set_matrix_identity(&garbage_slot_cursor->garbage.body.transform);
   z = cell->anchor_position.z;
-  v15 = *p_radius + cell->anchor_position.y;
+  v14 = *p_radius + cell->anchor_position.y;
   garbage_slot_cursor->garbage.body.transform.position.x = cell->anchor_position.x;
-  garbage_slot_cursor->garbage.body.transform.position.y = v15;
+  garbage_slot_cursor->garbage.body.transform.position.y = v14;
   garbage_slot_cursor->garbage.body.transform.position.z = z;
   project_position_onto_track_attachment(
     game,
-    (Vec3 *)&garbage_slot_cursor->garbage.body.transform.position,
+    &garbage_slot_cursor->garbage.body.transform.position,
     &garbage_slot_cursor->garbage.attachment_facing_angle);
   p_player = &game->player;
   p_active_bod_list = &g_game_base->active_bod_list;
@@ -80,10 +79,7 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
   garbage_slot_cursor->garbage.sprite->progress_step = 0.0;
   garbage_slot_cursor->garbage.sprite->size_start = *p_radius;
   garbage_slot_cursor->garbage.sprite->size_end = *p_radius;
-  p_position = &garbage_slot_cursor->garbage.sprite->position;
-  p_position->x = garbage_slot_cursor->garbage.body.transform.position.x;
-  p_position->y = garbage_slot_cursor->garbage.body.transform.position.y;
-  p_position->z = garbage_slot_cursor->garbage.body.transform.position.z;
+  garbage_slot_cursor->garbage.sprite->position = garbage_slot_cursor->garbage.body.transform.position;
   garbage_slot_cursor->garbage.source_cell = cell;
   garbage_slot_cursor->garbage.hidden = 0;
 }

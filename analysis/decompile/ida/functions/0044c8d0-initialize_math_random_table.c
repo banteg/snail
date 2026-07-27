@@ -2,20 +2,14 @@
 /* function: initialize_math_random_table @ 0x44c8d0 */
 /* selector: initialize_math_random_table */
 
-// Fills the shared 0x1fff-entry gameplay random table from the underlying linear-congruential generator and resets the ring index. Android symbols match this helper family to `gRMathRand2Init()`.
-int sub_44C8D0()
+// Exact void Windows `gRMathRand2Init()` platform implementation: fills the shared 0x1fff-entry gameplay random table from the underlying generator and resets the ring index.
+void __cdecl initialize_math_random_table()
 {
   int *v0; // esi
-  int result; // eax
 
-  v0 = &MEMORY[0x787F8C];
+  v0 = g_math_random_table;
   do
-  {
-    result = rand();
-    *v0++ = result;
-  }
-  while ( (int)v0 < (int)&MEMORY[0x78FF88] );
-  MEMORY[0x77FF3C] = 0;
-  return result;
+    *v0++ = rand();
+  while ( (int)v0 < (int)&g_sound_effect_manager );
+  g_math_random_index = 0;
 }
-

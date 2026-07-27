@@ -10,9 +10,9 @@
 #include "track_attachment.h"
 #include "transform_matrix.h"
 #include "parcel_bucket.h"
+#include "rmath_random.h"
 #include "subgame_runtime.h"
 
-double random_float_below(float upper_bound, const char* tag);
 void report_errorf(const char* format, ...);
 
 // row records at game + 244*row + 0x5ccac8: flags +0x00, payload vec3

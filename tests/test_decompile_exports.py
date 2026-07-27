@@ -541,6 +541,9 @@ def test_ida_symbol_sync_can_split_a_main_function_chunk() -> None:
         encoding="utf-8"
     )
 
+    assert "existing_start = ida_funcs.get_func_start(address)" in source
+    assert "ida_funcs.get_func_cmt_ea(address, True)" in source
+    assert "ida_funcs.set_func_cmt_ea(address, description, True)" in source
     assert "ida_funcs.remove_func_tail(func, address)" in source
     assert "ida_funcs.set_func_end(func.start_ea, address)" in source
     assert "split_main_chunk_verification_failed" in source

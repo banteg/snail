@@ -50,11 +50,11 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   BarrierActor *p_barrier; // eax
   struct BodNode *v46; // ecx
   int32_t v47; // eax
-  float v48; // [esp+0h] [ebp-14h]
+  float slider; // [esp+0h] [ebp-14h]
 
   unhide_star_field(&g_game_base->star_manager);
   if ( game->level_mode == 7 )
-    hide_gameplay_scores((FrontendWidget **)game);
+    hide_gameplay_scores(game);
   else
     unhide_gameplay_scores(game);
   switch ( (unsigned int)(__int64)((double)next_math_random_value() * 0.00012207031) )
@@ -84,7 +84,7 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   initialize_salt_hazard_pool(&game->salt_hazards);
   reset_voice_manager(&g_voice_manager);
   load_frontend_level_by_mode_and_index(&game->level_definition, game->level_mode, level_index);
-  if ( game->selected_level_record_active || game->selected_level_record_persistent )
+  if ( game->selected_level_record_active != 0 || game->selected_level_record_persistent != 0 )
   {
     game->rate_or_level_arg.level_arg_tail = game->selected_level_record->replay_speed_scalar.bits;
     game->level_mode = game->selected_level_record->replay_mode_id;
@@ -103,23 +103,25 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
     case 4:
     case 7:
       if ( game->level_definition.selected_speed.bits == -1082130432 )
-        game->rate_or_level_arg.base_rate = calc_slider_to_rate(0.0);
+        game->rate_or_level_arg.base_rate = calc_slider_to_rate(game, 0.0);
       else
         game->rate_or_level_arg.base_rate = game->level_definition.selected_speed.value * 0.0099999998 * 0.90000004
                                           + 0.2;
       break;
     case 1:
-      v48 = (double)g_runtime_config.completion_bonus_x_source * 0.0099999998;
-      game->rate_or_level_arg.base_rate = calc_slider_to_rate(v48);
+      slider = (double)g_runtime_config.completion_bonus_x_source * 0.0099999998;
+      game->rate_or_level_arg.base_rate = calc_slider_to_rate(game, slider);
       challenge_difficulty_value = (double)g_runtime_config.completion_bonus_y_source;
 LABEL_24:
       game->challenge_difficulty_scalar = challenge_difficulty_value * 0.0099999998;
       break;
     case 2:
-      game->rate_or_level_arg.base_rate = calc_slider_to_rate(g_runtime_config.default_challenge_speed_slider);
+      game->rate_or_level_arg.base_rate = calc_slider_to_rate(game, g_runtime_config.default_challenge_speed_slider);
+      break;
+    default:
       break;
   }
-  if ( game->selected_level_record_active || game->selected_level_record_persistent )
+  if ( game->selected_level_record_active != 0 || game->selected_level_record_persistent != 0 )
   {
     LODWORD(game->garbage_frequency) = game->selected_level_record->garbage_frequency.bits;
     LODWORD(game->salt_frequency) = game->selected_level_record->salt_frequency.bits;
@@ -127,7 +129,7 @@ LABEL_24:
   else
   {
     v5 = game->level_mode;
-    if ( v5 == 2 || v5 == 3 || !v5 || v5 == 4 || v5 == 7 )
+    if ( v5 == 2 || v5 == 3 || v5 == 0 || v5 == 4 || v5 == 7 )
     {
       game->garbage_frequency = game->level_definition.garbage_frequency * 0.0099999998;
       game->salt_frequency = game->level_definition.salt_frequency * 0.0099999998;
@@ -147,24 +149,24 @@ LABEL_24:
   rebuild_track_runtime_from_segments(game, level_index);
   if ( game->level_definition.track_texture_set == 5 )
   {
-    switch ( (unsigned int)(__int64)random_float_below(4.0) )
+    switch ( (__int64)random_float_below(4.0, nullptr) )
     {
-      case 0u:
+      case 0LL:
         landscape_script_by_name = load_landscape_script_by_name(
                                      &g_game_base->subgame.landscape_manager,
                                      aSpaceblueswhor);
         break;
-      case 1u:
+      case 1LL:
         landscape_script_by_name = load_landscape_script_by_name(
                                      &g_game_base->subgame.landscape_manager,
                                      aSpacegreenwarp);
         break;
-      case 2u:
+      case 2LL:
         landscape_script_by_name = load_landscape_script_by_name(
                                      &g_game_base->subgame.landscape_manager,
                                      aSpacepurpleTxt);
         break;
-      case 3u:
+      case 3LL:
         landscape_script_by_name = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, aSpaceredTxt);
         break;
       default:
@@ -172,7 +174,7 @@ LABEL_24:
         break;
     }
     activate_landscape_entry(&game->landscape_manager, landscape_script_by_name);
-    g_game_base->backdrop.pending_flip = random_float_below(1.0) > 0.5;
+    g_game_base->backdrop.pending_flip = random_float_below(1.0, nullptr) > 0.5;
   }
   else
   {
@@ -190,7 +192,7 @@ LABEL_24:
     game->banners.slots[0].bod.bod.list_next = game->track_body_list_head.bod.list_next;
     game->track_body_list_head.bod.list_next = (struct BodNode *)p_banners;
     list_next = game->banners.slots[0].bod.bod.list_next;
-    if ( list_next )
+    if ( list_next != nullptr )
       list_next->list_prev = (struct BodNode *)p_banners;
     game->banners.slots[0].bod.bod.list_flags |= 0x200u;
   }
@@ -214,7 +216,7 @@ LABEL_24:
     game->banners.slots[1].bod.bod.list_next = game->track_body_list_head.bod.list_next;
     game->track_body_list_head.bod.list_next = &v12->bod.bod;
     v13 = game->banners.slots[1].bod.bod.list_next;
-    if ( v13 )
+    if ( v13 != nullptr )
       v13->list_prev = &v12->bod.bod;
     game->banners.slots[1].bod.bod.list_flags |= 0x200u;
   }
@@ -247,7 +249,7 @@ LABEL_24:
   {
     active_first_ref_jetpack = &g_game_base->active_bod_list.first;
     active_first_jetpack = g_game_base->active_bod_list.first;
-    if ( active_first_jetpack )
+    if ( active_first_jetpack != nullptr )
     {
       active_first_jetpack->list_prev = &jetpack_channel->body.bod.bod;
       (*active_first_ref_jetpack)->list_prev->list_next = *active_first_ref_jetpack;
@@ -272,7 +274,7 @@ LABEL_24:
   {
     active_first_ref_weapon_0 = &g_game_base->active_bod_list.first;
     active_first_weapon_0 = g_game_base->active_bod_list.first;
-    if ( active_first_weapon_0 )
+    if ( active_first_weapon_0 != nullptr )
     {
       active_first_weapon_0->list_prev = &weapon_channel_0->body.bod.bod;
       (*active_first_ref_weapon_0)->list_prev->list_next = *active_first_ref_weapon_0;
@@ -297,7 +299,7 @@ LABEL_24:
   {
     active_first_ref_weapon_1 = &g_game_base->active_bod_list.first;
     active_first_weapon_1 = g_game_base->active_bod_list.first;
-    if ( active_first_weapon_1 )
+    if ( active_first_weapon_1 != nullptr )
     {
       active_first_weapon_1->list_prev = &weapon_channel_1->body.bod.bod;
       (*active_first_ref_weapon_1)->list_prev->list_next = *active_first_ref_weapon_1;
@@ -322,7 +324,7 @@ LABEL_24:
   {
     active_first_ref_weapon_2 = &g_game_base->active_bod_list.first;
     active_first_weapon_2 = g_game_base->active_bod_list.first;
-    if ( active_first_weapon_2 )
+    if ( active_first_weapon_2 != nullptr )
     {
       active_first_weapon_2->list_prev = &weapon_channel_2->body.bod.bod;
       (*active_first_ref_weapon_2)->list_prev->list_next = *active_first_ref_weapon_2;
@@ -347,7 +349,7 @@ LABEL_24:
   {
     active_first_ref_invincible_shell = &g_game_base->active_bod_list.first;
     active_first_invincible_shell = g_game_base->active_bod_list.first;
-    if ( active_first_invincible_shell )
+    if ( active_first_invincible_shell != nullptr )
     {
       active_first_invincible_shell->list_prev = &invincible_shell->body.bod.bod;
       (*active_first_ref_invincible_shell)->list_prev->list_next = *active_first_ref_invincible_shell;
@@ -375,7 +377,7 @@ LABEL_24:
   {
     active_first_ref_presentation = &g_game_base->active_bod_list.first;
     active_first_presentation = g_game_base->active_bod_list.first;
-    if ( active_first_presentation )
+    if ( active_first_presentation != nullptr )
     {
       active_first_presentation->list_prev = &presentation->body.bod.bod;
       (*active_first_ref_presentation)->list_prev->list_next = *active_first_ref_presentation;
@@ -399,7 +401,7 @@ LABEL_24:
   {
     active_first_ref_player = &g_game_base->active_bod_list.first;
     active_first_player = g_game_base->active_bod_list.first;
-    if ( active_first_player )
+    if ( active_first_player != nullptr )
     {
       active_first_player->list_prev = &player->body.bod.bod;
       (*active_first_ref_player)->list_prev->list_next = *active_first_ref_player;
@@ -427,13 +429,13 @@ LABEL_24:
     game->barrier.bod.bod.list_next = game->barrier_sub_lazer_list_head.bod.list_next;
     game->barrier_sub_lazer_list_head.bod.list_next = &p_barrier->bod.bod;
     v46 = game->barrier.bod.bod.list_next;
-    if ( v46 )
+    if ( v46 != nullptr )
       v46->list_prev = &p_barrier->bod.bod;
     game->barrier.bod.bod.list_flags |= 0x200u;
   }
   v47 = game->level_mode;
   game->barrier.owner_player = player;
-  if ( !v47 )
+  if ( v47 == 0 )
   {
     sprintf((char *const)&game->lives_text_widget->text_buffer, "0/%i", game->level_definition.parcel_count);
     unhide_border_init(game->lives_icon_widget);

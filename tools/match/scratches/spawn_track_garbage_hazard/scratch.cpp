@@ -6,6 +6,7 @@
 #include "sprite.h"
 #include "game_root.h"
 #include "player.h"
+#include "rmath_random.h"
 #include "garbage_hazard_slot.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
@@ -21,7 +22,6 @@ enum {
 };
 
 
-float random_float_below(float upper_bound, const char* tag);
 int next_math_random_value();
 int report_warningf(char* format, ...);
 int report_errorf(char* format, ...);

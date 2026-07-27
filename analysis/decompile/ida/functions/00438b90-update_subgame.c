@@ -56,7 +56,7 @@ void __thiscall update_subgame(SubgameRuntime *game)
   tColour *v50; // [esp-1Ch] [ebp-68h]
   tColour *v51; // [esp-1Ch] [ebp-68h]
   int v52; // [esp+10h] [ebp-3Ch]
-  int v53; // [esp+14h] [ebp-38h]
+  int i; // [esp+14h] [ebp-38h]
   RuntimeRowStrideAnchor *runtime_row_anchor_saved; // [esp+18h] [ebp-34h]
   Color4f color; // [esp+1Ch] [ebp-30h] BYREF
   Color4f v56; // [esp+2Ch] [ebp-20h] BYREF
@@ -70,7 +70,7 @@ void __thiscall update_subgame(SubgameRuntime *game)
       game->subgame_state = 1;
       if ( subgame_rebuild_selector == 1 )
         goto LABEL_214;
-      if ( !subgame_rebuild_selector || subgame_rebuild_selector == 3 )
+      if ( subgame_rebuild_selector == 0 || subgame_rebuild_selector == 3 )
       {
 LABEL_21:
         build_subgame_level(game, game->level_mode_arg);
@@ -90,7 +90,7 @@ LABEL_21:
       return;
     case 1:
 LABEL_14:
-      random_float_below(1.0);
+      random_float_below(1.0, nullptr);
       level_mode = game->level_mode;
       game->completion_bonus_x_source = g_runtime_config.completion_bonus_x_source;
       game->completion_bonus_y_source = g_runtime_config.completion_bonus_y_source;
@@ -146,7 +146,7 @@ LABEL_25:
       }
       return;
     case 2:
-      if ( game->selected_level_record_active == 1 && !g_game_base->intro.hide_for_replay_latch )
+      if ( game->selected_level_record_active == 1 && g_game_base->intro.hide_for_replay_latch == 0 )
       {
         if ( game->level_mode == 3 )
         {
@@ -159,7 +159,7 @@ LABEL_25:
           queue_axis_aligned_textured_quad_uv(27, 288.0, 10.0, 64.0, 64.0, 0x1000000u, v51, 0.0, 0.0, 1.0, 1.0, 1, 0.0);
         }
       }
-      if ( !game->player.completion_handoff_active
+      if ( game->player.completion_handoff_active == 0
         && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START )
       {
         advance_timer_counters(&game->player.stopwatch, 1.0);
@@ -173,12 +173,12 @@ LABEL_25:
         game->resume_requested = 0;
         set_sprite_manager_paused(&g_sprite_manager, 0);
       }
-      if ( game->selected_level_record_active
+      if ( game->selected_level_record_active != 0
         && game->pause_fade == 0.0
         && (game->player.control_source->control_flags_a & 0x4000) != 0
-        || g_game_base->intro.hide_for_replay_latch )
+        || g_game_base->intro.hide_for_replay_latch != 0 )
       {
-        if ( game->selected_level_record_persistent )
+        if ( game->selected_level_record_persistent != 0 )
         {
           g_game_base->players[0].saved_frontend_state = g_game_base->players[0].frontend_state;
           g_game_base->players[0].frontend_state = 26;
@@ -192,7 +192,7 @@ LABEL_25:
           g_game_base->intro.hide_for_replay_latch = 0;
         return;
       }
-      if ( (read_pressed_text_input_key_code() == 11 || g_window_deactivated == 1) && !g_game_base->fade.state )
+      if ( (read_pressed_text_input_key_code() == 11 || g_window_deactivated == 1) && g_game_base->fade.state == 0 )
       {
         game->subgame_pause_gate = 1;
         game->subgame_state = 3;
@@ -210,7 +210,7 @@ LABEL_25:
         if ( game->player.click_start.state == CLICK_START_STATE_WAITING_FOR_START )
           unhide_border_init(game->player.click_start.prompt);
       }
-      if ( game->scan_reset )
+      if ( game->scan_reset != 0 )
       {
         v11 = game->level_mode;
         game->runtime_row_scan_begin = 0;
@@ -256,7 +256,7 @@ LABEL_65:
           {
             p_first = &g_game_base->active_bod_list.first;
             first = g_game_base->active_bod_list.first;
-            if ( first )
+            if ( first != nullptr )
             {
               first->list_prev = &p_row_model->body.bod.bod;
               (*p_first)->list_prev->list_next = *p_first;
@@ -292,7 +292,7 @@ LABEL_65:
             tile_id = runtime_cell_anchor->cell.tile_id;
             if ( tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE )
             {
-              if ( runtime_cell_anchor->cell.object )
+              if ( runtime_cell_anchor->cell.object != nullptr )
               {
                 p_cell = &runtime_cell_anchor->cell;
                 if ( (runtime_cell_anchor->cell.bod.list_flags & 0x200) != 0 )
@@ -305,7 +305,7 @@ LABEL_65:
                   runtime_cell_anchor->cell.bod.list_next = game->special_track_cell_list_head.bod.list_next;
                   game->special_track_cell_list_head.bod.list_next = &p_cell->bod;
                   list_next = runtime_cell_anchor->cell.bod.list_next;
-                  if ( list_next )
+                  if ( list_next != nullptr )
                     list_next->list_prev = &p_cell->bod;
                   runtime_cell_anchor->cell.bod.list_flags |= 0x200u;
                 }
@@ -321,7 +321,7 @@ LABEL_65:
                   runtime_row_anchor_saved->row.attachment_body.bod.list_next = game->fringe_attachment_list_head.bod.list_next;
                   game->fringe_attachment_list_head.bod.list_next = &p_attachment_body->bod;
                   v30 = runtime_row_anchor_saved->row.attachment_body.bod.list_next;
-                  if ( v30 )
+                  if ( v30 != nullptr )
                     v30->list_prev = &p_attachment_body->bod;
                   v31 = runtime_row_anchor_saved->row.attachment_body.bod.list_flags;
                   BYTE1(v31) |= 2u;
@@ -343,7 +343,7 @@ LABEL_65:
                 runtime_cell_anchor->cell.bod.list_next = game->track_body_list_head.bod.list_next;
                 game->track_body_list_head.bod.list_next = &v25->bod;
                 v26 = runtime_cell_anchor->cell.bod.list_next;
-                if ( v26 )
+                if ( v26 != nullptr )
                   v26->list_prev = &v25->bod;
                 runtime_cell_anchor->cell.bod.list_flags |= 0x200u;
               }
@@ -351,11 +351,10 @@ LABEL_65:
             (*(void (__thiscall **)(TrackRowCell *))runtime_cell_anchor->cell.bod.vtable)(&runtime_cell_anchor->cell);
           }
           p_fringe_front = &runtime_cell_anchor->cell.fringe_front;
-          v53 = 4;
-          do
+          for ( i = 4; i != 0; --i )
           {
             v33 = (struct BodNode *)*p_fringe_front;
-            if ( *p_fringe_front )
+            if ( *p_fringe_front != nullptr )
             {
               if ( (v33->list_flags & 0x200) != 0 )
               {
@@ -367,7 +366,7 @@ LABEL_65:
                 v33->list_next = game->fringe_attachment_list_head.bod.list_next;
                 game->fringe_attachment_list_head.bod.list_next = v33;
                 v34 = v33->list_next;
-                if ( v34 )
+                if ( v34 != nullptr )
                   v34->list_prev = v33;
                 v35 = v33->list_flags;
                 BYTE1(v35) |= 2u;
@@ -376,9 +375,7 @@ LABEL_65:
               (*p_fringe_front)->bod.color = *get_track_skirt_color(&g_game_base->subgame, &out);
             }
             ++p_fringe_front;
-            --v53;
           }
-          while ( v53 );
           if ( runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_HEALTH_PICKUP
             && (game->runtime_flags & 0x800) != 0
             && runtime_row_scan_begin >= game->first_block_row_count
@@ -403,22 +400,24 @@ LABEL_65:
             || (runtime_cell_anchor->cell.lane_and_flags & 0x10) == 0
             && (v36 == SUBLOC_TILE_FLOOR_DOT || v36 == SUBLOC_TILE_FLOOR_DASH)
             && (game->runtime_flags & 2) != 0
-            && (1.0 - game->garbage_frequency) * 0.2 + 0.80000001 < random_float_below(1.0)
-            && (!v52
-             || (v37 = runtime_cell_anchor->previous_lane_same_row.tile_id, v37 == SUBLOC_TILE_FLOOR_DOT)
+            && (1.0 - game->garbage_frequency) * 0.2 + 0.80000001 < random_float_below(1.0, aG)
+            && (v52 == 0
+             || (v37 = runtime_cell_anchor->previous_lane_same_row.tile_id) == SUBLOC_TILE_FLOOR_DOT
              || v37 == SUBLOC_TILE_FLOOR_VARIANT_14
              || v37 == SUBLOC_TILE_FLOOR_DASH
              || v37 == SUBLOC_TILE_FLOOR_HASH_MARKER)
             && (v52 == 7
-             || (v38 = runtime_cell_anchor->next_lane_same_row.tile_id, v38 == SUBLOC_TILE_FLOOR_DOT)
+             || (v38 = runtime_cell_anchor->next_lane_same_row.tile_id) == SUBLOC_TILE_FLOOR_DOT
              || v38 == SUBLOC_TILE_FLOOR_VARIANT_14
              || v38 == SUBLOC_TILE_FLOOR_DASH
              || v38 == SUBLOC_TILE_FLOOR_HASH_MARKER)
             && runtime_row_scan_begin >= game->first_block_row_count
             && runtime_row_scan_begin < game->completion_row_start
             && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START
-            && (game->level_mode != 4 || game->base_subgame_rate * 0.30000001 + 0.69999999 >= random_float_below(1.0))
-            && (game->level_mode || game->base_subgame_rate * 0.60000002 + 0.40000001 >= random_float_below(1.0)) )
+            && (game->level_mode != 4
+             || game->base_subgame_rate * 0.30000001 + 0.69999999 >= random_float_below(1.0, aG2))
+            && (game->level_mode != 0
+             || game->base_subgame_rate * 0.60000002 + 0.40000001 >= random_float_below(1.0, aG3)) )
           {
             spawn_track_garbage_hazard(game, &runtime_cell_anchor->cell, &game->player);
           }
@@ -435,7 +434,7 @@ LABEL_65:
                  && (v39 == SUBLOC_TILE_FLOOR_DOT || v39 == SUBLOC_TILE_SLIDE_UNDERSCORE)
                  && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START
                  && (game->runtime_flags & 0x10000) != 0
-                 && (1.0 - game->salt_frequency) * 0.02 + 0.98000002 < random_float_below(1.0)
+                 && (1.0 - game->salt_frequency) * 0.02 + 0.98000002 < random_float_below(1.0, aS_0)
                  && runtime_row_scan_begin >= game->first_block_row_count
                  && runtime_row_scan_begin < game->completion_row_start )
           {
@@ -526,7 +525,7 @@ LABEL_158:
               }
               else
               {
-                if ( random_float_below(1.0) <= 0.69999999
+                if ( random_float_below(1.0, aR2) <= 0.69999999
                   && game->level_mode != 7
                   && (runtime_row_anchor_saved->row.flags & 0x800) == 0 )
                 {
@@ -573,7 +572,7 @@ LABEL_208:
               z = runtime_cell_anchor->projected_row_six_ahead_same_lane.anchor_position.z;
               goto LABEL_208;
             }
-            if ( (game->runtime_flags & 8) == 0 || random_float_below(1.0) <= 0.69999999 && game->level_mode != 7 )
+            if ( (game->runtime_flags & 8) == 0 || random_float_below(1.0, aR) <= 0.69999999 && game->level_mode != 7 )
               goto LABEL_209;
             v43 = runtime_cell_anchor->cell.tile_id;
             if ( v43 == SUBLOC_TILE_RAMP_LEFT_BRACKET

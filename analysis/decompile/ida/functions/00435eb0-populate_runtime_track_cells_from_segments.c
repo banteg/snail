@@ -2,7 +2,7 @@
 /* function: populate_runtime_track_cells_from_segments @ 0x435eb0 */
 /* selector: populate_runtime_track_cells_from_segments */
 
-// Windows implementation of authored `cRSubGame::BuildLevel()`. It copies authored segment rows into the generated runtime grid, seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs, and seeds the course row bounds: non-random levels use the final `Last:` block boundary while the mode-1 random branch keeps the authored `Length:` lane scaled by the challenge scalar before subtracting the final `Last:` block rows. Runtime cell object selection reuses each `SubLoc` cell's shared `cRBod`/`BodBase` prefix, while authored row models and installed path strips belong to the embedded `SubRow::row_model` and `SubRow::attachment_body`; there is no separate track-row BOD-slot owner.
+// Windows implementation of authored `cRSubGame::BuildLevel()`. It copies authored segment rows into the generated runtime grid, seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs, and seeds the course row bounds: non-random levels use the final `Last:` block boundary while the mode-1 random branch keeps the authored `Length:` lane scaled by the challenge scalar before subtracting the final `Last:` block rows. Each lane iteration writes the physical runtime `SubLoc` selected by `lane`, while a distinct mirrored authored lane indexes the borrowed active `SubSegment::glyph_rows`; first/last-block bounds produce the byte `edge_row` input consumed by the glyph normalizer. Runtime cell object selection reuses each `SubLoc` cell's shared `cRBod`/`BodBase` prefix and borrows render objects from the root catalog, while authored row models and installed path strips belong to the embedded `SubRow::row_model` and `SubRow::attachment_body`; there is no separate track-row BOD-slot owner.
 void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
 {
   int32_t runtime_build_seed; // esi
@@ -106,7 +106,8 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   Fringe *fringe_object; // eax
   Vec3 *fringe_position; // eax
   bool v102; // cc
-  float v103; // [esp+0h] [ebp-5Ch]
+  float upper_bound; // [esp+0h] [ebp-5Ch]
+  char *v104; // [esp+4h] [ebp-58h]
   char *source_name; // [esp+4h] [ebp-58h]
   char first_or_last_row; // [esp+1Ah] [ebp-42h]
   char attachment_entry_installed; // [esp+1Bh] [ebp-41h]
@@ -117,7 +118,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int32_t lane; // [esp+2Ch] [ebp-30h]
   int32_t row_event_owner; // [esp+30h] [ebp-2Ch]
   TrackRowCellFringeFrontStrideCursor *row_fringe_front_cursor; // [esp+34h] [ebp-28h]
-  float v115; // [esp+34h] [ebp-28h]
+  float v116; // [esp+34h] [ebp-28h]
   int32_t segment_cursor; // [esp+38h] [ebp-24h]
   int32_t trampoline_counter; // [esp+3Ch] [ebp-20h]
   int edge_row; // [esp+40h] [ebp-1Ch]
@@ -134,7 +135,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
     if ( level_mode == 4 || level_mode == 7 )
       runtime_build_seed = 0;
     else
-      runtime_build_seed = (__int64)random_float_below(32768.0);
+      runtime_build_seed = (__int64)random_float_below(32768.0, aSeed);
   }
   v4 = game->level_mode;
   if ( v4 != 0 )
@@ -323,12 +324,18 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
           if ( build_runtime_owner->level_definition.random_enabled == 1 )
           {
             if ( build_runtime_owner->level_mode == 1 )
+            {
+              v104 = aSegdif;
               segment_count = (build_runtime_owner->challenge_difficulty_scalar * 0.89999998 + 0.1)
                             * (double)build_runtime_owner->level_definition.segment_count;
+            }
             else
+            {
               segment_count = (double)build_runtime_owner->level_definition.segment_count;
-            v103 = segment_count;
-            selected_segment = &build_runtime_owner->level_definition.segment_slots[(__int64)((double)(int)(__int64)random_float_below(v103)
+              v104 = aSegtra;
+            }
+            upper_bound = segment_count;
+            selected_segment = &build_runtime_owner->level_definition.segment_slots[(__int64)((double)(int)(__int64)random_float_below(upper_bound, v104)
                                                                                             * build_runtime_owner->base_subgame_rate)];
             active_segment = selected_segment;
             selected_segment->visited = 1;
@@ -905,7 +912,7 @@ LABEL_174:
             {
               p_anchor_position->x = 0.0;
               v93 = (double)build_row + 0.5;
-              v115 = v93;
+              v116 = v93;
               v94 = v93 - 0.5;
               runtime_cell_anchor->cell.anchor_position.z = v94;
               if ( (g_runtime_config.render_flags & 0x20) != 0 )
@@ -934,8 +941,8 @@ LABEL_174:
               {
                 runtime_cell_anchor->cell.anchor_position.y = 0.5;
               }
-              v115 = (double)build_row + 0.5;
-              runtime_cell_anchor->cell.anchor_position.z = v115;
+              v116 = (double)build_row + 0.5;
+              runtime_cell_anchor->cell.anchor_position.z = v116;
             }
             if ( build_row < 4 && game->level_mode != 2 )
               runtime_cell_anchor->cell.anchor_position.y = game->path_pairs[36].primary.primary_samples->transform.position.y;
@@ -967,7 +974,7 @@ LABEL_174:
             {
               if ( game->level_mode != 3 || (game->runtime_flags & 0x400) != 0 )
                 runtime_cell_anchor->cell.anchor_position.y = -3.0;
-              runtime_cell_anchor->cell.anchor_position.z = v115;
+              runtime_cell_anchor->cell.anchor_position.z = v116;
             }
             fringe_slot = &runtime_cell_anchor->cell.fringe_front;
             for ( remaining_fringe_slots = 4; remaining_fringe_slots != 0; --remaining_fringe_slots )

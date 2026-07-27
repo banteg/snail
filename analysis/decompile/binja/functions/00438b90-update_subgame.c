@@ -21,15 +21,14 @@
 00438c6d        if (game->selected_level_record_persistent != 1)
 00438c8f        game->selected_level_record_active = 0
 00438ca2        hide_star_field(&g_game_base->star_manager)
-00438c6d        goto label_438ca7
+00438c6d        goto label_438cae
 00438c6f        struct SubSolution* selected_level_record = game->selected_level_record
 00438c75        game->selected_level_record_active = 1
 00438c82        build_subgame_level(game, selected_level_record->replay_level_index)
 00438c8e        return
-00438ca7        case 1
-00438ca7        label_438ca7:
-00438ca7        int32_t var_50_2 = 0
-00438cae        random_float_below(1f)
+00438cae        case 1
+00438cae        label_438cae:
+00438cae        random_float_below(1f, nullptr)
 00438cb9        int32_t level_mode = game->level_mode
 00438cbc        game->completion_bonus_x_source = g_runtime_config.completion_bonus_x_source
 00438ccd        game->completion_bonus_y_source = g_runtime_config.completion_bonus_y_source
@@ -257,7 +256,7 @@
 004392f8        if (runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_HEALTH_PICKUP && (game->runtime_flags:1.b & 8) != 0 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
 0043930a        spawn_track_health_pickup(game, &runtime_cell_anchor->cell, &game->player)
 00439320        if (runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_SPEEDUP_PICKUP && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
-0043932e        uint32_t var_50_9 = &game->player.body.bod.bod.vtable
+0043932e        uint32_t var_50_8 = &game->player.body.bod.bod.vtable
 0043932f        struct TrackRowCell* var_54_3 = &runtime_cell_anchor->cell
 00439348        if (runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_JETPACK_PICKUP && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
 0043935a        spawn_track_jetpack_pickup(game, &runtime_cell_anchor->cell, &game->player)
@@ -265,8 +264,7 @@
 00439367        if (tile_id_1 == SUBLOC_TILE_GARBAGE_HAZARD)
 0043949f        spawn_track_garbage_hazard(game, &runtime_cell_anchor->cell, &game->player)
 00439399        if ((runtime_cell_anchor->cell.lane_and_flags.b & 0x10) == 0 && (tile_id_1 == SUBLOC_TILE_FLOOR_DOT || tile_id_1 == SUBLOC_TILE_FLOOR_DASH) && (game->runtime_flags.b & 2) != 0)
-0043939f        void* var_50_12 = &data_4a4dbc
-004393a9        long double st0_2 = random_float_below(1f)
+004393a9        long double st0_2 = random_float_below(1f, "G")
 004393c3        long double x87_r6_4 = (fconvert.t(1f) - fconvert.t(game->garbage_frequency)) * fconvert.t(0.200000003f) + fconvert.t(0.800000012f)
 004393c9        x87_r6_4 - st0_2
 004393cb        int16_t eax_48 = (x87_r6_4 < st0_2 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_4, st0_2) ? 1 : 0) << 0xa | (x87_r6_4 == st0_2 ? 1 : 0) << 0xe
@@ -280,16 +278,14 @@
 00439432        long double st0_3
 00439432        long double x87_r6_7
 00439432        if (game->level_mode == 4)
-00439434        void* var_50_13 = &data_4a4db8
-0043943e        st0_3 = random_float_below(1f)
+0043943e        st0_3 = random_float_below(1f, "G2")
 0043944f        x87_r6_7 = fconvert.t(game->base_subgame_rate) * fconvert.t(0.300000012f) + fconvert.t(0.699999988f)
 00439455        x87_r6_7 - st0_3
 0043945c        if (game->level_mode != 4 || (((x87_r6_7 < st0_3 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_7, st0_3) ? 1 : 0) << 0xa | (x87_r6_7 == st0_3 ? 1 : 0) << 0xe):1.b & 1) == 0)
 00439463        long double st0_4
 00439463        long double x87_r6_10
 00439463        if (game->level_mode == 0)
-00439465        void* var_50_14 = &data_4a4db4
-0043946f        st0_4 = random_float_below(1f)
+0043946f        st0_4 = random_float_below(1f, "G3")
 00439480        x87_r6_10 = fconvert.t(game->base_subgame_rate) * fconvert.t(0.600000024f) + fconvert.t(0.400000006f)
 00439486        x87_r6_10 - st0_4
 0043948d        if (game->level_mode != 0 || (((x87_r6_10 < st0_4 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_10, st0_4) ? 1 : 0) << 0xa | (x87_r6_10 == st0_4 ? 1 : 0) << 0xe):1.b & 1) == 0)
@@ -297,8 +293,7 @@
 004394a4        enum SubLocTileId tile_id_2 = runtime_cell_anchor->cell.tile_id
 004394ac        if (tile_id_2 != SUBLOC_TILE_SALT_HAZARD)
 004394e6        if ((runtime_cell_anchor->cell.lane_and_flags.b & 8) == 0 && (tile_id_2 == SUBLOC_TILE_FLOOR_DOT || tile_id_2 == SUBLOC_TILE_SLIDE_UNDERSCORE) && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START && (game->runtime_flags & 0x10000) != 0)
-004394e8        void* var_50_16 = &data_4a4db0
-004394f2        long double st0_5 = random_float_below(1f)
+004394f2        long double st0_5 = random_float_below(1f, "S")
 0043950c        long double x87_r6_14 = (fconvert.t(1f) - fconvert.t(game->salt_frequency)) * fconvert.t(0.0199999996f) + fconvert.t(0.980000019f)
 00439512        x87_r6_14 - st0_5
 00439523        if ((((x87_r6_14 < st0_5 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_14, st0_5) ? 1 : 0) << 0xa | (x87_r6_14 == st0_5 ? 1 : 0) << 0xe):1.b & 1) != 0 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
@@ -332,8 +327,7 @@
 0043983a        player = &game->player
 0043983b        requested_kind = 2
 0043983b        goto label_439846
-00439802        void* var_50_22 = &data_4a4da8
-0043980c        long double st0_7 = random_float_below(1f)
+0043980c        long double st0_7 = random_float_below(1f, "R2")
 00439811        long double temp7_1 = fconvert.t(0.699999988f)
 00439811        st0_7 - temp7_1
 00439830        if ((((st0_7 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(st0_7, temp7_1) ? 1 : 0) << 0xa | (st0_7 == temp7_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 || game->level_mode == 7 || ((runtime_row_anchor->row.flags).w:1.b & 8) != 0)
@@ -349,8 +343,7 @@
 00439717        spawn_track_ring_or_special_effect(game, &runtime_cell_anchor->projected_row_six_ahead_same_lane, 7, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
 00439851        game->player.last_ring_spawn_z = runtime_cell_anchor->projected_row_six_ahead_same_lane.anchor_position.z
 0043972b        if ((game->runtime_flags.b & 8) != 0)
-00439731        void* var_50_21 = &data_4a4dac
-0043973b        long double st0_6 = random_float_below(1f)
+0043973b        long double st0_6 = random_float_below(1f, "R")
 00439740        long double temp8_1 = fconvert.t(0.699999988f)
 00439740        st0_6 - temp8_1
 00439749        int16_t eax_81 = (st0_6 < temp8_1 ? 1 : 0) << 8 | (is_unordered.t(st0_6, temp8_1) ? 1 : 0) << 0xa | (st0_6 == temp8_1 ? 1 : 0) << 0xe

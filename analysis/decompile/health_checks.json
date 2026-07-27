@@ -10596,8 +10596,10 @@
         "int32_t velocity_x_random;",
         "set_color_rgb(&sprite->color, red, green, 0.0);",
         "sprite->velocity.x = velocity_x;",
-        "sprite->position = *position;",
-        "--remaining;"
+        "sprite->position = *position;"
+      ],
+      "required_regexes": [
+        "--remaining(?:;| \\))"
       ],
       "forbidden_substrings": [
         "char __stdcall sub_441DD0",
@@ -22340,6 +22342,163 @@
         "return result",
         "dword_777",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_rmath_random_table_void_owner",
+      "artifact": "analysis/decompile/binja/functions/0044c8d0-initialize_math_random_table.c",
+      "required_substrings": [
+        "*i = rand()",
+        "data_77ff3c = 0",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "int32_t result",
+        "return result",
+        "sub_48bfe5"
+      ]
+    },
+    {
+      "name": "ida_rmath_random_table_void_owner",
+      "artifact": "analysis/decompile/ida/functions/0044c8d0-initialize_math_random_table.c",
+      "required_substrings": [
+        "void __cdecl initialize_math_random_table()",
+        "*v0++ = rand();",
+        "g_math_random_index = 0;"
+      ],
+      "forbidden_substrings": [
+        "int sub_44C8D0",
+        "return result",
+        "MEMORY[0x77FF3C]"
+      ]
+    },
+    {
+      "name": "bn_rmath_init_void_owner",
+      "artifact": "analysis/decompile/binja/functions/0044c930-initialize_trigonometry_tables.c",
+      "required_substrings": [
+        "initialize_math_random_table()",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "return initialize_math_random_table()"
+      ]
+    },
+    {
+      "name": "ida_rmath_init_void_owner",
+      "artifact": "analysis/decompile/ida/functions/0044c930-initialize_trigonometry_tables.c",
+      "required_substrings": [
+        "void __cdecl initialize_trigonometry_tables()",
+        "while ( v0 < 0x2000 );",
+        "initialize_math_random_table();"
+      ],
+      "forbidden_substrings": [
+        "int sub_44C930",
+        "return initialize_math_random_table()"
+      ]
+    },
+    {
+      "name": "bn_srand_mobile_authored_contract",
+      "artifact": "analysis/decompile/binja/functions/0044dc70-random_signed_float_below.c",
+      "required_substrings": [
+        "j_rand()",
+        "upper_bound",
+        "16384f",
+        "6.10351562e-05f"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "j_sub_48bfe5"
+      ]
+    },
+    {
+      "name": "ida_srand_mobile_authored_contract",
+      "artifact": "analysis/decompile/ida/functions/0044dc70-random_signed_float_below.c",
+      "required_substrings": [
+        "float __cdecl random_signed_float_below(float upper_bound, char *tag)",
+        "j_rand()",
+        "upper_bound",
+        "0.000061035156"
+      ],
+      "forbidden_substrings": [
+        "double __cdecl sub_44DC70",
+        "float a1"
+      ]
+    },
+    {
+      "name": "bn_rand_mobile_authored_contract",
+      "artifact": "analysis/decompile/binja/functions/0044dc90-random_float_below.c",
+      "required_substrings": [
+        "j_rand()",
+        "upper_bound",
+        "3.05175781e-05f"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "j_sub_48bfe5"
+      ]
+    },
+    {
+      "name": "ida_rand_mobile_authored_contract",
+      "artifact": "analysis/decompile/ida/functions/0044dc90-random_float_below.c",
+      "required_substrings": [
+        "float __cdecl random_float_below(float upper_bound, char *tag)",
+        "j_rand()",
+        "upper_bound",
+        "0.000030517578"
+      ],
+      "forbidden_substrings": [
+        "double __cdecl sub_44DC90",
+        "float a1"
+      ]
+    },
+    {
+      "name": "bn_mirror_rng_tag_provenance",
+      "artifact": "analysis/decompile/binja/functions/00435e60-switch_track_mirror.c",
+      "required_substrings": [
+        "random_float_below(1f, \"Mirror\")"
+      ],
+      "forbidden_substrings": [
+        "char* var_8 = \"Mirror\"",
+        "random_float_below(1f)"
+      ]
+    },
+    {
+      "name": "ida_mirror_rng_tag_provenance",
+      "artifact": "analysis/decompile/ida/functions/00435e60-switch_track_mirror.c",
+      "required_substrings": [
+        "random_float_below(1.0, g_rng_tag_mirror)"
+      ],
+      "forbidden_substrings": [
+        "random_float_below(1.0, tag)",
+        "random_float_below(1.0)"
+      ]
+    },
+    {
+      "name": "bn_track_builder_rng_tag_provenance",
+      "artifact": "analysis/decompile/binja/functions/00435eb0-populate_runtime_track_cells_from_segments.c",
+      "required_substrings": [
+        "random_float_below(32768f, \"Seed\")",
+        "tag = \"Segdif\"",
+        "tag = \"Segtra\"",
+        "random_float_below(fconvert.s(x87_r7_9), tag)"
+      ],
+      "forbidden_substrings": [
+        "char* var_58_1 = \"Seed\"",
+        "random_float_below(32768f)"
+      ]
+    },
+    {
+      "name": "ida_track_builder_rng_tag_provenance",
+      "artifact": "analysis/decompile/ida/functions/00435eb0-populate_runtime_track_cells_from_segments.c",
+      "required_substrings": [
+        "random_float_below(32768.0, aSeed)",
+        "v104 = aSegdif;",
+        "v104 = aSegtra;",
+        "random_float_below(upper_bound, v104)"
+      ],
+      "forbidden_substrings": [
+        "random_float_below(32768.0)",
+        "random_float_below(v103)"
       ]
     }
   ]

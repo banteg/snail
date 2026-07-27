@@ -30,7 +30,7 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
   float v26; // [esp+1Ch] [ebp-Ch]
   float v27; // [esp+20h] [ebp-8h]
 
-  if ( !sub_garbage->owner_game->subgame_pause_gate )
+  if ( sub_garbage->owner_game->subgame_pause_gate == 0 )
   {
     switch ( sub_garbage->state )
     {
@@ -61,9 +61,9 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
         goto LABEL_27;
       case SUB_GARBAGE_STATE_BURST_PENDING:
         sub_garbage->state = SUB_GARBAGE_STATE_BURST;
-        v26 = random_signed_float_below(0.1);
-        v27 = random_float_below(0.2) + 0.1;
-        v5 = random_float_below(0.30000001);
+        v26 = random_signed_float_below(0.1, off_4A4E6C);
+        v27 = random_float_below(0.2, nullptr) + 0.1;
+        v5 = random_float_below(0.30000001, nullptr);
         owner_game = sub_garbage->owner_game;
         p_velocity = &sub_garbage->velocity;
         subgame_rate = owner_game->subgame_rate;
@@ -77,7 +77,7 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
         if ( collision_side == SUB_GARBAGE_COLLISION_SIDE_RIGHT )
         {
           v11 = p_velocity->x;
-          if ( v12 )
+          if ( v12 != 0 )
             v11 = -v11;
         }
         else
@@ -85,7 +85,7 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
           if ( collision_side != SUB_GARBAGE_COLLISION_SIDE_LEFT )
             goto LABEL_19;
           v14 = p_velocity->x;
-          if ( v15 )
+          if ( v15 != 0 )
             v14 = -v14;
           v11 = -v14;
         }

@@ -2,7 +2,7 @@
 /* function: game_startup_and_main_loop @ 0x406dc0 */
 /* selector: game_startup_and_main_loop */
 
-// WinMain startup and fixed-step frame loop. It constructs and initializes the global cRGame root, drives its owned fade and render/update gates, then persists the embedded cRSubHighScore bank before releasing the root and process subsystems.
+// Four-argument stdcall WinMain startup and fixed-step frame loop. It constructs and initializes the global cRGame root, drives its owned fade and render/update gates, then persists the embedded cRSubHighScore bank before releasing the root and process subsystems.
 int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, char *lpCmdLine, int nShowCmd)
 {
   int v4; // edi
@@ -66,7 +66,7 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
       {
         for ( i = v7; i != 0; --i )
         {
-          random_float_below(1.0);
+          random_float_below(1.0, nullptr);
           next_math_random_value();
         }
       }

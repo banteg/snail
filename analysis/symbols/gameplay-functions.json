@@ -3773,7 +3773,10 @@
     {
       "address": "0x44c8d0",
       "name": "initialize_math_random_table",
-      "description": "Fills the shared 0x1fff-entry gameplay random table from the underlying linear-congruential generator and resets the ring index. Android symbols match this helper family to `gRMathRand2Init()`."
+      "description": "Exact void Windows `gRMathRand2Init()` platform implementation: fills the shared 0x1fff-entry gameplay random table from the underlying generator and resets the ring index.",
+      "aliases": [
+        "gRMathRand2Init"
+      ]
     },
     {
       "address": "0x44c900",
@@ -3788,7 +3791,10 @@
     {
       "address": "0x44c930",
       "name": "initialize_trigonometry_tables",
-      "description": "Builds the shared cosine and sine lookup tables used by the gameplay math wrappers during startup, then resets the companion random table state."
+      "description": "Windows `RMathInit()` platform implementation: builds the shared cosine and sine lookup tables used by the gameplay math wrappers during startup, then invokes `gRMathRand2Init()`. Mobile performs the same phases with different table extents and also initializes its color defaults.",
+      "aliases": [
+        "RMathInit"
+      ]
     },
     {
       "address": "0x44c970",
@@ -4043,12 +4049,18 @@
     {
       "address": "0x44dc70",
       "name": "random_signed_float_below",
-      "description": "Returns a centered random float in `[-scale, scale)` by shifting the engine RNG around zero before scaling by the supplied magnitude."
+      "description": "Exact Windows `SRAND(float, char*)` implementation: returns a centered random float in `[-scale, scale)` by shifting the engine RNG around zero before scaling by the supplied magnitude. The release body ignores the retained debug-tag argument.",
+      "aliases": [
+        "SRAND"
+      ]
     },
     {
       "address": "0x44dc90",
       "name": "random_float_below",
-      "description": "Returns a uniform random float in `[0, upper_bound)` by scaling the engine RNG output with the supplied upper bound."
+      "description": "Exact Windows `RAND(float, char*)` implementation: returns a uniform random float in `[0, upper_bound)` by scaling the engine RNG output with the supplied upper bound. The release body ignores the retained debug-tag argument.",
+      "aliases": [
+        "RAND"
+      ]
     },
     {
       "address": "0x44dcb0",

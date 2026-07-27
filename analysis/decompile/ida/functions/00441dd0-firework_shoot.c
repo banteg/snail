@@ -18,8 +18,7 @@ void __thiscall firework_shoot(FireWork *firework, Vec3 *position, int32_t owner
 
   if ( (g_runtime_config.render_flags & 0x10) != 0 && count > 0 )
   {
-    remaining = count;
-    do
+    for ( remaining = count; remaining != 0; --remaining )
     {
       sprite = allocate_sprite(&g_sprite_manager, owner, texture_id, -1, -1);
       flags = sprite->flags;
@@ -27,11 +26,11 @@ void __thiscall firework_shoot(FireWork *firework, Vec3 *position, int32_t owner
       sprite->corner_scale = 4.0;
       sprite->flags = flags | 0x802;
       sprite->progress = 0.0;
-      duration_random = random_float_below(0.5);
+      duration_random = random_float_below(0.5, nullptr);
       sprite->lifetime = 0.0;
       sprite->lifetime_step = 0.27777779;
       sprite->progress_step = 1.0 / ((duration_random + 0.80000001) * 60.0);
-      red = random_float_below(0.30000001) + 0.69999999;
+      red = random_float_below(0.30000001, nullptr) + 0.69999999;
       green = red * 0.5;
       set_color_rgb(&sprite->color, red, green, 0.0);
       sprite->size_start = 0.5;
@@ -45,8 +44,6 @@ void __thiscall firework_shoot(FireWork *firework, Vec3 *position, int32_t owner
       sprite->velocity.y = velocity_y;
       sprite->velocity.z = velocity_z;
       sprite->position = *position;
-      --remaining;
     }
-    while ( remaining );
   }
 }

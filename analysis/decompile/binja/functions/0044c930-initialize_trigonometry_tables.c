@@ -22,4 +22,5 @@
 0044c95c        st0_2, c1_2, c2_2 = __fsin(x87_r7_3)
 0044c95e        (&data_77ff88)[i] = fconvert.s(st0_2)
 0044c965        do while (i s< 0x2000)
-0044c96d        return initialize_math_random_table()
+0044c967        initialize_math_random_table()
+0044c96d        return

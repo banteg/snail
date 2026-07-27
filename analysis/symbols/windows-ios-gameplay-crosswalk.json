@@ -3892,6 +3892,24 @@
       "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x44dc70",
+      "windows_name": "random_signed_float_below",
+      "ios_symbol": "SRAND(float, char*)",
+      "android_symbol": "SRAND(float, char*)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "All three bodies subtract 16384 from a 15-bit random sample, multiply by 1/16384, and scale by the first float argument. Windows callsites preserve the second source-tag argument even though the release body does not read it. Restoring the authored float return and two-argument signature is byte-exact at 9/9 instructions; mobile layouts and RNG backends are not transferred."
+    },
+    {
+      "address": "0x44dc90",
+      "windows_name": "random_float_below",
+      "ios_symbol": "RAND(float, char*)",
+      "android_symbol": "RAND(float, char*)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "All three bodies multiply a 15-bit random sample by 1/32768 and the first float argument. Windows callsites preserve the second source-tag argument even though the release body does not read it. Restoring the authored float return and two-argument signature is byte-exact at 8/8 instructions; mobile layouts and RNG backends are not transferred."
+    },
+    {
       "address": "0x44dcb0",
       "windows_name": "initialize_sound_bank",
       "ios_symbol": "cRSound::Init(cRSoundBank*)",
@@ -4865,7 +4883,7 @@
       "android_symbol": "gRMathRand2Init()",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "Android preserves the authored random-table initializer family. Windows fills its fixed 0x1fff-entry gameplay table from the shared linear-congruential generator and resets the ring index."
+      "notes": "Android preserves the authored void random-table initializer. Windows fills its fixed 0x1fff-entry gameplay table from the CRT random stream and resets the ring index; Android uses a compact persisted table. Removing the incidental final sample result leaves the exact Windows 10/10 body unchanged."
     },
     {
       "address": "0x44c900",
@@ -4875,6 +4893,15 @@
       "source_object": "RMaths.o",
       "confidence": "high",
       "notes": "All ports advance the gameplay random-table cursor and return the next cached value; Windows wraps its fixed table index modulo 0x1fff."
+    },
+    {
+      "address": "0x44c930",
+      "windows_name": "initialize_trigonometry_tables",
+      "ios_symbol": "RMathInit()",
+      "android_symbol": "RMathInit()",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "All three startup bodies build sine and cosine lookup tables and then initialize the gameplay random table. Windows uses 0x2000 table entries and delegates to its separate gRMathRand2Init helper; mobile uses 0x8000 entries and also initializes platform color defaults. Both mobile symbols are void, the sole Windows caller discards EAX, and restoring void leaves the exact Windows 18/18 body unchanged."
     },
     {
       "address": "0x44c970",

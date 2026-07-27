@@ -6,6 +6,7 @@
 #include "sprite.h"
 #include "fringe_object.h"
 #include "game_root.h"
+#include "rmath_random.h"
 #include "runtime_config.h"
 #include "subgame_runtime.h"
 #include "game_time.h"
@@ -16,7 +17,6 @@
 
 #define ROOT_BOD_OBJECT(slot) (g_game->root_bod_catalog.slot.object)
 
-double random_float_below(float upper_bound, const char* tag);
 void set_math_random_seed(int seed);
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);

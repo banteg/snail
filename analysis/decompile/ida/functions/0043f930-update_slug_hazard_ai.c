@@ -2,7 +2,7 @@
 /* function: update_slug_hazard_ai @ 0x43f930 */
 /* selector: update_slug_hazard_ai */
 
-// Void slot-zero callback running one owned `SlugPool` record through inactive, active, lateral-active, death-toss-pending, and teardown-pending states. Each record borrows its containing SubgameRuntime, embedded owner Player, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`.
+// Void slot-zero callback running one owned `SlugPool` record through the typed `SubSlugState` lifecycle: inactive, active, lateral-active, death-toss-pending, and teardown-pending, with death flight oriented by `SubSlugDeathTossDirection`. Each record borrows its containing SubgameRuntime, embedded owner Player, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`.
 void __thiscall update_slug_hazard_ai(Slug *slug)
 {
   float hit_flash_progress_step; // ecx
@@ -46,14 +46,14 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
   float v43; // [esp+10h] [ebp-10h]
   float v44; // [esp+14h] [ebp-Ch]
 
-  if ( !slug->owner_game->subgame_pause_gate )
+  if ( slug->owner_game->subgame_pause_gate == 0 )
   {
     switch ( slug->state )
     {
       case SUB_SLUG_STATE_INACTIVE:
         return;
       case SUB_SLUG_STATE_ACTIVE:
-        if ( slug->hit_flash_pending && g_render_queue_active )
+        if ( slug->hit_flash_pending != 0 && g_render_queue_active != 0 )
         {
           hit_flash_progress_step = slug->hit_flash_progress_step;
           slug->hit_flash_pending = 0;
@@ -79,7 +79,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
           else
           {
             slug->blink_progress = 0.0;
-            slug->blink_step = advance_blink_random((float *)&g_game_base->subgame.scan_reset);
+            slug->blink_step = advance_blink_random(&g_game_base->subgame);
           }
         }
         else
@@ -104,7 +104,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
           }
         }
         if ( slug->owner_player->body.transform.position.z + 1.0 > slug->body.transform.position.z
-          && !slug->player_encounter_latched )
+          && slug->player_encounter_latched == 0 )
         {
           slug->player_encounter_latched = 1;
           if ( (double)next_math_random_value() * 0.000030517578 > 0.60000002 )
@@ -114,8 +114,11 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
           }
         }
         owner_player = slug->owner_player;
-        if ( slug->body.transform.position.z < (double)owner_player->body.transform.position.z && !slug->passed_player )
+        if ( slug->body.transform.position.z < (double)owner_player->body.transform.position.z
+          && slug->passed_player == 0 )
+        {
           slug->passed_player = 1;
+        }
         if ( slug->engagement_voice_gate == 1
           && owner_player->body.transform.position.z + 16.0 > slug->body.transform.position.z )
         {
@@ -147,10 +150,10 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
         if ( (list_flags & 0x40) != 0 )
           goto LABEL_72;
         list_next = slug->body.bod.bod.list_next;
-        if ( list_next )
+        if ( list_next != nullptr )
           list_next->list_prev = slug->body.bod.bod.list_prev;
         list_prev = slug->body.bod.bod.list_prev;
-        if ( list_prev )
+        if ( list_prev != nullptr )
         {
           list_prev->list_next = slug->body.bod.bod.list_next;
           goto LABEL_78;
@@ -158,9 +161,9 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
         goto LABEL_77;
       case SUB_SLUG_STATE_DEATH_TOSS_PENDING:
         slug->state = SUB_SLUG_STATE_TEARDOWN_PENDING;
-        v43 = random_float_below(0.30000001);
-        v41 = random_float_below(0.2) + 0.1;
-        v25 = random_signed_float_below(0.1);
+        v43 = random_float_below(0.30000001, nullptr);
+        v41 = random_float_below(0.2, nullptr) + 0.1;
+        v25 = random_signed_float_below(0.1, aSdi);
         p_velocity = &slug->velocity;
         v44 = v25;
         slug->velocity.x = v44;
@@ -170,7 +173,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
         if ( death_toss_direction == SUB_SLUG_DEATH_TOSS_RIGHT )
         {
           x = p_velocity->x;
-          if ( v30 )
+          if ( v30 != 0 )
             x = -x;
         }
         else
@@ -178,7 +181,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
           if ( death_toss_direction != SUB_SLUG_DEATH_TOSS_LEFT )
             goto LABEL_65;
           v32 = p_velocity->x;
-          if ( v33 )
+          if ( v33 != 0 )
             v32 = -v32;
           x = -v32;
         }
@@ -204,10 +207,10 @@ LABEL_69:
         if ( (v36 & 0x40) != 0 )
           goto LABEL_72;
         v37 = slug->body.bod.bod.list_next;
-        if ( v37 )
+        if ( v37 != nullptr )
           v37->list_prev = slug->body.bod.bod.list_prev;
         v38 = slug->body.bod.bod.list_prev;
-        if ( !v38 )
+        if ( v38 == nullptr )
           goto LABEL_77;
         v38->list_next = slug->body.bod.bod.list_next;
         goto LABEL_78;
@@ -216,12 +219,12 @@ LABEL_69:
       case SUB_SLUG_STATE_LATERAL_ACTIVE:
         v14 = slug->lateral_phase_step + slug->lateral_phase;
         slug->lateral_phase = v14;
-        if ( !(v16 | v17) )
+        if ( (v16 | v17) == 0 )
           slug->lateral_phase = v14 - 6.2831855;
         v18 = sine(slug->lateral_phase);
         v19 = slug->owner_player;
         slug->body.transform.position.x = v18 * 3.0;
-        if ( slug->body.transform.position.z < (double)v19->body.transform.position.z && !slug->passed_player )
+        if ( slug->body.transform.position.z < (double)v19->body.transform.position.z && slug->passed_player == 0 )
           slug->passed_player = 1;
         v20 = &slug->sprite->position;
         v20->x = slug->body.transform.position.x;
@@ -255,10 +258,10 @@ LABEL_72:
             else
             {
               v23 = slug->body.bod.bod.list_next;
-              if ( v23 )
+              if ( v23 != nullptr )
                 v23->list_prev = slug->body.bod.bod.list_prev;
               v24 = slug->body.bod.bod.list_prev;
-              if ( v24 )
+              if ( v24 != nullptr )
                 v24->list_next = slug->body.bod.bod.list_next;
               else
 LABEL_77:

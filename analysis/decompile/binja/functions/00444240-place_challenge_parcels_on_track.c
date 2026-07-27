@@ -33,10 +33,9 @@
 004442d6        if (game->level_definition.parcel_count s> 0)
 004442dc        int32_t last_candidate_index = candidate_count - 1
 004442e7        while (candidate_count s> 0)
-004442f1        void* var_5c_1 = &data_4a5100
 004442f6        int32_t runtime_row_count_1 = runtime_row_count
 00444302        int32_t picked_index
-00444302        picked_index, x87control_1 = ftol(x87control_1, random_float_below(fconvert.s(float.t(remaining_candidate_count))))
+00444302        picked_index, x87control_1 = ftol(x87control_1, random_float_below(fconvert.s(float.t(remaining_candidate_count)), "P3"))
 00444307        int32_t selected_runtime_row_index = g_parcel_group_survival_0[picked_index]
 0044430e        int32_t* selected_row_index_entry = &g_parcel_group_survival_0[picked_index]
 00444315        out_angle = selected_runtime_row_index
@@ -83,8 +82,9 @@
 00444482        get_path_position_at_node(projection_row->primary_attachment_cell->attachment_template_record, &projection_row->parcel_spawn_position, node, row_index, &projection_row->parcel_spawn_position)
 0044444f        struct TransformMatrix transform
 0044444f        x87control_1 = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], projection_row->parcel_spawn_position.x, projection_row->parcel_spawn_position.y, &transform, &out_angle)
+00444458        float y = transform.position.y
 0044445c        projection_row->parcel_spawn_position.x = transform.position.x
-00444462        projection_row->parcel_spawn_position.y = transform.position.y
+00444462        projection_row->parcel_spawn_position.y = y
 0044448f        projection_row = &projection_row[1]
 00444495        cond:1_1 = projection_scan_index + 1 s< game->runtime_row_count
 00444497        projection_scan_index += 1
