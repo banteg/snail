@@ -138,13 +138,13 @@ typedef enum CompletionState {
 
 /* Exact 0x50-byte Windows cRCompletion embedded in SubgameRuntime. */
 typedef struct Completion {
-    FrontendWidget* widget_a;
+    FrontendWidget* title_widget;
     FrontendWidget* delivered_count_widget;
-    FrontendWidget* bonus_widget;
-    FrontendWidget* widget_d;
+    FrontendWidget* bonus_summary_widget;
+    FrontendWidget* bonus_icon_widget;
     FrontendWidget* continue_widget;
     CompletionState state;
-    uint8_t gate_18;
+    uint8_t fast_forward_enabled;
     uint8_t unknown_19[0x1c - 0x19];
     int32_t parcel_target_count;
     int32_t bonus_enabled;

@@ -17,12 +17,12 @@
 0040486c        do while (edx_2 s< parcel_target_count_1)
 00404873        if (completion->bonus_enabled != 0)
 00404887        add_subgoldy_score(&g_game_base->subgame.player, completion->bonus_score, 0)
-0040488f        struct FrontendWidget* widget_a = completion->widget_a
+0040488f        struct FrontendWidget* title_widget = completion->title_widget
 00404893        completion->delivered_parcel_count += 1
-004048a2        kill_border(&g_game_base->border_manager, widget_a)
+004048a2        kill_border(&g_game_base->border_manager, title_widget)
 004048b6        kill_border(&g_game_base->border_manager, completion->delivered_count_widget)
-004048cb        kill_border(&g_game_base->border_manager, completion->widget_d)
-004048e0        kill_border(&g_game_base->border_manager, completion->bonus_widget)
+004048cb        kill_border(&g_game_base->border_manager, completion->bonus_icon_widget)
+004048e0        kill_border(&g_game_base->border_manager, completion->bonus_summary_widget)
 004048f4        kill_border(&g_game_base->border_manager, completion->continue_widget)
 004048f9        struct GameRoot* game_base_1 = g_game_base
 004048ff        int32_t display_token = completion->display_token

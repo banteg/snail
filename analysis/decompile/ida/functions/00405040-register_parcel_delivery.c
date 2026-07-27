@@ -12,7 +12,7 @@ void __thiscall register_parcel_delivery(Completion *completion)
     play_sound_effect(&g_sound_effect_manager, 45);
     if ( completion->delivered_parcel_count == completion->parcel_target_count )
     {
-      if ( completion->bonus_enabled )
+      if ( completion->bonus_enabled != 0 )
       {
         add_subgoldy_score(&g_game_base->subgame.player, 5, completion->bonus_score);
         play_sound_effect(&g_sound_effect_manager, 49);

@@ -21509,12 +21509,20 @@
         "completion->display_token = g_game_base->subgame.player.total_score",
         "allocate_border(&g_game_base->border_manager)",
         "struct tColour color_2",
+        "completion->title_widget",
+        "completion->bonus_summary_widget",
+        "completion->bonus_icon_widget",
+        "completion->fast_forward_enabled = 1",
         "completion->state = COMPLETION_STATE_STAGING_PARCELS"
       ],
       "forbidden_substrings": [
         "data_4df904",
         "CompletionResultScreen",
-        "screen->"
+        "screen->",
+        "completion->widget_a",
+        "completion->bonus_widget",
+        "completion->widget_d",
+        "completion->gate_18"
       ]
     },
     {
@@ -21529,13 +21537,95 @@
         "completion->display_token = bonus_score + g_game_base->subgame.player.total_score",
         "struct tColour color;",
         "allocate_border(&g_game_base->border_manager)",
+        "completion->title_widget",
+        "completion->bonus_summary_widget",
+        "completion->bonus_icon_widget",
+        "completion->fast_forward_enabled = 1",
         "completion->state = COMPLETION_STATE_STAGING_PARCELS"
       ],
       "forbidden_substrings": [
         "MEMORY[0x4DF904]",
         "CompletionResultScreen",
         "Color4f color",
-        "(tColour *)&color"
+        "(tColour *)&color",
+        "completion->widget_a",
+        "completion->bonus_widget",
+        "completion->widget_d",
+        "completion->gate_18"
+      ]
+    },
+    {
+      "name": "bn_completion_ai_widget_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00404cf0-update_row_event_display.c",
+      "required_substrings": [
+        "completion->title_widget",
+        "completion->delivered_count_widget",
+        "completion->bonus_summary_widget",
+        "completion->bonus_icon_widget",
+        "completion->continue_widget",
+        "completion->fast_forward_enabled = 0",
+        "completion->state = COMPLETION_STATE_SUMMARY_ACTIVE"
+      ],
+      "forbidden_substrings": [
+        "completion->widget_a",
+        "completion->bonus_widget",
+        "completion->widget_d",
+        "completion->gate_18"
+      ]
+    },
+    {
+      "name": "ida_completion_ai_widget_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00404cf0-update_row_event_display.c",
+      "required_substrings": [
+        "void __thiscall update_row_event_display(Completion *completion)",
+        "completion->title_widget",
+        "completion->delivered_count_widget",
+        "completion->bonus_summary_widget",
+        "completion->bonus_icon_widget",
+        "completion->continue_widget",
+        "completion->fast_forward_enabled = 0;",
+        "completion->state = COMPLETION_STATE_SUMMARY_ACTIVE;"
+      ],
+      "forbidden_substrings": [
+        "completion->widget_a",
+        "completion->bonus_widget",
+        "completion->widget_d",
+        "completion->gate_18"
+      ]
+    },
+    {
+      "name": "bn_completion_teardown_widget_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00404830-flush_row_event_display.c",
+      "required_substrings": [
+        "completion->title_widget",
+        "completion->delivered_count_widget",
+        "completion->bonus_icon_widget",
+        "completion->bonus_summary_widget",
+        "completion->continue_widget",
+        "completion->state = COMPLETION_STATE_INACTIVE"
+      ],
+      "forbidden_substrings": [
+        "completion->widget_a",
+        "completion->bonus_widget",
+        "completion->widget_d"
+      ]
+    },
+    {
+      "name": "ida_completion_teardown_widget_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00404830-flush_row_event_display.c",
+      "required_substrings": [
+        "void __thiscall flush_row_event_display(Completion *completion)",
+        "completion->title_widget",
+        "completion->delivered_count_widget",
+        "completion->bonus_icon_widget",
+        "completion->bonus_summary_widget",
+        "completion->continue_widget",
+        "completion->state = COMPLETION_STATE_INACTIVE;"
+      ],
+      "forbidden_substrings": [
+        "completion->widget_a",
+        "completion->bonus_widget",
+        "completion->widget_d"
       ]
     },
     {

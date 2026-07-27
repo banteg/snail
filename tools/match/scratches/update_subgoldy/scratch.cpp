@@ -778,7 +778,7 @@ steering_stored:
         if (completion_handoff_timer > 2.0f) {
             SubgameRuntime* skip_game = game;
             if (skip_game->level_mode == 0 || skip_game->level_mode == 1) {
-                if (skip_game->completion.gate_18 == 1
+                if (skip_game->completion.fast_forward_enabled == 1
                     && (control_source->control_flags_a
                             & INPUT_BUTTON_PRIMARY)
                         != 0)

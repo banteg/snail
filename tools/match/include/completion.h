@@ -34,10 +34,7 @@ public:
         CompletionState state;
         CompletionState continue_state;
     }; // +0x14
-    union {
-        unsigned char gate_18;
-        unsigned char continue_visible;
-    }; // +0x18
+    unsigned char fast_forward_enabled; // +0x18, permits primary-input skip
     char unknown_19[0x1c - 0x19];
     union {
         int parcel_target_count;

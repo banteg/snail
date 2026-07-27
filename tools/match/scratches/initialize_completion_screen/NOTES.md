@@ -149,3 +149,18 @@ This is analysis/replay ownership work only. The candidate remains honestly at
 89.89%, 276/278 instructions, prefix 23/278, with all 44 operands clean; the
 documented x/y register allocation residual remains visible and was not
 fakematched.
+
+## 2026-07-28 cross-port widget-role replay
+
+Android and iOS preserve the same `cRCompletion::{Init,AI,UnInit}` lifecycle
+and identify the heading, delivered-count, bonus-summary, and continue handles.
+Windows independently adds the sprite-122 bonus icon at `+0x0c`; its exact
+initializer and AI prove the five Windows roles at `+0x00..+0x10`.
+
+The canonical Binary Ninja and IDA owners now use `title_widget`,
+`delivered_count_widget`, `bonus_summary_widget`, `bonus_icon_widget`, and
+`continue_widget` rather than the stale `widget_a/bonus_widget/widget_d`
+aliases. Windows also proves `+0x18` is `fast_forward_enabled`: Init sets it,
+AI clears it as the summary begins, and `update_subgoldy` consumes it with
+primary input to advance the completion handoff. No mobile field offset was
+copied into Windows, and the honest 89.89% matcher result is unchanged.

@@ -16,7 +16,7 @@ void __thiscall update_row_event_display(Completion *completion)
   int32_t bonus_enabled; // eax
   GameRoot *v11; // eax
   double v12; // st7
-  FrontendWidget *bonus_widget; // ecx
+  FrontendWidget *bonus_summary_widget; // ecx
   int32_t delivered_parcel_count; // ecx
   float v15; // [esp+8h] [ebp-3Ch]
   float v16; // [esp+Ch] [ebp-38h]
@@ -32,22 +32,22 @@ void __thiscall update_row_event_display(Completion *completion)
   float v26; // [esp+3Ch] [ebp-8h]
   float v27; // [esp+40h] [ebp-4h]
 
-  if ( completion->state )
+  if ( completion->state != COMPLETION_STATE_INACTIVE )
   {
     delivered_count_widget = completion->delivered_count_widget;
-    if ( g_game_base->subgame.subgame_pause_gate )
+    if ( g_game_base->subgame.subgame_pause_gate != 0 )
     {
       hide_border_init(delivered_count_widget);
-      hide_border_init(completion->widget_a);
-      hide_border_init(completion->widget_d);
-      hide_border_init(completion->bonus_widget);
+      hide_border_init(completion->title_widget);
+      hide_border_init(completion->bonus_icon_widget);
+      hide_border_init(completion->bonus_summary_widget);
       hide_border_init(completion->continue_widget);
     }
     else
     {
       unhide_border_init(delivered_count_widget);
-      unhide_border_init(completion->widget_a);
-      unhide_border_init(completion->widget_d);
+      unhide_border_init(completion->title_widget);
+      unhide_border_init(completion->bonus_icon_widget);
       unhide_border_init(completion->continue_widget);
       switch ( completion->state )
       {
@@ -76,7 +76,7 @@ void __thiscall update_row_event_display(Completion *completion)
             completion->progress = 0.0;
             if ( v8 == parcel_target_count )
             {
-              if ( parcel_target_count )
+              if ( parcel_target_count != 0 )
               {
                 completion->state = COMPLETION_STATE_WAITING_FOR_DELIVERIES;
               }
@@ -92,12 +92,12 @@ void __thiscall update_row_event_display(Completion *completion)
         case COMPLETION_STATE_SUMMARY_PENDING:
           unhide_border_init(completion->continue_widget);
           bonus_enabled = completion->bonus_enabled;
-          completion->gate_18 = 0;
+          completion->fast_forward_enabled = 0;
           completion->state = COMPLETION_STATE_SUMMARY_ACTIVE;
-          if ( !bonus_enabled )
+          if ( bonus_enabled == 0 )
             goto LABEL_18;
-          unhide_border_init(completion->bonus_widget);
-          if ( completion->parcel_target_count )
+          unhide_border_init(completion->bonus_summary_widget);
+          if ( completion->parcel_target_count != 0 )
             goto LABEL_18;
           v11 = g_game_base;
           if ( g_game_base->subgame.level_mode == 1 )
@@ -107,18 +107,18 @@ void __thiscall update_row_event_display(Completion *completion)
 LABEL_18:
             v11 = g_game_base;
           }
-          if ( completion->bonus_enabled )
+          if ( completion->bonus_enabled != 0 )
           {
             v12 = completion->bonus_blink_step + completion->bonus_blink_progress;
             completion->bonus_blink_progress = v12;
             if ( v12 > 1.0 )
             {
-              bonus_widget = completion->bonus_widget;
+              bonus_summary_widget = completion->bonus_summary_widget;
               completion->bonus_blink_progress = 0.0;
-              if ( (bonus_widget->widget_flags & 0x1000) != 0 )
-                unhide_border_init(bonus_widget);
+              if ( (bonus_summary_widget->widget_flags & 0x1000) != 0 )
+                unhide_border_init(bonus_summary_widget);
               else
-                hide_border_init(bonus_widget);
+                hide_border_init(bonus_summary_widget);
             }
             v11 = g_game_base;
           }

@@ -124,7 +124,7 @@ void Completion::initialize_completion_screen(
     delivered_count_display = 0;
     continue_state = COMPLETION_STATE_STAGING_PARCELS;
     delivered_count_progress_limit = 0.833333313f;
-    continue_visible = 1;
+    fast_forward_enabled = 1;
     delivered_count_progress_step =
         1.0f / (3.4000001f / (float)(delivered_count + 1) * 60.0f);
 }

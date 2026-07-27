@@ -78,9 +78,9 @@ void __thiscall initialize_completion_screen(Completion *completion, int32_t del
   completion->parcel_target_count = delivered_count;
   completion->bonus_enabled = perfect_delivery;
   completion->display_token = bonus_score + g_game_base->subgame.player.total_score + 100 * delivered_count;
-  completion->widget_a = allocate_border(&g_game_base->border_manager);
+  completion->title_widget = allocate_border(&g_game_base->border_manager);
   v11 = set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
-  initialize_frontend_widget(completion->widget_a, 0x20400002u, aDeliveryComple, 20, 0.0, 80.0, v11, 2, 0.0);
+  initialize_frontend_widget(completion->title_widget, 0x20400002u, aDeliveryComple, 20, 0.0, 80.0, v11, 2, 0.0);
   completion->delivered_count_widget = allocate_border(&g_game_base->border_manager);
   if ( completion->parcel_target_count == 1 )
   {
@@ -110,28 +110,46 @@ void __thiscall initialize_completion_screen(Completion *completion, int32_t del
       2,
       0.0);
   }
-  completion->widget_d = allocate_border(&g_game_base->border_manager);
+  completion->bonus_icon_widget = allocate_border(&g_game_base->border_manager);
   v12 = set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
-  initialize_frontend_sprite_button(completion->widget_d, 0x400800u, 122, 100.0, 146.0, v12, 0.0, 4);
-  completion->widget_d->sprite_shadow_offset = 0.0;
-  completion->bonus_widget = allocate_border(&g_game_base->border_manager);
+  initialize_frontend_sprite_button(completion->bonus_icon_widget, 0x400800u, 122, 100.0, 146.0, v12, 0.0, 4);
+  completion->bonus_icon_widget->sprite_shadow_offset = 0.0;
+  completion->bonus_summary_widget = allocate_border(&g_game_base->border_manager);
   v13 = g_game_base->subgame.level_mode;
   if ( v13 != 0 )
   {
     if ( v13 == 1 )
     {
       v15 = set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
-      initialize_frontend_widget(completion->bonus_widget, 0x20400002u, aLevelComplete, 20, 0.0, 302.0, v15, 2, 0.0);
-      border_add_text_number(completion->bonus_widget, completion->bonus_score);
-      strcat((char *)&completion->bonus_widget->text_buffer, aBonusPoints);
+      initialize_frontend_widget(
+        completion->bonus_summary_widget,
+        0x20400002u,
+        aLevelComplete,
+        20,
+        0.0,
+        302.0,
+        v15,
+        2,
+        0.0);
+      border_add_text_number(completion->bonus_summary_widget, completion->bonus_score);
+      strcat((char *)&completion->bonus_summary_widget->text_buffer, aBonusPoints);
     }
   }
   else
   {
     v14 = set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
-    initialize_frontend_widget(completion->bonus_widget, 0x20400002u, aPerfectScore50, 20, 0.0, 302.0, v14, 2, 0.0);
+    initialize_frontend_widget(
+      completion->bonus_summary_widget,
+      0x20400002u,
+      aPerfectScore50,
+      20,
+      0.0,
+      302.0,
+      v14,
+      2,
+      0.0);
   }
-  hide_border_init(completion->bonus_widget);
+  hide_border_init(completion->bonus_summary_widget);
   completion->bonus_blink_progress = 0.0;
   completion->bonus_blink_step = 0.041666668;
   completion->continue_widget = allocate_border(&g_game_base->border_manager);
@@ -169,6 +187,6 @@ void __thiscall initialize_completion_screen(Completion *completion, int32_t del
   completion->delivered_parcel_count = 0;
   completion->state = COMPLETION_STATE_STAGING_PARCELS;
   completion->progress = 0.83333331;
-  completion->gate_18 = 1;
+  completion->fast_forward_enabled = 1;
   completion->progress_step = 1.0 / (3.4000001 / (double)(parcel_target_count + 1) * 60.0);
 }

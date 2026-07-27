@@ -84,7 +84,7 @@ void Completion::update_row_event_display()
     case COMPLETION_STATE_SUMMARY_PENDING: {
         controller->continue_widget->unhide_border_init();
         int bonus_enabled = controller->bonus_enabled;
-        controller->gate_18 = 0;
+        controller->fast_forward_enabled = 0;
         controller->state = COMPLETION_STATE_SUMMARY_ACTIVE;
         if (bonus_enabled != 0) {
             controller->bonus_summary_widget->unhide_border_init();

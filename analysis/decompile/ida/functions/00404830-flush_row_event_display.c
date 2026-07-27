@@ -10,9 +10,9 @@ void __thiscall flush_row_event_display(Completion *completion)
   int32_t v4; // ecx
   int32_t v5; // eax
   int32_t display_token; // eax
-  FrontendWidget *widget_a; // [esp-4h] [ebp-8h]
+  FrontendWidget *title_widget; // [esp-4h] [ebp-8h]
 
-  if ( completion->state )
+  if ( completion->state != COMPLETION_STATE_INACTIVE )
   {
     delivered_parcel_count = completion->delivered_parcel_count;
     parcel_target_count = completion->parcel_target_count;
@@ -29,15 +29,15 @@ void __thiscall flush_row_event_display(Completion *completion)
         }
         while ( v5 < v4 );
       }
-      if ( completion->bonus_enabled )
+      if ( completion->bonus_enabled != 0 )
         add_subgoldy_score(&g_game_base->subgame.player, completion->bonus_score, 0);
     }
-    widget_a = completion->widget_a;
+    title_widget = completion->title_widget;
     ++completion->delivered_parcel_count;
-    kill_border(&g_game_base->border_manager, widget_a);
+    kill_border(&g_game_base->border_manager, title_widget);
     kill_border(&g_game_base->border_manager, completion->delivered_count_widget);
-    kill_border(&g_game_base->border_manager, completion->widget_d);
-    kill_border(&g_game_base->border_manager, completion->bonus_widget);
+    kill_border(&g_game_base->border_manager, completion->bonus_icon_widget);
+    kill_border(&g_game_base->border_manager, completion->bonus_summary_widget);
     kill_border(&g_game_base->border_manager, completion->continue_widget);
     display_token = completion->display_token;
     if ( g_game_base->subgame.player.total_score != display_token )

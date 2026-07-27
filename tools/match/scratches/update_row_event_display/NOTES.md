@@ -193,3 +193,17 @@ colliding IDA operands recovers the full
 and the same Player score sink already shown by Binary Ninja. The parcel and
 Player lifetimes now agree across both decompilers; matching remains exact at
 213/213.
+
+## 2026-07-28 completion widget and skip ownership
+
+The exact Windows Init/AI/UnInit trio proves the previously generic pointer
+roles: the heading at `+0x00`, blinking bonus summary at `+0x08`, and
+sprite-122 bonus icon at `+0x0c`. Android and iOS independently preserve the
+same `cRCompletion` lifecycle and the common heading, count, summary, and
+continue roles; their compact layouts are used as semantic evidence only.
+
+Windows `+0x18` is now `fast_forward_enabled`, not a visibility flag. Init
+sets it, this AI clears it when entering the summary, and `update_subgoldy`
+requires it alongside primary input before skipping the completion delay.
+The canonical BN/IDA owner and tracked decompiles now expose these roles while
+the matcher remains exact at 213/213.

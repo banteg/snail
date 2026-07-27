@@ -8,14 +8,14 @@
 00404d0f        struct FrontendWidget* delivered_count_widget = completion->delivered_count_widget
 00404d12        if (g_game_base->subgame.subgame_pause_gate != 0)
 00404d14        hide_border_init(delivered_count_widget)
-00404d1b        hide_border_init(completion->widget_a)
-00404d23        hide_border_init(completion->widget_d)
-00404d2b        hide_border_init(completion->bonus_widget)
+00404d1b        hide_border_init(completion->title_widget)
+00404d23        hide_border_init(completion->bonus_icon_widget)
+00404d2b        hide_border_init(completion->bonus_summary_widget)
 00404d33        hide_border_init(completion->continue_widget)
 00404d3d        return
 00404d3e        unhide_border_init(delivered_count_widget)
-00404d45        unhide_border_init(completion->widget_a)
-00404d4d        unhide_border_init(completion->widget_d)
+00404d45        unhide_border_init(completion->title_widget)
+00404d4d        unhide_border_init(completion->bonus_icon_widget)
 00404d55        unhide_border_init(completion->continue_widget)
 00404d5a        enum CompletionState state = completion->state
 00404d60        if (state u> COMPLETION_STATE_EMPTY_DELIVERY_DELAY)
@@ -51,11 +51,11 @@
 00404e26        case COMPLETION_STATE_SUMMARY_PENDING
 00404e26        unhide_border_init(completion->continue_widget)
 00404e2b        int32_t bonus_enabled = completion->bonus_enabled
-00404e2e        completion->gate_18 = 0
+00404e2e        completion->fast_forward_enabled = 0
 00404e33        completion->state = COMPLETION_STATE_SUMMARY_ACTIVE
 00404e3a        if (bonus_enabled == 0)
 00404e3a        goto label_404e74
-00404e3f        unhide_border_init(completion->bonus_widget)
+00404e3f        unhide_border_init(completion->bonus_summary_widget)
 00404e47        if (completion->parcel_target_count != 0)
 00404e47        goto label_404e74
 00404e49        struct GameRoot* game_base_2 = g_game_base
@@ -70,31 +70,33 @@
 00404e87        long double temp4_1 = fconvert.t(1f)
 00404e87        x87_r7_6 - temp4_1
 00404e92        if ((((x87_r7_6 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_6, temp4_1) ? 1 : 0) << 0xa | (x87_r7_6 == temp4_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-00404e94        struct FrontendWidget* bonus_widget = completion->bonus_widget
+00404e94        struct FrontendWidget* bonus_summary_widget = completion->bonus_summary_widget
 00404e97        completion->bonus_blink_progress = 0f
-00404ea3        if (((bonus_widget->widget_flags).w:1.b & 0x10) == 0)
-00404eac        hide_border_init(bonus_widget)
-00404ea5        unhide_border_init(bonus_widget)
+00404ea3        if (((bonus_summary_widget->widget_flags).w:1.b & 0x10) == 0)
+00404eac        hide_border_init(bonus_summary_widget)
+00404ea5        unhide_border_init(bonus_summary_widget)
 00404eb1        game_base_2 = g_game_base
 00404ec2        if (((game_base_2->players[0].game_input->input.pressed_buttons).w:1.b & 0x40) != 0)
 00404ecb        completion->state = COMPLETION_STATE_CONTINUE_ACCEPTED
 00404ed2        play_sound_effect(&g_sound_effect_manager, 8)
 00404ed7        label_404ed7:
 00404ed7        game_base_2 = g_game_base
+00404f04        float var_4_1 = fconvert.s(fconvert.t(game_base_2->players[0].body.transform.basis_forward.z) * fconvert.t(6f))
 00404f08        long double x87_r6_5 = fconvert.t(game_base_2->players[0].body.transform.basis_up.x)
 00404f10        long double x87_r5_1 = fconvert.t(game_base_2->players[0].body.transform.basis_up.y)
 00404f1c        long double x87_r5_3 = fconvert.t(game_base_2->players[0].body.transform.basis_up.z)
 00404f83        float var_14_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(game_base_2->players[0].body.transform.basis_right.y) * fconvert.t(7.30000019f))) + fconvert.t(game_base_2->players[0].body.transform.position.y))) + fconvert.t(fconvert.s(x87_r5_1 + x87_r5_1)))
 00404f8f        float var_10_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(game_base_2->players[0].body.transform.basis_right.z) * fconvert.t(7.30000019f))) + fconvert.t(game_base_2->players[0].body.transform.position.z))) + fconvert.t(fconvert.s(x87_r5_3 + x87_r5_3)))
 00404f93        long double x87_r6_8 = x87_r6_5 + x87_r6_5 + fconvert.t(game_base_2->players[0].body.transform.basis_right.x) * fconvert.t(7.30000019f) + fconvert.t(game_base_2->players[0].body.transform.position.x) + fconvert.t(game_base_2->players[0].body.transform.basis_forward.x) * fconvert.t(6f)
+00404fa3        long double x87_r7_11 = fconvert.t(var_14_1) + fconvert.t(fconvert.s(fconvert.t(game_base_2->players[0].body.transform.basis_forward.y) * fconvert.t(6f)))
 00404fa7        completion->widget_world.x = fconvert.s(x87_r6_8)
-00404fb9        completion->widget_world.y = fconvert.s(fconvert.t(var_14_1) + fconvert.t(fconvert.s(fconvert.t(game_base_2->players[0].body.transform.basis_forward.y) * fconvert.t(6f))))
-00404fc4        completion->widget_world.z = fconvert.s(fconvert.t(var_10_1) + fconvert.t(fconvert.s(fconvert.t(game_base_2->players[0].body.transform.basis_forward.z) * fconvert.t(6f))))
+00404fb9        completion->widget_world.y = fconvert.s(x87_r7_11)
+00404fc4        completion->widget_world.z = fconvert.s(fconvert.t(var_10_1) + fconvert.t(var_4_1))
 00404fc7        int32_t delivered_parcel_count = completion->delivered_parcel_count
 00404fcd        if (delivered_parcel_count s>= 0xa)
-00404ff2        *(completion->delivered_count_widget + 0x2cc) = (delivered_parcel_count s/ 0xa).b + 0x30
-00404fd2        *(completion->delivered_count_widget + 0x2cc) = 0x20
-00405009        *(completion->delivered_count_widget + 0x2cd) = (mods.dp.d(sx.q(completion->delivered_parcel_count), 0xa)).b + 0x30
+00404ff2        completion->delivered_count_widget->text_buffer.raw[0] = (delivered_parcel_count s/ 0xa).b + 0x30
+00404fd2        completion->delivered_count_widget->text_buffer.raw[0] = 0x20
+00405009        completion->delivered_count_widget->text_buffer.raw[1] = (mods.dp.d(sx.q(completion->delivered_parcel_count), 0xa)).b + 0x30
 00404d66        case COMPLETION_STATE_SUMMARY_ACTIVE
 00404d66        goto label_404e74
 00404e00        case COMPLETION_STATE_EMPTY_DELIVERY_DELAY

@@ -1198,13 +1198,13 @@ cross-port `cRCompletion` owner.
 
 High-confidence current fields:
 
-- `+0x00`: `widget_a`
-- `+0x04`: `widget_b`
-- `+0x08`: `widget_c`
-- `+0x0c`: `widget_d`
-- `+0x10`: `widget_e`
+- `+0x00`: `title_widget`
+- `+0x04`: `delivered_count_widget`
+- `+0x08`: `bonus_summary_widget`
+- `+0x0c`: `bonus_icon_widget`
+- `+0x10`: `continue_widget`
 - `+0x14`: `state` (`CompletionState`)
-- `+0x18`: `completion_fast_forward_gate`
+- `+0x18`: `fast_forward_enabled`
 - `+0x1c`: `parcel_target_count`
 - `+0x20`: `bonus_enabled`
 - `+0x24`: `staged_parcel_count`

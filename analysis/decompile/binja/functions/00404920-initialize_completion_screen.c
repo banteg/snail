@@ -42,10 +42,10 @@
 00404a10        completion->parcel_target_count = delivered_count
 00404a13        completion->bonus_enabled = zx.d(perfect_delivery)
 00404a2d        completion->display_token = g_game_base->subgame.player.total_score + delivered_count * 0x64 + bonus_score
-00404a5c        completion->widget_a = allocate_border(&g_game_base->border_manager)
+00404a5c        completion->title_widget = allocate_border(&g_game_base->border_manager)
 00404a5f        struct tColour color_2
 00404a5f        struct tColour* color_3 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00404a7a        initialize_frontend_widget(completion->widget_a, 0x20400002, "Delivery Complete!", 0x14, 0f, 80f, color_3, 2, 0f)
+00404a7a        initialize_frontend_widget(completion->title_widget, 0x20400002, "Delivery Complete!", 0x14, 0f, 80f, color_3, 2, 0f)
 00404a91        completion->delivered_count_widget = allocate_border(&g_game_base->border_manager)
 00404ab0        char* text
 00404ab0        struct tColour* color
@@ -61,19 +61,19 @@
 00404ac2        int32_t var_38 = 0x14
 00404ac4        text = " 0 Package Delivered"
 00404aea        initialize_frontend_widget(completion->delivered_count_widget, 0x20400002, text, 0x14, 0f, 160f, color, 2, 0f)
-00404b1a        completion->widget_d = allocate_border(&g_game_base->border_manager)
+00404b1a        completion->bonus_icon_widget = allocate_border(&g_game_base->border_manager)
 00404b1d        struct tColour* color_4 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00404b37        initialize_frontend_sprite_button(completion->widget_d, 0x400800, 0x7a, 100f, 146f, color_4, 0f, 4)
-00404b3f        *(completion->widget_d + 0x178) = 0
-00404b56        completion->bonus_widget = allocate_border(&g_game_base->border_manager)
+00404b37        initialize_frontend_sprite_button(completion->bonus_icon_widget, 0x400800, 0x7a, 100f, 146f, color_4, 0f, 4)
+00404b3f        completion->bonus_icon_widget->sprite_shadow_offset = 0f
+00404b56        completion->bonus_summary_widget = allocate_border(&g_game_base->border_manager)
 00404b5e        int32_t level_mode = g_game_base->subgame.level_mode
 00404b66        if (level_mode == 0)
 00404b83        struct tColour* color_5 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00404b9e        initialize_frontend_widget(completion->bonus_widget, 0x20400002, "PERFECT SCORE!>50,000 Bonus Points", 0x14, 0f, 302f, color_5, 2, 0f)
+00404b9e        initialize_frontend_widget(completion->bonus_summary_widget, 0x20400002, "PERFECT SCORE!>50,000 Bonus Points", 0x14, 0f, 302f, color_5, 2, 0f)
 00404bab        if (level_mode == 1)
 00404bc8        struct tColour* color_6 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00404be3        initialize_frontend_widget(completion->bonus_widget, 0x20400002, "LEVEL COMPLETE!>", 0x14, 0f, 302f, color_6, 2, 0f)
-00404bef        border_add_text_number(completion->bonus_widget, completion->bonus_score)
+00404be3        initialize_frontend_widget(completion->bonus_summary_widget, 0x20400002, "LEVEL COMPLETE!>", 0x14, 0f, 302f, color_6, 2, 0f)
+00404bef        border_add_text_number(completion->bonus_summary_widget, completion->bonus_score)
 00404bf7        char* edi_1 = " Bonus Points"
 00404bfc        int32_t i = 0xffffffff
 00404c07        while (i != 0)
@@ -83,11 +83,11 @@
 00404c07        if (not(cond:2_1))
 00404c07        break
 00404c09        int32_t ecx_25 = not.d(i)
-00404c11        void* edi_3 = completion->bonus_widget + 0x2cc
+00404c11        struct FrontendWidgetTextBuffer* edi_3 = &completion->bonus_summary_widget->text_buffer
 00404c13        int32_t i_1 = 0xffffffff
 00404c16        while (i_1 != 0)
-00404c16        bool cond:3_1 = 0 != *edi_3
-00404c16        edi_3 += 1
+00404c16        bool cond:3_1 = 0 != edi_3->raw[0]
+00404c16        edi_3 = &edi_3->raw[1]
 00404c16        i_1 -= 1
 00404c16        if (not(cond:3_1))
 00404c16        break
@@ -95,7 +95,7 @@
 00404c1e        int32_t edi_5
 00404c1e        edi_5, esi_3 = __builtin_memcpy(edi_3 - 1, edi_1 - ecx_25, ecx_25 & 0xfffffffc)
 00404c25        __builtin_memcpy(edi_5, esi_3, ecx_25 & 3)
-00404c2c        hide_border_init(completion->bonus_widget)
+00404c2c        hide_border_init(completion->bonus_summary_widget)
 00404c31        completion->bonus_blink_progress = 0f
 00404c34        completion->bonus_blink_step = 0.0416666679f
 00404c4c        completion->continue_widget = allocate_border(&g_game_base->border_manager)
@@ -114,6 +114,6 @@
 00404cb3        perfect_delivery.d = parcel_target_count + 1
 00404cbc        completion->state = COMPLETION_STATE_STAGING_PARCELS
 00404cc3        __builtin_strncpy(&completion->progress, "UUU?", 4)
-00404cca        completion->gate_18 = 1
+00404cca        completion->fast_forward_enabled = 1
 00404ce1        completion->progress_step = fconvert.s(fconvert.t(1f) / (fconvert.t(3.4000001f) / float.t(perfect_delivery.d) * fconvert.t(60f)))
 00404ce9        return

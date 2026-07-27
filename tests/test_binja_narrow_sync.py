@@ -11390,8 +11390,33 @@ def test_completion_state_ownership_stays_aligned() -> None:
         assert "COMPLETION_STATE_SUMMARY_ACTIVE = 4" in header
         assert "COMPLETION_STATE_CONTINUE_ACCEPTED = 5" in header
         assert "COMPLETION_STATE_EMPTY_DELIVERY_DELAY = 6" in header
+        assert "FrontendWidget* title_widget;" in header
         assert "FrontendWidget* delivered_count_widget;" in header
+        assert "FrontendWidget* bonus_summary_widget;" in header
+        assert "FrontendWidget* bonus_icon_widget;" in header
         assert "FrontendWidget* continue_widget;" in header
+        assert "fast_forward_enabled" in header
+        for stale_declaration in (
+            "    FrontendWidget* widget_a;\n",
+            "    FrontendWidget* bonus_widget;\n",
+            "    FrontendWidget* widget_d;\n",
+            "    uint8_t gate_18;\n",
+            "        unsigned char gate_18;\n",
+        ):
+            assert stale_declaration not in header
+
+    for offset, field_name, field_type in (
+        ("0x00", "title_widget", "FrontendWidget*"),
+        ("0x04", "delivered_count_widget", "FrontendWidget*"),
+        ("0x08", "bonus_summary_widget", "FrontendWidget*"),
+        ("0x0c", "bonus_icon_widget", "FrontendWidget*"),
+        ("0x10", "continue_widget", "FrontendWidget*"),
+        ("0x18", "fast_forward_enabled", "uint8_t"),
+    ):
+        assert (
+            f'("{offset}", "{field_name}", "{field_type}")'
+            in runtime_sync
+        )
 
     consumers = {
         "initialize_completion_screen": "COMPLETION_STATE_STAGING_PARCELS",

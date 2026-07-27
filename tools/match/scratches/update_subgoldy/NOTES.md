@@ -103,7 +103,8 @@ scratch additionally pins:
 - **Completion handoff machine**: timer step 1/60; entry resets voice
   gate, clamps vz into [rate*0.17, rate*0.5], `reset_voice_manager`,
   `end_jetpack_hover`, cutscene state 5, sound 0; past start+2.5 decays vz
-  by 2×quantum; voice 8 at t>2; skip lanes (display gate_18 + fire, or
+  by 2×quantum; voice 8 at t>2; skip lanes (`Completion::fast_forward_enabled`
+  + fire, or
   display state 5, level_mode ≤ 1) jump the timer to 5.0999999; t>5 holds
   by re-subtracting the step while display state != 5; then frontend fade
   state 0 → begin fade-out, state 4 → flush display + `complete_subgame`

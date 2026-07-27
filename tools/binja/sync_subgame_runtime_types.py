@@ -350,7 +350,13 @@ SUBGAME_PLAYER_FIELD_UPDATES = (
 )
 
 COMPLETION_FIELD_UPDATES = (
+    ("0x00", "title_widget", "FrontendWidget*"),
+    ("0x04", "delivered_count_widget", "FrontendWidget*"),
+    ("0x08", "bonus_summary_widget", "FrontendWidget*"),
+    ("0x0c", "bonus_icon_widget", "FrontendWidget*"),
+    ("0x10", "continue_widget", "FrontendWidget*"),
     ("0x14", "state", "CompletionState"),
+    ("0x18", "fast_forward_enabled", "uint8_t"),
     ("0x34", "widget_world", "Vec3"),
 )
 
