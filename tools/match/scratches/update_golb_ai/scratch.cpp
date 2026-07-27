@@ -77,8 +77,8 @@ void GolbShot::update_golb_ai()
             break;
         }
     } else {
-        Vec3* movement = &velocity;
         Vec3* current_position = &flight_transform.position;
+        Vec3* movement = &velocity;
         *current_position += *movement;
         if (kind == 0) {
             if (flight_transform.position.y > 0.49000001f || flight_transform.position.y < 0.0f) {

@@ -1,4 +1,24 @@
-# WIP scratch — 90.41%, 693/694 insns (2026-07-27)
+# WIP scratch — 90.84%, 693/694 insns (2026-07-27)
+
+## 2026-07-27 destination-first flight integration
+
+Android and iOS independently preserve the non-following update as the
+projectile's owned flight position plus its borrowed velocity. Windows carries
+those two owners in distinct live pointers across the complete three-lane
+inline addition: the destination position is `ESI` and the movement source is
+`EDI`. Declaring the destination pointer before the movement pointer recovers
+the native x/z load and pointer schedule while retaining the already-proven
+`Vector3::operator+=` statement.
+
+Focused matching rises from 90.41% to 90.84%, still `693/694` instructions,
+prefix `9/694`, with `69 ok, 0 unresolved, 0 mismatch`; the same four
+zero-constant scheduling operands remain unaudited. Swapping the two
+path-output copy declarations was byte-neutral and was reverted. Promoting the
+mobile-confirmed indexed slug bank to a typed loop cursor was also rejected:
+although semantically correct, it changed Windows base-address formation,
+removed two native instructions, and regressed to 90.04%. The retained raw
+stride loop continues to derive its extent, stride, state, position, and
+method receivers from the canonical `SlugPool`/`Slug` layout.
 
 ## 2026-07-27 mobile-authored collision vector recovery
 
