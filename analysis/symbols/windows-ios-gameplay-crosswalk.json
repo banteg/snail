@@ -4849,6 +4849,14 @@
       "source_object": null,
       "confidence": "high",
       "notes": "Android and Windows use the same cRTip field offsets: active at +0x00 and main, OK, and Disable border pointers at +0x0c, +0x10, and +0x14. Both unconditionally kill the main border, conditionally kill the two optional borders through the root BorderManager, then clear active. No cRTip::UnInit export survives in the iOS corpus, so this is intentionally Android-only evidence."
+    },
+    {
+      "address": "0x407b60",
+      "windows_name": "construct_game_runtime",
+      "android_symbol": "cRGame::cRGame()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "This mapping applies to the inlined cRGame constructor region inside the larger Windows allocation/reporting wrapper, not to the wrapper's outer authored name. Both ports install the root callback owner and construct the same major embedded families: the border manager with 150 records, 128 cached object slots, Backdrop, StarManager, large logo banks, cRSubGame, and TipManager. Android uses smaller Bod-derived layouts and different secondary-logo capacity; Windows additionally emits its size ledger, operator new call, exception cleanup, global publication, and allocation counters."
     }
   ]
 }

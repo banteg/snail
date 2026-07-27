@@ -352,6 +352,43 @@ def test_mobile_finalizer_high_score_and_tip_lifecycles_are_persisted() -> None:
     assert "cRTip::UnInit" in tip_header
 
 
+def test_android_root_constructor_recovers_inlined_game_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    functions_by_address = {
+        entry["address"]: entry for entry in functions["functions"]
+    }
+    crosswalk_by_address = {
+        entry["address"]: entry for entry in crosswalk["entries"]
+    }
+
+    root_constructor = crosswalk_by_address["0x407b60"]
+    assert root_constructor["android_symbol"] == "cRGame::cRGame()"
+    assert "ios_symbol" not in root_constructor
+    assert root_constructor["source_object"] is None
+    assert root_constructor["confidence"] == "high"
+    assert "inlined cRGame constructor region" in root_constructor["notes"]
+    assert "not to the wrapper's outer authored name" in (
+        root_constructor["notes"]
+    )
+    assert "border manager with 150 records" in root_constructor["notes"]
+    assert "128 cached object slots" in root_constructor["notes"]
+
+    description = functions_by_address["0x407b60"]["description"]
+    assert "inlined constructor" in description
+    assert "wrapper-only work" in description
+    assert "aliases" not in functions_by_address["0x407b60"]
+
+
 def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
     repo_root = Path(__file__).parents[1]
     functions = json.loads(

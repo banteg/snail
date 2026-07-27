@@ -13,11 +13,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 535,
-    "unverified_entries": 250,
-    "verified_android_symbols": 532,
+    "verified_entries": 536,
+    "unverified_entries": 249,
+    "verified_android_symbols": 533,
     "verified_ios_symbols": 432,
-    "available_android_mappings": 532,
+    "available_android_mappings": 533,
     "available_ios_mappings": 394
   },
   "entries": [
@@ -3860,39 +3860,11 @@
       "address": "0x407b60",
       "windows_name": "construct_game_runtime",
       "windows_size": 1184,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRGame::cRGame()",
-          "score": 0.8022,
-          "name_score": 0.9,
-          "size_score": 0.6554
-        },
-        {
-          "symbol": "cRSubGame::cRSubGame()",
-          "score": 0.7339,
-          "name_score": 0.675,
-          "size_score": 0.8222
-        },
-        {
-          "symbol": "cRPath::BuildFringe(char*, float)",
-          "score": 0.6807,
-          "name_score": 0.5714,
-          "size_score": 0.8446
-        },
-        {
-          "symbol": "cRSubGame::RemoveBods()",
-          "score": 0.6724,
-          "name_score": 0.5013,
-          "size_score": 0.9291
-        },
-        {
-          "symbol": "cRPath::BuildSnake(float, int, bool, char*, char*)",
-          "score": 0.6716,
-          "name_score": 0.4615,
-          "size_score": 0.9867
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRGame::cRGame()",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRGame::AI()",
@@ -3907,22 +3879,22 @@
           "size_score": 0.9764
         },
         {
+          "symbol": "cRSubGame::cRSubGame()",
+          "score": 0.7216,
+          "name_score": 0.9,
+          "size_score": 0.454
+        },
+        {
+          "symbol": "cRStarManager::Init()",
+          "score": 0.7046,
+          "name_score": 0.6,
+          "size_score": 0.8615
+        },
+        {
           "symbol": "cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)",
           "score": 0.6927,
           "name_score": 0.5013,
           "size_score": 0.9797
-        },
-        {
-          "symbol": "cRGame::Init4()",
-          "score": 0.6922,
-          "name_score": 0.6267,
-          "size_score": 0.7905
-        },
-        {
-          "symbol": "cRGame::Init2()",
-          "score": 0.6391,
-          "name_score": 0.6267,
-          "size_score": 0.6578
         }
       ]
     },

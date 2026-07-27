@@ -600,3 +600,28 @@ are pre-biased before the grid-member offset and therefore are not honest
 No matching source changed. Focused matching remains the honest 88.89%
 (`299/268` candidate/target instructions, prefix `2/268`, 120 clean operands,
 zero unresolved or mismatched operands).
+
+## 2026-07-27 Android root-constructor topology
+
+Android retains the authored `cRGame::cRGame()` symbol and independently
+confirms that the inner Windows allocation region is the inlined cRGame
+constructor. The two ports construct the same high-value owner families in
+the same root lifecycle:
+
+- the root callback owner and fog color;
+- the BorderManager and exactly 150 owned border records;
+- the fixed root BOD catalog;
+- exactly 128 cached object slots;
+- Backdrop and StarManager;
+- the large Logo renderable banks;
+- the embedded `cRSubGame`; and
+- the final TipManager.
+
+The port layouts are not conflated. Android uses smaller Bod-derived records,
+353 compact root BODs, and a different secondary Logo capacity; Windows keeps
+its recovered 352-entry catalog plus standalone BOD and desktop-specific
+extents. The Windows function also surrounds the constructor with the runtime
+size ledger, `operator new`, exception cleanup, global publication, and
+allocation counters. The crosswalk therefore maps the inlined constructor
+region for owner provenance without renaming the whole wrapper or claiming
+body identity.
