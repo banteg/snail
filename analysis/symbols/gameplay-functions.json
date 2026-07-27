@@ -227,45 +227,54 @@
     {
       "address": "0x4050c0",
       "name": "classify_archive_entry_extension",
+      "port_scope": "boundary",
       "description": "Copies one archive entry's filename stem before the first dot into the caller buffer and returns the shared ArchiveEntryExtensionClass: TGA, WAV, MP3, or UNKNOWN."
     },
     {
       "address": "0x405140",
-      "name": "file_exists"
+      "name": "file_exists",
+      "port_scope": "boundary"
     },
     {
       "address": "0x405170",
       "name": "get_stream_length_preserve_position",
+      "port_scope": "boundary",
       "description": "Seeks one open file stream to the end, reads its byte length, and restores the original stream position before returning."
     },
     {
       "address": "0x4051b0",
       "name": "load_file_bytes_allocating",
+      "port_scope": "boundary",
       "description": "Loads one filesystem file into a freshly allocated byte buffer and optionally returns the byte length through the out parameter."
     },
     {
       "address": "0x4051d0",
       "name": "load_file_bytes_into_optional_buffer",
+      "port_scope": "boundary",
       "description": "Loads one filesystem file into the caller-supplied buffer when present, otherwise allocates a new buffer, and optionally returns the byte length through the out parameter."
     },
     {
       "address": "0x405270",
       "name": "scramble_archive_bytes_in_place",
+      "port_scope": "boundary",
       "description": "Applies the archive rebuild byte-scramble in place by XORing each byte with its index-derived polynomial mask."
     },
     {
       "address": "0x4052a0",
       "name": "save_file_bytes_with_optional_archive_scramble",
+      "port_scope": "boundary",
       "description": "Writes one byte buffer to the filesystem and optionally applies the archive rebuild scramble before the write."
     },
     {
       "address": "0x405340",
       "name": "delete_file_path",
+      "port_scope": "boundary",
       "description": "Deletes one filesystem path; used by the archive rebuild pass to remove the old archive and temporary extracted PNG."
     },
     {
       "address": "0x405350",
       "name": "toggle_archive_high_bit_in_place",
+      "port_scope": "boundary",
       "description": "Toggles bit 7 on each byte in place; used to decode the legacy `.dam` archive payload before rebuild."
     },
     {
@@ -276,21 +285,25 @@
     {
       "address": "0x405640",
       "name": "load_x_mesh",
+      "port_scope": "boundary",
       "description": "Void Windows member corresponding to iOS `cRDirectX::Load(char*, cRObject*, int)`: loads one X mesh into an owned Object, preserves raw and signed-16-bit working counts, writes scalar UV and index lanes through the Object-owned face array, then assigns each face material from a guarded local TextureRef table."
     },
     {
       "address": "0x405c90",
       "name": "initialize_directx_loader",
+      "port_scope": "boundary",
       "description": "Void Windows `cRDirectX::Init()` member: initializes the root-owned 0x5e10-byte X-file loader, clears its cached-mesh count, loads XAnimation.txt, and allocates the duplicate-vertex workspace after the fixed 128-slot mesh cache."
     },
     {
       "address": "0x405cc0",
       "name": "load_or_reuse_cached_x_mesh",
+      "port_scope": "boundary",
       "description": "Searches the root DirectX loader's fixed 128-slot X-mesh cache by name and returns the existing index on a hit; on a miss it appends a new entry, allocates its backing object from the global object list, loads the mesh, and returns the new index."
     },
     {
       "address": "0x405d60",
       "name": "load_x_animation_clip",
+      "port_scope": "boundary",
       "description": "Void Windows `cRDirectX::LoadAnim(char*, cRObject*)`: owns the shared parse cursor while enumerating one mesh's X-animation keyframes into 0x80-byte BodBase-derived records, loads their borrowed ObjectList slots, parses duration/mode metadata, and asks the destination Object to retain the generated animation graph."
     },
     {
@@ -340,11 +353,13 @@
     },
     {
       "address": "0x406d30",
-      "name": "log_startup_timestamp"
+      "name": "log_startup_timestamp",
+      "port_scope": "replaceable-platform"
     },
     {
       "address": "0x406d70",
       "name": "initialize_main_loop_display_state",
+      "port_scope": "boundary",
       "description": "Resets the display-mode/view-sample state, window deactivation latches, and object texture transform matrix, then tail-calls the adjacent main-loop timing initializer before startup enters the active frame loop."
     },
     {
@@ -355,95 +370,114 @@
     {
       "address": "0x406dc0",
       "name": "game_startup_and_main_loop",
+      "port_scope": "replaceable-platform",
       "description": "Four-argument stdcall WinMain startup and fixed-step frame loop. It constructs and initializes the global cRGame root, drives its owned fade and render/update gates, then persists the embedded cRSubHighScore bank before releasing the root and process subsystems."
     },
     {
       "address": "0x4072f0",
       "name": "handle_game_window_activate",
+      "port_scope": "replaceable-platform",
       "description": "Runtime reactivation helper for the main window. It clears the inactive flag, reapplies fullscreen mode when configured, refreshes the frame timestamp, shows and focuses the game window, and clears the mouse button latch bytes after WM_ACTIVATE enters the active state."
     },
     {
       "address": "0x4073b0",
       "name": "show_and_focus_game_window",
+      "port_scope": "replaceable-platform",
       "description": "Startup-only helper that shows the game window, brings it to the foreground, sets focus and active window state, refreshes the frame timestamp, and clears the mouse button latch bytes before the main loop begins."
     },
     {
       "address": "0x407440",
       "name": "handle_game_window_deactivate",
+      "port_scope": "replaceable-platform",
       "description": "Runtime deactivation helper for the main window. When the game is active in fullscreen mode, it marks the window inactive, minimizes it, and clears the pending quit flag before returning."
     },
     {
       "address": "0x407490",
       "name": "minimize_game_window",
+      "port_scope": "replaceable-platform",
       "description": "Posts WM_SIZE/SIZE_MINIMIZED to the process-owned main window after emitting the stripped software-minimize diagnostic."
     },
     {
       "address": "0x4074b0",
       "name": "game_window_proc",
+      "port_scope": "replaceable-platform",
       "description": "Primary Win32 window procedure for the game's main window. It handles activation and minimize transitions, ESC-to-quit, left and right mouse button latches, and mouse-wheel delta capture before delegating the rest to DefWindowProcA."
     },
     {
       "address": "0x4077f0",
       "name": "consume_mouse_wheel_delta",
+      "port_scope": "boundary",
       "description": "Returns the latched mouse-wheel delta for the requested slot and clears it back to zero."
     },
     {
       "address": "0x407810",
       "name": "read_left_mouse_button_state",
+      "port_scope": "boundary",
       "description": "Clears the companion left-button latch byte for the requested slot and returns the current left mouse button state byte."
     },
     {
       "address": "0x407830",
       "name": "read_right_mouse_button_state",
+      "port_scope": "boundary",
       "description": "Clears the companion right-button latch byte for the requested slot and returns the current right mouse button state byte."
     },
     {
       "address": "0x407850",
       "name": "snapshot_current_display_mode",
+      "port_scope": "replaceable-platform",
       "description": "Reads the current desktop display mode into the shared `DEVMODEA` buffer at `data_4df868` before fullscreen or pointer-scaling setup."
     },
     {
       "address": "0x407860",
       "name": "restore_desktop_display_mode",
+      "port_scope": "replaceable-platform",
       "description": "Restores the desktop display mode with ChangeDisplaySettingsA(nullptr, 0) and makes the OS cursor visible again. The startup loop and deactivate path use it when leaving fullscreen presentation."
     },
     {
       "address": "0x407880",
       "name": "probe_display_mode_count",
+      "port_scope": "replaceable-platform",
       "description": "Walks `EnumDisplaySettingsA` until it fails and returns the terminal result, which the startup path uses while gathering desktop display capabilities."
     },
     {
       "address": "0x4078b0",
       "name": "read_current_display_resolution",
+      "port_scope": "replaceable-platform",
       "description": "Reads the current desktop width and height into the supplied outputs, falling back to `640x480` if `EnumDisplaySettingsA` fails."
     },
     {
       "address": "0x407910",
       "name": "clear_display_mode_state",
+      "port_scope": "replaceable-platform",
       "description": "Clears the queued display-mode view-sample count and current display-mode pointer."
     },
     {
       "address": "0x407920",
       "name": "reset_display_mode_probe_count",
+      "port_scope": "replaceable-platform",
       "description": "Clears the display-mode probe count after the main window restores from minimization."
     },
     {
       "address": "0x407930",
       "name": "read_next_display_mode_view_sample",
+      "port_scope": "replaceable-platform",
       "description": "Returns the next display-mode view sample or the current mode dimensions during the startup probe warm-up."
     },
     {
       "address": "0x4079e0",
       "name": "bass_audio_window_proc",
+      "port_scope": "replaceable-platform",
       "description": "Hidden BASS window procedure that posts WM_QUIT on close and otherwise forwards messages to DefWindowProcA."
     },
     {
       "address": "0x407a10",
-      "name": "initialize_audio_subsystem"
+      "name": "initialize_audio_subsystem",
+      "port_scope": "replaceable-platform"
     },
     {
       "address": "0x407b00",
       "name": "shutdown_bass_audio_window",
+      "port_scope": "replaceable-platform",
       "description": "Uninitializes the audio backend, destroys the hidden BASS window, and unregisters the BASS window class; its handle-zeroing store is confined to the fatal destroy-failure path."
     },
     {
@@ -603,6 +637,7 @@
     {
       "address": "0x4088a0",
       "name": "abort_startup_with_3d_error",
+      "port_scope": "replaceable-platform",
       "description": "Shows the native 3D-accelerator startup error dialog, terminates the shell process, and returns through the shared `cRBod` constructor on the static sentinel object."
     },
     {
@@ -681,21 +716,25 @@
     {
       "address": "0x40a490",
       "name": "render_game_frame",
+      "port_scope": "boundary",
       "description": "Renders every active root viewport in camera sort order, synchronizes flagged Snail/weapon BODs from their borrowed AnimManager progress into Object::animation, draws eligible BODs, depth-buckets the active sprite list through the fixed 3000-node workspace, drains all 256 buckets, renders queued text, and replays staged after-sprite BODs. The native function has a void thiscall ABI; iOS names the same root-owned method `cRGame::Render()`, and Android preserves the animation-progress chain at port-specific offsets."
     },
     {
       "address": "0x40aa50",
       "name": "initialize_input",
+      "port_scope": "boundary",
       "description": "Exact void Windows cRInput::Init(): initializes the 0x38-byte InputState masks, axes, authored pointer coordinates, and pointer value. Android preserves the same owner and semantics at port-specific offsets; its incidental receiver result differs from Windows' zero-store temporary, while the sole Windows caller consumes neither."
     },
     {
       "address": "0x40aa80",
       "name": "update_input",
+      "port_scope": "boundary",
       "description": "Void Windows cRInput::Update(): derives pressed and released button edges from current versus previous state, stores the inverse mask, advances previous state, and clears the current word. Android preserves the same edge algebra and cRInput owner; the honest Windows scratch remains 52.94% because of an extra native EDI lifetime."
     },
     {
       "address": "0x40aab0",
       "name": "update_game_input",
+      "port_scope": "boundary",
       "description": "Runs cRGameInput::AI() for one root-owned BodBase-derived input record: when the root sampling gate is live, copies the selected controller's buttons, axes, pointer values, and authored x/y into the trailing cRInput-compatible state and derives the current-frame button edges."
     },
     {
@@ -868,70 +907,84 @@
     {
       "address": "0x4114b0",
       "name": "create_vertex_buffer",
+      "port_scope": "replaceable-platform",
       "description": "Allocates one Direct3D vertex buffer in the renderer's fixed 3000-slot ObjectRenderBuffers pool using the requested FVF layout."
     },
     {
       "address": "0x4115d0",
       "name": "create_index_buffer",
+      "port_scope": "replaceable-platform",
       "description": "Allocates one 16-bit Direct3D index buffer in the renderer's embedded fixed 3000-slot IndexBufferFactory pool."
     },
     {
       "address": "0x411630",
       "name": "initialize_direct3d_renderer_defaults",
+      "port_scope": "replaceable-platform",
       "description": "Seeds authored mouse client/clip rectangles and initializes the Direct3D renderer's inactive interface pointers and default presentation fields."
     },
     {
       "address": "0x4116f0",
       "name": "release_direct3d_renderer_resources",
+      "port_scope": "replaceable-platform",
       "description": "Direct3DRenderer member teardown entry point that tail-calls the device/interface release body with the existing renderer receiver."
     },
     {
       "address": "0x411700",
       "name": "direct3d_renderer_set_cull_mode",
+      "port_scope": "replaceable-platform",
       "description": "Renderer-wrapper method that maps the one-bit cull selector to Direct3D render state 0x16 values before object rendering."
     },
     {
       "address": "0x411730",
-      "name": "initialize_d3d8_device"
+      "name": "initialize_d3d8_device",
+      "port_scope": "replaceable-platform"
     },
     {
       "address": "0x4118b0",
       "name": "reset_direct3d_render_state",
+      "port_scope": "replaceable-platform",
       "description": "Reapplies the Direct3D renderer's baseline device render states after device creation or reset."
     },
     {
       "address": "0x411960",
       "name": "release_direct3d_device_interfaces",
+      "port_scope": "replaceable-platform",
       "description": "Releases the Direct3D device and Direct3D8 interface owned by one Direct3DRenderer and clears both pointers."
     },
     {
       "address": "0x4119c0",
       "name": "initialize_game_window_and_input_wrapper",
+      "port_scope": "replaceable-platform",
       "description": "Small cdecl wrapper used by startup to forward the SnailMail window title to the window/input initializer body."
     },
     {
       "address": "0x4119d0",
       "name": "initialize_game_window_and_input",
+      "port_scope": "replaceable-platform",
       "description": "Registers the SnailMail window class, applies the recovered 4:3 resolution presets, falls back to a 640x480 windowed client, and initializes keyboard, controller, and mouse input."
     },
     {
       "address": "0x411d70",
       "name": "release_global_direct3d_renderer_resources",
+      "port_scope": "replaceable-platform",
       "description": "Loads the process-owned Direct3D renderer singleton and tail-calls its renderer-resource teardown method for window/input failure and shutdown paths."
     },
     {
       "address": "0x411d80",
       "name": "uninitialize_input_devices",
+      "port_scope": "replaceable-platform",
       "description": "Shuts down the live DirectInput stack by releasing the enumerated controllers, keyboard input, mouse device, and shared DirectInput interface handles."
     },
     {
       "address": "0x411de0",
       "name": "end_overlay_render_state",
+      "port_scope": "replaceable-platform",
       "description": "Restores the saved Direct3D projection and view transforms after an orthographic overlay/font render pass."
     },
     {
       "address": "0x411e10",
       "name": "begin_overlay_render_state",
+      "port_scope": "replaceable-platform",
       "description": "Saves the current Direct3D projection and view transforms, installs an orthographic overlay projection and translated view matrix, and disables depth/fog state before overlay or font rendering."
     },
     {
@@ -940,11 +993,13 @@
       "aliases": [
         "G0RenderCamera"
       ],
+      "port_scope": "boundary",
       "description": "Windows `G0RenderCamera`: a nine-argument cdecl camera pipeline owner that configures one 3D scene viewport, projection, view transform, depth and root-owned fog state, then publishes the active source/view matrices and after-sprites object lane before world objects render. Android and iOS retain the authored G0 name, the same camera/view and pass globals, and a platform-specific eleven-argument OpenGL ABI. Both Windows callers discard EAX, and the natural void source remains instruction-exact."
     },
     {
       "address": "0x412250",
       "name": "refresh_object_vertex_buffer",
+      "port_scope": "boundary",
       "description": "Refreshes one built object's grouped vertex buffer from the current animated or distorted vertex source, preserving the authored UV lanes for the grouped draw path."
     },
     {
@@ -953,6 +1008,7 @@
       "aliases": [
         "G0RenderToon"
       ],
+      "port_scope": "boundary",
       "description": "Windows `G0RenderToon(cRObject*, tMatrix*)`: draws one object's optional toon edge pass by transforming the shared G0Camera delta into object space, selecting boundary or silhouette edges against their two face normals, and submitting the selected vertex pairs as line primitives. Android and iOS preserve the same two-argument void owner, edge records, camera transform, dot-product silhouette test, and 0.01 threshold across their OpenGL backends. The sole Windows caller discards EAX, and the natural void source remains instruction-exact."
     },
     {
@@ -961,26 +1017,31 @@
       "aliases": [
         "G0RenderObject"
       ],
+      "port_scope": "boundary",
       "description": "Windows `G0RenderObject`: renders one built object through the grouped Direct3D path, applies the shared G0AfterSprites pass split, texture offsets, cull and tint policy, and optionally dispatches G0RenderToon. Android and iOS retain `G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)` and the same semantic gates in their larger OpenGL implementation; Windows instead borrows a float `tColour*` tint in the fifth slot. Both Windows callers discard EAX, and the natural void source remains instruction-exact."
     },
     {
       "address": "0x412940",
       "name": "update_display_mode_view_state",
+      "port_scope": "replaceable-platform",
       "description": "Updates the shared display-mode view-sample state against the authored view dimensions before the frame render pass."
     },
     {
       "address": "0x4129c0",
       "name": "initialize_direct3d_renderer",
+      "port_scope": "replaceable-platform",
       "description": "Initializes renderer defaults, creates the Direct3D8 device, and allocates the shared transient 8-vertex sprite/object buffer."
     },
     {
       "address": "0x4129f0",
       "name": "set_cull_mode",
+      "port_scope": "boundary",
       "description": "Programs the shared renderer cull state from the one-bit front-vs-back-face selection. Cross-port Android symbols match this helper to `G0SetCull(int)`."
     },
     {
       "address": "0x412a00",
       "name": "load_registered_texture_refs",
+      "port_scope": "boundary",
       "description": "Windows `G0TextureSetLoad(int)`: allocates the renderer's indexed texture-slot array, resets the shared VRAM estimate, invokes G0TextureLoad for every cRTexture owned by cRTextures, then reports kilobytes. Android and iOS retain the same authored lifecycle plus OpenGL-only name/residency setup.",
       "aliases": [
         "G0TextureSetLoad"
@@ -989,6 +1050,7 @@
     {
       "address": "0x412a70",
       "name": "load_registered_texture_ref",
+      "port_scope": "boundary",
       "description": "Windows `G0TextureLoad(int, int)`: loads one cRTexture by index, honors the shared skip/retain-source flags, installs the platform texture, accounts VRAM, and publishes width/height into the same 0xa4-byte record used by both mobile ports. All three retain the legacy second argument without reading it; Direct3D/OpenGL upload and missing-file policy remain platform-specific.",
       "aliases": [
         "G0TextureLoad"
@@ -997,31 +1059,37 @@
     {
       "address": "0x412d00",
       "name": "set_blend_mode",
+      "port_scope": "replaceable-platform",
       "description": "Void object-rendering half of the Windows G0SetBlend split: maps one render blend preset through the shared lookup table and programs the matching alpha-blend state. Its sole caller discards EAX."
     },
     {
       "address": "0x412e50",
       "name": "set_immediate_blend_mode",
+      "port_scope": "replaceable-platform",
       "description": "Void immediate-quad half of the Windows G0SetBlend split: programs the alpha-blend render state selected by draw_textured_quad_immediate. Its sole caller discards EAX."
     },
     {
       "address": "0x413030",
       "name": "draw_textured_quad_immediate",
+      "port_scope": "replaceable-platform",
       "description": "Void G0RenderFont counterpart: builds one immediate 2D textured quad in the transient UI vertex buffer, supporting explicit corner coordinates, axis-aligned size, or centered rotation before submitting the quad as a six-index primitive. All three Windows callers discard EAX."
     },
     {
       "address": "0x4134c0",
       "name": "render_game_frame_scene",
+      "port_scope": "replaceable-platform",
       "description": "Clears the backbuffer, opens a Direct3D scene, updates display-mode view state, renders one game frame, and closes the scene."
     },
     {
       "address": "0x413520",
       "name": "present_backbuffer",
+      "port_scope": "replaceable-platform",
       "description": "Presents the Direct3D backbuffer with null source, destination, window, and dirty-region arguments."
     },
     {
       "address": "0x413540",
       "name": "begin_sprite_depth_render_state",
+      "port_scope": "replaceable-platform",
       "description": "Exact Windows `G0RenderSprite3DStart()` platform implementation: saves the active Direct3D view transform, installs identity view and texture transforms, and prepares texture-stage state before `render_game_frame` depth-sorts sprites. Android and iOS preserve the same GL.o render-pass boundary with OpenGL state.",
       "aliases": [
         "G0RenderSprite3DStart"
@@ -1030,6 +1098,7 @@
     {
       "address": "0x413650",
       "name": "end_sprite_depth_render_state",
+      "port_scope": "replaceable-platform",
       "description": "Exact Windows `G0RenderSprite3DEnd()` platform implementation: restores the Direct3D view transform saved by `G0RenderSprite3DStart()` after the sprite depth bucket pass. Android and iOS preserve the same GL.o pass terminator while flushing and dismantling their OpenGL sprite batch.",
       "aliases": [
         "G0RenderSprite3DEnd"
@@ -1038,11 +1107,13 @@
     {
       "address": "0x413670",
       "name": "configure_sprite_render_state",
+      "port_scope": "replaceable-platform",
       "description": "Chooses the sprite render-state preset from the sprite draw-mode lane at `+0x28` before one sprite quad is submitted."
     },
     {
       "address": "0x4137f0",
       "name": "draw_sprite_quad",
+      "port_scope": "boundary",
       "description": "Exact Windows `G0RenderSprite3D(tVector*, cRSprite*)` platform implementation: builds and submits one textured sprite quad from the sprite color, scale, angle, and stretch lanes. Android and iOS preserve the same GL.o geometry, alpha, rotation, and corner-scale algorithm over their platform sprite layouts.",
       "aliases": [
         "G0RenderSprite3D"
@@ -1051,31 +1122,37 @@
     {
       "address": "0x413bb0",
       "name": "get_or_append_object_texture_group_vertex",
+      "port_scope": "boundary",
       "description": "Returns the existing grouped-render vertex matching one object vertex index plus UVs, or appends a new record field-by-field through the shared global texture-group build scratch when no match exists."
     },
     {
       "address": "0x413d50",
       "name": "build_object_texture_group_buffers",
+      "port_scope": "boundary",
       "description": "Allocates one Object's texture-group tables, expands each Object-owned face run through six advancing index lanes, uploads the grouped scratch's scalar diffuse plus aggregate UV/XYZ render payload, and retains the resulting Direct3D vertex and index buffers. iOS RObject.o names the owner family `cRObject::BuildGLVertexArray()`."
     },
     {
       "address": "0x4141d0",
       "name": "set_object_color",
+      "port_scope": "boundary",
       "description": "Void object-colour helper: converts the incoming float tint to the authored four-byte `tColourSmall` owner and, when grouped vertex buffers exist, rewrites every per-vertex diffuse lane for the next draw. Android preserves the same BGRA byte layout and names the corresponding renderer operation `G0SetColour(tColourSmall*)`; all 26 Windows callsites discard EAX."
     },
     {
       "address": "0x414260",
       "name": "set_fullscreen_mode",
+      "port_scope": "boundary",
       "description": "Consumes a byte-valued windowed (`0`) or fullscreen (`1`) flag, forwards it through the shared renderer owner, updates saved window-rectangle bookkeeping, and recenters the cursor after the mode change."
     },
     {
       "address": "0x414270",
       "name": "direct3d_renderer_set_fullscreen_mode",
+      "port_scope": "replaceable-platform",
       "description": "Direct3DRenderer member that consumes the low byte of the fullscreen flag, owns the presentation-parameter transition, resets the device and render state, restores the saved window placement, and recenters the cursor."
     },
     {
       "address": "0x4143c0",
       "name": "restore_texture_ref_stage_states",
+      "port_scope": "replaceable-platform",
       "description": "Direct3DRenderer member that rebinds every registered D3D texture after a device reset and reapplies alpha and wrap texture-stage state from TextureRef flags."
     },
     {
@@ -1084,21 +1161,25 @@
       "aliases": [
         "G0BindTexture"
       ],
+      "port_scope": "boundary",
       "description": "Windows `G0BindTexture`: binds one TextureRef pointer, skips redundant binds through the cached gBindTextureRefLast lane, and applies texture-stage wrap-vs-clamp state from the ref flags. Android and iOS preserve the authored void owner, gBindCount, gBindTextureRefLast, and 0x1000 wrap flag while their OpenGL ABI passes a texture-list index instead of a Windows TextureRef pointer."
     },
     {
       "address": "0x4145c0",
       "name": "replace_object_group_texture_refs",
+      "port_scope": "boundary",
       "description": "Rewrites one built object's grouped-render texture-ref table from an old texture reference to a replacement after grouped buffers have been built."
     },
     {
       "address": "0x414600",
       "name": "query_direct3d_device_caps",
+      "port_scope": "replaceable-platform",
       "description": "Direct3DRenderer member that queries adapter device capabilities into its owned D3DDeviceCaps8 block and reports the maximum texture dimensions."
     },
     {
       "address": "0x414650",
       "name": "reset_render_counters",
+      "port_scope": "boundary",
       "description": "Clears the per-frame renderer counters for submitted triangles, DrawPrimitive calls, and texture binds before render_game_frame starts."
     },
     {
@@ -1194,7 +1275,7 @@
     {
       "address": "0x417540",
       "name": "initialize_high_score_tables",
-      "description": "Windows `cRSubHighScore::Init()`: seeds the owner’s postal, challenge, time-trial, and completion arrays with blank cRSubSolution entries before ScoreA/B/C overlays are loaded. Android and iOS retain the same Init phase as a no-op immediately before their separate MiniInit routine initializes and loads the compact mobile-only score bank.",
+      "description": "Windows `cRSubHighScore::Init()`: seeds the owner\u2019s postal, challenge, time-trial, and completion arrays with blank cRSubSolution entries before ScoreA/B/C overlays are loaded. Android and iOS retain the same Init phase as a no-op immediately before their separate MiniInit routine initializes and loads the compact mobile-only score bank.",
       "aliases": [
         "cRSubHighScore_Init"
       ]
@@ -1222,7 +1303,7 @@
     {
       "address": "0x417940",
       "name": "save_high_scores_and_config",
-      "description": "Void `cRSubHighScore::MiniSave(int)`: serializes the owner’s active postal, survival, and time-trial cRSubSolution entries into ScoreA.dat, ScoreB.dat, and ScoreC.dat according to the save mask, then writes the shared SnailMail.cfg blob. All five Windows callers discard EAX; the final `save_config_file` result is incidental tail residue."
+      "description": "Void `cRSubHighScore::MiniSave(int)`: serializes the owner\u2019s active postal, survival, and time-trial cRSubSolution entries into ScoreA.dat, ScoreB.dat, and ScoreC.dat according to the save mask, then writes the shared SnailMail.cfg blob. All five Windows callers discard EAX; the final `save_config_file` result is incidental tail residue."
     },
     {
       "address": "0x417a70",
@@ -1425,6 +1506,7 @@
     {
       "address": "0x41b070",
       "name": "apply_audio_config_volumes",
+      "port_scope": "boundary",
       "description": "Pushes the saved sound and music scalar fields from SnailMail.cfg into the audio engine through the root-owned cROptions receiver. Cross-port `cROptions::Apply(bool)` is a broader lifecycle member; Windows retains this exact no-argument audio subset."
     },
     {
@@ -1657,6 +1739,7 @@
     {
       "address": "0x42f0a0",
       "name": "load_png_image",
+      "port_scope": "boundary",
       "description": "Authored seven-argument cdecl PNG loader used only by rebuild_game_archive_if_needed. It reads through the statically linked libpng 1.2.5 API, returns an allocated pixel buffer plus dimensions and channel count, and copies an optional PNG background color to the caller."
     },
     {
@@ -1666,11 +1749,13 @@
     {
       "address": "0x42f490",
       "name": "load_file_bytes_from_path",
+      "port_scope": "boundary",
       "description": "Loads one filesystem path into caller-supplied or freshly allocated bytes, optionally returning the byte count through the extra output lanes."
     },
     {
       "address": "0x42f540",
-      "name": "save_config_file"
+      "name": "save_config_file",
+      "port_scope": "boundary"
     },
     {
       "address": "0x42f5b0",
@@ -1864,6 +1949,7 @@
     {
       "address": "0x430f30",
       "name": "set_current_directory_with_drive_fallback",
+      "port_scope": "replaceable-platform",
       "description": "Wraps `SetCurrentDirectoryA`, retrying drive-qualified paths through the Win32 current-drive environment-variable fallback before emitting a plain debug message on failure."
     },
     {
@@ -1893,16 +1979,19 @@
     {
       "address": "0x431540",
       "name": "delete_file_path_with_directory_walk",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellDeleteFile(char*): deletes one filesystem path after walking each parent directory component through the shared current-directory helper, mirroring the save-path builder beside it; used by the temporary BASS DLL teardown path."
     },
     {
       "address": "0x431650",
       "name": "write_file_bytes",
+      "port_scope": "replaceable-platform",
       "description": "Windows RShellSaveFile(char*, void*, int): walks intermediate directory components, writes the caller-owned byte range, and restores the original working directory."
     },
     {
       "address": "0x431740",
       "name": "enumerate_matching_archive_or_fs_entries",
+      "port_scope": "boundary",
       "description": "Windows RShellReadDirectory(char*, char*, int*, char (*)[128]): enumerates archive-backed or filesystem-backed filenames under the requested prefix, filters them against the caller wildcard pattern, copies each match into caller-owned 128-byte name records, and returns the match count through the out parameter. The archive path walks 12-byte ArchiveEntry records and reloads the shared ArchiveIndex owner at each loop tail; the filesystem path owns a 0x118-byte CRT FileSearchData record with name[260] at +0x14."
     },
     {
@@ -2042,6 +2131,7 @@
       "aliases": [
         "RShellInputRegisterKeyboard"
       ],
+      "port_scope": "boundary",
       "description": "Windows `RShellInputRegisterKeyboard(int, float, float)`: stores the keyboard-derived button mask and X/Y axes into RShell input slot 0. Android and iOS preserve the authored RShell.o name and the same three stores; the sole Windows caller overwrites EAX immediately, proving the native contract is void."
     },
     {
@@ -2050,6 +2140,7 @@
       "aliases": [
         "RShellInputRegister"
       ],
+      "port_scope": "boundary",
       "description": "Windows `RShellInputRegister(int, int, float, float)`: merges button and analog-axis input into slot 0 or overwrites a selected nonzero slot, then derives slot 1 authored X through the 0.15 deadzone and primary-button bridge. Android preserves the same authored RShell.o memberless API and control flow; all Windows callers discard the incidental flags residue."
     },
     {
@@ -2058,6 +2149,7 @@
       "aliases": [
         "RShellInputRetrieve"
       ],
+      "port_scope": "boundary",
       "description": "Windows `RShellInputRetrieve`: copies the selected eight-field RShell input payload into caller-owned outputs. Android and iOS preserve those same outputs plus two mobile-only mouse-extra floats; Windows has neither the extra parameters nor xrefs in its payload gap, proving the narrower 0x20-byte owner and void contract rather than a synthetic returned pointer."
     },
     {
@@ -2066,11 +2158,13 @@
       "aliases": [
         "RShellInputRegisterMouse"
       ],
+      "port_scope": "boundary",
       "description": "Windows `RShellInputRegisterMouse`: stores the authored gMouseWX0/WY0/WX1/WY1 region sidecars, optionally clamps and warps an outside pointer, projects it into 640x480 coordinates, and latches the three mouse-button bits. Android and iOS preserve the exact 13-argument RShell.o API and control flow while using their platform-specific 0x40 input stride; Windows keeps the proved 0x38 selection stride and void contract."
     },
     {
       "address": "0x4323a0",
       "name": "set_input_controller_pointer_authored_xy",
+      "port_scope": "boundary",
       "description": "Exact void `RShellSetMouse(int, float, float)`: seeds one global input-controller slot to an authored 640x480 pointer position, converts it through the stored region bounds, and forwards the screen coordinates to the authored `MouseSet` helper. Android and iOS preserve the same RShell.o owner and void call chain.",
       "aliases": [
         "RShellSetMouse"
@@ -2079,11 +2173,13 @@
     {
       "address": "0x432440",
       "name": "read_pressed_text_input_key_code",
+      "port_scope": "boundary",
       "description": "Maps newly pressed keyboard scancodes into the shared text-input byte codes used by frontend widgets, cheat entry, intro skip, and subgame ESC handling: ASCII for letters/digits/punctuation plus the small control-code set for edit and navigation keys."
     },
     {
       "address": "0x4327e0",
       "name": "read_repeating_text_input_key_code",
+      "port_scope": "boundary",
       "description": "Maps held keyboard scancodes into the same text-input byte codes as read_pressed_text_input_key_code, but with the native repeat delay/rate state so border_input_text can autorepeat held edits and cursor moves."
     },
     {
@@ -2094,41 +2190,49 @@
     {
       "address": "0x432d40",
       "name": "reset_registered_sound_sample_count",
+      "port_scope": "boundary",
       "description": "Resets the registered runtime sound-sample table count before archive-backed audio registration begins."
     },
     {
       "address": "0x432d50",
       "name": "cache_music_file",
+      "port_scope": "boundary",
       "description": "Windows RShellMusicPlay entry point: preserves the authored three-argument music ABI while ensuring one `music/*.ogg` payload is resident in the shared cache, loading it from the archive or filesystem on first use and reusing the cached bytes afterward."
     },
     {
       "address": "0x432dd0",
       "name": "play_registered_warning_sample",
+      "port_scope": "boundary",
       "description": "Windows RShellSoundPlayLooped entry point: forwards one registered warning sample id to the process audio backend's looped default sample-play method and returns the live playback handle."
     },
     {
       "address": "0x432de0",
       "name": "stop_registered_warning_sample",
+      "port_scope": "boundary",
       "description": "Windows RShellSoundStopLooped entry point: forwards one live warning playback handle to the process audio backend's handle-stop method."
     },
     {
       "address": "0x432df0",
       "name": "play_sound_effect_backend",
+      "port_scope": "boundary",
       "description": "Windows RShellSoundPlay entry point: normalizes one effect's gain and preserves the authored sample-id, gain, pitch, and pan dispatch contract before forwarding into the BASS registered-sample backend."
     },
     {
       "address": "0x432e80",
       "name": "play_voice_backend",
+      "port_scope": "boundary",
       "description": "Windows RShellVoicePlay entry point: normalizes one voice sample's gain and preserves the authored sample-id, gain, pitch, and pan dispatch contract before forwarding into the BASS registered-sample backend."
     },
     {
       "address": "0x432f10",
       "name": "register_sound_sample",
+      "port_scope": "boundary",
       "description": "Registers one voice or sound-bank sample path into the shared 256-entry runtime sound table, loading bytes from the archive on first use and returning the assigned sample index."
     },
     {
       "address": "0x432fc0",
       "name": "find_registered_sound_sample_id_by_name",
+      "port_scope": "boundary",
       "description": "Scans the registered sound-sample path/name table populated by `register_sound_sample` and returns the matching sample id for level `Sample=\"...\"` message audio, reporting an error and returning 0 on miss."
     },
     {
@@ -2154,6 +2258,7 @@
     {
       "address": "0x433050",
       "name": "launch_alpha72_url",
+      "port_scope": "replaceable-platform",
       "description": "Completion-screen outbound-link helper that minimizes the game window and raises the pending-deactivate latch; its Alpha72.url path argument is unused by this stripped body."
     },
     {
@@ -2164,7 +2269,7 @@
     {
       "address": "0x433220",
       "name": "build_track_render_caches",
-      "description": "Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning SubgameRuntime’s fixed runtime-cell slab and uses each embedded TrackRowCell anchor as the mesh-instance position. The final debug-report result is incidental call state."
+      "description": "Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning SubgameRuntime\u2019s fixed runtime-cell slab and uses each embedded TrackRowCell anchor as the mesh-instance position. The final debug-report result is incidental call state."
     },
     {
       "address": "0x433830",
@@ -2174,12 +2279,12 @@
     {
       "address": "0x433960",
       "name": "append_track_cache_object",
-      "description": "Appends one source object’s triangle or quad faces to a cRSegmentCache family by emitting deduplicated vertices and indices."
+      "description": "Appends one source object\u2019s triangle or quad faces to a cRSegmentCache family by emitting deduplicated vertices and indices."
     },
     {
       "address": "0x433b30",
       "name": "update_track_render_cache_rows",
-      "description": "Advances cRSegmentCache while Goldy’s current row stays ahead of the next cached row, linking the Floor, Slide, Warn, Ramp, and Fringe BOD slots into their active lists and seeding each slot color."
+      "description": "Advances cRSegmentCache while Goldy\u2019s current row stays ahead of the next cached row, linking the Floor, Slide, Warn, Ramp, and Fringe BOD slots into their active lists and seeding each slot color."
     },
     {
       "address": "0x433e80",
@@ -2189,12 +2294,12 @@
     {
       "address": "0x433f20",
       "name": "remove_track_render_cache_bods",
-      "description": "Unlinks the cRSegmentCache owner’s fixed 143x5 BOD grid from the shared active-bod list during subgame teardown."
+      "description": "Unlinks the cRSegmentCache owner\u2019s fixed 143x5 BOD grid from the shared active-bod list during subgame teardown."
     },
     {
       "address": "0x433fc0",
       "name": "bind_subgame_owner",
-      "description": "Binds a front-end controller’s first field to the embedded cRSubGame owner. For the 0x28-byte GUI receiver this is `cRGUI::Open()`; Windows folds the identical one-store body with the ThanksScreen owner-binding callsite."
+      "description": "Binds a front-end controller\u2019s first field to the embedded cRSubGame owner. For the 0x28-byte GUI receiver this is `cRGUI::Open()`; Windows folds the identical one-store body with the ThanksScreen owner-binding callsite."
     },
     {
       "address": "0x433fd0",
@@ -2345,7 +2450,6 @@
       "name": "initialize_track_colour_bank_k",
       "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupPathWarp counterpart, which BuildColours intentionally visits twice."
     },
-
     {
       "address": "0x434b60",
       "name": "is_neighbor_cell_solid",
@@ -3405,46 +3509,55 @@
     {
       "address": "0x449460",
       "name": "initialize_bass_audio_backend",
+      "port_scope": "replaceable-platform",
       "description": "Extracts Bass.dll from game data into tBass.dll, loads the BASS 2.0 exports dynamically, and initializes the audio backend."
     },
     {
       "address": "0x4496d0",
       "name": "uninitialize_bass_audio_backend",
+      "port_scope": "replaceable-platform",
       "description": "Stops the global BASS backend, frees the loaded `Bass.dll` state, unloads the temporary DLL, and deletes the extracted `tBass.dll` copy."
     },
     {
       "address": "0x449720",
       "name": "ensure_music_stream_from_path",
+      "port_scope": "replaceable-platform",
       "description": "Ensures the requested music path is the active BASS stream, skipping a restart when the cached path already matches and otherwise stopping any previous stream before opening and playing the new path."
     },
     {
       "address": "0x4497e0",
       "name": "prepare_music_stream_reload_if_path_changed",
+      "port_scope": "replaceable-platform",
       "description": "Checks whether the requested music path differs from the cached active path and, when it does, stops the current music stream so `cache_music_file` can reload it from archive bytes."
     },
     {
       "address": "0x449820",
       "name": "play_music_stream_from_bytes",
+      "port_scope": "replaceable-platform",
       "description": "Stops any previous active music stream, opens a new BASS stream from already-read music bytes, and starts playback while caching the source path."
     },
     {
       "address": "0x4498d0",
       "name": "stop_music_stream",
+      "port_scope": "replaceable-platform",
       "description": "Stops the active BASS music stream, removes any registered sync callback, frees the stream handle, and clears the active-stream flag."
     },
     {
       "address": "0x449920",
       "name": "load_registered_sound_sample_from_path",
+      "port_scope": "replaceable-platform",
       "description": "Loads one sample directly from a filesystem path into the shared runtime sound-bank slot table via `BASS_SampleLoad(mem=0, ...)`, storing the resulting sample handle at the requested registered-sample index."
     },
     {
       "address": "0x449960",
       "name": "load_registered_sound_sample_from_bytes",
+      "port_scope": "replaceable-platform",
       "description": "Loads one sample from already-read archive bytes into the shared runtime sound-bank slot table via `BASS_SampleLoad(mem=1, ...)`, storing the resulting sample handle at the requested registered-sample index."
     },
     {
       "address": "0x4499a0",
       "name": "play_registered_sound_sample_scaled",
+      "port_scope": "replaceable-platform",
       "description": "Authored `cRBass::PlaySample(int, float)` method on the Windows gBass owner: resolves one registered sample ID, clamps its normalized gain, and plays it through BASS with default pitch and pan. Both iOS versions retain the exact owner and ABI as a platform-stubbed method.",
       "aliases": [
         "cRBass_PlaySample"
@@ -3453,6 +3566,7 @@
     {
       "address": "0x449a10",
       "name": "stop_sound_sample_handle",
+      "port_scope": "replaceable-platform",
       "description": "Authored `cRBass::StopSampleLooped(int)` method on the Windows gBass owner: forwards the live loop handle returned by PlaySampleLooped directly into `BASS_SampleStop`. The iOS RShell wrapper independently proves the handle ABI even though the mobile method is stubbed.",
       "aliases": [
         "cRBass_StopSampleLooped"
@@ -3461,6 +3575,7 @@
     {
       "address": "0x449a20",
       "name": "stop_registered_sound_sample",
+      "port_scope": "replaceable-platform",
       "description": "Authored `cRBass::StopSample(int)` method on the Windows gBass owner: stops one registered sample ID by resolving it through the shared sound-bank table before calling BASS. The iOS VoiceManager preserves the same owner and sample-ID call edge.",
       "aliases": [
         "cRBass_StopSample"
@@ -3469,6 +3584,7 @@
     {
       "address": "0x449a40",
       "name": "is_registered_sound_sample_playing",
+      "port_scope": "replaceable-platform",
       "description": "Authored `cRBass::SamplePlaying(int)` method on the Windows gBass owner: reports whether one registered sample ID is active by querying its shared sound-bank table entry through BASS. The iOS VoiceManager preserves the same owner, argument, and boolean use while its platform body returns false.",
       "aliases": [
         "cRBass_SamplePlaying"
@@ -3477,6 +3593,7 @@
     {
       "address": "0x449a60",
       "name": "play_registered_sound_sample_default",
+      "port_scope": "replaceable-platform",
       "description": "Authored `cRBass::PlaySampleLooped(int)` method on the Windows gBass owner: resolves one registered sample ID and starts looped BASS playback, returning the live handle consumed by StopSampleLooped. The iOS RShell wrapper preserves the sample-ID ABI while the mobile method returns a disabled zero handle.",
       "aliases": [
         "cRBass_PlaySampleLooped"
@@ -3485,46 +3602,55 @@
     {
       "address": "0x449a80",
       "name": "play_registered_sound_sample_backend",
+      "port_scope": "replaceable-platform",
       "description": "AudioBackend method that forwards one registered runtime sample index plus normalized volume and pitch into the `BASS_SamplePlayEx` lane shared by the SFX and voice wrappers."
     },
     {
       "address": "0x449ae0",
       "name": "play_registered_sound_sample_scaled_panned",
+      "port_scope": "replaceable-platform",
       "description": "AudioBackend method that plays one registered runtime sample through BASS with normalized volume plus explicit pitch and pan overrides."
     },
     {
       "address": "0x449b50",
       "name": "set_global_sample_volume_config",
+      "port_scope": "replaceable-platform",
       "description": "Scales one normalized [0,1] sample-volume scalar onto BASS config option `4` (`BASS_CONFIG_GVOL_SAMPLE`) before the backend stores it as the live global SFX sample volume."
     },
     {
       "address": "0x449b70",
       "name": "set_global_stream_volume_config",
+      "port_scope": "replaceable-platform",
       "description": "Scales one normalized [0,1] stream-volume scalar onto BASS config option `5` (`BASS_CONFIG_GVOL_STREAM`) before the backend stores it as the live music or stream volume."
     },
     {
       "address": "0x449b90",
       "name": "stop_audio_backend",
+      "port_scope": "replaceable-platform",
       "description": "Forwards directly into the global BASS stop export to halt active backend playback during shutdown or full audio resets."
     },
     {
       "address": "0x449ba0",
       "name": "resume_audio_backend_if_paused",
+      "port_scope": "replaceable-platform",
       "description": "Restarts the global BASS backend only when the audio state flag at `backend + 0x18` says the backend is currently paused, then clears that paused flag."
     },
     {
       "address": "0x449bc0",
       "name": "pause_audio_backend_if_running",
+      "port_scope": "replaceable-platform",
       "description": "Pauses the global BASS backend only when the audio state flag at `backend + 0x18` says the backend is currently running, then marks it paused."
     },
     {
       "address": "0x449be0",
       "name": "set_audio_normalization_scales",
+      "port_scope": "boundary",
       "description": "Stores the normalized music, SFX, and voice gain scales parsed from `VOICE/_VOICE.TXT` into the shared backend lanes that the music, sound, and voice wrappers multiply into live playback volume."
     },
     {
       "address": "0x449c00",
       "name": "debug_report_stub",
+      "port_scope": "replaceable-platform",
       "description": "Stripped release-build variadic debug reporter; it ignores every caller-owned argument and returns zero."
     },
     {
@@ -3570,85 +3696,102 @@
     {
       "address": "0x449f50",
       "name": "register_font_texture_sheet",
+      "port_scope": "boundary",
       "description": "Windows integer-returning `FontLoad` variant: owns one FONT-MENU-HOVER atlas buffer through release, derives split-page paths, publishes texture refs and glyph metadata into the Windows-specific FontSheet owner, then returns the pre-increment sheet index. Both mobile ports retain a void ABI and a different 0xa28 sheet format."
     },
     {
       "address": "0x44a360",
       "name": "draw_font_text_instance",
+      "port_scope": "boundary",
       "description": "Exact void FontPrintReal counterpart over one cFontPrintBuffer: preserves the borrowed queue-entry owner in ESI, reuses its incoming stack slot as the horizontal glyph cursor, maps each byte to the FontSheet glyph_u0/glyph_u1/glyph_v0/glyph_v1 atlas quartet and saved texture page, independently reborrows the selected texture and sheet dimensions for the shadow and primary draws, then advances by the integer glyph width. The optional shadow pass casts the positive sheet offset directly into both coordinates and supplies its black color setter as the draw argument; the queue drain discards EAX on every path."
     },
     {
       "address": "0x44a6d0",
       "name": "draw_queued_font_quad_instance",
+      "port_scope": "boundary",
       "description": "Void OSDPrintReal counterpart over one cFontPrintBuffer: forwards its stored coordinates, UVs, size mode, angle, and color into the shared immediate textured-quad helper. The queue drain discards EAX."
     },
     {
       "address": "0x44a730",
       "name": "draw_font_text_queue",
+      "port_scope": "boundary",
       "description": "Void FontPrintRender counterpart: iterates the live cFontPrintBuffer queue backward and draws entries matching the supplied render mask. Its sole Windows caller discards EAX."
     },
     {
       "address": "0x44a790",
       "name": "queue_font_text_instance",
+      "port_scope": "boundary",
       "description": "FontPrint counterpart: copies one text run into the shared font print string buffer and appends the matching cFontPrintBuffer record with its font, position, alignment, colors, and render flags."
     },
     {
       "address": "0x44a8b0",
       "name": "queue_axis_aligned_textured_quad",
+      "port_scope": "boundary",
       "description": "OSDPrint counterpart: appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue, using the supplied texture, authored rectangle, tint, and render flags. The mobile overloads are void, but Windows intentionally retains an integer queue-offset result; forcing the mobile ABI destroys the native register schedule."
     },
     {
       "address": "0x44a9b0",
       "name": "queue_axis_aligned_textured_quad_uv",
+      "port_scope": "boundary",
       "description": "Short OSDPrintUV overload counterpart: appends one axis-aligned textured quad with explicit UV bounds into the shared 2D render queue. Front-end widgets, progress bars, and the damage gauge all use this helper. The mobile overloads are void, while Windows retains the successful append offset as an integer result; the focused matcher rejects a cross-port void projection."
     },
     {
       "address": "0x44aac0",
       "name": "queue_textured_quad_corners",
+      "port_scope": "boundary",
       "description": "Long OSDPrintUV overload counterpart: appends one arbitrary four-corner textured quad with explicit per-corner positions and UV bounds into the shared 2D render queue. Its two otherwise-unused post-corner formals are floats in both symbol-rich mobile builds. Mobile declares the overload void, but Windows retains an integer queue-offset result; the backdrop and galaxy-line renderers consume it according to their platform-specific contracts."
     },
     {
       "address": "0x44abe0",
       "name": "layout_and_queue_wrapped_font_text",
+      "port_scope": "boundary",
       "description": "Authored void `FontType(...)`: splits one text string into wrapped line runs, queues each run through `queue_font_text_instance`, and writes the aligned authored-space origin and measured bounds through four borrowed output pointers."
     },
     {
       "address": "0x44ae10",
       "name": "initialize_font3d_objects",
+      "port_scope": "boundary",
       "description": "Void materializer for the registered font atlas: advances a FontGlyphAtlasCursor anchored at glyph_u1 with synchronized +0x200 glyph_width and +0x400 texture_page lanes, borrows one ObjectList slot per glyph into the fixed 128-entry g_font3d_bods array, applies the horizontally paired and vertically flipped glyph UVs, and records the derived glyph_scale in g_font3d_scales."
     },
     {
       "address": "0x44afc0",
       "name": "query_directx_runtime_version",
+      "port_scope": "replaceable-platform",
       "description": "Dynamically probes DirectDraw, DirectInput, and Direct3D 8 availability and returns the highest DirectX-style runtime version code reached by the startup capability check."
     },
     {
       "address": "0x44b3c0",
-      "name": "enumerate_input_controllers"
+      "name": "enumerate_input_controllers",
+      "port_scope": "replaceable-platform"
     },
     {
       "address": "0x44b490",
       "name": "append_enumerated_input_controller_callback",
+      "port_scope": "replaceable-platform",
       "description": "DirectInput device-enumeration callback that creates one joystick device from the reported instance, appends it to the global controller list, and stops enumeration once four devices are present."
     },
     {
       "address": "0x44b4e0",
       "name": "configure_input_controller_axis_range_callback",
+      "port_scope": "replaceable-platform",
       "description": "DirectInput object-enumeration callback that applies the native `[-1000, 1000]` range property to each axis object on one enumerated input controller."
     },
     {
       "address": "0x44b570",
       "name": "update_joystick_input",
+      "port_scope": "replaceable-platform",
       "description": "Polls each enumerated DirectInput joystick device, reacquires on transient loss, normalizes its primary X/Y axes into the shared [-1000, 1000] range, packs the sampled buttons into the game's bitmask format, and publishes the result through the input-controller slot writer."
     },
     {
       "address": "0x44b770",
       "name": "release_input_controllers",
+      "port_scope": "replaceable-platform",
       "description": "Releases every enumerated DirectInput controller device plus the shared DirectInput interface and clears the global controller list."
     },
     {
       "address": "0x44b7d0",
       "name": "initialize_keyboard_input",
+      "port_scope": "replaceable-platform",
       "description": "Windows `KeyboardInit`: initializes the DirectInput keyboard device, sets its data format/cooperative level, acquires it, and clears the process-owned previous/current key-state buffers. Android and iOS preserve the authored global and the same two 256-byte buffers, but omit the desktop device setup.",
       "aliases": [
         "KeyboardInit"
@@ -3657,6 +3800,7 @@
     {
       "address": "0x44b870",
       "name": "update_keyboard_input",
+      "port_scope": "replaceable-platform",
       "description": "Windows `KeyboardAI`: advances the process-owned previous/current 256-byte key-state tables, polls DirectInput with guarded reacquisition, and publishes derived button flags and axes into the shared input-controller lanes. Android and iOS retain the authored global and table lifetime while feeding platform key events instead of DirectInput.",
       "aliases": [
         "KeyboardAI"
@@ -3665,6 +3809,7 @@
     {
       "address": "0x44bb10",
       "name": "is_key_pressed_edge",
+      "port_scope": "boundary",
       "description": "Exact `KeyPress(unsigned char)`: returns true when the supplied keyboard scancode is down in the current DirectInput key-state table and was up in the previous frame's table. Android and iOS preserve the authored byte argument and identical two-table test.",
       "aliases": [
         "KeyPress"
@@ -3673,6 +3818,7 @@
     {
       "address": "0x44bb40",
       "name": "is_key_down",
+      "port_scope": "boundary",
       "description": "Exact `KeyOn(unsigned char)`: returns true when the supplied keyboard scancode is down in the current DirectInput key-state table. Android and iOS preserve the authored byte argument and identical current-table test.",
       "aliases": [
         "KeyOn"
@@ -3681,6 +3827,7 @@
     {
       "address": "0x44bb60",
       "name": "release_keyboard_input",
+      "port_scope": "replaceable-platform",
       "description": "Void `FreeDirectInputKeyboard()`: unacquires and releases the Windows DirectInput keyboard device and parent interface, then clears both process-owned handles. Android preserves the authored global as a platform no-op stub; its arbitrary R0 and two value-agnostic Windows callers prove the side-effect-only contract.",
       "aliases": [
         "FreeDirectInputKeyboard"
@@ -3689,6 +3836,7 @@
     {
       "address": "0x44bbb0",
       "name": "initialize_mouse_authored_scale_from_clip_rect",
+      "port_scope": "replaceable-platform",
       "description": "Exact void Windows `MouseGetDesktopSize()`: caches the current clipped screen rectangle and invokes `MouseCalcDesktopScale(640.0f, 480.0f)`. Android preserves the authored no-argument global as a platform no-op; its position at the head of the same contiguous mouse API chain independently confirms the name.",
       "aliases": [
         "MouseGetDesktopSize"
@@ -3697,6 +3845,7 @@
     {
       "address": "0x44bbd0",
       "name": "update_mouse_authored_scale",
+      "port_scope": "replaceable-platform",
       "description": "Exact void Windows `MouseCalcDesktopScale(float, float)`: computes the shared mouse screen-to-authored X/Y scale factors from the cached clip rectangle. Android preserves the authored name and signature as a platform no-op.",
       "aliases": [
         "MouseCalcDesktopScale"
@@ -3705,6 +3854,7 @@
     {
       "address": "0x44bc20",
       "name": "resolve_uncaptured_cursor_sensitivity_scale",
+      "port_scope": "replaceable-platform",
       "description": "Exact Windows `MouseCalcScale(float)`: returns 1.0 while the desktop cursor is captured and otherwise applies `scale * 1.8 + 0.7`. Android and iOS preserve the authored name and same cRSubGoldy steering-sensitivity callsite while stubbing their platform body to 1.0.",
       "aliases": [
         "MouseCalcScale"
@@ -3713,6 +3863,7 @@
     {
       "address": "0x44bc50",
       "name": "update_mouse",
+      "port_scope": "replaceable-platform",
       "description": "Exact Windows `ReadImmediateDataMouse` desktop poller: reads a 20-byte DIMOUSESTATE2-compatible owner, accumulates and clamps live pointer coordinates, selects captured or uncaptured Win32 clip rectangles, and forwards wheel/button state into InputControllerSlot 0. Android preserves the authored global as a no-argument platform stub.",
       "aliases": [
         "ReadImmediateDataMouse"
@@ -3721,6 +3872,7 @@
     {
       "address": "0x44c050",
       "name": "set_hide_system_cursor_flag",
+      "port_scope": "replaceable-platform",
       "description": "Exact void `HideWindowMouse(bool)`: stores the bool-shaped request in the Mouse.o-owned window-mouse latch consumed by `update_mouse`. Android and iOS preserve the authored name and `gWindowMouseState`; all Windows callers discard the incidental argument copy left in AL.",
       "aliases": [
         "HideWindowMouse"
@@ -3729,6 +3881,7 @@
     {
       "address": "0x44c060",
       "name": "click_mouse_screen",
+      "port_scope": "replaceable-platform",
       "description": "Exact void `MouseSet(int, int, int)`: optionally forwards a cursor position to SetCursorPos when the Windows window is active and captured, then stores raw/live coordinates for the selected slot and publishes authored x/y through player zero's borrowed cRGameInput owner. Android and iOS preserve the authored global and incompatible incidental return-register residues.",
       "aliases": [
         "MouseSet"
@@ -3737,6 +3890,7 @@
     {
       "address": "0x44c100",
       "name": "convert_mouse_screen_xy",
+      "port_scope": "replaceable-platform",
       "description": "Exact void Windows `MouseRead(int, float*, float*)`: copies a captured OS cursor directly or converts centered cursor deltas into authored x/y, applies steering sensitivity only while uncaptured, zeros both outputs on query failure, and recenters the active main window. Android preserves the exact argument list as a four-byte platform stub; its separate `cRMouse::ConvertScreenXY(float, float, float*, float*)` touch-rotation method is deliberately not mapped here.",
       "aliases": [
         "MouseRead"
@@ -3745,25 +3899,30 @@
     {
       "address": "0x44c2c0",
       "name": "release_mouse_input",
+      "port_scope": "replaceable-platform",
       "description": "Releases the DirectInput mouse device and its shared DirectInput interface, clearing the global mouse-input handles."
     },
     {
       "address": "0x44c310",
-      "name": "initialize_mouse_input"
+      "name": "initialize_mouse_input",
+      "port_scope": "replaceable-platform"
     },
     {
       "address": "0x44c3b0",
       "name": "is_mouse_captured",
+      "port_scope": "boundary",
       "description": "Returns the active byte at the head of the player-owned cRMouse-compatible subobject stored at GameRoot +0x290; iOS names the same method cRMouse::IsActive()."
     },
     {
       "address": "0x44c3c0",
       "name": "capture_mouse_cursor",
+      "port_scope": "boundary",
       "description": "Implements the Windows cRMouse::SetActive() lane at GameRoot +0x290: snapshots live x/y, warps controller zero through click_mouse_screen, marks the one-frame draw suppression latch, and enables the active byte."
     },
     {
       "address": "0x44c400",
       "name": "release_mouse_cursor",
+      "port_scope": "boundary",
       "description": "Implements cRMouse::SetInActive() for the player-owned mouse subobject by restoring saved x/y into the live lanes when active and clearing byte zero."
     },
     {
@@ -4086,31 +4245,37 @@
     {
       "address": "0x44dcb0",
       "name": "initialize_sound_bank",
+      "port_scope": "boundary",
       "description": "Exact void Windows `cRSound::Init(cRSoundBank*)` member: registers the 51 shipped `g_sound_bank_entries` records, stores each returned sample id at record `+0x04`, and stops at the 52nd empty-string sentinel. Android names the same 12-byte table owner `gSFXBank`; Windows and Android leave different incidental return-register residue, and both startup callers discard it."
     },
     {
       "address": "0x44dce0",
       "name": "play_sound_effect_at_position",
+      "port_scope": "boundary",
       "description": "Windows cRSound positional overload: folds a one-listener minimum-distance loop over GamePlayer[0]'s owned camera transform position, then plays one effect id with 25-unit attenuation and left-right pan derived from the supplied Vector3 reference."
     },
     {
       "address": "0x44dde0",
       "name": "play_sound_effect",
+      "port_scope": "boundary",
       "description": "Exact Windows `cRSound::Play(int)` member: forwards one effect id into the shared audio backend with the default volume, pitch, and pan parameters."
     },
     {
       "address": "0x44de00",
       "name": "play_sound_effect_scaled",
+      "port_scope": "boundary",
       "description": "Exact Windows `cRSound::PlayVolume(int, float)` member: forwards one effect id and explicit gain into the shared audio backend, leaving pitch and pan on their default lanes."
     },
     {
       "address": "0x44de20",
       "name": "play_warning_sample_backend",
+      "port_scope": "boundary",
       "description": "Exact SoundEffectManager warning wrapper that plays one sample id through the shared registered-sample backend and returns the live sample handle."
     },
     {
       "address": "0x44de30",
       "name": "stop_warning_sample_handle",
+      "port_scope": "boundary",
       "description": "Exact SoundEffectManager warning wrapper that stops one live warning-sample handle through the shared registered-sample backend."
     },
     {
@@ -4259,6 +4424,7 @@
     {
       "address": "0x44e800",
       "name": "initialize_texture_list",
+      "port_scope": "boundary",
       "description": "Authored `cRTextures::Init(int)` in both mobile ports: clears the live cRTexture count and records the fixed registry capacity. Windows and iOS share the exact two-store body; Android additionally initializes a port-only hash index.",
       "aliases": [
         "cRTextures_Init"
@@ -4275,30 +4441,32 @@
     {
       "address": "0x44e900",
       "name": "attach_render_camera_source",
+      "port_scope": "boundary",
       "description": "Windows cRViewport::SetCamera: borrows one RenderCamera at Viewport +0x20 and marks the viewport active through flag bit 0; GameRoot retains both viewport and camera ownership."
     },
     {
       "address": "0x44e920",
       "name": "initialize_render_camera_slot",
+      "port_scope": "boundary",
       "description": "Windows cRViewport constructor: initializes one 0x28-byte Viewport used by render_game_frame, seeding rectangle, draw-world, flags, and the constructor-only 0.8725f lane while leaving setup-owned fields untouched."
     },
     {
       "address": "0x44fd90",
       "name": "initialize_translation_matrix",
-      "match_scope": "reference-only",
-      "description": "DirectX 8 SDK `D3DXMatrixTranslation` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for game callsites, but excluded from authored gameplay matching totals."
+      "port_scope": "third-party",
+      "description": "DirectX 8 SDK `D3DXMatrixTranslation` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for game callsites, but excluded from port-relevant matching totals."
     },
     {
       "address": "0x450314",
       "name": "build_perspective_projection_matrix",
-      "match_scope": "reference-only",
-      "description": "DirectX 8 SDK `D3DXMatrixPerspectiveFovRH` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for `render_camera` and toon-outline callsites, but excluded from authored gameplay matching totals."
+      "port_scope": "third-party",
+      "description": "DirectX 8 SDK `D3DXMatrixPerspectiveFovRH` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for `render_camera` and toon-outline callsites, but excluded from port-relevant matching totals."
     },
     {
       "address": "0x451ad9",
       "name": "build_camera_view_matrix",
-      "match_scope": "reference-only",
-      "description": "DirectX 8 SDK `D3DXMatrixLookAtRH` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for `render_camera`, but excluded from authored gameplay matching totals."
+      "port_scope": "third-party",
+      "description": "DirectX 8 SDK `D3DXMatrixLookAtRH` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for `render_camera`, but excluded from port-relevant matching totals."
     }
   ],
   "source_database": "artifacts/binary_ninja/SnailMail.RWG.bndb"

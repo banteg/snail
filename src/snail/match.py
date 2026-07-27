@@ -2974,7 +2974,7 @@ def _function_manifest_cache_digest(manifest: FunctionSymbolManifest) -> str:
                 symbol.address,
                 symbol.name,
                 list(symbol.aliases),
-                symbol.match_scope,
+                symbol.port_scope,
             ]
             for symbol in manifest.functions
         ],
@@ -3494,8 +3494,10 @@ class ClusterTotals:
     matched_bytes: int
     scratched_functions: int = 0
     fuzzy_weighted_bytes: float = 0.0
-    reference_only_functions: int = 0
-    reference_only_bytes: int = 0
+    replaceable_platform_functions: int = 0
+    replaceable_platform_bytes: int = 0
+    third_party_functions: int = 0
+    third_party_bytes: int = 0
 
     @property
     def byte_percentage(self) -> float:
@@ -3515,7 +3517,7 @@ def manifest_cluster_totals(
     image_path: Path,
     statuses: list[ScratchStatus],
 ) -> ClusterTotals:
-    """Totals over the whole mapped gameplay cluster, not just touched scratches.
+    """Totals over the mapped port-relevant cluster, not just touched scratches.
 
     Each curated function's extent runs to the next curated address (padding
     trimmed); the last function ends at the next int3 padding byte.
@@ -3524,7 +3526,8 @@ def manifest_cluster_totals(
     functions = sorted(manifest.functions, key=lambda symbol: symbol.address)
     functions_by_name = _function_symbols_by_name(manifest)
     byte_total = 0
-    reference_only_bytes = 0
+    replaceable_platform_bytes = 0
+    third_party_bytes = 0
     for index, symbol in enumerate(functions):
         start = symbol.address
         if index + 1 < len(functions):
@@ -3533,16 +3536,18 @@ def manifest_cluster_totals(
             padding_index = image.mapped.find(b"\xcc", start - image.image_base)
             end = image.image_base + padding_index if padding_index != -1 else start
         target_size = len(image.function_bytes(start, end))
-        if symbol.match_scope == "gameplay":
+        if symbol.is_port_relevant:
             byte_total += target_size
-        else:
-            reference_only_bytes += target_size
+        elif symbol.port_scope == "replaceable-platform":
+            replaceable_platform_bytes += target_size
+        elif symbol.port_scope == "third-party":
+            third_party_bytes += target_size
 
     scratched_functions = {
         functions_by_name[status.config.function].name
         for status in statuses
         if status.config.function in functions_by_name
-        and functions_by_name[status.config.function].match_scope == "gameplay"
+        and functions_by_name[status.config.function].is_port_relevant
     }
     matched_bytes_by_function: dict[str, int] = {}
     fuzzy_bytes_by_function: dict[str, float] = {}
@@ -3551,7 +3556,7 @@ def manifest_cluster_totals(
         if requested_function not in functions_by_name:
             continue
         symbol = functions_by_name[requested_function]
-        if symbol.match_scope != "gameplay":
+        if not symbol.is_port_relevant:
             continue
         function = symbol.name
         if status.state == "match":
@@ -3566,23 +3571,29 @@ def manifest_cluster_totals(
             )
     return ClusterTotals(
         function_count=sum(
-            symbol.match_scope == "gameplay" for symbol in manifest.functions
+            symbol.is_port_relevant for symbol in manifest.functions
         ),
         byte_total=byte_total,
         matched_functions=len(matched_bytes_by_function),
         matched_bytes=sum(matched_bytes_by_function.values()),
         scratched_functions=len(scratched_functions),
         fuzzy_weighted_bytes=sum(fuzzy_bytes_by_function.values()),
-        reference_only_functions=sum(
-            symbol.match_scope == "reference-only" for symbol in manifest.functions
+        replaceable_platform_functions=sum(
+            symbol.port_scope == "replaceable-platform"
+            for symbol in manifest.functions
         ),
-        reference_only_bytes=reference_only_bytes,
+        replaceable_platform_bytes=replaceable_platform_bytes,
+        third_party_functions=sum(
+            symbol.port_scope == "third-party" for symbol in manifest.functions
+        ),
+        third_party_bytes=third_party_bytes,
     )
 
 
 STATE_ICONS = {"match": "✅", "audit": "⚠", "wip": "🚧", "error": "❌"}
 MISSING_SCRATCH_ICON = "⬜"
-REFERENCE_ONLY_ICON = "📚"
+REPLACEABLE_PLATFORM_ICON = "🖥"
+THIRD_PARTY_ICON = "📚"
 STATUS_SECTION_ORDER = (
     "Proof Grade",
     "Audit Needed",
@@ -3593,7 +3604,8 @@ STATUS_SECTION_ORDER = (
     "Zero Match (0%)",
     "No Scratch (0%)",
     "Errors",
-    "Reference Only (third-party)",
+    "Excluded: Replaceable Platform",
+    "Excluded: Third-party",
 )
 # build column stays empty unless a scratch deviates from the project-wide
 # toolchain assumption (msvc6.5 /O2 /G5 /W3 for all game code)
@@ -3607,6 +3619,7 @@ STATUS_HEADER = (
     "prefix",
     "masked",
     "build",
+    "scope",
     "note",
 )
 
@@ -3672,7 +3685,7 @@ def _missing_scratch_status_rows(
     missing_functions = {
         symbol.name
         for symbol in manifest.functions
-        if symbol.match_scope == "gameplay" and symbol.name not in scratched_functions
+        if symbol.is_port_relevant and symbol.name not in scratched_functions
     }
     if not missing_functions:
         return []
@@ -3698,6 +3711,7 @@ def _missing_scratch_status_rows(
                 f"0/{target_instructions}",
                 "-",
                 "",
+                functions_by_name[name].port_scope,
                 "no scratch",
             )
         )
@@ -3728,13 +3742,20 @@ def render_status_rows(
         build = f"{status.config.compiler} {status.config.cflags}"
         default_build = f"{DEFAULT_SCRATCH_COMPILER} {DEFAULT_SCRATCH_CFLAGS}"
         symbol = functions_by_name.get(status.config.function)
-        reference_only = symbol is not None and symbol.match_scope == "reference-only"
+        port_scope = symbol.port_scope if symbol is not None else "core"
         note = status.error or ""
-        if reference_only:
-            note = "third-party reference only" + (f"; {note}" if note else "")
+        icon = STATE_ICONS[status.state]
+        if port_scope == "replaceable-platform":
+            icon = REPLACEABLE_PLATFORM_ICON
+            note = "replaceable platform implementation" + (
+                f"; {note}" if note else ""
+            )
+        elif port_scope == "third-party":
+            icon = THIRD_PARTY_ICON
+            note = "third-party implementation" + (f"; {note}" if note else "")
         rows.append(
             (
-                REFERENCE_ONLY_ICON if reference_only else STATE_ICONS[status.state],
+                icon,
                 status.config.function,
                 f"0x{status.address:x}",
                 str(status.target_size),
@@ -3743,6 +3764,7 @@ def render_status_rows(
                 prefix,
                 _format_masked_counts(status),
                 "" if build == default_build else build,
+                port_scope,
                 note,
             )
         )
@@ -3762,9 +3784,12 @@ def _row_match_ratio(row: tuple[str, ...]) -> float | None:
 
 
 def _status_row_section(row: tuple[str, ...]) -> str:
+    port_scope = row[9]
+    if port_scope == "replaceable-platform":
+        return "Excluded: Replaceable Platform"
+    if port_scope == "third-party":
+        return "Excluded: Third-party"
     icon = row[0]
-    if icon == REFERENCE_ONLY_ICON:
-        return "Reference Only (third-party)"
     if icon == "✅":
         return "Proof Grade"
     if icon == "⚠":
@@ -3815,7 +3840,7 @@ def _cluster_summary(
             status
             for status in statuses
             if (symbol := functions_by_name.get(status.config.function)) is None
-            or symbol.match_scope == "gameplay"
+            or symbol.is_port_relevant
         ]
     exact_scratches = sum(status.state == "match" for status in tracked_statuses)
     summary = (
@@ -3826,10 +3851,15 @@ def _cluster_summary(
         f"overall fuzzy {totals.fuzzy_percentage:.2%}; "
         f"{exact_scratches}/{len(tracked_statuses)} scratches at proof-grade 100%"
     )
-    if totals.reference_only_functions:
+    if totals.replaceable_platform_functions:
         summary += (
-            f"; {totals.reference_only_functions} reference-only functions "
-            f"({totals.reference_only_bytes} curated-extent bytes) excluded"
+            f"; {totals.replaceable_platform_functions} replaceable-platform functions "
+            f"({totals.replaceable_platform_bytes} curated-extent bytes) excluded"
+        )
+    if totals.third_party_functions:
+        summary += (
+            f"; {totals.third_party_functions} third-party functions "
+            f"({totals.third_party_bytes} curated-extent bytes) excluded"
         )
     return summary
 
@@ -3873,20 +3903,34 @@ def render_status_markdown(
         "",
         "Regenerate with `uv run snail match status --write tools/match/STATUS.md`.",
         "",
-        f"**{totals.matched_functions}/{totals.function_count}** mapped gameplay "
-        f"functions matched, **{totals.scratched_functions}/{totals.function_count}** "
-        f"mapped gameplay functions have a scratch, **{totals.matched_bytes}/"
-        f"{totals.byte_total}** bytes (**{totals.byte_percentage:.2%}**) are "
-        f"proof-grade, and overall fuzzy is **{totals.fuzzy_percentage:.2%}**.",
+        (
+            f"**{totals.matched_functions}/{totals.function_count}** port-relevant "
+            "functions matched, "
+            f"**{totals.scratched_functions}/{totals.function_count}** port-relevant "
+            f"functions have a scratch, **{totals.matched_bytes}/{totals.byte_total}** "
+            f"bytes (**{totals.byte_percentage:.2%}**) are proof-grade, and overall "
+            f"fuzzy is **{totals.fuzzy_percentage:.2%}**."
+        ),
     ]
-    if totals.reference_only_functions:
+    if totals.replaceable_platform_functions or totals.third_party_functions:
+        exclusions: list[str] = []
+        if totals.replaceable_platform_functions:
+            exclusions.append(
+                f"**{totals.replaceable_platform_functions}** replaceable-platform "
+                "functions "
+                f"(**{totals.replaceable_platform_bytes}** curated-extent bytes)"
+            )
+        if totals.third_party_functions:
+            exclusions.append(
+                f"**{totals.third_party_functions}** third-party functions "
+                f"(**{totals.third_party_bytes}** curated-extent bytes)"
+            )
         lines.extend(
             [
                 "",
-                f"**{totals.reference_only_functions}** reference-only library functions "
-                f"(**{totals.reference_only_bytes}** curated-extent bytes) remain "
-                "available for semantic and extent context but are excluded from "
-                "gameplay totals.",
+                " and ".join(exclusions)
+                + " remain visible for contract, semantic, and extent context but "
+                "are excluded from port-relevant totals.",
             ]
         )
     rendered_rows = render_status_rows(statuses, manifest=manifest, image_path=image_path, image=image)
@@ -3896,12 +3940,15 @@ def render_status_markdown(
                 "",
                 f"## {title} ({len(section_rows)})",
                 "",
-                "| | function | address | bytes | insns | match | prefix | masked | build |",
-                "|---|---|---|---|---|---|---|---|---|",
+                (
+                    "| | function | address | bytes | insns | match | prefix | "
+                    "masked | build | scope |"
+                ),
+                "|---|---|---|---|---|---|---|---|---|---|",
             ]
         )
         for row in section_rows:
-            lines.append("| " + " | ".join(row[:9]) + " |")
+            lines.append("| " + " | ".join(row[:10]) + " |")
     lines.append("")
     if type_findings is not None:
         lines.extend(render_type_consolidation_markdown(type_findings))

@@ -28,15 +28,28 @@ def test_default_function_symbol_manifest_loads() -> None:
     assert manifest.functions[8].description is not None
     assert any(function.name == "get_or_create_texture_ref" for function in manifest.functions)
     assert summary["function_count"] == len(manifest.functions)
-    assert summary["gameplay_function_count"] == len(manifest.functions) - 3
-    assert summary["reference_only_function_count"] == 3
+    assert summary["port_relevant_function_count"] == (
+        summary["core_function_count"] + summary["boundary_function_count"]
+    )
+    assert summary["replaceable_platform_function_count"] > 0
+    assert summary["third_party_function_count"] == 3
+    assert sum(
+        summary[key]
+        for key in (
+            "core_function_count",
+            "boundary_function_count",
+            "replaceable_platform_function_count",
+            "third_party_function_count",
+        )
+    ) == len(manifest.functions)
     assert summary["described_function_count"] >= 1
     assert summary["alias_count"] >= 2
     assert summary["mobile_candidate_rejection_count"] >= 1
     assert summary["address_range"]["start"] == f"0x{min_address:x}"
     by_name = {function.name: function for function in manifest.functions}
     assert by_name["update_intro_logo_renderable"].aliases == ("update_logo_row",)
-    assert by_name["initialize_translation_matrix"].match_scope == "reference-only"
+    assert by_name["initialize_translation_matrix"].port_scope == "third-party"
+    assert by_name["game_window_proc"].port_scope == "replaceable-platform"
     game_init = by_name["initialize_game_assets_and_world"]
     assert {
         rejection.symbol
@@ -67,13 +80,13 @@ def test_write_function_symbol_manifest_preserves_normalized_shape(tmp_path: Pat
     assert "description" in raw["functions"][8]
     aliased = next(function for function in raw["functions"] if "aliases" in function)
     assert aliased["aliases"]
-    reference_only = next(
+    third_party = next(
         function
         for function in raw["functions"]
         if function["name"] == "initialize_translation_matrix"
     )
-    assert reference_only["match_scope"] == "reference-only"
-    assert "match_scope" not in raw["functions"][0]
+    assert third_party["port_scope"] == "third-party"
+    assert "port_scope" not in raw["functions"][0]
     game_init = next(
         function
         for function in raw["functions"]
@@ -94,8 +107,8 @@ def test_write_function_symbol_manifest_preserves_normalized_shape(tmp_path: Pat
     }
 
 
-def test_unknown_function_match_scope_is_rejected(tmp_path: Path) -> None:
-    manifest_path = tmp_path / "unknown-match-scope.json"
+def test_unknown_function_port_scope_is_rejected(tmp_path: Path) -> None:
+    manifest_path = tmp_path / "unknown-port-scope.json"
     manifest_path.write_text(
         json.dumps(
             {
@@ -108,7 +121,7 @@ def test_unknown_function_match_scope_is_rejected(tmp_path: Path) -> None:
                     {
                         "address": "0x405140",
                         "name": "file_exists",
-                        "match_scope": "ignore",
+                        "port_scope": "ignore",
                     }
                 ],
             }
@@ -116,7 +129,7 @@ def test_unknown_function_match_scope_is_rejected(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    with pytest.raises(ValueError, match="match_scope must be one of"):
+    with pytest.raises(ValueError, match="port_scope must be one of"):
         load_function_symbol_manifest(manifest_path)
 
 

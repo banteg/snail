@@ -138,13 +138,20 @@ Useful analysis helpers:
   older scratch name retained during an ownership rename. Aliases resolve
   scratch configs, function extents, and masked call operands without creating
   another function or changing cluster totals; duplicate names are rejected.
-- Set `"match_scope": "reference-only"` on proven third-party library bodies
-  that must remain addressable for semantic scratches, call resolution, and
-  neighboring function extents but are not authored gameplay matching targets.
-  Status keeps their scratch results in a separate reference-only section and
-  excludes their functions, bytes, and fuzzy scores from gameplay totals. The
-  default scope is `"gameplay"`; do not use this field to hide difficult game
-  code.
+- Every function has a `port_scope`:
+  - `"core"` (the default) is authored portable behavior that the native mirror
+    must recover.
+  - `"boundary"` is an authored content, input, audio, or rendering contract
+    whose behavior still matters across the modern-engine seam.
+  - `"replaceable-platform"` is a concrete Win32, Direct3D, DirectInput, or BASS
+    implementation that the port replaces.
+  - `"third-party"` is a proven library body that should be linked or replaced,
+    not decompiled.
+  Status counts `core` and `boundary` functions in port-relevant totals and
+  keeps the last two scopes visible in separate excluded sections for call,
+  semantic, and extent context. Scope by implementation ownership and
+  cross-platform evidence, never by match difficulty; uncertain authored code
+  stays `"core"`.
 - `uv run snail match dump <obj> <function> --side target --start-offset 0x20`
   prints addressed normalized listings. Use this when a region involves jump
   tables, duplicated tails, or branch labels and the side-by-side diff is too

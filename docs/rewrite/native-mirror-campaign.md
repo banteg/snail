@@ -9,6 +9,14 @@ invented model is gone. Rendering, platform, audio backend, and asset code
 are explicitly out of scope — that layer is the modern-engine upgrade and
 stays idiomatic Zig.
 
+The matching manifest records that split with `port_scope` (see
+`tools/match/README.md`). `core` and `boundary` remain port-relevant because
+the latter preserves contracts crossing into the modern engine;
+`replaceable-platform` and `third-party` stay visible for provenance and
+call/extent analysis but do not count toward matching progress. A boundary
+needs enough recovery to pin its portable contract, not an exact transcription
+of the Windows backend.
+
 ## The loop
 
 For each cluster, in order:

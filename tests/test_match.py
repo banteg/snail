@@ -2110,6 +2110,7 @@ def test_render_status_rows_include_missing_manifest_functions() -> None:
         "0/2",
         "-",
         "",
+        "core",
         "no scratch",
     )
 
@@ -2122,51 +2123,41 @@ def test_render_status_rows_include_missing_manifest_functions() -> None:
         fuzzy_weighted_bytes=2.0,
     )
     markdown = render_status_markdown([status], totals, manifest=manifest, image=image)
-    assert "| ⬜ | missing | 0x1002 | 2 | 0/2 | 0.00% | 0/2 | - |  |" in markdown
+    assert (
+        "| ⬜ | missing | 0x1002 | 2 | 0/2 | 0.00% | 0/2 | - |  | core |"
+        in markdown
+    )
 
 
-def test_reference_only_functions_stay_visible_but_do_not_affect_gameplay_totals(
+def test_non_portable_scopes_stay_visible_but_do_not_affect_port_totals(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     import snail.match as match_module
 
-    exact_config = ScratchConfig(
-        directory=Path("scratch/exact"),
-        function="exact",
-        compiler="msvc6.5",
-        cflags="/O2 /G5 /W3",
-        end_va=None,
-        symbol=None,
-    )
-    reference_config = ScratchConfig(
-        directory=Path("scratch/reference"),
-        function="library_body",
-        compiler="msvc6.5",
-        cflags="/O2 /G5 /W3",
-        end_va=None,
-        symbol=None,
-    )
-    statuses = [
-        ScratchStatus(
-            config=exact_config,
-            address=0x1000,
-            target_size=2,
+    def exact_status(name: str, address: int, size: int) -> ScratchStatus:
+        return ScratchStatus(
+            config=ScratchConfig(
+                directory=Path(f"scratch/{name}"),
+                function=name,
+                compiler="msvc6.5",
+                cflags="/O2 /G5 /W3",
+                end_va=None,
+                symbol=None,
+            ),
+            address=address,
+            target_size=size,
             ratio=1.0,
-            prefix_instructions=2,
-            target_instructions=2,
-            candidate_instructions=2,
+            prefix_instructions=size,
+            target_instructions=size,
+            candidate_instructions=size,
             error=None,
-        ),
-        ScratchStatus(
-            config=reference_config,
-            address=0x1002,
-            target_size=4,
-            ratio=0.5,
-            prefix_instructions=1,
-            target_instructions=4,
-            candidate_instructions=4,
-            error=None,
-        ),
+        )
+
+    statuses = [
+        exact_status("exact", 0x1000, 2),
+        exact_status("boundary_contract", 0x1002, 2),
+        exact_status("platform_body", 0x1004, 4),
+        exact_status("library_body", 0x1008, 4),
     ]
     manifest = FunctionSymbolManifest(
         name="test",
@@ -2179,46 +2170,73 @@ def test_reference_only_functions_stay_visible_but_do_not_affect_gameplay_totals
             FunctionSymbol(address=0x1000, name="exact"),
             FunctionSymbol(
                 address=0x1002,
-                name="library_body",
-                match_scope="reference-only",
+                name="boundary_contract",
+                port_scope="boundary",
             ),
-            FunctionSymbol(address=0x1006, name="missing"),
+            FunctionSymbol(
+                address=0x1004,
+                name="platform_body",
+                port_scope="replaceable-platform",
+            ),
+            FunctionSymbol(
+                address=0x1008,
+                name="library_body",
+                port_scope="third-party",
+            ),
+            FunctionSymbol(address=0x100C, name="missing"),
         ),
     )
     image = LoadedImage(
-        mapped=b"\x90\xc3\x90\x90\x90\xc3\x90\xc3\xcc",
+        mapped=(
+            b"\x90\xc3\x90\xc3\x90\x90\x90\xc3"
+            b"\x90\x90\x90\xc3\x90\xc3\xcc"
+        ),
         image_base=0x1000,
-        size_of_image=9,
+        size_of_image=15,
     )
     monkeypatch.setattr(match_module, "load_image", lambda *_args: image)
 
     totals = manifest_cluster_totals(manifest, tmp_path / "test.exe", statuses)
 
     assert totals == ClusterTotals(
-        function_count=2,
-        byte_total=4,
-        matched_functions=1,
-        matched_bytes=2,
-        scratched_functions=1,
-        fuzzy_weighted_bytes=2.0,
-        reference_only_functions=1,
-        reference_only_bytes=4,
+        function_count=3,
+        byte_total=6,
+        matched_functions=2,
+        matched_bytes=4,
+        scratched_functions=2,
+        fuzzy_weighted_bytes=4.0,
+        replaceable_platform_functions=1,
+        replaceable_platform_bytes=4,
+        third_party_functions=1,
+        third_party_bytes=4,
     )
     rows = render_status_rows(statuses, manifest=manifest, image=image)
-    assert [row[1] for row in rows] == ["exact", "library_body", "missing"]
-    assert rows[1][0] == "📚"
-    assert rows[1][9] == "third-party reference only"
+    assert [row[1] for row in rows] == [
+        "exact",
+        "boundary_contract",
+        "platform_body",
+        "library_body",
+        "missing",
+    ]
+    assert rows[1][9] == "boundary"
+    assert rows[2][0] == "🖥"
+    assert rows[2][10] == "replaceable platform implementation"
+    assert rows[3][0] == "📚"
+    assert rows[3][10] == "third-party implementation"
 
     table = render_status_table(statuses, totals, manifest=manifest, image=image)
-    assert "Reference Only (third-party) (1)" in table
-    assert "1/1 scratches at proof-grade 100%" in table
-    assert "1 reference-only functions (4 curated-extent bytes) excluded" in table
+    assert "Excluded: Replaceable Platform (1)" in table
+    assert "Excluded: Third-party (1)" in table
+    assert "2/2 scratches at proof-grade 100%" in table
+    assert "1 replaceable-platform functions (4 curated-extent bytes) excluded" in table
+    assert "1 third-party functions (4 curated-extent bytes) excluded" in table
 
     markdown = render_status_markdown(statuses, totals, manifest=manifest, image=image)
-    assert "**1/2** mapped gameplay functions matched" in markdown
-    assert "**1** reference-only library functions" in markdown
-    assert "(**4** curated-extent bytes)" in markdown
-    assert "## Reference Only (third-party) (1)" in markdown
+    assert "**2/3** port-relevant functions matched" in markdown
+    assert "**1** replaceable-platform functions" in markdown
+    assert "**1** third-party functions" in markdown
+    assert "## Excluded: Replaceable Platform (1)" in markdown
+    assert "## Excluded: Third-party (1)" in markdown
 
 
 def test_render_status_markdown_splits_progress_sections() -> None:
@@ -2347,7 +2365,7 @@ def test_render_status_outputs_scratch_and_fuzzy_summary() -> None:
     assert "1/2 scratches at proof-grade 100%" in status_table
 
     markdown = render_status_markdown(statuses, totals)
-    assert "**2/4** mapped gameplay functions have a scratch" in markdown
+    assert "**2/4** port-relevant functions have a scratch" in markdown
     assert "overall fuzzy is **40.00%**" in markdown
     assert "Byte totals are curated-extent upper bounds" not in markdown
 
@@ -2730,7 +2748,7 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
             FunctionSymbol(
                 address=0x1000,
                 name="foo",
-                match_scope="reference-only",
+                port_scope="third-party",
             ),
             manifest.functions[1],
         ),

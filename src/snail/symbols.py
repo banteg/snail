@@ -16,8 +16,16 @@ AUTO_FUNCTION_NAME_RE = re.compile(
 FUNCTION_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 HEX_VALUE_RE = re.compile(r"^0x[0-9a-fA-F]+$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
-FUNCTION_MATCH_SCOPES = frozenset(("gameplay", "reference-only"))
-FunctionMatchScope = Literal["gameplay", "reference-only"]
+FUNCTION_PORT_SCOPES = frozenset(
+    ("core", "boundary", "replaceable-platform", "third-party")
+)
+PORT_RELEVANT_FUNCTION_SCOPES = frozenset(("core", "boundary"))
+FunctionPortScope = Literal[
+    "core",
+    "boundary",
+    "replaceable-platform",
+    "third-party",
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,12 +40,16 @@ class FunctionSymbol:
     name: str
     description: str | None = None
     aliases: tuple[str, ...] = ()
-    match_scope: FunctionMatchScope = "gameplay"
+    port_scope: FunctionPortScope = "core"
     mobile_candidate_rejections: tuple[MobileCandidateRejection, ...] = ()
 
     @property
     def address_hex(self) -> str:
         return f"0x{self.address:x}"
+
+    @property
+    def is_port_relevant(self) -> bool:
+        return self.port_scope in PORT_RELEVANT_FUNCTION_SCOPES
 
 
 @dataclass(frozen=True, slots=True)
@@ -151,11 +163,11 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
                     f"functions[{index}].description must be a non-empty string when present"
                 )
             description = description.strip()
-        match_scope = raw_symbol.get("match_scope", "gameplay")
-        if match_scope not in FUNCTION_MATCH_SCOPES:
-            allowed = ", ".join(sorted(FUNCTION_MATCH_SCOPES))
+        port_scope = raw_symbol.get("port_scope", "core")
+        if port_scope not in FUNCTION_PORT_SCOPES:
+            allowed = ", ".join(sorted(FUNCTION_PORT_SCOPES))
             raise ValueError(
-                f"functions[{index}].match_scope must be one of: {allowed}"
+                f"functions[{index}].port_scope must be one of: {allowed}"
             )
         if address in seen_addresses:
             raise ValueError(f"duplicate function address: 0x{address:x}")
@@ -171,7 +183,7 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
                 name=name,
                 description=description,
                 aliases=tuple(aliases_value),
-                match_scope=match_scope,
+                port_scope=port_scope,
                 mobile_candidate_rejections=tuple(
                     mobile_candidate_rejections
                 ),
@@ -194,9 +206,9 @@ def validate_function_symbol_manifest(
     if not manifest.functions:
         raise ValueError("manifest must contain at least one function symbol")
     for function in manifest.functions:
-        if function.match_scope not in FUNCTION_MATCH_SCOPES:
-            allowed = ", ".join(sorted(FUNCTION_MATCH_SCOPES))
-            raise ValueError(f"match_scope must be one of: {allowed}")
+        if function.port_scope not in FUNCTION_PORT_SCOPES:
+            allowed = ", ".join(sorted(FUNCTION_PORT_SCOPES))
+            raise ValueError(f"port_scope must be one of: {allowed}")
     if manifest.functions[0].address < manifest.image_base:
         raise ValueError("function addresses must be within the image address space")
     return manifest
@@ -255,8 +267,8 @@ def normalize_function_symbol_manifest(
                 "address": function.address_hex, "name": function.name,
                 **({"aliases": list(function.aliases)} if function.aliases else {}),
                 **(
-                    {"match_scope": function.match_scope}
-                    if function.match_scope != "gameplay"
+                    {"port_scope": function.port_scope}
+                    if function.port_scope != "core"
                     else {}
                 ),
                 **(
@@ -307,12 +319,21 @@ def summarize_function_symbol_manifest(
     summary: dict[str, object] = {
         "name": manifest.name,
         "function_count": len(manifest.functions),
-        "gameplay_function_count": sum(
-            function.match_scope == "gameplay" for function in manifest.functions
+        "port_relevant_function_count": sum(
+            function.is_port_relevant for function in manifest.functions
         ),
-        "reference_only_function_count": sum(
-            function.match_scope == "reference-only"
+        "core_function_count": sum(
+            function.port_scope == "core" for function in manifest.functions
+        ),
+        "boundary_function_count": sum(
+            function.port_scope == "boundary" for function in manifest.functions
+        ),
+        "replaceable_platform_function_count": sum(
+            function.port_scope == "replaceable-platform"
             for function in manifest.functions
+        ),
+        "third_party_function_count": sum(
+            function.port_scope == "third-party" for function in manifest.functions
         ),
         "described_function_count": sum(
             1 for function in manifest.functions if function.description is not None
@@ -335,8 +356,8 @@ def summarize_function_symbol_manifest(
                 "address": symbol.address_hex, "name": symbol.name,
                 **({"aliases": list(symbol.aliases)} if symbol.aliases else {}),
                 **(
-                    {"match_scope": symbol.match_scope}
-                    if symbol.match_scope != "gameplay"
+                    {"port_scope": symbol.port_scope}
+                    if symbol.port_scope != "core"
                     else {}
                 ),
                 **(
