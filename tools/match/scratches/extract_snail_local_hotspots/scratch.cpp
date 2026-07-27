@@ -24,28 +24,32 @@ void Snail::extract_snail_local_hotspots()
         TextureRef* texture = g_texture_refs.get_or_create_texture_ref(texture_name, 0, 0);
         int facequad_count = model->facequad_count;
         int face_index = 0;
+        ObjectFaceQuad* facequad;
+        int vertex_index;
+        Vector3* vertex;
 
-        if (facequad_count <= 0) {
-            report_errorf("Cannot find HotPoint Texture %s", *name_cursor);
-        } else {
-            ObjectFaceQuad* facequad = model->facequads;
-            while (1) {
-                if (facequad->texture_ref == texture)
-                    break;
-                ++face_index;
-                ++facequad;
-                if (face_index >= facequad_count) {
-                    report_errorf("Cannot find HotPoint Texture %s", *name_cursor);
-                    goto next_hotspot;
-                }
-            }
+        if (facequad_count <= 0)
+            goto missing_hotspot;
 
-            int vertex_index = model->facequads[face_index].vertex_0;
-            Vector3* vertex = &model->vertices[vertex_index];
-            hotspot_z[-2] += vertex->x;
-            hotspot_z[-1] += vertex->y;
-            *hotspot_z += vertex->z;
+        facequad = model->facequads;
+        while (1) {
+            if (facequad->texture_ref == texture)
+                break;
+            ++face_index;
+            ++facequad;
+            if (face_index >= facequad_count)
+                goto missing_hotspot;
         }
+
+        vertex_index = model->facequads[face_index].vertex_0;
+        vertex = &model->vertices[vertex_index];
+        hotspot_z[-2] += vertex->x;
+        hotspot_z[-1] += vertex->y;
+        *hotspot_z += vertex->z;
+        goto next_hotspot;
+
+    missing_hotspot:
+        report_errorf("Cannot find HotPoint Texture %s", *name_cursor);
 
     next_hotspot:
         ++name_cursor;

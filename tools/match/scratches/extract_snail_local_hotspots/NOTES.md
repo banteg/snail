@@ -109,3 +109,24 @@ initialization-time texture-to-local-bank scan. The canonical Windows name is
 now `extract_snail_local_hotspots`; the historical `build_snail_hotspots`
 label remains a compatibility alias. No matcher source shape changed, so the
 honest 83.78% result and residual scheduling differences are preserved.
+
+## 2026-07-27 mobile-backed missing-hotspot flow
+
+The Android and iOS bodies independently confirm one authored operation per
+name: clear the destination vector, find the named face, and add its first
+vertex as a complete vector. Replaying that intent against the Windows CFG
+reveals a single shared missing-hotspot error block for both an empty face bank
+and an exhausted scan. Hoisting the face/vertex cursors and spelling that
+shared block as `missing_hotspot` raises focused Wibo from 83.78% to 91.55%.
+The exact prefix grows from 22/74 to 31/74 instructions, the candidate contracts
+from 74 to 68 instructions, and all seven masked operands audit cleanly with no
+unresolved, mismatched, or unaudited references.
+
+Whole-`Vector3` `operator+=`, direct vector assignment, and reporting the
+already-loaded `texture_name` local were tested because they are plausible
+mobile-authored shapes; they regressed to 50.32%, 38.99%, and 70.83%
+respectively. The retained scalar x/y/z additions preserve the same semantics
+and the stronger Windows register lifetimes. Remaining drift is one error-call
+argument register and the native six-instruction redundant self-copy of the
+finished vector. Those are compiler scheduling residue, not justification for
+explicit self-assignments.

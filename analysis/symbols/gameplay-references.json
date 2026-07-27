@@ -3297,10 +3297,11 @@
       "name": "g_snail_hotspot_texture_names",
       "kind": "global",
       "aliases": [
+        "gSnailHotSpotNames",
         "data_4a4aa0"
       ],
       "size": "0x4c",
-      "description": "Nineteen-entry texture-name pointer table walked by extract_snail_local_hotspots to map model facequads into local snail hotspot slots."
+      "description": "Authored `gSnailHotSpotNames` on iOS: nineteen-entry texture-name pointer table walked by extract_snail_local_hotspots to map model facequads into local snail hotspot slots."
     },
     {
       "address": "0x4a4aec",
