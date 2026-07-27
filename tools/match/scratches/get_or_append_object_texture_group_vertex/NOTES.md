@@ -129,3 +129,27 @@ layouts before previewing any mutation, and a second run is fully idempotent.
 Focused Wibo remains 83.14%, 128/127 candidate/target instructions, prefix 25,
 and all 18 masked operands clean. No matcher source changed; the loop-exit
 block-placement residual remains visible.
+
+## 2026-07-27 mobile AddVertexUV ownership
+
+Android retains the factored authored helper
+`AddVertexUV(cGLVertexUV*, int&, tVector*, float, float)` immediately before
+`cRObject::BuildGLVertexArray()`. Its complete body borrows the builder's
+scratch vertex bank, compares position plus UV, appends on a miss, advances
+the caller-owned count by reference, and returns the existing or appended
+index. iOS inlines the same five-float search/append loop into
+`BuildGLVertexArray()`, independently confirming the helper boundary even
+though that build exports no separate symbol.
+
+This is a semantic and ownership mapping, not a layout transfer. Mobile
+`cGLVertexUV` is a 0x14-byte position/UV record. Windows deliberately owns a
+0x1c-byte `ObjectGroupedVertex`, adding packed diffuse colour and the source
+vertex index used by dynamic objects. Windows also keeps its scratch pointer
+and count in builder-scoped globals rather than passing both into the helper.
+The shared lifecycle is builder-borrowed dedup workspace; the platform record
+layouts and ABIs remain distinct.
+
+The matcher source remains unchanged at the honest 83.14%, 128/127
+candidate/target instructions, prefix 25, and 18 clean operands. The remaining
+loop-exit block placement is a VC6 control-flow choice, so no mobile-shaped ABI
+or goto is introduced to force it.

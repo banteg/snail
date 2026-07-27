@@ -14,11 +14,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 563,
-    "unverified_entries": 222,
-    "verified_android_symbols": 557,
+    "verified_entries": 564,
+    "unverified_entries": 221,
+    "verified_android_symbols": 558,
     "verified_ios_symbols": 453,
-    "available_android_mappings": 557,
+    "available_android_mappings": 558,
     "available_ios_mappings": 416
   },
   "entries": [
@@ -8638,39 +8638,11 @@
       "address": "0x413bb0",
       "windows_name": "get_or_append_object_texture_group_vertex",
       "windows_size": 416,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRObject::CalcTextureGroups()",
-          "score": 0.7296,
-          "name_score": 0.6776,
-          "size_score": 0.8077
-        },
-        {
-          "symbol": "ObjectProcClickStart(cRObject*, int, float, float, char*)",
-          "score": 0.6089,
-          "name_score": 0.3846,
-          "size_score": 0.9455
-        },
-        {
-          "symbol": "cRObjects::BuildObjects()",
-          "score": 0.6082,
-          "name_score": 0.45,
-          "size_score": 0.8455
-        },
-        {
-          "symbol": "ObjectProcSkirt(cRObject*, int, float, float, char*)",
-          "score": 0.6015,
-          "name_score": 0.4255,
-          "size_score": 0.8654
-        },
-        {
-          "symbol": "cRObject::AddEdge(int, int, int)",
-          "score": 0.5887,
-          "name_score": 0.3657,
-          "size_score": 0.9231
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "AddVertexUV(cGLVertexUV*, int&, tVector*, float, float)",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRObject::CalcTextureGroups()",
@@ -8685,22 +8657,22 @@
           "size_score": 0.9904
         },
         {
-          "symbol": "ObjectProcJoinTextures(cRObject*)",
-          "score": 0.5966,
-          "name_score": 0.4815,
-          "size_score": 0.7692
-        },
-        {
           "symbol": "cRTextures::Add(char*, cTgaHeader*, int)",
-          "score": 0.5939,
-          "name_score": 0.336,
+          "score": 0.6623,
+          "name_score": 0.45,
           "size_score": 0.9808
         },
         {
-          "symbol": "OFRTTI::OFRTTI(char const*, OFRTTI const*, void* (*)(OFISerializer*))",
-          "score": 0.5758,
-          "name_score": 0.3055,
-          "size_score": 0.9811
+          "symbol": "cRObject::AddEdge(int, int, int)",
+          "score": 0.6614,
+          "name_score": 0.6,
+          "size_score": 0.7536
+        },
+        {
+          "symbol": "OFResourceDataMap::addField(NSString*, objc_selector*, objc_selector*)",
+          "score": 0.6315,
+          "name_score": 0.45,
+          "size_score": 0.9038
         }
       ]
     },

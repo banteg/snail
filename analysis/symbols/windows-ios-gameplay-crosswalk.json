@@ -2965,6 +2965,14 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x413bb0",
+      "windows_name": "get_or_append_object_texture_group_vertex",
+      "android_symbol": "AddVertexUV(cGLVertexUV*, int&, tVector*, float, float)",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "notes": "Android keeps the authored helper factored from cRObject::BuildGLVertexArray: it searches builder-borrowed scratch for position-plus-UV identity, appends one cGLVertexUV when absent, advances the caller-owned count by reference, and returns the existing or appended index. iOS inlines the same five-float dedup loop into BuildGLVertexArray, so it has no separate symbol to map. Windows extends the helper with Object flags, vertex colour packing, and source-index identity; its 0x1c ObjectGroupedVertex is not the mobile 0x14 cGLVertexUV layout."
+    },
+    {
       "address": "0x413d50",
       "windows_name": "build_object_texture_group_buffers",
       "ios_symbol": "cRObject::BuildGLVertexArray()",

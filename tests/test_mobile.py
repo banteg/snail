@@ -764,3 +764,43 @@ def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     assert "cRPath::BuildSlalom(" in output
     assert "android: verified" in output
     assert "ios: verified" in output
+
+
+def test_mobile_object_vertex_dedup_preserves_platform_layout_boundary() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    dedup = entries["get_or_append_object_texture_group_vertex"]
+    assert dedup["status"] == "verified"
+    assert dedup["confidence"] == "high"
+    assert dedup["source_object"] == "RObject.o"
+    assert dedup["android_symbol"] == (
+        "AddVertexUV(cGLVertexUV*, int&, tVector*, float, float)"
+    )
+    assert dedup["android_body_count"] == 1
+    assert "ios_symbol" not in dedup
+    assert "AddVertexUV" in (
+        functions_by_name[
+            "get_or_append_object_texture_group_vertex"
+        ]["aliases"]
+    )
+
+    notes = (
+        repo_root
+        / "tools/match/scratches"
+        / "get_or_append_object_texture_group_vertex"
+        / "NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "0x14-byte position/UV record" in notes
+    assert "0x1c-byte `ObjectGroupedVertex`" in notes

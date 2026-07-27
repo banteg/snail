@@ -1127,7 +1127,10 @@
       "address": "0x413bb0",
       "name": "get_or_append_object_texture_group_vertex",
       "port_scope": "boundary",
-      "description": "Returns the existing grouped-render vertex matching one object vertex index plus UVs, or appends a new record field-by-field through the shared global texture-group build scratch when no match exists."
+      "description": "Windows extension of the mobile `AddVertexUV` helper: returns the existing grouped-render vertex matching one object vertex index plus UVs, or appends a new record field-by-field through the shared texture-group build scratch when no match exists. The desktop record additionally owns diffuse colour and source-vertex identity.",
+      "aliases": [
+        "AddVertexUV"
+      ]
     },
     {
       "address": "0x413d50",
