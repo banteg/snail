@@ -24,16 +24,13 @@ void __fastcall Path::calc_path_length_z()
 
     int i = 0;
     if (segment_count > 0) {
-        int sample_offset = 0;
         do {
-            AttachmentSample* primary = (AttachmentSample*)((char*)this->primary_samples + sample_offset);
-            primary->inverse_matrix.invert_matrix_from_source(primary->transform);
-
-            AttachmentSample* secondary = (AttachmentSample*)((char*)this->secondary_samples + sample_offset);
-            secondary->inverse_matrix.invert_matrix_from_source(secondary->transform);
+            this->primary_samples[i].inverse_matrix.invert_matrix_from_source(
+                this->primary_samples[i].transform);
+            this->secondary_samples[i].inverse_matrix.invert_matrix_from_source(
+                this->secondary_samples[i].transform);
 
             ++i;
-            sample_offset += sizeof(AttachmentSample);
         } while (i < this->segment_count);
     }
 
@@ -42,11 +39,11 @@ void __fastcall Path::calc_path_length_z()
         int sample_offset = 0;
         do {
             Vector3 cross;
-            AttachmentSample* primary = (AttachmentSample*)((char*)this->primary_samples + sample_offset);
-            AttachmentSample* next = primary + 1;
             cross.cross_vectors(
-                &primary->transform.basis_forward,
-                &next->transform.basis_forward);
+                &((AttachmentSample*)((char*)this->primary_samples
+                    + sample_offset))->transform.basis_forward,
+                &((AttachmentSample*)((char*)this->primary_samples
+                    + sample_offset + sizeof(AttachmentSample)))->transform.basis_forward);
 
             *(float*)((char*)this->primary_samples + sample_offset
                 + offsetof(AttachmentSample, lateral_source)) =

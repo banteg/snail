@@ -122,3 +122,23 @@ ordinary caller that discards the tail `EAX` state. The previous `int32_t
 PathTemplate*` declaration combined a partial owner with a decompiler-inferred
 return. Replay metadata now records the real owner and void contract without
 changing the focused source or its 81.78% result.
+
+## 2026-07-27 mobile-authored sample induction
+
+The exact Android and iOS `cRPath::CalcLengthZ()` bodies independently show
+that both inverse transforms are indexed through the owned primary and
+secondary sample arrays. Expressing those two operations directly as
+`samples[i]` removes the synthetic byte-offset induction variable from the
+inverse loop and reproduces the native Windows register allocation.
+
+The adjacent-forward-vector cross product likewise has no need to retain
+temporary `primary` and `next` owners: direct byte-offset expressions preserve
+the already-proved `AttachmentSample` stride while letting the compiler issue
+both adjacent arguments in the native order. The lateral-source loop remains
+owned by its one real byte-offset induction variable because replacing that
+with a second array index measurably changes the generated loop.
+
+Together these source-shape corrections raise the focused result from 81.78%
+to **100.00%**: 113/113 instructions, a 113-instruction exact prefix, and all
+nine masked operands clean. No artificial control flow, volatile qualifier,
+register coercion, or dead expression is involved.
