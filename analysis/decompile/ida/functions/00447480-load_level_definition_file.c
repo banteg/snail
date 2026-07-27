@@ -2,7 +2,7 @@
 /* function: load_level_definition_file @ 0x447480 */
 /* selector: load_level_definition_file */
 
-// Parses one Levels/*.txt definition into the owning SubTracks instance, including its SubSegments, display metadata, speed, hazard frequencies, landscape, parcel, and texture fields. Arcade definitions also populate the selected GalaxyRouteSlot's detail and description text in the root-owned Galaxy controller. Symbol-preserving iOS builds name the corresponding void overload `cRSubTracks::Init(char*)`; all Windows callers discard the path-dependent incidental value left in EAX.
+// Parses one Levels/*.txt definition into the owning SubTracks instance, including its SubSegments, display metadata, speed, hazard frequencies, landscape, parcel, and texture fields. Arcade definitions also populate the selected GalaxyStar child's detail and description text in the root-owned Galaxy controller. Symbol-preserving iOS builds name the corresponding void overload `cRSubTracks::Init(char*)`; all Windows callers discard the path-dependent incidental value left in EAX.
 void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
 {
   char *case_insensitive_substring; // eax

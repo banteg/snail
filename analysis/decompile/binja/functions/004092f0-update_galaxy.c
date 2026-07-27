@@ -6,7 +6,7 @@
 00409308        hide_gameplay_scores(galaxy->level_progress_base)
 00409312        int32_t i = 0
 00409316        if (g_runtime_config.highest_galaxy_route_index s>= 0)
-00409318        struct GalaxyRouteSlot* route_slot_cursor = &galaxy->route_slots
+00409318        struct GalaxyStar* route_slot_cursor = &galaxy->route_slots
 0040931d        update_galaxy_route_record(route_slot_cursor)
 00409327        i += 1
 00409328        route_slot_cursor = &route_slot_cursor[1]
@@ -44,8 +44,9 @@
 00409439        color_1.g = galaxy->route_names[*(&galaxy->:0x10.67872[0]:4.668 + ecx_11)].color.g
 0040943d        int32_t b = galaxy->route_names[*(&galaxy->:0x10.67872[0]:4.668 + ecx_11)].color.b
 00409440        color_1.b = b
+00409444        int32_t a = galaxy->route_names[*(&galaxy->:0x10.67872[0]:4.668 + ecx_11)].color.a
 00409447        color_1.r = 0x3f800000
-0040944f        color_1.a = galaxy->route_names[*(&galaxy->:0x10.67872[0]:4.668 + ecx_11)].color.a
+0040944f        color_1.a = a
 00409453        color_1.g = 0x3f800000
 0040945b        color_1.b = 0x3f800000
 00409463        color_1.a = 0x3f7d70a4
@@ -84,9 +85,10 @@
 00409576        i_1 += 1
 00409579        do while (i_1 s<= g_runtime_config.highest_galaxy_route_index)
 00409583        set_color_white(&color_1)
+00409588        int32_t highest_galaxy_route_index = g_runtime_config.highest_galaxy_route_index
 0040958d        color_1.a = 0x3e4ccccd
 00409597        int32_t i_2 = 1
-00409599        if (g_runtime_config.highest_galaxy_route_index s> 1)
+00409599        if (highest_galaxy_route_index s> 1)
 0040959b        float* edi_1 = &galaxy->route_slots[2].record.map_x
 004095a7        if (i_2 s< galaxy->selected_index)
 004095ad        color_1.a = 0x3f4ccccd
@@ -155,12 +157,14 @@
 00409793        struct Vec3 vector
 00409793        if (galaxy->route_state == 1)
 00409799        galaxy->selected_index
-004097ba        int32_t edx_9 = (&galaxy->route_slots[0].record.map_z)[galaxy->:0x10f80.d * 0xa8]
+004097ba        int32_t edx_8 = (&galaxy->route_slots[0].record.map_z)[galaxy->:0x10f80.d * 0xa8]
 004097bd        color.r = fconvert.s(fconvert.t((&galaxy->route_slots[0].record.map_x)[galaxy->:0x10f80.d * 0xa8]) - fconvert.t(authored_x))
-004097cc        color.b = edx_9
-004097d0        vector.x = color.r
-004097d4        vector.z = edx_9
-004097d8        color.g = fconvert.s(fconvert.t((&galaxy->route_slots[0].record.map_y)[galaxy->:0x10f80.d * 0xa8]) - fconvert.t(authored_y))
+004097c4        long double x87_r7_38 = fconvert.t((&galaxy->route_slots[0].record.map_y)[galaxy->:0x10f80.d * 0xa8]) - fconvert.t(authored_y)
+004097c8        float r = color.r
+004097cc        color.b = edx_8
+004097d0        vector.x = r
+004097d4        vector.z = edx_8
+004097d8        color.g = fconvert.s(x87_r7_38)
 004097e0        vector.y = color.g
 004097e8        long double st0_1 = normalize_vector(&vector)
 004097ed        long double temp5_1 = fconvert.t(17f)
@@ -171,12 +175,15 @@
 00409823        (&galaxy->route_slots[0].record.highlight_target)[selected_index * 0xa8] = 0x3f800000
 00409832        if (g_runtime_config.highest_galaxy_route_index s>= 1)
 00409838        float* highlight_target_cursor = &galaxy->route_slots[1].record.highlight_target
+00409841        long double x87_r7_41 = fconvert.t(highlight_target_cursor[-4]) - fconvert.t(authored_x)
 00409845        int32_t ecx_29 = highlight_target_cursor[-2]
 00409848        color.b = ecx_29
-0040984c        color.r = fconvert.s(fconvert.t(highlight_target_cursor[-4]) - fconvert.t(authored_x))
+0040984c        color.r = fconvert.s(x87_r7_41)
+00409853        long double x87_r7_43 = fconvert.t(highlight_target_cursor[-3]) - fconvert.t(authored_y)
+00409857        float r_1 = color.r
 0040985b        vector.z = ecx_29
-00409863        vector.x = color.r
-00409867        color.g = fconvert.s(fconvert.t(highlight_target_cursor[-3]) - fconvert.t(authored_y))
+00409863        vector.x = r_1
+00409867        color.g = fconvert.s(x87_r7_43)
 0040986f        vector.y = color.g
 00409873        long double st0_2 = normalize_vector(&vector)
 00409878        long double temp7_1 = fconvert.t(17f)
@@ -194,17 +201,17 @@
 004098d8        struct GameRoot* game_base_3 = g_game_base
 004098e6        if (game_base_3->border_manager.delayed_widget_active == 0)
 004098ec        struct FrontendWidget* exit_or_back_widget = galaxy->exit_or_back_widget
-004098f2        int32_t eax_45
-004098f2        eax_45.b = exit_or_back_widget->widget_flags.b
-004098f2        eax_45:1.b = exit_or_back_widget->widget_flags:1.b
-004098f2        eax_45:2.b = exit_or_back_widget->widget_flags:2.b
-004098f2        eax_45:3.b = exit_or_back_widget->widget_flags:3.b
-004098fa        if ((eax_45.b & 0x20) != 0)
-004098fc        eax_45.b &= 0xdf
-004098fe        exit_or_back_widget->widget_flags.b = eax_45.b
-004098fe        exit_or_back_widget->widget_flags:1.b = eax_45:1.b
-004098fe        exit_or_back_widget->widget_flags:2.b = eax_45:2.b
-004098fe        exit_or_back_widget->widget_flags:3.b = eax_45:3.b
+004098f2        int32_t eax_43
+004098f2        eax_43.b = exit_or_back_widget->widget_flags.b
+004098f2        eax_43:1.b = exit_or_back_widget->widget_flags:1.b
+004098f2        eax_43:2.b = exit_or_back_widget->widget_flags:2.b
+004098f2        eax_43:3.b = exit_or_back_widget->widget_flags:3.b
+004098fa        if ((eax_43.b & 0x20) != 0)
+004098fc        eax_43.b &= 0xdf
+004098fe        exit_or_back_widget->widget_flags.b = eax_43.b
+004098fe        exit_or_back_widget->widget_flags:1.b = eax_43:1.b
+004098fe        exit_or_back_widget->widget_flags:2.b = eax_43:2.b
+004098fe        exit_or_back_widget->widget_flags:3.b = eax_43:3.b
 00409909        if (galaxy->route_mode != 1)
 00409947        destroy_galaxy(galaxy)
 00409958        return 3
@@ -218,20 +225,20 @@
 00409937        game_base_2->players[0].frontend_state:3.b = 0
 00409944        return 0
 00409959        int32_t route_state = galaxy->route_state
-0040995e        int32_t eax_50
+0040995e        int32_t eax_48
 0040995e        struct FrontendWidget* play_or_deliver_widget
 0040995e        if (route_state == 1)
 00409960        play_or_deliver_widget = galaxy->play_or_deliver_widget
-00409966        eax_50.b = play_or_deliver_widget->widget_flags.b
-00409966        eax_50:1.b = play_or_deliver_widget->widget_flags:1.b
-00409966        eax_50:2.b = play_or_deliver_widget->widget_flags:2.b
-00409966        eax_50:3.b = play_or_deliver_widget->widget_flags:3.b
-0040996e        if (route_state == 1 && (eax_50.b & 0x20) != 0)
-00409970        eax_50.b &= 0xdf
-00409972        play_or_deliver_widget->widget_flags.b = eax_50.b
-00409972        play_or_deliver_widget->widget_flags:1.b = eax_50:1.b
-00409972        play_or_deliver_widget->widget_flags:2.b = eax_50:2.b
-00409972        play_or_deliver_widget->widget_flags:3.b = eax_50:3.b
+00409966        eax_48.b = play_or_deliver_widget->widget_flags.b
+00409966        eax_48:1.b = play_or_deliver_widget->widget_flags:1.b
+00409966        eax_48:2.b = play_or_deliver_widget->widget_flags:2.b
+00409966        eax_48:3.b = play_or_deliver_widget->widget_flags:3.b
+0040996e        if (route_state == 1 && (eax_48.b & 0x20) != 0)
+00409970        eax_48.b &= 0xdf
+00409972        play_or_deliver_widget->widget_flags.b = eax_48.b
+00409972        play_or_deliver_widget->widget_flags:1.b = eax_48:1.b
+00409972        play_or_deliver_widget->widget_flags:2.b = eax_48:2.b
+00409972        play_or_deliver_widget->widget_flags:3.b = eax_48:3.b
 0040997a        destroy_galaxy(galaxy)
 0040998b        galaxy->level_progress_base->level_mode_arg = galaxy->selected_index
 0040998e        struct SubgameRuntime* level_progress_base = galaxy->level_progress_base
@@ -241,17 +248,17 @@
 004099d0        return 2
 00409a5a        return 1
 004099d1        struct FrontendWidget* replay_widget = galaxy->replay_widget
-004099d7        int32_t eax_54
-004099d7        eax_54.b = replay_widget->widget_flags.b
-004099d7        eax_54:1.b = replay_widget->widget_flags:1.b
-004099d7        eax_54:2.b = replay_widget->widget_flags:2.b
-004099d7        eax_54:3.b = replay_widget->widget_flags:3.b
-004099df        if ((eax_54.b & 0x20) != 0)
-004099e1        eax_54.b &= 0xdf
-004099e3        replay_widget->widget_flags.b = eax_54.b
-004099e3        replay_widget->widget_flags:1.b = eax_54:1.b
-004099e3        replay_widget->widget_flags:2.b = eax_54:2.b
-004099e3        replay_widget->widget_flags:3.b = eax_54:3.b
+004099d7        int32_t eax_52
+004099d7        eax_52.b = replay_widget->widget_flags.b
+004099d7        eax_52:1.b = replay_widget->widget_flags:1.b
+004099d7        eax_52:2.b = replay_widget->widget_flags:2.b
+004099d7        eax_52:3.b = replay_widget->widget_flags:3.b
+004099df        if ((eax_52.b & 0x20) != 0)
+004099e1        eax_52.b &= 0xdf
+004099e3        replay_widget->widget_flags.b = eax_52.b
+004099e3        replay_widget->widget_flags:1.b = eax_52:1.b
+004099e3        replay_widget->widget_flags:2.b = eax_52:2.b
+004099e3        replay_widget->widget_flags:3.b = eax_52:3.b
 004099eb        destroy_galaxy(galaxy)
 004099fc        galaxy->level_progress_base->level_mode_arg = galaxy->selected_index
 004099ff        struct SubgameRuntime* level_progress_base_1 = galaxy->level_progress_base

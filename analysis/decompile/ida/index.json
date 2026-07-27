@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 730,
-  "function_count": 730,
+  "selected_count": 731,
+  "function_count": 731,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -809,6 +809,13 @@
       "address": "0x409b00",
       "name": "draw_galaxy_line",
       "artifact": "analysis/decompile/ida/functions/00409b00-draw_galaxy_line.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "update_galaxy_route_record",
+      "address": "0x409bd0",
+      "name": "update_galaxy_route_record",
+      "artifact": "analysis/decompile/ida/functions/00409bd0-update_galaxy_route_record.c",
       "removed_stale_artifacts": []
     },
     {

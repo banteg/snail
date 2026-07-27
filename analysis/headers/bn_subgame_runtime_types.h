@@ -428,10 +428,12 @@ typedef struct GalaxyPoint {
     float y;
 } GalaxyPoint;
 
-typedef struct GalaxyRouteSlot {
+typedef struct GalaxyStar {
     int32_t unknown_000;
     GalaxyRouteRecord record;
-} GalaxyRouteSlot;
+} GalaxyStar;
+
+typedef GalaxyStar GalaxyRouteSlot;
 
 typedef struct GalaxyRouteNameRecord {
     char name[0x80];
@@ -451,7 +453,7 @@ typedef struct Galaxy {
     int32_t route_mode;
     int32_t route_state;
     int32_t record_count;
-    GalaxyRouteSlot route_slots[101];
+    GalaxyStar route_slots[101];
     GalaxyRouteNameRecord route_names[10];
     SubgameRuntime* level_progress_base;
     FrontendWidget* exit_or_back_widget;

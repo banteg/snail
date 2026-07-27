@@ -14,11 +14,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 578,
-    "unverified_entries": 207,
-    "verified_android_symbols": 572,
+    "verified_entries": 579,
+    "unverified_entries": 206,
+    "verified_android_symbols": 573,
     "verified_ios_symbols": 462,
-    "available_android_mappings": 572,
+    "available_android_mappings": 573,
     "available_ios_mappings": 426
   },
   "entries": [
@@ -5803,45 +5803,29 @@
       "address": "0x409bd0",
       "windows_name": "update_galaxy_route_record",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRGalaxyStar::AI()",
-          "score": 0.71,
-          "name_score": 0.6,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRSpriteManager::GetTextureRef(int)",
-          "score": 0.6333,
-          "name_score": 0.3889,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGoldy::RessurectInit(int)",
-          "score": 0.6304,
-          "name_score": 0.384,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "G0RemoveTexture(cRTexture*)",
-          "score": 0.625,
-          "name_score": 0.375,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RTextCopy(char*, char*)",
-          "score": 0.625,
-          "name_score": 0.375,
-          "size_score": 1.0
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cRGalaxyStar::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
+        {
+          "symbol": "cRTutorial::AI()",
+          "score": 0.67,
+          "name_score": 0.45,
+          "size_score": 1.0
+        },
         {
           "symbol": "cRSound::PlayVolume(int, float)",
           "score": 0.6545,
           "name_score": 0.4242,
           "size_score": 1.0
+        },
+        {
+          "symbol": "cRGalaxy::AI()",
+          "score": 0.6064,
+          "name_score": 1.0,
+          "size_score": 0.0159
         },
         {
           "symbol": "OFDelegate::isValid() const",
@@ -5854,18 +5838,6 @@
           "score": 0.5939,
           "name_score": 0.4065,
           "size_score": 0.875
-        },
-        {
-          "symbol": "OFBinaryMemorySink::getDataBuffer() const",
-          "score": 0.5833,
-          "name_score": 0.3889,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRSound::Play(int)",
-          "score": 0.58,
-          "name_score": 0.3,
-          "size_score": 1.0
         }
       ]
     },

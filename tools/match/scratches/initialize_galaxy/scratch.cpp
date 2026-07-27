@@ -117,7 +117,7 @@ void Galaxy::initialize_galaxy()
             clear_cursor[-1] = 0;
             clear_cursor[0] = 0;
             ++index;
-            clear_cursor += sizeof(GalaxyRouteSlot) / sizeof(int);
+            clear_cursor += sizeof(GalaxyStar) / sizeof(int);
         } while (index < record_count);
     }
 

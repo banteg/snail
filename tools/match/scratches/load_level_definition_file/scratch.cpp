@@ -71,7 +71,7 @@ void SubTracks::load_level_definition_file(char* filename)
         if (cursor != 0) {
             cursor = find_case_insensitive_substring("e", cursor) + 1;
             int galaxy_route_offset =
-                sizeof(GalaxyRouteSlot) * parse_next_signed_int(&cursor);
+                sizeof(GalaxyStar) * parse_next_signed_int(&cursor);
             sprintf(
                 g_game->subgame.galaxy.route_slots[0].record.detail_text
                     + galaxy_route_offset,

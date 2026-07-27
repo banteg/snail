@@ -453,6 +453,14 @@
       "notes": "The Android body independently preserves the same cRGalaxy receiver, normalized segment, perpendicular half-width expansion, and long OSDPrintUV call. Its explicit void return agrees with every Windows caller discarding EAX; the natural Windows void transcription remains exact at 67/67 instructions. No matching iOS export is present."
     },
     {
+      "address": "0x409bd0",
+      "windows_name": "update_galaxy_route_record",
+      "android_symbol": "cRGalaxyStar::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact 6-instruction Windows helper and Android cRGalaxyStar::AI both update child +0x18 by (child +0x1c - child +0x18) * 0.1. Their Galaxy callers traverse the child bank at the same 0x2a0 stride. iOS has no standalone cRGalaxyStar export, but cRGalaxy::AI inlines the identical expression over the same stride, and its position, tint, target, and text accesses preserve the same child-relative layout."
+    },
+    {
       "address": "0x409bf0",
       "windows_name": "close_galaxy_route",
       "ios_symbol": "cRGalaxy::BoxOff()",

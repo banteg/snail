@@ -38,7 +38,7 @@ selected-level/replay launch handoff back to the subgame state machine.
 
 - `RuntimeConfig::highest_galaxy_route_index` at `+0xa0` is the inclusive
   highest galaxy route index shared with subgame setup and challenge setup.
-- `GalaxyRouteSlot` starts at `this +0x10` and owns a `GalaxyRouteRecord` at
+- `GalaxyStar` starts at `this +0x10` and owns a `GalaxyRouteRecord` at
   slot `+0x04`. The native icon loop instead keeps the controller-relative
   base `this + route_index * 0x2a0` and reads fields at
   `+0x1c/+0x20/+0x24/+0x28/+0x2c`; the explicitly non-owning
@@ -191,7 +191,7 @@ with all 52 operands clean.
 
 The live database now records `int32_t __thiscall update_galaxy(Galaxy*)` and
 resolves its two former anonymous helpers as
-`update_galaxy_route_record(GalaxyRouteSlot*)` and the true Galaxy-member
+`update_galaxy_route_record(GalaxyStar*)` and the true Galaxy-member
 `draw_galaxy_line`. The focused export also retains typed destroy/open/close
 transitions and the enclosing subgame backlink. Honest matching is unchanged
 at 71.01%, 569/566 candidate/target instructions, prefix 48, and 52 clean
@@ -202,16 +202,16 @@ operands.
 The first route-update pass borrows one element from the Galaxy-owned
 `route_slots[101]` bank. Native seeds EBX with `Galaxy +0x10`, calls
 `update_galaxy_route_record`, and advances EBX by exactly `0x2a0`, the proven
-`sizeof(GalaxyRouteSlot)`. Binary Ninja had promoted that induction value to
-`GalaxyRouteSlot (*)[101]`, which misleadingly presented the borrow as a
+`sizeof(GalaxyStar)`. Binary Ninja had promoted that induction value to
+`GalaxyStar (*)[101]`, which misleadingly presented the borrow as a
 pointer to the complete owner and rendered its increment through the whole
 array type.
 
 The exact SSA identity (`RegisterVariableSourceType`, index `40`, storage
-`69`) now replays as a borrowed `GalaxyRouteSlot* route_slot_cursor`. The
+`69`) now replays as a borrowed `GalaxyStar* route_slot_cursor`. The
 tracked decompile consequently shows the one-slot update and
 `route_slot_cursor = &route_slot_cursor[1]`. IDA independently retains the
-same `GalaxyRouteSlot*` loop cursor, so no competing aggregate owner is
+same `GalaxyStar*` loop cursor, so no competing aggregate owner is
 needed.
 
 The later hover scan carries the interior
@@ -231,10 +231,23 @@ calls. That ABI was recovered in the 2026-07-12 pass; the stale checked-in
 Binary Ninja text had still omitted the receiver even though the live
 prototype and matcher source were current.
 
-The focused replay fails closed unless `GalaxyRouteSlot == 0x2a0` and the
+The focused replay fails closed unless `GalaxyStar == 0x2a0` and the
 complete `Galaxy == 0x10fa8`; it also removes the rejected reset-loop
 experiment before applying the two useful borrows. A second run reports all
 three operations already current. This is an analysis-only ownership
 clarification. Focused matching remains honestly unchanged at 71.01%,
 569/566 instructions, prefix 48/566, with 52 clean and no unresolved or
 mismatched masked operands.
+
+## 2026-07-28 mobile GalaxyStar ownership
+
+Android names each `0x2a0` child as `cRGalaxyStar` and calls its standalone
+`AI()` method from `cRGalaxy::AI()`. iOS inlines the same method, but preserves
+the identical stride and first-field layout. Together with the exact Windows
+helper at `0x409bd0`, this establishes the route bank as 101 owned
+`GalaxyStar` children rather than anonymous route slots.
+
+The matcher, Binary Ninja replay, and IDA replay now use `GalaxyStar` as the
+primary owner while retaining `GalaxyRouteSlot` only as a compatibility
+typedef. Matching remains honestly unchanged at 71.01%; this slice recovers
+class identity and cross-port provenance, not a compiler-shape trick.

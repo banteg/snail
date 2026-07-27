@@ -73,7 +73,7 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert "void __thiscall open_galaxy_route(" in runtime_sync
     assert "void __thiscall galaxy_border_bound(" in runtime_sync
     assert "GALAXY_ROUTE_CURSOR_EXPECTED_SIZES" in runtime_sync
-    assert '"GalaxyRouteSlot": 0x2A0' in runtime_sync
+    assert '"GalaxyStar": 0x2A0' in runtime_sync
     assert '"Galaxy": 0x10FA8' in runtime_sync
     assert "GALAXY_ROUTE_CURSOR_USER_VAR_UPDATES" in runtime_sync
     assert (
@@ -82,7 +82,7 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
         "        40,\n"
         "        69,\n"
         '        "route_slot_cursor",\n'
-        '        "GalaxyRouteSlot*",'
+        '        "GalaxyStar*",'
     ) in runtime_sync
     assert "remove_user_var_updates" in runtime_sync
     assert "REJECTED_GALAXY_HIGHLIGHT_RESET_CURSOR_REMOVALS" in runtime_sync
@@ -106,11 +106,16 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert "if args.galaxy_route_cursor_only:" in runtime_sync
     assert "require_galaxy_route_cursor_dependencies" in runtime_sync
     assert (
-        '"struct GalaxyRouteSlot* route_slot_cursor = &galaxy->route_slots"'
+        '"struct GalaxyStar* route_slot_cursor = &galaxy->route_slots"'
         in health_checks
     )
     assert (
         '"update_galaxy_route_record(route_slot_cursor)"' in health_checks
+    )
+    assert '"star->record.route_tint_alpha"' in health_checks
+    assert (
+        '"void __thiscall update_galaxy_route_record(GalaxyStar *star)"'
+        in health_checks
     )
     assert (
         '"float* highlight_target_cursor = '
@@ -120,7 +125,7 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
         '"int32_t* edi_2 = '
         '&galaxy->route_slots[1].record.highlight_target"'
     ) in health_checks
-    assert '"struct GalaxyRouteSlot (*"' in health_checks
+    assert '"struct GalaxyStar (*"' in health_checks
 
     for declaration in (
         "GalaxyRouteNameRecord* __thiscall initialize_galaxy_route_name_record(",
@@ -129,7 +134,7 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
         "void __thiscall initialize_galaxy(Galaxy* galaxy);",
         "int32_t __thiscall update_galaxy(Galaxy* galaxy);",
         "void __thiscall draw_galaxy_line(Galaxy* galaxy,",
-        "void __thiscall update_galaxy_route_record(GalaxyRouteSlot* slot);",
+        "void __thiscall update_galaxy_route_record(GalaxyStar* star);",
         "void __thiscall close_galaxy_route(Galaxy* galaxy);",
         "void __thiscall open_galaxy_route(Galaxy* galaxy,",
         "void __thiscall galaxy_border_bound(Galaxy* galaxy,",
@@ -141,6 +146,10 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert "GALAXY_ROUTE_POINT_OWNER_ADDRESS = 0x4A1D14" in ida_runtime_sync
     assert "GALAXY_ROUTE_POINT_OWNER_SIZE = 0x328" in ida_runtime_sync
     assert "GALAXY_ROUTE_POINT_NEXT_OWNER_ADDRESS = 0x4A203C" in ida_runtime_sync
+    assert "GALAXY_OWNER_EXPECTED_SIZES" in ida_runtime_sync
+    assert '"GalaxyStar": 0x2A0' in ida_runtime_sync
+    assert '"Galaxy": 0x10FA8' in ida_runtime_sync
+    assert '"GalaxyStar": _named_struct_size("GalaxyStar")' in ida_runtime_sync
     for stale_address, stale_name in (
         ("0x4A1D18", "g_galaxy_initial_map_y_bits"),
         ("0x4A1D1C", "g_galaxy_missing_level_map_x_table"),
@@ -157,7 +166,7 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
 
     for header in analysis_headers:
         assert "typedef struct GalaxyPoint" in header
-        assert "GalaxyRouteSlot route_slots[101]" in header
+        assert "GalaxyStar route_slots[101]" in header
         assert "GalaxyRouteNameRecord route_names[10]" in header
 
     assert "extern GalaxyPoint g_galaxy_group_points[10];" in matcher_header
@@ -191,6 +200,12 @@ def test_mobile_galaxy_and_backdrop_evidence_preserves_windows_abi_boundaries() 
         == "cRGalaxy::Line(int, float, float, float, float, float, tColour&)"
     )
     assert "ios_symbol" not in crosswalk_by_address["0x409b00"]
+    assert (
+        crosswalk_by_address["0x409bd0"]["android_symbol"]
+        == "cRGalaxyStar::AI()"
+    )
+    assert "ios_symbol" not in crosswalk_by_address["0x409bd0"]
+    assert "same 0x2a0 stride" in crosswalk_by_address["0x409bd0"]["notes"]
 
     for address, alias, symbol in (
         ("0x410d50", "cRBackdrop_Change", "cRBackdrop::Change(cRLandscape*, bool)"),
@@ -214,6 +229,8 @@ def test_mobile_galaxy_and_backdrop_evidence_preserves_windows_abi_boundaries() 
     galaxy_header = (
         repo_root / "tools/match/include/galaxy_route_types.h"
     ).read_text(encoding="utf-8")
+    assert "class GalaxyStar" in galaxy_header
+    assert "typedef GalaxyStar GalaxyRouteSlot;" in galaxy_header
     backdrop_header = (repo_root / "tools/match/include/backdrop.h").read_text(
         encoding="utf-8"
     )

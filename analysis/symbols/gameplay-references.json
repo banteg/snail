@@ -54,9 +54,10 @@
       "name": "update_galaxy_route_record",
       "kind": "function",
       "aliases": [
-        "sub_409bd0"
+        "sub_409bd0",
+        "cRGalaxyStar_AI"
       ],
-      "description": "Thiscall helper on a 0x2a0-byte GalaxyRouteSlot that interpolates route_tint_alpha +0x18 toward highlight_target +0x1c by 0.1 each tick."
+      "description": "Exact cRGalaxyStar::AI thiscall helper on a 0x2a0-byte GalaxyStar child that interpolates route_tint_alpha +0x18 toward highlight_target +0x1c by 0.1 each tick."
     },
     {
       "address": "0x410730",

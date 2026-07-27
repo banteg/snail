@@ -46,7 +46,7 @@ int Galaxy::update_galaxy()
 
         int tick_index = 0;
         if (g_runtime_config.highest_galaxy_route_index >= 0) {
-            GalaxyRouteSlot* tick_record = route_slots;
+            GalaxyStar* tick_record = route_slots;
             do {
                 tick_record->update_galaxy_route_record();
                 ++tick_index;
@@ -60,7 +60,7 @@ int Galaxy::update_galaxy()
             color.store_color4f(1.0f, 1.0f, 1.0f, 0.999000013f);
             GalaxyRouteIndexedSlotView* selected_record =
                 (GalaxyRouteIndexedSlotView*)((char*)this +
-                                              selected_index * sizeof(GalaxyRouteSlot));
+                                              selected_index * sizeof(GalaxyStar));
             FrontendWidget* card = bounds_frame_widget;
 
             if (card->frame_x > selected_record->map_x) {
@@ -76,7 +76,7 @@ int Galaxy::update_galaxy()
         int route_index = 1;
         if (g_runtime_config.highest_galaxy_route_index >= 1) {
             do {
-                int record_offset = route_index * sizeof(GalaxyRouteSlot);
+                int record_offset = route_index * sizeof(GalaxyStar);
                 GalaxyRouteIndexedSlotView* record =
                     (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);
                 color = route_names[record->route_name_index].color;
@@ -115,7 +115,7 @@ int Galaxy::update_galaxy()
         color.a = 0.200000003f;
         int line_index = 1;
         if (g_runtime_config.highest_galaxy_route_index > 1) {
-            GalaxyRouteSlot* next_record = &route_slots[2];
+            GalaxyStar* next_record = &route_slots[2];
             do {
                 if (line_index < selected_index) {
                     color.a = 0.800000012f;
@@ -190,7 +190,7 @@ int Galaxy::update_galaxy()
         }
 
         if (g_runtime_config.highest_galaxy_route_index >= 1) {
-            GalaxyRouteSlot* probe_slot = &route_slots[1];
+            GalaxyStar* probe_slot = &route_slots[1];
             do {
                 Vector3 probe = subtract_screen_xy(
                     *(Vector3*)&probe_slot->record.map_x, mouse_x, mouse_y);

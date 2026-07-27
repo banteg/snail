@@ -66,7 +66,7 @@ Residuals:
 2026-07-12 Galaxy and landscape ownership closure:
 
 - The root-relative `+0x12d4638` gate is `SubgameRuntime::galaxy.active`.
-  Each parsed `ArcadeN` ordinal selects one owned `GalaxyRouteSlot` at the
+  Each parsed `ArcadeN` ordinal selects one owned `GalaxyStar` at the
   native `0x2a0` stride; the loader writes the level name to
   `record.detail_text` and `GalaxyText:` to `record.description_text`.
 - The native compiler retains the selected route as a byte offset from slot 0

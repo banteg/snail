@@ -14672,12 +14672,28 @@
       "name": "bn_galaxy_route_tick_owner",
       "artifact": "analysis/decompile/binja/functions/00409bd0-update_galaxy_route_record.c",
       "required_substrings": [
-        "slot->record.route_tint_alpha",
-        "slot->record.highlight_target"
+        "star->record.route_tint_alpha",
+        "star->record.highlight_target"
       ],
       "forbidden_substrings": [
+        "GalaxyRouteSlot",
         "sub_409bd0",
         "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_galaxy_star_tick_owner",
+      "artifact": "analysis/decompile/ida/functions/00409bd0-update_galaxy_route_record.c",
+      "required_substrings": [
+        "void __thiscall update_galaxy_route_record(GalaxyStar *star)",
+        "star->record.route_tint_alpha",
+        "star->record.highlight_target"
+      ],
+      "forbidden_substrings": [
+        "GalaxyRouteSlot",
+        "sub_409BD0",
+        "_DWORD *this",
         "unimplemented"
       ]
     },
@@ -14779,7 +14795,7 @@
       "artifact": "analysis/decompile/binja/functions/004092f0-update_galaxy.c",
       "required_substrings": [
         "hide_gameplay_scores(galaxy->level_progress_base)",
-        "struct GalaxyRouteSlot* route_slot_cursor = &galaxy->route_slots",
+        "struct GalaxyStar* route_slot_cursor = &galaxy->route_slots",
         "update_galaxy_route_record(route_slot_cursor)",
         "route_slot_cursor = &route_slot_cursor[1]",
         "float* highlight_target_cursor = &galaxy->route_slots[1].record.highlight_target",
@@ -14790,7 +14806,7 @@
         "open_galaxy_route(galaxy"
       ],
       "forbidden_substrings": [
-        "struct GalaxyRouteSlot (*",
+        "struct GalaxyStar (*",
         "slot = &(*slot)[1]",
         "int32_t* edi_2 = &galaxy->route_slots[1].record.highlight_target",
         "sub_409bd0",
@@ -14803,7 +14819,7 @@
       "artifact": "analysis/decompile/ida/functions/004092f0-update_galaxy.c",
       "required_substrings": [
         "int32_t __thiscall update_galaxy(Galaxy *galaxy)",
-        "GalaxyRouteSlot *route_slots;",
+        "GalaxyStar *route_slots;",
         "galaxy->level_progress_base",
         "update_galaxy_route_record(route_slots)",
         "v26 = &galaxy->route_slots[1].record.highlight_target;",

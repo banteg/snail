@@ -11,6 +11,7 @@ from _narrow_sync import (
     apply_data_var_updates,
     apply_symbol_updates,
     apply_struct_and_proto_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_header_type_equivalence,
     current_struct_size,
@@ -44,7 +45,7 @@ GALAXY_ROUTE_RECORD_FIELD_UPDATES = (
     ("0x9c", "description_text", "char[0x200]"),
 )
 
-GALAXY_ROUTE_SLOT_FIELD_UPDATES = (
+GALAXY_STAR_FIELD_UPDATES = (
     ("0x00", "unknown_000", "int32_t"),
     ("0x04", "record", "GalaxyRouteRecord"),
 )
@@ -63,7 +64,7 @@ GALAXY_FIELD_UPDATES = (
     ("0x04", "route_mode", "int32_t"),
     ("0x08", "route_state", "int32_t"),
     ("0x0c", "record_count", "int32_t"),
-    ("0x10", "route_slots", "GalaxyRouteSlot[101]"),
+    ("0x10", "route_slots", "GalaxyStar[101]"),
     ("0x10930", "route_names", "GalaxyRouteNameRecord[10]"),
     ("0x10f70", "level_progress_base", "SubgameRuntime*"),
     ("0x10f74", "exit_or_back_widget", "FrontendWidget*"),
@@ -140,7 +141,7 @@ SALT_STARTUP_CURSOR_EXPECTED_SIZES = {
 }
 
 GALAXY_ROUTE_CURSOR_EXPECTED_SIZES = {
-    "GalaxyRouteSlot": 0x2A0,
+    "GalaxyStar": 0x2A0,
     "Galaxy": 0x10FA8,
 }
 
@@ -230,8 +231,8 @@ SALT_STARTUP_CURSOR_USER_VAR_UPDATES = (
     ),
 )
 
-# update_galaxy's first route pass borrows one GalaxyRouteSlot at a time from
-# Galaxy::route_slots. Native advances EBX by exactly sizeof(GalaxyRouteSlot);
+# update_galaxy's first route pass borrows one GalaxyStar at a time from
+# Galaxy::route_slots. Native advances EBX by exactly sizeof(GalaxyStar);
 # without this bounded lifetime Binary Ninja promotes the borrow to a pointer
 # to the complete 101-slot owner and renders a misleading owner-sized step.
 #
@@ -240,7 +241,7 @@ SALT_STARTUP_CURSOR_USER_VAR_UPDATES = (
 # float borrow because bit-pattern stores otherwise degrade it to int32_t*
 # after reanalysis. The earlier reset pass is deliberately left automatic:
 # annotating its interior address suppresses Binary Ninja's more useful
-# containing GalaxyRouteSlot recovery and expands each dword store into bytes.
+# containing GalaxyStar recovery and expands each dword store into bytes.
 GALAXY_ROUTE_CURSOR_USER_VAR_UPDATES = (
     (
         "update_galaxy",
@@ -248,7 +249,7 @@ GALAXY_ROUTE_CURSOR_USER_VAR_UPDATES = (
         40,
         69,
         "route_slot_cursor",
-        "GalaxyRouteSlot*",
+        "GalaxyStar*",
     ),
     (
         "update_galaxy",
@@ -431,7 +432,7 @@ PROTO_UPDATES = (
     ),
     (
         "update_galaxy_route_record",
-        "void __thiscall update_galaxy_route_record(GalaxyRouteSlot* slot)",
+        "void __thiscall update_galaxy_route_record(GalaxyStar* star)",
     ),
     (
         "close_galaxy_route",
@@ -716,7 +717,14 @@ def main() -> int:
             operations=operations,
         )
 
+    type_rename_operations = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=(("GalaxyRouteSlot", "GalaxyStar"),),
+    )
+
     operations: list[dict[str, object]] = [
+        *type_rename_operations,
         types_declare_if_missing(
             REPO_ROOT,
             target=args.target,
@@ -747,7 +755,7 @@ def main() -> int:
                 "ThanksScreen",
                 "GalaxyPoint",
                 "GalaxyRouteRecord",
-                "GalaxyRouteSlot",
+                "GalaxyStar",
                 "GalaxyRouteNameRecord",
                 "Galaxy",
                 "Vapour",
@@ -966,7 +974,7 @@ def main() -> int:
                 ("SubgameRuntime", subgame_updates),
                 ("GalaxyPoint", GALAXY_POINT_FIELD_UPDATES),
                 ("GalaxyRouteRecord", GALAXY_ROUTE_RECORD_FIELD_UPDATES),
-                ("GalaxyRouteSlot", GALAXY_ROUTE_SLOT_FIELD_UPDATES),
+                ("GalaxyStar", GALAXY_STAR_FIELD_UPDATES),
                 ("GalaxyRouteNameRecord", GALAXY_ROUTE_NAME_FIELD_UPDATES),
                 ("Galaxy", GALAXY_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),

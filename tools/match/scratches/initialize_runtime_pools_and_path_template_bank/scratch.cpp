@@ -213,7 +213,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         &RuntimeSlot::initialize_track_parcel_runtime);
     initialize_array_with_constructor(
         (RuntimeSlot*)galaxy.route_slots,
-        sizeof(GalaxyRouteSlot),
+        sizeof(GalaxyStar),
         sizeof(galaxy.route_slots) / sizeof(galaxy.route_slots[0]),
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(

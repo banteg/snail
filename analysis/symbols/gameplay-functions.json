@@ -702,7 +702,10 @@
     {
       "address": "0x409bd0",
       "name": "update_galaxy_route_record",
-      "description": "Interpolates one GalaxyRouteSlot's tint alpha at +0x18 toward its highlight target at +0x1c by 0.1 while the Star Map is active."
+      "aliases": [
+        "cRGalaxyStar_AI"
+      ],
+      "description": "Exact Windows `cRGalaxyStar::AI`: interpolates one 0x2a0-byte GalaxyStar child's tint alpha at +0x18 toward its highlight target at +0x1c by 0.1. Android retains the named member and identical child-relative expression; iOS inlines it inside `cRGalaxy::AI()` over the same stride."
     },
     {
       "address": "0x409bf0",
@@ -3543,7 +3546,7 @@
     {
       "address": "0x447480",
       "name": "load_level_definition_file",
-      "description": "Parses one Levels/*.txt definition into the owning SubTracks instance, including its SubSegments, display metadata, speed, hazard frequencies, landscape, parcel, and texture fields. Arcade definitions also populate the selected GalaxyRouteSlot's detail and description text in the root-owned Galaxy controller. Symbol-preserving iOS builds name the corresponding void overload `cRSubTracks::Init(char*)`; all Windows callers discard the path-dependent incidental value left in EAX."
+      "description": "Parses one Levels/*.txt definition into the owning SubTracks instance, including its SubSegments, display metadata, speed, hazard frequencies, landscape, parcel, and texture fields. Arcade definitions also populate the selected GalaxyStar child's detail and description text in the root-owned Galaxy controller. Symbol-preserving iOS builds name the corresponding void overload `cRSubTracks::Init(char*)`; all Windows callers discard the path-dependent incidental value left in EAX."
     },
     {
       "address": "0x448060",

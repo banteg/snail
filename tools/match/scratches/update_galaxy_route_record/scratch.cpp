@@ -2,7 +2,7 @@
 
 #include "galaxy_route_types.h"
 
-void GalaxyRouteSlot::update_galaxy_route_record()
+void GalaxyStar::update_galaxy_route_record()
 {
     record.route_tint_alpha =
         (record.highlight_target - record.route_tint_alpha) * 0.1f +

@@ -6,7 +6,7 @@
 int32_t __thiscall update_galaxy(Galaxy *galaxy)
 {
   int32_t v2; // edi
-  GalaxyRouteSlot *route_slots; // ebx
+  GalaxyStar *route_slots; // ebx
   FrontendWidget *bounds_frame_widget; // edx
   float *v5; // ecx
   double v6; // st7
@@ -48,8 +48,8 @@ int32_t __thiscall update_galaxy(Galaxy *galaxy)
   float ya; // [esp+4h] [ebp-78h]
   float yb; // [esp+4h] [ebp-78h]
   tColour *p_color; // [esp+14h] [ebp-68h]
-  float v46; // [esp+18h] [ebp-64h]
-  float v47; // [esp+20h] [ebp-5Ch]
+  float x0; // [esp+18h] [ebp-64h]
+  float x1; // [esp+20h] [ebp-5Ch]
   float v48; // [esp+44h] [ebp-38h]
   float v49; // [esp+48h] [ebp-34h]
   Vec3 vector; // [esp+50h] [ebp-2Ch] BYREF
@@ -57,7 +57,7 @@ int32_t __thiscall update_galaxy(Galaxy *galaxy)
   Color4f color; // [esp+6Ch] [ebp-10h] BYREF
 
   noop_this_constructor(&color);
-  hide_gameplay_scores((FrontendWidget **)galaxy->level_progress_base);
+  hide_gameplay_scores(galaxy->level_progress_base);
   v2 = 0;
   if ( g_runtime_config.highest_galaxy_route_index >= 0 )
   {
@@ -77,16 +77,16 @@ int32_t __thiscall update_galaxy(Galaxy *galaxy)
     v5 = (float *)(&galaxy->active + 672 * galaxy->selected_index);
     if ( bounds_frame_widget->authored_left <= (double)v5[7] )
     {
-      v47 = bounds_frame_widget->authored_width + bounds_frame_widget->authored_left + 6.0;
+      x1 = bounds_frame_widget->authored_width + bounds_frame_widget->authored_left + 6.0;
       v6 = v5[7] - 16.0;
     }
     else
     {
-      v47 = bounds_frame_widget->authored_left - 6.0;
+      x1 = bounds_frame_widget->authored_left - 6.0;
       v6 = v5[7] + 16.0;
     }
-    v46 = v6;
-    draw_galaxy_line(galaxy, 153, v46, v5[8], v47, v5[8], 4.0, (tColour *)&color);
+    x0 = v6;
+    draw_galaxy_line(galaxy, 153, x0, v5[8], x1, v5[8], 4.0, (tColour *)&color);
   }
   for ( i = 1; i <= g_runtime_config.highest_galaxy_route_index; ++i )
   {
@@ -95,7 +95,7 @@ int32_t __thiscall update_galaxy(Galaxy *galaxy)
     color.g = 1.0;
     color.b = 1.0;
     color.a = 0.99000001;
-    if ( i )
+    if ( i != 0 )
     {
       if ( galaxy->route_mode == 1 && i > galaxy->selected_index )
         goto LABEL_17;
@@ -231,7 +231,7 @@ LABEL_17:
   {
     galaxy->route_slots[galaxy->selected_index].record.highlight_target = 1.0;
   }
-  else if ( !galaxy->hover_state )
+  else if ( galaxy->hover_state == 0 )
   {
     if ( galaxy->route_state == 1 )
     {
@@ -244,7 +244,7 @@ LABEL_17:
       vector.z = map_z;
       v51.g = v25;
       vector.y = v51.g;
-      if ( normalize_vector(&vector) < 17.0 && !galaxy->hover_state )
+      if ( normalize_vector(&vector) < 17.0 && galaxy->hover_state == 0 )
       {
         v15 = galaxy->selected_index;
         galaxy->hover_state = 2;
@@ -264,7 +264,7 @@ LABEL_17:
         vector.x = v51.r;
         v51.g = v28;
         vector.y = v51.g;
-        if ( normalize_vector(&vector) >= 17.0 || galaxy->hover_state )
+        if ( normalize_vector(&vector) >= 17.0 || galaxy->hover_state != 0 )
         {
           if ( galaxy->route_state == 1 && v14 == galaxy->selected_index )
             *v26 = 1.0;
@@ -283,7 +283,7 @@ LABEL_17:
       while ( v14 <= g_runtime_config.highest_galaxy_route_index );
     }
   }
-  if ( g_game_base->border_manager.delayed_widget_active )
+  if ( g_game_base->border_manager.delayed_widget_active != 0 )
     return 0;
   exit_or_back_widget = galaxy->exit_or_back_widget;
   widget_flags = exit_or_back_widget->widget_flags;
@@ -305,7 +305,7 @@ LABEL_17:
           galaxy->level_progress_base->level_mode,
           galaxy->level_progress_base->level_mode_arg);
         level_progress_base = galaxy->level_progress_base;
-        if ( !level_progress_base->level_mode && level_progress_base->subgame_rebuild_selector == 1 )
+        if ( level_progress_base->level_mode == 0 && level_progress_base->subgame_rebuild_selector == 1 )
           return 2;
         return 1;
       }
@@ -326,14 +326,14 @@ LABEL_17:
       galaxy->level_progress_base->selected_level_record = &galaxy->level_progress_base->sub_high_score.time_trial_route_records[galaxy->selected_index];
       return 1;
     }
-    if ( !g_game_base->fade.state && galaxy->route_mode != 1 )
+    if ( g_game_base->fade.state == 0 && galaxy->route_mode != 1 )
     {
       hover_state = galaxy->hover_state;
       if ( hover_state != 1 )
       {
         if ( hover_state != 2 || (g_game_base->players[0].game_input->input.pressed_buttons & 0x4000) == 0 )
         {
-          if ( hover_state
+          if ( hover_state != 0
             || (g_game_base->players[0].game_input->input.pressed_buttons & 0x4000) == 0
             || v32 != 1
             || g_runtime_config.highest_galaxy_route_index <= 1 )
@@ -350,10 +350,10 @@ LABEL_17:
             close_galaxy_route(galaxy);
             open_galaxy_route(galaxy, v15);
 LABEL_85:
-            play_sound_effect(8);
+            play_sound_effect(&g_sound_effect_manager, 8);
             return 0;
           }
-          if ( !v32 )
+          if ( v32 == 0 )
           {
             open_galaxy_route(galaxy, v15);
             goto LABEL_85;

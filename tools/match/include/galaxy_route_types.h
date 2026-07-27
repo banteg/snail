@@ -53,7 +53,10 @@ public:
 typedef char GalaxyRouteRecord_must_be_0x29c[
     (sizeof(GalaxyRouteRecord) == 0x29c) ? 1 : -1];
 
-class GalaxyRouteSlot {
+// Android preserves this exact child owner as cRGalaxyStar. Its AI member
+// advances the +0x18 tint toward the +0x1c target, and both mobile Galaxy
+// owners traverse the children at the same 0x2a0 stride as Windows.
+class GalaxyStar {
 public:
     void update_galaxy_route_record(); // @ 0x409bd0
 
@@ -61,8 +64,11 @@ public:
     GalaxyRouteRecord record; // +0x04
 };
 
-typedef char GalaxyRouteSlot_must_be_0x2a0[
-    (sizeof(GalaxyRouteSlot) == 0x2a0) ? 1 : -1];
+typedef char GalaxyStar_must_be_0x2a0[
+    (sizeof(GalaxyStar) == 0x2a0) ? 1 : -1];
+
+// Compatibility vocabulary for older notes and out-of-tree analysis scripts.
+typedef GalaxyStar GalaxyRouteSlot;
 
 // Non-owning view used when native keeps `this + index * 0x2a0` as its base
 // instead of materializing route_slots +0x10. Storage remains route_slots[].
@@ -131,7 +137,7 @@ public:
     int record_count; // +0x0c
     // Constructor-built slot array. Each slot has a four-byte tick prefix and
     // a 0x29c-byte authored/display record.
-    GalaxyRouteSlot route_slots[101]; // +0x10, ends at +0x10930
+    GalaxyStar route_slots[101]; // +0x10, ends at +0x10930
     GalaxyRouteNameRecord route_names[10]; // +0x10930
     SubgameRuntime* level_progress_base; // +0x10f70, borrowed enclosing subgame
     union {

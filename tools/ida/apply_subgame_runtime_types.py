@@ -112,6 +112,11 @@ BANNER_OWNER_EXPECTED_SIZES = {
     "BannerInitStrideView": 0x3CD6F8,
 }
 
+GALAXY_OWNER_EXPECTED_SIZES = {
+    "GalaxyStar": 0x2A0,
+    "Galaxy": 0x10FA8,
+}
+
 PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES = {
     "PresentationAnimationSlot": 0x80,
     "PresentationAnimationObjectStrideCursor": 0x80,
@@ -279,7 +284,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "update_galaxy_route_record",
-        "void __thiscall update_galaxy_route_record(GalaxyRouteSlot* slot);",
+        "void __thiscall update_galaxy_route_record(GalaxyStar* star);",
     ),
     (
         "close_galaxy_route",
@@ -1879,6 +1884,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
     banner_owner_sizes = {
         name: _named_struct_size(name) for name in BANNER_OWNER_EXPECTED_SIZES
     }
+    galaxy_owner_sizes = {
+        name: _named_struct_size(name) for name in GALAXY_OWNER_EXPECTED_SIZES
+    }
     presentation_animation_cursor_sizes = {
         name: _named_struct_size(name)
         for name in PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES
@@ -1924,6 +1932,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "selector": name,
             "reason": "owner_size_mismatch",
             "expected": expected_size,
+            "observed": galaxy_owner_sizes[name],
+        }
+        for name, expected_size in GALAXY_OWNER_EXPECTED_SIZES.items()
+        if galaxy_owner_sizes[name] != expected_size
+    )
+    size_failures.extend(
+        {
+            "selector": name,
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
             "observed": presentation_animation_cursor_sizes[name],
         }
         for name, expected_size in (
@@ -1962,6 +1980,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "parcel_owner_sizes": parcel_owner_sizes,
                     "help_owner_size": help_owner_size,
                     "banner_owner_sizes": banner_owner_sizes,
+                    "galaxy_owner_sizes": galaxy_owner_sizes,
                     "presentation_animation_cursor_sizes": (
                         presentation_animation_cursor_sizes
                     ),
@@ -2364,6 +2383,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "contact_header": str(contact_header_path),
                 "parcel_owner_sizes": parcel_owner_sizes,
                 "banner_owner_sizes": banner_owner_sizes,
+                "galaxy_owner_sizes": galaxy_owner_sizes,
                 "presentation_animation_cursor_sizes": (
                     presentation_animation_cursor_sizes
                 ),
@@ -2391,6 +2411,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "GUI": _named_struct_size("GUI"),
                     "Help": _named_struct_size("Help"),
                     "ThanksScreen": _named_struct_size("ThanksScreen"),
+                    "GalaxyStar": _named_struct_size("GalaxyStar"),
                     "Galaxy": _named_struct_size("Galaxy"),
                     "Parcel": _named_struct_size("Parcel"),
                     "ParcelManager": _named_struct_size("ParcelManager"),

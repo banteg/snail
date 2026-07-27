@@ -560,10 +560,16 @@ typedef struct GalaxyPoint {
     };
 } GalaxyPoint;
 
-typedef struct GalaxyRouteSlot {
+/*
+ * Exact 0x2a0-byte cRGalaxyStar child owner. Android retains the named AI
+ * member; iOS inlines the same update while preserving this stride and layout.
+ */
+typedef struct GalaxyStar {
     int32_t unknown_000;
     GalaxyRouteRecord record;
-} GalaxyRouteSlot;
+} GalaxyStar;
+
+typedef GalaxyStar GalaxyRouteSlot;
 
 typedef struct GalaxyRouteNameRecord {
     char name[0x80];
@@ -581,7 +587,7 @@ typedef struct Galaxy {
     int32_t route_mode;
     int32_t route_state;
     int32_t record_count;
-    GalaxyRouteSlot route_slots[101];
+    GalaxyStar route_slots[101];
     GalaxyRouteNameRecord route_names[10];
     SubgameRuntime* level_progress_base;
     FrontendWidget* exit_or_back_widget;

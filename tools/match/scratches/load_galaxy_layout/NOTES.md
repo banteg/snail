@@ -5,7 +5,7 @@ the two authored point tables, loads `Galaxy/_Galaxy.txt`, copies galaxy names
 and star counts into the route-name table, seeds placeholder level labels, and
 initializes the first route record.
 
-The loader now uses the shared `Galaxy`, `GalaxyRouteSlot`,
+The loader now uses the shared `Galaxy`, `GalaxyStar`,
 `GalaxyRouteRecord`, and `GalaxyRouteNameRecord` views established with the
 constructor, route initializer, opener, updater, and closer.
 
@@ -145,7 +145,7 @@ contracts as Binary Ninja and types the external `GalaxyPoint[10]` group bank
 and `GalaxyPoint[101]` route bank. Live readback confirms the void loader and
 the typed constructor, destructor, updater, line renderer, route tick, route
 open/close, and bounds helper. Focused paired exports now retain `Galaxy*`,
-`GalaxyRouteSlot*`, both point-bank owners, and the borrowed
+`GalaxyStar*`, both point-bank owners, and the borrowed
 `SubgameRuntime* level_progress_base` instead of IDA's former `_DWORD*` and
 integer receivers. Matching remains honestly unchanged at 88.27%, 236/233
 instructions, prefix 62, with 39 clean operands; this is a durable ownership
