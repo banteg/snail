@@ -193,3 +193,12 @@ The fields are therefore conservatively named `death_toss_progress` and
 and rate steps are proved, but no effect semantics or shared hazard base is
 claimed. Focused matching remains genuinely exact at 464/464 instructions
 with all 71 masked operands clean.
+
+## 2026-07-28 mobile-backed voice range
+
+iOS `cRSlug::AI()` explicitly preserves the second random draw as the unit
+factor multiplied by four before selecting voices 30..33. Android preserves
+the same guarded draw-to-`VoicePlay` path but loses the call operands in its
+high-level decompile. The Windows-native negative-multiply/subtraction form is
+retained while its folded decimal is factored as `(1.0f / 32768.0f) * -4.0f`.
+VC6 still emits the exact 464/464 body with all 71 operands clean.

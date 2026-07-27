@@ -108,3 +108,14 @@ clamp the upper bound and call with the local volume. VC6 duplicated that call
 and epilogue and regressed to 89.01%, 94/88 instructions. It was removed; the
 Windows target's shared lower-clamp tail is still an optimizer residual rather
 than evidence for platform control flow.
+
+## 2026-07-28 dual-mobile SFX ranges
+
+Android and iOS both retain the three authored random buckets as a unit-random
+draw scaled to two, three, and three choices, producing SFX ranges 17..18,
+19..21, and 22..24. The first mobile bucket appears as two additions of the
+unit factor while the latter buckets retain explicit `* 3.0f`; the Windows
+scratch now names the equivalent range factors rather than their folded
+decimals. VC6 emits the same 96-instruction candidate, preserving the honest
+89.13% result, prefix 26/88, 19 clean references, and two candidate-only
+unaudited duplicated-tail references.

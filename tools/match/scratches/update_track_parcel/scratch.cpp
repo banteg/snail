@@ -93,8 +93,9 @@ void Parcel::update_track_parcel()
         {
             int random_y = next_math_random_value();
             delivery_offset.z = 0.0f;
-            delivery_offset.y =
-                ((float)random_y - 16384.0f) * 0.000091552734f + 1.0f;
+            delivery_offset.y = ((float)random_y - 16384.0f) *
+                                    0.0000610351562f * 1.5f +
+                                1.0f;
         }
         /* fall through */
 

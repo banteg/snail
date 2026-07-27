@@ -513,3 +513,13 @@ aligned masked operands, no unresolved or mismatched references, and four
 alignment-only unaudited references. Preinitializing the landscape selector
 from `level_index`, another superficially mobile-like spelling, regressed to
 76.98% and changed the Windows switch lowering, so it was rejected.
+
+## 2026-07-28 dual-mobile music range
+
+Android and iOS `cRSubGame::StartLevel(int)` both preserve the music selector
+as `gRMathRand2() * (1.0f / 32768.0f) * 4.0f` before the four-way switch.
+The Windows scratch now expresses that authored unit-random factor and range
+instead of the folded `0.000122070312f` product. VC6 emits the same
+560-instruction candidate: the honest 77.67% frontier, prefix 177/555, 106
+clean aligned operands, and four alignment-only unaudited references are
+unchanged.

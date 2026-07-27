@@ -28,7 +28,7 @@ void Twinkle::update_twinkle()
                 target_alpha = 0.89999998f;
                 angle =
                     ((float)next_math_random_value() - 16384.0f) *
-                    0.0001917476f;
+                    0.0000610351562f * 3.1415927f;
 
                 int spin_direction;
                 if (((float)next_math_random_value() - 16384.0f) *
@@ -70,7 +70,7 @@ void Twinkle::update_twinkle()
 
                 size =
                     ((float)next_math_random_value() - 16384.0f) *
-                        0.00073242188f +
+                        0.0000610351562f * 12.0f +
                     25.0f;
             }
         }

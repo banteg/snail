@@ -14,17 +14,20 @@ void Player::PlayShootSfx()
     int sound_id;
 
     if ((flags & 7) != 0) {
-        int variant = (int)((float)next_math_random_value() * 0.000061035156f);
+        int variant = (int)(
+            (float)next_math_random_value() * 0.0000305175781f * 2.0f);
         shoot_sfx_variant_sample = variant;
         sound_id = variant + 17;
     } else if ((flags & 0x18) != 0) {
-        int variant = (int)((float)next_math_random_value() * 0.000091552734f);
+        int variant = (int)(
+            (float)next_math_random_value() * 0.0000305175781f * 3.0f);
         shoot_sfx_variant_sample = variant;
         sound_id = variant + 19;
     } else {
         if ((flags & 0x60) == 0)
             return;
-        int variant = (int)((float)next_math_random_value() * 0.000091552734f);
+        int variant = (int)(
+            (float)next_math_random_value() * 0.0000305175781f * 3.0f);
         shoot_sfx_variant_sample = variant;
         sound_id = variant + 22;
     }

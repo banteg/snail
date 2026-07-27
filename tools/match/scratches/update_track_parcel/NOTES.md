@@ -124,3 +124,11 @@ persisting a false owner.
 
 This is analysis-only ownership recovery. The exact source remains 100.00%,
 312/312 instructions with a full prefix and all 35 masked operands clean.
+
+## 2026-07-28 dual-mobile delivery drift range
+
+Android and iOS `cRParcel::AI()` both preserve the delivery-flight random
+offsets as signed unit draws: X uses the normalized value directly, while Y
+uses `signed_unit * 1.5f + 1.0f`. The Windows source now carries that authored
+Y range instead of the folded `0.000091552734f` scale. It remains exactly
+312/312 with all 35 operands clean.

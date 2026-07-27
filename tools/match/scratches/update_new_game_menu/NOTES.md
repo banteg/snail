@@ -87,3 +87,11 @@ unrelated parcel-bank symbol because the root displacement lands within that
 global's address range. Normalizing only the two observed operands recovers
 the same `postal_records[index]` owner already shown by Binary Ninja. The
 matcher remains exact at 273/273.
+
+## 2026-07-28 dual-mobile replay-bank ranges
+
+Android and iOS `cRIntro::AI()` both preserve the attract replay choices as a
+unit-random draw scaled by the actual bank counts: four postal records, four
+survival records, or 51 time-trial route records. The Windows source now names
+those three cardinalities instead of the folded `4/32768` and `51/32768`
+constants. VC6 emits the same exact 273/273 body with all 62 operands clean.

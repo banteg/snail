@@ -77,7 +77,8 @@ active_state_tail:
             random_value = next_math_random_value();
             if ((float)random_value * 0.000030517578f > 0.600000024f) {
                 random_value = next_math_random_value();
-                int variant = (int)((float)random_value * -0.000122070312f);
+                int variant =
+                    (int)((float)random_value * 0.0000305175781f * -4.0f);
                 play_slug_voice(30 - variant);
             }
         }

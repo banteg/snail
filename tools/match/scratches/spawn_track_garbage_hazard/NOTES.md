@@ -290,3 +290,12 @@ Binary Ninja and IDA exports now contain no raw selected-slot `esi` / `v6`
 displacement accesses. The source matcher remains exactly 143/143 with all 16
 masked operands clean, so this is analysis ownership recovery and introduces
 no source-shape change or fakematch.
+
+## 2026-07-28 dual-mobile garbage sprite range
+
+Android and iOS `cRSubGame::AddGarbage` both preserve a unit-random draw
+multiplied by four before adding the platform's garbage-sprite base. Windows
+uses a different sprite base and its native subtraction-of-a-negative
+spelling, so only the independently corroborated four-choice factor is
+transferred. Replacing the folded decimal with `(1.0f / 32768.0f) * -4.0f`
+keeps the Windows function exactly 143/143 with all 16 operands clean.

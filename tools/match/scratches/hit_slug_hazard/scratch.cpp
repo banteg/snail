@@ -14,6 +14,7 @@ void Slug::hit_slug_hazard(int damage)
     }
 
     hit_flash_pending = 1;
-    int variant = (int)((float)next_math_random_value() * -0.000091552734f);
+    int variant = (int)(
+        (float)next_math_random_value() * 0.0000305175781f * -3.0f);
     play_slug_voice(36 - variant);
 }

@@ -37,7 +37,8 @@ void SubgameRuntime::build_subgame_level(int level_index)
         unhide_gameplay_scores();
 
     int zero = 0;
-    switch ((unsigned int)(next_math_random_value() * 0.000122070312f)) {
+    switch ((unsigned int)(
+        next_math_random_value() * 0.0000305175781f * 4.0f)) {
     case 0:
         cache_music_file("music/1.ogg", zero, g_blank_text);
         break;

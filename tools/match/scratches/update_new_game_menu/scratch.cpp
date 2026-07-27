@@ -103,7 +103,8 @@ void Intro::update_new_game_menu()
         ++attempts;
         switch (replay_attract_bank_cursor) {
         case 0: {
-            int index = (int)((float)next_math_random_value() * 0.000122070312f);
+            int index = (int)(
+                (float)next_math_random_value() * 0.0000305175781f * 4.0f);
             SubSolution* record =
                 &g_game->subgame.sub_high_score.postal_records[index];
             if (record->active == 1) {
@@ -113,7 +114,8 @@ void Intro::update_new_game_menu()
             break;
         }
         case 1: {
-            int index = (int)((float)next_math_random_value() * 0.000122070312f);
+            int index = (int)(
+                (float)next_math_random_value() * 0.0000305175781f * 4.0f);
             SubSolution* record =
                 &g_game->subgame.sub_high_score.survival_records[index];
             if (record->active == 1) {
@@ -123,7 +125,8 @@ void Intro::update_new_game_menu()
             break;
         }
         case 3: {
-            int index = (int)((float)next_math_random_value() * 0.00155639648f);
+            int index = (int)(
+                (float)next_math_random_value() * 0.0000305175781f * 51.0f);
             SubSolution* record =
                 &g_game->subgame.sub_high_score.time_trial_route_records[index];
             if (record->active == 1) {

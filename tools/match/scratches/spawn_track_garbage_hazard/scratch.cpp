@@ -88,7 +88,8 @@ void SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* play
 
     Sprite* sprite = g_sprite_manager.allocate_sprite(
         garbage_hazards.slots[slot_index].owner_player->player_slot,
-        114 - (int)((float)next_math_random_value() * -0.00012207031f),
+        114 - (int)(
+                  (float)next_math_random_value() * 0.0000305175781f * -4.0f),
         -1,
         -1);
     garbage_hazards.slots[slot_index].sprite = sprite;

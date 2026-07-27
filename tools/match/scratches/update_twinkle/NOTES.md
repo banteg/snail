@@ -28,3 +28,11 @@ groups already coincide exactly with the recovered 0x724-byte
 0x30-byte twinkle at `+0x2c`. `Twinkle::owner_widget` is therefore a borrowed
 widget pointer, not an independent owner class. The typed member accesses keep
 the Windows function exact at 181/181 instructions.
+
+## 2026-07-28 dual-mobile twinkle ranges
+
+Android and iOS `cRTwinkle::AI()` both preserve the initialization ranges as
+`signed_unit * pi` for angle and `signed_unit * 12.0f + 25.0f` for size. The
+Windows scratch now expresses those authored factors instead of their folded
+`0.0001917476f` and `0.00073242188f` products. VC6 still emits the exact
+181/181 body with all 48 operands clean.
