@@ -5163,6 +5163,51 @@
       "notes": "All three ports set the same cRObject 0x40000 render-suppression flag. More decisively, Android and iOS cRGame::LoadPaths call ObjectProcNull on the same pair of newly bound path objects and in the same order as the two Windows callsites. The mobile layouts place flags at cRObject +0x00 while Windows places them at +0x10, so the semantic owner transfers but the field offset does not."
     },
     {
+      "address": "0x41a0b0",
+      "windows_name": "initialize_textured_backdrop_quad",
+      "android_symbol": "ObjectProcTileFast(cRObject*, char*, float)",
+      "ios_symbol": "ObjectProcTileFast(cRObject*, char*, float)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "notes": "All three bodies request four cRObject vertices and one face quad, write the same flat x/z geometry and {0,1,3,2} indices, bind the supplied texture, and assign the same full-range UVs. Android and iOS cRGame::Init3 call ObjectProcTileFast for the same three Ramp objects with offsets 0 and for Universe/Hole, matching the Windows bootstrap call sequence. Mobile additionally maintains its platform-specific high object flag."
+    },
+    {
+      "address": "0x41a170",
+      "windows_name": "raise_backdrop_quad_edge_pair",
+      "android_symbol": "ObjectProcTileFastRamp(int, cRObject*)",
+      "ios_symbol": "ObjectProcTileFastRamp(int, cRObject*)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "notes": "All three bodies use selectors -1, 0, and 1 to raise the same first, both, or second configured tile vertices by 0.5. Each port calls this helper immediately after ObjectProcTileFast on the same ordered Ramp object triplet. Mobile also clears the platform-specific high object flag that its TileFast helper sets; Windows has no corresponding flag transition."
+    },
+    {
+      "address": "0x41a1c0",
+      "windows_name": "initialize_backdrop_slice_quad",
+      "android_symbol": "ObjectProcTileFloorFast(cRObject*, char*, float)",
+      "ios_symbol": "ObjectProcTileFloorFast(cRObject*, char*, float)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "notes": "All three bodies request the same four-vertex, one-face-quad geometry and derive the negative U edge as (index + 1) * -0.125 while keeping the other U edge at zero and V at 0.125. Their cRGame::Init3 phases apply the helper across corresponding eight-entry World00 floor banks. Mobile carries an additional high cRObject flag and applies later UV transforms; Windows uses separate Track, Warning, and Slide textures."
+    },
+    {
+      "address": "0x41a290",
+      "windows_name": "initialize_backdrop_corner_quad",
+      "android_symbol": "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
+      "ios_symbol": "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "notes": "All three bodies first call the floor-tile helper with offset zero, select one vertex through the same four-entry {3,2,0,1} table, and replace its x and z components with -0.3, 0, or 0.3 according to sign. Android and iOS preserve the authored name and the same 0,1,2,3 call order across the corresponding corner banks."
+    },
+    {
+      "address": "0x41a4d0",
+      "windows_name": "initialize_backdrop_tile_quad",
+      "android_symbol": "ObjectProcFringe(cRObject*, int, int, int, int, char*)",
+      "ios_symbol": "ObjectProcFringe(cRObject*, int, int, int, int, char*)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "notes": "All three six-argument bodies build one four-vertex Fringe quad from row and column offsets scaled by 0.4, assign the same 0.8/0.2 UV window, rotate it through the same four orientation cases, and run the same seven edge-selector cases using 0.2, 0.5, and 0.6 adjustments. The nested cRGame::Init3 loops pass the same selector, orientation, row, column, and Objects/Universe/Fringe asset lanes."
+    },
+    {
       "address": "0x430470",
       "windows_name": "advance_frame_sequence",
       "android_symbol": "cRMovie::AI()",

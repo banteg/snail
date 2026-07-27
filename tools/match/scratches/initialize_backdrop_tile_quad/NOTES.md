@@ -132,3 +132,14 @@ Both mobile ports identify the six orientation calls as
 `ObjectFaceQuad* quad` preserves the complete Windows instruction stream:
 100.00%, 367/367 instructions, a 367/367 prefix, and all 63 relocations clean.
 This is a source-level ownership gain with no matching concession.
+
+## 2026-07-27 mobile authored identity
+
+Android and iOS preserve the complete six-argument helper as
+`ObjectProcFringe(cRObject*, int, int, int, int, char*)` in `ObjectProc.o`.
+Beyond the signature, both bodies independently retain the same `0.4` row and
+column scaling, four orientation cases, `0.8/0.2` UV window, seven edge
+selectors, and `0.2/0.5/0.6` adjustments. Their nested `cRGame::Init3` loops
+also pass the same Fringe selector, orientation, row, column, and asset lanes
+as Windows. This closes the authored identity without changing the already
+exact matcher body.

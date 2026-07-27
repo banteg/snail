@@ -941,6 +941,64 @@ def test_mobile_object_null_recovers_authored_free_function() -> None:
     assert "without importing a false field" in notes
 
 
+def test_mobile_object_tile_helpers_recover_authored_free_functions() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    expected = {
+        "initialize_textured_backdrop_quad": (
+            "ObjectProcTileFast(cRObject*, char*, float)",
+            "ObjectProcTileFast",
+        ),
+        "raise_backdrop_quad_edge_pair": (
+            "ObjectProcTileFastRamp(int, cRObject*)",
+            "ObjectProcTileFastRamp",
+        ),
+        "initialize_backdrop_slice_quad": (
+            "ObjectProcTileFloorFast(cRObject*, char*, float)",
+            "ObjectProcTileFloorFast",
+        ),
+        "initialize_backdrop_corner_quad": (
+            "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
+            "ObjectProcTileFloorCornerFast",
+        ),
+        "initialize_backdrop_tile_quad": (
+            "ObjectProcFringe(cRObject*, int, int, int, int, char*)",
+            "ObjectProcFringe",
+        ),
+    }
+
+    for windows_name, (mobile_symbol, alias) in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "ObjectProc.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert alias in functions_by_name[windows_name]["aliases"]
+
+        notes = (
+            repo_root
+            / "tools/match/scratches"
+            / windows_name
+            / "NOTES.md"
+        ).read_text(encoding="utf-8")
+        assert f"`{mobile_symbol}`" in notes
+        assert "ObjectProc.o" in notes
+
+
 def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

@@ -16,3 +16,12 @@ The helper now reads back as `void __cdecl(int32_t, Object*, char*)` in both
 databases. The four-entry table at `0x4a3ce0` is replayed as the typed
 `g_backdrop_corner_vertex_indices[4]`, allowing both decompilers to express the
 selected `Object::vertices` element directly. The matcher stays exact.
+
+## 2026-07-27 mobile authored identity
+
+Android and iOS preserve this helper as
+`ObjectProcTileFloorCornerFast(int, cRObject*, char*)` in `ObjectProc.o`. Every
+port first invokes its floor-tile helper at offset zero, selects through the
+same `{3, 2, 0, 1}` table, and clamps the chosen vertex's x/z components to
+signed `0.3`. The mobile `cRGame::Init3` call order mirrors Windows across the
+corresponding corner banks.

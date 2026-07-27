@@ -14,12 +14,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 570,
-    "unverified_entries": 215,
-    "verified_android_symbols": 564,
-    "verified_ios_symbols": 457,
-    "available_android_mappings": 564,
-    "available_ios_mappings": 421
+    "verified_entries": 575,
+    "unverified_entries": 210,
+    "verified_android_symbols": 569,
+    "verified_ios_symbols": 462,
+    "available_android_mappings": 569,
+    "available_ios_mappings": 426
   },
   "entries": [
     {
@@ -10211,281 +10211,49 @@
       "address": "0x41a0b0",
       "windows_name": "initialize_textured_backdrop_quad",
       "windows_size": 192,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "G0BindTexture(int)",
-          "score": 0.6669,
-          "name_score": 0.4865,
-          "size_score": 0.9375
-        },
-        {
-          "symbol": "cRObjects::ReTextureObjects(cRTexture*, cRTexture*)",
-          "score": 0.6465,
-          "name_score": 0.45,
-          "size_score": 0.9412
-        },
-        {
-          "symbol": "cRBorder::InputTextInit(int, char*, int)",
-          "score": 0.6385,
-          "name_score": 0.4242,
-          "size_score": 0.96
-        },
-        {
-          "symbol": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
-          "score": 0.6192,
-          "name_score": 0.4706,
-          "size_score": 0.8421
-        },
-        {
-          "symbol": "G0TextureSetReLoad()",
-          "score": 0.6159,
-          "name_score": 0.4571,
-          "size_score": 0.8542
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "G0BindTexture(int)",
-          "score": 0.6752,
-          "name_score": 0.4865,
-          "size_score": 0.9583
-        },
-        {
-          "symbol": "G0TextureSetLoad(int)",
-          "score": 0.6385,
-          "name_score": 0.4242,
-          "size_score": 0.96
-        },
-        {
-          "symbol": "std::_Rb_tree<OFSdbmHashedString, std::pair<OFSdbmHashedString const, OFRTTI const*>, std::_Select1st<std::pair<OFSdbmHashedString const, OFRTTI const*>>, std::less<OFSdbmHashedString>, std::allocator<std::pair<OFSdbmHashedString const, OFRTTI const*>>>::_M_insert_unique(std::pair<OFSdbmHashedString const, OFRTTI const*> const&)",
-          "score": 0.6035,
-          "name_score": 0.3784,
-          "size_score": 0.9412
-        },
-        {
-          "symbol": "OFImageViewHttpServiceObserver::OFImageViewHttpServiceObserver(OFDelegate const&, OFDelegate const&)",
-          "score": 0.5833,
-          "name_score": 0.3333,
-          "size_score": 0.9583
-        },
-        {
-          "symbol": "cRSMTracks::OpenLevels()",
-          "score": 0.5833,
-          "name_score": 0.3055,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "ObjectProcTileFast(cRObject*, char*, float)",
+      "ios_symbol": "ObjectProcTileFast(cRObject*, char*, float)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x41a170",
       "windows_name": "raise_backdrop_quad_edge_pair",
       "windows_size": 80,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBackdrop::Change(cRLandscape*, bool)",
-          "score": 0.742,
-          "name_score": 0.6034,
-          "size_score": 0.95
-        },
-        {
-          "symbol": "cRObject::RequestEdges(int)",
-          "score": 0.6718,
-          "name_score": 0.4848,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "cRObjects::Add()",
-          "score": 0.6336,
-          "name_score": 0.45,
-          "size_score": 0.9091
-        },
-        {
-          "symbol": "cRPathManager::NameCode(char*)",
-          "score": 0.6292,
-          "name_score": 0.4138,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "cRBorderManager::ActivateBorders()",
-          "score": 0.6143,
-          "name_score": 0.3889,
-          "size_score": 0.9524
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBackdrop::Change(cRLandscape*, bool)",
-          "score": 0.7257,
-          "name_score": 0.6034,
-          "size_score": 0.9091
-        },
-        {
-          "symbol": "OFDelegate::OFDelegate(NSObject*, objc_selector*)",
-          "score": 0.651,
-          "name_score": 0.45,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "OFDelegate::OFDelegate(OFDelegate const&)",
-          "score": 0.651,
-          "name_score": 0.45,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "OFDelegate::~OFDelegate()",
-          "score": 0.65,
-          "name_score": 0.45,
-          "size_score": 0.95
-        },
-        {
-          "symbol": "G0BackdropVBO(unsigned int*, int, unsigned short*)",
-          "score": 0.6302,
-          "name_score": 0.4706,
-          "size_score": 0.8696
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "ObjectProcTileFastRamp(int, cRObject*)",
+      "ios_symbol": "ObjectProcTileFastRamp(int, cRObject*)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x41a1c0",
       "windows_name": "initialize_backdrop_slice_quad",
       "windows_size": 208,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "AddVertexUV(cGLVertexUV*, int&, tVector*, float, float)",
-          "score": 0.7525,
-          "name_score": 0.6,
-          "size_score": 0.9811
-        },
-        {
-          "symbol": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
-          "score": 0.6746,
-          "name_score": 0.5161,
-          "size_score": 0.9123
-        },
-        {
-          "symbol": "cRObjects::Init(int)",
-          "score": 0.6055,
-          "name_score": 0.45,
-          "size_score": 0.8387
-        },
-        {
-          "symbol": "ATan(float, float)",
-          "score": 0.6008,
-          "name_score": 0.45,
-          "size_score": 0.8269
-        },
-        {
-          "symbol": "OFAddParcelDelivered()",
-          "score": 0.598,
-          "name_score": 0.3684,
-          "size_score": 0.9423
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "SoundEngineEffect::PlaybackProc(void*)",
-          "score": 0.6468,
-          "name_score": 0.4242,
-          "size_score": 0.9808
-        },
-        {
-          "symbol": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
-          "score": 0.6201,
-          "name_score": 0.5161,
-          "size_score": 0.7761
-        },
-        {
-          "symbol": "cRLoadingBar::Signal()",
-          "score": 0.6104,
-          "name_score": 0.3632,
-          "size_score": 0.9811
-        },
-        {
-          "symbol": "OFISerializer::popScope()",
-          "score": 0.5994,
-          "name_score": 0.4114,
-          "size_score": 0.8814
-        },
-        {
-          "symbol": "OFHttpService::OFHttpService(OFRetainedPtr<NSString>, bool)",
-          "score": 0.5969,
-          "name_score": 0.3529,
-          "size_score": 0.963
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "ObjectProcTileFloorFast(cRObject*, char*, float)",
+      "ios_symbol": "ObjectProcTileFloorFast(cRObject*, char*, float)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x41a290",
       "windows_name": "initialize_backdrop_corner_quad",
       "windows_size": 208,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
-          "score": 0.6649,
-          "name_score": 0.5,
-          "size_score": 0.9123
-        },
-        {
-          "symbol": "cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)",
-          "score": 0.6468,
-          "name_score": 0.4242,
-          "size_score": 0.9808
-        },
-        {
-          "symbol": "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
-          "score": 0.6205,
-          "name_score": 0.3922,
-          "size_score": 0.963
-        },
-        {
-          "symbol": "cRBackdrop::ChangeReal()",
-          "score": 0.6108,
-          "name_score": 0.624,
-          "size_score": 0.5909
-        },
-        {
-          "symbol": "cRSubHighScore::AddArcade(int)",
-          "score": 0.6086,
-          "name_score": 0.384,
-          "size_score": 0.9455
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "SoundEngineEffect::PlaybackProc(void*)",
-          "score": 0.6394,
-          "name_score": 0.4118,
-          "size_score": 0.9808
-        },
-        {
-          "symbol": "cRBackdrop::ChangeReal()",
-          "score": 0.6191,
-          "name_score": 0.624,
-          "size_score": 0.6118
-        },
-        {
-          "symbol": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)",
-          "score": 0.6104,
-          "name_score": 0.5,
-          "size_score": 0.7761
-        },
-        {
-          "symbol": "cRLoadingBar::Signal()",
-          "score": 0.6047,
-          "name_score": 0.3537,
-          "size_score": 0.9811
-        },
-        {
-          "symbol": "cRTrack::Change(int)",
-          "score": 0.603,
-          "name_score": 0.4073,
-          "size_score": 0.8966
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
+      "ios_symbol": "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x41a360",
@@ -10503,71 +10271,13 @@
       "address": "0x41a4d0",
       "windows_name": "initialize_backdrop_tile_quad",
       "windows_size": 1376,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRIntro::Init()",
-          "score": 0.6176,
-          "name_score": 0.384,
-          "size_score": 0.968
-        },
-        {
-          "symbol": "ObjectProcTileWall(cRObject*, char*, char*, char*)",
-          "score": 0.6003,
-          "name_score": 0.4211,
-          "size_score": 0.8692
-        },
-        {
-          "symbol": "cRIntro::AI()",
-          "score": 0.5925,
-          "name_score": 0.384,
-          "size_score": 0.9053
-        },
-        {
-          "symbol": "cRObject::RequestAnim(int, cRBodPos*, float, int)",
-          "score": 0.5738,
-          "name_score": 0.3226,
-          "size_score": 0.9506
-        },
-        {
-          "symbol": "cRPath::BuildFringeSuperTramp(char*)",
-          "score": 0.5644,
-          "name_score": 0.2778,
-          "size_score": 0.9942
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBackdrop::Open()",
-          "score": 0.6449,
-          "name_score": 0.54,
-          "size_score": 0.8023
-        },
-        {
-          "symbol": "cRObject::CalcFaceQuadNormals()",
-          "score": 0.6226,
-          "name_score": 0.4,
-          "size_score": 0.9564
-        },
-        {
-          "symbol": "BackgroundTrackMgr::QueueStoppedProc(void*, OpaqueAudioQueue*, unsigned long)",
-          "score": 0.6177,
-          "name_score": 0.3958,
-          "size_score": 0.9506
-        },
-        {
-          "symbol": "cRIntro::Init()",
-          "score": 0.6048,
-          "name_score": 0.384,
-          "size_score": 0.936
-        },
-        {
-          "symbol": "cAccelerometer::AI()",
-          "score": 0.6033,
-          "name_score": 0.3388,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "ObjectProcFringe(cRObject*, int, int, int, int, char*)",
+      "ios_symbol": "ObjectProcFringe(cRObject*, int, int, int, int, char*)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x41aa30",

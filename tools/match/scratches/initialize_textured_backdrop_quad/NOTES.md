@@ -16,3 +16,13 @@ The repeatable object-render slice now pins this exact helper as
 therefore expose the complete `Object` vertex/facequad owners and retire both
 the incidental integer return and IDA's stale `PathTemplateStripMesh*` prefix.
 The matcher remains byte-identical at 100%.
+
+## 2026-07-27 mobile authored identity
+
+Android and iOS preserve this exact helper as
+`ObjectProcTileFast(cRObject*, char*, float)` in `ObjectProc.o`. The independent
+bodies request the same four vertices and one face quad, write the same
+geometry, indices, texture, and UVs, and `cRGame::Init3` calls them on the same
+three Ramp objects plus Universe/Hole as Windows. Mobile maintains an
+additional high `cRObject` flag, so that platform field behavior is not copied
+into the already-exact Windows source.

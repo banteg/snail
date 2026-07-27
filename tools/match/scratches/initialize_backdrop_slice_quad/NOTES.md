@@ -16,3 +16,13 @@ databases. IDA no longer assigns the helper to the obsolete partial
 `PathTemplateStripMesh` view, and both checked-in artifacts expose the shared
 `Object` flags, vertices, facequad, texture, and UV owners. Matching remains
 100%.
+
+## 2026-07-27 mobile authored identity
+
+Android and iOS preserve this exact helper as
+`ObjectProcTileFloorFast(cRObject*, char*, float)` in `ObjectProc.o`. The three
+ports share the four-vertex geometry, face indices, and
+`(index + 1) * -0.125` UV slice. Their `cRGame::Init3` phases apply it to the
+corresponding eight-entry World00 floor banks; mobile follows with platform UV
+transforms and carries an additional high Object flag, while Windows selects
+separate Track, Warning, and Slide textures.

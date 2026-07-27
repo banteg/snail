@@ -1464,22 +1464,34 @@
     {
       "address": "0x41a0b0",
       "name": "initialize_textured_backdrop_quad",
-      "description": "Builds one shared 4-vertex textured backdrop quad with full-range UVs for the `Objects/Univers*` lane."
+      "aliases": [
+        "ObjectProcTileFast"
+      ],
+      "description": "Exact Windows `ObjectProcTileFast(cRObject*, char*, float)`: requests four vertices and one face quad, builds the flat `Objects/Universe` tile, binds its texture, and assigns the full UV range. Android and iOS preserve the authored free-function name and call it for the same three Ramp objects and Universe Hole."
     },
     {
       "address": "0x41a170",
       "name": "raise_backdrop_quad_edge_pair",
-      "description": "Raises one of the two adjacent backdrop-quad edge pairs by 0.5 units using the small orientation tables consumed by the `Objects/Univers` variants."
+      "aliases": [
+        "ObjectProcTileFastRamp"
+      ],
+      "description": "Exact Windows `ObjectProcTileFastRamp(int, cRObject*)`: raises one or both selected tile vertices by 0.5 for selectors -1, 0, and 1. Android and iOS preserve the authored free-function name and the same three calls immediately after ObjectProcTileFast builds the Ramp objects."
     },
     {
       "address": "0x41a1c0",
       "name": "initialize_backdrop_slice_quad",
-      "description": "Builds one shared 4-vertex textured backdrop quad using a horizontal 1/8 UV slice selected by the panel index for the `Objects/World00*` lane."
+      "aliases": [
+        "ObjectProcTileFloorFast"
+      ],
+      "description": "Exact Windows `ObjectProcTileFloorFast(cRObject*, char*, float)`: builds the same flat four-vertex tile with a horizontal 1/8 UV slice selected by the supplied index. Android and iOS preserve the authored free-function name and use it for the corresponding eight-entry World00 floor banks."
     },
     {
       "address": "0x41a290",
       "name": "initialize_backdrop_corner_quad",
-      "description": "Builds one sliced backdrop quad and offsets the selected edge pair by 0.3 units using the four-entry corner selector table."
+      "aliases": [
+        "ObjectProcTileFloorCornerFast"
+      ],
+      "description": "Exact Windows `ObjectProcTileFloorCornerFast(int, cRObject*, char*)`: calls ObjectProcTileFloorFast, selects one vertex through the shared {3,2,0,1} corner table, and clamps its x/z magnitudes to 0.3 while preserving their signs. Android and iOS retain the authored free-function and the same ordered corner-bank calls."
     },
     {
       "address": "0x41a360",
@@ -1492,7 +1504,10 @@
     {
       "address": "0x41a4d0",
       "name": "initialize_backdrop_tile_quad",
-      "description": "Builds one oriented textured backdrop tile quad by choosing one of the eight UV-orientation cases and offsetting the local tile with the supplied row and column selectors."
+      "aliases": [
+        "ObjectProcFringe"
+      ],
+      "description": "Exact Windows `ObjectProcFringe(cRObject*, int, int, int, int, char*)`: builds an oriented textured fringe quad, rotates its UVs, offsets it by row and column, then applies one of seven edge-selector adjustments across the four vertices. Android and iOS preserve the authored free-function name, signature, constants, selector behavior, and nested Fringe-bank callsite."
     },
     {
       "address": "0x41aa30",

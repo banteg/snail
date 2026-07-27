@@ -35,17 +35,17 @@ void register_font_texture_sheet_wrapper(
     int shadow_offset_pixels,
     float width_scale,
     float height_scale); // @ 0x432d20
-void initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a1c0
-void initialize_textured_backdrop_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a2f0
-void raise_backdrop_quad_edge_pair(int edge_pair, Object* object); // @ 0x41a440
-void initialize_backdrop_corner_quad(int corner, Object* object, char* texture_path); // @ 0x41a450
+void initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a1c0, ObjectProcTileFloorFast
+void initialize_textured_backdrop_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a0b0, ObjectProcTileFast
+void raise_backdrop_quad_edge_pair(int edge_pair, Object* object); // @ 0x41a170, ObjectProcTileFastRamp
+void initialize_backdrop_corner_quad(int corner, Object* object, char* texture_path); // @ 0x41a290, ObjectProcTileFloorCornerFast
 void initialize_backdrop_tile_quad(
     Object* object,
     int edge_selector,
     int orientation,
     int row_selector,
     int column_selector,
-    char* texture_path); // @ 0x41a4d0
+    char* texture_path); // @ 0x41a4d0, ObjectProcFringe
 void set_object_color(Object* object, tColour color); // @ 0x4141d0
 void set_input_controller_pointer_authored_xy(
     int controller,
