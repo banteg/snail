@@ -67,3 +67,24 @@ Android and iOS independently preserve the exact authored
 array ownership and stop after `CalcLengthZ()`; Windows additionally mirrors
 the strip mesh and flips its face winding. The authored name is therefore
 high-confidence while the platform body difference remains explicit.
+
+## 2026-07-27 face-pair ownership closure
+
+The Windows-only strip-mesh tail is now exact. Each copied
+`ObjectFaceQuad` owns two independent operations:
+
+- exchange the two vertex-index pairs to reverse winding; and
+- exchange the U components within the corresponding two UV pairs.
+
+Keeping those exchanges as small typed helpers preserves the alias boundary
+between each complete pair. VC6 consequently finishes the first vertex pair
+before loading the second, and keeps both float values live on the x87 stack
+for each U exchange. This is the natural aggregate-member source shape behind
+the native schedule; it introduces no volatile state, dummy work, or synthetic
+data.
+
+Focused matching improves from **97.45%** to **100.00%**: 314/314
+instructions, a 314-instruction exact prefix, and all 15 masked operands clean.
+Together with the independently named Android and iOS bodies, this closes the
+shared `cRPath::Mirror(cRPath*)` owner while retaining the explicit fact that
+only Windows mirrors the generated strip mesh.

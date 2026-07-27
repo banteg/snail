@@ -4,6 +4,23 @@
 #include "sprite.h"
 #include "track_attachment_types.h"
 
+static inline void swap_float(float& left, float& right)
+{
+    float left_value = left;
+    float right_value = right;
+    left = right_value;
+    right = left_value;
+}
+
+static inline void swap_vertex_index(
+    unsigned short& left,
+    unsigned short& right)
+{
+    int temporary = left;
+    left = right;
+    right = temporary;
+}
+
 void Path::mirror_path(Path* source)
 {
     is_mirrored_x = 1;
@@ -110,21 +127,19 @@ void Path::mirror_path(Path* source)
 
                         *destination_face = *source_face;
 
-                        int swap_vertex = destination_face->vertex_0;
-                        destination_face->vertex_0 = destination_face->vertex_1;
-                        destination_face->vertex_1 = swap_vertex;
+                        swap_vertex_index(
+                            destination_face->vertex_0,
+                            destination_face->vertex_1);
+                        swap_vertex_index(
+                            destination_face->vertex_2,
+                            destination_face->vertex_3);
 
-                        swap_vertex = destination_face->vertex_2;
-                        destination_face->vertex_2 = destination_face->vertex_3;
-                        destination_face->vertex_3 = swap_vertex;
-
-                        float swap_uv = destination_face->uv[0].u;
-                        destination_face->uv[0].u = destination_face->uv[1].u;
-                        destination_face->uv[1].u = swap_uv;
-
-                        swap_uv = destination_face->uv[2].u;
-                        destination_face->uv[2].u = destination_face->uv[3].u;
-                        destination_face->uv[3].u = swap_uv;
+                        swap_float(
+                            destination_face->uv[0].u,
+                            destination_face->uv[1].u);
+                        swap_float(
+                            destination_face->uv[2].u,
+                            destination_face->uv[3].u);
 
                         ++quad_pair;
                     } while (quad_pair < 2);
