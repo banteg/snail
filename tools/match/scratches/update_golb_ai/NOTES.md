@@ -1,4 +1,49 @@
-# WIP scratch — 81.88%, 669/694 insns (2026-07-23)
+# WIP scratch — 90.41%, 693/694 insns (2026-07-27)
+
+## 2026-07-27 mobile-authored collision vector recovery
+
+The exact Android and iOS `cRSubGolb::AI()` bodies close the remaining
+projectile collision tree independently of Windows: garbage and slug contact
+share one collision vector, slug deflection writes a complete temporary
+velocity before assigning it back to the shot, the first kind-zero slug hit
+arms the bounce byte, and the second hit falls through to `Kill()` plus
+`Explode()`. Both ports also preserve the kind-two garbage splash and its
+negative-x/positive-x collision-side split.
+
+Live Binary Ninja agrees with that source model. Windows has one `Vec3` at
+`[esp+0x14]` / `ebp-0x6c` for collision probes and a second `Vec3` at
+`[esp+0x20]` / `ebp-0x60` used first by homing normalization and later by slug
+deflection. Reusing the latter owner, then assigning it to `velocity` as one
+aggregate, recovers the native deflection copy instead of inventing a
+third one-use vector.
+
+The retained source-shape changes are:
+
+- advance `flight_transform.position` through the authored `Vector3::operator+=`;
+- reuse the homing `delta` vector for slug deflection and assign the complete
+  result back to `velocity`;
+- stage direct garbage contact through a branch-local vector before copying it
+  into the shared collision probe;
+- recover the kind-two splash probe as
+  `splash->transform.position - source_matrix.position`;
+- spell both garbage side tests in the negative-x-first order preserved by the
+  mobile bodies and Windows branches;
+- put the first-bounce arm/return before the second-hit teardown path; and
+- stage the wall impact through a source vector before assigning the
+  address-taken effect argument.
+
+Focused matching rises from 81.88% (`669/694`) to 90.41% (`693/694`), with
+prefix `9/694` and a clean masked audit of `69 ok, 0 unresolved, 0 mismatch`;
+the four unaudited zero-constant comparisons remain paired source-scheduling
+residuals, not call or ownership mismatches.
+
+Rejected trials were not retained: promoting the byte-indexed slug scan to a
+by-value typed subtraction grew the candidate to 700 instructions and fell to
+90.10%; a separate slug collision staging vector also regressed; constructing
+the wall vector through the three-float constructor emitted floating loads for
+the copied x/y lanes and fell to 88.54%; and moving the z-sign condition ahead
+of the collision-vector copy fell to 86.17%. No register-forcing local,
+volatile qualifier, padding, or other fakematch was introduced.
 
 ## 2026-07-23 Binary Ninja collision-owner lifetimes
 

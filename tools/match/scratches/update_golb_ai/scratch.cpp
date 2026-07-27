@@ -41,7 +41,6 @@ void GolbShot::update_golb_ai()
     Vec3 blended_velocity;
     Vec3 pull_delta;
     Vec3 kept_velocity;
-    Vec3 reflected_velocity;
     Vec3 smoke_position;
     Vec3 trail_a;
     Vec3 trail_b;
@@ -80,9 +79,7 @@ void GolbShot::update_golb_ai()
     } else {
         Vec3* movement = &velocity;
         Vec3* current_position = &flight_transform.position;
-        current_position->x = movement->x + current_position->x;
-        current_position->y = movement->y + current_position->y;
-        current_position->z = movement->z + current_position->z;
+        *current_position += *movement;
         if (kind == 0) {
             if (flight_transform.position.y > 0.49000001f || flight_transform.position.y < 0.0f) {
                 velocity.y = velocity.y - game->subgame_rate * 0.017000001f;
@@ -183,18 +180,25 @@ void GolbShot::update_golb_ai()
             SubGarbage* garbage = game->garbage_hazards.active_head;
             while (garbage) {
                 if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {
-                    probe.x = garbage->transform.position.x - new_output->x;
-                    probe.y = garbage->transform.position.y - new_output->y;
-                    probe.z = garbage->transform.position.z - new_output->z;
-                    float dz = probe.z;
+                    Vec3 collision_delta;
+                    collision_delta.x =
+                        garbage->transform.position.x - new_output->x;
+                    collision_delta.y =
+                        garbage->transform.position.y - new_output->y;
+                    float dz = collision_delta.z =
+                        garbage->transform.position.z - new_output->z;
+                    probe = collision_delta;
                     if (dz < 0.0f)
                         dz = -dz;
                     if (dz < 3.0f
                         && normalize_vector(&probe) < garbage->radius + 0.49000001f) {
                         garbage->state = SUB_GARBAGE_STATE_BURST_PENDING;
-                        garbage->collision_side = probe.x >= 0.0f
-                            ? SUB_GARBAGE_COLLISION_SIDE_RIGHT
-                            : SUB_GARBAGE_COLLISION_SIDE_LEFT;
+                        if (probe.x < 0.0f)
+                            garbage->collision_side =
+                                SUB_GARBAGE_COLLISION_SIDE_LEFT;
+                        else
+                            garbage->collision_side =
+                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;
                         player->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
                         if (kind != 1)
                             goto garbage_hit;
@@ -227,12 +231,10 @@ void GolbShot::update_golb_ai()
                             deflect_speed = normalize_vector(&velocity);
                             probe.y = 0.0f;
                             normalize_vector(&probe);
-                            reflected_velocity.x = -(deflect_speed * probe.x);
-                            reflected_velocity.y = 0.0f;
-                            reflected_velocity.z = -(deflect_speed * probe.z);
-                            velocity.x = reflected_velocity.x;
-                            velocity.y = reflected_velocity.y;
-                            velocity.z = reflected_velocity.z;
+                            delta.x = -(deflect_speed * probe.x);
+                            delta.y = 0.0f;
+                            delta.z = -(deflect_speed * probe.z);
+                            velocity = delta;
                             if (kind == 1) {
                                 kill_golb();
                                 spawn_golb_impact_sprite(new_output);
@@ -250,12 +252,12 @@ void GolbShot::update_golb_ai()
                                 return;
                             }
                             if (kind == 0) {
-                                if (slug_bounce_armed) {
-                                    kill_golb();
-                                    spawn_golb_impact_sprite(new_output);
-                                } else {
+                                if (!slug_bounce_armed) {
                                     slug_bounce_armed = 1;
+                                    return;
                                 }
+                                kill_golb();
+                                spawn_golb_impact_sprite(new_output);
                                 return;
                             }
                         }
@@ -273,15 +275,13 @@ garbage_hit:
                     splash;
                     splash = splash->next_active) {
                     if (splash->state == SUB_GARBAGE_STATE_ACTIVE) {
-                        probe.x = splash->transform.position.x - new_output->x;
-                        probe.y = splash->transform.position.y - new_output->y;
-                        probe.z = splash->transform.position.z - new_output->z;
+                        probe = splash->transform.position - *new_output;
                         if (normalize_vector(&probe) < 3.0f) {
                             splash->state = SUB_GARBAGE_STATE_BURST_PENDING;
-                            if (probe.x >= 0.0f)
-                                splash->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
-                            else
+                            if (probe.x < 0.0f)
                                 splash->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
+                            else
+                                splash->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
                             player->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
                         }
                     }
@@ -293,9 +293,11 @@ wall_probe:
             if (game->get_track_grid_cell_at_world_position(new_output)->tile_id
                 != SUBLOC_TILE_WALL2)
                 return;
-            wall_impact.x = new_output->x;
-            wall_impact.y = new_output->y;
-            wall_impact.z = new_output->z - 1.0f;
+            Vec3 wall_source;
+            wall_source.x = new_output->x;
+            wall_source.y = new_output->y;
+            wall_source.z = new_output->z - 1.0f;
+            wall_impact = wall_source;
             spawn_golb_impact_sprite(&wall_impact);
         }
     }

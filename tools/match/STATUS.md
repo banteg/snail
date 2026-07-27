@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**530/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93388/294937** bytes (**31.66%**) are proof-grade, and overall fuzzy is **78.20%**.
+**530/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93388/294937** bytes (**31.66%**) are proof-grade, and overall fuzzy is **78.28%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -586,7 +586,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_backdrop | 0x4112f0 | 189 | 69/67 | 88.24% | 17/67 | 7 ok |  | core |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 137/139 | 90.58% | 7/139 | 4 ok |  | boundary |
 | 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 128/127 | 83.14% | 25/127 | 18 ok |  | boundary |
-| 🚧 | update_golb_ai | 0x414820 | 2656 | 669/694 | 81.88% | 9/694 | 4 unaudited, 69 ok |  | core |
+| 🚧 | update_golb_ai | 0x414820 | 2656 | 693/694 | 90.41% | 9/694 | 4 unaudited, 69 ok |  | core |
 | 🚧 | add_survival_high_score | 0x417780 | 289 | 86/84 | 89.41% | 36/84 | 6 ok |  | core |
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 89.80% | 29/49 | 1 ok |  | core |
 | 🚧 | mini_delete_high_score_entry | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  | core |
