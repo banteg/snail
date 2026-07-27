@@ -15,7 +15,6 @@ typedef unsigned int DWORD;
 
 typedef Vector3 Vec3;
 
-
 int report_errorf(char* format, ...);
 int next_math_random_value();
 
@@ -25,26 +24,7 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
     slug_bounce_armed = 0;
 
     BodNode* body = &primary_body;
-    if ((body->list_flags & BOD_FLAG_LINKED) != 0) {
-        report_errorf("List ADD");
-    } else {
-        BodNode** first_ref = &g_game->active_bod_list.first;
-        BodNode* old_first = *first_ref;
-        if (old_first) {
-            old_first->list_prev = body;
-            BodNode* current = *first_ref;
-            BodNode* inserted = current->list_prev;
-            inserted->list_next = current;
-            current = *first_ref;
-            *first_ref = current->list_prev;
-            (*first_ref)->list_prev = 0;
-        } else {
-            *first_ref = body;
-            body->list_prev = 0;
-            (*first_ref)->list_next = 0;
-        }
-        body->list_flags |= BOD_FLAG_LINKED;
-    }
+    g_game->active_bod_list.add_bod(body);
 
     owner_player = player_;
     DWORD kind_flags = player_->shoot_flags;
@@ -57,81 +37,108 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
     }
 
     source_matrix.set_matrix_identity();
-    state = 1;
 
+    Player* spawn_player = owner_player;
     Vec3* position = &flight_transform.position;
-    Player* player = owner_player;
-    Vec3* player_position = &player->transform.position;
-    position->x = player_position->x;
-    position->y = player_position->y;
-    position->z = player_position->z;
-    position->x = player->transform.basis_forward.x * 0.5f + position->x;
-    position->y = player->transform.basis_forward.y * 0.5f + position->y;
-    position->z = player->transform.basis_forward.z * 0.5f + position->z;
+    state = 1;
+    *position = spawn_player->transform.position;
+    Vec3 half_forward = spawn_player->transform.basis_forward * 0.5f;
+    *position += half_forward;
 
+    Player* player = owner_player;
     DWORD shoot_flags = player->shoot_flags;
     if ((shoot_flags & 5) == 0) {
         if ((shoot_flags & 2) != 0) {
             if (spawn_selector == 2) {
                 Vec3* source = &player->presentation.snail_hotspots_world[
                     SNAIL_HOTSPOT_BLASTER_LEFT_FIRE];
-                position->x = source->x;
-                position->y = source->y;
-                position->z = source->z;
+                *position = *source;
                 position->x += 0.5f;
             } else if (spawn_selector == 1) {
                 Vec3* source = &player->presentation.snail_hotspots_world[
                     SNAIL_HOTSPOT_BLASTER_RIGHT_FIRE];
-                position->x = source->x;
-                position->y = source->y;
-                position->z = source->z;
+                *position = *source;
                 position->x -= 0.5f;
             }
-            velocity.x = 0.0f;
-            velocity.y = 0.0f;
-            velocity.z = player->velocity.z + 1.0f;
-        } else if ((shoot_flags & 0x18) != 0) {
-            Vec3* source;
-            if (spawn_selector == 2)
-                source = &player->presentation.snail_hotspots_world[
-                    SNAIL_HOTSPOT_LASER_LEFT];
-            else
-                source = &player->presentation.snail_hotspots_world[
-                    SNAIL_HOTSPOT_LASER_RIGHT];
-            position->x = source->x;
-            position->y = source->y;
-            position->z = source->z;
-            if (player->transform.basis_forward.z > 0.0f)
-                spawn_selector = (int)&player->presentation.snail_hotspots_world[
-                    SNAIL_HOTSPOT_LASER_LEFT].z;
-            else
-                spawn_selector = 0;
-            skip_one_tick = 1;
-            velocity.x = 0.0f;
-            velocity.y = 0.0f;
-            velocity.z = player->velocity.z + 1.0f;
-        } else if ((shoot_flags & 0x60) != 0) {
-            Vec3* source = &player->presentation.snail_hotspots_world[
-                SNAIL_HOTSPOT_ROCKET_BASE];
-            position->x = source->x;
-            position->y = source->y;
-            position->z = source->z;
-            velocity.x = 0.0f;
-            velocity.y = 0.0f;
-            velocity.z = player->velocity.z + 0.60000002f;
-        } else if ((shoot_flags & 0x29) != 0) {
-            velocity.x = 0.0f;
-            velocity.y = 0.0f;
-            velocity.z = player->velocity.z + 1.0f;
-        } else if ((shoot_flags & 0x52) != 0) {
-            velocity.x = 0.0f;
-            velocity.y = 0.0f;
-            velocity.z = player->velocity.z + 1.0f;
-            if (spawn_selector == 2)
-                position->x += 0.5f;
-            else
-                position->x -= 0.5f;
+            Vec3 staged_velocity;
+            staged_velocity.x = 0.0f;
+            staged_velocity.y = 0.0f;
+            staged_velocity.z = player->velocity.z + 1.0f;
+            velocity = staged_velocity;
+            goto after_default_launch_family;
         }
+
+        if ((shoot_flags & 0x18) == 0) {
+            if ((shoot_flags & 0x60) == 0) {
+                if ((shoot_flags & 0x29) != 0) {
+                    Vec3 staged_velocity;
+                    staged_velocity.x = 0.0f;
+                    staged_velocity.y = 0.0f;
+                    staged_velocity.z = player->velocity.z + 1.0f;
+                    velocity = staged_velocity;
+                    goto after_default_launch_family;
+                }
+
+                if ((shoot_flags & 0x52) != 0) {
+                    Vec3 staged_velocity;
+                    staged_velocity.x = 0.0f;
+                    staged_velocity.y = 0.0f;
+                    staged_velocity.z = player->velocity.z + 1.0f;
+                    velocity = staged_velocity;
+                    if (spawn_selector == 2)
+                        position->x += 0.5f;
+                    else
+                        position->x -= 0.5f;
+                }
+                goto after_default_launch_family;
+            }
+
+            {
+                Vec3* source = &player->presentation.snail_hotspots_world[
+                    SNAIL_HOTSPOT_ROCKET_BASE];
+                *position = *source;
+                Vec3 staged_velocity;
+                staged_velocity.x = 0.0f;
+                staged_velocity.y = 0.0f;
+                staged_velocity.z = player->velocity.z + 0.60000002f;
+                velocity = staged_velocity;
+            }
+            goto after_default_launch_family;
+        }
+
+        {
+            if (spawn_selector == 2) {
+                Vec3* source = &player->presentation.snail_hotspots_world[
+                    SNAIL_HOTSPOT_LASER_LEFT];
+                *position = *source;
+                if (player->transform.basis_forward.z > 0.0f)
+                    spawn_selector =
+                        (int)&player->presentation.snail_hotspots_world[
+                            SNAIL_HOTSPOT_LASER_LEFT].z;
+                else
+                    spawn_selector = 0;
+            } else {
+                Vec3* source = &player->presentation.snail_hotspots_world[
+                    SNAIL_HOTSPOT_LASER_RIGHT];
+                *position = *source;
+                if (player->transform.basis_forward.z > 0.0f)
+                    spawn_selector =
+                        (int)&player->presentation.snail_hotspots_world[
+                            SNAIL_HOTSPOT_LASER_LEFT].z;
+                else
+                    spawn_selector = 0;
+            }
+            skip_one_tick = 1;
+            Vec3 staged_velocity;
+            staged_velocity.x = 0.0f;
+            staged_velocity.y = 0.0f;
+            staged_velocity.z = player->velocity.z + 1.0f;
+            velocity = staged_velocity;
+        }
+        goto after_default_launch_family;
+
+after_default_launch_family:
+        ;
     } else {
         Vec3* source;
         if (spawn_selector == 3) {
@@ -152,9 +159,7 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
         goto after_shoot_flag_source;
 
 copy_shoot_flag_source:
-        position->x = source->x;
-        position->y = source->y;
-        position->z = source->z;
+        *position = *source;
 
 after_shoot_flag_source:
 
@@ -192,61 +197,38 @@ after_shoot_flag_source:
         velocity.z *= 0.80000001f;
     }
 
-    Vec3* direction = &this->direction;
-    Vec3* movement = &velocity;
-    direction->x = movement->x;
-    direction->y = movement->y;
-    direction->z = movement->z;
+    direction = velocity;
 
-    if (kind) {
-        int adjusted_kind = kind - 1;
-        if (adjusted_kind) {
-            if (adjusted_kind == 1) {
-                lifetime = 0.0f;
-                lifetime_step = game->subgame_rate * 0.027777776f;
-                rocket_owner_shot = this;
-                spin = 0.0f;
-                spin_step = 0.20943952f;
-                homing_target_object = 0;
-
-                char* node = (char*)&tertiary_body;
-                DWORD* node_words = (DWORD*)node;
-                if ((node_words[1] & BOD_FLAG_LINKED) != 0) {
-                    report_errorf("List ADD");
-                } else {
-                    char* anchor = (char*)&g_game->active_bod_list.first;
-                    int head = *(int*)anchor;
-                    if (head) {
-                        *(DWORD*)(head + 8) = (DWORD)node;
-                        *(DWORD*)(*(DWORD*)(*(DWORD*)anchor + 8) + 12) = *(DWORD*)anchor;
-                        int next = *(DWORD*)(*(DWORD*)anchor + 8);
-                        *(DWORD*)anchor = next;
-                        *(DWORD*)(next + 8) = 0;
-                    } else {
-                        *(DWORD*)anchor = (DWORD)node;
-                        node_words[2] = 0;
-                        *(DWORD*)(*(DWORD*)anchor + 12) = 0;
-                    }
-                    node_words[1] |= BOD_FLAG_LINKED;
-                }
-
-                this->emitter_index = emitter_index;
-                ContactTargetEntry* found =
-                    game->enemy_manager.search_path_for_golb(position);
-                if (found) {
-                    homing_target_object = found->object;
-                    if (!found->kind)
-                        found->object->list_flags |= BOD_FLAG_SUPPRESS_CONTACT;
-                    Vec3* homing_target = &this->homing_target;
-                    *homing_target = found->position;
-                    homing_blend = 0.0f;
-                    homing_blend_step = 0.033333335f;
-                }
-            }
-        } else {
+    switch (kind) {
+        case 2: {
             lifetime = 0.0f;
-            vapour_owner_shot = this;
+            lifetime_step = game->subgame_rate * 0.027777776f;
+            rocket_owner_shot = this;
+            spin = 0.0f;
+            spin_step = 0.20943952f;
+            homing_target_object = 0;
+
+            g_game->active_bod_list.add_bod(&tertiary_body);
+
+            this->emitter_index = emitter_index;
+            ContactTargetEntry* found =
+                game->enemy_manager.search_path_for_golb(position);
+            if (found) {
+                ContactTargetObject* object = found->object;
+                homing_target_object = object;
+                if (!found->kind)
+                    object->list_flags |= BOD_FLAG_SUPPRESS_CONTACT;
+                Vec3* homing_target = &this->homing_target;
+                *homing_target = found->position;
+                homing_blend = 0.0f;
+                homing_blend_step = 0.033333335f;
+            }
+            break;
+        }
+        case 1: {
+            lifetime = 0.0f;
             lifetime_step = game->subgame_rate * 0.041666668f;
+            vapour_owner_shot = this;
 
             BodNode* node = &vapour;
             BodNode* anchor = &g_game->subgame.golb_vapour_list_head;
@@ -265,34 +247,40 @@ after_shoot_flag_source:
             vapour.color.store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
             this->emitter_index = emitter_index;
             vapour.add_vapour_point(&flight_transform);
-            vapour.update_vapour();
+            ((BodAiDispatch*)&vapour)->update_bod_ai();
+            break;
         }
-    } else {
-        lifetime = 0.0f;
-        lifetime_step = game->subgame_rate * 0.041666668f;
-        Sprite* sprite = g_sprite_manager.allocate_sprite(
-            owner_player->player_slot,
-            130,
-            -1,
-            -1);
-        render_sprite = sprite;
-        sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
-        sprite->progress = 0.0f;
-        sprite->progress_step = 0.0f;
-        sprite->gravity_step = 0.0f;
+        case 0: {
+            lifetime = 0.0f;
+            lifetime_step = game->subgame_rate * 0.041666668f;
+            render_sprite = g_sprite_manager.allocate_sprite(
+                owner_player->player_slot,
+                130,
+                -1,
+                -1);
+            render_sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
+            render_sprite->progress = 0.0f;
+            render_sprite->progress_step = 0.0f;
+            render_sprite->gravity_step = 0.0f;
 
-        tColour color;
-        sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-        sprite->size_start = 0.49000001f;
-        sprite->size_end = 0.49000001f;
-        Vec3* sprite_position = (Vec3*)&sprite->position;
-        *sprite_position = *position;
-        sprite->facing_angle = ((float)next_math_random_value() - 16384.0f) * 0.0001917476f;
-        sprite->facing_angle_step = game->subgame_rate * 0.58177644f;
-        this->emitter_index = emitter_index;
+            tColour color;
+            render_sprite->color =
+                *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+            render_sprite->size_start = 0.49000001f;
+            render_sprite->size_end = 0.49000001f;
+            Vec3* sprite_position = (Vec3*)&render_sprite->position;
+            *sprite_position = *position;
+            render_sprite->facing_angle =
+                ((float)next_math_random_value() - 16384.0f) * 0.0001917476f;
+            render_sprite->facing_angle_step =
+                game->subgame_rate * 0.58177644f;
+            this->emitter_index = emitter_index;
+            break;
+        }
     }
 
-    if (owner_player->follow_state.active == 1 && owner_player->follow_state.vertical_offset < 0.5f) {
+    if (owner_player->follow_state.active == 1
+        && owner_player->follow_state.vertical_offset < 0.5f) {
         path_follow.active = 1;
         path_follow.template_record = owner_player->follow_state.template_record;
         path_follow.source_cell = owner_player->follow_state.source_cell;

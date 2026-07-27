@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**530/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93388/294937** bytes (**31.66%**) are proof-grade, and overall fuzzy is **77.86%**.
+**530/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93388/294937** bytes (**31.66%**) are proof-grade, and overall fuzzy is **78.20%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -627,7 +627,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  | core |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  | core |
 
-## Mid Progress (50-79.99%) (43)
+## Mid Progress (50-79.99%) (44)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -637,6 +637,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 430/439 | 56.16% | 6/439 | 12 unaudited, 28 ok |  | boundary |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  | boundary |
 | 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 2 unaudited, 6 ok |  | core |
+| 🚧 | create_golb | 0x415280 | 2349 | 549/582 | 77.98% | 81/582 | 1 unaudited, 47 ok |  | core |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  | core |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 13 ok |  | core |
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 725/721 | 69.71% | 22/721 | 49 ok |  | core |
@@ -675,11 +676,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 5 unaudited, 91 ok |  | core |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 4 unaudited, 54 ok |  | boundary |
 
-## Early Progress (>0-49.99%) (13)
+## Early Progress (>0-49.99%) (12)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
-| 🚧 | create_golb | 0x415280 | 2349 | 459/582 | 34.77% | 1/582 | 10 unaudited, 41 ok |  | core |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 646/655 | 48.89% | 20/655 | 37 ok |  | core |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 646/685 | 48.53% | 6/685 | 2 unaudited, 38 ok |  | core |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 654/696 | 32.15% | 1/696 | 12 unaudited, 34 ok |  | core |

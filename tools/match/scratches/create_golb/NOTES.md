@@ -317,3 +317,52 @@ honest 34.77%, 459/582 instruction frontier, prefix 1/582, with all 35 masked
 operands clean. BN's printable immediate rendering of `spin_step` as a
 four-byte `strncpy` remains an analyzer artifact; no fake tail or string owner
 was introduced to hide it.
+
+## 2026-07-27 mobile-authored creation shape
+
+The independently shipped Android
+`cRSubGolb::Create(cRSubGoldy*, int, int)` at `0x62d2c` and iOS copy at
+`0x3f9a4` preserve the same authored creation phases as Windows: intrusive
+body insertion, kind selection, identity/source-transform setup, the paired
+shoot-flag tree, kind-specific presentation setup, path-follow inheritance,
+and the initial AI callback. Their object offsets and presentation constants
+remain platform-specific; only the common control and ownership evidence was
+used here.
+
+That evidence closes several Windows source shapes:
+
+- Both the zero-offset primary body and kind-2 tertiary body use the shared
+  `BodList::add_bod` surface instead of handwritten word-slice splices.
+- The spawn position, hotspot anchors, direction, homing target, Sprite
+  position, and previous-flight position are whole `Vector3` values. The
+  half-forward offset is the authored by-value multiply/add pair.
+- `spawn_player` owns the initial transform read, while a separately reloaded
+  `player` owns the shoot-flag tree. Moving `state = 1` into that boundary
+  recovers the exact first 81 Windows instructions.
+- The mobile nested flag family and Windows CFG agree on the `0x02`, `0x18`,
+  `0x60`, `0x29`, and `0x52` lanes. Windows retains distinct stack-staged
+  launch vectors for the first blaster, `0x29`, `0x52`, rocket, and laser
+  lanes, while the mobile optimizers merge equivalent assignments into shared
+  labels.
+- The presentation discriminator is an authored `switch`. Kind zero stores
+  the allocated `Sprite*` directly in `render_sprite`; kind two retains a
+  borrowed `ContactTargetObject*`; kind one ends with the Vapour child's
+  slot-zero virtual AI callback, matching the explicit `cRVapour::AI` call on
+  both mobile builds.
+
+The focused Windows result rises from 34.77%, 459/582 instructions, prefix
+1/582, with 41 clean and 10 unaudited masked operands to 77.98%, 549/582
+instructions, prefix 81/582, with 47 clean operands, no unresolved or
+mismatched operands, and one unaudited target operand. The residual at
+`0x415724` is the second emitted copy of the default
+`player->velocity.z + 1.0f` launch constructor. Expressing a synthetic extra
+temporary reproduces that constant but forces EBP into the function prologue
+and destroys the otherwise native register schedule, so it is deliberately
+not retained.
+
+Rejected neighboring forms include a single shared launch label (67.91%), a
+fully structured `else if` ladder with direct `Vector3(...)` assignments
+(45.03%), the same ladder with explicit temporaries (51.20%), an explicit
+long-lived `Vapour*` local (56.51%), and staging only the final default launch
+copy (53.18%). These were useful compiler-lifetime probes, not candidates for
+score-only retention.
