@@ -117,3 +117,19 @@ repeatable instead of requiring an unsafe manual merge replacement.
 Focused Wibo remains 75.62%, 142/141 instructions, prefix 0/141, and 14 clean
 masked operands. The remaining extra spill and cleanup-loop allocation delta
 are unchanged and visible; no matching source or masked operand was altered.
+
+## 2026-07-27 dual-mobile lifecycle confirmation
+
+Android and iOS preserve the exact void `cRObject::CalcEdges()` owner and the
+same complete lifetime as Windows: gate on the toon-edge Object flag, borrow
+the global scratch edge bank, clear its shared count, call `AddEdge` across the
+active face topology, compact boundary records when Object flag `0x8000` is
+set, allocate the retained Object-owned bank once, and copy the final scratch
+records into it.
+
+The topology and storage are platform projections, not interchangeable
+layouts. Mobile walks a GL index array in triples and stores ten-byte compact
+edges (plus a mobile edge-index bank); Windows walks 0x30-byte
+`ObjectFaceQuad` records, emits three edges for a triangle and six for a quad,
+and retains 0x24-byte `ObjectToonEdge` records for the DirectX toon renderer.
+Only the method owner and lifecycle transfer.

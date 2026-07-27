@@ -3049,7 +3049,8 @@
       "source_object": "RObject.o",
       "confidence": "high",
       "android_symbol": "cRObject::CalcTextureGroups()",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Android and iOS preserve the same two-pass cRObject method as Windows: scan the Object-owned face bank, split on texture changes or the explicit face flag, propagate the 0x400 Object policy into face and texture flags, allocate cumulative group ends after the count pass, then fill them. Their cRObject field offsets differ, so only owner and lifecycle transfer. The separate exact Windows face-reordering helper at 0x419fd0 is not this method and remains unmapped."
     },
     {
       "address": "0x430570",
@@ -3067,7 +3068,8 @@
       "source_object": "RObject.o",
       "confidence": "high",
       "android_symbol": "cRObject::AddEdge(int, int, int)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Android and iOS preserve the void cRObject member and its three integer arguments. All three ports reject normals below 0.9, compare vertex positions to find a reverse edge, create boundary records, and convert a matched boundary into a shared edge carrying the second normal. Mobile uses compact ten-byte index records; Windows independently extends its 36-byte ObjectToonEdge with normalized direction, source length, and static coplanar-join filtering. Those desktop-only fields and policy are not inferred from mobile."
     },
     {
       "address": "0x4308b0",
@@ -3076,7 +3078,8 @@
       "source_object": "RObject.o",
       "confidence": "high",
       "android_symbol": "cRObject::CalcEdges()",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Android and iOS preserve the full cRObject edge-build lifecycle: Object-flag gate, borrowed global scratch bank and count, repeated AddEdge calls over face topology, optional boundary-edge compaction under flag 0x8000, one-time final-bank allocation, and copy into Object-owned storage. Mobile consumes GL triangle indices and ten-byte edges, whereas Windows consumes 0x30-byte triangle-or-quad facequads and 36-byte ObjectToonEdge records; only the owner and lifecycle transfer."
     },
     {
       "address": "0x430a30",

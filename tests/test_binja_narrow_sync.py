@@ -389,6 +389,66 @@ def test_android_root_constructor_recovers_inlined_game_owner() -> None:
     assert "aliases" not in functions_by_address["0x407b60"]
 
 
+def test_dual_mobile_object_geometry_owners_preserve_platform_boundaries() -> None:
+    repo_root = Path(__file__).parents[1]
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    functions_by_address = {
+        entry["address"]: entry for entry in functions["functions"]
+    }
+    crosswalk_by_address = {
+        entry["address"]: entry for entry in crosswalk["entries"]
+    }
+
+    for address, alias, symbol in (
+        (
+            "0x4303f0",
+            "cRObject_CalcTextureGroups",
+            "cRObject::CalcTextureGroups()",
+        ),
+        (
+            "0x4305a0",
+            "cRObject_AddEdge",
+            "cRObject::AddEdge(int, int, int)",
+        ),
+        ("0x4308b0", "cRObject_CalcEdges", "cRObject::CalcEdges()"),
+    ):
+        assert alias in functions_by_address[address]["aliases"]
+        entry = crosswalk_by_address[address]
+        assert entry["android_symbol"] == symbol
+        assert entry["ios_symbol"] == symbol
+        assert entry["source_object"] == "RObject.o"
+        assert entry["confidence"] == "high"
+
+    assert "separate exact Windows face-reordering helper" in (
+        crosswalk_by_address["0x4303f0"]["notes"]
+    )
+    assert "compact ten-byte index records" in (
+        crosswalk_by_address["0x4305a0"]["notes"]
+    )
+    assert "0x30-byte triangle-or-quad facequads" in (
+        crosswalk_by_address["0x4308b0"]["notes"]
+    )
+
+    object_header = (
+        repo_root / "tools/match/include/object_render_types.h"
+    ).read_text(encoding="utf-8")
+    for method in (
+        "cRObject::CalcTextureGroups",
+        "cRObject::AddEdge",
+        "cRObject::CalcEdges",
+    ):
+        assert method in object_header
+
+
 def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
     repo_root = Path(__file__).parents[1]
     functions = json.loads(

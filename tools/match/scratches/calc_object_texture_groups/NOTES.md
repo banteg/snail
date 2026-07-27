@@ -146,3 +146,19 @@ passes, Object-owned facequad borrow, conditional texture flag mutation, and
 Object-owned cumulative group-end allocation. This confirms the existing
 Windows owner graph without justifying any source shaping for the remaining
 equivalent SIB encoding.
+
+## 2026-07-27 cross-port algorithm boundary
+
+Reading both newly tracked mobile bodies closes more than the symbol name:
+each begins from the Object-owned face bank, splits a group on either a
+texture-reference change or face flag `0x10`, propagates Object flag `0x400`
+into face flag `0x02` and texture flag `0x20`, counts the cumulative-end bank,
+then repeats the scan to fill it. That is the complete Windows method
+lifecycle, despite different cRObject offsets.
+
+The exact Windows `sort_object_faces_by_texture_group @ 0x419fd0` remains a
+separate pre-pass. Neither mobile corpus exports a second cRObject sorting
+method, and the mobile `CalcTextureGroups` bodies contain the two-pass grouping
+logic directly rather than the Windows 0x30-byte record swaps. Do not map the
+sort helper to `CalcTextureGroups` merely because both participate in texture
+grouping.

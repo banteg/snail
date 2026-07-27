@@ -175,10 +175,10 @@ struct Object {
     void calc_object_bounding_box(); // @ 0x42fb10
     void calc_object_facequad_normals(); // @ 0x42fcb0
     int calc_object_facequad_normals_simple(); // @ 0x430230
-    void calc_object_texture_groups(); // @ 0x4303f0
-    void add_object_edge(int vertex_a, int vertex_b, int normal_index); // @ 0x4305a0
+    void calc_object_texture_groups(); // @ 0x4303f0; cRObject::CalcTextureGroups
+    void add_object_edge(int vertex_a, int vertex_b, int normal_index); // @ 0x4305a0; cRObject::AddEdge
     void request_object_edges(int edge_count); // @ 0x430570; Android cRObject::RequestEdges(int)
-    void calc_object_edges(); // @ 0x4308b0
+    void calc_object_edges(); // @ 0x4308b0; cRObject::CalcEdges
     void request_object_animation(
         int keyframe_count, XAnimationKeyframe* keyframes,
         float progress_step, int flags); // @ 0x430a70

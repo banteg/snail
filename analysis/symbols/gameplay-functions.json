@@ -1726,7 +1726,10 @@
     {
       "address": "0x4303f0",
       "name": "calc_object_texture_groups",
-      "description": "Authored void `cRObject::CalcTextureGroups()` in both mobile ports: borrows the Object-owned facequad bank, marks texture refs when required, allocates the Object-owned cumulative texture-group end array, then fills it on the second pass."
+      "description": "Authored void `cRObject::CalcTextureGroups()` in both mobile ports: borrows the Object-owned facequad bank, marks texture refs when required, allocates the Object-owned cumulative texture-group end array, then fills it on the second pass.",
+      "aliases": [
+        "cRObject_CalcTextureGroups"
+      ]
     },
     {
       "address": "0x430470",
@@ -1741,12 +1744,18 @@
     {
       "address": "0x4305a0",
       "name": "add_object_edge",
-      "description": "Adds or merges one candidate toon edge in the global build scratch array. Its two vertex members are 32-bit indices; new records store a normalized direction plus its original length, while shared records add the second face normal and may be removed when the join should not outline. iOS RObject.o names this `cRObject::AddEdge(int, int, int)`."
+      "description": "Authored void `cRObject::AddEdge(int, int, int)` in both mobile ports. All three builds reject degenerate face normals, merge reverse geometric edges in the shared build workspace, and attach the second face normal; Windows additionally owns a normalized direction, source length, and static coplanar-join filtering in its 36-byte ObjectToonEdge record.",
+      "aliases": [
+        "cRObject_AddEdge"
+      ]
     },
     {
       "address": "0x4308b0",
       "name": "calc_object_edges",
-      "description": "Builds the unique edge list for one toon-enabled object from its face quads, optionally removes boundary edges for closed meshes, and stores the packed records later filtered by `render_object_toon`. iOS RObject.o names this `cRObject::CalcEdges()`."
+      "description": "Authored void `cRObject::CalcEdges()` in both mobile ports: gates toon-edge generation on the Object flag, borrows a global scratch edge bank, feeds face topology through AddEdge, optionally removes boundary records, allocates the Object-owned final bank, and copies the retained edges. Windows traverses 0x30-byte triangle-or-quad faces and owns 36-byte outline records; mobile traverses GL triangles and owns compact 10-byte records.",
+      "aliases": [
+        "cRObject_CalcEdges"
+      ]
     },
     {
       "address": "0x430a30",

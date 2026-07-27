@@ -134,3 +134,20 @@ loads as byte-lane assignments. That is a decompiler presentation residual,
 not four native byte loads. Focused Wibo remains 73.36%, 231/227 instructions,
 prefix 1/227, and 29 clean operands; the remaining delta is still honest
 register/block allocation.
+
+## 2026-07-27 dual-mobile algorithm confirmation
+
+The Android and iOS bodies retain the exact void
+`cRObject::AddEdge(int, int, int)` owner. Across all three ports the method
+rejects a source normal below `0.9`, compares endpoint positions rather than
+trusting vertex indices, searches for the reverse orientation, creates a
+boundary record when none exists, and converts the first boundary match into a
+shared edge with a second face-normal index.
+
+The record layout intentionally diverges. Both mobile ports store a compact
+five-halfword, ten-byte edge and stop after the boundary/shared merge. Windows
+owns the richer 0x24-byte `ObjectToonEdge`: 32-bit indices, normalized edge
+direction, original length, and the static-object cross/dot tests which remove
+flat or inward joins. Mobile proves the owner and common algorithmic prefix;
+it does not justify shrinking the Windows record or deleting its desktop-only
+filtering.
