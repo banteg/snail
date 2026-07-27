@@ -1,6 +1,6 @@
 // find_case_insensitive_substring @ 0x44e600 (cdecl)
 
-char ascii_upper_if_lowercase(char value); // @ 0x44e5a0
+#include "rstring.h"
 
 char* __cdecl find_case_insensitive_substring(char* needle, char* haystack)
 {

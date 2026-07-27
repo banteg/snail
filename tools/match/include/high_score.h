@@ -6,6 +6,7 @@
 
 #include "frontend_widget.h"
 #include "game_base.h"
+#include "rstring.h"
 #include "sub_high_score.h"
 #include "runtime_config.h"
 #include "sprite.h"
@@ -39,7 +40,5 @@ public:
 
 typedef char HighScore_known_extent_must_be_0xf4[
     (sizeof(HighScore) == 0xf4) ? 1 : -1];
-
-void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 
 #endif

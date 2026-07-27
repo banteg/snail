@@ -3,14 +3,12 @@
 #include <stddef.h>
 
 #include "game_root.h"
+#include "rstring.h"
 
 int sprintf(char* buffer, char* format, ...);
 
 char* get_archive_data_base();
 char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out_size);
-char* find_case_insensitive_substring(char* needle, char* haystack);
-int parse_next_signed_int(char** cursor);
-void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);
 
 

@@ -2,9 +2,7 @@
 
 #include "directx_loader.h"
 #include "object_render_types.h"
-
-int strings_equal_case_insensitive_path(char* left, char* right);
-void rstrcpy_checked_ascii(char* destination, char* source);
+#include "rstring.h"
 
 int DirectXLoader::load_or_reuse_cached_x_mesh(char* mesh_name)
 {

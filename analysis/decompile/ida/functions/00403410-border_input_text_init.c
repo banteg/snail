@@ -12,7 +12,7 @@ void __thiscall border_input_text_init(FrontendWidget *widget, int32_t capacity,
   p_text_buffer = &widget->text_buffer;
   widget->input_cursor = 0;
   widget->input_length = 0;
-  if ( widget->text_buffer.raw[0] )
+  if ( widget->text_buffer.raw[0] != 0 )
   {
     do
     {
@@ -20,7 +20,7 @@ void __thiscall border_input_text_init(FrontendWidget *widget, int32_t capacity,
       ++widget->input_length;
       ++widget->input_cursor;
     }
-    while ( p_text_buffer->raw[0] );
+    while ( p_text_buffer->raw[0] != 0 );
   }
   widget->text_buffer.raw[widget->input_cursor] = 124;
   widget->text_buffer.raw[widget->input_cursor + 1] = 0;

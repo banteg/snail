@@ -56,7 +56,7 @@ void __thiscall initialize_high_score_screen(HighScore *high_score, int selected
   high_score->selected_rank = selected_rank;
   high_score->entering_name = selected_rank != -1;
   hide_star_field(&g_game_base->star_manager);
-  hide_gameplay_scores((FrontendWidget **)&g_game_base->subgame);
+  hide_gameplay_scores(&g_game_base->subgame);
   cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
   landscape_script_by_name = load_landscape_script_by_name(
                                &g_game_base->subgame.landscape_manager,
@@ -66,7 +66,7 @@ void __thiscall initialize_high_score_screen(HighScore *high_score, int selected
   capture_mouse_cursor(&g_game_base->players[0].mouse_cursor);
   high_score->title_widget = allocate_border(&g_game_base->border_manager);
   v5 = high_score->selected_bank;
-  if ( !v5 )
+  if ( v5 == 0 )
   {
     v7 = set_color_rgba((tColour *)&v39, 1.0, 1.0, 1.0, 1.0);
     initialize_frontend_widget(high_score->title_widget, 0, aPostalHighScor, 23, 0.0, 64.0, v7, 2, 0.0);
@@ -83,7 +83,7 @@ void __thiscall initialize_high_score_screen(HighScore *high_score, int selected
 LABEL_8:
     v37 = 27.0;
   }
-  if ( high_score->entering_name )
+  if ( high_score->entering_name != 0 )
   {
     rstrcpy_checked_ascii((char *)&high_score->title_widget->text_buffer, aEnterYourNameH);
     layout_frontend_widget(high_score->title_widget);
@@ -100,7 +100,7 @@ LABEL_8:
     if ( *(int32_t *)((char *)&g_game_base->subgame.sub_high_score.active_record_bank->active + record_offset_bytes) != 1 )
       goto LABEL_25;
     v12 = high_score->selected_bank;
-    if ( v12 )
+    if ( v12 != 0 )
     {
       if ( v12 != 1 )
         goto LABEL_23;
@@ -161,7 +161,7 @@ LABEL_8:
       name_widget_cursor[20] = allocate_border(&g_game_base->border_manager);
       v18 = set_color_rgba((tColour *)&v49, 1.0, 1.0, 1.0, 1.0);
       initialize_frontend_widget(name_widget_cursor[20], v11 | 0x20000014, aReplay, 22, 0.0, y, v18, 2, 170.0);
-      if ( !high_score->entering_name )
+      if ( high_score->entering_name == 0 )
         goto LABEL_23;
     }
     else
@@ -252,7 +252,7 @@ LABEL_25:
   }
   while ( v25 );
   yb = v37 * 10.0 + 111.0;
-  if ( high_score->entering_name )
+  if ( high_score->entering_name != 0 )
   {
     high_score->cancel_name_button = allocate_border(&g_game_base->border_manager);
     v26 = set_color_rgba((tColour *)&v38, 1.0, 1.0, 1.0, 1.0);
@@ -270,7 +270,7 @@ LABEL_25:
     initialize_frontend_widget(high_score->back_button, 0x20000014u, g_back_text, 23, 0.0, yb, v28, 2, -132.0);
     high_score->bank_toggle_button = allocate_border(&g_game_base->border_manager);
     v29 = high_score->selected_bank;
-    if ( v29 )
+    if ( v29 != 0 )
     {
       if ( v29 == 1 )
       {

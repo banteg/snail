@@ -2,9 +2,9 @@
 
 #include "audio_system.h"
 #include "archive_index.h"
+#include "rstring.h"
 
 char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, int* out_size);
-void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);
 
 int register_sound_sample(char* path, int normalization_class)

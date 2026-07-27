@@ -2,8 +2,7 @@
 
 #include "frontend_widget.h"
 #include "input_ok_state.h"
-
-void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
+#include "rstring.h"
 
 void FrontendWidget::border_input_text_init(int capacity, char* text, int flags)
 {

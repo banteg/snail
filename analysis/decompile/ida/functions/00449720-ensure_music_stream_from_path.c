@@ -9,25 +9,25 @@ int32_t __thiscall ensure_music_stream_from_path(AudioBackend *backend, char *pa
   unsigned int v5; // kr04_4
   BassHandle file; // eax
 
-  if ( backend->music_stream_active )
+  if ( backend->music_stream_active != 0 )
   {
     result = strings_equal_case_insensitive_path(path, g_cached_music_path);
-    if ( result )
+    if ( result != 0 )
       return result;
     stop_music_stream(backend);
   }
   v5 = strlen(path) + 1;
   rstrcpy_checked_ascii(g_cached_music_path, path);
-  if ( g_active_music_stream )
+  if ( g_active_music_stream != 0 )
     stop_music_stream(backend);
   g_active_music_stream = 0;
   if ( (int)(v5 - 1) <= 4 )
     return report_errorf("Music Play Memory Failed %s", path);
   file = g_bass_stream_create_file(0, path, 0, 0, 0);
   g_active_music_stream = file;
-  if ( !file )
+  if ( file == 0 )
     return report_errorf("Music Play Memory Failed %s", path);
-  if ( play_mode )
+  if ( play_mode != 0 )
     result = g_bass_stream_play(file, 0, 4u);
   else
     result = g_bass_stream_play(file, 0, 0);

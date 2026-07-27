@@ -18,7 +18,7 @@ LABEL_5:
   else
   {
     v2 = g_registered_sound_sample_names[0];
-    while ( !find_case_insensitive_substring(sample_name, v2) )
+    while ( find_case_insensitive_substring(sample_name, v2) == nullptr )
     {
       ++v1;
       v2 += 128;

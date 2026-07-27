@@ -3,14 +3,15 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_voice_manager @ 0x448ee0 */
 
-00448ef0        char pattern = 0
+00448ef0        char var_200[0x100]
+00448ef0        var_200[0] = 0
 00448ef4        char* eax = get_archive_data_base()
 00448f04        load_file_bytes_from_archive_or_fs("Voice/_Voice.txt", eax, nullptr)
 00448f0c        int32_t ebp = 0
 00448f0e        int32_t var_20c = 0
 00448f22        char* cursor
 00448f22        while (true)
-00448f22        rstrcpy_checked_ascii(&pattern, "Set:")
+00448f22        rstrcpy_checked_ascii(&var_200, "Set:")
 00448f2d        if (ebp u<= 0xf)
 00448f33        char* edi_1
 00448f33        switch (ebp)
@@ -54,11 +55,11 @@
 00448ff9        if (not(cond:2_1))
 00448ff9        break
 00448ffb        int32_t ecx = not.d(i)
-00449001        char* edi_3 = &pattern
+00449001        char (* edi_3)[0x100] = &var_200
 00449005        int32_t i_1 = 0xffffffff
 00449008        while (i_1 != 0)
 00449008        bool cond:3_1 = 0 != *edi_3
-00449008        edi_3 = &edi_3[1]
+00449008        edi_3 = &(*edi_3)[1]
 00449008        i_1 -= 1
 00449008        if (not(cond:3_1))
 00449008        break
@@ -66,20 +67,20 @@
 00449010        int32_t edi_5
 00449010        edi_5, esi_2 = __builtin_memcpy(edi_3 - 1, edi_1 - ecx, ecx & 0xfffffffc)
 00449017        __builtin_memcpy(edi_5, esi_2, ecx & 3)
-00449023        char* searched = find_case_insensitive_substring(&pattern, eax)
+00449023        char* searched = find_case_insensitive_substring(&var_200, eax)
 0044902d        cursor = searched
 00449031        if (searched == 0)
-0044924b        report_errorf("Cannot find %s in _Voice.txt", &pattern)
+0044924b        report_errorf("Cannot find %s in _Voice.txt", &var_200)
 0044925d        return
 0044903d        char* searched_1 = find_case_insensitive_substring("{", searched)
 00449048        cursor = searched_1
 0044904c        char* eax_2 = find_case_insensitive_substring("}", searched_1)
-00449058        char* i_2 = advance_to_next_crlf_line(cursor)
+00449058        char* cursor_1 = advance_to_next_crlf_line(cursor)
 00449060        int32_t count = 0
-00449064        cursor = i_2
-00449068        while (i_2 u< eax_2)
+00449064        cursor = cursor_1
+00449068        while (cursor_1 u< eax_2)
 0044906b        count += 1
-0044906c        i_2 = advance_to_next_crlf_line(i_2)
+0044906c        cursor_1 = advance_to_next_crlf_line(cursor_1)
 00449081        struct VoiceSet* set = &manager->sets[ebp]
 00449086        initialize_voice_set(set, count)
 0044908b        int32_t esi_4 = 0
@@ -87,25 +88,25 @@
 00449099        while (true)
 00449099        char eax_4 = *cursor
 004490a1        if (eax_4 != 9 && eax_4 != 0x20)
-004490b6        void path
-004490b6        rstrcpy_checked_ascii(&path, "Voice/")
-004490bb        char* cursor_1 = cursor
+004490b6        char var_100
+004490b6        rstrcpy_checked_ascii(&var_100, "Voice/")
+004490bb        char* cursor_2 = cursor
 004490c2        void var_fa
 004490c2        char* eax_5 = &var_fa
-004490c9        char i_3 = *cursor_1
-004490ce        while (i_3 != 0x2e)
-004490d0        *eax_5 = i_3
+004490c9        char i_2 = *cursor_2
+004490ce        while (i_2 != 0x2e)
+004490d0        *eax_5 = i_2
 004490d2        eax_5 = &eax_5[1]
-004490d3        cursor_1 = &cursor_1[1]
-004490d4        cursor = cursor_1
-004490d8        i_3 = *cursor_1
+004490d3        cursor_2 = &cursor_2[1]
+004490d4        cursor = cursor_2
+004490d8        i_2 = *cursor_2
 004490df        *eax_5 = 0x2e
 004490e4        eax_5[1] = 0x6f
 004490e8        eax_5[2] = 0x67
 004490ec        eax_5[3] = 0x67
 004490ef        eax_5[4] = 0
-00449101        cursor = advance_to_next_crlf_line(cursor_1)
-00449110        set->bites[esi_4] = register_sound_sample(&path, 1)
+00449101        cursor = advance_to_next_crlf_line(cursor_2)
+00449110        set->bites[esi_4] = register_sound_sample(&var_100, 1)
 00449113        esi_4 += 1
 00449116        if (esi_4 s>= count)
 00449116        break

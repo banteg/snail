@@ -14,3 +14,11 @@ Recovered relationships:
 
 Focused Wibo verifies this as exact: 100.00%, 31/31 instructions, with 2 masked
 operands OK.
+
+## 2026-07-27 authored RString contract
+
+Both mobile ports name this `Rstrcpy(char*, char const*)` in `RString.o`.
+Windows keeps the additional diagnostic but shares the void contract and const
+source ownership. The final copied NUL remains in AL incidentally; callers do
+not consume it. The shared `rstring.h` declaration and both analyzer replays
+now preserve that distinction without changing the exact object.

@@ -1,10 +1,9 @@
 // ensure_music_stream_from_path @ 0x449720 (thiscall, ret 0x8)
 
 #include "audio_system.h"
+#include "rstring.h"
 #include <string.h>
 
-int strings_equal_case_insensitive_path(char* left, char* right); // @ 0x44e6c0
-void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);
 
 int AudioBackend::ensure_music_stream_from_path(char* path, char play_mode)

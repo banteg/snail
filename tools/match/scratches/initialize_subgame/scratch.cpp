@@ -9,6 +9,7 @@
 #include "game_root.h"
 #include "galaxy_route_types.h"
 #include "landscape_manager.h"
+#include "rstring.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
 #include "time_trial.h"
@@ -28,7 +29,6 @@ extern char g_blank_text[]; // 0x4dfb08
 extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
-void rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
 int report_errorf(char* format, ...); // @ 0x431cc0
 

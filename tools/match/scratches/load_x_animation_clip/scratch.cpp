@@ -6,17 +6,16 @@
 #include "bod_types.h"
 #include "directx_loader.h"
 #include "object_animation_types.h"
+#include "rstring.h"
 #include "rtext.h"
 
 void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
-char* find_case_insensitive_substring(char* needle, char* haystack); // @ 0x44e600
 char is_archive_index_loaded(); // @ 0x431a80
 void enumerate_matching_archive_or_fs_entries(
     char* directory,
     char* pattern,
     int* out_count,
     DirectoryEntryName* out_names); // @ 0x431740
-int parse_next_signed_int(char** cursor); // @ 0x44e710
 int report_errorf(char* format, ...); // @ 0x431cc0
 
 extern DirectoryEntryName g_animation_directory[128]; // data_4b2f50

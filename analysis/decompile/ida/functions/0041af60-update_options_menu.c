@@ -14,7 +14,7 @@ void __thiscall update_options_menu(Options *options)
 
   g_runtime_config.stream_volume = options->music_volume_widget->slider_position_target;
   g_runtime_config.sample_volume = options->sound_volume_widget->slider_position_target;
-  if ( g_runtime_config.fullscreen_enabled )
+  if ( g_runtime_config.fullscreen_enabled != 0 )
     rstrcpy_checked_ascii((char *)&options->fullscreen_widget->text_buffer, g_fullscreen_on_text);
   else
     rstrcpy_checked_ascii((char *)&options->fullscreen_widget->text_buffer, g_fullscreen_off_text);
@@ -24,14 +24,14 @@ void __thiscall update_options_menu(Options *options)
   {
     LOBYTE(widget_flags) = widget_flags & 0xDF;
     fullscreen_widget->widget_flags = widget_flags;
-    if ( g_runtime_config.fullscreen_enabled )
+    if ( g_runtime_config.fullscreen_enabled != 0 )
     {
       set_fullscreen_mode(0);
       g_runtime_config.fullscreen_enabled = 0;
     }
     else
     {
-      set_fullscreen_mode(1);
+      set_fullscreen_mode(1u);
       g_runtime_config.fullscreen_enabled = 1;
     }
   }
@@ -55,7 +55,7 @@ void __thiscall update_options_menu(Options *options)
   apply_audio_config_volumes(options);
   if ( options->previous_sample_volume != g_runtime_config.sample_volume )
   {
-    play_sound_effect(8);
+    play_sound_effect(&g_sound_effect_manager, 8);
     options->previous_sample_volume = g_runtime_config.sample_volume;
   }
 }

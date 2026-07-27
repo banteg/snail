@@ -9,9 +9,9 @@ void __thiscall open_galaxy_route(Galaxy *galaxy, int32_t selected_level_index)
   FrontendWidget *selected_title_widget; // ecx
   double v5; // st7
   FrontendWidget *v6; // [esp-4h] [ebp-14h]
-  float v7; // [esp+4h] [ebp-Ch] BYREF
-  float v8; // [esp+8h] [ebp-8h] BYREF
-  float v9; // [esp+Ch] [ebp-4h] BYREF
+  float max_y; // [esp+4h] [ebp-Ch] BYREF
+  float min_x; // [esp+8h] [ebp-8h] BYREF
+  float min_y; // [esp+Ch] [ebp-4h] BYREF
 
   v2 = selected_level_index;
   selected_title_widget = galaxy->selected_title_widget;
@@ -57,33 +57,39 @@ void __thiscall open_galaxy_route(Galaxy *galaxy, int32_t selected_level_index)
     }
     unhide_border_init(galaxy->bounds_frame_widget);
     v6 = galaxy->selected_title_widget;
-    v8 = 1000.0;
+    min_x = 1000.0;
     *(float *)&selected_level_index = -1000.0;
-    v9 = 1000.0;
-    v7 = -1000.0;
-    galaxy_border_bound(galaxy, &v8, (float *)&selected_level_index, &v9, &v7, v6);
-    galaxy_border_bound(galaxy, &v8, (float *)&selected_level_index, &v9, &v7, galaxy->selected_detail_widget);
-    galaxy_border_bound(galaxy, &v8, (float *)&selected_level_index, &v9, &v7, galaxy->selected_description_widget);
-    galaxy_border_bound(galaxy, &v8, (float *)&selected_level_index, &v9, &v7, galaxy->play_or_deliver_widget);
-    v7 = v7 + 8.0;
-    v8 = v8 - 8.0;
+    min_y = 1000.0;
+    max_y = -1000.0;
+    galaxy_border_bound(galaxy, &min_x, (float *)&selected_level_index, &min_y, &max_y, v6);
+    galaxy_border_bound(galaxy, &min_x, (float *)&selected_level_index, &min_y, &max_y, galaxy->selected_detail_widget);
+    galaxy_border_bound(
+      galaxy,
+      &min_x,
+      (float *)&selected_level_index,
+      &min_y,
+      &max_y,
+      galaxy->selected_description_widget);
+    galaxy_border_bound(galaxy, &min_x, (float *)&selected_level_index, &min_y, &max_y, galaxy->play_or_deliver_widget);
+    max_y = max_y + 8.0;
+    min_x = min_x - 8.0;
     v5 = *(float *)&selected_level_index + 8.0;
     *(float *)&selected_level_index = v5;
     if ( v5 > 630.0 )
       galaxy->selected_title_widget->layout_anchor_x = galaxy->route_slots[galaxy->selected_index].record.map_x
                                                      - (*(float *)&selected_level_index
-                                                      - v8)
+                                                      - min_x)
                                                      - 40.0;
-    if ( v9 < 50.0 )
+    if ( min_y < 50.0 )
       galaxy->selected_title_widget->layout_anchor_y = 50.0;
-    if ( v7 > 450.0 )
-      galaxy->selected_title_widget->layout_anchor_y = 450.0 - (v7 - v9);
+    if ( max_y > 450.0 )
+      galaxy->selected_title_widget->layout_anchor_y = 450.0 - (max_y - min_y);
   }
-  while ( *(float *)&selected_level_index > 631.0 || v9 < 49.0 || v7 > 451.0 );
-  galaxy->bounds_frame_widget->authored_width = *(float *)&selected_level_index - v8;
-  galaxy->bounds_frame_widget->authored_height = v7 - v9;
-  galaxy->bounds_frame_widget->authored_left = v8;
-  galaxy->bounds_frame_widget->authored_top = v9;
+  while ( *(float *)&selected_level_index > 631.0 || min_y < 49.0 || max_y > 451.0 );
+  galaxy->bounds_frame_widget->authored_width = *(float *)&selected_level_index - min_x;
+  galaxy->bounds_frame_widget->authored_height = max_y - min_y;
+  galaxy->bounds_frame_widget->authored_left = min_x;
+  galaxy->bounds_frame_widget->authored_top = min_y;
   galaxy->play_or_deliver_widget->anchor_x = galaxy->bounds_frame_widget->authored_width * 0.5
                                            + galaxy->bounds_frame_widget->authored_left
                                            - 320.0;

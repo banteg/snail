@@ -55,20 +55,20 @@
 004482a9        i_1 = *(eax_4 + 1)
 004482ac        eax_4 += 1
 004482b0        do while (i_1 != 0x27)
-004482bf        char* eax_5 = find_case_insensitive_substring("Data:", &file_buffer)
-004482c9        if (eax_5 == 0)
+004482bf        char* cursor = find_case_insensitive_substring("Data:", &file_buffer)
+004482c9        if (cursor == 0)
 00448854        report_errorf("Cannot find Data: in Segment %s\n", &(&__saved_edi)[segment_index * 0x20 + 0x53c])
 00448866        return
-004482d0        char* eax_6 = advance_to_next_crlf_line(eax_5)
+004482d0        char* cursor_1 = advance_to_next_crlf_line(cursor)
 004482da        void* var_14_31
-004482da        if (eax_6 == 0)
+004482da        if (cursor_1 == 0)
 00448871        var_14_31 = &(&__saved_edi)[segment_index * 0x20 + 0x53c]
-004482e6        char* data_line_cursor = advance_to_next_crlf_line(eax_6)
-004482ed        void* eax_34
+004482e6        char* data_line_cursor = advance_to_next_crlf_line(cursor_1)
+004482ed        void* eax_32
 004482ed        if (data_line_cursor == 0)
-00448877        eax_34 = &(&__saved_edi)[segment_index * 0x20 + 0x53c]
+00448877        eax_32 = &(&__saved_edi)[segment_index * 0x20 + 0x53c]
 004488d8        label_4488d8:
-004488d8        var_14_31 = eax_34
+004488d8        var_14_31 = eax_32
 004482f6        if (*data_line_cursor != 0x40)
 00448890        report_errorf("Data line must start with '@' in Segment %s\n", &(&__saved_edi)[segment_index * 0x20 + 0x53c])
 004488a2        return
@@ -144,11 +144,11 @@
 00448473        char* searched_2 = find_case_insensitive_substring("Velocity=", &option_text)
 0044847d        parse_cursor = searched_2
 00448481        if (searched_2 != 0)
-00448489        char* eax_15 = find_case_insensitive_substring("=", searched_2)
+00448489        char* eax_13 = find_case_insensitive_substring("=", searched_2)
 00448495        int32_t edx_13 = row_stride_anchor->row.flags | 8
-0044849e        parse_cursor = &eax_15[1]
+0044849e        parse_cursor = &eax_13[1]
 004484a2        row_stride_anchor->row.flags = edx_13
-004484b1        parse_cursor = find_case_insensitive_substring("(", &eax_15[1])
+004484b1        parse_cursor = find_case_insensitive_substring("(", &eax_13[1])
 004484bb        row_stride_anchor->row.object_velocity.x = fconvert.s(parse_next_float32(&parse_cursor))
 004484cb        row_stride_anchor->row.object_velocity.y = fconvert.s(parse_next_float32(&parse_cursor))
 004484db        row_stride_anchor->row.object_velocity.z = fconvert.s(parse_next_float32(&parse_cursor))
@@ -157,9 +157,9 @@
 004484fc        if (searched_3 != 0)
 0044850d        row_stride_anchor->row.flags |= 1
 00448519        parse_cursor = &find_case_insensitive_substring("=", searched_3)[1]
-00448522        int32_t eax_20 = parse_next_signed_int(&parse_cursor)
+00448522        int32_t eax_18 = parse_next_signed_int(&parse_cursor)
 00448527        char* searched_6 = parse_cursor
-0044852b        row_stride_anchor->row.parcel_set_id = eax_20
+0044852b        row_stride_anchor->row.parcel_set_id = eax_18
 00448542        parse_cursor = &find_case_insensitive_substring("(", searched_6)[1]
 0044854b        row_stride_anchor->row.local_position.x = fconvert.s(parse_next_float32(&parse_cursor))
 0044855b        row_stride_anchor->row.local_position.y = fconvert.s(parse_next_float32(&parse_cursor))
@@ -179,9 +179,9 @@
 004485b0        parse_cursor = parse_cursor_2
 004485b4        path_char = *parse_cursor_2
 004485cc        *path_name_cursor = 0
-004485ce        int32_t eax_24 = find_segment_path_index_by_name(&g_game_base->subgame.path_manager, &path_name)
-004485d6        row_stride_anchor->row.path_template_index = eax_24
-004485dc        if (eax_24 != 0xffffffff)
+004485ce        int32_t eax_22 = find_segment_path_index_by_name(&g_game_base->subgame.path_manager, &path_name)
+004485d6        row_stride_anchor->row.path_template_index = eax_22
+004485dc        if (eax_22 != 0xffffffff)
 004485f7        int32_t flags_2 = row_stride_anchor->row.flags
 004485fd        flags_2.b |= 8
 004485ff        row_stride_anchor->row.flags = flags_2
@@ -236,7 +236,7 @@
 0044877d        row_stride_anchor->row.flags = flags_9
 00448789        data_line_cursor = advance_to_next_crlf_line(option_cursor)
 00448790        if (data_line_cursor == 0)
-004488d1        eax_34 = &(&__saved_edi)[segment_index_spill * 0x20 + 0x53c]
+004488d1        eax_32 = &(&__saved_edi)[segment_index_spill * 0x20 + 0x53c]
 004488d1        goto label_4488d8
 0044879a        segment_index = segment_index_spill
 0044879f        row_index += 1

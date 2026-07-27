@@ -4206,32 +4206,50 @@
     {
       "address": "0x44e5a0",
       "name": "ascii_upper_if_lowercase",
-      "description": "Exact Windows `RstrASC(char)`: folds one lowercase ASCII byte to uppercase and leaves all other byte values unchanged."
+      "description": "Exact Windows `RstrASC(char)`: folds one lowercase ASCII byte to uppercase and leaves all other byte values unchanged.",
+      "aliases": [
+        "RstrASC"
+      ]
     },
     {
       "address": "0x44e5b0",
       "name": "rstrcpy_checked_ascii",
-      "description": "Exact Windows `Rstrcpy(char*, char const*)`: copies a null-terminated resource string while the Windows build additionally reports high-bit bytes through its `Dodgy Rstrcpy` diagnostic. This helper is hot across path, text, and script setup code."
+      "description": "Exact void Windows `Rstrcpy(char*, char const*)`: copies a null-terminated resource string while the Windows build additionally reports high-bit bytes through its `Dodgy Rstrcpy` diagnostic. Both mobile ports preserve the authored RString.o owner and const source contract; Windows callers discard the final copied byte left incidentally in EAX.",
+      "aliases": [
+        "Rstrcpy"
+      ]
     },
     {
       "address": "0x44e600",
       "name": "find_case_insensitive_substring",
-      "description": "Windows `Rstrfind(char*, char*)`: scans the second argument for the first ASCII-case-insensitive match of the first argument and returns that searched-string cursor. Used for prefix-friendly parser metadata and tag probes."
+      "description": "Windows `Rstrfind(char*, char*)`: scans the second argument for the first ASCII-case-insensitive match of the first argument and returns that searched-string cursor. Used for prefix-friendly parser metadata and tag probes.",
+      "aliases": [
+        "Rstrfind"
+      ]
     },
     {
       "address": "0x44e690",
       "name": "advance_to_next_crlf_line",
-      "description": "Exact Windows `Rstrnewline(char*)`: returns the first byte after the next CRLF pair, or null when there is no following non-empty line."
+      "description": "Exact Windows `Rstrnewline(char*)`: returns the first byte after the next CRLF pair, or null when there is no following non-empty line.",
+      "aliases": [
+        "Rstrnewline"
+      ]
     },
     {
       "address": "0x44e6c0",
       "name": "strings_equal_case_insensitive_path",
-      "description": "ASCII case-insensitive equality comparator used by path, mesh, landscape, and music lookup helpers. Unlike the earlier parser comparator, both strings must terminate after the folded match."
+      "description": "Exact Windows `Rstrcmp(char*, char*)` from RString.o: performs strict ASCII-case-insensitive equality, requiring both strings to terminate after the folded match. Windows returns a full int and every caller consumes EAX; importing the mobile decompilers' inferred bool ABI changes the exact VC6 return sequence.",
+      "aliases": [
+        "Rstrcmp"
+      ]
     },
     {
       "address": "0x44e710",
       "name": "parse_next_signed_int",
-      "description": "Exact Windows `Rstrint(char**)`: advances a caller-owned text cursor to the next numeric token, parses an optional sign and decimal digits, and leaves the cursor after the consumed integer. Shared by shipped asset and level-script parsers."
+      "description": "Exact Windows `Rstrint(char**)`: advances a caller-owned text cursor to the next numeric token, parses an optional sign and decimal digits, and leaves the cursor after the consumed integer. Shared by shipped asset and level-script parsers.",
+      "aliases": [
+        "Rstrint"
+      ]
     },
     {
       "address": "0x44e780",

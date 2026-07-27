@@ -29,7 +29,7 @@ void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks, char *s
     catalog_filename_cursor = g_game_base->subgame.sm_tracks.entries[0].filename;
     do
     {
-      if ( strings_equal_case_insensitive_path(segment_name, catalog_filename_cursor) )
+      if ( strings_equal_case_insensitive_path(segment_name, catalog_filename_cursor) == 1 )
         break;
       ++catalog_index;
       catalog_filename_cursor += 16520;
@@ -65,7 +65,7 @@ void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks, char *s
       destination_glyph_row_cursor += 256;
       --glyph_lane_remaining;
     }
-    while ( glyph_lane_remaining );
+    while ( glyph_lane_remaining != 0 );
     metadata_row_index = 0;
     segment->row_count = selected_entry_anchor->entry.row_count;
     segment->source_name = selected_entry_anchor->entry.filename;

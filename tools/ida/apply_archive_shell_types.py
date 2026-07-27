@@ -17,14 +17,6 @@ SYNC_FAILURE_SENTINEL = "ARCHIVE_SHELL_SYNC_FAILED"
 
 TRUSTED_DECLARATIONS = [
     (
-        "strings_equal_case_insensitive",
-        "bool __cdecl strings_equal_case_insensitive(char* left, char* prefix);",
-    ),
-    (
-        "find_case_insensitive_substring",
-        "char* __cdecl find_case_insensitive_substring(char* pattern, char* searched);",
-    ),
-    (
         "shutdown_bass_audio_window",
         "int __cdecl shutdown_bass_audio_window(void);",
     ),
@@ -336,7 +328,6 @@ TRUSTED_NAMES = [
     (0x405370, "rebuild_game_archive_if_needed"),
     (0x407B00, "shutdown_bass_audio_window"),
     (0x42F0A0, "load_png_image"),
-    (0x431DC0, "strings_equal_case_insensitive"),
     (0x432D40, "reset_registered_sound_sample_count"),
     (0x432D50, "cache_music_file"),
     (0x432DD0, "play_registered_warning_sample"),
@@ -366,7 +357,6 @@ TRUSTED_NAMES = [
     (0x449BA0, "resume_audio_backend_if_paused"),
     (0x449BC0, "pause_audio_backend_if_running"),
     (0x449BE0, "set_audio_normalization_scales"),
-    (0x44E600, "find_case_insensitive_substring"),
     (0x48B3A7, "fclose"),
     (0x48B41D, "fopen"),
     (0x48B430, "fseek"),

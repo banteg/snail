@@ -9,6 +9,7 @@
 #include "new_game_menu.h"
 #include "player.h"
 #include "rmath_random.h"
+#include "rstring.h"
 #include "runtime_config.h"
 #include "salt_hazard_types.h"
 #include "slug_voice_manager.h"
@@ -44,7 +45,6 @@ int queue_axis_aligned_textured_quad_uv(
     float v1,
     int blend_mode,
     float rotation);
-void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);
 
 void SubgameRuntime::update_subgame()

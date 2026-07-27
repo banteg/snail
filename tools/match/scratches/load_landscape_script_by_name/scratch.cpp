@@ -2,16 +2,13 @@
 
 #include "game_root.h"
 #include "landscape_manager.h"
+#include "rstring.h"
 #include "rtext.h"
 
 
 int sprintf(char* buffer, char* format, ...);
 char* load_file_bytes(char* path, char* out_buffer);
 int report_errorf(char* format, ...);
-char* find_case_insensitive_substring(char* needle, char* haystack);
-int strings_equal_case_insensitive_path(char* left, char* right);
-void rstrcpy_checked_ascii(char* destination, char* source);
-int parse_next_signed_int(char** cursor);
 char archive_or_file_exists(char* path, char force_filesystem);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 

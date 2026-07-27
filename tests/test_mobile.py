@@ -618,6 +618,135 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
     assert random_scratches
 
 
+def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+
+    expected = {
+        "ascii_upper_if_lowercase": "RstrASC(char)",
+        "rstrcpy_checked_ascii": "Rstrcpy(char*, char const*)",
+        "find_case_insensitive_substring": "Rstrfind(char*, char*)",
+        "advance_to_next_crlf_line": "Rstrnewline(char*)",
+        "strings_equal_case_insensitive_path": "Rstrcmp(char*, char*)",
+        "parse_next_signed_int": "Rstrint(char**)",
+    }
+    for windows_name, mobile_symbol in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "RString.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert mobile_symbol.split("(", 1)[0] in (
+            functions_by_name[windows_name]["aliases"]
+        )
+
+    comparator_description = functions_by_name[
+        "strings_equal_case_insensitive_path"
+    ]["description"]
+    assert "strict ASCII-case-insensitive equality" in comparator_description
+    assert "full int" in comparator_description
+    assert "inferred bool ABI changes" in comparator_description
+
+    rstring_header = (
+        repo_root / "tools/match/include/rstring.h"
+    ).read_text(encoding="utf-8")
+    for declaration in (
+        "char __cdecl ascii_upper_if_lowercase(char value);",
+        "char* destination, const char* source",
+        "char* pattern, char* searched",
+        "char* __cdecl advance_to_next_crlf_line(char* cursor);",
+        "int __cdecl strings_equal_case_insensitive_path(",
+        "int __cdecl parse_next_signed_int(char** cursor);",
+    ):
+        assert declaration in rstring_header
+    assert "bool __cdecl strings_equal_case_insensitive_path" not in rstring_header
+
+    binja_replay = (
+        repo_root / "tools/binja/sync_rstring_types.py"
+    ).read_text(encoding="utf-8")
+    ida_replay = (
+        repo_root / "tools/ida/apply_rstring_types.py"
+    ).read_text(encoding="utf-8")
+    ida_runner = (
+        repo_root / "tools/ida/sync_rstring_types.py"
+    ).read_text(encoding="utf-8")
+    for source in (binja_replay, ida_replay):
+        for address, windows_name in (
+            ("44e5a0", "ascii_upper_if_lowercase"),
+            ("44e5b0", "rstrcpy_checked_ascii"),
+            ("44e600", "find_case_insensitive_substring"),
+            ("44e690", "advance_to_next_crlf_line"),
+            ("44e6c0", "strings_equal_case_insensitive_path"),
+            ("44e710", "parse_next_signed_int"),
+        ):
+            assert address in source.lower()
+            assert windows_name in source
+        assert "bool __cdecl strings_equal_case_insensitive_path" not in source
+    for dependency in (
+        "GALAXY_LAYOUT_USER_VAR_UPDATES",
+        "verify_galaxy_layout_owners",
+        "apply_user_var_updates",
+    ):
+        assert dependency in binja_replay
+    assert "IDAPython RString sync script" in ida_runner
+    assert "IDA 9.4" in ida_runner
+
+    for archive_replay_path in (
+        repo_root / "tools/binja/sync_archive_shell_types.py",
+        repo_root / "tools/ida/apply_archive_shell_types.py",
+    ):
+        archive_replay = archive_replay_path.read_text(encoding="utf-8")
+        assert "strings_equal_case_insensitive" not in archive_replay
+        assert "find_case_insensitive_substring" not in archive_replay
+    for archive_header_path in (
+        repo_root / "analysis/headers/archive_shell_types.h",
+        repo_root / "analysis/headers/bn_archive_shell_types.h",
+    ):
+        archive_header = archive_header_path.read_text(encoding="utf-8")
+        assert "strings_equal_case_insensitive" not in archive_header
+        assert "find_case_insensitive_substring" not in archive_header
+
+    scratch_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (repo_root / "tools/match/scratches").glob("*/scratch.cpp")
+    )
+    for stale_declaration in (
+        "void rstrcpy_checked_ascii(char* destination, char* source);",
+        "char* find_case_insensitive_substring(char* needle, char* haystack);",
+        "char* advance_to_next_crlf_line(char* cursor);",
+        "int strings_equal_case_insensitive_path(char* left, char* right);",
+        "int parse_next_signed_int(char** cursor);",
+    ):
+        assert stale_declaration not in scratch_sources
+    assert '#include "rstring.h"' in (
+        repo_root / "tools/match/include/high_score.h"
+    ).read_text(encoding="utf-8")
+    assert "regressed the focused match to 87.88%" in (
+        repo_root
+        / "tools/match/scratches/strings_equal_case_insensitive_path/NOTES.md"
+    ).read_text(encoding="utf-8")
+    galaxy_notes = (
+        repo_root / "tools/match/scratches/load_galaxy_layout/NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "RString.o::Rstrint(char**)" in galaxy_notes
+    assert "edi->r:-4.d" in galaxy_notes
+    assert "rather than claiming a false owner" in galaxy_notes
+
+
 def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     result = main(
         [

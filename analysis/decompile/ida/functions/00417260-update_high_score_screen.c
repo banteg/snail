@@ -25,7 +25,7 @@ void __thiscall update_high_score_screen(HighScore *high_score)
   FrontendWidgetFlag v19; // eax
   FrontendWidget **replay_row_widgets; // [esp+Ch] [ebp-4h]
 
-  if ( high_score->entering_name )
+  if ( high_score->entering_name != 0 )
   {
     v2 = high_score->name_row_widgets[high_score->selected_rank];
     widget_flags = v2->widget_flags;
@@ -37,13 +37,13 @@ void __thiscall update_high_score_screen(HighScore *high_score)
       kill_game_sprites(&g_sprite_manager);
       rstrcpy_checked_ascii(
         g_game_base->subgame.sub_high_score.active_record_bank[high_score->selected_rank].player_name,
-        (char *)&high_score->name_row_widgets[high_score->selected_rank]->text_buffer);
+        (const char *)&high_score->name_row_widgets[high_score->selected_rank]->text_buffer);
       rstrcpy_checked_ascii(
         g_game_base->players[0].player_name,
-        (char *)&high_score->name_row_widgets[high_score->selected_rank]->text_buffer);
+        (const char *)&high_score->name_row_widgets[high_score->selected_rank]->text_buffer);
       rstrcpy_checked_ascii(
         g_runtime_config.last_entered_player_name,
-        (char *)&high_score->name_row_widgets[high_score->selected_rank]->text_buffer);
+        (const char *)&high_score->name_row_widgets[high_score->selected_rank]->text_buffer);
       exit_high_score_screen(high_score);
     }
     else
@@ -80,7 +80,7 @@ void __thiscall update_high_score_screen(HighScore *high_score)
       bank_toggle_button->widget_flags = v10;
       destroy_high_score_screen(high_score);
       selected_bank = high_score->selected_bank;
-      if ( selected_bank )
+      if ( selected_bank != 0 )
       {
         if ( selected_bank == 1 )
           high_score->selected_bank = 0;
@@ -109,7 +109,7 @@ void __thiscall update_high_score_screen(HighScore *high_score)
         }
         else
         {
-          if ( !mode )
+          if ( mode == 0 )
             g_game_base->players[0].frontend_state = 4;
           destroy_high_score_screen(high_score);
         }
@@ -127,7 +127,7 @@ void __thiscall update_high_score_screen(HighScore *high_score)
             if ( v15->subgame.sub_high_score.active_record_bank[v17].active == 1 )
             {
               v18 = *replay_row_widgets;
-              if ( *replay_row_widgets )
+              if ( *replay_row_widgets != nullptr )
               {
                 v19 = v18->widget_flags;
                 if ( (v19 & 0x20) != 0 )

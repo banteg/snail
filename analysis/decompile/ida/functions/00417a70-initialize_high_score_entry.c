@@ -13,7 +13,7 @@ void __thiscall initialize_high_score_entry(
         int route_or_rank_index)
 {
   int16_t *p_delta_z; // eax
-  int v9; // ecx
+  int i; // ecx
 
   record->runtime_build_seed = runtime_build_seed;
   record->replay_sample_count = 0;
@@ -28,14 +28,11 @@ void __thiscall initialize_high_score_entry(
   record->runtime_build_flags = runtime_build_flags;
   record->replay_cursor = 0;
   p_delta_z = &record->run_records[0].delta_z;
-  v9 = 21600;
-  do
+  for ( i = 21600; i != 0; --i )
   {
     *(p_delta_z - 1) = 0;
     *p_delta_z = 0;
     p_delta_z[1] = 0;
     p_delta_z += 3;
-    --v9;
   }
-  while ( v9 );
 }

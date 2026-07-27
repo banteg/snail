@@ -103,9 +103,9 @@ LABEL_20:
       break;
     cursor = find_case_insensitive_substring(asc_4A1568, case_insensitive_substring);
     v4 = find_case_insensitive_substring(asc_4AC1BC, cursor);
-    crlf_line = (char *)advance_to_next_crlf_line(cursor);
+    crlf_line = advance_to_next_crlf_line(cursor);
     v6 = 0;
-    for ( cursor = crlf_line; crlf_line < v4; crlf_line = (char *)advance_to_next_crlf_line(crlf_line) )
+    for ( cursor = crlf_line; crlf_line < v4; crlf_line = advance_to_next_crlf_line(crlf_line) )
       ++v6;
     set = &owner->sets[set_index];
     initialize_voice_set(set, v6);
@@ -127,7 +127,7 @@ LABEL_20:
       *v12++ = 103;
       *v12 = 103;
       v12[1] = 0;
-      cursor = (char *)advance_to_next_crlf_line(v9);
+      cursor = advance_to_next_crlf_line(v9);
       set->bites[i] = register_sound_sample(path, 1);
     }
     if ( ++next_set_index >= 16 )

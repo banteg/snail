@@ -28,8 +28,8 @@
 00431979        return
 0043175f        int32_t archive_entry_index = 0
 00431765        if (archive_index->count s> 0)
-0043176b        char ebx
-0043176b        char var_330_1 = ebx
+0043176b        char value
+0043176b        char value_1 = value
 0043176d        int32_t archive_entry_offset = 0
 00431869        bool cond:1_1
 00431775        char* directory_cursor = directory
@@ -52,11 +52,11 @@
 004317bb        int32_t basename_index = 0
 004317bd        int32_t pattern_index = 0
 004317c1        if (pattern_1.b != 0)
-004317ca        ebx = pattern[pattern_index]
-004317cf        if (ebx == 0)
+004317ca        value = pattern[pattern_index]
+004317cf        if (value == 0)
 004317cf        break
 004317d1        pattern_1.b = archive_path_cursor[1 + basename_index]
-004317ed        bool cond:2_1 = ascii_upper_if_lowercase(pattern_1.b) == ascii_upper_if_lowercase(ebx)
+004317ed        bool cond:2_1 = ascii_upper_if_lowercase(pattern_1.b) == ascii_upper_if_lowercase(value)
 004317ef        pattern_1 = pattern
 004317fc        if (not(cond:2_1) && pattern_1[pattern_index] != 0x2a)
 004317fc        break

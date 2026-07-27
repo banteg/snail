@@ -16,16 +16,16 @@ int32_t __thiscall play_music_stream_from_bytes(
 
   v6 = strlen(path) + 1;
   rstrcpy_checked_ascii(g_cached_music_path, path);
-  if ( g_active_music_stream )
+  if ( g_active_music_stream != 0 )
     stop_music_stream(backend);
   g_active_music_stream = 0;
   if ( (int)(v6 - 1) <= 4 )
     return report_errorf("Music Play Memory Failed %s", path);
   file = g_bass_stream_create_file(1, bytes, 0, byte_count, 0);
   g_active_music_stream = file;
-  if ( !file )
+  if ( file == 0 )
     return report_errorf("Music Play Memory Failed %s", path);
-  if ( play_mode )
+  if ( play_mode != 0 )
     result = g_bass_stream_play(file, 0, 4u);
   else
     result = g_bass_stream_play(file, 0, 0);

@@ -8,281 +8,281 @@ char __cdecl read_repeating_text_input_key_code()
   char v0; // bl
   double v2; // st7
   char v3; // [esp+7h] [ebp-5h]
-  char v4; // [esp+8h] [ebp-4h]
+  char value; // [esp+8h] [ebp-4h]
 
   v0 = 0;
-  v4 = 0;
-  if ( is_key_down(0x1Eu) )
+  value = 0;
+  if ( is_key_down(0x1Eu) != 0 )
   {
     v0 = 97;
-    v4 = 97;
+    value = 97;
   }
-  if ( is_key_down(0x30u) )
+  if ( is_key_down(0x30u) != 0 )
   {
     v0 = 98;
-    v4 = 98;
+    value = 98;
   }
-  if ( is_key_down(0x2Eu) )
+  if ( is_key_down(0x2Eu) != 0 )
   {
     v0 = 99;
-    v4 = 99;
+    value = 99;
   }
-  if ( is_key_down(0x20u) )
+  if ( is_key_down(0x20u) != 0 )
   {
     v0 = 100;
-    v4 = 100;
+    value = 100;
   }
-  if ( is_key_down(0x12u) )
+  if ( is_key_down(0x12u) != 0 )
   {
     v0 = 101;
-    v4 = 101;
+    value = 101;
   }
-  if ( is_key_down(0x21u) )
+  if ( is_key_down(0x21u) != 0 )
   {
     v0 = 102;
-    v4 = 102;
+    value = 102;
   }
-  if ( is_key_down(0x22u) )
+  if ( is_key_down(0x22u) != 0 )
   {
     v0 = 103;
-    v4 = 103;
+    value = 103;
   }
-  if ( is_key_down(0x23u) )
+  if ( is_key_down(0x23u) != 0 )
   {
     v0 = 104;
-    v4 = 104;
+    value = 104;
   }
-  if ( is_key_down(0x17u) )
+  if ( is_key_down(0x17u) != 0 )
   {
     v0 = 105;
-    v4 = 105;
+    value = 105;
   }
-  if ( is_key_down(0x24u) )
+  if ( is_key_down(0x24u) != 0 )
   {
     v0 = 106;
-    v4 = 106;
+    value = 106;
   }
-  if ( is_key_down(0x25u) )
+  if ( is_key_down(0x25u) != 0 )
   {
     v0 = 107;
-    v4 = 107;
+    value = 107;
   }
-  if ( is_key_down(0x26u) )
+  if ( is_key_down(0x26u) != 0 )
   {
     v0 = 108;
-    v4 = 108;
+    value = 108;
   }
-  if ( is_key_down(0x32u) )
+  if ( is_key_down(0x32u) != 0 )
   {
     v0 = 109;
-    v4 = 109;
+    value = 109;
   }
-  if ( is_key_down(0x31u) )
+  if ( is_key_down(0x31u) != 0 )
   {
     v0 = 110;
-    v4 = 110;
+    value = 110;
   }
-  if ( is_key_down(0x18u) )
+  if ( is_key_down(0x18u) != 0 )
   {
     v0 = 111;
-    v4 = 111;
+    value = 111;
   }
-  if ( is_key_down(0x19u) )
+  if ( is_key_down(0x19u) != 0 )
   {
     v0 = 112;
-    v4 = 112;
+    value = 112;
   }
-  if ( is_key_down(0x10u) )
+  if ( is_key_down(0x10u) != 0 )
   {
     v0 = 113;
-    v4 = 113;
+    value = 113;
   }
-  if ( is_key_down(0x13u) )
+  if ( is_key_down(0x13u) != 0 )
   {
     v0 = 114;
-    v4 = 114;
+    value = 114;
   }
-  if ( is_key_down(0x1Fu) )
+  if ( is_key_down(0x1Fu) != 0 )
   {
     v0 = 115;
-    v4 = 115;
+    value = 115;
   }
-  if ( is_key_down(0x14u) )
+  if ( is_key_down(0x14u) != 0 )
   {
     v0 = 116;
-    v4 = 116;
+    value = 116;
   }
-  if ( is_key_down(0x16u) )
+  if ( is_key_down(0x16u) != 0 )
   {
     v0 = 117;
-    v4 = 117;
+    value = 117;
   }
-  if ( is_key_down(0x2Fu) )
+  if ( is_key_down(0x2Fu) != 0 )
   {
     v0 = 118;
-    v4 = 118;
+    value = 118;
   }
-  if ( is_key_down(0x11u) )
+  if ( is_key_down(0x11u) != 0 )
   {
     v0 = 119;
-    v4 = 119;
+    value = 119;
   }
-  if ( is_key_down(0x2Du) )
+  if ( is_key_down(0x2Du) != 0 )
   {
     v0 = 120;
-    v4 = 120;
+    value = 120;
   }
-  if ( is_key_down(0x15u) )
+  if ( is_key_down(0x15u) != 0 )
   {
     v0 = 121;
-    v4 = 121;
+    value = 121;
   }
-  if ( is_key_down(0x2Cu) )
+  if ( is_key_down(0x2Cu) != 0 )
   {
     v0 = 122;
-    v4 = 122;
+    value = 122;
   }
-  else if ( !v0 )
+  else if ( v0 == 0 )
   {
     goto LABEL_57;
   }
-  if ( is_key_down(0x2Au) || is_key_down(0x36u) )
+  if ( is_key_down(0x2Au) != 0 || is_key_down(0x36u) != 0 )
   {
     v0 -= 32;
-    v4 = v0;
+    value = v0;
   }
 LABEL_57:
-  if ( is_key_down(0x39u) )
+  if ( is_key_down(0x39u) != 0 )
   {
     v0 = 32;
-    v4 = 32;
+    value = 32;
   }
-  if ( is_key_down(0xBu) )
+  if ( is_key_down(0xBu) != 0 )
   {
     v0 = 48;
-    v4 = 48;
+    value = 48;
   }
-  if ( is_key_down(2u) )
+  if ( is_key_down(2u) != 0 )
   {
     v0 = 49;
-    v4 = 49;
+    value = 49;
   }
-  if ( is_key_down(3u) )
+  if ( is_key_down(3u) != 0 )
   {
     v0 = 50;
-    v4 = 50;
+    value = 50;
   }
-  if ( is_key_down(4u) )
+  if ( is_key_down(4u) != 0 )
   {
     v0 = 51;
-    v4 = 51;
+    value = 51;
   }
-  if ( is_key_down(5u) )
+  if ( is_key_down(5u) != 0 )
   {
     v0 = 52;
-    v4 = 52;
+    value = 52;
   }
-  if ( is_key_down(6u) )
+  if ( is_key_down(6u) != 0 )
   {
     v0 = 53;
-    v4 = 53;
+    value = 53;
   }
-  if ( is_key_down(7u) )
+  if ( is_key_down(7u) != 0 )
   {
     v0 = 54;
-    v4 = 54;
+    value = 54;
   }
-  if ( is_key_down(8u) )
+  if ( is_key_down(8u) != 0 )
   {
     v0 = 55;
-    v4 = 55;
+    value = 55;
   }
-  if ( is_key_down(9u) )
+  if ( is_key_down(9u) != 0 )
   {
     v0 = 56;
-    v4 = 56;
+    value = 56;
   }
-  if ( is_key_down(0xAu) )
+  if ( is_key_down(0xAu) != 0 )
   {
     v0 = 57;
-    v4 = 57;
+    value = 57;
   }
-  if ( is_key_down(0x34u) )
+  if ( is_key_down(0x34u) != 0 )
   {
     v0 = 46;
-    v4 = 46;
+    value = 46;
   }
-  if ( is_key_down(0x33u) )
+  if ( is_key_down(0x33u) != 0 )
   {
     v0 = 44;
-    v4 = 44;
+    value = 44;
   }
-  if ( is_key_down(0x28u) )
+  if ( is_key_down(0x28u) != 0 )
   {
     v0 = 39;
-    v4 = 39;
+    value = 39;
   }
-  if ( is_key_down(0x2Bu) )
+  if ( is_key_down(0x2Bu) != 0 )
   {
     v0 = 92;
-    v4 = 92;
+    value = 92;
   }
-  if ( is_key_down(0xEu) )
+  if ( is_key_down(0xEu) != 0 )
   {
     v0 = 1;
-    v4 = 1;
+    value = 1;
   }
-  if ( is_key_down(0xD3u) )
+  if ( is_key_down(0xD3u) != 0 )
   {
     v0 = 2;
-    v4 = 2;
+    value = 2;
   }
-  if ( is_key_down(0xCBu) )
+  if ( is_key_down(0xCBu) != 0 )
   {
     v0 = 3;
-    v4 = 3;
+    value = 3;
   }
-  if ( is_key_down(0xCDu) )
+  if ( is_key_down(0xCDu) != 0 )
   {
     v0 = 4;
-    v4 = 4;
+    value = 4;
   }
-  if ( is_key_down(0xC8u) )
+  if ( is_key_down(0xC8u) != 0 )
   {
     v0 = 7;
-    v4 = 7;
+    value = 7;
   }
-  if ( is_key_down(0xD0u) )
+  if ( is_key_down(0xD0u) != 0 )
   {
     v0 = 8;
-    v4 = 8;
+    value = 8;
   }
-  if ( is_key_down(0xCFu) )
+  if ( is_key_down(0xCFu) != 0 )
   {
     v0 = 9;
-    v4 = 9;
+    value = 9;
   }
-  if ( is_key_down(0xC7u) )
+  if ( is_key_down(0xC7u) != 0 )
   {
     v0 = 10;
-    v4 = 10;
+    value = 10;
   }
-  if ( is_key_down(1u) )
+  if ( is_key_down(1u) != 0 )
   {
     v0 = 11;
-    v4 = 11;
+    value = 11;
   }
-  if ( is_key_down(0x3Bu) )
+  if ( is_key_down(0x3Bu) != 0 )
   {
     v0 = 12;
-    v4 = 12;
+    value = 12;
   }
-  if ( is_key_down(0x1Cu) )
+  if ( is_key_down(0x1Cu) != 0 )
   {
-    v0 = is_key_down(0x1Du) + 5;
-    v4 = v0;
+    v0 = (is_key_down(0x1Du) != 0) + 5;
+    value = v0;
   }
-  else if ( !v0 )
+  else if ( v0 == 0 )
   {
     g_text_input_repeat_accumulator = 0.0;
     g_text_input_last_repeat_code = 0;
@@ -295,7 +295,7 @@ LABEL_57:
     g_text_input_repeat_accumulator = 0.033333335;
     return v0;
   }
-  v3 = ascii_upper_if_lowercase(v4);
+  v3 = ascii_upper_if_lowercase(value);
   if ( v3 == ascii_upper_if_lowercase(g_text_input_last_repeat_code) )
   {
     v2 = g_text_input_repeat_step + g_text_input_repeat_accumulator;

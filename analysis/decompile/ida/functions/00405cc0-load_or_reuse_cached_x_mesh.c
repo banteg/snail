@@ -25,7 +25,7 @@ LABEL_5:
   else
   {
     name = loader->cached_x_mesh_slots[0].name;
-    while ( !strings_equal_case_insensitive_path(mesh_name, name) )
+    while ( strings_equal_case_insensitive_path(mesh_name, name) == 0 )
     {
       ++v3;
       name += 188;

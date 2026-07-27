@@ -28,7 +28,7 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
 
   archive_index = g_archive_index_records;
   g_enumerated_entry_count = 0;
-  if ( g_archive_index_records )
+  if ( g_archive_index_records != nullptr )
   {
     archive_entry_index = 0;
     if ( g_archive_index_records->count > 0 )
@@ -38,10 +38,10 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
       {
         directory_cursor = directory;
         archive_path_cursor = archive_index->entries[archive_entry_offset].path;
-        for ( archive_path_char = *archive_path_cursor; archive_path_char; ++archive_path_cursor )
+        for ( archive_path_char = *archive_path_cursor; archive_path_char != 0; ++archive_path_cursor )
         {
           directory_char = *directory_cursor;
-          if ( !*directory_cursor )
+          if ( *directory_cursor == 0 )
             break;
           if ( directory_char >= 97 && directory_char <= 122 )
             directory_char -= 32;
@@ -50,17 +50,17 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
           archive_path_char = archive_path_cursor[1];
           ++directory_cursor;
         }
-        if ( *archive_path_cursor == 47 && !*directory_cursor )
+        if ( *archive_path_cursor == 47 && *directory_cursor == 0 )
         {
           basename_cursor = archive_path_cursor + 1;
           basename_index = 0;
           pattern_index = 0;
-          if ( archive_path_cursor[1] )
+          if ( archive_path_cursor[1] != 0 )
           {
             do
             {
               pattern_char = pattern[pattern_index];
-              if ( !pattern_char )
+              if ( pattern_char == 0 )
                 break;
               folded_basename_char = ascii_upper_if_lowercase(basename_cursor[basename_index]);
               if ( folded_basename_char != ascii_upper_if_lowercase(pattern_char) && pattern[pattern_index] != 42 )
@@ -71,9 +71,9 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
               if ( pattern[pattern_index] != 42 )
                 ++pattern_index;
             }
-            while ( basename_cursor[basename_index] );
+            while ( basename_cursor[basename_index] != 0 );
           }
-          if ( !basename_cursor[basename_index] )
+          if ( basename_cursor[basename_index] == 0 )
           {
             rstrcpy_checked_ascii(&(*names)[128 * g_enumerated_entry_count], basename_cursor);
             ++g_enumerated_entry_count;

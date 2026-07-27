@@ -1,9 +1,9 @@
 // play_music_stream_from_bytes @ 0x449820 (thiscall, ret 0x10)
 
 #include "audio_system.h"
+#include "rstring.h"
 #include <string.h>
 
-void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);
 
 int AudioBackend::play_music_stream_from_bytes(

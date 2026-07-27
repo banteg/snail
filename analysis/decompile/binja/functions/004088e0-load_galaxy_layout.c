@@ -25,54 +25,54 @@
 0040899b        int32_t var_cc = 0
 0040899f        float* current_group_point_y_cursor_1 = &g_galaxy_group_points[0].y
 004089a3        struct tColour* edi = &galaxy->route_names[0].color
-004089b8        void buffer
-004089b8        sprintf(&buffer, "Galaxy%i:", var_d0)
-004089c7        char* eax_4 = find_case_insensitive_substring(&buffer, file_text)
-004089d1        char* var_d4 = eax_4
-004089d5        if (eax_4 == 0)
+004089b8        char var_c0[0x40]
+004089b8        sprintf(&var_c0, "Galaxy%i:", var_d0)
+004089c7        char* searched = find_case_insensitive_substring(&var_c0, file_text)
+004089d1        char* cursor = searched
+004089d5        if (searched == 0)
 00408bd8        report_errorf("Cannot find Galaxy %i in _Galaxy.txt")
 00408bea        return
-004089e9        char* eax_6 = &find_case_insensitive_substring(":", eax_4)[1]
-004089ea        var_d4 = eax_6
-004089f1        if (*eax_6 != 0x22)
+004089e9        char* cursor_1 = &find_case_insensitive_substring(":", searched)[1]
+004089ea        cursor = cursor_1
+004089f1        if (*cursor_1 != 0x22)
 00408bf0        report_errorf("missing " in _Galaxy.txt")
 00408c02        return
-004089f7        char* eax_7 = &eax_6[1]
+004089f7        char* searched_1 = &cursor_1[1]
 004089f8        char* route_name_character_cursor = edi - 0x84
-004089fe        var_d4 = eax_7
-00408a02        char j = *eax_7
+004089fe        cursor = searched_1
+00408a02        char j = *searched_1
 00408a07        while (j != 0x22)
 00408a09        *route_name_character_cursor = j
 00408a0b        route_name_character_cursor = &route_name_character_cursor[1]
-00408a0c        eax_7 = &eax_7[1]
-00408a0d        var_d4 = eax_7
-00408a11        j = *eax_7
+00408a0c        searched_1 = &searched_1[1]
+00408a0d        cursor = searched_1
+00408a11        j = *searched_1
 00408a1e        *route_name_character_cursor = 0
-00408a21        char* eax_8 = find_case_insensitive_substring("StarNumber=", eax_7)
-00408a2c        var_d4 = eax_8
-00408a3b        var_d4 = &find_case_insensitive_substring("=", eax_8)[1]
-00408a44        (edi - 0x109b4)->route_names[0].star_count = parse_next_signed_int(&var_d4)
+00408a21        char* searched_2 = find_case_insensitive_substring("StarNumber=", searched_1)
+00408a2c        cursor = searched_2
+00408a3b        cursor = &find_case_insensitive_substring("=", searched_2)[1]
+00408a44        edi->r:-4.d = parse_next_signed_int(&cursor)
 00408a4c        edi->r = 0x3f800000
 00408a4e        edi->g = 1f
 00408a51        edi->b = 1f
 00408a54        edi->a = 0.800000012f
 00408a61        edi->__offset(0x10).d = current_group_point_y_cursor[-1]
 00408a67        edi->__offset(0x14).d = *current_group_point_y_cursor
-00408a6a        edi->__offset(0x18).d = 0f
-00408a70        if ((edi - 0x109b4)->route_names[0].star_count s> 0)
+00408a6a        edi->__offset(0x18).d = 0
+00408a70        if (edi->r:-4.d s> 0)
 00408a76        int32_t ebp = 0
 00408a8e        galaxy->route_slots[galaxy->record_count].record.route_name_index = var_d0
-00408ab9        (&galaxy->route_slots[0].record.map_x)[galaxy->record_count * 0xa8] = g_galaxy_route_points[1 + divs.dp.d(sx.q(ebp), (edi - 0x109b4)->route_names[0].star_count) + var_cc].x
-00408ae4        (&galaxy->route_slots[0].record.map_y)[galaxy->record_count * 0xa8] = g_galaxy_route_points[1 + divs.dp.d(sx.q(ebp), (edi - 0x109b4)->route_names[0].star_count) + var_cc].y
+00408ab9        (&galaxy->route_slots[0].record.map_x)[galaxy->record_count * 0xa8] = g_galaxy_route_points[1 + divs.dp.d(sx.q(ebp), edi->r:-4.d) + var_cc].x
+00408ae4        (&galaxy->route_slots[0].record.map_y)[galaxy->record_count * 0xa8] = g_galaxy_route_points[1 + divs.dp.d(sx.q(ebp), edi->r:-4.d) + var_cc].y
 00408afe        (&galaxy->route_slots[0].record.map_z)[galaxy->record_count * 0xa8] = 0
-00408b10        void buffer_1
-00408b10        sprintf(&buffer_1, "LEVEL %i MISSING", galaxy->record_count)
-00408b31        rstrcpy_checked_ascii(&galaxy->route_slots[0].record.detail_text[galaxy->record_count * 0x2a0], &buffer_1)
-00408b55        rstrcpy_checked_ascii(&galaxy->route_slots[0].record.description_text[galaxy->record_count * 0x2a0], &buffer_1)
+00408b10        char var_80[0x80]
+00408b10        sprintf(&var_80, "LEVEL %i MISSING", galaxy->record_count)
+00408b31        rstrcpy_checked_ascii(&galaxy->route_slots[0].record.detail_text[galaxy->record_count * 0x2a0], &var_80)
+00408b55        rstrcpy_checked_ascii(&galaxy->route_slots[0].record.description_text[galaxy->record_count * 0x2a0], &var_80)
 00408b61        j_1 += 1
 00408b62        galaxy->record_count += 1
 00408b68        ebp += 0xa
-00408b6d        do while (j_1 s< (edi - 0x109b4)->route_names[0].star_count)
+00408b6d        do while (j_1 s< edi->r:-4.d)
 00408b73        current_group_point_y_cursor = current_group_point_y_cursor_1
 00408b77        j_1 = 0
 00408b81        current_group_point_y_cursor = &current_group_point_y_cursor[2]

@@ -12,6 +12,7 @@
 #include "galaxy_route_types.h"
 #include "landscape_manager.h"
 #include "object_render_types.h"
+#include "rstring.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
 #include "sound_effect_manager.h"
@@ -27,7 +28,6 @@ extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
 int report_errorf(char* format, ...); // @ 0x431cc0
 int debug_report_stub(char* format, ...); // @ 0x449c00
-char* find_case_insensitive_substring(char* needle, char* haystack); // @ 0x44e600
 void initialize_font_wave_state(); // @ 0x449c70
 void initialize_font3d_objects(short font_id); // @ 0x44ae10
 void register_font_texture_sheet_wrapper(

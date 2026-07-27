@@ -14,12 +14,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 562,
-    "unverified_entries": 223,
-    "verified_android_symbols": 556,
-    "verified_ios_symbols": 452,
-    "available_android_mappings": 556,
-    "available_ios_mappings": 415
+    "verified_entries": 563,
+    "unverified_entries": 222,
+    "verified_android_symbols": 557,
+    "verified_ios_symbols": 453,
+    "available_android_mappings": 557,
+    "available_ios_mappings": 416
   },
   "entries": [
     {
@@ -25688,71 +25688,13 @@
       "address": "0x44e6c0",
       "windows_name": "strings_equal_case_insensitive_path",
       "windows_size": 80,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRFringeManager::GetFringe()",
-          "score": 0.6586,
-          "name_score": 0.431,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRObject::ScaleVertices(float)",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRStarManager::UnInit()",
-          "score": 0.6114,
-          "name_score": 0.384,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "tMatrix::Identity()",
-          "score": 0.5994,
-          "name_score": 0.3657,
-          "size_score": 0.95
-        },
-        {
-          "symbol": "cRObject::RequestEdges(int)",
-          "score": 0.5964,
-          "name_score": 0.359,
-          "size_score": 0.9524
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "OFSdbmHashedString::OFSdbmHashedString(char const*)",
-          "score": 0.6194,
-          "name_score": 0.3657,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRStarManager::Open(int)",
-          "score": 0.6194,
-          "name_score": 0.3657,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFStringUtility::convertFromValidParameter(NSString*)",
-          "score": 0.6086,
-          "name_score": 0.4476,
-          "size_score": 0.85
-        },
-        {
-          "symbol": "OFStringUtility::convertToValidParameter(OFRetainedPtr<NSString>)",
-          "score": 0.6019,
-          "name_score": 0.4476,
-          "size_score": 0.8333
-        },
-        {
-          "symbol": "tMatrix::Identity()",
-          "score": 0.5994,
-          "name_score": 0.3657,
-          "size_score": 0.95
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "Rstrcmp(char*, char*)",
+      "ios_symbol": "Rstrcmp(char*, char*)",
+      "source_object": "RString.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x44e710",

@@ -5,14 +5,14 @@
 
 0041af6c        g_runtime_config.stream_volume = options->music_volume_widget->slider_position_target
 0041af7b        g_runtime_config.sample_volume = options->sound_volume_widget->slider_position_target
-0041af87        char* var_c
-0041af87        char* var_8
+0041af87        char* destination
+0041af87        char* source
 0041af87        if (g_runtime_config.fullscreen_enabled == 0)
-0041af9d        var_8 = "Full-screen Off"
-0041afa8        var_c = &options->fullscreen_widget->text_buffer.raw
-0041af8c        var_8 = "Full-screen On"
-0041af97        var_c = &options->fullscreen_widget->text_buffer
-0041afa9        rstrcpy_checked_ascii(var_c, var_8)
+0041af9d        source = "Full-screen Off"
+0041afa8        destination = &options->fullscreen_widget->text_buffer.raw
+0041af8c        source = "Full-screen On"
+0041af97        destination = &options->fullscreen_widget->text_buffer
+0041afa9        rstrcpy_checked_ascii(destination, source)
 0041afae        struct FrontendWidget* fullscreen_widget = options->fullscreen_widget
 0041afb4        enum FrontendWidgetFlag widget_flags = fullscreen_widget->widget_flags
 0041afbc        if ((widget_flags.b & 0x20) != 0)
@@ -41,6 +41,6 @@
 0041b048        long double temp0 = fconvert.t(g_runtime_config.sample_volume)
 0041b048        x87_r7 - temp0
 0041b053        if ((((x87_r7 < temp0 ? 1 : 0) << 8 | (is_unordered.t(x87_r7, temp0) ? 1 : 0) << 0xa | (x87_r7 == temp0 ? 1 : 0) << 0xe):1.b & 0x40) == 0)
-0041b05c        play_sound_effect(8)
+0041b05c        play_sound_effect(&g_sound_effect_manager, 8)
 0041b066        options->previous_sample_volume = g_runtime_config.sample_volume
 0041b06a        return

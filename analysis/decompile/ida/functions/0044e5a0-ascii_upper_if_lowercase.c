@@ -2,13 +2,13 @@
 /* function: ascii_upper_if_lowercase @ 0x44e5a0 */
 /* selector: ascii_upper_if_lowercase */
 
-char __cdecl sub_44E5A0(char a1)
+// Exact Windows `RstrASC(char)`: folds one lowercase ASCII byte to uppercase and leaves all other byte values unchanged.
+char __cdecl ascii_upper_if_lowercase(char value)
 {
   char result; // al
 
-  result = a1;
-  if ( a1 >= 97 && a1 <= 122 )
-    return a1 - 32;
+  result = value;
+  if ( value >= 97 && value <= 122 )
+    return value - 32;
   return result;
 }
-

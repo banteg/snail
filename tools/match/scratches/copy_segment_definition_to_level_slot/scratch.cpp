@@ -1,10 +1,10 @@
 // copy_segment_definition_to_level_slot @ 0x447300 (thiscall, ret 0x8)
 
 #include "game_root.h"
+#include "rstring.h"
 
 extern char* g_current_level_definition_name; // data_74ec74
 
-int strings_equal_case_insensitive_path(char* lhs, char* rhs); // @ 0x44e6c0
 int report_errorf(char* format, ...);
 
 void SubTracks::copy_segment_definition_to_level_slot(

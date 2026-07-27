@@ -1,9 +1,9 @@
 // read_repeating_text_input_key_code @ 0x4327e0 (cdecl)
 
+#include "rstring.h"
 #include "text_input_repeat_state.h"
 
 unsigned char is_key_down(int key_code); // @ 0x44bb40
-char ascii_upper_if_lowercase(char value); // @ 0x44e5a0
 
 char read_repeating_text_input_key_code()
 {

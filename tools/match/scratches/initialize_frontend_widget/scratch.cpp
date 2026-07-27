@@ -3,11 +3,11 @@
 #include "border_manager.h"
 #include "frontend_widget.h"
 #include "game_root.h"
+#include "rstring.h"
 
 extern char g_blank_text[]; // data_4dfb08
 
 int report_errorf(char* format, ...);
-void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
 
 void FrontendWidget::initialize_frontend_widget(
     int flags,

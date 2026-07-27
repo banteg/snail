@@ -5,9 +5,9 @@
 // Checks whether the requested music path differs from the cached active path and, when it does, stops the current music stream so `cache_music_file` can reload it from archive bytes.
 char __thiscall prepare_music_stream_reload_if_path_changed(AudioBackend *backend, char *path)
 {
-  if ( backend->music_stream_active )
+  if ( backend->music_stream_active != 0 )
   {
-    if ( strings_equal_case_insensitive_path(path, g_cached_music_path) )
+    if ( strings_equal_case_insensitive_path(path, g_cached_music_path) != 0 )
       return 0;
     stop_music_stream(backend);
   }

@@ -29,10 +29,10 @@ void __thiscall initialize_frontend_widget(
   tColour *v22; // eax
   tColour *v23; // eax
   tColour *v24; // eax
-  int v25; // [esp+0h] [ebp-128h]
-  int v26; // [esp+0h] [ebp-128h]
+  float v25; // [esp+0h] [ebp-128h]
+  float v26; // [esp+0h] [ebp-128h]
   float v27; // [esp+4h] [ebp-124h]
-  int ArgList; // [esp+24h] [ebp-104h]
+  float ArgList; // [esp+24h] [ebp-104h]
   struct tColour v29; // [esp+28h] [ebp-100h] BYREF
   tColour v30; // [esp+38h] [ebp-F0h] BYREF
   struct tColour v31; // [esp+48h] [ebp-E0h] BYREF
@@ -67,7 +67,7 @@ void __thiscall initialize_frontend_widget(
     widget->list_next = p_border_manager->list_next;
     p_border_manager->list_next = widget;
     list_next = widget->list_next;
-    if ( list_next )
+    if ( list_next != nullptr )
       list_next->list_prev = widget;
     widget->list_flags |= 0x200u;
   }
@@ -75,7 +75,7 @@ void __thiscall initialize_frontend_widget(
   widget->tooltip.state = 0;
   widget->tooltip.owner_widget = widget;
   widget->tooltip.tooltip_widget = nullptr;
-  widget->tooltip.owner_widget_38 = widget;
+  widget->tooltip.input_ok_state.source_widget = widget;
   widget->widget_flags = widget_flags | 0x40001;
   set_color_white(&widget->hot_text_color);
   set_color_white(&widget->hot_fill_color);
@@ -180,33 +180,33 @@ LABEL_11:
   widget->anchor_x = v21;
   if ( (v20 & 0x100000) != 0 )
   {
-    *(float *)&ArgList = y + 40.0;
+    ArgList = y + 40.0;
     widget->slider_more_widget = allocate_border(&g_game_base->border_manager);
     v22 = set_color_rgba(&v29, 1.0, 1.0, 1.0, 1.0);
-    *(float *)&v25 = g_game_base->border_manager.justify_centre + 458.0;
+    v25 = g_game_base->border_manager.justify_centre + 458.0;
     initialize_frontend_sprite_button(
-      (int)widget->slider_more_widget,
-      (unsigned int)&unk_800000 & widget->widget_flags | 0x20400814,
+      widget->slider_more_widget,
+      (unsigned int)&g_sprite_manager.sprites[2527] & widget->widget_flags | 0x20400814,
       42,
       v25,
       ArgList,
       v22,
       0.0,
       4);
-    border_sprite_extend((int)widget->slider_more_widget, 44, 43, 45, 1);
+    border_sprite_extend(widget->slider_more_widget, 44, 43, 45, 1u);
     widget->slider_less_widget = allocate_border(&g_game_base->border_manager);
     v23 = set_color_rgba(&v29, 1.0, 1.0, 1.0, 1.0);
-    *(float *)&v26 = g_game_base->border_manager.justify_centre + 118.0;
+    v26 = g_game_base->border_manager.justify_centre + 118.0;
     initialize_frontend_sprite_button(
-      (int)widget->slider_less_widget,
-      (unsigned int)&unk_800000 & widget->widget_flags | 0x20400814,
+      widget->slider_less_widget,
+      (unsigned int)&g_sprite_manager.sprites[2527] & widget->widget_flags | 0x20400814,
       38,
       v26,
       ArgList,
       v23,
       0.0,
       4);
-    border_sprite_extend((int)widget->slider_less_widget, 40, 39, 41, 0);
+    border_sprite_extend(widget->slider_less_widget, 40, 39, 41, 0);
     widget->slider_value_widget = allocate_border(&g_game_base->border_manager);
     v24 = set_color_rgba(&v29, 1.0, 1.0, 1.0, 1.0);
     v27 = widget->layout_anchor_y + 40.0;

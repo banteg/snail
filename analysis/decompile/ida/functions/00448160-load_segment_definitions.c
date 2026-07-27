@@ -19,7 +19,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
   char *v13; // eax
   char *v14; // esi
   char *v15; // eax
-  _BYTE *crlf_line; // eax
+  char *crlf_line; // eax
   char *v17; // eax
   char *data_line_cursor; // edi
   int32_t flattened_row_index; // ebp
@@ -138,10 +138,10 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
             v15 = find_case_insensitive_substring(aData, file_buffer);
             if ( v15 != nullptr )
             {
-              crlf_line = (_BYTE *)advance_to_next_crlf_line(v15);
+              crlf_line = advance_to_next_crlf_line(v15);
               if ( crlf_line != nullptr )
               {
-                v17 = (char *)advance_to_next_crlf_line(crlf_line);
+                v17 = advance_to_next_crlf_line(crlf_line);
                 data_line_cursor = v17;
                 if ( v17 != nullptr )
                 {
@@ -328,7 +328,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                         BYTE1(v58) |= 0x80u;
                         row_stride_anchor->row.flags = v58;
                       }
-                      data_line_cursor = (char *)advance_to_next_crlf_line(option_cursor);
+                      data_line_cursor = advance_to_next_crlf_line(option_cursor);
                       if ( data_line_cursor == nullptr )
                       {
                         v60 = segment_files[segment_index_spill];

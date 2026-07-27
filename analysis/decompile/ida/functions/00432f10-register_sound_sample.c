@@ -10,11 +10,11 @@ int __cdecl register_sound_sample(char *path, int normalization_class)
   int sample_size; // [esp+8h] [ebp+4h] SPLIT BYREF
 
   v2 = path;
-  if ( g_archive_index_records )
+  if ( g_archive_index_records != nullptr )
   {
     load_file_bytes_from_archive_or_fs(path, g_music_memory_buffer, &sample_size);
     load_registered_sound_sample_from_bytes(
-      (AudioBackend *)g_audio_backend,
+      &g_audio_backend,
       g_music_memory_buffer,
       sample_size,
       g_registered_sound_sample_count,
@@ -22,11 +22,7 @@ int __cdecl register_sound_sample(char *path, int normalization_class)
   }
   else
   {
-    load_registered_sound_sample_from_path(
-      (AudioBackend *)g_audio_backend,
-      path,
-      g_registered_sound_sample_count,
-      normalization_class);
+    load_registered_sound_sample_from_path(&g_audio_backend, path, g_registered_sound_sample_count, normalization_class);
   }
   rstrcpy_checked_ascii(g_registered_sound_sample_names[g_registered_sound_sample_count], v2);
   v3 = ++g_registered_sound_sample_count;

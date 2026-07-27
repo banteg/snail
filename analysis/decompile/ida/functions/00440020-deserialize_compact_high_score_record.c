@@ -3,7 +3,7 @@
 /* selector: deserialize_compact_high_score_record */
 
 // Validates one compact ScoreA/B/C cRSubSolutionHeader checksum, copies its scalar fields, name, and replay samples into the expanded cRSubSolution entry, and marks the entry active. Android preserves this owner method as `cRSubSolution::Load(cRSubSolutionHeader*)`.
-unsigned __int8 __thiscall deserialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)
+uint8_t __thiscall deserialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)
 {
   int32_t replay_sample_count; // edx
   int32_t v5; // eax

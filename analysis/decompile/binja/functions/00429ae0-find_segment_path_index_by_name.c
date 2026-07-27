@@ -6,7 +6,7 @@
 00429ae7        int32_t result = 0
 00429ae9        char (** i)[0xc] = &data_4a3d6c
 00429b08        while (i s< "TOADPAIR1")
-00429afc        if (sub_44e6c0(arg1, *i) != 0)
+00429afc        if (strings_equal_case_insensitive_path(name, *i) != 0)
 00429b18        return result
 00429afe        i = &i[1]
 00429b01        result += 1

@@ -49,10 +49,10 @@ void __thiscall initialize_subgame(SubgameRuntime *game)
       v5[2] = nullptr;
       v5[3] = nullptr;
     }
-    while ( v4 );
+    while ( v4 != 0 );
     --v1;
   }
-  while ( v1 );
+  while ( v1 != 0 );
   subgame_rebuild_selector = game->subgame_rebuild_selector;
   if ( subgame_rebuild_selector == 2 || subgame_rebuild_selector == 1 )
   {
@@ -67,7 +67,7 @@ void __thiscall initialize_subgame(SubgameRuntime *game)
     set_border_justify_centre(&g_game_base->border_manager, 25.0);
   }
   level_mode = game->level_mode;
-  if ( !level_mode )
+  if ( level_mode == 0 )
   {
     postal_records = game->sub_high_score.postal_records;
 LABEL_14:
@@ -76,7 +76,7 @@ LABEL_14:
     goto LABEL_15;
   }
   v9 = level_mode - 1;
-  if ( v9 )
+  if ( v9 != 0 )
   {
     if ( v9 != 3 )
       goto LABEL_16;
@@ -89,7 +89,7 @@ LABEL_14:
 LABEL_15:
   qmemcpy(&game->active_level_timer, &postal_records->score_or_time, sizeof(game->active_level_timer));
 LABEL_16:
-  if ( game->selected_level_record_persistent )
+  if ( game->selected_level_record_persistent != 0 )
     game->rate_or_level_arg.level_arg_tail = game->selected_level_record->replay_speed_scalar.bits;
   game->subgame_pause_gate = 0;
   game->resume_requested = 0;
@@ -104,7 +104,7 @@ LABEL_16:
   game->top_score_widget->font_scale = 1.5;
   game->top_score_widget->texture_layer = 7;
   game->top_score_widget->text_buffer.raw[0] = 0;
-  if ( !game->level_mode )
+  if ( game->level_mode == 0 )
   {
     game->lives_icon_widget = allocate_border(&g_game_base->border_manager);
     v12 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
@@ -182,13 +182,13 @@ LABEL_29:
       break;
   }
   v22 = g_game_base;
-  if ( g_game_base->intro.hide_for_replay_latch || game->level_mode == 7 )
+  if ( g_game_base->intro.hide_for_replay_latch != 0 || game->level_mode == 7 )
   {
     hide_border_init(game->bottom_score_widget);
     hide_border_init(game->top_score_widget);
     v22 = g_game_base;
   }
-  if ( !v22->players[0].high_score_entry_pending )
+  if ( v22->players[0].high_score_entry_pending == 0 )
   {
     v22->players[0].high_score_entry_pending = 0;
     g_game_base->players[0].selected_high_score_rank = 0;
@@ -207,9 +207,9 @@ LABEL_29:
     game->player.body.bod.bod.list_flags &= ~0x20u;
     initialize_warning(&game->player.warning);
     v25 = game->subgame_rebuild_selector;
-    if ( v25 && v25 != 3 )
+    if ( v25 != 0 && v25 != 3 )
     {
-      if ( !game->selected_level_record_persistent )
+      if ( game->selected_level_record_persistent == 0 )
       {
         switch ( game->level_mode )
         {

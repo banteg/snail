@@ -35,12 +35,12 @@ int __thiscall update_challenge_setup_screen(GUI *gui)
   unsigned int v30; // edi
   FrontendWidget *v31; // eax
 
-  hide_gameplay_scores(&gui->game->scan_reset);
+  hide_gameplay_scores(gui->game);
   level_mode = gui->game->level_mode;
-  if ( level_mode )
+  if ( level_mode != 0 )
   {
     v3 = level_mode - 1;
-    if ( v3 )
+    if ( v3 != 0 )
     {
       if ( v3 == 3 )
       {
@@ -84,7 +84,7 @@ int __thiscall update_challenge_setup_screen(GUI *gui)
         }
         v10 = gui->previous_level_button;
         v11 = v10->widget_flags;
-        if ( gui->game->level_mode_arg )
+        if ( gui->game->level_mode_arg != 0 )
           v12 = v11 & 0xFFFF7FFF;
         else
           v12 = v11 | 0x8000;
@@ -191,7 +191,7 @@ LABEL_38:
     }
     v28 = gui->previous_level_button;
     v29 = v28->widget_flags;
-    if ( gui->game->level_mode_arg )
+    if ( gui->game->level_mode_arg != 0 )
       v30 = v29 & 0xFFFF7FFF;
     else
       v30 = v29 | 0x8000;

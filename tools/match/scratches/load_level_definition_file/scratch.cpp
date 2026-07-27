@@ -2,6 +2,7 @@
 
 #include "sprite.h"
 #include "landscape_manager.h"
+#include "rstring.h"
 #include "rtext.h"
 #include "sub_tracks.h"
 #include "segment_catalog_types.h"
@@ -16,10 +17,6 @@ int sprintf(char* buffer, char* format, ...);
 int report_errorf(char* format, ...);
 int report_warningf(char* format, ...);
 int load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out_size);
-char* find_case_insensitive_substring(char* needle, char* haystack);
-char* advance_to_next_crlf_line(char* cursor); // @ 0x44e690
-int parse_next_signed_int(char** cursor);
-void rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 int find_registered_sound_sample_id_by_name(char* sample_name); // @ 0x432fc0
 
 struct LevelDefinitionParseBuffers {

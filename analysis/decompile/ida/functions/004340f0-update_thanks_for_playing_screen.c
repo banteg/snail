@@ -17,10 +17,10 @@ void __thiscall update_thanks_for_playing_screen(ThanksScreen *thanks_screen)
   if ( ((g_game_base->players[0].game_input->input.pressed_buttons & 0x4000) != 0
      || read_pressed_text_input_key_code() == 11)
     && thanks_screen->message_state >= 2
-    && !g_game_base->fade.state )
+    && g_game_base->fade.state == 0 )
   {
     play_sound_effect(&g_sound_effect_manager, 8);
-    begin_frontend_fade_out(&g_game_base->fade.state, 0);
+    begin_frontend_fade_out(&g_game_base->fade, nullptr);
   }
   if ( g_game_base->fade.state == 4 )
     uninit_thanks_screen(thanks_screen);

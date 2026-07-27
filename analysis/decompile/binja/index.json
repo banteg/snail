@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 740,
-  "function_count": 740,
+  "selected_count": 742,
+  "function_count": 742,
   "mismatch_count": 0,
   "mismatches": [],
   "analysis_refreshed": true,
@@ -3682,6 +3682,16 @@
       "address": "0x44e600",
       "name": "find_case_insensitive_substring",
       "artifact": "analysis/decompile/binja/functions/0044e600-find_case_insensitive_substring.c"
+    },
+    {
+      "address": "0x44e690",
+      "name": "advance_to_next_crlf_line",
+      "artifact": "analysis/decompile/binja/functions/0044e690-advance_to_next_crlf_line.c"
+    },
+    {
+      "address": "0x44e6c0",
+      "name": "strings_equal_case_insensitive_path",
+      "artifact": "analysis/decompile/binja/functions/0044e6c0-strings_equal_case_insensitive_path.c"
     },
     {
       "address": "0x44e710",

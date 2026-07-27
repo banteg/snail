@@ -1,15 +1,13 @@
 // update_challenge_setup_screen @ 0x416370 (thiscall)
 
 #include "gui.h"
+#include "rstring.h"
 #include "sub_solution.h"
 #include "sub_tracks.h"
 #include "runtime_config.h"
 #include "subgame_runtime.h"
 #include "game_time.h"
 #include "time_trial.h"
-
-
-void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 
 int GUI::update_challenge_setup_screen()
 {

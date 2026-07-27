@@ -116,7 +116,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
         cursor = v10;
         if ( v10 != nullptr )
         {
-          cursor = (char *)advance_to_next_crlf_line(v10);
+          cursor = advance_to_next_crlf_line(v10);
           v11 = find_case_insensitive_substring(asc_4AC1BC, cursor);
           if ( v11 != nullptr )
           {
@@ -337,7 +337,7 @@ void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)
     report_errorf("Cannot find Segments End: in %s", level_path);
     return;
   }
-  crlf_line = (char *)advance_to_next_crlf_line(cursor);
+  crlf_line = advance_to_next_crlf_line(cursor);
   cursor = crlf_line;
   if ( crlf_line == nullptr )
     goto LABEL_105;
@@ -351,7 +351,7 @@ LABEL_94:
       report_errorf("Cannot find 'First:' in %s", level_path);
       return;
     }
-    v51 = (char *)advance_to_next_crlf_line(v50);
+    v51 = advance_to_next_crlf_line(v50);
     cursor = v51;
     if ( v51 != nullptr )
     {
@@ -375,7 +375,7 @@ LABEL_94:
         report_errorf("Cannot find 'Last:' in %s", level_path);
         return;
       }
-      v56 = (char *)advance_to_next_crlf_line(v55);
+      v56 = advance_to_next_crlf_line(v55);
       cursor = v56;
       if ( v56 != nullptr )
       {
@@ -501,7 +501,7 @@ LABEL_105:
     }
     v60 = cursor;
     ++tracks->segment_count;
-    crlf_line = (char *)advance_to_next_crlf_line(v60);
+    crlf_line = advance_to_next_crlf_line(v60);
     cursor = crlf_line;
     if ( crlf_line == nullptr )
       break;

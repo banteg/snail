@@ -1,10 +1,12 @@
 // rstrcpy_checked_ascii @ 0x44e5b0 (cdecl)
 
+#include "rstring.h"
+
 void report_errorf(char* format, ...);
 
-void __cdecl rstrcpy_checked_ascii(char* destination, char* source)
+void __cdecl rstrcpy_checked_ascii(char* destination, const char* source)
 {
-    char* source_cursor = source;
+    const char* source_cursor = source;
     char value = *source_cursor;
     if (value != 0) {
         char* destination_cursor = destination;

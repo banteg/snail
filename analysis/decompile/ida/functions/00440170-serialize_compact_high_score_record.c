@@ -3,7 +3,7 @@
 /* selector: serialize_compact_high_score_record */
 
 // Compacts one active cRSubSolution into the ScoreA/B/C on-disk record format, including checksum, name, and variable replay payload arrays. Android preserves this owner method as `cRSubSolution::Save(unsigned char*)`.
-int __thiscall serialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)
+int32_t __thiscall serialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)
 {
   int32_t replay_sample_count; // eax
   int32_t v4; // eax
@@ -18,7 +18,7 @@ int __thiscall serialize_compact_high_score_record(SubSolution *record, CompactH
   uint8_t *v13; // edi
   uint16_t *p_flags; // esi
   uint8_t v15; // cl
-  int result; // eax
+  int32_t result; // eax
 
   replay_sample_count = record->replay_sample_count;
   record->active = 1;

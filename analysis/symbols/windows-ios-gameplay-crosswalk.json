@@ -4137,6 +4137,15 @@
       "notes": "The exact Windows and mobile helpers return the byte after the next CRLF pair only when a non-NUL byte follows it."
     },
     {
+      "address": "0x44e6c0",
+      "windows_name": "strings_equal_case_insensitive_path",
+      "ios_symbol": "Rstrcmp(char*, char*)",
+      "android_symbol": "Rstrcmp(char*, char*)",
+      "source_object": "RString.o",
+      "confidence": "high",
+      "notes": "All three bodies fold lowercase ASCII and require both strings to terminate after the match, proving this is the strict RString.o comparator rather than the earlier prefix-friendly RShell.o RTextCompStart helper. Windows returns a full int in EAX and all six callers consume that full result; a bool return transcription changes the exact VC6 epilogue."
+    },
+    {
       "address": "0x44e710",
       "windows_name": "parse_next_signed_int",
       "ios_symbol": "Rstrint(char**)",

@@ -7,11 +7,11 @@
 00418311        sprintf(&var_600, "Backgrounds/%s", script_name)
 0041831f        int32_t i = 0
 00418323        if (manager->script_count s> 0)
-00418325        char (* ebp_1)[0x80] = &manager->scripts[0].name
-00418337        if (strings_equal_case_insensitive_path(ebp_1, script_name) != 0)
+00418325        char (* left)[0x80] = &manager->scripts[0].name
+00418337        if (strings_equal_case_insensitive_path(left, script_name) != 0)
 00418392        return i
 0041833f        i += 1
-00418340        ebp_1 = &(*ebp_1)[0x124]
+00418340        left = &(*left)[0x124]
 00418348        do while (i s< manager->script_count)
 00418354        char* searched = load_file_bytes(&var_600, nullptr)
 00418360        if (searched == 0)
@@ -57,25 +57,25 @@
 004185c3        int32_t edx_11 = manager->script_count * 0x49
 004185c6        if (cond:0_1)
 00418601        (&manager->scripts[0].split_backdrop_texture_pair)[edx_11 << 2] = 1
-00418625        char texture_path_1
-00418625        rstrcpy_checked_ascii(&texture_path_1, &manager->scripts[manager->script_count].backdrop_texture_path)
-00418643        char texture_path
-00418643        rstrcpy_checked_ascii(&texture_path, &manager->scripts[manager->script_count].backdrop_texture_path)
-00418655        char* eax_34 = &texture_path_1
-0041865c        if (texture_path_1 != 0x2e)
+00418625        char var_680[0x80]
+00418625        rstrcpy_checked_ascii(&var_680, &manager->scripts[manager->script_count].backdrop_texture_path)
+00418643        char var_700[0x80]
+00418643        rstrcpy_checked_ascii(&var_700, &manager->scripts[manager->script_count].backdrop_texture_path)
+00418655        char (* eax_34)[0x80] = &var_680
+0041865c        if (var_680[0] != 0x2e)
 00418665        char i_2
-0041865e        i_2 = eax_34[1]
-00418661        eax_34 = &eax_34[1]
+0041865e        i_2 = (*eax_34)[1]
+00418661        eax_34 = &(*eax_34)[1]
 00418665        do while (i_2 != 0x2e)
-00418667        bool cond:2_1 = texture_path == 0x2e
+00418667        bool cond:2_1 = var_700[0] == 0x2e
 00418672        __builtin_strncpy(eax_34, "_A.tga", 7)
-0041868a        char* eax_35 = &texture_path
+0041868a        char (* eax_35)[0x80] = &var_700
 0041868e        if (not(cond:2_1))
-00418690        eax_35 = &eax_35[1]
+00418690        eax_35 = &(*eax_35)[1]
 00418694        do while (*eax_35 != 0x2e)
 00418696        __builtin_strncpy(eax_35, "_B.tga", 7)
-004186d4        register_sprite_texture(&g_sprite_manager, &texture_path_1, manager->scripts[manager->script_count].backdrop_texture_id, 0x400)
-004186fd        register_sprite_texture(&g_sprite_manager, &texture_path, manager->scripts[manager->script_count].backdrop_texture_id + 1, 0x400)
+004186d4        register_sprite_texture(&g_sprite_manager, &var_680, manager->scripts[manager->script_count].backdrop_texture_id, 0x400)
+004186fd        register_sprite_texture(&g_sprite_manager, &var_700, manager->scripts[manager->script_count].backdrop_texture_id + 1, 0x400)
 004185e3        register_sprite_texture(&g_sprite_manager, &manager->scripts[0].backdrop_texture_path[edx_11 << 2], (&manager->scripts[0].backdrop_texture_id)[edx_11], 0x400)
 004185f4        manager->scripts[manager->script_count].split_backdrop_texture_pair = 0
 00418709        manager->script_count

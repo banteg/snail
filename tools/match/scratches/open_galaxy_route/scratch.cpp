@@ -2,9 +2,8 @@
 
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
+#include "rstring.h"
 #include "subgame_runtime.h"
-
-void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
 
 void Galaxy::open_galaxy_route(int selected_level_index)
 {

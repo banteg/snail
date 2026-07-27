@@ -4960,8 +4960,6 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "char* __cdecl xor_decode_buffer_with_index(char* bytes, int32_t byte_count)",
         "int32_t __cdecl write_file_bytes(char* path, void* bytes, int32_t byte_count)",
         "char* __cdecl save_config_file(char* path, void* bytes, int32_t byte_count)",
-        "bool __cdecl strings_equal_case_insensitive(char* left, char* prefix)",
-        "char* __cdecl find_case_insensitive_substring(char* pattern, char* searched)",
     )
     ida_declarations = (
         "unsigned int __cdecl fread(void* bytes, unsigned int element_size, unsigned int element_count, File* stream);",
@@ -4970,8 +4968,6 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "char* __cdecl xor_decode_buffer_with_index(char* bytes, int byte_count);",
         "int __cdecl write_file_bytes(char* path, void* bytes, int byte_count);",
         "char* __cdecl save_config_file(char* path, void* bytes, int byte_count);",
-        "bool __cdecl strings_equal_case_insensitive(char* left, char* prefix);",
-        "char* __cdecl find_case_insensitive_substring(char* pattern, char* searched);",
     )
     for declaration in binja_declarations:
         assert declaration in binja_source
@@ -5069,8 +5065,6 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     assert "int32_t __cdecl printf(char* format, ...)" in binja_source
     assert "void __cdecl free(void* pointer)" in binja_source
     assert '(0x42F0A0, "load_png_image")' in ida_apply_source
-    assert '(0x431DC0, "strings_equal_case_insensitive")' in ida_apply_source
-    assert '(0x44E600, "find_case_insensitive_substring")' in ida_apply_source
     assert '(0x48B614, "printf")' in ida_apply_source
     assert '(0x48B8D5, "free")' in ida_apply_source
     assert "ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension" in ida_apply_source
@@ -5081,8 +5075,10 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     assert "char* __cdecl toggle_archive_high_bit_in_place" in ida_apply_source
     assert "int __cdecl printf(char* format, ...);" in ida_apply_source
     assert "void __cdecl free(void* pointer);" in ida_apply_source
-    assert '("0x431dc0", "strings_equal_case_insensitive")' in binja_source
-    assert '("0x44e600", "find_case_insensitive_substring")' in binja_source
+    assert "strings_equal_case_insensitive" not in ida_apply_source
+    assert "find_case_insensitive_substring" not in ida_apply_source
+    assert "strings_equal_case_insensitive" not in binja_source
+    assert "find_case_insensitive_substring" not in binja_source
     assert "apply_user_var_updates" in binja_source
     for owner_name in (
         '"serialized_header"',
@@ -19402,6 +19398,24 @@ def test_mobile_backed_owner_health_guards_are_registered() -> None:
         "ida_rstrfind_mobile_argument_ownership": (
             "0044e600-find_case_insensitive_substring.c"
         ),
+        "bn_rstrasc_mobile_contract": "0044e5a0-ascii_upper_if_lowercase.c",
+        "ida_rstrasc_mobile_contract": "0044e5a0-ascii_upper_if_lowercase.c",
+        "bn_rstrcpy_mobile_contract": "0044e5b0-rstrcpy_checked_ascii.c",
+        "ida_rstrcpy_mobile_contract": "0044e5b0-rstrcpy_checked_ascii.c",
+        "bn_rstrnewline_mobile_contract": (
+            "0044e690-advance_to_next_crlf_line.c"
+        ),
+        "ida_rstrnewline_mobile_contract": (
+            "0044e690-advance_to_next_crlf_line.c"
+        ),
+        "bn_rstrcmp_mobile_contract": (
+            "0044e6c0-strings_equal_case_insensitive_path.c"
+        ),
+        "ida_rstrcmp_mobile_contract": (
+            "0044e6c0-strings_equal_case_insensitive_path.c"
+        ),
+        "bn_rstrint_mobile_contract": "0044e710-parse_next_signed_int.c",
+        "ida_rstrint_mobile_contract": "0044e710-parse_next_signed_int.c",
     }
     for name, artifact_name in expected.items():
         assert checks[name]["artifact"].endswith(artifact_name)
@@ -19429,6 +19443,14 @@ def test_mobile_backed_owner_health_guards_are_registered() -> None:
     assert (
         "char* pattern_1 = pattern"
         in checks["bn_rstrfind_mobile_argument_ownership"]["required_substrings"]
+    )
+    assert (
+        "return 1"
+        in checks["bn_rstrcmp_mobile_contract"]["required_substrings"]
+    )
+    assert (
+        "int __cdecl strings_equal_case_insensitive_path(char *left, char *right)"
+        in checks["ida_rstrcmp_mobile_contract"]["required_substrings"]
     )
 
 

@@ -1,5 +1,7 @@
 // strings_equal_case_insensitive_path @ 0x44e6c0 (cdecl)
 
+#include "rstring.h"
+
 int __cdecl strings_equal_case_insensitive_path(char* left, char* right)
 {
     while (1) {

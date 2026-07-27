@@ -30,7 +30,7 @@ int32_t __thiscall load_landscape_script_by_name(LandscapeManager *manager, char
   char *v26; // eax
   char *cursor; // [esp+10h] [ebp-708h] BYREF
   int v28; // [esp+14h] [ebp-704h]
-  char v29[128]; // [esp+18h] [ebp-700h] BYREF
+  char destination[128]; // [esp+18h] [ebp-700h] BYREF
   char texture_path[128]; // [esp+98h] [ebp-680h] BYREF
   char Buffer[512]; // [esp+118h] [ebp-600h] BYREF
   char v32[512]; // [esp+318h] [ebp-400h] BYREF
@@ -97,7 +97,7 @@ LABEL_5:
         {
           manager->scripts[v16].split_backdrop_texture_pair = 1;
           rstrcpy_checked_ascii(texture_path, manager->scripts[manager->script_count].backdrop_texture_path);
-          rstrcpy_checked_ascii(v29, manager->scripts[manager->script_count].backdrop_texture_path);
+          rstrcpy_checked_ascii(destination, manager->scripts[manager->script_count].backdrop_texture_path);
           v17 = texture_path;
           if ( texture_path[0] != 46 )
           {
@@ -105,7 +105,7 @@ LABEL_5:
               v18 = *++v17;
             while ( v18 != 46 );
           }
-          v15 = v29[0] == 46;
+          v15 = destination[0] == 46;
           *v17 = 95;
           v17[1] = 65;
           v17[2] = 46;
@@ -113,7 +113,7 @@ LABEL_5:
           v17[4] = 103;
           v17[5] = 97;
           v17[6] = 0;
-          v19 = v29;
+          v19 = destination;
           if ( !v15 )
           {
             do
@@ -134,7 +134,7 @@ LABEL_5:
             1024);
           register_sprite_texture(
             &g_sprite_manager,
-            v29,
+            destination,
             manager->scripts[manager->script_count].backdrop_texture_id + 1,
             1024);
           v2 = script_name;
@@ -216,7 +216,7 @@ LABEL_5:
   else
   {
     name = manager->scripts[0].name;
-    while ( !strings_equal_case_insensitive_path(name, script_name) )
+    while ( strings_equal_case_insensitive_path(name, script_name) == 0 )
     {
       ++v4;
       name += 292;

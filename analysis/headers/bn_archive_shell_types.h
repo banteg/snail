@@ -47,9 +47,6 @@ int32_t __cdecl chdir(char* path);
 int32_t __cdecl findfirst(char* pattern, FileSearchData* find_data);
 int32_t __cdecl findnext(int32_t handle, FileSearchData* find_data);
 int32_t __cdecl set_current_directory_with_drive_fallback(char* path);
-bool __cdecl strings_equal_case_insensitive(char* left, char* prefix);
-char* __cdecl find_case_insensitive_substring(char* pattern, char* searched);
-
 int32_t __thiscall get_tracked_allocation_size(
     TrackedAllocationStack* stack, void* pointer);
 void __thiscall push_tracked_allocation(

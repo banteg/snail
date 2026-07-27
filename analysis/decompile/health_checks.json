@@ -1286,7 +1286,7 @@
       "name": "ida_deserialize_compact_solution_owner",
       "artifact": "analysis/decompile/ida/functions/00440020-deserialize_compact_high_score_record.c",
       "required_substrings": [
-        "unsigned __int8 __thiscall deserialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)",
+        "uint8_t __thiscall deserialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)",
         "compact->checksum",
         "record->replay_speed_scalar.bits",
         "record->run_records",
@@ -1325,7 +1325,7 @@
       "name": "ida_serialize_compact_solution_owner",
       "artifact": "analysis/decompile/ida/functions/00440170-serialize_compact_high_score_record.c",
       "required_substrings": [
-        "int __thiscall serialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)",
+        "int32_t __thiscall serialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)",
         "compact->replay_speed_scalar.bits",
         "record->run_records",
         "uint16_t *p_flags",
@@ -14740,7 +14740,8 @@
         "char* route_name_character_cursor = edi - 0x84",
         "*route_name_character_cursor = j",
         "route_name_character_cursor = &route_name_character_cursor[1]",
-        "(edi - 0x109b4)->route_names[0].star_count",
+        "edi->r:-4.d = parse_next_signed_int(&cursor)",
+        "if (edi->r:-4.d s> 0)",
         "galaxy->route_slots[galaxy->record_count].record.route_name_index"
       ],
       "forbidden_substrings": [
@@ -21627,12 +21628,12 @@
       "name": "bn_crt_variadic_galaxy_labels",
       "artifact": "analysis/decompile/binja/functions/004088e0-load_galaxy_layout.c",
       "required_substrings": [
-        "sprintf(&buffer, \"Galaxy%i:\", var_d0)",
-        "sprintf(&buffer_1, \"LEVEL %i MISSING\", galaxy->record_count)"
+        "sprintf(&var_c0, \"Galaxy%i:\", var_d0)",
+        "sprintf(&var_80, \"LEVEL %i MISSING\", galaxy->record_count)"
       ],
       "forbidden_substrings": [
-        "sprintf(&buffer, \"Galaxy%i:\")",
-        "sprintf(&buffer_1, \"LEVEL %i MISSING\")",
+        "sprintf(&var_c0, \"Galaxy%i:\")",
+        "sprintf(&var_80, \"LEVEL %i MISSING\")",
         "sub_48b32c"
       ]
     },
@@ -22385,6 +22386,163 @@
         "char *__cdecl sub_44E600",
         "char *a1",
         "char *a2"
+      ]
+    },
+    {
+      "name": "bn_rstrasc_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/0044e5a0-ascii_upper_if_lowercase.c",
+      "required_substrings": [
+        "eax.b = value",
+        "if (eax.b s>= 0x61 && eax.b s<= 0x7a)",
+        "eax -= 0x20",
+        "return eax.b"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "int32_t result",
+        "sub_44"
+      ]
+    },
+    {
+      "name": "ida_rstrasc_mobile_contract",
+      "artifact": "analysis/decompile/ida/functions/0044e5a0-ascii_upper_if_lowercase.c",
+      "required_substrings": [
+        "char __cdecl ascii_upper_if_lowercase(char value)",
+        "result = value",
+        "return value - 32",
+        "return result"
+      ],
+      "forbidden_substrings": [
+        "char __cdecl sub_44E5A0",
+        "char a1"
+      ]
+    },
+    {
+      "name": "bn_rstrcpy_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/0044e5b0-rstrcpy_checked_ascii.c",
+      "required_substrings": [
+        "char const* source_1 = source",
+        "*destination = 0",
+        "char* destination_1 = destination",
+        "report_errorf(\"Dodgy Rstrcpy %s\", source_1)",
+        "source_1 = &source_1[1]"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return i",
+        "int32_t rstrcpy_checked_ascii"
+      ]
+    },
+    {
+      "name": "ida_rstrcpy_mobile_contract",
+      "artifact": "analysis/decompile/ida/functions/0044e5b0-rstrcpy_checked_ascii.c",
+      "required_substrings": [
+        "void __cdecl rstrcpy_checked_ascii(char *destination, const char *source)",
+        "const char *v2",
+        "v2 = source",
+        "report_errorf(\"Dodgy Rstrcpy %s\", v2)",
+        "*destination = 0"
+      ],
+      "forbidden_substrings": [
+        "char __cdecl sub_44E5B0",
+        "char __cdecl rstrcpy_checked_ascii",
+        "char *a1",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_rstrnewline_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/0044e690-advance_to_next_crlf_line.c",
+      "required_substrings": [
+        "char* cursor_1 = cursor",
+        "if (i == 0xd && cursor_1[1] == 0xa)",
+        "return &cursor_1[2]",
+        "return 0"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "void* cursor",
+        "sub_44"
+      ]
+    },
+    {
+      "name": "ida_rstrnewline_mobile_contract",
+      "artifact": "analysis/decompile/ida/functions/0044e690-advance_to_next_crlf_line.c",
+      "required_substrings": [
+        "char *__cdecl advance_to_next_crlf_line(char *cursor)",
+        "v1 = cursor",
+        "while ( v2 != 13 || v1[1] != 10 )",
+        "return v1[2] != 0 ? v1 + 2 : nullptr"
+      ],
+      "forbidden_substrings": [
+        "char *__cdecl sub_44E690",
+        "char *a1"
+      ]
+    },
+    {
+      "name": "bn_rstrcmp_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/0044e6c0-strings_equal_case_insensitive_path.c",
+      "required_substrings": [
+        "char* left_1 = left",
+        "char* right_1 = right",
+        "if (eax_1 s>= 0x61 && eax_1 s<= 0x7a)",
+        "if (ecx_1 != 0 && eax_1 == ecx_1)",
+        "return 1",
+        "return 0"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "bool strings_equal_case_insensitive_path"
+      ]
+    },
+    {
+      "name": "ida_rstrcmp_mobile_contract",
+      "artifact": "analysis/decompile/ida/functions/0044e6c0-strings_equal_case_insensitive_path.c",
+      "required_substrings": [
+        "int __cdecl strings_equal_case_insensitive_path(char *left, char *right)",
+        "if ( v4 >= 97 && v4 <= 122 )",
+        "if ( v5 == 0 || v4 != v5 )",
+        "return v5 == 0"
+      ],
+      "forbidden_substrings": [
+        "bool __cdecl strings_equal_case_insensitive_path",
+        "int __cdecl sub_44E6C0",
+        "char *a1",
+        "char *a2"
+      ]
+    },
+    {
+      "name": "bn_rstrint_mobile_contract",
+      "artifact": "analysis/decompile/binja/functions/0044e710-parse_next_signed_int.c",
+      "required_substrings": [
+        "if (**cursor != 0x2d)",
+        "*cursor = &edx_1[1]",
+        "edi = 0xffffffff",
+        "*cursor = &esi_1[1]",
+        "return eax_4 * edi"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "int32_t* cursor",
+        "sub_44"
+      ]
+    },
+    {
+      "name": "ida_rstrint_mobile_contract",
+      "artifact": "analysis/decompile/ida/functions/0044e710-parse_next_signed_int.c",
+      "required_substrings": [
+        "int __cdecl parse_next_signed_int(char **cursor)",
+        "if ( **cursor != 45 )",
+        "*cursor = v1 + 1",
+        "v3 = -1",
+        "return v3 * v4"
+      ],
+      "forbidden_substrings": [
+        "int __cdecl sub_44E710",
+        "char **a1",
+        "_DWORD **cursor"
       ]
     },
     {

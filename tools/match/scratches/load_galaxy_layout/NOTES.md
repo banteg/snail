@@ -192,3 +192,22 @@ name-only EDI override caused Binary Ninja to lose the enclosing
 `star_count` field. Both were removed rather than claiming a false owner. No
 matcher source changed: 88.27%, 236/233 instructions, prefix 62, and all 39
 operands remain honest.
+
+## 2026-07-27 exact RString parser ABI
+
+Android and iOS identify the adjacent Windows parser as authored
+`RString.o::Rstrint(char**)`. Replacing Binary Ninja's stale `int32_t*`
+parameter with that proven `char**` cursor contract improves the parser and
+all of its callers, but changes this loader's presentation of the interior
+EDI value. Because EDI physically points at `GalaxyRouteNameRecord::color`,
+the preceding `star_count` now renders honestly as `edi->r:-4.d` instead of
+Binary Ninja reconstructing the enclosing record from an imprecise argument
+type.
+
+The false EDI owner overrides rejected above remain rejected. The canonical
+layout, IDA's independent `galaxy->route_names[0].color` view, and the exact
+`-4` displacement still preserve the ownership evidence; the raw field label
+is analyzer presentation debt. The RString replay now reasserts the five
+validated galaxy point/text/name cursor lifetimes after caller analysis
+settles. Matching remains unchanged at 88.27%, 236/233 instructions, prefix
+62, with all 39 masked operands clean.

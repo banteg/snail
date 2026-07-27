@@ -2,12 +2,12 @@
 
 #include "audio_system.h"
 #include "game_root.h"
+#include "rstring.h"
 #include "thanks_screen.h"
 
 extern char g_click_to_continue_text[]; // 0x4a11c4
 
 char read_pressed_text_input_key_code(); // @ 0x432440
-void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 
 void ThanksScreen::update_thanks_for_playing_screen()
 {

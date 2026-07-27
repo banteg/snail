@@ -76,7 +76,6 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x405350", "toggle_archive_high_bit_in_place"),
     ("0x407b00", "shutdown_bass_audio_window"),
     ("0x42f0a0", "load_png_image"),
-    ("0x431dc0", "strings_equal_case_insensitive"),
     ("0x432d40", "reset_registered_sound_sample_count"),
     ("0x432d50", "cache_music_file"),
     ("0x432dd0", "play_registered_warning_sample"),
@@ -106,7 +105,6 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x449ba0", "resume_audio_backend_if_paused"),
     ("0x449bc0", "pause_audio_backend_if_running"),
     ("0x449be0", "set_audio_normalization_scales"),
-    ("0x44e600", "find_case_insensitive_substring"),
     ("0x48b3a7", "fclose"),
     ("0x48b41d", "fopen"),
     ("0x48b430", "fseek"),
@@ -187,14 +185,6 @@ LEGACY_AUDIO_BACKEND_SYMBOL_REMOVALS = (
 )
 
 PROTO_UPDATES = (
-    (
-        "strings_equal_case_insensitive",
-        "bool __cdecl strings_equal_case_insensitive(char* left, char* prefix)",
-    ),
-    (
-        "find_case_insensitive_substring",
-        "char* __cdecl find_case_insensitive_substring(char* pattern, char* searched)",
-    ),
     (
         "shutdown_bass_audio_window",
         "int32_t __cdecl shutdown_bass_audio_window()",

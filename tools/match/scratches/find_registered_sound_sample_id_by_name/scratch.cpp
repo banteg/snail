@@ -1,8 +1,8 @@
 // find_registered_sound_sample_id_by_name @ 0x432fc0 (cdecl)
 
 #include "audio_system.h"
+#include "rstring.h"
 
-char* find_case_insensitive_substring(char* needle, char* haystack);
 int report_errorf(char* format, ...);
 
 int find_registered_sound_sample_id_by_name(char* sample_name)

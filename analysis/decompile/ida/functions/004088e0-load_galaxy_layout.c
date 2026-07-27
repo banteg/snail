@@ -20,11 +20,11 @@ void __thiscall load_galaxy_layout(Galaxy *galaxy)
   char i; // cl
   int v15; // ebp
   int v16; // [esp+0h] [ebp-E4h]
-  char *v17; // [esp+10h] [ebp-D4h] BYREF
+  char *cursor; // [esp+10h] [ebp-D4h] BYREF
   int32_t v18; // [esp+14h] [ebp-D0h]
   int v19; // [esp+18h] [ebp-CCh]
   union GalaxyPoint::$05C98FCC6CBF70FB5A4B689A398B23F2 *v20; // [esp+1Ch] [ebp-C8h]
-  char *file_bytes_from_archive_or_fs; // [esp+20h] [ebp-C4h]
+  char *searched; // [esp+20h] [ebp-C4h]
   char Buffer[64]; // [esp+24h] [ebp-C0h] BYREF
   char ArgList[128]; // [esp+64h] [ebp-80h] BYREF
 
@@ -52,10 +52,7 @@ void __thiscall load_galaxy_layout(Galaxy *galaxy)
   galaxy->level_progress_base = &g_game_base->subgame;
   archive_data_base = get_archive_data_base();
   v8 = (union GalaxyPoint::$05C98FCC6CBF70FB5A4B689A398B23F2 *)&g_galaxy_group_points[0].y_bits;
-  file_bytes_from_archive_or_fs = (char *)load_file_bytes_from_archive_or_fs(
-                                            aGalaxyGalaxyTx,
-                                            archive_data_base,
-                                            nullptr);
+  searched = (char *)load_file_bytes_from_archive_or_fs(aGalaxyGalaxyTx, archive_data_base, nullptr);
   v18 = 0;
   v19 = 0;
   v20 = (union GalaxyPoint::$05C98FCC6CBF70FB5A4B689A398B23F2 *)&g_galaxy_group_points[0].y_bits;
@@ -63,29 +60,29 @@ void __thiscall load_galaxy_layout(Galaxy *galaxy)
   while ( 1 )
   {
     sprintf(Buffer, "Galaxy%i:", v18);
-    case_insensitive_substring = find_case_insensitive_substring(Buffer, file_bytes_from_archive_or_fs);
-    v17 = case_insensitive_substring;
-    if ( !case_insensitive_substring )
+    case_insensitive_substring = find_case_insensitive_substring(Buffer, searched);
+    cursor = case_insensitive_substring;
+    if ( case_insensitive_substring == nullptr )
     {
       report_errorf("Cannot find Galaxy %i in _Galaxy.txt", v16);
       return;
     }
     v11 = find_case_insensitive_substring(asc_4A1644, case_insensitive_substring) + 1;
-    v17 = v11;
+    cursor = v11;
     if ( *v11 != 34 )
       break;
     v12 = v11 + 1;
     p_a = (char *)&p_color[-9].a;
-    v17 = v12;
+    cursor = v12;
     for ( i = *v12; *v12 != 34; i = *v12 )
     {
       *p_a++ = i;
-      v17 = ++v12;
+      cursor = ++v12;
     }
     *p_a = 0;
-    v17 = find_case_insensitive_substring(aStarnumber, v12);
-    v17 = find_case_insensitive_substring(asc_4A2094, v17) + 1;
-    LODWORD(p_color[-1].a) = parse_next_signed_int(&v17);
+    cursor = find_case_insensitive_substring(aStarnumber, v12);
+    cursor = find_case_insensitive_substring(asc_4A2094, cursor) + 1;
+    LODWORD(p_color[-1].a) = parse_next_signed_int(&cursor);
     p_color->r = 1.0;
     p_color->g = 1.0;
     p_color->b = 1.0;
