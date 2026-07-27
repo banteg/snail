@@ -33,10 +33,9 @@ insert_record:
 
     SubSolution* shift_cursor = &bank->survival_records[shift_rank];
     do {
-        SubSolution* destination = shift_cursor;
-        SubSolution* source = --shift_cursor;
-        *destination = *source;
-        destination->route_or_rank_index = shift_rank;
+        --shift_cursor;
+        shift_cursor[1] = shift_cursor[0];
+        shift_cursor[1].route_or_rank_index = shift_rank;
         --shift_rank;
     } while (shift_rank > rank);
 

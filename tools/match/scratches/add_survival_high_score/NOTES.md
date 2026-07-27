@@ -151,3 +151,17 @@ Residual:
 - Matching source is unchanged. Focused matching remains honestly at 89.41%,
   86/84 candidate/target instructions, prefix 36/84, and six clean masks; the
   remaining allocator/scheduler residual stays visible.
+
+2026-07-27 mobile-guided adjacent-record cursor:
+
+- Android and iOS both preserve the survival insertion as a backward walk over
+  adjacent owned `SubSolution` records. On Windows, EBP is the decremented
+  source cursor and the destination is the immediately following record.
+- Expressing that relationship directly as `shift_cursor[1] =
+  shift_cursor[0]` removes the artificial destination-pointer spill/reload
+  around `rep movsd` while preserving the recovered bank-owner lifetime.
+- Focused matching rises from 89.41% (`86/84` candidate/target instructions) to
+  90.48% with exact `84/84` instruction counts, prefix `36/84`, and six clean
+  masks. More literal-looking two-pointer and destination-before-decrement
+  spellings regress to 65.03% because VC6 loses the native cursor ownership;
+  they are not retained.
