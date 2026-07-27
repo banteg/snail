@@ -1,9 +1,10 @@
-// load_registered_texture_refs @ 0x412a00 (cdecl)
+// load_registered_texture_refs @ 0x412a00 (cdecl); mobile G0TextureSetLoad(int)
 
 #include "texture_registry.h"
 
 void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
-void load_registered_texture_ref(int texture_index, int unused_legacy_mode); // @ 0x412a70
+void load_registered_texture_ref(
+    int texture_index, int unused_legacy_mode); // @ 0x412a70; mobile G0TextureLoad
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
 void load_registered_texture_refs(int legacy_mode)

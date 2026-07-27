@@ -449,6 +449,100 @@ def test_dual_mobile_object_geometry_owners_preserve_platform_boundaries() -> No
         assert method in object_header
 
 
+def test_dual_mobile_texture_registry_recovers_authored_owner_and_record() -> None:
+    repo_root = Path(__file__).parents[1]
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    functions_by_address = {
+        entry["address"]: entry for entry in functions["functions"]
+    }
+    crosswalk_by_address = {
+        entry["address"]: entry for entry in crosswalk["entries"]
+    }
+
+    for address, alias, symbol in (
+        ("0x44e800", "cRTextures_Init", "cRTextures::Init(int)"),
+        (
+            "0x44e810",
+            "cRTextures_Add",
+            "cRTextures::Add(char*, cTgaHeader*, int)",
+        ),
+    ):
+        assert alias in functions_by_address[address]["aliases"]
+        entry = crosswalk_by_address[address]
+        assert entry["android_symbol"] == symbol
+        assert entry["ios_symbol"] == symbol
+        assert entry["source_object"] == "RTexture.o"
+        assert entry["confidence"] == "high"
+
+    init_notes = crosswalk_by_address["0x44e800"]["notes"]
+    assert "exact Windows two-store initializer" in init_notes
+    assert "port-only tail offset" in init_notes
+
+    add_notes = crosswalk_by_address["0x44e810"]["notes"]
+    for field_offset in ("+0x0c", "+0x8c", "+0x98", "+0xa0"):
+        assert field_offset in add_notes
+    assert "hash table" in add_notes
+
+    sprite_header = (repo_root / "tools/match/include/sprite.h").read_text(
+        encoding="utf-8"
+    )
+    assert "typedef TextureRef cRTexture;" in sprite_header
+    assert "typedef TextureRefList cRTextures;" in sprite_header
+    assert "cRTextures::Init" in sprite_header
+    assert "cRTextures::Add" in sprite_header
+
+
+def test_dual_mobile_texture_loaders_preserve_renderer_boundaries() -> None:
+    repo_root = Path(__file__).parents[1]
+    functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    functions_by_address = {
+        entry["address"]: entry for entry in functions["functions"]
+    }
+    crosswalk_by_address = {
+        entry["address"]: entry for entry in crosswalk["entries"]
+    }
+
+    for address, alias, symbol in (
+        ("0x412a00", "G0TextureSetLoad", "G0TextureSetLoad(int)"),
+        ("0x412a70", "G0TextureLoad", "G0TextureLoad(int, int)"),
+    ):
+        assert alias in functions_by_address[address]["aliases"]
+        entry = crosswalk_by_address[address]
+        assert entry["android_symbol"] == symbol
+        assert entry["ios_symbol"] == symbol
+        assert entry["source_object"] is None
+        assert entry["confidence"] == "high"
+
+    set_load_notes = crosswalk_by_address["0x412a00"]["notes"]
+    assert "renderer-owned four-byte slot" in set_load_notes
+    assert "OpenGL residency bank" in set_load_notes
+    assert "Direct3D texture-pointer bank" in set_load_notes
+
+    load_notes = crosswalk_by_address["0x412a70"]["notes"]
+    for field_offset in ("+0x0c", "+0x98", "+0x04", "+0x08"):
+        assert field_offset in load_notes
+    assert "legacy second argument is unread" in load_notes
+    assert "Debug.tga fallback" in load_notes
+
+
 def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
     repo_root = Path(__file__).parents[1]
     functions = json.loads(

@@ -927,12 +927,18 @@
     {
       "address": "0x412a00",
       "name": "load_registered_texture_refs",
-      "description": "Allocates the Direct3D texture slot array, forwards its legacy mode argument while loading each registered texture reference, and reports the estimated texture memory budget."
+      "description": "Windows `G0TextureSetLoad(int)`: allocates the renderer's indexed texture-slot array, resets the shared VRAM estimate, invokes G0TextureLoad for every cRTexture owned by cRTextures, then reports kilobytes. Android and iOS retain the same authored lifecycle plus OpenGL-only name/residency setup.",
+      "aliases": [
+        "G0TextureSetLoad"
+      ]
     },
     {
       "address": "0x412a70",
       "name": "load_registered_texture_ref",
-      "description": "Loads one TextureRef from the archive or filesystem, optionally retains its source bytes, installs the indexed Direct3D texture slot, derives color-key and alpha-stage behavior from the TGA bits-per-pixel field, accounts estimated VRAM, and publishes the loaded dimensions. Its forwarded legacy second argument is unused."
+      "description": "Windows `G0TextureLoad(int, int)`: loads one cRTexture by index, honors the shared skip/retain-source flags, installs the platform texture, accounts VRAM, and publishes width/height into the same 0xa4-byte record used by both mobile ports. All three retain the legacy second argument without reading it; Direct3D/OpenGL upload and missing-file policy remain platform-specific.",
+      "aliases": [
+        "G0TextureLoad"
+      ]
     },
     {
       "address": "0x412d00",
@@ -4105,12 +4111,19 @@
     },
     {
       "address": "0x44e800",
-      "name": "initialize_texture_list"
+      "name": "initialize_texture_list",
+      "description": "Authored `cRTextures::Init(int)` in both mobile ports: clears the live cRTexture count and records the fixed registry capacity. Windows and iOS share the exact two-store body; Android additionally initializes a port-only hash index.",
+      "aliases": [
+        "cRTextures_Init"
+      ]
     },
     {
       "address": "0x44e810",
       "name": "get_or_create_texture_ref",
-      "description": "Looks up or allocates one TextureRefList entry, using the 0xa4-byte TextureRef stride, 0x80-byte inline path, no-reuse flag, and slot-index/count bookkeeping behind sprite texture registration."
+      "description": "Authored `cRTextures::Add(char*, cTgaHeader*, int)` in both mobile ports. The returned `cRTexture` is the Windows 0xa4-byte TextureRef record: inline path, flags, slot index, retained TGA payload, and mip count all occupy the same offsets. Windows and iOS scan the inline registry; Android substitutes a port-only hash lookup without changing record ownership.",
+      "aliases": [
+        "cRTextures_Add"
+      ]
     },
     {
       "address": "0x44e900",

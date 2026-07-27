@@ -82,3 +82,19 @@ rather than `int32_t`; the flag parameter is `int32_t`, not the stale IDA
 `int16_t`. The global registry owns 500 inline entries and ends at `0x4cb7e8`.
 These type changes preserve the exact 79/79 instruction body and all four
 clean operands.
+
+## 2026-07-27 dual-mobile record ownership
+
+Both ports retain this method as
+`cRTextures::Add(char*, cTgaHeader*, int)` in `RTexture.o`. Their record
+arithmetic proves that Windows `TextureRefList` is the authored `cRTextures`
+owner and each 0xa4-byte `TextureRef` is `cRTexture`: entries begin at owner
+`+0x08`, with flags at record `+0x00`, path `+0x0c`, slot index `+0x8c`,
+the retained `cTgaHeader*` payload at `+0x98`, and mip count at `+0xa0`.
+
+iOS preserves the Windows linear path-reuse scan and allocation lifecycle
+nearly instruction for instruction. Android replaces only the scan with a
+hash lookup and adds hash state beyond the common entry bank; it retains the
+same 0x800 no-reuse gate, new-record stores, count increment, and returned
+record pointer. This is ownership evidence, not a reason to reshape the
+already exact Windows matcher body. The authored alias is `cRTextures_Add`.

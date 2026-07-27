@@ -1,4 +1,4 @@
-// load_registered_texture_ref @ 0x412a70 (cdecl, exact)
+// load_registered_texture_ref @ 0x412a70 (cdecl, exact); mobile G0TextureLoad(int, int)
 
 #include "texture_registry.h"
 #include "tga_image_view.h"

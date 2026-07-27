@@ -13,12 +13,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 536,
-    "unverified_entries": 249,
-    "verified_android_symbols": 533,
-    "verified_ios_symbols": 432,
-    "available_android_mappings": 533,
-    "available_ios_mappings": 394
+    "verified_entries": 540,
+    "unverified_entries": 245,
+    "verified_android_symbols": 537,
+    "verified_ios_symbols": 436,
+    "available_android_mappings": 537,
+    "available_ios_mappings": 398
   },
   "entries": [
     {
@@ -8380,141 +8380,27 @@
       "address": "0x412a00",
       "windows_name": "load_registered_texture_refs",
       "windows_size": 112,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRObject::RequestFaceQuadTextureGroups(int)",
-          "score": 0.711,
-          "name_score": 0.566,
-          "size_score": 0.9286
-        },
-        {
-          "symbol": "G0TextureReLoad(int, char*)",
-          "score": 0.7067,
-          "name_score": 0.5556,
-          "size_score": 0.9333
-        },
-        {
-          "symbol": "cRResourceManager::RemoveTexture(int)",
-          "score": 0.6513,
-          "name_score": 0.4902,
-          "size_score": 0.8929
-        },
-        {
-          "symbol": "cRBorderManager::DeActivateOtherBorders(cRBorder*, cRBorder*)",
-          "score": 0.6304,
-          "name_score": 0.384,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "tAxis::operator=(tQuaternian const&)",
-          "score": 0.6122,
-          "name_score": 0.3537,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "G0TextureReLoad(int, char*)",
-          "score": 0.6947,
-          "name_score": 0.5556,
-          "size_score": 0.9032
-        },
-        {
-          "symbol": "OFXmlElement::dequeueNextUnreadChild()",
-          "score": 0.6286,
-          "name_score": 0.4255,
-          "size_score": 0.9333
-        },
-        {
-          "symbol": "OFBinaryKeyedWriter::writeKey(OFISerializerKey*)",
-          "score": 0.6171,
-          "name_score": 0.4062,
-          "size_score": 0.9333
-        },
-        {
-          "symbol": "cRSubGame::SetFeatures()",
-          "score": 0.6161,
-          "name_score": 0.384,
-          "size_score": 0.9643
-        },
-        {
-          "symbol": "cRSprite::SetTextureRef(int, int)",
-          "score": 0.6076,
-          "name_score": 0.6556,
-          "size_score": 0.5357
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "G0TextureSetLoad(int)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "ios_symbol": "G0TextureSetLoad(int)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x412a70",
       "windows_name": "load_registered_texture_ref",
       "windows_size": 656,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "G0TextureLoad(int, int)",
-          "score": 0.6494,
-          "name_score": 0.4848,
-          "size_score": 0.8963
-        },
-        {
-          "symbol": "cRBorderStack::Perform(int)",
-          "score": 0.595,
-          "name_score": 0.3657,
-          "size_score": 0.939
-        },
-        {
-          "symbol": "cRDistort::Build(cRObject*)",
-          "score": 0.5913,
-          "name_score": 0.3716,
-          "size_score": 0.9207
-        },
-        {
-          "symbol": "cRClickStart::AI()",
-          "score": 0.5789,
-          "name_score": 0.3388,
-          "size_score": 0.939
-        },
-        {
-          "symbol": "cRDirectX::Export(cRObject*, char*)",
-          "score": 0.5744,
-          "name_score": 0.3632,
-          "size_score": 0.8913
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "OFHttpNestedQueryStringWriter::storeInnerStreamOfType(OFISerializer*, OFRTTI const*)",
-          "score": 0.6423,
-          "name_score": 0.4348,
-          "size_score": 0.9535
-        },
-        {
-          "symbol": "void OFISerializer::serialize<OFHighScoreBatchEntry>(char const*, char const*, std::vector<OFPointer<OFHighScoreBatchEntry>, std::allocator<OFPointer<OFHighScoreBatchEntry>>>&)",
-          "score": 0.6106,
-          "name_score": 0.3668,
-          "size_score": 0.9762
-        },
-        {
-          "symbol": "cRBorder::AddTextNumber(int)",
-          "score": 0.602,
-          "name_score": 0.528,
-          "size_score": 0.713
-        },
-        {
-          "symbol": "FontMake3D(short)",
-          "score": 0.6017,
-          "name_score": 0.45,
-          "size_score": 0.8293
-        },
-        {
-          "symbol": "cRBorderManager::CentreRow(cRBorder*, bool, float)",
-          "score": 0.596,
-          "name_score": 0.3757,
-          "size_score": 0.9266
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "G0TextureLoad(int, int)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "ios_symbol": "G0TextureLoad(int, int)",
+      "source_object": null,
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x412d00",
@@ -26925,141 +26811,27 @@
       "address": "0x44e800",
       "windows_name": "initialize_texture_list",
       "windows_size": 16,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBackdrop::SetTextureDimensions(float, float)",
-          "score": 0.6375,
-          "name_score": 0.5625,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cRBorderManager::SetJustifyCentre(float)",
-          "score": 0.6143,
-          "name_score": 0.3571,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::GetTexture(int)",
-          "score": 0.6126,
-          "name_score": 0.64,
-          "size_score": 0.5714
-        },
-        {
-          "symbol": "ObjectProcVertexCompare(void const*, void const*)",
-          "score": 0.5895,
-          "name_score": 0.3158,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cAccelerometer::Input(float, float, float)",
-          "score": 0.58,
-          "name_score": 0.3,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRTextures::Init(int)",
-          "score": 0.8007,
-          "name_score": 0.6678,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::GetTexture(int)",
-          "score": 0.704,
-          "name_score": 0.64,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "RShellInputRegisterMouseExtra(float, float)",
-          "score": 0.6333,
-          "name_score": 0.3889,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::GetTextureRef(int)",
-          "score": 0.6095,
-          "name_score": 0.5714,
-          "size_score": 0.6667
-        },
-        {
-          "symbol": "cRBod::IsAfterSprites()",
-          "score": 0.6069,
-          "name_score": 0.3448,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRTextures::Init(int)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "ios_symbol": "cRTextures::Init(int)",
+      "source_object": "RTexture.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x44e810",
       "windows_name": "get_or_create_texture_ref",
       "windows_size": 240,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRBorder::AddTextNumber(int)",
-          "score": 0.6923,
-          "name_score": 0.5189,
-          "size_score": 0.9524
-        },
-        {
-          "symbol": "G0TextureSetLoad(int)",
-          "score": 0.6866,
-          "name_score": 0.5333,
-          "size_score": 0.9167
-        },
-        {
-          "symbol": "cRObjects::ReTextureObjects(cRTexture*, cRTexture*)",
-          "score": 0.6643,
-          "name_score": 0.5405,
-          "size_score": 0.85
-        },
-        {
-          "symbol": "cRSprite::Kill()",
-          "score": 0.6571,
-          "name_score": 0.45,
-          "size_score": 0.9677
-        },
-        {
-          "symbol": "G0TextureSetReLoad()",
-          "score": 0.6483,
-          "name_score": 0.625,
-          "size_score": 0.6833
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "OFPointer<OFHighScoreBatchEntry> OFISerializer::deserializeObject<OFHighScoreBatchEntry>(char const*)",
-          "score": 0.6683,
-          "name_score": 0.4583,
-          "size_score": 0.9833
-        },
-        {
-          "symbol": "OFViewHelper::setReturnKeyForAllTextFields(UIReturnKeyType, UIView*)",
-          "score": 0.6542,
-          "name_score": 0.4348,
-          "size_score": 0.9833
-        },
-        {
-          "symbol": "G0TextureSetLoad(int)",
-          "score": 0.6533,
-          "name_score": 0.5333,
-          "size_score": 0.8333
-        },
-        {
-          "symbol": "OFXmlElement::dequeueNextUnreadChild(char const*)",
-          "score": 0.6512,
-          "name_score": 0.4186,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFHttpNestedQueryStringWriter::getCurrentScope()",
-          "score": 0.6476,
-          "name_score": 0.4444,
-          "size_score": 0.9524
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRTextures::Add(char*, cTgaHeader*, int)",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "ios_symbol": "cRTextures::Add(char*, cTgaHeader*, int)",
+      "source_object": "RTexture.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x44e900",

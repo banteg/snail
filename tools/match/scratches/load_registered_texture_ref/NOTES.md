@@ -55,3 +55,18 @@ exact `load_registered_texture_refs` remains 100%. The earlier
 
 No `volatile`, dummy state, inline assembly, fake alias, or unrelated scheduling
 dependency is used.
+
+## 2026-07-27 cross-port cRTexture lifecycle
+
+Both mobile ports retain this authored loader as `G0TextureLoad(int, int)`.
+Every body indexes the same 0xa4-byte `cRTexture`, gates on skip flag `0x8000`,
+loads the path at record `+0x0c`, optionally retains source TGA bytes at
+`+0x98` under flag `0x20`, publishes width and height at `+0x04/+0x08`, and
+adds `width * height * 4` to the shared VRAM estimate. The legacy second
+argument is unread on Android, iOS, and Windows.
+
+The upload path is intentionally platform-specific: Windows creates Direct3D
+textures, derives alpha/color-key state, and falls back to Debug.tga; mobile
+uploads OpenGL textures and reports a missing texture as an error. Those
+differences do not split the authored G0 loader or its `cRTextures` record
+ownership. The exact Windows body remains 216/216 with 47 clean operands.
