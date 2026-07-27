@@ -18,16 +18,16 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_looptheloop_path_template_pair",
-      "address": "0x41b0f0"
+      "name": "initialize_hump_path_template_pair",
+      "address": "0x41d030"
     },
     {
-      "name": "initialize_looptheloopw_path_template_pair",
-      "address": "0x41bb40"
+      "name": "initialize_dump_path_template_pair",
+      "address": "0x41da30"
     },
     {
-      "name": "initialize_loopout_path_template_pair",
-      "address": "0x41c5f0"
+      "name": "initialize_halfpipe_path_template_pair",
+      "address": "0x429b20"
     }
   ],
   "health_check_count": 1137,

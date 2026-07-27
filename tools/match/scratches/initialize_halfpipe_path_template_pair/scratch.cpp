@@ -11,7 +11,7 @@ float sine(float angle);
 void Path::initialize_halfpipe_path_template_pair(
     float scale,
     int width_cells_,
-    int side_exit,
+    bool side_exit,
     char* texture_a,
     char* texture_b,
     char* vertical_texture)

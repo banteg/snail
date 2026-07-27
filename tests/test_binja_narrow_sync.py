@@ -3656,8 +3656,6 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "Without this flag the tool" in repair_source
     assert '"is read-only. Function recreation' in repair_source
     for declaration in (
-        "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-        "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_dip_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_screw_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_slalom_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
@@ -3672,7 +3670,6 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "void __thiscall initialize_turnunder_path_template_pair(Path* self, float turns, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
-        "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_p_path_template_pair(Path* self, int32_t variant, float scale_arg, int32_t width_cells_, float start_x, float end_x, int32_t curve_segments, char* texture_a, char* texture_b, char* cap_texture)",
@@ -3700,6 +3697,18 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         (
             "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
             "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        ),
+        (
+            "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
         (
             "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
@@ -20134,6 +20143,41 @@ def test_hump_dump_path_replay_preserves_only_clean_owner_lifetimes() -> None:
     for rejected_index in (892, 1063, 902, 1073):
         assert f"({rejected_index}, 66," not in replay
 
+    health = json.loads(
+        (Path(__file__).parents[1] / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    aggregate_addresses = {
+        "bn_hump_path_full_owner_abi": (
+            "0041d39e",
+            "0041d449",
+            "0041d620",
+            "0041d667",
+        ),
+        "bn_dump_path_full_owner_abi": (
+            "0041dda8",
+            "0041de53",
+            "0041e02a",
+            "0041e071",
+        ),
+    }
+    for check_name, addresses in aggregate_addresses.items():
+        check = checks[check_name]
+        regexes = check["required_regexes"]
+        for address in addresses:
+            matching_regex = next(
+                pattern for pattern in regexes if pattern.startswith(address)
+            )
+            for component in (r"\.x =", r"\.y =", r"\.z ="):
+                assert component in matching_regex
+        assert "struct Vec3* primary_right" not in check["required_substrings"]
+        assert (
+            "struct Vec3* primary_terminal_delta"
+            not in check["required_substrings"]
+        )
+
 
 def test_slalom_path_replay_preserves_shared_owner_lifetimes() -> None:
     replay = (BINJA_DIR / "sync_slalom_path_lifetimes.py").read_text(
@@ -20450,6 +20494,27 @@ def test_wibble_invert_halfpipe_replay_preserves_mesh_owner_lifetimes() -> None:
     assert '0x8C: ("delta_length", "float")' in replay
     assert '0x90: ("center_x", "float")' in replay
     assert "(896, 66," not in replay
+
+    health = json.loads(
+        (Path(__file__).parents[1] / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {check["name"]: check for check in health["checks"]}
+    check = checks["bn_halfpipe_path_full_owner_abi"]
+    regexes = check["required_regexes"]
+    for address in ("00429e9a", "0042a09c", "0042a0e3"):
+        matching_regex = next(
+            pattern for pattern in regexes if pattern.startswith(address)
+        )
+        for component in (r"\.x =", r"\.y =", r"\.z ="):
+            assert component in matching_regex
+    for rendered_alias in (
+        "struct Vec3* primary_up",
+        "struct Vec3* primary_terminal_delta",
+        "struct Vec3* secondary_terminal_delta",
+    ):
+        assert rendered_alias not in check["required_substrings"]
 
 
 def test_toad_hill_sbend_replay_preserves_mesh_owner_lifetimes() -> None:

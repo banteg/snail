@@ -2590,7 +2590,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildHump(float, float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols recover the authored bool side-exit input and stop after sample/delta construction plus CalcLengthZ. Windows retains one additional trailing cap texture in its ret-0x1c ABI and builds the generated strip mesh locally."
     },
     {
       "address": "0x41da30",
@@ -2599,7 +2600,8 @@
       "source_object": "Path.o",
       "confidence": "high",
       "android_symbol": "cRPath::BuildDump(float, float, int, bool, char*, char*)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile symbols recover the authored bool side-exit input and stop after sample/delta construction plus CalcLengthZ. Windows retains one additional trailing cap texture in its ret-0x1c ABI and builds the generated strip mesh locally."
     },
     {
       "address": "0x41e440",
@@ -2829,7 +2831,7 @@
       "ios_symbol": "cRPath::BuildHalfPipe(float, int, bool, char*, char*)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "The direct Windows world-init call constructs public authored slot 42 (HALFPIPE); Android independently supplies the matching BuildHalfPipe name.",
+      "notes": "The direct Windows world-init call constructs public authored slot 42 (HALFPIPE). Both mobile symbols recover the authored bool side-exit input and stop after sample/delta construction plus CalcLengthZ; Windows retains one additional trailing vertical texture in its ret-0x18 ABI and builds the generated strip mesh locally.",
       "android_symbol": "cRPath::BuildHalfPipe(float, int, bool, char*, char*)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },

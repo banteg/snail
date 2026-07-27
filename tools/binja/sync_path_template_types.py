@@ -3994,22 +3994,28 @@ REFINED_PATH_OWNER_PROTO_UPDATES = (
         "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
     ),
     (
+        "initialize_hump_path_template_pair",
+        "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+    ),
+    (
+        "initialize_dump_path_template_pair",
+        "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+    ),
+    (
+        "initialize_halfpipe_path_template_pair",
+        "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+        "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
         "initialize_toad_path_template_pair",
         "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall initialize_toad_path_template_pair(Path* self, bool turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
     ),
 )
 
-
 DEFERRED_PATH_OWNER_PROTO_UPDATES = (
-    (
-        "initialize_hump_path_template_pair",
-        "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-    ),
-    (
-        "initialize_dump_path_template_pair",
-        "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-    ),
     (
         "initialize_dip_path_template_pair",
         "void __thiscall initialize_dip_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
@@ -4065,10 +4071,6 @@ DEFERRED_PATH_OWNER_PROTO_UPDATES = (
     (
         "initialize_invert_path_template_pair",
         "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
-    ),
-    (
-        "initialize_halfpipe_path_template_pair",
-        "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
     ),
     (
         "initialize_twister_path_template_pair",

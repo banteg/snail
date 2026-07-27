@@ -27,7 +27,7 @@ struct Path : public BodBase {
     void initialize_halfpipe_path_template_pair(
         float scale,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);
@@ -56,7 +56,7 @@ struct Path : public BodBase {
         float curve_source,
         float height_scale,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);
@@ -64,7 +64,7 @@ struct Path : public BodBase {
         float curve_source,
         float height_scale,
         int width_cells_,
-        int side_exit,
+        bool side_exit,
         char* texture_a,
         char* texture_b,
         char* cap_texture);

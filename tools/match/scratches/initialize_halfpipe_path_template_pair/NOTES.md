@@ -253,3 +253,34 @@ masked operands: 50 ok, 0 unresolved, 0 mismatch (was 47 ok)
 
 No padding or unused stack-shaping variable is involved; the retained lifetime
 comes directly from native dataflow and the exact callee contract.
+
+## 2026-07-27 mobile-authored boolean ABI
+
+The exact Android and iOS `Path.o` symbols both spell the portable constructor
+as `cRPath::BuildHalfPipe(float, int, bool, char*, char*)`. This independently
+proves that `side_exit` is an authored `bool`, rather than the provisional
+Windows `int32_t`. Both mobile bodies stop after sample/delta construction and
+`CalcLengthZ`; Windows retains an additional trailing vertical texture in its
+`retn 0x18` ABI and builds the generated strip mesh locally.
+
+Binary Ninja preview, application, and readback confirmed the refined prototype,
+and the guarded lifetime replay reported every existing sample, vector, vertex,
+and face owner already current. Reanalysis only changed three contiguous `Vec3`
+writes from pointer aliases to address-anchored aggregate rendering, so strict
+health checks now guard all three components at `0x429e9a`, `0x42a09c`, and
+`0x42a0e3`.
+
+The source-level type correction is byte-neutral:
+
+```text
+match: 43.20%
+target: 707 insns, candidate: 691 insns
+prefix: 18/707 target insns
+masked operands: 55 ok, 0 unresolved, 0 mismatch
+```
+
+Two mobile-guided source probes were measured and rejected. Spelling the sine
+normalization as `sin_value * -0.5f + 0.5f` was byte-identical and added no
+evidence. Recasting the middle loop through explicit byte offsets regressed to
+40.64%, reduced clean masked operands, and introduced two unaudited calls. No
+such match-driven rewrite is retained.

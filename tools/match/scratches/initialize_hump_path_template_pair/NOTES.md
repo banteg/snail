@@ -270,3 +270,30 @@ This is a 0.72-point gain over the 59.28% curved/mesh frontier and restores four
 exact prefix instructions. The change supersedes the 48.79% isolated result
 documented above: it only becomes faithful once current samples, preceding
 orientation records, and the mesh cursor have their native owners.
+
+## 2026-07-27 mobile-authored boolean ABI
+
+The exact Android and iOS `Path.o` symbols both spell the portable constructor
+as `cRPath::BuildHump(float, float, int, bool, char*, char*)`. This independently
+proves that `side_exit` is an authored `bool`, rather than the provisional
+Windows `int32_t`. Both mobile bodies stop after sample/delta construction and
+`CalcLengthZ`; Windows retains an additional trailing cap texture in its
+`retn 0x1c` ABI and builds the generated strip mesh locally.
+
+Binary Ninja preview, application, and readback confirmed the refined prototype,
+and the guarded lifetime replay reported every existing sample, vector, vertex,
+and face owner already current. Reanalysis only changed four contiguous `Vec3`
+writes from pointer aliases to address-anchored aggregate rendering, so strict
+health checks now guard all three components at `0x41d39e`, `0x41d449`,
+`0x41d620`, and `0x41d667`.
+
+The source-level type correction is byte-neutral:
+
+```text
+match: 60.00%
+target: 685 insns, candidate: 695 insns
+prefix: 20/685 target insns
+masked operands: 42 ok, 2 unaudited, 0 unresolved, 0 mismatch
+```
+
+No lifetime, branch, or expression was altered to manufacture a match.

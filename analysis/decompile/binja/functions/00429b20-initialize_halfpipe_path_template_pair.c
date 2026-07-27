@@ -79,10 +79,11 @@
 00429e6c        *(&self->primary_samples->transform.position + i_2) = 0
 00429e77        *(&self->primary_samples->transform.position.z + i_2) = fconvert.s(float.t(var_9c_2 + 0x10))
 00429e7e        *(&self->primary_samples->transform.position.y + i_2) = 0
-00429e89        struct Vec3* primary_up = &self->primary_samples->transform.basis_up + i_2
-00429e91        primary_up->x = 0
-00429e97        primary_up->y = 1f
-00429e9a        primary_up->z = 0f
+00429e9a        *(&self->primary_samples->transform.basis_up + i_2) = struct Vec3 {
+    .x = 0
+    .y = 1f
+    .z = 0f
+}
 00429ea0        void* eax_19 = self->primary_samples + i_2
 00429ebc        float var_8c_1 = fconvert.s(fconvert.t(*(eax_19 + 0x34)) - fconvert.t(*(eax_19 - 0x74)))
 00429ec3        long double x87_r7_38 = fconvert.t(*(eax_19 + 0x38)) - fconvert.t(*(eax_19 - 0x70))
@@ -122,16 +123,18 @@
 0042a034        *(&self->secondary_samples->delta_length + esi_2) = fconvert.s(normalize_vector(&self->secondary_samples->delta_dir_to_next + esi_2))
 0042a03e        esi_2 += 0xa8
 0042a047        do while (i_3 s< self->segment_count - 1)
-0042a077        struct Vec3* primary_terminal_delta = &self->primary_samples[self->segment_count] - 0x28
-0042a08b        primary_terminal_delta->x = 0
-0042a099        primary_terminal_delta->y = 0f
-0042a09c        primary_terminal_delta->z = 1f
+0042a09c        *(&self->primary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 0042a0ae        int32_t var_88_3 = 0x3f800000
 0042a0ba        *(&self->primary_samples[self->segment_count] - 0x1c) = 0x3f800000
-0042a0d0        struct Vec3* secondary_terminal_delta = &self->secondary_samples[self->segment_count] - 0x28
-0042a0d8        secondary_terminal_delta->x = 0
-0042a0de        secondary_terminal_delta->y = 0f
-0042a0e3        secondary_terminal_delta->z = 1f
+0042a0e3        *(&self->secondary_samples[self->segment_count] - 0x28) = struct Vec3 {
+    .x = 0
+    .y = 0f
+    .z = 1f
+}
 0042a0f8        *(&self->secondary_samples[self->segment_count] - 0x1c) = 0x3f800000
 0042a10b        request_object_vertices(self->bod.object, (self->width_cells + 1) * (self->segment_count + 1))
 0042a11d        request_object_facequads(self->bod.object, (self->width_cells * self->segment_count) << 1)

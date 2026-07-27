@@ -215,3 +215,30 @@ with 38 clean operands. Binary Ninja's structured form preserves the authored
 `departure_index - 7 - curve_count < 7` expression and does not establish a
 separate source lifetime, so the slightly higher score is insufficient evidence.
 No dummy use, artificial lifetime, or equal-arm texture rewrite is retained.
+
+## 2026-07-27 mobile-authored boolean ABI
+
+The exact Android and iOS `Path.o` symbols both spell the portable constructor
+as `cRPath::BuildDump(float, float, int, bool, char*, char*)`. This independently
+proves that `side_exit` is an authored `bool`, rather than the provisional
+Windows `int32_t`. Both mobile bodies stop after sample/delta construction and
+`CalcLengthZ`; Windows retains an additional trailing cap texture in its
+`retn 0x1c` ABI and builds the generated strip mesh locally.
+
+Binary Ninja preview, application, and readback confirmed the refined prototype,
+and the guarded lifetime replay reported every existing sample, vector, vertex,
+and face owner already current. Reanalysis only changed four contiguous `Vec3`
+writes from pointer aliases to address-anchored aggregate rendering, so strict
+health checks now guard all three components at `0x41dda8`, `0x41de53`,
+`0x41e02a`, and `0x41e071`.
+
+The source-level type correction is byte-neutral:
+
+```text
+match: 56.86%
+target: 690 insns, candidate: 703 insns
+prefix: 8/690 target insns
+masked operands: 42 ok, 2 unaudited, 0 unresolved, 0 mismatch
+```
+
+No lifetime, branch, or expression was altered to manufacture a match.
