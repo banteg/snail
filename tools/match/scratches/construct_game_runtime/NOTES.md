@@ -5,9 +5,10 @@ manager constructors, installs the known callback tables, publishes
 `g_game_base`, and reports constructor counters.
 
 The printed `Size of cRPathManager` value is now sourced from the recovered
-one-byte `PathManager` type rather than a literal. Symbol-rich iOS builds name
-its sole known member `NameCode(char*)`; the size and generated constructor
-report remain unchanged.
+one-byte `cRPathManager` type rather than a literal. Android and iOS both name
+its sole known member `NameCode(char*)`; Windows fixes the size and root
+placement. `PathManager` remains only a compatibility alias, and the generated
+constructor report remains unchanged.
 
 The same ledger now sources its `cRSubLoc` and `cRSubRow` totals from the
 recovered owner types. It reports `0x20d000` for 3200 rows of eight 0x54-byte

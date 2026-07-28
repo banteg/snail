@@ -50,7 +50,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
   char *path_value_cursor; // eax
   char *path_name_cursor; // edx
   char path_char; // cl
-  PathManager *p_path_manager; // ecx
+  cRPathManager *p_path_manager; // ecx
   int32_t segment_path_index_by_name; // eax
   int32_t v49; // eax
   int32_t v50; // eax

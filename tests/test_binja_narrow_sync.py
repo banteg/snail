@@ -24331,3 +24331,87 @@ def test_c_r_track_primary_ownership_stays_aligned() -> None:
     ):
         body = (repo_root / mobile_body).read_text(encoding="utf-8")
         assert "cRTrack::Change(int)" in body
+
+
+def test_c_r_path_manager_primary_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (
+        repo_root / "tools/match/include/path_manager.h"
+    ).read_text(encoding="utf-8")
+    matcher_runtime = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+    scratch = (
+        repo_root
+        / "tools/match/scratches/find_segment_path_index_by_name/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    scratch_config = (
+        repo_root
+        / "tools/match/scratches/find_segment_path_index_by_name/scratch.conf"
+    ).read_text(encoding="utf-8")
+    analysis_header = (
+        repo_root / "analysis/headers/path_template_types.h"
+    ).read_text(encoding="utf-8")
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRPathManager {" in matcher_header
+    assert "typedef cRPathManager PathManager;" in matcher_header
+    assert "cRPathManager_must_be_1" in matcher_header
+    assert "cRPathManager path_manager; // +0xff2910" in matcher_runtime
+    assert (
+        "int cRPathManager::find_segment_path_index_by_name(char* name)"
+        in scratch
+    )
+    assert (
+        "SYMBOL=?find_segment_path_index_by_name@cRPathManager@@QAEHPAD@Z"
+        in scratch_config
+    )
+
+    assert "typedef struct cRPathManager {" in analysis_header
+    assert (
+        "} cRPathManager;\ntypedef cRPathManager PathManager;" in analysis_header
+    )
+    assert "cRPathManager path_manager;" in analysis_header
+
+    prototype = (
+        "int32_t __thiscall find_segment_path_index_by_name("
+        "cRPathManager* manager, char* name)"
+    )
+    assert prototype in binja_sync
+    assert "--path-manager-only" in binja_sync
+    assert "ensure_c_r_path_manager_owner_types" in binja_sync
+    assert '("0xff2910", "path_manager", "cRPathManager")' in binja_sync
+    assert '"cRPathManager": 0x1' in ida_sync
+    assert (
+        "int32_t __thiscall find_segment_path_index_by_name("
+        "cRPathManager *manager, char *name);"
+    ) in ida_sync
+
+    gameplay_functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    path_manager_entry = next(
+        entry
+        for entry in gameplay_functions["functions"]
+        if int(entry["address"], 0) == 0x429AE0
+    )
+    assert "Android and iOS preserve the exact authored class" in (
+        path_manager_entry["description"]
+    )
+    assert "Windows independently proves the empty one-byte owner" in (
+        path_manager_entry["description"]
+    )
+
+    for mobile_body in (
+        "analysis/decompile/android/functions/0004c744-_ZN13cRPathManager8NameCodeEPc.c",
+        "analysis/decompile/ios/functions/0004df90-_ZN13cRPathManager8NameCodeEPc.c",
+    ):
+        body = (repo_root / mobile_body).read_text(encoding="utf-8")
+        assert "cRPathManager::NameCode(char*)" in body

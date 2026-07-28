@@ -42,10 +42,11 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 Ownership note:
 
 - `find_segment_path_index_by_name` is the authored
-  `cRPathManager::NameCode(char*)` member
-- Windows stores the empty one-byte `PathManager` at
+  `cRPathManager::NameCode(char*)` member in both Android and iOS
+- Windows stores the empty one-byte `cRPathManager` at
   `SubgameRuntime +0xff2910` (`GameRoot +0x1066f28`), followed by three bytes
-  of alignment and the path-template pair bank at `+0xff2914`
+  of alignment and the path-template pair bank at `+0xff2914`;
+  `PathManager` is retained only as a compatibility alias
 - `update_jetpack_gauge` at `0x43a390`
 - `advance_timer_counters` at `0x441b90` (authored `cRTime::Add(float)`)
 - `update_damage_gauge` at `0x440fd0`

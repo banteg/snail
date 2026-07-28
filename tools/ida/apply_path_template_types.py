@@ -61,6 +61,7 @@ TRUSTED_NAMES = [
     (0x421770, "initialize_path_follow_golb"),
     (0x4217B0, "traverse_path_follow_golb"),
     (0x421DC0, "mirror_path"),
+    (0x429AE0, "find_segment_path_index_by_name"),
     (0x42B9C0, "get_path_position_at_node"),
     (0x42C600, "calc_path_length_z"),
     (0x42CA90, "is_point_inside_track_attachment"),
@@ -233,6 +234,19 @@ TRACK_RENDER_CACHE_OWNER_MARKERS = (
     "void __thiscall remove_track_render_cache_bods(SegmentCache* manager);",
 )
 
+PATH_MANAGER_OWNER_MARKERS = (
+    "typedef struct cRPathManager {",
+    "} cRPathManager;",
+    "typedef cRPathManager PathManager;",
+    "cRPathManager path_manager;",
+    "int32_t __thiscall find_segment_path_index_by_name(",
+    "cRPathManager* manager,",
+)
+
+PATH_MANAGER_OWNER_SIZES = {
+    "cRPathManager": 0x1,
+}
+
 BOD_CORE_OWNER_MARKERS = (
     "BodNode_must_be_0x10",
     "BodList_must_be_0x0c",
@@ -312,6 +326,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4217B0,  # traverse_path_follow_golb
     0x4246A0,  # build_track_fringe_mesh
     0x424AD0,  # build_track_fringe_supertramp_mesh
+    0x429AE0,  # find_segment_path_index_by_name
     0x42B9C0,  # get_path_position_at_node
     0x42C600,  # calc_path_length_z
     0x42C770,  # try_enter_track_attachment_from_swept_motion
@@ -401,6 +416,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x447110,  # initialize_nuke
     0x4471E0,  # update_nuke
     0x447290,  # recycle_bod_to_free_list
+    0x448160,  # load_segment_definitions
     0x4489E0,  # kill_tip_widgets
     0x448A40,  # initialize_tip
     0x448C40,  # update_tip
@@ -2105,7 +2121,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "find_segment_path_index_by_name",
-        "int32_t __thiscall find_segment_path_index_by_name(PathManager *manager, char *name);",
+        "int32_t __thiscall find_segment_path_index_by_name(cRPathManager *manager, char *name);",
     ),
     (
         "border_mouse_test",
@@ -4775,6 +4791,11 @@ def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]
 
 def _sync_types(header_path: pathlib.Path) -> int:
     header_text = header_path.read_text(encoding="utf-8")
+    missing_path_manager_owner_markers = [
+        marker
+        for marker in PATH_MANAGER_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_bod_core_owner_markers = [
         marker
         for marker in BOD_CORE_OWNER_MARKERS
@@ -4811,7 +4832,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if marker not in header_text
     ]
     if (
-        missing_bod_core_owner_markers
+        missing_path_manager_owner_markers
+        or missing_bod_core_owner_markers
         or missing_fringe_owner_markers
         or missing_track_render_cache_owner_markers
         or missing_sub_lazer_asset_cursor_markers
@@ -4820,6 +4842,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_fringe_mesh_cursor_markers
     ):
         marker_failures = []
+        if missing_path_manager_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_path_manager_owner_header"}
+            )
         if missing_bod_core_owner_markers:
             marker_failures.append({"reason": "noncanonical_bod_core_header"})
         if missing_fringe_owner_markers:
@@ -4849,6 +4875,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 {
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
+                    "missing_path_manager_owner_markers": (
+                        missing_path_manager_owner_markers
+                    ),
                     "missing_bod_core_owner_markers": missing_bod_core_owner_markers,
                     "missing_fringe_owner_markers": missing_fringe_owner_markers,
                     "missing_track_render_cache_owner_markers": (
@@ -4874,6 +4903,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         return 1
 
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    path_manager_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in PATH_MANAGER_OWNER_SIZES
+    }
     bod_core_owner_sizes = {
         name: _named_struct_size(name)
         for name in BOD_CORE_OWNER_SIZES
@@ -4921,6 +4954,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         hex(offset): _named_struct_member_readback("Player", offset)
         for offset in PLAYER_SHOOT_EXPECTED_MEMBERS
     }
+    path_manager_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "path_manager",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": path_manager_owner_sizes[name],
+        }
+        for name, expected_size in PATH_MANAGER_OWNER_SIZES.items()
+        if path_manager_owner_sizes[name] != expected_size
+    ]
     bod_core_owner_size_failures = [
         {
             "selector": name,
@@ -4955,7 +4999,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if track_render_cache_owner_sizes[name] != expected_size
     ]
     owner_size_failures = (
-        bod_core_owner_size_failures
+        path_manager_owner_size_failures
+        + bod_core_owner_size_failures
         + fringe_owner_size_failures
         + track_render_cache_owner_size_failures
     )
@@ -5077,6 +5122,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "parse_errors": parse_errors,
+                    "path_manager_owner_sizes": path_manager_owner_sizes,
                     "bod_core_owner_sizes": bod_core_owner_sizes,
                     "fringe_owner_sizes": fringe_owner_sizes,
                     "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
@@ -5783,6 +5829,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "path_manager_owner_sizes": path_manager_owner_sizes,
                 "bod_core_owner_sizes": bod_core_owner_sizes,
                 "fringe_owner_sizes": fringe_owner_sizes,
                 "track_render_cache_owner_sizes": track_render_cache_owner_sizes,

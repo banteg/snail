@@ -251,7 +251,7 @@ public:
     };
     int replay_update_cursor; // +0xff25dc
     TimeTrial time_trial; // +0xff25e0, exact authored cRTimeTrial owner
-    PathManager path_manager; // +0xff2910, empty authored cRPathManager owner
+    cRPathManager path_manager; // +0xff2910, empty authored owner
     char unknown_ff2911[0xff2914 - 0xff2911];
     // Startup constructs 126 authored cRPath records here as 63 adjacent
     // primary/secondary pairs; public `Path=` indices occupy 0..50 and

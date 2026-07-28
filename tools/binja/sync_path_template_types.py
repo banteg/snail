@@ -21,6 +21,7 @@ from _narrow_sync import (
     current_type_widths,
     emit_summary,
     normalize_prototype,
+    reanalyze_functions,
     remove_user_var_updates,
     run_bn,
     struct_exists,
@@ -428,8 +429,24 @@ GOLB_AUTHORED_TYPE_NAMES = (
     "cRPathFollowGolb",
 )
 
-REQUIRED_HEADER_STRUCTS = (
+PATH_MANAGER_FIELD_UPDATES = (
+    ("0x00", "_empty", "uint8_t"),
+)
+
+PATH_MANAGER_OWNER_TYPE_NAMES = (
+    "cRPathManager",
     "PathManager",
+)
+
+PATH_MANAGER_PROTO_UPDATES = (
+    (
+        "find_segment_path_index_by_name",
+        "int32_t __thiscall find_segment_path_index_by_name(cRPathManager* manager, char* name)",
+    ),
+)
+
+REQUIRED_HEADER_STRUCTS = (
+    "cRPathManager",
     "FrontendWidgetFlag",
     "TextureRefFlags",
     "Twinkle",
@@ -2820,7 +2837,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0xff25d8", "selected_level_record_cursor", "int32_t"),
     ("0xff25dc", "replay_update_cursor", "int32_t"),
     ("0xff25e0", "time_trial", "TimeTrial"),
-    ("0xff2910", "path_manager", "PathManager"),
+    ("0xff2910", "path_manager", "cRPathManager"),
     ("0xff2914", "path_pairs", "PathPair[63]"),
     ("0xff7bc4", "barrier", "BarrierActor"),
     ("0xff7c00", "landscape_manager", "LandscapeManager"),
@@ -3180,6 +3197,47 @@ def ensure_golb_path_follow_state(*, target: str) -> dict[str, object]:
             GOLB_PATH_FOLLOW_STATE_DECLARATION,
         ),
     }
+
+
+def ensure_c_r_path_manager_owner_types(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    """Promote the exact mobile-authored cRPathManager class identity."""
+
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    missing_from_header = [
+        name for name in PATH_MANAGER_OWNER_TYPE_NAMES if name not in equivalence
+    ]
+    if missing_from_header:
+        raise RuntimeError(
+            "authoritative header omitted cRPathManager owner types: "
+            + ", ".join(missing_from_header)
+        )
+
+    stale_types = tuple(
+        name for name in PATH_MANAGER_OWNER_TYPE_NAMES if not equivalence[name]
+    )
+    if not stale_types:
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRPathManager owner types already equivalent",
+            "types": PATH_MANAGER_OWNER_TYPE_NAMES,
+        }
+
+    result = types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=stale_types,
+        include_types=PATH_MANAGER_OWNER_TYPE_NAMES,
+    )
+    result["stale_types"] = stale_types
+    return result
 
 
 def ensure_goldy_path_follow_owner_types(
@@ -3733,10 +3791,7 @@ PROTO_UPDATES = (
         "get_track_cell_row_index",
         "int32_t __thiscall get_track_cell_row_index(SubLoc* cell)",
     ),
-    (
-        "find_segment_path_index_by_name",
-        "int32_t __thiscall find_segment_path_index_by_name(PathManager* manager, char* name)",
-    ),
+    *PATH_MANAGER_PROTO_UPDATES,
     (
         "initialize_player_presentation_controller",
         "Snail* __thiscall initialize_player_presentation_controller(Snail* snail)",
@@ -4550,6 +4605,21 @@ def apply_refined_owner_prototypes(
     return results
 
 
+def _has_verified_mutation(results: list[dict[str, object]]) -> bool:
+    """Report whether a narrow replay changed an owner or prototype."""
+
+    def contains_verified_mutation(value: object) -> bool:
+        if isinstance(value, dict):
+            if value.get("status") == "verified" or value.get("verified") is True:
+                return True
+            return any(contains_verified_mutation(item) for item in value.values())
+        if isinstance(value, list):
+            return any(contains_verified_mutation(item) for item in value)
+        return False
+
+    return contains_verified_mutation(results)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
@@ -4596,6 +4666,14 @@ def parse_args() -> argparse.Namespace:
         help=(
             "Replay only the authored cRPathFollowGoldy type, embedded Player "
             "field, and Init/Traverse method ABIs."
+        ),
+    )
+    focused_group.add_argument(
+        "--path-manager-only",
+        action="store_true",
+        help=(
+            "Replay only the authored cRPathManager type, embedded "
+            "SubgameRuntime field, and NameCode(char*) method ABI."
         ),
     )
     focused_group.add_argument(
@@ -4670,6 +4748,44 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
+    if args.path_manager_only:
+        operations.append(
+            ensure_c_r_path_manager_owner_types(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        path_manager_results = apply_struct_and_proto_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_updates=(
+                ("cRPathManager", PATH_MANAGER_FIELD_UPDATES),
+                (
+                    "SubgameRuntime",
+                    (("0xff2910", "path_manager", "cRPathManager"),),
+                ),
+            ),
+            proto_updates=PATH_MANAGER_PROTO_UPDATES,
+        )
+        operations.extend(path_manager_results)
+        if _has_verified_mutation(path_manager_results):
+            operations.extend(
+                reanalyze_functions(
+                    REPO_ROOT,
+                    target=args.target,
+                    identifiers=(
+                        "find_segment_path_index_by_name",
+                        "load_segment_definitions",
+                    ),
+                )
+            )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if args.goldy_path_follow_only:
         operations.append(
             ensure_goldy_path_follow_owner_types(
@@ -5225,6 +5341,12 @@ def main() -> int:
 
     if not args.golb_only:
         operations.append(
+            ensure_c_r_path_manager_owner_types(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.append(
             types_declare_if_missing(
                 REPO_ROOT,
                 target=args.target,
@@ -5339,6 +5461,7 @@ def main() -> int:
                     ACTIVE_LANDSCAPE_ENTRY_FIELD_UPDATES,
                 ),
                 ("Face", FACE_FIELD_UPDATES),
+                ("cRPathManager", PATH_MANAGER_FIELD_UPDATES),
                 ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("Vapour", VAPOUR_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),

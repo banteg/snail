@@ -18,10 +18,14 @@ typedef struct ObjectFaceQuad ObjectFaceQuad;
 typedef struct ObjectRenderBuffers ObjectRenderBuffers;
 typedef struct Direct3DTexture8 Direct3DTexture8;
 
-/* Empty C++ cRPathManager occupies one byte in the Windows root layout. */
-typedef struct PathManager {
+/*
+ * Android and iOS preserve the authored cRPathManager class identity.
+ * Windows independently proves this empty owner is one byte at +0xff2910.
+ */
+typedef struct cRPathManager {
     uint8_t _empty;
-} PathManager;
+} cRPathManager;
+typedef cRPathManager PathManager;
 
 typedef struct Vec3 {
     float x;
@@ -2638,7 +2642,7 @@ typedef struct SubgameRuntime {
     int32_t selected_level_record_cursor;
     int32_t replay_update_cursor;
     TimeTrial time_trial;
-    PathManager path_manager;
+    cRPathManager path_manager;
     uint8_t _pad_ff2911[0xff2914 - 0xff2911];
     PathPair path_pairs[63];
     BarrierActor barrier;
@@ -2666,6 +2670,10 @@ TextureRef* __thiscall get_or_create_texture_ref(
 void __fastcall get_path_nodes(Path* self);
 void __fastcall calc_path_length_z(Path* self);
 void __thiscall mirror_path(Path* self, Path* source);
+int32_t __thiscall find_segment_path_index_by_name(
+    cRPathManager* manager,
+    char* name
+);
 void __thiscall set_matrix_identity(TransformMatrix* transform);
 void __thiscall set_matrix_rotation_identity(TransformMatrix* transform);
 TransformMatrix* __thiscall initialize_matrix_from_values(
