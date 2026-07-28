@@ -933,8 +933,27 @@ unaudited), with the one existing jump-table mismatch retained.
 
 The mobile bodies also prove that `SwitchMirror()` belongs to the common
 new-segment join, not to every generated row or only the sequential picker.
-Authored nested-loop, per-row-test, and flattened common-join probes reached
-26.58%, 27.38%, and 27.42% respectively because they disturbed the unresolved
-VC6 lifetime schedule, so none was retained. The ownership clarification is
-recorded here without a compiler barrier, dummy dependency, register
-coercion, or other fakematch.
+The first authored nested-loop, per-row-test, and flattened common-join probes
+reached 26.58%, 27.38%, and 27.42% respectively because they disturbed the
+then-unresolved VC6 lifetime schedule, so none was retained at that point.
+
+## 2026-07-28 cross-port segment transition and Windows fringe-slot lifetime
+
+Android and iOS settle the authored control flow: selecting the first, last,
+random, or sequential segment all reaches the same `SwitchMirror()` call
+before row construction. Windows remains authoritative for ABI and layout.
+Its `BuildLevel` computes the address of the current cell's four borrowed
+fringe links at `0x00436695`, stores that `Fringe**` in stack slot `+0x40` at
+`0x0043669b`, clears the four links, carries the pointer across the glyph
+switch, and reloads it at `0x00437100` for the four-object position-copy loop.
+Expressing `subobject_slot` once at cell initialization and retaining it
+through that consumer restores the target's exact `sub esp, 0x44` frame and
+raises focused matching from 31.70% to 32.40%.
+
+With that real Windows lifetime recovered, retaining the mobile-authored
+common `SwitchMirror()` join produces 32.32% (1,230/1,245 instructions,
+2-instruction prefix, 78 clean operands, 115 unaudited, and only the existing
+jump-table mismatch). A fresh authored nested-loop probe reached 31.23%, so it
+was rejected rather than score-shaped. The source now records both the real
+borrowed fringe ownership and the cross-port transition semantics without a
+compiler barrier, dummy dependency, register coercion, or other fakematch.

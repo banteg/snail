@@ -24,7 +24,6 @@ void set_object_color(Object* object, tColour color);
 
 void cRSubGame::populate_runtime_track_cells_from_segments()
 {
-    char* base = (char*)this;
     int runtime_build_seed;
 
     if (selected_level_record_active != 0) {
@@ -353,19 +352,23 @@ void cRSubGame::populate_runtime_track_cells_from_segments()
     if (runtime_row_count <= 0)
         return;
 
+    char* base = (char*)this;
     int segment_row = 0;
     char* active_segment = 0;
     for (int build_row = 0; build_row < runtime_row_count; ++build_row) {
+        bool selected_new_segment = false;
         if (build_row == 0) {
             active_segment = base + LEVEL_FIRST_SEGMENT_BASE;
             first_or_last_row = 1;
             segment_row = 0;
             ((SubSegment*)active_segment)->row_base = build_row;
+            selected_new_segment = true;
         } else if (build_row == completion_row_start && level_definition.random_enabled == 0) {
             active_segment = base + LEVEL_LAST_SEGMENT_BASE;
             first_or_last_row = 1;
             segment_row = 0;
             ((SubSegment*)active_segment)->row_base = build_row;
+            selected_new_segment = true;
         } else if (segment_row >= ((SubSegment*)active_segment)->row_count) {
             first_or_last_row = 0;
             base_subgame_rate = 1.0f;
@@ -392,13 +395,15 @@ void cRSubGame::populate_runtime_track_cells_from_segments()
                 ++segment_cursor;
                 active_segment =
                     base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;
-                switch_track_mirror();
             }
             segment_row = 0;
             ((SubSegment*)active_segment)->row_base = build_row;
             if (((SubSegment*)active_segment)->row_count < 0)
                 report_errorf("Negative Segment Length");
+            selected_new_segment = true;
         }
+        if (selected_new_segment)
+            switch_track_mirror();
 
         if (level_mode != 2 && build_row >= completion_row_start) {
             if (level_mode == 0 || level_mode == 4 || level_mode == 1 || level_mode == 7) {
@@ -534,10 +539,12 @@ void cRSubGame::populate_runtime_track_cells_from_segments()
             cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;
             *(int*)(cell + CELL_LANE_FLAGS) = cell_word;
 
-            *(int*)(cell + CELL_FRINGE_FRONT) = 0;
-            *(int*)(cell + CELL_FRINGE_RIGHT) = 0;
-            *(int*)(cell + CELL_FRINGE_LEFT) = 0;
-            *(int*)(cell + CELL_FRINGE_BACK) = 0;
+            Fringe** subobject_slot =
+                (Fringe**)(cell + CELL_FRINGE_FRONT);
+            subobject_slot[0] = 0;
+            subobject_slot[1] = 0;
+            subobject_slot[2] = 0;
+            subobject_slot[3] = 0;
 
             char edge_row;
             if (build_row >= first_block_row_count) {
@@ -940,8 +947,6 @@ void cRSubGame::populate_runtime_track_cells_from_segments()
                 }
             }
 
-            Fringe** subobject_slot =
-                &((cRSubLoc*)(cell + CELL_BOD_BASE))->fringes[0];
             for (int subobject_index = 0;
                  subobject_index < CELL_FRINGE_COUNT;
                  ++subobject_index) {
