@@ -20557,9 +20557,67 @@ def test_hump_dump_path_replay_preserves_only_clean_owner_lifetimes() -> None:
         )
 
     assert "HUMP_DUMP_PATH_USER_VAR_UPDATES" in replay
+    assert "HUMP_DUMP_CONTROL_USER_VAR_UPDATES" in replay
+    assert "HUMP_CONTROL_LIFETIME_SPLITS" in replay
+    assert "DUMP_CONTROL_LIFETIME_SPLITS" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert "apply_split_user_var_updates" in replay
     assert "apply_user_var_updates" in replay
+
+    for index, storage, name, variable_type in (
+        (84, -72, "curve_count_f", "float"),
+        (215, -64, "approach_sample_z", "float"),
+        (571, -68, "angle", "float"),
+        (712, -64, "curve_sample_index", "int32_t"),
+        (731, -64, "curve_sample_z", "float"),
+        (219, -64, "approach_sample_z", "float"),
+        (579, -68, "angle", "float"),
+        (722, -64, "curve_sample_index", "int32_t"),
+        (743, -64, "curve_sample_z", "float"),
+    ):
+        assert (
+            f'        {index},\n'
+            f'        {storage},\n'
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        ) in replay
+
+    for name, variable_type in (
+        ("curve_count", "int32_t"),
+        ("total_segment_count", "int32_t"),
+        ("profile_radius", "float"),
+        ("approach_sample_index", "int32_t"),
+        ("approach_sample_offset", "int32_t"),
+        ("departure_index", "int32_t"),
+        ("departure_sample_z", "float"),
+        ("departure_sample_offset", "int32_t"),
+        ("curve_index", "int32_t"),
+        ("curve_sample_offset", "int32_t"),
+        ("delta_index", "int32_t"),
+        ("delta_sample_offset", "int32_t"),
+    ):
+        assert f'        "{name}",\n        "{variable_type}",' in replay
+
+    for address, view, source_type, index, storage in (
+        ("0x41d05a", "mlil", "RegisterVariableSourceType", 42, 66),
+        ("0x41d4e4", "mlil_ssa", "RegisterVariableSourceType", 1204, 67),
+        ("0x41d0a3", "mlil_ssa", "StackVariableSourceType", 115, 12),
+        ("0x41d184", "mlil_ssa", "RegisterVariableSourceType", 340, 71),
+        ("0x41d259", "mlil_ssa", "RegisterVariableSourceType", 553, 73),
+        ("0x41d50b", "mlil_ssa", "RegisterVariableSourceType", 1243, 73),
+        ("0x41da5a", "mlil", "RegisterVariableSourceType", 42, 66),
+        ("0x41deee", "mlil_ssa", "RegisterVariableSourceType", 1214, 67),
+        ("0x41daa3", "mlil_ssa", "StackVariableSourceType", 115, 12),
+        ("0x41db88", "mlil_ssa", "RegisterVariableSourceType", 344, 71),
+        ("0x41dc61", "mlil_ssa", "RegisterVariableSourceType", 561, 73),
+        ("0x41df15", "mlil_ssa", "RegisterVariableSourceType", 1253, 73),
+    ):
+        assert (
+            f'("{address}", "{view}", "{source_type}", {index}, {storage})'
+            in replay
+        )
+
     for rejected_index in (892, 1063, 902, 1073):
         assert f"({rejected_index}, 66," not in replay
 
@@ -20585,6 +20643,20 @@ def test_hump_dump_path_replay_preserves_only_clean_owner_lifetimes() -> None:
     }
     for check_name, addresses in aggregate_addresses.items():
         check = checks[check_name]
+        for owner in (
+            "int32_t curve_count =",
+            "float profile_radius =",
+            "int32_t approach_sample_index =",
+            "int32_t approach_sample_offset =",
+            "int32_t departure_index =",
+            "int32_t departure_sample_offset =",
+            "int32_t curve_index =",
+            "int32_t curve_sample_offset =",
+            "float angle =",
+            "int32_t delta_index =",
+            "int32_t delta_sample_offset =",
+        ):
+            assert owner in check["required_substrings"]
         regexes = check["required_regexes"]
         for address in addresses:
             matching_regex = next(

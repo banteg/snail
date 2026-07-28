@@ -297,3 +297,30 @@ masked operands: 42 ok, 2 unaudited, 0 unresolved, 0 mismatch
 ```
 
 No lifetime, branch, or expression was altered to manufacture a match.
+
+## 2026-07-28 paired-mobile control ownership
+
+The exact Android and iOS `cRPath::BuildHump(float, float, int, bool, char*,
+char*)` bodies independently retain the portable seven-approach / cosine-curve
+/ seven-departure graph and the final delta pass through `CalcLengthZ`.
+Windows remains authoritative for its extra cap-texture argument, exact stack
+reuse, and the later strip-mesh and facequad construction.
+
+Windows MLIL proves 17 portable control owners: five stable scalar homes plus
+twelve split lifetimes covering the curve and total counts, derived profile
+radius, approach, departure, curve, and delta indices and byte offsets. The
+replay resolves every loop phi and compiler-reused parameter slot from the
+Windows function itself; no Android or iOS address, storage, or native-only
+tail shape is transferred.
+
+The shared Hump/Dump split batch changed 24 logical owners in a transactional
+preview before apply. Persisted readback finds all 17 Hump owners user-defined
+with zero `__offset` expressions, and a second replay is fully idempotent.
+Several scalar conversion homes are folded from HLIL but remain owned in the
+database. Strict Binary Ninja and IDA 9.4 export reports zero mismatches and
+all 1,142 health checks pass.
+
+This is ownership-only: focused matching remains **60.00%** (`695/685`), with
+42 clean masked operands, two pre-existing unaudited normalize-call alignment
+entries, and no unresolved or mismatched operands. Matcher source and the
+Windows-only mesh tail are unchanged.
