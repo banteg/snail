@@ -349,12 +349,12 @@ enum SubLocFlag {
 struct cRSubLoc : public BodBase {
     cRSubLoc* initialize_sub_loc(); // @ 0x4088c0, cRSubLoc constructor wrapper
 
-    void remove_sub_loc(); // @ 0x439bc0, cRSubLoc::Remove
-    void update_sub_loc(); // @ 0x439d50, cRSubLoc::AI
-    unsigned char is_sub_loc_floor(); // @ 0x439a40, cRSubLoc::IsFloor
-    unsigned char is_sub_loc_ramp(); // @ 0x439a70, cRSubLoc::IsRamp
-    unsigned char is_sub_loc_empty(); // @ 0x439ab0, cRSubLoc::IsEmpty
-    unsigned char is_sub_loc_slide(); // @ 0x439ad0, cRSubLoc::IsSlide
+    void Remove(); // @ 0x439bc0
+    void AI(); // @ 0x439d50
+    bool IsFloor(); // @ 0x439a40
+    bool IsRamp(); // @ 0x439a70
+    bool IsEmpty(); // @ 0x439ab0
+    bool IsSlide(); // @ 0x439ad0
 
     cRPath* attachment_template_record; // +0x38, installed by P/p entry tiles
     SubLocTileId tile_id;                // +0x3c, SubLocTileIdValue
@@ -371,7 +371,7 @@ struct cRSubLoc : public BodBase {
         Fringe* fringes[SUBLOC_FRINGE_COUNT]; // +0x44, directional scan view
     };
 
-    int get_track_cell_row_index(); // @ 0x447040, cRSubLoc::Yi
+    int Yi(); // @ 0x447040
 };
 
 typedef char cRSubLoc_must_be_0x54[(sizeof(cRSubLoc) == 0x54) ? 1 : -1];

@@ -2761,21 +2761,33 @@
     {
       "address": "0x439a40",
       "name": "is_sub_loc_floor",
+      "aliases": [
+        "cRSubLoc_IsFloor"
+      ],
       "description": "Exact Windows counterpart of cross-port `cRSubLoc::IsFloor()`: accepts tile ids 1, 20, 21, 33, 34, and 27."
     },
     {
       "address": "0x439a70",
       "name": "is_sub_loc_ramp",
+      "aliases": [
+        "cRSubLoc_IsRamp"
+      ],
       "description": "Exact cRSubLoc predicate matching cross-port `cRSubLoc::IsRamp()`: accepts the authored ramp tile family 2 through 13."
     },
     {
       "address": "0x439ab0",
       "name": "is_sub_loc_empty",
+      "aliases": [
+        "cRSubLoc_IsEmpty"
+      ],
       "description": "Exact Windows counterpart of cross-port `cRSubLoc::IsEmpty()`: accepts tile ids 0, 28, 35, 14, and 29."
     },
     {
       "address": "0x439ad0",
       "name": "is_sub_loc_slide",
+      "aliases": [
+        "cRSubLoc_IsSlide"
+      ],
       "description": "Exact Windows counterpart of Android `cRSubLoc::IsSlide()`: accepts tile ids 15, 23, 24, 25, 26, 16, 18, and 19. This retires the historical cache-family labels that had Floor and Slide reversed."
     },
     {
@@ -2786,11 +2798,17 @@
     {
       "address": "0x439bc0",
       "name": "remove_sub_loc",
+      "aliases": [
+        "cRSubLoc_Remove"
+      ],
       "description": "Windows `cRSubLoc::Remove()`: tears down one live cRSubLoc through the shared inlined `cLinkedList<cRBod>::Remove` owner, clearing `SubRow::attachment_body` for entry tiles when required and unlinking its four borrowed fringe BODs. Android preserves the authored name and the same Yi/row-body/own-body lifecycle; the Windows constructor table and both native callers independently confirm the owner."
     },
     {
       "address": "0x439d50",
       "name": "update_sub_loc",
+      "aliases": [
+        "cRSubLoc_AI"
+      ],
       "description": "Windows `cRSubLoc::AI()`: updates one runtime cRSubLoc. Wall2 tile 14 builds its launch origin as the cell position plus `(0, 8, 0)` and its aim target as Goldy's position plus `(0, 0, jitter + 8)`, then fires through the owned 20-slot `SubLazerPool` after `first_block_row_count` passes Goldy's z. Android and iOS independently preserve both vector additions. Tiles 22/29/30 and the default path cull against the embedded player's interaction plane, while skirt tiles refresh `runtime_rows[row].attachment_body.color`. The source-shaped Windows transcription reaches 99.47% at 187/187 instructions with all references audited."
     },
     {
@@ -3618,6 +3636,9 @@
     {
       "address": "0x447040",
       "name": "get_track_cell_row_index",
+      "aliases": [
+        "cRSubLoc_Yi"
+      ],
       "description": "Exact Windows implementation of `cRSubLoc::Yi()`: masks the cell's low three lane bits, backs up to lane zero, subtracts the runtime-cell slab base, and divides by eight cells per row. The iOS implementation independently preserves the same algorithm with its port-specific 0x44-byte cell stride; Windows uses 0x54."
     },
     {

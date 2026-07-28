@@ -1211,6 +1211,60 @@
       "description": "Compiler-emitted switch jump table for update_subgame's level-state dispatch."
     },
     {
+      "address": "0x439a40",
+      "name": "is_sub_loc_floor",
+      "kind": "function",
+      "aliases": [
+        "?IsFloor@cRSubLoc@@QAE_NXZ"
+      ],
+      "description": "Exact Windows bool cRSubLoc::IsFloor() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x439a70",
+      "name": "is_sub_loc_ramp",
+      "kind": "function",
+      "aliases": [
+        "?IsRamp@cRSubLoc@@QAE_NXZ"
+      ],
+      "description": "Exact Windows bool cRSubLoc::IsRamp() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x439ab0",
+      "name": "is_sub_loc_empty",
+      "kind": "function",
+      "aliases": [
+        "?IsEmpty@cRSubLoc@@QAE_NXZ"
+      ],
+      "description": "Exact Windows bool cRSubLoc::IsEmpty() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x439ad0",
+      "name": "is_sub_loc_slide",
+      "kind": "function",
+      "aliases": [
+        "?IsSlide@cRSubLoc@@QAE_NXZ"
+      ],
+      "description": "Exact Windows bool cRSubLoc::IsSlide() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x439bc0",
+      "name": "remove_sub_loc",
+      "kind": "function",
+      "aliases": [
+        "?Remove@cRSubLoc@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubLoc::Remove() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x439d50",
+      "name": "update_sub_loc",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSubLoc@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubLoc::AI() entry; the owner-qualified alias disambiguates it from other authored AI methods."
+    },
+    {
       "address": "0x43a010",
       "name": "health_collect_particles",
       "kind": "function",
@@ -1590,6 +1644,15 @@
       ],
       "size": "0x20",
       "description": "Compiler-emitted switch jump table that follows initialize_subgoldy_death immediately after the terminal return and padding byte."
+    },
+    {
+      "address": "0x447040",
+      "name": "get_track_cell_row_index",
+      "kind": "function",
+      "aliases": [
+        "?Yi@cRSubLoc@@QAEHXZ"
+      ],
+      "description": "Exact Windows int cRSubLoc::Yi() entry with its authored decorated relocation name."
     },
     {
       "address": "0x449260",

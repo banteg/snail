@@ -1,11 +1,11 @@
-// is_sub_loc_slide @ 0x439ad0 (fastcall, ret)
+// is_sub_loc_slide @ 0x439ad0 (thiscall, ret) — cRSubLoc::IsSlide()
 
 #include "track_attachment.h"
 
-unsigned char cRSubLoc::is_sub_loc_slide()
+bool cRSubLoc::IsSlide()
 {
     unsigned char tile_id = this->tile_id;
-    unsigned char result;
+    bool result;
     if (tile_id == SUBLOC_TILE_SLIDE_UNDERSCORE
         || tile_id == SUBLOC_TILE_HEALTH_PICKUP
         || tile_id == SUBLOC_TILE_SPEEDUP_PICKUP

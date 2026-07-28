@@ -24665,11 +24665,11 @@ def test_c_r_sub_loc_primary_ownership_stays_aligned() -> None:
     assert "cRSubLoc runtime_cells[" in matcher_runtime
     for scratch_name, declaration in (
         ("initialize_sub_loc", "cRSubLoc* cRSubLoc::initialize_sub_loc()"),
-        ("remove_sub_loc", "void cRSubLoc::remove_sub_loc()"),
-        ("update_sub_loc", "void cRSubLoc::update_sub_loc()"),
+        ("remove_sub_loc", "void cRSubLoc::Remove()"),
+        ("update_sub_loc", "void cRSubLoc::AI()"),
         (
             "get_track_cell_row_index",
-            "int cRSubLoc::get_track_cell_row_index()",
+            "int cRSubLoc::Yi()",
         ),
     ):
         scratch = (

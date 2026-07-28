@@ -1,4 +1,4 @@
-// remove_sub_loc @ 0x439bc0 (thiscall, ret)
+// remove_sub_loc @ 0x439bc0 (thiscall, ret) — cRSubLoc::Remove()
 
 #include <stddef.h>
 
@@ -41,9 +41,9 @@ enum {
         }                                                         \
     } while (0)
 
-void cRSubLoc::remove_sub_loc()
+void cRSubLoc::Remove()
 {
-    int row_index = get_track_cell_row_index();
+    int row_index = Yi();
     unsigned char tile = tile_id;
     DWORD unlink_mask = ~BOD_FLAG_LINKED;
 

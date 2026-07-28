@@ -85,7 +85,7 @@ void cRSubGame::PlaceParcelsSurvival()
                         & SUBROW_FLAG_PRIMARY_ATTACHMENT)
                     != 0) {
                 cRSubLoc* cell = runtime_rows[scan].primary_attachment_cell;
-                int source_row = cell->get_track_cell_row_index();
+                int source_row = cell->Yi();
                 int node =
                     (int)runtime_rows[scan].parcel_spawn_position.z
                     - source_row;
@@ -113,7 +113,7 @@ void cRSubGame::PlaceParcelsSurvival()
                         ->get_path_position_at_node(
                             runtime_rows[scan].parcel_spawn_position,
                             node,
-                            cell->get_track_cell_row_index(),
+                            cell->Yi(),
                             runtime_rows[scan].parcel_spawn_position);
                 }
             }

@@ -8,9 +8,6 @@
 #include "track_attachment_types.h"
 
 
-unsigned char __fastcall is_sub_loc_floor(cRSubLoc* cell);
-unsigned char __fastcall is_sub_loc_slide(cRSubLoc* cell);
-
 #define IS_FLOOR_RUN_TILE(tile) \
     ((tile) == SUBLOC_TILE_FLOOR_DOT \
         || (tile) == SUBLOC_TILE_FLOOR_DASH \
@@ -69,7 +66,7 @@ void cRSubGame::CondenseTrack()
             int lane = 0;
             do {
                 cRSubLoc* cell = CELL_FROM_LANE_FLAGS(cell_lane_flags);
-                if (is_sub_loc_floor(cell) != 0
+                if (cell->IsFloor() != 0
                     && (*cell_lane_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0
                     && (*cell_lane_flags & SUBLOC_FLAG_CACHE_FAMILY_SWAPPED) == 0) {
                     int run_length = 0;
@@ -98,7 +95,7 @@ void cRSubGame::CondenseTrack()
                                     .object);
                         CLEAR_MERGED_CONTINUATIONS(this, row_index, lane, run_length);
                     }
-                } else if (is_sub_loc_slide(cell) != 0
+                } else if (cell->IsSlide() != 0
                            && (*cell_lane_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0
                            && (*cell_lane_flags & SUBLOC_FLAG_CACHE_FAMILY_SWAPPED) == 0) {
                     int run_length = 0;
@@ -107,7 +104,7 @@ void cRSubGame::CondenseTrack()
                     while (lane_cursor
                                < (int)(sizeof(runtime_cells[0])
                                    / sizeof(runtime_cells[0][0]))
-                           && is_sub_loc_slide(cursor) != 0
+                           && cursor->IsSlide() != 0
                            && (cursor->lane_and_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0
                            && (cursor->lane_and_flags & SUBLOC_FLAG_UNCACHED_BODY) != 0
                            && (cursor->lane_and_flags

@@ -70,7 +70,7 @@ seed:
     PLAYER->velocity.y = 0;
     PLAYER->follow_state.player = PLAYER;
     PLAYER->follow_state.template_record->installed_heading_delta =
-        g_game->subgame.runtime_rows[cell->get_track_cell_row_index()]
+        g_game->subgame.runtime_rows[cell->Yi()]
             .installed_heading_delta;
     PLAYER->follow_state.orientation_b = 0;
     PLAYER->follow_state.orientation_a = 0;

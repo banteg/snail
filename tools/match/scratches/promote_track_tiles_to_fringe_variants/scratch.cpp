@@ -9,8 +9,6 @@
 #include "track_attachment_types.h"
 
 
-unsigned char __fastcall is_sub_loc_empty(cRSubLoc* cell);
-
 void cRSubGame::WarnTrack()
 {
     int row = 0;
@@ -21,7 +19,7 @@ void cRSubGame::WarnTrack()
             int lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
             do {
                 cell->lane_and_flags &= ~SUBLOC_FLAG_WARNING_CACHE_FAMILY;
-                if (is_sub_loc_empty(cell + SUBGAME_TRACK_LANE_COUNT) != 0) {
+                if ((cell + SUBGAME_TRACK_LANE_COUNT)->IsEmpty() != 0) {
                     GameRoot* game = g_game;
                     int offset = 0;
                     do {

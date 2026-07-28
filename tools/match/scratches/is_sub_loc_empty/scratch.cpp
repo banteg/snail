@@ -1,11 +1,11 @@
-// is_sub_loc_empty @ 0x439ab0 (fastcall, ret)
+// is_sub_loc_empty @ 0x439ab0 (thiscall, ret) — cRSubLoc::IsEmpty()
 
 #include "track_attachment.h"
 
-unsigned char cRSubLoc::is_sub_loc_empty()
+bool cRSubLoc::IsEmpty()
 {
     unsigned char tile_id = this->tile_id;
-    unsigned char result;
+    bool result;
     if (tile_id == SUBLOC_TILE_EMPTY
         || tile_id == SUBLOC_TILE_UNIVERSE_HOLE
         || tile_id == SUBLOC_TILE_RING_MARKER

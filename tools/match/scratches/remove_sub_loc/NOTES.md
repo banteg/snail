@@ -1,6 +1,6 @@
 # remove_sub_loc
 
-First relationship scratch for `cRSubLoc::remove_sub_loc()`
+First relationship scratch for `cRSubLoc::Remove()`
 at `0x439bc0`.
 
 Android preserves the authored operation as `cRSubLoc::Remove()`: it begins
@@ -105,8 +105,8 @@ local `object` active check. A final-tail-only `FringeObject*` remover is also
 codegen-neutral, proving the residual is not caused by casting the fringe object
 through the shared `BodNode` prefix. Do not chase a non-void method signature:
 IDA infers a stale `_DWORD*` return from the last fringe expression, but the
-known callers (`update_sub_loc` and `remove_subgame_bods`)
-ignore the result and the shared header's `void remove_sub_loc()`
+known callers (`cRSubLoc::AI()` and `cRSubGame::RemoveBods()`)
+ignore the result and the shared header's `void Remove()`
 remains the source-plausible shape.
 
 ## 2026-07-12 attachment-body correction

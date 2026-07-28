@@ -1,4 +1,4 @@
-// update_sub_loc @ 0x439d50 (thiscall, ret)
+// update_sub_loc @ 0x439d50 (thiscall, ret) — cRSubLoc::AI()
 // Runtime-cell update: wall2 (tile 14) fires at the player through the
 // 4% gate once the first authored block passes the player z; tiles 22/29/30
 // and the default lane cull or sync the attachment skirt color.
@@ -10,7 +10,7 @@
 
 
 
-void cRSubLoc::update_sub_loc()
+void cRSubLoc::AI()
 {
     if ((lane_and_flags & SUBLOC_FLAG_AI_ENABLED) == 0)
         return;
@@ -42,7 +42,7 @@ void cRSubLoc::update_sub_loc()
         }
 cull_check:
         if (position.z < g_game->subgame.embedded_player()->interaction_max_z)
-            remove_sub_loc();
+            Remove();
         return;
     }
 
@@ -61,18 +61,18 @@ cull_check:
         }
         tColour scratch;
         tColour* skirt = g_game->subgame.GetSkirtColour(&scratch);
-        g_game->subgame.runtime_rows[get_track_cell_row_index()]
+        g_game->subgame.runtime_rows[Yi()]
             .attachment_body.color = *skirt;
         if (g_game->subgame.embedded_player()->interaction_max_z
                 - ((float)attachment_template_record->row_span_count + 5.0f)
             > position.z)
-            remove_sub_loc();
+            Remove();
         return;
     }
 
     if (position.z < g_game->subgame.embedded_player()->interaction_max_z
         && (float)(g_game->subgame.completion_row_start - 5) > position.z) {
 destroy:
-        remove_sub_loc();
+        Remove();
     }
 }

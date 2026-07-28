@@ -10,7 +10,7 @@ void cRSubGame::CalcRealPos(Vector3* position, float* out_angle)
     if ((row->flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {
         cRSubLoc* cell = row->primary_attachment_cell;
         Path* template_record = cell->attachment_template_record;
-        int sample_index = (int)position->z - cell->get_track_cell_row_index();
+        int sample_index = (int)position->z - cell->Yi();
         AttachmentSample* sample = &template_record->primary_samples[sample_index];
         if (template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
             TransformMatrix transform;

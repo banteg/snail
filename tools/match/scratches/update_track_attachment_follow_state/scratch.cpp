@@ -60,17 +60,17 @@ int cRPathFollowGoldy::update_track_attachment_follow_state(
             int current_index = (int)this->sample_index;
             if (current_index == count - 1) {
                 Path* attached =
-                    g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
-                g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_base_strip_mesh;
-                g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 1.0f;
+                    g_game->subgame.runtime_rows[source_cell->Yi()].primary_attachment_cell->attachment_template_record;
+                g_game->subgame.runtime_rows[source_cell->Yi()].primary_attachment_cell->object = attached->entry_base_strip_mesh;
+                g_game->subgame.runtime_rows[source_cell->Yi()].primary_attachment_cell->color.a = 1.0f;
             } else if (current_index == (3 * count) / 7) {
-                g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()]
+                g_game->subgame.runtime_rows[source_cell->Yi()]
                     .primary_attachment_cell->list_flags |=
                     BOD_FLAG_AFTER_SPRITES;
                 Path* attached =
-                    g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
-                g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_transition_strip_mesh;
-                g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 0.6f;
+                    g_game->subgame.runtime_rows[source_cell->Yi()].primary_attachment_cell->attachment_template_record;
+                g_game->subgame.runtime_rows[source_cell->Yi()].primary_attachment_cell->object = attached->entry_transition_strip_mesh;
+                g_game->subgame.runtime_rows[source_cell->Yi()].primary_attachment_cell->color.a = 0.6f;
             }
         }
 

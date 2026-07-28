@@ -1,4 +1,4 @@
-// get_track_cell_row_index @ 0x447040 (thiscall, ret)
+// get_track_cell_row_index @ 0x447040 (thiscall, ret) — cRSubLoc::Yi()
 
 #include "track_attachment_types.h"
 
@@ -7,7 +7,7 @@ class GameRoot;
 extern GameRoot* g_game; // data_4df904
 extern char g_track_row_cells_offset[]; // 0x4340e0
 
-int cRSubLoc::get_track_cell_row_index()
+int cRSubLoc::Yi()
 {
     int lane = lane_and_flags & (SUBGAME_TRACK_LANE_COUNT - 1);
     char* row_cell = (char*)this - lane * (int)sizeof(cRSubLoc);

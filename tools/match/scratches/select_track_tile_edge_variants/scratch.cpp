@@ -50,25 +50,25 @@ void cRSubGame::SmoothTrack()
                     && skip_tile != SUBLOC_TILE_WALL2) {
                     if (lane == 0
                         || ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_PREVIOUS_LANE))
-                                ->is_sub_loc_empty()
+                                ->IsEmpty()
                             != 0) {
                         cell->open_edge_mask |= SUBLOC_OPEN_PREVIOUS_LANE;
                     }
                     if (lane == SUBGAME_TRACK_LANE_COUNT - 1
                         || ((cRSubLoc*)((char*)cell + TILE_VIEW_TO_NEXT_LANE))
-                                ->is_sub_loc_empty()
+                                ->IsEmpty()
                             != 0) {
                         cell->open_edge_mask |= SUBLOC_OPEN_NEXT_LANE;
                     }
                     if (row == 0
                         || ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_PREVIOUS_ROW))
-                                ->is_sub_loc_empty()
+                                ->IsEmpty()
                             != 0) {
                         cell->open_edge_mask |= SUBLOC_OPEN_PREVIOUS_ROW;
                     }
                     if (row >= runtime_row_count - 1
                         || ((cRSubLoc*)((char*)cell + TILE_VIEW_TO_NEXT_ROW))
-                                ->is_sub_loc_empty()
+                                ->IsEmpty()
                             != 0) {
                         cell->open_edge_mask |= SUBLOC_OPEN_NEXT_ROW;
                     }
@@ -87,7 +87,7 @@ void cRSubGame::SmoothTrack()
                             } else if (tile != SUBLOC_TILE_TRAMPOLINE
                                 && tile != SUBLOC_TILE_WALL2
                                 && ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                        ->is_sub_loc_ramp()
+                                        ->IsRamp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                     ->set_bod_object(
@@ -111,7 +111,7 @@ void cRSubGame::SmoothTrack()
                             } else if (tile != SUBLOC_TILE_TRAMPOLINE
                                 && tile != SUBLOC_TILE_WALL2
                                 && ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                        ->is_sub_loc_ramp()
+                                        ->IsRamp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                     ->set_bod_object(
@@ -135,7 +135,7 @@ void cRSubGame::SmoothTrack()
                             } else if (tile != SUBLOC_TILE_TRAMPOLINE
                                 && tile != SUBLOC_TILE_WALL2
                                 && ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                        ->is_sub_loc_ramp()
+                                        ->IsRamp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                     ->set_bod_object(
@@ -159,7 +159,7 @@ void cRSubGame::SmoothTrack()
                             } else if (tile != SUBLOC_TILE_TRAMPOLINE
                                 && tile != SUBLOC_TILE_WALL2
                                 && ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                        ->is_sub_loc_ramp()
+                                        ->IsRamp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                     ->set_bod_object(

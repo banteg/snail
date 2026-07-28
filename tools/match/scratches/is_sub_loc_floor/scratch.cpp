@@ -1,11 +1,11 @@
-// is_sub_loc_floor @ 0x439a40 (fastcall, ret)
+// is_sub_loc_floor @ 0x439a40 (thiscall, ret) — cRSubLoc::IsFloor()
 
 #include "track_attachment.h"
 
-unsigned char cRSubLoc::is_sub_loc_floor()
+bool cRSubLoc::IsFloor()
 {
     unsigned char tile_id = this->tile_id;
-    unsigned char result;
+    bool result;
     if (tile_id == SUBLOC_TILE_FLOOR_DOT
         || tile_id == SUBLOC_TILE_FLOOR_VARIANT_14
         || tile_id == SUBLOC_TILE_FLOOR_DASH

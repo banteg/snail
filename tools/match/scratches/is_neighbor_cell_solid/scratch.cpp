@@ -7,7 +7,7 @@
 
 bool cRSubGame::TestLoc(cRSubLoc* cell, int dx, int dz)
 {
-    int row = cell->get_track_cell_row_index();
+    int row = cell->Yi();
     int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;
     bool result = false;
     if ((unsigned int)(lane + dx) < SUBGAME_TRACK_LANE_COUNT) {
@@ -22,7 +22,7 @@ bool cRSubGame::TestLoc(cRSubLoc* cell, int dx, int dz)
             int tile = tile_id;
             neighbor = (cRSubLoc*)((char*)neighbor
                 + (int)offsetof(cRSubGame, runtime_cells));
-            if (!neighbor->is_sub_loc_empty()
+            if (!neighbor->IsEmpty()
                 && tile != SUBLOC_TILE_EMPTY
                 && tile != SUBLOC_TILE_RING_MARKER
                 && tile != SUBLOC_TILE_UNIVERSE_HOLE

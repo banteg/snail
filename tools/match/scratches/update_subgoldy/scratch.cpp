@@ -286,7 +286,7 @@ steering_stored:
     cRSubLoc* source_cell = game->LocFromPos(p_position);
     cRSubGame* event_game = game;
     SubRow* row_record =
-        &event_game->runtime_rows[source_cell->get_track_cell_row_index()];
+        &event_game->runtime_rows[source_cell->Yi()];
     int event_id = row_record->row_event_id;
     if (event_id > 0 && event_id != row_event.id
         && event_id < event_game->level_definition.segment_count + 1) {
@@ -430,7 +430,7 @@ steering_stored:
                     == SUBLOC_TILE_SLIDE_F
                 || damage_gauge.state == DAMAGE_GUAGE_STATE_DRAINING
                        && (slide_cell = game->LocFromPos(p_position),
-                           slide_cell->is_sub_loc_floor())) {
+                           slide_cell->IsFloor())) {
                 float rate = game->subgame_rate;
                 float quantum = rate * rate * 0.0040000002f;
                 velocity.z = quantum + quantum + velocity.z;
@@ -458,7 +458,7 @@ steering_stored:
             cRSubLoc* landing_cell = game->LocFromPos(p_position);
             if (attachment_exit_pending) {
                 cRSubGame* drag_game = game;
-                if ((drag_game->runtime_rows[landing_cell->get_track_cell_row_index()]
+                if ((drag_game->runtime_rows[landing_cell->Yi()]
                          .flags
                       & SUBROW_FLAG_NO_FALL)
                     == 0
@@ -467,7 +467,7 @@ steering_stored:
                     velocity.z = (1.0f - drag_game->subgame_rate * 0.2f) * velocity.z;
                 }
                 if (game
-                        ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                        ->runtime_rows[landing_cell->Yi()]
                         .flags
                     & SUBROW_FLAG_PRIMARY_ATTACHMENT) {
                     Vector3 swept;
@@ -475,18 +475,18 @@ steering_stored:
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
                     ((SubgoldyPathView*)game
-                         ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                         ->runtime_rows[landing_cell->Yi()]
                          .primary_attachment_cell
                          ->attachment_template_record)
                         ->try_enter_track_attachment_from_swept_motion(
                             *p_position, swept,
                             game
-                                ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                                ->runtime_rows[landing_cell->Yi()]
                                 .primary_attachment_cell);
                 }
                 if (attachment_exit_pending
                     && (game
-                            ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                            ->runtime_rows[landing_cell->Yi()]
                             .flags
                         & SUBROW_FLAG_SECONDARY_ATTACHMENT)) {
                     Vector3 swept;
@@ -494,20 +494,20 @@ steering_stored:
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
                     ((SubgoldyPathView*)game
-                         ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                         ->runtime_rows[landing_cell->Yi()]
                          .secondary_attachment_cell
                          ->attachment_template_record)
                         ->try_enter_track_attachment_from_swept_motion(
                             *p_position, swept,
                             game
-                                ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                                ->runtime_rows[landing_cell->Yi()]
                                 .secondary_attachment_cell);
                 }
             }
             if (!follow_state.active) {
                 if (transform.position.y < 0.49000001f
                     && transform.position.y > -0.16333334f
-                    && !landing_cell->is_sub_loc_empty()
+                    && !landing_cell->IsEmpty()
                     && landing_cell->tile_id != SUBLOC_TILE_TRAMPOLINE) {
                     transform.set_matrix_rotation_identity();
                     trampoline_bounce_active = 0;

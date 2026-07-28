@@ -38,7 +38,7 @@ void cRSubGame::RemoveBods()
 
         int lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
         do {
-            cell->remove_sub_loc();
+            cell->Remove();
             ++cell;
             --lane_count;
         } while (lane_count != 0);

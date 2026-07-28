@@ -266,7 +266,7 @@ void cRSubGame::PlaceParcels()
             cRSubLoc* cell = row_record->primary_attachment_cell;
             int node =
                 (int)row_record->parcel_spawn_position.z
-                - cell->get_track_cell_row_index();
+                - cell->Yi();
             if (node < 0)
                 node = 0;
             cRSubLoc* live_cell = row_record->primary_attachment_cell;
@@ -283,7 +283,7 @@ void cRSubGame::PlaceParcels()
                 row_record->parcel_spawn_position.x = transform.position.x;
                 row_record->parcel_spawn_position.y = transform.position.y;
             } else {
-                int row_index = live_cell->get_track_cell_row_index();
+                int row_index = live_cell->Yi();
                 live_cell->attachment_template_record->get_path_position_at_node(
                     row_record->parcel_spawn_position, node, row_index,
                     row_record->parcel_spawn_position);

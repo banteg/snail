@@ -36,3 +36,20 @@ at `GameRoot +0x74618`; the runtime is exactly `0x1272838` bytes and ends at
 root `+0x12e6e50`. All three IDA replay lanes preserve that composition instead
 of letting the sparse frame view truncate the runtime tail. The constructor
 remains exact at 10/10 instructions with all four operands clean.
+
+## 2026-07-28 mobile-authored method surface
+
+Android and iOS recover the cohesive `cRSubLoc` surface as `IsFloor`,
+`IsRamp`, `IsEmpty`, `IsSlide`, `Remove`, `AI`, and `Yi`. The four predicates
+now use their authored `bool` contract; VC6 emits the same exact Windows
+instruction streams as the former byte-shaped declarations. Every focused
+scratch targets the corresponding owner-qualified decorated symbol, and
+downstream matcher callsites now invoke the methods directly instead of
+declaring ownerless fastcall shims.
+
+The mobile ports establish names and behavior, not Windows layout. Windows
+retains its independently proven `0x54` cell size, `BodBase` prefix, pointer
+fields, and eight-lane row geometry; iOS uses a port-specific `0x44` stride.
+The replay is codegen-neutral across all 662 scratches: the four predicates and
+`Yi` remain proof-grade, `AI` remains `99.47%`, `Remove` remains `91.19%`, and
+the aggregate stays at 532 proof-grade functions and `79.11%`.

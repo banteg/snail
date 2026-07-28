@@ -6,9 +6,6 @@
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
-unsigned char __fastcall is_sub_loc_floor(cRSubLoc* cell);
-unsigned char __fastcall is_sub_loc_slide(cRSubLoc* cell);
-
 void cRSubGame::SlideSmoothTrack()
 {
     cRSubGame* game_runtime = this;
@@ -24,8 +21,8 @@ void cRSubGame::SlideSmoothTrack()
                          SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0) {
                         if ((game_runtime->runtime_cells[row + 1][lane].lane_and_flags &
                              SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0 &&
-                            is_sub_loc_floor(&game_runtime->runtime_cells[row][lane]) == 1 &&
-                            (is_sub_loc_slide(&game_runtime->runtime_cells[row + 1][lane]) == 1 ||
+                            game_runtime->runtime_cells[row][lane].IsFloor() == 1 &&
+                            (game_runtime->runtime_cells[row + 1][lane].IsSlide() == 1 ||
                              game_runtime->runtime_cells[row + 1][lane].tile_id ==
                                  SUBLOC_TILE_PATH_ENTRY_UPPERCASE)) {
                             GameRoot* game = g_game;
@@ -62,8 +59,8 @@ void cRSubGame::SlideSmoothTrack()
                          SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0) {
                         if ((game_runtime->runtime_cells[row + 1][lane].lane_and_flags &
                              SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0 &&
-                            is_sub_loc_slide(&game_runtime->runtime_cells[row][lane]) == 1 &&
-                            is_sub_loc_floor(&game_runtime->runtime_cells[row + 1][lane]) == 1) {
+                            game_runtime->runtime_cells[row][lane].IsSlide() == 1 &&
+                            game_runtime->runtime_cells[row + 1][lane].IsFloor() == 1) {
                             GameRoot* game = g_game;
                             if (((BodBase*)&game_runtime->runtime_cells[row][lane])->object ==
                                 game->root_bod_catalog.slide_slices.storage[0].object) {
@@ -100,8 +97,8 @@ void cRSubGame::SlideSmoothTrack()
                          SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0) {
                         if ((game_runtime->runtime_cells[row - 1][lane].lane_and_flags &
                              SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0 &&
-                            is_sub_loc_floor(&game_runtime->runtime_cells[row][lane]) == 1 &&
-                            (is_sub_loc_slide(&game_runtime->runtime_cells[row - 1][lane]) == 1 ||
+                            game_runtime->runtime_cells[row][lane].IsFloor() == 1 &&
+                            (game_runtime->runtime_cells[row - 1][lane].IsSlide() == 1 ||
                              game_runtime->runtime_cells[row - 1][lane].tile_id ==
                                  SUBLOC_TILE_FLOOR_HASH_MARKER)) {
                             GameRoot* game = g_game;
@@ -138,8 +135,8 @@ void cRSubGame::SlideSmoothTrack()
                          SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0) {
                         if ((game_runtime->runtime_cells[row - 1][lane].lane_and_flags &
                              SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0 &&
-                            is_sub_loc_slide(&game_runtime->runtime_cells[row][lane]) == 1 &&
-                            is_sub_loc_floor(&game_runtime->runtime_cells[row - 1][lane]) == 1) {
+                            game_runtime->runtime_cells[row][lane].IsSlide() == 1 &&
+                            game_runtime->runtime_cells[row - 1][lane].IsFloor() == 1) {
                             GameRoot* game = g_game;
                             if (((BodBase*)&game_runtime->runtime_cells[row][lane])->object ==
                                 game->root_bod_catalog.slide_slices.storage[0].object) {

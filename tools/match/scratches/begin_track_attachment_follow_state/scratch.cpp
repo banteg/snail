@@ -14,7 +14,7 @@ void cRPathFollowGoldy::begin_track_attachment_follow_state(
     float height = world_position->y - 0.49f;
     player = owning_player;
     vertical_offset = height;
-    int row_index = cell->get_track_cell_row_index();
+    int row_index = cell->Yi();
     SubRow* runtime_rows = g_game->subgame.runtime_rows;
     template_record->installed_heading_delta =
         runtime_rows[row_index].installed_heading_delta;

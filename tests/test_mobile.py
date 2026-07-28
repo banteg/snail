@@ -906,6 +906,128 @@ def test_mobile_subgame_utilities_recover_authored_surface() -> None:
     assert "SubgoldyFloorSamplerCallView" in subgoldy
 
 
+def test_mobile_subloc_methods_recover_authored_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+    subloc_header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    expected_methods = (
+        (
+            "is_sub_loc_floor",
+            "IsFloor",
+            "cRSubLoc::IsFloor()",
+            "bool IsFloor();",
+            "?IsFloor@cRSubLoc@@QAE_NXZ",
+        ),
+        (
+            "is_sub_loc_ramp",
+            "IsRamp",
+            "cRSubLoc::IsRamp()",
+            "bool IsRamp();",
+            "?IsRamp@cRSubLoc@@QAE_NXZ",
+        ),
+        (
+            "is_sub_loc_empty",
+            "IsEmpty",
+            "cRSubLoc::IsEmpty()",
+            "bool IsEmpty();",
+            "?IsEmpty@cRSubLoc@@QAE_NXZ",
+        ),
+        (
+            "is_sub_loc_slide",
+            "IsSlide",
+            "cRSubLoc::IsSlide()",
+            "bool IsSlide();",
+            "?IsSlide@cRSubLoc@@QAE_NXZ",
+        ),
+        (
+            "remove_sub_loc",
+            "Remove",
+            "cRSubLoc::Remove()",
+            "void Remove();",
+            "?Remove@cRSubLoc@@QAEXXZ",
+        ),
+        (
+            "update_sub_loc",
+            "AI",
+            "cRSubLoc::AI()",
+            "void AI();",
+            "?AI@cRSubLoc@@QAEXXZ",
+        ),
+        (
+            "get_track_cell_row_index",
+            "Yi",
+            "cRSubLoc::Yi()",
+            "int Yi();",
+            "?Yi@cRSubLoc@@QAEHXZ",
+        ),
+    )
+
+    for (
+        windows_name,
+        authored_name,
+        mobile_symbol,
+        header_declaration,
+        object_symbol,
+    ) in expected_methods:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert mobile_symbol in {
+            entry.get("android_symbol"),
+            entry.get("ios_symbol"),
+        }
+        assert f"cRSubLoc_{authored_name}" in (
+            functions_by_name[windows_name]["aliases"]
+        )
+        assert header_declaration in subloc_header
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRSubLoc::{authored_name}(" in scratch_source
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"FUNCTION={windows_name}\n" in scratch_config
+        assert f"SYMBOL={object_symbol}\n" in scratch_config
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+
+    for scratch_name in (
+        "build_track_render_caches",
+        "harmonize_center_lane_floor_slide_variants",
+        "merge_track_tile_runs",
+        "promote_track_tiles_to_fringe_variants",
+    ):
+        source = (
+            repo_root
+            / "tools/match/scratches"
+            / scratch_name
+            / "scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert "__fastcall is_sub_loc_" not in source
+
+
 def test_mobile_subgoldy_methods_recover_authored_surface() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
