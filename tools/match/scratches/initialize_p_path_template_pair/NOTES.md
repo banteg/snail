@@ -219,3 +219,33 @@ the curve-counter declaration to the native store site regressed to 53.76%.
 The ARM function independently retains a zero-based curve counter, one-based
 sample index, and byte cursor, so the scratch keeps those real owners and
 leaves the remaining x86 stack-slot coalescing to the compiler.
+
+## 2026-07-28 paired-mobile and Windows lifetime replay
+
+The exact Android and iOS `cRPath::BuildP(int, float, int, float, float, int,
+char*, char*)` bodies independently preserve the portable `curve_segments + 2`
+sample count, `curve_segments + 1` terminal sample, zero-based curve counter,
+one-based sample Z, and curve-phase graph. The Windows MLIL then proves where
+VC6 spills that graph through dead `scale_arg`, `start_x`, and `end_x` homes.
+Merging the exact EBP counter definitions with their stack spill avoids a false
+second `curve_index` owner.
+
+Both mobile bodies stop after `CalcLengthZ`. The strip vertices, face records,
+UVs, winding pass, and repeated EAX/ECX/EDX `width + 1` reloads are therefore
+recovered exclusively from Windows. One transaction previewed, applied,
+snapshotted, and read back 23 bounded BuildP split groups. Register/stack
+definitions for the mesh column, face column, and winding pass are merged only
+where native SSA proves one logical counter. Reanalysis also promotes the two
+basis-vector initializers and two terminal deltas to address-anchored aggregate
+`Vec3` assignments.
+
+An idempotent replay reports all 23 groups already current. Strict paired
+Binary Ninja and IDA 9.4 export reports zero mismatches and 1,142/1,142 passing
+health checks. The IDA refresh is retained because it replaces the stale
+three-argument `PathTemplate*` view with the proven void `Path*` ABI containing
+nine explicit stack arguments and exposes the `Object*` mesh owner.
+
+This is analysis-only. Focused matching remains **54.05%** with exact **679/679**
+instruction-count parity, a six-instruction exact prefix, and **41 accepted,
+0 unresolved, 0 mismatched, and 0 unaudited** masked operands. No source edit,
+synthetic branch, or mobile address transfer was introduced.

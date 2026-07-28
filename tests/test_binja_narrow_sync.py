@@ -20869,6 +20869,10 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
         Path(__file__).parents[1]
         / "tools/match/scratches/initialize_slalomdouble_path_template_pair/scratch.cpp"
     ).read_text(encoding="utf-8")
+    p_scratch = (
+        Path(__file__).parents[1]
+        / "tools/match/scratches/initialize_p_path_template_pair/scratch.cpp"
+    ).read_text(encoding="utf-8")
     health = json.loads(
         (
             Path(__file__).parents[1]
@@ -20879,6 +20883,11 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
         check
         for check in health["checks"]
         if check["name"] == "bn_slalomdouble_path_full_owner_abi"
+    )
+    p_health = next(
+        check
+        for check in health["checks"]
+        if check["name"] == "bn_p_path_full_owner_abi"
     )
 
     for type_name, width in (
@@ -20922,6 +20931,10 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
     assert "SLALOMDOUBLE_CONTROL_STACK_LIFETIME_SPLITS" in replay
     assert "SLALOMDOUBLE_MESH_STACK_LIFETIME_SPLITS" in replay
     assert "SLALOMDOUBLE_FACE_REGISTER_LIFETIME_SPLITS" in replay
+    assert "P_CONTROL_LIFETIME_SPLITS" in replay
+    assert "P_MESH_LIFETIME_SPLITS" in replay
+    assert "P_FACE_REGISTER_LIFETIME_SPLITS" in replay
+    assert "SLALOMDOUBLE_P_SPLIT_LIFETIME_GROUPS" in replay
     assert "apply_split_user_var_updates(" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
@@ -20952,6 +20965,12 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
         ("u1", "float"),
         ("face_width_plus_one_ecx", "int32_t"),
         ("face_width_plus_one_edx", "int32_t"),
+        ("sample_count", "int32_t"),
+        ("last_sample_index", "int32_t"),
+        ("terminal_sample_z", "float"),
+        ("curve_segments_f", "float"),
+        ("face_column", "int32_t"),
+        ("face_width_plus_one_eax", "int32_t"),
     ):
         assert f'        "{name}",' in replay
         assert f'        "{variable_type}",' in replay
@@ -20964,6 +20983,15 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
         '("0x4256f7", "mlil_ssa", "StackVariableSourceType", 1703, -76)',
         '("0x42585b", "mlil_ssa", "StackVariableSourceType", 2059, 8)',
         '("0x42588a", "mlil_ssa", "StackVariableSourceType", 2106, -72)',
+        '("0x425bc0", "mlil", "RegisterVariableSourceType", 384, 71)',
+        '("0x425bf5", "mlil_ssa", "RegisterVariableSourceType", 437, 71)',
+        '("0x425bf5", "mlil_ssa", "StackVariableSourceType", 437, 16)',
+        '("0x4260a2", "mlil_ssa", "RegisterVariableSourceType", 1634, 73)',
+        '("0x4260a2", "mlil_ssa", "StackVariableSourceType", 1634, 8)',
+        '("0x426206", "mlil_ssa", "RegisterVariableSourceType", 1990, 73)',
+        '("0x426206", "mlil_ssa", "StackVariableSourceType", 1990, 8)',
+        '("0x426235", "mlil_ssa", "RegisterVariableSourceType", 2037, 67)',
+        '("0x426235", "mlil_ssa", "StackVariableSourceType", 2037, 4)',
     ):
         assert definition in replay
     for rejected_face_pass_phi in (
@@ -20976,6 +21004,10 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
         assert f"({rejected_index}, 66," not in replay
     assert slalomdouble_scratch.count("if (curve_index == 0)") == 2
     assert "if (i <= 4)" not in slalomdouble_scratch
+    assert "int curve_index = 0" in p_scratch
+    assert "float angle = (float)curve_index" in p_scratch
+    assert "int face_index;" in p_scratch
+    assert "for (face_index = 0; face_index < 2; ++face_index)" in p_scratch
     for rendered_owner in (
         "int32_t lead_sample_index = 0",
         "int32_t tail_sample_index = 0x42",
@@ -21002,6 +21034,35 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
         "width_cells_ = j",
     ):
         assert stale_width_alias in slalomdouble_health["forbidden_substrings"]
+
+    for rendered_owner in (
+        "int32_t curve_index = 0",
+        "float curve_phase =",
+        "struct Vec3* mesh_vertices = vertices",
+        "struct ObjectFaceQuad* facequads = object->facequads",
+        "int32_t mesh_column = 0",
+        "int32_t mesh_width_cells = width_cells",
+        "int32_t face_column = 0",
+        "float v0 =",
+        "float v1 =",
+        "int32_t face_pass = 0",
+        "float u0 =",
+        "float u1 =",
+        "int32_t face_width_plus_one_eax",
+        "int32_t face_width_plus_one_ecx",
+        "int32_t face_width_plus_one_edx",
+    ):
+        assert rendered_owner in p_health["required_substrings"]
+    for stale_argument_alias in (
+        "start_x = 0f",
+        "start_x = vertices",
+        "width_cells_ = object->facequads",
+        "scale_arg = 0f",
+        "curve_segments = width_cells",
+        "variant = 0",
+        "int32_t j = 0",
+    ):
+        assert stale_argument_alias in p_health["forbidden_substrings"]
 
 
 
@@ -21586,6 +21647,12 @@ def test_curve_family_aggregate_health_stays_address_anchored() -> None:
             "0042563e",
             "00425685",
         ),
+        "bn_p_path_full_owner_abi": (
+            "00425d6c",
+            "00425e17",
+            "00425fe9",
+            "00426030",
+        ),
     }
     for check_name, addresses in aggregate_addresses.items():
         check = checks[check_name]
@@ -21631,6 +21698,10 @@ def test_curve_family_aggregate_health_stays_address_anchored() -> None:
             "struct Vec3* secondary_right",
         ),
         "bn_slalomdouble_path_full_owner_abi": (
+            "struct Vec3* primary_forward",
+            "struct Vec3* secondary_forward",
+        ),
+        "bn_p_path_full_owner_abi": (
             "struct Vec3* primary_forward",
             "struct Vec3* secondary_forward",
         ),

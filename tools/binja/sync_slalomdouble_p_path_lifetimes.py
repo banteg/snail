@@ -322,6 +322,231 @@ SLALOMDOUBLE_FACE_REGISTER_LIFETIME_SPLITS = (
     ),
 )
 
+# The paired Android and iOS BuildP bodies independently preserve the portable
+# sample-count, endpoint, zero-based curve counter, one-based sample index, and
+# curve-angle owners. Windows remains authoritative for every definition below:
+# VC6 merely coalesces those values into the dead scale/start/end argument homes.
+P_CONTROL_LIFETIME_SPLITS = (
+    (
+        (("0x425a68", "mlil", "StackVariableSourceType", 40, 8),),
+        ("StackVariableSourceType", 40, 8),
+        "sample_count",
+        "int32_t",
+    ),
+    (
+        (("0x425b30", "mlil", "StackVariableSourceType", 240, 16),),
+        ("StackVariableSourceType", 240, 16),
+        "last_sample_index",
+        "int32_t",
+    ),
+    (
+        (("0x425b90", "mlil", "StackVariableSourceType", 336, 16),),
+        ("StackVariableSourceType", 336, 16),
+        "terminal_sample_z",
+        "float",
+    ),
+    (
+        (
+            ("0x425bc0", "mlil", "RegisterVariableSourceType", 384, 71),
+            ("0x425ccb", "mlil", "RegisterVariableSourceType", 651, 71),
+            ("0x425bf5", "mlil_ssa", "RegisterVariableSourceType", 437, 71),
+            ("0x425bcd", "mlil", "StackVariableSourceType", 397, 16),
+            ("0x425ccc", "mlil", "StackVariableSourceType", 652, 16),
+            ("0x425eba", "mlil", "StackVariableSourceType", 1146, 16),
+            ("0x425bf5", "mlil_ssa", "StackVariableSourceType", 437, 16),
+        ),
+        ("RegisterVariableSourceType", 384, 71),
+        "curve_index",
+        "int32_t",
+    ),
+    (
+        (("0x425bf1", "mlil", "StackVariableSourceType", 433, 20),),
+        ("StackVariableSourceType", 433, 20),
+        "curve_segments_f",
+        "float",
+    ),
+    (
+        (("0x425c09", "mlil", "StackVariableSourceType", 457, 16),),
+        ("StackVariableSourceType", 457, 16),
+        "curve_phase",
+        "float",
+    ),
+    (
+        (("0x425ce6", "mlil", "StackVariableSourceType", 678, 16),),
+        ("StackVariableSourceType", 678, 16),
+        "curve_sample_z",
+        "float",
+    ),
+)
+
+# The mobile functions end after CalcLengthZ. Everything here is therefore
+# recovered solely from the native Windows mesh tail. In particular, the
+# vertices/facequads pointers, nested loop counters, UV scalars, and winding
+# pass are not authored mutations of BuildP's incoming arguments.
+P_MESH_LIFETIME_SPLITS = (
+    (
+        (("0x42607d", "mlil", "StackVariableSourceType", 1597, 16),),
+        ("StackVariableSourceType", 1597, 16),
+        "mesh_vertices",
+        "Vec3*",
+    ),
+    (
+        (("0x426083", "mlil", "StackVariableSourceType", 1603, 12),),
+        ("StackVariableSourceType", 1603, 12),
+        "mesh_facequads",
+        "ObjectFaceQuad*",
+    ),
+    (
+        (
+            ("0x426090", "mlil", "RegisterVariableSourceType", 1616, 73),
+            ("0x426192", "mlil", "RegisterVariableSourceType", 1874, 73),
+            ("0x4260a2", "mlil_ssa", "RegisterVariableSourceType", 1634, 73),
+            ("0x426094", "mlil", "StackVariableSourceType", 1620, 8),
+            ("0x426199", "mlil", "StackVariableSourceType", 1881, 8),
+            ("0x4260a2", "mlil_ssa", "StackVariableSourceType", 1634, 8),
+        ),
+        ("RegisterVariableSourceType", 1616, 73),
+        "mesh_column",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x426098", "mlil", "StackVariableSourceType", 1624, 24),
+            ("0x426193", "mlil", "StackVariableSourceType", 1875, 24),
+            ("0x4260a2", "mlil_ssa", "StackVariableSourceType", 1634, 24),
+        ),
+        ("StackVariableSourceType", 1624, 24),
+        "mesh_width_cells",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x4261c5", "mlil", "RegisterVariableSourceType", 1925, 73),
+            ("0x4263b8", "mlil", "RegisterVariableSourceType", 2424, 73),
+            ("0x426206", "mlil_ssa", "RegisterVariableSourceType", 1990, 73),
+            ("0x4261c9", "mlil", "StackVariableSourceType", 1929, 8),
+            ("0x4263c1", "mlil", "StackVariableSourceType", 2433, 8),
+            ("0x426206", "mlil_ssa", "StackVariableSourceType", 1990, 8),
+        ),
+        ("RegisterVariableSourceType", 1925, 73),
+        "face_column",
+        "int32_t",
+    ),
+    (
+        (("0x4261e1", "mlil", "StackVariableSourceType", 1953, 24),),
+        ("StackVariableSourceType", 1953, 24),
+        "v0_index",
+        "int32_t",
+    ),
+    (
+        (("0x4261ea", "mlil", "StackVariableSourceType", 1962, 16),),
+        ("StackVariableSourceType", 1962, 16),
+        "v1_index",
+        "int32_t",
+    ),
+    (
+        (("0x4261f4", "mlil", "StackVariableSourceType", 1972, 24),),
+        ("StackVariableSourceType", 1972, 24),
+        "v0",
+        "float",
+    ),
+    (
+        (("0x426202", "mlil", "StackVariableSourceType", 1986, 20),),
+        ("StackVariableSourceType", 1986, 20),
+        "v1",
+        "float",
+    ),
+    (
+        (("0x42620f", "mlil", "StackVariableSourceType", 1999, -64),),
+        ("StackVariableSourceType", 1999, -64),
+        "u1_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42620d", "mlil", "RegisterVariableSourceType", 1997, 67),
+            ("0x426231", "mlil", "RegisterVariableSourceType", 2033, 67),
+            ("0x426235", "mlil_ssa", "RegisterVariableSourceType", 2037, 67),
+            ("0x426213", "mlil", "StackVariableSourceType", 2003, 4),
+            ("0x4263ae", "mlil", "StackVariableSourceType", 2414, 4),
+            ("0x426235", "mlil_ssa", "StackVariableSourceType", 2037, 4),
+        ),
+        ("RegisterVariableSourceType", 1997, 67),
+        "face_pass",
+        "int32_t",
+    ),
+    (
+        (("0x42621d", "mlil", "StackVariableSourceType", 2013, 8),),
+        ("StackVariableSourceType", 2013, 8),
+        "u0",
+        "float",
+    ),
+    (
+        (("0x42622b", "mlil", "StackVariableSourceType", 2027, 16),),
+        ("StackVariableSourceType", 2027, 16),
+        "u1",
+        "float",
+    ),
+)
+
+# Each branch-local face record reconstructs width + 1 in physical registers.
+# Preserve the EAX, ECX, and EDX lifetimes independently; merging them would
+# falsely make the face-pass or authored width owners change type mid-loop.
+P_FACE_REGISTER_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x42625f", "mlil", "RegisterVariableSourceType", 2079, 66),
+            ("0x426263", "mlil", "RegisterVariableSourceType", 2083, 66),
+            ("0x426323", "mlil", "RegisterVariableSourceType", 2275, 66),
+            ("0x426327", "mlil", "RegisterVariableSourceType", 2279, 66),
+        ),
+        ("RegisterVariableSourceType", 2079, 66),
+        "face_width_plus_one_eax",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42626e", "mlil", "RegisterVariableSourceType", 2094, 67),
+            ("0x426272", "mlil", "RegisterVariableSourceType", 2098, 67),
+            ("0x426282", "mlil", "RegisterVariableSourceType", 2114, 67),
+            ("0x426286", "mlil", "RegisterVariableSourceType", 2118, 67),
+            ("0x426293", "mlil", "RegisterVariableSourceType", 2131, 67),
+            ("0x426297", "mlil", "RegisterVariableSourceType", 2135, 67),
+            ("0x426312", "mlil", "RegisterVariableSourceType", 2258, 67),
+            ("0x426316", "mlil", "RegisterVariableSourceType", 2262, 67),
+            ("0x426332", "mlil", "RegisterVariableSourceType", 2290, 67),
+            ("0x426339", "mlil", "RegisterVariableSourceType", 2297, 67),
+        ),
+        ("RegisterVariableSourceType", 2094, 67),
+        "face_width_plus_one_ecx",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x426344", "mlil", "RegisterVariableSourceType", 2308, 68),
+            ("0x426348", "mlil", "RegisterVariableSourceType", 2312, 68),
+        ),
+        ("RegisterVariableSourceType", 2308, 68),
+        "face_width_plus_one_edx",
+        "int32_t",
+    ),
+)
+
+SLALOMDOUBLE_P_SPLIT_LIFETIME_GROUPS = (
+    (
+        "initialize_slalomdouble_path_template_pair",
+        SLALOMDOUBLE_CONTROL_STACK_LIFETIME_SPLITS
+        + SLALOMDOUBLE_MESH_STACK_LIFETIME_SPLITS
+        + SLALOMDOUBLE_FACE_REGISTER_LIFETIME_SPLITS,
+    ),
+    (
+        "initialize_p_path_template_pair",
+        P_CONTROL_LIFETIME_SPLITS
+        + P_MESH_LIFETIME_SPLITS
+        + P_FACE_REGISTER_LIFETIME_SPLITS,
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -405,17 +630,14 @@ def main() -> int:
             target=args.target,
             updates=tuple(
                 (
-                    "initialize_slalomdouble_path_template_pair",
+                    function_name,
                     definitions,
                     target_var,
                     variable_name,
                     variable_type,
                 )
-                for definitions, target_var, variable_name, variable_type in (
-                    SLALOMDOUBLE_CONTROL_STACK_LIFETIME_SPLITS
-                    + SLALOMDOUBLE_MESH_STACK_LIFETIME_SPLITS
-                    + SLALOMDOUBLE_FACE_REGISTER_LIFETIME_SPLITS
-                )
+                for function_name, groups in SLALOMDOUBLE_P_SPLIT_LIFETIME_GROUPS
+                for definitions, target_var, variable_name, variable_type in groups
             ),
         ),
     ]

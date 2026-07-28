@@ -2,115 +2,117 @@
 /* function: initialize_p_path_template_pair @ 0x425a40 */
 /* selector: initialize_p_path_template_pair */
 
-int32_t __thiscall initialize_p_path_template_pair(
-        PathTemplate *self,
-        int32_t arg2,
-        uint32_t arg3,
-        float arg4,
-        float arg5,
-        int32_t arg6,
+// Builds the P attachment path-template pair; iOS Path.o names this `cRPath::BuildP(int, float, int, float, float, int, char*, char*)`.
+void __thiscall initialize_p_path_template_pair(
+        Path *self,
+        int32_t variant,
+        float scale_arg,
+        int32_t width_cells_,
+        float start_x,
+        float end_x,
+        int32_t curve_segments,
         char *texture_a,
-        char *texture_b)
+        char *texture_b,
+        char *cap_texture)
 {
-  signed int v9; // ebx
-  double v10; // st7
+  signed int v11; // ebx
+  double v12; // st7
   PathTemplateSample *primary_samples; // eax
-  int v12; // edi
-  double v13; // st7
-  int v14; // ebp
-  int v15; // edi
-  double v16; // st7
-  Vec4 *p_basis_up; // edx
-  PathTemplateSample *v18; // ecx
+  int v14; // edi
+  double v15; // st7
+  int32_t v16; // ebp
+  int v17; // edi
+  double v18; // st7
+  Vec3 *p_basis_up; // edx
+  PathTemplateSample *v20; // ecx
   float *p_x; // eax
-  double v20; // st7
-  Vec4 *v21; // eax
+  double v22; // st7
+  Vec3 *v23; // eax
   PathTemplateSample *secondary_samples; // edx
-  float *v23; // eax
-  double v24; // st7
-  signed int v25; // ebp
-  int v26; // edi
-  float *v27; // eax
-  double v28; // st7
-  double v29; // st7
-  PathTemplateSample *v30; // ecx
-  float *v31; // eax
-  double v32; // st7
+  float *v25; // eax
+  double v26; // st7
+  signed int v27; // ebp
+  int v28; // edi
+  PathTemplateSample *v29; // eax
+  double v30; // st7
+  double v31; // st7
+  PathTemplateSample *v32; // ecx
+  float *v33; // eax
+  double v34; // st7
   Vec3 *p_delta_dir_to_next; // edx
-  Vec3 *v34; // ecx
-  PathTemplateStripMesh *strip_mesh; // eax
-  signed int v36; // edx
+  Vec3 *v36; // ecx
+  Object *object; // eax
+  signed int v38; // edx
   Vec3 *vertices; // ebp
   signed int width_cells; // ecx
-  signed int v39; // edi
-  double v40; // st7
-  float *v41; // eax
-  float *v42; // eax
-  float v43; // ecx
-  double v44; // st7
-  int v45; // edi
-  int32_t v46; // ecx
-  ObjectFaceQuad *v47; // ebp
-  float v49; // [esp+0h] [ebp-54h]
+  signed int v41; // edi
+  double v42; // st7
+  float *v43; // eax
+  float *v44; // eax
+  float v45; // ecx
+  double v46; // st7
+  int v47; // edi
+  int32_t v48; // ecx
+  ObjectFaceQuad *v49; // ebp
   float v50; // [esp+0h] [ebp-54h]
-  signed int v51; // [esp+14h] [ebp-40h]
-  float v52; // [esp+18h] [ebp-3Ch]
-  float v53; // [esp+1Ch] [ebp-38h]
-  float v54; // [esp+24h] [ebp-30h]
+  float v51; // [esp+0h] [ebp-54h]
+  signed int v52; // [esp+14h] [ebp-40h]
+  float v53; // [esp+18h] [ebp-3Ch]
+  float v54; // [esp+1Ch] [ebp-38h]
   float v55; // [esp+24h] [ebp-30h]
-  float v56; // [esp+28h] [ebp-2Ch]
+  float v56; // [esp+24h] [ebp-30h]
   float v57; // [esp+28h] [ebp-2Ch]
-  float v58; // [esp+2Ch] [ebp-28h]
-  float v59; // [esp+30h] [ebp-24h]
+  float v58; // [esp+28h] [ebp-2Ch]
+  float v59; // [esp+2Ch] [ebp-28h]
   float v60; // [esp+30h] [ebp-24h]
-  float v61; // [esp+34h] [ebp-20h]
+  float v61; // [esp+30h] [ebp-24h]
   float v62; // [esp+34h] [ebp-20h]
-  float v63; // [esp+38h] [ebp-1Ch]
+  float v63; // [esp+34h] [ebp-20h]
   float v64; // [esp+38h] [ebp-1Ch]
-  float v65; // [esp+3Ch] [ebp-18h]
+  float v65; // [esp+38h] [ebp-1Ch]
   float v66; // [esp+3Ch] [ebp-18h]
   float v67; // [esp+3Ch] [ebp-18h]
-  float v68; // [esp+40h] [ebp-14h]
+  float v68; // [esp+3Ch] [ebp-18h]
   float v69; // [esp+40h] [ebp-14h]
   float v70; // [esp+40h] [ebp-14h]
-  float v71; // [esp+44h] [ebp-10h]
+  float v71; // [esp+40h] [ebp-14h]
   float v72; // [esp+44h] [ebp-10h]
   float v73; // [esp+44h] [ebp-10h]
-  float v74; // [esp+50h] [ebp-4h]
-  int32_t arg2a; // [esp+58h] [ebp+4h]
-  float arg3a; // [esp+5Ch] [ebp+8h]
+  float v74; // [esp+44h] [ebp-10h]
+  float v75; // [esp+50h] [ebp-4h]
+  int32_t arg2; // [esp+58h] [ebp+4h]
+  float arg3; // [esp+5Ch] [ebp+8h]
+  signed int arg3a; // [esp+5Ch] [ebp+8h]
   signed int arg3b; // [esp+5Ch] [ebp+8h]
-  signed int arg3c; // [esp+5Ch] [ebp+8h]
-  float arg3d; // [esp+5Ch] [ebp+8h]
-  ObjectFaceQuad *arg4a; // [esp+60h] [ebp+Ch]
-  float arg5e; // [esp+64h] [ebp+10h]
-  int arg5a; // [esp+64h] [ebp+10h]
-  float arg5b; // [esp+64h] [ebp+10h]
-  float arg5f; // [esp+64h] [ebp+10h]
-  Vec3 *arg5c; // [esp+64h] [ebp+10h]
+  float arg3c; // [esp+5Ch] [ebp+8h]
+  ObjectFaceQuad *arg4; // [esp+60h] [ebp+Ch]
   float arg5d; // [esp+64h] [ebp+10h]
-  float arg6b; // [esp+68h] [ebp+14h]
+  int arg5; // [esp+64h] [ebp+10h]
+  float arg5a; // [esp+64h] [ebp+10h]
+  float arg5e; // [esp+64h] [ebp+10h]
+  Vec3 *arg5b; // [esp+64h] [ebp+10h]
+  float arg5c; // [esp+64h] [ebp+10h]
   float arg6a; // [esp+68h] [ebp+14h]
+  float arg6; // [esp+68h] [ebp+14h]
   char *texture_aa; // [esp+6Ch] [ebp+18h]
   float texture_ab; // [esp+6Ch] [ebp+18h]
-  char *texture_path; // [esp+74h] [ebp+20h]
 
-  self->kind = arg2 + 33;
-  v9 = 0;
-  self->segment_count = (uint32_t)(texture_a + 2);
+  self->kind = variant + 33;
+  v11 = 0;
+  self->segment_count = curve_segments + 2;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
-  *(float *)&self->width_cells = arg4;
+  self->width_cells = width_cells_;
   self->width_or_scale = 1.0;
-  self->segment_count_f = (float)(int)(texture_a + 2);
-  v10 = (*(float *)&arg6 - arg5) * 0.5;
-  if ( v10 < 0.0 )
-    v10 = -v10;
-  arg3a = v10;
+  self->segment_count_f = (float)(curve_segments + 2);
+  v12 = (end_x - start_x) * 0.5;
+  if ( v12 < 0.0 )
+    v12 = -v12;
+  arg3 = v12;
   get_path_nodes(self);
   primary_samples = self->primary_samples;
-  self->special_runtime_flag_9c = 0;
-  primary_samples->center_x = arg5;
+  self->has_entry_mesh_transition = 0;
+  primary_samples->center_x = start_x;
   self->primary_samples->rotation_scalar_98 = 0.0;
   self->primary_samples->rotation_scalar_94 = 0.0;
   self->primary_samples->special_scalar = 0.0;
@@ -123,275 +125,274 @@ int32_t __thiscall initialize_p_path_template_pair(
   self->secondary_samples->transform.position.x = self->primary_samples->center_x;
   self->secondary_samples->transform.position.y = 0.49000001;
   self->secondary_samples->transform.position.z = 0.0;
-  v12 = (int)(texture_a + 1);
-  self->primary_samples[v12].center_x = *(float *)&arg6;
-  self->primary_samples[v12].rotation_scalar_98 = 0.0;
-  self->primary_samples[v12].rotation_scalar_94 = 0.0;
-  self->primary_samples[v12].special_scalar = 0.0;
-  self->primary_samples[v12].lateral_scale = 1.0;
-  set_matrix_identity(&self->primary_samples[v12].transform);
-  arg5e = (float)(int)(texture_a + 1);
-  self->primary_samples[v12].transform.position.x = self->primary_samples[v12].center_x;
-  self->primary_samples[v12].transform.position.y = 0.0;
-  self->primary_samples[v12].transform.position.z = arg5e;
-  set_matrix_identity(&self->secondary_samples[v12].transform);
-  v13 = arg5e;
-  v14 = 0;
-  self->secondary_samples[v12].transform.position.x = self->primary_samples[v12].center_x;
-  arg5a = 0;
-  self->secondary_samples[v12].transform.position.y = 0.49000001;
-  self->secondary_samples[v12].transform.position.z = v13;
-  if ( (int)texture_a > 0 )
+  v14 = curve_segments + 1;
+  self->primary_samples[v14].center_x = end_x;
+  self->primary_samples[v14].rotation_scalar_98 = 0.0;
+  self->primary_samples[v14].rotation_scalar_94 = 0.0;
+  self->primary_samples[v14].special_scalar = 0.0;
+  self->primary_samples[v14].lateral_scale = 1.0;
+  set_matrix_identity(&self->primary_samples[v14].transform);
+  arg5d = (float)(curve_segments + 1);
+  self->primary_samples[v14].transform.position.x = self->primary_samples[v14].center_x;
+  self->primary_samples[v14].transform.position.y = 0.0;
+  self->primary_samples[v14].transform.position.z = arg5d;
+  set_matrix_identity(&self->secondary_samples[v14].transform);
+  v15 = arg5d;
+  v16 = 0;
+  self->secondary_samples[v14].transform.position.x = self->primary_samples[v14].center_x;
+  arg5 = 0;
+  self->secondary_samples[v14].transform.position.y = 0.49000001;
+  self->secondary_samples[v14].transform.position.z = v15;
+  if ( curve_segments > 0 )
   {
-    v15 = 1;
+    v17 = 1;
     while ( 1 )
     {
-      arg6b = (float)(int)texture_a;
-      arg5b = (double)arg5a * 3.1415927 / arg6b;
+      arg6a = (float)curve_segments;
+      arg5a = (double)arg5 * 3.1415927 / arg6a;
       if ( self->kind == 33 )
         break;
       if ( self->kind == 34 )
       {
-        self->primary_samples[v15].center_x = 2.0 - cosine(arg5b) * arg3a - arg3a + 0.5;
+        self->primary_samples[v17].center_x = 2.0 - cosine(arg5a) * arg3 - arg3 + 0.5;
       }
       else if ( self->kind == 35 )
       {
-        v49 = arg5b + 1.5707964;
-        v16 = (sine(v49) + 1.0) * arg3a;
+        v50 = arg5a + 1.5707964;
+        v18 = (sine(v50) + 1.0) * arg3;
 LABEL_11:
-        self->primary_samples[v15].center_x = v16 + 0.5;
+        self->primary_samples[v17].center_x = v18 + 0.5;
       }
-      self->primary_samples[v15].rotation_scalar_98 = 0.0;
-      self->primary_samples[v15].rotation_scalar_94 = 0.0;
-      self->primary_samples[v15].special_scalar = 0.0;
-      self->primary_samples[v15].lateral_scale = 1.0;
-      set_matrix_identity(&self->primary_samples[v15].transform);
-      ++v14;
-      self->primary_samples[v15].transform.position.x = self->primary_samples[v15].center_x;
-      arg5f = (float)v14;
-      self->primary_samples[v15].transform.position.y = 0.0;
-      self->primary_samples[v15].transform.position.z = arg5f;
-      set_matrix_identity(&self->secondary_samples[v15].transform);
-      self->secondary_samples[v15].transform.position.x = self->primary_samples[v15].center_x;
-      self->secondary_samples[v15].transform.position.y = self->primary_samples[v15].transform.position.y + 0.49000001;
-      self->secondary_samples[v15].transform.position.z = arg5f;
-      if ( v15 <= 1 )
+      self->primary_samples[v17].rotation_scalar_98 = 0.0;
+      self->primary_samples[v17].rotation_scalar_94 = 0.0;
+      self->primary_samples[v17].special_scalar = 0.0;
+      self->primary_samples[v17].lateral_scale = 1.0;
+      set_matrix_identity(&self->primary_samples[v17].transform);
+      ++v16;
+      self->primary_samples[v17].transform.position.x = self->primary_samples[v17].center_x;
+      arg5e = (float)v16;
+      self->primary_samples[v17].transform.position.y = 0.0;
+      self->primary_samples[v17].transform.position.z = arg5e;
+      set_matrix_identity(&self->secondary_samples[v17].transform);
+      self->secondary_samples[v17].transform.position.x = self->primary_samples[v17].center_x;
+      self->secondary_samples[v17].transform.position.y = self->primary_samples[v17].transform.position.y + 0.49000001;
+      self->secondary_samples[v17].transform.position.z = arg5e;
+      if ( v17 <= 1 )
       {
-        set_matrix_rotation_identity(&self->primary_samples[v15 - 1].transform);
-        set_matrix_rotation_identity(&self->secondary_samples[v15 - 1].transform);
+        set_matrix_rotation_identity(&self->primary_samples[v17 - 1].transform);
+        set_matrix_rotation_identity(&self->secondary_samples[v17 - 1].transform);
       }
       else
       {
-        p_basis_up = &self->primary_samples[v15 - 1].transform.basis_up;
+        p_basis_up = &self->primary_samples[v17 - 1].transform.basis_up;
         p_basis_up->x = 0.0;
         p_basis_up->y = 1.0;
         p_basis_up->z = 0.0;
-        v18 = self->primary_samples;
-        p_x = &v18[v15 - 1].transform.basis_forward.x;
-        v54 = v18[v15].transform.position.x - v18[v15 - 1].transform.position.x;
-        v56 = p_x[47] - p_x[5];
-        v20 = p_x[48] - p_x[6];
-        *p_x = v54;
-        p_x[1] = v56;
-        v58 = v20;
-        p_x[2] = v58;
-        normalize_vector((Vec3 *)&self->primary_samples[v15 - 1].transform.basis_forward);
+        v20 = self->primary_samples;
+        p_x = &v20[v17 - 1].transform.basis_forward.x;
+        v55 = v20[v17].transform.position.x - v20[v17 - 1].transform.position.x;
+        v57 = p_x[47] - p_x[5];
+        v22 = p_x[48] - p_x[6];
+        *p_x = v55;
+        p_x[1] = v57;
+        v59 = v22;
+        p_x[2] = v59;
+        normalize_vector(&self->primary_samples[v17 - 1].transform.basis_forward);
         cross_vectors(
-          (Vec3 *)&self->primary_samples[v15 - 1],
-          (Vec3 *)&self->primary_samples[v15 - 1].transform.basis_up,
-          (Vec3 *)&self->primary_samples[v15 - 1].transform.basis_forward);
-        v21 = &self->secondary_samples[v15 - 1].transform.basis_up;
-        v21->x = 0.0;
-        v21->y = 1.0;
-        v21->z = 0.0;
+          &self->primary_samples[v17 - 1].transform.basis_right,
+          &self->primary_samples[v17 - 1].transform.basis_up,
+          &self->primary_samples[v17 - 1].transform.basis_forward);
+        v23 = &self->secondary_samples[v17 - 1].transform.basis_up;
+        v23->x = 0.0;
+        v23->y = 1.0;
+        v23->z = 0.0;
         secondary_samples = self->secondary_samples;
-        v23 = &secondary_samples[v15 - 1].transform.basis_forward.x;
-        v65 = secondary_samples[v15].transform.position.x - secondary_samples[v15 - 1].transform.position.x;
-        v68 = v23[47] - v23[5];
-        v24 = v23[48] - v23[6];
-        *v23 = v65;
-        v23[1] = v68;
-        v71 = v24;
-        v23[2] = v71;
-        normalize_vector((Vec3 *)&self->secondary_samples[v15 - 1].transform.basis_forward);
+        v25 = &secondary_samples[v17 - 1].transform.basis_forward.x;
+        v66 = secondary_samples[v17].transform.position.x - secondary_samples[v17 - 1].transform.position.x;
+        v69 = v25[47] - v25[5];
+        v26 = v25[48] - v25[6];
+        *v25 = v66;
+        v25[1] = v69;
+        v72 = v26;
+        v25[2] = v72;
+        normalize_vector(&self->secondary_samples[v17 - 1].transform.basis_forward);
         cross_vectors(
-          (Vec3 *)&self->secondary_samples[v15 - 1],
-          (Vec3 *)&self->secondary_samples[v15 - 1].transform.basis_up,
-          (Vec3 *)&self->secondary_samples[v15 - 1].transform.basis_forward);
+          &self->secondary_samples[v17 - 1].transform.basis_right,
+          &self->secondary_samples[v17 - 1].transform.basis_up,
+          &self->secondary_samples[v17 - 1].transform.basis_forward);
       }
-      ++v15;
-      arg5a = v14;
-      if ( v14 >= (int)texture_a )
+      ++v17;
+      arg5 = v16;
+      if ( v16 >= curve_segments )
         goto LABEL_16;
     }
-    v50 = arg5b + 1.5707964;
-    v16 = sine(v50) * arg3a - arg3a;
+    v51 = arg5a + 1.5707964;
+    v18 = sine(v51) * arg3 - arg3;
     goto LABEL_11;
   }
 LABEL_16:
-  v25 = 0;
+  v27 = 0;
   if ( (signed int)(self->segment_count - 1) > 0 )
   {
-    v26 = 0;
+    v28 = 0;
     do
     {
-      v27 = &self->primary_samples[v26].transform.basis_right.x;
-      v28 = v27[54] - v27[12];
-      v27 += 32;
-      v66 = v28;
-      v69 = v27[23] - *(v27 - 19);
-      v29 = v27[24] - *(v27 - 18);
-      *v27 = v66;
-      v27[1] = v69;
-      v72 = v29;
-      v27[2] = v72;
-      self->primary_samples[v26].delta_length = normalize_vector(&self->primary_samples[v26].delta_dir_to_next);
-      v30 = self->secondary_samples;
-      v31 = &v30[v26].delta_dir_to_next.x;
-      v59 = v30[v26 + 1].transform.position.x - v30[v26].transform.position.x;
-      v61 = v30[v26 + 1].transform.position.y - v30[v26].transform.position.y;
-      v32 = v30[v26 + 1].transform.position.z - v30[v26].transform.position.z;
-      *v31 = v59;
-      v31[1] = v61;
-      v63 = v32;
-      v31[2] = v63;
-      ++v25;
-      self->secondary_samples[v26].delta_length = normalize_vector(&self->secondary_samples[v26].delta_dir_to_next);
-      ++v26;
+      v29 = &self->primary_samples[v28];
+      v30 = v29[1].transform.position.x - v29->transform.position.x;
+      v29 = (PathTemplateSample *)((char *)v29 + 128);
+      v67 = v30;
+      v70 = v29->inverse_matrix.basis_up_w - v29[-1].inverse_matrix.basis_up_w;
+      v31 = v29->inverse_matrix.basis_forward.x - v29[-1].inverse_matrix.basis_forward.x;
+      v29->transform.basis_right.x = v67;
+      v29->transform.basis_right.y = v70;
+      v73 = v31;
+      v29->transform.basis_right.z = v73;
+      self->primary_samples[v28].delta_length = normalize_vector(&self->primary_samples[v28].delta_dir_to_next);
+      v32 = self->secondary_samples;
+      v33 = &v32[v28].delta_dir_to_next.x;
+      v60 = v32[v28 + 1].transform.position.x - v32[v28].transform.position.x;
+      v62 = v32[v28 + 1].transform.position.y - v32[v28].transform.position.y;
+      v34 = v32[v28 + 1].transform.position.z - v32[v28].transform.position.z;
+      *v33 = v60;
+      v33[1] = v62;
+      v64 = v34;
+      v33[2] = v64;
+      ++v27;
+      self->secondary_samples[v28].delta_length = normalize_vector(&self->secondary_samples[v28].delta_dir_to_next);
+      ++v28;
     }
-    while ( v25 < (signed int)(self->segment_count - 1) );
+    while ( v27 < (signed int)(self->segment_count - 1) );
   }
   p_delta_dir_to_next = &self->primary_samples[self->segment_count - 1].delta_dir_to_next;
   p_delta_dir_to_next->x = 0.0;
   p_delta_dir_to_next->y = 0.0;
   p_delta_dir_to_next->z = 1.0;
   self->primary_samples[self->segment_count - 1].delta_length = 1.0;
-  v34 = &self->secondary_samples[self->segment_count - 1].delta_dir_to_next;
-  v34->x = 0.0;
-  v34->y = 0.0;
-  v34->z = 1.0;
+  v36 = &self->secondary_samples[self->segment_count - 1].delta_dir_to_next;
+  v36->x = 0.0;
+  v36->y = 0.0;
+  v36->z = 1.0;
   self->secondary_samples[self->segment_count - 1].delta_length = 1.0;
-  request_object_vertices(self->strip_mesh, (self->segment_count + 1) * (self->width_cells + 1));
-  request_object_facequads(self->strip_mesh, 2 * self->segment_count * self->width_cells);
-  strip_mesh = self->strip_mesh;
-  v36 = 0;
-  vertices = strip_mesh->vertices;
-  arg5c = vertices;
-  arg4a = strip_mesh->facequads;
+  request_object_vertices(self->bod.object, (self->segment_count + 1) * (self->width_cells + 1));
+  request_object_facequads(self->bod.object, 2 * self->segment_count * self->width_cells);
+  object = self->bod.object;
+  v38 = 0;
+  vertices = object->vertices;
+  arg5b = vertices;
+  arg4 = object->facequads;
   if ( (self->segment_count & 0x80000000) == 0 )
   {
     do
     {
       width_cells = self->width_cells;
-      v39 = 0;
-      arg3b = 0;
-      for ( texture_aa = (char *)width_cells; v39 <= width_cells; arg3b = v39 )
+      v41 = 0;
+      arg3a = 0;
+      for ( texture_aa = (char *)width_cells; v41 <= width_cells; arg3a = v41 )
       {
-        v40 = (double)arg3b - (double)(int)texture_aa * 0.5;
-        v41 = (float *)((char *)&self->primary_samples->transform.basis_right.x + v9);
-        if ( v36 == self->segment_count )
+        v42 = (double)arg3a - (double)(int)texture_aa * 0.5;
+        v43 = (float *)((char *)&self->primary_samples->transform.basis_right.x + v11);
+        if ( v38 == self->segment_count )
         {
-          vertices = arg5c;
-          v52 = v40 * *(v41 - 42);
-          v53 = v40 * *(v41 - 41);
-          v44 = v40 * *(v41 - 40);
-          v74 = *(v41 - 28) + 1.0;
-          v60 = *(v41 - 30) + v52;
-          v62 = *(v41 - 29) + v53;
-          v42 = &arg5c[v39 + v36 * (width_cells + 1)].x;
-          *v42 = v60;
-          v64 = v74 + v44;
-          v42[1] = v62;
-          v43 = v64;
+          vertices = arg5b;
+          v53 = v42 * *(v43 - 42);
+          v54 = v42 * *(v43 - 41);
+          v46 = v42 * *(v43 - 40);
+          v75 = *(v43 - 28) + 1.0;
+          v61 = *(v43 - 30) + v53;
+          v63 = *(v43 - 29) + v54;
+          v44 = &arg5b[v41 + v38 * (width_cells + 1)].x;
+          *v44 = v61;
+          v65 = v75 + v46;
+          v44[1] = v63;
+          v45 = v65;
         }
         else
         {
-          v55 = v40 * *v41;
-          v57 = v40 * v41[1];
-          v67 = v55 + v41[12];
-          v70 = v57 + v41[13];
-          v73 = v40 * v41[2] + v41[14];
-          v42 = &vertices[v39 + v36 * (width_cells + 1)].x;
-          *v42 = v67;
-          v42[1] = v70;
-          v43 = v73;
+          v56 = v42 * *v43;
+          v58 = v42 * v43[1];
+          v68 = v56 + v43[12];
+          v71 = v58 + v43[13];
+          v74 = v42 * v43[2] + v43[14];
+          v44 = &vertices[v41 + v38 * (width_cells + 1)].x;
+          *v44 = v68;
+          v44[1] = v71;
+          v45 = v74;
         }
-        v42[2] = v43;
+        v44[2] = v45;
         width_cells = self->width_cells;
-        ++v39;
+        ++v41;
         texture_aa = (char *)width_cells;
       }
-      ++v36;
-      v9 += 168;
+      ++v38;
+      v11 += 168;
     }
-    while ( v36 <= (signed int)self->segment_count );
-    v9 = 0;
+    while ( v38 <= (signed int)self->segment_count );
+    v11 = 0;
   }
   if ( (int)self->segment_count > 0 )
   {
     do
     {
-      v45 = 0;
-      arg3c = 0;
+      v47 = 0;
+      arg3b = 0;
       if ( (int)self->width_cells > 0 )
       {
-        texture_ab = (double)(v9 % 8) * 0.125;
-        arg6a = (double)(v9 % 8 + 1) * 0.125;
+        texture_ab = (double)(v11 % 8) * 0.125;
+        arg6 = (double)(v11 % 8 + 1) * 0.125;
         do
         {
-          v46 = 0;
-          v51 = v45 + 1;
-          arg2a = 0;
-          arg3d = (double)arg3c * 0.125;
-          arg5d = (double)(v45 + 1) * 0.125;
+          v48 = 0;
+          v52 = v47 + 1;
+          arg2 = 0;
+          arg3c = (double)arg3b * 0.125;
+          arg5c = (double)(v47 + 1) * 0.125;
           while ( 1 )
           {
-            v47 = &arg4a[2 * v45 + 2 * v9 * self->width_cells + v46];
-            v47->flags = 0;
-            if ( v46 )
+            v49 = &arg4[2 * v47 + 2 * v11 * self->width_cells + v48];
+            v49->header_word = 0;
+            if ( v48 != 0 )
             {
-              v47->vertex_index_a = v9 * (LOWORD(self->width_cells) + 1) + v45 + 1;
-              v47->vertex_index_b = v45 + v9 * (LOWORD(self->width_cells) + 1);
-              v47->vertex_index_c = v45 + (v9 + 1) * (LOWORD(self->width_cells) + 1);
-              v47->vertex_index_d = (v9 + 1) * (LOWORD(self->width_cells) + 1) + v45 + 1;
-              v47->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
-              v47->u0 = arg5d;
-              v47->v0 = texture_ab;
-              v47->u1 = arg3d;
-              v47->v1 = texture_ab;
-              v47->u2 = arg3d;
-              v47->v2 = arg6a;
-              v47->u3 = arg5d;
+              v49->vertex_0 = v11 * (LOWORD(self->width_cells) + 1) + v47 + 1;
+              v49->vertex_1 = v47 + v11 * (LOWORD(self->width_cells) + 1);
+              v49->vertex_2 = v47 + (v11 + 1) * (LOWORD(self->width_cells) + 1);
+              v49->vertex_3 = (v11 + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
+              v49->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_b, nullptr, 0);
+              v49->uv[0].u = arg5c;
+              v49->uv[0].v = texture_ab;
+              v49->uv[1].u = arg3c;
+              v49->uv[1].v = texture_ab;
+              v49->uv[2].u = arg3c;
+              v49->uv[2].v = arg6;
+              v49->uv[3].u = arg5c;
             }
             else
             {
-              v47->vertex_index_a = v45 + v9 * (LOWORD(self->width_cells) + 1);
-              v47->vertex_index_b = v9 * (LOWORD(self->width_cells) + 1) + v45 + 1;
-              v47->vertex_index_c = (v9 + 1) * (LOWORD(self->width_cells) + 1) + v45 + 1;
-              v47->vertex_index_d = v45 + (v9 + 1) * (LOWORD(self->width_cells) + 1);
-              v47->texture_ref = get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
-              v47->u0 = arg3d;
-              v47->v0 = texture_ab;
-              v47->u1 = arg5d;
-              v47->v1 = texture_ab;
-              v47->u2 = arg5d;
-              v47->v2 = arg6a;
-              v47->u3 = arg3d;
+              v49->vertex_0 = v47 + v11 * (LOWORD(self->width_cells) + 1);
+              v49->vertex_1 = v11 * (LOWORD(self->width_cells) + 1) + v47 + 1;
+              v49->vertex_2 = (v11 + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
+              v49->vertex_3 = v47 + (v11 + 1) * (LOWORD(self->width_cells) + 1);
+              v49->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_a, nullptr, 0);
+              v49->uv[0].u = arg3c;
+              v49->uv[0].v = texture_ab;
+              v49->uv[1].u = arg5c;
+              v49->uv[1].v = texture_ab;
+              v49->uv[2].u = arg5c;
+              v49->uv[2].v = arg6;
+              v49->uv[3].u = arg3c;
             }
-            v47->v3 = arg6a;
-            if ( ++arg2a >= 2 )
+            v49->uv[3].v = arg6;
+            if ( ++arg2 >= 2 )
               break;
-            v46 = arg2a;
+            v48 = arg2;
           }
-          ++v45;
-          arg3c = v51;
+          ++v47;
+          arg3b = v52;
         }
-        while ( v51 < (signed int)self->width_cells );
+        while ( v52 < (signed int)self->width_cells );
       }
-      ++v9;
+      ++v11;
     }
-    while ( v9 < (signed int)self->segment_count );
+    while ( v11 < (signed int)self->segment_count );
   }
-  return calc_path_length_z(self);
+  calc_path_length_z(self);
 }
-
