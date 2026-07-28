@@ -20702,6 +20702,21 @@ def test_sweep_snake_path_replay_preserves_clean_owner_lifetimes() -> None:
         repo_root
         / "tools/match/scratches/initialize_snake_path_template_pair/scratch.cpp"
     ).read_text(encoding="utf-8")
+    health = json.loads(
+        (
+            repo_root / "analysis/decompile/health_checks.json"
+        ).read_text(encoding="utf-8")
+    )
+    sweep_health = next(
+        check
+        for check in health["checks"]
+        if check["name"] == "bn_sweep_path_full_owner_abi"
+    )
+    snake_health = next(
+        check
+        for check in health["checks"]
+        if check["name"] == "bn_snake_path_full_owner_abi"
+    )
 
     for type_name, width in (
         ("Vec3", "0x0C"),
@@ -20741,16 +20756,109 @@ def test_sweep_snake_path_replay_preserves_clean_owner_lifetimes() -> None:
         )
 
     assert "SWEEP_SNAKE_PATH_USER_VAR_UPDATES" in replay
+    assert "SWEEP_SNAKE_CONTROL_USER_VAR_UPDATES" in replay
+    assert "SWEEP_CONTROL_STACK_LIFETIME_SPLITS" in replay
+    assert "SNAKE_CONTROL_STACK_LIFETIME_SPLITS" in replay
+    assert "SWEEP_MESH_STACK_LIFETIME_SPLITS" in replay
+    assert "SNAKE_MESH_STACK_LIFETIME_SPLITS" in replay
+    assert "SWEEP_FACE_REGISTER_LIFETIME_SPLITS" in replay
+    assert "SNAKE_FACE_REGISTER_LIFETIME_SPLITS" in replay
+    assert "apply_split_user_var_updates(" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
     assert '0x90: ("center_x", "float")' in replay
+    for name, variable_type in (
+        ("lead_sample_z", "float"),
+        ("curve_phase", "float"),
+        ("lead_sample_index", "int32_t"),
+        ("tail_sample_index", "int32_t"),
+        ("tail_sample_z", "float"),
+        ("curve_index", "int32_t"),
+        ("curve_sample_index", "int32_t"),
+        ("curve_sample_z", "float"),
+        ("mesh_facequads", "ObjectFaceQuad*"),
+        ("mesh_vertices", "Vec3*"),
+        ("mesh_column", "int32_t"),
+        ("mesh_width_cells", "int32_t"),
+        ("face_column_for_uv", "int32_t"),
+        ("v0_index", "int32_t"),
+        ("v1_index", "int32_t"),
+        ("v0", "float"),
+        ("v1", "float"),
+        ("u1_index", "int32_t"),
+        ("face_pass", "int32_t"),
+        ("u0", "float"),
+        ("u1", "float"),
+        ("face_width_plus_one_eax", "int32_t"),
+        ("face_width_plus_one_ecx", "int32_t"),
+        ("face_width_plus_one_edx", "int32_t"),
+    ):
+        assert f'        "{name}",' in replay
+        assert f'        "{variable_type}",' in replay
+    for definition in (
+        '("0x422c47", "mlil_ssa", "StackVariableSourceType", 71, 8)',
+        '("0x422d10", "mlil_ssa", "StackVariableSourceType", 272, 8)',
+        '("0x422dd6", "mlil_ssa", "StackVariableSourceType", 470, 8)',
+        '("0x423226", "mlil_ssa", "StackVariableSourceType", 1574, 8)',
+        '("0x423226", "mlil_ssa", "StackVariableSourceType", 1574, -76)',
+        '("0x42338a", "mlil_ssa", "StackVariableSourceType", 1930, 8)',
+        '("0x4233b9", "mlil_ssa", "StackVariableSourceType", 1977, -72)',
+        '("0x4234bd", "mlil", "RegisterVariableSourceType", 2237, 67)',
+        '("0x4235c7", "mlil_ssa", "StackVariableSourceType", 71, 8)',
+        '("0x423670", "mlil_ssa", "StackVariableSourceType", 240, 8)',
+        '("0x423736", "mlil_ssa", "StackVariableSourceType", 438, 8)',
+        '("0x423bae", "mlil_ssa", "StackVariableSourceType", 1582, 8)',
+        '("0x423bae", "mlil_ssa", "StackVariableSourceType", 1582, -76)',
+        '("0x423d12", "mlil_ssa", "StackVariableSourceType", 1938, 8)',
+        '("0x423d41", "mlil_ssa", "StackVariableSourceType", 1985, -72)',
+        '("0x423e45", "mlil", "RegisterVariableSourceType", 2245, 67)',
+    ):
+        assert definition in replay
+    for rejected_face_pass_phi in (
+        "0x423346",
+        "0x423552",
+        "0x42355e",
+        "0x423cce",
+        "0x423eda",
+        "0x423ee6",
+    ):
+        assert rejected_face_pass_phi not in replay
     for rejected_index in (760, 1685, 769, 1693):
         assert f"({rejected_index}, 66," not in replay
     assert "if (curve_index == 0)" in sweep_scratch
     assert "if (curve_index == 0)" in snake_scratch
     assert "if (current_index <= 3)" not in sweep_scratch
     assert "if (i <= 6)" not in snake_scratch
+    for health_check, tail_owner in (
+        (sweep_health, "int32_t tail_sample_index = 0x1b"),
+        (snake_health, "int32_t tail_sample_index = 0x18"),
+    ):
+        assert tail_owner in health_check["required_substrings"]
+        for rendered_owner in (
+            "int32_t lead_sample_index = 0",
+            "int32_t curve_index = 0",
+            "float curve_phase",
+            "struct Vec3* mesh_vertices = vertices",
+            "int32_t mesh_column = 0",
+            "int32_t mesh_width_cells = width_cells",
+            "int32_t face_column_for_uv = 0",
+            "float v0 =",
+            "float v1 =",
+            "int32_t face_pass = 0",
+            "float u0 =",
+            "float u1 =",
+            "int32_t face_width_plus_one_eax",
+            "int32_t face_width_plus_one_ecx",
+            "int32_t face_width_plus_one_edx",
+        ):
+            assert rendered_owner in health_check["required_substrings"]
+        for stale_width_alias in (
+            "width_cells_ = 0",
+            "width_cells_ += 1",
+            "width_cells_ = j",
+        ):
+            assert stale_width_alias in health_check["forbidden_substrings"]
 
 
 def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:

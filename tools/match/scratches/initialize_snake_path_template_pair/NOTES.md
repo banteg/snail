@@ -194,3 +194,25 @@ audit.
 Both mobile bodies stop after sample/delta construction and `CalcLengthZ`;
 Windows owns the cap-texture and mesh-building tail. Binary Ninja preview,
 apply, readback, and lifetime replay kept every recovered owner current.
+
+## 2026-07-28 complete control and mesh lifetime replay
+
+The paired Android and iOS bodies independently preserve the six-sample
+lead-in, three-sample lead-out, 18-sample curve induction, and phase graph.
+Exact Windows MLIL then separates those logical owners from the width argument
+and proves the Windows-only mesh-column, UV, winding-pass, and repeated
+EAX/ECX/EDX width-reload lifetimes.
+
+One batched transaction previewed, applied, read back, and snapshotted 22 split
+groups plus two bounded stack scalars for Snake, as part of the 44-group,
+four-scalar Sweep/Snake replay. An idempotent pair replay completed in about
+39 seconds. Strict paired Binary Ninja and IDA 9.4 export reports zero
+mismatches and 1,142/1,142 passing health checks. The IDA refresh is retained
+because it recovers the current `void Path*` seven-argument ABI and `Object*`
+owner in place of the stale three-argument `PathTemplate*` view, rather than
+merely changing temporary names.
+
+This is analysis-only. Focused matching remains **33.70%** (618/652 candidate
+instructions), with a five-instruction exact prefix and 40 accepted,
+0 unresolved, 0 mismatched, and 0 unaudited operands. No source edit or
+synthetic branch was introduced.
