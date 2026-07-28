@@ -162,3 +162,26 @@ kind `0x14` and both mobile siblings write their platform-specific Dip kind
 superseded pre-mobile name. The canonical label is now
 `PATH_TEMPLATE_KIND_DIP`, with guarded Binary Ninja replay and IDA header
 reimport carrying the correction without changing matcher source.
+
+## 2026-07-28 paired-mobile control ownership
+
+The exact Android
+`analysis/decompile/android/functions/00056d14-_ZN6cRPath8BuildDipEfibPcS0_.c`
+and iOS
+`analysis/decompile/ios/functions/000591b8-_ZN6cRPath8BuildDipEfibPcS0_.c`
+bodies independently preserve the portable control graph: a derived curve
+count, the far endpoint, the cosine middle, the adjacent-sample orientation
+pass, and the final delta/`CalcLengthZ` pass. Windows remains authoritative for
+the exact variable definitions, `0xa8` sample-byte cursors, six-argument ABI,
+and native-only cap-texture/strip-mesh tail.
+
+A transactional Binary Ninja replay now records 14 exact Windows owners: five
+direct variables plus nine merged definition clusters for the curve count and
+radius, endpoint, curve phase/index/offset, and delta index/offset. The preview
+changed all nine clusters, rolled them back cleanly, and produced no
+`__offset` artifacts. Live readback confirms every owner is user-defined with
+the expected type; an idempotency replay found all operations already current.
+
+This is analysis-only. The scratch remains at the honest **48.89%** focused
+match, **646/655** candidate instructions, a 20-instruction exact prefix, and
+37 accepted masked operands. No source expression or matcher exception changed.

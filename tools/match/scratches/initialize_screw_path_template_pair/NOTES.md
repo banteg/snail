@@ -118,3 +118,29 @@ accepted and 2 unaudited operands with no unresolved or mismatched operands.
 Replacing the native `sample_index <= 3` spelling with the mobile logical
 `i == 0` guard was measured and rejected: it regressed matching to 46.92% and
 645 candidate instructions. Only the proved boolean ABI is retained.
+
+## 2026-07-28 paired-mobile control ownership
+
+The exact Android
+`analysis/decompile/android/functions/0005681c-_ZN6cRPath10BuildScrewEiibPcS0_.c`
+and iOS
+`analysis/decompile/ios/functions/000586dc-_ZN6cRPath10BuildScrewEiibPcS0_.c`
+bodies independently preserve the three-sample entrance, five-sample
+departure, helical middle, adjacent-sample orientation, and final
+delta/`CalcLengthZ` passes. Windows remains authoritative for exact definition
+identities, `0xa8` byte cursors, the six-argument ABI, and its native-only
+cap-texture/strip-mesh tail.
+
+A transactional Binary Ninja replay now records 15 exact Windows owners: five
+direct variables plus ten merged definition clusters covering the total count,
+entrance and departure indices/offsets, departure Z, helical curve
+index/offset, and delta index/offset. The preview changed all ten clusters,
+rolled them back cleanly, and produced no `__offset` artifacts. Live readback
+confirms exact types and user-defined provenance, while a second replay found
+every operation already current.
+
+The strict export also corrected IDA's stale five-argument `PathTemplate*`
+rendering to the recovered `Path*`, boolean mode, and cap-texture ABI. No
+matcher source changed: focused Windows matching remains honestly **48.53%**,
+**646/685** candidate instructions, a six-instruction exact prefix, 38 accepted
+and two unaudited masked operands, with no unresolved or mismatched operands.

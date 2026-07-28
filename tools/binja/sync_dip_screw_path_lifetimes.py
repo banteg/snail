@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
+    apply_split_user_var_updates,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -88,12 +88,289 @@ DIP_SCREW_PATH_USER_VAR_UPDATES = tuple(
     for index, storage, variable_name, variable_type in specs
 )
 
+# Android and iOS independently preserve the portable control graph for each
+# constructor. Dip owns a derived curve count, one far endpoint, a cosine
+# middle, and the final delta pass. Screw owns three entrance samples, five
+# departure samples, a helical middle, and the final delta pass. Windows is
+# authoritative for every exact definition identity below and for the
+# native-only strip-mesh tail.
+DIP_SCREW_CONTROL_USER_VAR_UPDATES = (
+    (
+        "initialize_dip_path_template_pair",
+        "StackVariableSourceType",
+        85,
+        -72,
+        "curve_count_f",
+        "float",
+    ),
+    (
+        "initialize_dip_path_template_pair",
+        "RegisterVariableSourceType",
+        246,
+        73,
+        "endpoint_sample_offset",
+        "int32_t",
+    ),
+    (
+        "initialize_dip_path_template_pair",
+        "StackVariableSourceType",
+        333,
+        -64,
+        "endpoint_sample_z",
+        "float",
+    ),
+    (
+        "initialize_dip_path_template_pair",
+        "StackVariableSourceType",
+        491,
+        -76,
+        "angle",
+        "float",
+    ),
+    (
+        "initialize_dip_path_template_pair",
+        "StackVariableSourceType",
+        560,
+        -64,
+        "curve_sample_z",
+        "float",
+    ),
+    (
+        "initialize_screw_path_template_pair",
+        "StackVariableSourceType",
+        161,
+        -68,
+        "entrance_sample_z",
+        "float",
+    ),
+    (
+        "initialize_screw_path_template_pair",
+        "StackVariableSourceType",
+        507,
+        -68,
+        "curve_count_f",
+        "float",
+    ),
+    (
+        "initialize_screw_path_template_pair",
+        "StackVariableSourceType",
+        530,
+        -76,
+        "angle",
+        "float",
+    ),
+    (
+        "initialize_screw_path_template_pair",
+        "StackVariableSourceType",
+        631,
+        -72,
+        "curve_sample_index",
+        "int32_t",
+    ),
+    (
+        "initialize_screw_path_template_pair",
+        "StackVariableSourceType",
+        655,
+        -72,
+        "curve_sample_z",
+        "float",
+    ),
+)
+
+DIP_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x41e46a", "mlil", "RegisterVariableSourceType", 42, 66),
+            ("0x41e472", "mlil", "StackVariableSourceType", 50, 8),
+        ),
+        ("RegisterVariableSourceType", 42, 66),
+        "curve_count",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41e47d", "mlil", "RegisterVariableSourceType", 61, 66),
+            ("0x41e483", "mlil", "StackVariableSourceType", 67, 4),
+        ),
+        ("RegisterVariableSourceType", 61, 66),
+        "total_segment_count",
+        "int32_t",
+    ),
+    (
+        (("0x41e49f", "mlil", "StackVariableSourceType", 95, 4),),
+        ("StackVariableSourceType", 95, 4),
+        "profile_radius",
+        "float",
+    ),
+    (
+        (
+            ("0x41e46f", "mlil", "RegisterVariableSourceType", 47, 73),
+            ("0x41e50a", "mlil", "StackVariableSourceType", 202, -64),
+        ),
+        ("RegisterVariableSourceType", 47, 73),
+        "endpoint_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41e5c2", "mlil", "StackVariableSourceType", 386, -76),
+            ("0x41e84d", "mlil", "StackVariableSourceType", 1037, -76),
+            ("0x41e5e2", "mlil_ssa", "StackVariableSourceType", 418, -76),
+        ),
+        ("StackVariableSourceType", 386, -76),
+        "curve_phase_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41e5b5", "mlil", "RegisterVariableSourceType", 373, 69),
+            ("0x41e65a", "mlil", "RegisterVariableSourceType", 538, 69),
+            ("0x41e65f", "mlil", "StackVariableSourceType", 543, -64),
+            ("0x41e5e2", "mlil_ssa", "RegisterVariableSourceType", 418, 69),
+        ),
+        ("RegisterVariableSourceType", 373, 69),
+        "curve_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41e5dd", "mlil", "RegisterVariableSourceType", 413, 73),
+            ("0x41e845", "mlil", "RegisterVariableSourceType", 1029, 73),
+            ("0x41e5e2", "mlil_ssa", "RegisterVariableSourceType", 418, 73),
+        ),
+        ("RegisterVariableSourceType", 413, 73),
+        "curve_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41e85a", "mlil", "RegisterVariableSourceType", 1050, 69),
+            ("0x41e913", "mlil", "RegisterVariableSourceType", 1235, 69),
+            ("0x41e867", "mlil_ssa", "RegisterVariableSourceType", 1063, 69),
+        ),
+        ("RegisterVariableSourceType", 1050, 69),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41e865", "mlil", "RegisterVariableSourceType", 1061, 73),
+            ("0x41e91e", "mlil", "RegisterVariableSourceType", 1246, 73),
+            ("0x41e867", "mlil_ssa", "RegisterVariableSourceType", 1063, 73),
+        ),
+        ("RegisterVariableSourceType", 1061, 73),
+        "delta_sample_offset",
+        "int32_t",
+    ),
+)
+
+SCREW_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x41edbb", "mlil", "RegisterVariableSourceType", 27, 66),
+            ("0x41edc0", "mlil", "StackVariableSourceType", 32, 8),
+        ),
+        ("RegisterVariableSourceType", 27, 66),
+        "total_segment_count",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41edea", "mlil", "StackVariableSourceType", 74, 8),
+            ("0x41ee9a", "mlil", "StackVariableSourceType", 250, 8),
+            ("0x41edf0", "mlil_ssa", "StackVariableSourceType", 80, 8),
+        ),
+        ("StackVariableSourceType", 74, 8),
+        "entrance_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41edee", "mlil", "RegisterVariableSourceType", 78, 73),
+            ("0x41ee8d", "mlil", "RegisterVariableSourceType", 237, 73),
+            ("0x41edf0", "mlil_ssa", "RegisterVariableSourceType", 80, 73),
+        ),
+        ("RegisterVariableSourceType", 78, 73),
+        "entrance_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41eead", "mlil", "RegisterVariableSourceType", 269, 71),
+            ("0x41ef70", "mlil", "RegisterVariableSourceType", 464, 71),
+            ("0x41eec9", "mlil_ssa", "RegisterVariableSourceType", 297, 71),
+        ),
+        ("RegisterVariableSourceType", 269, 71),
+        "departure_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41eec0", "mlil", "RegisterVariableSourceType", 288, 73),
+            ("0x41ef6a", "mlil", "RegisterVariableSourceType", 458, 73),
+            ("0x41eec9", "mlil_ssa", "RegisterVariableSourceType", 297, 73),
+        ),
+        ("RegisterVariableSourceType", 288, 73),
+        "departure_sample_offset",
+        "int32_t",
+    ),
+    (
+        (("0x41ef1e", "mlil", "StackVariableSourceType", 382, 8),),
+        ("StackVariableSourceType", 382, 8),
+        "departure_sample_z",
+        "float",
+    ),
+    (
+        (
+            ("0x41ef84", "mlil", "RegisterVariableSourceType", 484, 71),
+            ("0x41ef88", "mlil", "StackVariableSourceType", 488, 8),
+            ("0x41f22e", "mlil", "RegisterVariableSourceType", 1166, 71),
+            ("0x41f237", "mlil", "StackVariableSourceType", 1175, 8),
+            ("0x41efa3", "mlil_ssa", "RegisterVariableSourceType", 515, 71),
+            ("0x41efa3", "mlil_ssa", "StackVariableSourceType", 515, 8),
+        ),
+        ("RegisterVariableSourceType", 484, 71),
+        "curve_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41ef96", "mlil", "RegisterVariableSourceType", 502, 73),
+            ("0x41f22f", "mlil", "RegisterVariableSourceType", 1167, 73),
+            ("0x41efa3", "mlil_ssa", "RegisterVariableSourceType", 515, 73),
+        ),
+        ("RegisterVariableSourceType", 502, 73),
+        "curve_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41f246", "mlil", "RegisterVariableSourceType", 1190, 71),
+            ("0x41f302", "mlil", "RegisterVariableSourceType", 1378, 71),
+            ("0x41f253", "mlil_ssa", "RegisterVariableSourceType", 1203, 71),
+        ),
+        ("RegisterVariableSourceType", 1190, 71),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41f251", "mlil", "RegisterVariableSourceType", 1201, 73),
+            ("0x41f30d", "mlil", "RegisterVariableSourceType", 1389, 73),
+            ("0x41f253", "mlil_ssa", "RegisterVariableSourceType", 1203, 73),
+        ),
+        ("RegisterVariableSourceType", 1201, 73),
+        "delta_sample_offset",
+        "int32_t",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the proved vector, terminal-delta, mesh-vertex, and "
-            "facequad lifetimes in the dip and screw constructors."
+            "Replay the proved control, vector, terminal-delta, mesh-vertex, "
+            "and facequad lifetimes in the dip and screw constructors."
         )
     )
     parser.add_argument(
@@ -161,7 +438,34 @@ def main() -> int:
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=DIP_SCREW_PATH_USER_VAR_UPDATES,
+            updates=(
+                DIP_SCREW_PATH_USER_VAR_UPDATES
+                + DIP_SCREW_CONTROL_USER_VAR_UPDATES
+            ),
+        ),
+        *apply_split_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=tuple(
+                (
+                    function_name,
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                )
+                for function_name, split_specs in (
+                    (
+                        "initialize_dip_path_template_pair",
+                        DIP_CONTROL_LIFETIME_SPLITS,
+                    ),
+                    (
+                        "initialize_screw_path_template_pair",
+                        SCREW_CONTROL_LIFETIME_SPLITS,
+                    ),
+                )
+                for definitions, target_var, variable_name, variable_type in split_specs
+            ),
         ),
     ]
     return emit_summary(

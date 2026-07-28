@@ -18,12 +18,12 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_hump_path_template_pair",
-      "address": "0x41d030"
+      "name": "initialize_dip_path_template_pair",
+      "address": "0x41e440"
     },
     {
-      "name": "initialize_dump_path_template_pair",
-      "address": "0x41da30"
+      "name": "initialize_screw_path_template_pair",
+      "address": "0x41eda0"
     }
   ],
   "health_check_count": 1142,

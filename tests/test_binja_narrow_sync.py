@@ -21785,12 +21785,72 @@ def test_dip_screw_replay_preserves_mesh_owner_lifetimes() -> None:
         )
 
     assert "DIP_SCREW_PATH_USER_VAR_UPDATES" in replay
+    assert "DIP_SCREW_CONTROL_USER_VAR_UPDATES" in replay
+    assert "DIP_CONTROL_LIFETIME_SPLITS" in replay
+    assert "SCREW_CONTROL_LIFETIME_SPLITS" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert "apply_split_user_var_updates" in replay
     assert "apply_user_var_updates" in replay
     assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
     assert '0x8C: ("delta_length", "float")' in replay
     assert '0x90: ("center_x", "float")' in replay
+
+    for index, storage, name, variable_type in (
+        (85, -72, "curve_count_f", "float"),
+        (246, 73, "endpoint_sample_offset", "int32_t"),
+        (333, -64, "endpoint_sample_z", "float"),
+        (491, -76, "angle", "float"),
+        (560, -64, "curve_sample_z", "float"),
+        (161, -68, "entrance_sample_z", "float"),
+        (507, -68, "curve_count_f", "float"),
+        (530, -76, "angle", "float"),
+        (631, -72, "curve_sample_index", "int32_t"),
+        (655, -72, "curve_sample_z", "float"),
+    ):
+        assert (
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        ) in replay
+
+    for name, variable_type in (
+        ("curve_count", "int32_t"),
+        ("total_segment_count", "int32_t"),
+        ("profile_radius", "float"),
+        ("endpoint_sample_index", "int32_t"),
+        ("curve_phase_index", "int32_t"),
+        ("curve_sample_index", "int32_t"),
+        ("curve_sample_offset", "int32_t"),
+        ("delta_index", "int32_t"),
+        ("delta_sample_offset", "int32_t"),
+        ("entrance_sample_index", "int32_t"),
+        ("entrance_sample_offset", "int32_t"),
+        ("departure_sample_index", "int32_t"),
+        ("departure_sample_offset", "int32_t"),
+        ("departure_sample_z", "float"),
+        ("curve_index", "int32_t"),
+    ):
+        assert f'        "{name}",\n        "{variable_type}",' in replay
+
+    for address, view, source_type, index, storage in (
+        ("0x41e46a", "mlil", "RegisterVariableSourceType", 42, 66),
+        ("0x41e5e2", "mlil_ssa", "StackVariableSourceType", 418, -76),
+        ("0x41e5e2", "mlil_ssa", "RegisterVariableSourceType", 418, 69),
+        ("0x41e867", "mlil_ssa", "RegisterVariableSourceType", 1063, 73),
+        ("0x41edbb", "mlil", "RegisterVariableSourceType", 27, 66),
+        ("0x41edf0", "mlil_ssa", "StackVariableSourceType", 80, 8),
+        ("0x41eec9", "mlil_ssa", "RegisterVariableSourceType", 297, 73),
+        ("0x41efa3", "mlil_ssa", "RegisterVariableSourceType", 515, 71),
+        ("0x41efa3", "mlil_ssa", "StackVariableSourceType", 515, 8),
+        ("0x41f253", "mlil_ssa", "RegisterVariableSourceType", 1203, 73),
+    ):
+        assert (
+            f'("{address}", "{view}", "{source_type}", {index}, {storage})'
+            in replay
+        )
+
     for rejected_index in (724, 891, 842, 1061):
         assert f"({rejected_index}, 66," not in replay
 
@@ -21911,6 +21971,33 @@ def test_curve_family_aggregate_health_stays_address_anchored() -> None:
             assert (
                 rendered_alias not in checks[check_name]["required_substrings"]
             )
+
+    for check_name, control_owners in {
+        "bn_dip_path_full_owner_abi": (
+            "int32_t curve_count =",
+            "float profile_radius =",
+            "int32_t curve_sample_index =",
+            "int32_t curve_phase_index =",
+            "int32_t curve_sample_offset =",
+            "float angle =",
+            "int32_t delta_index =",
+            "int32_t delta_sample_offset =",
+        ),
+        "bn_screw_path_full_owner_abi": (
+            "int32_t entrance_sample_index =",
+            "int32_t entrance_sample_offset =",
+            "int32_t departure_sample_index =",
+            "int32_t departure_sample_offset =",
+            "int32_t curve_index =",
+            "int32_t curve_sample_offset =",
+            "float angle =",
+            "int32_t delta_index =",
+            "int32_t delta_sample_offset =",
+        ),
+    }.items():
+        required_substrings = checks[check_name]["required_substrings"]
+        for control_owner in control_owners:
+            assert control_owner in required_substrings
 
 
 def test_transition_family_aggregate_health_stays_address_anchored() -> None:
