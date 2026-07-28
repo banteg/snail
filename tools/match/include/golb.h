@@ -53,6 +53,7 @@ public:
 
 typedef char GolbPathFollowState_must_be_0x28[
     (sizeof(GolbPathFollowState) == 0x28) ? 1 : -1];
+typedef GolbPathFollowState cRPathFollowGolb;
 
 // Authored cRGolbRocket is a fieldless cRBodPos specialization whose AI body
 // folds into the shared one-byte Windows no-op.
@@ -64,9 +65,11 @@ typedef char GolbRocket_must_be_0x80[
     (sizeof(GolbRocket) == 0x80) ? 1 : -1];
 typedef GolbRocket cRGolbRocket;
 
-// Shot sprite/list view shared by the Golb helpers. update_golb_ai still keeps
-// some raw collision lanes, but the projectile owner layout is shared here.
-class GolbShot {
+// Windows and the mobile cRSubGoldy constructor agree that each shot is a
+// zero-offset cRBodPos specialization, followed by its platform-specific
+// presentation children. update_golb_ai still keeps some raw collision lanes,
+// but the projectile owner layout is shared here.
+class GolbShot : public RenderableBod {
 public:
     GolbShot* initialize_golb_shot(); // @ 0x408690
     void kill_golb(); // @ 0x414670, iOS/Android cRSubGolb::Kill()
@@ -78,7 +81,6 @@ public:
     void spawn_golb_impact_sprite(Vector3* position); // @ 0x415d80,
         // Android cRSubGolb::Explode(tVector)
 
-    RenderableBod primary_body; // +0x000, projectile AI/list owner
     Vapour vapour; // +0x080, complete kind-1 trail renderer
     GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink
     GolbRocket tertiary_body; // +0x118, authored cRGolbRocket owner
@@ -120,5 +122,6 @@ public:
 };
 
 typedef char GolbShot_must_be_0x2e8[(sizeof(GolbShot) == 0x2e8) ? 1 : -1];
+typedef GolbShot cRSubGolb;
 
 #endif

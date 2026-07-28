@@ -4,22 +4,22 @@
 /* function: kill_golb @ 0x414670 */
 
 00414678        struct BodList* ecx = &g_game_base->active_bod_list
-0041467e        uint16_t list_flags = (shot->primary_body.bod.bod.list_flags).w
+0041467e        uint16_t list_flags = (shot->bod.bod.list_flags).w
 00414684        if ((list_flags:1.b & 2) == 0)
 0041468b        report_errorf("List remove")
 00414697        if ((list_flags.b & 0x40) == 0)
-004146a8        struct BodNode* list_next = shot->primary_body.bod.bod.list_next
+004146a8        struct BodNode* list_next = shot->bod.bod.list_next
 004146ad        if (list_next != 0)
-004146b2        list_next->list_prev = shot->primary_body.bod.bod.list_prev
-004146b5        struct BodNode* list_prev = shot->primary_body.bod.bod.list_prev
+004146b2        list_next->list_prev = shot->bod.bod.list_prev
+004146b5        struct BodNode* list_prev = shot->bod.bod.list_prev
 004146ba        if (list_prev == 0)
-004146c7        ecx->first = shot->primary_body.bod.bod.list_next
-004146bf        list_prev->list_next = shot->primary_body.bod.bod.list_next
-004146cd        shot->primary_body.bod.bod.list_next = ecx->free_top
+004146c7        ecx->first = shot->bod.bod.list_next
+004146bf        list_prev->list_next = shot->bod.bod.list_next
+004146cd        shot->bod.bod.list_next = ecx->free_top
 004146d0        ecx->free_top = shot
-004146d3        uint32_t list_flags_1 = shot->primary_body.bod.bod.list_flags
+004146d3        uint32_t list_flags_1 = shot->bod.bod.list_flags
 004146d6        list_flags_1:1.b &= 0xfd
-004146d9        shot->primary_body.bod.bod.list_flags = list_flags_1
+004146d9        shot->bod.bod.list_flags = list_flags_1
 0041469e        report_errorf("List remove NEXTBOD")
 004146dc        int32_t kind = shot->kind
 004146e2        shot->state = 0

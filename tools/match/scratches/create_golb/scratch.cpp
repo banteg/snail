@@ -23,7 +23,7 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
     skip_one_tick = 0;
     slug_bounce_armed = 0;
 
-    BodNode* body = &primary_body;
+    BodNode* body = this;
     g_game->active_bod_list.add_bod(body);
 
     owner_player = player_;
@@ -300,5 +300,5 @@ after_shoot_flag_source:
     Vec3* previous_output = &previous_flight_transform.position;
     *previous_output = *position;
 
-    ((BodAiDispatch*)&primary_body)->update_bod_ai();
+    ((BodAiDispatch*)this)->update_bod_ai();
 }

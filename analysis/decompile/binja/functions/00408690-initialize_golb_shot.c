@@ -8,5 +8,5 @@
 004086a6        shot->vapour.body.bod.bod.vtable = &g_vapour_vtable
 004086b4        initialize_renderable_bod(&shot->tertiary_body)
 004086b9        shot->tertiary_body.bod.bod.vtable = &g_golb_noop_body_vtable
-004086bf        shot->primary_body.bod.bod.vtable = &g_golb_shot_vtable
+004086bf        shot->bod.bod.vtable = &g_golb_shot_vtable
 004086c9        return shot

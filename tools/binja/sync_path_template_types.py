@@ -386,10 +386,11 @@ typedef struct GolbPathFollowState {
 """.strip()
 
 GOLB_SHOT_FIELD_UPDATES = (
-    # The exact constructor seeds three zero-offset-compatible owners at
-    # +0x000, +0x080, and +0x118. The middle owner is the complete 0x94-byte
-    # Vapour; the old +0x150 live_matrix alias is tertiary_body.transform.
-    ("0x000", "primary_body", "RenderableBod"),
+    # GolbShot's zero-offset RenderableBod is an inherited cRBodPos base, not
+    # a separately owned child. The constructor then seeds presentation
+    # children at +0x080 and +0x118. The middle owner is the complete
+    # 0x94-byte Vapour; the old +0x150 live_matrix alias is
+    # tertiary_body.transform.
     ("0x080", "vapour", "Vapour"),
     ("0x114", "vapour_owner_shot", "GolbShot*"),
     ("0x118", "tertiary_body", "cRGolbRocket"),
@@ -418,6 +419,12 @@ GOLB_SHOT_FIELD_UPDATES = (
     ("0x27c", "source_matrix", "TransformMatrix"),
     ("0x2bc", "path_follow", "GolbPathFollowState"),
     ("0x2e4", "path_entry_z_latch", "float"),
+)
+
+GOLB_AUTHORED_TYPE_NAMES = (
+    "GolbShot",
+    "cRSubGolb",
+    "cRPathFollowGolb",
 )
 
 REQUIRED_HEADER_STRUCTS = (
@@ -3100,6 +3107,170 @@ def ensure_golb_path_follow_state(*, target: str) -> dict[str, object]:
         ),
     }
 
+
+def ensure_golb_authored_types(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    """Replay the mobile-proven cRSubGolb base and authored type aliases."""
+
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    missing_from_header = [
+        name for name in GOLB_AUTHORED_TYPE_NAMES if name not in equivalence
+    ]
+    if missing_from_header:
+        raise RuntimeError(
+            "authoritative header omitted Golb authored types: "
+            + ", ".join(missing_from_header)
+        )
+
+    stale_types = tuple(
+        name for name in GOLB_AUTHORED_TYPE_NAMES if not equivalence[name]
+    )
+    if not stale_types:
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "Golb authored types already equivalent",
+            "types": GOLB_AUTHORED_TYPE_NAMES,
+        }
+
+    result = types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=stale_types,
+        include_types=GOLB_AUTHORED_TYPE_NAMES,
+    )
+    result["stale_types"] = stale_types
+    return result
+
+
+def verify_golb_shot_inheritance(*, target: str) -> dict[str, object]:
+    """Fail closed unless GolbShot has one zero-offset RenderableBod base."""
+
+    response = run_bn(
+        REPO_ROOT,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        """
+shot = bv.get_type_by_name("GolbShot")
+decompiles = {}
+for function_name in ("initialize_golb_shot", "kill_golb", "create_golb"):
+    functions = list(bv.get_functions_by_name(function_name))
+    decompiles[function_name] = (
+        ""
+        if len(functions) != 1 or functions[0].hlil is None
+        else str(functions[0].hlil)
+    )
+result = None if shot is None else {
+    "width": int(shot.width),
+    "bases": [
+        {
+            "type": str(base.type),
+            "offset": int(base.offset),
+            "width": int(base.width),
+        }
+        for base in shot.base_structures
+    ],
+    "direct_members": [
+        {
+            "name": str(member.name),
+            "type": str(member.type),
+            "offset": int(member.offset),
+        }
+        for member in shot.members
+        if int(member.offset) < 0x198
+    ],
+    "aliases": {
+        name: (
+            None
+            if (alias := bv.get_type_by_name(name)) is None
+            else {"width": int(alias.width), "type": str(alias)}
+        )
+        for name in ("cRSubGolb", "cRPathFollowGolb")
+    },
+    "decompile_checks": {
+        "initialize_inherited_vtable": (
+            "shot->bod.bod.vtable = &g_golb_shot_vtable"
+            in decompiles["initialize_golb_shot"]
+        ),
+        "kill_inherited_list": (
+            "shot->bod.bod.list_flags" in decompiles["kill_golb"]
+        ),
+        "create_inherited_list": (
+            "shot->bod.bod.list_flags" in decompiles["create_golb"]
+        ),
+        "create_inherited_dispatch": (
+            "(*shot->bod.bod.vtable)()" in decompiles["create_golb"]
+        ),
+        "no_primary_body_alias": all(
+            "primary_body" not in decompile
+            for decompile in decompiles.values()
+        ),
+    },
+}
+""",
+    )
+    observed = response.get("result") if isinstance(response, dict) else None
+    expected_bases = [
+        {
+            "type": "struct RenderableBod",
+            "offset": 0,
+            "width": 0x80,
+        }
+    ]
+    expected_members = [
+        {"name": "vapour", "type": "struct Vapour", "offset": 0x80},
+        {
+            "name": "vapour_owner_shot",
+            "type": "struct GolbShot*",
+            "offset": 0x114,
+        },
+        {
+            "name": "tertiary_body",
+            "type": "cRGolbRocket",
+            "offset": 0x118,
+        },
+    ]
+    aliases = observed.get("aliases") if isinstance(observed, dict) else None
+    decompile_checks = (
+        observed.get("decompile_checks")
+        if isinstance(observed, dict)
+        else None
+    )
+    verified = (
+        isinstance(observed, dict)
+        and observed.get("width") == 0x2E8
+        and observed.get("bases") == expected_bases
+        and observed.get("direct_members") == expected_members
+        and isinstance(aliases, dict)
+        and isinstance(aliases.get("cRSubGolb"), dict)
+        and aliases["cRSubGolb"].get("width") == 0x2E8
+        and isinstance(aliases.get("cRPathFollowGolb"), dict)
+        and aliases["cRPathFollowGolb"].get("width") == 0x28
+        and isinstance(decompile_checks, dict)
+        and all(decompile_checks.values())
+    )
+    if not verified:
+        raise RuntimeError(
+            f"GolbShot inheritance readback failed: {observed!r}"
+        )
+    return {
+        "op": "verify_golb_shot_inheritance",
+        "status": "verified",
+        "observed": observed,
+    }
+
+
 GOLB_PROTO_UPDATES = (
     (
         "initialize_golb_shot",
@@ -4914,6 +5085,13 @@ def main() -> int:
                 updates=SYMBOL_UPDATES,
             )
         )
+    operations.append(
+        ensure_golb_authored_types(
+            target=args.target,
+            header_path=header_path,
+        )
+    )
+    operations.append(verify_golb_shot_inheritance(target=args.target))
     operations.append(ensure_golb_path_follow_state(target=args.target))
     operations.extend(
         apply_struct_field_updates(

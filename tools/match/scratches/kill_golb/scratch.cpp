@@ -10,28 +10,28 @@ int report_errorf(char* format, ...);
 void GolbShot::kill_golb()
 {
     BodList* list = &g_game->active_bod_list;
-    unsigned int flags = primary_body.list_flags;
+    unsigned int flags = list_flags;
     if ((flags & BOD_FLAG_LINKED) == 0) {
         report_errorf("List remove");
     } else if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
         report_errorf("List remove NEXTBOD");
     } else {
-        BodNode* next = primary_body.list_next;
+        BodNode* next = list_next;
         if (next != 0)
-            next->list_prev = primary_body.list_prev;
+            next->list_prev = list_prev;
 
-        BodNode* prev = primary_body.list_prev;
+        BodNode* prev = list_prev;
         if (prev != 0)
-            prev->list_next = primary_body.list_next;
+            prev->list_next = list_next;
         else
-            list->first = primary_body.list_next;
+            list->first = list_next;
 
-        primary_body.list_next = list->free_top;
-        list->free_top = &primary_body;
+        list_next = list->free_top;
+        list->free_top = this;
 
-        unsigned int updated = primary_body.list_flags;
+        unsigned int updated = list_flags;
         updated &= ~BOD_FLAG_LINKED;
-        primary_body.list_flags = updated;
+        list_flags = updated;
     }
 
     int live_kind = kind;

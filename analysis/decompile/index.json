@@ -1,16 +1,16 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 7,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 7,
-  "ida_exported": 7,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "binja_refreshed": true,
   "binja_analysis_refreshed": false,
   "ida_refreshed": true,
@@ -18,32 +18,20 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "reset_subgame",
-      "address": "0x437b10"
+      "name": "initialize_golb_shot",
+      "address": "0x408690"
     },
     {
-      "name": "complete_subgame",
-      "address": "0x438700"
+      "name": "kill_golb",
+      "address": "0x414670"
     },
     {
-      "name": "update_subgoldy",
-      "address": "0x43b120"
+      "name": "update_golb_ai",
+      "address": "0x414820"
     },
     {
-      "name": "deserialize_compact_high_score_record",
-      "address": "0x440020"
-    },
-    {
-      "name": "serialize_compact_high_score_record",
-      "address": "0x440170"
-    },
-    {
-      "name": "initialize_click_start",
-      "address": "0x442170"
-    },
-    {
-      "name": "update_click_start",
-      "address": "0x442290"
+      "name": "create_golb",
+      "address": "0x415280"
     }
   ],
   "health_check_count": 1143,

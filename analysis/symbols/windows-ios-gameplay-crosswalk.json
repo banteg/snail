@@ -688,7 +688,7 @@
       "android_symbol": "cRSubGolb::AI()",
       "source_object": "Golb.o",
       "confidence": "high",
-      "notes": "Both mobile bodies preserve the complete cRSubGolb AI state machine seen on Windows: pause and one-tick gates, straight or path-follow motion, kind-zero gravity, kind-two homing, per-kind trail presentation, lifetime cleanup, garbage and slug contacts, and terminal wall impact. Mobile pool offsets and inlined effect code are platform-specific; the GolbShot receiver and field order agree."
+      "notes": "Both mobile bodies preserve the complete cRSubGolb AI state machine seen on Windows: pause and one-tick gates, straight or path-follow motion, kind-zero gravity, kind-two homing, per-kind trail presentation, lifetime cleanup, garbage and slug contacts, and terminal wall impact. Android's cRSubGoldy constructor independently constructs cRBodPos at the start of every cRSubGolb slot before installing the cRSubGolb vtable, proving the zero-offset inherited body also seen in the Windows constructor and callback table. Mobile pool offsets, child presentation types, and inlined effect code remain platform-specific."
     },
     {
       "address": "0x415280",

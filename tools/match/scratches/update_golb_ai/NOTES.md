@@ -672,3 +672,17 @@ The `GolbShot +0x248` lane is now `Sprite* render_sprite` in the canonical
 analysis layout, matching this function's position write and the exact
 creation/teardown consumers. Focused matching stays at 81.88%, 669/694
 instructions, with all 66 masked operands clean.
+
+## 2026-07-28 inherited cRSubGolb receiver
+
+The expanded Android `cRSubGoldy` constructor proves that each `cRSubGolb`
+slot begins with an inherited `cRBodPos` and receives the actor vtable at that
+same address. This agrees with the Windows constructor and this function's
+zero-offset callback receiver. The shared `GolbShot` model now expresses that
+base relationship directly and carries the authored `cRSubGolb` alias.
+
+No mobile offsets or code shape were transferred. Focused Windows output
+remains at the current honest 90.84%, 693/694-instruction frontier with 69
+clean masks and four unaudited zero operands. Binary Ninja and IDA 9.4 both
+read the inherited body through `shot->bod.bod` and their guarded replays reject
+the retired `primary_body` composition.

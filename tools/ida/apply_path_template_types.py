@@ -423,10 +423,22 @@ FRINGE_VERTEX_ROW_CURSOR_EXPECTED_SIZE = 0x30
 FRINGE_FACE_PAIR_CURSOR_EXPECTED_SIZE = 0x60
 GOLB_SHOT_PREFIX_END = 0x198
 GOLB_SHOT_PREFIX_MEMBERS = (
-    (0x000, 0x080, "primary_body", "RenderableBod"),
-    (0x080, 0x094, "vapour", "Vapour"),
-    (0x114, 0x004, "vapour_owner_shot", "GolbShot *"),
-    (0x118, 0x080, "tertiary_body", "cRGolbRocket"),
+    (0x000, 0x080, "RenderableBod", "RenderableBod", True),
+    (0x080, 0x094, "vapour", "Vapour", False),
+    (0x114, 0x004, "vapour_owner_shot", "GolbShot *", False),
+    (0x118, 0x080, "tertiary_body", "cRGolbRocket", False),
+)
+GOLB_SHOT_COMPOSED_PREFIX_MEMBERS = (
+    (0x000, 0x080, "primary_body", "RenderableBod", False),
+    (0x080, 0x094, "vapour", "Vapour", False),
+    (0x114, 0x004, "vapour_owner_shot", "GolbShot *", False),
+    (0x118, 0x080, "tertiary_body", "cRGolbRocket", False),
+)
+GOLB_SHOT_HEADER_COMPOSED_PREFIX_MEMBERS = (
+    (0x000, 0x080, "body", "RenderableBod", False),
+    (0x080, 0x094, "vapour", "Vapour", False),
+    (0x114, 0x004, "vapour_owner_shot", "GolbShot *", False),
+    (0x118, 0x080, "tertiary_body", "cRGolbRocket", False),
 )
 PLAYER_SHOOT_EXPECTED_MEMBERS = {
     0x0308: {
@@ -462,10 +474,13 @@ PLAYER_SHOOT_EXPECTED_MEMBERS = {
     },
 }
 GOLB_SHOT_HEADER_MARKERS = (
-    "RenderableBod primary_body;",
+    "typedef struct __base(RenderableBod, 0x00) GolbShot {",
+    "__inherited RenderableBod body;",
     "Vapour vapour;",
     "struct GolbShot* vapour_owner_shot;",
     "cRGolbRocket tertiary_body;",
+    "typedef GolbShot cRSubGolb;",
+    "typedef GolbPathFollowState cRPathFollowGolb;",
     "typedef struct GolbShotVapourObjectStrideCursor {",
     "Object* vapour_object;",
     "uint8_t _stride_tail[0x1f4];",
@@ -4367,6 +4382,7 @@ def _golb_shot_prefix_snapshot(owner: ida_typeinf.tinfo_t) -> list[dict[str, obj
             "size": int(member.size) // 8,
             "name": member.name,
             "type": _normalize_udt_type(member.type.dstr()),
+            "baseclass": bool(member.is_baseclass()),
         }
         for index, member in enumerate(udt)
         if int(member.offset) // 8 < GOLB_SHOT_PREFIX_END
@@ -4380,6 +4396,54 @@ def _golb_shot_prefix_readback(owner: ida_typeinf.tinfo_t) -> dict[str, object]:
     }
 
 
+def _golb_shot_inheritance_decompile_readback() -> dict[str, object]:
+    texts = {}
+    for selector in ("initialize_golb_shot", "kill_golb", "create_golb"):
+        address = idc.get_name_ea_simple(selector)
+        if (
+            address == idc.BADADDR
+            or ida_funcs.get_func_start(address) == idc.BADADDR
+        ):
+            return {
+                "verified": False,
+                "reason": "missing_function",
+                "selector": selector,
+            }
+        try:
+            ida_hexrays.mark_cfunc_dirty(address, True)
+            texts[selector] = str(ida_hexrays.decompile(address))
+        except Exception as exc:
+            return {
+                "verified": False,
+                "reason": "decompile_failed",
+                "selector": selector,
+                "error": str(exc),
+            }
+
+    checks = {
+        "initialize_inherited_vtable": (
+            "shot->bod.bod.vtable = &g_golb_shot_vtable"
+            in texts["initialize_golb_shot"]
+        ),
+        "kill_inherited_list": (
+            "shot->bod.bod.list_flags" in texts["kill_golb"]
+        ),
+        "create_inherited_list": (
+            "shot->bod.bod.list_flags" in texts["create_golb"]
+        ),
+        "create_inherited_dispatch": (
+            "shot->bod.bod.vtable" in texts["create_golb"]
+        ),
+        "no_primary_body_alias": all(
+            "primary_body" not in text for text in texts.values()
+        ),
+    }
+    return {
+        "verified": all(checks.values()),
+        "checks": checks,
+    }
+
+
 def _golb_shot_prefix_is_canonical(owner: ida_typeinf.tinfo_t) -> bool:
     snapshot = _golb_shot_prefix_snapshot(owner)
     if owner.get_size() != GOLB_SHOT_EXPECTED_SIZE or snapshot is None:
@@ -4390,6 +4454,7 @@ def _golb_shot_prefix_is_canonical(owner: ida_typeinf.tinfo_t) -> bool:
             int(member["size"]),
             str(member["name"]),
             str(member["type"]),
+            bool(member["baseclass"]),
         )
         for member in snapshot
     )
@@ -4397,7 +4462,7 @@ def _golb_shot_prefix_is_canonical(owner: ida_typeinf.tinfo_t) -> bool:
 
 
 def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]:
-    """Replace the obsolete anonymous overlap with the proved nested owners."""
+    """Recover the inherited cRBodPos base and proved presentation children."""
 
     header_text = header_path.read_text(encoding="utf-8")
     missing_markers = [
@@ -4421,7 +4486,19 @@ def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]
             "observed": owner.get_size(),
         }
     if _golb_shot_prefix_is_canonical(owner):
-        return {"status": "unchanged", "readback": _golb_shot_prefix_readback(owner)}
+        decompile_readback = _golb_shot_inheritance_decompile_readback()
+        if not decompile_readback.get("verified"):
+            return {
+                "status": "failed",
+                "reason": "decompile_readback_failed",
+                "readback": _golb_shot_prefix_readback(owner),
+                "decompile_readback": decompile_readback,
+            }
+        return {
+            "status": "unchanged",
+            "readback": _golb_shot_prefix_readback(owner),
+            "decompile_readback": decompile_readback,
+        }
 
     udt = ida_typeinf.udt_type_data_t()
     if not owner.get_udt_details(udt):
@@ -4431,37 +4508,65 @@ def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]
         for index, member in enumerate(udt)
         if int(member.offset) // 8 < GOLB_SHOT_PREFIX_END
     ]
-    if len(overlapping) != 1:
+    current_snapshot = _golb_shot_prefix_snapshot(owner)
+    current_members = (
+        tuple(
+            (
+                int(member["offset"]),
+                int(member["size"]),
+                str(member["name"]),
+                str(member["type"]),
+                bool(member["baseclass"]),
+            )
+            for member in current_snapshot
+        )
+        if current_snapshot is not None
+        else ()
+    )
+    legacy_union = (
+        len(overlapping) == 1
+        and int(overlapping[0][1].offset) // 8 == 0
+        and int(overlapping[0][1].size) // 8 == GOLB_SHOT_PREFIX_END
+        and not overlapping[0][1].name
+        and overlapping[0][1].type.is_union()
+    )
+    composed_prefix = current_members in {
+        GOLB_SHOT_COMPOSED_PREFIX_MEMBERS,
+        GOLB_SHOT_HEADER_COMPOSED_PREFIX_MEMBERS,
+    }
+    if not legacy_union and not composed_prefix:
         return {
             "status": "failed",
-            "reason": "unexpected_prefix_member_count",
-            "readback": _golb_shot_prefix_readback(owner),
-        }
-    old_index, old_member = overlapping[0]
-    if (
-        int(old_member.offset) // 8 != 0
-        or int(old_member.size) // 8 != GOLB_SHOT_PREFIX_END
-        or old_member.name
-        or not old_member.type.is_union()
-    ):
-        return {
-            "status": "failed",
-            "reason": "unexpected_legacy_prefix_owner",
+            "reason": "unexpected_prefix_owner",
             "readback": _golb_shot_prefix_readback(owner),
         }
 
-    old_union_type = ida_typeinf.tinfo_t(old_member.type)
-    code = owner.del_udm(old_index)
-    if code != ida_typeinf.TERR_OK:
-        return {
-            "status": "failed",
-            "reason": "delete_legacy_prefix_failed",
-            "error": ida_typeinf.tinfo_errstr(code),
+    old_members = [
+        {
+            "name": member.name,
+            "type": ida_typeinf.tinfo_t(member.type),
+            "offset_bits": int(member.offset),
+            "baseclass": bool(member.is_baseclass()),
         }
+        for _index, member in overlapping
+    ]
+
+    for index, _member in reversed(overlapping):
+        code = owner.del_udm(index)
+        if code != ida_typeinf.TERR_OK:
+            return {
+                "status": "failed",
+                "reason": "delete_existing_prefix_failed",
+                "error": ida_typeinf.tinfo_errstr(code),
+                "readback": _golb_shot_prefix_readback(owner),
+            }
 
     try:
-        for offset, _size, name, type_name in GOLB_SHOT_PREFIX_MEMBERS:
-            code = owner.add_udm(ida_typeinf.udm_t(name, type_name, offset * 8))
+        for offset, _size, name, type_name, baseclass in GOLB_SHOT_PREFIX_MEMBERS:
+            member = ida_typeinf.udm_t(name, type_name, offset * 8)
+            if baseclass:
+                member.set_baseclass()
+            code = owner.add_udm(member)
             if code != ida_typeinf.TERR_OK:
                 raise RuntimeError(
                     f"add {name}: {ida_typeinf.tinfo_errstr(code)}"
@@ -4477,12 +4582,22 @@ def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]
                 ]
             ):
                 owner.del_udm(index)
-        rollback_code = owner.add_udm(ida_typeinf.udm_t("", old_union_type, 0))
+        rollback = []
+        for old_member in old_members:
+            member = ida_typeinf.udm_t(
+                old_member["name"],
+                old_member["type"],
+                old_member["offset_bits"],
+            )
+            if old_member["baseclass"]:
+                member.set_baseclass()
+            rollback_code = owner.add_udm(member)
+            rollback.append(ida_typeinf.tinfo_errstr(rollback_code))
         return {
             "status": "failed",
             "reason": "mutation_failed",
             "error": str(exc),
-            "rollback": ida_typeinf.tinfo_errstr(rollback_code),
+            "rollback": rollback,
             "readback": _golb_shot_prefix_readback(owner),
         }
 
@@ -4492,7 +4607,19 @@ def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]
             "reason": "verification_failed",
             "readback": _golb_shot_prefix_readback(owner),
         }
-    return {"status": "applied", "readback": _golb_shot_prefix_readback(owner)}
+    decompile_readback = _golb_shot_inheritance_decompile_readback()
+    if not decompile_readback.get("verified"):
+        return {
+            "status": "failed",
+            "reason": "decompile_readback_failed",
+            "readback": _golb_shot_prefix_readback(owner),
+            "decompile_readback": decompile_readback,
+        }
+    return {
+        "status": "applied",
+        "readback": _golb_shot_prefix_readback(owner),
+        "decompile_readback": decompile_readback,
+    }
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
@@ -5608,7 +5735,7 @@ def main() -> None:
     if len(argv) < 2:
         print(
             "usage: apply_path_template_types.py <header-path> "
-            "[--replay-start-cursor-only]",
+            "[--replay-start-cursor-only|--golb-base-only]",
             file=sys.stderr,
         )
         ida_pro.qexit(2)
@@ -5628,6 +5755,19 @@ def main() -> None:
                 {
                     "database": idc.get_idb_path(),
                     "mode": "replay_start_cursor_only",
+                    "result": result,
+                },
+                indent=2,
+            )
+        )
+        exit_code = 1 if result.get("status") == "failed" else 0
+    elif mode_args == {"--golb-base-only"}:
+        result = _sync_golb_shot_prefix_owner(header_path)
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "mode": "golb_base_only",
                     "result": result,
                 },
                 indent=2,

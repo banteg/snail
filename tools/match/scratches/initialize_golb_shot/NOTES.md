@@ -62,3 +62,26 @@ The tertiary body is now typed as the fieldless `GolbRocket` specialization of
 The table's sole Windows entry is folded `noop_runtime_ai @ 0x407b50`.
 `GolbRocket` adds no storage, remains exactly `0x80` bytes, and preserves the
 exact `GolbShot == 0x2e8` boundary.
+
+## 2026-07-28 authored cRSubGolb base recovery
+
+The expanded Android corpus closes the zero-offset owner as inheritance rather
+than composition. `cRSubGoldy::cRSubGoldy()` calls the `cRBodPos` constructor
+at the start of every `cRSubGolb` slot, installs the `cRSubGolb` vtable at that
+same address, then constructs its two presentation children at later offsets.
+Its mobile slot stride and child offsets differ from Windows, so none of those
+numbers were transferred.
+
+Windows independently repeats the same hierarchy: this exact helper constructs
+the `RenderableBod`/`cRBodPos` prefix at `GolbShot +0x000`, installs the table
+whose first entry is `update_golb_ai`, and the active-list and virtual-dispatch
+sites use that same address. `GolbShot` now therefore inherits
+`RenderableBod` and carries the authored `cRSubGolb` alias; its embedded
+`Vapour` and `cRGolbRocket` children remain at the Windows-proven `+0x080` and
+`+0x118`.
+
+The source rewrite is byte-neutral: `initialize_golb_shot` remains exact at
+17/17 instructions, `kill_golb` remains exact at 132/132, and `create_golb`
+remains at its honest 77.98% frontier. Binary Ninja and IDA 9.4 now both render
+the inherited list/vtable path as `shot->bod.bod`, with guarded replay checks
+rejecting a return of the synthetic `primary_body` alias.

@@ -61,3 +61,16 @@ The analysis layout now names `GolbShot +0x248` directly as
 `Sprite* render_sprite`, completing the same ownership already used by this
 exact source. Binary Ninja now emits `kill_sprite(shot->render_sprite)`;
 focused matching remains exact at 132/132 with all 16 masks clean.
+
+## 2026-07-28 inherited cRSubGolb teardown owner
+
+Android's expanded `cRSubGoldy` constructor proves that every `cRSubGolb`
+begins with an inherited `cRBodPos`, then installs the actor vtable on that
+base. Windows independently constructs and dispatches the same zero-offset
+body. The teardown now accesses its inherited `BodNode` fields directly rather
+than naming a separately owned `primary_body`.
+
+This is an ownership correction, not byte shaping: the function remains exact
+at 132/132 instructions with all 16 masked operands clean. Binary Ninja and
+IDA 9.4 both read back `shot->bod.bod` for the primary removal while retaining
+the distinct embedded `vapour` and `tertiary_body` children.

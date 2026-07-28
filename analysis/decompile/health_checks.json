@@ -10320,7 +10320,7 @@
         "struct Vec3* shot_velocity",
         "struct Vec3* spawn_anchor",
         "shot->flight_transform.position.x = spawn_anchor->x",
-        "shot_velocity->x = color.r",
+        "shot->velocity.x = color.r",
         "struct Sprite* render_sprite = allocate_sprite",
         "shot->render_sprite = render_sprite",
         "struct tColour* render_color = &shot->render_sprite->color",
@@ -10349,7 +10349,7 @@
       "artifact": "analysis/decompile/ida/functions/00415280-create_golb.c",
       "required_substrings": [
         "BodNode **p_first",
-        "first->list_prev = &shot->primary_body.bod.bod;",
+        "first->list_prev = &shot->bod.bod;",
         "(*p_first)->list_prev->list_next = *p_first;",
         "BodNode **v40",
         "v41->list_prev = &p_tertiary_body->bod.bod;",
@@ -10360,6 +10360,7 @@
       "forbidden_substrings": [
         "FrameBodBase",
         "(FrameBodBase *)",
+        "primary_body",
         "secondary_body",
         "shot->live_matrix"
       ]
@@ -10368,10 +10369,12 @@
       "name": "analysis_golb_shot_nested_vapour_owner",
       "artifact": "analysis/headers/path_template_types.h",
       "required_substrings": [
-        "typedef struct GolbShot {\n    RenderableBod primary_body;\n    Vapour vapour;\n    struct GolbShot* vapour_owner_shot;\n    cRGolbRocket tertiary_body;",
+        "typedef struct __base(RenderableBod, 0x00) GolbShot {\n    __inherited RenderableBod body;\n    Vapour vapour;\n    struct GolbShot* vapour_owner_shot;\n    cRGolbRocket tertiary_body;",
+        "typedef GolbShot cRSubGolb;",
         "Sprite* render_sprite;"
       ],
       "forbidden_substrings": [
+        "RenderableBod primary_body",
         "render_body_owner",
         "RenderableBod secondary_body",
         "uint8_t _pad_114[0x150 - 0x114]"
@@ -10384,9 +10387,10 @@
         "initialize_renderable_bod(&shot->vapour)",
         "shot->vapour.body.bod.bod.vtable = &g_vapour_vtable",
         "initialize_renderable_bod(&shot->tertiary_body)",
-        "shot->primary_body.bod.bod.vtable = &g_golb_shot_vtable"
+        "shot->bod.bod.vtable = &g_golb_shot_vtable"
       ],
       "forbidden_substrings": [
+        "primary_body",
         "secondary_body",
         "shot->live_matrix"
       ]
@@ -10399,9 +10403,10 @@
         "initialize_renderable_bod(&shot->vapour.body);",
         "shot->vapour.body.bod.bod.vtable = &g_vapour_vtable;",
         "initialize_renderable_bod(&shot->tertiary_body);",
-        "shot->primary_body.bod.bod.vtable = &g_golb_shot_vtable;"
+        "shot->bod.bod.vtable = &g_golb_shot_vtable;"
       ],
       "forbidden_substrings": [
+        "primary_body",
         "secondary_body",
         "shot->live_matrix"
       ]
@@ -10410,13 +10415,14 @@
       "name": "bn_kill_golb_nested_body_owners",
       "artifact": "analysis/decompile/binja/functions/00414670-kill_golb.c",
       "required_substrings": [
-        "shot->primary_body.bod.bod.list_flags",
+        "shot->bod.bod.list_flags",
         "shot->vapour.body.bod.bod.list_flags",
         "edx_6->free_top = &shot->vapour",
         "shot->tertiary_body.bod.bod.list_flags",
         "kill_sprite(shot->render_sprite)"
       ],
       "forbidden_substrings": [
+        "primary_body",
         "render_body_owner",
         "secondary_body",
         "shot->live_matrix",
@@ -10428,11 +10434,12 @@
       "artifact": "analysis/decompile/ida/functions/00414670-kill_golb.c",
       "required_substrings": [
         "void __thiscall kill_golb(GolbShot *shot)",
-        "shot->primary_body.bod.bod.list_flags",
+        "shot->bod.bod.list_flags",
         "shot->vapour.body.bod.bod.list_flags",
         "shot->tertiary_body.bod.bod.list_flags"
       ],
       "forbidden_substrings": [
+        "primary_body",
         "secondary_body",
         "shot->live_matrix"
       ]

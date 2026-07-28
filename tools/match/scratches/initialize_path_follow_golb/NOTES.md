@@ -16,3 +16,12 @@ The focused Golb replay now explicitly owns both path-follow symbols as well
 as the `GolbPathFollowState`, `TrackRowCell`, `Path`, and `GolbShot` boundaries.
 This keeps the borrowed attachment links distinct from the embedded state and
 gives `traverse_path_follow_golb` and the harder Golb AI a stable owner graph.
+
+## 2026-07-28 authored path-follow class identity
+
+The exact Android and iOS
+`cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)` symbols close the
+class identity independently of Windows layout. The shared state now carries
+the `cRPathFollowGolb` alias alongside the newly recovered `cRSubGolb` owner;
+the Windows-proven `0x28` state size and field offsets remain authoritative.
+Focused output stays exact at 16/16 instructions.

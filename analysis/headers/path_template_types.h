@@ -2373,11 +2373,18 @@ typedef struct GolbPathFollowState {
     Vec3 output_position;
     struct GolbShot* shot;
 } GolbPathFollowState;
+typedef GolbPathFollowState cRPathFollowGolb;
 
 typedef RenderableBod cRGolbRocket;
 
-typedef struct GolbShot {
-    RenderableBod primary_body;
+/*
+ * Exact 0x2e8-byte Windows cRSubGolb. Android's cRSubGoldy constructor
+ * independently constructs cRBodPos at the start of every cRSubGolb slot,
+ * then installs the cRSubGolb vtable there. Windows repeats that zero-offset
+ * base construction and table install with its 0x2e8-byte platform layout.
+ */
+typedef struct __base(RenderableBod, 0x00) GolbShot {
+    __inherited RenderableBod body;
     Vapour vapour;
     struct GolbShot* vapour_owner_shot;
     cRGolbRocket tertiary_body;
@@ -2408,6 +2415,7 @@ typedef struct GolbShot {
     GolbPathFollowState path_follow;
     float path_entry_z_latch;
 } GolbShot;
+typedef GolbShot cRSubGolb;
 
 /* Analytical field-stride view rooted at GolbShot::flight_transform. The
  * native initialize_subgoldy loop advances this borrowed cursor by one full

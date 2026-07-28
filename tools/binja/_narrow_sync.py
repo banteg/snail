@@ -1183,14 +1183,59 @@ if parsed is None or errors:
         "types": [],
     }}
 else:
+    def _structure_signature(type_):
+        if (
+            type_ is None
+            or type_.type_class
+            != binaryninja.TypeClass.StructureTypeClass
+        ):
+            return None
+        return (
+            type_.type_class,
+            type_.width,
+            type_.alignment,
+            type_.packed,
+            str(type_).split(" ", 1)[0],
+            tuple(
+                (
+                    str(base.type),
+                    base.offset,
+                    base.width,
+                )
+                for base in type_.base_structures
+            ),
+            tuple(
+                (
+                    member.name,
+                    member.offset,
+                    member.type.type_class,
+                    member.type.width,
+                    member.type.alignment,
+                    str(member.type),
+                )
+                for member in type_.members
+            ),
+        )
+
+    def _equivalent(current, parsed_type):
+        if current is None:
+            return False
+        if current == parsed_type:
+            return True
+        parsed_signature = _structure_signature(parsed_type)
+        return (
+            parsed_signature is not None
+            and _structure_signature(current) == parsed_signature
+        )
+
     result = {{
         "errors": [],
         "types": [
             {{
                 "name": str(parsed_type.name),
-                "equivalent": (
-                    (current := bv.get_type_by_name(parsed_type.name)) is not None
-                    and current == parsed_type.type
+                "equivalent": _equivalent(
+                    bv.get_type_by_name(parsed_type.name),
+                    parsed_type.type,
                 ),
             }}
             for parsed_type in parsed.types
@@ -1302,6 +1347,14 @@ def _structure_signature(type_):
         type_.alignment,
         type_.packed,
         str(type_).split(" ", 1)[0],
+        tuple(
+            (
+                str(base.type),
+                base.offset,
+                base.width,
+            )
+            for base in type_.base_structures
+        ),
         tuple(
             (
                 member.name,

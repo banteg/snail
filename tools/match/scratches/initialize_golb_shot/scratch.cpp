@@ -8,11 +8,11 @@ extern void* g_golb_noop_body_vtable;  // off_497350 / data_497350
 
 GolbShot* GolbShot::initialize_golb_shot()
 {
-    primary_body.initialize_renderable_bod();
+    initialize_renderable_bod();
     vapour.initialize_renderable_bod();
     vapour.vtable = &g_vapour_vtable;
     tertiary_body.initialize_renderable_bod();
     tertiary_body.vtable = &g_golb_noop_body_vtable;
-    primary_body.vtable = &g_golb_shot_vtable;
+    vtable = &g_golb_shot_vtable;
     return this;
 }

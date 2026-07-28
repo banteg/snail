@@ -2354,7 +2354,7 @@
         "off_49734c",
         "data_49734c"
       ],
-      "description": "Golb shot callback table installed by initialize_golb_shot; first entry is `update_golb_ai`."
+      "description": "Authored cRSubGolb callback table installed on GolbShot's inherited zero-offset RenderableBod base by initialize_golb_shot; first entry is `update_golb_ai`."
     },
     {
       "address": "0x497350",

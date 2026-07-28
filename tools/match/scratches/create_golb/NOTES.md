@@ -379,3 +379,18 @@ documented unaudited target operand.
 
 The mobile Sprite offsets and rate source remain platform-specific. Only the
 corroborated random-expression hierarchy is transferred to the Windows source.
+
+## 2026-07-28 inherited cRSubGolb active-list owner
+
+The expanded Android `cRSubGoldy` constructor explicitly constructs
+`cRBodPos` at each `cRSubGolb` slot start and installs the actor vtable at that
+same address. Together with the Windows constructor, first active-list splice,
+and final slot-zero dispatch, this proves that the former `primary_body` is the
+inherited base of the enclosing shot rather than an independently owned child.
+
+The matcher now inserts `this` through its inherited `BodNode` base and
+dispatches the same zero-offset table. Focused output is unchanged at the
+honest 77.98%, 549/582-instruction frontier, prefix 81/582, with 47 clean masks
+and the one documented unaudited target operand. Both tracked decompilers now
+show the inherited `shot->bod.bod` path and reject the synthetic
+`primary_body` alias during replay.

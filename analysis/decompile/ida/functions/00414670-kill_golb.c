@@ -2,7 +2,7 @@
 /* function: kill_golb @ 0x414670 */
 /* selector: kill_golb */
 
-// Void `cRSubGolb::Kill()` teardown for one 0x2e8-byte `GolbShot`: removes its primary body, releases the kind-specific sprite, complete embedded vapour body, or tertiary rocket and homing-target reservation, and marks the owned player-bank slot inactive.
+// Void `cRSubGolb::Kill()` teardown for one 0x2e8-byte `GolbShot`: removes its inherited zero-offset body, releases the kind-specific sprite, complete embedded vapour body, or tertiary rocket and homing-target reservation, and marks the owned player-bank slot inactive.
 void __thiscall kill_golb(GolbShot *shot)
 {
   BodList *p_active_bod_list; // ecx
@@ -26,7 +26,7 @@ void __thiscall kill_golb(GolbShot *shot)
   uint32_t v20; // ecx
 
   p_active_bod_list = &g_game_base->active_bod_list;
-  list_flags = shot->primary_body.bod.bod.list_flags;
+  list_flags = shot->bod.bod.list_flags;
   if ( (list_flags & 0x200) != 0 )
   {
     if ( (list_flags & 0x40) != 0 )
@@ -35,19 +35,19 @@ void __thiscall kill_golb(GolbShot *shot)
     }
     else
     {
-      list_next = shot->primary_body.bod.bod.list_next;
+      list_next = shot->bod.bod.list_next;
       if ( list_next != nullptr )
-        list_next->list_prev = shot->primary_body.bod.bod.list_prev;
-      list_prev = shot->primary_body.bod.bod.list_prev;
+        list_next->list_prev = shot->bod.bod.list_prev;
+      list_prev = shot->bod.bod.list_prev;
       if ( list_prev != nullptr )
-        list_prev->list_next = shot->primary_body.bod.bod.list_next;
+        list_prev->list_next = shot->bod.bod.list_next;
       else
-        p_active_bod_list->first = shot->primary_body.bod.bod.list_next;
-      shot->primary_body.bod.bod.list_next = p_active_bod_list->free_top;
-      p_active_bod_list->free_top = &shot->primary_body.bod.bod;
-      v6 = shot->primary_body.bod.bod.list_flags;
+        p_active_bod_list->first = shot->bod.bod.list_next;
+      shot->bod.bod.list_next = p_active_bod_list->free_top;
+      p_active_bod_list->free_top = &shot->bod.bod;
+      v6 = shot->bod.bod.list_flags;
       BYTE1(v6) &= ~2u;
-      shot->primary_body.bod.bod.list_flags = v6;
+      shot->bod.bod.list_flags = v6;
     }
   }
   else

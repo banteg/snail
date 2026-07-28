@@ -3541,7 +3541,7 @@ def test_broad_type_declaration_rejects_complete_to_forward_regression(monkeypat
     assert len(calls) == 1
 
 
-def test_current_header_type_equivalence_uses_exact_parsed_type_comparison(
+def test_current_header_type_equivalence_preserves_structural_base_comparison(
     monkeypatch,
 ) -> None:
     calls = []
@@ -3549,7 +3549,9 @@ def test_current_header_type_equivalence_uses_exact_parsed_type_comparison(
     def fake_run_bn(_repo_root, *args):
         calls.append(args)
         assert args[:2] == ("py", "exec")
-        assert "current == parsed_type.type" in args[-1]
+        assert "current == parsed_type" in args[-1]
+        assert "for base in type_.base_structures" in args[-1]
+        assert "_structure_signature(current) == parsed_signature" in args[-1]
         assert "bv.type_container" in args[-1]
         assert "isolated_parsed, isolated_errors" in args[-1]
         assert "bv.platform,\n            None," in args[-1]
@@ -4138,7 +4140,7 @@ def test_golb_replays_preserve_real_lifecycle_and_emitter_abis() -> None:
     assert "no-argument auto prototype" not in binja_source
 
 
-def test_golb_shot_nested_vapour_owner_is_replayed() -> None:
+def test_golb_shot_inherited_base_and_nested_vapour_owner_are_replayed() -> None:
     repo_root = Path(__file__).parents[1]
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
@@ -4154,37 +4156,41 @@ def test_golb_shot_nested_vapour_owner_is_replayed() -> None:
     )
 
     analysis_owner = (
-        "typedef struct GolbShot {\n"
-        "    RenderableBod primary_body;\n"
+        "typedef struct __base(RenderableBod, 0x00) GolbShot {\n"
+        "    __inherited RenderableBod body;\n"
         "    Vapour vapour;\n"
         "    struct GolbShot* vapour_owner_shot;\n"
         "    cRGolbRocket tertiary_body;"
     )
     matcher_owner = (
-        "    RenderableBod primary_body; // +0x000, projectile AI/list owner\n"
         "    Vapour vapour; // +0x080, complete kind-1 trail renderer\n"
         "    GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink\n"
         "    GolbRocket tertiary_body; // +0x118, authored cRGolbRocket owner"
     )
     assert analysis_owner in analysis_header
+    assert "class GolbShot : public RenderableBod {" in matcher_header
     assert matcher_owner in matcher_header
-    analysis_golb_owner = analysis_header.split("typedef struct GolbShot {", 1)[
-        1
-    ].split("} GolbShot;", 1)[0]
-    matcher_golb_owner = matcher_header.split("class GolbShot {", 1)[1].split(
-        "typedef char GolbShot_must_be_0x2e8", 1
-    )[0]
+    analysis_golb_owner = analysis_header.split(
+        "typedef struct __base(RenderableBod, 0x00) GolbShot {", 1
+    )[1].split("} GolbShot;", 1)[0]
+    matcher_golb_owner = matcher_header.split(
+        "class GolbShot : public RenderableBod {", 1
+    )[1].split("typedef char GolbShot_must_be_0x2e8", 1)[0]
     for source in (analysis_golb_owner, matcher_golb_owner):
+        assert "primary_body" not in source
         assert "secondary_body" not in source
         assert "TransformMatrix live_matrix" not in source
 
     for update in (
-        '("0x000", "primary_body", "RenderableBod")',
         '("0x080", "vapour", "Vapour")',
         '("0x114", "vapour_owner_shot", "GolbShot*")',
         '("0x118", "tertiary_body", "cRGolbRocket")',
     ):
         assert update in binja_sync
+    assert '("0x000", "primary_body", "RenderableBod")' not in binja_sync
+    assert "GOLB_AUTHORED_TYPE_NAMES" in binja_sync
+    assert "ensure_golb_authored_types" in binja_sync
+    assert "verify_golb_shot_inheritance" in binja_sync
     assert "KILL_GOLB_OWNER_USER_VAR_UPDATES" in binja_sync
     assert '"shot_cursor",\n        "GolbShot*"' in binja_sync
     assert "*KILL_GOLB_OWNER_USER_VAR_UPDATES" in binja_sync
@@ -4193,6 +4199,7 @@ def test_golb_shot_nested_vapour_owner_is_replayed() -> None:
         "GOLB_SHOT_EXPECTED_SIZE = 0x2E8",
         "GOLB_SHOT_PREFIX_END = 0x198",
         "GOLB_SHOT_PREFIX_MEMBERS",
+        "_golb_shot_inheritance_decompile_readback",
         "_sync_golb_shot_prefix_owner(header_path)",
         '"golb_shot_prefix_owner": golb_shot_prefix_owner',
     ):
@@ -4214,16 +4221,19 @@ def test_golb_shot_nested_vapour_owner_is_replayed() -> None:
             )
         }
         for artifact in artifacts.values():
+            assert "primary_body" not in artifact
             assert "secondary_body" not in artifact
             assert "shot->live_matrix" not in artifact
         assert "shot->vapour" in artifacts["constructor"]
         assert "shot->tertiary_body" in artifacts["constructor"]
-        assert "shot->primary_body" in artifacts["kill"]
+        assert "shot->bod.bod" in artifacts["constructor"]
+        assert "shot->bod.bod" in artifacts["kill"]
         assert "shot->vapour.body" in artifacts["kill"]
         assert "shot->tertiary_body" in artifacts["kill"]
         assert "add_vapour_point(&shot->vapour" in artifacts["update"]
         assert "shot->tertiary_body.transform" in artifacts["update"]
         assert "shot->vapour_owner_shot = shot" in artifacts["create"]
+        assert "shot->bod.bod" in artifacts["create"]
         assert "shot->vapour.body" in artifacts["create"]
         assert "shot->tertiary_body" in artifacts["create"]
 

@@ -5156,6 +5156,18 @@
       "status": "unverified",
       "android_candidates": [
         {
+          "symbol": "cRBodPos::cRBodPos()",
+          "score": 0.94,
+          "name_score": 0.9,
+          "size_score": 1.0
+        },
+        {
+          "symbol": "cRBodPos::cRBodPos()",
+          "score": 0.94,
+          "name_score": 0.9,
+          "size_score": 1.0
+        },
+        {
           "symbol": "cRVapour::Init(cRObject*, float)",
           "score": 0.8956,
           "name_score": 0.9,
@@ -5172,18 +5184,6 @@
           "score": 0.76,
           "name_score": 0.6,
           "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorder::X0()",
-          "score": 0.68,
-          "name_score": 0.6,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRObject::Init()",
-          "score": 0.6465,
-          "name_score": 0.45,
-          "size_score": 0.9412
         }
       ],
       "ios_candidates": [
@@ -5194,28 +5194,28 @@
           "size_score": 0.8421
         },
         {
+          "symbol": "cRBod::cRBod()",
+          "score": 0.796,
+          "name_score": 0.9,
+          "size_score": 0.64
+        },
+        {
+          "symbol": "cRBod::cRBod()",
+          "score": 0.796,
+          "name_score": 0.9,
+          "size_score": 0.64
+        },
+        {
           "symbol": "cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)",
           "score": 0.7815,
           "name_score": 0.675,
           "size_score": 0.9412
         },
         {
-          "symbol": "cRDirectX::Init()",
-          "score": 0.685,
-          "name_score": 0.6,
-          "size_score": 0.8125
-        },
-        {
-          "symbol": "cRSound::Init(cRSoundBank*)",
-          "score": 0.6465,
-          "name_score": 0.45,
-          "size_score": 0.9412
-        },
-        {
-          "symbol": "KeyboardAI()",
-          "score": 0.645,
-          "name_score": 0.45,
-          "size_score": 0.9375
+          "symbol": "cRBodPos::cRBodPos()",
+          "score": 0.7465,
+          "name_score": 0.9,
+          "size_score": 0.5161
         }
       ]
     },
