@@ -1,19 +1,23 @@
 # pack_color_rgba_u8 @ 0x44dbf0
 
-Exact thiscall match. Converts a `tColour` record to the packed BGRA byte
+Exact authored `tColourSmall::operator=(const tColour&)` match. Converts a
+`tColour` record to the packed BGRA byte
 record used by sprite and mesh draw paths: float `r/g/b/a` are multiplied by
 `255.0f`, converted through the native `__ftol` path, and stored as
 `tColourSmall::{r,g,b,a}` at byte offsets `+2/+1/+0/+3`.
 
-Android's symbol-preserving build names the owner `tColourSmall` and exposes
-this exact operation as `tColourSmall::operator=(tColour const&)`: its four
-stores use the same `+2/+1/+0/+3` layout. `G0SetColour` reads those bytes back
-as red, green, blue, and alpha, independently closing the four-byte class
-layout. The stable Windows harness name remains `pack_color_rgba_u8`.
+Android and iOS name this exact operation
+`tColourSmall::operator=(tColour const&)`. Android's ARM body explicitly
+restores `r0 = this` after its conversion calls, matching Windows
+`eax = this`; this distinguishes the receiver-return contract from the void
+axis/quaternion assignment bodies. Its four stores use the same
+`+2/+1/+0/+3` layout. `G0SetColour` reads those bytes back as red, green,
+blue, and alpha, independently closing the four-byte class layout. The stable
+Windows harness name remains `pack_color_rgba_u8`.
 
 The shared class replaces the temporary descriptive `ColorBGRA8` shell.
-`draw_sprite_quad`, `set_object_color`, and the track cache builder retain their
-measured code generation with the authored owner.
+All six Windows callers now use the authored operator and retain their measured
+code generation.
 
 The checked-in headers and IDA database carry the recovered prototype. Binary
 Ninja accepts the `tColourSmall*` prototype in preview, but the live database

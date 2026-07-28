@@ -4611,7 +4611,10 @@
     {
       "address": "0x44dbf0",
       "name": "pack_color_rgba_u8",
-      "description": "Exact Windows implementation of the authored `tColourSmall::operator=(tColour const&)` role: converts one four-float RGBA tuple in `[0,1]` into the four-byte BGRA record used by sprite and mesh draw paths. Android independently preserves the same `+2/+1/+0/+3` stores."
+      "aliases": [
+        "tColourSmall_operator_assign_colour"
+      ],
+      "description": "Exact Windows implementation of the authored `tColourSmall::operator=(const tColour&)`: converts one four-float RGBA tuple in [0,1] into the four-byte BGRA record used by sprite and mesh draw paths. Windows returns the receiver in EAX; Android explicitly restores the receiver in r0 after its conversion calls, and iOS retains the same exact-demangled owner and parameter."
     },
     {
       "address": "0x44dc50",

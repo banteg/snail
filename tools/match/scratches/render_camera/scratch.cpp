@@ -88,7 +88,7 @@ void render_camera(
 
         tColourSmall packed_fog;
         packed_fog.noop_this_constructor();
-        packed_fog.pack_color_rgba_u8(&g_game->fog_color);
+        packed_fog.operator=(g_game->fog_color);
         packed_fog.a = 0;
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 34, *(int*)&packed_fog);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 140, 3);

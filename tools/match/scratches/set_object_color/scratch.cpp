@@ -11,7 +11,7 @@ void set_object_color(Object* object, tColour color)
     ObjectRenderVertex* vertices;
 
     out.noop_this_constructor();
-    out.pack_color_rgba_u8(&color);
+    out.operator=(color);
 
     if ((object->flags & OBJECT_FLAG_RENDER_BUFFERS_READY) != 0) {
         object->render_buffers->vertex_buffer->vtbl->Lock(

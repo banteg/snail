@@ -50,7 +50,10 @@ extern tColour g_temp_colour; // data_503308
 // order through operator=(tColour const&) and G0SetColour.
 struct tColourSmall {
     tColourSmall* noop_this_constructor();
-    tColourSmall* pack_color_rgba_u8(tColour* color); // @ 0x44dbf0; tColourSmall::operator=
+    // Mobile proves the authored operator name and const-reference parameter.
+    // Windows requires the receiver result; this pointer spelling preserves
+    // the already-exact Windows helper shape.
+    tColourSmall* operator=(const tColour& color); // @ 0x44dbf0
 
     unsigned char b; // +0x00
     unsigned char g; // +0x01

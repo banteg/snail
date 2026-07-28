@@ -46,8 +46,8 @@ int get_or_append_object_texture_group_vertex(
     g_object_grouped_vertex_scratch[i].v = 1.0f - v;
 
     if ((object->flags & OBJECT_FLAG_USE_VERTEX_COLOURS) != 0) {
-        ((tColourSmall*)&g_object_grouped_vertex_scratch[i].diffuse)->pack_color_rgba_u8(
-            &object->vertex_colours[vertex_index]);
+        ((tColourSmall*)&g_object_grouped_vertex_scratch[i].diffuse)->operator=(
+            object->vertex_colours[vertex_index]);
     } else {
         g_object_grouped_vertex_scratch[i].diffuse = 0xffffffff;
     }

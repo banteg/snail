@@ -44,7 +44,7 @@ void SegmentCache::build_track_render_caches(tColour skirt_color)
     int index_counts[TRACK_RENDER_CACHE_FAMILY_COUNT];
 
     white_color.noop_this_constructor();
-    skirt_color_bgra.pack_color_rgba_u8(&skirt_color);
+    skirt_color_bgra.operator=(skirt_color);
     *(int*)&white_color = -1;
     ((AudioBackend*)this)->noop_runtime_ai();
 

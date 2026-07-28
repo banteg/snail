@@ -186,7 +186,7 @@ normalized listings remain byte-identical:
 
 Android's symbol-preserving `tColourSmall` class proves the four-byte BGRA
 owner stored at `SegmentCache +0x00`; its assignment operator uses the same
-`+2/+1/+0/+3` stores as Windows `pack_color_rgba_u8`. The manager field and
+`+2/+1/+0/+3` stores as the exact Windows body. The manager field and
 local all-white value now use that authored type, while the fringe builder
 still passes the same four packed bytes by value. Focused Wibo remains at the
 honest 99.79%, 475/475 instructions, with all 20 operands clean and only the

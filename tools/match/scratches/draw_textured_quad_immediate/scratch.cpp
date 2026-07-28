@@ -40,7 +40,7 @@ void draw_textured_quad_immediate(
 
     tColourSmall packed;
     packed.noop_this_constructor();
-    packed.pack_color_rgba_u8(color);
+    packed.operator=(*color);
 
     ObjectRenderVertex* vertices;
     g_direct3d_renderer.renderer_state->vertex_buffer->vtbl->Lock(

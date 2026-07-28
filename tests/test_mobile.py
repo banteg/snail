@@ -1140,6 +1140,36 @@ def test_mobile_tcolour_methods_recover_authored_surface() -> None:
         source = path.read_text(encoding="utf-8")
         assert not any(name in source for name in old_names)
 
+    small_entry = entries["pack_color_rgba_u8"]
+    assert small_entry["status"] == "verified"
+    assert small_entry["confidence"] == "high"
+    assert "tColourSmall::operator=(tColour const&)" in {
+        small_entry.get("android_symbol"),
+        small_entry.get("ios_symbol"),
+    }
+    assert (
+        "tColourSmall_operator_assign_colour"
+        in functions_by_name["pack_color_rgba_u8"]["aliases"]
+    )
+    assert "tColourSmall* operator=(const tColour& color);" in colour_header
+    small_source = (
+        repo_root / "tools/match/scratches/pack_color_rgba_u8/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert (
+        "tColourSmall* tColourSmall::operator=(const tColour& color)"
+        in small_source
+    )
+    small_config = (
+        repo_root / "tools/match/scratches/pack_color_rgba_u8/scratch.conf"
+    ).read_text(encoding="utf-8")
+    small_symbol = "??4tColourSmall@@QAEPAU0@ABUtColour@@@Z"
+    assert f"SYMBOL={small_symbol}\n" in small_config
+    assert small_symbol in references_by_name["pack_color_rgba_u8"]["aliases"]
+    for path in (repo_root / "tools/match/scratches").rglob("scratch.cpp"):
+        if "build" in path.parts:
+            continue
+        assert "pack_color_rgba_u8(" not in path.read_text(encoding="utf-8")
+
     verified = load_json(
         repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
     )

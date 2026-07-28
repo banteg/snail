@@ -2044,6 +2044,15 @@
       "description": "Exact Windows void tColour::Set(float, float, float) entry; stores r/g/b and leaves alpha unchanged."
     },
     {
+      "address": "0x44dbf0",
+      "name": "pack_color_rgba_u8",
+      "kind": "function",
+      "aliases": [
+        "??4tColourSmall@@QAEPAU0@ABUtColour@@@Z"
+      ],
+      "description": "Exact Windows tColourSmall assignment from const tColour: converts one four-float RGBA tuple in [0,1] into the four-byte BGRA record and returns the receiver in EAX. Android and iOS preserve the authored operator name, const-reference parameter, and stores; Android additionally restores the receiver in r0."
+    },
+    {
       "address": "0x44dc50",
       "name": "set_color_white",
       "kind": "function",
