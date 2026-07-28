@@ -20761,6 +20761,17 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
         Path(__file__).parents[1]
         / "tools/match/scratches/initialize_slalomdouble_path_template_pair/scratch.cpp"
     ).read_text(encoding="utf-8")
+    health = json.loads(
+        (
+            Path(__file__).parents[1]
+            / "analysis/decompile/health_checks.json"
+        ).read_text(encoding="utf-8")
+    )
+    slalomdouble_health = next(
+        check
+        for check in health["checks"]
+        if check["name"] == "bn_slalomdouble_path_full_owner_abi"
+    )
 
     for type_name, width in (
         ("Vec3", "0x0C"),
@@ -20799,13 +20810,91 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
         )
 
     assert "SLALOMDOUBLE_P_PATH_USER_VAR_UPDATES" in replay
+    assert "SLALOMDOUBLE_CONTROL_USER_VAR_UPDATES" in replay
+    assert "SLALOMDOUBLE_CONTROL_STACK_LIFETIME_SPLITS" in replay
+    assert "SLALOMDOUBLE_MESH_STACK_LIFETIME_SPLITS" in replay
+    assert "SLALOMDOUBLE_FACE_REGISTER_LIFETIME_SPLITS" in replay
+    assert "apply_split_user_var_updates(" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
+    for name, variable_type in (
+        ("lead_sample_z", "float"),
+        ("curve_phase", "float"),
+        ("lead_sample_index", "int32_t"),
+        ("tail_sample_index", "int32_t"),
+        ("tail_sample_z", "float"),
+        ("curve_index", "int32_t"),
+        ("center_distance_a", "float"),
+        ("center_distance_b", "float"),
+        ("curve_sample_index", "int32_t"),
+        ("curve_sample_z", "float"),
+        ("mesh_facequads", "ObjectFaceQuad*"),
+        ("mesh_vertices", "Vec3*"),
+        ("mesh_column", "int32_t"),
+        ("mesh_width_cells", "int32_t"),
+        ("face_column_for_uv", "int32_t"),
+        ("v0_index", "int32_t"),
+        ("v1_index", "int32_t"),
+        ("v0", "float"),
+        ("v1", "float"),
+        ("u1_index", "int32_t"),
+        ("face_pass", "int32_t"),
+        ("u0", "float"),
+        ("u1", "float"),
+        ("face_width_plus_one_ecx", "int32_t"),
+        ("face_width_plus_one_edx", "int32_t"),
+    ):
+        assert f'        "{name}",' in replay
+        assert f'        "{variable_type}",' in replay
+    for definition in (
+        '("0x425097", "mlil_ssa", "StackVariableSourceType", 71, 8)',
+        '("0x425151", "mlil_ssa", "StackVariableSourceType", 257, 8)',
+        '("0x42520a", "mlil_ssa", "StackVariableSourceType", 442, 8)',
+        '("0x425241", "mlil_ssa", "StackVariableSourceType", 497, -72)',
+        '("0x4256f7", "mlil_ssa", "StackVariableSourceType", 1703, 8)',
+        '("0x4256f7", "mlil_ssa", "StackVariableSourceType", 1703, -76)',
+        '("0x42585b", "mlil_ssa", "StackVariableSourceType", 2059, 8)',
+        '("0x42588a", "mlil_ssa", "StackVariableSourceType", 2106, -72)',
+    ):
+        assert definition in replay
+    for rejected_face_pass_phi in (
+        "0x425817",
+        "0x42585b\", \"mlil_ssa\", \"StackVariableSourceType\", 2059, -72",
+        "0x425a0e",
+    ):
+        assert rejected_face_pass_phi not in replay
     for rejected_index in (825, 939, 1745, 1814):
         assert f"({rejected_index}, 66," not in replay
     assert slalomdouble_scratch.count("if (curve_index == 0)") == 2
     assert "if (i <= 4)" not in slalomdouble_scratch
+    for rendered_owner in (
+        "int32_t lead_sample_index = 0",
+        "int32_t tail_sample_index = 0x42",
+        "int32_t curve_index = 0",
+        "float curve_phase",
+        "float center_distance_a",
+        "struct Vec3* mesh_vertices",
+        "int32_t mesh_column = 0",
+        "int32_t mesh_width_cells = width_cells",
+        "int32_t face_column_for_uv = 0",
+        "float v0",
+        "float v1",
+        "int32_t face_pass = 0",
+        "float u0",
+        "float u1",
+        "struct ObjectFaceQuad* face = &facequads[",
+        "int32_t face_width_plus_one_ecx",
+        "int32_t face_width_plus_one_edx",
+    ):
+        assert rendered_owner in slalomdouble_health["required_substrings"]
+    for stale_width_alias in (
+        "width_cells_ = 0",
+        "width_cells_ += 1",
+        "width_cells_ = j",
+    ):
+        assert stale_width_alias in slalomdouble_health["forbidden_substrings"]
+
 
 
 def test_supertramp_start_path_replay_preserves_mesh_owner_lifetimes() -> None:

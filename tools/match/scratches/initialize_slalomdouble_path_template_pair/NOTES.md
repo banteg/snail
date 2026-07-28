@@ -166,3 +166,21 @@ The exact body pair also corrects the shared enum identity. Windows writes kind
 pre-mobile name; the canonical label is now
 `PATH_TEMPLATE_KIND_SLALOMDOUBLE`. This ownership change is analysis-only and
 does not alter the accepted 39.55% matcher source.
+
+## 2026-07-28 complete control and mesh lifetime replay
+
+The paired Android and iOS bodies independently preserve the four-sample lead
+and tail loops, the 62-sample curve induction, and its phase and folded-distance
+graph. Exact Windows MLIL definitions split those logical owners without
+transferring mobile addresses. Windows-only instructions separately prove the
+mesh, UV, face-pass, and ECX/EDX width-reload lifetimes.
+
+One batched preview/apply/readback transaction verified 23 split-lifetime groups
+plus two bounded stack scalars. An idempotent live replay completed in 17.14
+seconds with every owner already current. A strict paired Binary Ninja/IDA
+export reported zero lane mismatches and 1,142/1,142 passing health checks.
+
+This is analysis-only. Focused matching remains **39.55%** at **642/683**
+instructions with a five-instruction exact prefix, 40 accepted operands, 10
+unaudited operands, and no unresolved or mismatched operands. No matcher source
+was changed.
