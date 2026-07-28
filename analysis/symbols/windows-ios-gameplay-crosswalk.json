@@ -1456,7 +1456,7 @@
       "ios_symbol": "cRTip::Init(cRTipData*, bool)",
       "source_object": "Tips.o",
       "confidence": "high",
-      "notes": "The 0x20-byte Tip and 0x14-byte TipData field order agrees across ports. Windows reads the hide-disable-button formal as a full 32-bit stack argument, while iOS v1.5 names it bool and v1.9 names it signed char, so the Windows declaration intentionally retains int32_t.",
+      "notes": "The 0x20-byte Tip and 0x14-byte TipData field order agrees across ports. All three builds pass TipData +0x04 as the main widget X/anchor-X and +0x08 as its Y coordinate; the optional buttons reuse +0x04 with +40/-60 offsets. Windows reads the hide-disable-button formal as a full 32-bit stack argument, while the mobile builds name it bool, so the Windows declaration intentionally retains int32_t.",
       "android_symbol": "cRTip::Init(cRTipData*, bool)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },

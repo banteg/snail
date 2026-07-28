@@ -299,8 +299,8 @@ steering_stored:
                                             ->level_definition
                                             .segment_slots[row_record->row_event_id - 1]
                                             .message_text;
-            row_event.definition.layout_y = 0.0f;
-            row_event.definition.text_scale = 30.0f;
+            row_event.definition.anchor_x = 0.0f;
+            row_event.definition.layout_y = 30.0f;
             row_event.definition.dismiss_seconds = game
                                                         ->level_definition
                                                         .segment_slots[row_record->row_event_id - 1]

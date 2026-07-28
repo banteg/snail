@@ -199,8 +199,8 @@
 0043b764        if (player->game->segment_slots_one_based[(&game_22->runtime_rows[0].row_event_id)[eax_34]].message_text[0] != 0)
 0043b76a        player->row_event.tip_definition.flags = 2
 0043b796        player->row_event.tip_definition.text = &player->game->segment_slots_one_based[(&game_22->runtime_rows[0].row_event_id)[eax_34]].message_text
-0043b79c        player->row_event.tip_definition.layout_y = 0f
-0043b7a6        player->row_event.tip_definition.text_scale = 30f
+0043b79c        player->row_event.tip_definition.anchor_x = 0f
+0043b7a6        player->row_event.tip_definition.layout_y = 30f
 0043b7d2        player->row_event.tip_definition.dismiss_seconds = player->game->segment_slots_one_based[(&game_22->runtime_rows[0].row_event_id)[eax_34]].message_duration.bits
 0043b7d8        int16_t eax_40
 0043b7d8        eax_40.b = player->row_event_cutscene_started
@@ -1143,7 +1143,7 @@
 0043c88c        struct SubgameRuntime* game_5 = player->game
 0043c892        int32_t level_mode_1 = game_5->level_mode
 0043c89c        if (level_mode_1 == 0 || level_mode_1 == 1)
-0043c8b8        if (game_5->completion.gate_18 == 1 && (player->control_source->control_flags_a:1.b & 0x40) != 0)
+0043c8b8        if (game_5->completion.fast_forward_enabled == 1 && (player->control_source->control_flags_a:1.b & 0x40) != 0)
 0043c8ba        player->completion_handoff_timer = 5.0999999f
 0043c8c6        if (game_5->completion.state == COMPLETION_STATE_CONTINUE_ACCEPTED)
 0043c8c8        player->completion_handoff_timer = 5.0999999f

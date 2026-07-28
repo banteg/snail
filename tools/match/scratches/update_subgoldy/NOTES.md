@@ -842,3 +842,15 @@ The older `movement_fire_progress` names remain only as stable Frida trace
 schema keys; the C++ and analysis struct now carry the narrower ownership.
 Field spelling does not affect code generation, so the focused match remains
 honestly unchanged.
+
+## 2026-07-28 row-event TipData coordinates
+
+The row-event producer's adjacent `0.0f` and `30.0f` stores are now
+`TipData::anchor_x` and `TipData::layout_y`. Dual-mobile `cRTip::Init` bodies
+independently pass those exact lanes as widget X/anchor-X and Y, and the
+Windows initializer consumes them in the same argument positions. The former
+`text_scale` name at `+0x08` had no font-scale consumer and is retired.
+
+This ownership correction is codegen-neutral. The focused result remains
+82.67%, 2,086/2,087 instructions, with 314 clean masked operands and no
+unresolved or mismatched references.

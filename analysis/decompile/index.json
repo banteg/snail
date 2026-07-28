@@ -10,7 +10,7 @@
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "binja_analysis_refreshed": false,
   "ida_refreshed": true,
@@ -18,12 +18,12 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_object_distort",
-      "address": "0x41aa30"
+      "name": "update_subgoldy",
+      "address": "0x43b120"
     },
     {
-      "name": "apply_distort_to_object",
-      "address": "0x41aa50"
+      "name": "initialize_tip",
+      "address": "0x448a40"
     }
   ],
   "health_check_count": 1143,

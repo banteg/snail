@@ -237,8 +237,8 @@ LABEL_60:
             player->row_event.tip_definition.flags = 2;
             player->row_event.tip_definition.text = (char *)(&player->game->segment_cache.slots[141][2].bod.bod.list_prev
                                                            + 4232 * runtime_row->row_event_id);
-            player->row_event.tip_definition.layout_y = 0.0;
-            player->row_event.tip_definition.text_scale = 30.0;
+            player->row_event.tip_definition.anchor_x = 0.0;
+            player->row_event.tip_definition.layout_y = 30.0;
             player->row_event.tip_definition.dismiss_seconds = *(float *)&player->game->tutorial._pad_10[16928 * runtime_row->row_event_id + 8];
             if ( player->row_event_cutscene_started == 0 )
             {
@@ -710,7 +710,7 @@ LABEL_98:
             v66 = player->game;
             if ( v66->level_mode <= 1u )
             {
-              if ( v66->completion.gate_18 == 1 && (player->control_source->control_flags_a & 0x4000) != 0 )
+              if ( v66->completion.fast_forward_enabled == 1 && (player->control_source->control_flags_a & 0x4000) != 0 )
                 player->completion_handoff_timer = 5.0999999;
               if ( v66->completion.state == COMPLETION_STATE_CONTINUE_ACCEPTED )
                 player->completion_handoff_timer = 5.0999999;

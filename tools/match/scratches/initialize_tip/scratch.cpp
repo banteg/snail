@@ -24,11 +24,11 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
         FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         definition->text,
         0x14,
+        definition->anchor_x,
         definition->layout_y,
-        definition->text_scale,
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
         alignment >> 1,
-        definition->layout_y);
+        definition->anchor_x);
 
     TipData* live_definition = definition;
     int live_flags = live_definition->flags;
@@ -49,7 +49,7 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
                 0.0f,
                 color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 2,
-                definition->layout_y + 40.0f);
+                definition->anchor_x + 40.0f);
 
             widget_disable = g_game->border_manager.allocate_border();
             widget_disable->initialize_frontend_widget(
@@ -61,7 +61,7 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
                 0.0f,
                 color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 2,
-                definition->layout_y - 60.0f);
+                definition->anchor_x - 60.0f);
             widget_disable->stack_widget_below(widget_main);
             widget_ok->stack_widget_below(widget_main);
         } else {
@@ -74,7 +74,7 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
                 0.0f,
                 color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 2,
-                definition->layout_y);
+                definition->anchor_x);
             widget_disable = 0;
             widget_ok->stack_widget_below(widget_main);
         }

@@ -25,8 +25,9 @@ operands OK and no unresolved or mismatched operands.
 2026-06-21 tip argument/shape pass: native branches to the OK-only path when
 the second argument is nonzero, so the parameter is now modeled as
 `hide_disable_button`. Spelling the alignment as an unsigned masked value and
-passing the button y positions as direct `definition->layout_y +/- constant`
-expressions moves focused Wibo to 81.70%, 152/154 candidate/target
+passing the button anchor positions as direct
+`definition->anchor_x +/- constant` expressions moves focused Wibo to 81.70%,
+152/154 candidate/target
 instructions, with 25 clean masked operands. Remaining residual is source-shape
 scheduling around the initial `widget_main` store versus definition reload,
 main-widget argument load order, and final owner restore.
@@ -68,3 +69,17 @@ Exact 0x14/0x20/0x98 owner-size assertions and paired health checks prevent the
 analysis from drifting back to synthetic slots, `void*` widgets, or raw root
 offsets. The honest matcher result remains 83.12%, 154/154, prefix 16, with 25
 clean masked operands; no source scheduling was changed for appearance.
+
+## 2026-07-28 dual-mobile TipData coordinate ownership
+
+The complete Android and iOS `cRTip::Init(cRTipData*, bool)` bodies close the
+two formerly misnamed floats. In all three builds `TipData +0x04` is passed as
+both the main widget X and anchor-X, while `+0x08` is passed as its Y
+coordinate. The OK and Disable children reuse `+0x04` with `+40` and `-60`
+offsets; neither port consumes `+0x08` as a font scale. Windows independently
+confirms the producer by storing `(0.0f, 30.0f)` into the row-event definition
+before enqueueing it.
+
+The shared owner now names these fields `anchor_x` and `layout_y`. This is a
+layout-preserving ownership correction: focused matching remains honestly at
+83.12%, 154/154 instructions, prefix 16, with all audited operands clean.

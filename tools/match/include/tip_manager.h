@@ -8,8 +8,8 @@ class FrontendWidget;
 
 struct TipData {
     unsigned int flags;        // +0x00
-    float layout_y;            // +0x04
-    float text_scale;          // +0x08
+    float anchor_x;            // +0x04
+    float layout_y;            // +0x08
     float dismiss_seconds;     // +0x0c
     char* text;                // +0x10
 };

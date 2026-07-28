@@ -2981,8 +2981,8 @@ SUB_HOVER_FIELD_UPDATES = (
 
 TIP_DATA_FIELD_UPDATES = (
     ("0x00", "flags", "uint32_t"),
-    ("0x04", "layout_y", "float"),
-    ("0x08", "text_scale", "float"),
+    ("0x04", "anchor_x", "float"),
+    ("0x08", "layout_y", "float"),
     ("0x0c", "dismiss_seconds", "float"),
     ("0x10", "text", "char*"),
 )

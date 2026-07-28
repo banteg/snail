@@ -306,8 +306,8 @@ Two `update_subgoldy` corrections from the latest static audit:
 - `player + 0x1e8` is a real inline `PlayerRowEventState`
   - `+0x00`: `id`
   - `+0x04`: inline `tip_definition.flags`
-  - `+0x08`: `tip_definition.layout_y`
-  - `+0x0c`: `tip_definition.text_scale`
+  - `+0x08`: `tip_definition.anchor_x`
+  - `+0x0c`: `tip_definition.layout_y`
   - `+0x10`: `tip_definition.dismiss_seconds`
   - `+0x14`: `tip_definition.text`
   - `update_subgoldy` seeds that tail as a small tip payload and passes `&player->row_event.tip_definition` to `enqueue_tip_message`; it is not a standalone row-event controller suffix

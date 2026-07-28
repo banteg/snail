@@ -2098,8 +2098,8 @@ typedef struct ClickStart {
 
 typedef struct TipData {
     uint32_t flags;
+    float anchor_x;
     float layout_y;
-    float text_scale;
     float dismiss_seconds;
     char* text;
 } TipData;
