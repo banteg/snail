@@ -4,7 +4,7 @@
 
 // Builds the Dip attachment path-template pair; iOS Path.o names this `cRPath::BuildDip(float, int, bool, char*, char*)`.
 void __thiscall initialize_dip_path_template_pair(
-        Path *self,
+        cRPath *self,
         float curve_source,
         int32_t width_cells_,
         bool side_exit,

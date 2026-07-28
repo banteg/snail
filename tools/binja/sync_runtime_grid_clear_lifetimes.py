@@ -291,7 +291,7 @@ RUNTIME_ATTACHMENT_INSTALL_USER_VAR_UPDATES = (
         3686,
         67,
         "selected_attachment_path",
-        "Path*",
+        "cRPath*",
     ),
     (
         "populate_runtime_track_cells_from_segments",

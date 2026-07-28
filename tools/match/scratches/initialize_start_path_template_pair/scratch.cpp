@@ -110,7 +110,7 @@ static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
     }
 }
 
-void Path::initialize_start_path_template_pair(
+void cRPath::initialize_start_path_template_pair(
     float length,
     int width_cells_,
     bool side_exit,

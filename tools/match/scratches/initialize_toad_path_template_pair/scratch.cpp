@@ -132,7 +132,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     }
 }
 
-void Path::initialize_toad_path_template_pair(
+void cRPath::initialize_toad_path_template_pair(
     bool turn_left, char* texture_a, char* texture_b, char* vertical_texture)
 {
     int lead_count;

@@ -4,7 +4,7 @@
 /* function: initialize_path_follow_golb @ 0x421770 */
 
 00421774        state->active = 1
-00421777        struct Path* attachment_template_record = source_cell->attachment_template_record
+00421777        struct cRPath* attachment_template_record = source_cell->attachment_template_record
 0042177a        state->source_cell = source_cell
 0042177d        state->template_record = attachment_template_record
 00421784        state->sample_index = 0

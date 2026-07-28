@@ -31,7 +31,6 @@
 #include "vector3.h"
 #include "warning.h"
 
-struct Path;
 struct Object;
 
 class Player;

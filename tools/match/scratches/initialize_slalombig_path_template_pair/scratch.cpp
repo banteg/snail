@@ -186,7 +186,7 @@ static __forceinline void build_extrapolated_strip_mesh(
     }
 }
 
-void Path::initialize_slalombig_path_template_pair(
+void cRPath::initialize_slalombig_path_template_pair(
     int curve_segments,
     int width_cells_,
     bool side_exit,

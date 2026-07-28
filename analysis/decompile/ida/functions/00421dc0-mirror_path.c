@@ -3,7 +3,7 @@
 /* selector: mirror_path */
 
 // Clones one path-template pair, negates X-space samples, and flips strip winding for the mirrored half. iOS Path.o names this `cRPath::Mirror(cRPath*)`.
-void __thiscall mirror_path(Path *self, Path *source)
+void __thiscall mirror_path(cRPath *self, cRPath *source)
 {
   Object *object; // eax
   signed int v5; // edx

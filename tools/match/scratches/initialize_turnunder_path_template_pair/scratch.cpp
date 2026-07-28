@@ -189,7 +189,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     }
 }
 
-void Path::initialize_turnunder_path_template_pair(
+void cRPath::initialize_turnunder_path_template_pair(
     float turns, int width_cells_, bool side_exit,
     char* texture_a, char* texture_b, char* vertical_texture)
 {

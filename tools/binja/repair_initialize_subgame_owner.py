@@ -570,7 +570,7 @@ def _path_function_spec(
     missing_stale_variable_storages: tuple[int, ...] = (),
     discard_variables: tuple[dict[str, object], ...] = (),
 ) -> dict[str, object]:
-    expected_parameters = (("self", "struct Path*"),) + tuple(
+    expected_parameters = (("self", "struct cRPath*"),) + tuple(
         (parameter_name, expected_type)
         for parameter_name, expected_type, _stale_type in parameters
     )
@@ -606,7 +606,7 @@ def _path_function_spec(
             "index": 0,
             "storage": 67,
             "name": "self",
-            "type": "struct Path*",
+            "type": "struct cRPath*",
         }
     ]
     for stack_index, (parameter_name, expected_type, _stale_type) in enumerate(
@@ -1363,7 +1363,7 @@ FUNCTION_SPECS.update(
             return_type="void",
             stale_return_type="int32_t",
             calling_convention="__thiscall",
-            parameters=(("source", "struct Path*", "struct PathTemplate*"),),
+            parameters=(("source", "struct cRPath*", "struct PathTemplate*"),),
         ),
     }
 )

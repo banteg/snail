@@ -1,6 +1,6 @@
 // Authored cRPath records and attachment-follow runtime views. Windows stores
-// 126 exact 0xa8-byte Path owners as 63 primary/secondary pairs; iOS Path.o
-// preserves the cRPath methods and cRPathFollowGoldy traversal vocabulary.
+// 126 exact 0xa8-byte owners as 63 primary/secondary pairs; Android and iOS
+// preserve the cRPath methods and cRPathFollowGoldy traversal vocabulary.
 #ifndef TRACK_ATTACHMENT_TYPES_H
 #define TRACK_ATTACHMENT_TYPES_H
 
@@ -48,8 +48,8 @@ enum PathTemplateKind {
     PATH_TEMPLATE_KIND_TWISTER2 = 0x2d,
 };
 
-struct Path : public BodBase {
-    Path* initialize_path_template_record_pair(); // @ 0x4085c0
+struct cRPath : public BodBase {
+    cRPath* initialize_path_template_record_pair(); // @ 0x4085c0
     void get_path_nodes(); // @ 0x41b0a0
     void initialize_worm_path_template_pair(char* texture_path);
     void initialize_cage2_path_template_pair(
@@ -248,7 +248,7 @@ struct Path : public BodBase {
         char* vertical_texture);
     void build_track_fringe_mesh(char* texture_path, float clamp_side); // @ 0x4246a0, cRPath::BuildFringe
     void build_track_fringe_supertramp_mesh(char* texture_path); // @ 0x424ad0, cRPath::BuildFringeSuperTramp
-    void mirror_path(Path* source); // @ 0x421dc0, cRPath::Mirror
+    void mirror_path(cRPath* source); // @ 0x421dc0, cRPath::Mirror
     void __fastcall calc_path_length_z(); // @ 0x42c600, cRPath::CalcLengthZ
     void try_enter_track_attachment_from_swept_motion(
         float px, float py, float pz,
@@ -286,12 +286,17 @@ struct Path : public BodBase {
         Vector3& out, int node, int row_index, Vector3& local); // @ 0x42b9c0, void cRPath::GetPos
 };
 
-typedef char Path_must_be_0xa8[
-    (sizeof(Path) == 0xa8) ? 1 : -1];
+typedef char cRPath_must_be_0xa8[
+    (sizeof(cRPath) == 0xa8) ? 1 : -1];
+
+// Compatibility vocabulary for older scratches and analysis notes. Mobile
+// symbols establish cRPath as the authored identity; Windows establishes the
+// complete layout and ABI.
+typedef cRPath Path;
 
 struct PathPair {
-    Path primary;   // +0x00
-    Path secondary; // +0xa8, X-mirrored or explicitly built peer
+    cRPath primary;   // +0x00
+    cRPath secondary; // +0xa8, X-mirrored or explicitly built peer
 };
 
 typedef char PathPair_must_be_0x150[
@@ -351,7 +356,7 @@ struct SubLoc : public BodBase {
     unsigned char is_sub_loc_empty(); // @ 0x439ab0, cRSubLoc::IsEmpty
     unsigned char is_sub_loc_slide(); // @ 0x439ad0, cRSubLoc::IsSlide
 
-    Path* attachment_template_record; // +0x38, installed by P/p entry tiles
+    cRPath* attachment_template_record; // +0x38, installed by P/p entry tiles
     SubLocTileId tile_id;                // +0x3c, SubLocTileIdValue
     unsigned char open_edge_mask;       // +0x3d, SubLocOpenEdgeFlag bits
     char _pad_3e[0x40 - 0x3e];
@@ -444,7 +449,7 @@ public:
 
     unsigned char active;        // +0x00
     char unknown_01[3];
-    Path* template_record; // +0x04
+    cRPath* template_record; // +0x04
     SubLoc* source_cell;         // +0x08
     int sample_index;            // +0x0c
     float progress;              // +0x10

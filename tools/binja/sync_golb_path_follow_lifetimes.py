@@ -59,7 +59,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x10: ("anchor_position", "Vec3"),
     },
     "GolbPathFollowState": {
-        0x04: ("template_record", "Path*"),
+        0x04: ("template_record", "cRPath*"),
         0x08: ("source_cell", "TrackRowCell*"),
         0x18: ("output_position", "Vec3"),
         0x24: ("shot", "GolbShot*"),

@@ -8,7 +8,7 @@
 float cosine(float angle);
 
 
-void Path::initialize_cage2_path_template_pair(
+void cRPath::initialize_cage2_path_template_pair(
     int width_cells_, char* texture_a, char* texture_b, char* vertical_texture)
 {
     int mesh_cursor = 0;

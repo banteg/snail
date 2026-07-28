@@ -234,6 +234,23 @@ TRACK_RENDER_CACHE_OWNER_MARKERS = (
     "void __thiscall remove_track_render_cache_bods(SegmentCache* manager);",
 )
 
+PATH_OWNER_MARKERS = (
+    "typedef struct cRPath {",
+    "} cRPath;",
+    "typedef cRPath Path;",
+    "cRPath primary;",
+    "cRPath secondary;",
+    "struct cRPath* attachment_template_record;",
+    "cRPath* template_record;",
+    "void __fastcall get_path_nodes(cRPath* self);",
+    "void __thiscall mirror_path(cRPath* self, cRPath* source);",
+)
+
+PATH_OWNER_SIZES = {
+    "cRPath": 0xA8,
+    "PathPair": 0x150,
+}
+
 PATH_MANAGER_OWNER_MARKERS = (
     "typedef struct cRPathManager {",
     "} cRPathManager;",
@@ -650,7 +667,7 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ),
     (
         "selected_attachment_path",
-        "Path *selected_attachment_path;",
+        "cRPath *selected_attachment_path;",
         0x436D17,
         None,
     ),
@@ -803,7 +820,7 @@ PROJECT_ATTACHMENT_LVAR_SPECS = (
     ),
     (
         "attachment_template_record",
-        "Path *attachment_template_record;",
+        "cRPath *attachment_template_record;",
         0x4444F4,
         None,
     ),
@@ -2189,15 +2206,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "get_path_nodes",
-        "void __fastcall get_path_nodes(Path* self);",
+        "void __fastcall get_path_nodes(cRPath* self);",
     ),
     (
         "calc_path_length_z",
-        "void __fastcall calc_path_length_z(Path* self);",
+        "void __fastcall calc_path_length_z(cRPath* self);",
     ),
     (
         "mirror_path",
-        "void __thiscall mirror_path(Path* self, Path* source);",
+        "void __thiscall mirror_path(cRPath* self, cRPath* source);",
     ),
     (
         "set_matrix_identity",
@@ -2285,7 +2302,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "compute_kind42_attachment_transform",
-        "void __thiscall compute_kind42_attachment_transform(Path* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle);",
+        "void __thiscall compute_kind42_attachment_transform(cRPath* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle);",
     ),
     (
         "request_object_vertices",
@@ -2845,15 +2862,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "try_enter_track_attachment_from_swept_motion",
-        "void __thiscall try_enter_track_attachment_from_swept_motion(Path* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, TrackRowCell* source_cell);",
+        "void __thiscall try_enter_track_attachment_from_swept_motion(cRPath* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, TrackRowCell* source_cell);",
     ),
     (
         "get_path_position_at_node",
-        "void __thiscall get_path_position_at_node(Path* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local);",
+        "void __thiscall get_path_position_at_node(cRPath* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local);",
     ),
     (
         "is_point_inside_track_attachment",
-        "bool __thiscall is_point_inside_track_attachment(Path* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell);",
+        "bool __thiscall is_point_inside_track_attachment(cRPath* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell);",
     ),
     (
         "begin_track_attachment_follow_state",
@@ -2865,119 +2882,119 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_loopout_path_template_pair",
-        "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_loopout_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_cage2_path_template_pair",
-        "void __thiscall initialize_cage2_path_template_pair(Path* self, int32_t width_cells_, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_cage2_path_template_pair(cRPath* self, int32_t width_cells_, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_supertramp_path_template_pair",
-        "void __thiscall initialize_supertramp_path_template_pair(Path* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* unused_texture, char* cap_texture);",
+        "void __thiscall initialize_supertramp_path_template_pair(cRPath* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* unused_texture, char* cap_texture);",
     ),
     (
         "initialize_halfpipe_path_template_pair",
-        "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_halfpipe_path_template_pair(cRPath* self, float scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_hump_path_template_pair",
-        "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_hump_path_template_pair(cRPath* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_looptheloop_path_template_pair",
-        "void __thiscall initialize_looptheloop_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_looptheloop_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_looptheloopw_path_template_pair",
-        "void __thiscall initialize_looptheloopw_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_looptheloopw_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_dump_path_template_pair",
-        "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_dump_path_template_pair(cRPath* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_dip_path_template_pair",
-        "void __thiscall initialize_dip_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_dip_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_screw_path_template_pair",
-        "void __thiscall initialize_screw_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_screw_path_template_pair(cRPath* self, int32_t curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_slalom_path_template_pair",
-        "void __thiscall initialize_slalom_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_slalom_path_template_pair(cRPath* self, int32_t curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_worm_path_template_pair",
-        "void __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path);",
+        "void __thiscall initialize_worm_path_template_pair(cRPath* self, char* texture_path);",
     ),
     (
         "initialize_slalombig_path_template_pair",
-        "void __thiscall initialize_slalombig_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_slalombig_path_template_pair(cRPath* self, int32_t curve_segments, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_sweep_path_template_pair",
-        "void __thiscall initialize_sweep_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_sweep_path_template_pair(cRPath* self, float scale_arg, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_snake_path_template_pair",
-        "void __thiscall initialize_snake_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_snake_path_template_pair(cRPath* self, float scale_arg, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_slalomdouble_path_template_pair",
-        "void __thiscall initialize_slalomdouble_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_slalomdouble_path_template_pair(cRPath* self, int32_t curve_segments, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_p_path_template_pair",
-        "void __thiscall initialize_p_path_template_pair(Path* self, int32_t variant, float scale_arg, int32_t width_cells_, float start_x, float end_x, int32_t curve_segments, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_p_path_template_pair(cRPath* self, int32_t variant, float scale_arg, int32_t width_cells_, float start_x, float end_x, int32_t curve_segments, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_start_path_template_pair",
-        "void __thiscall initialize_start_path_template_pair(Path* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_start_path_template_pair(cRPath* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_turnover_path_template_pair",
-        "void __thiscall initialize_turnover_path_template_pair(Path* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_turnover_path_template_pair(cRPath* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_turnoverdouble_path_template_pair",
-        "void __thiscall initialize_turnoverdouble_path_template_pair(Path* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
+        "void __thiscall initialize_turnoverdouble_path_template_pair(cRPath* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_turnunder_path_template_pair",
-        "void __thiscall initialize_turnunder_path_template_pair(Path* self, float turns, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_turnunder_path_template_pair(cRPath* self, float turns, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_wibble_path_template_pair",
-        "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_wibble_path_template_pair(cRPath* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_invert_path_template_pair",
-        "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_invert_path_template_pair(cRPath* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_twister_path_template_pair",
-        "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_twister_path_template_pair(cRPath* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_twister2_path_template_pair",
-        "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_twister2_path_template_pair(cRPath* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_loopbow_path_template_pair",
-        "void __thiscall initialize_loopbow_path_template_pair(Path* self, float curve_scale, uint32_t width_cells_arg, bool mode, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_loopbow_path_template_pair(cRPath* self, float curve_scale, uint32_t width_cells_arg, bool mode, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_toad_path_template_pair",
-        "void __thiscall initialize_toad_path_template_pair(Path* self, bool turn_left, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_toad_path_template_pair(cRPath* self, bool turn_left, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_hill_valley_path_template_pair",
-        "void __thiscall initialize_hill_valley_path_template_pair(Path* self, int32_t width_cells_, float height, float length, bool centered, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_hill_valley_path_template_pair(cRPath* self, int32_t width_cells_, float height, float length, bool centered, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_sbend_path_template_pair",
-        "void __thiscall initialize_sbend_path_template_pair(Path* self, int32_t width_cells_, float height, float z_amplitude, bool centered, char* texture_a, char* texture_b, char* vertical_texture);",
+        "void __thiscall initialize_sbend_path_template_pair(cRPath* self, int32_t width_cells_, float height, float z_amplitude, bool centered, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_subgame",
@@ -4791,6 +4808,11 @@ def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]
 
 def _sync_types(header_path: pathlib.Path) -> int:
     header_text = header_path.read_text(encoding="utf-8")
+    missing_path_owner_markers = [
+        marker
+        for marker in PATH_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_path_manager_owner_markers = [
         marker
         for marker in PATH_MANAGER_OWNER_MARKERS
@@ -4832,7 +4854,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if marker not in header_text
     ]
     if (
-        missing_path_manager_owner_markers
+        missing_path_owner_markers
+        or missing_path_manager_owner_markers
         or missing_bod_core_owner_markers
         or missing_fringe_owner_markers
         or missing_track_render_cache_owner_markers
@@ -4842,6 +4865,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_fringe_mesh_cursor_markers
     ):
         marker_failures = []
+        if missing_path_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_path_owner_header"}
+            )
         if missing_path_manager_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_path_manager_owner_header"}
@@ -4875,6 +4902,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 {
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
+                    "missing_path_owner_markers": missing_path_owner_markers,
                     "missing_path_manager_owner_markers": (
                         missing_path_manager_owner_markers
                     ),
@@ -4903,6 +4931,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         return 1
 
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    path_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in PATH_OWNER_SIZES
+    }
     path_manager_owner_sizes = {
         name: _named_struct_size(name)
         for name in PATH_MANAGER_OWNER_SIZES
@@ -4954,6 +4986,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         hex(offset): _named_struct_member_readback("Player", offset)
         for offset in PLAYER_SHOOT_EXPECTED_MEMBERS
     }
+    path_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "path",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": path_owner_sizes[name],
+        }
+        for name, expected_size in PATH_OWNER_SIZES.items()
+        if path_owner_sizes[name] != expected_size
+    ]
     path_manager_owner_size_failures = [
         {
             "selector": name,
@@ -4999,7 +5042,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if track_render_cache_owner_sizes[name] != expected_size
     ]
     owner_size_failures = (
-        path_manager_owner_size_failures
+        path_owner_size_failures
+        + path_manager_owner_size_failures
         + bod_core_owner_size_failures
         + fringe_owner_size_failures
         + track_render_cache_owner_size_failures
@@ -5122,6 +5166,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "parse_errors": parse_errors,
+                    "path_owner_sizes": path_owner_sizes,
                     "path_manager_owner_sizes": path_manager_owner_sizes,
                     "bod_core_owner_sizes": bod_core_owner_sizes,
                     "fringe_owner_sizes": fringe_owner_sizes,
@@ -5829,6 +5874,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "path_owner_sizes": path_owner_sizes,
                 "path_manager_owner_sizes": path_manager_owner_sizes,
                 "bod_core_owner_sizes": bod_core_owner_sizes,
                 "fringe_owner_sizes": fringe_owner_sizes,

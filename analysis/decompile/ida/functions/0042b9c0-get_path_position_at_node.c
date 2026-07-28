@@ -3,7 +3,7 @@
 /* selector: get_path_position_at_node */
 
 // Projects a path node and row index into a borrowed output vector for attachment-row consumers; iOS Path.o names this `cRPath::GetPos(tVector&, int, int, tVector&)`. Both Windows callers discard EAX, and the byte-identical VC6 candidate naturally leaves the final z bits there when declared void, confirming that the apparent scalar return is compiler residue rather than an owned result.
-void __thiscall get_path_position_at_node(Path *self, Vec3 *out, int32_t node, int32_t row_index, Vec3 *local)
+void __thiscall get_path_position_at_node(cRPath *self, Vec3 *out, int32_t node, int32_t row_index, Vec3 *local)
 {
   double y; // st7
   PathTemplateSample *v6; // eax

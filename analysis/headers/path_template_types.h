@@ -1423,7 +1423,7 @@ typedef struct TrackRowCell {
     float render_arg_20;
     void* object;
     tColour color;
-    struct Path* attachment_template_record;
+    struct cRPath* attachment_template_record;
     SubLocTileId tile_id;
     uint8_t open_edge_mask;
     uint8_t _pad_3e[0x2];
@@ -2320,9 +2320,12 @@ typedef char PathTemplateSamplePairCursorView_must_be_0x150[
     (sizeof(PathTemplateSamplePairCursorView) == 0x150) ? 1 : -1
 ];
 
-/* Authored cRPath, exact 0xa8 bytes. Windows stores 126 instances as 63
- * adjacent primary/secondary PathPair records in SubgameRuntime. */
-typedef struct Path {
+/*
+ * Android and iOS preserve the authored cRPath identity and member family.
+ * Windows independently proves this exact 0xa8-byte layout and stores 126
+ * instances as 63 adjacent PathPair records in SubgameRuntime.
+ */
+typedef struct cRPath {
     BodBase bod;
     PathTemplateKind kind;
     uint8_t is_mirrored_x;
@@ -2341,17 +2344,18 @@ typedef struct Path {
     uint8_t _pad_9d[0x3];
     Object* entry_transition_strip_mesh;
     Object* entry_base_strip_mesh;
-} Path;
+} cRPath;
+typedef cRPath Path;
 
 typedef struct PathPair {
-    Path primary;
-    Path secondary;
+    cRPath primary;
+    cRPath secondary;
 } PathPair;
 
 typedef struct cRPathFollowGoldy {
     uint8_t active;
     uint8_t _pad_01[0x3];
-    Path* template_record;
+    cRPath* template_record;
     TrackRowCell* source_cell;
     uint32_t sample_index;
     float progress;
@@ -2371,7 +2375,7 @@ typedef cRPathFollowGoldy FollowState;
 typedef struct GolbPathFollowState {
     uint8_t active;
     uint8_t _pad_01[0x3];
-    Path* template_record;
+    cRPath* template_record;
     TrackRowCell* source_cell;
     int32_t sample_index;
     float progress;
@@ -2667,9 +2671,9 @@ typedef struct SubgameRuntime {
 TextureRef* __thiscall get_or_create_texture_ref(
     TextureRefList* texture_list, char* texture_path, void* payload,
     int32_t flags);
-void __fastcall get_path_nodes(Path* self);
-void __fastcall calc_path_length_z(Path* self);
-void __thiscall mirror_path(Path* self, Path* source);
+void __fastcall get_path_nodes(cRPath* self);
+void __fastcall calc_path_length_z(cRPath* self);
+void __thiscall mirror_path(cRPath* self, cRPath* source);
 int32_t __thiscall find_segment_path_index_by_name(
     cRPathManager* manager,
     char* name
@@ -2772,7 +2776,7 @@ void __thiscall linear_interpolate_matrix(
     float alpha
 );
 void __thiscall compute_kind42_attachment_transform(
-    Path* self,
+    cRPath* self,
     float radius,
     float x,
     float y,
@@ -2840,12 +2844,12 @@ void __thiscall request_object_vertices(Object* object, int32_t vertex_count);
 void __fastcall request_object_vertex_colours(Object* object);
 void __thiscall request_object_facequads(Object* object, int32_t facequad_count);
 void __thiscall build_track_fringe_mesh(
-    Path* self,
+    cRPath* self,
     char* texture_path,
     float clamp_side
 );
 void __thiscall build_track_fringe_supertramp_mesh(
-    Path* self,
+    cRPath* self,
     char* texture_path
 );
 tColour* __thiscall set_color_rgba(tColour* color, float r, float g, float b, float a);
@@ -2989,7 +2993,7 @@ void __thiscall select_track_tile_edge_variants(SubgameRuntime* game);
 void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime* game);
 void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime* game);
 void __thiscall try_enter_track_attachment_from_swept_motion(
-    Path* self,
+    cRPath* self,
     float world_x,
     float world_y,
     float world_z,
@@ -2999,14 +3003,14 @@ void __thiscall try_enter_track_attachment_from_swept_motion(
     TrackRowCell* source_cell
 );
 void __thiscall get_path_position_at_node(
-    Path* self,
+    cRPath* self,
     Vec3* out,
     int32_t node,
     int32_t row_index,
     Vec3* local
 );
 bool __thiscall is_point_inside_track_attachment(
-    Path* self,
+    cRPath* self,
     Vec3 probe,
     Vec3 swept_motion,
     TrackRowCell* cell
@@ -3015,7 +3019,7 @@ void __thiscall begin_track_attachment_follow_state(cRPathFollowGoldy* follow_st
 int32_t __thiscall update_track_attachment_follow_state(cRPathFollowGoldy* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
 
 void __thiscall initialize_looptheloop_path_template_pair(
-    Path* self,
+    cRPath* self,
     float curve_source,
     int32_t width_cells_,
     bool side_exit,
@@ -3025,7 +3029,7 @@ void __thiscall initialize_looptheloop_path_template_pair(
 );
 
 void __thiscall initialize_loopout_path_template_pair(
-    Path* self,
+    cRPath* self,
     float curve_source,
     int32_t width_cells_,
     bool side_exit,
@@ -3035,7 +3039,7 @@ void __thiscall initialize_loopout_path_template_pair(
 );
 
 void __thiscall initialize_cage2_path_template_pair(
-    Path* self,
+    cRPath* self,
     int32_t width_cells_,
     char* texture_a,
     char* texture_b,
@@ -3043,7 +3047,7 @@ void __thiscall initialize_cage2_path_template_pair(
 );
 
 void __thiscall initialize_supertramp_path_template_pair(
-    Path* self,
+    cRPath* self,
     float length,
     int32_t width_cells_,
     bool side_exit,
@@ -3054,7 +3058,7 @@ void __thiscall initialize_supertramp_path_template_pair(
 );
 
 void __thiscall initialize_halfpipe_path_template_pair(
-    Path* self,
+    cRPath* self,
     float scale,
     int32_t width_cells_,
     bool side_exit,
@@ -3064,7 +3068,7 @@ void __thiscall initialize_halfpipe_path_template_pair(
 );
 
 void __thiscall initialize_hump_path_template_pair(
-    Path* self,
+    cRPath* self,
     float curve_source,
     float height_scale,
     int32_t width_cells_,
@@ -3075,7 +3079,7 @@ void __thiscall initialize_hump_path_template_pair(
 );
 
 void __thiscall initialize_looptheloopw_path_template_pair(
-    Path* self,
+    cRPath* self,
     float curve_source,
     int32_t width_cells_,
     bool side_exit,
@@ -3085,7 +3089,7 @@ void __thiscall initialize_looptheloopw_path_template_pair(
 );
 
 void __thiscall initialize_dump_path_template_pair(
-    Path* self,
+    cRPath* self,
     float curve_source,
     float height_scale,
     int32_t width_cells_,
@@ -3096,7 +3100,7 @@ void __thiscall initialize_dump_path_template_pair(
 );
 
 void __thiscall initialize_dip_path_template_pair(
-    Path* self,
+    cRPath* self,
     float curve_source,
     int32_t width_cells_,
     bool side_exit,
@@ -3106,7 +3110,7 @@ void __thiscall initialize_dip_path_template_pair(
 );
 
 void __thiscall initialize_screw_path_template_pair(
-    Path* self,
+    cRPath* self,
     int32_t curve_source,
     int32_t width_cells_,
     bool side_exit,
@@ -3116,7 +3120,7 @@ void __thiscall initialize_screw_path_template_pair(
 );
 
 void __thiscall initialize_slalom_path_template_pair(
-    Path* self,
+    cRPath* self,
     int32_t curve_source,
     int32_t width_cells_,
     bool side_exit,
@@ -3126,12 +3130,12 @@ void __thiscall initialize_slalom_path_template_pair(
 );
 
 void __thiscall initialize_worm_path_template_pair(
-    Path* self,
+    cRPath* self,
     char* texture_path
 );
 
 void __thiscall initialize_slalombig_path_template_pair(
-    Path* self,
+    cRPath* self,
     int32_t curve_segments,
     int32_t width_cells_,
     bool side_exit,
@@ -3141,7 +3145,7 @@ void __thiscall initialize_slalombig_path_template_pair(
 );
 
 void __thiscall initialize_sweep_path_template_pair(
-    Path* self,
+    cRPath* self,
     float scale_arg,
     int32_t width_cells_,
     bool side_exit,
@@ -3151,7 +3155,7 @@ void __thiscall initialize_sweep_path_template_pair(
 );
 
 void __thiscall initialize_snake_path_template_pair(
-    Path* self,
+    cRPath* self,
     float scale_arg,
     int32_t width_cells_,
     bool side_exit,
@@ -3161,7 +3165,7 @@ void __thiscall initialize_snake_path_template_pair(
 );
 
 void __thiscall initialize_slalomdouble_path_template_pair(
-    Path* self,
+    cRPath* self,
     int32_t curve_segments,
     int32_t width_cells_,
     bool side_exit,
@@ -3171,7 +3175,7 @@ void __thiscall initialize_slalomdouble_path_template_pair(
 );
 
 void __thiscall initialize_p_path_template_pair(
-    Path* self,
+    cRPath* self,
     int32_t variant,
     float scale_arg,
     int32_t width_cells_,
@@ -3184,7 +3188,7 @@ void __thiscall initialize_p_path_template_pair(
 );
 
 void __thiscall initialize_start_path_template_pair(
-    Path* self,
+    cRPath* self,
     float length,
     int32_t width_cells_,
     bool side_exit,
@@ -3194,7 +3198,7 @@ void __thiscall initialize_start_path_template_pair(
 );
 
 void __thiscall initialize_turnover_path_template_pair(
-    Path* self,
+    cRPath* self,
     float length,
     int32_t width_cells_,
     bool side_exit,
@@ -3204,7 +3208,7 @@ void __thiscall initialize_turnover_path_template_pair(
 );
 
 void __thiscall initialize_turnoverdouble_path_template_pair(
-    Path* self,
+    cRPath* self,
     float length,
     int32_t width_cells_,
     bool side_exit,
@@ -3214,7 +3218,7 @@ void __thiscall initialize_turnoverdouble_path_template_pair(
 );
 
 void __thiscall initialize_turnunder_path_template_pair(
-    Path* self,
+    cRPath* self,
     float turns,
     int32_t width_cells_,
     bool side_exit,
@@ -3224,7 +3228,7 @@ void __thiscall initialize_turnunder_path_template_pair(
 );
 
 void __thiscall initialize_wibble_path_template_pair(
-    Path* self,
+    cRPath* self,
     float radius,
     int32_t width_cells_,
     bool side_exit,
@@ -3234,7 +3238,7 @@ void __thiscall initialize_wibble_path_template_pair(
 );
 
 void __thiscall initialize_invert_path_template_pair(
-    Path* self,
+    cRPath* self,
     float radius,
     int32_t width_cells_,
     bool side_exit,
@@ -3244,7 +3248,7 @@ void __thiscall initialize_invert_path_template_pair(
 );
 
 void __thiscall initialize_twister_path_template_pair(
-    Path* self,
+    cRPath* self,
     float height,
     int32_t width_cells_,
     bool handedness,
@@ -3254,7 +3258,7 @@ void __thiscall initialize_twister_path_template_pair(
 );
 
 void __thiscall initialize_twister2_path_template_pair(
-    Path* self,
+    cRPath* self,
     float height,
     int32_t width_cells_,
     bool handedness,
@@ -3264,7 +3268,7 @@ void __thiscall initialize_twister2_path_template_pair(
 );
 
 void __thiscall initialize_loopbow_path_template_pair(
-    Path* self,
+    cRPath* self,
     float curve_scale,
     uint32_t width_cells_arg,
     bool mode,
@@ -3274,7 +3278,7 @@ void __thiscall initialize_loopbow_path_template_pair(
 );
 
 void __thiscall initialize_toad_path_template_pair(
-    Path* self,
+    cRPath* self,
     bool turn_left,
     char* texture_a,
     char* texture_b,
@@ -3282,7 +3286,7 @@ void __thiscall initialize_toad_path_template_pair(
 );
 
 void __thiscall initialize_hill_valley_path_template_pair(
-    Path* self,
+    cRPath* self,
     int32_t width_cells_,
     float height,
     float length,
@@ -3293,7 +3297,7 @@ void __thiscall initialize_hill_valley_path_template_pair(
 );
 
 void __thiscall initialize_sbend_path_template_pair(
-    Path* self,
+    cRPath* self,
     int32_t width_cells_,
     float height,
     float z_amplitude,

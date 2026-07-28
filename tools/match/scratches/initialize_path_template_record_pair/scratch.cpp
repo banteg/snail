@@ -4,7 +4,7 @@
 
 extern void* g_path_template_record_vtable; // off_497334 / data_497334
 
-Path* Path::initialize_path_template_record_pair()
+cRPath* cRPath::initialize_path_template_record_pair()
 {
     initialize_bod_base();
     fringe_mesh_bod.initialize_bod_base();

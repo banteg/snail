@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: traverse_path_follow_golb @ 0x4217b0 */
 
-004217c5        struct Path* template_record_1 = state->template_record
+004217c5        struct cRPath* template_record_1 = state->template_record
 004217c8        struct PathTemplateSample* secondary_samples_3 = template_record_1->secondary_samples
 004217d4        int32_t eax_2 = state->sample_index * 0x15
 004217d7        long double x87_r7_1 = fconvert.t(path_factor) * fconvert.t((&secondary_samples_3->delta_length)[eax_2 * 2])
@@ -25,7 +25,7 @@
 004218bb        flight_position_overflow->x = state->output_position.x
 004218c0        flight_position_overflow->y = state->output_position.y
 004218c6        flight_position_overflow->z = state->output_position.z
-004218c9        struct Path* template_record = state->template_record
+004218c9        struct cRPath* template_record = state->template_record
 004218d0        if (template_record->kind != PATH_TEMPLATE_KIND_SUPERTRAMP)
 004219d1        long double x87_r7_6 = x87_r7_1 + fconvert.t(*(&template_record->secondary_samples[template_record->segment_count] - 0x70)) + fconvert.t(state->source_cell->anchor_position.z) + fconvert.t(template_record->width_or_scale)
 004219d5        position->z = fconvert.s(x87_r7_6)
@@ -38,7 +38,7 @@
 004218ea        special_scalar_2:2.b = position->x:2.b
 004218ea        special_scalar_2:3.b = position->x:3.b
 004218ec        special_scalar = special_scalar_2
-004218f0        struct Path* template_record_2 = state->template_record
+004218f0        struct cRPath* template_record_2 = state->template_record
 004218f6        long double x87_r7_3 = x87_r7_1 + fconvert.t(template_record_2->width_or_scale)
 004218f9        struct PathTemplateSample* secondary_samples_2 = template_record_2->secondary_samples
 00421906        uint32_t eax_22 = template_record_2->segment_count * 0x15
@@ -154,7 +154,7 @@
 00421d43        x87_r7_54 - temp3
 00421d4e        if ((((x87_r7_54 < temp3 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_54, temp3) ? 1 : 0) << 0xa | (x87_r7_54 == temp3 ? 1 : 0) << 0xe | 0x3800):1.b & 1) != 0)
 00421d50        x87_r7_54 = fneg(x87_r7_54)
-00421d52        struct Path* template_record_3 = state->template_record
+00421d52        struct cRPath* template_record_3 = state->template_record
 00421d64        long double x87_r7_55 = float.t(template_record_3->width_cells) * fconvert.t(0.5f) + fconvert.t(0.300000012f)
 00421d66        x87_r7_54 - x87_r7_55
 00421d6d        if ((((x87_r7_54 < x87_r7_55 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_54, x87_r7_55) ? 1 : 0) << 0xa | (x87_r7_54 == x87_r7_55 ? 1 : 0) << 0xe):1.b & 0x41) != 0)

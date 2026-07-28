@@ -144,7 +144,7 @@ static __forceinline void build_direct_strip_mesh(
     }
 }
 
-void Path::initialize_supertramp_path_template_pair(
+void cRPath::initialize_supertramp_path_template_pair(
     float length,
     int width_cells_,
     bool side_exit,

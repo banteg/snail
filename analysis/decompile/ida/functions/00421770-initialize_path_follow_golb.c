@@ -9,7 +9,7 @@ int32_t __thiscall initialize_path_follow_golb(
         const Vec3 *position,
         GolbShot *shot)
 {
-  Path *attachment_template_record; // edx
+  cRPath *attachment_template_record; // edx
   double v5; // st7
 
   state->active = 1;

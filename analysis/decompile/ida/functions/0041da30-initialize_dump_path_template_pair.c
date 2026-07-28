@@ -4,7 +4,7 @@
 
 // Builds the Dump attachment path-template pair; iOS Path.o names this `cRPath::BuildDump(float, float, int, bool, char*, char*)`.
 void __thiscall initialize_dump_path_template_pair(
-        Path *self,
+        cRPath *self,
         float curve_source,
         float height_scale,
         int32_t width_cells_,

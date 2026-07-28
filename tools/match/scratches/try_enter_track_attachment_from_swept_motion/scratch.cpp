@@ -7,7 +7,7 @@
 // The follow state is embedded in the fixed player owned by SubgameRuntime.
 #define PLAYER (&g_game->subgame.player)
 
-void Path::try_enter_track_attachment_from_swept_motion(
+void cRPath::try_enter_track_attachment_from_swept_motion(
     float px, float py, float pz,
     float sweep_x, float sweep_y, float sweep_z,
     TrackRowCell* cell)

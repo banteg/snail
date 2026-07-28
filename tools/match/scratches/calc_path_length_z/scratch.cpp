@@ -5,7 +5,7 @@
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
-void __fastcall Path::calc_path_length_z()
+void __fastcall cRPath::calc_path_length_z()
 {
     int segment_count = this->segment_count;
     this->row_span_count = 0;

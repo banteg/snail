@@ -4,7 +4,7 @@
 
 // Builds the P attachment path-template pair; iOS Path.o names this `cRPath::BuildP(int, float, int, float, float, int, char*, char*)`.
 void __thiscall initialize_p_path_template_pair(
-        Path *self,
+        cRPath *self,
         int32_t variant,
         float scale_arg,
         int32_t width_cells_,

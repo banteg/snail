@@ -4,7 +4,7 @@
 
 // Builds the Twister2A attachment path-template pair; iOS Path.o names this `cRPath::BuildTwister2A(float, int, bool, char*, char*)`.
 void __thiscall initialize_twister2_path_template_pair(
-        Path *self,
+        cRPath *self,
         float height,
         int32_t width_cells_,
         bool handedness,

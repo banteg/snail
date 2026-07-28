@@ -4,7 +4,7 @@
 
 // Builds the Cage2 attachment path-template pair; iOS Path.o names this `cRPath::BuildCage2(int, char*, char*)`.
 void __thiscall initialize_cage2_path_template_pair(
-        Path *self,
+        cRPath *self,
         int32_t width_cells_,
         char *texture_a,
         char *texture_b,

@@ -3649,7 +3649,7 @@ def test_path_sync_owns_golb_follow_abis() -> None:
         assert compact_declaration in compact_header
         assert compact_declaration in compact_ida_source
 
-    assert "Path* template_record;" in header
+    assert "cRPath* template_record;" in header
     assert "TrackRowCell* source_cell;" in header
     assert "GolbPathFollowState path_follow;" in header
     for symbol_update in (
@@ -3756,7 +3756,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     )[1].split("\n)\n\n\nDEFERRED_PATH_OWNER_PROTO_UPDATES", 1)[0]
     deferred_path_prototypes = source.split(
         "DEFERRED_PATH_OWNER_PROTO_UPDATES = (", 1
-    )[1].split("\n)\n\n\ndef report_deferred_owner_prototypes", 1)[0]
+    )[1].split("\n)\n\nPATH_OWNER_REANALYSIS_CONSUMERS", 1)[0]
     for function_name in ("reset_subgame", "complete_subgame"):
         assert f'"{function_name}"' in stable_prototypes
     for function_name in (
@@ -3925,120 +3925,120 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "Without this flag the tool" in repair_source
     assert '"is read-only. Function recreation' in repair_source
     for declaration in (
-        "void __thiscall initialize_p_path_template_pair(Path* self, int32_t variant, float scale_arg, int32_t width_cells_, float start_x, float end_x, int32_t curve_segments, char* texture_a, char* texture_b, char* cap_texture)",
-        "void __fastcall get_path_nodes(Path* self)",
-        "void __fastcall calc_path_length_z(Path* self)",
-        "void __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path)",
-        "void __thiscall initialize_cage2_path_template_pair(Path* self, int32_t width_cells_, char* texture_a, char* texture_b, char* vertical_texture)",
-        "void __thiscall mirror_path(Path* self, Path* source)",
+        "void __thiscall initialize_p_path_template_pair(cRPath* self, int32_t variant, float scale_arg, int32_t width_cells_, float start_x, float end_x, int32_t curve_segments, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __fastcall get_path_nodes(cRPath* self)",
+        "void __fastcall calc_path_length_z(cRPath* self)",
+        "void __thiscall initialize_worm_path_template_pair(cRPath* self, char* texture_path)",
+        "void __thiscall initialize_cage2_path_template_pair(cRPath* self, int32_t width_cells_, char* texture_a, char* texture_b, char* vertical_texture)",
+        "void __thiscall mirror_path(cRPath* self, cRPath* source)",
     ):
         assert declaration in deferred_path_prototypes
         assert "".join(f"{declaration};".split()) in compact_header
         assert "".join(f'"{declaration};"'.split()) in compact_ida_source
     refined_prototypes = (
         (
-            "void __thiscall initialize_looptheloop_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_looptheloop_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_looptheloop_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_looptheloop_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_looptheloopw_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_looptheloopw_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_looptheloopw_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_looptheloopw_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_loopout_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_loopout_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_hump_path_template_pair(cRPath* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_hump_path_template_pair(cRPath* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_dump_path_template_pair(cRPath* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_dump_path_template_pair(cRPath* self, float curve_source, float height_scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
-            "void __thiscall initialize_halfpipe_path_template_pair(Path* self, float scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_halfpipe_path_template_pair(cRPath* self, float scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_halfpipe_path_template_pair(cRPath* self, float scale, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
         (
-            "void __thiscall initialize_dip_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_dip_path_template_pair(Path* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_dip_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_dip_path_template_pair(cRPath* self, float curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_screw_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_screw_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_screw_path_template_pair(cRPath* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_screw_path_template_pair(cRPath* self, int32_t curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_slalom_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_slalom_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_slalom_path_template_pair(cRPath* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_slalom_path_template_pair(cRPath* self, int32_t curve_source, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_slalombig_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_slalombig_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_slalombig_path_template_pair(cRPath* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_slalombig_path_template_pair(cRPath* self, int32_t curve_segments, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_sweep_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_sweep_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_sweep_path_template_pair(cRPath* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_sweep_path_template_pair(cRPath* self, float scale_arg, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_snake_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_snake_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_snake_path_template_pair(cRPath* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_snake_path_template_pair(cRPath* self, float scale_arg, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_slalomdouble_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_slalomdouble_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_slalomdouble_path_template_pair(cRPath* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_slalomdouble_path_template_pair(cRPath* self, int32_t curve_segments, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_start_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_start_path_template_pair(Path* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_start_path_template_pair(cRPath* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_start_path_template_pair(cRPath* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_turnover_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_turnover_path_template_pair(Path* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_turnover_path_template_pair(cRPath* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_turnover_path_template_pair(cRPath* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_turnoverdouble_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
-            "void __thiscall initialize_turnoverdouble_path_template_pair(Path* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_turnoverdouble_path_template_pair(cRPath* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+            "void __thiscall initialize_turnoverdouble_path_template_pair(cRPath* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_turnunder_path_template_pair(Path* self, float turns, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
-            "void __thiscall initialize_turnunder_path_template_pair(Path* self, float turns, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_turnunder_path_template_pair(cRPath* self, float turns, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_turnunder_path_template_pair(cRPath* self, float turns, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
         (
-            "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
-            "void __thiscall initialize_wibble_path_template_pair(Path* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_wibble_path_template_pair(cRPath* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_wibble_path_template_pair(cRPath* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
         (
-            "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
-            "void __thiscall initialize_invert_path_template_pair(Path* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_invert_path_template_pair(cRPath* self, float radius, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_invert_path_template_pair(cRPath* self, float radius, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
         (
-            "void __thiscall initialize_supertramp_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* unused_texture, char* cap_texture)",
-            "void __thiscall initialize_supertramp_path_template_pair(Path* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* unused_texture, char* cap_texture)",
+            "void __thiscall initialize_supertramp_path_template_pair(cRPath* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* unused_texture, char* cap_texture)",
+            "void __thiscall initialize_supertramp_path_template_pair(cRPath* self, float length, int32_t width_cells_, bool side_exit, char* texture_a, char* texture_b, char* unused_texture, char* cap_texture)",
         ),
         (
-            "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
-            "void __thiscall initialize_twister_path_template_pair(Path* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_twister_path_template_pair(cRPath* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_twister_path_template_pair(cRPath* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
         (
-            "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
-            "void __thiscall initialize_twister2_path_template_pair(Path* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_twister2_path_template_pair(cRPath* self, float height, int32_t width_cells_, char handedness, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_twister2_path_template_pair(cRPath* self, float height, int32_t width_cells_, bool handedness, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
         (
-            "void __thiscall initialize_loopbow_path_template_pair(Path* self, float curve_scale, uint32_t width_cells_arg, char mode, char* texture_a, char* texture_b, char* vertical_texture)",
-            "void __thiscall initialize_loopbow_path_template_pair(Path* self, float curve_scale, uint32_t width_cells_arg, bool mode, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_loopbow_path_template_pair(cRPath* self, float curve_scale, uint32_t width_cells_arg, char mode, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_loopbow_path_template_pair(cRPath* self, float curve_scale, uint32_t width_cells_arg, bool mode, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
         (
-            "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
-            "void __thiscall initialize_toad_path_template_pair(Path* self, bool turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_toad_path_template_pair(cRPath* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_toad_path_template_pair(cRPath* self, bool turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
         (
-            "void __thiscall initialize_hill_valley_path_template_pair(Path* self, int32_t width_cells_, float height, float length, char centered, char* texture_a, char* texture_b, char* vertical_texture)",
-            "void __thiscall initialize_hill_valley_path_template_pair(Path* self, int32_t width_cells_, float height, float length, bool centered, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_hill_valley_path_template_pair(cRPath* self, int32_t width_cells_, float height, float length, char centered, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_hill_valley_path_template_pair(cRPath* self, int32_t width_cells_, float height, float length, bool centered, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
         (
-            "void __thiscall initialize_sbend_path_template_pair(Path* self, int32_t width_cells_, float height, float z_amplitude, char centered, char* texture_a, char* texture_b, char* vertical_texture)",
-            "void __thiscall initialize_sbend_path_template_pair(Path* self, int32_t width_cells_, float height, float z_amplitude, bool centered, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_sbend_path_template_pair(cRPath* self, int32_t width_cells_, float height, float z_amplitude, char centered, char* texture_a, char* texture_b, char* vertical_texture)",
+            "void __thiscall initialize_sbend_path_template_pair(cRPath* self, int32_t width_cells_, float height, float z_amplitude, bool centered, char* texture_a, char* texture_b, char* vertical_texture)",
         ),
     )
     for previous_prototype, desired_prototype in refined_prototypes:
@@ -4536,7 +4536,7 @@ def test_runtime_pool_constructor_replay_preserves_element_borrows() -> None:
         '"SubGarbage": 0xC4',
         '"SubRing": 0x1F8',
         '"TrackRowCell": 0x54',
-        '"Path": 0xA8',
+        '"cRPath": 0xA8',
         '0x356000: ("health_pickups", "SubHealth[8]")',
         '0x3BFAC8: ("runtime_cells", "TrackRowCell[3200][8]")',
         '0xFF2914: ("path_pairs", "PathPair[63]")',
@@ -4553,7 +4553,7 @@ def test_runtime_pool_constructor_replay_preserves_element_borrows() -> None:
         (463, "garbage_hazard_cursor", "SubGarbage*"),
         (490, "ring_effect_cursor", "SubRing*"),
         (628, "runtime_cell_cursor", "TrackRowCell*"),
-        (679, "path_template_cursor", "Path*"),
+        (679, "path_template_cursor", "cRPath*"),
     ):
         update = (
             '"initialize_runtime_pools_and_path_template_bank",\n'
@@ -10200,7 +10200,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         ),
         (
             "attachment_template_record",
-            "Path *attachment_template_record;",
+            "cRPath *attachment_template_record;",
         ),
         ("sample", "PathTemplateSample *sample;"),
         ("projected_position", "Vec3 projected_position;"),
@@ -19368,7 +19368,7 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     ) in binja_sync
     attachment_entry_prototype = (
         "void __thiscall try_enter_track_attachment_from_swept_motion("
-        "Path* self, float world_x, float world_y, float world_z, "
+        "cRPath* self, float world_x, float world_y, float world_z, "
         "float sweep_dx, float sweep_dy, float sweep_dz, "
         "TrackRowCell* source_cell)"
     )
@@ -19379,7 +19379,7 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
 
     attachment_search_prototype = (
         "bool __thiscall is_point_inside_track_attachment("
-        "Path* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)"
+        "cRPath* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)"
     )
     assert attachment_search_prototype in binja_sync
     assert attachment_search_prototype + ";" in ida_sync
@@ -19389,7 +19389,7 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
 
     path_position_prototype = (
         "void __thiscall get_path_position_at_node("
-        "Path* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local)"
+        "cRPath* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local)"
     )
     assert path_position_prototype in binja_sync
     assert path_position_prototype + ";" in ida_sync
@@ -19489,8 +19489,8 @@ def test_path_receiver_replay_keeps_exact_abis_and_reanalyzes_callers() -> None:
     )
 
     declarations = (
-        "void __thiscall get_path_position_at_node(Path* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local)",
-        "bool __thiscall is_point_inside_track_attachment(Path* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)",
+        "void __thiscall get_path_position_at_node(cRPath* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local)",
+        "bool __thiscall is_point_inside_track_attachment(cRPath* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)",
     )
     for source in (
         binja_sync,
@@ -19509,7 +19509,7 @@ def test_path_receiver_replay_keeps_exact_abis_and_reanalyzes_callers() -> None:
             ('"Vec3"', "0xC"),
             ('"TrackRowCell"', "0x54"),
             ('"PathTemplateSample"', "0xA8"),
-            ('"Path"', "0xA8"),
+            ('"cRPath"', "0xA8"),
         ):
             assert f"{owner}: {size}" in source
 
@@ -20192,7 +20192,7 @@ def test_track_fringe_mesh_lifetime_replay_stays_guarded() -> None:
         ("FringeVertexRowCursorView", "0x30"),
         ("FringeFaceQuadPairCursorView", "0x60"),
         ("Object", "0xDC"),
-        ("Path", "0xA8"),
+        ("cRPath", "0xA8"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -20206,8 +20206,8 @@ def test_track_fringe_mesh_lifetime_replay_stays_guarded() -> None:
         ("FringeFaceQuadPairCursorView", "0x30", "second_face", "ObjectFaceQuad"),
         ("Object", "0x38", "vertices", "Vec3*"),
         ("Object", "0x5C", "facequads", "ObjectFaceQuad*"),
-        ("Path", "0x44", "segment_count", "uint32_t"),
-        ("Path", "0x60", "fringe_mesh_bod", "BodBase"),
+        ("cRPath", "0x44", "segment_count", "uint32_t"),
+        ("cRPath", "0x60", "fringe_mesh_bod", "BodBase"),
     ):
         assert f'"{struct_name}": {{' in replay
         assert f'{offset}: ("{field_name}", "{field_type}")' in replay
@@ -23907,7 +23907,7 @@ def test_runtime_attachment_path_borrows_replay_cross_decompiler() -> None:
             3686,
             67,
             "selected_attachment_path",
-            "Path*",
+            "cRPath*",
         ),
         (
             "RegisterVariableSourceType",
@@ -23948,7 +23948,7 @@ def test_runtime_attachment_path_borrows_replay_cross_decompiler() -> None:
         ("runtime_cell", "TrackRowCell *runtime_cell;", "0x4366C5"),
         (
             "selected_attachment_path",
-            "Path *selected_attachment_path;",
+            "cRPath *selected_attachment_path;",
             "0x436D17",
         ),
         (
@@ -23987,7 +23987,7 @@ def test_runtime_attachment_path_borrows_replay_cross_decompiler() -> None:
     ida_health = health_checks["ida_runtime_cell_stride_owner_graph"]
     for marker in (
         "TrackRowCell *runtime_cell;",
-        "Path *selected_attachment_path;",
+        "cRPath *selected_attachment_path;",
         "int32_t attachment_span_index;",
         "runtime_cell_anchor->cell.attachment_template_record = selected_attachment_path",
         "stamped_row->primary_attachment_cell = runtime_cell",
@@ -24415,3 +24415,63 @@ def test_c_r_path_manager_primary_ownership_stays_aligned() -> None:
     ):
         body = (repo_root / mobile_body).read_text(encoding="utf-8")
         assert "cRPathManager::NameCode(char*)" in body
+
+
+def test_c_r_path_primary_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    matcher_skeleton = (
+        repo_root / "tools/match/include/path_template_skeleton.h"
+    ).read_text(encoding="utf-8")
+    mirror_scratch = (
+        repo_root / "tools/match/scratches/mirror_path/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    analysis_header = (
+        repo_root / "analysis/headers/path_template_types.h"
+    ).read_text(encoding="utf-8")
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "struct cRPath : public BodBase {" in matcher_header
+    assert "typedef cRPath Path;" in matcher_header
+    assert "cRPath_must_be_0xa8" in matcher_header
+    assert "struct Path : public BodBase {" not in matcher_header
+    assert "cRPath primary;" in matcher_header
+    assert "cRPath secondary;" in matcher_header
+    assert "void cRPath::PATH_FUNCTION" in matcher_skeleton
+    assert "void cRPath::mirror_path(cRPath* source)" in mirror_scratch
+
+    assert "typedef struct cRPath {" in analysis_header
+    assert "} cRPath;\ntypedef cRPath Path;" in analysis_header
+    assert "typedef struct Path {" not in analysis_header
+    assert "cRPath primary;" in analysis_header
+    assert "cRPath secondary;" in analysis_header
+
+    assert "--path-owner-only" in binja_sync
+    assert "ensure_c_r_path_owner_types" in binja_sync
+    assert "collect_c_r_path_owner_proto_updates" in binja_sync
+    assert (
+        "for identifier, prototype in CORE_SUBGAME_PROTO_UPDATES"
+        in binja_sync
+    )
+    assert '("cRPath", PATH_FIELD_UPDATES)' in binja_sync
+    assert '("PathPair", PATH_PAIR_FIELD_UPDATES)' in binja_sync
+    assert '"cRPath": 0xA8' in ida_sync
+    assert '"PathPair": 0x150' in ida_sync
+    assert (
+        "void __thiscall mirror_path(cRPath* self, cRPath* source);"
+        in ida_sync
+    )
+
+    for mobile_body in (
+        "analysis/decompile/android/functions/00055ce8-_ZN6cRPath6MirrorEPS_.c",
+        "analysis/decompile/ios/functions/00056e74-_ZN6cRPath6MirrorEPS_.c",
+    ):
+        body = (repo_root / mobile_body).read_text(encoding="utf-8")
+        assert "cRPath::Mirror(cRPath*)" in body

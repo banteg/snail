@@ -3,7 +3,7 @@
 /* selector: build_track_fringe_supertramp_mesh */
 
 // Windows `cRPath::BuildFringeSuperTramp(char*)`: owns a generated fringe Object through the Path's second BodBase, emits the two extruded side strips, extrapolates two terminal cap vertices, and appends the final cap facequad. Android and iOS preserve the authored method name.
-void __thiscall build_track_fringe_supertramp_mesh(Path *self, char *texture_path)
+void __thiscall build_track_fringe_supertramp_mesh(cRPath *self, char *texture_path)
 {
   Object *v3; // eax
   Object *object; // ebx

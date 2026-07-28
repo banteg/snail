@@ -33,7 +33,7 @@
 004462eb        rotate_matrix_local_x(&cameraman->desired_matrix, fconvert.s(fconvert.t(fconvert.s(x87_r6_2)) * fconvert.t(0.872499943f)))
 00446306        struct Player* player_4 = cameraman->player
 00446313        enum PathTemplateKind kind
-00446313        struct Path* template_record_1
+00446313        struct cRPath* template_record_1
 00446313        if (player_4->follow_state.active == 1)
 00446319        template_record_1 = player_4->follow_state.template_record
 0044631f        kind = template_record_1->kind
@@ -97,7 +97,7 @@
 004465ab        struct Player* player_1 = cameraman->player
 004465b9        if (player_1->attachment_exit_pending != 0)
 004465c4        rotate_matrix_local_z(&cameraman->desired_matrix, player_1->post_follow_exit_roll)
-004465d8        struct Path* template_record = rotate_matrix_local_z(&cameraman->desired_matrix, cameraman->player->heading_roll)
+004465d8        struct cRPath* template_record = rotate_matrix_local_z(&cameraman->desired_matrix, cameraman->player->heading_roll)
 004465dd        struct Player* player_2 = cameraman->player
 004465ea        if (player_2->follow_state.active == 1)
 004465f0        template_record = player_2->follow_state.template_record
@@ -113,15 +113,15 @@
 0044662d        if ((((x87_r7_66 < temp12_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_66, temp12_1) ? 1 : 0) << 0xa | (x87_r7_66 == temp12_1 ? 1 : 0) << 0xe | 0x3800):1.b & 0x41) == 0)
 00446631        x87_r7_66 = fconvert.t(1f)
 0044661a        x87_r7_66 = fconvert.t(0f)
-0044663d        struct Path* template_record_3 = template_record
+0044663d        struct cRPath* template_record_3 = template_record
 00446641        long double st0_4
 00446641        st0_4, template_record = cosine(fconvert.s(x87_r7_66 * fconvert.t(6.28318548f)))
-0044664c        struct Path* template_record_2 = template_record
+0044664c        struct cRPath* template_record_2 = template_record
 0044664d        long double x87_r7_72 = fconvert.t(0.5f) - st0_4 * fconvert.t(0.5f)
 00446657        template_record_2.q = fconvert.d(x87_r7_72)
 00446671        x87_r7_75 = fconvert.t(fconvert.s(x87_r7_72)) * fconvert.t(50f) + fconvert.t(110f)
 00446685        struct SubgameRuntime* game = cameraman->game
-0044668b        struct Path* template_record_4 = template_record
+0044668b        struct cRPath* template_record_4 = template_record
 004466a0        cameraman->fov_degrees = fconvert.s((x87_r7_75 - fconvert.t(cameraman->fov_degrees)) * fconvert.t(0.300000012f) + fconvert.t(cameraman->fov_degrees))
 004466b4        linear_interpolate_matrix(cameraman, &cameraman->previous_desired_matrix, &cameraman->desired_matrix, fconvert.s(fconvert.t(game->subgame_rate) * fconvert.t(0.300000012f)))
 004466c0        __builtin_memcpy(&cameraman->previous_desired_matrix, &cameraman->desired_matrix, 0x40)

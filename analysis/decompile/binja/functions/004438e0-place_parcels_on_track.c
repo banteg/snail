@@ -318,7 +318,7 @@
 00444195        if (eax_54 - eax_53 s< 0)
 00444197        node = 0
 00444199        struct TrackRowCell* primary_attachment_cell = projection_row->primary_attachment_cell
-0044419f        struct Path* attachment_template_record = primary_attachment_cell->attachment_template_record
+0044419f        struct cRPath* attachment_template_record = primary_attachment_cell->attachment_template_record
 004441a6        if (attachment_template_record->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
 00444201        int32_t row_index = get_track_cell_row_index(primary_attachment_cell)
 00444212        get_path_position_at_node(projection_row->primary_attachment_cell->attachment_template_record, &projection_row->parcel_spawn_position, node, row_index, &projection_row->parcel_spawn_position)

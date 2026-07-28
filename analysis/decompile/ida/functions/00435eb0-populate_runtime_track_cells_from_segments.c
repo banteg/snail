@@ -85,7 +85,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   uint32_t v79; // eax
   uint32_t v80; // eax
   int32_t attachment_template_index; // ecx
-  Path *selected_attachment_path; // ecx
+  cRPath *selected_attachment_path; // ecx
   int32_t attachment_span_index; // edx
   SubRow *stamped_row; // ecx
   uint32_t v85; // eax

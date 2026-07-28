@@ -147,7 +147,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     }
 }
 
-void Path::initialize_sweep_path_template_pair(
+void cRPath::initialize_sweep_path_template_pair(
     float scale_arg,
     int width_cells_,
     bool side_exit,

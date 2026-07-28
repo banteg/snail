@@ -30,7 +30,7 @@ EXPECTED_TYPE_WIDTHS = {
     "SubRing": 0x1F8,
     "SubRingPool": 0x3F0,
     "TrackRowCell": 0x54,
-    "Path": 0xA8,
+    "cRPath": 0xA8,
     "PathPair": 0x150,
 }
 
@@ -58,8 +58,8 @@ EXPECTED_STRUCT_FIELDS = {
         0x00: ("slots", "SubRing[2]"),
     },
     "PathPair": {
-        0x00: ("primary", "Path"),
-        0xA8: ("secondary", "Path"),
+        0x00: ("primary", "cRPath"),
+        0xA8: ("secondary", "cRPath"),
     },
 }
 
@@ -121,7 +121,7 @@ RUNTIME_POOL_CONSTRUCTOR_CURSOR_USER_VAR_UPDATES = (
         679,
         73,
         "path_template_cursor",
-        "Path*",
+        "cRPath*",
     ),
 )
 

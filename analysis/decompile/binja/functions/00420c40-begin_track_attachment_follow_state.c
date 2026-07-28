@@ -4,7 +4,7 @@
 /* function: begin_track_attachment_follow_state @ 0x420c40 */
 
 00420c4b        follow_state->active = 1
-00420c4e        struct Path* attachment_template_record = source_cell->attachment_template_record
+00420c4e        struct cRPath* attachment_template_record = source_cell->attachment_template_record
 00420c51        follow_state->source_cell = source_cell
 00420c54        follow_state->template_record = attachment_template_record
 00420c5b        follow_state->sample_index = 0

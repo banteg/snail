@@ -4,7 +4,7 @@
 
 // Builds the LoopBow attachment path-template pair; iOS Path.o names this `cRPath::BuildLoopBow(float, int, bool, char*, char*)`.
 void __thiscall initialize_loopbow_path_template_pair(
-        Path *self,
+        cRPath *self,
         float curve_scale,
         uint32_t width_cells_arg,
         bool mode,

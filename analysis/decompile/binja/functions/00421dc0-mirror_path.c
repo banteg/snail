@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: mirror_path @ 0x421dc0 */
 
-00421dc5        struct Path* source_1 = source
+00421dc5        struct cRPath* source_1 = source
 00421dcd        self->is_mirrored_x = 1
 00421dd4        self->segment_count = source_1->segment_count
 00421dda        self->segment_count_f = source_1->segment_count_f

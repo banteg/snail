@@ -23,7 +23,7 @@ EXPECTED_OWNER_SIZES = {
     "Vec3": 0xC,
     "TrackRowCell": 0x54,
     "PathTemplateSample": 0xA8,
-    "Path": 0xA8,
+    "cRPath": 0xA8,
 }
 
 SYMBOL_UPDATES = (
@@ -34,18 +34,18 @@ SYMBOL_UPDATES = (
 PROTO_UPDATES = (
     (
         "get_path_position_at_node",
-        "void __thiscall get_path_position_at_node(Path* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local)",
+        "void __thiscall get_path_position_at_node(cRPath* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local)",
     ),
     (
         "is_point_inside_track_attachment",
-        "bool __thiscall is_point_inside_track_attachment(Path* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)",
+        "bool __thiscall is_point_inside_track_attachment(cRPath* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)",
     ),
 )
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the focused exact Path receiver ABIs."
+        description="Apply the focused exact cRPath receiver ABIs."
     )
     parser.add_argument(
         "--target",
@@ -56,7 +56,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Canonical Path owner type header.",
+        help="Canonical cRPath owner type header.",
     )
     return parser.parse_args()
 
@@ -65,7 +65,7 @@ def main() -> int:
     args = parse_args()
     header_path = args.header.resolve()
     if not header_path.is_file():
-        raise FileNotFoundError(f"Path owner type header not found: {header_path}")
+        raise FileNotFoundError(f"cRPath owner type header not found: {header_path}")
 
     operations: list[dict[str, object]] = [
         types_declare_if_missing(
@@ -111,7 +111,9 @@ def main() -> int:
             )
 
     if mismatches:
-        raise RuntimeError("Path receiver owner size mismatch: " + "; ".join(mismatches))
+        raise RuntimeError(
+            "cRPath receiver owner size mismatch: " + "; ".join(mismatches)
+        )
 
     return emit_summary(
         repo_root=REPO_ROOT,

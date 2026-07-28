@@ -25,7 +25,7 @@ EXPECTED_TYPE_WIDTHS = {
     "FringeVertexRowCursorView": 0x30,
     "FringeFaceQuadPairCursorView": 0x60,
     "Object": 0xDC,
-    "Path": 0xA8,
+    "cRPath": 0xA8,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -55,7 +55,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x38: ("vertices", "Vec3*"),
         0x5C: ("facequads", "ObjectFaceQuad*"),
     },
-    "Path": {
+    "cRPath": {
         0x00: ("bod", "BodBase"),
         0x44: ("segment_count", "uint32_t"),
         0x54: ("width_cells", "uint32_t"),
@@ -63,7 +63,7 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# Both fringe builders borrow the generated Object from Path::fringe_mesh_bod,
+# Both fringe builders borrow the generated Object from cRPath::fringe_mesh_bod,
 # then keep disjoint vertex and face-bank lifetimes after allocation. Native
 # additionally strength-reduces the row loop to inner_a.z within each
 # four-Vec3 row and the face loop to first_face.vertex_0 within each two-face

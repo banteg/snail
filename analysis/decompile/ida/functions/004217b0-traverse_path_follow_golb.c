@@ -10,7 +10,7 @@ int32_t __thiscall traverse_path_follow_golb(
         Vec3 *velocity)
 {
   int32_t sample_index; // ecx
-  Path *template_record; // edx
+  cRPath *template_record; // edx
   PathTemplateSample *secondary_samples; // esi
   double v8; // st7
   int32_t v9; // ecx
@@ -20,8 +20,8 @@ int32_t __thiscall traverse_path_follow_golb(
   int v13; // eax
   float *p_x; // ecx
   Vec3 *v15; // edx
-  Path *v16; // eax
-  Path *v17; // edx
+  cRPath *v16; // eax
+  cRPath *v17; // edx
   uint32_t segment_count; // esi
   double v19; // st7
   PathTemplateSample *v20; // edx
@@ -49,7 +49,7 @@ int32_t __thiscall traverse_path_follow_golb(
   double v43; // st6
   double v44; // st7
   double v45; // st7
-  Path *v46; // edi
+  cRPath *v46; // edi
   float x; // eax
   Vec3 *p_position; // edx
   float arg2; // [esp+0h] [ebp-114h]

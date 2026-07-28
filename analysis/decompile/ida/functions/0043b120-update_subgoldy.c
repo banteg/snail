@@ -5,7 +5,7 @@
 // Main void per-frame player or Goldy actor step, installed as slot zero of `g_subgoldy_callback_table` and invoked through the shared void `BodAiDispatch` ABI. It updates attachment-follow state, samples current track cells, drives row events, dispatches pickups and completion handoff, emits movement flags and sounds, and advances the runtime track index. It contains four direct calls to `begin_post_follow_carryover`, plus the post-exit progress loop that advances `attachment_exit_progress` by `attachment_exit_progress_step` and trips the `gate_a` and `gate_b` thresholds. Windows `cdb` confirmed those carryover-arm lanes are real, but at least one clean level-complete path bypasses all four of them. Newer field-xref narrowing also shows later retirement of `attachment_exit_pending` happens only through five clear sites inside this function, not through the swept-entry helper or a standalone progress-expiry store; one of those clear sites, `0x43bcb3`, now resolves to the non-follow floor-cache/slide motion bran
 void __thiscall update_subgoldy(Player *player)
 {
-  Path *template_record; // esi
+  cRPath *template_record; // esi
   signed int v3; // eax
   signed int segment_count; // ecx
   int32_t movement_mode_selector; // eax

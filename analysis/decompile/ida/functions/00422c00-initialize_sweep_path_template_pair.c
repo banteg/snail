@@ -4,7 +4,7 @@
 
 // Builds the Sweep attachment path-template pair; iOS Path.o names this `cRPath::BuildSweep(float, int, bool, char*, char*)`.
 void __thiscall initialize_sweep_path_template_pair(
-        Path *self,
+        cRPath *self,
         float scale_arg,
         int32_t width_cells_,
         bool side_exit,

@@ -7,7 +7,7 @@
 0043b18a        if (player->follow_state.active != 1)
 0043b1e1        struct Object* object = player->presentation.body.bod.object
 0043b1fb        object->distort.z_wave = fconvert.s(fneg(fconvert.t(object->distort.z_wave)) * fconvert.t(0.100000001f) + fconvert.t(object->distort.z_wave))
-0043b18c        struct Path* template_record = player->follow_state.template_record
+0043b18c        struct cRPath* template_record = player->follow_state.template_record
 0043b198        int32_t eax_2 = player->follow_state.sample_index + 3
 0043b19b        uint32_t segment_count = template_record->segment_count
 0043b1a0        if (eax_2 s>= segment_count)

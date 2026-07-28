@@ -4,7 +4,7 @@
 
 // Builds the Snake attachment path-template pair; iOS Path.o names this `cRPath::BuildSnake(float, int, bool, char*, char*)`.
 void __thiscall initialize_snake_path_template_pair(
-        Path *self,
+        cRPath *self,
         float scale_arg,
         int32_t width_cells_,
         bool side_exit,

@@ -4,7 +4,7 @@
 
 // Builds the SuperTramp attachment path-template pair; iOS Path.o names this `cRPath::BuildSuperTramp(float, float, int, bool, char*, char*, char*)`.
 void __thiscall initialize_supertramp_path_template_pair(
-        Path *self,
+        cRPath *self,
         float length,
         int32_t width_cells_,
         bool side_exit,

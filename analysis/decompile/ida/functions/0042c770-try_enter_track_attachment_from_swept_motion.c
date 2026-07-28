@@ -4,7 +4,7 @@
 
 // Scans `Path::secondary_samples` against the player's swept motion, using real vector subtraction in each sample-local frame. On acceptance it clears `Player::attachment_exit_pending`, seeds the Player-embedded `cRPathFollowGoldy`, copies the runtime row's installed heading into the Path, and immediately validates the candidate through one follow update. The caller rechecks the cleared byte before its secondary-slot probe, so a successful primary entry suppresses that fallback. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches this entry family; Android and iOS name the broader owner `cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)` and independently confirm that the accepted tail hands off to `cRPathFollowGoldy`.
 void __thiscall try_enter_track_attachment_from_swept_motion(
-        Path *self,
+        cRPath *self,
         float world_x,
         float world_y,
         float world_z,

@@ -95,7 +95,7 @@ static inline void orient_previous_with_fixed_up(
         previous->transform.rotate_matrix_local_z(roll);
 }
 
-void Path::PATH_FUNCTION(PATH_SIGNATURE)
+void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 {
 #if PATH_VARIANT == 5
     float curve_count_source = curve_source * 5.0f;

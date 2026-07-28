@@ -3,7 +3,7 @@
 /* selector: initialize_worm_path_template_pair */
 
 // Builds the Worm attachment path template; iOS Path.o names this `cRPath::BuildWorm(char*)`.
-void __thiscall initialize_worm_path_template_pair(Path *self, char *texture_path)
+void __thiscall initialize_worm_path_template_pair(cRPath *self, char *texture_path)
 {
   signed int v3; // ebp
   int v4; // edi

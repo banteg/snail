@@ -3,7 +3,7 @@
 /* selector: calc_path_length_z */
 
 // Windows `cRPath::CalcLengthZ()`: recomputes one built path's derived row span and per-sample lateral length scalars, inverts both sample-transform banks, and normalizes the nested strip-mesh flags. Android and iOS Path.o independently preserve the exact authored owner and name. The former `finalize_path_template` label remains only as a compatibility alias.
-void __fastcall calc_path_length_z(Path *self)
+void __fastcall calc_path_length_z(cRPath *self)
 {
   signed int segment_count; // ebx
   signed int v3; // ebp

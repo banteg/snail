@@ -18,7 +18,7 @@ static __inline Vector3 vector_subtract(const Vector3& lhs, const Vector3& rhs)
 // The native caller ignores the incidental EAX state left by this finalizer.
 void __fastcall calc_path_length_z(Path* path);
 
-void Path::initialize_loopbow_path_template_pair(
+void cRPath::initialize_loopbow_path_template_pair(
     float curve_scale,
     unsigned int width_cells_arg,
     bool mode,

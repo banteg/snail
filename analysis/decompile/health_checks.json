@@ -4451,7 +4451,7 @@
       "artifact": "analysis/decompile/ida/functions/0042c770-try_enter_track_attachment_from_swept_motion.c",
       "required_substrings": [
         "void __thiscall try_enter_track_attachment_from_swept_motion(",
-        "Path *self,",
+        "cRPath *self,",
         "TrackRowCell *source_cell)",
         "PathTemplateSample *",
         "self->secondary_samples[i]",
@@ -11726,7 +11726,7 @@
       "name": "ida_worm_path_mobile_control_and_owner_abi",
       "artifact": "analysis/decompile/ida/functions/00420170-initialize_worm_path_template_pair.c",
       "required_substrings": [
-        "void __thiscall initialize_worm_path_template_pair(Path *self, char *texture_path)",
+        "void __thiscall initialize_worm_path_template_pair(cRPath *self, char *texture_path)",
         "self->kind = PATH_TEMPLATE_KIND_WORM;",
         "self->segment_count = 24;",
         "get_path_nodes(self);",
@@ -11752,7 +11752,7 @@
       "name": "bn_mirrored_path_full_owner_abi",
       "artifact": "analysis/decompile/binja/functions/00421dc0-mirror_path.c",
       "required_substrings": [
-        "struct Path* source_1 = source",
+        "struct cRPath* source_1 = source",
         "self->bod.object",
         "source_1->bod.object",
         "calc_path_length_z(self)"
@@ -19099,7 +19099,7 @@
         "runtime_cell_anchor->previous_row_same_lane.tile_id",
         "runtime_cell_anchor->cell.attachment_template_record",
         "TrackRowCell *runtime_cell;",
-        "Path *selected_attachment_path;",
+        "cRPath *selected_attachment_path;",
         "int32_t attachment_span_index;",
         "selected_attachment_path = &game->path_pairs[attachment_template_index].secondary",
         "selected_attachment_path = &game->path_pairs[attachment_template_index].primary",
@@ -19241,7 +19241,7 @@
         "void __thiscall project_position_onto_track_attachment(SubgameRuntime *game, Vec3 *position, float *out_angle)",
         "SubRow *runtime_row;",
         "TrackRowCell *primary_attachment_cell;",
-        "Path *attachment_template_record;",
+        "cRPath *attachment_template_record;",
         "PathTemplateSample *sample;",
         "Vec3 projected_position;",
         "runtime_row = &game->runtime_rows",
@@ -19268,7 +19268,7 @@
       "name": "bn_kind42_attachment_path_owner",
       "artifact": "analysis/decompile/binja/functions/0042b920-compute_kind42_attachment_transform.c",
       "required_substrings": [
-        "struct Path* self_2 = self",
+        "struct cRPath* self_2 = self",
         "rotate_matrix_local_z(transform, *out_angle)",
         "transform->position.x",
         "transform->position.y"
@@ -19283,7 +19283,7 @@
       "artifact": "analysis/decompile/binja/functions/00421770-initialize_path_follow_golb.c",
       "required_substrings": [
         "state->active = 1",
-        "struct Path* attachment_template_record = source_cell->attachment_template_record",
+        "struct cRPath* attachment_template_record = source_cell->attachment_template_record",
         "state->source_cell = source_cell",
         "state->template_record = attachment_template_record",
         "state->sample_index = 0",
@@ -19329,7 +19329,7 @@
       "name": "bn_golb_path_follow_owner_graph",
       "artifact": "analysis/decompile/binja/functions/004217b0-traverse_path_follow_golb.c",
       "required_substrings": [
-        "struct Path* template_record_1 = state->template_record",
+        "struct cRPath* template_record_1 = state->template_record",
         "state->sample_index",
         "state->progress",
         "state->vertical_offset",
@@ -19445,7 +19445,7 @@
       "name": "ida_path_position_owner_abi",
       "artifact": "analysis/decompile/ida/functions/0042b9c0-get_path_position_at_node.c",
       "required_substrings": [
-        "void __thiscall get_path_position_at_node(Path *self, Vec3 *out, int32_t node, int32_t row_index, Vec3 *local)",
+        "void __thiscall get_path_position_at_node(cRPath *self, Vec3 *out, int32_t node, int32_t row_index, Vec3 *local)",
         "&self->primary_samples[node]",
         "local->x",
         "local->y",

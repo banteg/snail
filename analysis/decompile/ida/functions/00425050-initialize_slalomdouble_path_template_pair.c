@@ -4,7 +4,7 @@
 
 // Builds the SlalomDouble attachment path-template pair; iOS Path.o names this `cRPath::BuildSlalomDouble(int, int, bool, char*, char*)`.
 void __thiscall initialize_slalomdouble_path_template_pair(
-        Path *self,
+        cRPath *self,
         int32_t curve_segments,
         int32_t width_cells_,
         bool side_exit,

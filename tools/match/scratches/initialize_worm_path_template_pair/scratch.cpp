@@ -17,7 +17,7 @@ inline Vector3 operator*(float scalar, const Vector3& value)
     return Vector3(scalar * value.x, scalar * value.y, scalar * value.z);
 }
 
-void Path::initialize_worm_path_template_pair(char* texture_path)
+void cRPath::initialize_worm_path_template_pair(char* texture_path)
 {
     kind = PATH_TEMPLATE_KIND_WORM;
     is_mirrored_x = 0;

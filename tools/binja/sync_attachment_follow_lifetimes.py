@@ -92,7 +92,7 @@ ATTACHMENT_FOLLOW_USER_VAR_UPDATES = tuple(
 )
 
 # The two entry-mesh alpha stores reload g_game_base into a physical register
-# lifetime that BN otherwise merges with nearby Path* template reloads.
+# lifetime that BN otherwise merges with nearby cRPath* template reloads.
 ATTACHMENT_FOLLOW_ROOT_SPLIT_DEFINITIONS = (
     (
         "0x420dab",

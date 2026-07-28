@@ -9,7 +9,7 @@ void __thiscall begin_track_attachment_follow_state(
         const Vec3 *world_position,
         Player *player)
 {
-  Path *attachment_template_record; // eax
+  cRPath *attachment_template_record; // eax
   double v5; // st7
 
   follow_state->active = 1;

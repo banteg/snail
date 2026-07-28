@@ -193,7 +193,7 @@ static __forceinline void build_strip_mesh(
     }
 }
 
-void Path::initialize_invert_path_template_pair(
+void cRPath::initialize_invert_path_template_pair(
     float radius, int width_cells_, bool side_exit,
     char* texture_a, char* texture_b, char* vertical_texture)
 {

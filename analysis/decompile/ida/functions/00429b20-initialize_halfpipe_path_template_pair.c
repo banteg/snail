@@ -4,7 +4,7 @@
 
 // Builds the Windows public HALFPIPE path-template pair at authored slot 42. The direct initialize_game_assets_and_world call targets pair base game+0x106a64c, seeds runtime kind 42 with 66 samples, and emits the generated strip mesh through the shared kind-42 transform helper; Android cRPath::BuildHalfPipe independently matches the shape.
 void __thiscall initialize_halfpipe_path_template_pair(
-        Path *self,
+        cRPath *self,
         float scale,
         int32_t width_cells_,
         bool side_exit,

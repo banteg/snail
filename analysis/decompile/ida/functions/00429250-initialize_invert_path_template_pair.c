@@ -4,7 +4,7 @@
 
 // Builds the Invert attachment path-template pair; iOS Path.o has both `cRPath::BuildInvert(float, int, bool, char*, char*)` and `cRPath::BuildInvert1(float, int, bool, char*, char*)`, so this Windows split keeps the conservative family name.
 void __thiscall initialize_invert_path_template_pair(
-        Path *self,
+        cRPath *self,
         float radius,
         int32_t width_cells_,
         bool side_exit,

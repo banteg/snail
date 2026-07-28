@@ -4,7 +4,7 @@
 
 // Builds the TurnoverDouble attachment path-template pair; iOS Path.o names this `cRPath::BuildTurnoverDouble(float, int, bool, char*, char*)`.
 void __thiscall initialize_turnoverdouble_path_template_pair(
-        Path *self,
+        cRPath *self,
         float length,
         int32_t width_cells_,
         bool side_exit,

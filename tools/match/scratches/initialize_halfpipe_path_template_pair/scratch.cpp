@@ -8,7 +8,7 @@
 float sine(float angle);
 
 
-void Path::initialize_halfpipe_path_template_pair(
+void cRPath::initialize_halfpipe_path_template_pair(
     float scale,
     int width_cells_,
     bool side_exit,

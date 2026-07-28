@@ -4,7 +4,7 @@
 /* function: update_track_attachment_follow_state @ 0x420cb0 */
 
 00420cc2        uint32_t sample_index_3 = follow_state->sample_index
-00420cc5        struct Path* template_record_6 = follow_state->template_record
+00420cc5        struct cRPath* template_record_6 = follow_state->template_record
 00420cc9        struct PathTemplateSample* secondary_samples_4 = template_record_6->secondary_samples
 00420cd5        uint32_t eax_2 = sample_index_3 * 0x15
 00420cd8        long double x87_r7_1 = fconvert.t(path_factor) * fconvert.t((&secondary_samples_4->delta_length)[eax_2 * 2])
@@ -22,7 +22,7 @@
 00420d1f        var_180 = fconvert.s(fconvert.t(var_180) - x87_r7_4)
 00420d23        if (sample_index_3 + 1 == template_record_6->segment_count << 1)
 00420d30        play_voice_manager(&g_voice_manager, 4, 1, 0xffffffff)
-00420d35        struct Path* template_record = follow_state->template_record
+00420d35        struct cRPath* template_record = follow_state->template_record
 00420d40        if (template_record->has_entry_mesh_transition != 0)
 00420d46        uint32_t segment_count = template_record->segment_count
 00420d49        uint32_t sample_index_5 = follow_state->sample_index
@@ -47,21 +47,21 @@
 00420efa        follow_state->active = 0
 00420f03        if ((((x87_r7_10 < temp2 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_10, temp2) ? 1 : 0) << 0xa | (x87_r7_10 == temp2 ? 1 : 0) << 0xe):1.b & 1) == 0)
 00420f05        var_180 = 0.999000013f
-00420f0d        struct Path* template_record_1 = follow_state->template_record
+00420f0d        struct cRPath* template_record_1 = follow_state->template_record
 00420f30        long double x87_r7_12 = fconvert.t(path_factor) * fconvert.t(*(&template_record_1->secondary_samples[template_record_1->segment_count] - 0x1c))
 00420f34        motion->z = fconvert.s(x87_r7_12)
 00420f37        long double temp4 = fconvert.t(1f)
 00420f37        x87_r7_12 - temp4
 00420f42        if ((((x87_r7_12 < temp4 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp4) ? 1 : 0) << 0xa | (x87_r7_12 == temp4 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 00420f44        motion->z = 1f
-00420f4b        struct Path* template_record_4 = follow_state->template_record
+00420f4b        struct cRPath* template_record_4 = follow_state->template_record
 00420f52        if (template_record_4->kind != PATH_TEMPLATE_KIND_SUPERTRAMP)
 00421077        out_position->z = fconvert.s(fconvert.t(*(&template_record_4->secondary_samples[template_record_4->segment_count] - 0x70)) + fconvert.t(follow_state->source_cell->anchor_position.z) + fconvert.t(template_record_4->width_or_scale) + fconvert.t(var_180))
 00420f68        int32_t sample_override = 0xffffffff
 00420f6a        uint32_t mode = 0
 00420f6c        int32_t set_id = 0xf
 00420f6e        motion->y = fconvert.s(fconvert.t(motion->z) * fconvert.t(0.699999988f))
-00420f71        struct Path* template_record_2 = follow_state->template_record
+00420f71        struct cRPath* template_record_2 = follow_state->template_record
 00420f74        long double x87_r7_15 = fconvert.t(out_position->x)
 00420f7d        long double x87_r6_2 = fconvert.t(var_180) + fconvert.t(template_record_2->width_or_scale)
 00420f80        struct PathTemplateSample* secondary_samples_2 = template_record_2->secondary_samples
@@ -94,7 +94,7 @@
 00420eae        uint32_t sample_index_4 = follow_state->sample_index
 00420eb1        float var_17c = fconvert.s(fconvert.t(var_180) + fconvert.t(follow_state->progress))
 00420eb9        follow_state->progress = var_17c
-00420ebc        struct Path* template_record_3 = follow_state->template_record
+00420ebc        struct cRPath* template_record_3 = follow_state->template_record
 00420ec2        int32_t edi = template_record_3->segment_count - 1
 00420ec5        uint32_t eax_25 = sample_index_4 << 3
 00420ece        float center_x
@@ -229,7 +229,7 @@
 0042151c        follow_state->orientation_up.x = var_164.basis_up.x
 0042151f        float z = var_164.basis_up.z
 00421523        follow_state->orientation_up.y = y_2
-00421526        struct Path* template_record_5 = follow_state->template_record
+00421526        struct cRPath* template_record_5 = follow_state->template_record
 00421529        follow_state->orientation_up.z = z
 0042152f        uint32_t sample_index_2 = follow_state->sample_index
 00421539        uint32_t ecx_66 = sample_index_2 << 3

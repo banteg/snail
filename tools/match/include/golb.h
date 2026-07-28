@@ -1,6 +1,6 @@
 // Golb (player shot) path-follow structures, partial. iOS Path.o keeps this
 // live projectile traversal family as cRPathFollowGolb; its state borrows the
-// shared authored Path and SubLoc owners rather than private prefix views.
+// shared authored cRPath and SubLoc owners rather than private prefix views.
 #ifndef GOLB_H
 #define GOLB_H
 
@@ -42,7 +42,7 @@ public:
 
     unsigned char active;     // +0x00
     char unknown_01[3];
-    Path* template_record;       // +0x04, borrowed authored cRPath
+    cRPath* template_record;       // +0x04, borrowed authored cRPath
     SubLoc* source_cell;        // +0x08, borrowed runtime-grid cell
     int sample_index;          // +0x0c
     float progress;            // +0x10

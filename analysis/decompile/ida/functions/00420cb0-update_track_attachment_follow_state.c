@@ -10,26 +10,26 @@ int32_t __thiscall update_track_attachment_follow_state(
         Vec3 *motion)
 {
   uint32_t sample_index; // ecx
-  Path *template_record; // esi
+  cRPath *template_record; // esi
   PathTemplateSample *secondary_samples; // edx
   double v8; // st7
   float *p_delta_length; // edx
   double v10; // st7
   uint32_t v11; // ecx
-  Path *v12; // eax
+  cRPath *v12; // eax
   uint32_t segment_count; // eax
   uint32_t v14; // esi
-  struct Path *attachment_template_record; // esi
+  struct cRPath *attachment_template_record; // esi
   int32_t track_cell_row_index; // eax
-  struct Path *v17; // esi
+  struct cRPath *v17; // esi
   uint32_t v18; // ebx
-  Path *v19; // edx
+  cRPath *v19; // edx
   int v20; // edi
   int v21; // eax
   float *p_x; // ecx
   double v23; // st7
-  Path *v24; // edx
-  Path *v25; // ecx
+  cRPath *v24; // edx
+  cRPath *v25; // ecx
   double v26; // st7
   uint32_t v27; // esi
   double v28; // st6
@@ -62,7 +62,7 @@ int32_t __thiscall update_track_attachment_follow_state(
   double v56; // st5
   float v57; // edx
   float z; // ecx
-  Path *v59; // edx
+  cRPath *v59; // edx
   float v60; // eax
   bool v61; // zf
   int v62; // ecx

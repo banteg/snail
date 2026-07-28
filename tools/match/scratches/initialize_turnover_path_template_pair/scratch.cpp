@@ -185,7 +185,7 @@ static __forceinline void build_strip_mesh(
     }
 }
 
-void Path::initialize_turnover_path_template_pair(
+void cRPath::initialize_turnover_path_template_pair(
     float length,
     int width_cells_,
     bool side_exit,
