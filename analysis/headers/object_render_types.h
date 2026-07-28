@@ -331,6 +331,11 @@ typedef struct Movie {
     TextureRef* current_texture_ref;
 } Movie;
 
+/*
+ * Focused flattened view of the authored cRBodPos owner. The canonical
+ * gameplay type is RenderableBod; this view keeps the object-animation replay
+ * self-contained while preserving its object and frame-number lanes.
+ */
 typedef struct XAnimationKeyframe {
     uint8_t _pad_00[0x24];
     Object* object;

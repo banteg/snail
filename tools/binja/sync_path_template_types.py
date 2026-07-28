@@ -303,7 +303,7 @@ RENDERABLE_BOD_FIELD_UPDATES = (
     ("0x00", "bod", "BodBase"),
     ("0x38", "transform", "TransformMatrix"),
     ("0x78", "render_animation_manager", "AnimManager*"),
-    ("0x7c", "unknown_7c", "uint8_t[0x4]"),
+    ("0x7c", "frame_number", "int32_t"),
 )
 
 BOD_NODE_FIELD_UPDATES = (

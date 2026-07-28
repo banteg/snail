@@ -128,7 +128,8 @@ typedef struct RenderableBod {
     TransformMatrix transform;
     /* Borrowed only when BodNode.list_flags has the render-sync bit 0x800. */
     AnimManager* render_animation_manager;
-    uint8_t unknown_7c[0x4];
+    /* Authored frame number when LoadAnim uses this cRBodPos as a keyframe. */
+    int32_t frame_number;
 } RenderableBod;
 typedef char RenderableBod_must_be_0x80[
     (sizeof(RenderableBod) == 0x80) ? 1 : -1

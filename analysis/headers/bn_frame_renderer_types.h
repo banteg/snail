@@ -146,7 +146,7 @@ typedef struct FrameRenderableBod {
     FrameBodBase bod;
     FrameTransformMatrix transform;
     void* render_animation_manager;
-    uint8_t unknown_7c[0x04];
+    int32_t frame_number;
 } FrameRenderableBod;
 
 typedef struct FrameRenderCamera {

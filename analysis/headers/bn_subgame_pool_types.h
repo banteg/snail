@@ -63,7 +63,7 @@ typedef struct RenderableBod {
     BodBase bod;
     TransformMatrix transform;
     AnimManager* render_animation_manager;
-    uint8_t unknown_7c[0x04];
+    int32_t frame_number;
 } RenderableBod;
 
 /* Exact 0x94-byte Windows cRVapour owner. */

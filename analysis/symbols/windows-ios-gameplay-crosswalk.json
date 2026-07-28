@@ -3232,7 +3232,7 @@
       "android_symbol": "cRObject::RequestAnim(int, cRBodPos*, float, int)",
       "source_object": "RObject.o",
       "confidence": "high",
-      "notes": "Windows and Android validate caller-owned cRBodPos keyframes, retain an ObjectAnimation/frame graph on the destination Object, and generate vertices from current plus a scaled next-minus-current delta. Android's 0x74-byte keyframes and 0x18-byte animation record are port-specific; Windows proves 0x80-byte keyframes and a 0x14-byte ObjectAnimation."
+      "notes": "Windows, Android, and iOS validate caller-owned cRBodPos keyframes, retain an ObjectAnimation/frame graph on the destination Object, and generate vertices from current plus a scaled next-minus-current delta. Both mobile LoadAnim bodies allocate the records as raw 0x74-byte cRBodPos objects and write the authored frame number at their final +0x70 lane. Windows proves the homologous cRBodPos owner is 0x80 bytes with frame_number at its final +0x7c lane; the mobile 0x18-byte and Windows 0x14-byte ObjectAnimation layouts remain platform-specific."
     },
     {
       "address": "0x430d90",

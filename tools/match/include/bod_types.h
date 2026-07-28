@@ -48,7 +48,9 @@ public:
     // Only valid with BOD_FLAG_SYNC_ANIMATION: cRGame::Render borrows this
     // manager's progress for Object::animation immediately before drawing.
     AnimManager* render_animation_manager; // +0x78
-    char unknown_07c[0x80 - 0x7c];
+    // LoadAnim reuses raw cRBodPos records as animation keyframes and stores
+    // their authored frame number in the final positioned-body lane.
+    int frame_number; // +0x7c
 };
 
 typedef char RenderableBod_must_be_0x80[(sizeof(RenderableBod) == 0x80) ? 1 : -1];

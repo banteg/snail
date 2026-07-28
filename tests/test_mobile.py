@@ -440,6 +440,64 @@ def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -
     assert "typedef Player cRSubGoldy;" in player_header
 
 
+def test_mobile_animation_keyframes_recover_crbodpos_tail_lane() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    request_anim = next(
+        entry
+        for entry in crosswalk["entries"]
+        if entry["windows_name"] == "request_object_animation"
+    )
+    verified = load_json(
+        repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+    )
+    verified_request_anim = next(
+        entry
+        for entry in verified["entries"]
+        if entry["windows_name"] == "request_object_animation"
+    )
+    assert request_anim["android_symbol"] == (
+        "cRObject::RequestAnim(int, cRBodPos*, float, int)"
+    )
+    assert request_anim["ios_symbol"] == request_anim["android_symbol"]
+    assert "raw 0x74-byte cRBodPos objects" in verified_request_anim["notes"]
+    assert "final +0x7c lane" in verified_request_anim["notes"]
+
+    android_loader = (
+        repo_root
+        / "analysis/decompile/android/functions/"
+        "00089044-_ZN9cRDirectX8LoadAnimEPcP8cRObject.c"
+    ).read_text(encoding="utf-8")
+    ios_loader = (
+        repo_root
+        / "analysis/decompile/ios/functions/"
+        "000681f8-_ZN9cRDirectX8LoadAnimEPcP8cRObject.c"
+    ).read_text(encoding="utf-8")
+    for loader, count_name in (
+        (android_loader, "local_2bc"),
+        (ios_loader, "local_30"),
+    ):
+        assert f"{count_name} * 0x74" in loader
+        assert "*(undefined4 *)(this_00 + 0x70)" in loader
+        assert "this_00 = this_00 + 0x74" in loader
+
+    bod_header = (
+        repo_root / "tools/match/include/bod_types.h"
+    ).read_text(encoding="utf-8")
+    animation_header = (
+        repo_root / "tools/match/include/object_animation_types.h"
+    ).read_text(encoding="utf-8")
+    analysis_header = (
+        repo_root / "analysis/headers/path_template_types.h"
+    ).read_text(encoding="utf-8")
+    assert "int frame_number; // +0x7c" in bod_header
+    assert "unknown_07c" not in bod_header
+    assert "typedef cRBodPos XAnimationKeyframe;" in animation_header
+    assert "struct XAnimationKeyframe : public BodBase" not in animation_header
+    assert "int32_t frame_number;" in analysis_header
+    assert "unknown_7c" not in analysis_header
+
+
 def test_mobile_sprite_renderer_recovers_gl_owner_and_void_boundaries() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

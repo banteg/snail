@@ -52,7 +52,7 @@ typedef struct RenderableBod {
     BodBase bod;
     TransformMatrix transform;
     void* render_animation_manager;
-    uint8_t unknown_7c[0x4];
+    int32_t frame_number;
 } RenderableBod;
 
 /* Windows cRLogoLetter layout; mobile ports use a smaller BOD prefix. */

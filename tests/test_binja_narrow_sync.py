@@ -4154,7 +4154,6 @@ def test_golb_shot_inherited_base_and_nested_vapour_owner_are_replayed() -> None
     ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
-
     analysis_owner = (
         "typedef struct __base(RenderableBod, 0x00) GolbShot {\n"
         "    __inherited RenderableBod body;\n"
@@ -7118,6 +7117,9 @@ def test_bod_intrusive_list_lifecycle_replay_owns_shared_layout() -> None:
     ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
+    ida_wrapper = (IDA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
     path_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
@@ -7134,6 +7136,11 @@ def test_bod_intrusive_list_lifecycle_replay_owns_shared_layout() -> None:
     assert '"--bod-core-only"' in path_sync
     assert "verify_bod_core_owner_sizes" in path_sync
     assert "current_type_widths(" in path_sync
+    assert '"--bod-core-only"' in ida_wrapper
+    assert '"--bod-core-only"' in ida_sync
+    assert "_sync_renderable_bod_frame_number" in ida_sync
+    assert '"int32_t frame_number;"' in ida_sync
+    assert "renderable_bod_frame_owner" in ida_sync
     for name, size in (
         ("BodNode", "0x10"),
         ("BodList", "0x0C"),

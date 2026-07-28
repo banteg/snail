@@ -24,10 +24,10 @@ enum ObjectAnimationModeOverride {
 
 typedef unsigned short ObjectAnimationFlags;
 
-struct XAnimationKeyframe : public BodBase {
-    char unknown_38[0x7c - 0x38];
-    int frame_number; // +0x7c
-};
+// The authored RequestAnim ABI accepts cRBodPos*. LoadAnim allocates those
+// positioned bodies as a transient keyframe bank; this stable matcher alias
+// describes that role without inventing a derived owner.
+typedef cRBodPos XAnimationKeyframe;
 
 typedef char XAnimationKeyframe_must_be_0x80[
     (sizeof(XAnimationKeyframe) == 0x80) ? 1 : -1];

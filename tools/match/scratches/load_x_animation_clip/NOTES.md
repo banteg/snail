@@ -114,3 +114,17 @@ fake initialization.
 
 Focused matching is intentionally unchanged at **100.00%**, 228/228
 instructions, with all 50 masked operands clean.
+
+## 2026-07-28 authored cRBodPos keyframe owner
+
+Both symbol-preserving mobile bodies allocate `"Anim Key frame bods"` as
+`count * 0x74`, walk that bank as `cRBodPos*`, retain each frame Object through
+the inherited `+0x24` lane, and write the parsed frame number at the final
+`+0x70` word. They then pass the same pointer to the exact
+`cRObject::RequestAnim(int, cRBodPos*, float, int)` ABI.
+
+Windows independently fixes the homologous record at `0x80` bytes with the
+Object and frame lanes at `+0x24/+0x7c`. The shared matcher now expresses
+`XAnimationKeyframe` as a role alias for `cRBodPos` instead of inventing a
+second `BodBase` subclass with opaque padding. Focused matching remains exact
+at 228/228 instructions with all 50 operands clean.

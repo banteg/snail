@@ -174,3 +174,16 @@ The matcher remains proof-grade at 231/231 with all 17 operands clean.
   8-byte frame, and 0xdc-byte object layouts before applying any annotation.
   A second run reports every update already current. Focused matching remains
   exact at 231/231 instructions with all 17 masked operands clean.
+
+## 2026-07-28 cRBodPos alias closure
+
+The exact Android and iOS symbols name the second argument `cRBodPos*`, and
+both mobile loaders prove that this is the allocated record itself rather than
+a base pointer to another keyframe class: they allocate `count * 0x74`, advance
+by `0x74`, and write the frame number at the record's final `+0x70` word.
+
+Windows preserves the same owner relationship with its platform-specific
+`0x80` stride and final `+0x7c` lane. `XAnimationKeyframe` is therefore now a
+matcher role alias for the existing `cRBodPos`/`RenderableBod` owner, eliminating
+the artificial `BodBase + 0x44-byte padding` subclass. The exact method remains
+231/231 instructions with all 17 masked operands clean.

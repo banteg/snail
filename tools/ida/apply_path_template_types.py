@@ -238,6 +238,7 @@ BOD_CORE_OWNER_MARKERS = (
     "BodList_must_be_0x0c",
     "BodBase_must_be_0x38",
     "RenderableBod_must_be_0x80",
+    "int32_t frame_number;",
     "void __thiscall add_bod_to_front(BodList* list, BodNode* node);",
     "void __thiscall append_bod_to_end(BodList* list, BodNode* node);",
     "bool __thiscall is_bod_after_sprites(BodBase* bod);",
@@ -3144,6 +3145,156 @@ def _sync_build_track_render_cache_lvar() -> dict[str, object]:
     return {"status": "applied", "name": "locals", "type": "TrackRenderCacheBuildLocals"}
 
 
+def _read_renderable_bod_frame_number() -> tuple[
+    ida_typeinf.tinfo_t | None,
+    dict[str, object],
+]:
+    owner = ida_typeinf.tinfo_t()
+    if not owner.get_named_type(None, "RenderableBod", ida_typeinf.BTF_STRUCT):
+        return None, {
+            "status": "failed",
+            "reason": "missing_RenderableBod_type",
+        }
+    if owner.get_size() != BOD_CORE_OWNER_SIZES["RenderableBod"]:
+        return None, {
+            "status": "failed",
+            "reason": "owner_size_mismatch",
+            "expected_size": BOD_CORE_OWNER_SIZES["RenderableBod"],
+            "observed_size": owner.get_size(),
+        }
+
+    members = ida_typeinf.udt_type_data_t()
+    if not owner.get_udt_details(members):
+        return None, {
+            "status": "failed",
+            "reason": "missing_RenderableBod_members",
+        }
+    candidates = [
+        (index, member)
+        for index, member in enumerate(members)
+        if int(member.offset) // 8 == 0x7C
+    ]
+    if len(candidates) != 1:
+        return None, {
+            "status": "failed",
+            "reason": "unexpected_frame_number_candidates",
+            "candidate_count": len(candidates),
+        }
+
+    index, member = candidates[0]
+    return owner, {
+        "status": "verified",
+        "index": index,
+        "offset": "0x7c",
+        "size": int(member.size) // 8,
+        "name": member.name,
+        "type": member.type.dstr(),
+        "integral": bool(member.type.is_integral()),
+    }
+
+
+def _sync_renderable_bod_frame_number(
+    header_path: pathlib.Path,
+) -> dict[str, object]:
+    header_text = header_path.read_text(encoding="utf-8")
+    if "int32_t frame_number;" not in header_text:
+        return {
+            "status": "failed",
+            "reason": "noncanonical_RenderableBod_header",
+        }
+
+    owner, field = _read_renderable_bod_frame_number()
+    if owner is None:
+        return field
+    if field["size"] != 4 or field["name"] not in (
+        "unknown_7c",
+        "frame_number",
+    ):
+        return {
+            "status": "failed",
+            "reason": "unexpected_RenderableBod_tail_lane",
+            "field": field,
+        }
+    if (
+        field["name"] == "frame_number"
+        and field["type"] == "int32_t"
+        and field["integral"]
+    ):
+        return {
+            "status": "unchanged",
+            "field": {
+                key: value for key, value in field.items() if key != "index"
+            },
+        }
+
+    old_member = {
+        "name": str(field["name"]),
+        "type": str(field["type"]),
+        "offset_bits": 0x7C * 8,
+    }
+    code = owner.del_udm(int(field["index"]))
+    if code != ida_typeinf.TERR_OK:
+        return {
+            "status": "failed",
+            "reason": "delete_RenderableBod_tail_lane_failed",
+            "error": ida_typeinf.tinfo_errstr(code),
+            "field": field,
+        }
+
+    code = owner.add_udm(
+        ida_typeinf.udm_t("frame_number", "int32_t", 0x7C * 8)
+    )
+    if code != ida_typeinf.TERR_OK:
+        rollback_code = owner.add_udm(
+            ida_typeinf.udm_t(
+                old_member["name"],
+                old_member["type"],
+                old_member["offset_bits"],
+            )
+        )
+        return {
+            "status": "failed",
+            "reason": "add_RenderableBod_frame_number_failed",
+            "error": ida_typeinf.tinfo_errstr(code),
+            "rollback": ida_typeinf.tinfo_errstr(rollback_code),
+        }
+
+    _owner, readback = _read_renderable_bod_frame_number()
+    if (
+        readback.get("status") != "verified"
+        or readback.get("size") != 4
+        or readback.get("name") != "frame_number"
+        or readback.get("type") != "int32_t"
+        or not readback.get("integral")
+    ):
+        rollback_owner, rollback_field = _read_renderable_bod_frame_number()
+        rollback = []
+        if rollback_owner is not None:
+            delete_code = rollback_owner.del_udm(int(rollback_field["index"]))
+            rollback.append(ida_typeinf.tinfo_errstr(delete_code))
+            add_code = rollback_owner.add_udm(
+                ida_typeinf.udm_t(
+                    old_member["name"],
+                    old_member["type"],
+                    old_member["offset_bits"],
+                )
+            )
+            rollback.append(ida_typeinf.tinfo_errstr(add_code))
+        return {
+            "status": "failed",
+            "reason": "RenderableBod_frame_number_readback_failed",
+            "readback": readback,
+            "rollback": rollback,
+        }
+
+    return {
+        "status": "applied",
+        "field": {
+            key: value for key, value in readback.items() if key != "index"
+        },
+    }
+
+
 def _read_replay_start_cursor_field(
     owner_name: str,
     expected_owner_size: int,
@@ -4955,6 +5106,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
     missing = []
     failed = []
 
+    renderable_bod_frame_owner = _sync_renderable_bod_frame_number(
+        header_path
+    )
+    if renderable_bod_frame_owner.get("status") == "failed":
+        failed.append(
+            {"renderable_bod_frame_owner": renderable_bod_frame_owner}
+        )
+
     face_movie_owner = _sync_face_movie_owner()
     if face_movie_owner.get("status") == "failed":
         failed.append({"face_movie_owner": face_movie_owner})
@@ -5650,6 +5809,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "data_applied": data_applied,
                 "data_unchanged": data_unchanged,
                 "type_changes": type_changes,
+                "renderable_bod_frame_owner": renderable_bod_frame_owner,
                 "face_movie_owner": face_movie_owner,
                 "golb_shot_prefix_owner": golb_shot_prefix_owner,
                 "game_root_owner_graph": game_root_owner_graph,
@@ -5735,7 +5895,7 @@ def main() -> None:
     if len(argv) < 2:
         print(
             "usage: apply_path_template_types.py <header-path> "
-            "[--replay-start-cursor-only|--golb-base-only]",
+            "[--bod-core-only|--replay-start-cursor-only|--golb-base-only]",
             file=sys.stderr,
         )
         ida_pro.qexit(2)
@@ -5748,7 +5908,20 @@ def main() -> None:
         return
 
     mode_args = set(argv[2:])
-    if mode_args == {"--replay-start-cursor-only"}:
+    if mode_args == {"--bod-core-only"}:
+        result = _sync_renderable_bod_frame_number(header_path)
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "mode": "bod_core_only",
+                    "result": result,
+                },
+                indent=2,
+            )
+        )
+        exit_code = 1 if result.get("status") == "failed" else 0
+    elif mode_args == {"--replay-start-cursor-only"}:
         result = _sync_replay_start_cursor_fields()
         print(
             json.dumps(

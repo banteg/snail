@@ -13,7 +13,7 @@ struct tColour;
 struct ObjectToonFaceQuadNormal;
 struct ObjectToonEdge;
 struct ObjectAnimation;
-struct XAnimationKeyframe;
+class RenderableBod;
 
 // Shared cRObject state word. Only bits with independent producer/consumer
 // evidence are named.
@@ -187,7 +187,7 @@ struct Object {
     void request_object_edges(int edge_count); // @ 0x430570; Android cRObject::RequestEdges(int)
     void calc_object_edges(); // @ 0x4308b0; cRObject::CalcEdges
     void request_object_animation(
-        int keyframe_count, XAnimationKeyframe* keyframes,
+        int keyframe_count, RenderableBod* keyframes,
         float progress_step, int flags); // @ 0x430a70
 
     char unknown_00[0x08];

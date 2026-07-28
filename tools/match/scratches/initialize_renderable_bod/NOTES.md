@@ -21,3 +21,20 @@ The canonical replay now preserves that ABI in both analysis backends. Binary
 Ninja consequently renders the inherited `BodNode` members and owned
 `TransformMatrix` directly instead of a `void***` result and word-indexed
 stores. No matching source or operand mask changed.
+
+## 2026-07-28 cRBodPos tail-lane ownership
+
+Android and iOS `cRDirectX::LoadAnim` independently allocate their transient
+animation keyframe banks as raw `cRBodPos` records with a `0x74` stride, retain
+the inherited `Object*` at `+0x24`, and store the parsed frame number in the
+final word at `+0x70`. Their exact
+`cRObject::RequestAnim(int, cRBodPos*, float, int)` symbols consume that same
+lane.
+
+The Windows owner has the already-proven `0x80` extent: its larger
+`BodBase + TransformMatrix + AnimManager*` prefix places the homologous final
+word at `+0x7c`. That lane is now `RenderableBod::frame_number`, and the former
+synthetic `XAnimationKeyframe : BodBase` record is only a role alias for the
+authored `cRBodPos`. The constructor still leaves both trailing words alone,
+exactly as both mobile constructors do. Focused Windows matching remains exact
+at 10/10 instructions with all three operands clean.

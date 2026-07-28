@@ -35,6 +35,14 @@ def parse_args() -> argparse.Namespace:
     )
     narrow_mode = parser.add_mutually_exclusive_group()
     narrow_mode.add_argument(
+        "--bod-core-only",
+        action="store_true",
+        help=(
+            "Replay only the guarded RenderableBod frame-number tail lane "
+            "after verifying the complete shared owner."
+        ),
+    )
+    narrow_mode.add_argument(
         "--replay-start-cursor-only",
         action="store_true",
         help=(
@@ -68,6 +76,8 @@ def main() -> int:
         raise FileNotFoundError(f"IDAPython sync script not found: {IDAPYTHON_SCRIPT_PATH}")
 
     script_args = [str(header_path)]
+    if args.bod_core_only:
+        script_args.append("--bod-core-only")
     if args.replay_start_cursor_only:
         script_args.append("--replay-start-cursor-only")
     if args.golb_base_only:
