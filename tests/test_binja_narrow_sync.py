@@ -15062,7 +15062,97 @@ def test_split_user_variable_replay_skips_current_cluster(monkeypatch) -> None:
     assert len(calls) == 1
     assert result[0]["status"] == "skipped"
     assert result[0]["reason"] == "already current"
-    assert "if changed:\n            bv.update_analysis_and_wait()" in calls[0][-1]
+    assert "if changed_identifiers:" in calls[0][-1]
+    assert "functions[identifier].reanalyze()" in calls[0][-1]
+
+
+def test_split_user_variable_batch_replays_in_one_transaction(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        code = args[-1]
+        preview = "preview = True" in code
+        return {
+            "result": {
+                "success": True,
+                "preview": preview,
+                "committed": not preview,
+                "changed": True,
+                "snapshot_saved": not preview,
+                "operation_results": [
+                    {
+                        "identifier": "initialize_slalom_path_template_pair",
+                        "changed": True,
+                    },
+                    {
+                        "identifier": "initialize_slalom_path_template_pair",
+                        "changed": False,
+                    },
+                ],
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+    result = _narrow_sync.apply_split_user_var_updates(
+        Path("."),
+        target="snail-mail.exe",
+        updates=(
+            (
+                "initialize_slalom_path_template_pair",
+                (
+                    ("0x41f7ad", "mlil", "StackVariableSourceType", 77, 8),
+                    ("0x41f7b3", "mlil_ssa", "StackVariableSourceType", 83, 8),
+                ),
+                ("StackVariableSourceType", 77, 8),
+                "lead_sample_index",
+                "int32_t",
+            ),
+            (
+                "initialize_slalom_path_template_pair",
+                (("0x41f8de", "mlil", "StackVariableSourceType", 382, 8),),
+                ("StackVariableSourceType", 382, 8),
+                "tail_sample_z",
+                "float",
+            ),
+        ),
+    )
+
+    assert ["preview = True" in call[-1] for call in calls] == [True, False]
+    assert [entry["status"] for entry in result] == ["verified", "skipped"]
+    assert calls[0][-1].count("bv.begin_undo_actions()") == 1
+    assert calls[0][-1].count("bv.file.save_auto_snapshot()") == 1
+    assert "Resolve every definition against the same pre-mutation IL" in calls[0][-1]
+    assert calls[0][-1].index("pending_splits.append(") < calls[0][-1].index(
+        "function.split_var(split_variable)"
+    )
+
+
+def test_split_user_variable_batch_rejects_overlapping_identities() -> None:
+    repeated_definition = (
+        ("0x41f7ad", "mlil", "StackVariableSourceType", 77, 8),
+    )
+    with pytest.raises(ValueError, match="disjoint identities"):
+        _narrow_sync.apply_split_user_var_updates(
+            Path("."),
+            target="snail-mail.exe",
+            updates=(
+                (
+                    "initialize_slalom_path_template_pair",
+                    repeated_definition,
+                    ("StackVariableSourceType", 77, 8),
+                    "lead_sample_index",
+                    "int32_t",
+                ),
+                (
+                    "initialize_slalom_path_template_pair",
+                    repeated_definition,
+                    ("StackVariableSourceType", 77, 8),
+                    "other_owner",
+                    "int32_t",
+                ),
+            ),
+        )
 
 
 def test_split_away_user_variable_replay_types_the_residual_lifetime(
@@ -15105,7 +15195,7 @@ def test_split_away_user_variable_replay_types_the_residual_lifetime(
     assert ["preview = True" in call[-1] for call in calls] == [True, False]
     assert result[0]["op"] == "split_away_user_var_set"
     assert result[0]["status"] == "verified"
-    assert "merge_definitions = False" in calls[0][-1]
+    assert '"merge_definitions": false' in calls[0][-1]
     assert "definition_keys.issubset(split_keys)" in calls[0][-1]
     assert "residual target variable missing after split" in calls[0][-1]
 
@@ -20550,7 +20640,7 @@ def test_slalom_path_replay_preserves_shared_owner_lifetimes() -> None:
     assert "SLALOM_CONTROL_STACK_LIFETIME_SPLITS" in replay
     assert "SLALOM_MESH_STACK_LIFETIME_SPLITS" in replay
     assert "SLALOM_FACE_REGISTER_LIFETIME_SPLITS" in replay
-    assert "apply_split_user_var_update" in replay
+    assert "apply_split_user_var_updates(" in replay
     assert '"mlil_ssa", "StackVariableSourceType", 1728, 4' in replay
     assert '"mlil_ssa", "StackVariableSourceType", 1728, 8' in replay
     assert '"mlil_ssa", "StackVariableSourceType", 2093, 4' in replay

@@ -23,6 +23,13 @@ DataVarRemoval = tuple[str, str]
 IntDisplayUpdate = tuple[str, str, str, int, int, str, str, str]
 SplitVarSpec = tuple[str, int, int]
 SplitVarDefinition = tuple[str, str, str, int, int]
+SplitUserVarUpdate = tuple[
+    str,
+    Iterable[SplitVarDefinition],
+    SplitVarSpec,
+    str,
+    str,
+]
 StructUpdateGroup = tuple[str, Iterable[FieldUpdate]]
 UserVarUpdate = tuple[str, str, int, int, str, str]
 UserVarRemoval = tuple[str, str, int, int, str, str]
@@ -2645,79 +2652,115 @@ def remove_user_var_updates(
     ]
 
 
-def apply_split_user_var_update(
-    repo_root: Path,
+def split_user_var_operations(
+    updates: Iterable[SplitUserVarUpdate],
     *,
-    target: str,
-    identifier: str,
-    definitions: Iterable[SplitVarDefinition],
-    target_var: SplitVarSpec,
-    variable_name: str,
-    variable_type: str,
-    _merge_definitions: bool = True,
-    _operation_name: str = "split_user_var_set",
+    merge_definitions: bool = True,
+    operation_name: str = "split_user_var_set",
 ) -> list[dict[str, object]]:
-    definition_list = [
-        {
-            "address": address,
-            "view": view,
-            "source_type": source_type,
-            "index": index,
-            "storage": storage,
+    operations: list[dict[str, object]] = []
+    relevant_keys_by_identifier: dict[str, set[SplitVarSpec]] = {}
+    for identifier, definitions, target_var, variable_name, variable_type in updates:
+        definition_list = [
+            {
+                "address": str(address),
+                "view": view,
+                "source_type": str(source_type).split(".")[-1],
+                "index": int(index),
+                "storage": int(storage),
+            }
+            for address, view, source_type, index, storage in definitions
+        ]
+        if not definition_list:
+            continue
+        if any(
+            definition["view"] not in {"mlil", "mlil_ssa"}
+            for definition in definition_list
+        ):
+            raise ValueError(
+                "split-variable definitions require mlil or mlil_ssa views"
+            )
+
+        target_source_type, target_index, target_storage = target_var
+        target_spec = {
+            "source_type": str(target_source_type).split(".")[-1],
+            "index": int(target_index),
+            "storage": int(target_storage),
         }
-        for address, view, source_type, index, storage in definitions
-    ]
-    if not definition_list:
-        return []
-    if any(definition["view"] not in {"mlil", "mlil_ssa"} for definition in definition_list):
-        raise ValueError("split-variable definitions require mlil or mlil_ssa views")
-
-    target_source_type, target_index, target_storage = target_var
-    target_spec = {
-        "source_type": target_source_type,
-        "index": target_index,
-        "storage": target_storage,
-    }
-    definition_keys = {
-        (
-            str(definition["source_type"]),
-            int(definition["index"]),
-            int(definition["storage"]),
+        definition_keys = {
+            (
+                str(definition["source_type"]),
+                int(definition["index"]),
+                int(definition["storage"]),
+            )
+            for definition in definition_list
+        }
+        if len(definition_keys) != len(definition_list):
+            raise ValueError(
+                "split-variable definitions require unique variable identities"
+            )
+        target_key = (
+            str(target_spec["source_type"]),
+            int(target_spec["index"]),
+            int(target_spec["storage"]),
         )
-        for definition in definition_list
-    }
-    if len(definition_keys) != len(definition_list):
-        raise ValueError("split-variable definitions require unique variable identities")
-    target_key = (target_source_type, target_index, target_storage)
-    if _merge_definitions and target_key not in definition_keys:
-        raise ValueError("split-variable target must be one of the definition identities")
-    if not _merge_definitions and target_key in definition_keys:
-        raise ValueError("split-away residual target must not be a detached definition")
+        if merge_definitions and target_key not in definition_keys:
+            raise ValueError(
+                "split-variable target must be one of the definition identities"
+            )
+        if not merge_definitions and target_key in definition_keys:
+            raise ValueError(
+                "split-away residual target must not be a detached definition"
+            )
 
-    def run_batch(*, preview: bool) -> dict[str, object]:
-        code = f"""
-identifier = {identifier!r}
-definitions = {json.dumps(definition_list)}
-target_spec = {json.dumps(target_spec)}
-variable_name = {variable_name!r}
-variable_type = {variable_type!r}
-merge_definitions = {_merge_definitions!r}
-preview = {preview!r}
+        identifier_text = str(identifier)
+        relevant_keys = definition_keys | {target_key}
+        prior_keys = relevant_keys_by_identifier.setdefault(identifier_text, set())
+        overlapping_keys = prior_keys & relevant_keys
+        if overlapping_keys:
+            raise ValueError(
+                "split-variable batch updates require disjoint identities per "
+                f"function; {identifier_text!r} repeats {sorted(overlapping_keys)!r}"
+            )
+        prior_keys.update(relevant_keys)
+        operations.append(
+            {
+                "op": operation_name,
+                "identifier": identifier_text,
+                "definitions": definition_list,
+                "target_var": target_spec,
+                "variable_name": variable_name,
+                "variable_type": variable_type,
+                "merge_definitions": merge_definitions,
+            }
+        )
+    return operations
+
+
+def _split_user_var_batch_python_code(
+    operations: list[dict[str, object]], *, preview: bool
+) -> str:
+    template = """
+import json
+
+operations = json.loads(__OPERATIONS_JSON__)
+preview = __PREVIEW__
 
 
 def find_function(identifier):
+    text = str(identifier)
     try:
-        address = int(identifier, 0)
+        address = int(text, 0)
     except ValueError:
-        functions = list(bv.get_functions_by_name(identifier))
+        functions = list(bv.get_functions_by_name(text))
         if len(functions) != 1:
             raise RuntimeError(
-                f"expected one function named {{identifier}}, found {{len(functions)}}"
+                f"expected one function named {text}, found {len(functions)}"
             )
         return functions[0]
     function = bv.get_function_at(address)
     if function is None:
-        raise RuntimeError(f"function not found at {{address:#x}}")
+        raise RuntimeError(f"function not found at {address:#x}")
     return function
 
 
@@ -2742,7 +2785,7 @@ def spec_key(spec):
 
 
 def known_variables(function):
-    variables = {{}}
+    variables = {}
     for variable in function.vars:
         variables[variable_key(variable)] = variable
     for variable in function.split_vars:
@@ -2755,14 +2798,13 @@ def known_variables(function):
 
 
 def find_current_variable(function, spec):
-    key = spec_key(spec)
-    return known_variables(function).get(key)
+    return known_variables(function).get(spec_key(spec))
 
 
 def find_definition_variable(function, spec):
     address = int(str(spec["address"]), 0)
     il = function.mlil.ssa_form if spec["view"] == "mlil_ssa" else function.mlil
-    candidates = {{}}
+    candidates = {}
     for instruction in il.instructions:
         if int(instruction.address) != address:
             continue
@@ -2785,7 +2827,7 @@ def find_definition_variable(function, spec):
                 candidates[variable_key(candidate)] = candidate
     if len(candidates) != 1:
         raise RuntimeError(
-            f"expected one split variable for {{spec!r}}, found {{len(candidates)}}"
+            f"expected one split variable for {spec!r}, found {len(candidates)}"
         )
     return next(iter(candidates.values()))
 
@@ -2800,8 +2842,7 @@ def merge_snapshot(function):
     )
 
 
-def state_snapshot(function):
-    relevant_keys = {{spec_key(spec) for spec in definitions}} | {{spec_key(target_spec)}}
+def state_snapshot(function, relevant_keys):
     relevant_variables = sorted(
         (
             variable_key(variable),
@@ -2812,33 +2853,37 @@ def state_snapshot(function):
         for variable in function.vars
         if variable_key(variable) in relevant_keys
     )
-    return {{
+    return {
         "split_vars": sorted(variable_key(variable) for variable in function.split_vars),
         "merged_vars": merge_snapshot(function),
         "relevant_variables": relevant_variables,
         "hlil": str(function.hlil),
-    }}
+    }
 
 
-def inspect_expected_state(function, expected_type):
-    definition_keys = {{spec_key(spec) for spec in definitions}}
+def inspect_expected_state(function, operation, expected_type):
+    definitions = operation["definitions"]
+    target_spec = operation["target_var"]
+    variable_name = operation["variable_name"]
+    merge_definitions = bool(operation["merge_definitions"])
+    definition_keys = {spec_key(spec) for spec in definitions}
     expected_target_key = spec_key(target_spec)
-    relevant_keys = definition_keys | {{expected_target_key}}
+    relevant_keys = definition_keys | {expected_target_key}
     expected_source_keys = (
-        definition_keys - {{expected_target_key}} if merge_definitions else set()
+        definition_keys - {expected_target_key} if merge_definitions else set()
     )
-    split_keys = {{variable_key(variable) for variable in function.split_vars}}
-    variables = {{
+    split_keys = {variable_key(variable) for variable in function.split_vars}
+    variables = {
         variable_key(variable): variable
         for variable in function.vars
         if variable_key(variable) in relevant_keys
-    }}
-    merge_entries = {{
-        variable_key(merge_target): {{variable_key(source) for source in sources}}
+    }
+    merge_entries = {
+        variable_key(merge_target): {variable_key(source) for source in sources}
         for merge_target, sources in function.merged_vars.items()
-    }}
+    }
     for merge_target_key, source_keys in merge_entries.items():
-        touched = ({{merge_target_key}} | source_keys) & relevant_keys
+        touched = ({merge_target_key} | source_keys) & relevant_keys
         safe_same_target_extension = (
             merge_definitions
             and merge_target_key == expected_target_key
@@ -2847,7 +2892,7 @@ def inspect_expected_state(function, expected_type):
         if touched and not safe_same_target_extension:
             raise RuntimeError(
                 "refusing to replace conflicting variable merge: "
-                f"target={{merge_target_key!r}}, sources={{sorted(source_keys)!r}}"
+                f"target={merge_target_key!r}, sources={sorted(source_keys)!r}"
             )
     target_variable = variables.get(expected_target_key)
     target_current = (
@@ -2864,176 +2909,370 @@ def inspect_expected_state(function, expected_type):
         )
     else:
         merge_current = not any(
-            ({{merge_target_key}} | source_keys) & relevant_keys
+            ({merge_target_key} | source_keys) & relevant_keys
             for merge_target_key, source_keys in merge_entries.items()
         )
-    return {{
+    return {
         "all_split": definition_keys.issubset(split_keys),
         "merge_current": merge_current,
         "target_current": target_current,
-        "target_variable": target_variable,
-        "variables": variables,
         "expected_target_key": expected_target_key,
         "expected_source_keys": expected_source_keys,
-    }}
+    }
 
 
-function = find_function(identifier)
-expected_type, _ = bv.parse_type_string(variable_type)
-before = state_snapshot(function)
+functions = {}
+relevant_keys_by_identifier = {}
+runtime_operations = []
+for operation in operations:
+    identifier = str(operation["identifier"])
+    if identifier not in functions:
+        functions[identifier] = find_function(identifier)
+    function = functions[identifier]
+    relevant_keys_by_identifier.setdefault(identifier, set()).update(
+        {spec_key(spec) for spec in operation["definitions"]}
+        | {spec_key(operation["target_var"])}
+    )
+    expected_type, _ = bv.parse_type_string(operation["variable_type"])
+    runtime_operations.append((operation, function, expected_type))
+
+before_by_identifier = {
+    identifier: state_snapshot(
+        function,
+        relevant_keys_by_identifier[identifier],
+    )
+    for identifier, function in functions.items()
+}
 state = bv.begin_undo_actions()
 undo_closed = False
 snapshot_saved = False
+changed_identifiers = []
 try:
-    expected = inspect_expected_state(function, expected_type)
-    changed = not (
-        expected["all_split"]
-        and expected["merge_current"]
-        and expected["target_current"]
-    )
-    if changed:
-        current_split_keys = {{variable_key(variable) for variable in function.split_vars}}
-        pending_splits = []
-        for definition in definitions:
-            if spec_key(definition) not in current_split_keys:
-                pending_splits.append(find_definition_variable(function, definition))
-        for split_variable in pending_splits:
-            function.split_var(split_variable)
-        if pending_splits:
-            bv.update_analysis_and_wait()
+    expected_states = []
+    changed_operations = []
+    for operation, function, expected_type in runtime_operations:
+        expected = inspect_expected_state(function, operation, expected_type)
+        changed = not (
+            expected["all_split"]
+            and expected["merge_current"]
+            and expected["target_current"]
+        )
+        expected_states.append(expected)
+        changed_operations.append(changed)
+        if changed:
+            changed_identifiers.append(str(operation["identifier"]))
 
-        resolved_variables = {{}}
-        for definition in definitions:
+    # Resolve every definition against the same pre-mutation IL. Splitting one
+    # lifetime can renumber later IL identities after analysis, so no lookup is
+    # allowed after the first split until the single analysis pass completes.
+    pending_splits = []
+    for runtime, changed in zip(runtime_operations, changed_operations):
+        operation, function, _ = runtime
+        if not changed:
+            continue
+        current_split_keys = {
+            variable_key(variable) for variable in function.split_vars
+        }
+        for definition in operation["definitions"]:
+            if spec_key(definition) not in current_split_keys:
+                pending_splits.append(
+                    (function, find_definition_variable(function, definition))
+                )
+    for function, split_variable in pending_splits:
+        function.split_var(split_variable)
+    if pending_splits:
+        bv.update_analysis_and_wait()
+
+    resolved_by_operation = []
+    for runtime, expected, changed in zip(
+        runtime_operations,
+        expected_states,
+        changed_operations,
+    ):
+        operation, function, _ = runtime
+        if not changed:
+            resolved_by_operation.append({})
+            continue
+        resolved_variables = {}
+        for definition in operation["definitions"]:
             variable = find_current_variable(function, definition)
             if variable is None:
-                raise RuntimeError(f"split variable missing after apply: {{definition!r}}")
+                raise RuntimeError(
+                    f"split variable missing after apply: {definition!r}"
+                )
             resolved_variables[spec_key(definition)] = variable
-
         expected_target_key = expected["expected_target_key"]
-        expected_source_keys = expected["expected_source_keys"]
         if expected_target_key not in resolved_variables:
-            target_variable = find_current_variable(function, target_spec)
+            target_variable = find_current_variable(
+                function,
+                operation["target_var"],
+            )
             if target_variable is None:
                 raise RuntimeError(
-                    f"residual target variable missing after split: {{target_spec!r}}"
+                    "residual target variable missing after split: "
+                    f"{operation['target_var']!r}"
                 )
             resolved_variables[expected_target_key] = target_variable
-        current_merge_entries = {{
-            variable_key(merge_target): {{variable_key(source) for source in sources}}
+        resolved_by_operation.append(resolved_variables)
+
+    for runtime, expected, changed, resolved_variables in zip(
+        runtime_operations,
+        expected_states,
+        changed_operations,
+        resolved_by_operation,
+    ):
+        operation, function, expected_type = runtime
+        if not changed:
+            continue
+        expected_target_key = expected["expected_target_key"]
+        expected_source_keys = expected["expected_source_keys"]
+        current_merge_entries = {
+            variable_key(merge_target): {
+                variable_key(source) for source in sources
+            }
             for merge_target, sources in function.merged_vars.items()
-        }}
+        }
         if (
-            merge_definitions
+            operation["merge_definitions"]
             and expected_source_keys
-            and current_merge_entries.get(expected_target_key) != expected_source_keys
+            and current_merge_entries.get(expected_target_key)
+            != expected_source_keys
         ):
             function.merge_vars(
                 resolved_variables[expected_target_key],
-                [resolved_variables[key] for key in sorted(expected_source_keys)],
+                [
+                    resolved_variables[key]
+                    for key in sorted(expected_source_keys)
+                ],
             )
         function.create_user_var(
             resolved_variables[expected_target_key],
             expected_type,
-            variable_name,
+            operation["variable_name"],
         )
+    if changed_identifiers:
         bv.update_analysis_and_wait()
 
-    observed = inspect_expected_state(function, expected_type)
-    verified = (
-        observed["all_split"]
-        and observed["merge_current"]
-        and observed["target_current"]
-    )
-    if not verified:
-        raise RuntimeError("split user-variable verification failed")
-    after = state_snapshot(function)
+    for operation, function, expected_type in runtime_operations:
+        observed = inspect_expected_state(function, operation, expected_type)
+        verified = (
+            observed["all_split"]
+            and observed["merge_current"]
+            and observed["target_current"]
+        )
+        if not verified:
+            raise RuntimeError(
+                "split user-variable verification failed for "
+                f"{operation['identifier']!r}:{operation['variable_name']!r}"
+            )
+    after_by_identifier = {
+        identifier: state_snapshot(
+            function,
+            relevant_keys_by_identifier[identifier],
+        )
+        for identifier, function in functions.items()
+    }
 
     if preview:
         bv.revert_undo_actions(state)
         undo_closed = True
-        if changed:
+        if changed_identifiers:
+            for identifier in dict.fromkeys(changed_identifiers):
+                functions[identifier].reanalyze()
             bv.update_analysis_and_wait()
-        restored = state_snapshot(function)
-        if restored != before:
-            raise RuntimeError("split user-variable rollback failed")
+        restored_by_identifier = {
+            identifier: state_snapshot(
+                function,
+                relevant_keys_by_identifier[identifier],
+            )
+            for identifier, function in functions.items()
+        }
+        if restored_by_identifier != before_by_identifier:
+            raise RuntimeError("split user-variable batch rollback failed")
     else:
         bv.commit_undo_actions(state)
         undo_closed = True
-        snapshot_saved = bv.file.save_auto_snapshot()
+        if changed_identifiers:
+            snapshot_saved = bv.file.save_auto_snapshot()
+            if snapshot_saved is not True:
+                raise RuntimeError(
+                    "Binary Ninja committed split lifetimes without saving "
+                    "the database snapshot"
+                )
 except Exception:
     if not undo_closed:
         bv.revert_undo_actions(state)
-        bv.update_analysis_and_wait()
+        if changed_identifiers:
+            for identifier in dict.fromkeys(changed_identifiers):
+                functions[identifier].reanalyze()
+            bv.update_analysis_and_wait()
     raise
 
-result = {{
+operation_results = []
+for runtime, changed in zip(runtime_operations, changed_operations):
+    operation, _, _ = runtime
+    identifier = str(operation["identifier"])
+    operation_results.append({
+        **operation,
+        "changed": changed,
+        "before_hlil": before_by_identifier[identifier]["hlil"],
+        "after_hlil": after_by_identifier[identifier]["hlil"],
+    })
+result = {
     "success": True,
     "preview": preview,
     "committed": not preview,
-    "changed": changed,
+    "changed": any(changed_operations),
     "snapshot_saved": snapshot_saved,
-    "operation": {{
-        "identifier": identifier,
-        "definitions": definitions,
-        "target_var": target_spec,
-        "variable_name": variable_name,
-        "variable_type": variable_type,
-        "before_hlil": before["hlil"],
-        "after_hlil": after["hlil"],
-    }},
-}}
+    "operation_results": operation_results,
+}
+if len(operation_results) == 1:
+    result["operation"] = operation_results[0]
 """
-        response = run_bn(
-            repo_root,
-            "py",
-            "exec",
-            "--target",
-            target,
-            "--format",
-            "json",
-            "--code",
-            code,
-        )
-        payload = response.get("result") if isinstance(response, dict) else None
-        if (
-            not isinstance(payload, dict)
-            or payload.get("success") is not True
-            or payload.get("preview") is not preview
-            or payload.get("committed") is not (not preview)
-            or not isinstance(payload.get("changed"), bool)
-        ):
-            phase = "preview" if preview else "apply"
-            raise RuntimeError(
-                f"Binary Ninja split user-variable {phase} failed: {response!r}"
-            )
-        return payload
+    return template.replace(
+        "__OPERATIONS_JSON__", repr(json.dumps(operations))
+    ).replace("__PREVIEW__", repr(preview))
 
-    preview_result = run_batch(preview=True)
+
+def _run_split_user_var_batch(
+    repo_root: Path,
+    *,
+    target: str,
+    operations: list[dict[str, object]],
+    preview: bool,
+) -> dict[str, object]:
+    response = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        _split_user_var_batch_python_code(operations, preview=preview),
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if (
+        not isinstance(payload, dict)
+        or payload.get("success") is not True
+        or payload.get("preview") is not preview
+        or payload.get("committed") is not (not preview)
+        or not isinstance(payload.get("changed"), bool)
+    ):
+        phase = "preview" if preview else "apply"
+        raise RuntimeError(
+            f"Binary Ninja split user-variable batch {phase} failed: {response!r}"
+        )
+    operation_results = payload.get("operation_results")
+    if (
+        not isinstance(operation_results, list)
+        and len(operations) == 1
+        and isinstance(payload.get("operation"), dict)
+    ):
+        operation_results = [
+            {
+                **payload["operation"],
+                "changed": payload["changed"],
+            }
+        ]
+        payload["operation_results"] = operation_results
+    if (
+        not isinstance(operation_results, list)
+        or len(operation_results) != len(operations)
+        or any(
+            not isinstance(result, dict)
+            or not isinstance(result.get("changed"), bool)
+            for result in operation_results
+        )
+    ):
+        raise RuntimeError(
+            f"Binary Ninja split user-variable batch result is malformed: {payload!r}"
+        )
+    return payload
+
+
+def apply_split_user_var_updates(
+    repo_root: Path,
+    *,
+    target: str,
+    updates: Iterable[SplitUserVarUpdate],
+    _merge_definitions: bool = True,
+    _operation_name: str = "split_user_var_set",
+) -> list[dict[str, object]]:
+    operations = split_user_var_operations(
+        updates,
+        merge_definitions=_merge_definitions,
+        operation_name=_operation_name,
+    )
+    if not operations:
+        return []
+
+    preview_result = _run_split_user_var_batch(
+        repo_root,
+        target=target,
+        operations=operations,
+        preview=True,
+    )
     if preview_result["changed"]:
-        applied_result = run_batch(preview=False)
+        applied_result = _run_split_user_var_batch(
+            repo_root,
+            target=target,
+            operations=operations,
+            preview=False,
+        )
         if applied_result.get("snapshot_saved") is not True:
             raise RuntimeError(
-                "split user-variable update changed live analysis without a saved snapshot"
+                "split user-variable batch changed live analysis without a "
+                "saved snapshot"
             )
         payload = applied_result
     else:
         payload = preview_result
 
-    operation = payload.get("operation")
-    if not isinstance(operation, dict):
-        raise RuntimeError(f"split user-variable result is malformed: {payload!r}")
+    operation_results = payload["operation_results"]
     return [
         {
-            "op": _operation_name,
-            "identifier": identifier,
-            "definitions": definition_list,
-            "target_var": target_spec,
-            "variable_name": variable_name,
-            "variable_type": variable_type,
-            "status": "verified" if payload["changed"] else "skipped",
-            "reason": None if payload["changed"] else "already current",
+            "op": operation["op"],
+            "identifier": operation["identifier"],
+            "definitions": operation["definitions"],
+            "target_var": operation["target_var"],
+            "variable_name": operation["variable_name"],
+            "variable_type": operation["variable_type"],
+            "status": "verified" if result["changed"] else "skipped",
+            "reason": None if result["changed"] else "already current",
         }
+        for operation, result in zip(operations, operation_results, strict=True)
     ]
+
+
+def apply_split_user_var_update(
+    repo_root: Path,
+    *,
+    target: str,
+    identifier: str,
+    definitions: Iterable[SplitVarDefinition],
+    target_var: SplitVarSpec,
+    variable_name: str,
+    variable_type: str,
+    _merge_definitions: bool = True,
+    _operation_name: str = "split_user_var_set",
+) -> list[dict[str, object]]:
+    return apply_split_user_var_updates(
+        repo_root,
+        target=target,
+        updates=(
+            (
+                identifier,
+                definitions,
+                target_var,
+                variable_name,
+                variable_type,
+            ),
+        ),
+        _merge_definitions=_merge_definitions,
+        _operation_name=_operation_name,
+    )
 
 
 def apply_split_away_user_var_update(

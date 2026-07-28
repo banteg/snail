@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from _narrow_sync import (
-    apply_split_user_var_update,
+    apply_split_user_var_updates,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
@@ -387,32 +387,30 @@ def main() -> int:
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=(
-                SLALOM_PATH_USER_VAR_UPDATES
-                + SLALOM_CONTROL_USER_VAR_UPDATES
-            ),
+            updates=(SLALOM_PATH_USER_VAR_UPDATES + SLALOM_CONTROL_USER_VAR_UPDATES),
         ),
     ]
-    for function_name, function_base in SLALOM_FUNCTION_BASES:
-        for definitions, target_var, variable_name, variable_type in (
-            SLALOM_CONTROL_STACK_LIFETIME_SPLITS
-            + SLALOM_MESH_STACK_LIFETIME_SPLITS
-            + SLALOM_FACE_REGISTER_LIFETIME_SPLITS
-        ):
-            operations.extend(
-                apply_split_user_var_update(
-                    REPO_ROOT,
-                    target=args.target,
-                    identifier=function_name,
-                    definitions=translated_definitions(
-                        function_base,
-                        definitions,
-                    ),
-                    target_var=target_var,
-                    variable_name=variable_name,
-                    variable_type=variable_type,
+    operations.extend(
+        apply_split_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=tuple(
+                (
+                    function_name,
+                    translated_definitions(function_base, definitions),
+                    target_var,
+                    variable_name,
+                    variable_type,
                 )
-            )
+                for function_name, function_base in SLALOM_FUNCTION_BASES
+                for definitions, target_var, variable_name, variable_type in (
+                    SLALOM_CONTROL_STACK_LIFETIME_SPLITS
+                    + SLALOM_MESH_STACK_LIFETIME_SPLITS
+                    + SLALOM_FACE_REGISTER_LIFETIME_SPLITS
+                )
+            ),
+        )
+    )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,
